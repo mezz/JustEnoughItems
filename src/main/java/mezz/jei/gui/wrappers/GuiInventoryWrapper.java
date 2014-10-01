@@ -12,10 +12,12 @@ import java.awt.Color;
 
 public class GuiInventoryWrapper extends GuiInventory {
 
+	static final int iconPadding = 2;
+	static final int iconSize = 16;
+
 	protected GuiButton nextButton;
 	protected GuiButton backButton;
 	protected int pageNum = 1;
-	protected int countPerPage = 1;
 
 	public GuiInventoryWrapper(GuiInventory gui) {
 		super(FMLClientHandler.instance().getClientPlayerEntity());
@@ -33,6 +35,10 @@ public class GuiInventoryWrapper extends GuiInventory {
 		buttonList.add(nextButton = new GuiButton(-1, this.width - buttonWidth - 4, 0, buttonWidth, buttonHeight, "Next"));
 		buttonList.add(backButton = new GuiButton(-2, this.guiLeft + this.xSize + 4, 0, buttonWidth, buttonHeight, "Back"));
 
+		int pageCount = getPageCount();
+		if (pageNum > pageCount)
+			pageNum = pageCount;
+		
 		updateButtonEnabled();
 	}
 
@@ -40,7 +46,6 @@ public class GuiInventoryWrapper extends GuiInventory {
 		nextButton.enabled = pageNum < getPageCount();
 		backButton.enabled = pageNum > 1;
 	}
-
 
 	protected void actionPerformed(GuiButton button) {
 		if (button.id == -1 && pageNum < getPageCount()) {
@@ -58,30 +63,25 @@ public class GuiInventoryWrapper extends GuiInventory {
 	protected void drawGuiContainerForegroundLayer(int p_146979_1_, int p_146979_2_) {
 		RenderHelper.enableGUIStandardItemLighting();
 
-		final int pageStart = (pageNum - 1) * countPerPage;
+		final int xStart = xSize + 4;
+		final int yStart = -guiTop + backButton.height + 4;
 
-		final int iconPadding = 2;
-		final int iconSize = 16;
-		final int xInitial = xSize + 4;
-		int x = xInitial;
-		int y = -guiTop + 32;
+		int x = xStart;
+		int y = yStart;
 		int maxX = 0;
-		int count = 0;
 
-		for (int i = pageStart; i < JustEnoughItems.itemRegistry.itemList.size(); i++) {
+		for (int i = (pageNum - 1) * getCountPerPage(); i < JustEnoughItems.itemRegistry.itemList.size(); i++) {
 			ItemStack stack = JustEnoughItems.itemRegistry.itemList.get(i);
 			drawItemStack(stack, x, y);
-			count++;
+
 			x += iconSize + iconPadding;
 			if (x + iconSize + guiLeft > width) {
-				x = xInitial;
+				x = xStart;
 				y += iconSize + iconPadding;
 			}
 
-			if (y + iconSize + guiTop > height) {
-				countPerPage = count;
+			if (y + iconSize + guiTop > height)
 				break;
-			}
 
 			if (x > maxX)
 				maxX = x;
@@ -91,13 +91,13 @@ public class GuiInventoryWrapper extends GuiInventory {
 
 		nextButton.xPosition = this.guiLeft + maxX + iconSize - nextButton.width;
 
-		drawPageDisplay();
+		drawPageNumbers();
 		updateButtonEnabled();
 
 		super.drawGuiContainerForegroundLayer(p_146979_1_, p_146979_2_);
 	}
 
-	private void drawPageDisplay() {
+	private void drawPageNumbers() {
 		String pageDisplay = getPageNum() + " / " + getPageCount();
 		int pageDisplayWidth = fontRendererObj.getStringWidth(pageDisplay);
 
@@ -115,9 +115,19 @@ public class GuiInventoryWrapper extends GuiInventory {
 		itemRender.renderItemOverlayIntoGUI(font, this.mc.getTextureManager(), stack, xPos, yPos);
 	}
 
+	private int getCountPerPage() {
+		int xArea = width - (guiLeft + xSize + 4);
+		int yArea = height - (backButton.height + 4);
+
+		int xCount = xArea / (iconSize + iconPadding);
+		int yCount = yArea / (iconSize + iconPadding);
+
+		return xCount * yCount;
+	}
+
 	private int getPageCount() {
 		int count = JustEnoughItems.itemRegistry.itemList.size();
-		return (int) Math.ceil((double) count / (double) countPerPage);
+		return (int) Math.ceil((double) count / (double) getCountPerPage());
 	}
 
 	protected int getPageNum() {
