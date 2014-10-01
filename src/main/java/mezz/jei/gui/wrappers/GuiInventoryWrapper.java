@@ -2,18 +2,22 @@ package mezz.jei.gui.wrappers;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import mezz.jei.JustEnoughItems;
-import net.minecraft.client.gui.FontRenderer;
+import mezz.jei.gui.GuiItemIcon;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
 public class GuiInventoryWrapper extends GuiInventory {
 
 	static final int iconPadding = 2;
 	static final int iconSize = 16;
+
+	protected ArrayList<GuiItemIcon> items = new ArrayList<GuiItemIcon>();
 
 	protected GuiButton nextButton;
 	protected GuiButton backButton;
@@ -37,9 +41,40 @@ public class GuiInventoryWrapper extends GuiInventory {
 
 		int pageCount = getPageCount();
 		if (pageNum > pageCount)
-			pageNum = pageCount;
-		
+			setPageNum(pageCount);
+
+		updatePage();
 		updateButtonEnabled();
+	}
+
+	private void updatePage() {
+		items.clear();
+
+		final int xStart = guiLeft + xSize + 4;
+		final int yStart = backButton.height + 4;
+
+		int x = xStart;
+		int y = yStart;
+		int maxX = 0;
+
+		for (int i = (pageNum - 1) * getCountPerPage(); i < JustEnoughItems.itemRegistry.itemList.size(); i++) {
+			ItemStack stack = JustEnoughItems.itemRegistry.itemList.get(i);
+			items.add(new GuiItemIcon(stack, x, y));
+
+			x += iconSize + iconPadding;
+			if (x + iconSize > width) {
+				x = xStart;
+				y += iconSize + iconPadding;
+			}
+
+			if (y + iconSize > height)
+				break;
+
+			if (x > maxX)
+				maxX = x;
+		}
+
+		nextButton.xPosition = maxX + iconSize - nextButton.width;
 	}
 
 	private void updateButtonEnabled() {
@@ -49,52 +84,38 @@ public class GuiInventoryWrapper extends GuiInventory {
 
 	protected void actionPerformed(GuiButton button) {
 		if (button.id == -1 && pageNum < getPageCount()) {
-			pageNum++;
+			setPageNum(pageNum + 1);
 		} else if (button.id == -2 && pageNum > 1) {
-			pageNum--;
+			setPageNum(pageNum - 1);
 		}
 		updateButtonEnabled();
 	}
 
-	/**
-	 * Draw the foreground layer for the GuiContainer (everything in front of the items)
-	 */
 	@Override
-	protected void drawGuiContainerForegroundLayer(int p_146979_1_, int p_146979_2_) {
+	protected void mouseClicked(int xPos, int yPos, int mouseButton) {
+		for (GuiItemIcon itemIcon : items) {
+			if (itemIcon.isMouseOver(xPos, yPos)) {
+				itemIcon.mouseClicked(xPos, yPos, mouseButton);
+				return;
+			}
+		}
+		super.mouseClicked(xPos, yPos, mouseButton);
+	}
+
+	@Override
+	public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_) {
+		super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
+
+		TextureManager textureManager = this.mc.getTextureManager();
+
 		RenderHelper.enableGUIStandardItemLighting();
 
-		final int xStart = xSize + 4;
-		final int yStart = -guiTop + backButton.height + 4;
-
-		int x = xStart;
-		int y = yStart;
-		int maxX = 0;
-
-		for (int i = (pageNum - 1) * getCountPerPage(); i < JustEnoughItems.itemRegistry.itemList.size(); i++) {
-			ItemStack stack = JustEnoughItems.itemRegistry.itemList.get(i);
-			drawItemStack(stack, x, y);
-
-			x += iconSize + iconPadding;
-			if (x + iconSize + guiLeft > width) {
-				x = xStart;
-				y += iconSize + iconPadding;
-			}
-
-			if (y + iconSize + guiTop > height)
-				break;
-
-			if (x > maxX)
-				maxX = x;
-		}
+		for (GuiItemIcon itemIcon : items)
+			itemIcon.draw(itemRender, fontRendererObj, textureManager);
 
 		RenderHelper.disableStandardItemLighting();
 
-		nextButton.xPosition = this.guiLeft + maxX + iconSize - nextButton.width;
-
 		drawPageNumbers();
-		updateButtonEnabled();
-
-		super.drawGuiContainerForegroundLayer(p_146979_1_, p_146979_2_);
 	}
 
 	private void drawPageNumbers() {
@@ -104,15 +125,7 @@ public class GuiInventoryWrapper extends GuiInventory {
 		int pageDisplayX = ((backButton.xPosition + backButton.width) + nextButton.xPosition) / 2;
 		int pageDisplayY = backButton.yPosition + 6;
 
-		fontRendererObj.drawString(pageDisplay, pageDisplayX - (pageDisplayWidth / 2) - guiLeft, pageDisplayY - guiTop, Color.white.getRGB());
-	}
-
-	private void drawItemStack(ItemStack stack, int xPos, int yPos) {
-		FontRenderer font = stack.getItem().getFontRenderer(stack);
-		if (font == null)
-			font = fontRendererObj;
-		itemRender.renderItemAndEffectIntoGUI(font, this.mc.getTextureManager(), stack, xPos, yPos);
-		itemRender.renderItemOverlayIntoGUI(font, this.mc.getTextureManager(), stack, xPos, yPos);
+		fontRendererObj.drawString(pageDisplay, pageDisplayX - (pageDisplayWidth / 2), pageDisplayY, Color.white.getRGB());
 	}
 
 	private int getCountPerPage() {
@@ -132,6 +145,13 @@ public class GuiInventoryWrapper extends GuiInventory {
 
 	protected int getPageNum() {
 		return pageNum;
+	}
+
+	protected void setPageNum(int pageNum) {
+		if (this.pageNum == pageNum)
+			return;
+		this.pageNum = pageNum;
+		updatePage();
 	}
 
 }
