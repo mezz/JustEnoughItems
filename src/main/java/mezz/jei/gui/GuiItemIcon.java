@@ -28,7 +28,8 @@ public class GuiItemIcon {
 
 	public void mouseClicked(int xPos, int yPos, int mouseButton) {
 		EntityClientPlayerMP player = FMLClientHandler.instance().getClientPlayerEntity();
-		if (Permissions.canPlayerSpawnItems(player)) {
+		if (Permissions.canPlayerSpawnItems(player) && player.inventory.getFirstEmptyStack() != -1) {
+
 			if (mouseButton == 0)
 				Commands.giveFullStack(itemStack);
 			else if (mouseButton == 1)
