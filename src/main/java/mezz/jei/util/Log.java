@@ -28,6 +28,6 @@ public class Log {
 	}
 
 	public static void log(Level logLevel, String message, Object... params) {
-		LogManager.getLogger(JustEnoughItems.MODID).log(logLevel, new MessageFormatMessage(String.format(message, params), params));
+		LogManager.getLogger(JustEnoughItems.MODID).log(logLevel, message, params);
 	}
 }
