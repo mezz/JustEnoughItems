@@ -17,30 +17,49 @@ public class ItemRegistry {
 	public ItemRegistry() {
 
 		for (Block block : GameData.getBlockRegistry().typeSafeIterable())
-			addItemStackAndSubtypes(new ItemStack(block));
+			addBlockAndSubBlocks(block);
 
 		for (Item item : GameData.getItemRegistry().typeSafeIterable())
-			addItemStackAndSubtypes(new ItemStack(item));
-
-		for (ItemStack stack : itemList)
-			Log.info(stack.getUnlocalizedName());
+			addItemAndSubItems(item);
 	}
 
-	public void addItemStackAndSubtypes(ItemStack itemStack) {
-		if (itemStack == null)
-			return;
-
-		Item item = itemStack.getItem();
-
+	public void addItemAndSubItems(Item item) {
 		if (item == null)
 			return;
 
-		if (itemStack.getHasSubtypes()) {
-			ArrayList<ItemStack> subItems = new ArrayList<ItemStack>();
-			item.getSubItems(item, null, subItems);
+		ArrayList<ItemStack> subItems = new ArrayList<ItemStack>();
+		item.getSubItems(item, null, subItems);
+		addItemStacks(subItems);
+
+		if (subItems.isEmpty()) {
+			ItemStack stack = new ItemStack(item);
+			if (stack.getItem() == null) {
+				Log.warning("Empty item stack from item: " + item.getUnlocalizedName());
+				return;
+			}
+			addItemStack(stack);
+		}
+	}
+
+	public void addBlockAndSubBlocks(Block block) {
+		if (block == null)
+			return;
+
+		Item item = Item.getItemFromBlock(block);
+
+		ArrayList<ItemStack> subItems = new ArrayList<ItemStack>();
+		if (item != null) {
+			block.getSubBlocks(item, null, subItems);
 			addItemStacks(subItems);
-		} else {
-			addItemStack(itemStack);
+		}
+
+		if (subItems.isEmpty()) {
+			ItemStack stack = new ItemStack(block);
+			if (stack.getItem() == null) {
+				Log.debug("Couldn't get itemStack for block: " + block.getUnlocalizedName());
+				return;
+			}
+			addItemStack(stack);
 		}
 	}
 
@@ -50,11 +69,21 @@ public class ItemRegistry {
 	}
 
 	public void addItemStack(ItemStack stack) {
-		if (itemNameSet.contains(stack.getUnlocalizedName()))
+		String itemKey = uniqueIdentifierForStack(stack);
+		if (stack.hasTagCompound())
+			itemKey += stack.getTagCompound();
+
+		if (itemNameSet.contains(itemKey))
 			return;
-		itemNameSet.add(stack.getUnlocalizedName());
+		itemNameSet.add(itemKey);
 		itemList.add(stack);
 	}
 
+	private String uniqueIdentifierForStack(ItemStack stack) {
+		StringBuilder itemKey = new StringBuilder(stack.getUnlocalizedName());
+		if (stack.hasTagCompound())
+			itemKey.append(":").append(stack.getTagCompound().toString());
+		return itemKey.toString();
+	}
 
 }
