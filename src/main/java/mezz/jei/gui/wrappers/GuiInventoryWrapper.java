@@ -8,6 +8,7 @@ import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -36,8 +37,10 @@ public class GuiInventoryWrapper extends GuiInventory {
 		super.initGui();
 		final int buttonWidth = 50;
 		final int buttonHeight = 20;
-		buttonList.add(nextButton = new GuiButton(-1, this.width - buttonWidth - 4, 0, buttonWidth, buttonHeight, "Next"));
-		buttonList.add(backButton = new GuiButton(-2, this.guiLeft + this.xSize + 4, 0, buttonWidth, buttonHeight, "Back"));
+		String next = StatCollector.translateToLocal("jei.button.next");
+		String back = StatCollector.translateToLocal("jei.button.back");
+		buttonList.add(nextButton = new GuiButton(-1, this.width - buttonWidth - 4, 0, buttonWidth, buttonHeight, next));
+		buttonList.add(backButton = new GuiButton(-2, this.guiLeft + this.xSize + 4, 0, buttonWidth, buttonHeight, back));
 
 		int pageCount = getPageCount();
 		if (pageNum > pageCount)
