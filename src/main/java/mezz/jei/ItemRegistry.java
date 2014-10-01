@@ -70,8 +70,6 @@ public class ItemRegistry {
 
 	public void addItemStack(ItemStack stack) {
 		String itemKey = uniqueIdentifierForStack(stack);
-		if (stack.hasTagCompound())
-			itemKey += stack.getTagCompound();
 
 		if (itemNameSet.contains(itemKey))
 			return;
