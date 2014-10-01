@@ -22,7 +22,7 @@ public class GuiInventoryWrapper extends GuiInventory {
 
 	protected GuiButton nextButton;
 	protected GuiButton backButton;
-	protected int pageNum = 1;
+	protected static int pageNum = 1;
 
 	public GuiInventoryWrapper(GuiInventory gui) {
 		super(FMLClientHandler.instance().getClientPlayerEntity());
