@@ -3,7 +3,6 @@ package mezz.jei.util;
 import mezz.jei.JustEnoughItems;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.message.MessageFormatMessage;
 
 public class Log {
 

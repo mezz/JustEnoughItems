@@ -3,13 +3,14 @@ package mezz.jei.gui.wrappers;
 import cpw.mods.fml.client.FMLClientHandler;
 import mezz.jei.gui.GuiContainerOverlay;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.gui.inventory.GuiCrafting;
 
-public class GuiInventoryWrapper extends GuiInventory {
+public class GuiCraftingWrapper extends GuiCrafting {
 	private GuiContainerOverlay overlay;
 
-	public GuiInventoryWrapper(GuiInventory gui) {
-		super(FMLClientHandler.instance().getClientPlayerEntity());
+	public GuiCraftingWrapper(GuiCrafting guiCrafting) {
+		super(FMLClientHandler.instance().getClientPlayerEntity().inventory,
+				FMLClientHandler.instance().getClientPlayerEntity().worldObj, 0, 0, 0);
 	}
 
 	@Override
@@ -36,5 +37,4 @@ public class GuiInventoryWrapper extends GuiInventory {
 		super.mouseClicked(xPos, yPos, mouseButton);
 		overlay.mouseClicked(xPos, yPos, mouseButton);
 	}
-
 }
