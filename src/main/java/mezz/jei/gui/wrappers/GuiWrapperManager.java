@@ -2,9 +2,7 @@ package mezz.jei.gui.wrappers;
 
 import mezz.jei.util.Log;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.gui.inventory.GuiCrafting;
-import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.gui.inventory.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -17,6 +15,7 @@ public class GuiWrapperManager {
 		registerWrapper(GuiCrafting.class, GuiCraftingWrapper.class);
 		registerWrapper(GuiChest.class, GuiChestWrapper.class);
 		registerWrapper(GuiInventory.class, GuiInventoryWrapper.class);
+		registerWrapper(GuiFurnace.class, GuiFurnaceWrapper.class);
 	}
 
 	public void registerWrapper(Class<? extends GuiScreen> guiClass, Class<? extends GuiScreen> wrapperClass) {

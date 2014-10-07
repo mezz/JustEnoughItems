@@ -1,10 +1,12 @@
 package mezz.jei.util;
 
 import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.gui.inventory.GuiFurnace;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.inventory.ContainerWorkbench;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.tileentity.TileEntityFurnace;
 
 import java.lang.reflect.Field;
 
@@ -42,6 +44,10 @@ public class Reflection {
 				(Integer)getDeclaredField(workbench, "posY"),
 				(Integer)getDeclaredField(workbench, "posZ")
 		};
+	}
+
+	public static TileEntityFurnace getTileEntityFurnace(GuiFurnace furnace) {
+		return (TileEntityFurnace)getDeclaredField(furnace, "tileFurnace");
 	}
 
 }
