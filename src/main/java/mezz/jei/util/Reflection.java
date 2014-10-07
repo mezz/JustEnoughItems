@@ -1,11 +1,13 @@
 package mezz.jei.util;
 
+import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiFurnace;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.inventory.ContainerWorkbench;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.tileentity.TileEntityBrewingStand;
 import net.minecraft.tileentity.TileEntityFurnace;
 
 import java.lang.reflect.Field;
@@ -48,6 +50,10 @@ public class Reflection {
 
 	public static TileEntityFurnace getTileEntityFurnace(GuiFurnace furnace) {
 		return (TileEntityFurnace)getDeclaredField(furnace, "tileFurnace");
+	}
+
+	public static TileEntityBrewingStand getTileEntityBrewingStand(GuiBrewingStand brewingStand) {
+		return (TileEntityBrewingStand)getDeclaredField(brewingStand, "tileBrewingStand");
 	}
 
 }
