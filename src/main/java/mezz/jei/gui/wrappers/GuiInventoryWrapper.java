@@ -1,17 +1,19 @@
 package mezz.jei.gui.wrappers;
 
-import cpw.mods.fml.client.FMLClientHandler;
 import mezz.jei.gui.GuiContainerOverlay;
+import mezz.jei.util.Reflection;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.inventory.ContainerPlayer;
 
 public class GuiInventoryWrapper extends GuiInventory {
 	private GuiContainerOverlay overlay;
 
 	public GuiInventoryWrapper(GuiInventory gui) {
-		super(FMLClientHandler.instance().getClientPlayerEntity());
+		super(Reflection.getPlayer((ContainerPlayer)gui.inventorySlots));
 	}
 
+	/* Overlay */
 	@Override
 	public void initGui() {
 		super.initGui();

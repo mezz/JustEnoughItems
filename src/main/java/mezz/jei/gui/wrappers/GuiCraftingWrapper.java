@@ -2,17 +2,24 @@ package mezz.jei.gui.wrappers;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import mezz.jei.gui.GuiContainerOverlay;
+import mezz.jei.util.Reflection;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiCrafting;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.ContainerWorkbench;
 
 public class GuiCraftingWrapper extends GuiCrafting {
 	private GuiContainerOverlay overlay;
 
 	public GuiCraftingWrapper(GuiCrafting guiCrafting) {
-		super(FMLClientHandler.instance().getClientPlayerEntity().inventory,
-				FMLClientHandler.instance().getClientPlayerEntity().worldObj, 0, 0, 0);
+		this(FMLClientHandler.instance().getClientPlayerEntity(), Reflection.getPosition((ContainerWorkbench)guiCrafting.inventorySlots));
 	}
 
+	private GuiCraftingWrapper(EntityPlayer player, Integer[] pos) {
+		super(player.inventory, player.getEntityWorld(), pos[0], pos[1], pos[2]);
+	}
+
+	/* Overlay */
 	@Override
 	public void initGui() {
 		super.initGui();
