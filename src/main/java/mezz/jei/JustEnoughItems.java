@@ -3,7 +3,7 @@ package mezz.jei;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import mezz.jei.gui.wrappers.GuiWrapperManager;
+import mezz.jei.gui.GuiWrapperManager;
 import net.minecraftforge.common.MinecraftForge;
 
 @Mod(modid = JustEnoughItems.MODID, version = JustEnoughItems.VERSION)

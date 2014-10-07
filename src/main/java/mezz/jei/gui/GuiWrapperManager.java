@@ -1,5 +1,6 @@
-package mezz.jei.gui.wrappers;
+package mezz.jei.gui;
 
+import mezz.jei.gui.wrappers.*;
 import mezz.jei.util.Log;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.*;
