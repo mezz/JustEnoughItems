@@ -17,6 +17,7 @@ public class GuiWrapperManager {
 		registerWrapper(GuiChest.class, GuiChestWrapper.class);
 		registerWrapper(GuiInventory.class, GuiInventoryWrapper.class);
 		registerWrapper(GuiFurnace.class, GuiFurnaceWrapper.class);
+		registerWrapper(GuiContainerCreative.class, GuiContainerCreativeWrapper.class);
 	}
 
 	public void registerWrapper(Class<? extends GuiScreen> guiClass, Class<? extends GuiScreen> wrapperClass) {
