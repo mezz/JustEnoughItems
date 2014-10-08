@@ -68,5 +68,4 @@ public class GuiItemButton extends GuiButton {
 		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 		GL11.glDisable(GL11.GL_BLEND);
 	}
-
 }
