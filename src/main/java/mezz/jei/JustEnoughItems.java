@@ -3,7 +3,6 @@ package mezz.jei;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import mezz.jei.gui.GuiWrapperManager;
 import net.minecraftforge.common.MinecraftForge;
 
 @Mod(modid = JustEnoughItems.MODID,
@@ -20,7 +19,6 @@ public class JustEnoughItems {
 
 	public static ItemRegistry itemRegistry;
 	public static RecipeRegistry recipeRegistry;
-	public static GuiWrapperManager wrapperManager;
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
@@ -28,6 +26,5 @@ public class JustEnoughItems {
 
 		itemRegistry = new ItemRegistry();
 		recipeRegistry = new RecipeRegistry();
-		wrapperManager = new GuiWrapperManager();
 	}
 }

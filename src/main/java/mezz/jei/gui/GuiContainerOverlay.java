@@ -1,63 +1,86 @@
 package mezz.jei.gui;
 
 import mezz.jei.JustEnoughItems;
+import mezz.jei.util.Log;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class GuiContainerOverlay {
 
 	static final int iconPadding = 2;
-	static final int iconSize = 16;
-	private static final RenderItem itemRender = new RenderItem();
 
-	protected ArrayList<GuiItemIcon> items = new ArrayList<GuiItemIcon>();
+	protected ArrayList<GuiItemButton> itemButtons = new ArrayList<GuiItemButton>();
 
 	protected GuiButton nextButton;
 	protected GuiButton backButton;
+
 	protected static int pageNum = 1;
 
 	protected int guiLeft;
+	protected int guiTop;
 	protected int xSize;
+	protected int ySize;
 	protected int width;
 	protected int height;
 
-	public GuiContainerOverlay(int guiLeft, int xSize, int width, int height) {
+	public void initGui(int guiLeft, int guiTop, int xSize, int ySize, int width, int height, List buttonList) {
 		this.guiLeft = guiLeft;
+		this.guiTop = guiTop;
 		this.xSize = xSize;
+		this.ySize = ySize;
 		this.width = width;
 		this.height = height;
-	}
 
-	/**
-	 * Adds the buttons (and other controls) to the screen in question.
-	 */
-	@SuppressWarnings("unchecked")
-	public void initGui(List buttonList) {
 		final int buttonWidth = 50;
 		final int buttonHeight = 20;
 		String next = StatCollector.translateToLocal("jei.button.next");
 		String back = StatCollector.translateToLocal("jei.button.back");
-		buttonList.add(nextButton = new GuiButton(-1, this.width - buttonWidth - 4, 0, buttonWidth, buttonHeight, next));
-		buttonList.add(backButton = new GuiButton(-2, this.guiLeft + this.xSize + 4, 0, buttonWidth, buttonHeight, back));
+		nextButton = new GuiButton(0, this.width - buttonWidth - 4, 0, buttonWidth, buttonHeight, next);
+		backButton = new GuiButton(0, this.guiLeft + this.xSize + 4, 0, buttonWidth, buttonHeight, back);
+
+		addButtonsToList(buttonList);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void addButtonsToList(List list) {
+		List<GuiButton> buttonList = (List<GuiButton>) list;
 
 		int pageCount = getPageCount();
 		if (pageNum > pageCount)
 			setPageNum(pageCount);
 
-		updatePage();
+		createItemButtons();
+		updateItemButtons();
+
+		HashSet<Integer> takenIDs = new HashSet<Integer>();
+		for (GuiButton button : buttonList)
+			takenIDs.add(button.id);
+
+		int id = 0;
+		for (GuiItemButton button : itemButtons) {
+			while (takenIDs.contains(id))
+				id += 1;
+			button.id = id;
+			id += 1;
+			buttonList.add(button);
+		}
+
+		nextButton.id = id;
+		buttonList.add(nextButton);
+		id += 1;
+		backButton.id = id;
+		buttonList.add(backButton);
 	}
 
-	private void updatePage() {
-		items.clear();
+	private void createItemButtons() {
+		itemButtons.clear();
 
 		final int xStart = guiLeft + xSize + 4;
 		final int yStart = backButton.height + 4;
@@ -66,59 +89,71 @@ public class GuiContainerOverlay {
 		int y = yStart;
 		int maxX = 0;
 
-		for (int i = (pageNum - 1) * getCountPerPage(); i < JustEnoughItems.itemRegistry.itemList.size() && y + iconSize <= height; i++) {
+		while (y + GuiItemButton.height <= height) {
 			if (x > maxX)
 				maxX = x;
 
-			ItemStack stack = JustEnoughItems.itemRegistry.itemList.get(i);
-			items.add(new GuiItemIcon(stack, x, y));
+			itemButtons.add(new GuiItemButton(null, x, y));
 
-			x += iconSize + iconPadding;
-			if (x + iconSize > width) {
+			x += GuiItemButton.width + iconPadding;
+			if (x + GuiItemButton.width > width) {
 				x = xStart;
-				y += iconSize + iconPadding;
+				y += GuiItemButton.height + iconPadding;
 			}
 		}
 
-		nextButton.xPosition = maxX + iconSize - nextButton.width;
+		nextButton.xPosition = maxX + GuiItemButton.width - nextButton.width;
 	}
 
-	public void actionPerformed(GuiButton button) {
-		if (button.id == -1) {
-			if (pageNum == getPageCount())
-				setPageNum(1);
-			else
-				setPageNum(pageNum + 1);
-		} else if (button.id == -2) {
-			if (pageNum == 1)
-				setPageNum(getPageCount());
-			else
-				setPageNum(pageNum - 1);
-		}
-	}
+	private void updateItemButtons() {
+		int i = (pageNum - 1) * getCountPerPage();
 
-	public void mouseClicked(int xPos, int yPos, int mouseButton) {
-		for (GuiItemIcon itemIcon : items) {
-			if (itemIcon.isMouseOver(xPos, yPos)) {
-				itemIcon.mouseClicked(xPos, yPos, mouseButton);
-				return;
+		for (GuiItemButton itemButton : itemButtons) {
+			if (i >= JustEnoughItems.itemRegistry.itemList.size()) {
+				itemButton.setItemStack(null);
+			} else {
+				ItemStack stack = JustEnoughItems.itemRegistry.itemList.get(i);
+				itemButton.setItemStack(stack);
 			}
+			i++;
 		}
 	}
 
-	public void drawScreen(TextureManager textureManager, FontRenderer fontRendererObj) {
-		RenderHelper.enableGUIStandardItemLighting();
+	public boolean actionPerformed(GuiButton button) {
+		if (button.id == nextButton.id) {
+			nextPage();
+		} else if (button.id == backButton.id) {
+			backPage();
+		} else if (button instanceof GuiItemButton) {
+			((GuiItemButton) button).actionPerformed();
+		} else {
+			Log.warning("Unknown button: " + button);
+			return false;
+		}
 
-		for (GuiItemIcon itemIcon : items)
-			itemIcon.draw(itemRender, fontRendererObj, textureManager);
+		return true;
+	}
 
-		RenderHelper.disableStandardItemLighting();
+	public void nextPage() {
+		if (pageNum == getPageCount())
+			setPageNum(1);
+		else
+			setPageNum(pageNum + 1);
+	}
 
+	public void backPage() {
+		if (pageNum == 1)
+			setPageNum(getPageCount());
+		else
+			setPageNum(pageNum - 1);
+	}
+
+	public void drawScreen(FontRenderer fontRendererObj) {
 		drawPageNumbers(fontRendererObj);
 	}
 
 	private void drawPageNumbers(FontRenderer fontRendererObj) {
-		String pageDisplay = getPageNum() + " / " + getPageCount();
+		String pageDisplay = getPageNum() + "/" + getPageCount();
 		int pageDisplayWidth = fontRendererObj.getStringWidth(pageDisplay);
 
 		int pageDisplayX = ((backButton.xPosition + backButton.width) + nextButton.xPosition) / 2;
@@ -131,8 +166,8 @@ public class GuiContainerOverlay {
 		int xArea = width - (guiLeft + xSize + 4);
 		int yArea = height - (backButton.height + 4);
 
-		int xCount = xArea / (iconSize + iconPadding);
-		int yCount = yArea / (iconSize + iconPadding);
+		int xCount = xArea / (GuiItemButton.width + iconPadding);
+		int yCount = yArea / (GuiItemButton.height + iconPadding);
 
 		return xCount * yCount;
 	}
@@ -150,7 +185,7 @@ public class GuiContainerOverlay {
 		if (GuiContainerOverlay.pageNum == pageNum)
 			return;
 		GuiContainerOverlay.pageNum = pageNum;
-		updatePage();
+		updateItemButtons();
 	}
 
 }
