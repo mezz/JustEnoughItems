@@ -28,5 +28,4 @@ public class Reflection {
 				(Integer)getDeclaredField(GuiContainer.class, guiContainer, "ySize"),
 		};
 	}
-
 }
