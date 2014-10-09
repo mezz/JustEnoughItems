@@ -65,6 +65,10 @@ public class GuiContainerOverlay {
 			button.id = buttonIDs.get(i);
 			buttonList.add(button);
 		}
+
+		int pageCount = getPageCount();
+		if (pageNum > pageCount)
+			pageNum = pageCount;
 	}
 
 	private ArrayList<Integer> getUnusedButtonIDs(List<GuiButton> buttonList, int count) {
