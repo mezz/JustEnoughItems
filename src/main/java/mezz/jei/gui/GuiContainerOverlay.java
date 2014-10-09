@@ -16,7 +16,7 @@ import java.util.List;
 
 public class GuiContainerOverlay {
 
-	static final int iconPadding = 2;
+	static final int borderPadding = 1;
 
 	protected ArrayList<GuiItemButton> itemButtons = new ArrayList<GuiItemButton>();
 
@@ -41,15 +41,18 @@ public class GuiContainerOverlay {
 		this.width = width;
 		this.height = height;
 
-		final int buttonWidth = 50;
-		final int buttonHeight = 20;
 		String next = StatCollector.translateToLocal("jei.button.next");
 		String back = StatCollector.translateToLocal("jei.button.back");
 
+		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+		final int nextButtonWidth = 10 + fontRenderer.getStringWidth(next);
+		final int backButtonWidth = 10 + fontRenderer.getStringWidth(back);
+		final int buttonHeight = 5 + fontRenderer.FONT_HEIGHT;
+
 		ArrayList<Integer> buttonIDs = getUnusedButtonIDs(buttonList, 2);
 
-		nextButton = new GuiButton(buttonIDs.get(0), this.width - buttonWidth - 4, 0, buttonWidth, buttonHeight, next);
-		backButton = new GuiButton(buttonIDs.get(1), this.guiLeft + this.xSize + 4, 0, buttonWidth, buttonHeight, back);
+		nextButton = new GuiButton(buttonIDs.get(0), this.width - nextButtonWidth - borderPadding, 0, nextButtonWidth, buttonHeight, next);
+		backButton = new GuiButton(buttonIDs.get(1), this.guiLeft + this.xSize + borderPadding, 0, backButtonWidth, buttonHeight, back);
 		buttonList.add(nextButton);
 		buttonList.add(backButton);
 
@@ -82,27 +85,27 @@ public class GuiContainerOverlay {
 	private void createItemButtons() {
 		itemButtons.clear();
 
-		final int xStart = guiLeft + xSize + 4;
-		final int yStart = backButton.height + 4;
+		final int xStart = guiLeft + xSize + borderPadding;
+		final int yStart = backButton.height + (2 * borderPadding);
 
 		int x = xStart;
 		int y = yStart;
 		int maxX = 0;
 
-		while (y + GuiItemButton.height <= height) {
+		while (y + GuiItemButton.height + borderPadding <= height) {
 			if (x > maxX)
 				maxX = x;
 
 			itemButtons.add(new GuiItemButton(null, x, y));
 
-			x += GuiItemButton.width + iconPadding;
-			if (x + GuiItemButton.width > width) {
+			x += GuiItemButton.width;
+			if (x + GuiItemButton.width + borderPadding > width) {
 				x = xStart;
-				y += GuiItemButton.height + iconPadding;
+				y += GuiItemButton.height;
 			}
 		}
 
-		nextButton.xPosition = maxX + GuiItemButton.width - nextButton.width;
+		nextButton.xPosition = maxX + GuiItemButton.width - nextButton.width - borderPadding;
 	}
 
 	private void updateItemButtons() {
@@ -157,9 +160,9 @@ public class GuiContainerOverlay {
 		int pageDisplayWidth = fontRendererObj.getStringWidth(pageDisplay);
 
 		int pageDisplayX = ((backButton.xPosition + backButton.width) + nextButton.xPosition) / 2;
-		int pageDisplayY = backButton.yPosition + 6;
+		int pageDisplayY = backButton.yPosition + Math.round((backButton.height - fontRendererObj.FONT_HEIGHT) / 2.0f);
 
-		fontRendererObj.drawString(pageDisplay, pageDisplayX - (pageDisplayWidth / 2), pageDisplayY, Color.white.getRGB());
+		fontRendererObj.drawString(pageDisplay, pageDisplayX - (pageDisplayWidth / 2), pageDisplayY, Color.white.getRGB(), true);
 	}
 
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
@@ -170,11 +173,11 @@ public class GuiContainerOverlay {
 	}
 
 	private int getCountPerPage() {
-		int xArea = width - (guiLeft + xSize + 4);
-		int yArea = height - (backButton.height + 4);
+		int xArea = width - (guiLeft + xSize + (2 * borderPadding));
+		int yArea = height - (backButton.height + (2 * borderPadding));
 
-		int xCount = xArea / (GuiItemButton.width + iconPadding);
-		int yCount = yArea / (GuiItemButton.height + iconPadding);
+		int xCount = xArea / GuiItemButton.width;
+		int yCount = yArea / GuiItemButton.height;
 
 		return xCount * yCount;
 	}

@@ -19,8 +19,9 @@ public class GuiItemButton extends GuiButton {
 	private static final RenderItem itemRender = new RenderItem();
 
 	protected ItemStack itemStack;
-	public static final int width = 16;
-	public static final int height = 16;
+	protected static final int padding = 1;
+	public static final int width = 16 + (padding * 2);
+	public static final int height = 16 + (padding * 2);
 
 	public GuiItemButton(ItemStack itemStack, int x, int y) {
 		super(0, x, y, width, height, null);
@@ -62,7 +63,7 @@ public class GuiItemButton extends GuiButton {
 		if (font == null)
 			font = minecraft.fontRenderer;
 
-		itemRender.renderItemAndEffectIntoGUI(font, minecraft.getTextureManager(), itemStack, xPosition, yPosition);
+		itemRender.renderItemAndEffectIntoGUI(font, minecraft.getTextureManager(), itemStack, xPosition + padding, yPosition + padding);
 
 		RenderHelper.disableStandardItemLighting();
 		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
