@@ -3,7 +3,6 @@ package mezz.jei;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import mezz.jei.gui.GuiContainerOverlay;
 import mezz.jei.util.Reflection;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
@@ -26,8 +25,15 @@ public class GuiEventHandler {
 	public void onDrawScreenEvent(GuiScreenEvent.DrawScreenEvent event) {
 		if (!shouldOverlay(event.gui))
 			return;
-		Minecraft minecraft = event.gui.mc;
-		overlay.drawScreen(minecraft.fontRenderer);
+
+		overlay.drawScreen(event.gui.mc, event.mouseX, event.mouseY);
+	}
+
+	@SubscribeEvent
+	public void onDrawScreenEventPost(GuiScreenEvent.DrawScreenEvent.Post event) {
+		if (!shouldOverlay(event.gui))
+			return;
+		overlay.drawTooltips(event.gui.mc, event.mouseX, event.mouseY);
 	}
 
 	@SubscribeEvent

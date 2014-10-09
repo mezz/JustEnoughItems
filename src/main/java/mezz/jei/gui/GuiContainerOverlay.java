@@ -2,6 +2,8 @@ package mezz.jei.gui;
 
 import mezz.jei.JustEnoughItems;
 import mezz.jei.util.Log;
+import mezz.jei.util.Render;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.item.ItemStack;
@@ -30,6 +32,7 @@ public class GuiContainerOverlay {
 	protected int width;
 	protected int height;
 
+	@SuppressWarnings("unchecked")
 	public void initGui(int guiLeft, int guiTop, int xSize, int ySize, int width, int height, List buttonList) {
 		this.guiLeft = guiLeft;
 		this.guiTop = guiTop;
@@ -42,41 +45,38 @@ public class GuiContainerOverlay {
 		final int buttonHeight = 20;
 		String next = StatCollector.translateToLocal("jei.button.next");
 		String back = StatCollector.translateToLocal("jei.button.back");
-		nextButton = new GuiButton(0, this.width - buttonWidth - 4, 0, buttonWidth, buttonHeight, next);
-		backButton = new GuiButton(0, this.guiLeft + this.xSize + 4, 0, buttonWidth, buttonHeight, back);
 
-		addButtonsToList(buttonList);
-	}
+		ArrayList<Integer> buttonIDs = getUnusedButtonIDs(buttonList, 2);
 
-	@SuppressWarnings("unchecked")
-	private void addButtonsToList(List list) {
-		List<GuiButton> buttonList = (List<GuiButton>) list;
-
-		int pageCount = getPageCount();
-		if (pageNum > pageCount)
-			setPageNum(pageCount);
+		nextButton = new GuiButton(buttonIDs.get(0), this.width - buttonWidth - 4, 0, buttonWidth, buttonHeight, next);
+		backButton = new GuiButton(buttonIDs.get(1), this.guiLeft + this.xSize + 4, 0, buttonWidth, buttonHeight, back);
+		buttonList.add(nextButton);
+		buttonList.add(backButton);
 
 		createItemButtons();
 		updateItemButtons();
 
-		HashSet<Integer> takenIDs = new HashSet<Integer>();
-		for (GuiButton button : buttonList)
-			takenIDs.add(button.id);
-
-		int id = 0;
-		for (GuiItemButton button : itemButtons) {
-			while (takenIDs.contains(id))
-				id += 1;
-			button.id = id;
-			id += 1;
+		buttonIDs = getUnusedButtonIDs(buttonList, itemButtons.size());
+		for (int i = 0; i < itemButtons.size(); i++) {
+			GuiItemButton button = itemButtons.get(i);
+			button.id = buttonIDs.get(i);
 			buttonList.add(button);
 		}
+	}
 
-		nextButton.id = id;
-		buttonList.add(nextButton);
-		id += 1;
-		backButton.id = id;
-		buttonList.add(backButton);
+	private ArrayList<Integer> getUnusedButtonIDs(List<GuiButton> buttonList, int count) {
+		HashSet<Integer> usedButtonIDs = new HashSet<Integer>();
+		for (GuiButton button : buttonList)
+			usedButtonIDs.add(button.id);
+
+		ArrayList<Integer> availableButtonIDs = new ArrayList<Integer>();
+		int id = 0;
+		while (availableButtonIDs.size() < count) {
+			if (!usedButtonIDs.contains(id))
+				availableButtonIDs.add(id);
+			id++;
+		}
+		return availableButtonIDs;
 	}
 
 	private void createItemButtons() {
@@ -148,8 +148,8 @@ public class GuiContainerOverlay {
 			setPageNum(pageNum - 1);
 	}
 
-	public void drawScreen(FontRenderer fontRendererObj) {
-		drawPageNumbers(fontRendererObj);
+	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY) {
+		drawPageNumbers(minecraft.fontRenderer);
 	}
 
 	private void drawPageNumbers(FontRenderer fontRendererObj) {
@@ -160,6 +160,13 @@ public class GuiContainerOverlay {
 		int pageDisplayY = backButton.yPosition + 6;
 
 		fontRendererObj.drawString(pageDisplay, pageDisplayX - (pageDisplayWidth / 2), pageDisplayY, Color.white.getRGB());
+	}
+
+	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
+		for (GuiItemButton guiItemButton : itemButtons) {
+			if (guiItemButton.mousePressed(minecraft, mouseX, mouseY))
+				Render.renderToolTip(guiItemButton.getItemStack(), mouseX, mouseY);
+		}
 	}
 
 	private int getCountPerPage() {
