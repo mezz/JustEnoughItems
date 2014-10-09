@@ -77,7 +77,7 @@ public class GuiContainerOverlay {
 			usedButtonIDs.add(button.id);
 
 		ArrayList<Integer> availableButtonIDs = new ArrayList<Integer>();
-		int id = 0;
+		int id = 10;
 		while (availableButtonIDs.size() < count) {
 			if (!usedButtonIDs.contains(id))
 				availableButtonIDs.add(id);
