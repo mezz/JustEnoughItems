@@ -1,6 +1,7 @@
 package mezz.jei.util;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.Slot;
 
 import java.lang.reflect.Field;
 
@@ -27,6 +28,10 @@ public class Reflection {
 				(Integer)getDeclaredField(GuiContainer.class, guiContainer, "xSize"),
 				(Integer)getDeclaredField(GuiContainer.class, guiContainer, "ySize"),
 		};
+	}
+
+	public static Slot getTheSlot(GuiContainer guiContainer) {
+		return (Slot)getDeclaredField(GuiContainer.class, guiContainer, "theSlot");
 	}
 
 }

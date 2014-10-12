@@ -37,13 +37,18 @@ public class GuiItemButton extends GuiButton {
 		return this.itemStack;
 	}
 
-	public void actionPerformed() {
+	public void handleMouseClick(int mouseButton) {
 		if (!enabled)
 			return;
 
 		EntityClientPlayerMP player = FMLClientHandler.instance().getClientPlayerEntity();
-		if (Permissions.canPlayerSpawnItems(player) && player.inventory.getFirstEmptyStack() != -1)
-			Commands.giveFullStack(itemStack);
+		if (Permissions.canPlayerSpawnItems(player) && player.inventory.getFirstEmptyStack() != -1) {
+			if (mouseButton == 0) {
+				Commands.giveFullStack(itemStack);
+			} else if (mouseButton == 1) {
+				Commands.giveOneFromStack(itemStack);
+			}
+		}
 
 		//TODO: recipes
 	}
@@ -53,21 +58,10 @@ public class GuiItemButton extends GuiButton {
 		if (!visible)
 			return;
 
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GL11.glEnable(GL11.GL_BLEND);
-		OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
-		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-		RenderHelper.enableGUIStandardItemLighting();
-
 		FontRenderer font = itemStack.getItem().getFontRenderer(itemStack);
 		if (font == null)
 			font = minecraft.fontRenderer;
 
 		itemRender.renderItemAndEffectIntoGUI(font, minecraft.getTextureManager(), itemStack, xPosition + padding, yPosition + padding);
-
-		RenderHelper.disableStandardItemLighting();
-		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-		GL11.glDisable(GL11.GL_BLEND);
 	}
-
 }

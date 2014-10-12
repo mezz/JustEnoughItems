@@ -1,11 +1,16 @@
 package mezz.jei;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import mezz.jei.gui.GuiContainerOverlay;
 import mezz.jei.util.Reflection;
+import mezz.jei.util.Render;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.GuiScreenEvent;
 
 public class GuiEventHandler {
@@ -14,37 +19,47 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
-		if (!shouldOverlay(event.gui))
+		GuiContainer guiContainer = asGuiContainer(event.gui);
+		if (guiContainer == null)
 			return;
-		GuiContainer guiContainer = (GuiContainer) event.gui;
 		Integer[] dimensions = Reflection.getDimensions(guiContainer);
 		overlay.initGui(dimensions[0], dimensions[1], dimensions[2], dimensions[3], guiContainer.width, guiContainer.height, event.buttonList);
 	}
 
 	@SubscribeEvent
-	public void onDrawScreenEvent(GuiScreenEvent.DrawScreenEvent event) {
-		if (!shouldOverlay(event.gui))
+	public void onDrawScreenEvent(GuiScreenEvent.DrawScreenEvent.Post event) {
+		GuiContainer guiContainer = asGuiContainer(event.gui);
+		if (guiContainer == null)
 			return;
 
-		overlay.drawScreen(event.gui.mc, event.mouseX, event.mouseY);
+		overlay.drawScreen(guiContainer.mc, event.mouseX, event.mouseY);
+
+		/**
+		 * There is no way to render between the existing inventory tooltip and the dark background layer,
+		 * so we have to re-render the inventory tooltip over the item list.
+		 **/
+		Slot theSlot = Reflection.getTheSlot(guiContainer);
+		if (theSlot != null && theSlot.getHasStack()) {
+			ItemStack itemStack = theSlot.getStack();
+			Render.renderToolTip(itemStack, event.mouseX, event.mouseY);
+		}
 	}
 
 	@SubscribeEvent
-	public void onDrawScreenEventPost(GuiScreenEvent.DrawScreenEvent.Post event) {
-		if (!shouldOverlay(event.gui))
+	public void onClientTick(TickEvent.ClientTickEvent event) {
+		if (event.phase == TickEvent.Phase.END)
 			return;
-		overlay.drawTooltips(event.gui.mc, event.mouseX, event.mouseY);
+
+		Minecraft minecraft = Minecraft.getMinecraft();
+		if (asGuiContainer(minecraft.currentScreen) == null)
+			return;
+
+		overlay.handleInput(minecraft);
 	}
 
-	@SubscribeEvent
-	public void onActionPerformedEvent(GuiScreenEvent.ActionPerformedEvent.Pre event) {
-		if (!shouldOverlay(event.gui))
-			return;
-		if (overlay.actionPerformed(event.button))
-			event.setCanceled(true);
-	}
-
-	private boolean shouldOverlay(GuiScreen gui) {
-		return (gui instanceof GuiContainer) && !(gui instanceof GuiContainerCreative);
+	private GuiContainer asGuiContainer(GuiScreen guiScreen) {
+		if (!(guiScreen instanceof GuiContainer) || (guiScreen instanceof GuiContainerCreative))
+			return null;
+		return (GuiContainer)guiScreen;
 	}
 }

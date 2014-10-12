@@ -6,8 +6,13 @@ import mezz.jei.util.Render;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -24,6 +29,8 @@ public class GuiContainerOverlay {
 	protected GuiButton backButton;
 
 	protected static int pageNum = 1;
+
+	private boolean clickHandled = false;
 
 	protected int guiLeft;
 	protected int guiTop;
@@ -49,41 +56,15 @@ public class GuiContainerOverlay {
 		final int backButtonWidth = 10 + fontRenderer.getStringWidth(back);
 		final int buttonHeight = 5 + fontRenderer.FONT_HEIGHT;
 
-		ArrayList<Integer> buttonIDs = getUnusedButtonIDs(buttonList, 2);
-
-		nextButton = new GuiButton(buttonIDs.get(0), this.width - nextButtonWidth - borderPadding, 0, nextButtonWidth, buttonHeight, next);
-		backButton = new GuiButton(buttonIDs.get(1), this.guiLeft + this.xSize + borderPadding, 0, backButtonWidth, buttonHeight, back);
-		buttonList.add(nextButton);
-		buttonList.add(backButton);
+		nextButton = new GuiButton(0, this.width - nextButtonWidth - borderPadding, 0, nextButtonWidth, buttonHeight, next);
+		backButton = new GuiButton(1, this.guiLeft + this.xSize + borderPadding, 0, backButtonWidth, buttonHeight, back);
 
 		createItemButtons();
 		updateItemButtons();
 
-		buttonIDs = getUnusedButtonIDs(buttonList, itemButtons.size());
-		for (int i = 0; i < itemButtons.size(); i++) {
-			GuiItemButton button = itemButtons.get(i);
-			button.id = buttonIDs.get(i);
-			buttonList.add(button);
-		}
-
 		int pageCount = getPageCount();
 		if (pageNum > pageCount)
 			pageNum = pageCount;
-	}
-
-	private ArrayList<Integer> getUnusedButtonIDs(List<GuiButton> buttonList, int count) {
-		HashSet<Integer> usedButtonIDs = new HashSet<Integer>();
-		for (GuiButton button : buttonList)
-			usedButtonIDs.add(button.id);
-
-		ArrayList<Integer> availableButtonIDs = new ArrayList<Integer>();
-		int id = 10;
-		while (availableButtonIDs.size() < count) {
-			if (!usedButtonIDs.contains(id))
-				availableButtonIDs.add(id);
-			id++;
-		}
-		return availableButtonIDs;
 	}
 
 	private void createItemButtons() {
@@ -126,21 +107,6 @@ public class GuiContainerOverlay {
 		}
 	}
 
-	public boolean actionPerformed(GuiButton button) {
-		if (button.id == nextButton.id) {
-			nextPage();
-		} else if (button.id == backButton.id) {
-			backPage();
-		} else if (button instanceof GuiItemButton) {
-			((GuiItemButton) button).actionPerformed();
-		} else {
-			Log.warning("Unknown button: " + button);
-			return false;
-		}
-
-		return true;
-	}
-
 	public void nextPage() {
 		if (pageNum == getPageCount())
 			setPageNum(1);
@@ -156,7 +122,14 @@ public class GuiContainerOverlay {
 	}
 
 	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY) {
+		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+		RenderHelper.enableGUIStandardItemLighting();
+
 		drawPageNumbers(minecraft.fontRenderer);
+		drawButtons(minecraft, mouseX, mouseY);
+
+		RenderHelper.disableStandardItemLighting();
+		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 	}
 
 	private void drawPageNumbers(FontRenderer fontRendererObj) {
@@ -169,10 +142,47 @@ public class GuiContainerOverlay {
 		fontRendererObj.drawString(pageDisplay, pageDisplayX - (pageDisplayWidth / 2), pageDisplayY, Color.white.getRGB(), true);
 	}
 
-	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
+	private void drawButtons(Minecraft minecraft, int mouseX, int mouseY) {
+
+		nextButton.drawButton(minecraft, mouseX, mouseY);
+		backButton.drawButton(minecraft, mouseX, mouseY);
+
+		GuiItemButton hoveredItemButton = null;
 		for (GuiItemButton guiItemButton : itemButtons) {
-			if (guiItemButton.mousePressed(minecraft, mouseX, mouseY))
-				Render.renderToolTip(guiItemButton.getItemStack(), mouseX, mouseY);
+			guiItemButton.drawButton(minecraft, mouseX, mouseY);
+
+			if (hoveredItemButton == null && guiItemButton.mousePressed(minecraft, mouseX, mouseY))
+				hoveredItemButton = guiItemButton;
+		}
+
+		if (hoveredItemButton != null)
+			Render.renderToolTip(hoveredItemButton.getItemStack(), mouseX, mouseY);
+	}
+
+	public void handleInput(Minecraft minecraft) {
+		if (Mouse.getEventButtonState()) {
+			if (!clickHandled) {
+				int mouseX = Mouse.getEventX() * width / minecraft.displayWidth;
+				int mouseY = this.height - Mouse.getEventY() * height / minecraft.displayHeight - 1;
+				handleMouseClick(minecraft, Mouse.getEventButton(), mouseX, mouseY);
+				clickHandled = true;
+			}
+		} else {
+			clickHandled = false;
+		}
+	}
+
+	private void handleMouseClick(Minecraft minecraft, int mouseButton, int mouseX, int mouseY) {
+		if (nextButton.mousePressed(minecraft, mouseX, mouseY)) {
+			nextPage();
+		} else if (backButton.mousePressed(minecraft, mouseX, mouseY)) {
+			backPage();
+		} else {
+			for (GuiItemButton guiItemButton : itemButtons) {
+				if (guiItemButton.mousePressed(minecraft, mouseX, mouseY)) {
+					guiItemButton.handleMouseClick(mouseButton);
+				}
+			}
 		}
 	}
 

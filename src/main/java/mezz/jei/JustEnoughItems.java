@@ -1,5 +1,6 @@
 package mezz.jei;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -22,7 +23,9 @@ public class JustEnoughItems {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		MinecraftForge.EVENT_BUS.register(new GuiEventHandler());
+		GuiEventHandler guiEventHandler = new GuiEventHandler();
+		MinecraftForge.EVENT_BUS.register(guiEventHandler);
+		FMLCommonHandler.instance().bus().register(guiEventHandler);
 
 		itemRegistry = new ItemRegistry();
 		recipeRegistry = new RecipeRegistry();
