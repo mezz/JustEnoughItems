@@ -33,6 +33,7 @@ public class GuiEventHandler {
 			return;
 
 		overlay.drawScreen(guiContainer.mc, event.mouseX, event.mouseY);
+		overlay.handleMouseEvent(guiContainer.mc, event.mouseX, event.mouseY);
 
 		/**
 		 * There is no way to render between the existing inventory tooltip and the dark background layer,
@@ -54,7 +55,7 @@ public class GuiEventHandler {
 		if (asGuiContainer(minecraft.currentScreen) == null)
 			return;
 
-		overlay.handleInput(minecraft);
+		overlay.handleTick();
 	}
 
 	private GuiContainer asGuiContainer(GuiScreen guiScreen) {

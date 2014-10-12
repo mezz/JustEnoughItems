@@ -21,6 +21,8 @@ public class JustEnoughItems {
 	public static ItemRegistry itemRegistry;
 	public static RecipeRegistry recipeRegistry;
 
+	public static ItemFilter itemFilter;
+
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		GuiEventHandler guiEventHandler = new GuiEventHandler();
@@ -29,5 +31,7 @@ public class JustEnoughItems {
 
 		itemRegistry = new ItemRegistry();
 		recipeRegistry = new RecipeRegistry();
+
+		itemFilter = new ItemFilter(itemRegistry);
 	}
 }
