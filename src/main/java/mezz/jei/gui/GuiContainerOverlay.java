@@ -20,8 +20,8 @@ import java.util.List;
 
 public class GuiContainerOverlay {
 
-	static protected final int borderPadding = 1;
-	static protected final int searchHeight = 16;
+	private static final int borderPadding = 1;
+	private static final int searchHeight = 16;
 	protected int buttonHeight;
 	protected int rightEdge;
 	protected int leftEdge;
@@ -32,8 +32,9 @@ public class GuiContainerOverlay {
 	protected GuiButton backButton;
 
 	protected GuiTextField searchField;
+	private static final int maxSearchLength = 32;
 
-	protected static int pageNum = 1;
+	private static int pageNum = 1;
 	protected int pageCount;
 
 	protected String pageNumDisplayString;
@@ -75,7 +76,7 @@ public class GuiContainerOverlay {
 		backButton = new GuiButton(1, leftEdge, 0, backButtonWidth, buttonHeight, back);
 
 		searchField = new GuiTextField(fontRenderer, leftEdge, this.height - searchHeight - (2 * borderPadding), rightEdge - leftEdge, searchHeight);
-		searchField.setMaxStringLength(32);
+		searchField.setMaxStringLength(maxSearchLength);
 		searchField.setFocused(false);
 		searchField.setText(JustEnoughItems.itemFilter.getFilterText());
 
@@ -132,6 +133,14 @@ public class GuiContainerOverlay {
 		int pageDisplayWidth = fontRendererObj.getStringWidth(pageNumDisplayString);
 		pageNumDisplayX = ((backButton.xPosition + backButton.width) + nextButton.xPosition) / 2 - (pageDisplayWidth / 2);
 		pageNumDisplayY = backButton.yPosition + Math.round((backButton.height - fontRendererObj.FONT_HEIGHT) / 2.0f);
+
+		if (itemList.size() == 0) {
+			searchField.setTextColor(Color.red.getRGB());
+			searchField.setMaxStringLength(searchField.getText().length());
+		} else {
+			searchField.setTextColor(Color.white.getRGB());
+			searchField.setMaxStringLength(maxSearchLength);
+		}
 	}
 
 	public void nextPage() {
