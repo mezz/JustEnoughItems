@@ -72,7 +72,7 @@ public class GuiContainerOverlay {
 
 		leftEdge = this.guiLeft + this.xSize + borderPadding;
 
-		nextButton = new GuiButton(0, rightEdge - nextButtonWidth - borderPadding, 0, nextButtonWidth, buttonHeight, next);
+		nextButton = new GuiButton(0, rightEdge - nextButtonWidth, 0, nextButtonWidth, buttonHeight, next);
 		backButton = new GuiButton(1, leftEdge, 0, backButtonWidth, buttonHeight, back);
 
 		searchField = new GuiTextField(fontRenderer, leftEdge, this.height - searchHeight - (2 * borderPadding), rightEdge - leftEdge, searchHeight);
