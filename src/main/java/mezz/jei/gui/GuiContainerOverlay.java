@@ -54,8 +54,7 @@ public class GuiContainerOverlay {
 	protected int width;
 	protected int height;
 
-	@SuppressWarnings("unchecked")
-	public void initGui(int guiLeft, int guiTop, int xSize, int ySize, int width, int height, List buttonList) {
+	public void initGui(int guiLeft, int guiTop, int xSize, int ySize, int width, int height) {
 		this.guiLeft = guiLeft;
 		this.guiTop = guiTop;
 		this.xSize = xSize;

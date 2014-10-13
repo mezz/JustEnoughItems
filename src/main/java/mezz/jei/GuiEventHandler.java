@@ -23,7 +23,7 @@ public class GuiEventHandler {
 		if (guiContainer == null)
 			return;
 		Integer[] dimensions = Reflection.getDimensions(guiContainer);
-		overlay.initGui(dimensions[0], dimensions[1], dimensions[2], dimensions[3], guiContainer.width, guiContainer.height, event.buttonList);
+		overlay.initGui(dimensions[0], dimensions[1], dimensions[2], dimensions[3], guiContainer.width, guiContainer.height);
 	}
 
 	@SubscribeEvent
