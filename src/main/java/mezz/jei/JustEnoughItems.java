@@ -25,6 +25,9 @@ public class JustEnoughItems {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
+
+		KeyBindings.init();
+
 		GuiEventHandler guiEventHandler = new GuiEventHandler();
 		MinecraftForge.EVENT_BUS.register(guiEventHandler);
 		FMLCommonHandler.instance().bus().register(guiEventHandler);

@@ -1,6 +1,7 @@
 package mezz.jei.gui;
 
 import mezz.jei.JustEnoughItems;
+import mezz.jei.KeyBindings;
 import mezz.jei.util.Render;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -42,6 +43,8 @@ public class GuiContainerOverlay {
 	protected int pageNumDisplayY;
 
 	private boolean clickHandled = false;
+
+	private boolean overlayEnabled = true;
 
 	// properties of the gui we're beside
 	protected int guiLeft;
@@ -158,6 +161,9 @@ public class GuiContainerOverlay {
 	}
 
 	public void handleMouseEvent(Minecraft minecraft, int mouseX, int mouseY) {
+		if (!overlayEnabled)
+			return;
+
 		if (Mouse.getEventButton() > -1) {
 			int mouseButton = Mouse.getEventButton();
 			if (Mouse.getEventButtonState()) {
@@ -172,6 +178,9 @@ public class GuiContainerOverlay {
 	}
 
 	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY) {
+		if (!overlayEnabled)
+			return;
+
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 		RenderHelper.enableGUIStandardItemLighting();
 
@@ -206,7 +215,6 @@ public class GuiContainerOverlay {
 
 	public void handleTick() {
 		handleKeyEvent();
-
 		searchField.updateCursorCounter();
 	}
 
@@ -225,8 +233,8 @@ public class GuiContainerOverlay {
 		searchField.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 
-	public void handleKeyEvent() {
-		if (searchField.isFocused()) {
+	private void handleKeyEvent() {
+		if (overlayEnabled && searchField.isFocused()) {
 			boolean textChanged = false;
 			while (Keyboard.next()) {
 				if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
@@ -241,7 +249,20 @@ public class GuiContainerOverlay {
 				if (JustEnoughItems.itemFilter.setFilterText(searchField.getText()))
 					updateLayout();
 			}
+		} else {
+			if (isKeyDown(KeyBindings.toggleOverlay.getKeyCode())) {
+				overlayEnabled = !overlayEnabled;
+				searchField.setFocused(false);
+			}
 		}
+	}
+
+	private boolean isKeyDown(int key) {
+		boolean keyDown = false;
+		while (Keyboard.isKeyDown(key) && Keyboard.next()) {
+			keyDown = true;
+		}
+		return keyDown;
 	}
 
 	private int getCountPerPage() {

@@ -1,2 +1,7 @@
+# Buttons
 jei.button.next=Next
 jei.button.back=Back
+
+# Key Bindings
+key.categories.jei=Just Enough Items
+key.jei.toggleOverlay=Toggle Item List Overlay
