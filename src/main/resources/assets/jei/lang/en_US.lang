@@ -3,7 +3,6 @@ jei.button.next=Next
 jei.button.back=Back
 
 # Key Bindings
-key.categories.jei=Just Enough Items
 key.jei.toggleOverlay=Toggle Item List Overlay
 key.jei.showRecipe=Show Item Recipe
 key.jei.showUses=Show Item Uses

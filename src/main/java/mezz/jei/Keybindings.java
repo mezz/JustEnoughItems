@@ -11,10 +11,11 @@ public class KeyBindings {
 	public static KeyBinding showUses;
 
 	public static void init() {
+		String categoryName = JustEnoughItems.MODID + " (" + JustEnoughItems.NAME + ")";
 
-		toggleOverlay = new KeyBinding("key.jei.toggleOverlay", Keyboard.KEY_O, "key.categories.jei");
-		showRecipe = new KeyBinding("key.jei.showRecipe", Keyboard.KEY_R, "key.categories.jei");
-		showUses = new KeyBinding("key.jei.showUses", Keyboard.KEY_U, "key.categories.jei");
+		toggleOverlay = new KeyBinding("key.jei.toggleOverlay", Keyboard.KEY_O, categoryName);
+		showRecipe = new KeyBinding("key.jei.showRecipe", Keyboard.KEY_R, categoryName);
+		showUses = new KeyBinding("key.jei.showUses", Keyboard.KEY_U, categoryName);
 
 		ClientRegistry.registerKeyBinding(toggleOverlay);
 		ClientRegistry.registerKeyBinding(showRecipe);
