@@ -1,0 +1,12 @@
+# Buttons
+jei.button.next=下翻
+jei.button.back=返回
+
+# Key Bindings
+key.jei.toggleOverlay=切换物品列表叠层
+key.jei.showRecipe=显示物品合成表
+key.jei.showUses=显示物品可参与合成表
+
+# Config
+config.jei.cheatItemsEnabled=开启物品作弊模式
+config.jei.cheatItemsEnabled.description=/给予物品而非显示其合成表
