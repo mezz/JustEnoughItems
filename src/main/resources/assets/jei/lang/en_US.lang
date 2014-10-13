@@ -5,3 +5,7 @@ jei.button.back=Back
 # Key Bindings
 key.categories.jei=Just Enough Items
 key.jei.toggleOverlay=Toggle Item List Overlay
+
+# Config
+config.jei.cheatItemsEnabled=Enable Item Cheating
+config.jei.cheatItemsEnabled.description=/give items instead of showing the recipe

@@ -1,6 +1,7 @@
 package mezz.jei.gui;
 
 import cpw.mods.fml.client.FMLClientHandler;
+import mezz.jei.config.Config;
 import mezz.jei.util.Commands;
 import mezz.jei.util.Permissions;
 import net.minecraft.client.Minecraft;
@@ -38,7 +39,7 @@ public class GuiItemButton extends GuiButton {
 			return;
 
 		EntityClientPlayerMP player = FMLClientHandler.instance().getClientPlayerEntity();
-		if (Permissions.canPlayerSpawnItems(player) && player.inventory.getFirstEmptyStack() != -1) {
+		if (Config.cheatItemsEnabled && Permissions.canPlayerSpawnItems(player) && player.inventory.getFirstEmptyStack() != -1) {
 			if (mouseButton == 0) {
 				Commands.giveFullStack(itemStack);
 			} else if (mouseButton == 1) {

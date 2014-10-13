@@ -1,6 +1,6 @@
 [
 {
-  "modid": "jei",
+  "modid": "JEI",
   "name": "Just Enough Items",
   "description": "Simple recipe and item helper.",
   "version": "${version}",
@@ -8,7 +8,6 @@
   "url": "https://github.com/mezz/JustEnoughItems",
   "updateUrl": "",
   "authorList": ["mezz"],
-  "credits": "Thanks to the Forge, FML, TMI, Recipe Book, and NEI guys",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
