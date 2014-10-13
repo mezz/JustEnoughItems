@@ -1,2 +1,13 @@
+# Buttons
 jei.button.next=Weiter
 jei.button.back=Zurück
+
+# Key Bindings
+key.categories.jei=Just Enough Items
+key.jei.toggleOverlay=Item-Listen-Overlay (de-)aktivieren
+key.jei.showRecipe=Zeige Item-Rezepte
+key.jei.showUses=Zeige Item-Nutzung
+
+# Config
+config.jei.cheatItemsEnabled=Aktiviere Item-Cheating
+config.jei.cheatItemsEnabled.description=/give Items, statt das Rezept zu zeigen
