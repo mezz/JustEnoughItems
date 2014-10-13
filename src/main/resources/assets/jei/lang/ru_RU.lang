@@ -1,0 +1,12 @@
+# Buttons
+jei.button.next=След.
+jei.button.back=Пред.
+
+# Key Bindings
+key.jei.toggleOverlay=Включить/выключить список предметов
+key.jei.showRecipe=Показывать рецепт предмета
+key.jei.showUses=Показывать использование предмета
+
+# Config
+config.jei.cheatItemsEnabled=Включить режим жульничества
+config.jei.cheatItemsEnabled.description=/give предметы, вместо показа рецепта
