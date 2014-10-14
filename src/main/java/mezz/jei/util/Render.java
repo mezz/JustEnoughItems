@@ -1,5 +1,6 @@
 package mezz.jei.util;
 
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderHelper;
@@ -10,18 +11,18 @@ import java.lang.reflect.Method;
 
 public class Render {
 
+	private static final String[] renderToolTip = new String[]{"func_146285_a", "renderToolTip"};
+
     public static void renderToolTip(ItemStack itemStack, int mouseX, int mouseY) {
 		GuiScreen screen = Minecraft.getMinecraft().currentScreen;
 		try {
-			Method m = GuiScreen.class.getDeclaredMethod("renderToolTip", ItemStack.class, int.class, int.class);
-			m.setAccessible(true);
+			Method m = ReflectionHelper.findMethod(GuiScreen.class, screen, renderToolTip, ItemStack.class, int.class, int.class);
 			m.invoke(screen, itemStack, mouseX, mouseY);
-			m.setAccessible(false);
 			RenderHelper.disableStandardItemLighting();
 		} catch (InvocationTargetException e) {
 			Log.debug("Bad tooltip for item: " + itemStack);
-		} catch (ReflectiveOperationException e) {
-			Log.error("Failed reflection when trying to create a tooltip");
+		} catch (IllegalAccessException e) {
+			Log.error("Failed invocation when trying to create a tooltip");
 		}
     }
 }
