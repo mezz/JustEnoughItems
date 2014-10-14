@@ -19,7 +19,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuiContainerOverlay {
+public class GuiItemListOverlay {
 
 	private static final int borderPadding = 1;
 	private static final int searchHeight = 16;
@@ -290,9 +290,9 @@ public class GuiContainerOverlay {
 	}
 
 	protected void setPageNum(int pageNum) {
-		if (GuiContainerOverlay.pageNum == pageNum)
+		if (GuiItemListOverlay.pageNum == pageNum)
 			return;
-		GuiContainerOverlay.pageNum = pageNum;
+		GuiItemListOverlay.pageNum = pageNum;
 		updateLayout();
 	}
 

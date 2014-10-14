@@ -2,7 +2,7 @@ package mezz.jei;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
-import mezz.jei.gui.GuiContainerOverlay;
+import mezz.jei.gui.GuiItemListOverlay;
 import mezz.jei.util.Reflection;
 import mezz.jei.util.Render;
 import net.minecraft.client.Minecraft;
@@ -15,7 +15,7 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 
 public class GuiEventHandler {
 
-	private GuiContainerOverlay overlay = new GuiContainerOverlay();
+	private GuiItemListOverlay overlay = new GuiItemListOverlay();
 
 	@SubscribeEvent
 	public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
