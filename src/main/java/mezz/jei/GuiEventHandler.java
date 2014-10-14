@@ -15,7 +15,7 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 
 public class GuiEventHandler {
 
-	private GuiItemListOverlay overlay = new GuiItemListOverlay();
+	private GuiItemListOverlay itemListOverlay = new GuiItemListOverlay();
 
 	@SubscribeEvent
 	public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
@@ -23,7 +23,7 @@ public class GuiEventHandler {
 		if (guiContainer == null)
 			return;
 		Integer[] dimensions = Reflection.getDimensions(guiContainer);
-		overlay.initGui(dimensions[0], dimensions[1], dimensions[2], dimensions[3], guiContainer.width, guiContainer.height);
+		itemListOverlay.initGui(dimensions[0], dimensions[1], dimensions[2], dimensions[3], guiContainer.width, guiContainer.height);
 	}
 
 	@SubscribeEvent
@@ -32,8 +32,8 @@ public class GuiEventHandler {
 		if (guiContainer == null)
 			return;
 
-		overlay.drawScreen(guiContainer.mc, event.mouseX, event.mouseY);
-		overlay.handleMouseEvent(guiContainer.mc, event.mouseX, event.mouseY);
+		itemListOverlay.drawScreen(guiContainer.mc, event.mouseX, event.mouseY);
+		itemListOverlay.handleMouseEvent(guiContainer.mc, event.mouseX, event.mouseY);
 
 		/**
 		 * There is no way to render between the existing inventory tooltip and the dark background layer,
@@ -55,7 +55,7 @@ public class GuiEventHandler {
 		if (asGuiContainer(minecraft.currentScreen) == null)
 			return;
 
-		overlay.handleTick();
+		itemListOverlay.handleTick();
 	}
 
 	private GuiContainer asGuiContainer(GuiScreen guiScreen) {
