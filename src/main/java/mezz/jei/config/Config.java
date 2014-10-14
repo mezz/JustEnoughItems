@@ -2,7 +2,6 @@ package mezz.jei.config;
 
 import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import mezz.jei.JustEnoughItems;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.config.Configuration;
 
@@ -18,7 +17,7 @@ public class Config {
 	}
 
 	public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
-		if(eventArgs.modID.equals(JustEnoughItems.MODID))
+		if(eventArgs.modID.equals(Defaults.MODID))
 			syncConfig();
 	}
 

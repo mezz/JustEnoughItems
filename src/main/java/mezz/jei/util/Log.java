@@ -1,6 +1,6 @@
 package mezz.jei.util;
 
-import mezz.jei.JustEnoughItems;
+import mezz.jei.config.Defaults;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
@@ -27,6 +27,6 @@ public class Log {
 	}
 
 	public static void log(Level logLevel, String message, Object... params) {
-		LogManager.getLogger(JustEnoughItems.MODID).log(logLevel, message, params);
+		LogManager.getLogger(Defaults.MODID).log(logLevel, message, params);
 	}
 }
