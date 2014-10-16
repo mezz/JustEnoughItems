@@ -1,0 +1,12 @@
+# Buttons
+jei.button.next=다음
+jei.button.back=뒤로
+
+# Key Bindings
+key.jei.toggleOverlay=토글 아이템목록 오버레이
+key.jei.showRecipe=아이템 레시피 보이기
+key.jei.showUses=아이템 사용 보이기
+
+# Config
+config.jei.cheatItemsEnabled=치트 활성화
+config.jei.cheatItemsEnabled.description=/give items 자체 레시피 제작
