@@ -3,7 +3,7 @@ jei.button.next=Seuraava
 jei.button.back=Takaisin
 
 # Key Bindings
-key.jei.toggleOverlay=Toggle Item List Overlay
+key.jei.toggleOverlay=Kytke tavaralista
 key.jei.showRecipe=Näytä tavaran resepti
 key.jei.showUses=Näytä tavaran käytöt
 
