@@ -1,0 +1,12 @@
+# Buttons
+jei.button.next=Seuraava
+jei.button.back=Takaisin
+
+# Key Bindings
+key.jei.toggleOverlay=Toggle Item List Overlay
+key.jei.showRecipe=Näytä tavaran resepti
+key.jei.showUses=Näytä tavaran käytöt
+
+# Config
+config.jei.cheatItemsEnabled=Kytke päälle tavaroiden huijaus
+config.jei.cheatItemsEnabled.description=Käytä /give-komentoa tavaroiden antamiseen tavaran reseptin näyttämisen sijaan
