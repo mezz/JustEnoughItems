@@ -13,7 +13,7 @@ public class Render {
 
 	private static final String[] renderToolTip = new String[]{"func_146285_a", "renderToolTip"};
 
-    public static void renderToolTip(ItemStack itemStack, int mouseX, int mouseY) {
+	public static void renderToolTip(ItemStack itemStack, int mouseX, int mouseY) {
 		GuiScreen screen = Minecraft.getMinecraft().currentScreen;
 		try {
 			Method m = ReflectionHelper.findMethod(GuiScreen.class, screen, renderToolTip, ItemStack.class, int.class, int.class);
@@ -24,5 +24,5 @@ public class Render {
 		} catch (IllegalAccessException e) {
 			Log.error("Failed invocation when trying to create a tooltip");
 		}
-    }
+	}
 }

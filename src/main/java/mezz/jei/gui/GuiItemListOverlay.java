@@ -1,9 +1,13 @@
 package mezz.jei.gui;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.KeyBindings;
-import mezz.jei.util.Render;
+import mezz.jei.config.Config;
+import mezz.jei.util.Commands;
+import mezz.jei.util.Permissions;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
@@ -23,11 +27,14 @@ public class GuiItemListOverlay {
 
 	private static final int borderPadding = 1;
 	private static final int searchHeight = 16;
+	private static final int itemStackPadding = 1;
+	private static final int itemStackWidth = GuiItemStack.getWidth(itemStackPadding);
+	private static final int itemStackHeight = GuiItemStack.getHeight(itemStackPadding);
 	protected int buttonHeight;
 	protected int rightEdge;
 	protected int leftEdge;
 
-	protected ArrayList<GuiItemButton> itemButtons = new ArrayList<GuiItemButton>();
+	protected ArrayList<GuiItemStack> guiItemStacks = new ArrayList<GuiItemStack>();
 
 	protected GuiButton nextButton;
 	protected GuiButton backButton;
@@ -87,7 +94,7 @@ public class GuiItemListOverlay {
 
 	// creates buttons and returns the x value of the right edge of the rightmost button
 	private int createItemButtons() {
-		itemButtons.clear();
+		guiItemStacks.clear();
 
 		final int xStart = guiLeft + xSize + borderPadding;
 		final int yStart = buttonHeight + (2 * borderPadding);
@@ -96,20 +103,20 @@ public class GuiItemListOverlay {
 		int y = yStart;
 		int maxX = 0;
 
-		while (y + GuiItemButton.height + borderPadding <= height - searchHeight) {
+		while (y + itemStackHeight + borderPadding <= height - searchHeight) {
 			if (x > maxX)
 				maxX = x;
 
-			itemButtons.add(new GuiItemButton(null, x, y));
+			guiItemStacks.add(new GuiItemStack(x, y, itemStackPadding));
 
-			x += GuiItemButton.width;
-			if (x + GuiItemButton.width + borderPadding > width) {
+			x += itemStackWidth;
+			if (x + itemStackWidth + borderPadding > width) {
 				x = xStart;
-				y += GuiItemButton.height;
+				y += itemStackHeight;
 			}
 		}
 
-		return maxX + GuiItemButton.width;
+		return maxX + itemStackWidth;
 	}
 
 	private void updateLayout() {
@@ -119,12 +126,12 @@ public class GuiItemListOverlay {
 		int i = (pageNum - 1) * getCountPerPage();
 
 		List<ItemStack> itemList = JustEnoughItems.itemFilter.getItemList();
-		for (GuiItemButton itemButton : itemButtons) {
+		for (GuiItemStack itemButton : guiItemStacks) {
 			if (i >= itemList.size()) {
-				itemButton.setItemStack(null);
+				itemButton.clearItemStacks();
 			} else {
 				ItemStack stack = itemList.get(i);
-				itemButton.setItemStack(stack);
+				itemButton.setItemStacks(stack);
 			}
 			i++;
 		}
@@ -200,16 +207,16 @@ public class GuiItemListOverlay {
 		nextButton.drawButton(minecraft, mouseX, mouseY);
 		backButton.drawButton(minecraft, mouseX, mouseY);
 
-		GuiItemButton hoveredItemButton = null;
-		for (GuiItemButton guiItemButton : itemButtons) {
-			guiItemButton.drawButton(minecraft, mouseX, mouseY);
-
-			if (hoveredItemButton == null && guiItemButton.mousePressed(minecraft, mouseX, mouseY))
-				hoveredItemButton = guiItemButton;
+		GuiItemStack hovered = null;
+		for (GuiItemStack guiItemStack : guiItemStacks) {
+			if (hovered == null && guiItemStack.isMouseOver(mouseX, mouseY))
+				hovered = guiItemStack;
+			else
+				guiItemStack.draw(minecraft);
 		}
 
-		if (hoveredItemButton != null)
-			Render.renderToolTip(hoveredItemButton.getItemStack(), mouseX, mouseY);
+		if (hovered != null)
+			hovered.drawHovered(minecraft, mouseX, mouseY);
 	}
 
 	public void handleTick() {
@@ -223,13 +230,26 @@ public class GuiItemListOverlay {
 		} else if (backButton.mousePressed(minecraft, mouseX, mouseY)) {
 			backPage();
 		} else {
-			for (GuiItemButton guiItemButton : itemButtons) {
-				if (guiItemButton.mousePressed(minecraft, mouseX, mouseY)) {
-					guiItemButton.handleMouseClick(mouseButton);
+			for (GuiItemStack guiItemStack : guiItemStacks) {
+				if (guiItemStack.isMouseOver(mouseX, mouseY)) {
+					handleMouseClickedItemStack(mouseButton, guiItemStack.getItemStack());
 				}
 			}
 		}
 		searchField.mouseClicked(mouseX, mouseY, mouseButton);
+	}
+
+	private void handleMouseClickedItemStack(int mouseButton, ItemStack itemStack) {
+		EntityClientPlayerMP player = FMLClientHandler.instance().getClientPlayerEntity();
+		if (Config.cheatItemsEnabled && Permissions.canPlayerSpawnItems(player) && player.inventory.getFirstEmptyStack() != -1) {
+			if (mouseButton == 0) {
+				Commands.giveFullStack(itemStack);
+			} else if (mouseButton == 1) {
+				Commands.giveOneFromStack(itemStack);
+			}
+		}
+
+		//TODO: recipes
 	}
 
 	private void handleKeyEvent() {
@@ -268,8 +288,8 @@ public class GuiItemListOverlay {
 		int xArea = width - (guiLeft + xSize + (2 * borderPadding));
 		int yArea = height - (buttonHeight + (2 * borderPadding));
 
-		int xCount = xArea / GuiItemButton.width;
-		int yCount = yArea / GuiItemButton.height;
+		int xCount = xArea / itemStackWidth;
+		int yCount = yArea / itemStackHeight;
 
 		return xCount * yCount;
 	}
