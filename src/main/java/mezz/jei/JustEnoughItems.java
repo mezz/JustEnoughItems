@@ -4,6 +4,7 @@ import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -45,6 +46,10 @@ public class JustEnoughItems {
 		FMLCommonHandler.instance().bus().register(guiEventHandler);
 
 		FMLCommonHandler.instance().bus().register(instance);
+	}
+
+	@EventHandler
+	public void loadComplete(FMLLoadCompleteEvent event) {
 
 		itemRegistry = new ItemRegistry();
 		recipeRegistry = new RecipeRegistry();

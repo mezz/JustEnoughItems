@@ -3,6 +3,7 @@ package mezz.jei;
 import cpw.mods.fml.common.registry.GameData;
 import mezz.jei.util.Log;
 import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -28,16 +29,19 @@ public class ItemRegistry {
 			return;
 
 		ArrayList<ItemStack> subItems = new ArrayList<ItemStack>();
-		item.getSubItems(item, null, subItems);
-		addItemStacks(subItems);
+		for(CreativeTabs itemTab : item.getCreativeTabs()) {
+			subItems.clear();
+			item.getSubItems(item, itemTab, subItems);
+			addItemStacks(subItems);
 
-		if (subItems.isEmpty()) {
-			ItemStack stack = new ItemStack(item);
-			if (stack.getItem() == null) {
-				Log.warning("Empty item stack from item: " + item.getUnlocalizedName());
-				return;
+			if (subItems.isEmpty()) {
+				ItemStack stack = new ItemStack(item);
+				if (stack.getItem() == null) {
+					Log.warning("Empty item stack from item: " + item.getUnlocalizedName());
+					return;
+				}
+				addItemStack(stack);
 			}
-			addItemStack(stack);
 		}
 	}
 
@@ -47,19 +51,30 @@ public class ItemRegistry {
 
 		Item item = Item.getItemFromBlock(block);
 
-		ArrayList<ItemStack> subItems = new ArrayList<ItemStack>();
-		if (item != null) {
-			block.getSubBlocks(item, null, subItems);
-			addItemStacks(subItems);
-		}
-
-		if (subItems.isEmpty()) {
+		if (item == null) {
 			ItemStack stack = new ItemStack(block);
 			if (stack.getItem() == null) {
 				Log.debug("Couldn't get itemStack for block: " + block.getUnlocalizedName());
 				return;
 			}
 			addItemStack(stack);
+			return;
+		}
+
+		ArrayList<ItemStack> subItems = new ArrayList<ItemStack>();
+		for (CreativeTabs itemTab : item.getCreativeTabs()) {
+			subItems.clear();
+			block.getSubBlocks(item, itemTab, subItems);
+			addItemStacks(subItems);
+
+			if (subItems.isEmpty()) {
+				ItemStack stack = new ItemStack(block);
+				if (stack.getItem() == null) {
+					Log.debug("Couldn't get itemStack for block: " + block.getUnlocalizedName());
+					return;
+				}
+				addItemStack(stack);
+			}
 		}
 	}
 
