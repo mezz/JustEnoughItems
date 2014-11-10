@@ -78,7 +78,6 @@ public class RecipesGui extends GuiScreen {
 		this.titleHeight = fontRendererObj.FONT_HEIGHT + borderPadding;
 		this.headerHeight = titleHeight + fontRendererObj.FONT_HEIGHT + textPadding;
 
-
 		int buttonWidth = 13;
 		int buttonHeight = fontRendererObj.FONT_HEIGHT + textPadding;
 
@@ -304,9 +303,6 @@ public class RecipesGui extends GuiScreen {
 
 		}
 		GL11.glPopMatrix();
-
-		if (recipeGuis.size() == 0)
-			return;
 
 		for (IRecipeGui recipeGui : recipeGuis) {
 			if (recipeGui.hasRecipe())

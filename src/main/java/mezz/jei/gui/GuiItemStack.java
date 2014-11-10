@@ -96,14 +96,20 @@ public class GuiItemStack {
 	}
 
 	public void draw(Minecraft minecraft) {
-		draw(minecraft, false);
+		draw(minecraft, true);
 	}
 
-	public void draw(Minecraft minecraft, boolean hovered) {
+	public void drawHovered(Minecraft minecraft, int mouseX, int mouseY) {
+		draw(minecraft, false);
+		minecraft.currentScreen.renderToolTip(getItemStack(), mouseX, mouseY);
+		RenderHelper.disableStandardItemLighting();
+	}
+
+	public void draw(Minecraft minecraft, boolean cycleIcons) {
 		if (!visible)
 			return;
 
-		if (!hovered)
+		if (cycleIcons)
 			drawTime = System.currentTimeMillis();
 
 		ItemStack itemStack = getItemStack();
@@ -126,11 +132,5 @@ public class GuiItemStack {
 			itemRender.zLevel = 0.0F;
 		}
 		GL11.glPopAttrib();
-	}
-
-	public void drawHovered(Minecraft minecraft, int mouseX, int mouseY) {
-		draw(minecraft, true);
-		minecraft.currentScreen.renderToolTip(getItemStack(), mouseX, mouseY);
-		RenderHelper.disableStandardItemLighting();
 	}
 }
