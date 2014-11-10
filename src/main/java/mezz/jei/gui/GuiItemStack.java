@@ -1,6 +1,5 @@
 package mezz.jei.gui;
 
-import mezz.jei.util.Render;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -130,6 +129,7 @@ public class GuiItemStack {
 
 	public void drawHovered(Minecraft minecraft, int mouseX, int mouseY) {
 		draw(minecraft);
-		Render.renderToolTip(getItemStack(), mouseX, mouseY);
+		minecraft.currentScreen.renderToolTip(getItemStack(), mouseX, mouseY);
+		RenderHelper.disableStandardItemLighting();
 	}
 }

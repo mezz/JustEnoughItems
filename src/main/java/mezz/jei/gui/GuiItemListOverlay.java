@@ -11,6 +11,7 @@ import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
@@ -61,13 +62,13 @@ public class GuiItemListOverlay {
 	protected int width;
 	protected int height;
 
-	public void initGui(int guiLeft, int guiTop, int xSize, int ySize, int width, int height) {
-		this.guiLeft = guiLeft;
-		this.guiTop = guiTop;
-		this.xSize = xSize;
-		this.ySize = ySize;
-		this.width = width;
-		this.height = height;
+	public void initGui(GuiContainer guiContainer) {
+		this.guiLeft = guiContainer.guiLeft;
+		this.guiTop = guiContainer.guiTop;
+		this.xSize = guiContainer.xSize;
+		this.ySize = guiContainer.ySize;
+		this.width = guiContainer.width;
+		this.height = guiContainer.height;
 
 		String next = StatCollector.translateToLocal("jei.button.next");
 		String back = StatCollector.translateToLocal("jei.button.back");

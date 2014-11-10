@@ -3,8 +3,6 @@ package mezz.jei;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import mezz.jei.gui.GuiItemListOverlay;
-import mezz.jei.util.Reflection;
-import mezz.jei.util.Render;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -22,8 +20,7 @@ public class GuiEventHandler {
 		GuiContainer guiContainer = asGuiContainer(event.gui);
 		if (guiContainer == null)
 			return;
-		Integer[] dimensions = Reflection.getDimensions(guiContainer);
-		itemListOverlay.initGui(dimensions[0], dimensions[1], dimensions[2], dimensions[3], guiContainer.width, guiContainer.height);
+		itemListOverlay.initGui(guiContainer);
 	}
 
 	@SubscribeEvent
@@ -39,10 +36,10 @@ public class GuiEventHandler {
 		 * There is no way to render between the existing inventory tooltip and the dark background layer,
 		 * so we have to re-render the inventory tooltip over the item list.
 		 **/
-		Slot theSlot = Reflection.getTheSlot(guiContainer);
+		Slot theSlot = guiContainer.theSlot;
 		if (theSlot != null && theSlot.getHasStack()) {
 			ItemStack itemStack = theSlot.getStack();
-			Render.renderToolTip(itemStack, event.mouseX, event.mouseY);
+			guiContainer.renderToolTip(itemStack, event.mouseX, event.mouseY);
 		}
 	}
 
