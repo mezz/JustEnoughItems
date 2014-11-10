@@ -59,10 +59,12 @@ public class GuiItemStack {
 		else if (obj instanceof List) {
 			List list = (List)obj;
 			List<ItemStack> itemStacks = StackUtil.getItemStacksRecursive(list);
-			if (StackUtil.containsStack(itemStacks, focusStack))
-				setItemStack(focusStack);
-			else
+			ItemStack matchingItemStack = StackUtil.containsStack(itemStacks, focusStack);
+			if (matchingItemStack != null) {
+				setItemStack(matchingItemStack);
+			} else {
 				setItemStacks(itemStacks);
+			}
 		}
 		else {
 			throw new IllegalArgumentException("Tried to set something other than an ItemStack or list of ItemStacks: " + obj);

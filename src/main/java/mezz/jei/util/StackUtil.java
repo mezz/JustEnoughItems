@@ -16,21 +16,22 @@ public class StackUtil {
 			return newStacks;
 
 		for (ItemStack stack : stacks) {
-			if (stack != null && !containsStack(newStacks, stack))
+			if (stack != null && containsStack(newStacks, stack) == null)
 				newStacks.add(stack);
 		}
 		return newStacks;
 	}
 
-	public static boolean containsStack(Iterable<ItemStack> stacks, ItemStack contains) {
+	/* Returns an ItemStack from "stacks" if it isIdentical to "contains" */
+	public static ItemStack containsStack(Iterable<ItemStack> stacks, ItemStack contains) {
 		if (stacks == null || contains == null)
-			return false;
+			return null;
 
 		for (ItemStack stack : stacks) {
 			if (isIdentical(stack, contains))
-				return true;
+				return stack;
 		}
-		return false;
+		return null;
 	}
 
 	public static boolean isIdentical(ItemStack lhs, ItemStack rhs) {
