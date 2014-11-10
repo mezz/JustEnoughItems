@@ -17,7 +17,7 @@ public class Config {
 	}
 
 	public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
-		if(eventArgs.modID.equals(Defaults.MODID))
+		if(eventArgs.modID.equals(Constants.MODID))
 			syncConfig();
 	}
 

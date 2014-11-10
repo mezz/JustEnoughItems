@@ -9,16 +9,16 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import mezz.jei.config.Config;
-import mezz.jei.config.Defaults;
+import mezz.jei.config.Constants;
 import net.minecraftforge.common.MinecraftForge;
 
-@Mod(modid = Defaults.MODID,
-		name = Defaults.NAME,
-		version = Defaults.VERSION,
+@Mod(modid = Constants.MODID,
+		name = Constants.NAME,
+		version = Constants.VERSION,
 		guiFactory = "mezz.jei.config.JEIModGuiFactory",
 		dependencies = "required-after:Forge@[10.13.0.1207,);")
 public class JustEnoughItems {
-	@Mod.Instance(Defaults.MODID)
+	@Mod.Instance(Constants.MODID)
 	public static JustEnoughItems instance;
 
 	public static ItemRegistry itemRegistry;

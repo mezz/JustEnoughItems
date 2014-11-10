@@ -1,7 +1,7 @@
 package mezz.jei;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
-import mezz.jei.config.Defaults;
+import mezz.jei.config.Constants;
 import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
 
@@ -12,7 +12,7 @@ public class KeyBindings {
 	public static KeyBinding showUses;
 
 	public static void init() {
-		String categoryName = Defaults.MODID + " (" + Defaults.NAME + ")";
+		String categoryName = Constants.MODID + " (" + Constants.NAME + ")";
 
 		toggleOverlay = new KeyBinding("key.jei.toggleOverlay", Keyboard.KEY_O, categoryName);
 		showRecipe = new KeyBinding("key.jei.showRecipe", Keyboard.KEY_R, categoryName);
