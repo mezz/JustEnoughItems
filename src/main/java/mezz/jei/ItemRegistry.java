@@ -2,6 +2,7 @@ package mezz.jei;
 
 import cpw.mods.fml.common.registry.GameData;
 import mezz.jei.util.Log;
+import mezz.jei.util.StackUtil;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -9,6 +10,7 @@ import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 public class ItemRegistry {
 
@@ -25,24 +27,8 @@ public class ItemRegistry {
 	}
 
 	public void addItemAndSubItems(Item item) {
-		if (item == null)
-			return;
-
-		ArrayList<ItemStack> subItems = new ArrayList<ItemStack>();
-		for(CreativeTabs itemTab : item.getCreativeTabs()) {
-			subItems.clear();
-			item.getSubItems(item, itemTab, subItems);
-			addItemStacks(subItems);
-
-			if (subItems.isEmpty()) {
-				ItemStack stack = new ItemStack(item);
-				if (stack.getItem() == null) {
-					Log.warning("Empty item stack from item: " + item.getUnlocalizedName());
-					return;
-				}
-				addItemStack(stack);
-			}
-		}
+		List<ItemStack> items = StackUtil.getSubItems(item);
+		addItemStacks(items);
 	}
 
 	public void addBlockAndSubBlocks(Block block) {
@@ -93,7 +79,9 @@ public class ItemRegistry {
 	}
 
 	private String uniqueIdentifierForStack(ItemStack stack) {
-		StringBuilder itemKey = new StringBuilder(stack.getUnlocalizedName());
+		int id = GameData.getItemRegistry().getId(stack.getItem());
+		StringBuilder itemKey = new StringBuilder();
+		itemKey.append(id).append(":").append(stack.getItemDamage());
 		if (stack.hasTagCompound())
 			itemKey.append(":").append(stack.getTagCompound().toString());
 		return itemKey.toString();

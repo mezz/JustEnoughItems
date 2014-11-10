@@ -24,35 +24,32 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuiItemListOverlay {
+public class ItemListOverlay {
 
 	private static final int borderPadding = 1;
 	private static final int searchHeight = 16;
 	private static final int itemStackPadding = 1;
 	private static final int itemStackWidth = GuiItemStack.getWidth(itemStackPadding);
 	private static final int itemStackHeight = GuiItemStack.getHeight(itemStackPadding);
+	private static final int maxSearchLength = 32;
+	private static int pageNum = 0;
+
 	protected int buttonHeight;
 	protected int rightEdge;
 	protected int leftEdge;
-
 	protected ArrayList<GuiItemStack> guiItemStacks = new ArrayList<GuiItemStack>();
-
 	protected GuiButton nextButton;
 	protected GuiButton backButton;
-
 	protected GuiTextField searchField;
-	private static final int maxSearchLength = 32;
-
-	private static int pageNum = 1;
 	protected int pageCount;
 
 	protected String pageNumDisplayString;
 	protected int pageNumDisplayX;
 	protected int pageNumDisplayY;
 
-	private boolean clickHandled = false;
+	protected RecipesGui recipesGui;
 
-	private boolean overlayEnabled = true;
+	protected GuiItemStack hovered = null;
 
 	// properties of the gui we're beside
 	protected int guiLeft;
@@ -62,13 +59,18 @@ public class GuiItemListOverlay {
 	protected int width;
 	protected int height;
 
-	public void initGui(GuiContainer guiContainer) {
+	private boolean clickHandled = false;
+	private boolean overlayEnabled = true;
+
+	public void initGui(GuiContainer guiContainer, RecipesGui recipesGui) {
 		this.guiLeft = guiContainer.guiLeft;
 		this.guiTop = guiContainer.guiTop;
 		this.xSize = guiContainer.xSize;
 		this.ySize = guiContainer.ySize;
 		this.width = guiContainer.width;
 		this.height = guiContainer.height;
+
+		this.recipesGui = recipesGui;
 
 		String next = StatCollector.translateToLocal("jei.button.next");
 		String back = StatCollector.translateToLocal("jei.button.back");
@@ -122,9 +124,9 @@ public class GuiItemListOverlay {
 
 	private void updateLayout() {
 		updatePageCount();
-		if (pageNum > getPageCount())
-			pageNum = 1;
-		int i = (pageNum - 1) * getCountPerPage();
+		if (pageNum >= getPageCount())
+			pageNum = 0;
+		int i = pageNum * getCountPerPage();
 
 		List<ItemStack> itemList = JustEnoughItems.itemFilter.getItemList();
 		for (GuiItemStack itemButton : guiItemStacks) {
@@ -132,14 +134,14 @@ public class GuiItemListOverlay {
 				itemButton.clearItemStacks();
 			} else {
 				ItemStack stack = itemList.get(i);
-				itemButton.setItemStacks(stack);
+				itemButton.setItemStacks(stack, null);
 			}
 			i++;
 		}
 
 		FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRenderer;
 
-		pageNumDisplayString = getPageNum() + "/" + getPageCount();
+		pageNumDisplayString = (getPageNum() + 1) + "/" + getPageCount();
 		int pageDisplayWidth = fontRendererObj.getStringWidth(pageNumDisplayString);
 		pageNumDisplayX = ((backButton.xPosition + backButton.width) + nextButton.xPosition) / 2 - (pageDisplayWidth / 2);
 		pageNumDisplayY = backButton.yPosition + Math.round((backButton.height - fontRendererObj.FONT_HEIGHT) / 2.0f);
@@ -154,15 +156,15 @@ public class GuiItemListOverlay {
 	}
 
 	public void nextPage() {
-		if (pageNum == getPageCount())
-			setPageNum(1);
+		if (pageNum == getPageCount() - 1)
+			setPageNum(0);
 		else
 			setPageNum(pageNum + 1);
 	}
 
 	public void backPage() {
-		if (pageNum == 1)
-			setPageNum(getPageCount());
+		if (pageNum == 0)
+			setPageNum(getPageCount() - 1);
 		else
 			setPageNum(pageNum - 1);
 	}
@@ -208,16 +210,19 @@ public class GuiItemListOverlay {
 		nextButton.drawButton(minecraft, mouseX, mouseY);
 		backButton.drawButton(minecraft, mouseX, mouseY);
 
-		GuiItemStack hovered = null;
 		for (GuiItemStack guiItemStack : guiItemStacks) {
 			if (hovered == null && guiItemStack.isMouseOver(mouseX, mouseY))
 				hovered = guiItemStack;
 			else
 				guiItemStack.draw(minecraft);
 		}
+	}
 
-		if (hovered != null)
+	public void drawHovered(Minecraft minecraft, int mouseX, int mouseY) {
+		if (hovered != null) {
 			hovered.drawHovered(minecraft, mouseX, mouseY);
+			hovered = null;
+		}
 	}
 
 	public void handleTick() {
@@ -238,6 +243,7 @@ public class GuiItemListOverlay {
 			}
 		}
 		searchField.mouseClicked(mouseX, mouseY, mouseButton);
+		recipesGui.handleMouseInput();
 	}
 
 	private void handleMouseClickedItemStack(int mouseButton, ItemStack itemStack) {
@@ -248,9 +254,11 @@ public class GuiItemListOverlay {
 			} else if (mouseButton == 1) {
 				Commands.giveOneFromStack(itemStack);
 			}
+		} else {
+			boolean success = recipesGui.mouseClickedStack(mouseButton, itemStack);
+			if (success)
+				recipesGui.setVisible(true);
 		}
-
-		//TODO: recipes
 	}
 
 	private void handleKeyEvent() {
@@ -273,6 +281,11 @@ public class GuiItemListOverlay {
 			if (isKeyDown(KeyBindings.toggleOverlay.getKeyCode())) {
 				overlayEnabled = !overlayEnabled;
 				searchField.setFocused(false);
+				if (recipesGui.isVisible() && !overlayEnabled)
+					recipesGui.setVisible(false);
+			}
+			if (recipesGui.isVisible() && isKeyDown(Keyboard.KEY_ESCAPE)) {
+				recipesGui.setVisible(false);
 			}
 		}
 	}
@@ -311,9 +324,9 @@ public class GuiItemListOverlay {
 	}
 
 	protected void setPageNum(int pageNum) {
-		if (GuiItemListOverlay.pageNum == pageNum)
+		if (ItemListOverlay.pageNum == pageNum)
 			return;
-		GuiItemListOverlay.pageNum = pageNum;
+		ItemListOverlay.pageNum = pageNum;
 		updateLayout();
 	}
 

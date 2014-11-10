@@ -1,8 +1,8 @@
 package mezz.jei.gui;
 
+import mezz.jei.util.StackUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
@@ -49,7 +49,7 @@ public class GuiItemStack {
 		return baseHeight + (2 * padding);
 	}
 
-	public void setItemStacks(Object obj) {
+	public void setItemStacks(Object obj, ItemStack focusStack) {
 		if (obj == null) {
 			clearItemStacks();
 		}
@@ -58,15 +58,11 @@ public class GuiItemStack {
 		}
 		else if (obj instanceof List) {
 			List list = (List)obj;
-			ArrayList<ItemStack> itemStacks = new ArrayList<ItemStack>(list.size());
-			for (Object itemStack : list) {
-				if (itemStack instanceof ItemStack) {
-					itemStacks.add((ItemStack) itemStack);
-				} else {
-					throw new IllegalArgumentException("ItemStack list contains something other than an ItemStack: " + itemStack);
-				}
-			}
-			setItemStacks(itemStacks);
+			List<ItemStack> itemStacks = StackUtil.getItemStacksRecursive(list);
+			if (StackUtil.containsStack(itemStacks, focusStack))
+				setItemStack(focusStack);
+			else
+				setItemStacks(itemStacks);
 		}
 		else {
 			throw new IllegalArgumentException("Tried to set something other than an ItemStack or list of ItemStacks: " + obj);
@@ -74,7 +70,7 @@ public class GuiItemStack {
 	}
 
 	public void setItemStacks(List<ItemStack> itemStacks) {
-		this.itemStacks = itemStacks;
+		this.itemStacks = StackUtil.getItemStacksRecursive(itemStacks);
 		visible = enabled = !itemStacks.isEmpty();
 	}
 
@@ -100,10 +96,15 @@ public class GuiItemStack {
 	}
 
 	public void draw(Minecraft minecraft) {
+		draw(minecraft, false);
+	}
+
+	public void draw(Minecraft minecraft, boolean hovered) {
 		if (!visible)
 			return;
 
-		drawTime = System.currentTimeMillis();
+		if (!hovered)
+			drawTime = System.currentTimeMillis();
 
 		ItemStack itemStack = getItemStack();
 		FontRenderer font = itemStack.getItem().getFontRenderer(itemStack);
@@ -128,7 +129,7 @@ public class GuiItemStack {
 	}
 
 	public void drawHovered(Minecraft minecraft, int mouseX, int mouseY) {
-		draw(minecraft);
+		draw(minecraft, true);
 		minecraft.currentScreen.renderToolTip(getItemStack(), mouseX, mouseY);
 		RenderHelper.disableStandardItemLighting();
 	}

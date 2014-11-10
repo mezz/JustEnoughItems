@@ -10,3 +10,9 @@ key.jei.showUses=Show Item Uses
 # Config
 config.jei.cheatItemsEnabled=Enable Item Cheating
 config.jei.cheatItemsEnabled.description=/give items instead of showing the recipe
+
+# Recipes
+gui.jei.shapedRecipes=Shaped Recipes
+gui.jei.shapedOreRecipes=Shaped Oredict Recipes
+gui.jei.shapelessRecipes=Shapeless Recipes
+gui.jei.shapelessOreRecipes=Shapeless Oredict Recipes

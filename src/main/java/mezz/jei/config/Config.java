@@ -8,7 +8,7 @@ import net.minecraftforge.common.config.Configuration;
 public class Config {
 	public static Configuration configFile;
 
-	public static boolean cheatItemsEnabled = true;
+	public static boolean cheatItemsEnabled = false;
 
 	public static void preInit(FMLPreInitializationEvent event) {
 		configFile = new Configuration(event.getSuggestedConfigurationFile());
