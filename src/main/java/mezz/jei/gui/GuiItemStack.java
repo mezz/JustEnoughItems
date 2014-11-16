@@ -1,5 +1,6 @@
 package mezz.jei.gui;
 
+import mezz.jei.api.gui.IGuiItemStack;
 import mezz.jei.util.StackUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class GuiItemStack {
+public class GuiItemStack implements IGuiItemStack {
 
 	public static final int baseWidth = 16;
 	public static final int baseHeight = 16;
@@ -56,24 +57,31 @@ public class GuiItemStack {
 		else if (obj instanceof ItemStack) {
 			setItemStack((ItemStack) obj);
 		}
-		else if (obj instanceof List) {
-			List list = (List)obj;
-			List<ItemStack> itemStacks = StackUtil.getItemStacksRecursive(list);
-			ItemStack matchingItemStack = StackUtil.containsStack(itemStacks, focusStack);
-			if (matchingItemStack != null) {
-				setItemStack(matchingItemStack);
-			} else {
-				setItemStacks(itemStacks);
-			}
+		else if (obj instanceof Iterable) {
+			setItemStacks((Iterable)obj, focusStack);
 		}
 		else {
 			throw new IllegalArgumentException("Tried to set something other than an ItemStack or list of ItemStacks: " + obj);
 		}
 	}
 
-	public void setItemStacks(List<ItemStack> itemStacks) {
+	public void setItemStacks(Iterable itemStacksIn, ItemStack focusStack) {
+		List<ItemStack> itemStacks = StackUtil.getItemStacksRecursive(itemStacksIn);
+		ItemStack matchingItemStack = StackUtil.containsStack(itemStacks, focusStack);
+		if (matchingItemStack != null) {
+			setItemStack(matchingItemStack);
+		} else {
+			setItemStacks(itemStacks);
+		}
+	}
+
+	public void setItemStacks(Iterable itemStacks) {
 		this.itemStacks = StackUtil.getItemStacksRecursive(itemStacks);
-		visible = enabled = !itemStacks.isEmpty();
+		visible = enabled = !this.itemStacks.isEmpty();
+	}
+
+	public void setItemStack(ItemStack itemStack) {
+		setItemStacks(Arrays.asList(itemStack));
 	}
 
 	public void clearItemStacks() {
@@ -87,10 +95,6 @@ public class GuiItemStack {
 
 		int stackIndex = (int)((drawTime / cycleTime) % itemStacks.size());
 		return itemStacks.get(stackIndex);
-	}
-
-	public void setItemStack(ItemStack itemStacks) {
-		setItemStacks(Arrays.asList(itemStacks));
 	}
 
 	public boolean isMouseOver(int mouseX, int mouseY) {
@@ -107,7 +111,7 @@ public class GuiItemStack {
 		RenderHelper.disableStandardItemLighting();
 	}
 
-	public void draw(Minecraft minecraft, boolean cycleIcons) {
+	private void draw(Minecraft minecraft, boolean cycleIcons) {
 		if (!visible)
 			return;
 

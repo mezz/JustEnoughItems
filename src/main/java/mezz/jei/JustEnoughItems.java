@@ -11,6 +11,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import mezz.jei.api.JEIManager;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
+import mezz.jei.gui.GuiHelper;
 import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.recipes.crafting.ShapedOreRecipeHelper;
 import mezz.jei.recipes.crafting.ShapedRecipesHelper;
@@ -35,6 +36,8 @@ public class JustEnoughItems {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		Config.preInit(event);
+
+		JEIManager.guiHelper = new GuiHelper();
 
 		JEIManager.recipeRegistry = new RecipeRegistry();
 

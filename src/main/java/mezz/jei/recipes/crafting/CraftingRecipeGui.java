@@ -1,9 +1,11 @@
 package mezz.jei.recipes.crafting;
 
+import mezz.jei.api.JEIManager;
+import mezz.jei.api.gui.IGuiHelper;
+import mezz.jei.api.gui.IGuiItemStack;
 import mezz.jei.api.recipes.IRecipeGui;
 import mezz.jei.api.recipes.RecipeType;
 import mezz.jei.config.Constants;
-import mezz.jei.gui.GuiItemStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.item.ItemStack;
@@ -23,7 +25,7 @@ public abstract class CraftingRecipeGui extends Gui implements IRecipeGui {
 	private final int height;
 
 	protected boolean hasRecipe;
-	protected final ArrayList<GuiItemStack> items = new ArrayList<GuiItemStack>();
+	protected final ArrayList<IGuiItemStack> items = new ArrayList<IGuiItemStack>();
 	protected int posX;
 	protected int posY;
 
@@ -32,11 +34,13 @@ public abstract class CraftingRecipeGui extends Gui implements IRecipeGui {
 		this.width = RecipeType.CRAFTING_TABLE.displayWidth();
 		this.height = RecipeType.CRAFTING_TABLE.displayHeight();
 
-		items.add(new GuiItemStack(124-30+1, 35-17+1, 0));
+		IGuiHelper guiHelper = JEIManager.guiHelper;
+
+		items.add(guiHelper.makeGuiItemStack(124-30, 35-17, 1));
 
 		for (int y = 0; y < 3; ++y)
 			for (int x = 0; x < 3; ++x)
-				items.add(new GuiItemStack(1 + x * 18, 1 + y * 18, 0));
+				items.add(guiHelper.makeGuiItemStack(x * 18, y * 18, 1));
 
 		hasRecipe = false;
 	}
@@ -93,7 +97,7 @@ public abstract class CraftingRecipeGui extends Gui implements IRecipeGui {
 	}
 
 	protected void clearItems() {
-		for (GuiItemStack guiItemStack : items) {
+		for (IGuiItemStack guiItemStack : items) {
 			guiItemStack.clearItemStacks();
 		}
 	}
@@ -110,7 +114,7 @@ public abstract class CraftingRecipeGui extends Gui implements IRecipeGui {
 		mouseX -= posX;
 		mouseY -= posY;
 
-		for (GuiItemStack item : items) {
+		for (IGuiItemStack item : items) {
 			if (item.isMouseOver(mouseX, mouseY))
 				return item.getItemStack();
 		}
@@ -134,8 +138,8 @@ public abstract class CraftingRecipeGui extends Gui implements IRecipeGui {
 		minecraft.getTextureManager().bindTexture(backgroundTexture);
 		this.drawTexturedModalRect(0, 0, 0, 0, width, height);
 
-		GuiItemStack hovered = null;
-		for (GuiItemStack item : items) {
+		IGuiItemStack hovered = null;
+		for (IGuiItemStack item : items) {
 			if (hovered == null && item.isMouseOver(mouseX, mouseY))
 				hovered = item;
 			else

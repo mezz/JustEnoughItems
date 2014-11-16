@@ -70,11 +70,11 @@ public class StackUtil {
 		return removeDuplicateItemStacks(itemStacks);
 	}
 
-	public static List<ItemStack> getItemStacksRecursive(List list) {
+	public static List<ItemStack> getItemStacksRecursive(Iterable stacks) {
 		ArrayList<ItemStack> itemStacks = new ArrayList<ItemStack>();
-		for (Object obj : list) {
-			if (obj	instanceof List) {
-				List<ItemStack> list2 = getItemStacksRecursive((List) obj);
+		for (Object obj : stacks) {
+			if (obj	instanceof Iterable) {
+				List<ItemStack> list2 = getItemStacksRecursive((Iterable) obj);
 				itemStacks.addAll(list2);
 			} else if (obj instanceof ItemStack) {
 				ItemStack itemStack = (ItemStack)obj;
