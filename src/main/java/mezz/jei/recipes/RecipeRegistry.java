@@ -68,12 +68,11 @@ public class RecipeRegistry implements IRecipeRegistry {
 		for (Object recipe : recipes) {
 			Class recipeClass = recipe.getClass();
 
-			if (!hasRecipeHelper(recipeClass)) {
+			IRecipeHelper recipeHelper = getRecipeHelper(recipeClass);
+			if (recipeHelper == null) {
 				Log.warning("Can't handle recipe: " + recipe.toString());
 				continue;
 			}
-
-			IRecipeHelper recipeHelper = getRecipeHelper(recipeClass);
 			IRecipeType recipeType = recipeHelper.getRecipeType();
 
 			Map<String, List<Object>> recipeInputs = getRecipeMap(recipeInputMaps, recipeType);
@@ -104,7 +103,15 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public IRecipeHelper getRecipeHelper(Class recipeClass) {
-		return recipeHelpers.get(recipeClass);
+		IRecipeHelper recipeHelper = recipeHelpers.get(recipeClass);
+		if (recipeHelper != null)
+			return recipeHelper;
+
+		Class superClass = recipeClass.getSuperclass();
+		if (superClass != null && superClass != Object.class)
+			return getRecipeHelper(superClass);
+
+		return null;
 	}
 
 	@Override
@@ -131,11 +138,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		if (recipeHelper == null)
 			return null;
 		return recipeHelper.getOutputs(recipe);
-	}
-
-	@Override
-	public boolean hasRecipeHelper(Class recipeClass) {
-		return recipeHelpers.containsKey(recipeClass);
 	}
 
 	@Override

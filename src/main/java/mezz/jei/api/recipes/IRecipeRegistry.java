@@ -25,10 +25,7 @@ public interface IRecipeRegistry {
 	 *  Using Recipes
 	 */
 
-	/* Returns true if there is an IRecipeHelper registered for the recipeClass */
-	boolean hasRecipeHelper(Class recipeClass);
-
-	/* Returns the IRecipeHelper associated with the recipeClass */
+	/* Returns the IRecipeHelper associated with the recipeClass or null if there is none */
 	IRecipeHelper getRecipeHelper(Class recipeClass);
 
 	/* Returns a list of Recipe Types that have the ItemStack as an input */
