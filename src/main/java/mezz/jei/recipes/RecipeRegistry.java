@@ -3,6 +3,7 @@ package mezz.jei.recipes;
 import cpw.mods.fml.common.registry.GameData;
 import mezz.jei.api.recipes.IRecipeHelper;
 import mezz.jei.api.recipes.IRecipeRegistry;
+import mezz.jei.api.recipes.IRecipeType;
 import mezz.jei.util.Log;
 import mezz.jei.util.StackUtil;
 import net.minecraft.item.ItemStack;
@@ -13,29 +14,29 @@ import java.util.List;
 import java.util.Map;
 
 public class RecipeRegistry implements IRecipeRegistry {
-	private static final HashMap<Class, IRecipeHelper> recipeHelpers = new HashMap<Class, IRecipeHelper>();
+	private static final Map<Class, IRecipeHelper> recipeHelpers = new HashMap<Class, IRecipeHelper>();
 
 	/**
 	 * List of recipes, keyed by recipe class and inputs/outputs for the recipe.
-	 * Recipe Class:
-	 *   String of ItemStack input/output:
+	 * Recipe Type:
+	 *   String Key of ItemStack input/output:
 	 *     List of recipes with input/output
 	 */
-	private final Map<Class, Map<String, List<Object>>> recipeInputMaps = new HashMap<Class, Map<String, List<Object>>>();
-	private final Map<Class, Map<String, List<Object>>> recipeOutputMaps = new HashMap<Class, Map<String, List<Object>>>();
+	private final Map<IRecipeType, Map<String, List<Object>>> recipeInputMaps = new HashMap<IRecipeType, Map<String, List<Object>>>();
+	private final Map<IRecipeType, Map<String, List<Object>>> recipeOutputMaps = new HashMap<IRecipeType, Map<String, List<Object>>>();
 
 	/**
-	 * List of Recipe Classes for each ItemStack input/output.
-	 * For fast access in getRecipeClassesForOutput and getRecipeClassesForInput.
+	 * List of Recipe Type for each ItemStack input/output.
+	 * For fast access in getRecipeTypesForInput and getRecipeTypesForOutput.
 	 */
-	private final Map<String, List<Class>> recipeClassInputMap = new HashMap<String, List<Class>>();
-	private final Map<String, List<Class>> recipeClassOutputMap = new HashMap<String, List<Class>>();
+	private final Map<String, List<IRecipeType>> recipeTypeInputMap = new HashMap<String, List<IRecipeType>>();
+	private final Map<String, List<IRecipeType>> recipeTypeOutputMap = new HashMap<String, List<IRecipeType>>();
 
-	private Map<String, List<Object>> getRecipeMap(Map<Class, Map<String, List<Object>>> recipeMaps, Class recipeClass) {
-		Map<String, List<Object>> recipeMap = recipeMaps.get(recipeClass);
+	private Map<String, List<Object>> getRecipeMap(Map<IRecipeType, Map<String, List<Object>>> recipeMaps, IRecipeType recipeType) {
+		Map<String, List<Object>> recipeMap = recipeMaps.get(recipeType);
 		if (recipeMap == null) {
 			recipeMap = new HashMap<String, List<Object>>();
-			recipeMaps.put(recipeClass, recipeMap);
+			recipeMaps.put(recipeType, recipeMap);
 		}
 		return recipeMap;
 	}
@@ -49,13 +50,13 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return recipeInputList;
 	}
 
-	private List<Class> getRecipeClassList(Map<String, List<Class>> recipeClassMap, String stackKey) {
-		List<Class> recipeClassList = recipeClassMap.get(stackKey);
-		if (recipeClassList == null) {
-			recipeClassList = new ArrayList<Class>();
-			recipeClassMap.put(stackKey, recipeClassList);
+	private List<IRecipeType> getRecipeTypeList(Map<String, List<IRecipeType>> recipeTypeMap, String stackKey) {
+		List<IRecipeType> recipeTypeList = recipeTypeMap.get(stackKey);
+		if (recipeTypeList == null) {
+			recipeTypeList = new ArrayList<IRecipeType>();
+			recipeTypeMap.put(stackKey, recipeTypeList);
 		}
-		return recipeClassList;
+		return recipeTypeList;
 	}
 
 	private String asKey(ItemStack itemstack) {
@@ -72,8 +73,11 @@ public class RecipeRegistry implements IRecipeRegistry {
 				continue;
 			}
 
-			Map<String, List<Object>> recipeInputs = getRecipeMap(recipeInputMaps, recipeClass);
-			Map<String, List<Object>> recipeOutputs = getRecipeMap(recipeOutputMaps, recipeClass);
+			IRecipeHelper recipeHelper = getRecipeHelper(recipeClass);
+			IRecipeType recipeType = recipeHelper.getRecipeType();
+
+			Map<String, List<Object>> recipeInputs = getRecipeMap(recipeInputMaps, recipeType);
+			Map<String, List<Object>> recipeOutputs = getRecipeMap(recipeOutputMaps, recipeType);
 
 			List<ItemStack> inputs = StackUtil.removeDuplicateItemStacks(getInputs(recipe));
 			List<ItemStack> outputs = StackUtil.removeDuplicateItemStacks(getOutputs(recipe));
@@ -82,18 +86,18 @@ public class RecipeRegistry implements IRecipeRegistry {
 				String inputKey = asKey(input);
 				getRecipeList(recipeInputs, inputKey).add(recipe);
 
-				List<Class> recipeClasses = getRecipeClassList(recipeClassInputMap, inputKey);
-				if (!recipeClasses.contains(recipeClass))
-					recipeClasses.add(recipeClass);
+				List<IRecipeType> recipeTypes = getRecipeTypeList(recipeTypeInputMap, inputKey);
+				if (!recipeTypes.contains(recipeType))
+					recipeTypes.add(recipeType);
 			}
 
 			for (ItemStack output : outputs) {
 				String outputKey = asKey(output);
 				getRecipeList(recipeOutputs, outputKey).add(recipe);
 
-				List<Class> recipeClasses = getRecipeClassList(recipeClassOutputMap, outputKey);
-				if (!recipeClasses.contains(recipeClass))
-					recipeClasses.add(recipeClass);
+				List<IRecipeType> recipeTypes = getRecipeTypeList(recipeTypeOutputMap, outputKey);
+				if (!recipeTypes.contains(recipeType))
+					recipeTypes.add(recipeType);
 			}
 		}
 	}
@@ -135,27 +139,27 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public List<Class> getInputRecipeClasses(ItemStack input) {
+	public List<IRecipeType> getRecipeTypesForInput(ItemStack input) {
 		String key = asKey(input);
-		return recipeClassInputMap.get(key);
+		return recipeTypeInputMap.get(key);
 	}
 
 	@Override
-	public List<Class> getOutputRecipeClasses(ItemStack output) {
+	public List<IRecipeType> getRecipeTypesForOutput(ItemStack output) {
 		String key = asKey(output);
-		return recipeClassOutputMap.get(key);
+		return recipeTypeOutputMap.get(key);
 	}
 
 	@Override
-	public List<Object> getInputRecipes(Class recipeClass, ItemStack input) {
-		Map<String, List<Object>> recipeMap = getRecipeMap(recipeInputMaps, recipeClass);
+	public List<Object> getInputRecipes(IRecipeType recipeType, ItemStack input) {
+		Map<String, List<Object>> recipeMap = getRecipeMap(recipeInputMaps, recipeType);
 		String key = asKey(input);
 		return getRecipeList(recipeMap, key);
 	}
 
 	@Override
-	public List<Object> getOutputRecipes(Class recipeClass, ItemStack output) {
-		Map<String, List<Object>> recipeMap = getRecipeMap(recipeOutputMaps, recipeClass);
+	public List<Object> getOutputRecipes(IRecipeType recipeType, ItemStack output) {
+		Map<String, List<Object>> recipeMap = getRecipeMap(recipeOutputMaps, recipeType);
 		String key = asKey(output);
 		return getRecipeList(recipeMap, key);
 	}

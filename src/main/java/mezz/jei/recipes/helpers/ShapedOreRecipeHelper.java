@@ -1,23 +1,24 @@
 package mezz.jei.recipes.helpers;
 
-import mezz.jei.api.gui.IRecipeGui;
+import mezz.jei.api.recipes.IRecipeGui;
 import mezz.jei.api.recipes.IRecipeHelper;
+import mezz.jei.api.recipes.IRecipeType;
+import mezz.jei.api.recipes.RecipeType;
 import mezz.jei.gui.recipes.ShapedOreRecipeGui;
 import mezz.jei.util.Log;
 import mezz.jei.util.StackUtil;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import scala.actors.threadpool.Arrays;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShapedOreRecipeHelper implements IRecipeHelper
-{
+public class ShapedOreRecipeHelper implements IRecipeHelper {
+
 	@Override
-	public String getTitle() {
-		return StatCollector.translateToLocal("gui.jei.shapedOreRecipes");
+	public IRecipeType getRecipeType() {
+		return RecipeType.CRAFTING_TABLE;
 	}
 
 	@Override

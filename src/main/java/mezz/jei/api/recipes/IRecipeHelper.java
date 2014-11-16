@@ -1,20 +1,19 @@
 package mezz.jei.api.recipes;
 
-import mezz.jei.api.gui.IRecipeGui;
 import net.minecraft.item.ItemStack;
 
 import java.util.List;
 
 /**
- * An IRecipeHelper provides information about one type of recipe.
+ * An IRecipeHelper provides information about one Recipe Class.
  */
 public interface IRecipeHelper {
 
-	/* Returns the page title for this type of recipe. */
-	String getTitle();
-
 	/* Returns the class of the Recipe handled by this IRecipeHelper. */
 	Class getRecipeClass();
+
+	/* Returns the type of this recipe. */
+	IRecipeType getRecipeType();
 
 	/* Returns a new IRecipeGui instance. */
 	IRecipeGui createGui();

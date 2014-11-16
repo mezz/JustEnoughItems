@@ -2,8 +2,9 @@ package mezz.jei.gui;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import mezz.jei.api.JEIManager;
-import mezz.jei.api.gui.IRecipeGui;
+import mezz.jei.api.recipes.IRecipeGui;
 import mezz.jei.api.recipes.IRecipeHelper;
+import mezz.jei.api.recipes.IRecipeType;
 import mezz.jei.config.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -33,24 +34,23 @@ public class RecipesGui extends GuiScreen {
 
 	/* The ItemStack that is the focus of this GUI */
 	private ItemStack stack;
-
-	/* The list of Recipe Classes that involve "stack" */
-	private List<Class> recipeClasses;
+	/* List of Recipe Types that involve "stack" */
+	private List<IRecipeType> recipeTypes = new ArrayList<IRecipeType>();
 
 	/* List of IRecipeGuis to display */
-	private List<IRecipeGui> recipeGuis = new ArrayList<IRecipeGui>();
+	private final List<IRecipeGui> recipeGuis = new ArrayList<IRecipeGui>();
 
 	/* List of recipes for the currently selected recipeClass */
-	private List<Object> recipes = new ArrayList<Object>();;
+	private List<Object> recipes = new ArrayList<Object>();
+	private int recipesPerPage;
 
-	private int recipeClassNum = 0;
-	private int pageNum = 0;
+	private int recipeTypeIndex = 0;
+	private int pageIndex = 0;
 	private String pageString;
 	private String title;
-	private IRecipeHelper recipeHelper;
 
-	private GuiButton nextRecipeClass;
-	private GuiButton previousRecipeClass;
+	private GuiButton nextRecipeType;
+	private GuiButton previousRecipeType;
 	private GuiButton nextPage;
 	private GuiButton previousPage;
 
@@ -91,8 +91,8 @@ public class RecipesGui extends GuiScreen {
 		int leftButtonX = guiLeft + borderPadding;
 
 		int recipeClassButtonTop = guiTop + borderPadding - 3;
-		nextRecipeClass = new GuiButton(2, rightButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, ">");
-		previousRecipeClass = new GuiButton(3, leftButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, "<");
+		nextRecipeType = new GuiButton(2, rightButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, ">");
+		previousRecipeType = new GuiButton(3, leftButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, "<");
 
 		int pageButtonTop =  guiTop + titleHeight;
 		nextPage = new GuiButton(4, rightButtonX, pageButtonTop, buttonWidth, buttonHeight, ">");
@@ -108,14 +108,14 @@ public class RecipesGui extends GuiScreen {
 
 	private void resetLayout() {
 		recipeGuis.clear();
-		pageNum = 0;
+		pageIndex = 0;
 		updateLayout();
 	}
 
 	@SuppressWarnings("unchecked")
 	private void addButtons() {
-		this.buttonList.add(nextRecipeClass);
-		this.buttonList.add(previousRecipeClass);
+		this.buttonList.add(nextRecipeType);
+		this.buttonList.add(previousRecipeType);
 		this.buttonList.add(nextPage);
 		this.buttonList.add(previousPage);
 	}
@@ -151,10 +151,10 @@ public class RecipesGui extends GuiScreen {
 			nextPage();
 		else if (guibutton.id == previousPage.id)
 			previousPage();
-		else if (guibutton.id == nextRecipeClass.id)
-			nextRecipeClass();
-		else if (guibutton.id == previousRecipeClass.id)
-			previousRecipeClass();
+		else if (guibutton.id == nextRecipeType.id)
+			nextRecipeType();
+		else if (guibutton.id == previousRecipeType.id)
+			previousRecipeType();
 	}
 
 	public void setVisible(boolean visible) {
@@ -179,127 +179,114 @@ public class RecipesGui extends GuiScreen {
 		if (this.stack != null && this.stack.equals(stack) && this.mode == mode)
 			return true;
 
-		List<Class> recipeClasses = null;
 		switch (mode) {
 			case INPUT:
-				recipeClasses = JEIManager.recipeRegistry.getInputRecipeClasses(stack);
+				recipeTypes = JEIManager.recipeRegistry.getRecipeTypesForInput(stack);
 				break;
 			case OUTPUT:
-				recipeClasses = JEIManager.recipeRegistry.getOutputRecipeClasses(stack);
+				recipeTypes = JEIManager.recipeRegistry.getRecipeTypesForOutput(stack);
 				break;
 		}
-		if (recipeClasses == null)
+		if (recipeTypes == null) {
+			recipeTypes = new ArrayList<IRecipeType>();
 			return false;
+		}
 
-		this.recipeClasses = recipeClasses;
-		this.recipeClassNum = 0;
 		this.stack = stack;
 		this.mode = mode;
-		this.pageNum = 0;
+		this.recipeTypeIndex = 0;
+		this.pageIndex = 0;
 
 		updateLayout();
 		return true;
 	}
 
-	public void nextRecipeClass() {
-		int recipesClassesCount = recipeClasses.size();
-		recipeClassNum = (recipeClassNum + 1) % recipesClassesCount;
-		pageNum = 0;
+	public void nextRecipeType() {
+		int recipesTypesCount = recipeTypes.size();
+		recipeTypeIndex = (recipeTypeIndex + 1) % recipesTypesCount;
+		pageIndex = 0;
 		updateLayout();
 	}
 
-	public void previousRecipeClass() {
-		int recipesClassesCount = recipeClasses.size();
-		recipeClassNum = (recipesClassesCount + recipeClassNum - 1) % recipesClassesCount;
-		pageNum = 0;
+	public void previousRecipeType() {
+		int recipesTypesCount = recipeTypes.size();
+		recipeTypeIndex = (recipesTypesCount + recipeTypeIndex - 1) % recipesTypesCount;
+		pageIndex = 0;
 		updateLayout();
 	}
 
 	public void nextPage() {
 		int pageCount = pageCount();
-		pageNum = (pageNum + 1) % pageCount;
+		pageIndex = (pageIndex + 1) % pageCount;
 		updateLayout();
 	}
 
 	public void previousPage() {
 		int pageCount = pageCount();
-		pageNum = (pageCount + pageNum - 1) % pageCount;
+		pageIndex = (pageCount + pageIndex - 1) % pageCount;
 		updateLayout();
 	}
 
 	private int pageCount() {
 		if (recipes.size() <= 1)
 			return 1;
-		return (int)Math.ceil(recipes.size() / (float)recipeGuis.size());
+		return (int)Math.ceil(recipes.size() / (float)recipesPerPage);
 	}
 
 	private void updateLayout() {
-		Class recipeClass = recipeClasses.get(recipeClassNum);
-		if (recipeHelper == null || recipeHelper.getRecipeClass() != recipeClass) {
-			recipeGuis.clear();
+		if (recipeTypes.isEmpty())
+			return;
 
-			recipeHelper = JEIManager.recipeRegistry.getRecipeHelper(recipeClass);
-			title = recipeHelper.getTitle();
-		}
+		IRecipeType recipeType = recipeTypes.get(recipeTypeIndex);
 
-		if (recipeGuis.isEmpty()) {
-			IRecipeGui recipeGui = recipeHelper.createGui();
-
-			int recipesPerPage = (ySize - headerHeight) / (recipeGui.getHeight() + borderPadding);
-			int recipeXOffset = (xSize - recipeGui.getWidth()) / 2;
-			int recipeSpacing = (ySize - headerHeight - (recipesPerPage * recipeGui.getHeight())) / (recipesPerPage + 1);
-
-			int posX = guiLeft + recipeXOffset;
-			int posY = guiTop + headerHeight + recipeSpacing;
-
-			recipeGui.setPosition(posX, posY);
-			recipeGuis.add(recipeGui);
-
-			// add more recipeGuis if they fit on a page
-			for (int i = 0; i < recipesPerPage - 1; i++) {
-				recipeGui = recipeHelper.createGui();
-				posY += recipeGui.getHeight() + recipeSpacing;
-				recipeGui.setPosition(posX, posY);
-				recipeGuis.add(recipeGui);
-			}
-		}
+		title = recipeType.getLocalizedName();
 
 		switch (mode) {
 			case INPUT:
-				recipes = JEIManager.recipeRegistry.getInputRecipes(recipeClass, stack);
+				recipes = JEIManager.recipeRegistry.getInputRecipes(recipeType, stack);
 				break;
 			case OUTPUT:
-				recipes = JEIManager.recipeRegistry.getOutputRecipes(recipeClass, stack);
+				recipes = JEIManager.recipeRegistry.getOutputRecipes(recipeType, stack);
 				break;
 		}
 		if (recipes == null) {
 			recipes = new ArrayList<Object>();
 		}
 
-		for (int i = 0; i < recipeGuis.size(); i++) {
-			IRecipeGui recipeGui = recipeGuis.get(i);
+		recipesPerPage = (ySize - headerHeight) / (recipeType.displayHeight() + borderPadding);
+		int recipeXOffset = (xSize - recipeType.displayWidth()) / 2;
+		int recipeSpacing = (ySize - headerHeight - (recipesPerPage * recipeType.displayHeight())) / (recipesPerPage + 1);
 
-			int recipeIndex = (pageNum * recipeGuis.size()) + i;
-			if (recipeIndex >= recipes.size()) {
-				recipeGui.setRecipe(null, null);
-				continue;
-			}
+		int posX = guiLeft + recipeXOffset;
+		int posY = guiTop + headerHeight + recipeSpacing;
+
+		recipeGuis.clear();
+		for (int i = 0; i < recipesPerPage; i++) {
+			int recipeIndex = (pageIndex * recipesPerPage) + i;
+			if (recipeIndex >= recipes.size())
+				break;
+
 			Object recipe = recipes.get(recipeIndex);
+			IRecipeHelper recipeHelper = JEIManager.recipeRegistry.getRecipeHelper(recipe.getClass());
+			IRecipeGui recipeGui = recipeHelper.createGui();
+			recipeGui.setPosition(posX, posY);
+			posY += recipeType.displayHeight() + recipeSpacing;
 
 			recipeGui.setRecipe(recipe, stack);
+			recipeGuis.add(recipeGui);
 		}
 
 		nextPage.enabled = previousPage.enabled = (pageCount() > 1);
-		nextRecipeClass.enabled = previousRecipeClass.enabled = (recipeClasses.size() > 1);
+		nextRecipeType.enabled = previousRecipeType.enabled = (recipeTypes.size() > 1);
 
-		this.pageString = (pageNum + 1) + "/" + pageCount();
+		this.pageString = (pageIndex + 1) + "/" + pageCount();
 	}
 
 	public void draw(int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getMinecraft();
 
-		nextRecipeClass.drawButton(minecraft, mouseX, mouseY);
-		previousRecipeClass.drawButton(minecraft, mouseX, mouseY);
+		nextRecipeType.drawButton(minecraft, mouseX, mouseY);
+		previousRecipeType.drawButton(minecraft, mouseX, mouseY);
 
 		nextPage.drawButton(minecraft, mouseX, mouseY);
 		previousPage.drawButton(minecraft, mouseX, mouseY);

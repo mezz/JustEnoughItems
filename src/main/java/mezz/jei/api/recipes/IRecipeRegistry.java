@@ -31,15 +31,15 @@ public interface IRecipeRegistry {
 	/* Returns the IRecipeHelper associated with the recipeClass */
 	IRecipeHelper getRecipeHelper(Class recipeClass);
 
-	/* Returns a list of Recipe Classes that have the ItemStack as an input */
-	List<Class> getInputRecipeClasses(ItemStack input);
+	/* Returns a list of Recipe Types that have the ItemStack as an input */
+	List<IRecipeType> getRecipeTypesForInput(ItemStack input);
 
-	/* Returns a list of Recipe Classes that have the ItemStack as an output */
-	List<Class> getOutputRecipeClasses(ItemStack output);
+	/* Returns a list of Recipe Types that have the ItemStack as an output */
+	List<IRecipeType> getRecipeTypesForOutput(ItemStack output);
 
-	/* Returns a list of Recipes of type recipeClass that have the ItemStack as an input */
-	List<Object> getInputRecipes(Class recipeClass, ItemStack input);
+	/* Returns a list of Recipes of recipeType that have the ItemStack as an input */
+	List<Object> getInputRecipes(IRecipeType recipeType, ItemStack input);
 
-	/* Returns a list of Recipes of type recipeClass that have the ItemStack as an output */
-	List<Object> getOutputRecipes(Class recipeClass, ItemStack output);
+	/* Returns a list of Recipes of recipeType that have the ItemStack as an output */
+	List<Object> getOutputRecipes(IRecipeType recipeType, ItemStack output);
 }

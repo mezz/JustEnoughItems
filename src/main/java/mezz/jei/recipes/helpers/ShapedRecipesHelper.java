@@ -1,11 +1,12 @@
 package mezz.jei.recipes.helpers;
 
-import mezz.jei.api.gui.IRecipeGui;
+import mezz.jei.api.recipes.IRecipeGui;
 import mezz.jei.api.recipes.IRecipeHelper;
+import mezz.jei.api.recipes.IRecipeType;
+import mezz.jei.api.recipes.RecipeType;
 import mezz.jei.gui.recipes.ShapedRecipesGui;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.util.StatCollector;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,8 +15,8 @@ import java.util.List;
 public class ShapedRecipesHelper implements IRecipeHelper {
 
 	@Override
-	public String getTitle() {
-		return StatCollector.translateToLocal("gui.jei.shapedRecipes");
+	public IRecipeType getRecipeType() {
+		return RecipeType.CRAFTING_TABLE;
 	}
 
 	@Override

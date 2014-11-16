@@ -1,6 +1,7 @@
 package mezz.jei.gui.recipes;
 
-import mezz.jei.api.gui.IRecipeGui;
+import mezz.jei.api.recipes.IRecipeGui;
+import mezz.jei.api.recipes.RecipeType;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.GuiItemStack;
 import net.minecraft.client.Minecraft;
@@ -17,15 +18,19 @@ public abstract class CraftingRecipeGui extends Gui implements IRecipeGui {
 	private static final int craftInputSlot1 = 1;
 	private static final int craftInputSlotCount = 9;
 
-	private ResourceLocation backgroundTexture;
+	private final ResourceLocation backgroundTexture;
+	private final int width;
+	private final int height;
 
 	protected boolean hasRecipe;
-	protected ArrayList<GuiItemStack> items = new ArrayList<GuiItemStack>();
+	protected final ArrayList<GuiItemStack> items = new ArrayList<GuiItemStack>();
 	protected int posX;
 	protected int posY;
 
 	public CraftingRecipeGui() {
 		this.backgroundTexture = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_GUI_PATH + "recipeCrafting.png");
+		this.width = RecipeType.CRAFTING_TABLE.displayWidth();
+		this.height = RecipeType.CRAFTING_TABLE.displayHeight();
 
 		items.add(new GuiItemStack(124-30+1, 35-17+1, 0));
 
@@ -113,16 +118,6 @@ public abstract class CraftingRecipeGui extends Gui implements IRecipeGui {
 	}
 
 	@Override
-	public int getWidth() {
-		return 116;
-	}
-
-	@Override
-	public int getHeight() {
-		return 54;
-	}
-
-	@Override
 	public void setPosition(int posX, int posY) {
 		this.posX = posX;
 		this.posY = posY;
@@ -137,7 +132,7 @@ public abstract class CraftingRecipeGui extends Gui implements IRecipeGui {
 
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		minecraft.getTextureManager().bindTexture(backgroundTexture);
-		this.drawTexturedModalRect(0, 0, 0, 0, getWidth(), getHeight());
+		this.drawTexturedModalRect(0, 0, 0, 0, width, height);
 
 		GuiItemStack hovered = null;
 		for (GuiItemStack item : items) {

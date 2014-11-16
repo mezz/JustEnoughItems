@@ -1,4 +1,4 @@
-package mezz.jei.api.gui;
+package mezz.jei.api.recipes;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
@@ -17,10 +17,6 @@ public interface IRecipeGui {
 
 	/* Returns the ItemStack at the mouse position, or null if there is none. */
 	ItemStack getStackUnderMouse(int mouseX, int mouseY);
-
-	/* Returns the dimensions of the drawn IRecipeGui. Must be constant, regardless of the recipe. */
-	int getWidth();
-	int getHeight();
 
 	/* Set the position to draw on the screen. */
 	void setPosition(int posX, int posY);
