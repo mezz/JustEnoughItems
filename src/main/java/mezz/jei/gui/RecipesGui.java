@@ -63,14 +63,20 @@ public class RecipesGui extends GuiScreen {
 	protected int ySize;
 
 	public RecipesGui() {
-		this.backgroundTexture = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_GUI_PATH + "recipeBackground.png");
 	}
 
 	public void initGui(Minecraft minecraft) {
 		setWorldAndResolution(minecraft, minecraft.currentScreen.width, minecraft.currentScreen.height);
 
 		this.xSize = 176;
-		this.ySize = 166;
+
+		if (this.height > 300) {
+			this.ySize = 256;
+			this.backgroundTexture = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_GUI_PATH + "recipeBackgroundTall.png");
+		} else {
+			this.ySize = 166;
+			this.backgroundTexture = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_GUI_PATH + "recipeBackground.png");
+		}
 
 		this.guiLeft = (minecraft.currentScreen.width - this.xSize) / 2;
 		this.guiTop = (minecraft.currentScreen.height - this.ySize) / 2;
@@ -94,11 +100,16 @@ public class RecipesGui extends GuiScreen {
 
 		addButtons();
 
-		// on screen resize, create new recipeGuis so they reposition
+		// on screen resize
 		if (recipeGuis.size() > 0) {
-			recipeGuis.clear();
-			updateLayout();
+			resetLayout();
 		}
+	}
+
+	private void resetLayout() {
+		recipeGuis.clear();
+		pageNum = 0;
+		updateLayout();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -271,7 +282,7 @@ public class RecipesGui extends GuiScreen {
 			int recipeIndex = (pageNum * recipeGuis.size()) + i;
 			if (recipeIndex >= recipes.size()) {
 				recipeGui.setRecipe(null, null);
-				break;
+				continue;
 			}
 			Object recipe = recipes.get(recipeIndex);
 
