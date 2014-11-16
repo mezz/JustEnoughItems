@@ -1,4 +1,4 @@
-package mezz.jei.gui.recipes;
+package mezz.jei.recipes.crafting;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapelessOreRecipe;

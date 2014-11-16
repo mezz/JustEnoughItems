@@ -1,4 +1,4 @@
-package mezz.jei.gui.recipes;
+package mezz.jei.recipes.crafting;
 
 import mezz.jei.api.recipes.IRecipeGui;
 import mezz.jei.api.recipes.RecipeType;

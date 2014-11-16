@@ -12,10 +12,10 @@ import mezz.jei.api.JEIManager;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.recipes.RecipeRegistry;
-import mezz.jei.recipes.helpers.ShapedOreRecipeHelper;
-import mezz.jei.recipes.helpers.ShapedRecipesHelper;
-import mezz.jei.recipes.helpers.ShapelessOreRecipeHelper;
-import mezz.jei.recipes.helpers.ShapelessRecipesHelper;
+import mezz.jei.recipes.crafting.ShapedOreRecipeHelper;
+import mezz.jei.recipes.crafting.ShapedRecipesHelper;
+import mezz.jei.recipes.crafting.ShapelessOreRecipeHelper;
+import mezz.jei.recipes.crafting.ShapelessRecipesHelper;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraftforge.common.MinecraftForge;
 

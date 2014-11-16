@@ -1,4 +1,4 @@
-package mezz.jei.gui.recipes;
+package mezz.jei.recipes.crafting;
 
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import mezz.jei.util.Log;

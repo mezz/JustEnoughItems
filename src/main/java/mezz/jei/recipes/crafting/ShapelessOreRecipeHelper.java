@@ -1,18 +1,17 @@
-package mezz.jei.recipes.helpers;
+package mezz.jei.recipes.crafting;
 
 import mezz.jei.api.recipes.IRecipeGui;
 import mezz.jei.api.recipes.IRecipeHelper;
 import mezz.jei.api.recipes.IRecipeType;
 import mezz.jei.api.recipes.RecipeType;
-import mezz.jei.gui.recipes.ShapelessRecipesGui;
 import mezz.jei.util.StackUtil;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShapelessRecipesHelper implements IRecipeHelper {
+public class ShapelessOreRecipeHelper implements IRecipeHelper {
 
 	@Override
 	public IRecipeType getRecipeType() {
@@ -21,23 +20,23 @@ public class ShapelessRecipesHelper implements IRecipeHelper {
 
 	@Override
 	public Class getRecipeClass() {
-		return ShapelessRecipes.class;
+		return ShapelessOreRecipe.class;
 	}
 
 	@Override
 	public IRecipeGui createGui() {
-		return new ShapelessRecipesGui();
+		return new ShapelessOreRecipeGui();
 	}
 
 	@Override
 	public List<ItemStack> getInputs(Object recipe) {
-		ShapelessRecipes shapelessRecipe = (ShapelessRecipes)recipe;
-		return StackUtil.getItemStacksRecursive(shapelessRecipe.recipeItems);
+		ShapelessOreRecipe shapelessRecipe = (ShapelessOreRecipe)recipe;
+		return StackUtil.getItemStacksRecursive(shapelessRecipe.getInput());
 	}
 
 	@Override
 	public List<ItemStack> getOutputs(Object recipe) {
-		ShapelessRecipes shapelessRecipe = (ShapelessRecipes)recipe;
+		ShapelessOreRecipe shapelessRecipe = (ShapelessOreRecipe)recipe;
 		ArrayList<ItemStack> list = new ArrayList<ItemStack>();
 		list.add(shapelessRecipe.getRecipeOutput());
 		return list;

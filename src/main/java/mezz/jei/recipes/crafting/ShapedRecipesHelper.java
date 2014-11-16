@@ -1,10 +1,9 @@
-package mezz.jei.recipes.helpers;
+package mezz.jei.recipes.crafting;
 
 import mezz.jei.api.recipes.IRecipeGui;
 import mezz.jei.api.recipes.IRecipeHelper;
 import mezz.jei.api.recipes.IRecipeType;
 import mezz.jei.api.recipes.RecipeType;
-import mezz.jei.gui.recipes.ShapedRecipesGui;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
 
