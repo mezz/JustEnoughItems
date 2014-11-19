@@ -8,7 +8,7 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 public class ShapedOreRecipeGui extends CraftingRecipeGui {
 
 	@Override
-	protected void setItemsFromRecipe(Object recipe, ItemStack itemStack) {
+	protected void setItemsFromRecipe(Object recipe, ItemStack focusStack) {
 		ShapedOreRecipe shapedOreRecipe = (ShapedOreRecipe)recipe;
 
 		int width;
@@ -21,7 +21,7 @@ public class ShapedOreRecipeGui extends CraftingRecipeGui {
 			return;
 		}
 
-		setInput(shapedOreRecipe.getInput(), itemStack, width, height);
+		setInput(shapedOreRecipe.getInput(), focusStack, width, height);
 		setOutput(shapedOreRecipe.getRecipeOutput());
 	}
 

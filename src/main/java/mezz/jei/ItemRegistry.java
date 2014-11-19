@@ -14,8 +14,8 @@ import java.util.List;
 
 public class ItemRegistry {
 
-	public ArrayList<ItemStack> itemList = new ArrayList<ItemStack>();
-	public HashSet<String> itemNameSet = new HashSet<String>();
+	public final ArrayList<ItemStack> itemList = new ArrayList<ItemStack>();
+	public final HashSet<String> itemNameSet = new HashSet<String>();
 
 	public ItemRegistry() {
 

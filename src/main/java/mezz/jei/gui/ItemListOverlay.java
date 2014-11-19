@@ -37,7 +37,7 @@ public class ItemListOverlay {
 	protected int buttonHeight;
 	protected int rightEdge;
 	protected int leftEdge;
-	protected ArrayList<GuiItemStack> guiItemStacks = new ArrayList<GuiItemStack>();
+	protected final ArrayList<GuiItemStack> guiItemStacks = new ArrayList<GuiItemStack>();
 	protected GuiButton nextButton;
 	protected GuiButton backButton;
 	protected GuiTextField searchField;
