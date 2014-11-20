@@ -17,17 +17,19 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final RecipeMap recipeOutputMap = new RecipeMap();
 
 	@Override
-	public void registerRecipeHelper(IRecipeHelper recipeHelper) {
-		Class recipeClass = recipeHelper.getRecipeClass();
+	public void registerRecipeHelpers(IRecipeHelper... recipeHelpers) {
+		for (IRecipeHelper recipeHelper : recipeHelpers) {
+			Class recipeClass = recipeHelper.getRecipeClass();
 
-		if (recipeHelpers.containsKey(recipeClass))
-			throw new IllegalArgumentException("A Recipe Helper has already been registered for this recipe class: " + recipeClass.getName());
+			if (this.recipeHelpers.containsKey(recipeClass))
+				throw new IllegalArgumentException("A Recipe Helper has already been registered for this recipe class: " + recipeClass.getName());
 
-		recipeHelpers.put(recipeClass, recipeHelper);
+			this.recipeHelpers.put(recipeClass, recipeHelper);
+		}
 	}
 
 	@Override
-	public void addRecipes(Iterable<Object> recipes) {
+	public void addRecipes(Iterable recipes) {
 		for (Object recipe : recipes) {
 			Class recipeClass = recipe.getClass();
 

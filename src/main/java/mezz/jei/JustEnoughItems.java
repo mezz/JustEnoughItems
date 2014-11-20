@@ -17,8 +17,14 @@ import mezz.jei.recipes.crafting.ShapedOreRecipeHelper;
 import mezz.jei.recipes.crafting.ShapedRecipesHelper;
 import mezz.jei.recipes.crafting.ShapelessOreRecipeHelper;
 import mezz.jei.recipes.crafting.ShapelessRecipesHelper;
+import mezz.jei.recipes.furnace.FurnaceRecipe;
+import mezz.jei.recipes.furnace.FurnaceRecipeHelper;
+import mezz.jei.recipes.furnace.FurnaceRecipeTransformer;
 import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraftforge.common.MinecraftForge;
+
+import java.util.List;
 
 @Mod(modid = Constants.MODID,
 		name = Constants.NAME,
@@ -41,10 +47,13 @@ public class JustEnoughItems {
 
 		JEIManager.recipeRegistry = new RecipeRegistry();
 
-		JEIManager.recipeRegistry.registerRecipeHelper(new ShapedRecipesHelper());
-		JEIManager.recipeRegistry.registerRecipeHelper(new ShapedOreRecipeHelper());
-		JEIManager.recipeRegistry.registerRecipeHelper(new ShapelessRecipesHelper());
-		JEIManager.recipeRegistry.registerRecipeHelper(new ShapelessOreRecipeHelper());
+		JEIManager.recipeRegistry.registerRecipeHelpers(
+				new ShapedRecipesHelper(),
+				new ShapedOreRecipeHelper(),
+				new ShapelessRecipesHelper(),
+				new ShapelessOreRecipeHelper(),
+				new FurnaceRecipeHelper()
+		);
 	}
 
 	@EventHandler
@@ -70,6 +79,10 @@ public class JustEnoughItems {
 	@SuppressWarnings("unchecked")
 	private void registerRecipes() {
 		JEIManager.recipeRegistry.addRecipes(CraftingManager.getInstance().getRecipeList());
+
+		List<FurnaceRecipe> furnaceRecipeList = FurnaceRecipeTransformer.getFurnaceRecipes(FurnaceRecipes.smelting());
+
+		JEIManager.recipeRegistry.addRecipes(furnaceRecipeList);
 	}
 
 	@SubscribeEvent

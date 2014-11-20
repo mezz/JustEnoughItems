@@ -5,11 +5,12 @@ import net.minecraft.util.StatCollector;
 /* JEI's IRecipeTypes */
 public enum RecipeType implements IRecipeType {
 	CRAFTING_TABLE(116, 54, "gui.jei.craftingTableRecipes"),
+	FURNACE(82, 54, "gui.jei.furnaceRecipes"),
 	;
 
-	private String localizedName;
-	private int displayWidth;
-	private int displayHeight;
+	private final String localizedName;
+	private final int displayWidth;
+	private final int displayHeight;
 
 	private RecipeType(int displayWidth, int displayHeight, String unlocalizedName) {
 		this.displayWidth = displayWidth;

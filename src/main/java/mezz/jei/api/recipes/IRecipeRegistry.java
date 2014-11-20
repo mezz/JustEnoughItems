@@ -15,11 +15,11 @@ public interface IRecipeRegistry {
 	 *  Registering Recipes
 	 */
 
-	/* Register a new IRecipeHelper with JEI */
-	void registerRecipeHelper(IRecipeHelper recipeHelper);
+	/* Register new IRecipeHelpers with JEI */
+	void registerRecipeHelpers(IRecipeHelper... recipeHelpers);
 
 	/* Add new recipes to JEI */
-	void addRecipes(Iterable<Object> recipes);
+	void addRecipes(Iterable recipes);
 
 	/**
 	 *  Using Recipes

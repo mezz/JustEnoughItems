@@ -13,7 +13,7 @@ public class ShapelessOreRecipeGui extends CraftingRecipeGui {
 
 		ArrayList<Object> recipeItems = shapelessOreRecipe.getInput();
 		for (int i = 0; i < recipeItems.size(); i++) {
-			setInput(recipeItems.get(i), focusStack, i);
+			setInput(i, recipeItems.get(i), focusStack);
 		}
 
 		setOutput(shapelessOreRecipe.getRecipeOutput());
