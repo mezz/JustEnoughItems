@@ -17,9 +17,12 @@ import mezz.jei.recipes.crafting.ShapedOreRecipeHelper;
 import mezz.jei.recipes.crafting.ShapedRecipesHelper;
 import mezz.jei.recipes.crafting.ShapelessOreRecipeHelper;
 import mezz.jei.recipes.crafting.ShapelessRecipesHelper;
-import mezz.jei.recipes.furnace.FurnaceRecipe;
-import mezz.jei.recipes.furnace.FurnaceRecipeHelper;
-import mezz.jei.recipes.furnace.FurnaceRecipeTransformer;
+import mezz.jei.recipes.furnace.fuel.FuelRecipe;
+import mezz.jei.recipes.furnace.fuel.FuelRecipeHelper;
+import mezz.jei.recipes.furnace.fuel.FuelRecipeMaker;
+import mezz.jei.recipes.furnace.smelting.SmeltingRecipe;
+import mezz.jei.recipes.furnace.smelting.SmeltingRecipeHelper;
+import mezz.jei.recipes.furnace.smelting.SmeltingRecipeMaker;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraftforge.common.MinecraftForge;
@@ -52,7 +55,8 @@ public class JustEnoughItems {
 				new ShapedOreRecipeHelper(),
 				new ShapelessRecipesHelper(),
 				new ShapelessOreRecipeHelper(),
-				new FurnaceRecipeHelper()
+				new SmeltingRecipeHelper(),
+				new FuelRecipeHelper()
 		);
 	}
 
@@ -69,20 +73,22 @@ public class JustEnoughItems {
 
 	@EventHandler
 	public void loadComplete(FMLLoadCompleteEvent event) {
-		registerRecipes();
 
 		itemRegistry = new ItemRegistry();
-
 		itemFilter = new ItemFilter(itemRegistry);
+
+		registerRecipes();
 	}
 
 	@SuppressWarnings("unchecked")
 	private void registerRecipes() {
 		JEIManager.recipeRegistry.addRecipes(CraftingManager.getInstance().getRecipeList());
 
-		List<FurnaceRecipe> furnaceRecipeList = FurnaceRecipeTransformer.getFurnaceRecipes(FurnaceRecipes.smelting());
+		List<SmeltingRecipe> smeltingRecipeList = SmeltingRecipeMaker.getFurnaceRecipes(FurnaceRecipes.smelting());
+		JEIManager.recipeRegistry.addRecipes(smeltingRecipeList);
 
-		JEIManager.recipeRegistry.addRecipes(furnaceRecipeList);
+		List<FuelRecipe> fuelRecipeList = FuelRecipeMaker.getFuelRecipes(itemRegistry.fuels);
+		JEIManager.recipeRegistry.addRecipes(fuelRecipeList);
 	}
 
 	@SubscribeEvent

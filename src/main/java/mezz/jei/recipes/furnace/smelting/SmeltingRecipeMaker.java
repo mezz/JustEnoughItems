@@ -1,4 +1,4 @@
-package mezz.jei.recipes.furnace;
+package mezz.jei.recipes.furnace.smelting;
 
 import mezz.jei.util.StackUtil;
 import net.minecraft.item.Item;
@@ -11,12 +11,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class FurnaceRecipeTransformer {
+public class SmeltingRecipeMaker {
 
-	public static List<FurnaceRecipe> getFurnaceRecipes(FurnaceRecipes furnaceRecipes) {
+	public static List<SmeltingRecipe> getFurnaceRecipes(FurnaceRecipes furnaceRecipes) {
 		Map<ItemStack, ItemStack> smeltingMap = getSmeltingMap(furnaceRecipes);
 
-		List<FurnaceRecipe> recipes = new ArrayList<FurnaceRecipe>();
+		List<SmeltingRecipe> recipes = new ArrayList<SmeltingRecipe>();
 
 		for (ItemStack input : smeltingMap.keySet()) {
 			ItemStack output = smeltingMap.get(input);
@@ -30,7 +30,7 @@ public class FurnaceRecipeTransformer {
 			} else {
 				inputs = Arrays.asList(input);
 			}
-			FurnaceRecipe recipe = new FurnaceRecipe(inputs, output, experience);
+			SmeltingRecipe recipe = new SmeltingRecipe(inputs, output, experience);
 			recipes.add(recipe);
 		}
 

@@ -15,3 +15,4 @@ config.jei.cheatItemsEnabled.description=/give items instead of showing the reci
 gui.jei.craftingTableRecipes=Crafting Table Recipes
 gui.jei.furnaceRecipes=Furnace Recipes
 gui.jei.furnaceExperience=%s Exp.
+gui.jei.furnaceBurnTime=Burn Time: %s

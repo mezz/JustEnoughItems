@@ -1,4 +1,4 @@
-package mezz.jei.recipes.furnace;
+package mezz.jei.recipes.furnace.smelting;
 
 import mezz.jei.api.recipes.IRecipeGui;
 import mezz.jei.api.recipes.IRecipeHelper;
@@ -9,10 +9,10 @@ import net.minecraft.item.ItemStack;
 import java.util.Arrays;
 import java.util.List;
 
-public class FurnaceRecipeHelper implements IRecipeHelper {
+public class SmeltingRecipeHelper implements IRecipeHelper {
 	@Override
 	public Class getRecipeClass() {
-		return FurnaceRecipe.class;
+		return SmeltingRecipe.class;
 	}
 
 	@Override
@@ -22,18 +22,18 @@ public class FurnaceRecipeHelper implements IRecipeHelper {
 
 	@Override
 	public IRecipeGui createGui() {
-		return new FurnaceRecipeGui();
+		return new SmeltingRecipeGui();
 	}
 
 	@Override
 	public List<ItemStack> getInputs(Object recipe) {
-		FurnaceRecipe furnaceRecipe = (FurnaceRecipe)recipe;
-		return furnaceRecipe.getInput();
+		SmeltingRecipe smeltingRecipe = (SmeltingRecipe)recipe;
+		return smeltingRecipe.getInput();
 	}
 
 	@Override
 	public List<ItemStack> getOutputs(Object recipe) {
-		FurnaceRecipe furnaceRecipe = (FurnaceRecipe)recipe;
-		return Arrays.asList(furnaceRecipe.getOutput());
+		SmeltingRecipe smeltingRecipe = (SmeltingRecipe)recipe;
+		return Arrays.asList(smeltingRecipe.getOutput());
 	}
 }

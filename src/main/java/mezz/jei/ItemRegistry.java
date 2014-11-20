@@ -7,15 +7,19 @@ import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntityFurnace;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ItemRegistry {
 
-	public final ArrayList<ItemStack> itemList = new ArrayList<ItemStack>();
-	public final HashSet<String> itemNameSet = new HashSet<String>();
+	public final List<ItemStack> itemList = new ArrayList<ItemStack>();
+	public final Set<String> itemNameSet = new HashSet<String>();
+
+	public final List<ItemStack> fuels = new ArrayList<ItemStack>();
 
 	public ItemRegistry() {
 
@@ -76,6 +80,10 @@ public class ItemRegistry {
 			return;
 		itemNameSet.add(itemKey);
 		itemList.add(stack);
+
+		if (TileEntityFurnace.isItemFuel(stack)) {
+			fuels.add(stack);
+		}
 	}
 
 	private String uniqueIdentifierForStack(ItemStack stack) {
