@@ -33,8 +33,8 @@ public class RecipesGui extends GuiScreen {
 	private Mode mode;
 
 	/* The ItemStack that is the focus of this GUI */
-	private ItemStack stack;
-	/* List of Recipe Types that involve "stack" */
+	private ItemStack focusStack;
+	/* List of Recipe Types that involve "focusStack" */
 	private List<IRecipeType> recipeTypes = new ArrayList<IRecipeType>();
 
 	/* List of IRecipeGuis to display */
@@ -176,7 +176,7 @@ public class RecipesGui extends GuiScreen {
 	private boolean setStack(ItemStack stack, Mode mode) {
 		if (stack == null)
 			return false;
-		if (this.stack != null && this.stack.equals(stack) && this.mode == mode)
+		if (this.focusStack != null && this.focusStack.equals(stack) && this.mode == mode)
 			return true;
 
 		switch (mode) {
@@ -192,7 +192,7 @@ public class RecipesGui extends GuiScreen {
 			return false;
 		}
 
-		this.stack = stack;
+		this.focusStack = stack;
 		this.mode = mode;
 		this.recipeTypeIndex = 0;
 		this.pageIndex = 0;
@@ -243,10 +243,10 @@ public class RecipesGui extends GuiScreen {
 
 		switch (mode) {
 			case INPUT:
-				recipes = JEIManager.recipeRegistry.getInputRecipes(recipeType, stack);
+				recipes = JEIManager.recipeRegistry.getInputRecipes(recipeType, focusStack);
 				break;
 			case OUTPUT:
-				recipes = JEIManager.recipeRegistry.getOutputRecipes(recipeType, stack);
+				recipes = JEIManager.recipeRegistry.getOutputRecipes(recipeType, focusStack);
 				break;
 		}
 		if (recipes == null) {
@@ -272,7 +272,7 @@ public class RecipesGui extends GuiScreen {
 			recipeGui.setPosition(posX, posY);
 			posY += recipeType.displayHeight() + recipeSpacing;
 
-			recipeGui.setRecipe(recipe, stack);
+			recipeGui.setRecipe(recipe, focusStack);
 			recipeGuis.add(recipeGui);
 		}
 

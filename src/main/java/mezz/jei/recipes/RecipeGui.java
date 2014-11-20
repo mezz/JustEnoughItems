@@ -36,10 +36,10 @@ public abstract class RecipeGui extends Gui implements IRecipeGui {
 	}
 
 	@Override
-	public void setRecipe(Object recipe, ItemStack itemStack) {
+	public void setRecipe(Object recipe, ItemStack focusStack) {
 		clearItems();
 		if (recipe != null) {
-			setItemsFromRecipe(recipe, itemStack);
+			setItemsFromRecipe(recipe, focusStack);
 			hasRecipe = true;
 		} else {
 			hasRecipe = false;

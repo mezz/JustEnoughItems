@@ -31,8 +31,8 @@ public class FurnaceRecipeGui extends RecipeGui {
 	}
 
 	@Override
-	public void setRecipe(Object recipe, ItemStack itemStack) {
-		super.setRecipe(recipe, itemStack);
+	public void setRecipe(Object recipe, ItemStack focusStack) {
+		super.setRecipe(recipe, focusStack);
 
 		FurnaceRecipe furnaceRecipe = (FurnaceRecipe)recipe;
 
