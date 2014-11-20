@@ -20,16 +20,16 @@ public class GuiItemStack implements IGuiItemStack {
 	public static final int baseHeight = 16;
 	private static final RenderItem itemRender = new RenderItem();
 
-	public final int width;
-	public final int height;
-	public final int padding;
+	private final int width;
+	private final int height;
+	private final int padding;
 	/* the amount of time in ms to display one itemStack before cycling to the next one */
 	protected final int cycleTime = 1000;
 
-	public int xPosition;
-	public int yPosition;
-	public boolean enabled;
-	public boolean visible;
+	private int xPosition;
+	private int yPosition;
+	private boolean enabled;
+	private boolean visible;
 
 	protected List<ItemStack> itemStacks = new ArrayList<ItemStack>();
 	protected long drawTime = 0;
@@ -50,6 +50,7 @@ public class GuiItemStack implements IGuiItemStack {
 		return baseHeight + (2 * padding);
 	}
 
+	@Override
 	public void setItemStacks(Object obj, ItemStack focusStack) {
 		if (obj == null) {
 			clearItemStacks();
@@ -65,6 +66,7 @@ public class GuiItemStack implements IGuiItemStack {
 		}
 	}
 
+	@Override
 	public void setItemStacks(Iterable itemStacksIn, ItemStack focusStack) {
 		List<ItemStack> itemStacks = StackUtil.getItemStacksRecursive(itemStacksIn);
 		ItemStack matchingItemStack = StackUtil.containsStack(itemStacks, focusStack);
@@ -75,20 +77,23 @@ public class GuiItemStack implements IGuiItemStack {
 		}
 	}
 
-	public void setItemStacks(Iterable itemStacks) {
+	private void setItemStacks(Iterable itemStacks) {
 		this.itemStacks = StackUtil.getItemStacksRecursive(itemStacks);
 		visible = enabled = !this.itemStacks.isEmpty();
 	}
 
+	@Override
 	public void setItemStack(ItemStack itemStack) {
 		setItemStacks(Arrays.asList(itemStack));
 	}
 
+	@Override
 	public void clearItemStacks() {
 		itemStacks = new ArrayList<ItemStack>();
 		visible = enabled = false;
 	}
 
+	@Override
 	public ItemStack getItemStack() {
 		if (itemStacks.isEmpty())
 			return null;
@@ -97,14 +102,17 @@ public class GuiItemStack implements IGuiItemStack {
 		return itemStacks.get(stackIndex);
 	}
 
+	@Override
 	public boolean isMouseOver(int mouseX, int mouseY) {
 		return enabled && visible && (mouseX >= xPosition) && (mouseY >= yPosition) && (mouseX < xPosition + width) && (mouseY < yPosition + height);
 	}
 
+	@Override
 	public void draw(Minecraft minecraft) {
 		draw(minecraft, true);
 	}
 
+	@Override
 	public void drawHovered(Minecraft minecraft, int mouseX, int mouseY) {
 		draw(minecraft, false);
 		minecraft.currentScreen.renderToolTip(getItemStack(), mouseX, mouseY);
