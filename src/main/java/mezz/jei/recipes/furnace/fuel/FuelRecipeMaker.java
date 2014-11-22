@@ -4,18 +4,22 @@ import mezz.jei.util.StackUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class FuelRecipeMaker {
 
-	public static List<FuelRecipe> getFuelRecipes(List<ItemStack> fuelStacks) {
+	@Nonnull
+	public static List<FuelRecipe> getFuelRecipes(@Nonnull List<ItemStack> fuelStacks) {
 		Set<String> oreDictNames = new HashSet<String>();
 		List<FuelRecipe> fuelRecipes = new ArrayList<FuelRecipe>(fuelStacks.size());
 		for (ItemStack fuelStack : fuelStacks) {
+			if (fuelStack == null)
+				continue;
+
 			int[] oreIDs = OreDictionary.getOreIDs(fuelStack);
 			if (oreIDs.length > 0) {
 				for (int oreID: oreIDs) {
@@ -25,12 +29,11 @@ public class FuelRecipeMaker {
 
 					oreDictNames.add(name);
 					List<ItemStack> oreDictFuels = OreDictionary.getOres(name);
-					oreDictFuels = StackUtil.getItemStacksRecursive(oreDictFuels);
+					oreDictFuels = StackUtil.getAllSubtypes(oreDictFuels);
 					fuelRecipes.add(new FuelRecipe(oreDictFuels));
 				}
 			} else {
-				List<ItemStack> fuels = Arrays.asList(fuelStack);
-				fuels = StackUtil.getItemStacksRecursive(fuels);
+				List<ItemStack> fuels = StackUtil.getSubtypes(fuelStack);
 				fuelRecipes.add(new FuelRecipe(fuels));
 			}
 		}

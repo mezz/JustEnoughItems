@@ -12,7 +12,7 @@ public abstract class FurnaceRecipeGui extends RecipeGui {
 	protected static final int fuelSlot = 1;
 	protected static final int outputSlot = 2;
 
-	public FurnaceRecipeGui() {
+	protected FurnaceRecipeGui() {
 		super(new DrawableRecipePng(RecipeType.FURNACE));
 
 		IGuiHelper guiHelper = JEIManager.guiHelper;

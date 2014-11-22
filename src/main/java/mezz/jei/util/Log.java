@@ -26,7 +26,7 @@ public class Log {
 		log(Level.ERROR, message, params);
 	}
 
-	public static void log(Level logLevel, String message, Object... params) {
+	private static void log(Level logLevel, String message, Object... params) {
 		LogManager.getLogger(Constants.MODID).log(logLevel, message, params);
 	}
 }

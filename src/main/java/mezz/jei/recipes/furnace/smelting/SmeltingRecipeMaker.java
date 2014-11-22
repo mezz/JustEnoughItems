@@ -1,35 +1,30 @@
 package mezz.jei.recipes.furnace.smelting;
 
 import mezz.jei.util.StackUtil;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
-import net.minecraftforge.oredict.OreDictionary;
 
+
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class SmeltingRecipeMaker {
 
-	public static List<SmeltingRecipe> getFurnaceRecipes(FurnaceRecipes furnaceRecipes) {
+	@Nonnull
+	public static List<SmeltingRecipe> getFurnaceRecipes(@Nonnull FurnaceRecipes furnaceRecipes) {
 		Map<ItemStack, ItemStack> smeltingMap = getSmeltingMap(furnaceRecipes);
 
 		List<SmeltingRecipe> recipes = new ArrayList<SmeltingRecipe>();
 
-		for (ItemStack input : smeltingMap.keySet()) {
-			ItemStack output = smeltingMap.get(input);
+		for (Map.Entry<ItemStack, ItemStack> itemStackItemStackEntry : smeltingMap.entrySet()) {
+			ItemStack input = itemStackItemStackEntry.getKey();
+			ItemStack output = itemStackItemStackEntry.getValue();
 
 			float experience = furnaceRecipes.func_151398_b(output);
 
-			List<ItemStack> inputs;
-			if (input.getItemDamage() == OreDictionary.WILDCARD_VALUE && input.getHasSubtypes()) {
-				Item item = input.getItem();
-				inputs = StackUtil.getSubItems(item);
-			} else {
-				inputs = Arrays.asList(input);
-			}
+			List<ItemStack> inputs = StackUtil.getSubtypes(input);
 			SmeltingRecipe recipe = new SmeltingRecipe(inputs, output, experience);
 			recipes.add(recipe);
 		}
@@ -38,7 +33,7 @@ public class SmeltingRecipeMaker {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Map<ItemStack, ItemStack> getSmeltingMap(FurnaceRecipes furnaceRecipes) {
+	private static Map<ItemStack, ItemStack> getSmeltingMap(@Nonnull FurnaceRecipes furnaceRecipes) {
 		return furnaceRecipes.getSmeltingList();
 	}
 }

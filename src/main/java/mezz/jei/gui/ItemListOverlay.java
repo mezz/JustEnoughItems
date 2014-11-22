@@ -20,6 +20,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import javax.annotation.Nonnull;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,35 +35,35 @@ public class ItemListOverlay {
 	private static final int maxSearchLength = 32;
 	private static int pageNum = 0;
 
-	protected int buttonHeight;
-	protected int rightEdge;
-	protected int leftEdge;
-	protected final ArrayList<GuiItemStack> guiItemStacks = new ArrayList<GuiItemStack>();
-	protected GuiButton nextButton;
-	protected GuiButton backButton;
-	protected GuiTextField searchField;
-	protected int pageCount;
+	private int buttonHeight;
+	private int rightEdge;
+	private int leftEdge;
+	private final ArrayList<GuiItemStack> guiItemStacks = new ArrayList<GuiItemStack>();
+	private GuiButton nextButton;
+	private GuiButton backButton;
+	private GuiTextField searchField;
+	private int pageCount;
 
-	protected String pageNumDisplayString;
-	protected int pageNumDisplayX;
-	protected int pageNumDisplayY;
+	private String pageNumDisplayString;
+	private int pageNumDisplayX;
+	private int pageNumDisplayY;
 
-	protected RecipesGui recipesGui;
+	private RecipesGui recipesGui;
 
-	protected GuiItemStack hovered = null;
+	private GuiItemStack hovered = null;
 
 	// properties of the gui we're beside
-	protected int guiLeft;
-	protected int guiTop;
-	protected int xSize;
-	protected int ySize;
-	protected int width;
-	protected int height;
+	private int guiLeft;
+	private int guiTop;
+	private int xSize;
+	private int ySize;
+	private int width;
+	private int height;
 
 	private boolean clickHandled = false;
 	private boolean overlayEnabled = true;
 
-	public void initGui(GuiContainer guiContainer, RecipesGui recipesGui) {
+	public void initGui(@Nonnull GuiContainer guiContainer, RecipesGui recipesGui) {
 		this.guiLeft = guiContainer.guiLeft;
 		this.guiTop = guiContainer.guiTop;
 		this.xSize = guiContainer.xSize;
@@ -134,7 +135,7 @@ public class ItemListOverlay {
 				itemButton.clearItemStacks();
 			} else {
 				ItemStack stack = itemList.get(i);
-				itemButton.setItemStacks(stack, null);
+				itemButton.setItemStack(stack);
 			}
 			i++;
 		}
@@ -155,14 +156,14 @@ public class ItemListOverlay {
 		}
 	}
 
-	public void nextPage() {
+	private void nextPage() {
 		if (pageNum == getPageCount() - 1)
 			setPageNum(0);
 		else
 			setPageNum(pageNum + 1);
 	}
 
-	public void backPage() {
+	private void backPage() {
 		if (pageNum == 0)
 			setPageNum(getPageCount() - 1);
 		else
@@ -186,7 +187,7 @@ public class ItemListOverlay {
 		}
 	}
 
-	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawScreen(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 		if (!overlayEnabled)
 			return;
 
@@ -201,11 +202,11 @@ public class ItemListOverlay {
 		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 	}
 
-	private void drawPageNumbers(FontRenderer fontRendererObj) {
+	private void drawPageNumbers(@Nonnull FontRenderer fontRendererObj) {
 		fontRendererObj.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(), true);
 	}
 
-	private void drawButtons(Minecraft minecraft, int mouseX, int mouseY) {
+	private void drawButtons(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 
 		nextButton.drawButton(minecraft, mouseX, mouseY);
 		backButton.drawButton(minecraft, mouseX, mouseY);
@@ -218,7 +219,7 @@ public class ItemListOverlay {
 		}
 	}
 
-	public void drawHovered(Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 		if (hovered != null) {
 			hovered.drawHovered(minecraft, mouseX, mouseY);
 			hovered = null;
@@ -238,7 +239,9 @@ public class ItemListOverlay {
 		} else {
 			for (GuiItemStack guiItemStack : guiItemStacks) {
 				if (guiItemStack.isMouseOver(mouseX, mouseY)) {
-					handleMouseClickedItemStack(mouseButton, guiItemStack.getItemStack());
+					ItemStack itemStack = guiItemStack.getItemStack();
+					if (itemStack != null)
+						handleMouseClickedItemStack(mouseButton, itemStack);
 				}
 			}
 		}
@@ -246,7 +249,7 @@ public class ItemListOverlay {
 		recipesGui.handleMouseInput();
 	}
 
-	private void handleMouseClickedItemStack(int mouseButton, ItemStack itemStack) {
+	private void handleMouseClickedItemStack(int mouseButton, @Nonnull ItemStack itemStack) {
 		EntityClientPlayerMP player = FMLClientHandler.instance().getClientPlayerEntity();
 		if (Config.cheatItemsEnabled && Permissions.canPlayerSpawnItems(player) && player.inventory.getFirstEmptyStack() != -1) {
 			if (mouseButton == 0) {
@@ -315,15 +318,15 @@ public class ItemListOverlay {
 			pageCount = 1;
 	}
 
-	protected int getPageCount() {
+	private int getPageCount() {
 		return pageCount;
 	}
 
-	protected int getPageNum() {
+	private int getPageNum() {
 		return pageNum;
 	}
 
-	protected void setPageNum(int pageNum) {
+	private void setPageNum(int pageNum) {
 		if (ItemListOverlay.pageNum == pageNum)
 			return;
 		ItemListOverlay.pageNum = pageNum;

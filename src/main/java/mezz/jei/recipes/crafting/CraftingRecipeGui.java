@@ -5,15 +5,19 @@ import mezz.jei.api.gui.IGuiHelper;
 import mezz.jei.api.recipes.RecipeType;
 import mezz.jei.gui.resource.DrawableRecipePng;
 import mezz.jei.recipes.RecipeGui;
+import mezz.jei.util.StackUtil;
 import net.minecraft.item.ItemStack;
 
-public abstract class CraftingRecipeGui extends RecipeGui {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
+
+abstract class CraftingRecipeGui extends RecipeGui {
 
 	private static final int craftOutputSlot = 0;
 	private static final int craftInputSlot1 = 1;
-	private static final int craftInputSlotCount = 9;
 
-	public CraftingRecipeGui() {
+	protected CraftingRecipeGui() {
 		super(new DrawableRecipePng(RecipeType.CRAFTING_TABLE));
 
 		IGuiHelper guiHelper = JEIManager.guiHelper;
@@ -25,11 +29,11 @@ public abstract class CraftingRecipeGui extends RecipeGui {
 				addItem(guiHelper.makeGuiItemStack(x * 18, y * 18, 1));
 	}
 
-	protected void setOutput(Object output) {
-		setItem(craftOutputSlot, output, null);
+	protected void setOutput(@Nonnull ItemStack output) {
+		setItem(craftOutputSlot, output);
 	}
 
-	protected void setInput(Object[] recipeItems, ItemStack focusStack, int width, int height) {
+	protected void setInput(@Nonnull Object[] recipeItems, @Nullable ItemStack focusStack, int width, int height) {
 		for (int i = 0; i < recipeItems.length; i++) {
 			Object recipeItem = recipeItems[i];
 			int index;
@@ -54,11 +58,21 @@ public abstract class CraftingRecipeGui extends RecipeGui {
 			} else {
 				index = i;
 			}
-			setInput(index, recipeItem, focusStack);
+
+			if (recipeItem instanceof ItemStack) {
+				setInput(index, (ItemStack) recipeItem);
+			} else if (recipeItem instanceof Iterable) {
+				List<ItemStack> itemStacks = StackUtil.getItemStacksRecursive((Iterable)recipeItem);
+				setInput(index, itemStacks, focusStack);
+			}
 		}
 	}
 
-	protected void setInput(int inputIndex, Object input, ItemStack focusStack) {
-		setItem(craftInputSlot1 + inputIndex, input, focusStack);
+	protected void setInput(int inputIndex, @Nonnull ItemStack itemStack) {
+		setItem(craftInputSlot1 + inputIndex, itemStack);
+	}
+
+	protected void setInput(int inputIndex, @Nonnull Iterable<ItemStack> input, @Nullable ItemStack focusStack) {
+		setItems(craftInputSlot1 + inputIndex, input, focusStack);
 	}
 }

@@ -6,6 +6,7 @@ import mezz.jei.api.recipes.IRecipeGui;
 import mezz.jei.api.recipes.IRecipeHelper;
 import mezz.jei.api.recipes.IRecipeType;
 import mezz.jei.config.Constants;
+import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -14,6 +15,8 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +38,15 @@ public class RecipesGui extends GuiScreen {
 	/* The ItemStack that is the focus of this GUI */
 	private ItemStack focusStack;
 	/* List of Recipe Types that involve "focusStack" */
+	@Nonnull
 	private List<IRecipeType> recipeTypes = new ArrayList<IRecipeType>();
 
 	/* List of IRecipeGuis to display */
+	@Nonnull
 	private final List<IRecipeGui> recipeGuis = new ArrayList<IRecipeGui>();
 
 	/* List of recipes for the currently selected recipeClass */
+	@Nonnull
 	private List<Object> recipes = new ArrayList<Object>();
 	private int recipesPerPage;
 
@@ -57,15 +63,12 @@ public class RecipesGui extends GuiScreen {
 	private ResourceLocation backgroundTexture;
 	private boolean visible = false;
 
-	protected int guiLeft;
-	protected int guiTop;
-	protected int xSize;
-	protected int ySize;
+	private int guiLeft;
+	private int guiTop;
+	private int xSize;
+	private int ySize;
 
-	public RecipesGui() {
-	}
-
-	public void initGui(Minecraft minecraft) {
+	public void initGui(@Nonnull Minecraft minecraft) {
 		setWorldAndResolution(minecraft, minecraft.currentScreen.width, minecraft.currentScreen.height);
 
 		this.xSize = 176;
@@ -134,17 +137,17 @@ public class RecipesGui extends GuiScreen {
 		}
 	}
 
-	public boolean mouseClickedStack(int mouseButton, ItemStack stack) {
+	public boolean mouseClickedStack(int mouseButton, @Nonnull ItemStack stack) {
 		if (mouseButton == 0) {
-			return setOutputStack(stack);
+			return setStack(stack, Mode.OUTPUT);
 		} else if (mouseButton == 1) {
-			return setInputStack(stack);
+			return setStack(stack, Mode.INPUT);
 		}
 		return false;
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton guibutton) {
+	protected void actionPerformed(@Nonnull GuiButton guibutton) {
 		super.actionPerformed(guibutton);
 
 		if (guibutton.id == nextPage.id)
@@ -165,15 +168,7 @@ public class RecipesGui extends GuiScreen {
 		return visible && recipes.size() > 0;
 	}
 
-	public boolean setInputStack(ItemStack stack) {
-		return setStack(stack, Mode.INPUT);
-	}
-
-	public boolean setOutputStack(ItemStack stack) {
-		return setStack(stack, Mode.OUTPUT);
-	}
-
-	private boolean setStack(ItemStack stack, Mode mode) {
+	private boolean setStack(@Nullable ItemStack stack, @Nonnull Mode mode) {
 		if (stack == null)
 			return false;
 		if (this.focusStack != null && this.focusStack.equals(stack) && this.mode == mode)
@@ -187,8 +182,7 @@ public class RecipesGui extends GuiScreen {
 				recipeTypes = JEIManager.recipeRegistry.getRecipeTypesForOutput(stack);
 				break;
 		}
-		if (recipeTypes == null) {
-			recipeTypes = new ArrayList<IRecipeType>();
+		if (recipeTypes.isEmpty()) {
 			return false;
 		}
 
@@ -201,27 +195,27 @@ public class RecipesGui extends GuiScreen {
 		return true;
 	}
 
-	public void nextRecipeType() {
+	private void nextRecipeType() {
 		int recipesTypesCount = recipeTypes.size();
 		recipeTypeIndex = (recipeTypeIndex + 1) % recipesTypesCount;
 		pageIndex = 0;
 		updateLayout();
 	}
 
-	public void previousRecipeType() {
+	private void previousRecipeType() {
 		int recipesTypesCount = recipeTypes.size();
 		recipeTypeIndex = (recipesTypesCount + recipeTypeIndex - 1) % recipesTypesCount;
 		pageIndex = 0;
 		updateLayout();
 	}
 
-	public void nextPage() {
+	private void nextPage() {
 		int pageCount = pageCount();
 		pageIndex = (pageIndex + 1) % pageCount;
 		updateLayout();
 	}
 
-	public void previousPage() {
+	private void previousPage() {
 		int pageCount = pageCount();
 		pageIndex = (pageCount + pageIndex - 1) % pageCount;
 		updateLayout();
@@ -230,7 +224,8 @@ public class RecipesGui extends GuiScreen {
 	private int pageCount() {
 		if (recipes.size() <= 1)
 			return 1;
-		return (int)Math.ceil(recipes.size() / (float)recipesPerPage);
+		Double pageCount = Math.ceil(recipes.size() / (float)recipesPerPage);
+		return pageCount.intValue();
 	}
 
 	private void updateLayout() {
@@ -249,9 +244,6 @@ public class RecipesGui extends GuiScreen {
 				recipes = JEIManager.recipeRegistry.getOutputRecipes(recipeType, focusStack);
 				break;
 		}
-		if (recipes == null) {
-			recipes = new ArrayList<Object>();
-		}
 
 		recipesPerPage = (ySize - headerHeight) / (recipeType.displayHeight() + borderPadding);
 		int recipeXOffset = (xSize - recipeType.displayWidth()) / 2;
@@ -268,6 +260,10 @@ public class RecipesGui extends GuiScreen {
 
 			Object recipe = recipes.get(recipeIndex);
 			IRecipeHelper recipeHelper = JEIManager.recipeRegistry.getRecipeHelper(recipe.getClass());
+			if (recipeHelper == null) {
+				Log.error("Couldn't find recipe helper for recipe: " + recipe);
+				continue;
+			}
 			IRecipeGui recipeGui = recipeHelper.createGui();
 			recipeGui.setPosition(posX, posY);
 			posY += recipeType.displayHeight() + recipeSpacing;
@@ -322,7 +318,7 @@ public class RecipesGui extends GuiScreen {
 		drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
 	}
 
-	protected void bindTexture(ResourceLocation texturePath) {
+	private void bindTexture(ResourceLocation texturePath) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		FMLClientHandler.instance().getClient().getTextureManager().bindTexture(texturePath);
 	}

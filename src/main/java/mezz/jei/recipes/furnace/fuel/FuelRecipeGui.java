@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.StatCollector;
 
+import javax.annotation.Nonnull;
 import java.awt.Color;
 
 public class FuelRecipeGui extends FurnaceRecipeGui {
@@ -22,13 +23,13 @@ public class FuelRecipeGui extends FurnaceRecipeGui {
 	}
 
 	@Override
-	protected void setItemsFromRecipe(Object recipe, ItemStack focusStack) {
+	protected void setItemsFromRecipe(@Nonnull Object recipe, ItemStack focusStack) {
 		FuelRecipe fuelRecipe = (FuelRecipe)recipe;
-		setItem(fuelSlot, fuelRecipe.getInput(), focusStack);
+		setItems(fuelSlot, fuelRecipe.getInput(), focusStack);
 	}
 
 	@Override
-	public void drawForeground(Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawForeground(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 		FontRenderer fontRendererObj = minecraft.fontRenderer;
 		fontRendererObj.drawString(burnTimeString, 20, 45, Color.gray.getRGB());
 		super.drawForeground(minecraft, mouseX, mouseY);

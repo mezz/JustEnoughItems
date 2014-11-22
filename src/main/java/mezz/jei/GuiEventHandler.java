@@ -12,13 +12,16 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.GuiScreenEvent;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public class GuiEventHandler {
 
-	private final ItemListOverlay itemListOverlay = new ItemListOverlay();
-	private final RecipesGui recipesGui = new RecipesGui();
+	@Nonnull private final ItemListOverlay itemListOverlay = new ItemListOverlay();
+	@Nonnull private final RecipesGui recipesGui = new RecipesGui();
 
 	@SubscribeEvent
-	public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
+	public void onGuiInit(@Nonnull GuiScreenEvent.InitGuiEvent.Post event) {
 		GuiContainer guiContainer = asGuiContainer(event.gui);
 		if (guiContainer == null)
 			return;
@@ -30,7 +33,7 @@ public class GuiEventHandler {
 	}
 
 	@SubscribeEvent
-	public void onDrawScreenEventPre(GuiScreenEvent.DrawScreenEvent.Pre event) {
+	public void onDrawScreenEventPre(@Nonnull GuiScreenEvent.DrawScreenEvent.Pre event) {
 		GuiContainer guiContainer = asGuiContainer(event.gui);
 		if (guiContainer == null)
 			return;
@@ -40,7 +43,7 @@ public class GuiEventHandler {
 	}
 
 	@SubscribeEvent
-	public void onDrawScreenEventPost(GuiScreenEvent.DrawScreenEvent.Post event) {
+	public void onDrawScreenEventPost(@Nonnull GuiScreenEvent.DrawScreenEvent.Post event) {
 		GuiContainer guiContainer = asGuiContainer(event.gui);
 		if (guiContainer == null)
 			return;
@@ -71,7 +74,7 @@ public class GuiEventHandler {
 	}
 
 	@SubscribeEvent
-	public void onClientTick(TickEvent.ClientTickEvent event) {
+	public void onClientTick(@Nonnull TickEvent.ClientTickEvent event) {
 		if (event.phase == TickEvent.Phase.END)
 			return;
 
@@ -82,6 +85,7 @@ public class GuiEventHandler {
 		itemListOverlay.handleTick();
 	}
 
+	@Nullable
 	private GuiContainer asGuiContainer(GuiScreen guiScreen) {
 		if (!(guiScreen instanceof GuiContainer) || (guiScreen instanceof GuiContainerCreative))
 			return null;

@@ -4,11 +4,13 @@ import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class ShapedOreRecipeGui extends CraftingRecipeGui {
 
 	@Override
-	protected void setItemsFromRecipe(Object recipe, ItemStack focusStack) {
+	protected void setItemsFromRecipe(@Nonnull Object recipe, @Nullable ItemStack focusStack) {
 		ShapedOreRecipe shapedOreRecipe = (ShapedOreRecipe)recipe;
 
 		int width;

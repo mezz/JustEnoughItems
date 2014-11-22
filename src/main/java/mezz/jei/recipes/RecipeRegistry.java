@@ -7,6 +7,9 @@ import mezz.jei.util.Log;
 import mezz.jei.util.StackUtil;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +20,14 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final RecipeMap recipeOutputMap = new RecipeMap();
 
 	@Override
-	public void registerRecipeHelpers(IRecipeHelper... recipeHelpers) {
+	public final void registerRecipeHelpers(@Nullable IRecipeHelper... recipeHelpers) {
+		if (recipeHelpers == null)
+			return;
+
 		for (IRecipeHelper recipeHelper : recipeHelpers) {
+			if (recipeHelper == null)
+				continue;
+
 			Class recipeClass = recipeHelper.getRecipeClass();
 
 			if (this.recipeHelpers.containsKey(recipeClass))
@@ -29,58 +38,77 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public void addRecipes(Iterable recipes) {
+	public void addRecipes(@Nullable Iterable recipes) {
+		if (recipes == null)
+			return;
+
 		for (Object recipe : recipes) {
+			if (recipe == null)
+				continue;
+
 			Class recipeClass = recipe.getClass();
 
 			IRecipeHelper recipeHelper = getRecipeHelper(recipeClass);
 			if (recipeHelper == null) {
-				Log.debug("Can't handle recipe: " + recipe.toString());
+				Log.debug("Can't handle recipe: " + recipe);
 				continue;
 			}
 			IRecipeType recipeType = recipeHelper.getRecipeType();
 
 			List<ItemStack> inputs = recipeHelper.getInputs(recipe);
-			inputs = StackUtil.removeDuplicateItemStacks(inputs);
+			if (inputs != null) {
+				inputs = StackUtil.getAllSubtypes(inputs);
+				recipeInputMap.addRecipe(recipe, recipeType, inputs);
+			}
 
 			List<ItemStack> outputs = recipeHelper.getOutputs(recipe);
-			outputs = StackUtil.removeDuplicateItemStacks(outputs);
-
-			recipeInputMap.addRecipe(recipe, recipeType, inputs);
-			recipeOutputMap.addRecipe(recipe, recipeType, outputs);
+			if (outputs != null) {
+				outputs = StackUtil.getAllSubtypes(outputs);
+				recipeOutputMap.addRecipe(recipe, recipeType, outputs);
+			}
 		}
 	}
 
+	@Nullable
 	@Override
-	public IRecipeHelper getRecipeHelper(Class recipeClass) {
-		IRecipeHelper recipeHelper = recipeHelpers.get(recipeClass);
-		if (recipeHelper != null)
-			return recipeHelper;
+	public IRecipeHelper getRecipeHelper(@Nonnull Class recipeClass) {
+		IRecipeHelper recipeHelper;
+		while ((recipeHelper = recipeHelpers.get(recipeClass)) == null && (recipeClass != Object.class)) {
+			recipeClass = recipeClass.getSuperclass();
+		}
 
-		Class superClass = recipeClass.getSuperclass();
-		if (superClass != null && superClass != Object.class)
-			return getRecipeHelper(superClass);
-
-		return null;
+		return recipeHelper;
 	}
 
+	@Nonnull
 	@Override
-	public List<IRecipeType> getRecipeTypesForInput(ItemStack input) {
+	public List<IRecipeType> getRecipeTypesForInput(@Nullable ItemStack input) {
+		if (input == null)
+			return Collections.emptyList();
 		return recipeInputMap.getRecipeTypes(input);
 	}
 
+	@Nonnull
 	@Override
-	public List<IRecipeType> getRecipeTypesForOutput(ItemStack output) {
+	public List<IRecipeType> getRecipeTypesForOutput(@Nullable ItemStack output) {
+		if (output == null)
+			return Collections.emptyList();
 		return recipeOutputMap.getRecipeTypes(output);
 	}
 
+	@Nonnull
 	@Override
-	public List<Object> getInputRecipes(IRecipeType recipeType, ItemStack input) {
+	public List<Object> getInputRecipes(@Nullable IRecipeType recipeType, @Nullable ItemStack input) {
+		if (recipeType == null || input == null)
+			return Collections.emptyList();
 		return recipeInputMap.getRecipes(recipeType, input);
 	}
 
+	@Nonnull
 	@Override
-	public List<Object> getOutputRecipes(IRecipeType recipeType, ItemStack output) {
+	public List<Object> getOutputRecipes(@Nullable IRecipeType recipeType, @Nullable ItemStack output) {
+		if (recipeType == null || output == null)
+			return Collections.emptyList();
 		return recipeOutputMap.getRecipes(recipeType, output);
 	}
 }

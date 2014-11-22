@@ -2,6 +2,7 @@ package mezz.jei.api.recipes;
 
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -19,9 +20,9 @@ public interface IRecipeHelper {
 	IRecipeGui createGui();
 
 	/* Returns all input ItemStacks for the recipe. */
-	List<ItemStack> getInputs(Object recipe);
+	List<ItemStack> getInputs(@Nonnull Object recipe);
 
 	/* Returns all output ItemStacks for the recipe. */
-	List<ItemStack> getOutputs(Object recipe);
+	List<ItemStack> getOutputs(@Nonnull Object recipe);
 
 }

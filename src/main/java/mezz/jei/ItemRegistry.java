@@ -8,7 +8,10 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraftforge.oredict.OreDictionary;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,13 +19,15 @@ import java.util.Set;
 
 public class ItemRegistry {
 
-	public final List<ItemStack> itemList = new ArrayList<ItemStack>();
-	public final Set<String> itemNameSet = new HashSet<String>();
+	@Nonnull
+	private final Set<String> itemNameSet = new HashSet<String>();
 
+	@Nonnull
+	public final List<ItemStack> itemList = new ArrayList<ItemStack>();
+	@Nonnull
 	public final List<ItemStack> fuels = new ArrayList<ItemStack>();
 
 	public ItemRegistry() {
-
 		for (Block block : GameData.getBlockRegistry().typeSafeIterable())
 			addBlockAndSubBlocks(block);
 
@@ -30,12 +35,21 @@ public class ItemRegistry {
 			addItemAndSubItems(item);
 	}
 
-	public void addItemAndSubItems(Item item) {
-		List<ItemStack> items = StackUtil.getSubItems(item);
-		addItemStacks(items);
+	private void addItemAndSubItems(@Nullable Item item) {
+		if (item == null)
+			return;
+
+		if (item.getHasSubtypes()) {
+			ItemStack itemStack = new ItemStack(item, 1, OreDictionary.WILDCARD_VALUE);
+			List<ItemStack> items = StackUtil.getSubtypes(itemStack);
+			addItemStacks(items);
+		} else {
+			ItemStack itemStack = new ItemStack(item);
+			addItemStack(itemStack);
+		}
 	}
 
-	public void addBlockAndSubBlocks(Block block) {
+	private void addBlockAndSubBlocks(@Nullable Block block) {
 		if (block == null)
 			return;
 
@@ -68,12 +82,14 @@ public class ItemRegistry {
 		}
 	}
 
-	public void addItemStacks(Iterable<ItemStack> stacks) {
-		for (ItemStack stack : stacks)
-			addItemStack(stack);
+	private void addItemStacks(@Nonnull Iterable<ItemStack> stacks) {
+		for (ItemStack stack : stacks) {
+			if (stack != null)
+				addItemStack(stack);
+		}
 	}
 
-	public void addItemStack(ItemStack stack) {
+	private void addItemStack(@Nonnull ItemStack stack) {
 		String itemKey = uniqueIdentifierForStack(stack);
 
 		if (itemNameSet.contains(itemKey))
@@ -86,12 +102,13 @@ public class ItemRegistry {
 		}
 	}
 
-	private String uniqueIdentifierForStack(ItemStack stack) {
+	@Nonnull
+	private String uniqueIdentifierForStack(@Nonnull ItemStack stack) {
 		int id = GameData.getItemRegistry().getId(stack.getItem());
 		StringBuilder itemKey = new StringBuilder();
 		itemKey.append(id).append(":").append(stack.getItemDamage());
 		if (stack.hasTagCompound())
-			itemKey.append(":").append(stack.getTagCompound().toString());
+			itemKey.append(":").append(stack.getTagCompound());
 		return itemKey.toString();
 	}
 

@@ -5,23 +5,25 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.config.Configuration;
 
+import javax.annotation.Nonnull;
+
 public class Config {
 	public static Configuration configFile;
 
 	public static boolean cheatItemsEnabled = false;
 
-	public static void preInit(FMLPreInitializationEvent event) {
+	public static void preInit(@Nonnull FMLPreInitializationEvent event) {
 		configFile = new Configuration(event.getSuggestedConfigurationFile());
 
 		syncConfig();
 	}
 
-	public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
+	public static void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
 		if(eventArgs.modID.equals(Constants.MODID))
 			syncConfig();
 	}
 
-	public static void syncConfig() {
+	private static void syncConfig() {
 		String cheatItemsEnabledDescription = StatCollector.translateToLocal("config.jei.cheatItemsEnabled.description");
 		cheatItemsEnabled = configFile.getBoolean("config.jei.cheatItemsEnabled", Configuration.CATEGORY_GENERAL, cheatItemsEnabled, cheatItemsEnabledDescription);
 

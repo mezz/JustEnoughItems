@@ -3,6 +3,9 @@ package mezz.jei.api.recipes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * An IRecipeGui draws a representation of a single Recipe.
  * It draws tooltips and any necessary animations, but does not handle user navigation.
@@ -10,7 +13,7 @@ import net.minecraft.item.ItemStack;
 public interface IRecipeGui {
 
 	/* Set the recipe to display and the ItemStack in focus. */
-	void setRecipe(Object recipe, ItemStack focusStack);
+	void setRecipe(@Nullable Object recipe, @Nullable ItemStack focusStack);
 
 	/* Returns true if its recipe is not null. */
 	boolean hasRecipe();
@@ -22,6 +25,6 @@ public interface IRecipeGui {
 	void setPosition(int posX, int posY);
 
 	/* Draw the recipe. */
-	void draw(Minecraft minecraft, int mouseX, int mouseY);
+	void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY);
 
 }

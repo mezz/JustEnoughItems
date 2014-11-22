@@ -5,19 +5,19 @@ import mezz.jei.config.Constants;
 import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
 
-public class KeyBindings {
+import javax.annotation.Nonnull;
 
-	public static KeyBinding toggleOverlay;
-	public static KeyBinding showRecipe;
-	public static KeyBinding showUses;
+public class KeyBindings {
+	private static final String categoryName = Constants.MODID + " (" + Constants.NAME + ")";
+
+	@Nonnull
+	public static final KeyBinding toggleOverlay = new KeyBinding("key.jei.toggleOverlay", Keyboard.KEY_O, categoryName);
+	@Nonnull
+	public static final KeyBinding showRecipe = new KeyBinding("key.jei.showRecipe", Keyboard.KEY_R, categoryName);
+	@Nonnull
+	public static final KeyBinding showUses = new KeyBinding("key.jei.showUses", Keyboard.KEY_U, categoryName);
 
 	public static void init() {
-		String categoryName = Constants.MODID + " (" + Constants.NAME + ")";
-
-		toggleOverlay = new KeyBinding("key.jei.toggleOverlay", Keyboard.KEY_O, categoryName);
-		showRecipe = new KeyBinding("key.jei.showRecipe", Keyboard.KEY_R, categoryName);
-		showUses = new KeyBinding("key.jei.showUses", Keyboard.KEY_U, categoryName);
-
 		ClientRegistry.registerKeyBinding(toggleOverlay);
 		ClientRegistry.registerKeyBinding(showRecipe);
 		ClientRegistry.registerKeyBinding(showUses);

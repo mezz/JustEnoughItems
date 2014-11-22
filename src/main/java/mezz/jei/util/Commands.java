@@ -6,22 +6,23 @@ import net.minecraft.command.CommandGive;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 
 public class Commands {
 
-	public static void giveFullStack(ItemStack itemstack) {
+	public static void giveFullStack(@Nonnull ItemStack itemstack) {
 		giveStack(itemstack, itemstack.getMaxStackSize());
 	}
 
-	public static void giveOneFromStack(ItemStack itemstack) {
+	public static void giveOneFromStack(@Nonnull ItemStack itemstack) {
 		giveStack(itemstack, 1);
 	}
 
 	/**
 	 * give <player> <item> [amount] [data] [dataTag]
 	 */
-	public static void giveStack(ItemStack itemStack, int amount) {
+	public static void giveStack(@Nonnull ItemStack itemStack, int amount) {
 		EntityClientPlayerMP sender = Minecraft.getMinecraft().thePlayer;
 		String senderName = sender.getCommandSenderName();
 

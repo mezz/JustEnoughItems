@@ -6,34 +6,41 @@ import mezz.jei.api.recipes.IRecipeType;
 import mezz.jei.api.recipes.RecipeType;
 import net.minecraft.item.ItemStack;
 
-import java.util.Arrays;
+
+import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 
 public class SmeltingRecipeHelper implements IRecipeHelper {
+	@Nonnull
 	@Override
 	public Class getRecipeClass() {
 		return SmeltingRecipe.class;
 	}
 
+	@Nonnull
 	@Override
 	public IRecipeType getRecipeType() {
 		return RecipeType.FURNACE;
 	}
 
+	@Nonnull
 	@Override
 	public IRecipeGui createGui() {
 		return new SmeltingRecipeGui();
 	}
 
+	@Nonnull
 	@Override
-	public List<ItemStack> getInputs(Object recipe) {
+	public List<ItemStack> getInputs(@Nonnull Object recipe) {
 		SmeltingRecipe smeltingRecipe = (SmeltingRecipe)recipe;
 		return smeltingRecipe.getInput();
 	}
 
+	@Nonnull
 	@Override
-	public List<ItemStack> getOutputs(Object recipe) {
+	public List<ItemStack> getOutputs(@Nonnull Object recipe) {
 		SmeltingRecipe smeltingRecipe = (SmeltingRecipe)recipe;
-		return Arrays.asList(smeltingRecipe.getOutput());
+		return Collections.singletonList(smeltingRecipe.getOutput());
 	}
 }

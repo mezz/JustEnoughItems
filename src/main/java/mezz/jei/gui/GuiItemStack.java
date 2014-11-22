@@ -10,29 +10,30 @@ import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class GuiItemStack implements IGuiItemStack {
 
-	public static final int baseWidth = 16;
-	public static final int baseHeight = 16;
+	private static final int baseWidth = 16;
+	private static final int baseHeight = 16;
 	private static final RenderItem itemRender = new RenderItem();
 
 	private final int width;
 	private final int height;
 	private final int padding;
 	/* the amount of time in ms to display one itemStack before cycling to the next one */
-	protected final int cycleTime = 1000;
+	private final int cycleTime = 1000;
 
 	private int xPosition;
 	private int yPosition;
 	private boolean enabled;
 	private boolean visible;
 
-	protected List<ItemStack> itemStacks = new ArrayList<ItemStack>();
-	protected long drawTime = 0;
+	@Nonnull
+	private List<ItemStack> itemStacks = new ArrayList<ItemStack>();
+	private long drawTime = 0;
 
 	public GuiItemStack(int xPosition, int yPosition, int padding) {
 		this.xPosition = xPosition;
@@ -51,24 +52,8 @@ public class GuiItemStack implements IGuiItemStack {
 	}
 
 	@Override
-	public void setItemStacks(Object obj, ItemStack focusStack) {
-		if (obj == null) {
-			clearItemStacks();
-		}
-		else if (obj instanceof ItemStack) {
-			setItemStack((ItemStack) obj);
-		}
-		else if (obj instanceof Iterable) {
-			setItemStacks((Iterable)obj, focusStack);
-		}
-		else {
-			throw new IllegalArgumentException("Tried to set something other than an ItemStack or list of ItemStacks: " + obj);
-		}
-	}
-
-	@Override
-	public void setItemStacks(Iterable itemStacksIn, ItemStack focusStack) {
-		List<ItemStack> itemStacks = StackUtil.getItemStacksRecursive(itemStacksIn);
+	public void setItemStacks(@Nonnull Iterable<ItemStack> itemStacksIn, ItemStack focusStack) {
+		List<ItemStack> itemStacks = StackUtil.getAllSubtypes(itemStacksIn);
 		ItemStack matchingItemStack = StackUtil.containsStack(itemStacks, focusStack);
 		if (matchingItemStack != null) {
 			setItemStack(matchingItemStack);
@@ -77,19 +62,20 @@ public class GuiItemStack implements IGuiItemStack {
 		}
 	}
 
-	private void setItemStacks(Iterable itemStacks) {
-		this.itemStacks = StackUtil.getItemStacksRecursive(itemStacks);
+	private void setItemStacks(@Nonnull Iterable<ItemStack> itemStacks) {
+		this.itemStacks = StackUtil.getAllSubtypes(itemStacks);
 		visible = enabled = !this.itemStacks.isEmpty();
 	}
 
 	@Override
-	public void setItemStack(ItemStack itemStack) {
-		setItemStacks(Arrays.asList(itemStack));
+	public void setItemStack(@Nonnull ItemStack itemStack) {
+		List<ItemStack> itemStacks = StackUtil.getSubtypes(itemStack);
+		setItemStacks(itemStacks);
 	}
 
 	@Override
 	public void clearItemStacks() {
-		itemStacks = new ArrayList<ItemStack>();
+		itemStacks.clear();
 		visible = enabled = false;
 	}
 
@@ -98,8 +84,8 @@ public class GuiItemStack implements IGuiItemStack {
 		if (itemStacks.isEmpty())
 			return null;
 
-		int stackIndex = (int)((drawTime / cycleTime) % itemStacks.size());
-		return itemStacks.get(stackIndex);
+		Long stackIndex = (drawTime / cycleTime) % itemStacks.size();
+		return itemStacks.get(stackIndex.intValue());
 	}
 
 	@Override
@@ -108,14 +94,17 @@ public class GuiItemStack implements IGuiItemStack {
 	}
 
 	@Override
-	public void draw(Minecraft minecraft) {
+	public void draw(@Nonnull Minecraft minecraft) {
 		draw(minecraft, true);
 	}
 
 	@Override
-	public void drawHovered(Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+		ItemStack itemStack = getItemStack();
+		if (itemStack == null)
+			return;
 		draw(minecraft, false);
-		minecraft.currentScreen.renderToolTip(getItemStack(), mouseX, mouseY);
+		minecraft.currentScreen.renderToolTip(itemStack, mouseX, mouseY);
 		RenderHelper.disableStandardItemLighting();
 	}
 
@@ -127,6 +116,9 @@ public class GuiItemStack implements IGuiItemStack {
 			drawTime = System.currentTimeMillis();
 
 		ItemStack itemStack = getItemStack();
+		if (itemStack == null)
+			return;
+
 		FontRenderer font = itemStack.getItem().getFontRenderer(itemStack);
 		if (font == null)
 			font = minecraft.fontRenderer;

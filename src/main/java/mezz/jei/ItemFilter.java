@@ -4,6 +4,7 @@ import mezz.jei.util.HashMapCache;
 import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -12,30 +13,27 @@ import java.util.List;
 public class ItemFilter {
 	private static final int cacheSize = 16;
 
+	@Nonnull
 	private String filterText = "";
 
-	/**
-	 * The filter map for when there is no filter. Maps itemStack names to itemStacks
- 	 */
+	/** The filter map for when there is no filter. Maps itemStack names to itemStacks */
 	private final LinkedHashMap<String, ItemStack> unfilteredItemMap = new LinkedHashMap<String, ItemStack>();
 
-	/**
-	 * The currently active filter map. Maps itemStack names to itemStacks
-	 */
+	/** The currently active filter map. Maps itemStack names to itemStacks */
+	@Nonnull
 	private LinkedHashMap<String, ItemStack> filteredItemMap = unfilteredItemMap;
 
-	/**
-	 * A cache for fast searches while typing or using backspace. Maps filterText to filteredItemMaps
-	 */
+	/** A cache for fast searches while typing or using backspace. Maps filterText to filteredItemMaps */
 	private final HashMapCache<String, LinkedHashMap<String, ItemStack>> filteredItemMapsCache = new HashMapCache<String, LinkedHashMap<String, ItemStack>>(cacheSize);
 
-	/**
-	 * A cache for for fast getItemList(). Maps filterText to itemList
-	 */
+	/** A cache for for fast getItemList(). Maps filterText to itemList */
 	private final HashMapCache<String, List<ItemStack>> itemListsCache = new HashMapCache<String, List<ItemStack>>(cacheSize);
 
-	public ItemFilter(final ItemRegistry registry) {
+	public void init(@Nonnull ItemRegistry registry) {
 		for (ItemStack itemStack : registry.itemList) {
+			if (itemStack == null)
+				continue;
+
 			try {
 				unfilteredItemMap.put(itemStack.getDisplayName().toLowerCase(), itemStack);
 			} catch (RuntimeException e) {
@@ -45,7 +43,7 @@ public class ItemFilter {
 		setFilterText(filterText);
 	}
 
-	public boolean setFilterText(String filterText) {
+	public boolean setFilterText(@Nonnull String filterText) {
 		filterText = filterText.toLowerCase();
 		if (this.filterText.equals(filterText))
 			return false;
@@ -55,11 +53,13 @@ public class ItemFilter {
 		return true;
 	}
 
+	@Nonnull
 	public String getFilterText() {
 		return filterText;
 	}
 
-	private LinkedHashMap<String, ItemStack> getFilteredItemMap(String filterText) {
+	@Nonnull
+	private LinkedHashMap<String, ItemStack> getFilteredItemMap(@Nonnull String filterText) {
 		if (filterText.isEmpty())
 			return unfilteredItemMap;
 
@@ -71,17 +71,14 @@ public class ItemFilter {
 		// For example, the "ir" and "iro" filters are supersets of the "iron" filter.
 		String longestExistingFilterText = "";
 		for (String existingFilterText : filteredItemMapsCache.keySet()) {
+			if (existingFilterText == null)
+				continue;
 			if (filterText.startsWith(existingFilterText) && (existingFilterText.length() > longestExistingFilterText.length())) {
 				longestExistingFilterText = existingFilterText;
 			}
 		}
 
-		LinkedHashMap<String, ItemStack> baseItemMap;
-		if (longestExistingFilterText.equals("")) {
-			baseItemMap = unfilteredItemMap;
-		} else {
-			baseItemMap = filteredItemMapsCache.get(longestExistingFilterText);
-		}
+		LinkedHashMap<String, ItemStack> baseItemMap = getFilteredItemMap(longestExistingFilterText);
 		LinkedHashMap<String, ItemStack> filteredItemMap = new LinkedHashMap<String, ItemStack>(baseItemMap);
 
 		for (Iterator<String> iterator = filteredItemMap.keySet().iterator(); iterator.hasNext();) {
@@ -96,6 +93,7 @@ public class ItemFilter {
 		return filteredItemMap;
 	}
 
+	@Nonnull
 	public List<ItemStack> getItemList() {
 		List<ItemStack> itemList = itemListsCache.get(filterText);
 		if (itemList == null) {

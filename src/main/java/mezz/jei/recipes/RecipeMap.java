@@ -4,6 +4,7 @@ import cpw.mods.fml.common.registry.GameData;
 import mezz.jei.api.recipes.IRecipeType;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,15 +13,19 @@ import java.util.Map;
 /**
  * A RecipeMap efficiently links Recipes, IRecipeTypes, and ItemStacks.
  */
-public class RecipeMap {
+class RecipeMap {
 
+	@Nonnull
 	private final Map<IRecipeType, RecipesForStack> recipeMap = new HashMap<IRecipeType, RecipesForStack>();
+	@Nonnull
 	private final Map<String, List<IRecipeType>> typeMap = new HashMap<String, List<IRecipeType>>();
 
-	private static String asKey(ItemStack itemstack) {
+	@Nonnull
+	private static String asKey(@Nonnull ItemStack itemstack) {
 		return itemstack.getUnlocalizedName() + ":" + GameData.getItemRegistry().getId(itemstack.getItem());
 	}
 
+	@Nonnull
 	private RecipesForStack getRecipesForType(IRecipeType recipeType) {
 		RecipesForStack recipesForStack = recipeMap.get(recipeType);
 		if (recipesForStack == null) {
@@ -30,7 +35,8 @@ public class RecipeMap {
 		return recipesForStack;
 	}
 
-	public List<IRecipeType> getRecipeTypes(ItemStack itemStack) {
+	@Nonnull
+	public List<IRecipeType> getRecipeTypes(@Nonnull ItemStack itemStack) {
 		String stackKey = asKey(itemStack);
 		List<IRecipeType> recipeTypes = typeMap.get(stackKey);
 		if (recipeTypes == null) {
@@ -40,19 +46,18 @@ public class RecipeMap {
 		return recipeTypes;
 	}
 
-	public List<Object> getRecipes(IRecipeType recipeType, ItemStack stack) {
+	@Nonnull
+	public List<Object> getRecipes(@Nonnull IRecipeType recipeType, @Nonnull ItemStack stack) {
 		RecipesForStack recipesForType = getRecipesForType(recipeType);
-		List<Object> recipeInputList = recipesForType.getRecipes(stack);
-		if (recipeInputList == null) {
-			recipeInputList = new ArrayList<Object>();
-			recipesForType.addRecipes(stack, recipeInputList);
-		}
-		return recipeInputList;
+		return recipesForType.getRecipes(stack);
 	}
 
-	public void addRecipe(Object recipe, IRecipeType recipeType, List<ItemStack> itemStacks) {
+	public void addRecipe(@Nonnull Object recipe, @Nonnull IRecipeType recipeType, @Nonnull List<ItemStack> itemStacks) {
 		RecipesForStack recipesForType = getRecipesForType(recipeType);
 		for (ItemStack itemStack : itemStacks) {
+			if (itemStack == null)
+				continue;
+
 			recipesForType.getRecipes(itemStack).add(recipe);
 
 			List<IRecipeType> recipeTypes = getRecipeTypes(itemStack);
@@ -62,9 +67,11 @@ public class RecipeMap {
 	}
 
 	private class RecipesForStack {
+		@Nonnull
 		private final Map<String, List<Object>> map = new HashMap<String, List<Object>>();
 
-		public List<Object> getRecipes(ItemStack itemStack) {
+		@Nonnull
+		public List<Object> getRecipes(@Nonnull ItemStack itemStack) {
 			String stackKey = asKey(itemStack);
 			List<Object> recipeInputList = map.get(stackKey);
 			if (recipeInputList == null) {
@@ -74,7 +81,7 @@ public class RecipeMap {
 			return recipeInputList;
 		}
 
-		public void addRecipes(ItemStack itemStack, List<Object> recipes) {
+		public void addRecipes(@Nonnull ItemStack itemStack, List<Object> recipes) {
 			String stackKey = asKey(itemStack);
 			map.put(stackKey, recipes);
 		}

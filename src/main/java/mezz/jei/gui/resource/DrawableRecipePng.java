@@ -5,12 +5,14 @@ import mezz.jei.config.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nonnull;
+
 /** Helps working with the compound texture recipes.png */
 public class DrawableRecipePng implements IDrawable {
 
 	private DrawableResource resource;
 
-	public DrawableRecipePng(RecipeType recipeType) {
+	public DrawableRecipePng(@Nonnull RecipeType recipeType) {
 		int u = 0;
 		int v = 0;
 
@@ -28,7 +30,7 @@ public class DrawableRecipePng implements IDrawable {
 	}
 
 	@Override
-	public void draw(Minecraft minecraft, int x, int y) {
+	public void draw(@Nonnull Minecraft minecraft, int x, int y) {
 		resource.draw(minecraft, x, y);
 	}
 }

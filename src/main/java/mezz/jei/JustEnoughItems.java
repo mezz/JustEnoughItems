@@ -27,6 +27,7 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraftforge.common.MinecraftForge;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 @Mod(modid = Constants.MODID,
@@ -38,17 +39,18 @@ public class JustEnoughItems {
 	@Mod.Instance(Constants.MODID)
 	public static JustEnoughItems instance;
 
-	public static ItemRegistry itemRegistry;
-
+	@Nonnull
 	public static ItemFilter itemFilter;
 
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent event) {
-		Config.preInit(event);
-
+	public JustEnoughItems() {
+		itemFilter = new ItemFilter();
 		JEIManager.guiHelper = new GuiHelper();
-
 		JEIManager.recipeRegistry = new RecipeRegistry();
+	}
+
+	@EventHandler
+	public void preInit(@Nonnull FMLPreInitializationEvent event) {
+		Config.preInit(event);
 
 		JEIManager.recipeRegistry.registerRecipeHelpers(
 				new ShapedRecipesHelper(),
@@ -73,15 +75,10 @@ public class JustEnoughItems {
 
 	@EventHandler
 	public void loadComplete(FMLLoadCompleteEvent event) {
+		ItemRegistry itemRegistry = new ItemRegistry();
 
-		itemRegistry = new ItemRegistry();
-		itemFilter = new ItemFilter(itemRegistry);
+		itemFilter.init(itemRegistry);
 
-		registerRecipes();
-	}
-
-	@SuppressWarnings("unchecked")
-	private void registerRecipes() {
 		JEIManager.recipeRegistry.addRecipes(CraftingManager.getInstance().getRecipeList());
 
 		List<SmeltingRecipe> smeltingRecipeList = SmeltingRecipeMaker.getFurnaceRecipes(FurnaceRecipes.smelting());
@@ -92,7 +89,7 @@ public class JustEnoughItems {
 	}
 
 	@SubscribeEvent
-	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
+	public void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
 		Config.onConfigChanged(eventArgs);
 	}
 }

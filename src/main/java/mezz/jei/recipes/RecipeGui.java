@@ -8,19 +8,23 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 public abstract class RecipeGui extends Gui implements IRecipeGui {
 
+	@Nonnull
 	private final IDrawable background;
 
 	private int posX;
 	private int posY;
 	private boolean hasRecipe;
 
+	@Nonnull
 	private final ArrayList<IGuiItemStack> items = new ArrayList<IGuiItemStack>();
 
-	public RecipeGui(IDrawable background) {
+	protected RecipeGui(@Nonnull IDrawable background) {
 		this.background = background;
 	}
 
@@ -46,14 +50,18 @@ public abstract class RecipeGui extends Gui implements IRecipeGui {
 		}
 	}
 
-	abstract protected void setItemsFromRecipe(Object recipe, ItemStack focusStack);
+	abstract protected void setItemsFromRecipe(@Nonnull Object recipe, @Nullable ItemStack focusStack);
 
-	protected void addItem(IGuiItemStack guiItemStack) {
+	protected void addItem(@Nonnull IGuiItemStack guiItemStack) {
 		items.add(guiItemStack);
 	}
 
-	protected void setItem(int index, Object item, ItemStack focusStack) {
-		items.get(index).setItemStacks(item, focusStack);
+	protected void setItems(int index, @Nonnull Iterable<ItemStack> itemStacks, @Nullable ItemStack focusStack) {
+		this.items.get(index).setItemStacks(itemStacks, focusStack);
+	}
+
+	protected void setItem(int index, @Nonnull ItemStack item) {
+		items.get(index).setItemStack(item);
 	}
 
 	protected void clearItems() {
@@ -62,20 +70,21 @@ public abstract class RecipeGui extends Gui implements IRecipeGui {
 		}
 	}
 
+	@Nullable
 	@Override
 	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
 		mouseX -= posX;
 		mouseY -= posY;
 
 		for (IGuiItemStack item : items) {
-			if (item.isMouseOver(mouseX, mouseY))
+			if (item != null && item.isMouseOver(mouseX, mouseY))
 				return item.getItemStack();
 		}
 		return null;
 	}
 
 	@Override
-	public final void draw(Minecraft minecraft, int mouseX, int mouseY) {
+	public final void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 		GL11.glPushMatrix();
 		GL11.glTranslatef(posX, posY, 0.0F);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -89,11 +98,11 @@ public abstract class RecipeGui extends Gui implements IRecipeGui {
 		GL11.glPopMatrix();
 	}
 
-	public void drawBackground(Minecraft minecraft, int mouseX, int mouseY) {
+	protected void drawBackground(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 		background.draw(minecraft, 0, 0);
 	}
 
-	public void drawForeground(Minecraft minecraft, int mouseX, int mouseY) {
+	protected void drawForeground(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 		IGuiItemStack hovered = null;
 		for (IGuiItemStack item : items) {
 			if (hovered == null && item.isMouseOver(mouseX, mouseY))
