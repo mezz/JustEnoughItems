@@ -2,23 +2,32 @@ package mezz.jei.recipes.crafting;
 
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IGuiHelper;
+import mezz.jei.api.recipes.IRecipeType;
 import mezz.jei.api.recipes.RecipeType;
-import mezz.jei.gui.resource.DrawableRecipePng;
+import mezz.jei.gui.resource.DrawableResource;
+import mezz.jei.gui.resource.IDrawable;
 import mezz.jei.recipes.RecipeGui;
 import mezz.jei.util.StackUtil;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-abstract class CraftingRecipeGui extends RecipeGui {
+public abstract class CraftingRecipeGui extends RecipeGui {
 
 	private static final int craftOutputSlot = 0;
 	private static final int craftInputSlot1 = 1;
 
+	private static IDrawable getBackground() {
+		ResourceLocation location = new ResourceLocation("minecraft:textures/gui/container/crafting_table.png");
+		IRecipeType type = RecipeType.CRAFTING_TABLE;
+		return new DrawableResource(location, 29, 16, type.displayWidth(), type.displayHeight());
+	}
+
 	protected CraftingRecipeGui() {
-		super(new DrawableRecipePng(RecipeType.CRAFTING_TABLE));
+		super(getBackground());
 
 		IGuiHelper guiHelper = JEIManager.guiHelper;
 
