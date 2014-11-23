@@ -9,30 +9,26 @@ import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.StatCollector;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.Color;
 
 public class FuelRecipeGui extends FurnaceRecipeGui {
 
+	@Nonnull
 	private String burnTimeString;
 
 	@Override
-	public void setRecipe(Object recipe, ItemStack focusStack) {
-		super.setRecipe(recipe, focusStack);
+	public void setGuiItemStacks(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull Object recipe, @Nullable ItemStack focusStack) {
+		FuelRecipe fuelRecipe = (FuelRecipe)recipe;
+		guiItemStacks.setItemStack(fuelSlot, fuelRecipe.getInput(), focusStack);
 
 		int burnTime = TileEntityFurnace.getItemBurnTime(focusStack);
 		this.burnTimeString = StatCollector.translateToLocalFormatted("gui.jei.furnaceBurnTime", burnTime);
 	}
 
 	@Override
-	protected void setItemsFromRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull Object recipe, ItemStack focusStack) {
-		FuelRecipe fuelRecipe = (FuelRecipe)recipe;
-		guiItemStacks.setItemStack(fuelSlot, fuelRecipe.getInput(), focusStack);
-	}
-
-	@Override
-	public void drawForeground(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+	public void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 		FontRenderer fontRendererObj = minecraft.fontRenderer;
 		fontRendererObj.drawString(burnTimeString, 20, 45, Color.gray.getRGB());
-		super.drawForeground(minecraft, mouseX, mouseY);
 	}
 }

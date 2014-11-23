@@ -1,6 +1,6 @@
 package mezz.jei.recipes.crafting;
 
-import mezz.jei.api.recipes.IRecipeGui;
+import mezz.jei.api.recipes.IRecipeGuiHelper;
 import mezz.jei.api.recipes.IRecipeHelper;
 import mezz.jei.api.recipes.IRecipeType;
 import mezz.jei.api.recipes.RecipeType;
@@ -28,7 +28,7 @@ public class ShapedRecipesHelper implements IRecipeHelper {
 
 	@Nonnull
 	@Override
-	public IRecipeGui createGui() {
+	public IRecipeGuiHelper createGuiHelper() {
 		return new ShapedRecipesGui();
 	}
 

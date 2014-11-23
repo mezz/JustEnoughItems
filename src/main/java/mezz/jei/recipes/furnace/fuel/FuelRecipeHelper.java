@@ -1,6 +1,6 @@
 package mezz.jei.recipes.furnace.fuel;
 
-import mezz.jei.api.recipes.IRecipeGui;
+import mezz.jei.api.recipes.IRecipeGuiHelper;
 import mezz.jei.api.recipes.IRecipeHelper;
 import mezz.jei.api.recipes.IRecipeType;
 import mezz.jei.api.recipes.RecipeType;
@@ -25,7 +25,7 @@ public class FuelRecipeHelper implements IRecipeHelper {
 
 	@Nonnull
 	@Override
-	public IRecipeGui createGui() {
+	public IRecipeGuiHelper createGuiHelper() {
 		return new FuelRecipeGui();
 	}
 

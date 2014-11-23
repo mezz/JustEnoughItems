@@ -27,8 +27,8 @@ public class GuiItemStacks implements IGuiItemStacks {
 		guiItemStacks.get(index).setItemStacks(itemStacks, focusStack);
 	}
 
-	public void setItemStack(int index, @Nonnull ItemStack itemStack) {
-		guiItemStacks.get(index).setItemStack(itemStack);
+	public void setItemStack(int index, @Nonnull ItemStack itemStack, @Nullable ItemStack focusStack) {
+		guiItemStacks.get(index).setItemStack(itemStack, focusStack);
 	}
 
 	public void clearItemStacks() {

@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 public class ShapedOreRecipeGui extends CraftingRecipeGui {
 
 	@Override
-	protected void setItemsFromRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull Object recipe, @Nullable ItemStack focusStack) {
+	public void setGuiItemStacks(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull Object recipe, @Nullable ItemStack focusStack) {
 		ShapedOreRecipe shapedOreRecipe = (ShapedOreRecipe)recipe;
 
 		int width;
@@ -26,7 +26,7 @@ public class ShapedOreRecipeGui extends CraftingRecipeGui {
 		}
 
 		setInput(guiItemStacks, shapedOreRecipe.getInput(), focusStack, width, height);
-		setOutput(guiItemStacks, shapedOreRecipe.getRecipeOutput());
+		setOutput(guiItemStacks, shapedOreRecipe.getRecipeOutput(), focusStack);
 	}
 
 }

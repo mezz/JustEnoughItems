@@ -56,19 +56,15 @@ public class GuiItemStack {
 		List<ItemStack> itemStacks = StackUtil.getAllSubtypes(itemStacksIn);
 		ItemStack matchingItemStack = StackUtil.containsStack(itemStacks, focusStack);
 		if (matchingItemStack != null) {
-			setItemStack(matchingItemStack);
+			this.itemStacks = Collections.singletonList(matchingItemStack);
 		} else {
-			setItemStacks(itemStacks);
+			this.itemStacks = itemStacks;
 		}
-	}
-
-	public void setItemStack(@Nonnull ItemStack itemStack) {
-		setItemStacks(Collections.singletonList(itemStack));
-	}
-
-	private void setItemStacks(@Nonnull Iterable<ItemStack> itemStacks) {
-		this.itemStacks = StackUtil.getAllSubtypes(itemStacks);
 		visible = enabled = !this.itemStacks.isEmpty();
+	}
+
+	public void setItemStack(@Nonnull ItemStack itemStack, @Nullable ItemStack focusStack) {
+		setItemStacks(Collections.singletonList(itemStack), focusStack);
 	}
 
 	public void clearItemStacks() {

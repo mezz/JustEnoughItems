@@ -17,10 +17,11 @@ public class SmeltingRecipeGui extends FurnaceRecipeGui {
 	private String experienceString;
 
 	@Override
-	public void setRecipe(Object recipe, ItemStack focusStack) {
-		super.setRecipe(recipe, focusStack);
-
+	public void setGuiItemStacks(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull Object recipe, @Nullable ItemStack focusStack) {
 		SmeltingRecipe smeltingRecipe = (SmeltingRecipe)recipe;
+
+		guiItemStacks.setItemStack(inputSlot, smeltingRecipe.getInput(), focusStack);
+		guiItemStacks.setItemStack(outputSlot, smeltingRecipe.getOutput(), focusStack);
 
 		float experience = smeltingRecipe.getExperience();
 		if (experience > 0.0) {
@@ -31,19 +32,10 @@ public class SmeltingRecipeGui extends FurnaceRecipeGui {
 	}
 
 	@Override
-	protected void setItemsFromRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull Object recipe, ItemStack focusStack) {
-		SmeltingRecipe smeltingRecipe = (SmeltingRecipe)recipe;
-
-		guiItemStacks.setItemStack(inputSlot, smeltingRecipe.getInput(), focusStack);
-		guiItemStacks.setItemStack(outputSlot, smeltingRecipe.getOutput());
-	}
-
-	@Override
-	public void drawForeground(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+	public void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 		if (experienceString != null) {
 			FontRenderer fontRendererObj = minecraft.fontRenderer;
 			fontRendererObj.drawString(experienceString, 69 - fontRendererObj.getStringWidth(experienceString) / 2, 0, Color.gray.getRGB());
 		}
-		super.drawForeground(minecraft, mouseX, mouseY);
 	}
 }

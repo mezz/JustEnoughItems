@@ -27,7 +27,7 @@ public interface IGuiItemStacks {
 	 *  Useful when displaying all the recipes that include the focusStack.
 	 */
 	void setItemStack(int index, @Nonnull Iterable<ItemStack> itemStacks, @Nullable ItemStack focusStack);
-	void setItemStack(int index, @Nonnull ItemStack itemStack);
+	void setItemStack(int index, @Nonnull ItemStack itemStack, @Nullable ItemStack focusStack);
 
 	void clearItemStacks();
 

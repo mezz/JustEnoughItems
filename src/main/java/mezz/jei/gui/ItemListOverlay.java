@@ -135,7 +135,7 @@ public class ItemListOverlay {
 				itemButton.clearItemStacks();
 			} else {
 				ItemStack stack = itemList.get(i);
-				itemButton.setItemStack(stack);
+				itemButton.setItemStack(stack, null);
 			}
 			i++;
 		}

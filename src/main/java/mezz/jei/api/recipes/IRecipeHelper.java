@@ -17,7 +17,7 @@ public interface IRecipeHelper {
 	IRecipeType getRecipeType();
 
 	/* Returns a new IRecipeGui instance. */
-	IRecipeGui createGui();
+	IRecipeGuiHelper createGuiHelper();
 
 	/* Returns all input ItemStacks for the recipe. */
 	List<ItemStack> getInputs(@Nonnull Object recipe);
