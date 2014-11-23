@@ -173,18 +173,20 @@ public class RecipesGui extends GuiScreen {
 		if (this.focusStack != null && this.focusStack.equals(stack) && this.mode == mode)
 			return true;
 
+		List<IRecipeType> types = null;
 		switch (mode) {
 			case INPUT:
-				recipeTypes = JEIManager.recipeRegistry.getRecipeTypesForInput(stack);
+				types = JEIManager.recipeRegistry.getRecipeTypesForInput(stack);
 				break;
 			case OUTPUT:
-				recipeTypes = JEIManager.recipeRegistry.getRecipeTypesForOutput(stack);
+				types = JEIManager.recipeRegistry.getRecipeTypesForOutput(stack);
 				break;
 		}
-		if (recipeTypes.isEmpty()) {
+		if (types.isEmpty()) {
 			return false;
 		}
 
+		this.recipeTypes = types;
 		this.focusStack = stack;
 		this.mode = mode;
 		this.recipeTypeIndex = 0;
