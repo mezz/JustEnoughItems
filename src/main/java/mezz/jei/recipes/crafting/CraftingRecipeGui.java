@@ -60,8 +60,8 @@ public abstract class CraftingRecipeGui extends RecipeGui {
 				index = i;
 				if (i > 1) {
 					index++;
-				if (i > 4)
-					index++;
+					if (i > 3)
+						index++;
 				}
 			} else if (height == 2) {
 				index = i + 3;
