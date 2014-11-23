@@ -1,6 +1,6 @@
 package mezz.jei.recipes.crafting;
 
-import mezz.jei.gui.GuiItemStacks;
+import mezz.jei.api.gui.IGuiItemStacks;
 import mezz.jei.util.StackUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
@@ -13,7 +13,7 @@ import java.util.List;
 public class ShapelessOreRecipeGui extends CraftingRecipeGui {
 
 	@Override
-	protected void setItemsFromRecipe(@Nonnull GuiItemStacks guiItemStacks, @Nonnull Object recipe, @Nullable ItemStack focusStack) {
+	protected void setItemsFromRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull Object recipe, @Nullable ItemStack focusStack) {
 		ShapelessOreRecipe shapelessOreRecipe = (ShapelessOreRecipe)recipe;
 
 		ArrayList<Object> input = shapelessOreRecipe.getInput();

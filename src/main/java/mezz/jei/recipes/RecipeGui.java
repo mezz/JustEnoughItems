@@ -1,8 +1,8 @@
 package mezz.jei.recipes;
 
-import mezz.jei.api.gui.IGuiItemStack;
+import mezz.jei.api.JEIManager;
+import mezz.jei.api.gui.IGuiItemStacks;
 import mezz.jei.api.recipes.IRecipeGui;
-import mezz.jei.gui.GuiItemStacks;
 import mezz.jei.gui.resource.IDrawable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
@@ -16,13 +16,14 @@ public abstract class RecipeGui implements IRecipeGui {
 	@Nonnull
 	private final IDrawable background;
 	@Nonnull
-	private final GuiItemStacks guiItemStacks = new GuiItemStacks();
+	private final IGuiItemStacks guiItemStacks;
 
 	private int posX;
 	private int posY;
 
 	protected RecipeGui(@Nonnull IDrawable background) {
 		this.background = background;
+		this.guiItemStacks = JEIManager.guiHelper.makeGuiItemStacks();
 	}
 
 	@Override
@@ -33,16 +34,16 @@ public abstract class RecipeGui implements IRecipeGui {
 
 	@Override
 	public void setRecipe(Object recipe, ItemStack focusStack) {
-		guiItemStacks.clear();
+		guiItemStacks.clearItemStacks();
 		if (recipe != null) {
 			setItemsFromRecipe(guiItemStacks, recipe, focusStack);
 		}
 	}
 
-	abstract protected void setItemsFromRecipe(@Nonnull GuiItemStacks guiItemStacks, @Nonnull Object recipe, @Nullable ItemStack focusStack);
+	abstract protected void setItemsFromRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull Object recipe, @Nullable ItemStack focusStack);
 
-	protected void addItem(@Nonnull IGuiItemStack guiItemStack) {
-		guiItemStacks.addItem(guiItemStack);
+	protected void addItem(int index, int xPosition, int yPosition) {
+		guiItemStacks.initItemStack(index, xPosition, yPosition);
 	}
 
 	@Nullable

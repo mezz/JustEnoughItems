@@ -9,6 +9,6 @@ import javax.annotation.Nonnull;
 public interface IGuiHelper {
 
 	@Nonnull
-	IGuiItemStack makeGuiItemStack(int xPosition, int yPosition, int padding);
+	IGuiItemStacks makeGuiItemStacks();
 
 }

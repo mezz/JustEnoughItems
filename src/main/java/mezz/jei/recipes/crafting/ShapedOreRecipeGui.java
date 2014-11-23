@@ -1,17 +1,18 @@
 package mezz.jei.recipes.crafting;
 
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
-import mezz.jei.gui.GuiItemStacks;
+import mezz.jei.api.gui.IGuiItemStacks;
 import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ShapedOreRecipeGui extends CraftingRecipeGui {
 
 	@Override
-	protected void setItemsFromRecipe(@Nonnull GuiItemStacks guiItemStacks, @Nonnull Object recipe, @Nullable ItemStack focusStack) {
+	protected void setItemsFromRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull Object recipe, @Nullable ItemStack focusStack) {
 		ShapedOreRecipe shapedOreRecipe = (ShapedOreRecipe)recipe;
 
 		int width;

@@ -1,7 +1,5 @@
 package mezz.jei.recipes.furnace;
 
-import mezz.jei.api.JEIManager;
-import mezz.jei.api.gui.IGuiHelper;
 import mezz.jei.api.recipes.IRecipeType;
 import mezz.jei.api.recipes.RecipeType;
 import mezz.jei.gui.resource.DrawableResource;
@@ -24,11 +22,9 @@ public abstract class FurnaceRecipeGui extends RecipeGui {
 	protected FurnaceRecipeGui() {
 		super(getBackground());
 
-		IGuiHelper guiHelper = JEIManager.guiHelper;
-
-		addItem(guiHelper.makeGuiItemStack(0, 0, 1));
-		addItem(guiHelper.makeGuiItemStack(0, 36, 1));
-		addItem(guiHelper.makeGuiItemStack(60, 18, 1));
+		addItem(inputSlot, 0, 0);
+		addItem(fuelSlot, 0, 36);
+		addItem(outputSlot, 60, 18);
 	}
 
 }

@@ -1,6 +1,6 @@
 package mezz.jei.recipes.crafting;
 
-import mezz.jei.gui.GuiItemStacks;
+import mezz.jei.api.gui.IGuiItemStacks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 
@@ -10,7 +10,7 @@ import java.util.List;
 public class ShapelessRecipesGui extends CraftingRecipeGui {
 
 	@Override
-	protected void setItemsFromRecipe(@Nonnull GuiItemStacks guiItemStacks, @Nonnull Object recipe, ItemStack focusStack) {
+	protected void setItemsFromRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull Object recipe, ItemStack focusStack) {
 		ShapelessRecipes shapelessRecipe = (ShapelessRecipes)recipe;
 
 		List<ItemStack> input = ShapelessRecipesHelper.getRecipeItems(shapelessRecipe);

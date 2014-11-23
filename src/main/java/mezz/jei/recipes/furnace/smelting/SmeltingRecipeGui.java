@@ -1,6 +1,6 @@
 package mezz.jei.recipes.furnace.smelting;
 
-import mezz.jei.gui.GuiItemStacks;
+import mezz.jei.api.gui.IGuiItemStacks;
 import mezz.jei.recipes.furnace.FurnaceRecipeGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -31,11 +31,11 @@ public class SmeltingRecipeGui extends FurnaceRecipeGui {
 	}
 
 	@Override
-	protected void setItemsFromRecipe(@Nonnull GuiItemStacks guiItemStacks, @Nonnull Object recipe, ItemStack focusStack) {
+	protected void setItemsFromRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull Object recipe, ItemStack focusStack) {
 		SmeltingRecipe smeltingRecipe = (SmeltingRecipe)recipe;
 
-		guiItemStacks.setItems(inputSlot, smeltingRecipe.getInput(), focusStack);
-		guiItemStacks.setItem(outputSlot, smeltingRecipe.getOutput());
+		guiItemStacks.setItemStack(inputSlot, smeltingRecipe.getInput(), focusStack);
+		guiItemStacks.setItemStack(outputSlot, smeltingRecipe.getOutput());
 	}
 
 	@Override

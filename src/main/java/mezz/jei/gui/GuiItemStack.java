@@ -1,6 +1,5 @@
 package mezz.jei.gui;
 
-import mezz.jei.api.gui.IGuiItemStack;
 import mezz.jei.util.StackUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -11,11 +10,12 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class GuiItemStack implements IGuiItemStack {
+public class GuiItemStack {
 
 	private static final int baseWidth = 16;
 	private static final int baseHeight = 16;
@@ -52,8 +52,7 @@ public class GuiItemStack implements IGuiItemStack {
 		return baseHeight + (2 * padding);
 	}
 
-	@Override
-	public void setItemStacks(@Nonnull Iterable<ItemStack> itemStacksIn, ItemStack focusStack) {
+	public void setItemStacks(@Nonnull Iterable<ItemStack> itemStacksIn, @Nullable ItemStack focusStack) {
 		List<ItemStack> itemStacks = StackUtil.getAllSubtypes(itemStacksIn);
 		ItemStack matchingItemStack = StackUtil.containsStack(itemStacks, focusStack);
 		if (matchingItemStack != null) {
@@ -63,7 +62,6 @@ public class GuiItemStack implements IGuiItemStack {
 		}
 	}
 
-	@Override
 	public void setItemStack(@Nonnull ItemStack itemStack) {
 		setItemStacks(Collections.singletonList(itemStack));
 	}
@@ -73,13 +71,12 @@ public class GuiItemStack implements IGuiItemStack {
 		visible = enabled = !this.itemStacks.isEmpty();
 	}
 
-	@Override
 	public void clearItemStacks() {
 		itemStacks.clear();
 		visible = enabled = false;
 	}
 
-	@Override
+	@Nullable
 	public ItemStack getItemStack() {
 		if (itemStacks.isEmpty())
 			return null;
@@ -88,17 +85,14 @@ public class GuiItemStack implements IGuiItemStack {
 		return itemStacks.get(stackIndex.intValue());
 	}
 
-	@Override
 	public boolean isMouseOver(int mouseX, int mouseY) {
 		return enabled && visible && (mouseX >= xPosition) && (mouseY >= yPosition) && (mouseX < xPosition + width) && (mouseY < yPosition + height);
 	}
 
-	@Override
 	public void draw(@Nonnull Minecraft minecraft) {
 		draw(minecraft, true);
 	}
 
-	@Override
 	public void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 		ItemStack itemStack = getItemStack();
 		if (itemStack == null)

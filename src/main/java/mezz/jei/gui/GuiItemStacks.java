@@ -1,39 +1,45 @@
 package mezz.jei.gui;
 
-import mezz.jei.api.gui.IGuiItemStack;
+import mezz.jei.api.gui.IGuiItemStacks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-public class GuiItemStacks {
+public class GuiItemStacks implements IGuiItemStacks {
 
 	@Nonnull
-	private final ArrayList<IGuiItemStack> guiItemStacks = new ArrayList<IGuiItemStack>();
+	private final Map<Integer, GuiItemStack> guiItemStacks = new HashMap<Integer, GuiItemStack>();
 
-	public void addItem(@Nonnull IGuiItemStack guiItemStack) {
-		guiItemStacks.add(guiItemStack);
+	public void initItemStack(int index, int xPosition, int yPosition) {
+		initItemStack(index, xPosition, yPosition, 1);
 	}
 
-	public void setItems(int index, @Nonnull Iterable<ItemStack> itemStacks, @Nullable ItemStack focusStack) {
+	public void initItemStack(int index, int xPosition, int yPosition, int padding) {
+		GuiItemStack guiItemStack = new GuiItemStack(xPosition, yPosition, padding);
+		guiItemStacks.put(index, guiItemStack);
+	}
+
+	public void setItemStack(int index, @Nonnull Iterable<ItemStack> itemStacks, @Nullable ItemStack focusStack) {
 		guiItemStacks.get(index).setItemStacks(itemStacks, focusStack);
 	}
 
-	public void setItem(int index, @Nonnull ItemStack item) {
-		guiItemStacks.get(index).setItemStack(item);
+	public void setItemStack(int index, @Nonnull ItemStack itemStack) {
+		guiItemStacks.get(index).setItemStack(itemStack);
 	}
 
-	public void clear() {
-		for (IGuiItemStack guiItemStack : guiItemStacks) {
+	public void clearItemStacks() {
+		for (GuiItemStack guiItemStack : guiItemStacks.values()) {
 			guiItemStack.clearItemStacks();
 		}
 	}
 
 	@Nullable
 	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
-		for (IGuiItemStack item : guiItemStacks) {
+		for (GuiItemStack item : guiItemStacks.values()) {
 			if (item != null && item.isMouseOver(mouseX, mouseY))
 				return item.getItemStack();
 		}
@@ -41,8 +47,8 @@ public class GuiItemStacks {
 	}
 
 	public void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
-		IGuiItemStack hovered = null;
-		for (IGuiItemStack item : guiItemStacks) {
+		GuiItemStack hovered = null;
+		for (GuiItemStack item : guiItemStacks.values()) {
 			if (hovered == null && item.isMouseOver(mouseX, mouseY))
 				hovered = item;
 			else
