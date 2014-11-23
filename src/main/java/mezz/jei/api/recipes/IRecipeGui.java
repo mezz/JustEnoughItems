@@ -15,9 +15,6 @@ public interface IRecipeGui {
 	/* Set the recipe to display and the ItemStack in focus. */
 	void setRecipe(@Nullable Object recipe, @Nullable ItemStack focusStack);
 
-	/* Returns true if its recipe is not null. */
-	boolean hasRecipe();
-
 	/* Returns the ItemStack at the mouse position, or null if there is none. */
 	ItemStack getStackUnderMouse(int mouseX, int mouseY);
 

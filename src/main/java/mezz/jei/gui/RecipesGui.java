@@ -148,8 +148,6 @@ public class RecipesGui extends GuiScreen {
 
 	@Override
 	protected void actionPerformed(@Nonnull GuiButton guibutton) {
-		super.actionPerformed(guibutton);
-
 		if (guibutton.id == nextPage.id)
 			nextPage();
 		else if (guibutton.id == previousPage.id)
@@ -299,8 +297,7 @@ public class RecipesGui extends GuiScreen {
 		GL11.glPopMatrix();
 
 		for (IRecipeGui recipeGui : recipeGuis) {
-			if (recipeGui.hasRecipe())
-				recipeGui.draw(minecraft, mouseX, mouseY);
+			recipeGui.draw(minecraft, mouseX, mouseY);
 		}
 
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);

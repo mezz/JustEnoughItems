@@ -19,7 +19,6 @@ public abstract class RecipeGui extends Gui implements IRecipeGui {
 
 	private int posX;
 	private int posY;
-	private boolean hasRecipe;
 
 	@Nonnull
 	private final ArrayList<IGuiItemStack> items = new ArrayList<IGuiItemStack>();
@@ -35,18 +34,10 @@ public abstract class RecipeGui extends Gui implements IRecipeGui {
 	}
 
 	@Override
-	public boolean hasRecipe() {
-		return hasRecipe;
-	}
-
-	@Override
 	public void setRecipe(Object recipe, ItemStack focusStack) {
 		clearItems();
 		if (recipe != null) {
 			setItemsFromRecipe(recipe, focusStack);
-			hasRecipe = true;
-		} else {
-			hasRecipe = false;
 		}
 	}
 
