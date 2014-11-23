@@ -2,26 +2,24 @@ package mezz.jei.recipes;
 
 import mezz.jei.api.gui.IGuiItemStack;
 import mezz.jei.api.recipes.IRecipeGui;
+import mezz.jei.gui.GuiItemStacks;
 import mezz.jei.gui.resource.IDrawable;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 
-public abstract class RecipeGui extends Gui implements IRecipeGui {
+public abstract class RecipeGui implements IRecipeGui {
 
 	@Nonnull
 	private final IDrawable background;
+	@Nonnull
+	private final GuiItemStacks guiItemStacks = new GuiItemStacks();
 
 	private int posX;
 	private int posY;
-
-	@Nonnull
-	private final ArrayList<IGuiItemStack> items = new ArrayList<IGuiItemStack>();
 
 	protected RecipeGui(@Nonnull IDrawable background) {
 		this.background = background;
@@ -35,43 +33,22 @@ public abstract class RecipeGui extends Gui implements IRecipeGui {
 
 	@Override
 	public void setRecipe(Object recipe, ItemStack focusStack) {
-		clearItems();
+		guiItemStacks.clear();
 		if (recipe != null) {
-			setItemsFromRecipe(recipe, focusStack);
+			setItemsFromRecipe(guiItemStacks, recipe, focusStack);
 		}
 	}
 
-	abstract protected void setItemsFromRecipe(@Nonnull Object recipe, @Nullable ItemStack focusStack);
+	abstract protected void setItemsFromRecipe(@Nonnull GuiItemStacks guiItemStacks, @Nonnull Object recipe, @Nullable ItemStack focusStack);
 
 	protected void addItem(@Nonnull IGuiItemStack guiItemStack) {
-		items.add(guiItemStack);
-	}
-
-	protected void setItems(int index, @Nonnull Iterable<ItemStack> itemStacks, @Nullable ItemStack focusStack) {
-		this.items.get(index).setItemStacks(itemStacks, focusStack);
-	}
-
-	protected void setItem(int index, @Nonnull ItemStack item) {
-		items.get(index).setItemStack(item);
-	}
-
-	protected void clearItems() {
-		for (IGuiItemStack guiItemStack : items) {
-			guiItemStack.clearItemStacks();
-		}
+		guiItemStacks.addItem(guiItemStack);
 	}
 
 	@Nullable
 	@Override
 	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
-		mouseX -= posX;
-		mouseY -= posY;
-
-		for (IGuiItemStack item : items) {
-			if (item != null && item.isMouseOver(mouseX, mouseY))
-				return item.getItemStack();
-		}
-		return null;
+		return guiItemStacks.getStackUnderMouse(mouseX - posX, mouseY - posY);
 	}
 
 	@Override
@@ -94,16 +71,7 @@ public abstract class RecipeGui extends Gui implements IRecipeGui {
 	}
 
 	protected void drawForeground(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
-		IGuiItemStack hovered = null;
-		for (IGuiItemStack item : items) {
-			if (hovered == null && item.isMouseOver(mouseX, mouseY))
-				hovered = item;
-			else
-				item.draw(minecraft);
-		}
-		if (hovered != null)
-			hovered.drawHovered(minecraft, mouseX, mouseY);
-
+		guiItemStacks.draw(minecraft, mouseX, mouseY);
 	}
 
 }

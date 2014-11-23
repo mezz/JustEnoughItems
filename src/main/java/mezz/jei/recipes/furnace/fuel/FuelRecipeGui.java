@@ -1,5 +1,6 @@
 package mezz.jei.recipes.furnace.fuel;
 
+import mezz.jei.gui.GuiItemStacks;
 import mezz.jei.recipes.furnace.FurnaceRecipeGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -23,9 +24,9 @@ public class FuelRecipeGui extends FurnaceRecipeGui {
 	}
 
 	@Override
-	protected void setItemsFromRecipe(@Nonnull Object recipe, ItemStack focusStack) {
+	protected void setItemsFromRecipe(@Nonnull GuiItemStacks guiItemStacks, @Nonnull Object recipe, ItemStack focusStack) {
 		FuelRecipe fuelRecipe = (FuelRecipe)recipe;
-		setItems(fuelSlot, fuelRecipe.getInput(), focusStack);
+		guiItemStacks.setItems(fuelSlot, fuelRecipe.getInput(), focusStack);
 	}
 
 	@Override

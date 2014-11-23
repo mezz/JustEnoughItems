@@ -29,6 +29,8 @@ public class RecipeRegistry implements IRecipeRegistry {
 				continue;
 
 			Class recipeClass = recipeHelper.getRecipeClass();
+			if (recipeClass == null)
+				continue;
 
 			if (this.recipeHelpers.containsKey(recipeClass))
 				throw new IllegalArgumentException("A Recipe Helper has already been registered for this recipe class: " + recipeClass.getName());

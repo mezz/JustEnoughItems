@@ -1,6 +1,7 @@
 package mezz.jei.recipes.crafting;
 
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
+import mezz.jei.gui.GuiItemStacks;
 import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -10,7 +11,7 @@ import javax.annotation.Nullable;
 public class ShapedOreRecipeGui extends CraftingRecipeGui {
 
 	@Override
-	protected void setItemsFromRecipe(@Nonnull Object recipe, @Nullable ItemStack focusStack) {
+	protected void setItemsFromRecipe(@Nonnull GuiItemStacks guiItemStacks, @Nonnull Object recipe, @Nullable ItemStack focusStack) {
 		ShapedOreRecipe shapedOreRecipe = (ShapedOreRecipe)recipe;
 
 		int width;
@@ -23,8 +24,8 @@ public class ShapedOreRecipeGui extends CraftingRecipeGui {
 			return;
 		}
 
-		setInput(shapedOreRecipe.getInput(), focusStack, width, height);
-		setOutput(shapedOreRecipe.getRecipeOutput());
+		setInput(guiItemStacks, shapedOreRecipe.getInput(), focusStack, width, height);
+		setOutput(guiItemStacks, shapedOreRecipe.getRecipeOutput());
 	}
 
 }
