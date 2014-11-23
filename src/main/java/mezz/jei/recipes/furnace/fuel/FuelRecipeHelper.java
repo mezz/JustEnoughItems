@@ -3,12 +3,10 @@ package mezz.jei.recipes.furnace.fuel;
 import mezz.jei.api.recipes.IRecipeGuiHelper;
 import mezz.jei.api.recipes.IRecipeHelper;
 import mezz.jei.api.recipes.IRecipeType;
+import mezz.jei.api.recipes.IRecipeWrapper;
 import mezz.jei.api.recipes.RecipeType;
-import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 
 public class FuelRecipeHelper implements IRecipeHelper {
 	@Nonnull
@@ -29,16 +27,9 @@ public class FuelRecipeHelper implements IRecipeHelper {
 		return new FuelRecipeGui();
 	}
 
-	@Nonnull
 	@Override
-	public List<ItemStack> getInputs(@Nonnull Object recipe) {
-		FuelRecipe fuelRecipe = (FuelRecipe)recipe;
-		return fuelRecipe.getInput();
+	public IRecipeWrapper getRecipeWrapper(@Nonnull Object recipe) {
+		return (FuelRecipe)recipe;
 	}
 
-	@Nonnull
-	@Override
-	public List<ItemStack> getOutputs(@Nonnull Object recipe) {
-		return new ArrayList<ItemStack>(0);
-	}
 }

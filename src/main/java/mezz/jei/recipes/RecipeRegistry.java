@@ -3,6 +3,7 @@ package mezz.jei.recipes;
 import mezz.jei.api.recipes.IRecipeHelper;
 import mezz.jei.api.recipes.IRecipeRegistry;
 import mezz.jei.api.recipes.IRecipeType;
+import mezz.jei.api.recipes.IRecipeWrapper;
 import mezz.jei.util.Log;
 import mezz.jei.util.StackUtil;
 import net.minecraft.item.ItemStack;
@@ -13,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class RecipeRegistry implements IRecipeRegistry {
 	private final Map<Class, IRecipeHelper> recipeHelpers = new HashMap<Class, IRecipeHelper>();
@@ -57,16 +59,20 @@ public class RecipeRegistry implements IRecipeRegistry {
 			}
 			IRecipeType recipeType = recipeHelper.getRecipeType();
 
-			List<ItemStack> inputs = recipeHelper.getInputs(recipe);
+			IRecipeWrapper recipeWrapper = recipeHelper.getRecipeWrapper(recipe);
+
+			List inputs = recipeWrapper.getInputs();
 			if (inputs != null) {
-				inputs = StackUtil.getAllSubtypes(inputs);
-				recipeInputMap.addRecipe(recipe, recipeType, inputs);
+				List<ItemStack> inputStacks = StackUtil.toItemStackList(inputs);
+				Set<ItemStack> inputStacksSet = StackUtil.getAllSubtypesSet(inputStacks);
+				recipeInputMap.addRecipe(recipe, recipeType, inputStacksSet);
 			}
 
-			List<ItemStack> outputs = recipeHelper.getOutputs(recipe);
+			List<ItemStack> outputs = recipeWrapper.getOutputs();
 			if (outputs != null) {
-				outputs = StackUtil.getAllSubtypes(outputs);
-				recipeOutputMap.addRecipe(recipe, recipeType, outputs);
+				outputs = StackUtil.toItemStackList(outputs);
+				Set<ItemStack> outputSet = StackUtil.getAllSubtypesSet(outputs);
+				recipeOutputMap.addRecipe(recipe, recipeType, outputSet);
 			}
 		}
 	}

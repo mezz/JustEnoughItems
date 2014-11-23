@@ -1,6 +1,7 @@
 package mezz.jei.recipes.furnace.smelting;
 
 import mezz.jei.api.gui.IGuiItemStacks;
+import mezz.jei.api.recipes.IRecipeWrapper;
 import mezz.jei.recipes.furnace.FurnaceRecipeGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -17,11 +18,11 @@ public class SmeltingRecipeGui extends FurnaceRecipeGui {
 	private String experienceString;
 
 	@Override
-	public void setGuiItemStacks(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull Object recipe, @Nullable ItemStack focusStack) {
-		SmeltingRecipe smeltingRecipe = (SmeltingRecipe)recipe;
+	public void setGuiItemStacks(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IRecipeWrapper recipeWrapper, @Nullable ItemStack focusStack) {
+		SmeltingRecipe smeltingRecipe = (SmeltingRecipe)recipeWrapper;
 
-		guiItemStacks.setItemStack(inputSlot, smeltingRecipe.getInput(), focusStack);
-		guiItemStacks.setItemStack(outputSlot, smeltingRecipe.getOutput(), focusStack);
+		guiItemStacks.setItemStack(inputSlot, smeltingRecipe.getInputs(), focusStack);
+		guiItemStacks.setItemStack(outputSlot, smeltingRecipe.getOutputs(), focusStack);
 
 		float experience = smeltingRecipe.getExperience();
 		if (experience > 0.0) {

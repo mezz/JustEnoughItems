@@ -1,9 +1,6 @@
 package mezz.jei.api.recipes;
 
-import net.minecraft.item.ItemStack;
-
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
  * An IRecipeHelper provides information about one Recipe Class.
@@ -16,13 +13,10 @@ public interface IRecipeHelper {
 	/* Returns the type of this recipe. */
 	IRecipeType getRecipeType();
 
-	/* Returns a new IRecipeGui instance. */
+	/* Returns a new IRecipeGuiHelper instance. */
 	IRecipeGuiHelper createGuiHelper();
 
-	/* Returns all input ItemStacks for the recipe. */
-	List<ItemStack> getInputs(@Nonnull Object recipe);
-
-	/* Returns all output ItemStacks for the recipe. */
-	List<ItemStack> getOutputs(@Nonnull Object recipe);
+	/* Returns a recipe wrapper for the given recipe. */
+	IRecipeWrapper getRecipeWrapper(@Nonnull Object recipe);
 
 }

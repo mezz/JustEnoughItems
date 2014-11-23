@@ -3,7 +3,7 @@ package mezz.jei.recipes;
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IGuiItemStacks;
 import mezz.jei.api.recipes.IRecipeGuiHelper;
-import mezz.jei.api.recipes.IRecipeHelper;
+import mezz.jei.api.recipes.IRecipeWrapper;
 import mezz.jei.gui.resource.IDrawable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
@@ -36,11 +36,9 @@ public final class RecipeGui {
 		this.posY = posY;
 	}
 
-	public void setRecipe(Object recipe, ItemStack focusStack) {
+	public void setRecipe(@Nonnull IRecipeWrapper recipeWrapper, @Nullable ItemStack focusStack) {
 		guiItemStacks.clearItemStacks();
-		if (recipe != null) {
-			guiHelper.setGuiItemStacks(guiItemStacks, recipe, focusStack);
-		}
+		guiHelper.setGuiItemStacks(guiItemStacks, recipeWrapper, focusStack);
 	}
 
 	protected void addItem(int index, int xPosition, int yPosition) {

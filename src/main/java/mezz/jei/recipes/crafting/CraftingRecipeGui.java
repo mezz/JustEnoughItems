@@ -45,13 +45,25 @@ public abstract class CraftingRecipeGui implements IRecipeGuiHelper {
 
 	}
 
-	protected void setOutput(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull ItemStack output, @Nullable ItemStack focusStack) {
+	protected void setOutput(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull List<ItemStack> output, @Nullable ItemStack focusStack) {
 		guiItemStacks.setItemStack(craftOutputSlot, output, focusStack);
 	}
 
-	protected void setInput(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull Object[] input, @Nullable ItemStack focusStack, int width, int height) {
-		for (int i = 0; i < input.length; i++) {
-			Object recipeItem = input[i];
+	protected void setInput(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull List input, @Nullable ItemStack focusStack) {
+		int width, height;
+		if (input.size() > 4)
+			width = height = 3;
+		else if (input.size() > 1)
+			width = height = 2;
+		else
+			width = height = 1;
+
+		setInput(guiItemStacks, input, focusStack, width, height);
+	}
+
+	protected void setInput(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull List input, @Nullable ItemStack focusStack, int width, int height) {
+		for (int i = 0; i < input.size(); i++) {
+			Object recipeItem = input.get(i);
 			int index;
 			if (width == 1) {
 				if (height == 3)
@@ -79,7 +91,7 @@ public abstract class CraftingRecipeGui implements IRecipeGuiHelper {
 				List<ItemStack> itemStacks = Collections.singletonList((ItemStack) recipeItem);
 				setInput(guiItemStacks, index, itemStacks, focusStack);
 			} else if (recipeItem instanceof Iterable) {
-				List<ItemStack> itemStacks = StackUtil.getItemStacksRecursive((Iterable)recipeItem);
+				List<ItemStack> itemStacks = StackUtil.toItemStackList((Iterable) recipeItem);
 				setInput(guiItemStacks, index, itemStacks, focusStack);
 			}
 		}

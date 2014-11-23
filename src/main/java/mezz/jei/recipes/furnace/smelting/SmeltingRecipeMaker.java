@@ -4,7 +4,6 @@ import mezz.jei.util.StackUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 
-
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;

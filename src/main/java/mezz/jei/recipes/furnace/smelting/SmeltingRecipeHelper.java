@@ -3,15 +3,13 @@ package mezz.jei.recipes.furnace.smelting;
 import mezz.jei.api.recipes.IRecipeGuiHelper;
 import mezz.jei.api.recipes.IRecipeHelper;
 import mezz.jei.api.recipes.IRecipeType;
+import mezz.jei.api.recipes.IRecipeWrapper;
 import mezz.jei.api.recipes.RecipeType;
-import net.minecraft.item.ItemStack;
-
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.List;
 
 public class SmeltingRecipeHelper implements IRecipeHelper {
+
 	@Nonnull
 	@Override
 	public Class getRecipeClass() {
@@ -30,17 +28,9 @@ public class SmeltingRecipeHelper implements IRecipeHelper {
 		return new SmeltingRecipeGui();
 	}
 
-	@Nonnull
 	@Override
-	public List<ItemStack> getInputs(@Nonnull Object recipe) {
-		SmeltingRecipe smeltingRecipe = (SmeltingRecipe)recipe;
-		return smeltingRecipe.getInput();
+	public IRecipeWrapper getRecipeWrapper(@Nonnull Object recipe) {
+		return (SmeltingRecipe)recipe;
 	}
 
-	@Nonnull
-	@Override
-	public List<ItemStack> getOutputs(@Nonnull Object recipe) {
-		SmeltingRecipe smeltingRecipe = (SmeltingRecipe)recipe;
-		return Collections.singletonList(smeltingRecipe.getOutput());
-	}
 }

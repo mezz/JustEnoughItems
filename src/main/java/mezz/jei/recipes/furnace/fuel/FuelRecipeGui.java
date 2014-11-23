@@ -1,6 +1,7 @@
 package mezz.jei.recipes.furnace.fuel;
 
 import mezz.jei.api.gui.IGuiItemStacks;
+import mezz.jei.api.recipes.IRecipeWrapper;
 import mezz.jei.recipes.furnace.FurnaceRecipeGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -18,9 +19,10 @@ public class FuelRecipeGui extends FurnaceRecipeGui {
 	private String burnTimeString;
 
 	@Override
-	public void setGuiItemStacks(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull Object recipe, @Nullable ItemStack focusStack) {
-		FuelRecipe fuelRecipe = (FuelRecipe)recipe;
-		guiItemStacks.setItemStack(fuelSlot, fuelRecipe.getInput(), focusStack);
+	public void setGuiItemStacks(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IRecipeWrapper recipeWrapper, @Nullable ItemStack focusStack) {
+		FuelRecipe fuelRecipe = (FuelRecipe)recipeWrapper;
+
+		guiItemStacks.setItemStack(fuelSlot, fuelRecipe.getInputs(), focusStack);
 
 		int burnTime = TileEntityFurnace.getItemBurnTime(focusStack);
 		this.burnTimeString = StatCollector.translateToLocalFormatted("gui.jei.furnaceBurnTime", burnTime);

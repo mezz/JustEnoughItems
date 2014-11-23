@@ -17,7 +17,7 @@ public interface IRecipeGuiHelper {
 	void initGuiItemStacks(@Nonnull IGuiItemStacks guiItemStacks);
 
 	/** Set the itemStacks based on the recipe and focusStack */
-	void setGuiItemStacks(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull Object recipe, @Nullable ItemStack focusStack);
+	void setGuiItemStacks(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IRecipeWrapper recipeWrapper, @Nullable ItemStack focusStack);
 
 	@Nonnull
 	IDrawable getBackground();

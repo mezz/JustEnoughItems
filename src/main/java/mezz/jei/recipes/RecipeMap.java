@@ -52,7 +52,7 @@ class RecipeMap {
 		return recipesForType.getRecipes(stack);
 	}
 
-	public void addRecipe(@Nonnull Object recipe, @Nonnull IRecipeType recipeType, @Nonnull List<ItemStack> itemStacks) {
+	public void addRecipe(@Nonnull Object recipe, @Nonnull IRecipeType recipeType, @Nonnull Iterable<ItemStack> itemStacks) {
 		RecipesForStack recipesForType = getRecipesForType(recipeType);
 		for (ItemStack itemStack : itemStacks) {
 			if (itemStack == null)

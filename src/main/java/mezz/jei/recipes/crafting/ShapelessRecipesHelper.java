@@ -3,16 +3,15 @@ package mezz.jei.recipes.crafting;
 import mezz.jei.api.recipes.IRecipeGuiHelper;
 import mezz.jei.api.recipes.IRecipeHelper;
 import mezz.jei.api.recipes.IRecipeType;
+import mezz.jei.api.recipes.IRecipeWrapper;
 import mezz.jei.api.recipes.RecipeType;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
 
 public class ShapelessRecipesHelper implements IRecipeHelper {
+
+	private ShapelessRecipes recipe;
 
 	@Nonnull
 	@Override
@@ -29,26 +28,13 @@ public class ShapelessRecipesHelper implements IRecipeHelper {
 	@Nonnull
 	@Override
 	public IRecipeGuiHelper createGuiHelper() {
-		return new ShapelessRecipesGui();
-	}
-
-	@Nullable
-	@Override
-	public List<ItemStack> getInputs(@Nonnull Object recipe) {
-		ShapelessRecipes shapelessRecipe = (ShapelessRecipes)recipe;
-		return getRecipeItems(shapelessRecipe);
+		return new ShapelessRecipeGui();
 	}
 
 	@Nonnull
 	@Override
-	public List<ItemStack> getOutputs(@Nonnull Object recipe) {
-		ShapelessRecipes shapelessRecipe = (ShapelessRecipes)recipe;
-		return Collections.singletonList(shapelessRecipe.getRecipeOutput());
+	public IRecipeWrapper getRecipeWrapper(@Nonnull Object recipe) {
+		return new ShapelessRecipesWrapper(recipe);
 	}
 
-	@Nullable
-	@SuppressWarnings("unchecked")
-	public static List<ItemStack> getRecipeItems(@Nonnull ShapelessRecipes shapelessRecipes) {
-		return shapelessRecipes.recipeItems;
-	}
 }

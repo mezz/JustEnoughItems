@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class GuiItemStack {
 
@@ -53,12 +54,12 @@ public class GuiItemStack {
 	}
 
 	public void setItemStacks(@Nonnull Iterable<ItemStack> itemStacksIn, @Nullable ItemStack focusStack) {
-		List<ItemStack> itemStacks = StackUtil.getAllSubtypes(itemStacksIn);
+		Set<ItemStack> itemStacks = StackUtil.getAllSubtypesSet(itemStacksIn);
 		ItemStack matchingItemStack = StackUtil.containsStack(itemStacks, focusStack);
 		if (matchingItemStack != null) {
 			this.itemStacks = Collections.singletonList(matchingItemStack);
 		} else {
-			this.itemStacks = itemStacks;
+			this.itemStacks = new ArrayList<ItemStack>(itemStacks);
 		}
 		visible = enabled = !this.itemStacks.isEmpty();
 	}

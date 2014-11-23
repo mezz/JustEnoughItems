@@ -29,8 +29,8 @@ public class FuelRecipeMaker {
 
 					oreDictNames.add(name);
 					List<ItemStack> oreDictFuels = OreDictionary.getOres(name);
-					oreDictFuels = StackUtil.getAllSubtypes(oreDictFuels);
-					fuelRecipes.add(new FuelRecipe(oreDictFuels));
+					Set<ItemStack> oreDictFuelsSet = StackUtil.getAllSubtypesSet(oreDictFuels);
+					fuelRecipes.add(new FuelRecipe(oreDictFuelsSet));
 				}
 			} else {
 				List<ItemStack> fuels = StackUtil.getSubtypes(fuelStack);

@@ -3,15 +3,11 @@ package mezz.jei.recipes.crafting;
 import mezz.jei.api.recipes.IRecipeGuiHelper;
 import mezz.jei.api.recipes.IRecipeHelper;
 import mezz.jei.api.recipes.IRecipeType;
+import mezz.jei.api.recipes.IRecipeWrapper;
 import mezz.jei.api.recipes.RecipeType;
-import mezz.jei.util.StackUtil;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import scala.actors.threadpool.Arrays;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ShapedOreRecipeHelper implements IRecipeHelper {
 
@@ -30,23 +26,12 @@ public class ShapedOreRecipeHelper implements IRecipeHelper {
 	@Nonnull
 	@Override
 	public IRecipeGuiHelper createGuiHelper() {
-		return new ShapedOreRecipeGui();
+		return new ShapedRecipeGui();
 	}
 
-	@Nonnull
 	@Override
-	public List<ItemStack> getInputs(@Nonnull Object recipe) {
-		ShapedOreRecipe shapedRecipe = (ShapedOreRecipe)recipe;
-		List list = Arrays.asList(shapedRecipe.getInput());
-		return StackUtil.getItemStacksRecursive(list);
+	public IRecipeWrapper getRecipeWrapper(@Nonnull Object recipe) {
+		return new ShapedOreRecipeWrapper(recipe);
 	}
 
-	@Nonnull
-	@Override
-	public List<ItemStack> getOutputs(@Nonnull Object recipe) {
-		ShapedOreRecipe shapedRecipe = (ShapedOreRecipe)recipe;
-		ArrayList<ItemStack> list = new ArrayList<ItemStack>();
-		list.add(shapedRecipe.getRecipeOutput());
-		return list;
-	}
 }

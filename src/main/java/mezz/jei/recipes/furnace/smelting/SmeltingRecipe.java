@@ -1,11 +1,13 @@
 package mezz.jei.recipes.furnace.smelting;
 
+import mezz.jei.api.recipes.IRecipeWrapper;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 
-public class SmeltingRecipe {
+public class SmeltingRecipe implements IRecipeWrapper {
 	@Nonnull
 	private final List<ItemStack> input;
 	@Nonnull
@@ -19,16 +21,17 @@ public class SmeltingRecipe {
 	}
 
 	@Nonnull
-	public List<ItemStack> getInput() {
+	public List<ItemStack> getInputs() {
 		return input;
 	}
 
 	@Nonnull
-	public ItemStack getOutput() {
-		return output;
+	public List<ItemStack> getOutputs() {
+		return Collections.singletonList(output);
 	}
 
 	public float getExperience() {
 		return experience;
 	}
+
 }

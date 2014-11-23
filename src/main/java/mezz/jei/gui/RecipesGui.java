@@ -5,6 +5,7 @@ import mezz.jei.api.JEIManager;
 import mezz.jei.api.recipes.IRecipeGuiHelper;
 import mezz.jei.api.recipes.IRecipeHelper;
 import mezz.jei.api.recipes.IRecipeType;
+import mezz.jei.api.recipes.IRecipeWrapper;
 import mezz.jei.config.Constants;
 import mezz.jei.recipes.RecipeGui;
 import mezz.jei.util.Log;
@@ -270,7 +271,8 @@ public class RecipesGui extends GuiScreen {
 			recipeGui.setPosition(posX, posY);
 			posY += recipeType.displayHeight() + recipeSpacing;
 
-			recipeGui.setRecipe(recipe, focusStack);
+			IRecipeWrapper recipeWrapper = recipeHelper.getRecipeWrapper(recipe);
+			recipeGui.setRecipe(recipeWrapper, focusStack);
 			recipeGuis.add(recipeGui);
 		}
 
