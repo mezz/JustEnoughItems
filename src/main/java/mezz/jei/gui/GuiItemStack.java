@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL12;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GuiItemStack implements IGuiItemStack {
@@ -62,15 +63,14 @@ public class GuiItemStack implements IGuiItemStack {
 		}
 	}
 
+	@Override
+	public void setItemStack(@Nonnull ItemStack itemStack) {
+		setItemStacks(Collections.singletonList(itemStack));
+	}
+
 	private void setItemStacks(@Nonnull Iterable<ItemStack> itemStacks) {
 		this.itemStacks = StackUtil.getAllSubtypes(itemStacks);
 		visible = enabled = !this.itemStacks.isEmpty();
-	}
-
-	@Override
-	public void setItemStack(@Nonnull ItemStack itemStack) {
-		List<ItemStack> itemStacks = StackUtil.getSubtypes(itemStack);
-		setItemStacks(itemStacks);
 	}
 
 	@Override

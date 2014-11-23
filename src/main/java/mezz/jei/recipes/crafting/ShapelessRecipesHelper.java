@@ -9,7 +9,7 @@ import net.minecraft.item.crafting.ShapelessRecipes;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ShapelessRecipesHelper implements IRecipeHelper {
@@ -43,9 +43,7 @@ public class ShapelessRecipesHelper implements IRecipeHelper {
 	@Override
 	public List<ItemStack> getOutputs(@Nonnull Object recipe) {
 		ShapelessRecipes shapelessRecipe = (ShapelessRecipes)recipe;
-		ArrayList<ItemStack> list = new ArrayList<ItemStack>();
-		list.add(shapelessRecipe.getRecipeOutput());
-		return list;
+		return Collections.singletonList(shapelessRecipe.getRecipeOutput());
 	}
 
 	@Nullable
