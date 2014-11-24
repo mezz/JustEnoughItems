@@ -1,6 +1,5 @@
 package mezz.jei.util;
 
-import cpw.mods.fml.common.registry.GameData;
 import mezz.jei.api.recipe.IRecipeType;
 import net.minecraft.item.ItemStack;
 
@@ -22,7 +21,7 @@ public class RecipeMap {
 
 	@Nonnull
 	private static String asKey(@Nonnull ItemStack itemstack) {
-		return itemstack.getUnlocalizedName() + ":" + GameData.getItemRegistry().getId(itemstack.getItem());
+		return itemstack.getUnlocalizedName() + ":" + itemstack.getItemDamage();
 	}
 
 	@Nonnull
