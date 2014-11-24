@@ -1,8 +1,8 @@
-package mezz.jei.recipes.furnace.fuel;
+package mezz.jei.recipe.furnace.fuel;
 
 import mezz.jei.api.gui.IGuiItemStacks;
-import mezz.jei.api.recipes.IRecipeWrapper;
-import mezz.jei.recipes.furnace.FurnaceRecipeGui;
+import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.recipe.furnace.FurnaceRecipeGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;

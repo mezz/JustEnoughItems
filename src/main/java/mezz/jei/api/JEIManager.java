@@ -1,7 +1,7 @@
 package mezz.jei.api;
 
 import mezz.jei.api.gui.IGuiHelper;
-import mezz.jei.api.recipes.IRecipeRegistry;
+import mezz.jei.api.recipe.IRecipeRegistry;
 
 public class JEIManager {
 

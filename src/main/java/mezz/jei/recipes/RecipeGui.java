@@ -1,11 +1,11 @@
-package mezz.jei.recipes;
+package mezz.jei.recipe;
 
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStacks;
-import mezz.jei.api.recipes.IRecipeGuiHelper;
-import mezz.jei.api.recipes.IRecipeType;
-import mezz.jei.api.recipes.IRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeGuiHelper;
+import mezz.jei.api.recipe.type.IRecipeType;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;

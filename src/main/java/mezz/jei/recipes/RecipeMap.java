@@ -1,7 +1,7 @@
-package mezz.jei.recipes;
+package mezz.jei.recipe;
 
 import cpw.mods.fml.common.registry.GameData;
-import mezz.jei.api.recipes.IRecipeType;
+import mezz.jei.api.recipe.type.IRecipeType;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;

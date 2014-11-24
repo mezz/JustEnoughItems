@@ -1,7 +1,7 @@
-package mezz.jei.recipes.furnace;
+package mezz.jei.recipe.furnace;
 
 import mezz.jei.api.gui.IGuiItemStacks;
-import mezz.jei.api.recipes.IRecipeGuiHelper;
+import mezz.jei.api.recipe.IRecipeGuiHelper;
 
 import javax.annotation.Nonnull;
 

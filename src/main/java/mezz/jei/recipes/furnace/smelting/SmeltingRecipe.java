@@ -1,6 +1,6 @@
-package mezz.jei.recipes.furnace.smelting;
+package mezz.jei.recipe.furnace.smelting;
 
-import mezz.jei.api.recipes.IRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;

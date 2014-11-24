@@ -1,6 +1,6 @@
-package mezz.jei.recipes.crafting;
+package mezz.jei.recipe.crafting;
 
-import mezz.jei.api.recipes.IRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 

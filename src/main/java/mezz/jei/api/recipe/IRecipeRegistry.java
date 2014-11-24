@@ -1,5 +1,7 @@
-package mezz.jei.api.recipes;
+package mezz.jei.api.recipe;
 
+import mezz.jei.api.recipe.type.IRecipeType;
+import mezz.jei.api.recipe.type.IRecipeTypeKey;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;

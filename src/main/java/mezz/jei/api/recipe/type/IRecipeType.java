@@ -1,4 +1,4 @@
-package mezz.jei.api.recipes;
+package mezz.jei.api.recipe.type;
 
 import mezz.jei.api.gui.IDrawable;
 

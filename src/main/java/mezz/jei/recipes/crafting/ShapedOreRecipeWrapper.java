@@ -1,4 +1,4 @@
-package mezz.jei.recipes.crafting;
+package mezz.jei.recipe.crafting;
 
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import net.minecraft.item.ItemStack;

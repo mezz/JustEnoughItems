@@ -1,4 +1,6 @@
-package mezz.jei.api.recipes;
+package mezz.jei.api.recipe;
+
+import mezz.jei.api.recipe.type.IRecipeTypeKey;
 
 import javax.annotation.Nonnull;
 

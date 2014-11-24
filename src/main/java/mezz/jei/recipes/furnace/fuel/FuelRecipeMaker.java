@@ -1,4 +1,4 @@
-package mezz.jei.recipes.furnace.fuel;
+package mezz.jei.recipe.furnace.fuel;
 
 import mezz.jei.util.StackUtil;
 import net.minecraft.item.ItemStack;

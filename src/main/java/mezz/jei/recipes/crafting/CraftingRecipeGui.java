@@ -1,7 +1,7 @@
-package mezz.jei.recipes.crafting;
+package mezz.jei.recipe.crafting;
 
 import mezz.jei.api.gui.IGuiItemStacks;
-import mezz.jei.api.recipes.IRecipeGuiHelper;
+import mezz.jei.api.recipe.IRecipeGuiHelper;
 import mezz.jei.util.StackUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;

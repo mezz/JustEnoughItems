@@ -1,7 +1,7 @@
-package mezz.jei.recipes.furnace;
+package mezz.jei.recipe.furnace;
 
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.recipes.IRecipeType;
+import mezz.jei.api.recipe.type.IRecipeType;
 import mezz.jei.gui.resource.DrawableResource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;

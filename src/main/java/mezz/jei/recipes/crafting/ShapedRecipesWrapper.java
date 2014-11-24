@@ -1,4 +1,4 @@
-package mezz.jei.recipes.crafting;
+package mezz.jei.recipe.crafting;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;

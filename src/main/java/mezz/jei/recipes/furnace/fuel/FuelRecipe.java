@@ -1,6 +1,6 @@
-package mezz.jei.recipes.furnace.fuel;
+package mezz.jei.recipe.furnace.fuel;
 
-import mezz.jei.api.recipes.IRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
