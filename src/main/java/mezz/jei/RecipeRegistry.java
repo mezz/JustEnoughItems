@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class RecipeRegistry implements IRecipeRegistry {
+class RecipeRegistry implements IRecipeRegistry {
 	private final Map<Class, IRecipeHelper> recipeHelpers = new HashMap<Class, IRecipeHelper>();
 	private final Map<IRecipeTypeKey, IRecipeType> recipeTypes = new HashMap<IRecipeTypeKey, IRecipeType>();
 	private final RecipeMap recipeInputMap = new RecipeMap();

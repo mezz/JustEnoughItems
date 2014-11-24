@@ -17,15 +17,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ItemRegistry {
+class ItemRegistry {
 
 	@Nonnull
 	private final Set<String> itemNameSet = new HashSet<String>();
-
 	@Nonnull
-	public final List<ItemStack> itemList = new ArrayList<ItemStack>();
+	private final List<ItemStack> itemList = new ArrayList<ItemStack>();
 	@Nonnull
-	public final List<ItemStack> fuels = new ArrayList<ItemStack>();
+	private final List<ItemStack> fuels = new ArrayList<ItemStack>();
 
 	public ItemRegistry() {
 		for (Block block : GameData.getBlockRegistry().typeSafeIterable())
@@ -33,6 +32,16 @@ public class ItemRegistry {
 
 		for (Item item : GameData.getItemRegistry().typeSafeIterable())
 			addItemAndSubItems(item);
+	}
+
+	@Nonnull
+	public List<ItemStack> getItemList() {
+		return itemList;
+	}
+
+	@Nonnull
+	public List<ItemStack> getFuels() {
+		return fuels;
 	}
 
 	private void addItemAndSubItems(@Nullable Item item) {

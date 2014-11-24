@@ -83,14 +83,14 @@ public class JustEnoughItems {
 	public void loadComplete(FMLLoadCompleteEvent event) {
 		ItemRegistry itemRegistry = new ItemRegistry();
 
-		itemFilter.init(itemRegistry);
+		itemFilter.init(itemRegistry.getItemList());
 
 		JEIManager.recipeRegistry.addRecipes(CraftingManager.getInstance().getRecipeList());
 
 		List<SmeltingRecipe> smeltingRecipeList = SmeltingRecipeMaker.getFurnaceRecipes(FurnaceRecipes.smelting());
 		JEIManager.recipeRegistry.addRecipes(smeltingRecipeList);
 
-		List<FuelRecipe> fuelRecipeList = FuelRecipeMaker.getFuelRecipes(itemRegistry.fuels);
+		List<FuelRecipe> fuelRecipeList = FuelRecipeMaker.getFuelRecipes(itemRegistry.getFuels());
 		JEIManager.recipeRegistry.addRecipes(fuelRecipeList);
 	}
 
