@@ -14,6 +14,7 @@ import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiHelper;
+import mezz.jei.plugins.forestry.crafting.ForestryShapedRecipeHelper;
 import mezz.jei.recipe.crafting.CraftingRecipeType;
 import mezz.jei.plugins.vanilla.crafting.ShapedOreRecipeHelper;
 import mezz.jei.plugins.vanilla.crafting.ShapedRecipesHelper;
@@ -64,7 +65,8 @@ public class JustEnoughItems {
 				new ShapelessRecipesHelper(),
 				new ShapelessOreRecipeHelper(),
 				new SmeltingRecipeHelper(),
-				new FuelRecipeHelper()
+				new FuelRecipeHelper(),
+				new ForestryShapedRecipeHelper()
 		);
 	}
 
