@@ -30,9 +30,6 @@ public class CraftingRecipeGui implements IRecipeGui {
 	@Nullable
 	private IRecipeWrapper recipeWrapper;
 
-	private int posX;
-	private int posY;
-
 	public CraftingRecipeGui(@Nonnull IRecipeType recipeType) {
 		background = recipeType.getBackground();
 
@@ -45,11 +42,6 @@ public class CraftingRecipeGui implements IRecipeGui {
 				guiItemStacks.initItemStack(index, x * 18, y * 18);
 			}
 		}
-	}
-
-	public void setPosition(int posX, int posY) {
-		this.posX = posX;
-		this.posY = posY;
 	}
 
 	@Override
@@ -72,18 +64,9 @@ public class CraftingRecipeGui implements IRecipeGui {
 		if (recipeWrapper == null)
 			return;
 
-		GL11.glPushMatrix();
-		GL11.glTranslatef(posX, posY, 0.0F);
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-
-		mouseX -= posX;
-		mouseY -= posY;
-
 		background.draw(minecraft);
 		recipeWrapper.drawInfo(minecraft, mouseX, mouseY);
 		guiItemStacks.draw(minecraft, mouseX, mouseY);
-
-		GL11.glPopMatrix();
 	}
 
 	@Nullable

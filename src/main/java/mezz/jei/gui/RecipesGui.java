@@ -269,7 +269,7 @@ public class RecipesGui extends GuiScreen {
 				continue;
 			}
 
-			IRecipeGui recipeGui = recipeType.createGui();
+			PositionedRecipeGui recipeGui = new PositionedRecipeGui(recipeType.createGui());
 			recipeGui.setPosition(posX, posY);
 			posY += recipeBackground.getHeight() + recipeSpacing;
 

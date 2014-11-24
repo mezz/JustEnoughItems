@@ -10,7 +10,6 @@ import mezz.jei.api.recipe.wrapper.IRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.ISmeltingRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,9 +26,6 @@ public final class FurnaceRecipeGui implements IRecipeGui {
 	private final IGuiItemStacks guiItemStacks;
 	@Nullable
 	private IRecipeWrapper recipeWrapper;
-
-	private int posX;
-	private int posY;
 
 	public FurnaceRecipeGui(@Nonnull IRecipeType recipeType) {
 		background = recipeType.getBackground();
@@ -57,28 +53,13 @@ public final class FurnaceRecipeGui implements IRecipeGui {
 	}
 
 	@Override
-	public void setPosition(int posX, int posY) {
-		this.posX = posX;
-		this.posY = posY;
-	}
-
-	@Override
 	public void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 		if (recipeWrapper == null)
 			return;
 
-		GL11.glPushMatrix();
-		GL11.glTranslatef(posX, posY, 0.0F);
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-
-		mouseX -= posX;
-		mouseY -= posY;
-
 		background.draw(minecraft);
 		recipeWrapper.drawInfo(minecraft, mouseX, mouseY);
 		guiItemStacks.draw(minecraft, mouseX, mouseY);
-
-		GL11.glPopMatrix();
 	}
 
 	@Nullable
