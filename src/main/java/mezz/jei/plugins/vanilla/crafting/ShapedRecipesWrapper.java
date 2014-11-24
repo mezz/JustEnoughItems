@@ -1,4 +1,4 @@
-package mezz.jei.recipe.crafting;
+package mezz.jei.plugins.vanilla.crafting;
 
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 import net.minecraft.client.Minecraft;

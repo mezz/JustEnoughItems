@@ -1,4 +1,4 @@
-package mezz.jei.recipe.crafting;
+package mezz.jei.plugins.vanilla.crafting;
 
 import mezz.jei.api.recipe.IRecipeHelper;
 import mezz.jei.api.recipe.IRecipeWrapper;

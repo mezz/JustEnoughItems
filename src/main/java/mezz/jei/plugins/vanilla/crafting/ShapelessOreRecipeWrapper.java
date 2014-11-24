@@ -1,27 +1,27 @@
-package mezz.jei.recipe.crafting;
+package mezz.jei.plugins.vanilla.crafting;
 
 import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
-public class ShapelessRecipesWrapper implements ICraftingRecipeWrapper {
+public class ShapelessOreRecipeWrapper implements ICraftingRecipeWrapper {
 
 	@Nonnull
-	private final ShapelessRecipes recipe;
+	private final ShapelessOreRecipe recipe;
 
-	public ShapelessRecipesWrapper(@Nonnull Object recipe) {
-		this.recipe = (ShapelessRecipes)recipe;
+	public ShapelessOreRecipeWrapper(@Nonnull Object recipe) {
+		this.recipe = (ShapelessOreRecipe)recipe;
 	}
 
 	@Nonnull
 	@Override
 	public List getInputs() {
-		return recipe.recipeItems;
+		return recipe.getInput();
 	}
 
 	@Nonnull
@@ -34,4 +34,5 @@ public class ShapelessRecipesWrapper implements ICraftingRecipeWrapper {
 	public void drawInfo(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 
 	}
+
 }

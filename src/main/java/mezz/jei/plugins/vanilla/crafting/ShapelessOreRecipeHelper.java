@@ -1,14 +1,14 @@
-package mezz.jei.recipe.crafting;
+package mezz.jei.plugins.vanilla.crafting;
 
 import mezz.jei.api.recipe.IRecipeHelper;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.type.EnumRecipeTypeKey;
 import mezz.jei.api.recipe.type.IRecipeTypeKey;
-import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import javax.annotation.Nonnull;
 
-public class ShapedRecipesHelper implements IRecipeHelper {
+public class ShapelessOreRecipeHelper implements IRecipeHelper {
 
 	@Nonnull
 	@Override
@@ -19,12 +19,12 @@ public class ShapedRecipesHelper implements IRecipeHelper {
 	@Nonnull
 	@Override
 	public Class getRecipeClass() {
-		return ShapedRecipes.class;
+		return ShapelessOreRecipe.class;
 	}
 
 	@Override
 	public IRecipeWrapper getRecipeWrapper(@Nonnull Object recipe) {
-		return new ShapedRecipesWrapper(recipe);
+		return new ShapelessOreRecipeWrapper(recipe);
 	}
 
 }
