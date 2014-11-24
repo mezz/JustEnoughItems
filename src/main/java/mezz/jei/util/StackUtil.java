@@ -137,9 +137,9 @@ public class StackUtil {
 
 	@Nonnull
 	public static List<ItemStack> toItemStackList(@Nonnull Iterable stacks) {
-		List<ItemStack> itemStacksFlat = new ArrayList<ItemStack>();
-		toItemStackList(itemStacksFlat, stacks);
-		return removeDuplicateItemStacks(itemStacksFlat);
+		List<ItemStack> itemStacksList = new ArrayList<ItemStack>();
+		toItemStackList(itemStacksList, stacks);
+		return removeDuplicateItemStacks(itemStacksList);
 	}
 
 	private static void toItemStackList(@Nonnull List<ItemStack> itemStackList, @Nonnull Iterable input) {

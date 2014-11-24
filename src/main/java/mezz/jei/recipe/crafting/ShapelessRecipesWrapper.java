@@ -1,6 +1,7 @@
 package mezz.jei.recipe.crafting;
 
-import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 
@@ -8,7 +9,7 @@ import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
-public class ShapelessRecipesWrapper implements IRecipeWrapper {
+public class ShapelessRecipesWrapper implements ICraftingRecipeWrapper {
 
 	@Nonnull
 	private final ShapelessRecipes recipe;
@@ -27,5 +28,10 @@ public class ShapelessRecipesWrapper implements IRecipeWrapper {
 	@Override
 	public List<ItemStack> getOutputs() {
 		return Collections.singletonList(recipe.getRecipeOutput());
+	}
+
+	@Override
+	public void drawInfo(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+
 	}
 }

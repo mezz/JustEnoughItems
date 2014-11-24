@@ -35,9 +35,9 @@ public class DrawableResource extends Gui implements IDrawable {
 		return height;
 	}
 
-	public void draw(@Nonnull Minecraft minecraft, int x, int y) {
+	public void draw(@Nonnull Minecraft minecraft) {
 		minecraft.getTextureManager().bindTexture(resourceLocation);
-		this.drawTexturedModalRect(x, y, u, v, width, height);
+		this.drawTexturedModalRect(0, 0, u, v, width, height);
 	}
 
 }

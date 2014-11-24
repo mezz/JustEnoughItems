@@ -8,6 +8,6 @@ public interface IDrawable {
 
 	int getWidth();
 	int getHeight();
-	void draw(@Nonnull Minecraft minecraft, int x, int y);
+	void draw(@Nonnull Minecraft minecraft);
 
 }

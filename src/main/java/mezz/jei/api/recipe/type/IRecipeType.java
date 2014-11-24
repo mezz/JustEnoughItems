@@ -1,6 +1,7 @@
 package mezz.jei.api.recipe.type;
 
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.recipe.IRecipeGui;
 
 import javax.annotation.Nonnull;
 
@@ -13,5 +14,8 @@ public interface IRecipeType {
 
 	@Nonnull
 	IDrawable getBackground();
+
+	@Nonnull
+	IRecipeGui createGui();
 
 }

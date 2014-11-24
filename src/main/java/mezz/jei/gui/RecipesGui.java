@@ -3,12 +3,11 @@ package mezz.jei.gui;
 import cpw.mods.fml.client.FMLClientHandler;
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.recipe.IRecipeGuiHelper;
+import mezz.jei.api.recipe.IRecipeGui;
 import mezz.jei.api.recipe.IRecipeHelper;
+import mezz.jei.api.recipe.wrapper.IRecipeWrapper;
 import mezz.jei.api.recipe.type.IRecipeType;
-import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
-import mezz.jei.recipe.RecipeGui;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -46,7 +45,7 @@ public class RecipesGui extends GuiScreen {
 
 	/* List of RecipeGui to display */
 	@Nonnull
-	private final List<RecipeGui> recipeGuis = new ArrayList<RecipeGui>();
+	private final List<IRecipeGui> recipeGuis = new ArrayList<IRecipeGui>();
 
 	/* List of recipes for the currently selected recipeClass */
 	@Nonnull
@@ -131,7 +130,7 @@ public class RecipesGui extends GuiScreen {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
 		ItemStack stack;
-		for (RecipeGui recipeGui : recipeGuis) {
+		for (IRecipeGui recipeGui : recipeGuis) {
 			stack = recipeGui.getStackUnderMouse(mouseX, mouseY);
 			if (stack != null) {
 				mouseClickedStack(mouseButton, stack);
@@ -269,8 +268,8 @@ public class RecipesGui extends GuiScreen {
 				Log.error("Couldn't find recipe helper for recipe: " + recipe);
 				continue;
 			}
-			IRecipeGuiHelper recipeGuiHelper = recipeHelper.createGuiHelper();
-			RecipeGui recipeGui = new RecipeGui(recipeType, recipeGuiHelper);
+
+			IRecipeGui recipeGui = recipeType.createGui();
 			recipeGui.setPosition(posX, posY);
 			posY += recipeBackground.getHeight() + recipeSpacing;
 
@@ -305,7 +304,7 @@ public class RecipesGui extends GuiScreen {
 		}
 		GL11.glPopMatrix();
 
-		for (RecipeGui recipeGui : recipeGuis) {
+		for (IRecipeGui recipeGui : recipeGuis) {
 			recipeGui.draw(minecraft, mouseX, mouseY);
 		}
 

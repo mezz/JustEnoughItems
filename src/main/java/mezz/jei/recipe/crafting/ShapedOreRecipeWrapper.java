@@ -1,6 +1,8 @@
 package mezz.jei.recipe.crafting;
 
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
+import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import scala.actors.threadpool.Arrays;
@@ -32,6 +34,11 @@ public class ShapedOreRecipeWrapper implements IShapedCraftingRecipeWrapper {
 	@Override
 	public List<ItemStack> getOutputs() {
 		return Collections.singletonList(recipe.getRecipeOutput());
+	}
+
+	@Override
+	public void drawInfo(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+
 	}
 
 	@Override

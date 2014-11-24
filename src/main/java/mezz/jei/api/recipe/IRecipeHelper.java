@@ -1,6 +1,7 @@
 package mezz.jei.api.recipe;
 
 import mezz.jei.api.recipe.type.IRecipeTypeKey;
+import mezz.jei.api.recipe.wrapper.IRecipeWrapper;
 
 import javax.annotation.Nonnull;
 
@@ -14,9 +15,6 @@ public interface IRecipeHelper {
 
 	/* Returns the type of this recipe. */
 	IRecipeTypeKey getRecipeTypeKey();
-
-	/* Returns a new IRecipeGuiHelper instance. */
-	IRecipeGuiHelper createGuiHelper();
 
 	/* Returns a recipe wrapper for the given recipe. */
 	IRecipeWrapper getRecipeWrapper(@Nonnull Object recipe);

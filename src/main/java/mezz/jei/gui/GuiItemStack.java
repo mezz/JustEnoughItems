@@ -34,7 +34,7 @@ public class GuiItemStack {
 	private boolean visible;
 
 	@Nonnull
-	private List<ItemStack> itemStacks = new ArrayList<ItemStack>();
+	private final List<ItemStack> itemStacks = new ArrayList<ItemStack>();
 	private long drawTime = 0;
 
 	public GuiItemStack(int xPosition, int yPosition, int padding) {
@@ -54,12 +54,13 @@ public class GuiItemStack {
 	}
 
 	public void setItemStacks(@Nonnull Iterable<ItemStack> itemStacksIn, @Nullable ItemStack focusStack) {
+		this.itemStacks.clear();
 		Set<ItemStack> itemStacks = StackUtil.getAllSubtypesSet(itemStacksIn);
 		ItemStack matchingItemStack = StackUtil.containsStack(itemStacks, focusStack);
 		if (matchingItemStack != null) {
-			this.itemStacks = Collections.singletonList(matchingItemStack);
+			this.itemStacks.add(matchingItemStack);
 		} else {
-			this.itemStacks = new ArrayList<ItemStack>(itemStacks);
+			this.itemStacks.addAll(itemStacks);
 		}
 		visible = enabled = !this.itemStacks.isEmpty();
 	}
