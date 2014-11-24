@@ -4,24 +4,22 @@ import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStacks;
 import mezz.jei.api.recipe.IRecipeGui;
+import mezz.jei.api.recipe.type.IRecipeType;
 import mezz.jei.api.recipe.wrapper.IFuelRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IRecipeWrapper;
-import mezz.jei.api.recipe.type.IRecipeType;
 import mezz.jei.api.recipe.wrapper.ISmeltingRecipeWrapper;
-import mezz.jei.util.StackUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
-public class FurnaceRecipeGui implements IRecipeGui {
+public final class FurnaceRecipeGui implements IRecipeGui {
 
-	protected static final int inputSlot = 0;
-	protected static final int fuelSlot = 1;
-	protected static final int outputSlot = 2;
+	private static final int inputSlot = 0;
+	private static final int fuelSlot = 1;
+	private static final int outputSlot = 2;
 
 	@Nonnull
 	private final IDrawable background;

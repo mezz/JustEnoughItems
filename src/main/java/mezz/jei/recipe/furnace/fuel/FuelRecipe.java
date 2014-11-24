@@ -1,11 +1,9 @@
 package mezz.jei.recipe.furnace.fuel;
 
 import mezz.jei.api.recipe.wrapper.IFuelRecipeWrapper;
-import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.StatCollector;
 
 import javax.annotation.Nonnull;
@@ -20,7 +18,7 @@ public class FuelRecipe implements IFuelRecipeWrapper {
 	@Nonnull
 	private final List<ItemStack> input;
 	@Nullable
-	private String burnTimeString;
+	private final String burnTimeString;
 
 	public FuelRecipe(@Nonnull Collection<ItemStack> input, int burnTime) {
 		this.input = new ArrayList<ItemStack>(input);

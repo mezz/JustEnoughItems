@@ -1,9 +1,9 @@
 package mezz.jei.recipe.crafting;
 
 import mezz.jei.api.recipe.IRecipeHelper;
-import mezz.jei.api.recipe.wrapper.IRecipeWrapper;
 import mezz.jei.api.recipe.type.EnumRecipeTypeKey;
 import mezz.jei.api.recipe.type.IRecipeTypeKey;
+import mezz.jei.api.recipe.wrapper.IRecipeWrapper;
 import net.minecraft.item.crafting.ShapedRecipes;
 
 import javax.annotation.Nonnull;

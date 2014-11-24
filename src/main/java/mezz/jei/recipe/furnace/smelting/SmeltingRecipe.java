@@ -20,7 +20,7 @@ public class SmeltingRecipe implements ISmeltingRecipeWrapper {
 	private final float experience;
 
 	@Nullable
-	private String experienceString;
+	private final String experienceString;
 
 	public SmeltingRecipe(@Nonnull List<ItemStack> input, @Nonnull ItemStack output, float experience) {
 		this.input = input;
