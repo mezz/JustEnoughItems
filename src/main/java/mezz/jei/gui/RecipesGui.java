@@ -2,6 +2,7 @@ package mezz.jei.gui;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import mezz.jei.api.JEIManager;
+import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipes.IRecipeGuiHelper;
 import mezz.jei.api.recipes.IRecipeHelper;
 import mezz.jei.api.recipes.IRecipeType;
@@ -247,9 +248,11 @@ public class RecipesGui extends GuiScreen {
 				break;
 		}
 
-		recipesPerPage = (ySize - headerHeight) / (recipeType.displayHeight() + borderPadding);
-		int recipeXOffset = (xSize - recipeType.displayWidth()) / 2;
-		int recipeSpacing = (ySize - headerHeight - (recipesPerPage * recipeType.displayHeight())) / (recipesPerPage + 1);
+		IDrawable recipeBackground = recipeType.getBackground();
+
+		recipesPerPage = (ySize - headerHeight) / (recipeBackground.getHeight() + borderPadding);
+		int recipeXOffset = (xSize - recipeBackground.getWidth()) / 2;
+		int recipeSpacing = (ySize - headerHeight - (recipesPerPage * recipeBackground.getHeight())) / (recipesPerPage + 1);
 
 		int posX = guiLeft + recipeXOffset;
 		int posY = guiTop + headerHeight + recipeSpacing;
@@ -267,9 +270,9 @@ public class RecipesGui extends GuiScreen {
 				continue;
 			}
 			IRecipeGuiHelper recipeGuiHelper = recipeHelper.createGuiHelper();
-			RecipeGui recipeGui = new RecipeGui(recipeGuiHelper);
+			RecipeGui recipeGui = new RecipeGui(recipeType, recipeGuiHelper);
 			recipeGui.setPosition(posX, posY);
-			posY += recipeType.displayHeight() + recipeSpacing;
+			posY += recipeBackground.getHeight() + recipeSpacing;
 
 			IRecipeWrapper recipeWrapper = recipeHelper.getRecipeWrapper(recipe);
 			recipeGui.setRecipe(recipeWrapper, focusStack);

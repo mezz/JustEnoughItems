@@ -1,5 +1,6 @@
 package mezz.jei.gui.resource;
 
+import mezz.jei.api.gui.IDrawable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.ResourceLocation;
@@ -22,6 +23,16 @@ public class DrawableResource extends Gui implements IDrawable {
 		this.v = v;
 		this.width = width;
 		this.height = height;
+	}
+
+	@Override
+	public int getWidth() {
+		return width;
+	}
+
+	@Override
+	public int getHeight() {
+		return height;
 	}
 
 	public void draw(@Nonnull Minecraft minecraft, int x, int y) {

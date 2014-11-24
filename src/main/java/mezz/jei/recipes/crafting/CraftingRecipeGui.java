@@ -2,14 +2,9 @@ package mezz.jei.recipes.crafting;
 
 import mezz.jei.api.gui.IGuiItemStacks;
 import mezz.jei.api.recipes.IRecipeGuiHelper;
-import mezz.jei.api.recipes.IRecipeType;
-import mezz.jei.api.recipes.RecipeType;
-import mezz.jei.gui.resource.DrawableResource;
-import mezz.jei.gui.resource.IDrawable;
 import mezz.jei.util.StackUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,13 +26,6 @@ public abstract class CraftingRecipeGui implements IRecipeGuiHelper {
 				guiItemStacks.initItemStack(index, x * 18, y * 18);
 			}
 		}
-	}
-
-	@Nonnull
-	public IDrawable getBackground() {
-		ResourceLocation location = new ResourceLocation("minecraft:textures/gui/container/crafting_table.png");
-		IRecipeType type = RecipeType.CRAFTING_TABLE;
-		return new DrawableResource(location, 29, 16, type.displayWidth(), type.displayHeight());
 	}
 
 	@Override

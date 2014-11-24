@@ -17,16 +17,17 @@ public interface IRecipeRegistry {
 	 *  Registering Recipes
 	 */
 
-	/* Register new IRecipeHelpers with JEI */
+	void registerRecipeType(IRecipeTypeKey recipeTypeKey, IRecipeType recipeType);
 	void registerRecipeHelpers(IRecipeHelper... recipeHelpers);
-
-	/* Add new recipes to JEI */
 	void addRecipes(Iterable recipes);
 
 	/**
 	 *  Using Recipes
 	 *  Available after JEI's FMLLoadCompleteEvent event
 	 */
+
+	@Nullable
+	IRecipeType getRecipeType(IRecipeTypeKey recipeTypeKey);
 
 	/* Returns the IRecipeHelper associated with the recipeClass or null if there is none */
 	@Nullable

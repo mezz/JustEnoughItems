@@ -1,10 +1,11 @@
 package mezz.jei.recipes;
 
 import mezz.jei.api.JEIManager;
+import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStacks;
 import mezz.jei.api.recipes.IRecipeGuiHelper;
+import mezz.jei.api.recipes.IRecipeType;
 import mezz.jei.api.recipes.IRecipeWrapper;
-import mezz.jei.gui.resource.IDrawable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
@@ -24,8 +25,8 @@ public final class RecipeGui {
 	private int posX;
 	private int posY;
 
-	public RecipeGui(@Nonnull IRecipeGuiHelper guiHelper) {
-		this.background = guiHelper.getBackground();
+	public RecipeGui(@Nonnull IRecipeType recipeType, @Nonnull IRecipeGuiHelper guiHelper) {
+		this.background = recipeType.getBackground();
 		this.guiHelper = guiHelper;
 		this.guiItemStacks = JEIManager.guiHelper.makeGuiItemStacks();
 		this.guiHelper.initGuiItemStacks(this.guiItemStacks);

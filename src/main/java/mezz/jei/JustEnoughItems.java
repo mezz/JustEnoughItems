@@ -9,14 +9,17 @@ import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import mezz.jei.api.JEIManager;
+import mezz.jei.api.recipes.EnumRecipeType;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.recipes.RecipeRegistry;
+import mezz.jei.recipes.crafting.RecipeTypeCrafting;
 import mezz.jei.recipes.crafting.ShapedOreRecipeHelper;
 import mezz.jei.recipes.crafting.ShapedRecipesHelper;
 import mezz.jei.recipes.crafting.ShapelessOreRecipeHelper;
 import mezz.jei.recipes.crafting.ShapelessRecipesHelper;
+import mezz.jei.recipes.furnace.RecipeTypeFurnace;
 import mezz.jei.recipes.furnace.fuel.FuelRecipe;
 import mezz.jei.recipes.furnace.fuel.FuelRecipeHelper;
 import mezz.jei.recipes.furnace.fuel.FuelRecipeMaker;
@@ -51,6 +54,9 @@ public class JustEnoughItems {
 	@EventHandler
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
 		Config.preInit(event);
+
+		JEIManager.recipeRegistry.registerRecipeType(EnumRecipeType.CRAFTING_TABLE, new RecipeTypeCrafting());
+		JEIManager.recipeRegistry.registerRecipeType(EnumRecipeType.FURNACE, new RecipeTypeFurnace());
 
 		JEIManager.recipeRegistry.registerRecipeHelpers(
 				new ShapedRecipesHelper(),

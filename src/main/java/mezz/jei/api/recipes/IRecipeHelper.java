@@ -11,7 +11,7 @@ public interface IRecipeHelper {
 	Class getRecipeClass();
 
 	/* Returns the type of this recipe. */
-	IRecipeType getRecipeType();
+	IRecipeTypeKey getRecipeTypeKey();
 
 	/* Returns a new IRecipeGuiHelper instance. */
 	IRecipeGuiHelper createGuiHelper();

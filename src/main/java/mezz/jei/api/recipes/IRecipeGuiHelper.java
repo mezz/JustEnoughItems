@@ -1,7 +1,6 @@
 package mezz.jei.api.recipes;
 
 import mezz.jei.api.gui.IGuiItemStacks;
-import mezz.jei.gui.resource.IDrawable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
@@ -18,9 +17,6 @@ public interface IRecipeGuiHelper {
 
 	/** Set the itemStacks based on the recipe and focusStack */
 	void setGuiItemStacks(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IRecipeWrapper recipeWrapper, @Nullable ItemStack focusStack);
-
-	@Nonnull
-	IDrawable getBackground();
 
 	/* Draw additional info. */
 	void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY);

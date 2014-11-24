@@ -1,5 +1,7 @@
 package mezz.jei.api.recipes;
 
+import mezz.jei.api.gui.IDrawable;
+
 import javax.annotation.Nonnull;
 
 /* Defines a type of recipe, i.e. Crafting Table Recipe, Furnace Recipe, etc. */
@@ -9,8 +11,7 @@ public interface IRecipeType {
 	@Nonnull
 	String getLocalizedName();
 
-	/* Returns the dimensions of the drawn recipe type. */
-	int displayWidth();
-	int displayHeight();
+	@Nonnull
+	IDrawable getBackground();
 
 }
