@@ -9,7 +9,7 @@ import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import mezz.jei.api.JEIManager;
-import mezz.jei.api.recipe.type.EnumRecipeType;
+import mezz.jei.api.recipe.type.EnumRecipeTypeKey;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.GuiHelper;
@@ -55,8 +55,8 @@ public class JustEnoughItems {
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
 		Config.preInit(event);
 
-		JEIManager.recipeRegistry.registerRecipeType(EnumRecipeType.CRAFTING_TABLE, new RecipeTypeCrafting());
-		JEIManager.recipeRegistry.registerRecipeType(EnumRecipeType.FURNACE, new RecipeTypeFurnace());
+		JEIManager.recipeRegistry.registerRecipeType(EnumRecipeTypeKey.CRAFTING_TABLE, new RecipeTypeCrafting());
+		JEIManager.recipeRegistry.registerRecipeType(EnumRecipeTypeKey.FURNACE, new RecipeTypeFurnace());
 
 		JEIManager.recipeRegistry.registerRecipeHelpers(
 				new ShapedRecipesHelper(),

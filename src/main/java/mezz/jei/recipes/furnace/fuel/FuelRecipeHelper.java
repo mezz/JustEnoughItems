@@ -1,6 +1,6 @@
 package mezz.jei.recipe.furnace.fuel;
 
-import mezz.jei.api.recipe.type.EnumRecipeType;
+import mezz.jei.api.recipe.type.EnumRecipeTypeKey;
 import mezz.jei.api.recipe.IRecipeGuiHelper;
 import mezz.jei.api.recipe.IRecipeHelper;
 import mezz.jei.api.recipe.type.IRecipeTypeKey;
@@ -18,7 +18,7 @@ public class FuelRecipeHelper implements IRecipeHelper {
 	@Nonnull
 	@Override
 	public IRecipeTypeKey getRecipeTypeKey() {
-		return EnumRecipeType.FURNACE;
+		return EnumRecipeTypeKey.FURNACE;
 	}
 
 	@Nonnull

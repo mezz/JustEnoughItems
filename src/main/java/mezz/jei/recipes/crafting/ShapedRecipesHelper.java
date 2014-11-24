@@ -1,6 +1,6 @@
 package mezz.jei.recipe.crafting;
 
-import mezz.jei.api.recipe.type.EnumRecipeType;
+import mezz.jei.api.recipe.type.EnumRecipeTypeKey;
 import mezz.jei.api.recipe.IRecipeGuiHelper;
 import mezz.jei.api.recipe.IRecipeHelper;
 import mezz.jei.api.recipe.type.IRecipeTypeKey;
@@ -14,7 +14,7 @@ public class ShapedRecipesHelper implements IRecipeHelper {
 	@Nonnull
 	@Override
 	public IRecipeTypeKey getRecipeTypeKey() {
-		return EnumRecipeType.CRAFTING_TABLE;
+		return EnumRecipeTypeKey.CRAFTING_TABLE;
 	}
 
 	@Nonnull
