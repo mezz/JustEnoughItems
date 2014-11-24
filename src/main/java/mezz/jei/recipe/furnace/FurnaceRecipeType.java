@@ -1,9 +1,9 @@
 package mezz.jei.recipe.furnace;
 
+import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IRecipeGui;
 import mezz.jei.api.recipe.type.IRecipeType;
-import mezz.jei.gui.resource.DrawableResource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 
@@ -18,7 +18,7 @@ public class FurnaceRecipeType implements IRecipeType {
 
 	public FurnaceRecipeType() {
 		ResourceLocation location = new ResourceLocation("minecraft:textures/gui/container/furnace.png");
-		background = new DrawableResource(location, 55, 16, 82, 54);
+		background = JEIManager.guiHelper.makeDrawable(location, 55, 16, 82, 54);
 		localizedName = StatCollector.translateToLocal("gui.jei.furnaceRecipes");
 	}
 

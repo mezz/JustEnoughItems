@@ -1,4 +1,4 @@
-package mezz.jei.gui.resource;
+package mezz.jei.gui;
 
 import mezz.jei.api.gui.IDrawable;
 import net.minecraft.client.Minecraft;

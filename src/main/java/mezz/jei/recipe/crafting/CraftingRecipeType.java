@@ -1,9 +1,9 @@
 package mezz.jei.recipe.crafting;
 
+import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IRecipeGui;
 import mezz.jei.api.recipe.type.IRecipeType;
-import mezz.jei.gui.resource.DrawableResource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 
@@ -18,7 +18,7 @@ public class CraftingRecipeType implements IRecipeType {
 
 	public CraftingRecipeType() {
 		ResourceLocation location = new ResourceLocation("minecraft:textures/gui/container/crafting_table.png");
-		background = new DrawableResource(location, 29, 16, 116, 54);
+		background = JEIManager.guiHelper.makeDrawable(location, 29, 16, 116, 54);
 		localizedName = StatCollector.translateToLocal("gui.jei.craftingTableRecipes");
 	}
 
