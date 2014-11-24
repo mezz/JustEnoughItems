@@ -1,6 +1,5 @@
 package mezz.jei.api.recipe;
 
-import mezz.jei.api.recipe.wrapper.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 

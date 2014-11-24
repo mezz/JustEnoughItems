@@ -1,5 +1,7 @@
-package mezz.jei.api.gui;
+package mezz.jei.api;
 
+import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.IGuiItemStacks;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;

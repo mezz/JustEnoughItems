@@ -1,7 +1,7 @@
-package mezz.jei.recipe;
+package mezz.jei.util;
 
 import cpw.mods.fml.common.registry.GameData;
-import mezz.jei.api.recipe.type.IRecipeType;
+import mezz.jei.api.recipe.IRecipeType;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * A RecipeMap efficiently links Recipes, IRecipeTypes, and ItemStacks.
  */
-class RecipeMap {
+public class RecipeMap {
 
 	@Nonnull
 	private final Map<IRecipeType, RecipesForStack> recipeMap = new HashMap<IRecipeType, RecipesForStack>();

@@ -1,7 +1,6 @@
-package mezz.jei.api.recipe.type;
+package mezz.jei.api.recipe;
 
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.recipe.IRecipeGui;
 
 import javax.annotation.Nonnull;
 

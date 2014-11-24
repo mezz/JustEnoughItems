@@ -2,8 +2,8 @@ package mezz.jei.gui;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import mezz.jei.JustEnoughItems;
-import mezz.jei.KeyBindings;
 import mezz.jei.config.Config;
+import mezz.jei.config.KeyBindings;
 import mezz.jei.util.Commands;
 import mezz.jei.util.Permissions;
 import net.minecraft.client.Minecraft;

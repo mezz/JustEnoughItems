@@ -1,7 +1,6 @@
 package mezz.jei.api.recipe;
 
 import mezz.jei.api.recipe.type.IRecipeTypeKey;
-import mezz.jei.api.recipe.wrapper.IRecipeWrapper;
 
 import javax.annotation.Nonnull;
 

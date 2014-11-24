@@ -1,7 +1,6 @@
-package mezz.jei;
+package mezz.jei.config;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
-import mezz.jei.config.Constants;
 import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
 

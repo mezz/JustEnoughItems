@@ -1,9 +1,9 @@
 package mezz.jei.recipe.furnace.smelting;
 
 import mezz.jei.api.recipe.IRecipeHelper;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.type.EnumRecipeTypeKey;
 import mezz.jei.api.recipe.type.IRecipeTypeKey;
-import mezz.jei.api.recipe.wrapper.IRecipeWrapper;
 
 import javax.annotation.Nonnull;
 

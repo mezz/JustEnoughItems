@@ -3,7 +3,7 @@ package mezz.jei.recipe.crafting;
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IRecipeGui;
-import mezz.jei.api.recipe.type.IRecipeType;
+import mezz.jei.api.recipe.IRecipeType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 

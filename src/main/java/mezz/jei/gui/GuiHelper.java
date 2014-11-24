@@ -1,7 +1,7 @@
 package mezz.jei.gui;
 
+import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IGuiHelper;
 import mezz.jei.api.gui.IGuiItemStacks;
 import net.minecraft.util.ResourceLocation;
 

@@ -1,7 +1,7 @@
 package mezz.jei.gui;
 
 import mezz.jei.api.recipe.IRecipeGui;
-import mezz.jei.api.recipe.wrapper.IRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;

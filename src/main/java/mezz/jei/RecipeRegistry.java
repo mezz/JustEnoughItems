@@ -1,11 +1,12 @@
-package mezz.jei.recipe;
+package mezz.jei;
 
+import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IRecipeHelper;
-import mezz.jei.api.recipe.IRecipeRegistry;
-import mezz.jei.api.recipe.type.IRecipeType;
+import mezz.jei.api.recipe.IRecipeType;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.type.IRecipeTypeKey;
-import mezz.jei.api.recipe.wrapper.IRecipeWrapper;
 import mezz.jei.util.Log;
+import mezz.jei.util.RecipeMap;
 import mezz.jei.util.StackUtil;
 import net.minecraft.item.ItemStack;
 
