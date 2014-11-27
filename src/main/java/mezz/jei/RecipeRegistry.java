@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 class RecipeRegistry implements IRecipeRegistry {
 	private final Map<Class, IRecipeHelper> recipeHelpers = new HashMap<Class, IRecipeHelper>();
@@ -86,15 +85,13 @@ class RecipeRegistry implements IRecipeRegistry {
 			List inputs = recipeWrapper.getInputs();
 			if (inputs != null) {
 				List<ItemStack> inputStacks = StackUtil.toItemStackList(inputs);
-				Set<ItemStack> inputStacksSet = StackUtil.getAllSubtypesSet(inputStacks);
-				recipeInputMap.addRecipe(recipe, recipeType, inputStacksSet);
+				recipeInputMap.addRecipe(recipe, recipeType, inputStacks);
 			}
 
 			List<ItemStack> outputs = recipeWrapper.getOutputs();
 			if (outputs != null) {
 				outputs = StackUtil.toItemStackList(outputs);
-				Set<ItemStack> outputSet = StackUtil.getAllSubtypesSet(outputs);
-				recipeOutputMap.addRecipe(recipe, recipeType, outputSet);
+				recipeOutputMap.addRecipe(recipe, recipeType, outputs);
 			}
 		}
 	}

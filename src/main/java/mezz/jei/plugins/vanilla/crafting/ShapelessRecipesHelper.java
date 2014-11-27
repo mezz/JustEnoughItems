@@ -10,8 +10,6 @@ import javax.annotation.Nonnull;
 
 public class ShapelessRecipesHelper implements IRecipeHelper {
 
-	private ShapelessRecipes recipe;
-
 	@Nonnull
 	@Override
 	public IRecipeTypeKey getRecipeTypeKey() {

@@ -9,9 +9,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class StackUtil {
 
@@ -89,46 +87,20 @@ public class StackUtil {
 		return removeDuplicateItemStacks(itemStacks);
 	}
 
-	@Nonnull
-	public static List<List<ItemStack>> getAllSubtypes(@Nonnull Iterable stacks) {
-		List<List<ItemStack>> allSubtypes = new ArrayList<List<ItemStack>>();
+	public static List<ItemStack> getAllSubtypes(Iterable stacks) {
+		List<ItemStack> allSubtypes = new ArrayList<ItemStack>();
 		getAllSubtypes(allSubtypes, stacks);
 		return allSubtypes;
 	}
 
-	private static void getAllSubtypes(List<List<ItemStack>> allSubtypes, Iterable stacks) {
+	private static void getAllSubtypes(List<ItemStack> subtypesList, Iterable stacks) {
 		for (Object obj : stacks) {
 			if (obj instanceof ItemStack) {
 				ItemStack itemStack = (ItemStack) obj;
 				List<ItemStack> subtypes = getSubtypes(itemStack);
-				allSubtypes.add(subtypes);
+				subtypesList.addAll(subtypes);
 			} else if (obj instanceof Iterable) {
-				List<List<ItemStack>> objSubtypes = getAllSubtypes((Iterable)obj);
-				List<ItemStack> subtypes = toItemStackList(objSubtypes);
-				allSubtypes.add(subtypes);
-			} else if (obj != null) {
-				Log.error("Unknown object found: " + obj);
-				allSubtypes.add(null);
-			} else {
-				allSubtypes.add(null);
-			}
-		}
-	}
-
-	public static Set<ItemStack> getAllSubtypesSet(Iterable stacks) {
-		Set<ItemStack> allSubtypes = new HashSet<ItemStack>();
-		getAllSubtypesSet(allSubtypes, stacks);
-		return allSubtypes;
-	}
-
-	private static void getAllSubtypesSet(Set<ItemStack> subtypesSet, Iterable stacks) {
-		for (Object obj : stacks) {
-			if (obj instanceof ItemStack) {
-				ItemStack itemStack = (ItemStack) obj;
-				List<ItemStack> subtypes = getSubtypes(itemStack);
-				subtypesSet.addAll(subtypes);
-			} else if (obj instanceof Iterable) {
-				getAllSubtypesSet(subtypesSet, (Iterable)obj);
+				getAllSubtypes(subtypesList, (Iterable) obj);
 			} else if (obj != null) {
 				Log.error("Unknown object found: " + obj);
 			}

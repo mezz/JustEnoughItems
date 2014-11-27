@@ -32,7 +32,7 @@ public class FuelRecipeMaker {
 
 					oreDictNames.add(name);
 					List<ItemStack> oreDictFuels = OreDictionary.getOres(name);
-					Set<ItemStack> oreDictFuelsSet = StackUtil.getAllSubtypesSet(oreDictFuels);
+					Collection<ItemStack> oreDictFuelsSet = StackUtil.getAllSubtypes(oreDictFuels);
 					removeNoBurnTime(oreDictFuelsSet);
 					if (oreDictFuels.isEmpty())
 						continue;

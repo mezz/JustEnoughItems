@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL12;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -25,8 +26,10 @@ public class GuiItemStack {
 	private final int width;
 	private final int height;
 	private final int padding;
+
 	/* the amount of time in ms to display one itemStack before cycling to the next one */
 	private final int cycleTime = 1000;
+	private long drawTime = 0;
 
 	private int xPosition;
 	private int yPosition;
@@ -35,7 +38,6 @@ public class GuiItemStack {
 
 	@Nonnull
 	private final List<ItemStack> itemStacks = new ArrayList<ItemStack>();
-	private long drawTime = 0;
 
 	public GuiItemStack(int xPosition, int yPosition, int padding) {
 		this.xPosition = xPosition;
@@ -55,7 +57,7 @@ public class GuiItemStack {
 
 	public void setItemStacks(@Nonnull Iterable<ItemStack> itemStacksIn, @Nullable ItemStack focusStack) {
 		this.itemStacks.clear();
-		Set<ItemStack> itemStacks = StackUtil.getAllSubtypesSet(itemStacksIn);
+		Collection<ItemStack> itemStacks = StackUtil.getAllSubtypes(itemStacksIn);
 		ItemStack matchingItemStack = StackUtil.containsStack(itemStacks, focusStack);
 		if (matchingItemStack != null) {
 			this.itemStacks.add(matchingItemStack);

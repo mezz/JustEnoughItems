@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 public interface IGuiItemStacks {
 
 	/**
-	 * ItemStacks must be initialized before they are set.
+	 * ItemStacks must be initialized once, and then can be set many times.
 	 * Default padding is 1.
 	 */
 	void initItemStack(int index, int xPosition, int yPosition);

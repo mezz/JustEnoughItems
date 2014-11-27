@@ -29,6 +29,7 @@ public interface IRecipeRegistry {
 	 *  Available after JEI's FMLLoadCompleteEvent event
 	 */
 
+	/* Returns the IRecipeType if it has been registered. */
 	@Nullable
 	IRecipeType getRecipeType(IRecipeTypeKey recipeTypeKey);
 

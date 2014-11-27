@@ -113,9 +113,8 @@ class ItemRegistry {
 
 	@Nonnull
 	private String uniqueIdentifierForStack(@Nonnull ItemStack stack) {
-		int id = GameData.getItemRegistry().getId(stack.getItem());
 		StringBuilder itemKey = new StringBuilder();
-		itemKey.append(id).append(":").append(stack.getItemDamage());
+		itemKey.append(stack.getUnlocalizedName()).append(":").append(stack.getItemDamage());
 		if (stack.hasTagCompound())
 			itemKey.append(":").append(stack.getTagCompound());
 		return itemKey.toString();

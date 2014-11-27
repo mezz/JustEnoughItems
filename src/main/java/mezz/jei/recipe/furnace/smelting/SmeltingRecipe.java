@@ -17,7 +17,6 @@ public class SmeltingRecipe implements ISmeltingRecipeWrapper {
 	private final List<ItemStack> input;
 	@Nonnull
 	private final ItemStack output;
-	private final float experience;
 
 	@Nullable
 	private final String experienceString;
@@ -25,7 +24,6 @@ public class SmeltingRecipe implements ISmeltingRecipeWrapper {
 	public SmeltingRecipe(@Nonnull List<ItemStack> input, @Nonnull ItemStack output, float experience) {
 		this.input = input;
 		this.output = output;
-		this.experience = experience;
 
 		if (experience > 0.0) {
 			experienceString = StatCollector.translateToLocalFormatted("gui.jei.furnaceExperience", experience);
@@ -50,10 +48,6 @@ public class SmeltingRecipe implements ISmeltingRecipeWrapper {
 			FontRenderer fontRendererObj = minecraft.fontRenderer;
 			fontRendererObj.drawString(experienceString, 69 - fontRendererObj.getStringWidth(experienceString) / 2, 0, Color.gray.getRGB());
 		}
-	}
-
-	public float getExperience() {
-		return experience;
 	}
 
 }
