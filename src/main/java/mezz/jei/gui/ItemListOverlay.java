@@ -5,6 +5,7 @@ import mezz.jei.JustEnoughItems;
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.util.Commands;
+import mezz.jei.util.MathUtil;
 import mezz.jei.util.Permissions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
@@ -338,7 +339,7 @@ public class ItemListOverlay {
 
 	private void updatePageCount() {
 		int count = JustEnoughItems.itemFilter.size();
-		pageCount = (int) Math.ceil((double) count / (double) getCountPerPage());
+		pageCount = MathUtil.divideCeil(count, getCountPerPage());
 		if (pageCount == 0)
 			pageCount = 1;
 	}

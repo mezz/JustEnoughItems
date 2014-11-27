@@ -9,6 +9,7 @@ import mezz.jei.api.recipe.IRecipeType;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Log;
+import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -234,8 +235,8 @@ public class RecipesGui extends GuiScreen {
 	private int pageCount() {
 		if (recipes.size() <= 1)
 			return 1;
-		Double pageCount = Math.ceil(recipes.size() / (float)recipesPerPage);
-		return pageCount.intValue();
+
+		return MathUtil.divideCeil(recipes.size(), recipesPerPage);
 	}
 
 	private void updateLayout() {
