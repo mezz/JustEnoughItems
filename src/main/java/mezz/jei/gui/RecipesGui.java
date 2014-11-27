@@ -148,6 +148,14 @@ public class RecipesGui extends GuiScreen {
 		return false;
 	}
 
+	public boolean showRecipes(@Nonnull ItemStack stack) {
+		return setStack(stack, Mode.OUTPUT);
+	}
+
+	public boolean showUses(@Nonnull ItemStack stack) {
+		return setStack(stack, Mode.INPUT);
+	}
+
 	@Override
 	protected void actionPerformed(@Nonnull GuiButton guibutton) {
 		if (guibutton.id == nextPage.id)

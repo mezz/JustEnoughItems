@@ -79,10 +79,14 @@ public class GuiEventHandler {
 			return;
 
 		Minecraft minecraft = Minecraft.getMinecraft();
-		if (asGuiContainer(minecraft.currentScreen) == null)
+		GuiContainer guiContainer = asGuiContainer(minecraft.currentScreen);
+		if (guiContainer == null)
 			return;
 
 		itemListOverlay.handleTick();
+
+		Slot theSlot = guiContainer.theSlot;
+		itemListOverlay.handleKeyEvent(theSlot);
 	}
 
 	@Nullable
