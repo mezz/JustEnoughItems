@@ -10,6 +10,7 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Log;
 import mezz.jei.util.MathUtil;
+import mezz.jei.util.StringUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -307,9 +308,8 @@ public class RecipesGui extends GuiScreen {
 			GL11.glTranslatef(guiLeft, guiTop, 0.0F);
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-			fontRendererObj.drawString(title, (xSize / 2) - fontRendererObj.getStringWidth(title) / 2, borderPadding, Color.black.getRGB());
-			fontRendererObj.drawString(pageString, (xSize / 2) - fontRendererObj.getStringWidth(pageString) / 2, titleHeight + textPadding, Color.black.getRGB());
-
+			StringUtil.drawCenteredString(fontRendererObj, title, xSize, borderPadding, Color.black.getRGB());
+			StringUtil.drawCenteredString(fontRendererObj, pageString, xSize, titleHeight + textPadding, Color.black.getRGB());
 		}
 		GL11.glPopMatrix();
 
