@@ -1,17 +1,18 @@
-package mezz.jei.recipe.furnace.fuel;
+package mezz.jei.recipe.furnace.smelting;
 
-import mezz.jei.api.recipe.IRecipeHelper;
+import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.type.EnumRecipeTypeKey;
 import mezz.jei.api.recipe.type.IRecipeTypeKey;
 
 import javax.annotation.Nonnull;
 
-public class FuelRecipeHelper implements IRecipeHelper {
+public class SmeltingRecipeHandler implements IRecipeHandler {
+
 	@Nonnull
 	@Override
 	public Class getRecipeClass() {
-		return FuelRecipe.class;
+		return SmeltingRecipe.class;
 	}
 
 	@Nonnull
@@ -22,7 +23,7 @@ public class FuelRecipeHelper implements IRecipeHelper {
 
 	@Override
 	public IRecipeWrapper getRecipeWrapper(@Nonnull Object recipe) {
-		return (FuelRecipe)recipe;
+		return (SmeltingRecipe)recipe;
 	}
 
 }

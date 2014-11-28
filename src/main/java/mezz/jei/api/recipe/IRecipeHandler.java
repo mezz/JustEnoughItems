@@ -6,12 +6,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * An IRecipeHelper provides information about one Recipe Class.
+ * An IRecipeHandler provides information about one Recipe Class.
  */
-public interface IRecipeHelper {
+public interface IRecipeHandler {
 
 	/**
-	 *  Returns the class of the Recipe handled by this IRecipeHelper.
+	 *  Returns the class of the Recipe handled by this IRecipeHandler.
 	 *  Returns null if the class is not available.
 	 */
 	@Nullable

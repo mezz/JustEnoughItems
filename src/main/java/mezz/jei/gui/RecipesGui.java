@@ -4,7 +4,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IRecipeGui;
-import mezz.jei.api.recipe.IRecipeHelper;
+import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeType;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
@@ -298,8 +298,8 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 				break;
 
 			Object recipe = recipes.get(recipeIndex);
-			IRecipeHelper recipeHelper = JEIManager.recipeRegistry.getRecipeHelper(recipe.getClass());
-			if (recipeHelper == null) {
+			IRecipeHandler recipeHandler = JEIManager.recipeRegistry.getRecipeHandler(recipe.getClass());
+			if (recipeHandler == null) {
 				Log.error("Couldn't find recipe helper for recipe: " + recipe);
 				continue;
 			}
@@ -308,7 +308,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 			recipeGui.setPosition(posX, posY);
 			posY += recipeBackground.getHeight() + recipeSpacing;
 
-			IRecipeWrapper recipeWrapper = recipeHelper.getRecipeWrapper(recipe);
+			IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
 			recipeGui.setRecipe(recipeWrapper, focusStack);
 			recipeGuis.add(recipeGui);
 		}

@@ -1,6 +1,6 @@
 package mezz.jei.api;
 
-import mezz.jei.api.recipe.IRecipeHelper;
+import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeType;
 import mezz.jei.api.recipe.type.IRecipeTypeKey;
 import net.minecraft.item.ItemStack;
@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * IRecipeManager is used to register new IRecipeHelpers and recipes.
+ * IRecipeManager is used to register new IRecipeHandlers and recipes.
  * Once registered, the IRecipeManager offers several functions for retrieving and handling recipes.
  * The IRecipeManager instance is provided in JEIManager.
  */
@@ -21,7 +21,7 @@ public interface IRecipeRegistry {
 	 */
 
 	void registerRecipeType(IRecipeTypeKey recipeTypeKey, IRecipeType recipeType);
-	void registerRecipeHelpers(IRecipeHelper... recipeHelpers);
+	void registerRecipeHandlers(IRecipeHandler... recipeHandlers);
 	void addRecipes(Iterable recipes);
 
 	/**
@@ -33,9 +33,9 @@ public interface IRecipeRegistry {
 	@Nullable
 	IRecipeType getRecipeType(IRecipeTypeKey recipeTypeKey);
 
-	/* Returns the IRecipeHelper associated with the recipeClass or null if there is none */
+	/* Returns the IRecipeHandler associated with the recipeClass or null if there is none */
 	@Nullable
-	IRecipeHelper getRecipeHelper(Class recipeClass);
+	IRecipeHandler getRecipeHandler(Class recipeClass);
 
 	/* Returns a list of Recipe Types that have the ItemStack as an input */
 	@Nonnull

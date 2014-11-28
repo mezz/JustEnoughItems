@@ -1,7 +1,7 @@
 package mezz.jei;
 
 import mezz.jei.api.IRecipeRegistry;
-import mezz.jei.api.recipe.IRecipeHelper;
+import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeType;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.type.IRecipeTypeKey;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 class RecipeRegistry implements IRecipeRegistry {
-	private final Map<Class, IRecipeHelper> recipeHelpers = new HashMap<Class, IRecipeHelper>();
+	private final Map<Class, IRecipeHandler> recipeHandlers = new HashMap<Class, IRecipeHandler>();
 	private final Map<IRecipeTypeKey, IRecipeType> recipeTypes = new HashMap<IRecipeTypeKey, IRecipeType>();
 	private final RecipeMap recipeInputMap = new RecipeMap();
 	private final RecipeMap recipeOutputMap = new RecipeMap();
@@ -38,22 +38,22 @@ class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public final void registerRecipeHelpers(@Nullable IRecipeHelper... recipeHelpers) {
-		if (recipeHelpers == null)
+	public final void registerRecipeHandlers(@Nullable IRecipeHandler... recipeHandlers) {
+		if (recipeHandlers == null)
 			return;
 
-		for (IRecipeHelper recipeHelper : recipeHelpers) {
-			if (recipeHelper == null)
+		for (IRecipeHandler recipeHandler : recipeHandlers) {
+			if (recipeHandler == null)
 				continue;
 
-			Class recipeClass = recipeHelper.getRecipeClass();
+			Class recipeClass = recipeHandler.getRecipeClass();
 			if (recipeClass == null)
 				continue;
 
-			if (this.recipeHelpers.containsKey(recipeClass))
-				throw new IllegalArgumentException("A Recipe Helper has already been registered for this recipe class: " + recipeClass.getName());
+			if (this.recipeHandlers.containsKey(recipeClass))
+				throw new IllegalArgumentException("A Recipe Handler has already been registered for this recipe class: " + recipeClass.getName());
 
-			this.recipeHelpers.put(recipeClass, recipeHelper);
+			this.recipeHandlers.put(recipeClass, recipeHandler);
 		}
 	}
 
@@ -68,19 +68,19 @@ class RecipeRegistry implements IRecipeRegistry {
 
 			Class recipeClass = recipe.getClass();
 
-			IRecipeHelper recipeHelper = getRecipeHelper(recipeClass);
-			if (recipeHelper == null) {
+			IRecipeHandler recipeHandler = getRecipeHandler(recipeClass);
+			if (recipeHandler == null) {
 				Log.debug("Can't handle recipe: " + recipe);
 				continue;
 			}
-			IRecipeTypeKey recipeTypeKey = recipeHelper.getRecipeTypeKey();
+			IRecipeTypeKey recipeTypeKey = recipeHandler.getRecipeTypeKey();
 			IRecipeType recipeType = getRecipeType(recipeTypeKey);
 			if (recipeType == null) {
 				Log.error("No recipe type registered for key: " + recipeTypeKey);
 				continue;
 			}
 
-			IRecipeWrapper recipeWrapper = recipeHelper.getRecipeWrapper(recipe);
+			IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
 
 			List inputs = recipeWrapper.getInputs();
 			if (inputs != null) {
@@ -98,13 +98,13 @@ class RecipeRegistry implements IRecipeRegistry {
 
 	@Nullable
 	@Override
-	public IRecipeHelper getRecipeHelper(@Nonnull Class recipeClass) {
-		IRecipeHelper recipeHelper;
-		while ((recipeHelper = recipeHelpers.get(recipeClass)) == null && (recipeClass != Object.class)) {
+	public IRecipeHandler getRecipeHandler(@Nonnull Class recipeClass) {
+		IRecipeHandler recipeHandler;
+		while ((recipeHandler = recipeHandlers.get(recipeClass)) == null && (recipeClass != Object.class)) {
 			recipeClass = recipeClass.getSuperclass();
 		}
 
-		return recipeHelper;
+		return recipeHandler;
 	}
 
 	@Nonnull

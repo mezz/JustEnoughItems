@@ -14,18 +14,18 @@ import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiHelper;
-import mezz.jei.plugins.forestry.crafting.ForestryShapedRecipeHelper;
-import mezz.jei.plugins.vanilla.crafting.ShapedOreRecipeHelper;
-import mezz.jei.plugins.vanilla.crafting.ShapedRecipesHelper;
-import mezz.jei.plugins.vanilla.crafting.ShapelessOreRecipeHelper;
-import mezz.jei.plugins.vanilla.crafting.ShapelessRecipesHelper;
+import mezz.jei.plugins.forestry.crafting.ForestryShapedRecipeHandler;
+import mezz.jei.plugins.vanilla.crafting.ShapedOreRecipeHandler;
+import mezz.jei.plugins.vanilla.crafting.ShapedRecipesHandler;
+import mezz.jei.plugins.vanilla.crafting.ShapelessOreRecipeHandler;
+import mezz.jei.plugins.vanilla.crafting.ShapelessRecipesHandler;
 import mezz.jei.recipe.crafting.CraftingRecipeType;
 import mezz.jei.recipe.furnace.FurnaceRecipeType;
 import mezz.jei.recipe.furnace.fuel.FuelRecipe;
-import mezz.jei.recipe.furnace.fuel.FuelRecipeHelper;
+import mezz.jei.recipe.furnace.fuel.FuelRecipeHandler;
 import mezz.jei.recipe.furnace.fuel.FuelRecipeMaker;
 import mezz.jei.recipe.furnace.smelting.SmeltingRecipe;
-import mezz.jei.recipe.furnace.smelting.SmeltingRecipeHelper;
+import mezz.jei.recipe.furnace.smelting.SmeltingRecipeHandler;
 import mezz.jei.recipe.furnace.smelting.SmeltingRecipeMaker;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
@@ -59,14 +59,14 @@ public class JustEnoughItems {
 		JEIManager.recipeRegistry.registerRecipeType(EnumRecipeTypeKey.CRAFTING_TABLE, new CraftingRecipeType());
 		JEIManager.recipeRegistry.registerRecipeType(EnumRecipeTypeKey.FURNACE, new FurnaceRecipeType());
 
-		JEIManager.recipeRegistry.registerRecipeHelpers(
-				new ShapedRecipesHelper(),
-				new ShapedOreRecipeHelper(),
-				new ShapelessRecipesHelper(),
-				new ShapelessOreRecipeHelper(),
-				new SmeltingRecipeHelper(),
-				new FuelRecipeHelper(),
-				new ForestryShapedRecipeHelper()
+		JEIManager.recipeRegistry.registerRecipeHandlers(
+				new ShapedRecipesHandler(),
+				new ShapedOreRecipeHandler(),
+				new ShapelessRecipesHandler(),
+				new ShapelessOreRecipeHandler(),
+				new SmeltingRecipeHandler(),
+				new FuelRecipeHandler(),
+				new ForestryShapedRecipeHandler()
 		);
 	}
 

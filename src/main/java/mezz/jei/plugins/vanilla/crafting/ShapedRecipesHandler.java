@@ -1,6 +1,6 @@
 package mezz.jei.plugins.vanilla.crafting;
 
-import mezz.jei.api.recipe.IRecipeHelper;
+import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.type.EnumRecipeTypeKey;
 import mezz.jei.api.recipe.type.IRecipeTypeKey;
@@ -8,7 +8,7 @@ import net.minecraft.item.crafting.ShapedRecipes;
 
 import javax.annotation.Nonnull;
 
-public class ShapedRecipesHelper implements IRecipeHelper {
+public class ShapedRecipesHandler implements IRecipeHandler {
 
 	@Nonnull
 	@Override
