@@ -4,6 +4,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.RecipesGui;
+import mezz.jei.input.InputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -17,19 +18,25 @@ import javax.annotation.Nullable;
 
 public class GuiEventHandler {
 
-	@Nonnull private final ItemListOverlay itemListOverlay = new ItemListOverlay();
-	@Nonnull private final RecipesGui recipesGui = new RecipesGui();
+	@Nonnull
+	private final ItemListOverlay itemListOverlay = new ItemListOverlay();
+	@Nonnull
+	private final RecipesGui recipesGui = new RecipesGui();
+	@Nonnull
+	private InputHandler inputHandler;
 
 	@SubscribeEvent
 	public void onGuiInit(@Nonnull GuiScreenEvent.InitGuiEvent.Post event) {
 		GuiContainer guiContainer = asGuiContainer(event.gui);
 		if (guiContainer == null)
 			return;
-		itemListOverlay.initGui(guiContainer, recipesGui);
+		itemListOverlay.initGui(guiContainer);
 
 		Minecraft minecraft = Minecraft.getMinecraft();
 
 		recipesGui.initGui(minecraft);
+
+		inputHandler = new InputHandler(minecraft, recipesGui, itemListOverlay, guiContainer);
 	}
 
 	@SubscribeEvent
@@ -38,7 +45,7 @@ public class GuiEventHandler {
 		if (guiContainer == null)
 			return;
 
-		if (recipesGui.isVisible())
+		if (recipesGui.isOpen())
 			event.setCanceled(true);
 	}
 
@@ -48,19 +55,19 @@ public class GuiEventHandler {
 		if (guiContainer == null)
 			return;
 
-		if (recipesGui.isVisible()) {
+		if (recipesGui.isOpen()) {
 			recipesGui.drawBackground();
 		}
 
 		itemListOverlay.drawScreen(guiContainer.mc, event.mouseX, event.mouseY);
 
-		if (recipesGui.isVisible())
+		if (recipesGui.isOpen())
 			recipesGui.draw(event.mouseX, event.mouseY);
 
 		itemListOverlay.drawHovered(guiContainer.mc, event.mouseX, event.mouseY);
-		itemListOverlay.handleMouseEvent(guiContainer.mc, event.mouseX, event.mouseY);
+		inputHandler.handleMouseEvent(guiContainer.mc, event.mouseX, event.mouseY);
 
-		if (!recipesGui.isVisible()) {
+		if (!recipesGui.isOpen()) {
 			/**
 			 * There is no way to render between the existing inventory tooltip and the dark background layer,
 			 * so we have to re-render the inventory tooltip over the item list.
@@ -85,8 +92,7 @@ public class GuiEventHandler {
 
 		itemListOverlay.handleTick();
 
-		Slot theSlot = guiContainer.theSlot;
-		itemListOverlay.handleKeyEvent(theSlot);
+		inputHandler.handleKeyEvent();
 	}
 
 	@Nullable

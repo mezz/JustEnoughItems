@@ -1,24 +1,19 @@
 package mezz.jei.gui;
 
-import cpw.mods.fml.client.FMLClientHandler;
 import mezz.jei.JustEnoughItems;
-import mezz.jei.config.Config;
-import mezz.jei.config.KeyBindings;
-import mezz.jei.util.Commands;
+import mezz.jei.input.IClickable;
+import mezz.jei.input.IKeyable;
+import mezz.jei.input.IShowsItemStacks;
 import mezz.jei.util.MathUtil;
-import mezz.jei.util.Permissions;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -28,7 +23,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemListOverlay {
+public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 
 	private static final int borderPadding = 1;
 	private static final int searchHeight = 16;
@@ -39,8 +34,6 @@ public class ItemListOverlay {
 	private static int pageNum = 0;
 
 	private int buttonHeight;
-	private int rightEdge;
-	private int leftEdge;
 	private final ArrayList<GuiItemStack> guiItemStacks = new ArrayList<GuiItemStack>();
 	private GuiButton nextButton;
 	private GuiButton backButton;
@@ -51,30 +44,21 @@ public class ItemListOverlay {
 	private int pageNumDisplayX;
 	private int pageNumDisplayY;
 
-	private RecipesGui recipesGui;
-
 	private GuiItemStack hovered = null;
 
 	// properties of the gui we're beside
 	private int guiLeft;
-	private int guiTop;
 	private int xSize;
-	private int ySize;
 	private int width;
 	private int height;
 
-	private boolean clickHandled = false;
-	private boolean overlayEnabled = true;
+	private boolean isOpen = false;
 
-	public void initGui(@Nonnull GuiContainer guiContainer, RecipesGui recipesGui) {
+	public void initGui(@Nonnull GuiContainer guiContainer) {
 		this.guiLeft = guiContainer.guiLeft;
-		this.guiTop = guiContainer.guiTop;
 		this.xSize = guiContainer.xSize;
-		this.ySize = guiContainer.ySize;
 		this.width = guiContainer.width;
 		this.height = guiContainer.height;
-
-		this.recipesGui = recipesGui;
 
 		String next = StatCollector.translateToLocal("jei.button.next");
 		String back = StatCollector.translateToLocal("jei.button.back");
@@ -84,9 +68,9 @@ public class ItemListOverlay {
 		final int backButtonWidth = 10 + fontRenderer.getStringWidth(back);
 		buttonHeight = 5 + fontRenderer.FONT_HEIGHT;
 
-		rightEdge = createItemButtons();
+		int rightEdge = createItemButtons();
 
-		leftEdge = this.guiLeft + this.xSize + borderPadding;
+		int leftEdge = this.guiLeft + this.xSize + borderPadding;
 
 		nextButton = new GuiButton(0, rightEdge - nextButtonWidth, 0, nextButtonWidth, buttonHeight, next);
 		backButton = new GuiButton(1, leftEdge, 0, backButtonWidth, buttonHeight, back);
@@ -173,43 +157,15 @@ public class ItemListOverlay {
 			setPageNum(pageNum - 1);
 	}
 
-	public void handleMouseEvent(Minecraft minecraft, int mouseX, int mouseY) {
-		if (!overlayEnabled)
-			return;
-
-		if (Mouse.getEventButton() > -1) {
-			int mouseButton = Mouse.getEventButton();
-			if (Mouse.getEventButtonState()) {
-				if (!clickHandled) {
-					handleMouseClick(minecraft, mouseButton, mouseX, mouseY);
-					clickHandled = true;
-				}
-			} else {
-				clickHandled = false;
-			}
-		}
-	}
-
 	public void drawScreen(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
-		if (!overlayEnabled)
+		if (!isOpen)
 			return;
 
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 		RenderHelper.enableGUIStandardItemLighting();
 
-		drawPageNumbers(minecraft.fontRenderer);
+		minecraft.fontRenderer.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(), true);
 		searchField.drawTextBox();
-		drawButtons(minecraft, mouseX, mouseY);
-
-		RenderHelper.disableStandardItemLighting();
-		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-	}
-
-	private void drawPageNumbers(@Nonnull FontRenderer fontRendererObj) {
-		fontRendererObj.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(), true);
-	}
-
-	private void drawButtons(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 
 		nextButton.drawButton(minecraft, mouseX, mouseY);
 		backButton.drawButton(minecraft, mouseX, mouseY);
@@ -220,6 +176,9 @@ public class ItemListOverlay {
 			else
 				guiItemStack.draw(minecraft);
 		}
+
+		RenderHelper.disableStandardItemLighting();
+		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 	}
 
 	public void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
@@ -233,22 +192,9 @@ public class ItemListOverlay {
 		searchField.updateCursorCounter();
 	}
 
-	private void handleMouseClick(Minecraft minecraft, int mouseButton, int mouseX, int mouseY) {
-		if (nextButton.mousePressed(minecraft, mouseX, mouseY)) {
-			nextPage();
-		} else if (backButton.mousePressed(minecraft, mouseX, mouseY)) {
-			backPage();
-		} else {
-			ItemStack itemStack = getStackUnderMouse(mouseX, mouseY);
-			if (itemStack != null)
-				handleMouseClickedItemStack(mouseButton, itemStack);
-		}
-		searchField.mouseClicked(mouseX, mouseY, mouseButton);
-		recipesGui.handleMouseInput();
-	}
-
+	@Override
 	@Nullable
-	private ItemStack getStackUnderMouse(int mouseX, int mouseY) {
+	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
 		for (GuiItemStack guiItemStack : guiItemStacks) {
 			if (guiItemStack.isMouseOver(mouseX, mouseY)) {
 				return guiItemStack.getItemStack();
@@ -257,74 +203,34 @@ public class ItemListOverlay {
 		return null;
 	}
 
-	private void handleMouseClickedItemStack(int mouseButton, @Nonnull ItemStack itemStack) {
-		EntityClientPlayerMP player = FMLClientHandler.instance().getClientPlayerEntity();
-		if (Config.cheatItemsEnabled && Permissions.canPlayerSpawnItems(player) && player.inventory.getFirstEmptyStack() != -1) {
-			if (mouseButton == 0) {
-				Commands.giveFullStack(itemStack);
-			} else if (mouseButton == 1) {
-				Commands.giveOneFromStack(itemStack);
-			}
-		} else {
-			boolean success = recipesGui.mouseClickedStack(mouseButton, itemStack);
-			if (success)
-				recipesGui.setVisible(true);
+	@Override
+	public void handleMouseClicked(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
+		if (nextButton.mousePressed(minecraft, mouseX, mouseY)) {
+			nextPage();
+		} else if (backButton.mousePressed(minecraft, mouseX, mouseY)) {
+			backPage();
 		}
+		searchField.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 
-	public void handleKeyEvent(Slot theSlot) {
-		if (overlayEnabled && searchField.isFocused()) {
-			boolean textChanged = false;
-			while (Keyboard.next()) {
-				if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
-					searchField.setFocused(false);
-					return;
-				} else if (Keyboard.getEventKeyState()) {
-					searchField.textboxKeyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
-					textChanged = true;
-				}
-			}
-			if (textChanged) {
-				if (JustEnoughItems.itemFilter.setFilterText(searchField.getText()))
-					updateLayout();
-			}
-		} else {
-			if (isKeyDown(KeyBindings.toggleOverlay.getKeyCode())) {
-				overlayEnabled = !overlayEnabled;
-				searchField.setFocused(false);
-				if (recipesGui.isVisible() && !overlayEnabled)
-					recipesGui.setVisible(false);
-			} else {
-				ItemStack itemStack = null;
-				boolean success = false;
-				if (theSlot != null && theSlot.getHasStack()) {
-					itemStack = theSlot.getStack();
-				}
-				if (itemStack == null) {
-					itemStack = getStackUnderMouse(Mouse.getX(), Mouse.getY());
-				}
-				if (itemStack != null) {
-					if (isKeyDown(KeyBindings.showRecipe.getKeyCode())) {
-						success = recipesGui.showRecipes(itemStack);
-					} else if (isKeyDown(KeyBindings.showUses.getKeyCode())) {
-						success = recipesGui.showUses(itemStack);
-					}
-					if (success)
-						recipesGui.setVisible(true);
-				}
-			}
-			if (recipesGui.isVisible() && isInventoryCloseKeyPressed()) {
-				recipesGui.setVisible(false);
-			}
+	@Override
+	public boolean hasKeyboardFocus() {
+		return searchField.isFocused();
+	}
+
+	@Override
+	public void setKeyboardFocus(boolean keyboardFocus) {
+		searchField.setFocused(keyboardFocus);
+	}
+
+	@Override
+	public boolean onKeyPressed(int keyCode) {
+		boolean success = searchField.textboxKeyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
+		if (success && JustEnoughItems.itemFilter.setFilterText(searchField.getText())) {
+			updateLayout();
+			return true;
 		}
-	}
-
-	private boolean isInventoryCloseKeyPressed() {
-		return isKeyDown(Keyboard.KEY_ESCAPE) || Minecraft.getMinecraft().gameSettings.keyBindInventory.getIsKeyPressed();
-	}
-
-	private boolean isKeyDown(int key) {
-		return Keyboard.isKeyDown(key);
+		return false;
 	}
 
 	private int getCountPerPage() {
@@ -357,6 +263,23 @@ public class ItemListOverlay {
 			return;
 		ItemListOverlay.pageNum = pageNum;
 		updateLayout();
+	}
+
+	@Override
+	public void open() {
+		isOpen = true;
+		searchField.setFocused(false);
+	}
+
+	@Override
+	public void close() {
+		isOpen = false;
+		searchField.setFocused(false);
+	}
+
+	@Override
+	public boolean isOpen() {
+		return isOpen;
 	}
 
 }

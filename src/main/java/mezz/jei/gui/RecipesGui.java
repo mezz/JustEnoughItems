@@ -8,6 +8,9 @@ import mezz.jei.api.recipe.IRecipeHelper;
 import mezz.jei.api.recipe.IRecipeType;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
+import mezz.jei.input.IClickable;
+import mezz.jei.input.IKeyable;
+import mezz.jei.input.IShowsItemStacks;
 import mezz.jei.util.Log;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.StringUtil;
@@ -25,7 +28,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecipesGui extends GuiScreen {
+public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickable, IKeyable {
 	private enum Mode {
 		INPUT, OUTPUT
 	}
@@ -65,7 +68,7 @@ public class RecipesGui extends GuiScreen {
 	private GuiButton previousPage;
 
 	private ResourceLocation backgroundTexture;
-	private boolean visible = false;
+	private boolean isOpen = false;
 
 	private int guiLeft;
 	private int guiTop;
@@ -127,35 +130,61 @@ public class RecipesGui extends GuiScreen {
 		this.buttonList.add(previousPage);
 	}
 
+	@Nullable
 	@Override
-	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
-		super.mouseClicked(mouseX, mouseY, mouseButton);
-
-		ItemStack stack;
+	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
 		for (IRecipeGui recipeGui : recipeGuis) {
-			stack = recipeGui.getStackUnderMouse(mouseX, mouseY);
+			ItemStack stack = recipeGui.getStackUnderMouse(mouseX, mouseY);
 			if (stack != null) {
-				mouseClickedStack(mouseButton, stack);
-				return;
+				return stack;
 			}
 		}
+		return null;
 	}
 
-	public boolean mouseClickedStack(int mouseButton, @Nonnull ItemStack stack) {
-		if (mouseButton == 0) {
-			return setStack(stack, Mode.OUTPUT);
-		} else if (mouseButton == 1) {
-			return setStack(stack, Mode.INPUT);
-		}
+	@Override
+	public void handleMouseClicked(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
+		handleMouseInput();
+	}
+
+	@Override
+	public boolean hasKeyboardFocus() {
 		return false;
 	}
 
-	public boolean showRecipes(@Nonnull ItemStack stack) {
-		return setStack(stack, Mode.OUTPUT);
+	@Override
+	public void setKeyboardFocus(boolean keyboardFocus) {
+
 	}
 
-	public boolean showUses(@Nonnull ItemStack stack) {
-		return setStack(stack, Mode.INPUT);
+	@Override
+	public boolean onKeyPressed(int keyCode) {
+		return false;
+	}
+
+	@Override
+	public void open() {
+		setOpen(true);
+	}
+
+	@Override
+	public void close() {
+		setOpen(false);
+	}
+
+	@Override
+	public boolean isOpen() {
+		return isOpen && recipes.size() > 0;
+	}
+
+	public void showRecipes(@Nonnull ItemStack stack) {
+		if (setStack(stack, Mode.OUTPUT))
+			setOpen(true);
+	}
+
+	public void showUses(@Nonnull ItemStack stack) {
+		if(setStack(stack, Mode.INPUT))
+			setOpen(true);
 	}
 
 	@Override
@@ -170,12 +199,8 @@ public class RecipesGui extends GuiScreen {
 			previousRecipeType();
 	}
 
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
-	public boolean isVisible() {
-		return visible && recipes.size() > 0;
+	public void setOpen(boolean open) {
+		this.isOpen = open;
 	}
 
 	private boolean setStack(@Nullable ItemStack stack, @Nonnull Mode mode) {

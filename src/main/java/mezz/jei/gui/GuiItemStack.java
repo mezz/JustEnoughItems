@@ -27,7 +27,7 @@ public class GuiItemStack {
 	private final int padding;
 
 	/* the amount of time in ms to display one itemStack before cycling to the next one */
-	private final int cycleTime = 1000;
+	private static final int cycleTime = 1000;
 	private long drawTime = 0;
 
 	private int xPosition;
