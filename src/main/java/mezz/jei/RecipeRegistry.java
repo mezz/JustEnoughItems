@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -19,22 +20,24 @@ import java.util.Map;
 
 class RecipeRegistry implements IRecipeRegistry {
 	private final Map<Class, IRecipeHandler> recipeHandlers = new HashMap<Class, IRecipeHandler>();
-	private final Map<IRecipeTypeKey, IRecipeType> recipeTypes = new HashMap<IRecipeTypeKey, IRecipeType>();
+	private final Map<IRecipeTypeKey, IRecipeType> recipeTypesMap = new HashMap<IRecipeTypeKey, IRecipeType>();
+	private final List<IRecipeType> recipeTypes = new ArrayList<IRecipeType>();
 	private final RecipeMap recipeInputMap = new RecipeMap();
 	private final RecipeMap recipeOutputMap = new RecipeMap();
 
 	@Override
 	public void registerRecipeType(IRecipeTypeKey recipeTypeKey, IRecipeType recipeType) {
-		if (recipeTypes.containsKey(recipeTypeKey))
+		if (recipeTypesMap.containsKey(recipeTypeKey))
 			throw new IllegalArgumentException("A Recipe Type has already been registered for this recipeTypeKey: " + recipeTypeKey);
 
-		recipeTypes.put(recipeTypeKey, recipeType);
+		recipeTypesMap.put(recipeTypeKey, recipeType);
+		recipeTypes.add(recipeType);
 	}
 
 	@Nullable
 	@Override
 	public IRecipeType getRecipeType(IRecipeTypeKey recipeTypeKey) {
-		return recipeTypes.get(recipeTypeKey);
+		return recipeTypesMap.get(recipeTypeKey);
 	}
 
 	@Override
@@ -137,5 +140,10 @@ class RecipeRegistry implements IRecipeRegistry {
 		if (recipeType == null || output == null)
 			return Collections.emptyList();
 		return recipeOutputMap.getRecipes(recipeType, output);
+	}
+
+	@Override
+	public int getRecipeTypeIndex(IRecipeType recipeType) {
+		return recipeTypes.indexOf(recipeType);
 	}
 }

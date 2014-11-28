@@ -1,11 +1,15 @@
 package mezz.jei.util;
 
+import mezz.jei.api.IRecipeRegistry;
+import mezz.jei.api.JEIManager;
 import mezz.jei.api.recipe.IRecipeType;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -21,6 +25,19 @@ public class RecipeMap {
 	private final Map<IRecipeType, RecipesForType> recipeMap = new HashMap<IRecipeType, RecipesForType>();
 	@Nonnull
 	private final Map<String, List<IRecipeType>> typeMap = new HashMap<String, List<IRecipeType>>();
+	@Nonnull
+	private final Comparator<IRecipeType> recipeTypeComparator;
+
+	public RecipeMap() {
+		this.recipeTypeComparator = new Comparator<IRecipeType>() {
+			public int compare(IRecipeType recipeType1, IRecipeType recipeType2) {
+				IRecipeRegistry recipeRegistry = JEIManager.recipeRegistry;
+				int index1 = recipeRegistry.getRecipeTypeIndex(recipeType1);
+				int index2 = recipeRegistry.getRecipeTypeIndex(recipeType2);
+				return Integer.compare(index1, index2);
+			}
+		};
+	}
 
 	@Nonnull
 	private RecipesForType getRecipesForType(IRecipeType recipeType) {
@@ -38,7 +55,9 @@ public class RecipeMap {
 		for (String stackKey : getNamesWithWildcard(itemStack)) {
 			recipeTypes.addAll(getRecipeTypes(stackKey));
 		}
-		return new ArrayList<IRecipeType>(recipeTypes);
+		List<IRecipeType> sortedRecipeTypes = new ArrayList<IRecipeType>(recipeTypes);
+		Collections.sort(sortedRecipeTypes, recipeTypeComparator);
+		return sortedRecipeTypes;
 	}
 
 	private void addRecipeType(@Nonnull IRecipeType recipeType, @Nonnull ItemStack itemStack) {

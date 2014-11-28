@@ -29,27 +29,31 @@ public interface IRecipeRegistry {
 	 *  Available after JEI's FMLLoadCompleteEvent event
 	 */
 
-	/* Returns the IRecipeType if it has been registered. */
+	/** Returns the IRecipeType if it has been registered. */
 	@Nullable
 	IRecipeType getRecipeType(IRecipeTypeKey recipeTypeKey);
 
-	/* Returns the IRecipeHandler associated with the recipeClass or null if there is none */
+	/** Returns the IRecipeHandler associated with the recipeClass or null if there is none */
 	@Nullable
 	IRecipeHandler getRecipeHandler(Class recipeClass);
 
-	/* Returns a list of Recipe Types that have the ItemStack as an input */
+	/** Returns a list of Recipe Types that have the ItemStack as an input */
 	@Nonnull
 	List<IRecipeType> getRecipeTypesForInput(ItemStack input);
 
-	/* Returns a list of Recipe Types that have the ItemStack as an output */
+	/** Returns a list of Recipe Types that have the ItemStack as an output */
 	@Nonnull
 	List<IRecipeType> getRecipeTypesForOutput(ItemStack output);
 
-	/* Returns a list of Recipes of recipeType that have the ItemStack as an input */
+	/** Returns a list of Recipes of recipeType that have the ItemStack as an input */
 	@Nonnull
 	List<Object> getInputRecipes(IRecipeType recipeType, ItemStack input);
 
-	/* Returns a list of Recipes of recipeType that have the ItemStack as an output */
+	/** Returns a list of Recipes of recipeType that have the ItemStack as an output */
 	@Nonnull
 	List<Object> getOutputRecipes(IRecipeType recipeType, ItemStack output);
+
+	/** Returns the index of the recipeType, determined by the order it was registered. */
+	int getRecipeTypeIndex(IRecipeType recipeType);
+
 }
