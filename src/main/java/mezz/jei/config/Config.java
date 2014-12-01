@@ -19,7 +19,7 @@ public class Config {
 	}
 
 	public static void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
-		if(eventArgs.modID.equals(Constants.MODID))
+		if(eventArgs.modID.equals(Constants.MOD_ID))
 			syncConfig();
 	}
 

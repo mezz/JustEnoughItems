@@ -1,4 +1,4 @@
-package mezz.jei.recipe.furnace.fuel;
+package mezz.jei.plugins.vanilla.furnace.fuel;
 
 import mezz.jei.api.recipe.wrapper.IFuelRecipeWrapper;
 import net.minecraft.client.Minecraft;

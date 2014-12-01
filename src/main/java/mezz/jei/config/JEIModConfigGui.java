@@ -11,7 +11,7 @@ public class JEIModConfigGui extends GuiConfig {
 	public JEIModConfigGui(GuiScreen parent) {
 		super(parent,
 				new ConfigElement(Config.configFile.getCategory(Configuration.CATEGORY_GENERAL)).getChildElements(),
-				Constants.MODID, false, false, GuiConfig.getAbridgedConfigPath(Config.configFile.toString()));
+				Constants.MOD_ID, false, false, GuiConfig.getAbridgedConfigPath(Config.configFile.toString()));
 	}
 
 }

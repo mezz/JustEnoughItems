@@ -19,11 +19,15 @@ import javax.annotation.Nullable;
 public class GuiEventHandler {
 
 	@Nonnull
-	private final ItemListOverlay itemListOverlay = new ItemListOverlay();
+	private final ItemListOverlay itemListOverlay;
 	@Nonnull
 	private final RecipesGui recipesGui = new RecipesGui();
 	@Nonnull
 	private InputHandler inputHandler;
+
+	public GuiEventHandler(@Nonnull ItemListOverlay itemListOverlay) {
+		this.itemListOverlay = itemListOverlay;
+	}
 
 	@SubscribeEvent
 	public void onGuiInit(@Nonnull GuiScreenEvent.InitGuiEvent.Post event) {

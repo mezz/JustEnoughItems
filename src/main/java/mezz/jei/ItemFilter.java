@@ -29,7 +29,7 @@ public class ItemFilter {
 	/** A cache for for fast getItemList(). Maps filterText to itemList */
 	private final HashMapCache<String, List<ItemStack>> itemListsCache = new HashMapCache<String, List<ItemStack>>(cacheSize);
 
-	public void init(@Nonnull List<ItemStack> itemStacks) {
+	public ItemFilter(@Nonnull List<ItemStack> itemStacks) {
 		for (ItemStack itemStack : itemStacks) {
 			if (itemStack == null)
 				continue;

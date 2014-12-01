@@ -1,4 +1,4 @@
-package mezz.jei.recipe.crafting;
+package mezz.jei.plugins.vanilla.crafting;
 
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
@@ -68,7 +68,6 @@ public class CraftingRecipeGui implements IRecipeGui {
 		guiItemStacks.draw(minecraft, mouseX, mouseY);
 	}
 
-	@Nullable
 	@Override
 	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
 		return guiItemStacks.getStackUnderMouse(mouseX, mouseY);

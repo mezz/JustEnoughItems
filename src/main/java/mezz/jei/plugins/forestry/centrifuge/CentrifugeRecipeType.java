@@ -1,25 +1,26 @@
-package mezz.jei.recipe.crafting;
+package mezz.jei.plugins.forestry.centrifuge;
 
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IRecipeGui;
 import mezz.jei.api.recipe.IRecipeType;
+import mezz.jei.plugins.vanilla.crafting.CraftingRecipeGui;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 
 import javax.annotation.Nonnull;
 
-public class CraftingRecipeType implements IRecipeType {
+public class CentrifugeRecipeType implements IRecipeType {
 
 	@Nonnull
 	private final IDrawable background;
 	@Nonnull
 	private final String localizedName;
 
-	public CraftingRecipeType() {
-		ResourceLocation location = new ResourceLocation("minecraft:textures/gui/container/crafting_table.png");
-		background = JEIManager.guiHelper.makeDrawable(location, 29, 16, 116, 54);
-		localizedName = StatCollector.translateToLocal("gui.jei.craftingTableRecipes");
+	public CentrifugeRecipeType() {
+		ResourceLocation location = new ResourceLocation("forestry:textures/gui/centrifuge.png");
+		background = JEIManager.guiHelper.makeDrawable(location, 29, 18, 122, 54);
+		localizedName = StatCollector.translateToLocal("gui.jei.forestry.centrifugeRecipes");
 	}
 
 	@Override

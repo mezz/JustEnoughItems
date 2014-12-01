@@ -12,5 +12,6 @@ public interface IRecipeGui {
 
 	void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY);
 
+	@Nullable
 	public ItemStack getStackUnderMouse(int mouseX, int mouseY);
 }

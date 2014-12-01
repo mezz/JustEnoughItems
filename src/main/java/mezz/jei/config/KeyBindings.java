@@ -7,7 +7,7 @@ import org.lwjgl.input.Keyboard;
 import javax.annotation.Nonnull;
 
 public class KeyBindings {
-	private static final String categoryName = Constants.MODID + " (" + Constants.NAME + ")";
+	private static final String categoryName = Constants.MOD_ID + " (" + Constants.NAME + ")";
 
 	@Nonnull
 	public static final KeyBinding toggleOverlay = new KeyBinding("key.jei.toggleOverlay", Keyboard.KEY_O, categoryName);

@@ -8,96 +8,100 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import mezz.jei.api.IModPlugin;
+import mezz.jei.api.IPluginRegistry;
 import mezz.jei.api.JEIManager;
-import mezz.jei.api.recipe.type.EnumRecipeTypeKey;
+import mezz.jei.api.recipe.IRecipeHandler;
+import mezz.jei.api.recipe.IRecipeType;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiHelper;
-import mezz.jei.plugins.forestry.crafting.ForestryShapedRecipeHandler;
-import mezz.jei.plugins.vanilla.crafting.ShapedOreRecipeHandler;
-import mezz.jei.plugins.vanilla.crafting.ShapedRecipesHandler;
-import mezz.jei.plugins.vanilla.crafting.ShapelessOreRecipeHandler;
-import mezz.jei.plugins.vanilla.crafting.ShapelessRecipesHandler;
-import mezz.jei.recipe.crafting.CraftingRecipeType;
-import mezz.jei.recipe.furnace.FurnaceRecipeType;
-import mezz.jei.recipe.furnace.fuel.FuelRecipe;
-import mezz.jei.recipe.furnace.fuel.FuelRecipeHandler;
-import mezz.jei.recipe.furnace.fuel.FuelRecipeMaker;
-import mezz.jei.recipe.furnace.smelting.SmeltingRecipe;
-import mezz.jei.recipe.furnace.smelting.SmeltingRecipeHandler;
-import mezz.jei.recipe.furnace.smelting.SmeltingRecipeMaker;
-import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.item.crafting.FurnaceRecipes;
+import mezz.jei.gui.ItemListOverlay;
+import mezz.jei.plugins.forestry.ForestryPlugin;
+import mezz.jei.plugins.vanilla.VanillaPlugin;
 import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
 
-@Mod(modid = Constants.MODID,
+@Mod(modid = Constants.MOD_ID,
 		name = Constants.NAME,
 		version = Constants.VERSION,
 		guiFactory = "mezz.jei.config.JEIModGuiFactory",
 		dependencies = "required-after:Forge@[10.13.0.1207,);")
-public class JustEnoughItems {
-	@Mod.Instance(Constants.MODID)
+public class JustEnoughItems implements IPluginRegistry {
+
+	@Mod.Instance(Constants.MOD_ID)
 	public static JustEnoughItems instance;
 
 	@Nonnull
-	public static ItemFilter itemFilter;
+	private final List<IModPlugin> plugins;
+	private boolean pluginsCanRegister = true;
+	@Nonnull
+	private final RecipeRegistry recipeRegistry;
 
 	public JustEnoughItems() {
-		itemFilter = new ItemFilter();
+		plugins = new ArrayList<IModPlugin>();
+		JEIManager.recipeRegistry = recipeRegistry = new RecipeRegistry();
 		JEIManager.guiHelper = new GuiHelper();
-		JEIManager.recipeRegistry = new RecipeRegistry();
+		JEIManager.pluginRegistry = this;
 	}
 
 	@EventHandler
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
 		Config.preInit(event);
 
-		JEIManager.recipeRegistry.registerRecipeType(EnumRecipeTypeKey.CRAFTING_TABLE, new CraftingRecipeType());
-		JEIManager.recipeRegistry.registerRecipeType(EnumRecipeTypeKey.FURNACE, new FurnaceRecipeType());
+		JEIManager.pluginRegistry.registerPlugin(new VanillaPlugin());
+		JEIManager.pluginRegistry.registerPlugin(new ForestryPlugin());
+	}
 
-		JEIManager.recipeRegistry.registerRecipeHandlers(
-				new ShapedRecipesHandler(),
-				new ShapedOreRecipeHandler(),
-				new ShapelessRecipesHandler(),
-				new ShapelessOreRecipeHandler(),
-				new SmeltingRecipeHandler(),
-				new FuelRecipeHandler(),
-				new ForestryShapedRecipeHandler()
-		);
+	@Override
+	public void registerPlugin(IModPlugin plugin) {
+		if (!pluginsCanRegister) {
+			throw new IllegalStateException("Plugins must be registered during FMLPreInitializationEvent.");
+		}
+		plugins.add(plugin);
 	}
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
+		pluginsCanRegister = false;
 		KeyBindings.init();
 
-		GuiEventHandler guiEventHandler = new GuiEventHandler();
-		MinecraftForge.EVENT_BUS.register(guiEventHandler);
-		FMLCommonHandler.instance().bus().register(guiEventHandler);
-
 		FMLCommonHandler.instance().bus().register(instance);
+
+		for	(IModPlugin plugin : plugins) {
+			for (IRecipeType recipeType : plugin.getRecipeTypes()) {
+				recipeRegistry.registerRecipeType(recipeType);
+			}
+		}
+		for	(IModPlugin plugin : plugins) {
+			for (IRecipeHandler recipeHandler : plugin.getRecipeHandlers()) {
+				recipeRegistry.registerRecipeHandlers(recipeHandler);
+			}
+		}
 	}
 
 	@EventHandler
 	public void loadComplete(FMLLoadCompleteEvent event) {
-		ItemRegistry itemRegistry = new ItemRegistry();
+		JEIManager.itemRegistry = new ItemRegistry();
 
-		itemFilter.init(itemRegistry.getItemList());
+		for	(IModPlugin plugin : plugins) {
+			recipeRegistry.addRecipes(plugin.getRecipes());
+		}
 
-		JEIManager.recipeRegistry.addRecipes(CraftingManager.getInstance().getRecipeList());
-
-		List<SmeltingRecipe> smeltingRecipeList = SmeltingRecipeMaker.getFurnaceRecipes(FurnaceRecipes.smelting());
-		JEIManager.recipeRegistry.addRecipes(smeltingRecipeList);
-
-		List<FuelRecipe> fuelRecipeList = FuelRecipeMaker.getFuelRecipes(itemRegistry.getFuels());
-		JEIManager.recipeRegistry.addRecipes(fuelRecipeList);
+		ItemFilter itemFilter = new ItemFilter(JEIManager.itemRegistry.getItemList());
+		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter);
+		GuiEventHandler guiEventHandler = new GuiEventHandler(itemListOverlay);
+		MinecraftForge.EVENT_BUS.register(guiEventHandler);
+		FMLCommonHandler.instance().bus().register(guiEventHandler);
 	}
 
 	@SubscribeEvent
 	public void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
 		Config.onConfigChanged(eventArgs);
 	}
+
 }

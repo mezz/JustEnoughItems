@@ -1,4 +1,4 @@
-package mezz.jei.recipe.furnace.smelting;
+package mezz.jei.plugins.vanilla.furnace.smelting;
 
 import mezz.jei.api.recipe.wrapper.ISmeltingRecipeWrapper;
 import net.minecraft.client.Minecraft;

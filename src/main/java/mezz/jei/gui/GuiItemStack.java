@@ -25,13 +25,13 @@ public class GuiItemStack {
 	private final int width;
 	private final int height;
 	private final int padding;
+	private final int xPosition;
+	private final int yPosition;
 
 	/* the amount of time in ms to display one itemStack before cycling to the next one */
 	private static final int cycleTime = 1000;
 	private long drawTime = 0;
 
-	private int xPosition;
-	private int yPosition;
 	private boolean enabled;
 	private boolean visible;
 

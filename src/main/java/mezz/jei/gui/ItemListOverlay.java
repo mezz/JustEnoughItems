@@ -1,6 +1,6 @@
 package mezz.jei.gui;
 
-import mezz.jei.JustEnoughItems;
+import mezz.jei.ItemFilter;
 import mezz.jei.input.IClickable;
 import mezz.jei.input.IKeyable;
 import mezz.jei.input.IShowsItemStacks;
@@ -33,6 +33,8 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 	private static final int maxSearchLength = 32;
 	private static int pageNum = 0;
 
+	private final ItemFilter itemFilter;
+
 	private int buttonHeight;
 	private final ArrayList<GuiItemStack> guiItemStacks = new ArrayList<GuiItemStack>();
 	private GuiButton nextButton;
@@ -53,6 +55,10 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 	private int height;
 
 	private boolean isOpen = false;
+
+	public ItemListOverlay(ItemFilter itemFilter) {
+		this.itemFilter = itemFilter;
+	}
 
 	public void initGui(@Nonnull GuiContainer guiContainer) {
 		this.guiLeft = guiContainer.guiLeft;
@@ -78,7 +84,7 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 		searchField = new GuiTextField(fontRenderer, leftEdge, this.height - searchHeight - (2 * borderPadding), rightEdge - leftEdge, searchHeight);
 		searchField.setMaxStringLength(maxSearchLength);
 		searchField.setFocused(false);
-		searchField.setText(JustEnoughItems.itemFilter.getFilterText());
+		searchField.setText(itemFilter.getFilterText());
 
 		updateLayout();
 	}
@@ -116,7 +122,7 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 			pageNum = 0;
 		int i = pageNum * getCountPerPage();
 
-		List<ItemStack> itemList = JustEnoughItems.itemFilter.getItemList();
+		List<ItemStack> itemList = itemFilter.getItemList();
 		for (GuiItemStack itemButton : guiItemStacks) {
 			if (i >= itemList.size()) {
 				itemButton.clearItemStacks();
@@ -226,7 +232,7 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 	@Override
 	public boolean onKeyPressed(int keyCode) {
 		boolean success = searchField.textboxKeyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
-		if (success && JustEnoughItems.itemFilter.setFilterText(searchField.getText())) {
+		if (success && itemFilter.setFilterText(searchField.getText())) {
 			updateLayout();
 			return true;
 		}
@@ -244,7 +250,7 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 	}
 
 	private void updatePageCount() {
-		int count = JustEnoughItems.itemFilter.size();
+		int count = itemFilter.size();
 		pageCount = MathUtil.divideCeil(count, getCountPerPage());
 		if (pageCount == 0)
 			pageCount = 1;

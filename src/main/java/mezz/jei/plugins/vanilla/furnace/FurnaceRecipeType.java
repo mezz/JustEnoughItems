@@ -1,4 +1,4 @@
-package mezz.jei.recipe.furnace;
+package mezz.jei.plugins.vanilla.furnace;
 
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;

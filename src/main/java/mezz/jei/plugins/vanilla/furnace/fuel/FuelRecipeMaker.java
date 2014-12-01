@@ -1,5 +1,6 @@
-package mezz.jei.recipe.furnace.fuel;
+package mezz.jei.plugins.vanilla.furnace.fuel;
 
+import mezz.jei.api.JEIManager;
 import mezz.jei.util.StackUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
@@ -16,7 +17,8 @@ import java.util.Set;
 public class FuelRecipeMaker {
 
 	@Nonnull
-	public static List<FuelRecipe> getFuelRecipes(@Nonnull List<ItemStack> fuelStacks) {
+	public static List<FuelRecipe> getFuelRecipes() {
+		List<ItemStack> fuelStacks = JEIManager.itemRegistry.getFuels();
 		Set<String> oreDictNames = new HashSet<String>();
 		List<FuelRecipe> fuelRecipes = new ArrayList<FuelRecipe>(fuelStacks.size());
 		for (ItemStack fuelStack : fuelStacks) {
@@ -53,11 +55,11 @@ public class FuelRecipeMaker {
 	}
 
 	private static void removeNoBurnTime(Collection<ItemStack> itemStacks) {
-		Iterator<ItemStack> iter = itemStacks.iterator();
-		while (iter.hasNext()) {
-			ItemStack itemStack = iter.next();
+		Iterator<ItemStack> iterator = itemStacks.iterator();
+		while (iterator.hasNext()) {
+			ItemStack itemStack = iterator.next();
 			if (getBurnTime(itemStack) == 0)
-				iter.remove();
+				iterator.remove();
 		}
 	}
 

@@ -1,4 +1,4 @@
-package mezz.jei.recipe.furnace.smelting;
+package mezz.jei.plugins.vanilla.furnace.smelting;
 
 import mezz.jei.util.StackUtil;
 import net.minecraft.item.ItemStack;
@@ -12,7 +12,8 @@ import java.util.Map;
 public class SmeltingRecipeMaker {
 
 	@Nonnull
-	public static List<SmeltingRecipe> getFurnaceRecipes(@Nonnull FurnaceRecipes furnaceRecipes) {
+	public static List<SmeltingRecipe> getFurnaceRecipes() {
+		FurnaceRecipes furnaceRecipes = FurnaceRecipes.smelting();
 		Map<ItemStack, ItemStack> smeltingMap = getSmeltingMap(furnaceRecipes);
 
 		List<SmeltingRecipe> recipes = new ArrayList<SmeltingRecipe>();

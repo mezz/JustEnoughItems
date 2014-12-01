@@ -1,7 +1,5 @@
 package mezz.jei.api.recipe;
 
-import mezz.jei.api.recipe.type.IRecipeTypeKey;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -18,7 +16,7 @@ public interface IRecipeHandler {
 	Class getRecipeClass();
 
 	/* Returns the type of this recipe. */
-	IRecipeTypeKey getRecipeTypeKey();
+	Class<? extends IRecipeType> getRecipeTypeClass();
 
 	/* Returns a recipe wrapper for the given recipe. */
 	IRecipeWrapper getRecipeWrapper(@Nonnull Object recipe);

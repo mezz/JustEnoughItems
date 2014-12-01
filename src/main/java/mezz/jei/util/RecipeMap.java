@@ -1,7 +1,6 @@
 package mezz.jei.util;
 
-import mezz.jei.api.IRecipeRegistry;
-import mezz.jei.api.JEIManager;
+import mezz.jei.RecipeRegistry;
 import mezz.jei.api.recipe.IRecipeType;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -28,10 +27,9 @@ public class RecipeMap {
 	@Nonnull
 	private final Comparator<IRecipeType> recipeTypeComparator;
 
-	public RecipeMap() {
+	public RecipeMap(final RecipeRegistry recipeRegistry) {
 		this.recipeTypeComparator = new Comparator<IRecipeType>() {
 			public int compare(IRecipeType recipeType1, IRecipeType recipeType2) {
-				IRecipeRegistry recipeRegistry = JEIManager.recipeRegistry;
 				int index1 = recipeRegistry.getRecipeTypeIndex(recipeType1);
 				int index2 = recipeRegistry.getRecipeTypeIndex(recipeType2);
 				return Integer.compare(index1, index2);

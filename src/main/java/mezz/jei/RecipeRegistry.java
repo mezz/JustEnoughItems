@@ -4,7 +4,6 @@ import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeType;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.api.recipe.type.IRecipeTypeKey;
 import mezz.jei.util.Log;
 import mezz.jei.util.RecipeMap;
 import mezz.jei.util.StackUtil;
@@ -18,29 +17,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class RecipeRegistry implements IRecipeRegistry {
+public class RecipeRegistry implements IRecipeRegistry {
 	private final Map<Class, IRecipeHandler> recipeHandlers = new HashMap<Class, IRecipeHandler>();
-	private final Map<IRecipeTypeKey, IRecipeType> recipeTypesMap = new HashMap<IRecipeTypeKey, IRecipeType>();
+	private final Map<Class<? extends IRecipeType>, IRecipeType> recipeTypesMap = new HashMap<Class<? extends IRecipeType>, IRecipeType>();
 	private final List<IRecipeType> recipeTypes = new ArrayList<IRecipeType>();
-	private final RecipeMap recipeInputMap = new RecipeMap();
-	private final RecipeMap recipeOutputMap = new RecipeMap();
+	private final RecipeMap recipeInputMap;
+	private final RecipeMap recipeOutputMap;
 
-	@Override
-	public void registerRecipeType(IRecipeTypeKey recipeTypeKey, IRecipeType recipeType) {
-		if (recipeTypesMap.containsKey(recipeTypeKey))
-			throw new IllegalArgumentException("A Recipe Type has already been registered for this recipeTypeKey: " + recipeTypeKey);
+	public RecipeRegistry() {
+		recipeInputMap = new RecipeMap(this);
+		recipeOutputMap = new RecipeMap(this);
+	}
 
-		recipeTypesMap.put(recipeTypeKey, recipeType);
+	public void registerRecipeType(IRecipeType recipeType) {
+		if (recipeTypesMap.containsKey(recipeType.getClass()))
+			throw new IllegalArgumentException("This Recipe Type has already been registered: " + recipeType);
+
+		recipeTypesMap.put(recipeType.getClass(), recipeType);
 		recipeTypes.add(recipeType);
 	}
 
 	@Nullable
-	@Override
-	public IRecipeType getRecipeType(IRecipeTypeKey recipeTypeKey) {
-		return recipeTypesMap.get(recipeTypeKey);
+	public IRecipeType getRecipeType(Class<? extends IRecipeType> recipeTypeClass) {
+		return recipeTypesMap.get(recipeTypeClass);
 	}
 
-	@Override
 	public final void registerRecipeHandlers(@Nullable IRecipeHandler... recipeHandlers) {
 		if (recipeHandlers == null)
 			return;
@@ -60,7 +61,6 @@ class RecipeRegistry implements IRecipeRegistry {
 		}
 	}
 
-	@Override
 	public void addRecipes(@Nullable Iterable recipes) {
 		if (recipes == null)
 			return;
@@ -76,7 +76,7 @@ class RecipeRegistry implements IRecipeRegistry {
 				Log.debug("Can't handle recipe: " + recipe);
 				continue;
 			}
-			IRecipeTypeKey recipeTypeKey = recipeHandler.getRecipeTypeKey();
+			Class<? extends IRecipeType> recipeTypeKey = recipeHandler.getRecipeTypeClass();
 			IRecipeType recipeType = getRecipeType(recipeTypeKey);
 			if (recipeType == null) {
 				Log.error("No recipe type registered for key: " + recipeTypeKey);
@@ -142,7 +142,6 @@ class RecipeRegistry implements IRecipeRegistry {
 		return recipeOutputMap.getRecipes(recipeType, output);
 	}
 
-	@Override
 	public int getRecipeTypeIndex(IRecipeType recipeType) {
 		return recipeTypes.indexOf(recipeType);
 	}

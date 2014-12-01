@@ -1,6 +1,7 @@
 package mezz.jei;
 
 import cpw.mods.fml.common.registry.GameData;
+import mezz.jei.api.IItemRegistry;
 import mezz.jei.util.Log;
 import mezz.jei.util.StackUtil;
 import net.minecraft.block.Block;
@@ -17,7 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-class ItemRegistry {
+class ItemRegistry implements IItemRegistry {
 
 	@Nonnull
 	private final Set<String> itemNameSet = new HashSet<String>();
@@ -34,11 +35,13 @@ class ItemRegistry {
 			addItemAndSubItems(item);
 	}
 
+	@Override
 	@Nonnull
 	public List<ItemStack> getItemList() {
 		return itemList;
 	}
 
+	@Override
 	@Nonnull
 	public List<ItemStack> getFuels() {
 		return fuels;
