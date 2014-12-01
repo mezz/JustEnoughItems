@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,14 +18,12 @@ public class CentrifugeRecipeWrapper implements IRecipeWrapper {
 	private final List<ItemStack> outputs;
 	@Nonnull
 	private final List<ItemStack> inputs;
-	@Nonnull
-	private final String timePerItem;
 
 	public CentrifugeRecipeWrapper(Object recipe) {
 		this.recipe = (MachineCentrifuge.Recipe)recipe;
 		this.outputs = new ArrayList<ItemStack>(this.recipe.products.keySet());
 		this.inputs = Collections.singletonList(this.recipe.resource);
-		this.timePerItem = ((Integer)this.recipe.timePerItem).toString();
+//		Float itemsPerSecond = 20.0f / this.recipe.timePerItem;
 	}
 
 	@Nonnull
@@ -42,8 +39,8 @@ public class CentrifugeRecipeWrapper implements IRecipeWrapper {
 	}
 
 	@Override
-	public void drawInfo(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
-		minecraft.fontRenderer.drawString(timePerItem, 20, 45, Color.gray.getRGB());
+	public void drawInfo(@Nonnull Minecraft minecraft) {
+
 	}
 
 	public Integer getChance(ItemStack itemStack) {

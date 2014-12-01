@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class CentrifugeRecipeGui implements IRecipeGui {
 
@@ -22,7 +23,7 @@ public class CentrifugeRecipeGui implements IRecipeGui {
 	@Nonnull
 	private final IGuiItemStacks guiItemStacks;
 	@Nullable
-	private IRecipeWrapper recipeWrapper;
+	private CentrifugeRecipeWrapper recipeWrapper;
 
 	public CentrifugeRecipeGui(@Nonnull IRecipeType recipeType) {
 		background = recipeType.getBackground();
@@ -30,18 +31,24 @@ public class CentrifugeRecipeGui implements IRecipeGui {
 		guiItemStacks = JEIManager.guiHelper.makeGuiItemStacks();
 
 		// Resource
-		guiItemStacks.initItemStack(inputSlot, 34, 37);
+		guiItemStacks.initItemStack(inputSlot, 4, 18);
 
 		// Product Inventory
 		for (int y = 0; y < 3; y++)
 			for (int x = 0; x < 3; x++)
-				guiItemStacks.initItemStack(outputSlot1 + x + (y * 3), 98 + x * 18, 19 + y * 18);
+				guiItemStacks.initItemStack(outputSlot1 + x + (y * 3), 68 + x * 18, y * 18);
 	}
-
 
 	@Override
 	public void setRecipe(@Nonnull IRecipeWrapper recipeWrapper, @Nullable ItemStack focusStack) {
+		this.recipeWrapper = (CentrifugeRecipeWrapper)recipeWrapper;
 
+		guiItemStacks.setItemStack(inputSlot, this.recipeWrapper.getInputs(), focusStack);
+
+		List<ItemStack> outputs = this.recipeWrapper.getOutputs();
+		for (int i = 0; i < outputs.size(); i++) {
+			guiItemStacks.setItemStack(outputSlot1 + i, outputs.get(i), focusStack);
+		}
 	}
 
 	@Override
