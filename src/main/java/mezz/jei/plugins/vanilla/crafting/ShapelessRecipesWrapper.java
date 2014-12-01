@@ -31,7 +31,7 @@ public class ShapelessRecipesWrapper implements ICraftingRecipeWrapper {
 	}
 
 	@Override
-	public void drawInfo(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawInfo(@Nonnull Minecraft minecraft) {
 
 	}
 }

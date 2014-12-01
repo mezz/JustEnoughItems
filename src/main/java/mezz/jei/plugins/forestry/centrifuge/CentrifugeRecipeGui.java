@@ -50,7 +50,7 @@ public class CentrifugeRecipeGui implements IRecipeGui {
 			return;
 
 		background.draw(minecraft);
-		recipeWrapper.drawInfo(minecraft, mouseX, mouseY);
+		recipeWrapper.drawInfo(minecraft);
 		guiItemStacks.draw(minecraft, mouseX, mouseY);
 	}
 

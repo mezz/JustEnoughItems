@@ -27,7 +27,7 @@ public class CraftingRecipeGui implements IRecipeGui {
 	@Nonnull
 	private final IGuiItemStacks guiItemStacks;
 	@Nullable
-	private IRecipeWrapper recipeWrapper;
+	private ICraftingRecipeWrapper recipeWrapper;
 
 	public CraftingRecipeGui(@Nonnull IRecipeType recipeType) {
 		background = recipeType.getBackground();
@@ -45,13 +45,13 @@ public class CraftingRecipeGui implements IRecipeGui {
 
 	@Override
 	public void setRecipe(@Nonnull IRecipeWrapper recipeWrapper, @Nullable ItemStack focusStack) {
-		this.recipeWrapper = recipeWrapper;
+		this.recipeWrapper = (ICraftingRecipeWrapper)recipeWrapper;
 		guiItemStacks.clearItemStacks();
 		if (recipeWrapper instanceof IShapedCraftingRecipeWrapper) {
 			IShapedCraftingRecipeWrapper wrapper = (IShapedCraftingRecipeWrapper)recipeWrapper;
 			setInput(wrapper.getInputs(), focusStack, wrapper.getWidth(), wrapper.getHeight());
-			setOutput(wrapper.getOutputs(), focusStack);
-		} else if (recipeWrapper instanceof ICraftingRecipeWrapper) {
+			setOutput(this.recipeWrapper.getOutputs(), focusStack);
+		} else {
 			ICraftingRecipeWrapper wrapper = (ICraftingRecipeWrapper)recipeWrapper;
 			setInput(wrapper.getInputs(), focusStack);
 			setOutput(wrapper.getOutputs(), focusStack);
@@ -64,7 +64,7 @@ public class CraftingRecipeGui implements IRecipeGui {
 			return;
 
 		background.draw(minecraft);
-		recipeWrapper.drawInfo(minecraft, mouseX, mouseY);
+		recipeWrapper.drawInfo(minecraft);
 		guiItemStacks.draw(minecraft, mouseX, mouseY);
 	}
 

@@ -37,7 +37,7 @@ public class FuelRecipe implements IFuelRecipeWrapper {
 	}
 
 	@Override
-	public void drawInfo(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawInfo(@Nonnull Minecraft minecraft) {
 		FontRenderer fontRendererObj = minecraft.fontRenderer;
 		fontRendererObj.drawString(burnTimeString, 20, 45, Color.gray.getRGB());
 	}

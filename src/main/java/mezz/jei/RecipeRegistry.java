@@ -91,10 +91,10 @@ public class RecipeRegistry implements IRecipeRegistry {
 				recipeInputMap.addRecipe(recipe, recipeType, inputStacks);
 			}
 
-			List<ItemStack> outputs = recipeWrapper.getOutputs();
+			List outputs = recipeWrapper.getOutputs();
 			if (outputs != null) {
-				outputs = StackUtil.toItemStackList(outputs);
-				recipeOutputMap.addRecipe(recipe, recipeType, outputs);
+				List<ItemStack> outputStacks = StackUtil.toItemStackList(outputs);
+				recipeOutputMap.addRecipe(recipe, recipeType, outputStacks);
 			}
 		}
 	}

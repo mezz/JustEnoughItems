@@ -43,7 +43,7 @@ public class SmeltingRecipe implements ISmeltingRecipeWrapper {
 	}
 
 	@Override
-	public void drawInfo(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawInfo(@Nonnull Minecraft minecraft) {
 		if (experienceString != null) {
 			FontRenderer fontRendererObj = minecraft.fontRenderer;
 			fontRendererObj.drawString(experienceString, 69 - fontRendererObj.getStringWidth(experienceString) / 2, 0, Color.gray.getRGB());
