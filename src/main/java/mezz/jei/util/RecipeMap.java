@@ -1,5 +1,9 @@
 package mezz.jei.util;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Table;
 import mezz.jei.RecipeRegistry;
 import mezz.jei.api.recipe.IRecipeType;
 import net.minecraft.item.ItemStack;
@@ -9,7 +13,6 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +24,9 @@ import java.util.Set;
 public class RecipeMap {
 
 	@Nonnull
-	private final Map<IRecipeType, RecipesForType> recipeMap = new HashMap<IRecipeType, RecipesForType>();
+	private final Table<IRecipeType, String, List<Object>> recipeTable = HashBasedTable.create();
 	@Nonnull
-	private final Map<String, List<IRecipeType>> typeMap = new HashMap<String, List<IRecipeType>>();
+	private final ArrayListMultimap<String, IRecipeType> typeMap = ArrayListMultimap.create();
 	@Nonnull
 	private final Comparator<IRecipeType> recipeTypeComparator;
 
@@ -38,20 +41,10 @@ public class RecipeMap {
 	}
 
 	@Nonnull
-	private RecipesForType getRecipesForType(IRecipeType recipeType) {
-		RecipesForType recipesForType = recipeMap.get(recipeType);
-		if (recipesForType == null) {
-			recipesForType = new RecipesForType();
-			recipeMap.put(recipeType, recipesForType);
-		}
-		return recipesForType;
-	}
-
-	@Nonnull
 	public List<IRecipeType> getRecipeTypes(@Nonnull ItemStack itemStack) {
 		Set<IRecipeType> recipeTypes = new LinkedHashSet<IRecipeType>();
 		for (String stackKey : getNamesWithWildcard(itemStack)) {
-			recipeTypes.addAll(getRecipeTypes(stackKey));
+			recipeTypes.addAll(typeMap.get(stackKey));
 		}
 		List<IRecipeType> sortedRecipeTypes = new ArrayList<IRecipeType>(recipeTypes);
 		Collections.sort(sortedRecipeTypes, recipeTypeComparator);
@@ -60,18 +53,9 @@ public class RecipeMap {
 
 	private void addRecipeType(@Nonnull IRecipeType recipeType, @Nonnull ItemStack itemStack) {
 		String stackKey = getName(itemStack);
-		List<IRecipeType> recipeTypes = getRecipeTypes(stackKey);
+		List<IRecipeType> recipeTypes = typeMap.get(stackKey);
 		if (!recipeTypes.contains(recipeType))
 			recipeTypes.add(recipeType);
-	}
-
-	private List<IRecipeType> getRecipeTypes(String stackKey) {
-		List<IRecipeType> recipeTypes = typeMap.get(stackKey);
-		if (recipeTypes == null) {
-			recipeTypes = new ArrayList<IRecipeType>();
-			typeMap.put(stackKey, recipeTypes);
-		}
-		return recipeTypes;
 	}
 
 	@Nonnull
@@ -99,48 +83,33 @@ public class RecipeMap {
 
 	@Nonnull
 	public List<Object> getRecipes(@Nonnull IRecipeType recipeType, @Nonnull ItemStack stack) {
-		RecipesForType recipesForType = getRecipesForType(recipeType);
-		return recipesForType.getRecipes(stack);
+		Map<String, List<Object>> recipesForType = recipeTable.row(recipeType);
+
+		Set<Object> allRecipes = new LinkedHashSet<Object>();
+		for (String name : getNamesWithWildcard(stack)) {
+			List<Object> recipes = recipesForType.get(name);
+			if (recipes != null)
+				allRecipes.addAll(recipes);
+		}
+		return new ArrayList<Object>(allRecipes);
 	}
 
 	public void addRecipe(@Nonnull Object recipe, @Nonnull IRecipeType recipeType, @Nonnull Iterable<ItemStack> itemStacks) {
-		RecipesForType recipesForType = getRecipesForType(recipeType);
+		Map<String, List<Object>> recipesForType = recipeTable.row(recipeType);
+
 		for (ItemStack itemStack : itemStacks) {
 			if (itemStack == null)
 				continue;
 
-			recipesForType.addRecipe(itemStack, recipe);
+			String stackKey = getName(itemStack);
+			List<Object> recipes = recipesForType.get(stackKey);
+			if (recipes == null) {
+				recipes = Lists.newArrayList();
+				recipesForType.put(stackKey, recipes);
+			}
+			recipes.add(recipe);
 
 			addRecipeType(recipeType, itemStack);
 		}
 	}
-
-	private class RecipesForType {
-		@Nonnull
-		private final Map<String, List<Object>> map = new HashMap<String, List<Object>>();
-
-		public void addRecipe(@Nonnull ItemStack itemStack, @Nonnull Object recipe) {
-			String name = getName(itemStack);
-			getRecipes(name).add(recipe);
-		}
-
-		@Nonnull
-		public List<Object> getRecipes(@Nonnull ItemStack itemStack) {
-			Set<Object> recipes = new LinkedHashSet<Object>();
-			for (String name : getNamesWithWildcard(itemStack)) {
-				recipes.addAll(getRecipes(name));
-			}
-			return new ArrayList<Object>(recipes);
-		}
-
-		private List<Object> getRecipes(String stackKey) {
-			List<Object> recipes = map.get(stackKey);
-			if (recipes == null) {
-				recipes = new ArrayList<Object>();
-				map.put(stackKey, recipes);
-			}
-			return recipes;
-		}
-	}
-
 }
