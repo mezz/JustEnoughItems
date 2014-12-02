@@ -1,6 +1,6 @@
 package mezz.jei.plugins.vanilla.furnace.fuel;
 
-import mezz.jei.api.recipe.wrapper.IFuelRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class FuelRecipe implements IFuelRecipeWrapper {
+public class FuelRecipe implements IRecipeWrapper {
 	@Nonnull
 	private final List<ItemStack> input;
 	@Nullable
@@ -31,6 +31,7 @@ public class FuelRecipe implements IFuelRecipeWrapper {
 		return input;
 	}
 
+	@Nonnull
 	@Override
 	public List<ItemStack> getOutputs() {
 		return Collections.emptyList();

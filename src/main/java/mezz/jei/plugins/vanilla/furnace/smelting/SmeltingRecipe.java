@@ -1,6 +1,6 @@
 package mezz.jei.plugins.vanilla.furnace.smelting;
 
-import mezz.jei.api.recipe.wrapper.ISmeltingRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
@@ -12,7 +12,7 @@ import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 
-public class SmeltingRecipe implements ISmeltingRecipeWrapper {
+public class SmeltingRecipe implements IRecipeWrapper {
 	@Nonnull
 	private final List<ItemStack> input;
 	@Nonnull

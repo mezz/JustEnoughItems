@@ -6,8 +6,8 @@ import mezz.jei.api.gui.IGuiItemStacks;
 import mezz.jei.api.recipe.IRecipeGui;
 import mezz.jei.api.recipe.IRecipeType;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.api.recipe.wrapper.IFuelRecipeWrapper;
-import mezz.jei.api.recipe.wrapper.ISmeltingRecipeWrapper;
+import mezz.jei.plugins.vanilla.furnace.fuel.FuelRecipe;
+import mezz.jei.plugins.vanilla.furnace.smelting.SmeltingRecipe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
@@ -42,11 +42,11 @@ public final class FurnaceRecipeGui implements IRecipeGui {
 		this.recipeWrapper = recipeWrapper;
 		guiItemStacks.clearItemStacks();
 
-		if (recipeWrapper instanceof IFuelRecipeWrapper) {
-			IFuelRecipeWrapper fuelRecipeWrapper = (IFuelRecipeWrapper)recipeWrapper;
+		if (recipeWrapper instanceof FuelRecipe) {
+			FuelRecipe fuelRecipeWrapper = (FuelRecipe)recipeWrapper;
 			guiItemStacks.setItemStack(fuelSlot, fuelRecipeWrapper.getInputs(), focusStack);
-		} else if (recipeWrapper instanceof ISmeltingRecipeWrapper) {
-			ISmeltingRecipeWrapper smeltingRecipeWrapper = (ISmeltingRecipeWrapper)recipeWrapper;
+		} else if (recipeWrapper instanceof SmeltingRecipe) {
+			SmeltingRecipe smeltingRecipeWrapper = (SmeltingRecipe)recipeWrapper;
 			guiItemStacks.setItemStack(inputSlot, smeltingRecipeWrapper.getInputs(), focusStack);
 			guiItemStacks.setItemStack(outputSlot, smeltingRecipeWrapper.getOutputs(), focusStack);
 		}
