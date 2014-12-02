@@ -7,7 +7,6 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.cache.Weigher;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import mezz.jei.util.ItemStackElement;
 import net.minecraft.item.ItemStack;
 
@@ -39,10 +38,10 @@ public class ItemFilter {
 				public ImmutableList<ItemStackElement> load(@Nonnull final String filterText) throws Exception {
 					// Recursive.
 					// Find a cached filter that is before the one we want, so we don't have to filter the full item list.
-					// For example, the "ir" and "iro" filters contain everything in the "iron" filter and more.
-					String baseFilterText = filterText.substring(0, filterText.length() - 1);
+					// For example, the "", "i", "ir", and "iro" filters contain everything in the "iron" filter and more.
+					String prevFilterText = filterText.substring(0, filterText.length() - 1);
 
-					ImmutableList<ItemStackElement> baseItemSet = filteredItemMapsCache.get(baseFilterText);
+					ImmutableList<ItemStackElement> baseItemSet = filteredItemMapsCache.get(prevFilterText);
 
 					Collection<ItemStackElement> filteredItemList = Collections2.filter(baseItemSet,
 						new Predicate<ItemStackElement>() {
@@ -57,17 +56,18 @@ public class ItemFilter {
 				}
 			});
 
-		List<ItemStackElement> unfilteredItemSet = Lists.newArrayList();
+		// create the recursive base case value, the list with no filter set
+		ImmutableList.Builder<ItemStackElement> baseList = ImmutableList.builder();
 		for (ItemStack itemStack : itemStacks) {
 			if (itemStack == null)
 				continue;
 
 			ItemStackElement itemStackElement = ItemStackElement.create(itemStack);
 			if (itemStackElement != null)
-				unfilteredItemSet.add(itemStackElement);
+				baseList.add(itemStackElement);
 		}
 
-		filteredItemMapsCache.put("", ImmutableList.copyOf(unfilteredItemSet));
+		filteredItemMapsCache.put("", baseList.build());
 	}
 
 	public boolean setFilterText(@Nonnull String filterText) {
