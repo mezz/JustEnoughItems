@@ -1,5 +1,7 @@
 package mezz.jei.gui;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSortedSet;
 import cpw.mods.fml.client.FMLClientHandler;
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
@@ -46,7 +48,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 	private ItemStack focusStack;
 	/* List of Recipe Types that involve "focusStack" */
 	@Nonnull
-	private List<IRecipeType> recipeTypes = new ArrayList<IRecipeType>();
+	private ImmutableList<IRecipeType> recipeTypes = ImmutableList.of();
 
 	/* List of RecipeGui to display */
 	@Nonnull
@@ -54,7 +56,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 
 	/* List of recipes for the currently selected recipeClass */
 	@Nonnull
-	private List<Object> recipes = new ArrayList<Object>();
+	private ImmutableList<Object> recipes = ImmutableList.of();
 	private int recipesPerPage;
 
 	private int recipeTypeIndex = 0;
@@ -209,7 +211,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		if (this.focusStack != null && this.focusStack.equals(stack) && this.mode == mode)
 			return true;
 
-		List<IRecipeType> types = null;
+		ImmutableList<IRecipeType> types = null;
 		switch (mode) {
 			case INPUT:
 				types = JEIManager.recipeRegistry.getRecipeTypesForInput(stack);

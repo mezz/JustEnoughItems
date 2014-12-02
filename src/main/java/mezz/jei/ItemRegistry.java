@@ -1,5 +1,6 @@
 package mezz.jei;
 
+import com.google.common.collect.ImmutableList;
 import cpw.mods.fml.common.registry.GameData;
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.util.Log;
@@ -23,45 +24,51 @@ class ItemRegistry implements IItemRegistry {
 	@Nonnull
 	private final Set<String> itemNameSet = new HashSet<String>();
 	@Nonnull
-	private final List<ItemStack> itemList = new ArrayList<ItemStack>();
+	private final ImmutableList<ItemStack> itemList;
 	@Nonnull
-	private final List<ItemStack> fuels = new ArrayList<ItemStack>();
+	private final ImmutableList<ItemStack> fuels;
 
 	public ItemRegistry() {
+		List<ItemStack> itemList = new ArrayList<ItemStack>();
+		List<ItemStack> fuels = new ArrayList<ItemStack>();
+
 		for (Block block : GameData.getBlockRegistry().typeSafeIterable())
-			addBlockAndSubBlocks(block);
+			addBlockAndSubBlocks(block, itemList, fuels);
 
 		for (Item item : GameData.getItemRegistry().typeSafeIterable())
-			addItemAndSubItems(item);
+			addItemAndSubItems(item, itemList, fuels);
+
+		this.itemList = ImmutableList.copyOf(itemList);
+		this.fuels = ImmutableList.copyOf(fuels);
 	}
 
 	@Override
 	@Nonnull
-	public List<ItemStack> getItemList() {
+	public ImmutableList<ItemStack> getItemList() {
 		return itemList;
 	}
 
 	@Override
 	@Nonnull
-	public List<ItemStack> getFuels() {
+	public ImmutableList<ItemStack> getFuels() {
 		return fuels;
 	}
 
-	private void addItemAndSubItems(@Nullable Item item) {
+	private void addItemAndSubItems(@Nullable Item item, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {
 		if (item == null)
 			return;
 
 		if (item.getHasSubtypes()) {
 			ItemStack itemStack = new ItemStack(item, 1, OreDictionary.WILDCARD_VALUE);
 			List<ItemStack> items = StackUtil.getSubtypes(itemStack);
-			addItemStacks(items);
+			addItemStacks(items, itemList, fuels);
 		} else {
 			ItemStack itemStack = new ItemStack(item);
-			addItemStack(itemStack);
+			addItemStack(itemStack, itemList, fuels);
 		}
 	}
 
-	private void addBlockAndSubBlocks(@Nullable Block block) {
+	private void addBlockAndSubBlocks(@Nullable Block block, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {
 		if (block == null)
 			return;
 
@@ -73,7 +80,7 @@ class ItemRegistry implements IItemRegistry {
 				Log.debug("Couldn't get itemStack for block: " + block.getUnlocalizedName());
 				return;
 			}
-			addItemStack(stack);
+			addItemStack(stack, itemList, fuels);
 			return;
 		}
 
@@ -81,7 +88,7 @@ class ItemRegistry implements IItemRegistry {
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
 			subItems.clear();
 			block.getSubBlocks(item, itemTab, subItems);
-			addItemStacks(subItems);
+			addItemStacks(subItems, itemList, fuels);
 
 			if (subItems.isEmpty()) {
 				ItemStack stack = new ItemStack(block);
@@ -89,19 +96,19 @@ class ItemRegistry implements IItemRegistry {
 					Log.debug("Couldn't get itemStack for block: " + block.getUnlocalizedName());
 					return;
 				}
-				addItemStack(stack);
+				addItemStack(stack, itemList, fuels);
 			}
 		}
 	}
 
-	private void addItemStacks(@Nonnull Iterable<ItemStack> stacks) {
+	private void addItemStacks(@Nonnull Iterable<ItemStack> stacks, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {
 		for (ItemStack stack : stacks) {
 			if (stack != null)
-				addItemStack(stack);
+				addItemStack(stack, itemList, fuels);
 		}
 	}
 
-	private void addItemStack(@Nonnull ItemStack stack) {
+	private void addItemStack(@Nonnull ItemStack stack, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {
 		String itemKey = uniqueIdentifierForStack(stack);
 
 		if (itemNameSet.contains(itemKey))

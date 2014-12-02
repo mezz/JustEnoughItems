@@ -1,5 +1,7 @@
 package mezz.jei;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSortedSet;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeType;
@@ -112,33 +114,33 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Nonnull
 	@Override
-	public List<IRecipeType> getRecipeTypesForInput(@Nullable ItemStack input) {
+	public ImmutableList<IRecipeType> getRecipeTypesForInput(@Nullable ItemStack input) {
 		if (input == null)
-			return Collections.emptyList();
+			return ImmutableList.of();
 		return recipeInputMap.getRecipeTypes(input);
 	}
 
 	@Nonnull
 	@Override
-	public List<IRecipeType> getRecipeTypesForOutput(@Nullable ItemStack output) {
+	public ImmutableList<IRecipeType> getRecipeTypesForOutput(@Nullable ItemStack output) {
 		if (output == null)
-			return Collections.emptyList();
+			return ImmutableList.of();
 		return recipeOutputMap.getRecipeTypes(output);
 	}
 
 	@Nonnull
 	@Override
-	public List<Object> getInputRecipes(@Nullable IRecipeType recipeType, @Nullable ItemStack input) {
+	public ImmutableList<Object> getInputRecipes(@Nullable IRecipeType recipeType, @Nullable ItemStack input) {
 		if (recipeType == null || input == null)
-			return Collections.emptyList();
+			return ImmutableList.of();
 		return recipeInputMap.getRecipes(recipeType, input);
 	}
 
 	@Nonnull
 	@Override
-	public List<Object> getOutputRecipes(@Nullable IRecipeType recipeType, @Nullable ItemStack output) {
+	public ImmutableList<Object> getOutputRecipes(@Nullable IRecipeType recipeType, @Nullable ItemStack output) {
 		if (recipeType == null || output == null)
-			return Collections.emptyList();
+			return ImmutableList.of();
 		return recipeOutputMap.getRecipes(recipeType, output);
 	}
 

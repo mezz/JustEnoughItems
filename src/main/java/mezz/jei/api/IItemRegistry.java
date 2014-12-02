@@ -1,16 +1,16 @@
 package mezz.jei.api;
 
+import com.google.common.collect.ImmutableList;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 public interface IItemRegistry {
 
 	@Nonnull
-	public List<ItemStack> getItemList();
+	public ImmutableList<ItemStack> getItemList();
 
 	@Nonnull
-	public List<ItemStack> getFuels();
+	public ImmutableList<ItemStack> getFuels();
 
 }

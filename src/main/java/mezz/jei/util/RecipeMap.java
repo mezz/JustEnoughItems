@@ -2,7 +2,10 @@ package mezz.jei.util;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 import com.google.common.collect.Table;
 import mezz.jei.RecipeRegistry;
 import mezz.jei.api.recipe.IRecipeType;
@@ -11,7 +14,6 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -41,14 +43,12 @@ public class RecipeMap {
 	}
 
 	@Nonnull
-	public List<IRecipeType> getRecipeTypes(@Nonnull ItemStack itemStack) {
-		Set<IRecipeType> recipeTypes = new LinkedHashSet<IRecipeType>();
+	public ImmutableList<IRecipeType> getRecipeTypes(@Nonnull ItemStack itemStack) {
+		List<IRecipeType> recipeTypes = new ArrayList<IRecipeType>();
 		for (String stackKey : getNamesWithWildcard(itemStack)) {
 			recipeTypes.addAll(typeMap.get(stackKey));
 		}
-		List<IRecipeType> sortedRecipeTypes = new ArrayList<IRecipeType>(recipeTypes);
-		Collections.sort(sortedRecipeTypes, recipeTypeComparator);
-		return sortedRecipeTypes;
+		return Ordering.from(recipeTypeComparator).immutableSortedCopy(recipeTypes);
 	}
 
 	private void addRecipeType(@Nonnull IRecipeType recipeType, @Nonnull ItemStack itemStack) {
@@ -82,16 +82,16 @@ public class RecipeMap {
 	}
 
 	@Nonnull
-	public List<Object> getRecipes(@Nonnull IRecipeType recipeType, @Nonnull ItemStack stack) {
+	public ImmutableList<Object> getRecipes(@Nonnull IRecipeType recipeType, @Nonnull ItemStack stack) {
 		Map<String, List<Object>> recipesForType = recipeTable.row(recipeType);
 
-		Set<Object> allRecipes = new LinkedHashSet<Object>();
+		ImmutableList.Builder<Object> listBuilder = ImmutableList.builder();
 		for (String name : getNamesWithWildcard(stack)) {
 			List<Object> recipes = recipesForType.get(name);
 			if (recipes != null)
-				allRecipes.addAll(recipes);
+				listBuilder.addAll(recipes);
 		}
-		return new ArrayList<Object>(allRecipes);
+		return listBuilder.build();
 	}
 
 	public void addRecipe(@Nonnull Object recipe, @Nonnull IRecipeType recipeType, @Nonnull Iterable<ItemStack> itemStacks) {
