@@ -1,9 +1,11 @@
 package mezz.jei.gui;
 
+import com.google.common.collect.ImmutableList;
 import mezz.jei.ItemFilter;
 import mezz.jei.input.IClickable;
 import mezz.jei.input.IKeyable;
 import mezz.jei.input.IShowsItemStacks;
+import mezz.jei.util.ItemStackElement;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -21,7 +23,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 
@@ -122,12 +123,12 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 			pageNum = 0;
 		int i = pageNum * getCountPerPage();
 
-		List<ItemStack> itemList = itemFilter.getItemList();
+		ImmutableList<ItemStackElement> itemList = itemFilter.getItemList();
 		for (GuiItemStack itemButton : guiItemStacks) {
 			if (i >= itemList.size()) {
 				itemButton.clearItemStacks();
 			} else {
-				ItemStack stack = itemList.get(i);
+				ItemStack stack = itemList.get(i).getItemStack();
 				itemButton.setItemStack(stack, null);
 			}
 			i++;

@@ -1,46 +1,73 @@
 package mezz.jei;
 
-import mezz.jei.util.HashMapCache;
-import mezz.jei.util.Log;
+import com.google.common.base.Predicate;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.cache.Weigher;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import mezz.jei.util.ItemStackElement;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
+import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 
 public class ItemFilter {
-	private static final int cacheSize = 16;
-
+	/** The currently active filter text */
 	@Nonnull
 	private String filterText = "";
 
-	/** The filter map for when there is no filter. Maps itemStack names to itemStacks */
-	private final LinkedHashMap<String, ItemStack> unfilteredItemMap = new LinkedHashMap<String, ItemStack>();
-
-	/** The currently active filter map. Maps itemStack names to itemStacks */
-	@Nonnull
-	private LinkedHashMap<String, ItemStack> filteredItemMap = unfilteredItemMap;
-
 	/** A cache for fast searches while typing or using backspace. Maps filterText to filteredItemMaps */
-	private final HashMapCache<String, LinkedHashMap<String, ItemStack>> filteredItemMapsCache = new HashMapCache<String, LinkedHashMap<String, ItemStack>>(cacheSize);
-
-	/** A cache for for fast getItemList(). Maps filterText to itemList */
-	private final HashMapCache<String, List<ItemStack>> itemListsCache = new HashMapCache<String, List<ItemStack>>(cacheSize);
+	private final LoadingCache<String, ImmutableList<ItemStackElement>> filteredItemMapsCache;
 
 	public ItemFilter(@Nonnull List<ItemStack> itemStacks) {
+
+		filteredItemMapsCache = CacheBuilder.newBuilder()
+			.maximumWeight(16)
+			.weigher(new Weigher<String, ImmutableList<ItemStackElement>>() {
+				public int weigh(@Nonnull String key, @Nonnull ImmutableList<ItemStackElement> value) {
+					// The CacheLoader is recursive, so keep the base value in the cache permanently by setting its weight to 0
+					return (key.length() == 0) ? 0 : 1;
+				}
+			})
+			.build(new CacheLoader<String, ImmutableList<ItemStackElement>>() {
+				@Override
+				public ImmutableList<ItemStackElement> load(@Nonnull final String filterText) throws Exception {
+					// Recursive.
+					// Find a cached filter that is before the one we want, so we don't have to filter the full item list.
+					// For example, the "ir" and "iro" filters contain everything in the "iron" filter and more.
+					String baseFilterText = filterText.substring(0, filterText.length() - 1);
+
+					ImmutableList<ItemStackElement> baseItemSet = filteredItemMapsCache.get(baseFilterText);
+
+					Collection<ItemStackElement> filteredItemList = Collections2.filter(baseItemSet,
+						new Predicate<ItemStackElement>() {
+							@Override
+							public boolean apply(@Nullable ItemStackElement input) {
+								return input != null && input.getLocalizedName().contains(filterText);
+							}
+						}
+					);
+
+					return ImmutableList.copyOf(filteredItemList);
+				}
+			});
+
+		List<ItemStackElement> unfilteredItemSet = Lists.newArrayList();
 		for (ItemStack itemStack : itemStacks) {
 			if (itemStack == null)
 				continue;
 
-			try {
-				unfilteredItemMap.put(itemStack.getDisplayName().toLowerCase(), itemStack);
-			} catch (RuntimeException e) {
-				Log.warning("Found item with broken getDisplayName: " + itemStack);
-			}
+			ItemStackElement itemStackElement = ItemStackElement.create(itemStack);
+			if (itemStackElement != null)
+				unfilteredItemSet.add(itemStackElement);
 		}
-		setFilterText(filterText);
+
+		filteredItemMapsCache.put("", ImmutableList.copyOf(unfilteredItemSet));
 	}
 
 	public boolean setFilterText(@Nonnull String filterText) {
@@ -48,7 +75,6 @@ public class ItemFilter {
 		if (this.filterText.equals(filterText))
 			return false;
 
-		this.filteredItemMap = getFilteredItemMap(filterText);
 		this.filterText = filterText;
 		return true;
 	}
@@ -59,52 +85,12 @@ public class ItemFilter {
 	}
 
 	@Nonnull
-	private LinkedHashMap<String, ItemStack> getFilteredItemMap(@Nonnull String filterText) {
-		if (filterText.isEmpty())
-			return unfilteredItemMap;
-
-		if (filteredItemMapsCache.containsKey(filterText))
-			return filteredItemMapsCache.get(filterText);
-
-		// Find a cached filter that is a superset of the one we want,
-		// so we don't have to filter the full item list.
-		// For example, the "ir" and "iro" filters are supersets of the "iron" filter.
-		String longestExistingFilterText = "";
-		for (String existingFilterText : filteredItemMapsCache.keySet()) {
-			if (existingFilterText == null)
-				continue;
-			if (filterText.startsWith(existingFilterText) && (existingFilterText.length() > longestExistingFilterText.length())) {
-				longestExistingFilterText = existingFilterText;
-			}
-		}
-
-		LinkedHashMap<String, ItemStack> baseItemMap = getFilteredItemMap(longestExistingFilterText);
-		LinkedHashMap<String, ItemStack> filteredItemMap = new LinkedHashMap<String, ItemStack>(baseItemMap);
-
-		for (Iterator<String> iterator = filteredItemMap.keySet().iterator(); iterator.hasNext();) {
-			String key = iterator.next();
-			if (!key.contains(filterText)) {
-				iterator.remove();
-			}
-		}
-
-		filteredItemMapsCache.put(filterText, filteredItemMap);
-
-		return filteredItemMap;
-	}
-
-	@Nonnull
-	public List<ItemStack> getItemList() {
-		List<ItemStack> itemList = itemListsCache.get(filterText);
-		if (itemList == null) {
-			itemList = new ArrayList<ItemStack>(filteredItemMap.values());
-			itemListsCache.put(filterText, itemList);
-		}
-		return itemList;
+	public ImmutableList<ItemStackElement> getItemList() {
+		return filteredItemMapsCache.getUnchecked(filterText);
 	}
 
 	public int size() {
-		return filteredItemMap.size();
+		return getItemList().size();
 	}
 
 }
