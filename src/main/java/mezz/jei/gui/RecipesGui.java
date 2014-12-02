@@ -1,7 +1,6 @@
 package mezz.jei.gui;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSortedSet;
 import cpw.mods.fml.client.FMLClientHandler;
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
