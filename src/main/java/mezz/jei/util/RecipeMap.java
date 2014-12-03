@@ -3,6 +3,7 @@ package mezz.jei.util;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Table;
@@ -27,25 +28,27 @@ public class RecipeMap {
 	@Nonnull
 	private final ArrayListMultimap<String, IRecipeType> typeMap = ArrayListMultimap.create();
 	@Nonnull
-	private final Comparator<IRecipeType> recipeTypeComparator;
+	private final Ordering<IRecipeType> recipeTypeOrdering;
 
 	public RecipeMap(final RecipeRegistry recipeRegistry) {
-		this.recipeTypeComparator = new Comparator<IRecipeType>() {
+		Comparator<IRecipeType> recipeTypeComparator = new Comparator<IRecipeType>() {
 			public int compare(IRecipeType recipeType1, IRecipeType recipeType2) {
 				int index1 = recipeRegistry.getRecipeTypeIndex(recipeType1);
 				int index2 = recipeRegistry.getRecipeTypeIndex(recipeType2);
 				return Integer.compare(index1, index2);
 			}
 		};
+		this.recipeTypeOrdering = Ordering.from(recipeTypeComparator);
 	}
 
 	@Nonnull
 	public ImmutableList<IRecipeType> getRecipeTypes(@Nonnull ItemStack itemStack) {
-		List<IRecipeType> recipeTypes = new ArrayList<IRecipeType>();
+		ImmutableSet.Builder<IRecipeType> recipeTypeBuilder = ImmutableSet.builder();
 		for (String stackKey : getNamesWithWildcard(itemStack)) {
-			recipeTypes.addAll(typeMap.get(stackKey));
+			recipeTypeBuilder.addAll(typeMap.get(stackKey));
 		}
-		return Ordering.from(recipeTypeComparator).immutableSortedCopy(recipeTypes);
+		ImmutableSet<IRecipeType> recipeTypes = recipeTypeBuilder.build();
+		return recipeTypeOrdering.immutableSortedCopy(recipeTypes);
 	}
 
 	private void addRecipeType(@Nonnull IRecipeType recipeType, @Nonnull ItemStack itemStack) {
