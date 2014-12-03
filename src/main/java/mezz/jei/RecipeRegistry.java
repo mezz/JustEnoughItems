@@ -1,6 +1,11 @@
 package mezz.jei;
 
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
+import com.google.common.collect.MutableClassToInstanceMap;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeType;
@@ -12,40 +17,36 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class RecipeRegistry implements IRecipeRegistry {
-	private final Map<Class, IRecipeHandler> recipeHandlers = new HashMap<Class, IRecipeHandler>();
-	private final Map<Class<? extends IRecipeType>, IRecipeType> recipeTypesMap = new HashMap<Class<? extends IRecipeType>, IRecipeType>();
-	private final List<IRecipeType> recipeTypes = new ArrayList<IRecipeType>();
+	private final ImmutableMap<Class, IRecipeHandler> recipeHandlers;
+	private final ImmutableClassToInstanceMap<IRecipeType> recipeTypesMap;
+	private final ImmutableList<IRecipeType> recipeTypes;
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
 
-	public RecipeRegistry() {
-		recipeInputMap = new RecipeMap(this);
-		recipeOutputMap = new RecipeMap(this);
+	public RecipeRegistry(@Nonnull ImmutableList<IRecipeType> recipeTypes, @Nonnull ImmutableList<IRecipeHandler> recipeHandlers, @Nonnull ImmutableList<Object> recipes) {
+		this.recipeTypes = ImmutableSet.copyOf(recipeTypes).asList(); //remove duplicates
+		this.recipeTypesMap = buildRecipeTypesMap(this.recipeTypes);
+		this.recipeHandlers = buildRecipeHandlersMap(recipeHandlers);
+
+		this.recipeInputMap = new RecipeMap(this);
+		this.recipeOutputMap = new RecipeMap(this);
+		addRecipes(recipes);
 	}
 
-	public void registerRecipeType(IRecipeType recipeType) {
-		if (recipeTypesMap.containsKey(recipeType.getClass()))
-			throw new IllegalArgumentException("This Recipe Type has already been registered: " + recipeType);
-
-		recipeTypesMap.put(recipeType.getClass(), recipeType);
-		recipeTypes.add(recipeType);
+	private static ImmutableClassToInstanceMap<IRecipeType> buildRecipeTypesMap(@Nonnull ImmutableList<IRecipeType> recipeTypes) {
+		MutableClassToInstanceMap<IRecipeType> mutableRecipeTypesMap = MutableClassToInstanceMap.create();
+		for (IRecipeType recipeType : recipeTypes) {
+			mutableRecipeTypesMap.put(recipeType.getClass(), recipeType);
+		}
+		return ImmutableClassToInstanceMap.copyOf(mutableRecipeTypesMap);
 	}
 
-	@Nullable
-	public IRecipeType getRecipeType(Class<? extends IRecipeType> recipeTypeClass) {
-		return recipeTypesMap.get(recipeTypeClass);
-	}
-
-	public final void registerRecipeHandlers(@Nullable IRecipeHandler... recipeHandlers) {
-		if (recipeHandlers == null)
-			return;
-
+	private static ImmutableMap<Class, IRecipeHandler> buildRecipeHandlersMap(@Nonnull List<IRecipeHandler> recipeHandlers) {
+		HashMap<Class, IRecipeHandler> mutableRecipeHandlers = Maps.newHashMap();
 		for (IRecipeHandler recipeHandler : recipeHandlers) {
 			if (recipeHandler == null)
 				continue;
@@ -54,14 +55,15 @@ public class RecipeRegistry implements IRecipeRegistry {
 			if (recipeClass == null)
 				continue;
 
-			if (this.recipeHandlers.containsKey(recipeClass))
+			if (mutableRecipeHandlers.containsKey(recipeClass))
 				throw new IllegalArgumentException("A Recipe Handler has already been registered for this recipe class: " + recipeClass.getName());
 
-			this.recipeHandlers.put(recipeClass, recipeHandler);
+			mutableRecipeHandlers.put(recipeClass, recipeHandler);
 		}
+		return ImmutableMap.copyOf(mutableRecipeHandlers);
 	}
 
-	public void addRecipes(@Nullable Iterable recipes) {
+	private void addRecipes(@Nullable ImmutableList<Object> recipes) {
 		if (recipes == null)
 			return;
 
@@ -97,6 +99,11 @@ public class RecipeRegistry implements IRecipeRegistry {
 				recipeOutputMap.addRecipe(recipe, recipeType, outputStacks);
 			}
 		}
+	}
+
+	@Nullable
+	public IRecipeType getRecipeType(Class<? extends IRecipeType> recipeTypeClass) {
+		return recipeTypesMap.getInstance(recipeTypeClass);
 	}
 
 	@Nullable

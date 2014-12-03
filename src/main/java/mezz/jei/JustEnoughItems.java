@@ -1,5 +1,6 @@
 package mezz.jei;
 
+import com.google.common.collect.ImmutableList;
 import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -38,15 +39,13 @@ public class JustEnoughItems implements IPluginRegistry {
 
 	@Nonnull
 	private final List<IModPlugin> plugins;
-	private boolean pluginsCanRegister = true;
-	@Nonnull
-	private final RecipeRegistry recipeRegistry;
+	private boolean pluginsCanRegister;
 
 	public JustEnoughItems() {
 		plugins = new ArrayList<IModPlugin>();
-		JEIManager.recipeRegistry = recipeRegistry = new RecipeRegistry();
 		JEIManager.guiHelper = new GuiHelper();
 		JEIManager.pluginRegistry = this;
+		this.pluginsCanRegister = true;
 	}
 
 	@EventHandler
@@ -71,26 +70,23 @@ public class JustEnoughItems implements IPluginRegistry {
 		KeyBindings.init();
 
 		FMLCommonHandler.instance().bus().register(instance);
-
-		for	(IModPlugin plugin : plugins) {
-			for (IRecipeType recipeType : plugin.getRecipeTypes()) {
-				recipeRegistry.registerRecipeType(recipeType);
-			}
-		}
-		for	(IModPlugin plugin : plugins) {
-			for (IRecipeHandler recipeHandler : plugin.getRecipeHandlers()) {
-				recipeRegistry.registerRecipeHandlers(recipeHandler);
-			}
-		}
 	}
 
 	@EventHandler
 	public void loadComplete(FMLLoadCompleteEvent event) {
 		JEIManager.itemRegistry = new ItemRegistry();
 
+		ImmutableList.Builder<IRecipeType> recipeTypes = ImmutableList.builder();
+		ImmutableList.Builder<IRecipeHandler> recipeHandlers = ImmutableList.builder();
+		ImmutableList.Builder<Object> recipes = ImmutableList.builder();
+
 		for	(IModPlugin plugin : plugins) {
-			recipeRegistry.addRecipes(plugin.getRecipes());
+			recipeTypes.addAll(plugin.getRecipeTypes());
+			recipeHandlers.addAll( plugin.getRecipeHandlers());
+			recipes.addAll(plugin.getRecipes());
 		}
+
+		JEIManager.recipeRegistry = new RecipeRegistry(recipeTypes.build(), recipeHandlers.build(), recipes.build());
 
 		ItemFilter itemFilter = new ItemFilter(JEIManager.itemRegistry.getItemList());
 		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter);
