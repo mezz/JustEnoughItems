@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.furnace.smelting;
+package mezz.jei.plugins.vanilla.furnace;
 
 import mezz.jei.util.StackUtil;
 import net.minecraft.item.ItemStack;

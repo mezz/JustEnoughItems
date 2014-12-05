@@ -1,9 +1,8 @@
-package mezz.jei.plugins.vanilla.furnace.fuel;
+package mezz.jei.plugins.vanilla.furnace;
 
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.plugins.vanilla.furnace.FurnaceRecipeCategory;
 
 import javax.annotation.Nonnull;
 

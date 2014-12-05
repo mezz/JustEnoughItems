@@ -5,8 +5,6 @@ import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStacks;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.plugins.vanilla.furnace.fuel.FuelRecipe;
-import mezz.jei.plugins.vanilla.furnace.smelting.SmeltingRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 

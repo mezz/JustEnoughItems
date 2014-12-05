@@ -9,11 +9,11 @@ import mezz.jei.plugins.vanilla.crafting.ShapedOreRecipeHandler;
 import mezz.jei.plugins.vanilla.crafting.ShapedRecipesHandler;
 import mezz.jei.plugins.vanilla.crafting.ShapelessOreRecipeHandler;
 import mezz.jei.plugins.vanilla.crafting.ShapelessRecipesHandler;
+import mezz.jei.plugins.vanilla.furnace.FuelRecipeHandler;
+import mezz.jei.plugins.vanilla.furnace.FuelRecipeMaker;
 import mezz.jei.plugins.vanilla.furnace.FurnaceRecipeCategory;
-import mezz.jei.plugins.vanilla.furnace.fuel.FuelRecipeHandler;
-import mezz.jei.plugins.vanilla.furnace.fuel.FuelRecipeMaker;
-import mezz.jei.plugins.vanilla.furnace.smelting.SmeltingRecipeHandler;
-import mezz.jei.plugins.vanilla.furnace.smelting.SmeltingRecipeMaker;
+import mezz.jei.plugins.vanilla.furnace.SmeltingRecipeHandler;
+import mezz.jei.plugins.vanilla.furnace.SmeltingRecipeMaker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
