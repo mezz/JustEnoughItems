@@ -7,6 +7,6 @@ public interface IModPlugin {
 
 	public Iterable<? extends IRecipeType> getRecipeTypes();
 	public Iterable<? extends IRecipeHandler> getRecipeHandlers();
-	public Iterable getRecipes();
+	public Iterable<Object> getRecipes();
 
 }

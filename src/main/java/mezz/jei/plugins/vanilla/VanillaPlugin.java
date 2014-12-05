@@ -42,7 +42,7 @@ public class VanillaPlugin implements IModPlugin {
 	}
 
 	@Override
-	public Iterable getRecipes() {
+	public Iterable<Object> getRecipes() {
 		List<Object> recipes = new ArrayList<Object>();
 
 		recipes.addAll(CraftingRecipeMaker.getCraftingRecipes());

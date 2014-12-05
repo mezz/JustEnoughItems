@@ -27,7 +27,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
 
-	public RecipeRegistry(@Nonnull ImmutableList<IRecipeType> recipeTypes, @Nonnull ImmutableList<IRecipeHandler> recipeHandlers, @Nonnull ImmutableList<Object> recipes) {
+	RecipeRegistry(@Nonnull ImmutableList<IRecipeType> recipeTypes, @Nonnull ImmutableList<IRecipeHandler> recipeHandlers, @Nonnull ImmutableList<Object> recipes) {
 		this.recipeTypes = ImmutableSet.copyOf(recipeTypes).asList(); //remove duplicates
 		this.recipeTypesMap = buildRecipeTypesMap(this.recipeTypes);
 		this.recipeHandlers = buildRecipeHandlersMap(recipeHandlers);
@@ -78,10 +78,10 @@ public class RecipeRegistry implements IRecipeRegistry {
 				Log.debug("Can't handle recipe: " + recipe);
 				continue;
 			}
-			Class<? extends IRecipeType> recipeTypeKey = recipeHandler.getRecipeTypeClass();
-			IRecipeType recipeType = getRecipeType(recipeTypeKey);
+			Class<? extends IRecipeType> recipeTypeClass = recipeHandler.getRecipeTypeClass();
+			IRecipeType recipeType = recipeTypesMap.getInstance(recipeTypeClass);
 			if (recipeType == null) {
-				Log.error("No recipe type registered for key: " + recipeTypeKey);
+				Log.error("No recipe type registered for recipeTypeClass: " + recipeTypeClass);
 				continue;
 			}
 
@@ -99,11 +99,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 				recipeOutputMap.addRecipe(recipe, recipeType, outputStacks);
 			}
 		}
-	}
-
-	@Nullable
-	public IRecipeType getRecipeType(Class<? extends IRecipeType> recipeTypeClass) {
-		return recipeTypesMap.getInstance(recipeTypeClass);
 	}
 
 	@Nullable

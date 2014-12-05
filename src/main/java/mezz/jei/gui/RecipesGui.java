@@ -165,12 +165,12 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 
 	@Override
 	public void open() {
-		setOpen(true);
+		this.isOpen = true;
 	}
 
 	@Override
 	public void close() {
-		setOpen(false);
+		this.isOpen = false;
 	}
 
 	@Override
@@ -180,12 +180,12 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 
 	public void showRecipes(@Nonnull ItemStack stack) {
 		if (setStack(stack, Mode.OUTPUT))
-			setOpen(true);
+			open();
 	}
 
 	public void showUses(@Nonnull ItemStack stack) {
 		if(setStack(stack, Mode.INPUT))
-			setOpen(true);
+			open();
 	}
 
 	@Override
@@ -198,10 +198,6 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 			nextRecipeType();
 		else if (guibutton.id == previousRecipeType.id)
 			previousRecipeType();
-	}
-
-	public void setOpen(boolean open) {
-		this.isOpen = open;
 	}
 
 	private boolean setStack(@Nullable ItemStack stack, @Nonnull Mode mode) {

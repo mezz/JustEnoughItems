@@ -35,8 +35,7 @@ public class ForestryPlugin implements IModPlugin {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Iterable getRecipes() {
+	public Iterable<Object> getRecipes() {
 		List<Object> recipes = new ArrayList<Object>();
 
 		if (centrifugeRecipeHandler.getRecipeClass() != null) {
