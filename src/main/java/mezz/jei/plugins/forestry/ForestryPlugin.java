@@ -1,5 +1,6 @@
 package mezz.jei.plugins.forestry;
 
+import cpw.mods.fml.common.Loader;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
@@ -15,10 +16,9 @@ import java.util.List;
 
 public class ForestryPlugin implements IModPlugin {
 
-	private final IRecipeHandler centrifugeRecipeHandler;
-
-	public ForestryPlugin() {
-		centrifugeRecipeHandler = new CentrifugeRecipeHandler();
+	@Override
+	public boolean isModLoaded() {
+		return Loader.isModLoaded("Forestry");
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class ForestryPlugin implements IModPlugin {
 	public Iterable<? extends IRecipeHandler> getRecipeHandlers() {
 		return Arrays.asList(
 				new ForestryShapedRecipeHandler(),
-				centrifugeRecipeHandler
+				new CentrifugeRecipeHandler()
 		);
 	}
 
@@ -38,9 +38,7 @@ public class ForestryPlugin implements IModPlugin {
 	public Iterable<Object> getRecipes() {
 		List<Object> recipes = new ArrayList<Object>();
 
-		if (centrifugeRecipeHandler.getRecipeClass() != null) {
-			recipes.addAll(CentrifugeRecipeMaker.getCentrifugeRecipes());
-		}
+		recipes.addAll(CentrifugeRecipeMaker.getCentrifugeRecipes());
 
 		return recipes;
 	}

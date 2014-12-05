@@ -22,6 +22,11 @@ import java.util.List;
 public class VanillaPlugin implements IModPlugin {
 
 	@Override
+	public boolean isModLoaded() {
+		return true;
+	}
+
+	@Override
 	public Iterable<? extends IRecipeCategory> getRecipeCategories() {
 		return Arrays.asList(
 				new CraftingRecipeCategory(),

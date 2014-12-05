@@ -58,10 +58,11 @@ public class JustEnoughItems implements IPluginRegistry {
 
 	@Override
 	public void registerPlugin(IModPlugin plugin) {
-		if (!pluginsCanRegister) {
+		if (!pluginsCanRegister)
 			throw new IllegalStateException("Plugins must be registered during FMLPreInitializationEvent.");
-		}
-		plugins.add(plugin);
+
+		if (plugin.isModLoaded())
+			plugins.add(plugin);
 	}
 
 	@EventHandler
