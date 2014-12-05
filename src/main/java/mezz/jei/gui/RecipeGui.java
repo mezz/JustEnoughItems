@@ -47,8 +47,8 @@ public class RecipeGui {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 		recipeCategory.getBackground().draw(minecraft);
-		guiItemStacks.draw(minecraft, mouseX - posX, mouseY - posY);
 		recipeWrapper.drawInfo(minecraft);
+		guiItemStacks.draw(minecraft, mouseX - posX, mouseY - posY);
 
 		GL11.glPopMatrix();
 	}
