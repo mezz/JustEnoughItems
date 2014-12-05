@@ -1,15 +1,15 @@
 package mezz.jei.plugins.vanilla;
 
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
-import mezz.jei.api.recipe.IRecipeType;
+import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeMaker;
-import mezz.jei.plugins.vanilla.crafting.CraftingRecipeType;
 import mezz.jei.plugins.vanilla.crafting.ShapedOreRecipeHandler;
 import mezz.jei.plugins.vanilla.crafting.ShapedRecipesHandler;
 import mezz.jei.plugins.vanilla.crafting.ShapelessOreRecipeHandler;
 import mezz.jei.plugins.vanilla.crafting.ShapelessRecipesHandler;
-import mezz.jei.plugins.vanilla.furnace.FurnaceRecipeType;
+import mezz.jei.plugins.vanilla.furnace.FurnaceRecipeCategory;
 import mezz.jei.plugins.vanilla.furnace.fuel.FuelRecipeHandler;
 import mezz.jei.plugins.vanilla.furnace.fuel.FuelRecipeMaker;
 import mezz.jei.plugins.vanilla.furnace.smelting.SmeltingRecipeHandler;
@@ -22,10 +22,10 @@ import java.util.List;
 public class VanillaPlugin implements IModPlugin {
 
 	@Override
-	public Iterable<? extends IRecipeType> getRecipeTypes() {
+	public Iterable<? extends IRecipeCategory> getRecipeCategories() {
 		return Arrays.asList(
-				new CraftingRecipeType(),
-				new FurnaceRecipeType()
+				new CraftingRecipeCategory(),
+				new FurnaceRecipeCategory()
 		);
 	}
 

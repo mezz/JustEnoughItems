@@ -4,9 +4,8 @@ import com.google.common.collect.ImmutableList;
 import cpw.mods.fml.client.FMLClientHandler;
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.recipe.IRecipeGui;
+import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
-import mezz.jei.api.recipe.IRecipeType;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
 import mezz.jei.input.IClickable;
@@ -45,26 +44,23 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 
 	/* The ItemStack that is the focus of this GUI */
 	private ItemStack focusStack;
-	/* List of Recipe Types that involve "focusStack" */
-	@Nonnull
-	private ImmutableList<IRecipeType> recipeTypes = ImmutableList.of();
+	/* List of Recipe Categories that involve "focusStack" */
+	@Nonnull private ImmutableList<IRecipeCategory> recipeCategories = ImmutableList.of();
 
 	/* List of RecipeGui to display */
-	@Nonnull
-	private final List<IRecipeGui> recipeGuis = new ArrayList<IRecipeGui>();
+	@Nonnull private final List<RecipeGui> recipeGuis = new ArrayList<RecipeGui>();
 
 	/* List of recipes for the currently selected recipeClass */
-	@Nonnull
-	private ImmutableList<Object> recipes = ImmutableList.of();
+	@Nonnull private ImmutableList<Object> recipes = ImmutableList.of();
 	private int recipesPerPage;
 
-	private int recipeTypeIndex = 0;
+	private int recipeCategoryIndex = 0;
 	private int pageIndex = 0;
 	private String pageString;
 	private String title;
 
-	private GuiButton nextRecipeType;
-	private GuiButton previousRecipeType;
+	private GuiButton nextRecipeCategory;
+	private GuiButton previousRecipeCategory;
 	private GuiButton nextPage;
 	private GuiButton previousPage;
 
@@ -102,8 +98,8 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		int leftButtonX = guiLeft + borderPadding;
 
 		int recipeClassButtonTop = guiTop + borderPadding - 3;
-		nextRecipeType = new GuiButton(2, rightButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, ">");
-		previousRecipeType = new GuiButton(3, leftButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, "<");
+		nextRecipeCategory = new GuiButton(2, rightButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, ">");
+		previousRecipeCategory = new GuiButton(3, leftButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, "<");
 
 		int pageButtonTop =  guiTop + titleHeight;
 		nextPage = new GuiButton(4, rightButtonX, pageButtonTop, buttonWidth, buttonHeight, ">");
@@ -125,8 +121,8 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 
 	@SuppressWarnings("unchecked")
 	private void addButtons() {
-		this.buttonList.add(nextRecipeType);
-		this.buttonList.add(previousRecipeType);
+		this.buttonList.add(nextRecipeCategory);
+		this.buttonList.add(previousRecipeCategory);
 		this.buttonList.add(nextPage);
 		this.buttonList.add(previousPage);
 	}
@@ -134,7 +130,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 	@Nullable
 	@Override
 	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
-		for (IRecipeGui recipeGui : recipeGuis) {
+		for (RecipeGui recipeGui : recipeGuis) {
 			ItemStack stack = recipeGui.getStackUnderMouse(mouseX, mouseY);
 			if (stack != null) {
 				return stack;
@@ -194,10 +190,10 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 			nextPage();
 		else if (guibutton.id == previousPage.id)
 			previousPage();
-		else if (guibutton.id == nextRecipeType.id)
-			nextRecipeType();
-		else if (guibutton.id == previousRecipeType.id)
-			previousRecipeType();
+		else if (guibutton.id == nextRecipeCategory.id)
+			nextRecipeCategory();
+		else if (guibutton.id == previousRecipeCategory.id)
+			previousRecipeCategory();
 	}
 
 	private boolean setStack(@Nullable ItemStack stack, @Nonnull Mode mode) {
@@ -206,39 +202,39 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		if (this.focusStack != null && this.focusStack.equals(stack) && this.mode == mode)
 			return true;
 
-		ImmutableList<IRecipeType> types = null;
+		ImmutableList<IRecipeCategory> types = null;
 		switch (mode) {
 			case INPUT:
-				types = JEIManager.recipeRegistry.getRecipeTypesForInput(stack);
+				types = JEIManager.recipeRegistry.getRecipeCategoriesForInput(stack);
 				break;
 			case OUTPUT:
-				types = JEIManager.recipeRegistry.getRecipeTypesForOutput(stack);
+				types = JEIManager.recipeRegistry.getRecipeCategoriesForOutput(stack);
 				break;
 		}
 		if (types.isEmpty()) {
 			return false;
 		}
 
-		this.recipeTypes = types;
+		this.recipeCategories = types;
 		this.focusStack = stack;
 		this.mode = mode;
-		this.recipeTypeIndex = 0;
+		this.recipeCategoryIndex = 0;
 		this.pageIndex = 0;
 
 		updateLayout();
 		return true;
 	}
 
-	private void nextRecipeType() {
-		int recipesTypesCount = recipeTypes.size();
-		recipeTypeIndex = (recipeTypeIndex + 1) % recipesTypesCount;
+	private void nextRecipeCategory() {
+		int recipesTypesCount = recipeCategories.size();
+		recipeCategoryIndex = (recipeCategoryIndex + 1) % recipesTypesCount;
 		pageIndex = 0;
 		updateLayout();
 	}
 
-	private void previousRecipeType() {
-		int recipesTypesCount = recipeTypes.size();
-		recipeTypeIndex = (recipesTypesCount + recipeTypeIndex - 1) % recipesTypesCount;
+	private void previousRecipeCategory() {
+		int recipesTypesCount = recipeCategories.size();
+		recipeCategoryIndex = (recipesTypesCount + recipeCategoryIndex - 1) % recipesTypesCount;
 		pageIndex = 0;
 		updateLayout();
 	}
@@ -263,23 +259,23 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 	}
 
 	private void updateLayout() {
-		if (recipeTypes.isEmpty())
+		if (recipeCategories.isEmpty())
 			return;
 
-		IRecipeType recipeType = recipeTypes.get(recipeTypeIndex);
+		IRecipeCategory recipeCategory = recipeCategories.get(recipeCategoryIndex);
 
-		title = recipeType.getLocalizedName();
+		title = recipeCategory.getCategoryTitle();
 
 		switch (mode) {
 			case INPUT:
-				recipes = JEIManager.recipeRegistry.getInputRecipes(recipeType, focusStack);
+				recipes = JEIManager.recipeRegistry.getInputRecipes(recipeCategory, focusStack);
 				break;
 			case OUTPUT:
-				recipes = JEIManager.recipeRegistry.getOutputRecipes(recipeType, focusStack);
+				recipes = JEIManager.recipeRegistry.getOutputRecipes(recipeCategory, focusStack);
 				break;
 		}
 
-		IDrawable recipeBackground = recipeType.getBackground();
+		IDrawable recipeBackground = recipeCategory.getBackground();
 
 		recipesPerPage = (ySize - headerHeight) / (recipeBackground.getHeight() + borderPadding);
 		int recipeXOffset = (xSize - recipeBackground.getWidth()) / 2;
@@ -301,7 +297,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 				continue;
 			}
 
-			PositionedRecipeGui recipeGui = new PositionedRecipeGui(recipeType.createGui());
+			RecipeGui recipeGui = new RecipeGui(recipeCategory);
 			recipeGui.setPosition(posX, posY);
 			posY += recipeBackground.getHeight() + recipeSpacing;
 
@@ -311,7 +307,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		}
 
 		nextPage.enabled = previousPage.enabled = (pageCount() > 1);
-		nextRecipeType.enabled = previousRecipeType.enabled = (recipeTypes.size() > 1);
+		nextRecipeCategory.enabled = previousRecipeCategory.enabled = (recipeCategories.size() > 1);
 
 		this.pageString = (pageIndex + 1) + "/" + pageCount();
 	}
@@ -319,8 +315,8 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 	public void draw(int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getMinecraft();
 
-		nextRecipeType.drawButton(minecraft, mouseX, mouseY);
-		previousRecipeType.drawButton(minecraft, mouseX, mouseY);
+		nextRecipeCategory.drawButton(minecraft, mouseX, mouseY);
+		previousRecipeCategory.drawButton(minecraft, mouseX, mouseY);
 
 		nextPage.drawButton(minecraft, mouseX, mouseY);
 		previousPage.drawButton(minecraft, mouseX, mouseY);
@@ -335,7 +331,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		}
 		GL11.glPopMatrix();
 
-		for (IRecipeGui recipeGui : recipeGuis) {
+		for (RecipeGui recipeGui : recipeGuis) {
 			recipeGui.draw(minecraft, mouseX, mouseY);
 		}
 

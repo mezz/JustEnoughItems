@@ -3,21 +3,20 @@ package mezz.jei.plugins.vanilla.crafting;
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStacks;
-import mezz.jei.api.recipe.IRecipeGui;
-import mezz.jei.api.recipe.IRecipeType;
+import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 import mezz.jei.util.StackUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-public class CraftingRecipeGui implements IRecipeGui {
+public class CraftingRecipeCategory implements IRecipeCategory {
 
 	private static final int craftOutputSlot = 0;
 	private static final int craftInputSlot1 = 1;
@@ -25,14 +24,28 @@ public class CraftingRecipeGui implements IRecipeGui {
 	@Nonnull
 	private final IDrawable background;
 	@Nonnull
-	private final IGuiItemStacks guiItemStacks;
-	@Nullable
-	private ICraftingRecipeWrapper recipeWrapper;
+	private final String localizedName;
 
-	public CraftingRecipeGui(@Nonnull IRecipeType recipeType) {
-		background = recipeType.getBackground();
+	public CraftingRecipeCategory() {
+		ResourceLocation location = new ResourceLocation("minecraft:textures/gui/container/crafting_table.png");
+		background = JEIManager.guiHelper.createDrawable(location, 29, 16, 116, 54);
+		localizedName = StatCollector.translateToLocal("gui.jei.craftingTableRecipes");
+	}
 
-		guiItemStacks = JEIManager.guiHelper.makeGuiItemStacks();
+	@Nonnull
+	@Override
+	public String getCategoryTitle() {
+		return localizedName;
+	}
+
+	@Override
+	@Nonnull
+	public IDrawable getBackground() {
+		return background;
+	}
+
+	@Override
+	public void init(IGuiItemStacks guiItemStacks) {
 		guiItemStacks.initItemStack(craftOutputSlot, 94, 18);
 
 		for (int y = 0; y < 3; ++y) {
@@ -44,40 +57,23 @@ public class CraftingRecipeGui implements IRecipeGui {
 	}
 
 	@Override
-	public void setRecipe(@Nonnull IRecipeWrapper recipeWrapper, @Nullable ItemStack focusStack) {
-		this.recipeWrapper = (ICraftingRecipeWrapper)recipeWrapper;
-		guiItemStacks.clearItemStacks();
+	public void setRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IRecipeWrapper recipeWrapper) {
 		if (recipeWrapper instanceof IShapedCraftingRecipeWrapper) {
 			IShapedCraftingRecipeWrapper wrapper = (IShapedCraftingRecipeWrapper)recipeWrapper;
-			setInput(wrapper.getInputs(), focusStack, wrapper.getWidth(), wrapper.getHeight());
-			setOutput(this.recipeWrapper.getOutputs(), focusStack);
-		} else {
+			setInput(guiItemStacks, wrapper.getInputs(), wrapper.getWidth(), wrapper.getHeight());
+			setOutput(guiItemStacks, wrapper.getOutputs());
+		} else if (recipeWrapper instanceof ICraftingRecipeWrapper) {
 			ICraftingRecipeWrapper wrapper = (ICraftingRecipeWrapper)recipeWrapper;
-			setInput(wrapper.getInputs(), focusStack);
-			setOutput(wrapper.getOutputs(), focusStack);
+			setInput(guiItemStacks, wrapper.getInputs());
+			setOutput(guiItemStacks, wrapper.getOutputs());
 		}
 	}
 
-	@Override
-	public void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
-		if (recipeWrapper == null)
-			return;
-
-		background.draw(minecraft);
-		recipeWrapper.drawInfo(minecraft);
-		guiItemStacks.draw(minecraft, mouseX, mouseY);
+	private void setOutput(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull List<ItemStack> output) {
+		guiItemStacks.setItemStack(craftOutputSlot, output);
 	}
 
-	@Override
-	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
-		return guiItemStacks.getStackUnderMouse(mouseX, mouseY);
-	}
-
-	private void setOutput(@Nonnull List<ItemStack> output, @Nullable ItemStack focusStack) {
-		guiItemStacks.setItemStack(craftOutputSlot, output, focusStack);
-	}
-
-	private void setInput(@Nonnull List input, @Nullable ItemStack focusStack) {
+	private void setInput(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull List input) {
 		int width, height;
 		if (input.size() > 4)
 			width = height = 3;
@@ -86,10 +82,10 @@ public class CraftingRecipeGui implements IRecipeGui {
 		else
 			width = height = 1;
 
-		setInput(input, focusStack, width, height);
+		setInput(guiItemStacks, input, width, height);
 	}
 
-	private void setInput(@Nonnull List input, @Nullable ItemStack focusStack, int width, int height) {
+	private void setInput(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull List input, int width, int height) {
 		for (int i = 0; i < input.size(); i++) {
 			Object recipeItem = input.get(i);
 			int index;
@@ -117,16 +113,16 @@ public class CraftingRecipeGui implements IRecipeGui {
 
 			if (recipeItem instanceof ItemStack) {
 				List<ItemStack> itemStacks = Collections.singletonList((ItemStack) recipeItem);
-				setInput(index, itemStacks, focusStack);
+				setInput(guiItemStacks, index, itemStacks);
 			} else if (recipeItem instanceof Iterable) {
 				List<ItemStack> itemStacks = StackUtil.toItemStackList((Iterable) recipeItem);
-				setInput(index, itemStacks, focusStack);
+				setInput(guiItemStacks, index, itemStacks);
 			}
 		}
 	}
 
-	private void setInput(int inputIndex, @Nonnull Iterable<ItemStack> input, @Nullable ItemStack focusStack) {
-		guiItemStacks.setItemStack(craftInputSlot1 + inputIndex, input, focusStack);
+	private void setInput(@Nonnull IGuiItemStacks guiItemStacks, int inputIndex, @Nonnull Iterable<ItemStack> input) {
+		guiItemStacks.setItemStack(craftInputSlot1 + inputIndex, input);
 	}
 
 }

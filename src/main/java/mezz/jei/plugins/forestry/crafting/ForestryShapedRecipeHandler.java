@@ -1,9 +1,9 @@
 package mezz.jei.plugins.forestry.crafting;
 
+import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
-import mezz.jei.api.recipe.IRecipeType;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.plugins.vanilla.crafting.CraftingRecipeType;
+import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,8 +22,8 @@ public class ForestryShapedRecipeHandler implements IRecipeHandler {
 
 	@Nonnull
 	@Override
-	public Class<? extends IRecipeType> getRecipeTypeClass() {
-		return CraftingRecipeType.class;
+	public Class<? extends IRecipeCategory> getRecipeCategoryClass() {
+		return CraftingRecipeCategory.class;
 	}
 
 	@Override

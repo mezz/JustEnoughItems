@@ -13,6 +13,7 @@ public class GuiItemStacks implements IGuiItemStacks {
 
 	@Nonnull
 	private final Map<Integer, GuiItemStack> guiItemStacks = new HashMap<Integer, GuiItemStack>();
+	private ItemStack focusStack;
 
 	public void initItemStack(int index, int xPosition, int yPosition) {
 		initItemStack(index, xPosition, yPosition, 1);
@@ -23,11 +24,19 @@ public class GuiItemStacks implements IGuiItemStacks {
 		guiItemStacks.put(index, guiItemStack);
 	}
 
-	public void setItemStack(int index, @Nonnull Iterable<ItemStack> itemStacks, @Nullable ItemStack focusStack) {
+	/**
+	 * If focusStack is set and any of the guiItemStacks contains focusStack,
+	 * they will only display focusStack instead of rotating through all their values.
+	 */
+	public void setFocusStack(@Nullable ItemStack focusStack) {
+		this.focusStack = focusStack;
+	}
+
+	public void setItemStack(int index, @Nonnull Iterable<ItemStack> itemStacks) {
 		guiItemStacks.get(index).setItemStacks(itemStacks, focusStack);
 	}
 
-	public void setItemStack(int index, @Nonnull ItemStack itemStack, @Nullable ItemStack focusStack) {
+	public void setItemStack(int index, @Nonnull ItemStack itemStack) {
 		guiItemStacks.get(index).setItemStack(itemStack, focusStack);
 	}
 

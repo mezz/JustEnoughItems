@@ -1,11 +1,11 @@
 package mezz.jei.plugins.forestry;
 
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
-import mezz.jei.api.recipe.IRecipeType;
+import mezz.jei.plugins.forestry.centrifuge.CentrifugeRecipeCategory;
 import mezz.jei.plugins.forestry.centrifuge.CentrifugeRecipeHandler;
 import mezz.jei.plugins.forestry.centrifuge.CentrifugeRecipeMaker;
-import mezz.jei.plugins.forestry.centrifuge.CentrifugeRecipeType;
 import mezz.jei.plugins.forestry.crafting.ForestryShapedRecipeHandler;
 
 import java.util.ArrayList;
@@ -22,8 +22,8 @@ public class ForestryPlugin implements IModPlugin {
 	}
 
 	@Override
-	public Iterable<? extends IRecipeType> getRecipeTypes() {
-		return Collections.singletonList(new CentrifugeRecipeType());
+	public Iterable<? extends IRecipeCategory> getRecipeCategories() {
+		return Collections.singletonList(new CentrifugeRecipeCategory());
 	}
 
 	@Override

@@ -1,9 +1,9 @@
 package mezz.jei.plugins.vanilla.furnace.smelting;
 
+import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
-import mezz.jei.api.recipe.IRecipeType;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.plugins.vanilla.furnace.FurnaceRecipeType;
+import mezz.jei.plugins.vanilla.furnace.FurnaceRecipeCategory;
 
 import javax.annotation.Nonnull;
 
@@ -17,8 +17,8 @@ public class SmeltingRecipeHandler implements IRecipeHandler {
 
 	@Nonnull
 	@Override
-	public Class<? extends IRecipeType> getRecipeTypeClass() {
-		return FurnaceRecipeType.class;
+	public Class<? extends IRecipeCategory> getRecipeCategoryClass() {
+		return FurnaceRecipeCategory.class;
 	}
 
 	@Override

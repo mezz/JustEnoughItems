@@ -12,8 +12,8 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IPluginRegistry;
 import mezz.jei.api.JEIManager;
+import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
-import mezz.jei.api.recipe.IRecipeType;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
@@ -76,17 +76,17 @@ public class JustEnoughItems implements IPluginRegistry {
 	public void loadComplete(FMLLoadCompleteEvent event) {
 		JEIManager.itemRegistry = new ItemRegistry();
 
-		ImmutableList.Builder<IRecipeType> recipeTypes = ImmutableList.builder();
+		ImmutableList.Builder<IRecipeCategory> recipeCategories = ImmutableList.builder();
 		ImmutableList.Builder<IRecipeHandler> recipeHandlers = ImmutableList.builder();
 		ImmutableList.Builder<Object> recipes = ImmutableList.builder();
 
 		for	(IModPlugin plugin : plugins) {
-			recipeTypes.addAll(plugin.getRecipeTypes());
+			recipeCategories.addAll(plugin.getRecipeCategories());
 			recipeHandlers.addAll( plugin.getRecipeHandlers());
 			recipes.addAll(plugin.getRecipes());
 		}
 
-		JEIManager.recipeRegistry = new RecipeRegistry(recipeTypes.build(), recipeHandlers.build(), recipes.build());
+		JEIManager.recipeRegistry = new RecipeRegistry(recipeCategories.build(), recipeHandlers.build(), recipes.build());
 
 		ItemFilter itemFilter = new ItemFilter(JEIManager.itemRegistry.getItemList());
 		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter);

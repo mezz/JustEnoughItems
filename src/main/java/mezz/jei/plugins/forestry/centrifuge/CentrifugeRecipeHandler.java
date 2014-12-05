@@ -1,7 +1,7 @@
 package mezz.jei.plugins.forestry.centrifuge;
 
+import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
-import mezz.jei.api.recipe.IRecipeType;
 import mezz.jei.api.recipe.IRecipeWrapper;
 
 import javax.annotation.Nonnull;
@@ -21,8 +21,8 @@ public class CentrifugeRecipeHandler implements IRecipeHandler {
 
 	@Nonnull
 	@Override
-	public Class<? extends IRecipeType> getRecipeTypeClass() {
-		return CentrifugeRecipeType.class;
+	public Class<? extends IRecipeCategory> getRecipeCategoryClass() {
+		return CentrifugeRecipeCategory.class;
 	}
 
 	@Override

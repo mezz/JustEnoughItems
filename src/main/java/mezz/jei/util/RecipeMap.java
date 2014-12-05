@@ -8,7 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Table;
 import mezz.jei.RecipeRegistry;
-import mezz.jei.api.recipe.IRecipeType;
+import mezz.jei.api.recipe.IRecipeCategory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -19,43 +19,43 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A RecipeMap efficiently links Recipes, IRecipeTypes, and ItemStacks.
+ * A RecipeMap efficiently links Recipes, IRecipeCategory, and ItemStacks.
  */
 public class RecipeMap {
 
 	@Nonnull
-	private final Table<IRecipeType, String, List<Object>> recipeTable = HashBasedTable.create();
+	private final Table<IRecipeCategory, String, List<Object>> recipeTable = HashBasedTable.create();
 	@Nonnull
-	private final ArrayListMultimap<String, IRecipeType> typeMap = ArrayListMultimap.create();
+	private final ArrayListMultimap<String, IRecipeCategory> categoryMap = ArrayListMultimap.create();
 	@Nonnull
-	private final Ordering<IRecipeType> recipeTypeOrdering;
+	private final Ordering<IRecipeCategory> recipeCategoryOrdering;
 
 	public RecipeMap(final RecipeRegistry recipeRegistry) {
-		Comparator<IRecipeType> recipeTypeComparator = new Comparator<IRecipeType>() {
-			public int compare(IRecipeType recipeType1, IRecipeType recipeType2) {
-				int index1 = recipeRegistry.getRecipeTypeIndex(recipeType1);
-				int index2 = recipeRegistry.getRecipeTypeIndex(recipeType2);
+		Comparator<IRecipeCategory> recipeCategoryComparator = new Comparator<IRecipeCategory>() {
+			public int compare(IRecipeCategory recipeCategory1, IRecipeCategory recipeCategory2) {
+				int index1 = recipeRegistry.getRecipeCategoryIndex(recipeCategory1);
+				int index2 = recipeRegistry.getRecipeCategoryIndex(recipeCategory2);
 				return Integer.compare(index1, index2);
 			}
 		};
-		this.recipeTypeOrdering = Ordering.from(recipeTypeComparator);
+		this.recipeCategoryOrdering = Ordering.from(recipeCategoryComparator);
 	}
 
 	@Nonnull
-	public ImmutableList<IRecipeType> getRecipeTypes(@Nonnull ItemStack itemStack) {
-		ImmutableSet.Builder<IRecipeType> recipeTypeBuilder = ImmutableSet.builder();
+	public ImmutableList<IRecipeCategory> getRecipeCategories(@Nonnull ItemStack itemStack) {
+		ImmutableSet.Builder<IRecipeCategory> recipeCategoriesBuilder = ImmutableSet.builder();
 		for (String stackKey : getNamesWithWildcard(itemStack)) {
-			recipeTypeBuilder.addAll(typeMap.get(stackKey));
+			recipeCategoriesBuilder.addAll(categoryMap.get(stackKey));
 		}
-		ImmutableSet<IRecipeType> recipeTypes = recipeTypeBuilder.build();
-		return recipeTypeOrdering.immutableSortedCopy(recipeTypes);
+		ImmutableSet<IRecipeCategory> recipeCategories = recipeCategoriesBuilder.build();
+		return recipeCategoryOrdering.immutableSortedCopy(recipeCategories);
 	}
 
-	private void addRecipeType(@Nonnull IRecipeType recipeType, @Nonnull ItemStack itemStack) {
+	private void addRecipeCategory(@Nonnull IRecipeCategory recipeCategory, @Nonnull ItemStack itemStack) {
 		String stackKey = getName(itemStack);
-		List<IRecipeType> recipeTypes = typeMap.get(stackKey);
-		if (!recipeTypes.contains(recipeType))
-			recipeTypes.add(recipeType);
+		List<IRecipeCategory> recipeCategories = categoryMap.get(stackKey);
+		if (!recipeCategories.contains(recipeCategory))
+			recipeCategories.add(recipeCategory);
 	}
 
 	@Nonnull
@@ -82,8 +82,8 @@ public class RecipeMap {
 	}
 
 	@Nonnull
-	public ImmutableList<Object> getRecipes(@Nonnull IRecipeType recipeType, @Nonnull ItemStack stack) {
-		Map<String, List<Object>> recipesForType = recipeTable.row(recipeType);
+	public ImmutableList<Object> getRecipes(@Nonnull IRecipeCategory recipeCategory, @Nonnull ItemStack stack) {
+		Map<String, List<Object>> recipesForType = recipeTable.row(recipeCategory);
 
 		ImmutableList.Builder<Object> listBuilder = ImmutableList.builder();
 		for (String name : getNamesWithWildcard(stack)) {
@@ -94,8 +94,8 @@ public class RecipeMap {
 		return listBuilder.build();
 	}
 
-	public void addRecipe(@Nonnull Object recipe, @Nonnull IRecipeType recipeType, @Nonnull Iterable<ItemStack> itemStacks) {
-		Map<String, List<Object>> recipesForType = recipeTable.row(recipeType);
+	public void addRecipe(@Nonnull Object recipe, @Nonnull IRecipeCategory recipeCategory, @Nonnull Iterable<ItemStack> itemStacks) {
+		Map<String, List<Object>> recipesForType = recipeTable.row(recipeCategory);
 
 		for (ItemStack itemStack : itemStacks) {
 			if (itemStack == null)
@@ -109,7 +109,7 @@ public class RecipeMap {
 			}
 			recipes.add(recipe);
 
-			addRecipeType(recipeType, itemStack);
+			addRecipeCategory(recipeCategory, itemStack);
 		}
 	}
 }
