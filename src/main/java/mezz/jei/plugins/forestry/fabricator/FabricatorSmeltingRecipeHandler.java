@@ -1,5 +1,6 @@
 package mezz.jei.plugins.forestry.fabricator;
 
+import forestry.factory.gadgets.MachineFabricator;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
@@ -12,11 +13,7 @@ public class FabricatorSmeltingRecipeHandler implements IRecipeHandler {
 	@Nullable
 	@Override
 	public Class getRecipeClass() {
-		try {
-			return Class.forName("forestry.factory.gadgets.MachineFabricator$Smelting");
-		} catch (ClassNotFoundException e) {
-			return null;
-		}
+		return MachineFabricator.Smelting.class;
 	}
 
 	@Override

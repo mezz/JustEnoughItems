@@ -1,5 +1,6 @@
 package mezz.jei.plugins.forestry.crafting;
 
+import forestry.core.utils.ShapedRecipeCustom;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
@@ -13,11 +14,7 @@ public class ForestryShapedRecipeHandler implements IRecipeHandler {
 	@Nullable
 	@Override
 	public Class getRecipeClass() {
-		try {
-			return Class.forName("forestry.core.utils.ShapedRecipeCustom");
-		} catch (ClassNotFoundException e) {
-			return null;
-		}
+		return ShapedRecipeCustom.class;
 	}
 
 	@Nonnull
