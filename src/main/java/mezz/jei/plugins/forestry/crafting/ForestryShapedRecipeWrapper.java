@@ -20,7 +20,7 @@ public class ForestryShapedRecipeWrapper implements IShapedCraftingRecipeWrapper
 	}
 
 	@Override
-	public List getInputs() {
+	public List<Object> getInputs() {
 		return Arrays.asList(recipe.getIngredients());
 	}
 
