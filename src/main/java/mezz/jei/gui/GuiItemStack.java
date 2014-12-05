@@ -1,5 +1,6 @@
 package mezz.jei.gui;
 
+import mezz.jei.util.Log;
 import mezz.jei.util.StackUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -97,7 +98,11 @@ public class GuiItemStack {
 		if (itemStack == null)
 			return;
 		draw(minecraft, false);
-		minecraft.currentScreen.renderToolTip(itemStack, mouseX, mouseY);
+		try {
+			minecraft.currentScreen.renderToolTip(itemStack, mouseX, mouseY);
+		} catch (Exception e) {
+			Log.error("Exception when rendering tooltip on {}.\n{}", itemStack, e);
+		}
 		RenderHelper.disableStandardItemLighting();
 	}
 
