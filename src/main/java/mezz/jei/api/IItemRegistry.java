@@ -1,9 +1,10 @@
 package mezz.jei.api;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
+
+import net.minecraft.item.ItemStack;
 
 public interface IItemRegistry {
 

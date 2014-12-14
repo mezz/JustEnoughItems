@@ -1,5 +1,10 @@
 package mezz.jei.plugins.vanilla.crafting;
 
+import javax.annotation.Nonnull;
+
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
+
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IDrawable;
@@ -8,10 +13,6 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
-
-import javax.annotation.Nonnull;
 
 public class CraftingRecipeCategory implements IRecipeCategory {
 
@@ -45,7 +46,7 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 	}
 
 	@Override
-	public void init(IGuiItemStacks guiItemStacks) {
+	public void init(@Nonnull IGuiItemStacks guiItemStacks) {
 		guiItemStacks.initItemStack(craftOutputSlot, 94, 18);
 
 		for (int y = 0; y < 3; ++y) {

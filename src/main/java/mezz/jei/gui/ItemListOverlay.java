@@ -1,12 +1,12 @@
 package mezz.jei.gui;
 
 import com.google.common.collect.ImmutableList;
-import mezz.jei.ItemFilter;
-import mezz.jei.input.IClickable;
-import mezz.jei.input.IKeyable;
-import mezz.jei.input.IShowsItemStacks;
-import mezz.jei.util.ItemStackElement;
-import mezz.jei.util.MathUtil;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.awt.Color;
+import java.util.ArrayList;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -15,14 +15,17 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.Color;
-import java.util.ArrayList;
+import mezz.jei.ItemFilter;
+import mezz.jei.input.IClickable;
+import mezz.jei.input.IKeyable;
+import mezz.jei.input.IShowsItemStacks;
+import mezz.jei.util.ItemStackElement;
+import mezz.jei.util.MathUtil;
 
 public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 

@@ -1,12 +1,13 @@
 package mezz.jei.plugins.forestry.fabricator;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import forestry.factory.gadgets.MachineFabricator;
+
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class FabricatorSmeltingRecipeHandler implements IRecipeHandler {
 

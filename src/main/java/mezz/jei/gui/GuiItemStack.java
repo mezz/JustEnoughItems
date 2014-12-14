@@ -1,21 +1,23 @@
 package mezz.jei.gui;
 
-import mezz.jei.util.Log;
-import mezz.jei.util.StackUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.item.ItemStack;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.item.ItemStack;
+
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
+import mezz.jei.util.Log;
+import mezz.jei.util.StackUtil;
 
 public class GuiItemStack {
 
@@ -100,7 +102,7 @@ public class GuiItemStack {
 		draw(minecraft, false);
 		try {
 			minecraft.currentScreen.renderToolTip(itemStack, mouseX, mouseY);
-		} catch (Exception e) {
+		} catch (RuntimeException e) {
 			Log.error("Exception when rendering tooltip on {}.\n{}", itemStack, e);
 		}
 		RenderHelper.disableStandardItemLighting();

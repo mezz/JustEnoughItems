@@ -1,13 +1,14 @@
 package mezz.jei.gui;
 
-import mezz.jei.api.gui.IGuiItemStacks;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+
+import mezz.jei.api.gui.IGuiItemStacks;
 
 public class GuiItemStacks implements IGuiItemStacks {
 

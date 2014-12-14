@@ -1,14 +1,15 @@
 package mezz.jei.plugins.vanilla.crafting;
 
-import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ShapedRecipes;
-
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ShapedRecipes;
+
+import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 
 public class ShapedRecipesWrapper implements IShapedCraftingRecipeWrapper {
 

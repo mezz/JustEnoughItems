@@ -1,16 +1,17 @@
 package mezz.jei.plugins.forestry.centrifuge;
 
+import javax.annotation.Nonnull;
+import java.util.List;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
+
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStacks;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
-
-import javax.annotation.Nonnull;
-import java.util.List;
 
 public class CentrifugeRecipeCategory implements IRecipeCategory {
 
@@ -41,7 +42,7 @@ public class CentrifugeRecipeCategory implements IRecipeCategory {
 	}
 
 	@Override
-	public void init(IGuiItemStacks guiItemStacks) {
+	public void init(@Nonnull IGuiItemStacks guiItemStacks) {
 		// Resource
 		guiItemStacks.initItemStack(inputSlot, 4, 18);
 

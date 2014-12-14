@@ -1,15 +1,18 @@
 package mezz.jei.plugins.vanilla.crafting;
 
-import cpw.mods.fml.common.ObfuscationReflectionHelper;
-import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+
+import net.minecraftforge.oredict.ShapedOreRecipe;
+
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
+
+import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 
 public class ShapedOreRecipeWrapper implements IShapedCraftingRecipeWrapper {
 

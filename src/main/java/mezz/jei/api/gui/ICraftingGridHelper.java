@@ -1,9 +1,9 @@
 package mezz.jei.api.gui;
 
-import net.minecraft.item.ItemStack;
-
 import javax.annotation.Nonnull;
 import java.util.List;
+
+import net.minecraft.item.ItemStack;
 
 /**
  * Helps set crafting-grid-style GuiItemStacks.

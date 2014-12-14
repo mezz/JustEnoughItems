@@ -7,16 +7,19 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Table;
-import mezz.jei.RecipeRegistry;
-import mezz.jei.api.recipe.IRecipeCategory;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+
+import net.minecraft.item.ItemStack;
+
+import net.minecraftforge.oredict.OreDictionary;
+
+import mezz.jei.RecipeRegistry;
+import mezz.jei.api.recipe.IRecipeCategory;
 
 /**
  * A RecipeMap efficiently links Recipes, IRecipeCategory, and ItemStacks.
@@ -33,9 +36,9 @@ public class RecipeMap {
 	public RecipeMap(final RecipeRegistry recipeRegistry) {
 		Comparator<IRecipeCategory> recipeCategoryComparator = new Comparator<IRecipeCategory>() {
 			public int compare(IRecipeCategory recipeCategory1, IRecipeCategory recipeCategory2) {
-				int index1 = recipeRegistry.getRecipeCategoryIndex(recipeCategory1);
-				int index2 = recipeRegistry.getRecipeCategoryIndex(recipeCategory2);
-				return Integer.compare(index1, index2);
+				Integer index1 = recipeRegistry.getRecipeCategoryIndex(recipeCategory1);
+				Integer index2 = recipeRegistry.getRecipeCategoryIndex(recipeCategory2);
+				return index1.compareTo(index2);
 			}
 		};
 		this.recipeCategoryOrdering = Ordering.from(recipeCategoryComparator);
@@ -72,13 +75,13 @@ public class RecipeMap {
 		if (meta == OreDictionary.WILDCARD_VALUE) {
 			return getWildcardName(itemStack);
 		} else {
-			return itemStack.getUnlocalizedName() + ":" + meta;
+			return itemStack.getUnlocalizedName() + ':' + meta;
 		}
 	}
 
 	@Nonnull
 	private String getWildcardName(@Nonnull ItemStack itemStack) {
-		return itemStack.getItem().getUnlocalizedName() + ":" + OreDictionary.WILDCARD_VALUE;
+		return itemStack.getItem().getUnlocalizedName() + ':' + OreDictionary.WILDCARD_VALUE;
 	}
 
 	@Nonnull

@@ -1,13 +1,14 @@
 package mezz.jei.plugins.vanilla.crafting;
 
-import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
+import javax.annotation.Nonnull;
+import java.util.Collections;
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 
-import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.List;
+import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
 
 public class ShapelessRecipesWrapper implements ICraftingRecipeWrapper {
 

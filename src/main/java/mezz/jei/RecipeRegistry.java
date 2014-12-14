@@ -6,6 +6,14 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.MutableClassToInstanceMap;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.List;
+
+import net.minecraft.item.ItemStack;
+
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
@@ -13,12 +21,6 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.util.Log;
 import mezz.jei.util.RecipeMap;
 import mezz.jei.util.StackUtil;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.List;
 
 public class RecipeRegistry implements IRecipeRegistry {
 	private final ImmutableMap<Class, IRecipeHandler> recipeHandlers;

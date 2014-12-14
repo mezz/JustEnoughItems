@@ -1,14 +1,15 @@
 package mezz.jei.plugins.vanilla.furnace;
 
+import javax.annotation.Nonnull;
+
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
+
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStacks;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
-
-import javax.annotation.Nonnull;
 
 public class FurnaceRecipeCategory implements IRecipeCategory {
 
@@ -33,7 +34,7 @@ public class FurnaceRecipeCategory implements IRecipeCategory {
 	}
 
 	@Override
-	public void init(IGuiItemStacks guiItemStacks) {
+	public void init(@Nonnull IGuiItemStacks guiItemStacks) {
 		guiItemStacks.initItemStack(inputSlot, 0, 0);
 		guiItemStacks.initItemStack(fuelSlot, 0, 36);
 		guiItemStacks.initItemStack(outputSlot, 60, 18);

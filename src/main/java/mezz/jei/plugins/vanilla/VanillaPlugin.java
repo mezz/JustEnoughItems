@@ -1,5 +1,9 @@
 package mezz.jei.plugins.vanilla;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
@@ -14,10 +18,6 @@ import mezz.jei.plugins.vanilla.furnace.FuelRecipeMaker;
 import mezz.jei.plugins.vanilla.furnace.FurnaceRecipeCategory;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipeHandler;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipeMaker;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class VanillaPlugin implements IModPlugin {
 

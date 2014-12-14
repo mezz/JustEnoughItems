@@ -1,16 +1,17 @@
 package mezz.jei.plugins.vanilla.furnace;
 
-import mezz.jei.api.recipe.IRecipeWrapper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
+
+import mezz.jei.api.recipe.IRecipeWrapper;
 
 public class SmeltingRecipe implements IRecipeWrapper {
 	@Nonnull

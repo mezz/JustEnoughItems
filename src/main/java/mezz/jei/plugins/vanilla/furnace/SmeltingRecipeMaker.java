@@ -1,13 +1,14 @@
 package mezz.jei.plugins.vanilla.furnace;
 
-import mezz.jei.util.StackUtil;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
-
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
+
+import mezz.jei.util.StackUtil;
 
 public class SmeltingRecipeMaker {
 

@@ -1,12 +1,13 @@
 package mezz.jei.input;
 
-import mezz.jei.gui.RecipesGui;
+import javax.annotation.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-import javax.annotation.Nullable;
+import mezz.jei.gui.RecipesGui;
 
 public class GuiContainerWrapper implements IShowsItemStacks, IKeyable {
 

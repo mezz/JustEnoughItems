@@ -1,6 +1,13 @@
 package mezz.jei;
 
 import com.google.common.collect.ImmutableList;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraftforge.common.MinecraftForge;
+
 import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -9,6 +16,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IPluginRegistry;
 import mezz.jei.api.JEIManager;
@@ -21,11 +29,6 @@ import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.plugins.forestry.ForestryPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
-import net.minecraftforge.common.MinecraftForge;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 
 @Mod(modid = Constants.MOD_ID,
 		name = Constants.NAME,

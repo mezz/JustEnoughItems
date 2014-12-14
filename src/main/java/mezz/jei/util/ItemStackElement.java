@@ -1,9 +1,9 @@
 package mezz.jei.util;
 
-import net.minecraft.item.ItemStack;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import net.minecraft.item.ItemStack;
 
 /**
  * For getting properties of ItemStacks efficiently

@@ -1,8 +1,8 @@
 package mezz.jei.plugins.vanilla.crafting;
 
-import net.minecraft.item.crafting.CraftingManager;
-
 import java.util.List;
+
+import net.minecraft.item.crafting.CraftingManager;
 
 public class CraftingRecipeMaker {
 

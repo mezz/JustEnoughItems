@@ -1,6 +1,11 @@
 package mezz.jei.plugins.forestry;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import cpw.mods.fml.common.Loader;
+
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
@@ -12,10 +17,6 @@ import mezz.jei.plugins.forestry.fabricator.FabricatorCraftingRecipeHandler;
 import mezz.jei.plugins.forestry.fabricator.FabricatorRecipeCategory;
 import mezz.jei.plugins.forestry.fabricator.FabricatorRecipeMaker;
 import mezz.jei.plugins.forestry.fabricator.FabricatorSmeltingRecipeHandler;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class ForestryPlugin implements IModPlugin {
 

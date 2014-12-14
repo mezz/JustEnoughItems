@@ -1,13 +1,14 @@
 package mezz.jei.gui;
 
-import mezz.jei.api.gui.ICraftingGridHelper;
-import mezz.jei.api.gui.IGuiItemStacks;
-import mezz.jei.util.StackUtil;
-import net.minecraft.item.ItemStack;
-
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
+
+import net.minecraft.item.ItemStack;
+
+import mezz.jei.api.gui.ICraftingGridHelper;
+import mezz.jei.api.gui.IGuiItemStacks;
+import mezz.jei.util.StackUtil;
 
 public class CraftingGridHelper implements ICraftingGridHelper {
 

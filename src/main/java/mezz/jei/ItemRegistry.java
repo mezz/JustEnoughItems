@@ -1,16 +1,6 @@
 package mezz.jei;
 
 import com.google.common.collect.ImmutableList;
-import cpw.mods.fml.common.registry.GameData;
-import mezz.jei.api.IItemRegistry;
-import mezz.jei.util.Log;
-import mezz.jei.util.StackUtil;
-import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -18,6 +8,20 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntityFurnace;
+
+import net.minecraftforge.oredict.OreDictionary;
+
+import cpw.mods.fml.common.registry.GameData;
+
+import mezz.jei.api.IItemRegistry;
+import mezz.jei.util.Log;
+import mezz.jei.util.StackUtil;
 
 class ItemRegistry implements IItemRegistry {
 
@@ -124,9 +128,9 @@ class ItemRegistry implements IItemRegistry {
 	@Nonnull
 	private String uniqueIdentifierForStack(@Nonnull ItemStack stack) {
 		StringBuilder itemKey = new StringBuilder();
-		itemKey.append(stack.getUnlocalizedName()).append(":").append(stack.getItemDamage());
+		itemKey.append(stack.getUnlocalizedName()).append(':').append(stack.getItemDamage());
 		if (stack.hasTagCompound())
-			itemKey.append(":").append(stack.getTagCompound());
+			itemKey.append(':').append(stack.getTagCompound());
 		return itemKey.toString();
 	}
 

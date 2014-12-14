@@ -1,13 +1,13 @@
 package mezz.jei.util;
 
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.command.CommandGive;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
 
 public class Commands {
 

@@ -1,6 +1,20 @@
 package mezz.jei.input;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.item.ItemStack;
+
 import cpw.mods.fml.client.FMLClientHandler;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.ItemListOverlay;
@@ -8,17 +22,6 @@ import mezz.jei.gui.RecipesGui;
 import mezz.jei.util.Commands;
 import mezz.jei.util.MouseHelper;
 import mezz.jei.util.Permissions;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityClientPlayerMP;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.item.ItemStack;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class InputHandler {
 

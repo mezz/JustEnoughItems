@@ -1,13 +1,15 @@
 package mezz.jei.plugins.forestry.fabricator;
 
-import forestry.factory.gadgets.MachineFabricator;
-import mezz.jei.api.recipe.IRecipeWrapper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+
+import forestry.factory.gadgets.MachineFabricator;
+
+import mezz.jei.api.recipe.IRecipeWrapper;
 
 public class FabricatorSmeltingRecipeWrapper implements IRecipeWrapper {
 

@@ -1,9 +1,9 @@
 package mezz.jei.api.recipe;
 
+import javax.annotation.Nonnull;
+
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStacks;
-
-import javax.annotation.Nonnull;
 
 /**
  * Defines a category of recipe, (i.e. Crafting Table Recipe, Furnace Recipe)
@@ -27,7 +27,7 @@ public interface IRecipeCategory {
 	/**
 	 * Initialize the IGuiItemStacks with this recipe's layout.
 	 */
-	public void init(IGuiItemStacks guiItemStacks);
+	public void init(@Nonnull IGuiItemStacks guiItemStacks);
 
 	/**
 	 * Set the IGuiItemStacks from the RecipeWrapper.

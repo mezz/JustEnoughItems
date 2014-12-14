@@ -1,10 +1,10 @@
 package mezz.jei.plugins.vanilla.furnace;
 
+import javax.annotation.Nonnull;
+
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
-
-import javax.annotation.Nonnull;
 
 public class FuelRecipeHandler implements IRecipeHandler {
 	@Nonnull

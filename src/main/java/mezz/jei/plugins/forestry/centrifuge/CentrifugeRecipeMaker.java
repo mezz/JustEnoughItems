@@ -1,9 +1,9 @@
 package mezz.jei.plugins.forestry.centrifuge;
 
-import forestry.factory.gadgets.MachineCentrifuge;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import forestry.factory.gadgets.MachineCentrifuge;
 
 public class CentrifugeRecipeMaker {
 

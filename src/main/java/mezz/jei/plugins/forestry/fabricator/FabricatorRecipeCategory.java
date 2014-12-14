@@ -1,5 +1,12 @@
 package mezz.jei.plugins.forestry.fabricator;
 
+import javax.annotation.Nonnull;
+import java.util.List;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
+
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IDrawable;
@@ -7,12 +14,6 @@ import mezz.jei.api.gui.IGuiItemStacks;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.plugins.forestry.crafting.ForestryShapedRecipeWrapper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
-
-import javax.annotation.Nonnull;
-import java.util.List;
 
 public class FabricatorRecipeCategory implements IRecipeCategory {
 
@@ -45,7 +46,7 @@ public class FabricatorRecipeCategory implements IRecipeCategory {
 	}
 
 	@Override
-	public void init(IGuiItemStacks guiItemStacks) {
+	public void init(@Nonnull IGuiItemStacks guiItemStacks) {
 		// Molten resource
 		guiItemStacks.initItemStack(SLOT_METAL, 5, 4);
 

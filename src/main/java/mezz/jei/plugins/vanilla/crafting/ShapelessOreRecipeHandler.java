@@ -1,11 +1,12 @@
 package mezz.jei.plugins.vanilla.crafting;
 
+import javax.annotation.Nonnull;
+
+import net.minecraftforge.oredict.ShapelessOreRecipe;
+
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import net.minecraftforge.oredict.ShapelessOreRecipe;
-
-import javax.annotation.Nonnull;
 
 public class ShapelessOreRecipeHandler implements IRecipeHandler {
 

@@ -1,8 +1,8 @@
 package mezz.jei.api.gui;
 
-import net.minecraft.item.ItemStack;
-
 import javax.annotation.Nonnull;
+
+import net.minecraft.item.ItemStack;
 
 /**
  * IGuiItemStacks displays ItemStacks in a gui.

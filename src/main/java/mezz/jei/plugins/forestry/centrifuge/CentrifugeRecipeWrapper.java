@@ -1,14 +1,16 @@
 package mezz.jei.plugins.forestry.centrifuge;
 
-import forestry.factory.gadgets.MachineCentrifuge;
-import mezz.jei.api.recipe.IRecipeWrapper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+
+import forestry.factory.gadgets.MachineCentrifuge;
+
+import mezz.jei.api.recipe.IRecipeWrapper;
 
 public class CentrifugeRecipeWrapper implements IRecipeWrapper {
 

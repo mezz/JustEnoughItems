@@ -1,13 +1,15 @@
 package mezz.jei.config;
 
-import cpw.mods.fml.client.registry.ClientRegistry;
-import net.minecraft.client.settings.KeyBinding;
-import org.lwjgl.input.Keyboard;
-
 import javax.annotation.Nonnull;
 
+import net.minecraft.client.settings.KeyBinding;
+
+import cpw.mods.fml.client.registry.ClientRegistry;
+
+import org.lwjgl.input.Keyboard;
+
 public class KeyBindings {
-	private static final String categoryName = Constants.MOD_ID + " (" + Constants.NAME + ")";
+	private static final String categoryName = Constants.MOD_ID + " (" + Constants.NAME + ')';
 
 	@Nonnull
 	public static final KeyBinding toggleOverlay = new KeyBinding("key.jei.toggleOverlay", Keyboard.KEY_O, categoryName);

@@ -1,12 +1,13 @@
 package mezz.jei.config;
 
-import cpw.mods.fml.client.IModGuiFactory;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Set;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+
+import cpw.mods.fml.client.IModGuiFactory;
 
 public class JEIModGuiFactory implements IModGuiFactory {
 	@Override

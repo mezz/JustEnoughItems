@@ -1,9 +1,9 @@
 package mezz.jei.plugins.forestry.fabricator;
 
-import forestry.factory.gadgets.MachineFabricator;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import forestry.factory.gadgets.MachineFabricator;
 
 public class FabricatorRecipeMaker {
 

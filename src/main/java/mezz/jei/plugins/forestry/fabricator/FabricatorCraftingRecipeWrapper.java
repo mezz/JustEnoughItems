@@ -1,15 +1,17 @@
 package mezz.jei.plugins.forestry.fabricator;
 
-import forestry.factory.gadgets.MachineFabricator;
-import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.plugins.forestry.crafting.ForestryShapedRecipeWrapper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+
+import forestry.factory.gadgets.MachineFabricator;
+
+import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.plugins.forestry.crafting.ForestryShapedRecipeWrapper;
 
 public class FabricatorCraftingRecipeWrapper implements IRecipeWrapper {
 

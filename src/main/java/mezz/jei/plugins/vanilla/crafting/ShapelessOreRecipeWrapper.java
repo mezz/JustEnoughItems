@@ -1,13 +1,15 @@
 package mezz.jei.plugins.vanilla.crafting;
 
-import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.oredict.ShapelessOreRecipe;
-
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+
+import net.minecraftforge.oredict.ShapelessOreRecipe;
+
+import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
 
 public class ShapelessOreRecipeWrapper implements ICraftingRecipeWrapper {
 

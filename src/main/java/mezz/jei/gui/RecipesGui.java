@@ -1,7 +1,24 @@
 package mezz.jei.gui;
 
 import com.google.common.collect.ImmutableList;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+
 import cpw.mods.fml.client.FMLClientHandler;
+
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IRecipeCategory;
@@ -14,19 +31,6 @@ import mezz.jei.input.IShowsItemStacks;
 import mezz.jei.util.Log;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.StringUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickable, IKeyable {
 	private enum Mode {
@@ -285,11 +289,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		int posY = guiTop + headerHeight + recipeSpacing;
 
 		recipeGuis.clear();
-		for (int i = 0; i < recipesPerPage; i++) {
-			int recipeIndex = (pageIndex * recipesPerPage) + i;
-			if (recipeIndex >= recipes.size())
-				break;
-
+		for (int recipeIndex = pageIndex * recipesPerPage; recipeIndex < recipes.size(); recipeIndex++) {
 			Object recipe = recipes.get(recipeIndex);
 			IRecipeHandler recipeHandler = JEIManager.recipeRegistry.getRecipeHandler(recipe.getClass());
 			if (recipeHandler == null) {

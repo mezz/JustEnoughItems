@@ -1,11 +1,12 @@
 package mezz.jei.gui;
 
+import javax.annotation.Nonnull;
+
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IDrawable;
-import net.minecraft.util.ResourceLocation;
-
-import javax.annotation.Nonnull;
 
 public class GuiHelper implements IGuiHelper {
 

@@ -7,13 +7,15 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.cache.Weigher;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
-import mezz.jei.util.ItemStackElement;
-import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
+
+import net.minecraft.item.ItemStack;
+
+import mezz.jei.util.ItemStackElement;
 
 public class ItemFilter {
 	/** The currently active filter text */

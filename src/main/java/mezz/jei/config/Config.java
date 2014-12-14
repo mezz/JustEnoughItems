@@ -1,11 +1,13 @@
 package mezz.jei.config;
 
-import cpw.mods.fml.client.event.ConfigChangedEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import javax.annotation.Nonnull;
+
 import net.minecraft.util.StatCollector;
+
 import net.minecraftforge.common.config.Configuration;
 
-import javax.annotation.Nonnull;
+import cpw.mods.fml.client.event.ConfigChangedEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 public class Config {
 	public static Configuration configFile;

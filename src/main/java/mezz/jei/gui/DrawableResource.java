@@ -1,11 +1,13 @@
 package mezz.jei.gui;
 
-import cpw.mods.fml.client.config.GuiUtils;
-import mezz.jei.api.gui.IDrawable;
+import javax.annotation.Nonnull;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nonnull;
+import cpw.mods.fml.client.config.GuiUtils;
+
+import mezz.jei.api.gui.IDrawable;
 
 public class DrawableResource implements IDrawable {
 

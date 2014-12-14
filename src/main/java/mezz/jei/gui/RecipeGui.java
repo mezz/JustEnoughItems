@@ -1,13 +1,15 @@
 package mezz.jei.gui;
 
-import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeWrapper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import org.lwjgl.opengl.GL11;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+
+import org.lwjgl.opengl.GL11;
+
+import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.IRecipeWrapper;
 
 public class RecipeGui {
 

@@ -1,9 +1,10 @@
 package mezz.jei.util;
 
-import cpw.mods.fml.common.FMLCommonHandler;
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayer;
 
-import javax.annotation.Nonnull;
+import cpw.mods.fml.common.FMLCommonHandler;
 
 public class Permissions {
 	public static boolean canPlayerSpawnItems(@Nonnull EntityPlayer player) {

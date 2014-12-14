@@ -1,10 +1,11 @@
 package mezz.jei.api;
 
-import mezz.jei.api.gui.ICraftingGridHelper;
-import mezz.jei.api.gui.IDrawable;
+import javax.annotation.Nonnull;
+
 import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nonnull;
+import mezz.jei.api.gui.ICraftingGridHelper;
+import mezz.jei.api.gui.IDrawable;
 
 /**
  * Helps with the implementation of GUIs.

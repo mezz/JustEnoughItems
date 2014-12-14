@@ -1,20 +1,23 @@
 package mezz.jei;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import mezz.jei.gui.ItemListOverlay;
-import mezz.jei.gui.RecipesGui;
-import mezz.jei.input.InputHandler;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+
 import net.minecraftforge.client.event.GuiScreenEvent;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+
+import mezz.jei.gui.ItemListOverlay;
+import mezz.jei.gui.RecipesGui;
+import mezz.jei.input.InputHandler;
 
 public class GuiEventHandler {
 
@@ -22,7 +25,7 @@ public class GuiEventHandler {
 	private final ItemListOverlay itemListOverlay;
 	@Nonnull
 	private final RecipesGui recipesGui = new RecipesGui();
-	@Nonnull
+	@Nullable
 	private InputHandler inputHandler;
 
 	public GuiEventHandler(@Nonnull ItemListOverlay itemListOverlay) {
@@ -69,7 +72,8 @@ public class GuiEventHandler {
 			recipesGui.draw(event.mouseX, event.mouseY);
 
 		itemListOverlay.drawHovered(guiContainer.mc, event.mouseX, event.mouseY);
-		inputHandler.handleMouseEvent(guiContainer.mc, event.mouseX, event.mouseY);
+		if (inputHandler != null)
+			inputHandler.handleMouseEvent(guiContainer.mc, event.mouseX, event.mouseY);
 
 		if (!recipesGui.isOpen()) {
 			/**
@@ -96,7 +100,8 @@ public class GuiEventHandler {
 
 		itemListOverlay.handleTick();
 
-		inputHandler.handleKeyEvent();
+		if (inputHandler != null)
+			inputHandler.handleKeyEvent();
 	}
 
 	@Nullable

@@ -1,13 +1,14 @@
 package mezz.jei.plugins.forestry.crafting;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import forestry.core.utils.ShapedRecipeCustom;
+
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class ForestryShapedRecipeHandler implements IRecipeHandler {
 

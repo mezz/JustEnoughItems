@@ -1,12 +1,14 @@
 package mezz.jei.api;
 
 import com.google.common.collect.ImmutableList;
-import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeHandler;
-import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import net.minecraft.item.ItemStack;
+
+import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.IRecipeHandler;
 
 /**
  * The IRecipeManager offers several functions for retrieving and handling recipes.
