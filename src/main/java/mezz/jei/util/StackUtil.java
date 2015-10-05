@@ -16,7 +16,7 @@ public class StackUtil {
 
 	@Nonnull
 	public static List<ItemStack> removeDuplicateItemStacks(Iterable<ItemStack> stacks) {
-		ArrayList<ItemStack> newStacks = new ArrayList<ItemStack>();
+		List<ItemStack> newStacks = new ArrayList<ItemStack>();
 		if (stacks == null) {
 			return newStacks;
 		}
@@ -72,18 +72,22 @@ public class StackUtil {
 	@Nonnull
 	public static List<ItemStack> getSubtypes(@Nonnull ItemStack itemStack) {
 
-		ArrayList<ItemStack> itemStacks = new ArrayList<ItemStack>();
+		List<ItemStack> itemStacks = new ArrayList<ItemStack>();
 
 		Item item = itemStack.getItem();
 		if (item == null) {
 			return itemStacks;
 		}
 
-		if (!item.getHasSubtypes() || item.getDamage(itemStack) != OreDictionary.WILDCARD_VALUE) {
+		if (item.getDamage(itemStack) != OreDictionary.WILDCARD_VALUE) {
 			return Collections.singletonList(itemStack);
 		}
 
-		ArrayList<ItemStack> subItems = new ArrayList<ItemStack>();
+		if (!item.getHasSubtypes()) {
+			return Collections.singletonList(new ItemStack(item));
+		}
+
+		List<ItemStack> subItems = new ArrayList<ItemStack>();
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
 			subItems.clear();
 			item.getSubItems(item, itemTab, subItems);
