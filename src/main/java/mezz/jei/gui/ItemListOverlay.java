@@ -225,7 +225,16 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 		}
 
 		boolean searchClicked = mouseX >= searchField.xPosition && mouseX < searchField.xPosition + searchField.width && mouseY >= searchField.yPosition && mouseY < searchField.yPosition + searchField.height;
-		searchField.mouseClicked(mouseX, mouseY, mouseButton);
+		if (searchClicked) {
+			if (mouseButton == 1) {
+				searchField.setText("");
+				if (itemFilter.setFilterText(searchField.getText())) {
+					updateLayout();
+				}
+			} else {
+				searchField.mouseClicked(mouseX, mouseY, mouseButton);
+			}
+		}
 		return searchClicked;
 	}
 
