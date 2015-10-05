@@ -99,6 +99,7 @@ public class GuiItemStack {
 		draw(minecraft, false);
 		try {
 			minecraft.currentScreen.renderToolTip(itemStack, mouseX, mouseY);
+			RenderHelper.disableStandardItemLighting();
 		} catch (RuntimeException e) {
 			Log.error("Exception when rendering tooltip on {}.\n{}", itemStack, e);
 		}

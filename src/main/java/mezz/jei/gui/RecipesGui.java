@@ -292,14 +292,14 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		IDrawable recipeBackground = recipeCategory.getBackground();
 
 		recipesPerPage = (ySize - headerHeight) / (recipeBackground.getHeight() + borderPadding);
-		int recipeXOffset = (xSize - recipeBackground.getWidth()) / 2;
-		int recipeSpacing = (ySize - headerHeight - (recipesPerPage * recipeBackground.getHeight())) / (recipesPerPage + 1);
+		final int recipeXOffset = (xSize - recipeBackground.getWidth()) / 2;
+		final int recipeSpacing = (ySize - headerHeight - (recipesPerPage * recipeBackground.getHeight())) / (recipesPerPage + 1);
 
-		int posX = guiLeft + recipeXOffset;
+		final int posX = guiLeft + recipeXOffset;
 		int posY = guiTop + headerHeight + recipeSpacing;
 
 		recipeGuis.clear();
-		for (int recipeIndex = pageIndex * recipesPerPage; recipeIndex < recipes.size(); recipeIndex++) {
+		for (int recipeIndex = pageIndex * recipesPerPage; recipeIndex < recipes.size() && recipeGuis.size() < recipesPerPage; recipeIndex++) {
 			Object recipe = recipes.get(recipeIndex);
 			IRecipeHandler recipeHandler = JEIManager.recipeRegistry.getRecipeHandler(recipe.getClass());
 			if (recipeHandler == null) {
