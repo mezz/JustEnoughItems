@@ -22,6 +22,14 @@ public class ShapedOreRecipeWrapper implements IShapedCraftingRecipeWrapper {
 
 	public ShapedOreRecipeWrapper(@Nonnull Object recipe) {
 		this.recipe = (ShapedOreRecipe) recipe;
+		for (Object input : this.recipe.getInput()) {
+			if (input instanceof ItemStack) {
+				ItemStack itemStack = (ItemStack) input;
+				if (itemStack.stackSize > 1) {
+					itemStack.stackSize = 1;
+				}
+			}
+		}
 		this.width = ObfuscationReflectionHelper.getPrivateValue(ShapedOreRecipe.class, this.recipe, "width");
 		this.height = ObfuscationReflectionHelper.getPrivateValue(ShapedOreRecipe.class, this.recipe, "height");
 	}

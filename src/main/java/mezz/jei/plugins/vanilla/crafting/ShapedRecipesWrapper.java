@@ -18,6 +18,11 @@ public class ShapedRecipesWrapper implements IShapedCraftingRecipeWrapper {
 
 	public ShapedRecipesWrapper(@Nonnull Object recipe) {
 		this.recipe = (ShapedRecipes) recipe;
+		for (ItemStack itemStack : this.recipe.recipeItems) {
+			if (itemStack != null && itemStack.stackSize > 1) {
+				itemStack.stackSize = 1;
+			}
+		}
 	}
 
 	@Nonnull

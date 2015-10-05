@@ -18,6 +18,14 @@ public class ShapelessOreRecipeWrapper implements ICraftingRecipeWrapper {
 
 	public ShapelessOreRecipeWrapper(@Nonnull Object recipe) {
 		this.recipe = (ShapelessOreRecipe) recipe;
+		for (Object input : this.recipe.getInput()) {
+			if (input instanceof ItemStack) {
+				ItemStack itemStack = (ItemStack) input;
+				if (itemStack.stackSize > 1) {
+					itemStack.stackSize = 1;
+				}
+			}
+		}
 	}
 
 	@Nonnull
