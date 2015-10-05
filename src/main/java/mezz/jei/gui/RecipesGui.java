@@ -353,8 +353,16 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		}
 		GL11.glPopMatrix();
 
+		RecipeGui hovered = null;
 		for (RecipeGui recipeGui : recipeGuis) {
-			recipeGui.draw(minecraft, mouseX, mouseY);
+			if (recipeGui.getStackUnderMouse(mouseX, mouseY) != null) {
+				hovered = recipeGui;
+			} else {
+				recipeGui.draw(minecraft, mouseX, mouseY);
+			}
+		}
+		if (hovered != null) {
+			hovered.draw(minecraft, mouseX, mouseY);
 		}
 	}
 
