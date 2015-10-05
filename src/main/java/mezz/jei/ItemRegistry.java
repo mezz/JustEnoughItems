@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Set;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -117,6 +119,11 @@ class ItemRegistry implements IItemRegistry {
 	}
 
 	private void addItemStack(@Nonnull ItemStack stack, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {
+		ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+		if (itemModelMesher.getItemModel(stack) == itemModelMesher.getModelManager().getMissingModel()) {
+			return;
+		}
+
 		String itemKey = uniqueIdentifierForStack(stack);
 
 		if (itemNameSet.contains(itemKey)) {
