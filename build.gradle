@@ -22,8 +22,9 @@ group= "mezz.jei" // http://maven.apache.org/guides/mini/guide-naming-convention
 archivesBaseName = "jei"
 
 minecraft {
-    version = "1.7.10-10.13.1.1224"
+    version = "1.8-11.14.3.1502"
     runDir = "run"
+    mappings = 'snapshot_20141214'
 }
 
 dependencies {

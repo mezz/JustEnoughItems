@@ -22,12 +22,13 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 
 	public void setInput(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull List input) {
 		int width, height;
-		if (input.size() > 4)
+		if (input.size() > 4) {
 			width = height = 3;
-		else if (input.size() > 1)
+		} else if (input.size() > 1) {
 			width = height = 2;
-		else
+		} else {
 			width = height = 1;
+		}
 
 		setInput(guiItemStacks, input, width, height);
 	}
@@ -37,20 +38,22 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 			Object recipeItem = input.get(i);
 			int index;
 			if (width == 1) {
-				if (height == 3)
+				if (height == 3) {
 					index = (i * 3) + 1;
-				else if (height == 2)
+				} else if (height == 2) {
 					index = (i * 3) + 4;
-				else
+				} else {
 					index = 4;
+				}
 			} else if (height == 1) {
 				index = i + 6;
 			} else if (width == 2) {
 				index = i;
 				if (i > 1) {
 					index++;
-					if (i > 3)
+					if (i > 3) {
 						index++;
+					}
 				}
 			} else if (height == 2) {
 				index = i + 3;

@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.client.settings.KeyBinding;
 
-import cpw.mods.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import org.lwjgl.input.Keyboard;
 

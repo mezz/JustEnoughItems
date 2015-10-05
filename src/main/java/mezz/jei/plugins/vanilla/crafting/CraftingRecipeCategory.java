@@ -60,16 +60,15 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 	@Override
 	public void setRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IRecipeWrapper recipeWrapper) {
 		if (recipeWrapper instanceof IShapedCraftingRecipeWrapper) {
-			IShapedCraftingRecipeWrapper wrapper = (IShapedCraftingRecipeWrapper)recipeWrapper;
+			IShapedCraftingRecipeWrapper wrapper = (IShapedCraftingRecipeWrapper) recipeWrapper;
 			craftingGridHelper.setInput(guiItemStacks, wrapper.getInputs(), wrapper.getWidth(), wrapper.getHeight());
 			craftingGridHelper.setOutput(guiItemStacks, wrapper.getOutputs());
 		} else if (recipeWrapper instanceof ICraftingRecipeWrapper) {
-			ICraftingRecipeWrapper wrapper = (ICraftingRecipeWrapper)recipeWrapper;
+			ICraftingRecipeWrapper wrapper = (ICraftingRecipeWrapper) recipeWrapper;
 			craftingGridHelper.setInput(guiItemStacks, wrapper.getInputs());
 			craftingGridHelper.setOutput(guiItemStacks, wrapper.getOutputs());
 		}
 	}
-
 
 
 }

@@ -12,13 +12,10 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import mezz.jei.ItemFilter;
 import mezz.jei.input.IClickable;
@@ -73,7 +70,7 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 		String next = StatCollector.translateToLocal("jei.button.next");
 		String back = StatCollector.translateToLocal("jei.button.back");
 
-		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
 		final int nextButtonWidth = 10 + fontRenderer.getStringWidth(next);
 		final int backButtonWidth = 10 + fontRenderer.getStringWidth(back);
 		buttonHeight = 5 + fontRenderer.FONT_HEIGHT;
@@ -85,7 +82,7 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 		nextButton = new GuiButton(0, rightEdge - nextButtonWidth, 0, nextButtonWidth, buttonHeight, next);
 		backButton = new GuiButton(1, leftEdge, 0, backButtonWidth, buttonHeight, back);
 
-		searchField = new GuiTextField(fontRenderer, leftEdge, this.height - searchHeight - (2 * borderPadding), rightEdge - leftEdge, searchHeight);
+		searchField = new GuiTextField(0, fontRenderer, leftEdge, this.height - searchHeight - (2 * borderPadding), rightEdge - leftEdge, searchHeight);
 		searchField.setMaxStringLength(maxSearchLength);
 		searchField.setFocused(false);
 		searchField.setText(itemFilter.getFilterText());
@@ -105,8 +102,9 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 		int maxX = 0;
 
 		while (y + itemStackHeight + borderPadding <= height - searchHeight) {
-			if (x > maxX)
+			if (x > maxX) {
 				maxX = x;
+			}
 
 			guiItemStacks.add(new GuiItemStack(x, y, itemStackPadding));
 
@@ -122,8 +120,9 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 
 	private void updateLayout() {
 		updatePageCount();
-		if (pageNum >= getPageCount())
+		if (pageNum >= getPageCount()) {
 			pageNum = 0;
+		}
 		int i = pageNum * getCountPerPage();
 
 		ImmutableList<ItemStackElement> itemList = itemFilter.getItemList();
@@ -137,7 +136,7 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 			i++;
 		}
 
-		FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRenderer;
+		FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
 
 		pageNumDisplayString = (getPageNum() + 1) + "/" + getPageCount();
 		int pageDisplayWidth = fontRendererObj.getStringWidth(pageNumDisplayString);
@@ -154,41 +153,39 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 	}
 
 	private void nextPage() {
-		if (pageNum == getPageCount() - 1)
+		if (pageNum == getPageCount() - 1) {
 			setPageNum(0);
-		else
+		} else {
 			setPageNum(pageNum + 1);
+		}
 	}
 
 	private void backPage() {
-		if (pageNum == 0)
+		if (pageNum == 0) {
 			setPageNum(getPageCount() - 1);
-		else
+		} else {
 			setPageNum(pageNum - 1);
+		}
 	}
 
 	public void drawScreen(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
-		if (!isOpen)
+		if (!isOpen) {
 			return;
+		}
 
-		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-		RenderHelper.enableGUIStandardItemLighting();
-
-		minecraft.fontRenderer.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(), true);
+		minecraft.fontRendererObj.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(), true);
 		searchField.drawTextBox();
 
 		nextButton.drawButton(minecraft, mouseX, mouseY);
 		backButton.drawButton(minecraft, mouseX, mouseY);
 
 		for (GuiItemStack guiItemStack : guiItemStacks) {
-			if (hovered == null && guiItemStack.isMouseOver(mouseX, mouseY))
+			if (hovered == null && guiItemStack.isMouseOver(mouseX, mouseY)) {
 				hovered = guiItemStack;
-			else
+			} else {
 				guiItemStack.draw(minecraft);
+			}
 		}
-
-		RenderHelper.disableStandardItemLighting();
-		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 	}
 
 	public void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
@@ -256,8 +253,9 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 	private void updatePageCount() {
 		int count = itemFilter.size();
 		pageCount = MathUtil.divideCeil(count, getCountPerPage());
-		if (pageCount == 0)
+		if (pageCount == 0) {
 			pageCount = 1;
+		}
 	}
 
 	private int getPageCount() {
@@ -269,8 +267,9 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 	}
 
 	private void setPageNum(int pageNum) {
-		if (ItemListOverlay.pageNum == pageNum)
+		if (ItemListOverlay.pageNum == pageNum) {
 			return;
+		}
 		ItemListOverlay.pageNum = pageNum;
 		updateLayout();
 	}

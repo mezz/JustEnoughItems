@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,10 +15,9 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
@@ -49,13 +49,16 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 	/* The ItemStack that is the focus of this GUI */
 	private ItemStack focusStack;
 	/* List of Recipe Categories that involve "focusStack" */
-	@Nonnull private ImmutableList<IRecipeCategory> recipeCategories = ImmutableList.of();
+	@Nonnull
+	private ImmutableList<IRecipeCategory> recipeCategories = ImmutableList.of();
 
 	/* List of RecipeGui to display */
-	@Nonnull private final List<RecipeGui> recipeGuis = new ArrayList<RecipeGui>();
+	@Nonnull
+	private final List<RecipeGui> recipeGuis = new ArrayList<RecipeGui>();
 
 	/* List of recipes for the currently selected recipeClass */
-	@Nonnull private ImmutableList<Object> recipes = ImmutableList.of();
+	@Nonnull
+	private ImmutableList<Object> recipes = ImmutableList.of();
 	private int recipesPerPage;
 
 	private int recipeCategoryIndex = 0;
@@ -105,7 +108,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		nextRecipeCategory = new GuiButton(2, rightButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, ">");
 		previousRecipeCategory = new GuiButton(3, leftButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, "<");
 
-		int pageButtonTop =  guiTop + titleHeight;
+		int pageButtonTop = guiTop + titleHeight;
 		nextPage = new GuiButton(4, rightButtonX, pageButtonTop, buttonWidth, buttonHeight, ">");
 		previousPage = new GuiButton(5, leftButtonX, pageButtonTop, buttonWidth, buttonHeight, "<");
 
@@ -144,7 +147,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 	}
 
 	@Override
-	public void handleMouseClicked(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
+	public void handleMouseClicked(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) throws IOException {
 		handleMouseInput();
 	}
 
@@ -179,32 +182,37 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 	}
 
 	public void showRecipes(@Nonnull ItemStack stack) {
-		if (setStack(stack, Mode.OUTPUT))
+		if (setStack(stack, Mode.OUTPUT)) {
 			open();
+		}
 	}
 
 	public void showUses(@Nonnull ItemStack stack) {
-		if(setStack(stack, Mode.INPUT))
+		if (setStack(stack, Mode.INPUT)) {
 			open();
+		}
 	}
 
 	@Override
 	protected void actionPerformed(@Nonnull GuiButton guibutton) {
-		if (guibutton.id == nextPage.id)
+		if (guibutton.id == nextPage.id) {
 			nextPage();
-		else if (guibutton.id == previousPage.id)
+		} else if (guibutton.id == previousPage.id) {
 			previousPage();
-		else if (guibutton.id == nextRecipeCategory.id)
+		} else if (guibutton.id == nextRecipeCategory.id) {
 			nextRecipeCategory();
-		else if (guibutton.id == previousRecipeCategory.id)
+		} else if (guibutton.id == previousRecipeCategory.id) {
 			previousRecipeCategory();
+		}
 	}
 
 	private boolean setStack(@Nullable ItemStack stack, @Nonnull Mode mode) {
-		if (stack == null)
+		if (stack == null) {
 			return false;
-		if (this.focusStack != null && this.focusStack.equals(stack) && this.mode == mode)
+		}
+		if (this.focusStack != null && this.focusStack.equals(stack) && this.mode == mode) {
 			return true;
+		}
 
 		ImmutableList<IRecipeCategory> types = null;
 		switch (mode) {
@@ -256,15 +264,17 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 	}
 
 	private int pageCount() {
-		if (recipes.size() <= 1)
+		if (recipes.size() <= 1) {
 			return 1;
+		}
 
 		return MathUtil.divideCeil(recipes.size(), recipesPerPage);
 	}
 
 	private void updateLayout() {
-		if (recipeCategories.isEmpty())
+		if (recipeCategories.isEmpty()) {
 			return;
+		}
 
 		IRecipeCategory recipeCategory = recipeCategories.get(recipeCategoryIndex);
 
@@ -334,8 +344,6 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		for (RecipeGui recipeGui : recipeGuis) {
 			recipeGui.draw(minecraft, mouseX, mouseY);
 		}
-
-		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 	}
 
 	public void drawBackground() {

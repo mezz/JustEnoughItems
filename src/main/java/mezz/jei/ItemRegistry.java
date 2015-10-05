@@ -15,9 +15,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
 
+import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.oredict.OreDictionary;
-
-import cpw.mods.fml.common.registry.GameData;
 
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.util.Log;
@@ -36,11 +35,13 @@ class ItemRegistry implements IItemRegistry {
 		List<ItemStack> itemList = new ArrayList<ItemStack>();
 		List<ItemStack> fuels = new ArrayList<ItemStack>();
 
-		for (Block block : GameData.getBlockRegistry().typeSafeIterable())
+		for (Block block : GameData.getBlockRegistry().typeSafeIterable()) {
 			addBlockAndSubBlocks(block, itemList, fuels);
+		}
 
-		for (Item item : GameData.getItemRegistry().typeSafeIterable())
+		for (Item item : GameData.getItemRegistry().typeSafeIterable()) {
 			addItemAndSubItems(item, itemList, fuels);
+		}
 
 		this.itemList = ImmutableList.copyOf(itemList);
 		this.fuels = ImmutableList.copyOf(fuels);
@@ -59,8 +60,9 @@ class ItemRegistry implements IItemRegistry {
 	}
 
 	private void addItemAndSubItems(@Nullable Item item, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {
-		if (item == null)
+		if (item == null) {
 			return;
+		}
 
 		if (item.getHasSubtypes()) {
 			ItemStack itemStack = new ItemStack(item, 1, OreDictionary.WILDCARD_VALUE);
@@ -73,8 +75,9 @@ class ItemRegistry implements IItemRegistry {
 	}
 
 	private void addBlockAndSubBlocks(@Nullable Block block, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {
-		if (block == null)
+		if (block == null) {
 			return;
+		}
 
 		Item item = Item.getItemFromBlock(block);
 
@@ -88,7 +91,7 @@ class ItemRegistry implements IItemRegistry {
 			return;
 		}
 
-		ArrayList<ItemStack> subItems = new ArrayList<ItemStack>();
+		List<ItemStack> subItems = new ArrayList<ItemStack>();
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
 			subItems.clear();
 			block.getSubBlocks(item, itemTab, subItems);
@@ -107,16 +110,18 @@ class ItemRegistry implements IItemRegistry {
 
 	private void addItemStacks(@Nonnull Iterable<ItemStack> stacks, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {
 		for (ItemStack stack : stacks) {
-			if (stack != null)
+			if (stack != null) {
 				addItemStack(stack, itemList, fuels);
+			}
 		}
 	}
 
 	private void addItemStack(@Nonnull ItemStack stack, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {
 		String itemKey = uniqueIdentifierForStack(stack);
 
-		if (itemNameSet.contains(itemKey))
+		if (itemNameSet.contains(itemKey)) {
 			return;
+		}
 		itemNameSet.add(itemKey);
 		itemList.add(stack);
 
@@ -129,8 +134,9 @@ class ItemRegistry implements IItemRegistry {
 	private String uniqueIdentifierForStack(@Nonnull ItemStack stack) {
 		StringBuilder itemKey = new StringBuilder();
 		itemKey.append(stack.getUnlocalizedName()).append(':').append(stack.getItemDamage());
-		if (stack.hasTagCompound())
+		if (stack.hasTagCompound()) {
 			itemKey.append(':').append(stack.getTagCompound());
+		}
 		return itemKey.toString();
 	}
 

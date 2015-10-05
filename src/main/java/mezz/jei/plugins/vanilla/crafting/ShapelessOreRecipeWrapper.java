@@ -17,7 +17,7 @@ public class ShapelessOreRecipeWrapper implements ICraftingRecipeWrapper {
 	private final ShapelessOreRecipe recipe;
 
 	public ShapelessOreRecipeWrapper(@Nonnull Object recipe) {
-		this.recipe = (ShapelessOreRecipe)recipe;
+		this.recipe = (ShapelessOreRecipe) recipe;
 	}
 
 	@Nonnull

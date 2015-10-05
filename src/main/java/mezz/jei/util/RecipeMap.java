@@ -57,8 +57,9 @@ public class RecipeMap {
 	private void addRecipeCategory(@Nonnull IRecipeCategory recipeCategory, @Nonnull ItemStack itemStack) {
 		String stackKey = getName(itemStack);
 		List<IRecipeCategory> recipeCategories = categoryMap.get(stackKey);
-		if (!recipeCategories.contains(recipeCategory))
+		if (!recipeCategories.contains(recipeCategory)) {
 			recipeCategories.add(recipeCategory);
+		}
 	}
 
 	@Nonnull
@@ -91,8 +92,9 @@ public class RecipeMap {
 		ImmutableList.Builder<Object> listBuilder = ImmutableList.builder();
 		for (String name : getNamesWithWildcard(stack)) {
 			List<Object> recipes = recipesForType.get(name);
-			if (recipes != null)
+			if (recipes != null) {
 				listBuilder.addAll(recipes);
+			}
 		}
 		return listBuilder.build();
 	}
@@ -101,8 +103,9 @@ public class RecipeMap {
 		Map<String, List<Object>> recipesForType = recipeTable.row(recipeCategory);
 
 		for (ItemStack itemStack : itemStacks) {
-			if (itemStack == null)
+			if (itemStack == null) {
 				continue;
+			}
 
 			String stackKey = getName(itemStack);
 			List<Object> recipes = recipesForType.get(stackKey);

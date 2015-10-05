@@ -28,45 +28,47 @@ public class ItemFilter {
 	public ItemFilter(@Nonnull List<ItemStack> itemStacks) {
 
 		filteredItemMapsCache = CacheBuilder.newBuilder()
-			.maximumWeight(16)
-			.weigher(new Weigher<String, ImmutableList<ItemStackElement>>() {
-				public int weigh(@Nonnull String key, @Nonnull ImmutableList<ItemStackElement> value) {
-					// The CacheLoader is recursive, so keep the base value in the cache permanently by setting its weight to 0
-					return (key.length() == 0) ? 0 : 1;
-				}
-			})
-			.build(new CacheLoader<String, ImmutableList<ItemStackElement>>() {
-				@Override
-				public ImmutableList<ItemStackElement> load(@Nonnull final String filterText) throws Exception {
-					// Recursive.
-					// Find a cached filter that is before the one we want, so we don't have to filter the full item list.
-					// For example, the "", "i", "ir", and "iro" filters contain everything in the "iron" filter and more.
-					String prevFilterText = filterText.substring(0, filterText.length() - 1);
+				.maximumWeight(16)
+				.weigher(new Weigher<String, ImmutableList<ItemStackElement>>() {
+					public int weigh(@Nonnull String key, @Nonnull ImmutableList<ItemStackElement> value) {
+						// The CacheLoader is recursive, so keep the base value in the cache permanently by setting its weight to 0
+						return (key.length() == 0) ? 0 : 1;
+					}
+				})
+				.build(new CacheLoader<String, ImmutableList<ItemStackElement>>() {
+					@Override
+					public ImmutableList<ItemStackElement> load(@Nonnull final String filterText) throws Exception {
+						// Recursive.
+						// Find a cached filter that is before the one we want, so we don't have to filter the full item list.
+						// For example, the "", "i", "ir", and "iro" filters contain everything in the "iron" filter and more.
+						String prevFilterText = filterText.substring(0, filterText.length() - 1);
 
-					ImmutableList<ItemStackElement> baseItemSet = filteredItemMapsCache.get(prevFilterText);
+						ImmutableList<ItemStackElement> baseItemSet = filteredItemMapsCache.get(prevFilterText);
 
-					Collection<ItemStackElement> filteredItemList = Collections2.filter(baseItemSet,
-						new Predicate<ItemStackElement>() {
-							@Override
-							public boolean apply(@Nullable ItemStackElement input) {
-								return input != null && input.getLocalizedName().contains(filterText);
-							}
-						}
-					);
+						Collection<ItemStackElement> filteredItemList = Collections2.filter(baseItemSet,
+								new Predicate<ItemStackElement>() {
+									@Override
+									public boolean apply(@Nullable ItemStackElement input) {
+										return input != null && input.getLocalizedName().contains(filterText);
+									}
+								}
+						);
 
-					return ImmutableList.copyOf(filteredItemList);
-				}
-			});
+						return ImmutableList.copyOf(filteredItemList);
+					}
+				});
 
 		// create the recursive base case value, the list with no filter set
 		ImmutableList.Builder<ItemStackElement> baseList = ImmutableList.builder();
 		for (ItemStack itemStack : itemStacks) {
-			if (itemStack == null)
+			if (itemStack == null) {
 				continue;
+			}
 
 			ItemStackElement itemStackElement = ItemStackElement.create(itemStack);
-			if (itemStackElement != null)
+			if (itemStackElement != null) {
 				baseList.add(itemStackElement);
+			}
 		}
 
 		filteredItemMapsCache.put("", baseList.build());
@@ -74,8 +76,9 @@ public class ItemFilter {
 
 	public boolean setFilterText(@Nonnull String filterText) {
 		filterText = filterText.toLowerCase();
-		if (this.filterText.equals(filterText))
+		if (this.filterText.equals(filterText)) {
 			return false;
+		}
 
 		this.filterText = filterText;
 		return true;

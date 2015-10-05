@@ -16,13 +16,15 @@ public interface IRecipeCategory {
 	 * Drawn at the top of the recipe GUI pages for this category.
 	 * Called every frame, so make sure to store it in a field.
 	 */
-	@Nonnull String getCategoryTitle();
+	@Nonnull
+	String getCategoryTitle();
 
 	/**
 	 * Returns the drawable background for a single recipe in this category.
 	 * Called multiple times per frame, so make sure to store it in a field.
 	 */
-	@Nonnull IDrawable getBackground();
+	@Nonnull
+	IDrawable getBackground();
 
 	/**
 	 * Initialize the IGuiItemStacks with this recipe's layout.

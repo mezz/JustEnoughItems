@@ -46,7 +46,7 @@ public class SmeltingRecipe implements IRecipeWrapper {
 	@Override
 	public void drawInfo(@Nonnull Minecraft minecraft) {
 		if (experienceString != null) {
-			FontRenderer fontRendererObj = minecraft.fontRenderer;
+			FontRenderer fontRendererObj = minecraft.fontRendererObj;
 			fontRendererObj.drawString(experienceString, 69 - fontRendererObj.getStringWidth(experienceString) / 2, 0, Color.gray.getRGB());
 		}
 	}

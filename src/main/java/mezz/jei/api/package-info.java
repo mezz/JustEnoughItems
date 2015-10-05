@@ -1,3 +1,4 @@
 @API(apiVersion = "21.1.0", owner = "JEI", provides = "JustEnoughItemsAPI")
 package mezz.jei.api;
-import cpw.mods.fml.common.API;
+
+import net.minecraftforge.fml.common.API;

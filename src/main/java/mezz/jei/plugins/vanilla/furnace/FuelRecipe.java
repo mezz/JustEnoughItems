@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
@@ -40,8 +39,7 @@ public class FuelRecipe implements IRecipeWrapper {
 
 	@Override
 	public void drawInfo(@Nonnull Minecraft minecraft) {
-		FontRenderer fontRendererObj = minecraft.fontRenderer;
-		fontRendererObj.drawString(burnTimeString, 20, 45, Color.gray.getRGB());
+		minecraft.fontRendererObj.drawString(burnTimeString, 20, 45, Color.gray.getRGB());
 	}
 
 }

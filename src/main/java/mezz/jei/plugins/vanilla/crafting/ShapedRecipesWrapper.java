@@ -17,7 +17,7 @@ public class ShapedRecipesWrapper implements IShapedCraftingRecipeWrapper {
 	private final ShapedRecipes recipe;
 
 	public ShapedRecipesWrapper(@Nonnull Object recipe) {
-		this.recipe = (ShapedRecipes)recipe;
+		this.recipe = (ShapedRecipes) recipe;
 	}
 
 	@Nonnull

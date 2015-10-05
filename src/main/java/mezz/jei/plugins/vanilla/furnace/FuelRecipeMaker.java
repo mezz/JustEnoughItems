@@ -24,22 +24,25 @@ public class FuelRecipeMaker {
 		Set<String> oreDictNames = new HashSet<String>();
 		List<FuelRecipe> fuelRecipes = new ArrayList<FuelRecipe>(fuelStacks.size());
 		for (ItemStack fuelStack : fuelStacks) {
-			if (fuelStack == null)
+			if (fuelStack == null) {
 				continue;
+			}
 
 			int[] oreIDs = OreDictionary.getOreIDs(fuelStack);
 			if (oreIDs.length > 0) {
-				for (int oreID: oreIDs) {
+				for (int oreID : oreIDs) {
 					String name = OreDictionary.getOreName(oreID);
-					if (oreDictNames.contains(name))
+					if (oreDictNames.contains(name)) {
 						continue;
+					}
 
 					oreDictNames.add(name);
 					List<ItemStack> oreDictFuels = OreDictionary.getOres(name);
 					Collection<ItemStack> oreDictFuelsSet = StackUtil.getAllSubtypes(oreDictFuels);
 					removeNoBurnTime(oreDictFuelsSet);
-					if (oreDictFuels.isEmpty())
+					if (oreDictFuels.isEmpty()) {
 						continue;
+					}
 					int burnTime = getBurnTime(oreDictFuels.get(0));
 
 					fuelRecipes.add(new FuelRecipe(oreDictFuelsSet, burnTime));
@@ -47,8 +50,9 @@ public class FuelRecipeMaker {
 			} else {
 				List<ItemStack> fuels = StackUtil.getSubtypes(fuelStack);
 				removeNoBurnTime(fuels);
-				if (fuels.isEmpty())
+				if (fuels.isEmpty()) {
 					continue;
+				}
 				int burnTime = getBurnTime(fuels.get(0));
 				fuelRecipes.add(new FuelRecipe(fuels, burnTime));
 			}
@@ -60,8 +64,9 @@ public class FuelRecipeMaker {
 		Iterator<ItemStack> iterator = itemStacks.iterator();
 		while (iterator.hasNext()) {
 			ItemStack itemStack = iterator.next();
-			if (getBurnTime(itemStack) == 0)
+			if (getBurnTime(itemStack) == 0) {
 				iterator.remove();
+			}
 		}
 	}
 

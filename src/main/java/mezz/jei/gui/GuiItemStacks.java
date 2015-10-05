@@ -50,8 +50,9 @@ public class GuiItemStacks implements IGuiItemStacks {
 	@Nullable
 	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
 		for (GuiItemStack item : guiItemStacks.values()) {
-			if (item != null && item.isMouseOver(mouseX, mouseY))
+			if (item != null && item.isMouseOver(mouseX, mouseY)) {
 				return item.getItemStack();
+			}
 		}
 		return null;
 	}
@@ -59,12 +60,14 @@ public class GuiItemStacks implements IGuiItemStacks {
 	public void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 		GuiItemStack hovered = null;
 		for (GuiItemStack item : guiItemStacks.values()) {
-			if (hovered == null && item.isMouseOver(mouseX, mouseY))
+			if (hovered == null && item.isMouseOver(mouseX, mouseY)) {
 				hovered = item;
-			else
+			} else {
 				item.draw(minecraft);
+			}
 		}
-		if (hovered != null)
+		if (hovered != null) {
 			hovered.drawHovered(minecraft, mouseX, mouseY);
+		}
 	}
 }

@@ -14,7 +14,7 @@ public class SmeltingRecipeMaker {
 
 	@Nonnull
 	public static List<SmeltingRecipe> getFurnaceRecipes() {
-		FurnaceRecipes furnaceRecipes = FurnaceRecipes.smelting();
+		FurnaceRecipes furnaceRecipes = FurnaceRecipes.instance();
 		Map<ItemStack, ItemStack> smeltingMap = getSmeltingMap(furnaceRecipes);
 
 		List<SmeltingRecipe> recipes = new ArrayList<SmeltingRecipe>();
@@ -23,7 +23,7 @@ public class SmeltingRecipeMaker {
 			ItemStack input = itemStackItemStackEntry.getKey();
 			ItemStack output = itemStackItemStackEntry.getValue();
 
-			float experience = furnaceRecipes.func_151398_b(output);
+			float experience = furnaceRecipes.getSmeltingExperience(output);
 
 			List<ItemStack> inputs = StackUtil.getSubtypes(input);
 			SmeltingRecipe recipe = new SmeltingRecipe(inputs, output, experience);

@@ -41,12 +41,14 @@ public class RecipeGui {
 	}
 
 	public void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
-		if (recipeWrapper == null)
+		if (recipeWrapper == null) {
 			return;
+		}
 
 		GL11.glPushMatrix();
 		GL11.glTranslatef(posX, posY, 0.0F);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GL11.glDisable(GL11.GL_LIGHTING);
 
 		recipeCategory.getBackground().draw(minecraft);
 		recipeWrapper.drawInfo(minecraft);

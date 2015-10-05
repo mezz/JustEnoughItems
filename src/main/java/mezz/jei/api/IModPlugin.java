@@ -11,8 +11,11 @@ public interface IModPlugin {
 
 	/** Returns true if this plugin's mod is loaded. */
 	boolean isModLoaded();
+
 	public Iterable<? extends IRecipeCategory> getRecipeCategories();
+
 	public Iterable<? extends IRecipeHandler> getRecipeHandlers();
+
 	public Iterable<Object> getRecipes();
 
 }

@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 public interface IRecipeWrapper {
 
 	List getInputs();
+
 	List getOutputs();
 
 	/* Draw additional info about the recipe. */

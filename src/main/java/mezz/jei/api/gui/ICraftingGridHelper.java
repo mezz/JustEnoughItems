@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 public interface ICraftingGridHelper {
 
 	void setInput(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull List input);
+
 	void setInput(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull List input, int width, int height);
 
 	void setOutput(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull List<ItemStack> output);

@@ -10,11 +10,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
-
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import mezz.jei.util.Log;
 import mezz.jei.util.StackUtil;
@@ -23,7 +19,6 @@ public class GuiItemStack {
 
 	private static final int baseWidth = 16;
 	private static final int baseHeight = 16;
-	private static final RenderItem itemRender = new RenderItem();
 
 	private final int width;
 	private final int height;
@@ -80,8 +75,9 @@ public class GuiItemStack {
 
 	@Nullable
 	public ItemStack getItemStack() {
-		if (itemStacks.isEmpty())
+		if (itemStacks.isEmpty()) {
 			return null;
+		}
 
 		Long stackIndex = (drawTime / cycleTime) % itemStacks.size();
 		return itemStacks.get(stackIndex.intValue());
@@ -97,46 +93,41 @@ public class GuiItemStack {
 
 	public void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 		ItemStack itemStack = getItemStack();
-		if (itemStack == null)
+		if (itemStack == null) {
 			return;
+		}
 		draw(minecraft, false);
 		try {
 			minecraft.currentScreen.renderToolTip(itemStack, mouseX, mouseY);
 		} catch (RuntimeException e) {
 			Log.error("Exception when rendering tooltip on {}.\n{}", itemStack, e);
 		}
-		RenderHelper.disableStandardItemLighting();
 	}
 
 	private void draw(Minecraft minecraft, boolean cycleIcons) {
-		if (!visible)
+		if (!visible) {
 			return;
+		}
 
-		if (cycleIcons)
+		if (cycleIcons) {
 			drawTime = System.currentTimeMillis();
+		}
 
 		ItemStack itemStack = getItemStack();
-		if (itemStack == null)
+		if (itemStack == null) {
 			return;
+		}
 
 		FontRenderer font = itemStack.getItem().getFontRenderer(itemStack);
-		if (font == null)
-			font = minecraft.fontRenderer;
-
-		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-		{
-			RenderHelper.enableGUIStandardItemLighting();
-			GL11.glDisable(GL11.GL_LIGHTING);
-			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-			GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-			GL11.glEnable(GL11.GL_LIGHTING);
-			itemRender.zLevel = 100.0F;
-
-			itemRender.renderItemAndEffectIntoGUI(font, minecraft.getTextureManager(), itemStack, xPosition + padding, yPosition + padding);
-			itemRender.renderItemOverlayIntoGUI(font, minecraft.getTextureManager(), itemStack, xPosition + padding, yPosition + padding);
-
-			itemRender.zLevel = 0.0F;
+		if (font == null) {
+			font = minecraft.fontRendererObj;
 		}
-		GL11.glPopAttrib();
+
+		RenderHelper.enableGUIStandardItemLighting();
+
+		minecraft.getRenderItem().renderItemAndEffectIntoGUI(itemStack, xPosition + padding, yPosition + padding);
+		minecraft.getRenderItem().renderItemOverlayIntoGUI(font, itemStack, xPosition + padding, yPosition + padding, null);
+
+		RenderHelper.disableStandardItemLighting();
 	}
 }

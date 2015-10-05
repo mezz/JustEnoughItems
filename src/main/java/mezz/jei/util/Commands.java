@@ -2,12 +2,16 @@ package mezz.jei.util;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityClientPlayerMP;
-import net.minecraft.command.CommandGive;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
+import net.minecraftforge.client.ClientCommandHandler;
 
 public class Commands {
 
@@ -20,22 +24,24 @@ public class Commands {
 	}
 
 	/**
-	 * give <player> <item> [amount] [data] [dataTag]
+	 * /give <player> <item> [amount] [data] [dataTag]
 	 */
 	public static void giveStack(@Nonnull ItemStack itemStack, int amount) {
-		EntityClientPlayerMP sender = Minecraft.getMinecraft().thePlayer;
-		String senderName = sender.getCommandSenderName();
-
-		ArrayList<String> commandStrings = new ArrayList<String>();
+		EntityPlayerSP sender = Minecraft.getMinecraft().thePlayer;
+		String senderName = sender.getName();
+		
+		List<String> commandStrings = new ArrayList<String>();
+		commandStrings.add("/give");
 		commandStrings.add(senderName);
-		commandStrings.add(Item.itemRegistry.getNameForObject(itemStack.getItem()));
-		commandStrings.add("" + amount);
-		commandStrings.add("" + itemStack.getItemDamage());
+		commandStrings.add((String) Item.itemRegistry.getNameForObject(itemStack.getItem()));
+		commandStrings.add(String.valueOf(amount));
+		commandStrings.add(String.valueOf(itemStack.getItemDamage()));
 
-		if (itemStack.hasTagCompound())
+		if (itemStack.hasTagCompound()) {
 			commandStrings.add(itemStack.getTagCompound().toString());
+		}
 
-		CommandGive commandGive = new CommandGive();
-		commandGive.processCommand(sender, commandStrings.toArray(new String[commandStrings.size()]));
+		String fullCommand = StringUtils.join(commandStrings, " ");
+		ClientCommandHandler.instance.executeCommand(sender, fullCommand);
 	}
 }

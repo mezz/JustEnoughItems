@@ -7,15 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraftforge.common.MinecraftForge;
-
-import cpw.mods.fml.client.event.ConfigChangedEvent;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IPluginRegistry;
@@ -27,14 +25,13 @@ import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.ItemListOverlay;
-import mezz.jei.plugins.forestry.ForestryPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 
 @Mod(modid = Constants.MOD_ID,
 		name = Constants.NAME,
 		version = Constants.VERSION,
 		guiFactory = "mezz.jei.config.JEIModGuiFactory",
-		dependencies = "required-after:Forge@[10.13.0.1207,);")
+		dependencies = "required-after:Forge@[11.14.0.1269,);")
 public class JustEnoughItems implements IPluginRegistry {
 
 	@Mod.Instance(Constants.MOD_ID)
@@ -51,24 +48,25 @@ public class JustEnoughItems implements IPluginRegistry {
 		this.pluginsCanRegister = true;
 	}
 
-	@EventHandler
+	@Mod.EventHandler
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
 		Config.preInit(event);
 
 		JEIManager.pluginRegistry.registerPlugin(new VanillaPlugin());
-		JEIManager.pluginRegistry.registerPlugin(new ForestryPlugin());
 	}
 
 	@Override
 	public void registerPlugin(IModPlugin plugin) {
-		if (!pluginsCanRegister)
+		if (!pluginsCanRegister) {
 			throw new IllegalStateException("Plugins must be registered during FMLPreInitializationEvent.");
+		}
 
-		if (plugin.isModLoaded())
+		if (plugin.isModLoaded()) {
 			plugins.add(plugin);
+		}
 	}
 
-	@EventHandler
+	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
 		pluginsCanRegister = false;
 		KeyBindings.init();
@@ -76,7 +74,7 @@ public class JustEnoughItems implements IPluginRegistry {
 		FMLCommonHandler.instance().bus().register(instance);
 	}
 
-	@EventHandler
+	@Mod.EventHandler
 	public void loadComplete(FMLLoadCompleteEvent event) {
 		JEIManager.itemRegistry = new ItemRegistry();
 
@@ -84,9 +82,9 @@ public class JustEnoughItems implements IPluginRegistry {
 		ImmutableList.Builder<IRecipeHandler> recipeHandlers = ImmutableList.builder();
 		ImmutableList.Builder<Object> recipes = ImmutableList.builder();
 
-		for	(IModPlugin plugin : plugins) {
+		for (IModPlugin plugin : plugins) {
 			recipeCategories.addAll(plugin.getRecipeCategories());
-			recipeHandlers.addAll( plugin.getRecipeHandlers());
+			recipeHandlers.addAll(plugin.getRecipeHandlers());
 			recipes.addAll(plugin.getRecipes());
 		}
 

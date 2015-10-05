@@ -21,7 +21,7 @@ public class FuelRecipeHandler implements IRecipeHandler {
 
 	@Override
 	public IRecipeWrapper getRecipeWrapper(@Nonnull Object recipe) {
-		return (FuelRecipe)recipe;
+		return (FuelRecipe) recipe;
 	}
 
 }

@@ -5,9 +5,8 @@ import javax.annotation.Nonnull;
 import net.minecraft.util.StatCollector;
 
 import net.minecraftforge.common.config.Configuration;
-
-import cpw.mods.fml.client.event.ConfigChangedEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class Config {
 	public static Configuration configFile;
@@ -21,16 +20,18 @@ public class Config {
 	}
 
 	public static void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
-		if(eventArgs.modID.equals(Constants.MOD_ID))
+		if (eventArgs.modID.equals(Constants.MOD_ID)) {
 			syncConfig();
+		}
 	}
 
 	private static void syncConfig() {
 		String cheatItemsEnabledDescription = StatCollector.translateToLocal("config.jei.cheatItemsEnabled.description");
 		cheatItemsEnabled = configFile.getBoolean("config.jei.cheatItemsEnabled", Configuration.CATEGORY_GENERAL, cheatItemsEnabled, cheatItemsEnabledDescription);
 
-		if(configFile.hasChanged())
+		if (configFile.hasChanged()) {
 			configFile.save();
+		}
 	}
 
 }

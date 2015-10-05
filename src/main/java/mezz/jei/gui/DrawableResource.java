@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
-import cpw.mods.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.client.config.GuiUtils;
 
 import mezz.jei.api.gui.IDrawable;
 

@@ -50,15 +50,18 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private static ImmutableMap<Class, IRecipeHandler> buildRecipeHandlersMap(@Nonnull List<IRecipeHandler> recipeHandlers) {
 		HashMap<Class, IRecipeHandler> mutableRecipeHandlers = Maps.newHashMap();
 		for (IRecipeHandler recipeHandler : recipeHandlers) {
-			if (recipeHandler == null)
+			if (recipeHandler == null) {
 				continue;
+			}
 
 			Class recipeClass = recipeHandler.getRecipeClass();
-			if (recipeClass == null)
+			if (recipeClass == null) {
 				continue;
+			}
 
-			if (mutableRecipeHandlers.containsKey(recipeClass))
+			if (mutableRecipeHandlers.containsKey(recipeClass)) {
 				throw new IllegalArgumentException("A Recipe Handler has already been registered for this recipe class: " + recipeClass.getName());
+			}
 
 			mutableRecipeHandlers.put(recipeClass, recipeHandler);
 		}
@@ -66,12 +69,14 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	private void addRecipes(@Nullable ImmutableList<Object> recipes) {
-		if (recipes == null)
+		if (recipes == null) {
 			return;
+		}
 
 		for (Object recipe : recipes) {
-			if (recipe == null)
+			if (recipe == null) {
 				continue;
+			}
 
 			Class recipeClass = recipe.getClass();
 
@@ -117,32 +122,36 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Nonnull
 	@Override
 	public ImmutableList<IRecipeCategory> getRecipeCategoriesForInput(@Nullable ItemStack input) {
-		if (input == null)
+		if (input == null) {
 			return ImmutableList.of();
+		}
 		return recipeInputMap.getRecipeCategories(input);
 	}
 
 	@Nonnull
 	@Override
 	public ImmutableList<IRecipeCategory> getRecipeCategoriesForOutput(@Nullable ItemStack output) {
-		if (output == null)
+		if (output == null) {
 			return ImmutableList.of();
+		}
 		return recipeOutputMap.getRecipeCategories(output);
 	}
 
 	@Nonnull
 	@Override
 	public ImmutableList<Object> getInputRecipes(@Nullable IRecipeCategory recipeCategory, @Nullable ItemStack input) {
-		if (recipeCategory == null || input == null)
+		if (recipeCategory == null || input == null) {
 			return ImmutableList.of();
+		}
 		return recipeInputMap.getRecipes(recipeCategory, input);
 	}
 
 	@Nonnull
 	@Override
 	public ImmutableList<Object> getOutputRecipes(@Nullable IRecipeCategory recipeCategory, @Nullable ItemStack output) {
-		if (recipeCategory == null || output == null)
+		if (recipeCategory == null || output == null) {
 			return ImmutableList.of();
+		}
 		return recipeOutputMap.getRecipes(recipeCategory, output);
 	}
 

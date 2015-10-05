@@ -12,7 +12,10 @@ import mezz.jei.api.gui.IDrawable;
  */
 public interface IGuiHelper {
 
-	@Nonnull IDrawable createDrawable(@Nonnull ResourceLocation resourceLocation, int u, int v, int width, int height);
-	@Nonnull ICraftingGridHelper createCraftingGridHelper(int craftInputSlot1, int craftOutputSlot);
+	@Nonnull
+	IDrawable createDrawable(@Nonnull ResourceLocation resourceLocation, int u, int v, int width, int height);
+
+	@Nonnull
+	ICraftingGridHelper createCraftingGridHelper(int craftInputSlot1, int craftOutputSlot);
 
 }

@@ -43,10 +43,10 @@ public class FurnaceRecipeCategory implements IRecipeCategory {
 	@Override
 	public void setRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IRecipeWrapper recipeWrapper) {
 		if (recipeWrapper instanceof FuelRecipe) {
-			FuelRecipe fuelRecipeWrapper = (FuelRecipe)recipeWrapper;
+			FuelRecipe fuelRecipeWrapper = (FuelRecipe) recipeWrapper;
 			guiItemStacks.setItemStack(fuelSlot, fuelRecipeWrapper.getInputs());
 		} else if (recipeWrapper instanceof SmeltingRecipe) {
-			SmeltingRecipe smeltingRecipeWrapper = (SmeltingRecipe)recipeWrapper;
+			SmeltingRecipe smeltingRecipeWrapper = (SmeltingRecipe) recipeWrapper;
 			guiItemStacks.setItemStack(inputSlot, smeltingRecipeWrapper.getInputs());
 			guiItemStacks.setItemStack(outputSlot, smeltingRecipeWrapper.getOutputs());
 		}

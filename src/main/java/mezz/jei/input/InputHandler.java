@@ -2,15 +2,16 @@ package mezz.jei.input;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -20,6 +21,7 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.RecipesGui;
 import mezz.jei.util.Commands;
+import mezz.jei.util.Log;
 import mezz.jei.util.MouseHelper;
 import mezz.jei.util.Permissions;
 
@@ -64,7 +66,11 @@ public class InputHandler {
 		if (Mouse.getEventButton() > -1) {
 			if (Mouse.getEventButtonState()) {
 				if (!clickHandled) {
-					handleMouseClick(minecraft, Mouse.getEventButton(), mouseX, mouseY);
+					try {
+						handleMouseClick(minecraft, Mouse.getEventButton(), mouseX, mouseY);
+					} catch (IOException e) {
+						Log.error("IOException on mouse click.", e);
+					}
 					clickHandled = true;
 				}
 			} else {
@@ -73,7 +79,7 @@ public class InputHandler {
 		}
 	}
 
-	private void handleMouseClick(Minecraft minecraft, int mouseButton, int mouseX, int mouseY) {
+	private void handleMouseClick(Minecraft minecraft, int mouseButton, int mouseX, int mouseY) throws IOException {
 
 		ItemStack itemStack = getStackUnderMouseForClick(mouseX, mouseY);
 		if (itemStack != null) {
@@ -89,8 +95,9 @@ public class InputHandler {
 	@Nullable
 	private ItemStack getStackUnderMouseForClick(int mouseX, int mouseY) {
 		for (IShowsItemStacks gui : showsItemStacks) {
-			if (!(gui instanceof IClickable))
+			if (!(gui instanceof IClickable)) {
 				continue;
+			}
 
 			ItemStack itemStack = gui.getStackUnderMouse(mouseX, mouseY);
 			if (itemStack != null) {
@@ -103,8 +110,9 @@ public class InputHandler {
 	@Nullable
 	private ItemStack getStackUnderMouseForKey(int mouseX, int mouseY) {
 		for (IShowsItemStacks gui : showsItemStacks) {
-			if (!(gui instanceof IKeyable))
+			if (!(gui instanceof IKeyable)) {
 				continue;
+			}
 
 			ItemStack itemStack = gui.getStackUnderMouse(mouseX, mouseY);
 			if (itemStack != null) {
@@ -115,7 +123,7 @@ public class InputHandler {
 	}
 
 	private void handleMouseClickedItemStack(int mouseButton, @Nonnull ItemStack itemStack) {
-		EntityClientPlayerMP player = FMLClientHandler.instance().getClientPlayerEntity();
+		EntityPlayerSP player = FMLClientHandler.instance().getClientPlayerEntity();
 		if (Config.cheatItemsEnabled && Permissions.canPlayerSpawnItems(player) && player.inventory.getFirstEmptyStack() != -1) {
 			if (mouseButton == 0) {
 				Commands.giveFullStack(itemStack);

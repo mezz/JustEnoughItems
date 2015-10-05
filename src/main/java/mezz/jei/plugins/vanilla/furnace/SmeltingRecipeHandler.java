@@ -22,7 +22,7 @@ public class SmeltingRecipeHandler implements IRecipeHandler {
 
 	@Override
 	public IRecipeWrapper getRecipeWrapper(@Nonnull Object recipe) {
-		return (SmeltingRecipe)recipe;
+		return (SmeltingRecipe) recipe;
 	}
 
 }

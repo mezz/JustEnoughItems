@@ -8,9 +8,8 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-
-import cpw.mods.fml.common.ObfuscationReflectionHelper;
 
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 
@@ -22,7 +21,7 @@ public class ShapedOreRecipeWrapper implements IShapedCraftingRecipeWrapper {
 	private final int height;
 
 	public ShapedOreRecipeWrapper(@Nonnull Object recipe) {
-		this.recipe = (ShapedOreRecipe)recipe;
+		this.recipe = (ShapedOreRecipe) recipe;
 		this.width = ObfuscationReflectionHelper.getPrivateValue(ShapedOreRecipe.class, this.recipe, "width");
 		this.height = ObfuscationReflectionHelper.getPrivateValue(ShapedOreRecipe.class, this.recipe, "height");
 	}

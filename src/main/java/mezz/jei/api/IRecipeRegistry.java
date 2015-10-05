@@ -18,18 +18,23 @@ import mezz.jei.api.recipe.IRecipeHandler;
 public interface IRecipeRegistry {
 
 	/** Returns the IRecipeHandler associated with the recipeClass or null if there is none */
-	@Nullable IRecipeHandler getRecipeHandler(Class recipeClass);
+	@Nullable
+	IRecipeHandler getRecipeHandler(Class recipeClass);
 
 	/** Returns a list of Recipe Categories that have the ItemStack as an input */
-	@Nonnull ImmutableList<IRecipeCategory> getRecipeCategoriesForInput(ItemStack input);
+	@Nonnull
+	ImmutableList<IRecipeCategory> getRecipeCategoriesForInput(ItemStack input);
 
 	/** Returns a list of Recipe Categories that have the ItemStack as an output */
-	@Nonnull ImmutableList<IRecipeCategory> getRecipeCategoriesForOutput(ItemStack output);
+	@Nonnull
+	ImmutableList<IRecipeCategory> getRecipeCategoriesForOutput(ItemStack output);
 
 	/** Returns a list of Recipes of recipeCategory that have the ItemStack as an input */
-	@Nonnull ImmutableList<Object> getInputRecipes(IRecipeCategory recipeCategory, ItemStack input);
+	@Nonnull
+	ImmutableList<Object> getInputRecipes(IRecipeCategory recipeCategory, ItemStack input);
 
 	/** Returns a list of Recipes of recipeCategory that have the ItemStack as an output */
-	@Nonnull ImmutableList<Object> getOutputRecipes(IRecipeCategory recipeCategory, ItemStack output);
+	@Nonnull
+	ImmutableList<Object> getOutputRecipes(IRecipeCategory recipeCategory, ItemStack output);
 
 }

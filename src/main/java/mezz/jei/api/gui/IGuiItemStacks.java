@@ -18,6 +18,7 @@ public interface IGuiItemStacks {
 	void initItemStack(int index, int xPosition, int yPosition);
 
 	void setItemStack(int index, @Nonnull Iterable<ItemStack> itemStacks);
+
 	void setItemStack(int index, @Nonnull ItemStack itemStack);
 
 }
