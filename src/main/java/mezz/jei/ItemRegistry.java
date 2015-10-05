@@ -25,7 +25,7 @@ import mezz.jei.util.StackUtil;
 class ItemRegistry implements IItemRegistry {
 
 	@Nonnull
-	private final Set<String> itemNameSet = new HashSet<String>();
+	private final Set<Object> itemNameSet = new HashSet<Object>();
 	@Nonnull
 	private final ImmutableList<ItemStack> itemList;
 	@Nonnull
@@ -132,8 +132,11 @@ class ItemRegistry implements IItemRegistry {
 
 	@Nonnull
 	private String uniqueIdentifierForStack(@Nonnull ItemStack stack) {
+		Item item = stack.getItem();
+		Object itemName = GameData.getItemRegistry().getNameForObject(item);
+
 		StringBuilder itemKey = new StringBuilder();
-		itemKey.append(stack.getUnlocalizedName()).append(':').append(stack.getItemDamage());
+		itemKey.append(itemName).append(':').append(stack.getItemDamage());
 		if (stack.hasTagCompound()) {
 			itemKey.append(':').append(stack.getTagCompound());
 		}

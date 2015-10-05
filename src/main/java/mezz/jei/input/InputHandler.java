@@ -2,7 +2,6 @@ package mezz.jei.input;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +20,6 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.RecipesGui;
 import mezz.jei.util.Commands;
-import mezz.jei.util.Log;
 import mezz.jei.util.MouseHelper;
 import mezz.jei.util.Permissions;
 
@@ -62,34 +60,36 @@ public class InputHandler {
 		}
 	}
 
-	public void handleMouseEvent(Minecraft minecraft, int mouseX, int mouseY) {
+	public boolean handleMouseEvent(int mouseX, int mouseY) {
+		boolean cancelEvent = false;
 		if (Mouse.getEventButton() > -1) {
 			if (Mouse.getEventButtonState()) {
 				if (!clickHandled) {
-					try {
-						handleMouseClick(minecraft, Mouse.getEventButton(), mouseX, mouseY);
-					} catch (IOException e) {
-						Log.error("IOException on mouse click.", e);
-					}
+					cancelEvent = handleMouseClick(Mouse.getEventButton(), mouseX, mouseY);
 					clickHandled = true;
 				}
 			} else {
 				clickHandled = false;
 			}
 		}
+		return cancelEvent;
 	}
 
-	private void handleMouseClick(Minecraft minecraft, int mouseButton, int mouseX, int mouseY) throws IOException {
-
+	private boolean handleMouseClick(int mouseButton, int mouseX, int mouseY) {
 		ItemStack itemStack = getStackUnderMouseForClick(mouseX, mouseY);
 		if (itemStack != null) {
-			handleMouseClickedItemStack(mouseButton, itemStack);
-			return;
+			if (handleMouseClickedItemStack(mouseButton, itemStack)) {
+				return true;
+			}
 		}
 
 		for (IClickable clickable : clickables) {
-			clickable.handleMouseClicked(minecraft, mouseX, mouseY, mouseButton);
+			if (clickable.handleMouseClicked(mouseX, mouseY, mouseButton)) {
+				return true;
+			}
 		}
+
+		return recipesGui.isOpen();
 	}
 
 	@Nullable
@@ -122,43 +122,50 @@ public class InputHandler {
 		return null;
 	}
 
-	private void handleMouseClickedItemStack(int mouseButton, @Nonnull ItemStack itemStack) {
+	private boolean handleMouseClickedItemStack(int mouseButton, @Nonnull ItemStack itemStack) {
 		EntityPlayerSP player = FMLClientHandler.instance().getClientPlayerEntity();
 		if (Config.cheatItemsEnabled && Permissions.canPlayerSpawnItems(player) && player.inventory.getFirstEmptyStack() != -1) {
 			if (mouseButton == 0) {
 				Commands.giveFullStack(itemStack);
+				return true;
 			} else if (mouseButton == 1) {
 				Commands.giveOneFromStack(itemStack);
+				return true;
 			}
 		} else {
 			if (mouseButton == 0) {
 				recipesGui.showRecipes(itemStack);
+				return true;
 			} else if (mouseButton == 1) {
 				recipesGui.showUses(itemStack);
+				return true;
 			}
 		}
+		return false;
 	}
 
-	public void handleKeyEvent() {
+	public boolean handleKeyEvent() {
+		boolean cancelEvent = false;
 		if (Keyboard.getEventKeyState()) {
 			int eventKey = Keyboard.getEventKey();
 			if (keyHandled != eventKey) {
-				handleKeyDown(eventKey);
+				cancelEvent = handleKeyDown(eventKey);
 				keyHandled = eventKey;
 			}
 		} else {
 			keyHandled = -1;
 		}
+		return cancelEvent;
 	}
 
-	private void handleKeyDown(int eventKey) {
+	private boolean handleKeyDown(int eventKey) {
 		for (IKeyable keyable : keyables) {
 			if (keyable.isOpen() && keyable.hasKeyboardFocus()) {
 				if (keyable.onKeyPressed(eventKey)) {
-					return;
+					return true;
 				} else if (isInventoryCloseKey(eventKey)) {
 					keyable.setKeyboardFocus(false);
-					return;
+					return true;
 				}
 			}
 		}
@@ -166,13 +173,10 @@ public class InputHandler {
 		if (isInventoryCloseKey(eventKey) || isInventoryToggleKey(eventKey)) {
 			if (recipesGui.isOpen()) {
 				recipesGui.close();
-				return;
+				return true;
 			} else if (itemListOverlay.isOpen()) {
 				itemListOverlay.close();
-				return;
-			} else if (isInventoryToggleKey(eventKey)) {
-				itemListOverlay.open();
-				return;
+				return false;
 			}
 		}
 
@@ -180,21 +184,23 @@ public class InputHandler {
 			ItemStack itemStack = getStackUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
 			if (itemStack != null) {
 				recipesGui.showRecipes(itemStack);
-				return;
+				return true;
 			}
 		} else if (eventKey == KeyBindings.showUses.getKeyCode()) {
 			ItemStack itemStack = getStackUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
 			if (itemStack != null) {
 				recipesGui.showUses(itemStack);
-				return;
+				return true;
 			}
 		}
 
 		for (IKeyable keyable : keyables) {
 			if (keyable.isOpen() && keyable.onKeyPressed(eventKey)) {
-				return;
+				return true;
 			}
 		}
+
+		return false;
 	}
 
 	private boolean isInventoryToggleKey(int keyCode) {

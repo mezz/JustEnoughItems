@@ -202,6 +202,9 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 	@Override
 	@Nullable
 	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
+		if (!isOpen) {
+			return null;
+		}
 		for (GuiItemStack guiItemStack : guiItemStacks) {
 			if (guiItemStack.isMouseOver(mouseX, mouseY)) {
 				return guiItemStack.getItemStack();
@@ -211,13 +214,19 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 	}
 
 	@Override
-	public void handleMouseClicked(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
+	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
+		Minecraft minecraft = Minecraft.getMinecraft();
 		if (nextButton.mousePressed(minecraft, mouseX, mouseY)) {
 			nextPage();
+			return true;
 		} else if (backButton.mousePressed(minecraft, mouseX, mouseY)) {
 			backPage();
+			return true;
 		}
+
+		boolean searchClicked = mouseX >= searchField.xPosition && mouseX < searchField.xPosition + searchField.width && mouseY >= searchField.yPosition && mouseY < searchField.yPosition + searchField.height;
 		searchField.mouseClicked(mouseX, mouseY, mouseButton);
+		return searchClicked;
 	}
 
 	@Override

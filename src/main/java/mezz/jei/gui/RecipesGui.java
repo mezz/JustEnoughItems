@@ -137,6 +137,9 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 	@Nullable
 	@Override
 	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
+		if (!isOpen) {
+			return null;
+		}
 		for (RecipeGui recipeGui : recipeGuis) {
 			ItemStack stack = recipeGui.getStackUnderMouse(mouseX, mouseY);
 			if (stack != null) {
@@ -147,8 +150,17 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 	}
 
 	@Override
-	public void handleMouseClicked(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) throws IOException {
-		handleMouseInput();
+	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
+		if (!isOpen) {
+			return false;
+		}
+
+		try {
+			handleMouseInput();
+		} catch (IOException e) {
+			Log.error("IOException on mouse click.", e);
+		}
+		return false;
 	}
 
 	@Override

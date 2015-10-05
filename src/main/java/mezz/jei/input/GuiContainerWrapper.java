@@ -22,9 +22,12 @@ public class GuiContainerWrapper implements IShowsItemStacks, IKeyable {
 	@Nullable
 	@Override
 	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
-		Slot theSlot = guiContainer.theSlot;
-		if (theSlot != null && theSlot.getHasStack()) {
-			return theSlot.getStack();
+		if (!isOpen()) {
+			return null;
+		}
+		Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
+		if (slotUnderMouse != null && slotUnderMouse.getHasStack()) {
+			return slotUnderMouse.getStack();
 		}
 		return null;
 	}

@@ -14,6 +14,8 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import org.lwjgl.input.Mouse;
+
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.RecipesGui;
 import mezz.jei.input.InputHandler;
@@ -44,6 +46,8 @@ public class GuiEventHandler {
 		recipesGui.initGui(minecraft);
 
 		inputHandler = new InputHandler(minecraft, recipesGui, itemListOverlay, guiContainer);
+
+		itemListOverlay.open();
 	}
 
 	@SubscribeEvent
@@ -76,18 +80,15 @@ public class GuiEventHandler {
 		}
 
 		itemListOverlay.drawHovered(guiContainer.mc, event.mouseX, event.mouseY);
-		if (inputHandler != null) {
-			inputHandler.handleMouseEvent(guiContainer.mc, event.mouseX, event.mouseY);
-		}
 
 		if (!recipesGui.isOpen()) {
 			/**
 			 * There is no way to render between the existing inventory tooltip and the dark background layer,
 			 * so we have to re-render the inventory tooltip over the item list.
 			 **/
-			Slot theSlot = guiContainer.theSlot;
-			if (theSlot != null && theSlot.getHasStack()) {
-				ItemStack itemStack = theSlot.getStack();
+			Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
+			if (slotUnderMouse != null && slotUnderMouse.getHasStack()) {
+				ItemStack itemStack = slotUnderMouse.getStack();
 				guiContainer.renderToolTip(itemStack, event.mouseX, event.mouseY);
 			}
 		}
@@ -106,9 +107,26 @@ public class GuiEventHandler {
 		}
 
 		itemListOverlay.handleTick();
+	}
 
+	@SubscribeEvent
+	public void onGuiKeyboardEvent(GuiScreenEvent.KeyboardInputEvent.Pre event) {
 		if (inputHandler != null) {
-			inputHandler.handleKeyEvent();
+			if (inputHandler.handleKeyEvent()) {
+				event.setCanceled(true);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onGuiMouseEvent(GuiScreenEvent.MouseInputEvent.Pre event) {
+		GuiScreen gui = event.gui;
+		if (inputHandler != null) {
+			int x = Mouse.getEventX() * gui.width / gui.mc.displayWidth;
+			int y = gui.height - Mouse.getEventY() * gui.height / gui.mc.displayHeight - 1;
+			if (inputHandler.handleMouseEvent(x, y)) {
+				event.setCanceled(true);
+			}
 		}
 	}
 

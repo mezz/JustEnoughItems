@@ -7,6 +7,6 @@ import net.minecraft.item.ItemStack;
 public interface IShowsItemStacks {
 
 	@Nullable
-	public ItemStack getStackUnderMouse(int mouseX, int mouseY);
+	ItemStack getStackUnderMouse(int mouseX, int mouseY);
 
 }
