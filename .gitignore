@@ -18,3 +18,4 @@ JustEnoughItems.ipr
 JustEnoughItems.iws
 out/
 .idea
+build/*

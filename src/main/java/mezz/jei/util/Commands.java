@@ -28,7 +28,7 @@ public class Commands {
 	 */
 	public static void giveStack(@Nonnull ItemStack itemStack, int amount) {
 		EntityPlayerSP sender = Minecraft.getMinecraft().thePlayer;
-		String senderName = sender.getName();
+		String senderName = sender.getCommandSenderName();
 		
 		List<String> commandStrings = new ArrayList<String>();
 		commandStrings.add("/give");
