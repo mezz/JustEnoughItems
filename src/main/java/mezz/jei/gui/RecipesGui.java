@@ -15,6 +15,8 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
+import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
 import org.lwjgl.opengl.GL11;
@@ -118,6 +120,18 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		if (recipeGuis.size() > 0) {
 			resetLayout();
 		}
+	}
+
+	// don't post GUI events or we end up in an infinite loop handling them
+	@Override
+	public void setWorldAndResolution(Minecraft mc, int width, int height) {
+		this.mc = mc;
+		this.itemRender = mc.getRenderItem();
+		this.fontRendererObj = mc.fontRendererObj;
+		this.width = width;
+		this.height = height;
+		this.buttonList.clear();
+		this.initGui();
 	}
 
 	private void resetLayout() {

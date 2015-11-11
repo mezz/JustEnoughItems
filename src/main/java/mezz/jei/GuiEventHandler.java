@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
@@ -35,19 +34,19 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onGuiInit(@Nonnull GuiScreenEvent.InitGuiEvent.Post event) {
-		GuiContainer guiContainer = asGuiContainer(event.gui);
+		Minecraft minecraft = Minecraft.getMinecraft();
+		GuiContainer guiContainer = asGuiContainer(minecraft.currentScreen);
 		if (guiContainer == null) {
 			return;
 		}
+
 		itemListOverlay.initGui(guiContainer);
-
-		Minecraft minecraft = Minecraft.getMinecraft();
-
 		recipesGui.initGui(minecraft);
+		inputHandler = new InputHandler(recipesGui, itemListOverlay, guiContainer);
 
-		inputHandler = new InputHandler(minecraft, recipesGui, itemListOverlay, guiContainer);
-
-		itemListOverlay.open();
+		if (!minecraft.thePlayer.capabilities.isCreativeMode) {
+			itemListOverlay.open();
+		}
 	}
 
 	@SubscribeEvent
@@ -132,7 +131,7 @@ public class GuiEventHandler {
 
 	@Nullable
 	private GuiContainer asGuiContainer(GuiScreen guiScreen) {
-		if (!(guiScreen instanceof GuiContainer) || (guiScreen instanceof GuiContainerCreative)) {
+		if (!(guiScreen instanceof GuiContainer)) {
 			return null;
 		}
 		return (GuiContainer) guiScreen;

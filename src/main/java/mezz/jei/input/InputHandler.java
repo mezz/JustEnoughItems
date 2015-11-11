@@ -36,11 +36,11 @@ public class InputHandler {
 	private boolean clickHandled = false;
 	private int keyHandled = -1;
 
-	public InputHandler(Minecraft minecraft, RecipesGui recipesGui, ItemListOverlay itemListOverlay, GuiContainer guiContainer) {
+	public InputHandler(RecipesGui recipesGui, ItemListOverlay itemListOverlay, GuiContainer guiContainer) {
 		this.recipesGui = recipesGui;
 		this.itemListOverlay = itemListOverlay;
 
-		this.mouseHelper = new MouseHelper(minecraft);
+		this.mouseHelper = new MouseHelper();
 
 		List<ICloseable> objects = new ArrayList<ICloseable>();
 		objects.add(recipesGui);
