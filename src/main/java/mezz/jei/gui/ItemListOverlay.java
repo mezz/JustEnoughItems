@@ -55,7 +55,8 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 	private int width;
 	private int height;
 
-	private boolean isOpen = false;
+	private boolean open = false;
+	private boolean enabled = true;
 
 	public ItemListOverlay(ItemFilter itemFilter) {
 		this.itemFilter = itemFilter;
@@ -169,7 +170,7 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 	}
 
 	public void drawScreen(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
-		if (!isOpen) {
+		if (!isOpen()) {
 			return;
 		}
 
@@ -202,7 +203,7 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 	@Override
 	@Nullable
 	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
-		if (!isOpen) {
+		if (!isOpen()) {
 			return null;
 		}
 		for (GuiItemStack guiItemStack : guiItemStacks) {
@@ -294,19 +295,22 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 
 	@Override
 	public void open() {
-		isOpen = true;
+		open = true;
 		searchField.setFocused(false);
 	}
 
 	@Override
 	public void close() {
-		isOpen = false;
+		open = false;
 		searchField.setFocused(false);
 	}
 
 	@Override
 	public boolean isOpen() {
-		return isOpen;
+		return open && enabled;
 	}
 
+	public void toggleEnabled() {
+		enabled = !enabled;
+	}
 }

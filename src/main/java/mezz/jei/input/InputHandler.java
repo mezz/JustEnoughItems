@@ -192,6 +192,9 @@ public class InputHandler {
 				recipesGui.showUses(itemStack);
 				return true;
 			}
+		} else if (eventKey == KeyBindings.toggleOverlay.getKeyCode()) {
+			itemListOverlay.toggleEnabled();
+			return false;
 		}
 
 		for (IKeyable keyable : keyables) {
