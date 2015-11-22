@@ -1,17 +1,6 @@
-buildscript {
-    repositories {
-        jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-    }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.0-SNAPSHOT'
-    }
+plugins {
+	id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
-
-apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = version_major + '.' + version_minor + '.' + version_patch
 group= "mezz.jei" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -22,9 +11,13 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 minecraft {
-    version = mcversion + "-" + forgeversion
-    runDir = "run"
-    mappings = "snapshot_nodoc_20151110"
+	version = mcversion + "-" + forgeversion
+	runDir = "run"
+	mappings = "snapshot_nodoc_20151110"
+}
+
+repositories {
+
 }
 
 dependencies {
@@ -33,29 +26,29 @@ dependencies {
 
 processResources
 {
-    // this will ensure that this task is redone when the versions change.
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
+	// this will ensure that this task is redone when the versions change.
+	inputs.property "version", project.version
+	inputs.property "mcversion", project.minecraft.version
 
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-                
-        // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
-    }
-        
-    // copy everything else, thats not the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
+	// replace stuff in mcmod.info, nothing else
+	from(sourceSets.main.resources.srcDirs) {
+		include 'mcmod.info'
 
-    // Move access transformers to META-INF
-    rename '(.+_at.cfg)', 'META-INF/$1'
+		// replace version and mcversion
+		expand 'version':project.version, 'mcversion':project.minecraft.version
+	}
+
+	// copy everything else, thats not the mcmod.info
+	from(sourceSets.main.resources.srcDirs) {
+		exclude 'mcmod.info'
+	}
+
+	// Move access transformers to META-INF
+	rename '(.+_at.cfg)', 'META-INF/$1'
 }
 
 jar {
-    manifest {
-        attributes 'FMLAT': 'jei_at.cfg'
-    }
+	manifest {
+		attributes 'FMLAT': 'jei_at.cfg'
+	}
 }
