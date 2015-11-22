@@ -85,7 +85,7 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 
 		searchField = new GuiTextField(0, fontRenderer, leftEdge, this.height - searchHeight - (2 * borderPadding), rightEdge - leftEdge, searchHeight);
 		searchField.setMaxStringLength(maxSearchLength);
-		searchField.setFocused(false);
+		setKeyboardFocus(false);
 		searchField.setText(itemFilter.getFilterText());
 
 		updateLayout();
@@ -244,6 +244,7 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 	private boolean handleMouseClickedSearch(int mouseX, int mouseY, int mouseButton) {
 		boolean searchClicked = mouseX >= searchField.xPosition && mouseX < searchField.xPosition + searchField.width && mouseY >= searchField.yPosition && mouseY < searchField.yPosition + searchField.height;
 		if (searchClicked) {
+			setKeyboardFocus(true);
 			if (mouseButton == 1) {
 				searchField.setText("");
 				if (itemFilter.setFilterText(searchField.getText())) {
@@ -264,13 +265,16 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 	@Override
 	public void setKeyboardFocus(boolean keyboardFocus) {
 		searchField.setFocused(keyboardFocus);
+		Keyboard.enableRepeatEvents(keyboardFocus);
 	}
 
 	@Override
 	public boolean onKeyPressed(int keyCode) {
-		boolean success = searchField.textboxKeyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
-		if (success && itemFilter.setFilterText(searchField.getText())) {
-			updateLayout();
+		if (searchField.isFocused()) {
+			boolean success = searchField.textboxKeyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
+			if (success && itemFilter.setFilterText(searchField.getText())) {
+				updateLayout();
+			}
 			return true;
 		}
 		return false;
@@ -313,13 +317,13 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 	@Override
 	public void open() {
 		open = true;
-		searchField.setFocused(false);
+		setKeyboardFocus(false);
 	}
 
 	@Override
 	public void close() {
 		open = false;
-		searchField.setFocused(false);
+		setKeyboardFocus(false);
 	}
 
 	@Override

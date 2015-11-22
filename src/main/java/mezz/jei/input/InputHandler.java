@@ -34,7 +34,6 @@ public class InputHandler {
 	private final List<IShowsItemStacks> showsItemStacks = new ArrayList<IShowsItemStacks>();
 
 	private boolean clickHandled = false;
-	private int keyHandled = -1;
 
 	public InputHandler(RecipesGui recipesGui, ItemListOverlay itemListOverlay, GuiContainer guiContainer) {
 		this.recipesGui = recipesGui;
@@ -148,12 +147,7 @@ public class InputHandler {
 		boolean cancelEvent = false;
 		if (Keyboard.getEventKeyState()) {
 			int eventKey = Keyboard.getEventKey();
-			if (keyHandled != eventKey) {
-				cancelEvent = handleKeyDown(eventKey);
-				keyHandled = eventKey;
-			}
-		} else {
-			keyHandled = -1;
+			cancelEvent = handleKeyDown(eventKey);
 		}
 		return cancelEvent;
 	}
@@ -161,10 +155,10 @@ public class InputHandler {
 	private boolean handleKeyDown(int eventKey) {
 		for (IKeyable keyable : keyables) {
 			if (keyable.isOpen() && keyable.hasKeyboardFocus()) {
-				if (keyable.onKeyPressed(eventKey)) {
-					return true;
-				} else if (isInventoryCloseKey(eventKey)) {
+				if (isInventoryCloseKey(eventKey)) {
 					keyable.setKeyboardFocus(false);
+					return true;
+				} else if (keyable.onKeyPressed(eventKey)) {
 					return true;
 				}
 			}
