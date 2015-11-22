@@ -216,6 +216,20 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 
 	@Override
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
+		boolean buttonClicked = handleMouseClickedButtons(mouseX, mouseY, mouseButton);
+		if (buttonClicked) {
+			setKeyboardFocus(false);
+			return true;
+		}
+
+		boolean searchClicked = handleMouseClickedSearch(mouseX, mouseY, mouseButton);
+		if (!searchClicked) {
+			setKeyboardFocus(false);
+		}
+		return searchClicked;
+	}
+
+	private boolean handleMouseClickedButtons(int mouseX, int mouseY, int mouseButton) {
 		Minecraft minecraft = Minecraft.getMinecraft();
 		if (nextButton.mousePressed(minecraft, mouseX, mouseY)) {
 			nextPage();
@@ -224,7 +238,10 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 			backPage();
 			return true;
 		}
+		return false;
+	}
 
+	private boolean handleMouseClickedSearch(int mouseX, int mouseY, int mouseButton) {
 		boolean searchClicked = mouseX >= searchField.xPosition && mouseX < searchField.xPosition + searchField.width && mouseY >= searchField.yPosition && mouseY < searchField.yPosition + searchField.height;
 		if (searchClicked) {
 			if (mouseButton == 1) {
