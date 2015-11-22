@@ -110,6 +110,9 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onGuiKeyboardEvent(GuiScreenEvent.KeyboardInputEvent.Pre event) {
+		if (!(event.gui instanceof GuiContainer)) {
+			return;
+		}
 		if (inputHandler != null) {
 			if (inputHandler.handleKeyEvent()) {
 				event.setCanceled(true);
