@@ -33,7 +33,7 @@ public class Commands {
 		List<String> commandStrings = new ArrayList<>();
 		commandStrings.add("/give");
 		commandStrings.add(senderName);
-		commandStrings.add((String) Item.itemRegistry.getNameForObject(itemStack.getItem()));
+		commandStrings.add(Item.itemRegistry.getNameForObject(itemStack.getItem()).toString());
 		commandStrings.add(String.valueOf(amount));
 		commandStrings.add(String.valueOf(itemStack.getItemDamage()));
 

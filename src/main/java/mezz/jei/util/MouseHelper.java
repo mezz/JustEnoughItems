@@ -15,7 +15,7 @@ public class MouseHelper {
 		Minecraft minecraft = Minecraft.getMinecraft();
 		displayWidth = minecraft.displayWidth;
 		displayHeight = minecraft.displayHeight;
-		scaledresolution = new ScaledResolution(minecraft, displayWidth, displayHeight);
+		scaledresolution = new ScaledResolution(minecraft);
 	}
 
 	public int getX() {
