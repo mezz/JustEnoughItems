@@ -15,8 +15,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
 import org.lwjgl.opengl.GL11;
@@ -54,9 +52,9 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 	@Nonnull
 	private ImmutableList<IRecipeCategory> recipeCategories = ImmutableList.of();
 
-	/* List of RecipeGui to display */
+	/* List of RecipeWidget to display */
 	@Nonnull
-	private final List<RecipeGui> recipeGuis = new ArrayList<RecipeGui>();
+	private final List<RecipeWidget> recipeWidgets = new ArrayList<RecipeWidget>();
 
 	/* List of recipes for the currently selected recipeClass */
 	@Nonnull
@@ -117,7 +115,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		addButtons();
 
 		// on screen resize
-		if (recipeGuis.size() > 0) {
+		if (recipeWidgets.size() > 0) {
 			resetLayout();
 		}
 	}
@@ -135,7 +133,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 	}
 
 	private void resetLayout() {
-		recipeGuis.clear();
+		recipeWidgets.clear();
 		pageIndex = 0;
 		updateLayout();
 	}
@@ -154,8 +152,8 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		if (!isOpen) {
 			return null;
 		}
-		for (RecipeGui recipeGui : recipeGuis) {
-			ItemStack stack = recipeGui.getStackUnderMouse(mouseX, mouseY);
+		for (RecipeWidget recipeWidget : recipeWidgets) {
+			ItemStack stack = recipeWidget.getStackUnderMouse(mouseX, mouseY);
 			if (stack != null) {
 				return stack;
 			}
@@ -324,8 +322,8 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		final int posX = guiLeft + recipeXOffset;
 		int posY = guiTop + headerHeight + recipeSpacing;
 
-		recipeGuis.clear();
-		for (int recipeIndex = pageIndex * recipesPerPage; recipeIndex < recipes.size() && recipeGuis.size() < recipesPerPage; recipeIndex++) {
+		recipeWidgets.clear();
+		for (int recipeIndex = pageIndex * recipesPerPage; recipeIndex < recipes.size() && recipeWidgets.size() < recipesPerPage; recipeIndex++) {
 			Object recipe = recipes.get(recipeIndex);
 			IRecipeHandler recipeHandler = JEIManager.recipeRegistry.getRecipeHandler(recipe.getClass());
 			if (recipeHandler == null) {
@@ -333,13 +331,13 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 				continue;
 			}
 
-			RecipeGui recipeGui = new RecipeGui(recipeCategory);
-			recipeGui.setPosition(posX, posY);
+			RecipeWidget recipeWidget = new RecipeWidget(recipeCategory);
+			recipeWidget.setPosition(posX, posY);
 			posY += recipeBackground.getHeight() + recipeSpacing;
 
 			IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
-			recipeGui.setRecipe(recipeWrapper, focusStack);
-			recipeGuis.add(recipeGui);
+			recipeWidget.setRecipe(recipeWrapper, focusStack);
+			recipeWidgets.add(recipeWidget);
 		}
 
 		nextPage.enabled = previousPage.enabled = (pageCount() > 1);
@@ -367,12 +365,12 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		}
 		GL11.glPopMatrix();
 
-		RecipeGui hovered = null;
-		for (RecipeGui recipeGui : recipeGuis) {
-			if (recipeGui.getStackUnderMouse(mouseX, mouseY) != null) {
-				hovered = recipeGui;
+		RecipeWidget hovered = null;
+		for (RecipeWidget recipeWidget : recipeWidgets) {
+			if (recipeWidget.getStackUnderMouse(mouseX, mouseY) != null) {
+				hovered = recipeWidget;
 			} else {
-				recipeGui.draw(minecraft, mouseX, mouseY);
+				recipeWidget.draw(minecraft, mouseX, mouseY);
 			}
 		}
 		if (hovered != null) {

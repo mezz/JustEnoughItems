@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL11;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 
-public class RecipeGui {
+public class RecipeWidget {
 
 	@Nonnull
 	private final IRecipeCategory recipeCategory;
@@ -21,7 +21,7 @@ public class RecipeGui {
 	private int posX;
 	private int posY;
 
-	public RecipeGui(@Nonnull IRecipeCategory recipeCategory) {
+	public RecipeWidget(@Nonnull IRecipeCategory recipeCategory) {
 		this.recipeCategory = recipeCategory;
 		this.guiItemStacks = new GuiItemStacks();
 		this.recipeCategory.init(guiItemStacks);
