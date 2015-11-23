@@ -8,11 +8,11 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 
-public class ShapedOreRecipeHandler implements IRecipeHandler {
+public class ShapedOreRecipeHandler implements IRecipeHandler<ShapedOreRecipe> {
 
 	@Nonnull
 	@Override
-	public Class getRecipeClass() {
+	public Class<ShapedOreRecipe> getRecipeClass() {
 		return ShapedOreRecipe.class;
 	}
 
@@ -23,7 +23,7 @@ public class ShapedOreRecipeHandler implements IRecipeHandler {
 	}
 
 	@Override
-	public IRecipeWrapper getRecipeWrapper(@Nonnull Object recipe) {
+	public IRecipeWrapper getRecipeWrapper(@Nonnull ShapedOreRecipe recipe) {
 		return new ShapedOreRecipeWrapper(recipe);
 	}
 

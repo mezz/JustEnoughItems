@@ -12,16 +12,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
-import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
 
-public class FuelRecipe implements IRecipeWrapper {
+public class FuelRecipe extends VanillaRecipeWrapper {
 	@Nonnull
 	private final List<ItemStack> input;
 	@Nullable
 	private final String burnTimeString;
 
 	public FuelRecipe(@Nonnull Collection<ItemStack> input, int burnTime) {
-		this.input = new ArrayList<ItemStack>(input);
+		this.input = new ArrayList<>(input);
 		this.burnTimeString = StatCollector.translateToLocalFormatted("gui.jei.furnaceBurnTime", burnTime);
 	}
 

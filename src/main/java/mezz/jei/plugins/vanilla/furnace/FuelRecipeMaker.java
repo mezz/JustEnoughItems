@@ -21,8 +21,8 @@ public class FuelRecipeMaker {
 	@Nonnull
 	public static List<FuelRecipe> getFuelRecipes() {
 		List<ItemStack> fuelStacks = JEIManager.itemRegistry.getFuels();
-		Set<String> oreDictNames = new HashSet<String>();
-		List<FuelRecipe> fuelRecipes = new ArrayList<FuelRecipe>(fuelStacks.size());
+		Set<String> oreDictNames = new HashSet<>();
+		List<FuelRecipe> fuelRecipes = new ArrayList<>(fuelStacks.size());
 		for (ItemStack fuelStack : fuelStacks) {
 			if (fuelStack == null) {
 				continue;

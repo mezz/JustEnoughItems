@@ -26,13 +26,12 @@ import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
 import mezz.jei.input.IClickable;
-import mezz.jei.input.IKeyable;
 import mezz.jei.input.IShowsItemStacks;
 import mezz.jei.util.Log;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.StringUtil;
 
-public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickable, IKeyable {
+public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickable {
 	private enum Mode {
 		INPUT, OUTPUT
 	}
@@ -54,7 +53,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 
 	/* List of RecipeWidget to display */
 	@Nonnull
-	private final List<RecipeWidget> recipeWidgets = new ArrayList<RecipeWidget>();
+	private final List<RecipeWidget> recipeWidgets = new ArrayList<>();
 
 	/* List of recipes for the currently selected recipeClass */
 	@Nonnull
@@ -176,21 +175,6 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 	}
 
 	@Override
-	public boolean hasKeyboardFocus() {
-		return false;
-	}
-
-	@Override
-	public void setKeyboardFocus(boolean keyboardFocus) {
-
-	}
-
-	@Override
-	public boolean onKeyPressed(int keyCode) {
-		return false;
-	}
-
-	@Override
 	public void open() {
 		this.isOpen = true;
 	}
@@ -241,10 +225,10 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		ImmutableList<IRecipeCategory> types = null;
 		switch (mode) {
 			case INPUT:
-				types = JEIManager.recipeRegistry.getRecipeCategoriesForInput(stack);
+				types = JEIManager.recipeRegistry.getRecipeCategoriesWithInput(stack);
 				break;
 			case OUTPUT:
-				types = JEIManager.recipeRegistry.getRecipeCategoriesForOutput(stack);
+				types = JEIManager.recipeRegistry.getRecipeCategoriesWithOutput(stack);
 				break;
 		}
 		if (types.isEmpty()) {
@@ -306,10 +290,10 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 
 		switch (mode) {
 			case INPUT:
-				recipes = JEIManager.recipeRegistry.getInputRecipes(recipeCategory, focusStack);
+				recipes = JEIManager.recipeRegistry.getRecipesWithInput(recipeCategory, focusStack);
 				break;
 			case OUTPUT:
-				recipes = JEIManager.recipeRegistry.getOutputRecipes(recipeCategory, focusStack);
+				recipes = JEIManager.recipeRegistry.getRecipesWithOutput(recipeCategory, focusStack);
 				break;
 		}
 

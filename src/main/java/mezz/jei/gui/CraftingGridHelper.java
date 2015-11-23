@@ -1,6 +1,7 @@
 package mezz.jei.gui;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -72,11 +73,11 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 	}
 
 	public void setOutput(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull List<ItemStack> output) {
-		guiItemStacks.setItemStack(craftOutputSlot, output);
+		guiItemStacks.set(craftOutputSlot, output);
 	}
 
-	private void setInput(@Nonnull IGuiItemStacks guiItemStacks, int inputIndex, @Nonnull Iterable<ItemStack> input) {
-		guiItemStacks.setItemStack(craftInputSlot1 + inputIndex, input);
+	private void setInput(@Nonnull IGuiItemStacks guiItemStacks, int inputIndex, @Nonnull Collection<ItemStack> input) {
+		guiItemStacks.set(craftInputSlot1 + inputIndex, input);
 	}
 
 }

@@ -13,6 +13,7 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
+import mezz.jei.util.Log;
 
 public class CraftingRecipeCategory implements IRecipeCategory {
 
@@ -47,12 +48,12 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 
 	@Override
 	public void init(@Nonnull IGuiItemStacks guiItemStacks) {
-		guiItemStacks.initItemStack(craftOutputSlot, 94, 18);
+		guiItemStacks.init(craftOutputSlot, 94, 18);
 
 		for (int y = 0; y < 3; ++y) {
 			for (int x = 0; x < 3; ++x) {
 				int index = craftInputSlot1 + x + (y * 3);
-				guiItemStacks.initItemStack(index, x * 18, y * 18);
+				guiItemStacks.init(index, x * 18, y * 18);
 			}
 		}
 	}
@@ -67,8 +68,9 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 			ICraftingRecipeWrapper wrapper = (ICraftingRecipeWrapper) recipeWrapper;
 			craftingGridHelper.setInput(guiItemStacks, wrapper.getInputs());
 			craftingGridHelper.setOutput(guiItemStacks, wrapper.getOutputs());
+		} else {
+			Log.error("RecipeWrapper is not a know crafting wrapper type: %s", recipeWrapper);
 		}
 	}
-
 
 }

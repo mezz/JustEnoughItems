@@ -1,11 +1,7 @@
 package mezz.jei.gui;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -15,34 +11,10 @@ import net.minecraft.item.ItemStack;
 import mezz.jei.util.Log;
 import mezz.jei.util.StackUtil;
 
-public class GuiItemStack {
+public class GuiItemStack extends GuiWidget<ItemStack> {
 
 	private static final int baseWidth = 16;
 	private static final int baseHeight = 16;
-
-	private final int width;
-	private final int height;
-	private final int padding;
-	private final int xPosition;
-	private final int yPosition;
-
-	/* the amount of time in ms to display one itemStack before cycling to the next one */
-	private static final int cycleTime = 1000;
-	private long drawTime = 0;
-
-	private boolean enabled;
-	private boolean visible;
-
-	@Nonnull
-	private final List<ItemStack> itemStacks = new ArrayList<ItemStack>();
-
-	public GuiItemStack(int xPosition, int yPosition, int padding) {
-		this.xPosition = xPosition;
-		this.yPosition = yPosition;
-		this.padding = padding;
-		this.width = getWidth(padding);
-		this.height = getHeight(padding);
-	}
 
 	public static int getWidth(int padding) {
 		return baseWidth + (2 * padding);
@@ -52,47 +24,31 @@ public class GuiItemStack {
 		return baseHeight + (2 * padding);
 	}
 
-	public void setItemStacks(@Nonnull Iterable<ItemStack> itemStacksIn, @Nullable ItemStack focusStack) {
-		this.itemStacks.clear();
-		Collection<ItemStack> itemStacks = StackUtil.getAllSubtypes(itemStacksIn);
-		ItemStack matchingItemStack = StackUtil.containsStack(itemStacks, focusStack);
-		if (matchingItemStack != null) {
-			this.itemStacks.add(matchingItemStack);
-		} else {
-			this.itemStacks.addAll(itemStacks);
-		}
-		visible = enabled = !this.itemStacks.isEmpty();
+	private final int padding;
+
+	public GuiItemStack(int xPosition, int yPosition, int padding) {
+		super(xPosition, yPosition, getWidth(padding), getHeight(padding));
+		this.padding = padding;
 	}
 
-	public void setItemStack(@Nonnull ItemStack itemStack, @Nullable ItemStack focusStack) {
-		setItemStacks(Collections.singletonList(itemStack), focusStack);
+	@Override
+	protected Collection<ItemStack> expandSubtypes(Collection<ItemStack> contained) {
+		return StackUtil.getAllSubtypes(contained);
 	}
 
-	public void clearItemStacks() {
-		itemStacks.clear();
-		visible = enabled = false;
+	@Override
+	protected ItemStack getMatch(Iterable<ItemStack> contained, ItemStack toMatch) {
+		return StackUtil.containsStack(contained, toMatch);
 	}
 
-	@Nullable
-	public ItemStack getItemStack() {
-		if (itemStacks.isEmpty()) {
-			return null;
-		}
-
-		Long stackIndex = (drawTime / cycleTime) % itemStacks.size();
-		return itemStacks.get(stackIndex.intValue());
-	}
-
-	public boolean isMouseOver(int mouseX, int mouseY) {
-		return enabled && visible && (mouseX >= xPosition) && (mouseY >= yPosition) && (mouseX < xPosition + width) && (mouseY < yPosition + height);
-	}
-
+	@Override
 	public void draw(@Nonnull Minecraft minecraft) {
 		draw(minecraft, true);
 	}
 
+	@Override
 	public void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
-		ItemStack itemStack = getItemStack();
+		ItemStack itemStack = get();
 		if (itemStack == null) {
 			return;
 		}
@@ -110,11 +66,9 @@ public class GuiItemStack {
 			return;
 		}
 
-		if (cycleIcons) {
-			drawTime = System.currentTimeMillis();
-		}
+		cycleTimer.onDraw(cycleIcons);
 
-		ItemStack itemStack = getItemStack();
+		ItemStack itemStack = get();
 		if (itemStack == null) {
 			return;
 		}

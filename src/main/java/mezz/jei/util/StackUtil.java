@@ -10,13 +10,14 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class StackUtil {
 
 	@Nonnull
 	public static List<ItemStack> removeDuplicateItemStacks(Iterable<ItemStack> stacks) {
-		List<ItemStack> newStacks = new ArrayList<ItemStack>();
+		List<ItemStack> newStacks = new ArrayList<>();
 		if (stacks == null) {
 			return newStacks;
 		}
@@ -72,7 +73,7 @@ public class StackUtil {
 	@Nonnull
 	public static List<ItemStack> getSubtypes(@Nonnull ItemStack itemStack) {
 
-		List<ItemStack> itemStacks = new ArrayList<ItemStack>();
+		List<ItemStack> itemStacks = new ArrayList<>();
 
 		Item item = itemStack.getItem();
 		if (item == null) {
@@ -87,7 +88,7 @@ public class StackUtil {
 			return Collections.singletonList(new ItemStack(item));
 		}
 
-		List<ItemStack> subItems = new ArrayList<ItemStack>();
+		List<ItemStack> subItems = new ArrayList<>();
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
 			subItems.clear();
 			item.getSubItems(item, itemTab, subItems);
@@ -104,7 +105,7 @@ public class StackUtil {
 	}
 
 	public static List<ItemStack> getAllSubtypes(Iterable stacks) {
-		List<ItemStack> allSubtypes = new ArrayList<ItemStack>();
+		List<ItemStack> allSubtypes = new ArrayList<>();
 		getAllSubtypes(allSubtypes, stacks);
 		return allSubtypes;
 	}
@@ -124,8 +125,11 @@ public class StackUtil {
 	}
 
 	@Nonnull
-	public static List<ItemStack> toItemStackList(@Nonnull Iterable stacks) {
-		List<ItemStack> itemStacksList = new ArrayList<ItemStack>();
+	public static List<ItemStack> toItemStackList(@Nullable Iterable stacks) {
+		if (stacks == null) {
+			return Collections.emptyList();
+		}
+		List<ItemStack> itemStacksList = new ArrayList<>();
 		toItemStackList(itemStacksList, stacks);
 		return removeDuplicateItemStacks(itemStacksList);
 	}
@@ -142,4 +146,20 @@ public class StackUtil {
 		}
 	}
 
+	@Nonnull
+	public static String uniqueIdentifierForStack(@Nonnull ItemStack stack, boolean wildcard) {
+		Item item = stack.getItem();
+		Object itemName = GameData.getItemRegistry().getNameForObject(item);
+		String itemNameString = String.valueOf(itemName);
+		if (wildcard) {
+			return itemNameString;
+		}
+
+		StringBuilder itemKey = new StringBuilder(itemNameString).append(':').append(stack.getItemDamage());
+		if (stack.hasTagCompound()) {
+			itemKey.append(':').append(stack.getTagCompound());
+		}
+
+		return itemKey.toString();
+	}
 }

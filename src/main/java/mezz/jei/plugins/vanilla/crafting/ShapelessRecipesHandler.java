@@ -8,11 +8,11 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 
-public class ShapelessRecipesHandler implements IRecipeHandler {
+public class ShapelessRecipesHandler implements IRecipeHandler<ShapelessRecipes> {
 
 	@Nonnull
 	@Override
-	public Class getRecipeClass() {
+	public Class<ShapelessRecipes> getRecipeClass() {
 		return ShapelessRecipes.class;
 	}
 
@@ -24,7 +24,7 @@ public class ShapelessRecipesHandler implements IRecipeHandler {
 
 	@Nonnull
 	@Override
-	public IRecipeWrapper getRecipeWrapper(@Nonnull Object recipe) {
+	public IRecipeWrapper getRecipeWrapper(@Nonnull ShapelessRecipes recipe) {
 		return new ShapelessRecipesWrapper(recipe);
 	}
 

@@ -27,15 +27,15 @@ import mezz.jei.util.StackUtil;
 class ItemRegistry implements IItemRegistry {
 
 	@Nonnull
-	private final Set<Object> itemNameSet = new HashSet<Object>();
+	private final Set<Object> itemNameSet = new HashSet<>();
 	@Nonnull
 	private final ImmutableList<ItemStack> itemList;
 	@Nonnull
 	private final ImmutableList<ItemStack> fuels;
 
 	public ItemRegistry() {
-		List<ItemStack> itemList = new ArrayList<ItemStack>();
-		List<ItemStack> fuels = new ArrayList<ItemStack>();
+		List<ItemStack> itemList = new ArrayList<>();
+		List<ItemStack> fuels = new ArrayList<>();
 
 		for (Block block : GameData.getBlockRegistry().typeSafeIterable()) {
 			addBlockAndSubBlocks(block, itemList, fuels);
@@ -93,7 +93,7 @@ class ItemRegistry implements IItemRegistry {
 			return;
 		}
 
-		List<ItemStack> subItems = new ArrayList<ItemStack>();
+		List<ItemStack> subItems = new ArrayList<>();
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
 			subItems.clear();
 			block.getSubBlocks(item, itemTab, subItems);
@@ -124,7 +124,7 @@ class ItemRegistry implements IItemRegistry {
 			return;
 		}
 
-		String itemKey = uniqueIdentifierForStack(stack);
+		String itemKey = StackUtil.uniqueIdentifierForStack(stack, false);
 
 		if (itemNameSet.contains(itemKey)) {
 			return;
@@ -135,19 +135,6 @@ class ItemRegistry implements IItemRegistry {
 		if (TileEntityFurnace.isItemFuel(stack)) {
 			fuels.add(stack);
 		}
-	}
-
-	@Nonnull
-	private String uniqueIdentifierForStack(@Nonnull ItemStack stack) {
-		Item item = stack.getItem();
-		Object itemName = GameData.getItemRegistry().getNameForObject(item);
-
-		StringBuilder itemKey = new StringBuilder();
-		itemKey.append(itemName).append(':').append(stack.getItemDamage());
-		if (stack.hasTagCompound()) {
-			itemKey.append(':').append(stack.getTagCompound());
-		}
-		return itemKey.toString();
 	}
 
 }

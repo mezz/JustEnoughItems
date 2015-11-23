@@ -29,9 +29,9 @@ public class InputHandler {
 	private final ItemListOverlay itemListOverlay;
 	private final MouseHelper mouseHelper;
 
-	private final List<IClickable> clickables = new ArrayList<IClickable>();
-	private final List<IKeyable> keyables = new ArrayList<IKeyable>();
-	private final List<IShowsItemStacks> showsItemStacks = new ArrayList<IShowsItemStacks>();
+	private final List<IClickable> clickables = new ArrayList<>();
+	private final List<IKeyable> keyables = new ArrayList<>();
+	private final List<IShowsItemStacks> showsItemStacks = new ArrayList<>();
 
 	private boolean clickHandled = false;
 
@@ -41,7 +41,7 @@ public class InputHandler {
 
 		this.mouseHelper = new MouseHelper();
 
-		List<ICloseable> objects = new ArrayList<ICloseable>();
+		List<ICloseable> objects = new ArrayList<>();
 		objects.add(recipesGui);
 		objects.add(itemListOverlay);
 		objects.add(new GuiContainerWrapper(guiContainer, recipesGui));

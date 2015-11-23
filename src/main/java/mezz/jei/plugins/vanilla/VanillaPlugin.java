@@ -48,7 +48,7 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public Iterable<Object> getRecipes() {
-		List<Object> recipes = new ArrayList<Object>();
+		List<Object> recipes = new ArrayList<>();
 
 		recipes.addAll(CraftingRecipeMaker.getCraftingRecipes());
 		recipes.addAll(SmeltingRecipeMaker.getFurnaceRecipes());

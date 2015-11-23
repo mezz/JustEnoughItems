@@ -2,6 +2,7 @@ package mezz.jei.gui;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,14 +14,14 @@ import mezz.jei.api.gui.IGuiItemStacks;
 public class GuiItemStacks implements IGuiItemStacks {
 
 	@Nonnull
-	private final Map<Integer, GuiItemStack> guiItemStacks = new HashMap<Integer, GuiItemStack>();
+	private final Map<Integer, GuiItemStack> guiItemStacks = new HashMap<>();
 	private ItemStack focusStack;
 
-	public void initItemStack(int index, int xPosition, int yPosition) {
-		initItemStack(index, xPosition, yPosition, 1);
+	public void init(int index, int xPosition, int yPosition) {
+		init(index, xPosition, yPosition, 1);
 	}
 
-	public void initItemStack(int index, int xPosition, int yPosition, int padding) {
+	public void init(int index, int xPosition, int yPosition, int padding) {
 		GuiItemStack guiItemStack = new GuiItemStack(xPosition, yPosition, padding);
 		guiItemStacks.put(index, guiItemStack);
 	}
@@ -33,17 +34,17 @@ public class GuiItemStacks implements IGuiItemStacks {
 		this.focusStack = focusStack;
 	}
 
-	public void setItemStack(int index, @Nonnull Iterable<ItemStack> itemStacks) {
-		guiItemStacks.get(index).setItemStacks(itemStacks, focusStack);
+	public void set(int index, @Nonnull Collection<ItemStack> itemStacks) {
+		guiItemStacks.get(index).set(itemStacks, focusStack);
 	}
 
-	public void setItemStack(int index, @Nonnull ItemStack itemStack) {
-		guiItemStacks.get(index).setItemStack(itemStack, focusStack);
+	public void set(int index, @Nonnull ItemStack itemStack) {
+		guiItemStacks.get(index).set(itemStack, focusStack);
 	}
 
 	public void clearItemStacks() {
 		for (GuiItemStack guiItemStack : guiItemStacks.values()) {
-			guiItemStack.clearItemStacks();
+			guiItemStack.clear();
 		}
 	}
 
@@ -51,7 +52,7 @@ public class GuiItemStacks implements IGuiItemStacks {
 	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
 		for (GuiItemStack item : guiItemStacks.values()) {
 			if (item != null && item.isMouseOver(mouseX, mouseY)) {
-				return item.getItemStack();
+				return item.get();
 			}
 		}
 		return null;

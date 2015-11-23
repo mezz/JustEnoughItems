@@ -29,11 +29,11 @@ public interface IRecipeCategory {
 	/**
 	 * Initialize the IGuiItemStacks with this recipe's layout.
 	 */
-	public void init(@Nonnull IGuiItemStacks guiItemStacks);
+	void init(@Nonnull IGuiItemStacks guiItemStacks);
 
 	/**
-	 * Set the IGuiItemStacks from the RecipeWrapper.
+	 * Set the IGuiItemStacks and IGuiFluidTanks properties from the RecipeWrapper.
 	 */
-	public void setRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IRecipeWrapper recipeWrapper);
+	void setRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IRecipeWrapper recipeWrapper);
 
 }

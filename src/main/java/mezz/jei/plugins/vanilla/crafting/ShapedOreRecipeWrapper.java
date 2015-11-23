@@ -12,16 +12,17 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
+import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
 
-public class ShapedOreRecipeWrapper implements IShapedCraftingRecipeWrapper {
+public class ShapedOreRecipeWrapper extends VanillaRecipeWrapper implements IShapedCraftingRecipeWrapper {
 
 	@Nonnull
 	private final ShapedOreRecipe recipe;
 	private final int width;
 	private final int height;
 
-	public ShapedOreRecipeWrapper(@Nonnull Object recipe) {
-		this.recipe = (ShapedOreRecipe) recipe;
+	public ShapedOreRecipeWrapper(@Nonnull ShapedOreRecipe recipe) {
+		this.recipe = recipe;
 		for (Object input : this.recipe.getInput()) {
 			if (input instanceof ItemStack) {
 				ItemStack itemStack = (ItemStack) input;

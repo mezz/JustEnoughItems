@@ -6,11 +6,11 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 
-public class SmeltingRecipeHandler implements IRecipeHandler {
+public class SmeltingRecipeHandler implements IRecipeHandler<SmeltingRecipe> {
 
 	@Nonnull
 	@Override
-	public Class getRecipeClass() {
+	public Class<SmeltingRecipe> getRecipeClass() {
 		return SmeltingRecipe.class;
 	}
 
@@ -21,8 +21,8 @@ public class SmeltingRecipeHandler implements IRecipeHandler {
 	}
 
 	@Override
-	public IRecipeWrapper getRecipeWrapper(@Nonnull Object recipe) {
-		return (SmeltingRecipe) recipe;
+	public IRecipeWrapper getRecipeWrapper(@Nonnull SmeltingRecipe recipe) {
+		return recipe;
 	}
 
 }

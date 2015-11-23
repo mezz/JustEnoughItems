@@ -30,7 +30,7 @@ public class Commands {
 		EntityPlayerSP sender = Minecraft.getMinecraft().thePlayer;
 		String senderName = sender.getCommandSenderName();
 		
-		List<String> commandStrings = new ArrayList<String>();
+		List<String> commandStrings = new ArrayList<>();
 		commandStrings.add("/give");
 		commandStrings.add(senderName);
 		commandStrings.add((String) Item.itemRegistry.getNameForObject(itemStack.getItem()));

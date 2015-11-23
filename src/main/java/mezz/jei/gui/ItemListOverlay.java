@@ -37,7 +37,7 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 	private final ItemFilter itemFilter;
 
 	private int buttonHeight;
-	private final ArrayList<GuiItemStack> guiItemStacks = new ArrayList<GuiItemStack>();
+	private final ArrayList<GuiItemStack> guiItemStacks = new ArrayList<>();
 	private GuiButton nextButton;
 	private GuiButton backButton;
 	private GuiTextField searchField;
@@ -129,10 +129,10 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 		ImmutableList<ItemStackElement> itemList = itemFilter.getItemList();
 		for (GuiItemStack itemButton : guiItemStacks) {
 			if (i >= itemList.size()) {
-				itemButton.clearItemStacks();
+				itemButton.clear();
 			} else {
 				ItemStack stack = itemList.get(i).getItemStack();
-				itemButton.setItemStack(stack, null);
+				itemButton.set(stack, null);
 			}
 			i++;
 		}
@@ -208,7 +208,7 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 		}
 		for (GuiItemStack guiItemStack : guiItemStacks) {
 			if (guiItemStack.isMouseOver(mouseX, mouseY)) {
-				return guiItemStack.getItemStack();
+				return guiItemStack.get();
 			}
 		}
 		return null;
@@ -222,11 +222,7 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 			return true;
 		}
 
-		boolean searchClicked = handleMouseClickedSearch(mouseX, mouseY, mouseButton);
-		if (!searchClicked) {
-			setKeyboardFocus(false);
-		}
-		return searchClicked;
+		return handleMouseClickedSearch(mouseX, mouseY, mouseButton);
 	}
 
 	private boolean handleMouseClickedButtons(int mouseX, int mouseY, int mouseButton) {
@@ -243,8 +239,8 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 
 	private boolean handleMouseClickedSearch(int mouseX, int mouseY, int mouseButton) {
 		boolean searchClicked = mouseX >= searchField.xPosition && mouseX < searchField.xPosition + searchField.width && mouseY >= searchField.yPosition && mouseY < searchField.yPosition + searchField.height;
+		setKeyboardFocus(searchClicked);
 		if (searchClicked) {
-			setKeyboardFocus(true);
 			if (mouseButton == 1) {
 				searchField.setText("");
 				if (itemFilter.setFilterText(searchField.getText())) {

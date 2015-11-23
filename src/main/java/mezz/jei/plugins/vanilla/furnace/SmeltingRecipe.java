@@ -11,9 +11,9 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
-import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
 
-public class SmeltingRecipe implements IRecipeWrapper {
+public class SmeltingRecipe extends VanillaRecipeWrapper {
 	@Nonnull
 	private final List<ItemStack> input;
 	@Nonnull

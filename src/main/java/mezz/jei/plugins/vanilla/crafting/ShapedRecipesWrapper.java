@@ -10,14 +10,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
 
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
+import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
 
-public class ShapedRecipesWrapper implements IShapedCraftingRecipeWrapper {
+public class ShapedRecipesWrapper extends VanillaRecipeWrapper implements IShapedCraftingRecipeWrapper {
 
 	@Nonnull
 	private final ShapedRecipes recipe;
 
-	public ShapedRecipesWrapper(@Nonnull Object recipe) {
-		this.recipe = (ShapedRecipes) recipe;
+	public ShapedRecipesWrapper(@Nonnull ShapedRecipes recipe) {
+		this.recipe = recipe;
 		for (ItemStack itemStack : this.recipe.recipeItems) {
 			if (itemStack != null && itemStack.stackSize > 1) {
 				itemStack.stackSize = 1;

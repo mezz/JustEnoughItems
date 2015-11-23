@@ -10,14 +10,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
+import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
 
-public class ShapelessOreRecipeWrapper implements ICraftingRecipeWrapper {
+public class ShapelessOreRecipeWrapper extends VanillaRecipeWrapper implements ICraftingRecipeWrapper {
 
 	@Nonnull
 	private final ShapelessOreRecipe recipe;
 
-	public ShapelessOreRecipeWrapper(@Nonnull Object recipe) {
-		this.recipe = (ShapelessOreRecipe) recipe;
+	public ShapelessOreRecipeWrapper(@Nonnull ShapelessOreRecipe recipe) {
+		this.recipe = recipe;
 		for (Object input : this.recipe.getInput()) {
 			if (input instanceof ItemStack) {
 				ItemStack itemStack = (ItemStack) input;

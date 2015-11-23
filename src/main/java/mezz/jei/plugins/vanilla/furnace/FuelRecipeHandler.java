@@ -6,10 +6,10 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 
-public class FuelRecipeHandler implements IRecipeHandler {
+public class FuelRecipeHandler implements IRecipeHandler<FuelRecipe> {
 	@Nonnull
 	@Override
-	public Class getRecipeClass() {
+	public Class<FuelRecipe> getRecipeClass() {
 		return FuelRecipe.class;
 	}
 
@@ -20,8 +20,8 @@ public class FuelRecipeHandler implements IRecipeHandler {
 	}
 
 	@Override
-	public IRecipeWrapper getRecipeWrapper(@Nonnull Object recipe) {
-		return (FuelRecipe) recipe;
+	public IRecipeWrapper getRecipeWrapper(@Nonnull FuelRecipe recipe) {
+		return recipe;
 	}
 
 }

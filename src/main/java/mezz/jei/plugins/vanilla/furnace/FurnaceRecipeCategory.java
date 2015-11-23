@@ -35,20 +35,20 @@ public class FurnaceRecipeCategory implements IRecipeCategory {
 
 	@Override
 	public void init(@Nonnull IGuiItemStacks guiItemStacks) {
-		guiItemStacks.initItemStack(inputSlot, 0, 0);
-		guiItemStacks.initItemStack(fuelSlot, 0, 36);
-		guiItemStacks.initItemStack(outputSlot, 60, 18);
+		guiItemStacks.init(inputSlot, 0, 0);
+		guiItemStacks.init(fuelSlot, 0, 36);
+		guiItemStacks.init(outputSlot, 60, 18);
 	}
 
 	@Override
 	public void setRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IRecipeWrapper recipeWrapper) {
 		if (recipeWrapper instanceof FuelRecipe) {
 			FuelRecipe fuelRecipeWrapper = (FuelRecipe) recipeWrapper;
-			guiItemStacks.setItemStack(fuelSlot, fuelRecipeWrapper.getInputs());
+			guiItemStacks.set(fuelSlot, fuelRecipeWrapper.getInputs());
 		} else if (recipeWrapper instanceof SmeltingRecipe) {
 			SmeltingRecipe smeltingRecipeWrapper = (SmeltingRecipe) recipeWrapper;
-			guiItemStacks.setItemStack(inputSlot, smeltingRecipeWrapper.getInputs());
-			guiItemStacks.setItemStack(outputSlot, smeltingRecipeWrapper.getOutputs());
+			guiItemStacks.set(inputSlot, smeltingRecipeWrapper.getInputs());
+			guiItemStacks.set(outputSlot, smeltingRecipeWrapper.getOutputs());
 		}
 	}
 

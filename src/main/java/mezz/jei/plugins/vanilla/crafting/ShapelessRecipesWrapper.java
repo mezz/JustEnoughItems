@@ -9,14 +9,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 
 import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
+import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
 
-public class ShapelessRecipesWrapper implements ICraftingRecipeWrapper {
+public class ShapelessRecipesWrapper extends VanillaRecipeWrapper implements ICraftingRecipeWrapper {
 
 	@Nonnull
 	private final ShapelessRecipes recipe;
 
-	public ShapelessRecipesWrapper(@Nonnull Object recipe) {
-		this.recipe = (ShapelessRecipes) recipe;
+	public ShapelessRecipesWrapper(@Nonnull ShapelessRecipes recipe) {
+		this.recipe = recipe;
 		for (Object input : this.recipe.recipeItems) {
 			if (input instanceof ItemStack) {
 				ItemStack itemStack = (ItemStack) input;

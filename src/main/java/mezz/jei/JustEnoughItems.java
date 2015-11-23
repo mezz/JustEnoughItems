@@ -38,14 +38,12 @@ public class JustEnoughItems implements IPluginRegistry {
 	public static JustEnoughItems instance;
 
 	@Nonnull
-	private final List<IModPlugin> plugins;
-	private boolean pluginsCanRegister;
+	private final List<IModPlugin> plugins = new ArrayList<>();
+	private boolean pluginsCanRegister = true;
 
 	public JustEnoughItems() {
-		plugins = new ArrayList<IModPlugin>();
 		JEIManager.guiHelper = new GuiHelper();
 		JEIManager.pluginRegistry = this;
-		this.pluginsCanRegister = true;
 	}
 
 	@Mod.EventHandler

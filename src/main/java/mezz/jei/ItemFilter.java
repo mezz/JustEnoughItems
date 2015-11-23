@@ -1,6 +1,5 @@
 package mezz.jei;
 
-import com.google.common.base.Predicate;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -9,7 +8,6 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
@@ -46,12 +44,7 @@ public class ItemFilter {
 						ImmutableList<ItemStackElement> baseItemSet = filteredItemMapsCache.get(prevFilterText);
 
 						Collection<ItemStackElement> filteredItemList = Collections2.filter(baseItemSet,
-								new Predicate<ItemStackElement>() {
-									@Override
-									public boolean apply(@Nullable ItemStackElement input) {
-										return input != null && input.getLocalizedName().contains(filterText);
-									}
-								}
+								input -> input != null && input.getLocalizedName().contains(filterText)
 						);
 
 						return ImmutableList.copyOf(filteredItemList);
