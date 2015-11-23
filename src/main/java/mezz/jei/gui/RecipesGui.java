@@ -311,7 +311,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 			Object recipe = recipes.get(recipeIndex);
 			IRecipeHandler recipeHandler = JEIManager.recipeRegistry.getRecipeHandler(recipe.getClass());
 			if (recipeHandler == null) {
-				Log.error("Couldn't find recipe handler for recipe: " + recipe);
+				Log.error("Couldn't find recipe handler for recipe: %s", recipe);
 				continue;
 			}
 
@@ -319,6 +319,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 			recipeWidget.setPosition(posX, posY);
 			posY += recipeBackground.getHeight() + recipeSpacing;
 
+			@SuppressWarnings("unchecked")
 			IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
 			recipeWidget.setRecipe(recipeWrapper, focusStack);
 			recipeWidgets.add(recipeWidget);

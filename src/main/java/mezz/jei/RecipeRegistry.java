@@ -88,13 +88,13 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 			IRecipeHandler recipeHandler = getRecipeHandler(recipeClass);
 			if (recipeHandler == null) {
-				Log.debug("Can't handle recipe: " + recipe);
+				Log.debug("Can't handle recipe: %s", recipe);
 				continue;
 			}
 			Class recipeCategoryClass = recipeHandler.getRecipeCategoryClass();
 			IRecipeCategory recipeCategory = recipeCategoriesMap.getInstance(recipeCategoryClass);
 			if (recipeCategory == null) {
-				Log.error("No recipe category registered for recipeCategoryClass: " + recipeCategoryClass);
+				Log.error("No recipe category registered for recipeCategoryClass: %s", recipeCategoryClass);
 				continue;
 			}
 
@@ -145,7 +145,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Nonnull
 	@Override
-	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithInput(Fluid input) {
+	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithInput(@Nullable Fluid input) {
 		if (input == null) {
 			return ImmutableList.of();
 		}
@@ -163,7 +163,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Nonnull
 	@Override
-	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithOutput(Fluid output) {
+	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithOutput(@Nullable Fluid output) {
 		if (output == null) {
 			return ImmutableList.of();
 		}
