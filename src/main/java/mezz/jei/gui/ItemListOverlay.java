@@ -213,6 +213,7 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 		}
 		for (GuiItemStack guiItemStack : guiItemStacks) {
 			if (guiItemStack.isMouseOver(mouseX, mouseY)) {
+				setKeyboardFocus(false);
 				return guiItemStack.get();
 			}
 		}
