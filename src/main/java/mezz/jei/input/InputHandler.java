@@ -123,7 +123,7 @@ public class InputHandler {
 
 	private boolean handleMouseClickedItemStack(int mouseButton, @Nonnull ItemStack itemStack) {
 		EntityPlayerSP player = FMLClientHandler.instance().getClientPlayerEntity();
-		if (Config.cheatItemsEnabled && Permissions.canPlayerSpawnItems(player) && player.inventory.getFirstEmptyStack() != -1) {
+		if (Config.cheatItemsEnabled && Permissions.canPlayerSpawnItems(player)) {
 			if (mouseButton == 0) {
 				Commands.giveFullStack(itemStack);
 				return true;
