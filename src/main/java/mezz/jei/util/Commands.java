@@ -11,8 +11,6 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-import net.minecraftforge.client.ClientCommandHandler;
-
 public class Commands {
 
 	public static void giveFullStack(@Nonnull ItemStack itemstack) {
@@ -42,6 +40,6 @@ public class Commands {
 		}
 
 		String fullCommand = StringUtils.join(commandStrings, " ");
-		ClientCommandHandler.instance.executeCommand(sender, fullCommand);
+		sender.sendChatMessage(fullCommand);
 	}
 }
