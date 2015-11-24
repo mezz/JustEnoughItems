@@ -21,13 +21,13 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 import org.lwjgl.input.Keyboard;
 
 import mezz.jei.ItemFilter;
-import mezz.jei.input.IClickable;
 import mezz.jei.input.IKeyable;
+import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsItemStacks;
 import mezz.jei.util.ItemStackElement;
 import mezz.jei.util.MathUtil;
 
-public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
+public class ItemListOverlay implements IShowsItemStacks, IMouseHandler, IKeyable {
 
 	private static final int borderPadding = 1;
 	private static final int searchHeight = 16;
@@ -164,7 +164,7 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 		}
 	}
 
-	private void backPage() {
+	private void previousPage() {
 		if (pageNum == 0) {
 			setPageNum(getPageCount() - 1);
 		} else {
@@ -206,9 +206,14 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 	}
 
 	@Override
+	public boolean isMouseOver(int mouseX, int mouseY) {
+		return isOpen() && (mouseX >= guiLeft + xSize);
+	}
+
+	@Override
 	@Nullable
 	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
-		if (!isOpen()) {
+		if (!isMouseOver(mouseX, mouseY)) {
 			return null;
 		}
 		for (GuiItemStack guiItemStack : guiItemStacks) {
@@ -222,6 +227,9 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 
 	@Override
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
+		if (!isMouseOver(mouseX, mouseY)) {
+			return false;
+		}
 		boolean buttonClicked = handleMouseClickedButtons(mouseX, mouseY, mouseButton);
 		if (buttonClicked) {
 			setKeyboardFocus(false);
@@ -231,13 +239,28 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 		return handleMouseClickedSearch(mouseX, mouseY, mouseButton);
 	}
 
+	@Override
+	public boolean handleMouseScrolled(int mouseX, int mouseY, int scrollDelta) {
+		if (!isMouseOver(mouseX, mouseY)) {
+			return false;
+		}
+		if (scrollDelta > 0) {
+			nextPage();
+			return true;
+		} else if (scrollDelta < 0) {
+			previousPage();
+			return true;
+		}
+		return false;
+	}
+
 	private boolean handleMouseClickedButtons(int mouseX, int mouseY, int mouseButton) {
 		Minecraft minecraft = Minecraft.getMinecraft();
 		if (nextButton.mousePressed(minecraft, mouseX, mouseY)) {
 			nextPage();
 			return true;
 		} else if (backButton.mousePressed(minecraft, mouseX, mouseY)) {
-			backPage();
+			previousPage();
 			return true;
 		}
 		return false;
