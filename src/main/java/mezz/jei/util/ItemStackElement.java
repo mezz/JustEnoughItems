@@ -20,7 +20,7 @@ public class ItemStackElement {
 		try {
 			return new ItemStackElement(itemStack);
 		} catch (RuntimeException e) {
-			Log.warning("Found broken itemStack: %s", e);
+			Log.warning("Found broken itemStack: {}", e);
 			return null;
 		}
 	}

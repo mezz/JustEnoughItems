@@ -119,7 +119,7 @@ public class StackUtil {
 			} else if (obj instanceof Iterable) {
 				getAllSubtypes(subtypesList, (Iterable) obj);
 			} else if (obj != null) {
-				Log.error("Unknown object found: %s", obj);
+				Log.error("Unknown object found: {}", obj);
 			}
 		}
 	}
@@ -141,7 +141,7 @@ public class StackUtil {
 			} else if (obj instanceof ItemStack) {
 				itemStackList.add((ItemStack) obj);
 			} else if (obj != null) {
-				Log.error("Unknown object found: %s", obj);
+				Log.error("Unknown object found: {}", obj);
 			}
 		}
 	}

@@ -86,7 +86,7 @@ class ItemRegistry implements IItemRegistry {
 		if (item == null) {
 			ItemStack stack = new ItemStack(block);
 			if (stack.getItem() == null) {
-				Log.debug("Couldn't get itemStack for block: %s", block.getUnlocalizedName());
+				Log.debug("Couldn't get itemStack for block: {}", block.getUnlocalizedName());
 				return;
 			}
 			addItemStack(stack, itemList, fuels);
@@ -102,7 +102,7 @@ class ItemRegistry implements IItemRegistry {
 			if (subItems.isEmpty()) {
 				ItemStack stack = new ItemStack(block);
 				if (stack.getItem() == null) {
-					Log.debug("Couldn't get itemStack for block: %s", block.getUnlocalizedName());
+					Log.debug("Couldn't get itemStack for block: {}", block.getUnlocalizedName());
 					return;
 				}
 				addItemStack(stack, itemList, fuels);
