@@ -1,13 +1,16 @@
 package mezz.jei.gui;
 
 import javax.annotation.Nonnull;
+
+import org.lwjgl.opengl.GL11;
+
 import java.util.Collection;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
-
 import mezz.jei.util.Log;
 import mezz.jei.util.StackUtil;
 
@@ -54,8 +57,14 @@ public class GuiItemStack extends GuiWidget<ItemStack> {
 		}
 		draw(minecraft, false);
 		try {
-			minecraft.currentScreen.renderToolTip(itemStack, mouseX, mouseY);
+			GlStateManager.disableDepth();
+			this.zLevel = 0;
 			RenderHelper.disableStandardItemLighting();
+			GL11.glEnable(GL11.GL_BLEND);
+			drawRect(xPosition, yPosition, xPosition + width, yPosition + width, 0x7FFFFFFF);
+			this.zLevel = 0;
+			minecraft.currentScreen.renderToolTip(itemStack, mouseX, mouseY);
+			GlStateManager.enableDepth();
 		} catch (RuntimeException e) {
 			Log.error("Exception when rendering tooltip on {}.\n{}", itemStack, e);
 		}

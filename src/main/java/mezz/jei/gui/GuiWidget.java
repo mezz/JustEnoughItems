@@ -1,15 +1,17 @@
 package mezz.jei.gui;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import mezz.jei.util.CycleTimer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public abstract class GuiWidget<T> implements IGuiWidget<T> {
+import mezz.jei.util.CycleTimer;
+import net.minecraft.client.gui.Gui;
+
+public abstract class GuiWidget<T> extends Gui implements IGuiWidget<T> {
 	protected final int xPosition;
 	protected final int yPosition;
 	protected final int width;

@@ -1,21 +1,10 @@
 package mezz.jei.gui;
 
-import com.google.common.collect.ImmutableList;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.ArrayList;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
-
-import org.lwjgl.input.Keyboard;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import mezz.jei.ItemFilter;
 import mezz.jei.input.IClickable;
@@ -23,6 +12,19 @@ import mezz.jei.input.IKeyable;
 import mezz.jei.input.IShowsItemStacks;
 import mezz.jei.util.ItemStackElement;
 import mezz.jei.util.MathUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
+
+import org.lwjgl.input.Keyboard;
+
+import com.google.common.collect.ImmutableList;
 
 public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 
@@ -80,8 +82,8 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 
 		int leftEdge = this.guiLeft + this.xSize + borderPadding;
 
-		nextButton = new GuiButton(0, rightEdge - nextButtonWidth, 0, nextButtonWidth, buttonHeight, next);
-		backButton = new GuiButton(1, leftEdge, 0, backButtonWidth, buttonHeight, back);
+		nextButton = new GuiButtonExt(0, rightEdge - nextButtonWidth, 0, nextButtonWidth, buttonHeight, next);
+		backButton = new GuiButtonExt(1, leftEdge, 0, backButtonWidth, buttonHeight, back);
 
 		searchField = new GuiTextField(0, fontRenderer, leftEdge, this.height - searchHeight - (2 * borderPadding), rightEdge - leftEdge, searchHeight);
 		searchField.setMaxStringLength(maxSearchLength);
@@ -174,6 +176,8 @@ public class ItemListOverlay implements IShowsItemStacks, IClickable, IKeyable {
 			return;
 		}
 
+		GlStateManager.disableLighting();
+		
 		minecraft.fontRendererObj.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(), true);
 		searchField.drawTextBox();
 
