@@ -16,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 import org.lwjgl.opengl.GL11;
 
@@ -36,13 +37,14 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		INPUT, OUTPUT
 	}
 
-	private static final int borderPadding = 6;
-	private static final int textPadding = 2;
+	private static final int borderPadding = 8;
+	private static final int textPadding = 5;
 
 	private int titleHeight;
 	private int headerHeight;
+	private int buttonWidth;
 
-	/* Whether this GUI is displaying input or output recipes */
+	/* Whether this GUI is dispzzlaying input or output recipes */
 	private Mode mode;
 
 	/* The ItemStack that is the focus of this GUI */
@@ -97,19 +99,20 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		this.titleHeight = fontRendererObj.FONT_HEIGHT + borderPadding;
 		this.headerHeight = titleHeight + fontRendererObj.FONT_HEIGHT + textPadding;
 
-		int buttonWidth = 13;
-		int buttonHeight = fontRendererObj.FONT_HEIGHT + textPadding;
+		buttonWidth = 13;
+		
+		int buttonHeight = fontRendererObj.FONT_HEIGHT + 3;
 
 		int rightButtonX = guiLeft + xSize - borderPadding - buttonWidth;
 		int leftButtonX = guiLeft + borderPadding;
 
-		int recipeClassButtonTop = guiTop + borderPadding - 3;
-		nextRecipeCategory = new GuiButton(2, rightButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, ">");
-		previousRecipeCategory = new GuiButton(3, leftButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, "<");
+		int recipeClassButtonTop = guiTop + borderPadding - 2;
+		nextRecipeCategory = new GuiButtonExt(2, rightButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, ">");
+		previousRecipeCategory = new GuiButtonExt(3, leftButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, "<");
 
-		int pageButtonTop = guiTop + titleHeight;
-		nextPage = new GuiButton(4, rightButtonX, pageButtonTop, buttonWidth, buttonHeight, ">");
-		previousPage = new GuiButton(5, leftButtonX, pageButtonTop, buttonWidth, buttonHeight, "<");
+		int pageButtonTop = guiTop + titleHeight + 3;
+		nextPage = new GuiButtonExt(4, rightButtonX, pageButtonTop, buttonWidth, buttonHeight, ">");
+		previousPage = new GuiButtonExt(5, leftButtonX, pageButtonTop, buttonWidth, buttonHeight, "<");
 
 		addButtons();
 
@@ -343,10 +346,14 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		GL11.glPushMatrix();
 		{
 			GL11.glTranslatef(guiLeft, guiTop, 0.0F);
+			
+			drawRect(borderPadding + buttonWidth, borderPadding - 2, xSize - borderPadding - buttonWidth, borderPadding + 10, 0x30000000);
+			drawRect(borderPadding + buttonWidth, titleHeight + textPadding - 2, xSize - borderPadding - buttonWidth, titleHeight + textPadding + 10, 0x30000000);
+
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-			StringUtil.drawCenteredString(fontRendererObj, title, xSize, borderPadding, Color.black.getRGB());
-			StringUtil.drawCenteredString(fontRendererObj, pageString, xSize, titleHeight + textPadding, Color.black.getRGB());
+			StringUtil.drawCenteredString(fontRendererObj, title, xSize, borderPadding, Color.WHITE.getRGB(), true);
+			StringUtil.drawCenteredString(fontRendererObj, pageString, xSize, titleHeight + textPadding, Color.WHITE.getRGB(), true);
 		}
 		GL11.glPopMatrix();
 

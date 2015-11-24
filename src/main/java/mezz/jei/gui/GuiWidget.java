@@ -7,9 +7,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.client.gui.Gui;
+
 import mezz.jei.util.CycleTimer;
 
-public abstract class GuiWidget<T> implements IGuiWidget<T> {
+public abstract class GuiWidget<T> extends Gui implements IGuiWidget<T> {
 	protected final int xPosition;
 	protected final int yPosition;
 	protected final int width;
