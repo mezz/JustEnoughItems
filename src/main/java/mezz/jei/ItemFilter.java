@@ -11,9 +11,12 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.util.ItemStackElement;
+import mezz.jei.util.Log;
 
 public class ItemFilter {
 	/** The currently active filter text */
@@ -55,6 +58,21 @@ public class ItemFilter {
 		ImmutableList.Builder<ItemStackElement> baseList = ImmutableList.builder();
 		for (ItemStack itemStack : itemStacks) {
 			if (itemStack == null) {
+				continue;
+			}
+
+			// skip over itemStacks that can't be rendered
+			try {
+				ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+				if (itemModelMesher.getItemModel(itemStack) == itemModelMesher.getModelManager().getMissingModel()) {
+					continue;
+				}
+			} catch (RuntimeException e) {
+				try {
+					Log.error("Couldn't find ItemModelMesher for itemstack {}. Exception: {}", itemStack, e);
+				} catch (RuntimeException ignored) {
+
+				}
 				continue;
 			}
 
