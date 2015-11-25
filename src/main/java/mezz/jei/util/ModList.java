@@ -18,14 +18,14 @@ public class ModList {
 	private final Map<String, String> modNamesForIds = new HashMap<>();
 
 	public ModList() {
-		Map<String,ModContainer> modMap = Loader.instance().getIndexedModList();
+		Map<String, ModContainer> modMap = Loader.instance().getIndexedModList();
 		for (Map.Entry<String, ModContainer> modEntry : modMap.entrySet()) {
 			String lowercaseId = modEntry.getKey().toLowerCase(Locale.ENGLISH);
 			String modName = modEntry.getValue().getName();
 			modNamesForIds.put(lowercaseId, modName);
 		}
 	}
-
+	
 	@Nonnull
 	public String getModNameForItemStack(@Nonnull Item item) {
 		String modId = GameRegistry.findUniqueIdentifierFor(item).modId;
