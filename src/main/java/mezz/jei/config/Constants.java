@@ -1,5 +1,7 @@
 package mezz.jei.config;
 
+import java.util.Locale;
+
 public class Constants {
 
 	// Mod info
@@ -8,7 +10,7 @@ public class Constants {
 	public static final String VERSION = "1.0";
 
 	// Textures
-	public static final String RESOURCE_DOMAIN = MOD_ID.toLowerCase();
+	public static final String RESOURCE_DOMAIN = MOD_ID.toLowerCase(Locale.ENGLISH);
 	public static final String TEXTURE_GUI_PATH = "textures/gui/";
 
 }
