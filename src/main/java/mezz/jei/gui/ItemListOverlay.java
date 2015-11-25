@@ -228,6 +228,7 @@ public class ItemListOverlay implements IShowsItemStacks, IMouseHandler, IKeyabl
 	@Override
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
 		if (!isMouseOver(mouseX, mouseY)) {
+			setKeyboardFocus(false);
 			return false;
 		}
 		boolean buttonClicked = handleMouseClickedButtons(mouseX, mouseY, mouseButton);
