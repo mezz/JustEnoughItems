@@ -40,6 +40,7 @@ public class JustEnoughItems implements IPluginRegistry {
 	@Nonnull
 	private final List<IModPlugin> plugins = new ArrayList<>();
 	private boolean pluginsCanRegister = true;
+	private boolean jeiStarted = false;
 
 	public JustEnoughItems() {
 		JEIManager.guiHelper = new GuiHelper();
@@ -74,6 +75,11 @@ public class JustEnoughItems implements IPluginRegistry {
 
 	@Mod.EventHandler
 	public void aboutToStart(FMLServerAboutToStartEvent event) {
+		if (jeiStarted) {
+			return;
+		}
+		jeiStarted = true;
+
 		JEIManager.itemRegistry = new ItemRegistry();
 
 		ImmutableList.Builder<IRecipeCategory> recipeCategories = ImmutableList.builder();
