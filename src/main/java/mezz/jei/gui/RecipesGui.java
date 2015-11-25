@@ -188,10 +188,10 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IMouseHan
 			return false;
 		}
 
-		if (scrollDelta > 0) {
+		if (scrollDelta < 0) {
 			nextPage();
 			return true;
-		} else if (scrollDelta < 0) {
+		} else if (scrollDelta > 0) {
 			previousPage();
 			return true;
 		}

@@ -245,10 +245,10 @@ public class ItemListOverlay implements IShowsItemStacks, IMouseHandler, IKeyabl
 		if (!isMouseOver(mouseX, mouseY)) {
 			return false;
 		}
-		if (scrollDelta > 0) {
+		if (scrollDelta < 0) {
 			nextPage();
 			return true;
-		} else if (scrollDelta < 0) {
+		} else if (scrollDelta > 0) {
 			previousPage();
 			return true;
 		}
