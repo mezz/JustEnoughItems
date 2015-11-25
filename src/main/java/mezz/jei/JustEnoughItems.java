@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import mezz.jei.api.IModPlugin;
@@ -73,7 +74,7 @@ public class JustEnoughItems implements IPluginRegistry {
 	}
 
 	@Mod.EventHandler
-	public void loadComplete(FMLLoadCompleteEvent event) {
+	public void aboutToStart(FMLServerAboutToStartEvent event) {
 		JEIManager.itemRegistry = new ItemRegistry();
 
 		ImmutableList.Builder<IRecipeCategory> recipeCategories = ImmutableList.builder();

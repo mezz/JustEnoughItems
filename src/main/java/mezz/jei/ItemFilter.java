@@ -56,6 +56,9 @@ public class ItemFilter {
 
 		// create the recursive base case value, the list with no filter set
 		ImmutableList.Builder<ItemStackElement> baseList = ImmutableList.builder();
+
+		ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+		ModelManager modelManager = itemModelMesher.getModelManager();
 		for (ItemStack itemStack : itemStacks) {
 			if (itemStack == null) {
 				continue;
@@ -63,8 +66,7 @@ public class ItemFilter {
 
 			// skip over itemStacks that can't be rendered
 			try {
-				ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
-				if (itemModelMesher.getItemModel(itemStack) == itemModelMesher.getModelManager().getMissingModel()) {
+				if (itemModelMesher.getItemModel(itemStack) == modelManager.getMissingModel()) {
 					continue;
 				}
 			} catch (RuntimeException e) {
