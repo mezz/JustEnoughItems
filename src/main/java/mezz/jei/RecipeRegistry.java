@@ -11,7 +11,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.item.ItemStack;
 
@@ -32,6 +34,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final ImmutableClassToInstanceMap<IRecipeCategory> recipeCategoriesMap;
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
+	private final Set<Class> unhandledRecipeClasses = new HashSet<>();
 
 	RecipeRegistry(@Nonnull ImmutableList<IRecipeCategory> recipeCategories, @Nonnull ImmutableList<IRecipeHandler> recipeHandlers, @Nonnull ImmutableList<Object> recipes) {
 		recipeCategories = ImmutableSet.copyOf(recipeCategories).asList(); //remove duplicates
@@ -88,7 +91,10 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 			IRecipeHandler recipeHandler = getRecipeHandler(recipeClass);
 			if (recipeHandler == null) {
-				Log.debug("Can't handle recipe: {}", recipe);
+				if (!unhandledRecipeClasses.contains(recipeClass)) {
+					unhandledRecipeClasses.add(recipeClass);
+					Log.debug("Can't handle recipe: {}", recipeClass);
+				}
 				continue;
 			}
 			Class recipeCategoryClass = recipeHandler.getRecipeCategoryClass();
