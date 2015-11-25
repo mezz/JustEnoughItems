@@ -24,4 +24,8 @@ public class FuelRecipeHandler implements IRecipeHandler<FuelRecipe> {
 		return recipe;
 	}
 
+	@Override
+	public boolean isRecipeValid(@Nonnull FuelRecipe recipe) {
+		return recipe.getInputs().size() > 0 && recipe.getOutputs().size() == 0;
+	}
 }

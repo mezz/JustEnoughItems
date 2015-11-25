@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -86,7 +84,7 @@ class ItemRegistry implements IItemRegistry {
 		if (item == null) {
 			ItemStack stack = new ItemStack(block);
 			if (stack.getItem() == null) {
-				Log.debug("Couldn't get itemStack for block: %s", block.getUnlocalizedName());
+				Log.debug("Couldn't get itemStack for block: {}", block.getUnlocalizedName());
 				return;
 			}
 			addItemStack(stack, itemList, fuels);
@@ -102,7 +100,7 @@ class ItemRegistry implements IItemRegistry {
 			if (subItems.isEmpty()) {
 				ItemStack stack = new ItemStack(block);
 				if (stack.getItem() == null) {
-					Log.debug("Couldn't get itemStack for block: %s", block.getUnlocalizedName());
+					Log.debug("Couldn't get itemStack for block: {}", block.getUnlocalizedName());
 					return;
 				}
 				addItemStack(stack, itemList, fuels);
@@ -119,21 +117,24 @@ class ItemRegistry implements IItemRegistry {
 	}
 
 	private void addItemStack(@Nonnull ItemStack stack, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {
-		ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
-		if (itemModelMesher.getItemModel(stack) == itemModelMesher.getModelManager().getMissingModel()) {
-			return;
-		}
+		try {
+			String itemKey = StackUtil.uniqueIdentifierForStack(stack, false);
 
-		String itemKey = StackUtil.uniqueIdentifierForStack(stack, false);
+			if (itemNameSet.contains(itemKey)) {
+				return;
+			}
+			itemNameSet.add(itemKey);
+			itemList.add(stack);
 
-		if (itemNameSet.contains(itemKey)) {
-			return;
-		}
-		itemNameSet.add(itemKey);
-		itemList.add(stack);
+			if (TileEntityFurnace.isItemFuel(stack)) {
+				fuels.add(stack);
+			}
+		} catch (RuntimeException e) {
+			try {
+				Log.error("Couldn't create unique name for itemstack {}. Exception: {}", stack, e);
+			} catch (RuntimeException ignored) {
 
-		if (TileEntityFurnace.isItemFuel(stack)) {
-			fuels.add(stack);
+			}
 		}
 	}
 

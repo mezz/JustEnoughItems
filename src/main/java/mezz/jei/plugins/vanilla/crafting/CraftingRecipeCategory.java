@@ -69,7 +69,7 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 			craftingGridHelper.setInput(guiItemStacks, wrapper.getInputs());
 			craftingGridHelper.setOutput(guiItemStacks, wrapper.getOutputs());
 		} else {
-			Log.error("RecipeWrapper is not a know crafting wrapper type: %s", recipeWrapper);
+			Log.error("RecipeWrapper is not a know crafting wrapper type: {}", recipeWrapper);
 		}
 	}
 

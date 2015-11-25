@@ -29,7 +29,7 @@ public class InputHandler {
 	private final ItemListOverlay itemListOverlay;
 	private final MouseHelper mouseHelper;
 
-	private final List<IClickable> clickables = new ArrayList<>();
+	private final List<IMouseHandler> mouseHandlers = new ArrayList<>();
 	private final List<IKeyable> keyables = new ArrayList<>();
 	private final List<IShowsItemStacks> showsItemStacks = new ArrayList<>();
 
@@ -47,8 +47,8 @@ public class InputHandler {
 		objects.add(new GuiContainerWrapper(guiContainer, recipesGui));
 
 		for (Object gui : objects) {
-			if (gui instanceof IClickable) {
-				clickables.add((IClickable) gui);
+			if (gui instanceof IMouseHandler) {
+				mouseHandlers.add((IMouseHandler) gui);
 			}
 			if (gui instanceof IKeyable) {
 				keyables.add((IKeyable) gui);
@@ -70,8 +70,19 @@ public class InputHandler {
 			} else {
 				clickHandled = false;
 			}
+		} else if (Mouse.getEventDWheel() != 0) {
+			cancelEvent = handleMouseScroll(Mouse.getEventDWheel(), mouseX, mouseY);
 		}
 		return cancelEvent;
+	}
+
+	private boolean handleMouseScroll(int dWheel, int mouseX, int mouseY) {
+		for (IMouseHandler scrollable : mouseHandlers) {
+			if (scrollable.handleMouseScrolled(mouseX, mouseY, dWheel)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean handleMouseClick(int mouseButton, int mouseX, int mouseY) {
@@ -82,7 +93,7 @@ public class InputHandler {
 			}
 		}
 
-		for (IClickable clickable : clickables) {
+		for (IMouseHandler clickable : mouseHandlers) {
 			if (clickable.handleMouseClicked(mouseX, mouseY, mouseButton)) {
 				return true;
 			}
@@ -94,7 +105,7 @@ public class InputHandler {
 	@Nullable
 	private ItemStack getStackUnderMouseForClick(int mouseX, int mouseY) {
 		for (IShowsItemStacks gui : showsItemStacks) {
-			if (!(gui instanceof IClickable)) {
+			if (!(gui instanceof IMouseHandler)) {
 				continue;
 			}
 
@@ -123,7 +134,7 @@ public class InputHandler {
 
 	private boolean handleMouseClickedItemStack(int mouseButton, @Nonnull ItemStack itemStack) {
 		EntityPlayerSP player = FMLClientHandler.instance().getClientPlayerEntity();
-		if (Config.cheatItemsEnabled && Permissions.canPlayerSpawnItems(player) && player.inventory.getFirstEmptyStack() != -1) {
+		if (Config.cheatItemsEnabled && Permissions.canPlayerSpawnItems(player)) {
 			if (mouseButton == 0) {
 				Commands.giveFullStack(itemStack);
 				return true;

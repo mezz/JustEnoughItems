@@ -2,6 +2,7 @@ package mezz.jei.plugins.vanilla.crafting;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
 
 import mezz.jei.api.recipe.IRecipeCategory;
@@ -27,4 +28,17 @@ public class ShapedRecipesHandler implements IRecipeHandler<ShapedRecipes> {
 		return new ShapedRecipesWrapper(recipe);
 	}
 
+	@Override
+	public boolean isRecipeValid(@Nonnull ShapedRecipes recipe) {
+		if (recipe.getRecipeOutput() == null) {
+			return false;
+		}
+		int inputCount = 0;
+		for (ItemStack input : recipe.recipeItems) {
+			if (input != null) {
+				inputCount++;
+			}
+		}
+		return inputCount > 0;
+	}
 }

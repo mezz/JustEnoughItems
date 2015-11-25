@@ -25,4 +25,9 @@ public class SmeltingRecipeHandler implements IRecipeHandler<SmeltingRecipe> {
 		return recipe;
 	}
 
+	@Override
+	public boolean isRecipeValid(@Nonnull SmeltingRecipe recipe) {
+		return recipe.getInputs().size() != 0 && recipe.getOutputs().size() > 0;
+	}
+
 }

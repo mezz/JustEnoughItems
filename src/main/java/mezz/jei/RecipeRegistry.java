@@ -88,17 +88,22 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 			IRecipeHandler recipeHandler = getRecipeHandler(recipeClass);
 			if (recipeHandler == null) {
-				Log.debug("Can't handle recipe: %s", recipe);
+				Log.debug("Can't handle recipe: {}", recipe);
 				continue;
 			}
 			Class recipeCategoryClass = recipeHandler.getRecipeCategoryClass();
 			IRecipeCategory recipeCategory = recipeCategoriesMap.getInstance(recipeCategoryClass);
 			if (recipeCategory == null) {
-				Log.error("No recipe category registered for recipeCategoryClass: %s", recipeCategoryClass);
+				Log.error("No recipe category registered for recipeCategoryClass: {}", recipeCategoryClass);
 				continue;
 			}
 
-			@SuppressWarnings("unchecked")
+			//noinspection unchecked
+			if (!recipeHandler.isRecipeValid(recipe)) {
+				continue;
+			}
+
+			//noinspection unchecked
 			IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
 
 			List inputs = recipeWrapper.getInputs();

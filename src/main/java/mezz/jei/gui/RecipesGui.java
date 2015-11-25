@@ -26,13 +26,13 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
-import mezz.jei.input.IClickable;
+import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsItemStacks;
 import mezz.jei.util.Log;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.StringUtil;
 
-public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickable {
+public class RecipesGui extends GuiScreen implements IShowsItemStacks, IMouseHandler {
 	private enum Mode {
 		INPUT, OUTPUT
 	}
@@ -148,10 +148,15 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 		this.buttonList.add(previousPage);
 	}
 
+	@Override
+	public boolean isMouseOver(int mouseX, int mouseY) {
+		return isOpen() && (mouseX >= guiLeft) && (mouseY >= guiTop) && (mouseX < guiLeft + xSize) && (mouseY < guiTop + ySize);
+	}
+
 	@Nullable
 	@Override
 	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
-		if (!isOpen) {
+		if (!isMouseOver(mouseX, mouseY)) {
 			return null;
 		}
 		for (RecipeWidget recipeWidget : recipeWidgets) {
@@ -165,7 +170,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 
 	@Override
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
-		if (!isOpen) {
+		if (!isMouseOver(mouseX, mouseY)) {
 			return false;
 		}
 
@@ -173,6 +178,22 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 			handleMouseInput();
 		} catch (IOException e) {
 			Log.error("IOException on mouse click.", e);
+		}
+		return false;
+	}
+
+	@Override
+	public boolean handleMouseScrolled(int mouseX, int mouseY, int scrollDelta) {
+		if (!isMouseOver(mouseX, mouseY)) {
+			return false;
+		}
+
+		if (scrollDelta > 0) {
+			nextPage();
+			return true;
+		} else if (scrollDelta < 0) {
+			previousPage();
+			return true;
 		}
 		return false;
 	}
@@ -314,7 +335,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IClickabl
 			Object recipe = recipes.get(recipeIndex);
 			IRecipeHandler recipeHandler = JEIManager.recipeRegistry.getRecipeHandler(recipe.getClass());
 			if (recipeHandler == null) {
-				Log.error("Couldn't find recipe handler for recipe: %s", recipe);
+				Log.error("Couldn't find recipe handler for recipe: {}", recipe);
 				continue;
 			}
 

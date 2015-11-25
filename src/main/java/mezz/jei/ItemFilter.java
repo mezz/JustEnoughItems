@@ -11,9 +11,13 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemModelMesher;
+import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.util.ItemStackElement;
+import mezz.jei.util.Log;
 
 public class ItemFilter {
 	/** The currently active filter text */
@@ -44,7 +48,26 @@ public class ItemFilter {
 						ImmutableList<ItemStackElement> baseItemSet = filteredItemMapsCache.get(prevFilterText);
 
 						Collection<ItemStackElement> filteredItemList = Collections2.filter(baseItemSet,
-								input -> input != null && input.getLocalizedName().contains(filterText)
+								input -> {
+									if (input == null) {
+										return false;
+									}
+
+									String[] tokens = filterText.split(" ");
+									for (String token : tokens) {
+										if (token.startsWith("@")) {
+											String modNameFilter = token.substring(1);
+											if (modNameFilter.length() > 0 && !input.getModName().contains(modNameFilter)) {
+												return false;
+											}
+										} else {
+											if (!input.getLocalizedName().contains(token)) {
+												return false;
+											}
+										}
+									}
+									return true;
+								}
 						);
 
 						return ImmutableList.copyOf(filteredItemList);
@@ -53,8 +76,25 @@ public class ItemFilter {
 
 		// create the recursive base case value, the list with no filter set
 		ImmutableList.Builder<ItemStackElement> baseList = ImmutableList.builder();
+
+		ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+		ModelManager modelManager = itemModelMesher.getModelManager();
 		for (ItemStack itemStack : itemStacks) {
 			if (itemStack == null) {
+				continue;
+			}
+
+			// skip over itemStacks that can't be rendered
+			try {
+				if (itemModelMesher.getItemModel(itemStack) == modelManager.getMissingModel()) {
+					continue;
+				}
+			} catch (RuntimeException e) {
+				try {
+					Log.error("Couldn't find ItemModelMesher for itemstack {}. Exception: {}", itemStack, e);
+				} catch (RuntimeException ignored) {
+
+				}
 				continue;
 			}
 
