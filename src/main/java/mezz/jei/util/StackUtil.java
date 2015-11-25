@@ -151,11 +151,12 @@ public class StackUtil {
 		Item item = stack.getItem();
 		Object itemName = GameData.getItemRegistry().getNameForObject(item);
 		String itemNameString = String.valueOf(itemName);
-		if (wildcard) {
+		int metadata = stack.getMetadata();
+		if (wildcard || metadata == OreDictionary.WILDCARD_VALUE) {
 			return itemNameString;
 		}
 
-		StringBuilder itemKey = new StringBuilder(itemNameString).append(':').append(stack.getItemDamage());
+		StringBuilder itemKey = new StringBuilder(itemNameString).append(':').append(metadata);
 		if (stack.hasTagCompound()) {
 			itemKey.append(':').append(stack.getTagCompound());
 		}

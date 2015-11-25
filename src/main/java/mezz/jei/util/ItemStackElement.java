@@ -2,12 +2,13 @@ package mezz.jei.util;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Locale;
 
 import net.minecraft.item.ItemStack;
 
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import mezz.jei.api.JEIManager;
 
 /**
  * For getting properties of ItemStacks efficiently
@@ -36,12 +37,9 @@ public class ItemStackElement {
 		this.localizedName = itemStack.getDisplayName().toLowerCase();
 
 		String modId = GameRegistry.findUniqueIdentifierFor(itemStack.getItem()).modId;
-		ModContainer modContainer = FMLCommonHandler.instance().findContainerFor(modId);
-		if (modContainer != null) {
-			this.modName = modId.toLowerCase() + " " + modContainer.getName().toLowerCase();
-		} else {
-			this.modName = modId.toLowerCase();
-		}
+		String modName = JEIManager.itemRegistry.getModNameForItem(itemStack.getItem());
+
+		this.modName = modId.toLowerCase(Locale.ENGLISH) + " " + modName.toLowerCase(Locale.ENGLISH);
 	}
 
 	@Nonnull

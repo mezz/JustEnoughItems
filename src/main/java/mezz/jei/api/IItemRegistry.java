@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public interface IItemRegistry {
@@ -16,4 +17,7 @@ public interface IItemRegistry {
 	@Nonnull
 	ImmutableList<ItemStack> getFuels();
 
+	/** Returns a mod name for the given item. */
+	@Nonnull
+	String getModNameForItem(Item item);
 }

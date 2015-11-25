@@ -26,6 +26,7 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
+import mezz.jei.util.ModList;
 
 @Mod(modid = Constants.MOD_ID,
 		name = Constants.NAME,
@@ -40,6 +41,7 @@ public class JustEnoughItems implements IPluginRegistry {
 	@Nonnull
 	private final List<IModPlugin> plugins = new ArrayList<>();
 	private boolean pluginsCanRegister = true;
+	private boolean jeiStarted = false;
 
 	public JustEnoughItems() {
 		JEIManager.guiHelper = new GuiHelper();
@@ -74,7 +76,14 @@ public class JustEnoughItems implements IPluginRegistry {
 
 	@Mod.EventHandler
 	public void aboutToStart(FMLServerAboutToStartEvent event) {
-		JEIManager.itemRegistry = new ItemRegistry();
+		if (jeiStarted) {
+			return;
+		}
+		jeiStarted = true;
+
+		ModList modList = new ModList();
+
+		JEIManager.itemRegistry = new ItemRegistry(modList);
 
 		ImmutableList.Builder<IRecipeCategory> recipeCategories = ImmutableList.builder();
 		ImmutableList.Builder<IRecipeHandler> recipeHandlers = ImmutableList.builder();
@@ -93,6 +102,9 @@ public class JustEnoughItems implements IPluginRegistry {
 		GuiEventHandler guiEventHandler = new GuiEventHandler(itemListOverlay);
 		MinecraftForge.EVENT_BUS.register(guiEventHandler);
 		FMLCommonHandler.instance().bus().register(guiEventHandler);
+
+		TooltipEventHandler tooltipEventHandler = new TooltipEventHandler();
+		MinecraftForge.EVENT_BUS.register(tooltipEventHandler);
 	}
 
 	@SubscribeEvent

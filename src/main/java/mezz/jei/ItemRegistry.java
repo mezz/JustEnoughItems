@@ -20,6 +20,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.util.Log;
+import mezz.jei.util.ModList;
 import mezz.jei.util.StackUtil;
 
 class ItemRegistry implements IItemRegistry {
@@ -30,8 +31,11 @@ class ItemRegistry implements IItemRegistry {
 	private final ImmutableList<ItemStack> itemList;
 	@Nonnull
 	private final ImmutableList<ItemStack> fuels;
+	@Nonnull
+	private final ModList modList;
 
-	public ItemRegistry() {
+	public ItemRegistry(@Nonnull ModList modList) {
+		this.modList = modList;
 		List<ItemStack> itemList = new ArrayList<>();
 		List<ItemStack> fuels = new ArrayList<>();
 
@@ -57,6 +61,15 @@ class ItemRegistry implements IItemRegistry {
 	@Nonnull
 	public ImmutableList<ItemStack> getFuels() {
 		return fuels;
+	}
+
+	@Nonnull
+	@Override
+	public String getModNameForItem(@Nullable Item item) {
+		if (item == null) {
+			return "";
+		}
+		return modList.getModNameForItemStack(item);
 	}
 
 	private void addItemAndSubItems(@Nullable Item item, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {
