@@ -13,9 +13,9 @@ hs_err_pid*
 
 .gradle
 run/
-JustEnoughItems.iml
-JustEnoughItems.ipr
-JustEnoughItems.iws
+*.iml
+*.ipr
+*.iws
 out/
 .idea
 build/*
