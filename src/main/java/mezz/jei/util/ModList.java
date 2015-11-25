@@ -25,9 +25,9 @@ public class ModList {
 			modNamesForIds.put(lowercaseId, modName);
 		}
 	}
-	
+
 	@Nonnull
-	public String getModNameForItemStack(@Nonnull Item item) {
+	public String getModNameForItem(@Nonnull Item item) {
 		String modId = GameRegistry.findUniqueIdentifierFor(item).modId;
 		String modName = modNamesForIds.get(modId.toLowerCase(Locale.ENGLISH));
 		if (modName == null) {
