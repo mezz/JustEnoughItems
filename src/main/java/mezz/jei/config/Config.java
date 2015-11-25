@@ -12,6 +12,7 @@ public class Config {
 	public static Configuration configFile;
 
 	public static boolean cheatItemsEnabled = false;
+	public static boolean tooltipModNameEnabled = true;
 
 	public static void preInit(@Nonnull FMLPreInitializationEvent event) {
 		configFile = new Configuration(event.getSuggestedConfigurationFile());
@@ -28,6 +29,9 @@ public class Config {
 	private static void syncConfig() {
 		String cheatItemsEnabledDescription = StatCollector.translateToLocal("config.jei.cheatItemsEnabled.description");
 		cheatItemsEnabled = configFile.getBoolean("config.jei.cheatItemsEnabled", Configuration.CATEGORY_GENERAL, cheatItemsEnabled, cheatItemsEnabledDescription);
+
+		String tooltipModNameEnabledDescription = StatCollector.translateToLocal("config.jei.tooltipModName.description");
+		tooltipModNameEnabled = configFile.getBoolean("config.jei.tooltipModName", Configuration.CATEGORY_GENERAL, tooltipModNameEnabled, tooltipModNameEnabledDescription);
 
 		if (configFile.hasChanged()) {
 			configFile.save();
