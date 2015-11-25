@@ -13,6 +13,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemModelMesher;
+import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.util.ItemStackElement;
@@ -47,7 +48,26 @@ public class ItemFilter {
 						ImmutableList<ItemStackElement> baseItemSet = filteredItemMapsCache.get(prevFilterText);
 
 						Collection<ItemStackElement> filteredItemList = Collections2.filter(baseItemSet,
-								input -> input != null && input.getLocalizedName().contains(filterText)
+								input -> {
+									if (input == null) {
+										return false;
+									}
+
+									String[] tokens = filterText.split(" ");
+									for (String token : tokens) {
+										if (token.startsWith("@")) {
+											String modNameFilter = token.substring(1);
+											if (modNameFilter.length() > 0 && !input.getModName().contains(modNameFilter)) {
+												return false;
+											}
+										} else {
+											if (!input.getLocalizedName().contains(token)) {
+												return false;
+											}
+										}
+									}
+									return true;
+								}
 						);
 
 						return ImmutableList.copyOf(filteredItemList);
