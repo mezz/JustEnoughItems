@@ -98,7 +98,12 @@ public class RecipeRegistry implements IRecipeRegistry {
 				continue;
 			}
 
-			@SuppressWarnings("unchecked")
+			//noinspection unchecked
+			if (!recipeHandler.isRecipeValid(recipe)) {
+				continue;
+			}
+
+			//noinspection unchecked
 			IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
 
 			List inputs = recipeWrapper.getInputs();

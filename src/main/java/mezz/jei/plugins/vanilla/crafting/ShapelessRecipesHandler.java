@@ -2,6 +2,7 @@ package mezz.jei.plugins.vanilla.crafting;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 
 import mezz.jei.api.recipe.IRecipeCategory;
@@ -28,4 +29,19 @@ public class ShapelessRecipesHandler implements IRecipeHandler<ShapelessRecipes>
 		return new ShapelessRecipesWrapper(recipe);
 	}
 
+	@Override
+	public boolean isRecipeValid(@Nonnull ShapelessRecipes recipe) {
+		if (recipe.getRecipeOutput() == null) {
+			return false;
+		}
+		int inputCount = 0;
+		for (Object input : recipe.recipeItems) {
+			if (input instanceof ItemStack) {
+				inputCount++;
+			} else {
+				return false;
+			}
+		}
+		return inputCount > 0;
+	}
 }
