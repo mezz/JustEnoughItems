@@ -3,18 +3,26 @@ package mezz.jei;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import org.lwjgl.input.Mouse;
 
+import mezz.jei.config.Config;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.RecipesGui;
 import mezz.jei.input.InputHandler;
@@ -91,6 +99,25 @@ public class GuiEventHandler {
 				guiContainer.renderToolTip(itemStack, event.mouseX, event.mouseY);
 			}
 		}
+	}
+
+	@SubscribeEvent
+	public void onToolTip(@Nonnull ItemTooltipEvent event) {
+		if (!Config.tooltipModNameEnabled) {
+			return;
+		}
+
+		ItemStack itemStack = event.itemStack;
+		String modName;
+		String modId = GameRegistry.findUniqueIdentifierFor(itemStack.getItem()).modId;
+		ModContainer modContainer = FMLCommonHandler.instance().findContainerFor(modId);
+		if (modContainer != null) {
+			modName = modContainer.getName();
+		} else {
+			modName = modId;
+		}
+		modName = WordUtils.capitalize(modName);
+		event.toolTip.add(EnumChatFormatting.BLUE + modName);
 	}
 
 	@SubscribeEvent
