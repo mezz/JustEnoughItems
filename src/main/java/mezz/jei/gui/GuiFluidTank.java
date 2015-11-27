@@ -2,8 +2,10 @@ package mezz.jei.gui;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 
 import net.minecraftforge.fluids.FluidStack;
 
@@ -34,12 +36,18 @@ public class GuiFluidTank extends GuiWidget<FluidStack> {
 	}
 
 	@Override
-	public void draw(@Nonnull Minecraft minecraft) {
-		//TODO
+	protected void draw(@Nonnull Minecraft minecraft, int xPosition, int yPosition, @Nonnull FluidStack contents) {
+		// TODO
 	}
 
 	@Override
-	public void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
-		//TODO
+	protected List getTooltip(@Nonnull Minecraft minecraft, @Nonnull FluidStack value) {
+		// TODO
+		return null;
+	}
+
+	@Override
+	protected FontRenderer getFontRenderer(@Nonnull Minecraft minecraft, @Nonnull FluidStack value) {
+		return minecraft.fontRendererObj;
 	}
 }

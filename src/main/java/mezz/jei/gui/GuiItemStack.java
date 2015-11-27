@@ -2,20 +2,17 @@ package mezz.jei.gui;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 
-import org.lwjgl.opengl.GL11;
-
-import mezz.jei.util.Log;
 import mezz.jei.util.StackUtil;
 
 public class GuiItemStack extends GuiWidget<ItemStack> {
-
 	private static final int baseWidth = 16;
 	private static final int baseHeight = 16;
 
@@ -45,47 +42,8 @@ public class GuiItemStack extends GuiWidget<ItemStack> {
 	}
 
 	@Override
-	public void draw(@Nonnull Minecraft minecraft) {
-		draw(minecraft, true);
-	}
-
-	@Override
-	public void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
-		ItemStack itemStack = get();
-		if (itemStack == null) {
-			return;
-		}
-		draw(minecraft, false);
-		try {
-			GlStateManager.disableDepth();
-			this.zLevel = 0;
-			RenderHelper.disableStandardItemLighting();
-			GL11.glEnable(GL11.GL_BLEND);
-			drawRect(xPosition, yPosition, xPosition + width, yPosition + width, 0x7FFFFFFF);
-			this.zLevel = 0;
-			minecraft.currentScreen.renderToolTip(itemStack, mouseX, mouseY);
-			GlStateManager.enableDepth();
-		} catch (RuntimeException e) {
-			Log.error("Exception when rendering tooltip on {}.\n{}", itemStack, e);
-		}
-	}
-
-	private void draw(Minecraft minecraft, boolean cycleIcons) {
-		if (!visible) {
-			return;
-		}
-
-		cycleTimer.onDraw(cycleIcons);
-
-		ItemStack itemStack = get();
-		if (itemStack == null) {
-			return;
-		}
-
-		FontRenderer font = itemStack.getItem().getFontRenderer(itemStack);
-		if (font == null) {
-			font = minecraft.fontRendererObj;
-		}
+	protected void draw(@Nonnull Minecraft minecraft, int xPosition, int yPosition, @Nonnull ItemStack itemStack) {
+		FontRenderer font = getFontRenderer(minecraft, itemStack);
 
 		RenderHelper.enableGUIStandardItemLighting();
 
@@ -93,5 +51,28 @@ public class GuiItemStack extends GuiWidget<ItemStack> {
 		minecraft.getRenderItem().renderItemOverlayIntoGUI(font, itemStack, xPosition + padding, yPosition + padding, null);
 
 		RenderHelper.disableStandardItemLighting();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected List getTooltip(@Nonnull Minecraft minecraft, @Nonnull ItemStack itemStack) {
+		List list = itemStack.getTooltip(minecraft.thePlayer, minecraft.gameSettings.advancedItemTooltips);
+		for (int k = 0; k < list.size(); ++k) {
+			if (k == 0) {
+				list.set(k, itemStack.getRarity().rarityColor + (String) list.get(k));
+			} else {
+				list.set(k, EnumChatFormatting.GRAY + (String) list.get(k));
+			}
+		}
+		return list;
+	}
+
+	@Override
+	protected FontRenderer getFontRenderer(@Nonnull Minecraft minecraft, @Nonnull ItemStack itemStack) {
+		FontRenderer fontRenderer = itemStack.getItem().getFontRenderer(itemStack);
+		if (fontRenderer == null) {
+			fontRenderer = minecraft.fontRendererObj;
+		}
+		return fontRenderer;
 	}
 }
