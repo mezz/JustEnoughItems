@@ -89,6 +89,9 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public IRecipeCategory getRecipeCategory() {
+		if (recipeCategories.size() == 0) {
+			return null;
+		}
 		return recipeCategories.get(recipeCategoryIndex);
 	}
 
