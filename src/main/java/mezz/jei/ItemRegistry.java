@@ -69,7 +69,7 @@ class ItemRegistry implements IItemRegistry {
 		if (item == null) {
 			return "";
 		}
-		return modList.getModNameForItemStack(item);
+		return modList.getModNameForItem(item);
 	}
 
 	private void addItemAndSubItems(@Nullable Item item, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {

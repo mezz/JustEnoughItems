@@ -8,19 +8,20 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 
 public class SmeltingRecipeHandler implements IRecipeHandler<SmeltingRecipe> {
 
-	@Nonnull
 	@Override
+	@Nonnull
 	public Class<SmeltingRecipe> getRecipeClass() {
 		return SmeltingRecipe.class;
 	}
 
-	@Nonnull
 	@Override
+	@Nonnull
 	public Class<? extends IRecipeCategory> getRecipeCategoryClass() {
 		return FurnaceRecipeCategory.class;
 	}
 
 	@Override
+	@Nonnull
 	public IRecipeWrapper getRecipeWrapper(@Nonnull SmeltingRecipe recipe) {
 		return recipe;
 	}

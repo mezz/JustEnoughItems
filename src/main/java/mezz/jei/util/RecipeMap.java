@@ -9,8 +9,10 @@ import com.google.common.collect.Table;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.minecraft.item.ItemStack;
 
@@ -37,7 +39,7 @@ public class RecipeMap {
 
 	@Nonnull
 	public ImmutableList<IRecipeCategory> getRecipeCategories(@Nonnull ItemStack itemStack) {
-		List<IRecipeCategory> recipeCategories = new ArrayList<>();
+		Set<IRecipeCategory> recipeCategories = new HashSet<>();
 		for (String stackKey : getNamesWithWildcard(itemStack)) {
 			recipeCategories.addAll(categoryMap.get(stackKey));
 		}

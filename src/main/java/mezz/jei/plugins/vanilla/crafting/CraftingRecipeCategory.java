@@ -8,6 +8,7 @@ import net.minecraft.util.StatCollector;
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.IGuiFluidTanks;
 import mezz.jei.api.gui.IGuiItemStacks;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
@@ -36,7 +37,7 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 
 	@Nonnull
 	@Override
-	public String getCategoryTitle() {
+	public String getTitle() {
 		return localizedName;
 	}
 
@@ -47,7 +48,7 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 	}
 
 	@Override
-	public void init(@Nonnull IGuiItemStacks guiItemStacks) {
+	public void init(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IGuiFluidTanks guiFluidTanks) {
 		guiItemStacks.init(craftOutputSlot, 94, 18);
 
 		for (int y = 0; y < 3; ++y) {
@@ -59,7 +60,7 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 	}
 
 	@Override
-	public void setRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IRecipeWrapper recipeWrapper) {
+	public void setRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IGuiFluidTanks guiFluidTanks, @Nonnull IRecipeWrapper recipeWrapper) {
 		if (recipeWrapper instanceof IShapedCraftingRecipeWrapper) {
 			IShapedCraftingRecipeWrapper wrapper = (IShapedCraftingRecipeWrapper) recipeWrapper;
 			craftingGridHelper.setInput(guiItemStacks, wrapper.getInputs(), wrapper.getWidth(), wrapper.getHeight());

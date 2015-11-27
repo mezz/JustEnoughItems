@@ -23,11 +23,11 @@ import org.lwjgl.input.Keyboard;
 import mezz.jei.ItemFilter;
 import mezz.jei.input.IKeyable;
 import mezz.jei.input.IMouseHandler;
-import mezz.jei.input.IShowsItemStacks;
+import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.util.ItemStackElement;
 import mezz.jei.util.MathUtil;
 
-public class ItemListOverlay implements IShowsItemStacks, IMouseHandler, IKeyable {
+public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKeyable {
 
 	private static final int borderPadding = 1;
 	private static final int searchHeight = 16;
@@ -135,7 +135,7 @@ public class ItemListOverlay implements IShowsItemStacks, IMouseHandler, IKeyabl
 				itemButton.clear();
 			} else {
 				ItemStack stack = itemList.get(i).getItemStack();
-				itemButton.set(stack, null);
+				itemButton.set(stack, new Focus());
 			}
 			i++;
 		}
@@ -212,14 +212,14 @@ public class ItemListOverlay implements IShowsItemStacks, IMouseHandler, IKeyabl
 
 	@Override
 	@Nullable
-	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
+	public Focus getFocusUnderMouse(int mouseX, int mouseY) {
 		if (!isMouseOver(mouseX, mouseY)) {
 			return null;
 		}
 		for (GuiItemStack guiItemStack : guiItemStacks) {
 			if (guiItemStack.isMouseOver(mouseX, mouseY)) {
 				setKeyboardFocus(false);
-				return guiItemStack.get();
+				return new Focus(guiItemStack.get());
 			}
 		}
 		return null;

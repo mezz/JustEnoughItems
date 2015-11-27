@@ -8,7 +8,6 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.item.ItemStack;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
 
@@ -17,6 +16,7 @@ import org.lwjgl.input.Mouse;
 
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
+import mezz.jei.gui.Focus;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.RecipesGui;
 import mezz.jei.util.Commands;
@@ -31,7 +31,7 @@ public class InputHandler {
 
 	private final List<IMouseHandler> mouseHandlers = new ArrayList<>();
 	private final List<IKeyable> keyables = new ArrayList<>();
-	private final List<IShowsItemStacks> showsItemStacks = new ArrayList<>();
+	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<>();
 
 	private boolean clickHandled = false;
 
@@ -53,8 +53,8 @@ public class InputHandler {
 			if (gui instanceof IKeyable) {
 				keyables.add((IKeyable) gui);
 			}
-			if (gui instanceof IShowsItemStacks) {
-				showsItemStacks.add((IShowsItemStacks) gui);
+			if (gui instanceof IShowsRecipeFocuses) {
+				showsRecipeFocuses.add((IShowsRecipeFocuses) gui);
 			}
 		}
 	}
@@ -86,9 +86,9 @@ public class InputHandler {
 	}
 
 	private boolean handleMouseClick(int mouseButton, int mouseX, int mouseY) {
-		ItemStack itemStack = getStackUnderMouseForClick(mouseX, mouseY);
-		if (itemStack != null) {
-			if (handleMouseClickedItemStack(mouseButton, itemStack)) {
+		Focus focus = getFocusUnderMouseForClick(mouseX, mouseY);
+		if (focus != null) {
+			if (handleMouseClickedFocus(mouseButton, focus)) {
 				return true;
 			}
 		}
@@ -103,51 +103,51 @@ public class InputHandler {
 	}
 
 	@Nullable
-	private ItemStack getStackUnderMouseForClick(int mouseX, int mouseY) {
-		for (IShowsItemStacks gui : showsItemStacks) {
+	private Focus getFocusUnderMouseForClick(int mouseX, int mouseY) {
+		for (IShowsRecipeFocuses gui : showsRecipeFocuses) {
 			if (!(gui instanceof IMouseHandler)) {
 				continue;
 			}
 
-			ItemStack itemStack = gui.getStackUnderMouse(mouseX, mouseY);
-			if (itemStack != null) {
-				return itemStack;
+			Focus focus = gui.getFocusUnderMouse(mouseX, mouseY);
+			if (focus != null) {
+				return focus;
 			}
 		}
 		return null;
 	}
 
 	@Nullable
-	private ItemStack getStackUnderMouseForKey(int mouseX, int mouseY) {
-		for (IShowsItemStacks gui : showsItemStacks) {
-			if (!(gui instanceof IKeyable)) {
-				continue;
-			}
-
-			ItemStack itemStack = gui.getStackUnderMouse(mouseX, mouseY);
-			if (itemStack != null) {
-				return itemStack;
+	private Focus getFocusUnderMouseForKey(int mouseX, int mouseY) {
+		for (IShowsRecipeFocuses gui : showsRecipeFocuses) {
+			Focus focus = gui.getFocusUnderMouse(mouseX, mouseY);
+			if (focus != null) {
+				return focus;
 			}
 		}
 		return null;
 	}
 
-	private boolean handleMouseClickedItemStack(int mouseButton, @Nonnull ItemStack itemStack) {
+	private boolean handleMouseClickedFocus(int mouseButton, @Nonnull Focus focus) {
 		EntityPlayerSP player = FMLClientHandler.instance().getClientPlayerEntity();
 		if (Config.cheatItemsEnabled && Permissions.canPlayerSpawnItems(player)) {
 			if (mouseButton == 0) {
-				Commands.giveFullStack(itemStack);
+				if (focus.getStack() != null) {
+					Commands.giveFullStack(focus.getStack());
+				}
 				return true;
 			} else if (mouseButton == 1) {
-				Commands.giveOneFromStack(itemStack);
+				if (focus.getStack() != null) {
+					Commands.giveOneFromStack(focus.getStack());
+				}
 				return true;
 			}
 		} else {
 			if (mouseButton == 0) {
-				recipesGui.showRecipes(itemStack);
+				recipesGui.showRecipes(focus);
 				return true;
 			} else if (mouseButton == 1) {
-				recipesGui.showUses(itemStack);
+				recipesGui.showUses(focus);
 				return true;
 			}
 		}
@@ -186,15 +186,15 @@ public class InputHandler {
 		}
 
 		if (eventKey == KeyBindings.showRecipe.getKeyCode()) {
-			ItemStack itemStack = getStackUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
-			if (itemStack != null) {
-				recipesGui.showRecipes(itemStack);
+			Focus focus = getFocusUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
+			if (focus != null) {
+				recipesGui.showRecipes(focus);
 				return true;
 			}
 		} else if (eventKey == KeyBindings.showUses.getKeyCode()) {
-			ItemStack itemStack = getStackUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
-			if (itemStack != null) {
-				recipesGui.showUses(itemStack);
+			Focus focus = getFocusUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
+			if (focus != null) {
+				recipesGui.showUses(focus);
 				return true;
 			}
 		} else if (eventKey == KeyBindings.toggleOverlay.getKeyCode()) {

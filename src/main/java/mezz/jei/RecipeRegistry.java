@@ -64,9 +64,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 			}
 
 			Class recipeClass = recipeHandler.getRecipeClass();
-			if (recipeClass == null) {
-				continue;
-			}
 
 			if (mutableRecipeHandlers.containsKey(recipeClass)) {
 				throw new IllegalArgumentException("A Recipe Handler has already been registered for this recipe class: " + recipeClass.getName());
@@ -83,54 +80,62 @@ public class RecipeRegistry implements IRecipeRegistry {
 		}
 
 		for (Object recipe : recipes) {
-			if (recipe == null) {
-				continue;
+			try {
+				addRecipe(recipe);
+			} catch (RuntimeException e) {
+				Log.error("Failed to add recipe: {}\nWith error: {}", recipe, e);
 			}
+		}
+	}
 
-			Class recipeClass = recipe.getClass();
+	private void addRecipe(@Nullable Object recipe) {
+		if (recipe == null) {
+			return;
+		}
 
-			IRecipeHandler recipeHandler = getRecipeHandler(recipeClass);
-			if (recipeHandler == null) {
-				if (!unhandledRecipeClasses.contains(recipeClass)) {
-					unhandledRecipeClasses.add(recipeClass);
-					Log.debug("Can't handle recipe: {}", recipeClass);
-				}
-				continue;
+		Class recipeClass = recipe.getClass();
+		IRecipeHandler recipeHandler = getRecipeHandler(recipeClass);
+		if (recipeHandler == null) {
+			if (!unhandledRecipeClasses.contains(recipeClass)) {
+				unhandledRecipeClasses.add(recipeClass);
+				Log.debug("Can't handle recipe: {}", recipeClass);
 			}
-			Class recipeCategoryClass = recipeHandler.getRecipeCategoryClass();
-			IRecipeCategory recipeCategory = recipeCategoriesMap.getInstance(recipeCategoryClass);
-			if (recipeCategory == null) {
-				Log.error("No recipe category registered for recipeCategoryClass: {}", recipeCategoryClass);
-				continue;
-			}
+			return;
+		}
 
-			//noinspection unchecked
-			if (!recipeHandler.isRecipeValid(recipe)) {
-				continue;
-			}
+		Class recipeCategoryClass = recipeHandler.getRecipeCategoryClass();
+		IRecipeCategory recipeCategory = recipeCategoriesMap.getInstance(recipeCategoryClass);
+		if (recipeCategory == null) {
+			Log.error("No recipe category registered for recipeCategoryClass: {}", recipeCategoryClass);
+			return;
+		}
 
-			//noinspection unchecked
-			IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
+		//noinspection unchecked
+		if (!recipeHandler.isRecipeValid(recipe)) {
+			return;
+		}
 
-			List inputs = recipeWrapper.getInputs();
-			List<FluidStack> fluidInputs = recipeWrapper.getFluidInputs();
-			if (inputs != null || fluidInputs != null) {
-				List<ItemStack> inputStacks = StackUtil.toItemStackList(inputs);
-				if (fluidInputs == null) {
-					fluidInputs = Collections.emptyList();
-				}
-				recipeInputMap.addRecipe(recipe, recipeCategory, inputStacks, fluidInputs);
-			}
+		//noinspection unchecked
+		IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
 
-			List outputs = recipeWrapper.getOutputs();
-			List<FluidStack> fluidOutputs = recipeWrapper.getFluidOutputs();
-			if (outputs != null || fluidOutputs != null) {
-				List<ItemStack> outputStacks = StackUtil.toItemStackList(outputs);
-				if (fluidOutputs == null) {
-					fluidOutputs = Collections.emptyList();
-				}
-				recipeOutputMap.addRecipe(recipe, recipeCategory, outputStacks, fluidOutputs);
+		List inputs = recipeWrapper.getInputs();
+		List<FluidStack> fluidInputs = recipeWrapper.getFluidInputs();
+		if (inputs != null || fluidInputs != null) {
+			List<ItemStack> inputStacks = StackUtil.toItemStackList(inputs);
+			if (fluidInputs == null) {
+				fluidInputs = Collections.emptyList();
 			}
+			recipeInputMap.addRecipe(recipe, recipeCategory, inputStacks, fluidInputs);
+		}
+
+		List outputs = recipeWrapper.getOutputs();
+		List<FluidStack> fluidOutputs = recipeWrapper.getFluidOutputs();
+		if (outputs != null || fluidOutputs != null) {
+			List<ItemStack> outputStacks = StackUtil.toItemStackList(outputs);
+			if (fluidOutputs == null) {
+				fluidOutputs = Collections.emptyList();
+			}
+			recipeOutputMap.addRecipe(recipe, recipeCategory, outputStacks, fluidOutputs);
 		}
 	}
 

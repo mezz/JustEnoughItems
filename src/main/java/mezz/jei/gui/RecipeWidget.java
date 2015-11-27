@@ -1,10 +1,8 @@
 package mezz.jei.gui;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
 
@@ -16,6 +14,7 @@ public class RecipeWidget {
 	@Nonnull
 	private final IRecipeCategory recipeCategory;
 	private final GuiItemStacks guiItemStacks;
+	private final GuiFluidTanks guiFluidTanks;
 
 	private IRecipeWrapper recipeWrapper;
 	private int posX;
@@ -24,7 +23,8 @@ public class RecipeWidget {
 	public RecipeWidget(@Nonnull IRecipeCategory recipeCategory) {
 		this.recipeCategory = recipeCategory;
 		this.guiItemStacks = new GuiItemStacks();
-		this.recipeCategory.init(guiItemStacks);
+		this.guiFluidTanks = new GuiFluidTanks();
+		this.recipeCategory.init(guiItemStacks, guiFluidTanks);
 	}
 
 	public void setPosition(int posX, int posY) {
@@ -32,12 +32,12 @@ public class RecipeWidget {
 		this.posY = posY;
 	}
 
-	public void setRecipe(@Nonnull IRecipeWrapper recipeWrapper, @Nullable ItemStack focusStack) {
+	public void setRecipe(@Nonnull IRecipeWrapper recipeWrapper, @Nonnull Focus focus) {
 		this.recipeWrapper = recipeWrapper;
 
-		guiItemStacks.clearItemStacks();
-		guiItemStacks.setFocusStack(focusStack);
-		recipeCategory.setRecipe(guiItemStacks, recipeWrapper);
+		guiItemStacks.clear();
+		guiItemStacks.setFocus(focus);
+		recipeCategory.setRecipe(guiItemStacks, guiFluidTanks, recipeWrapper);
 	}
 
 	public void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
@@ -57,7 +57,7 @@ public class RecipeWidget {
 		GL11.glPopMatrix();
 	}
 
-	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
-		return guiItemStacks.getStackUnderMouse(mouseX - posX, mouseY - posY);
+	public Focus getFocusUnderMouse(int mouseX, int mouseY) {
+		return guiItemStacks.getFocusUnderMouse(mouseX - posX, mouseY - posY);
 	}
 }

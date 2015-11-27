@@ -1,6 +1,7 @@
 package mezz.jei.api.gui;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 
 import net.minecraftforge.fluids.FluidStack;
 
@@ -14,10 +15,10 @@ public interface IGuiFluidTanks {
 	/**
 	 * Fluid tanks must be initialized once, and then can be set many times.
 	 */
-	void init(int index, int xPosition, int yPosition, int capacityMb);
+	void init(int index, int xPosition, int yPosition, int width, int height, int capacityMb);
 
-	void set(int index, @Nonnull Iterable<FluidStack> fluidStacks);
+	void set(int index, @Nonnull Collection<FluidStack> fluidStacks);
 
-	void set(int index, @Nonnull FluidStack fluidStacks);
+	void set(int index, @Nonnull FluidStack fluidStack);
 
 }

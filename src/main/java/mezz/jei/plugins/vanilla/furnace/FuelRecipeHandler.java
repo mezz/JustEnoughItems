@@ -7,19 +7,20 @@ import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 
 public class FuelRecipeHandler implements IRecipeHandler<FuelRecipe> {
-	@Nonnull
 	@Override
+	@Nonnull
 	public Class<FuelRecipe> getRecipeClass() {
 		return FuelRecipe.class;
 	}
 
-	@Nonnull
 	@Override
+	@Nonnull
 	public Class<? extends IRecipeCategory> getRecipeCategoryClass() {
 		return FurnaceRecipeCategory.class;
 	}
 
 	@Override
+	@Nonnull
 	public IRecipeWrapper getRecipeWrapper(@Nonnull FuelRecipe recipe) {
 		return recipe;
 	}
