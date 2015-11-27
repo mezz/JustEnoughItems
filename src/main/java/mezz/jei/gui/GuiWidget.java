@@ -50,12 +50,12 @@ public abstract class GuiWidget<T> extends Gui implements IGuiWidget<T> {
 	}
 
 	@Override
-	public void set(@Nonnull T contained, @Nullable T focus) {
+	public void set(@Nonnull T contained, @Nonnull Focus focus) {
 		set(Collections.singleton(contained), focus);
 	}
 
 	@Override
-	public void set(@Nonnull Collection<T> contained, @Nullable T focus) {
+	public void set(@Nonnull Collection<T> contained, @Nonnull Focus focus) {
 		this.contained.clear();
 		contained = expandSubtypes(contained);
 		T match = getMatch(contained, focus);
@@ -69,5 +69,5 @@ public abstract class GuiWidget<T> extends Gui implements IGuiWidget<T> {
 
 	protected abstract Collection<T> expandSubtypes(Collection<T> contained);
 
-	protected abstract T getMatch(Iterable<T> contained, T toMatch);
+	protected abstract T getMatch(Iterable<T> contained, @Nonnull Focus toMatch);
 }

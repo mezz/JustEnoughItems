@@ -7,9 +7,9 @@ import java.util.Collection;
 import net.minecraft.client.Minecraft;
 
 public interface IGuiWidget<T> {
-	void set(@Nonnull T contained, @Nullable T focus);
+	void set(@Nonnull T contained, @Nonnull Focus focus);
 
-	void set(@Nonnull Collection<T> contained, @Nullable T focus);
+	void set(@Nonnull Collection<T> contained, @Nonnull Focus focus);
 
 	void clear();
 

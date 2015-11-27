@@ -1,7 +1,5 @@
 package mezz.jei.gui;
 
-import com.google.common.collect.ImmutableList;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
@@ -12,7 +10,6 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -20,23 +17,15 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 import org.lwjgl.opengl.GL11;
 
-import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeHandler;
-import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
 import mezz.jei.input.IMouseHandler;
-import mezz.jei.input.IShowsItemStacks;
+import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.util.Log;
-import mezz.jei.util.MathUtil;
 import mezz.jei.util.StringUtil;
 
-public class RecipesGui extends GuiScreen implements IShowsItemStacks, IMouseHandler {
-	private enum Mode {
-		INPUT, OUTPUT
-	}
-
+public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouseHandler {
 	private static final int borderPadding = 8;
 	private static final int textPadding = 5;
 
@@ -44,35 +33,22 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IMouseHan
 	private int headerHeight;
 	private int buttonWidth;
 
-	/* Whether this GUI is dispzzlaying input or output recipes */
-	private Mode mode;
-
-	/* The ItemStack that is the focus of this GUI */
-	private ItemStack focusStack;
-	/* List of Recipe Categories that involve "focusStack" */
-	@Nonnull
-	private ImmutableList<IRecipeCategory> recipeCategories = ImmutableList.of();
+	/* Internal logic for the gui, handles finding recipes */
+	private final IRecipeGuiLogic logic = new RecipeGuiLogic();
 
 	/* List of RecipeWidget to display */
 	@Nonnull
 	private final List<RecipeWidget> recipeWidgets = new ArrayList<>();
 
-	/* List of recipes for the currently selected recipeClass */
-	@Nonnull
-	private ImmutableList<Object> recipes = ImmutableList.of();
-	private int recipesPerPage;
-
-	private int recipeCategoryIndex = 0;
-	private int pageIndex = 0;
 	private String pageString;
 	private String title;
+	private ResourceLocation backgroundTexture;
 
 	private GuiButton nextRecipeCategory;
 	private GuiButton previousRecipeCategory;
 	private GuiButton nextPage;
 	private GuiButton previousPage;
 
-	private ResourceLocation backgroundTexture;
 	private boolean isOpen = false;
 
 	private int guiLeft;
@@ -116,10 +92,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IMouseHan
 
 		addButtons();
 
-		// on screen resize
-		if (recipeWidgets.size() > 0) {
-			resetLayout();
-		}
+		updateLayout();
 	}
 
 	// don't post GUI events or we end up in an infinite loop handling them
@@ -132,12 +105,6 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IMouseHan
 		this.height = height;
 		this.buttonList.clear();
 		this.initGui();
-	}
-
-	private void resetLayout() {
-		recipeWidgets.clear();
-		pageIndex = 0;
-		updateLayout();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -155,14 +122,14 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IMouseHan
 
 	@Nullable
 	@Override
-	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
+	public Focus getFocusUnderMouse(int mouseX, int mouseY) {
 		if (!isMouseOver(mouseX, mouseY)) {
 			return null;
 		}
 		for (RecipeWidget recipeWidget : recipeWidgets) {
-			ItemStack stack = recipeWidget.getStackUnderMouse(mouseX, mouseY);
-			if (stack != null) {
-				return stack;
+			Focus focus = recipeWidget.getFocusUnderMouse(mouseX, mouseY);
+			if (focus != null) {
+				return focus;
 			}
 		}
 		return null;
@@ -189,10 +156,12 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IMouseHan
 		}
 
 		if (scrollDelta < 0) {
-			nextPage();
+			logic.nextPage();
+			updateLayout();
 			return true;
 		} else if (scrollDelta > 0) {
-			previousPage();
+			logic.previousPage();
+			updateLayout();
 			return true;
 		}
 		return false;
@@ -210,17 +179,19 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IMouseHan
 
 	@Override
 	public boolean isOpen() {
-		return isOpen && recipes.size() > 0;
+		return isOpen && logic.getRecipeCategory() != null;
 	}
 
-	public void showRecipes(@Nonnull ItemStack stack) {
-		if (setStack(stack, Mode.OUTPUT)) {
+	public void showRecipes(@Nonnull Focus focus) {
+		if (logic.setFocus(focus, IRecipeGuiLogic.Mode.OUTPUT)) {
+			updateLayout();
 			open();
 		}
 	}
 
-	public void showUses(@Nonnull ItemStack stack) {
-		if (setStack(stack, Mode.INPUT)) {
+	public void showUses(@Nonnull Focus focus) {
+		if (logic.setFocus(focus, IRecipeGuiLogic.Mode.INPUT)) {
+			updateLayout();
 			open();
 		}
 	}
@@ -228,131 +199,50 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IMouseHan
 	@Override
 	protected void actionPerformed(@Nonnull GuiButton guibutton) {
 		if (guibutton.id == nextPage.id) {
-			nextPage();
+			logic.nextPage();
+			updateLayout();
 		} else if (guibutton.id == previousPage.id) {
-			previousPage();
+			logic.previousPage();
+			updateLayout();
 		} else if (guibutton.id == nextRecipeCategory.id) {
-			nextRecipeCategory();
+			logic.nextRecipeCategory();
+			updateLayout();
 		} else if (guibutton.id == previousRecipeCategory.id) {
-			previousRecipeCategory();
+			logic.previousRecipeCategory();
+			updateLayout();
 		}
-	}
-
-	private boolean setStack(@Nullable ItemStack stack, @Nonnull Mode mode) {
-		if (stack == null) {
-			return false;
-		}
-		if (this.focusStack != null && this.focusStack.equals(stack) && this.mode == mode) {
-			return true;
-		}
-
-		ImmutableList<IRecipeCategory> types = null;
-		switch (mode) {
-			case INPUT:
-				types = JEIManager.recipeRegistry.getRecipeCategoriesWithInput(stack);
-				break;
-			case OUTPUT:
-				types = JEIManager.recipeRegistry.getRecipeCategoriesWithOutput(stack);
-				break;
-		}
-		if (types.isEmpty()) {
-			return false;
-		}
-
-		this.recipeCategories = types;
-		this.focusStack = stack;
-		this.mode = mode;
-		this.recipeCategoryIndex = 0;
-		this.pageIndex = 0;
-
-		updateLayout();
-		return true;
-	}
-
-	private void nextRecipeCategory() {
-		int recipesTypesCount = recipeCategories.size();
-		recipeCategoryIndex = (recipeCategoryIndex + 1) % recipesTypesCount;
-		pageIndex = 0;
-		updateLayout();
-	}
-
-	private void previousRecipeCategory() {
-		int recipesTypesCount = recipeCategories.size();
-		recipeCategoryIndex = (recipesTypesCount + recipeCategoryIndex - 1) % recipesTypesCount;
-		pageIndex = 0;
-		updateLayout();
-	}
-
-	private void nextPage() {
-		int pageCount = pageCount();
-		pageIndex = (pageIndex + 1) % pageCount;
-		updateLayout();
-	}
-
-	private void previousPage() {
-		int pageCount = pageCount();
-		pageIndex = (pageCount + pageIndex - 1) % pageCount;
-		updateLayout();
-	}
-
-	private int pageCount() {
-		if (recipes.size() <= 1) {
-			return 1;
-		}
-
-		return MathUtil.divideCeil(recipes.size(), recipesPerPage);
 	}
 
 	private void updateLayout() {
-		if (recipeCategories.isEmpty()) {
+		IRecipeCategory recipeCategory = logic.getRecipeCategory();
+		if (recipeCategory == null) {
 			return;
-		}
-
-		IRecipeCategory recipeCategory = recipeCategories.get(recipeCategoryIndex);
-
-		title = recipeCategory.getCategoryTitle();
-
-		switch (mode) {
-			case INPUT:
-				recipes = JEIManager.recipeRegistry.getRecipesWithInput(recipeCategory, focusStack);
-				break;
-			case OUTPUT:
-				recipes = JEIManager.recipeRegistry.getRecipesWithOutput(recipeCategory, focusStack);
-				break;
 		}
 
 		IDrawable recipeBackground = recipeCategory.getBackground();
 
-		recipesPerPage = (ySize - headerHeight) / (recipeBackground.getHeight() + borderPadding);
+		final int recipesPerPage = (ySize - headerHeight) / (recipeBackground.getHeight() + borderPadding);
 		final int recipeXOffset = (xSize - recipeBackground.getWidth()) / 2;
 		final int recipeSpacing = (ySize - headerHeight - (recipesPerPage * recipeBackground.getHeight())) / (recipesPerPage + 1);
+
+		logic.setRecipesPerPage(recipesPerPage);
+
+		title = recipeCategory.getTitle();
 
 		final int posX = guiLeft + recipeXOffset;
 		int posY = guiTop + headerHeight + recipeSpacing;
 
 		recipeWidgets.clear();
-		for (int recipeIndex = pageIndex * recipesPerPage; recipeIndex < recipes.size() && recipeWidgets.size() < recipesPerPage; recipeIndex++) {
-			Object recipe = recipes.get(recipeIndex);
-			IRecipeHandler recipeHandler = JEIManager.recipeRegistry.getRecipeHandler(recipe.getClass());
-			if (recipeHandler == null) {
-				Log.error("Couldn't find recipe handler for recipe: {}", recipe);
-				continue;
-			}
-
-			RecipeWidget recipeWidget = new RecipeWidget(recipeCategory);
+		recipeWidgets.addAll(logic.getRecipeWidgets());
+		for (RecipeWidget recipeWidget : recipeWidgets) {
 			recipeWidget.setPosition(posX, posY);
 			posY += recipeBackground.getHeight() + recipeSpacing;
-
-			@SuppressWarnings("unchecked")
-			IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
-			recipeWidget.setRecipe(recipeWrapper, focusStack);
-			recipeWidgets.add(recipeWidget);
 		}
 
-		nextPage.enabled = previousPage.enabled = (pageCount() > 1);
-		nextRecipeCategory.enabled = previousRecipeCategory.enabled = (recipeCategories.size() > 1);
+		nextPage.enabled = previousPage.enabled = logic.hasMultiplePages();
+		nextRecipeCategory.enabled = previousRecipeCategory.enabled = logic.hasMultipleCategories();
 
-		this.pageString = (pageIndex + 1) + "/" + pageCount();
+		pageString = logic.getPageString();
 	}
 
 	public void draw(int mouseX, int mouseY) {
@@ -380,7 +270,7 @@ public class RecipesGui extends GuiScreen implements IShowsItemStacks, IMouseHan
 
 		RecipeWidget hovered = null;
 		for (RecipeWidget recipeWidget : recipeWidgets) {
-			if (recipeWidget.getStackUnderMouse(mouseX, mouseY) != null) {
+			if (recipeWidget.getFocusUnderMouse(mouseX, mouseY) != null) {
 				hovered = recipeWidget;
 			} else {
 				recipeWidget.draw(minecraft, mouseX, mouseY);

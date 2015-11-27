@@ -40,8 +40,8 @@ public class GuiItemStack extends GuiWidget<ItemStack> {
 	}
 
 	@Override
-	protected ItemStack getMatch(Iterable<ItemStack> contained, ItemStack toMatch) {
-		return StackUtil.containsStack(contained, toMatch);
+	protected ItemStack getMatch(Iterable<ItemStack> contained, @Nonnull Focus toMatch) {
+		return StackUtil.containsStack(contained, toMatch.getStack());
 	}
 
 	@Override

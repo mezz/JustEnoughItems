@@ -3,6 +3,7 @@ package mezz.jei.api.recipe;
 import javax.annotation.Nonnull;
 
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.IGuiFluidTanks;
 import mezz.jei.api.gui.IGuiItemStacks;
 
 /**
@@ -17,7 +18,7 @@ public interface IRecipeCategory {
 	 * Called every frame, so make sure to store it in a field.
 	 */
 	@Nonnull
-	String getCategoryTitle();
+	String getTitle();
 
 	/**
 	 * Returns the drawable background for a single recipe in this category.
@@ -27,13 +28,13 @@ public interface IRecipeCategory {
 	IDrawable getBackground();
 
 	/**
-	 * Initialize the IGuiItemStacks with this recipe's layout.
+	 * Initialize the IGuiItemStacks and IGuiFluidTanks with this recipe's layout.
 	 */
-	void init(@Nonnull IGuiItemStacks guiItemStacks);
+	void init(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IGuiFluidTanks guiFluidTanks);
 
 	/**
 	 * Set the IGuiItemStacks and IGuiFluidTanks properties from the RecipeWrapper.
 	 */
-	void setRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IRecipeWrapper recipeWrapper);
+	void setRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IGuiFluidTanks guiFluidTanks, @Nonnull IRecipeWrapper recipeWrapper);
 
 }

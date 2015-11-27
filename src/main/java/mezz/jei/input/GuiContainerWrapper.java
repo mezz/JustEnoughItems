@@ -5,11 +5,11 @@ import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
 
+import mezz.jei.gui.Focus;
 import mezz.jei.gui.RecipesGui;
 
-public class GuiContainerWrapper implements IShowsItemStacks, IKeyable {
+public class GuiContainerWrapper implements IShowsRecipeFocuses, IKeyable {
 
 	private final GuiContainer guiContainer;
 	private final RecipesGui recipesGui;
@@ -21,13 +21,13 @@ public class GuiContainerWrapper implements IShowsItemStacks, IKeyable {
 
 	@Nullable
 	@Override
-	public ItemStack getStackUnderMouse(int mouseX, int mouseY) {
+	public Focus getFocusUnderMouse(int mouseX, int mouseY) {
 		if (!isOpen()) {
 			return null;
 		}
 		Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
 		if (slotUnderMouse != null && slotUnderMouse.getHasStack()) {
-			return slotUnderMouse.getStack();
+			return new Focus(slotUnderMouse.getStack());
 		}
 		return null;
 	}
