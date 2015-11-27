@@ -149,6 +149,9 @@ public class StackUtil {
 	@Nonnull
 	public static String uniqueIdentifierForStack(@Nonnull ItemStack stack, boolean wildcard) {
 		Item item = stack.getItem();
+		if (item == null) {
+			throw new NullItemInStackException();
+		}
 		Object itemName = GameData.getItemRegistry().getNameForObject(item);
 		String itemNameString = String.valueOf(itemName);
 		int metadata = stack.getMetadata();

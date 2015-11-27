@@ -11,19 +11,20 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 
 public class ShapedRecipesHandler implements IRecipeHandler<ShapedRecipes> {
 
-	@Nonnull
 	@Override
+	@Nonnull
 	public Class<ShapedRecipes> getRecipeClass() {
 		return ShapedRecipes.class;
 	}
 
-	@Nonnull
 	@Override
+	@Nonnull
 	public Class<? extends IRecipeCategory> getRecipeCategoryClass() {
 		return CraftingRecipeCategory.class;
 	}
 
 	@Override
+	@Nonnull
 	public IRecipeWrapper getRecipeWrapper(@Nonnull ShapedRecipes recipe) {
 		return new ShapedRecipesWrapper(recipe);
 	}
