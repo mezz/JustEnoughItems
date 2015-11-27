@@ -120,9 +120,6 @@ public class InputHandler {
 	@Nullable
 	private ItemStack getStackUnderMouseForKey(int mouseX, int mouseY) {
 		for (IShowsItemStacks gui : showsItemStacks) {
-			if (!(gui instanceof IKeyable)) {
-				continue;
-			}
 
 			ItemStack itemStack = gui.getStackUnderMouse(mouseX, mouseY);
 			if (itemStack != null) {
