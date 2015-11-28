@@ -13,6 +13,8 @@ import mezz.jei.api.JEIManager;
 import mezz.jei.config.Config;
 
 public class TooltipEventHandler {
+	private static final String chatFormatting = EnumChatFormatting.BLUE.toString() + EnumChatFormatting.ITALIC.toString();
+
 	@SubscribeEvent
 	public void onToolTip(@Nonnull ItemTooltipEvent event) {
 		if (!Config.tooltipModNameEnabled) {
@@ -30,6 +32,6 @@ public class TooltipEventHandler {
 		}
 
 		String modName = JEIManager.itemRegistry.getModNameForItem(item);
-		event.toolTip.add(EnumChatFormatting.BLUE + modName);
+		event.toolTip.add(chatFormatting + modName);
 	}
 }
