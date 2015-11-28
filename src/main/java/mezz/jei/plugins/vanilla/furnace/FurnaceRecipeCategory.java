@@ -7,10 +7,12 @@ import net.minecraft.util.StatCollector;
 
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IGuiFluidTanks;
-import mezz.jei.api.gui.IGuiItemStacks;
+import mezz.jei.api.gui.IGuiFluidStackGroup;
+import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.IRecipeCategoryUid;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 
 public class FurnaceRecipeCategory implements IRecipeCategory {
 
@@ -30,19 +32,26 @@ public class FurnaceRecipeCategory implements IRecipeCategory {
 	}
 
 	@Nonnull
+	@Override
+	public IRecipeCategoryUid getUid() {
+		return VanillaRecipeCategoryUid.FURNACE;
+	}
+
+	@Nonnull
+	@Override
 	public IDrawable getBackground() {
 		return background;
 	}
 
 	@Override
-	public void init(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IGuiFluidTanks guiFluidTanks) {
+	public void init(@Nonnull IGuiItemStackGroup guiItemStacks, @Nonnull IGuiFluidStackGroup guiFluidTanks) {
 		guiItemStacks.init(inputSlot, 0, 0);
 		guiItemStacks.init(fuelSlot, 0, 36);
 		guiItemStacks.init(outputSlot, 60, 18);
 	}
 
 	@Override
-	public void setRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IGuiFluidTanks guiFluidTanks, @Nonnull IRecipeWrapper recipeWrapper) {
+	public void setRecipe(@Nonnull IGuiItemStackGroup guiItemStacks, @Nonnull IGuiFluidStackGroup guiFluidTanks, @Nonnull IRecipeWrapper recipeWrapper) {
 		if (recipeWrapper instanceof FuelRecipe) {
 			FuelRecipe fuelRecipeWrapper = (FuelRecipe) recipeWrapper;
 			guiItemStacks.set(fuelSlot, fuelRecipeWrapper.getInputs());

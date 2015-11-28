@@ -5,9 +5,10 @@ import java.util.List;
 
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.IRecipeCategoryUid;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 
 public class ShapedOreRecipeHandler implements IRecipeHandler<ShapedOreRecipe> {
 
@@ -17,10 +18,10 @@ public class ShapedOreRecipeHandler implements IRecipeHandler<ShapedOreRecipe> {
 		return ShapedOreRecipe.class;
 	}
 
-	@Override
 	@Nonnull
-	public Class<? extends IRecipeCategory> getRecipeCategoryClass() {
-		return CraftingRecipeCategory.class;
+	@Override
+	public IRecipeCategoryUid getRecipeCategoryUid() {
+		return VanillaRecipeCategoryUid.CRAFTING;
 	}
 
 	@Override

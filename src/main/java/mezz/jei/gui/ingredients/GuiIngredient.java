@@ -1,4 +1,4 @@
-package mezz.jei.gui;
+package mezz.jei.gui.ingredients;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -15,28 +15,39 @@ import net.minecraft.client.renderer.RenderHelper;
 
 import org.lwjgl.opengl.GL11;
 
+import mezz.jei.gui.Focus;
+import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.util.CycleTimer;
 import mezz.jei.util.Log;
 
-public abstract class GuiWidget<T> extends Gui implements IGuiWidget<T> {
-	protected final int xPosition;
-	protected final int yPosition;
-	protected final int width;
-	protected final int height;
-
-	protected boolean enabled;
-	protected boolean visible;
-
-	protected final CycleTimer cycleTimer = new CycleTimer();
+public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
+	private final int xPosition;
+	private final int yPosition;
+	private final int width;
+	private final int height;
+	private final int padding;
 
 	@Nonnull
-	protected final List<T> contained = new ArrayList<>();
+	private final CycleTimer cycleTimer = new CycleTimer();
+	@Nonnull
+	private final List<T> contained = new ArrayList<>();
+	@Nonnull
+	private final IIngredientRenderer<T> ingredientRenderer;
+	@Nonnull
+	private final IIngredientHelper<T> ingredientHelper;
 
-	public GuiWidget(int xPosition, int yPosition, int width, int height) {
+	private boolean enabled;
+	private boolean visible;
+
+	public GuiIngredient(@Nonnull IIngredientRenderer<T> ingredientRenderer, @Nonnull IIngredientHelper<T> ingredientHelper, int xPosition, int yPosition, int width, int height, int padding) {
+		this.ingredientRenderer = ingredientRenderer;
+		this.ingredientHelper = ingredientHelper;
+
 		this.xPosition = xPosition;
 		this.yPosition = yPosition;
 		this.width = width;
 		this.height = height;
+		this.padding = padding;
 	}
 
 	@Override
@@ -64,8 +75,8 @@ public abstract class GuiWidget<T> extends Gui implements IGuiWidget<T> {
 	@Override
 	public void set(@Nonnull Collection<T> contained, @Nonnull Focus focus) {
 		this.contained.clear();
-		contained = expandSubtypes(contained);
-		T match = getMatch(contained, focus);
+		contained = ingredientHelper.expandSubtypes(contained);
+		T match = ingredientHelper.getMatch(contained, focus);
 		if (match != null) {
 			this.contained.add(match);
 		} else {
@@ -73,10 +84,6 @@ public abstract class GuiWidget<T> extends Gui implements IGuiWidget<T> {
 		}
 		visible = enabled = !this.contained.isEmpty();
 	}
-
-	protected abstract Collection<T> expandSubtypes(Collection<T> contained);
-
-	protected abstract T getMatch(Iterable<T> contained, @Nonnull Focus toMatch);
 
 	@Override
 	public void draw(@Nonnull Minecraft minecraft) {
@@ -105,7 +112,7 @@ public abstract class GuiWidget<T> extends Gui implements IGuiWidget<T> {
 			return;
 		}
 
-		draw(minecraft, xPosition, yPosition, value);
+		ingredientRenderer.draw(minecraft, xPosition + padding, yPosition + padding, value);
 	}
 
 	private void drawTooltip(@Nonnull Minecraft minecraft, int mouseX, int mouseY, @Nonnull T value) {
@@ -118,8 +125,8 @@ public abstract class GuiWidget<T> extends Gui implements IGuiWidget<T> {
 			drawRect(xPosition, yPosition, xPosition + width, yPosition + width, 0x7FFFFFFF);
 
 			this.zLevel = 0;
-			List tooltip = getTooltip(minecraft, value);
-			FontRenderer fontRenderer = getFontRenderer(minecraft, value);
+			List<String> tooltip = ingredientRenderer.getTooltip(minecraft, value);
+			FontRenderer fontRenderer = ingredientRenderer.getFontRenderer(minecraft, value);
 			TooltipRenderer.drawHoveringText(minecraft, tooltip, mouseX, mouseY, fontRenderer);
 
 			GlStateManager.enableDepth();
@@ -127,10 +134,4 @@ public abstract class GuiWidget<T> extends Gui implements IGuiWidget<T> {
 			Log.error("Exception when rendering tooltip on {}.\n{}", value, e);
 		}
 	}
-
-	protected abstract void draw(@Nonnull Minecraft minecraft, int xPosition, int yPosition, @Nonnull T value);
-
-	protected abstract List getTooltip(@Nonnull Minecraft minecraft, @Nonnull T value);
-
-	protected abstract FontRenderer getFontRenderer(@Nonnull Minecraft minecraft, @Nonnull T value);
 }

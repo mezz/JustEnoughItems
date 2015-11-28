@@ -8,13 +8,15 @@ import org.lwjgl.opengl.GL11;
 
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.gui.ingredients.GuiFluidStackGroup;
+import mezz.jei.gui.ingredients.GuiItemStackGroup;
 
 public class RecipeWidget {
 
 	@Nonnull
 	private final IRecipeCategory recipeCategory;
-	private final GuiItemStacks guiItemStacks;
-	private final GuiFluidTanks guiFluidTanks;
+	private final GuiItemStackGroup guiItemStackGroup;
+	private final GuiFluidStackGroup guiFluidStackGroup;
 
 	private IRecipeWrapper recipeWrapper;
 	private int posX;
@@ -22,9 +24,9 @@ public class RecipeWidget {
 
 	public RecipeWidget(@Nonnull IRecipeCategory recipeCategory) {
 		this.recipeCategory = recipeCategory;
-		this.guiItemStacks = new GuiItemStacks();
-		this.guiFluidTanks = new GuiFluidTanks();
-		this.recipeCategory.init(guiItemStacks, guiFluidTanks);
+		this.guiItemStackGroup = new GuiItemStackGroup();
+		this.guiFluidStackGroup = new GuiFluidStackGroup();
+		this.recipeCategory.init(guiItemStackGroup, guiFluidStackGroup);
 	}
 
 	public void setPosition(int posX, int posY) {
@@ -35,9 +37,9 @@ public class RecipeWidget {
 	public void setRecipe(@Nonnull IRecipeWrapper recipeWrapper, @Nonnull Focus focus) {
 		this.recipeWrapper = recipeWrapper;
 
-		guiItemStacks.clear();
-		guiItemStacks.setFocus(focus);
-		recipeCategory.setRecipe(guiItemStacks, guiFluidTanks, recipeWrapper);
+		guiItemStackGroup.clear();
+		guiItemStackGroup.setFocus(focus);
+		recipeCategory.setRecipe(guiItemStackGroup, guiFluidStackGroup, recipeWrapper);
 	}
 
 	public void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
@@ -52,12 +54,12 @@ public class RecipeWidget {
 
 		recipeCategory.getBackground().draw(minecraft);
 		recipeWrapper.drawInfo(minecraft);
-		guiItemStacks.draw(minecraft, mouseX - posX, mouseY - posY);
+		guiItemStackGroup.draw(minecraft, mouseX - posX, mouseY - posY);
 
 		GL11.glPopMatrix();
 	}
 
 	public Focus getFocusUnderMouse(int mouseX, int mouseY) {
-		return guiItemStacks.getFocusUnderMouse(mouseX - posX, mouseY - posY);
+		return guiItemStackGroup.getFocusUnderMouse(mouseX - posX, mouseY - posY);
 	}
 }

@@ -3,14 +3,21 @@ package mezz.jei.api.recipe;
 import javax.annotation.Nonnull;
 
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IGuiFluidTanks;
-import mezz.jei.api.gui.IGuiItemStacks;
+import mezz.jei.api.gui.IGuiFluidStackGroup;
+import mezz.jei.api.gui.IGuiItemStackGroup;
 
 /**
  * Defines a category of recipe, (i.e. Crafting Table Recipe, Furnace Recipe)
  * and handles setting up the GUI for its recipe category.
  */
 public interface IRecipeCategory {
+
+	/**
+	 * Returns a unique ID for this recipe category.
+	 * Referenced from recipes to identify which recipe category they belong to.
+	 */
+	@Nonnull
+	IRecipeCategoryUid getUid();
 
 	/**
 	 * Returns the localized name for this recipe type.
@@ -28,13 +35,13 @@ public interface IRecipeCategory {
 	IDrawable getBackground();
 
 	/**
-	 * Initialize the IGuiItemStacks and IGuiFluidTanks with this recipe's layout.
+	 * Initialize the IGuiItemStackGroup and IGuiFluidStackGroup with this recipe's layout.
 	 */
-	void init(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IGuiFluidTanks guiFluidTanks);
+	void init(@Nonnull IGuiItemStackGroup guiItemStacks, @Nonnull IGuiFluidStackGroup guiFluidTanks);
 
 	/**
-	 * Set the IGuiItemStacks and IGuiFluidTanks properties from the RecipeWrapper.
+	 * Set the IGuiItemStackGroup and IGuiFluidStackGroup properties from the RecipeWrapper.
 	 */
-	void setRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IGuiFluidTanks guiFluidTanks, @Nonnull IRecipeWrapper recipeWrapper);
+	void setRecipe(@Nonnull IGuiItemStackGroup guiItemStacks, @Nonnull IGuiFluidStackGroup guiFluidTanks, @Nonnull IRecipeWrapper recipeWrapper);
 
 }

@@ -8,10 +8,12 @@ import net.minecraft.util.StatCollector;
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IGuiFluidTanks;
-import mezz.jei.api.gui.IGuiItemStacks;
+import mezz.jei.api.gui.IGuiFluidStackGroup;
+import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.IRecipeCategoryUid;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 import mezz.jei.util.Log;
@@ -35,6 +37,12 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 		craftingGridHelper = JEIManager.guiHelper.createCraftingGridHelper(craftInputSlot1, craftOutputSlot);
 	}
 
+	@Override
+	@Nonnull
+	public IRecipeCategoryUid getUid() {
+		return VanillaRecipeCategoryUid.CRAFTING;
+	}
+
 	@Nonnull
 	@Override
 	public String getTitle() {
@@ -48,7 +56,7 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 	}
 
 	@Override
-	public void init(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IGuiFluidTanks guiFluidTanks) {
+	public void init(@Nonnull IGuiItemStackGroup guiItemStacks, @Nonnull IGuiFluidStackGroup guiFluidTanks) {
 		guiItemStacks.init(craftOutputSlot, 94, 18);
 
 		for (int y = 0; y < 3; ++y) {
@@ -60,7 +68,7 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 	}
 
 	@Override
-	public void setRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IGuiFluidTanks guiFluidTanks, @Nonnull IRecipeWrapper recipeWrapper) {
+	public void setRecipe(@Nonnull IGuiItemStackGroup guiItemStacks, @Nonnull IGuiFluidStackGroup guiFluidTanks, @Nonnull IRecipeWrapper recipeWrapper) {
 		if (recipeWrapper instanceof IShapedCraftingRecipeWrapper) {
 			IShapedCraftingRecipeWrapper wrapper = (IShapedCraftingRecipeWrapper) recipeWrapper;
 			craftingGridHelper.setInput(guiItemStacks, wrapper.getInputs(), wrapper.getWidth(), wrapper.getHeight());
@@ -70,7 +78,7 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 			craftingGridHelper.setInput(guiItemStacks, wrapper.getInputs());
 			craftingGridHelper.setOutput(guiItemStacks, wrapper.getOutputs());
 		} else {
-			Log.error("RecipeWrapper is not a know crafting wrapper type: {}", recipeWrapper);
+			Log.error("RecipeWrapper is not a known crafting wrapper type: {}", recipeWrapper);
 		}
 	}
 

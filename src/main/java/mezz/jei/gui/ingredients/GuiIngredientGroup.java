@@ -1,4 +1,4 @@
-package mezz.jei.gui;
+package mezz.jei.gui.ingredients;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -8,37 +8,42 @@ import java.util.Map;
 
 import net.minecraft.client.Minecraft;
 
-public abstract class GuiWidgets<V, T extends GuiWidget<V>> {
+import mezz.jei.api.gui.IGuiIngredientGroup;
+import mezz.jei.gui.Focus;
+
+public abstract class GuiIngredientGroup<V, T extends GuiIngredient<V>> implements IGuiIngredientGroup<V> {
 	@Nonnull
-	protected final Map<Integer, T> guiWidgets = new HashMap<>();
+	protected final Map<Integer, T> guiIngredients = new HashMap<>();
 	@Nonnull
 	protected Focus focus = new Focus();
 
 	/**
-	 * If focus is set and any of the guiWidgets contains focus
+	 * If focus is set and any of the guiIngredients contains focus
 	 * they will only display focus instead of rotating through all their values.
 	 */
 	public void setFocus(@Nonnull Focus focus) {
 		this.focus = focus;
 	}
 
+	@Override
 	public void set(int index, @Nonnull Collection<V> values) {
-		guiWidgets.get(index).set(values, focus);
+		guiIngredients.get(index).set(values, focus);
 	}
 
+	@Override
 	public void set(int index, @Nonnull V value) {
-		guiWidgets.get(index).set(value, focus);
+		guiIngredients.get(index).set(value, focus);
 	}
 
 	public void clear() {
-		for (T guiWidget : guiWidgets.values()) {
+		for (T guiWidget : guiIngredients.values()) {
 			guiWidget.clear();
 		}
 	}
 
 	@Nullable
 	public Focus getFocusUnderMouse(int mouseX, int mouseY) {
-		for (T widget : guiWidgets.values()) {
+		for (T widget : guiIngredients.values()) {
 			if (widget != null && widget.isMouseOver(mouseX, mouseY)) {
 				return new Focus(widget.get());
 			}
@@ -48,11 +53,11 @@ public abstract class GuiWidgets<V, T extends GuiWidget<V>> {
 
 	public void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 		T hovered = null;
-		for (T widget : guiWidgets.values()) {
-			if (hovered == null && widget.isMouseOver(mouseX, mouseY)) {
-				hovered = widget;
+		for (T ingredient : guiIngredients.values()) {
+			if (hovered == null && ingredient.isMouseOver(mouseX, mouseY)) {
+				hovered = ingredient;
 			} else {
-				widget.draw(minecraft);
+				ingredient.draw(minecraft);
 			}
 		}
 		if (hovered != null) {

@@ -1,11 +1,9 @@
 package mezz.jei;
 
-import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.google.common.collect.MutableClassToInstanceMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -13,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.item.ItemStack;
@@ -22,6 +21,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.IRecipeCategoryUid;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.util.Log;
@@ -31,7 +31,7 @@ import mezz.jei.util.StackUtil;
 
 public class RecipeRegistry implements IRecipeRegistry {
 	private final ImmutableMap<Class, IRecipeHandler> recipeHandlers;
-	private final ImmutableClassToInstanceMap<IRecipeCategory> recipeCategoriesMap;
+	private final ImmutableMap<IRecipeCategoryUid, IRecipeCategory> recipeCategoriesMap;
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
 	private final Set<Class> unhandledRecipeClasses = new HashSet<>();
@@ -48,12 +48,12 @@ public class RecipeRegistry implements IRecipeRegistry {
 		addRecipes(recipes);
 	}
 
-	private static ImmutableClassToInstanceMap<IRecipeCategory> buildRecipeCategoriesMap(@Nonnull ImmutableList<IRecipeCategory> recipeCategories) {
-		MutableClassToInstanceMap<IRecipeCategory> mutableRecipeCategoriesMap = MutableClassToInstanceMap.create();
+	private static ImmutableMap<IRecipeCategoryUid, IRecipeCategory> buildRecipeCategoriesMap(@Nonnull ImmutableList<IRecipeCategory> recipeCategories) {
+		Map<IRecipeCategoryUid, IRecipeCategory> mutableRecipeCategoriesMap = new HashMap<>();
 		for (IRecipeCategory recipeCategory : recipeCategories) {
-			mutableRecipeCategoriesMap.put(recipeCategory.getClass(), recipeCategory);
+			mutableRecipeCategoriesMap.put(recipeCategory.getUid(), recipeCategory);
 		}
-		return ImmutableClassToInstanceMap.copyOf(mutableRecipeCategoriesMap);
+		return ImmutableMap.copyOf(mutableRecipeCategoriesMap);
 	}
 
 	private static ImmutableMap<Class, IRecipeHandler> buildRecipeHandlersMap(@Nonnull List<IRecipeHandler> recipeHandlers) {
@@ -103,10 +103,10 @@ public class RecipeRegistry implements IRecipeRegistry {
 			return;
 		}
 
-		Class recipeCategoryClass = recipeHandler.getRecipeCategoryClass();
-		IRecipeCategory recipeCategory = recipeCategoriesMap.getInstance(recipeCategoryClass);
+		IRecipeCategoryUid recipeCategoryUid = recipeHandler.getRecipeCategoryUid();
+		IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
 		if (recipeCategory == null) {
-			Log.error("No recipe category registered for recipeCategoryClass: {}", recipeCategoryClass);
+			Log.error("No recipe category registered for recipeCategoryUid: {}", recipeCategoryUid);
 			return;
 		}
 
