@@ -32,14 +32,14 @@ public class ItemStackElement {
 		}
 	}
 
-	public ItemStackElement(@Nonnull ItemStack itemStack) {
+	private ItemStackElement(@Nonnull ItemStack itemStack) {
 		this.itemStack = itemStack;
 		this.localizedName = itemStack.getDisplayName().toLowerCase();
 
 		String modId = GameRegistry.findUniqueIdentifierFor(itemStack.getItem()).modId;
 		String modName = JEIManager.itemRegistry.getModNameForItem(itemStack.getItem());
 
-		this.modName = modId.toLowerCase(Locale.ENGLISH) + " " + modName.toLowerCase(Locale.ENGLISH);
+		this.modName = modId.toLowerCase(Locale.ENGLISH) + ' ' + modName.toLowerCase(Locale.ENGLISH);
 	}
 
 	@Nonnull
