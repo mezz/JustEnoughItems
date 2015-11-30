@@ -8,7 +8,6 @@ import java.util.List;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -71,7 +70,7 @@ public class JustEnoughItems implements IPluginRegistry {
 		pluginsCanRegister = false;
 		KeyBindings.init();
 
-		FMLCommonHandler.instance().bus().register(instance);
+		MinecraftForge.EVENT_BUS.register(instance);
 	}
 
 	@Mod.EventHandler
@@ -101,7 +100,6 @@ public class JustEnoughItems implements IPluginRegistry {
 		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter);
 		GuiEventHandler guiEventHandler = new GuiEventHandler(itemListOverlay);
 		MinecraftForge.EVENT_BUS.register(guiEventHandler);
-		FMLCommonHandler.instance().bus().register(guiEventHandler);
 
 		TooltipEventHandler tooltipEventHandler = new TooltipEventHandler();
 		MinecraftForge.EVENT_BUS.register(tooltipEventHandler);

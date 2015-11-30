@@ -6,7 +6,7 @@ import java.util.Locale;
 
 import net.minecraft.item.ItemStack;
 
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameData;
 
 import mezz.jei.api.JEIManager;
 
@@ -36,10 +36,10 @@ public class ItemStackElement {
 		this.itemStack = itemStack;
 		this.localizedName = itemStack.getDisplayName().toLowerCase();
 
-		String modId = GameRegistry.findUniqueIdentifierFor(itemStack.getItem()).modId;
+		String modId = GameData.getItemRegistry().getNameForObject(itemStack.getItem()).getResourceDomain();
 		String modName = JEIManager.itemRegistry.getModNameForItem(itemStack.getItem());
 
-		this.modName = modId.toLowerCase(Locale.ENGLISH) + " " + modName.toLowerCase(Locale.ENGLISH);
+		this.modName = modId.toLowerCase(Locale.ENGLISH) + ' ' + modName.toLowerCase(Locale.ENGLISH);
 	}
 
 	@Nonnull

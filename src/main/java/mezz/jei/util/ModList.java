@@ -11,7 +11,7 @@ import net.minecraft.item.Item;
 
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameData;
 
 public class ModList {
 
@@ -28,7 +28,7 @@ public class ModList {
 
 	@Nonnull
 	public String getModNameForItem(@Nonnull Item item) {
-		String modId = GameRegistry.findUniqueIdentifierFor(item).modId;
+		String modId = GameData.getItemRegistry().getNameForObject(item).getResourceDomain();
 		String modName = modNamesForIds.get(modId.toLowerCase(Locale.ENGLISH));
 		if (modName == null) {
 			modName = WordUtils.capitalize(modId);
