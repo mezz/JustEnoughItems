@@ -3,6 +3,7 @@ package mezz.jei.plugins.vanilla.furnace;
 import javax.annotation.Nonnull;
 
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
@@ -12,13 +13,15 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 
 public class FurnaceFuelCategory extends FurnaceRecipeCategory {
-
 	@Nonnull
 	private final IDrawable background;
+	@Nonnull
+	private final String localizedName;
 
 	public FurnaceFuelCategory() {
 		ResourceLocation location = new ResourceLocation("minecraft:textures/gui/container/furnace.png");
 		background = JEIManager.guiHelper.createDrawable(location, 55, 38, 18, 32, 0, 0, 0, 80);
+		localizedName = StatCollector.translateToLocal("gui.jei.fuelRecipes");
 	}
 
 	@Override
@@ -31,6 +34,12 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory {
 	@Override
 	public String getUid() {
 		return VanillaRecipeCategoryUid.FUEL;
+	}
+
+	@Nonnull
+	@Override
+	public String getTitle() {
+		return localizedName;
 	}
 
 	@Override

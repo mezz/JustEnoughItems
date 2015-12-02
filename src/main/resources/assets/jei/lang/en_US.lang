@@ -17,7 +17,8 @@ config.jei.nbtKeyBlacklist.description=List of NBT Keys that should be ignored w
 
 # Recipes
 gui.jei.craftingTableRecipes=Crafting Table Recipes
-gui.jei.furnaceRecipes=Furnace Recipes
+gui.jei.smeltingRecipes=Smelting Recipes
+gui.jei.fuelRecipes=Fuel Recipes
 gui.jei.furnaceExperience=%s Exp.
 gui.jei.furnaceBurnTime=Burn Time: %s
 gui.jei.forestry.centrifugeRecipes=Forestry Centrifuge
