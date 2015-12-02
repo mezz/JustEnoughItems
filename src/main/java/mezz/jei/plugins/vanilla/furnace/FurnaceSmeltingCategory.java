@@ -15,8 +15,6 @@ public class FurnaceSmeltingCategory extends FurnaceRecipeCategory {
 
 	@Override
 	public void init(@Nonnull IRecipeLayout recipeLayout) {
-		recipeLayout.setRecipeTransferButton(-14, 0);
-
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 		guiItemStacks.init(inputSlot, true, 0, 0);
 		guiItemStacks.init(fuelSlot, false, 0, 36);

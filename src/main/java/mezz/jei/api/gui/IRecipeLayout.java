@@ -3,15 +3,24 @@ package mezz.jei.api.gui;
 import javax.annotation.Nonnull;
 
 public interface IRecipeLayout {
+	/**
+	 * Contains all the itemStacks displayed on this recipe layout.
+	 * Init and set them in your recipe category.
+	 */
 	@Nonnull
 	IGuiItemStackGroup getItemStacks();
 
+	/**
+	 * Contains all the fluidStacks displayed on this recipe layout.
+	 * Init and set them in your recipe category.
+	 */
 	@Nonnull
 	IGuiFluidStackGroup getFluidStacks();
 
 	/**
-	 * Enables the recipe transfer button and sets its position relative to the recipe layout.
-	 * The button transfers items in the user's inventory into the crafting area to set a recipe.
+	 * Moves the recipe transfer button's position relative to the recipe layout.
+	 * By default the recipe transfer button is at the bottom, to the right of the recipe.
+	 * If it doesn't fit there, you can use this to move it when you init the recipe layout.
 	 */
 	void setRecipeTransferButton(int posX, int posY);
 }
