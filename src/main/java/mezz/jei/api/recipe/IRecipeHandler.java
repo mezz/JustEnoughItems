@@ -11,9 +11,9 @@ public interface IRecipeHandler<T> {
 	@Nonnull
 	Class<T> getRecipeClass();
 
-	/** Returns the category of this recipe. */
+	/** Returns this recipe's category unique id. */
 	@Nonnull
-	Class<? extends IRecipeCategory> getRecipeCategoryClass();
+	String getRecipeCategoryUid();
 
 	/** Returns a recipe wrapper for the given recipe. */
 	@Nonnull

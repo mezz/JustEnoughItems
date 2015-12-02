@@ -5,9 +5,9 @@ import java.util.List;
 
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
-import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 
 public class ShapelessOreRecipeHandler implements IRecipeHandler<ShapelessOreRecipe> {
 
@@ -17,10 +17,10 @@ public class ShapelessOreRecipeHandler implements IRecipeHandler<ShapelessOreRec
 		return ShapelessOreRecipe.class;
 	}
 
-	@Override
 	@Nonnull
-	public Class<? extends IRecipeCategory> getRecipeCategoryClass() {
-		return CraftingRecipeCategory.class;
+	@Override
+	public String getRecipeCategoryUid() {
+		return VanillaRecipeCategoryUid.CRAFTING;
 	}
 
 	@Override

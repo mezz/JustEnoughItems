@@ -3,7 +3,7 @@ package mezz.jei.input;
 public interface IKeyable extends ICloseable {
 
 	/**
-	 * Returns true if all keyboard input should go to this IKeyboardable.
+	 * Returns true if all keyboard input should go to this IKeyable.
 	 */
 	boolean hasKeyboardFocus();
 

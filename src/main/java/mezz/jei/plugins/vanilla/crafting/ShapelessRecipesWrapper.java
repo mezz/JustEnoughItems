@@ -44,4 +44,9 @@ public class ShapelessRecipesWrapper extends VanillaRecipeWrapper implements ICr
 	public void drawInfo(@Nonnull Minecraft minecraft) {
 
 	}
+
+	@Override
+	public boolean usesOreDictionaryComparison() {
+		return false;
+	}
 }

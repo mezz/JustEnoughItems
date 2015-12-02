@@ -8,10 +8,11 @@ import net.minecraft.util.StatCollector;
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IGuiFluidTanks;
-import mezz.jei.api.gui.IGuiItemStacks;
+import mezz.jei.api.gui.IGuiItemStackGroup;
+import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 import mezz.jei.util.Log;
@@ -35,6 +36,12 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 		craftingGridHelper = JEIManager.guiHelper.createCraftingGridHelper(craftInputSlot1, craftOutputSlot);
 	}
 
+	@Override
+	@Nonnull
+	public String getUid() {
+		return VanillaRecipeCategoryUid.CRAFTING;
+	}
+
 	@Nonnull
 	@Override
 	public String getTitle() {
@@ -48,19 +55,25 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 	}
 
 	@Override
-	public void init(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IGuiFluidTanks guiFluidTanks) {
-		guiItemStacks.init(craftOutputSlot, 94, 18);
+	public void init(@Nonnull IRecipeLayout recipeLayout) {
+		recipeLayout.setRecipeTransferButton(56, 0);
+
+		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
+
+		guiItemStacks.init(craftOutputSlot, false, 94, 18);
 
 		for (int y = 0; y < 3; ++y) {
 			for (int x = 0; x < 3; ++x) {
 				int index = craftInputSlot1 + x + (y * 3);
-				guiItemStacks.init(index, x * 18, y * 18);
+				guiItemStacks.init(index, true, x * 18, y * 18);
 			}
 		}
 	}
 
 	@Override
-	public void setRecipe(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull IGuiFluidTanks guiFluidTanks, @Nonnull IRecipeWrapper recipeWrapper) {
+	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper) {
+		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
+
 		if (recipeWrapper instanceof IShapedCraftingRecipeWrapper) {
 			IShapedCraftingRecipeWrapper wrapper = (IShapedCraftingRecipeWrapper) recipeWrapper;
 			craftingGridHelper.setInput(guiItemStacks, wrapper.getInputs(), wrapper.getWidth(), wrapper.getHeight());
@@ -70,7 +83,7 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 			craftingGridHelper.setInput(guiItemStacks, wrapper.getInputs());
 			craftingGridHelper.setOutput(guiItemStacks, wrapper.getOutputs());
 		} else {
-			Log.error("RecipeWrapper is not a know crafting wrapper type: {}", recipeWrapper);
+			Log.error("RecipeWrapper is not a known crafting wrapper type: {}", recipeWrapper);
 		}
 	}
 

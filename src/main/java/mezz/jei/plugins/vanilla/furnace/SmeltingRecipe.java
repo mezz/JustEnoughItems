@@ -15,16 +15,16 @@ import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
 
 public class SmeltingRecipe extends VanillaRecipeWrapper {
 	@Nonnull
-	private final List<ItemStack> input;
+	private final List<List<ItemStack>> input;
 	@Nonnull
-	private final ItemStack output;
+	private final List<ItemStack> outputs;
 
 	@Nullable
 	private final String experienceString;
 
 	public SmeltingRecipe(@Nonnull List<ItemStack> input, @Nonnull ItemStack output, float experience) {
-		this.input = input;
-		this.output = output;
+		this.input = Collections.singletonList(input);
+		this.outputs = Collections.singletonList(output);
 
 		if (experience > 0.0) {
 			experienceString = StatCollector.translateToLocalFormatted("gui.jei.furnaceExperience", experience);
@@ -34,13 +34,13 @@ public class SmeltingRecipe extends VanillaRecipeWrapper {
 	}
 
 	@Nonnull
-	public List<ItemStack> getInputs() {
+	public List<List<ItemStack>> getInputs() {
 		return input;
 	}
 
 	@Nonnull
 	public List<ItemStack> getOutputs() {
-		return Collections.singletonList(output);
+		return outputs;
 	}
 
 	@Override
@@ -51,4 +51,8 @@ public class SmeltingRecipe extends VanillaRecipeWrapper {
 		}
 	}
 
+	@Override
+	public boolean usesOreDictionaryComparison() {
+		return false;
+	}
 }

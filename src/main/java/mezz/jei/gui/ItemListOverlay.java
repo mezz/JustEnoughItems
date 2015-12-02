@@ -21,6 +21,8 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 import org.lwjgl.input.Keyboard;
 
 import mezz.jei.ItemFilter;
+import mezz.jei.gui.ingredients.GuiIngredient;
+import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.input.IKeyable;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
@@ -32,15 +34,15 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	private static final int borderPadding = 1;
 	private static final int searchHeight = 16;
 	private static final int itemStackPadding = 1;
-	private static final int itemStackWidth = GuiItemStack.getWidth(itemStackPadding);
-	private static final int itemStackHeight = GuiItemStack.getHeight(itemStackPadding);
+	private static final int itemStackWidth = GuiItemStackGroup.getWidth(itemStackPadding);
+	private static final int itemStackHeight = GuiItemStackGroup.getHeight(itemStackPadding);
 	private static final int maxSearchLength = 32;
 	private static int pageNum = 0;
 
 	private final ItemFilter itemFilter;
 
 	private int buttonHeight;
-	private final ArrayList<GuiItemStack> guiItemStacks = new ArrayList<>();
+	private final ArrayList<GuiIngredient<ItemStack>> guiItemStacks = new ArrayList<>();
 	private GuiButton nextButton;
 	private GuiButton backButton;
 	private GuiTextField searchField;
@@ -50,7 +52,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	private int pageNumDisplayX;
 	private int pageNumDisplayY;
 
-	private GuiItemStack hovered = null;
+	private GuiIngredient<ItemStack> hovered = null;
 
 	// properties of the gui we're beside
 	private int guiLeft;
@@ -110,7 +112,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 				maxX = x;
 			}
 
-			guiItemStacks.add(new GuiItemStack(x, y, itemStackPadding));
+			guiItemStacks.add(GuiItemStackGroup.createGuiItemStack(false, x, y, itemStackPadding));
 
 			x += itemStackWidth;
 			if (x + itemStackWidth + borderPadding > width) {
@@ -130,7 +132,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		int i = pageNum * getCountPerPage();
 
 		ImmutableList<ItemStackElement> itemList = itemFilter.getItemList();
-		for (GuiItemStack itemButton : guiItemStacks) {
+		for (GuiIngredient<ItemStack> itemButton : guiItemStacks) {
 			if (i >= itemList.size()) {
 				itemButton.clear();
 			} else {
@@ -185,7 +187,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		nextButton.drawButton(minecraft, mouseX, mouseY);
 		backButton.drawButton(minecraft, mouseX, mouseY);
 
-		for (GuiItemStack guiItemStack : guiItemStacks) {
+		for (GuiIngredient<ItemStack> guiItemStack : guiItemStacks) {
 			if (hovered == null && guiItemStack.isMouseOver(mouseX, mouseY)) {
 				hovered = guiItemStack;
 			} else {
@@ -216,7 +218,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		if (!isMouseOver(mouseX, mouseY)) {
 			return null;
 		}
-		for (GuiItemStack guiItemStack : guiItemStacks) {
+		for (GuiIngredient<ItemStack> guiItemStack : guiItemStacks) {
 			if (guiItemStack.isMouseOver(mouseX, mouseY)) {
 				setKeyboardFocus(false);
 				return new Focus(guiItemStack.get());

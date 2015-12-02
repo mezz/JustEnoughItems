@@ -1,12 +1,15 @@
-package mezz.jei.gui;
+package mezz.jei.gui.ingredients;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.List;
 
 import net.minecraft.client.Minecraft;
 
-public interface IGuiWidget<T> {
+import mezz.jei.gui.Focus;
+
+public interface IGuiIngredient<T> {
 	void set(@Nonnull T contained, @Nonnull Focus focus);
 
 	void set(@Nonnull Collection<T> contained, @Nonnull Focus focus);
@@ -15,6 +18,9 @@ public interface IGuiWidget<T> {
 
 	@Nullable
 	T get();
+
+	@Nonnull
+	List<T> getAll();
 
 	boolean isMouseOver(int mouseX, int mouseY);
 

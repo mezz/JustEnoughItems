@@ -34,5 +34,5 @@ public interface IRecipeGuiLogic {
 	IRecipeCategory getRecipeCategory();
 
 	@Nonnull
-	List<RecipeWidget> getRecipeWidgets();
+	List<RecipeLayout> getRecipeWidgets(int posX, int posY, int spacingY);
 }

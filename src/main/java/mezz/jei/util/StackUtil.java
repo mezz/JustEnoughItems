@@ -3,10 +3,13 @@ package mezz.jei.util;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -16,18 +19,31 @@ import net.minecraftforge.oredict.OreDictionary;
 public class StackUtil {
 
 	@Nonnull
-	public static List<ItemStack> removeDuplicateItemStacks(Iterable<ItemStack> stacks) {
+	public static List<ItemStack> removeDuplicateItemStacks(@Nonnull Iterable<ItemStack> stacks) {
 		List<ItemStack> newStacks = new ArrayList<>();
-		if (stacks == null) {
-			return newStacks;
-		}
-
 		for (ItemStack stack : stacks) {
 			if (stack != null && containsStack(newStacks, stack) == null) {
 				newStacks.add(stack);
 			}
 		}
 		return newStacks;
+	}
+
+	/* Returns an ItemStack from "stacks" if it isIdentical to an ItemStack from "contains" */
+	@Nullable
+	public static ItemStack containsStack(@Nullable Iterable<ItemStack> stacks, @Nullable Iterable<ItemStack> contains) {
+		if (stacks == null || contains == null) {
+			return null;
+		}
+
+		for (ItemStack containStack : contains) {
+			ItemStack matchingStack = containsStack(stacks, containStack);
+			if (matchingStack != null) {
+				return matchingStack;
+			}
+		}
+
+		return null;
 	}
 
 	/* Returns an ItemStack from "stacks" if it isIdentical to "contains" */
@@ -43,6 +59,70 @@ public class StackUtil {
 			}
 		}
 		return null;
+	}
+
+	@Nonnull
+	public static List<ItemStack> condenseStacks(Collection<ItemStack> stacks) {
+		List<ItemStack> condensed = new ArrayList<>();
+
+		for (ItemStack stack : stacks) {
+			if (stack == null) {
+				continue;
+			}
+			if (stack.stackSize <= 0) {
+				continue;
+			}
+
+			boolean matched = false;
+			for (ItemStack cached : condensed) {
+				if ((cached.isItemEqual(stack) && ItemStack.areItemStackTagsEqual(cached, stack))) {
+					cached.stackSize += stack.stackSize;
+					matched = true;
+				}
+			}
+
+			if (!matched) {
+				ItemStack cached = stack.copy();
+				condensed.add(cached);
+			}
+		}
+
+		return condensed;
+	}
+
+	/**
+	 * Counts how many full sets are contained in the passed stock.
+	 * Returns a list of matching stacks from set, or null if there aren't enough for a complete match.
+	 */
+	@Nullable
+	public static List<ItemStack> containsSets(Collection<ItemStack> required, Collection<ItemStack> offered) {
+		int totalSets = 0;
+
+		List<ItemStack> matching = new ArrayList<>();
+		List<ItemStack> condensedRequired = condenseStacks(required);
+		List<ItemStack> condensedOffered = condenseStacks(offered);
+
+		for (ItemStack req : condensedRequired) {
+			int reqCount = 0;
+			for (ItemStack offer : condensedOffered) {
+				if (isIdentical(req, offer)) {
+					int stackCount = (int) Math.floor(offer.stackSize / req.stackSize);
+					reqCount = Math.max(reqCount, stackCount);
+				}
+			}
+
+			if (reqCount == 0) {
+				return null;
+			} else {
+				matching.add(req);
+
+				if (totalSets == 0 || totalSets > reqCount) {
+					totalSets = reqCount;
+				}
+			}
+		}
+
+		return matching;
 	}
 
 	public static boolean isIdentical(@Nullable ItemStack lhs, @Nullable ItemStack rhs) {
@@ -125,24 +205,63 @@ public class StackUtil {
 	}
 
 	@Nonnull
-	public static List<ItemStack> toItemStackList(@Nullable Iterable stacks) {
-		if (stacks == null) {
-			return Collections.emptyList();
+	public static List<String> getOreNames(@Nonnull ItemStack stack) {
+		List<String> oreNames = new ArrayList<>();
+		int[] oreIds = OreDictionary.getOreIDs(stack);
+		for (int oreId : oreIds) {
+			String oreName = OreDictionary.getOreName(oreId);
+			oreNames.add(oreName);
 		}
+		return oreNames;
+	}
+
+	public static List<List<ItemStack>> expandRecipeInputs(@Nullable List recipeInputs, boolean oreDict) {
+		List<List<ItemStack>> expandedRecipeInputs = new ArrayList<>();
+		if (recipeInputs == null) {
+			return expandedRecipeInputs;
+		}
+
+		for (Object recipeInput : recipeInputs) {
+			List<ItemStack> inputStacks = toItemStackList(recipeInput);
+			List<ItemStack> inputExpanded = new ArrayList<>();
+			for (ItemStack stack : inputStacks) {
+				if (oreDict) {
+					List<String> inputOres = getOreNames(stack);
+					if (inputOres.size() > 0) {
+						for (String inputOre : inputOres) {
+							List<ItemStack> ores = OreDictionary.getOres(inputOre);
+							inputExpanded.addAll(ores);
+						}
+					}
+				}
+				List<ItemStack> subtypes = getSubtypes(stack);
+				inputExpanded.addAll(subtypes);
+			}
+			removeDuplicateItemStacks(inputExpanded);
+			expandedRecipeInputs.add(inputExpanded);
+		}
+		return expandedRecipeInputs;
+	}
+
+	@Nonnull
+	public static List<ItemStack> toItemStackList(@Nullable Object stacks) {
 		List<ItemStack> itemStacksList = new ArrayList<>();
 		toItemStackList(itemStacksList, stacks);
 		return removeDuplicateItemStacks(itemStacksList);
 	}
 
-	private static void toItemStackList(@Nonnull List<ItemStack> itemStackList, @Nonnull Iterable input) {
-		for (Object obj : input) {
-			if (obj instanceof Iterable) {
-				toItemStackList(itemStackList, (Iterable) obj);
-			} else if (obj instanceof ItemStack) {
-				itemStackList.add((ItemStack) obj);
-			} else if (obj != null) {
-				Log.error("Unknown object found: {}", obj);
+	private static void toItemStackList(@Nonnull List<ItemStack> itemStackList, @Nullable Object input) {
+		if (input instanceof ItemStack) {
+			itemStackList.add((ItemStack) input);
+		} else if (input instanceof String) {
+			List<ItemStack> stacks = OreDictionary.getOres((String) input);
+			itemStackList.addAll(stacks);
+		} else if (input instanceof Iterable) {
+			for (Object obj : (Iterable) input) {
+				toItemStackList(itemStackList, obj);
 			}
+		} else if (input != null) {
+			Log.error("Unknown object found: {}", input);
 		}
 	}
 
@@ -164,5 +283,72 @@ public class StackUtil {
 		}
 
 		return itemKey.toString();
+	}
+
+	public static int addStack(Container container, Collection<Integer> slotIndexes, ItemStack stack, boolean doAdd) {
+		int added = 0;
+		// Add to existing stacks first
+		for (Integer slotIndex : slotIndexes) {
+			Slot slot = container.getSlot(slotIndex);
+			if (slot == null) {
+				continue;
+			}
+
+			ItemStack inventoryStack = slot.getStack();
+			if (inventoryStack == null || inventoryStack.getItem() == null) {
+				continue;
+			}
+
+			// Already occupied by different item, skip this slot.
+			if (!inventoryStack.isStackable() || !inventoryStack.isItemEqual(stack) || !ItemStack.areItemStackTagsEqual(inventoryStack, stack)) {
+				continue;
+			}
+
+			int remain = stack.stackSize - added;
+			int space = inventoryStack.getMaxStackSize() - inventoryStack.stackSize;
+			if (space <= 0) {
+				continue;
+			}
+
+			// Enough space
+			if (space >= remain) {
+				if (doAdd) {
+					inventoryStack.stackSize += remain;
+				}
+				return stack.stackSize;
+			}
+
+			// Not enough space
+			if (doAdd) {
+				inventoryStack.stackSize = inventoryStack.getMaxStackSize();
+			}
+
+			added += space;
+		}
+
+		if (added >= stack.stackSize) {
+			return added;
+		}
+
+		for (Integer slotIndex : slotIndexes) {
+			Slot slot = container.getSlot(slotIndex);
+			if (slot == null) {
+				continue;
+			}
+
+			ItemStack inventoryStack = slot.getStack();
+			if (inventoryStack != null) {
+				continue;
+			}
+
+			if (doAdd) {
+				ItemStack stackToAdd = stack.copy();
+				stackToAdd.stackSize = stack.stackSize - added;
+				slot.putStack(stackToAdd);
+			}
+			return stack.stackSize;
+		}
+
+		return added;
 	}
 }

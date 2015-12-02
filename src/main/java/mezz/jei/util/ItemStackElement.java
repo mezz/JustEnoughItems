@@ -32,7 +32,7 @@ public class ItemStackElement {
 		}
 	}
 
-	public ItemStackElement(@Nonnull ItemStack itemStack) {
+	private ItemStackElement(@Nonnull ItemStack itemStack) {
 		this.itemStack = itemStack;
 		this.localizedName = itemStack.getDisplayName().toLowerCase();
 

@@ -2,9 +2,9 @@ package mezz.jei.plugins.vanilla.furnace;
 
 import javax.annotation.Nonnull;
 
-import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 
 public class SmeltingRecipeHandler implements IRecipeHandler<SmeltingRecipe> {
 
@@ -14,10 +14,10 @@ public class SmeltingRecipeHandler implements IRecipeHandler<SmeltingRecipe> {
 		return SmeltingRecipe.class;
 	}
 
-	@Override
 	@Nonnull
-	public Class<? extends IRecipeCategory> getRecipeCategoryClass() {
-		return FurnaceRecipeCategory.class;
+	@Override
+	public String getRecipeCategoryUid() {
+		return VanillaRecipeCategoryUid.SMELTING;
 	}
 
 	@Override

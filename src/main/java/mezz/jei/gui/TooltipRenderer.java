@@ -13,7 +13,7 @@ import net.minecraft.client.gui.GuiScreen;
 public class TooltipRenderer {
 	private static final TooltipGuiScreen tooltipScreen = new TooltipGuiScreen();
 
-	public static void drawHoveringText(Minecraft minecraft, List textLines, int x, int y, FontRenderer font) {
+	public static void drawHoveringText(Minecraft minecraft, List<String> textLines, int x, int y, FontRenderer font) {
 		tooltipScreen.set(minecraft);
 		tooltipScreen.drawHoveringText(textLines, x, y, font);
 	}

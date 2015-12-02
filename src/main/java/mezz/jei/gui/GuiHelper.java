@@ -2,11 +2,13 @@ package mezz.jei.gui;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.recipe.IRecipeTransferHelper;
 
 public class GuiHelper implements IGuiHelper {
 
@@ -22,4 +24,9 @@ public class GuiHelper implements IGuiHelper {
 		return new CraftingGridHelper(craftInputSlot1, craftOutputSlot);
 	}
 
+	@Nonnull
+	@Override
+	public IRecipeTransferHelper createRecipeTransferHelper(Class<? extends Container> containerClass, String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
+		return new BasicRecipeTransferHelper(containerClass, recipeCategoryUid, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
+	}
 }

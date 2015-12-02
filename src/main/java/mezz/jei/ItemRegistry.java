@@ -34,8 +34,8 @@ class ItemRegistry implements IItemRegistry {
 	@Nonnull
 	private final ModList modList;
 
-	public ItemRegistry(@Nonnull ModList modList) {
-		this.modList = modList;
+	public ItemRegistry() {
+		this.modList = new ModList();
 		List<ItemStack> itemList = new ArrayList<>();
 		List<ItemStack> fuels = new ArrayList<>();
 
@@ -144,7 +144,7 @@ class ItemRegistry implements IItemRegistry {
 			}
 		} catch (RuntimeException e) {
 			try {
-				Log.error("Couldn't create unique name for itemstack {}. Exception: {}", stack, e);
+				Log.error("Couldn't create unique name for itemStack {}. Exception: {}", stack, e);
 			} catch (RuntimeException ignored) {
 
 			}

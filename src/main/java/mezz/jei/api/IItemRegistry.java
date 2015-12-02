@@ -7,6 +7,9 @@ import javax.annotation.Nonnull;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+/**
+ * The IItemRegistry is provided by JEI and has some useful functions related to items.
+ */
 public interface IItemRegistry {
 
 	/** Returns a list of all the Items registered. */

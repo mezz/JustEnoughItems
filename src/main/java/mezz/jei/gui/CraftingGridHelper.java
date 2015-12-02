@@ -2,13 +2,12 @@ package mezz.jei.gui;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.api.gui.ICraftingGridHelper;
-import mezz.jei.api.gui.IGuiItemStacks;
+import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.util.StackUtil;
 
 public class CraftingGridHelper implements ICraftingGridHelper {
@@ -21,7 +20,8 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		this.craftOutputSlot = craftOutputSlot;
 	}
 
-	public void setInput(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull List input) {
+	@Override
+	public void setInput(@Nonnull IGuiItemStackGroup guiItemStacks, @Nonnull List input) {
 		int width, height;
 		if (input.size() > 4) {
 			width = height = 3;
@@ -34,49 +34,51 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		setInput(guiItemStacks, input, width, height);
 	}
 
-	public void setInput(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull List input, int width, int height) {
+	@Override
+	public void setInput(@Nonnull IGuiItemStackGroup guiItemStacks, @Nonnull List input, int width, int height) {
 		for (int i = 0; i < input.size(); i++) {
 			Object recipeItem = input.get(i);
-			int index;
-			if (width == 1) {
-				if (height == 3) {
-					index = (i * 3) + 1;
-				} else if (height == 2) {
-					index = (i * 3) + 4;
-				} else {
-					index = 4;
-				}
-			} else if (height == 1) {
-				index = i + 6;
-			} else if (width == 2) {
-				index = i;
-				if (i > 1) {
-					index++;
-					if (i > 3) {
-						index++;
-					}
-				}
-			} else if (height == 2) {
-				index = i + 3;
-			} else {
-				index = i;
-			}
+			int index = getCraftingIndex(i, width, height);
 
-			if (recipeItem instanceof ItemStack) {
-				List<ItemStack> itemStacks = Collections.singletonList((ItemStack) recipeItem);
-				setInput(guiItemStacks, index, itemStacks);
-			} else if (recipeItem instanceof Iterable) {
-				List<ItemStack> itemStacks = StackUtil.toItemStackList((Iterable) recipeItem);
-				setInput(guiItemStacks, index, itemStacks);
-			}
+			List<ItemStack> itemStacks = StackUtil.toItemStackList(recipeItem);
+			setInput(guiItemStacks, index, itemStacks);
 		}
 	}
 
-	public void setOutput(@Nonnull IGuiItemStacks guiItemStacks, @Nonnull List<ItemStack> output) {
+	private int getCraftingIndex(int i, int width, int height) {
+		int index;
+		if (width == 1) {
+			if (height == 3) {
+				index = (i * 3) + 1;
+			} else if (height == 2) {
+				index = (i * 3) + 4;
+			} else {
+				index = 4;
+			}
+		} else if (height == 1) {
+			index = i + 6;
+		} else if (width == 2) {
+			index = i;
+			if (i > 1) {
+				index++;
+				if (i > 3) {
+					index++;
+				}
+			}
+		} else if (height == 2) {
+			index = i + 3;
+		} else {
+			index = i;
+		}
+		return index;
+	}
+
+	@Override
+	public void setOutput(@Nonnull IGuiItemStackGroup guiItemStacks, @Nonnull List<ItemStack> output) {
 		guiItemStacks.set(craftOutputSlot, output);
 	}
 
-	private void setInput(@Nonnull IGuiItemStacks guiItemStacks, int inputIndex, @Nonnull Collection<ItemStack> input) {
+	private void setInput(@Nonnull IGuiItemStackGroup guiItemStacks, int inputIndex, @Nonnull Collection<ItemStack> input) {
 		guiItemStacks.set(craftInputSlot1 + inputIndex, input);
 	}
 
