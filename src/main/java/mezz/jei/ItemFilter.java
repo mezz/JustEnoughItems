@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.item.ItemStack;
 
+import mezz.jei.api.JEIManager;
 import mezz.jei.util.ItemStackElement;
 import mezz.jei.util.Log;
 
@@ -27,8 +28,7 @@ public class ItemFilter {
 	/** A cache for fast searches while typing or using backspace. Maps filterText to filteredItemMaps */
 	private final LoadingCache<String, ImmutableList<ItemStackElement>> filteredItemMapsCache;
 
-	public ItemFilter(@Nonnull List<ItemStack> itemStacks) {
-
+	public ItemFilter() {
 		filteredItemMapsCache = CacheBuilder.newBuilder()
 				.maximumWeight(16)
 				.weigher(new Weigher<String, ImmutableList<ItemStackElement>>() {
@@ -40,6 +40,10 @@ public class ItemFilter {
 				.build(new CacheLoader<String, ImmutableList<ItemStackElement>>() {
 					@Override
 					public ImmutableList<ItemStackElement> load(@Nonnull final String filterText) throws Exception {
+						if (filterText.length() == 0) {
+							return createBaseList();
+						}
+
 						// Recursive.
 						// Find a cached filter that is before the one we want, so we don't have to filter the full item list.
 						// For example, the "", "i", "ir", and "iro" filters contain everything in the "iron" filter and more.
@@ -72,39 +76,41 @@ public class ItemFilter {
 
 						return ImmutableList.copyOf(filteredItemList);
 					}
+
+					private ImmutableList<ItemStackElement> createBaseList() {
+						ImmutableList.Builder<ItemStackElement> baseList = ImmutableList.builder();
+
+						ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+						ModelManager modelManager = itemModelMesher.getModelManager();
+
+						for (ItemStack itemStack : JEIManager.itemRegistry.getItemList()) {
+							if (itemStack == null) {
+								continue;
+							}
+
+							// skip over itemStacks that can't be rendered
+							try {
+								if (itemModelMesher.getItemModel(itemStack) == modelManager.getMissingModel()) {
+									continue;
+								}
+							} catch (RuntimeException e) {
+								try {
+									Log.error("Couldn't find ItemModelMesher for itemStack {}. Exception: {}", itemStack, e);
+								} catch (RuntimeException ignored) {
+
+								}
+								continue;
+							}
+
+							ItemStackElement itemStackElement = ItemStackElement.create(itemStack);
+							if (itemStackElement != null) {
+								baseList.add(itemStackElement);
+							}
+						}
+
+						return baseList.build();
+					}
 				});
-
-		// create the recursive base case value, the list with no filter set
-		ImmutableList.Builder<ItemStackElement> baseList = ImmutableList.builder();
-
-		ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
-		ModelManager modelManager = itemModelMesher.getModelManager();
-		for (ItemStack itemStack : itemStacks) {
-			if (itemStack == null) {
-				continue;
-			}
-
-			// skip over itemStacks that can't be rendered
-			try {
-				if (itemModelMesher.getItemModel(itemStack) == modelManager.getMissingModel()) {
-					continue;
-				}
-			} catch (RuntimeException e) {
-				try {
-					Log.error("Couldn't find ItemModelMesher for itemStack {}. Exception: {}", itemStack, e);
-				} catch (RuntimeException ignored) {
-
-				}
-				continue;
-			}
-
-			ItemStackElement itemStackElement = ItemStackElement.create(itemStack);
-			if (itemStackElement != null) {
-				baseList.add(itemStackElement);
-			}
-		}
-
-		filteredItemMapsCache.put("", baseList.build());
 	}
 
 	public boolean setFilterText(@Nonnull String filterText) {

@@ -38,7 +38,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		JEIManager.itemRegistry = new ItemRegistry();
 		JEIManager.recipeRegistry = JustEnoughItems.pluginRegistry.createRecipeRegistry();
 
-		ItemFilter itemFilter = new ItemFilter(JEIManager.itemRegistry.getItemList());
+		ItemFilter itemFilter = new ItemFilter();
 		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter);
 		GuiEventHandler guiEventHandler = new GuiEventHandler(itemListOverlay);
 		MinecraftForge.EVENT_BUS.register(guiEventHandler);
