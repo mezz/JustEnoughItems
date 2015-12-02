@@ -16,6 +16,7 @@ import mezz.jei.gui.ingredients.GuiFluidStackGroup;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 
 public class RecipeLayout implements IRecipeLayout {
+	private static final int RECIPE_BUTTON_SIZE = 12;
 	public static final int recipeTransferButtonIndex = 100;
 
 	@Nonnull
@@ -36,8 +37,9 @@ public class RecipeLayout implements IRecipeLayout {
 		this.recipeCategory = recipeCategory;
 		this.guiItemStackGroup = new GuiItemStackGroup();
 		this.guiFluidStackGroup = new GuiFluidStackGroup();
-		this.recipeTransferButton = new GuiButtonExt(recipeTransferButtonIndex + index, 0, 0, 12, 12, "+");
-		this.recipeTransferButton.visible = false;
+		int width = recipeCategory.getBackground().getWidth();
+		int height = recipeCategory.getBackground().getHeight();
+		this.recipeTransferButton = new GuiButtonExt(recipeTransferButtonIndex + index, posX + width + 2, posY + height - RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, "+");
 		this.posX = posX;
 		this.posY = posY;
 
@@ -86,7 +88,6 @@ public class RecipeLayout implements IRecipeLayout {
 	public void setRecipeTransferButton(int posX, int posY) {
 		recipeTransferButton.xPosition = posX + this.posX;
 		recipeTransferButton.yPosition = posY + this.posY;
-		recipeTransferButton.visible = true;
 	}
 
 	@Nonnull

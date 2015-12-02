@@ -16,8 +16,6 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory {
 
 	@Override
 	public void init(@Nonnull IRecipeLayout recipeLayout) {
-		recipeLayout.setRecipeTransferButton(-14, 36);
-
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 		guiItemStacks.init(inputSlot, false, 0, 0);
 		guiItemStacks.init(fuelSlot, true, 0, 36);

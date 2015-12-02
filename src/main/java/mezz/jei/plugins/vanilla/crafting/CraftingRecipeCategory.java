@@ -56,8 +56,6 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 
 	@Override
 	public void init(@Nonnull IRecipeLayout recipeLayout) {
-		recipeLayout.setRecipeTransferButton(56, 0);
-
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		guiItemStacks.init(craftOutputSlot, false, 94, 18);

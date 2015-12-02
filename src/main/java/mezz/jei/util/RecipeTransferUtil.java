@@ -70,6 +70,9 @@ public class RecipeTransferUtil {
 
 		for (Slot slot : craftingSlots.values()) {
 			if (slot.getHasStack()) {
+				if (!slot.canTakeStack(player)) {
+					return false;
+				}
 				filledCraftSlotCount++;
 				availableItemStacks.add(slot.getStack());
 			}
@@ -96,6 +99,19 @@ public class RecipeTransferUtil {
 		Map<Integer, ItemStack> slotMap = buildSlotMap(itemStackGroup, matchingStacks);
 		if (slotMap == null || StackUtil.containsSets(slotMap.values(), availableItemStacks) == null) {
 			return false;
+		}
+
+		// check that the slots exist and can be altered
+		for (Map.Entry<Integer, ItemStack> entry : slotMap.entrySet()) {
+			int slotIndex = entry.getKey();
+			if (slotIndex >= container.inventorySlots.size()) {
+				return false;
+			}
+			Slot slot = container.getSlot(slotIndex);
+			ItemStack stack = entry.getValue();
+			if (slot == null || !slot.isItemValid(stack)) {
+				return false;
+			}
 		}
 
 		if (doTransfer) {
