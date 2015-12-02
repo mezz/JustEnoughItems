@@ -1,20 +1,27 @@
 package mezz.jei.util;
 
+import com.google.common.collect.Sets;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.oredict.OreDictionary;
+
+import mezz.jei.config.Config;
 
 public class StackUtil {
 
@@ -280,10 +287,29 @@ public class StackUtil {
 
 		StringBuilder itemKey = new StringBuilder(itemNameString).append(':').append(metadata);
 		if (stack.hasTagCompound()) {
-			itemKey.append(':').append(stack.getTagCompound());
+			NBTTagCompound nbtTagCompound = stack.getTagCompound();
+			nbtTagCompound = cleanNbt(nbtTagCompound);
+			if (!nbtTagCompound.hasNoTags()) {
+				itemKey.append(':').append(nbtTagCompound);
+			}
 		}
 
 		return itemKey.toString();
+	}
+
+	private static NBTTagCompound cleanNbt(NBTTagCompound nbtTagCompound) {
+		Set<String> keys = nbtTagCompound.getKeySet();
+
+		Set<String> ignoredKeys = Sets.intersection(keys, Config.nbtKeyBlacklist);
+		if (ignoredKeys.size() == 0) {
+			return nbtTagCompound;
+		}
+
+		nbtTagCompound = (NBTTagCompound) nbtTagCompound.copy();
+		for (String ignoredKey : ignoredKeys) {
+			nbtTagCompound.removeTag(ignoredKey);
+		}
+		return nbtTagCompound;
 	}
 
 	public static int addStack(Container container, Collection<Integer> slotIndexes, ItemStack stack, boolean doAdd) {

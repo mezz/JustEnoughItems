@@ -2,6 +2,12 @@ package mezz.jei.config;
 
 import javax.annotation.Nonnull;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import net.minecraft.util.StatCollector;
 
 import net.minecraftforge.common.config.Configuration;
@@ -13,6 +19,7 @@ public class Config {
 
 	public static boolean cheatItemsEnabled = false;
 	public static boolean tooltipModNameEnabled = true;
+	public static Set<String> nbtKeyBlacklist = new HashSet<>();
 
 	public static void preInit(@Nonnull FMLPreInitializationEvent event) {
 		configFile = new Configuration(event.getSuggestedConfigurationFile());
@@ -32,6 +39,11 @@ public class Config {
 
 		String tooltipModNameEnabledDescription = StatCollector.translateToLocal("config.jei.tooltipModName.description");
 		tooltipModNameEnabled = configFile.getBoolean("config.jei.tooltipModName", Configuration.CATEGORY_GENERAL, tooltipModNameEnabled, tooltipModNameEnabledDescription);
+
+		String[] defaultNbtKeyBlacklist = new String[]{"BlockEntityTag", "CanPlaceOn"};
+		String nbtKeyBlacklistDescription = StatCollector.translateToLocal("config.jei.nbtKeyBlacklist.description");
+		String[] nbtKeyBlacklistArray = configFile.getStringList("config.jei.nbtKeyBlacklist", Configuration.CATEGORY_GENERAL, defaultNbtKeyBlacklist, nbtKeyBlacklistDescription);
+		Collections.addAll(nbtKeyBlacklist, nbtKeyBlacklistArray);
 
 		if (configFile.hasChanged()) {
 			configFile.save();
