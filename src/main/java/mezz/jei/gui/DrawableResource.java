@@ -17,29 +17,41 @@ public class DrawableResource implements IDrawable {
 	private final int v;
 	private final int width;
 	private final int height;
+	private final int paddingTop;
+	private final int paddingBottom;
+	private final int paddingLeft;
+	private final int paddingRight;
 
 	public DrawableResource(@Nonnull ResourceLocation resourceLocation, int u, int v, int width, int height) {
+		this(resourceLocation, u, v, width, height, 0, 0, 0, 0);
+	}
+
+	public DrawableResource(@Nonnull ResourceLocation resourceLocation, int u, int v, int width, int height, int paddingTop, int paddingBottom, int paddingLeft, int paddingRight) {
 		this.resourceLocation = resourceLocation;
 
 		this.u = u;
 		this.v = v;
 		this.width = width;
 		this.height = height;
+
+		this.paddingTop = paddingTop;
+		this.paddingBottom = paddingBottom;
+		this.paddingLeft = paddingLeft;
+		this.paddingRight = paddingRight;
 	}
 
 	@Override
 	public int getWidth() {
-		return width;
+		return width + paddingLeft + paddingRight;
 	}
 
 	@Override
 	public int getHeight() {
-		return height;
+		return height + paddingTop + paddingBottom;
 	}
 
 	public void draw(@Nonnull Minecraft minecraft) {
 		minecraft.getTextureManager().bindTexture(resourceLocation);
-		GuiUtils.drawTexturedModalRect(0, 0, u, v, width, height, 0);
+		GuiUtils.drawTexturedModalRect(paddingLeft, paddingTop, u, v, width, height, 0);
 	}
-
 }

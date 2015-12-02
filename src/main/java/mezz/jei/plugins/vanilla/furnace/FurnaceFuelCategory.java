@@ -2,11 +2,30 @@ package mezz.jei.plugins.vanilla.furnace;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.util.ResourceLocation;
+
+import mezz.jei.api.JEIManager;
+import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 
 public class FurnaceFuelCategory extends FurnaceRecipeCategory {
+
+	@Nonnull
+	private final IDrawable background;
+
+	public FurnaceFuelCategory() {
+		ResourceLocation location = new ResourceLocation("minecraft:textures/gui/container/furnace.png");
+		background = JEIManager.guiHelper.createDrawable(location, 55, 38, 18, 32, 0, 0, 0, 80);
+	}
+
+	@Override
+	@Nonnull
+	public IDrawable getBackground() {
+		return background;
+	}
 
 	@Nonnull
 	@Override
@@ -17,8 +36,12 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory {
 	@Override
 	public void init(@Nonnull IRecipeLayout recipeLayout) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-		guiItemStacks.init(inputSlot, false, 0, 0);
-		guiItemStacks.init(fuelSlot, true, 0, 36);
-		guiItemStacks.init(outputSlot, false, 60, 18);
+		guiItemStacks.init(fuelSlot, true, 0, 14);
+	}
+
+	@Override
+	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper) {
+		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
+		guiItemStacks.setFromRecipe(fuelSlot, recipeWrapper.getInputs());
 	}
 }

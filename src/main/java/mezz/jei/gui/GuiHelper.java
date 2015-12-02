@@ -20,6 +20,12 @@ public class GuiHelper implements IGuiHelper {
 
 	@Nonnull
 	@Override
+	public IDrawable createDrawable(@Nonnull ResourceLocation resourceLocation, int u, int v, int width, int height, int paddingTop, int paddingBottom, int paddingLeft, int paddingRight) {
+		return new DrawableResource(resourceLocation, u, v, width, height, paddingTop, paddingBottom, paddingLeft, paddingRight);
+	}
+
+	@Nonnull
+	@Override
 	public ICraftingGridHelper createCraftingGridHelper(int craftInputSlot1, int craftOutputSlot) {
 		return new CraftingGridHelper(craftInputSlot1, craftOutputSlot);
 	}
