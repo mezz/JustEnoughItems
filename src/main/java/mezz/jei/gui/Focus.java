@@ -51,6 +51,19 @@ public class Focus {
 		return stack;
 	}
 
+	public boolean isBlank() {
+		return stack == null && fluid == null;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Focus)) {
+			return false;
+		}
+		Focus other = (Focus) obj;
+		return ItemStack.areItemStacksEqual(this.stack, other.getStack()) && fluid == other.fluid;
+	}
+
 	@Nonnull
 	public ImmutableList<IRecipeCategory> getCategoriesWithInput() {
 		if (stack != null) {

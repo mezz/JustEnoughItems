@@ -1,6 +1,7 @@
 package mezz.jei;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableTable;
@@ -35,6 +36,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final ImmutableMap<Class, IRecipeHandler> recipeHandlers;
 	private final ImmutableTable<Class, String, IRecipeTransferHelper> recipeTransferHelpers;
 	private final ImmutableMap<String, IRecipeCategory> recipeCategoriesMap;
+	private final ImmutableListMultimap<IRecipeCategory, Object> recipesForCategories;
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
 	private final Set<Class> unhandledRecipeClasses = new HashSet<>();
@@ -49,7 +51,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		this.recipeInputMap = new RecipeMap(recipeCategoryComparator);
 		this.recipeOutputMap = new RecipeMap(recipeCategoryComparator);
 
-		addRecipes(recipes);
+		this.recipesForCategories = addRecipes(recipes);
 	}
 
 	private static ImmutableMap<String, IRecipeCategory> buildRecipeCategoriesMap(@Nonnull ImmutableList<IRecipeCategory> recipeCategories) {
@@ -86,21 +88,25 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return builder.build();
 	}
 
-	private void addRecipes(@Nullable ImmutableList<Object> recipes) {
+	private ImmutableListMultimap<IRecipeCategory, Object> addRecipes(@Nullable ImmutableList<Object> recipes) {
 		if (recipes == null) {
-			return;
+			return ImmutableListMultimap.of();
 		}
+
+		ImmutableListMultimap.Builder<IRecipeCategory, Object> builder = ImmutableListMultimap.builder();
 
 		for (Object recipe : recipes) {
 			try {
-				addRecipe(recipe);
+				addRecipe(builder, recipe);
 			} catch (RuntimeException e) {
 				Log.error("Failed to add recipe: {}\nWith error: {}", recipe, e);
 			}
 		}
+
+		return builder.build();
 	}
 
-	private void addRecipe(@Nullable Object recipe) {
+	private void addRecipe(@Nonnull ImmutableListMultimap.Builder<IRecipeCategory, Object> builder, @Nullable Object recipe) {
 		if (recipe == null) {
 			return;
 		}
@@ -152,6 +158,14 @@ public class RecipeRegistry implements IRecipeRegistry {
 			}
 			recipeOutputMap.addRecipe(recipe, recipeCategory, outputStacks, fluidOutputs);
 		}
+
+		builder.put(recipeCategory, recipe);
+	}
+
+	@Nonnull
+	@Override
+	public ImmutableList<IRecipeCategory> getRecipeCategories() {
+		return ImmutableList.copyOf(recipeCategoriesMap.values());
 	}
 
 	@Nullable
@@ -235,6 +249,15 @@ public class RecipeRegistry implements IRecipeRegistry {
 			return ImmutableList.of();
 		}
 		return recipeOutputMap.getRecipes(recipeCategory, output);
+	}
+
+	@Nonnull
+	@Override
+	public ImmutableList<Object> getRecipes(@Nullable IRecipeCategory recipeCategory) {
+		if (recipeCategory == null) {
+			return ImmutableList.of();
+		}
+		return recipesForCategories.get(recipeCategory);
 	}
 
 	@Nullable

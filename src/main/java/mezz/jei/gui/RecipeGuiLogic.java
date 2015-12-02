@@ -65,6 +65,28 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
+	public boolean setCategoryFocus() {
+		IRecipeCategory recipeCategory = getRecipeCategory();
+		if (recipeCategory == null) {
+			return false;
+		}
+
+		if (this.focus.isBlank()) {
+			return false;
+		}
+
+		this.recipeCategories = JEIManager.recipeRegistry.getRecipeCategories();
+		this.focus = new Focus();
+
+		this.recipeCategoryIndex = this.recipeCategories.indexOf(recipeCategory);
+		this.pageIndex = 0;
+
+		updateRecipes();
+
+		return true;
+	}
+
+	@Override
 	public void setRecipesPerPage(int recipesPerPage) {
 		if (this.recipesPerPage != recipesPerPage) {
 			int recipeIndex = pageIndex * this.recipesPerPage;
@@ -77,13 +99,17 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	
 	private void updateRecipes() {
 		IRecipeCategory recipeCategory = getRecipeCategory();
-		switch (mode) {
-			case INPUT:
-				recipes = focus.getRecipesWithInput(recipeCategory);
-				break;
-			case OUTPUT:
-				recipes = focus.getRecipesWithOutput(recipeCategory);
-				break;
+		if (focus.isBlank()) {
+			recipes = JEIManager.recipeRegistry.getRecipes(recipeCategory);
+		} else {
+			switch (mode) {
+				case INPUT:
+					recipes = focus.getRecipesWithInput(recipeCategory);
+					break;
+				case OUTPUT:
+					recipes = focus.getRecipesWithOutput(recipeCategory);
+					break;
+			}
 		}
 	}
 
