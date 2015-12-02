@@ -112,7 +112,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 				maxX = x;
 			}
 
-			guiItemStacks.add(GuiItemStackGroup.createGuiItemStack(x, y, itemStackPadding));
+			guiItemStacks.add(GuiItemStackGroup.createGuiItemStack(false, x, y, itemStackPadding));
 
 			x += itemStackWidth;
 			if (x + itemStackWidth + borderPadding > width) {

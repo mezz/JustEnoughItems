@@ -7,18 +7,16 @@ import net.minecraft.util.StatCollector;
 
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
+import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeCategoryUid;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 
-public class FurnaceRecipeCategory implements IRecipeCategory {
+public abstract class FurnaceRecipeCategory implements IRecipeCategory {
 
-	private static final int inputSlot = 0;
-	private static final int fuelSlot = 1;
-	private static final int outputSlot = 2;
+	protected static final int inputSlot = 0;
+	protected static final int fuelSlot = 1;
+	protected static final int outputSlot = 2;
 
 	@Nonnull
 	private final IDrawable background;
@@ -33,32 +31,18 @@ public class FurnaceRecipeCategory implements IRecipeCategory {
 
 	@Nonnull
 	@Override
-	public IRecipeCategoryUid getUid() {
-		return VanillaRecipeCategoryUid.FURNACE;
-	}
-
-	@Nonnull
-	@Override
 	public IDrawable getBackground() {
 		return background;
 	}
 
 	@Override
-	public void init(@Nonnull IGuiItemStackGroup guiItemStacks, @Nonnull IGuiFluidStackGroup guiFluidTanks) {
-		guiItemStacks.init(inputSlot, 0, 0);
-		guiItemStacks.init(fuelSlot, 0, 36);
-		guiItemStacks.init(outputSlot, 60, 18);
-	}
-
-	@Override
-	public void setRecipe(@Nonnull IGuiItemStackGroup guiItemStacks, @Nonnull IGuiFluidStackGroup guiFluidTanks, @Nonnull IRecipeWrapper recipeWrapper) {
+	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper) {
+		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 		if (recipeWrapper instanceof FuelRecipe) {
-			FuelRecipe fuelRecipeWrapper = (FuelRecipe) recipeWrapper;
-			guiItemStacks.set(fuelSlot, fuelRecipeWrapper.getInputs());
+			guiItemStacks.setFromRecipe(fuelSlot, recipeWrapper.getInputs());
 		} else if (recipeWrapper instanceof SmeltingRecipe) {
-			SmeltingRecipe smeltingRecipeWrapper = (SmeltingRecipe) recipeWrapper;
-			guiItemStacks.set(inputSlot, smeltingRecipeWrapper.getInputs());
-			guiItemStacks.set(outputSlot, smeltingRecipeWrapper.getOutputs());
+			guiItemStacks.setFromRecipe(inputSlot, recipeWrapper.getInputs());
+			guiItemStacks.setFromRecipe(outputSlot, recipeWrapper.getOutputs());
 		}
 	}
 

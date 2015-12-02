@@ -10,6 +10,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -23,6 +24,7 @@ import mezz.jei.config.Constants;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.util.Log;
+import mezz.jei.util.RecipeTransferUtil;
 import mezz.jei.util.StringUtil;
 
 public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouseHandler {
@@ -36,9 +38,9 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 	/* Internal logic for the gui, handles finding recipes */
 	private final IRecipeGuiLogic logic = new RecipeGuiLogic();
 
-	/* List of RecipeWidget to display */
+	/* List of RecipeLayout to display */
 	@Nonnull
-	private final List<RecipeWidget> recipeWidgets = new ArrayList<>();
+	private final List<RecipeLayout> recipeLayouts = new ArrayList<>();
 
 	private String pageString;
 	private String title;
@@ -126,7 +128,7 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		if (!isMouseOver(mouseX, mouseY)) {
 			return null;
 		}
-		for (RecipeWidget recipeWidget : recipeWidgets) {
+		for (RecipeLayout recipeWidget : recipeLayouts) {
 			Focus focus = recipeWidget.getFocusUnderMouse(mouseX, mouseY);
 			if (focus != null) {
 				return focus;
@@ -135,18 +137,23 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		return null;
 	}
 
+	// workaround to see if a button was clicked
+	private boolean guiActionPerformed = false;
+
 	@Override
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
 		if (!isMouseOver(mouseX, mouseY)) {
 			return false;
 		}
 
+		guiActionPerformed = false;
+
 		try {
 			handleMouseInput();
 		} catch (IOException e) {
 			Log.error("IOException on mouse click.", e);
 		}
-		return false;
+		return guiActionPerformed;
 	}
 
 	@Override
@@ -198,18 +205,31 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 
 	@Override
 	protected void actionPerformed(@Nonnull GuiButton guibutton) {
+		boolean updateLayout = true;
+
 		if (guibutton.id == nextPage.id) {
 			logic.nextPage();
-			updateLayout();
 		} else if (guibutton.id == previousPage.id) {
 			logic.previousPage();
-			updateLayout();
 		} else if (guibutton.id == nextRecipeCategory.id) {
 			logic.nextRecipeCategory();
-			updateLayout();
 		} else if (guibutton.id == previousRecipeCategory.id) {
 			logic.previousRecipeCategory();
+		} else if (guibutton.id >= RecipeLayout.recipeTransferButtonIndex) {
+			int recipeIndex = guibutton.id - RecipeLayout.recipeTransferButtonIndex;
+			RecipeLayout recipeLayout = recipeLayouts.get(recipeIndex);
+			if (RecipeTransferUtil.transferRecipe(recipeLayout, Minecraft.getMinecraft().thePlayer)) {
+				close();
+				guiActionPerformed = true;
+				updateLayout = false;
+			}
+		} else {
+			updateLayout = false;
+		}
+
+		if (updateLayout) {
 			updateLayout();
+			guiActionPerformed = true;
 		}
 	}
 
@@ -229,20 +249,33 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 
 		title = recipeCategory.getTitle();
 
-		final int posX = guiLeft + recipeXOffset;
+		int posX = guiLeft + recipeXOffset;
 		int posY = guiTop + headerHeight + recipeSpacing;
+		int spacingY = recipeBackground.getHeight() + recipeSpacing;
 
-		recipeWidgets.clear();
-		recipeWidgets.addAll(logic.getRecipeWidgets());
-		for (RecipeWidget recipeWidget : recipeWidgets) {
-			recipeWidget.setPosition(posX, posY);
-			posY += recipeBackground.getHeight() + recipeSpacing;
-		}
+		recipeLayouts.clear();
+		recipeLayouts.addAll(logic.getRecipeWidgets(posX, posY, spacingY));
+		addRecipeTransferButtons(recipeLayouts);
 
 		nextPage.enabled = previousPage.enabled = logic.hasMultiplePages();
 		nextRecipeCategory.enabled = previousRecipeCategory.enabled = logic.hasMultipleCategories();
 
 		pageString = logic.getPageString();
+	}
+
+	@SuppressWarnings("unchecked")
+	private void addRecipeTransferButtons(List<RecipeLayout> recipeLayouts) {
+		buttonList.clear();
+		addButtons();
+
+		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+
+		for (RecipeLayout recipeLayout : recipeLayouts) {
+			GuiButtonExt button = recipeLayout.getRecipeTransferButton();
+			button.visible = RecipeTransferUtil.hasTransferHelper(recipeLayout, player);
+			button.enabled = RecipeTransferUtil.canTransferRecipe(recipeLayout, player);
+			buttonList.add(button);
+		}
 	}
 
 	public void draw(int mouseX, int mouseY) {
@@ -268,8 +301,8 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		}
 		GL11.glPopMatrix();
 
-		RecipeWidget hovered = null;
-		for (RecipeWidget recipeWidget : recipeWidgets) {
+		RecipeLayout hovered = null;
+		for (RecipeLayout recipeWidget : recipeLayouts) {
 			if (recipeWidget.getFocusUnderMouse(mouseX, mouseY) != null) {
 				hovered = recipeWidget;
 			} else {

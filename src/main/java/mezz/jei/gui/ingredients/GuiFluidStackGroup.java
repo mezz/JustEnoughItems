@@ -8,9 +8,9 @@ public class GuiFluidStackGroup extends GuiIngredientGroup<FluidStack, GuiIngred
 	private static final FluidStackHelper helper = new FluidStackHelper();
 
 	@Override
-	public void init(int index, int xPosition, int yPosition, int width, int height, int capacityMb) {
+	public void init(int slotIndex, boolean input, int xPosition, int yPosition, int width, int height, int capacityMb) {
 		FluidStackRenderer renderer = new FluidStackRenderer(capacityMb);
-		GuiIngredient<FluidStack> guiIngredient = new GuiIngredient<>(renderer, helper, xPosition, yPosition, width, height, 0);
-		guiIngredients.put(index, guiIngredient);
+		GuiIngredient<FluidStack> guiIngredient = new GuiIngredient<>(renderer, helper, input, xPosition, yPosition, width, height, 0);
+		guiIngredients.put(slotIndex, guiIngredient);
 	}
 }

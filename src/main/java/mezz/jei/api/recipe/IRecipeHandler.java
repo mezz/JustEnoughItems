@@ -13,7 +13,7 @@ public interface IRecipeHandler<T> {
 
 	/** Returns this recipe's category unique id. */
 	@Nonnull
-	IRecipeCategoryUid getRecipeCategoryUid();
+	String getRecipeCategoryUid();
 
 	/** Returns a recipe wrapper for the given recipe. */
 	@Nonnull

@@ -3,6 +3,7 @@ package mezz.jei.gui.ingredients;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.List;
 
 import net.minecraft.client.Minecraft;
 
@@ -17,6 +18,9 @@ public interface IGuiIngredient<T> {
 
 	@Nullable
 	T get();
+
+	@Nonnull
+	List<T> getAll();
 
 	boolean isMouseOver(int mouseX, int mouseY);
 

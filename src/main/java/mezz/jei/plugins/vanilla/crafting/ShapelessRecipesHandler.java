@@ -5,7 +5,6 @@ import javax.annotation.Nonnull;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 
-import mezz.jei.api.recipe.IRecipeCategoryUid;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
@@ -20,7 +19,7 @@ public class ShapelessRecipesHandler implements IRecipeHandler<ShapelessRecipes>
 
 	@Nonnull
 	@Override
-	public IRecipeCategoryUid getRecipeCategoryUid() {
+	public String getRecipeCategoryUid() {
 		return VanillaRecipeCategoryUid.CRAFTING;
 	}
 

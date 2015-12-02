@@ -99,7 +99,7 @@ public class InputHandler {
 			}
 		}
 
-		return recipesGui.isOpen();
+		return false;
 	}
 
 	@Nullable

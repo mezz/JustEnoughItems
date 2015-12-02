@@ -2,7 +2,6 @@ package mezz.jei.gui;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
@@ -39,39 +38,39 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 	public void setInput(@Nonnull IGuiItemStackGroup guiItemStacks, @Nonnull List input, int width, int height) {
 		for (int i = 0; i < input.size(); i++) {
 			Object recipeItem = input.get(i);
-			int index;
-			if (width == 1) {
-				if (height == 3) {
-					index = (i * 3) + 1;
-				} else if (height == 2) {
-					index = (i * 3) + 4;
-				} else {
-					index = 4;
-				}
-			} else if (height == 1) {
-				index = i + 6;
-			} else if (width == 2) {
-				index = i;
-				if (i > 1) {
-					index++;
-					if (i > 3) {
-						index++;
-					}
-				}
-			} else if (height == 2) {
-				index = i + 3;
-			} else {
-				index = i;
-			}
+			int index = getCraftingIndex(i, width, height);
 
-			if (recipeItem instanceof ItemStack) {
-				List<ItemStack> itemStacks = Collections.singletonList((ItemStack) recipeItem);
-				setInput(guiItemStacks, index, itemStacks);
-			} else if (recipeItem instanceof Iterable) {
-				List<ItemStack> itemStacks = StackUtil.toItemStackList((Iterable) recipeItem);
-				setInput(guiItemStacks, index, itemStacks);
-			}
+			List<ItemStack> itemStacks = StackUtil.toItemStackList(recipeItem);
+			setInput(guiItemStacks, index, itemStacks);
 		}
+	}
+
+	private int getCraftingIndex(int i, int width, int height) {
+		int index;
+		if (width == 1) {
+			if (height == 3) {
+				index = (i * 3) + 1;
+			} else if (height == 2) {
+				index = (i * 3) + 4;
+			} else {
+				index = 4;
+			}
+		} else if (height == 1) {
+			index = i + 6;
+		} else if (width == 2) {
+			index = i;
+			if (i > 1) {
+				index++;
+				if (i > 3) {
+					index++;
+				}
+			}
+		} else if (height == 2) {
+			index = i + 3;
+		} else {
+			index = i;
+		}
+		return index;
 	}
 
 	@Override

@@ -53,4 +53,8 @@ public class ShapedRecipesWrapper extends VanillaRecipeWrapper implements IShape
 		return recipe.recipeHeight;
 	}
 
+	@Override
+	public boolean usesOreDictionaryComparison() {
+		return false;
+	}
 }

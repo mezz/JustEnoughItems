@@ -14,13 +14,20 @@ public interface IGuiFluidStackGroup extends IGuiIngredientGroup<FluidStack> {
 
 	/**
 	 * Fluid tanks must be initialized once, and then can be set many times.
+	 * @param slotIndex the slot index of this fluid
+	 * @param input whether this slot is an input
+	 * @param xPosition x position relative to the recipe background
+	 * @param yPosition y position relative to the recipe background
+	 * @param width width of this tank
+	 * @param height height of this tank
+	 * @param capacityMb maximum amount of fluid that this tank can hold
 	 */
-	void init(int index, int xPosition, int yPosition, int width, int height, int capacityMb);
+	void init(int slotIndex, boolean input, int xPosition, int yPosition, int width, int height, int capacityMb);
 
 	@Override
-	void set(int index, @Nonnull Collection<FluidStack> fluidStacks);
+	void set(int slotIndex, @Nonnull Collection<FluidStack> fluidStacks);
 
 	@Override
-	void set(int index, @Nonnull FluidStack fluidStack);
+	void set(int slotIndex, @Nonnull FluidStack fluidStack);
 
 }

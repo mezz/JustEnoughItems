@@ -5,7 +5,6 @@ import java.util.List;
 
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-import mezz.jei.api.recipe.IRecipeCategoryUid;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
@@ -20,7 +19,7 @@ public class ShapedOreRecipeHandler implements IRecipeHandler<ShapedOreRecipe> {
 
 	@Nonnull
 	@Override
-	public IRecipeCategoryUid getRecipeCategoryUid() {
+	public String getRecipeCategoryUid() {
 		return VanillaRecipeCategoryUid.CRAFTING;
 	}
 

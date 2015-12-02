@@ -46,4 +46,9 @@ public class ShapelessOreRecipeWrapper extends VanillaRecipeWrapper implements I
 
 	}
 
+	@Override
+	public boolean usesOreDictionaryComparison() {
+		return true;
+	}
+
 }

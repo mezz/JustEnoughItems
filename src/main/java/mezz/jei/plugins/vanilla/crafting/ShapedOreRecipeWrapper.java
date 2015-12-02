@@ -53,6 +53,11 @@ public class ShapedOreRecipeWrapper extends VanillaRecipeWrapper implements ISha
 	}
 
 	@Override
+	public boolean usesOreDictionaryComparison() {
+		return true;
+	}
+
+	@Override
 	public int getWidth() {
 		return width;
 	}

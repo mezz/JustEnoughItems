@@ -28,9 +28,6 @@ dependencies {
 ```
 
 `<MINECRAFT-VERSION>` can be `1.8` or `1.8.8`.
-See the curseforge link above for a available JEI versions.
-
-There is a bug in ForgeGradle with dependency ATs, to work around it run:
-`gradlew cleanDeobfMcSRG && gradlew setupDecompWorkspace`
+See the list of github tags for available JEI versions.
 
 Join [#JEI on esper.net IRC](http://webchat.esper.net/?nick=JEIGithub...&channels=JEI&prompt=1) for questions or anything else.

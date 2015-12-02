@@ -21,6 +21,8 @@ import mezz.jei.util.CycleTimer;
 import mezz.jei.util.Log;
 
 public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
+	private final boolean input;
+
 	private final int xPosition;
 	private final int yPosition;
 	private final int width;
@@ -39,9 +41,11 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	private boolean enabled;
 	private boolean visible;
 
-	public GuiIngredient(@Nonnull IIngredientRenderer<T> ingredientRenderer, @Nonnull IIngredientHelper<T> ingredientHelper, int xPosition, int yPosition, int width, int height, int padding) {
+	public GuiIngredient(@Nonnull IIngredientRenderer<T> ingredientRenderer, @Nonnull IIngredientHelper<T> ingredientHelper, boolean input, int xPosition, int yPosition, int width, int height, int padding) {
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredientHelper = ingredientHelper;
+
+		this.input = input;
 
 		this.xPosition = xPosition;
 		this.yPosition = yPosition;
@@ -65,6 +69,12 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	@Nullable
 	public T get() {
 		return cycleTimer.getCycledItem(contained);
+	}
+
+	@Nonnull
+	@Override
+	public List<T> getAll() {
+		return contained;
 	}
 
 	@Override
@@ -133,5 +143,9 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		} catch (RuntimeException e) {
 			Log.error("Exception when rendering tooltip on {}.\n{}", value, e);
 		}
+	}
+
+	public boolean isInput() {
+		return input;
 	}
 }

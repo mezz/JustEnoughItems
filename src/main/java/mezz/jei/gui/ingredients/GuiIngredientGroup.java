@@ -26,19 +26,18 @@ public abstract class GuiIngredientGroup<V, T extends GuiIngredient<V>> implemen
 	}
 
 	@Override
-	public void set(int index, @Nonnull Collection<V> values) {
-		guiIngredients.get(index).set(values, focus);
+	public void set(int slotIndex, @Nonnull Collection<V> values) {
+		guiIngredients.get(slotIndex).set(values, focus);
 	}
 
 	@Override
-	public void set(int index, @Nonnull V value) {
-		guiIngredients.get(index).set(value, focus);
+	public void set(int slotIndex, @Nonnull V value) {
+		guiIngredients.get(slotIndex).set(value, focus);
 	}
 
-	public void clear() {
-		for (T guiWidget : guiIngredients.values()) {
-			guiWidget.clear();
-		}
+	@Nonnull
+	public Map<Integer, T> getGuiIngredients() {
+		return guiIngredients;
 	}
 
 	@Nullable

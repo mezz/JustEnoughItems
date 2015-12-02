@@ -97,14 +97,15 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	@Nonnull
-	public List<RecipeWidget> getRecipeWidgets() {
-		List<RecipeWidget> recipeWidgets = new ArrayList<>();
+	public List<RecipeLayout> getRecipeWidgets(int posX, int posY, int spacingY) {
+		List<RecipeLayout> recipeWidgets = new ArrayList<>();
 
 		IRecipeCategory recipeCategory = getRecipeCategory();
 		if (recipeCategory == null) {
 			return recipeWidgets;
 		}
 
+		int recipeWidgetIndex = 0;
 		for (int recipeIndex = pageIndex * recipesPerPage; recipeIndex < recipes.size() && recipeWidgets.size() < recipesPerPage; recipeIndex++) {
 			Object recipe = recipes.get(recipeIndex);
 			IRecipeHandler recipeHandler = JEIManager.recipeRegistry.getRecipeHandler(recipe.getClass());
@@ -113,12 +114,13 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 				continue;
 			}
 
-			RecipeWidget recipeWidget = new RecipeWidget(recipeCategory);
-
 			@SuppressWarnings("unchecked")
 			IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
-			recipeWidget.setRecipe(recipeWrapper, focus);
+
+			RecipeLayout recipeWidget = new RecipeLayout(recipeWidgetIndex++, posX, posY, recipeCategory, recipeWrapper, focus);
 			recipeWidgets.add(recipeWidget);
+
+			posY += spacingY;
 		}
 
 		return recipeWidgets;

@@ -3,8 +3,7 @@ package mezz.jei.api.recipe;
 import javax.annotation.Nonnull;
 
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IGuiFluidStackGroup;
-import mezz.jei.api.gui.IGuiItemStackGroup;
+import mezz.jei.api.gui.IRecipeLayout;
 
 /**
  * Defines a category of recipe, (i.e. Crafting Table Recipe, Furnace Recipe)
@@ -17,7 +16,7 @@ public interface IRecipeCategory {
 	 * Referenced from recipes to identify which recipe category they belong to.
 	 */
 	@Nonnull
-	IRecipeCategoryUid getUid();
+	String getUid();
 
 	/**
 	 * Returns the localized name for this recipe type.
@@ -35,13 +34,13 @@ public interface IRecipeCategory {
 	IDrawable getBackground();
 
 	/**
-	 * Initialize the IGuiItemStackGroup and IGuiFluidStackGroup with this recipe's layout.
+	 * Initialize the IRecipeLayout.
 	 */
-	void init(@Nonnull IGuiItemStackGroup guiItemStacks, @Nonnull IGuiFluidStackGroup guiFluidTanks);
+	void init(@Nonnull IRecipeLayout recipeLayout);
 
 	/**
-	 * Set the IGuiItemStackGroup and IGuiFluidStackGroup properties from the RecipeWrapper.
+	 * Set the IRecipeLayout properties from the RecipeWrapper.
 	 */
-	void setRecipe(@Nonnull IGuiItemStackGroup guiItemStacks, @Nonnull IGuiFluidStackGroup guiFluidTanks, @Nonnull IRecipeWrapper recipeWrapper);
+	void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper);
 
 }

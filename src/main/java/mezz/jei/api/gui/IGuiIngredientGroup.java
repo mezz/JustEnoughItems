@@ -10,7 +10,7 @@ import java.util.Collection;
  * @see IGuiItemStackGroup and IGuiFluidStackGroup
  */
 public interface IGuiIngredientGroup<T> {
-	void set(int index, @Nonnull Collection<T> ingredients);
+	void set(int slotIndex, @Nonnull Collection<T> ingredients);
 
-	void set(int index, @Nonnull T ingredient);
+	void set(int slotIndex, @Nonnull T ingredient);
 }
