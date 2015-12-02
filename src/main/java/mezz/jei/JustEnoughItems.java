@@ -28,7 +28,7 @@ public class JustEnoughItems {
 
 	public static PacketHandler packetHandler;
 
-	private PluginRegistry pluginRegistry;
+	public static PluginRegistry pluginRegistry;
 
 	@Mod.EventHandler
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
@@ -46,7 +46,6 @@ public class JustEnoughItems {
 
 	@Mod.EventHandler
 	public void loadComplete(@Nonnull FMLLoadCompleteEvent event) {
-		JEIManager.recipeRegistry = pluginRegistry.createRecipeRegistry();
 		common.loadComplete(event);
 	}
 }

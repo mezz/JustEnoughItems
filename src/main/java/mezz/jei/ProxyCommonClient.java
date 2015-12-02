@@ -36,6 +36,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	@Override
 	public void loadComplete(@Nonnull FMLLoadCompleteEvent event) {
 		JEIManager.itemRegistry = new ItemRegistry();
+		JEIManager.recipeRegistry = JustEnoughItems.pluginRegistry.createRecipeRegistry();
 
 		ItemFilter itemFilter = new ItemFilter(JEIManager.itemRegistry.getItemList());
 		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter);
