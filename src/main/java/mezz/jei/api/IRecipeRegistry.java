@@ -25,6 +25,10 @@ public interface IRecipeRegistry {
 	@Nullable
 	IRecipeHandler getRecipeHandler(Class recipeClass);
 
+	/** Returns a list of Recipe Categories */
+	@Nonnull
+	ImmutableList<IRecipeCategory> getRecipeCategories();
+
 	/** Returns a list of Recipe Categories that have the ItemStack as an input */
 	@Nonnull
 	ImmutableList<IRecipeCategory> getRecipeCategoriesWithInput(ItemStack input);
@@ -56,6 +60,10 @@ public interface IRecipeRegistry {
 	/** Returns a list of Recipes of recipeCategory that have the Fluid as an output */
 	@Nonnull
 	ImmutableList<Object> getRecipesWithOutput(IRecipeCategory recipeCategory, Fluid output);
+
+	/** Returns a list of Recipe Wrappers in recipeCategory */
+	@Nonnull
+	ImmutableList<Object> getRecipes(IRecipeCategory recipeCategory);
 
 	@Nullable
 	IRecipeTransferHelper getRecipeTransferHelper(Container container, IRecipeCategory recipeCategory);

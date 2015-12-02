@@ -30,6 +30,8 @@ public interface IRecipeGuiLogic {
 
 	boolean setFocus(@Nonnull Focus focus, @Nonnull Mode mode);
 
+	boolean setCategoryFocus();
+
 	@Nullable
 	IRecipeCategory getRecipeCategory();
 

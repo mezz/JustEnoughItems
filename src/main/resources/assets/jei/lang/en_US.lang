@@ -10,14 +10,15 @@ key.jei.showUses=Show Item Uses
 # Config
 config.jei.cheatItemsEnabled=Enable Item Cheating
 config.jei.cheatItemsEnabled.description=/give items instead of showing the recipe
-config.jei.tooltipModName=Tooltip Mod Name
+config.jei.tooltipModName=Add Mod Name to Tooltip
 config.jei.tooltipModName.description=Adds the name of the item's mod to its tooltip.
 config.jei.nbtKeyBlacklist=NBT Key Blacklist
 config.jei.nbtKeyBlacklist.description=List of NBT Keys that should be ignored when retrieving recipes.
 
 # Recipes
 gui.jei.craftingTableRecipes=Crafting Table Recipes
-gui.jei.furnaceRecipes=Furnace Recipes
+gui.jei.smeltingRecipes=Smelting Recipes
+gui.jei.fuelRecipes=Fuel Recipes
 gui.jei.furnaceExperience=%s Exp.
 gui.jei.furnaceBurnTime=Burn Time: %s
 gui.jei.forestry.centrifugeRecipes=Forestry Centrifuge

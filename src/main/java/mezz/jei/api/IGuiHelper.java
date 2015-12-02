@@ -18,6 +18,9 @@ public interface IGuiHelper {
 	IDrawable createDrawable(@Nonnull ResourceLocation resourceLocation, int u, int v, int width, int height);
 
 	@Nonnull
+	IDrawable createDrawable(@Nonnull ResourceLocation resourceLocation, int u, int v, int width, int height, int paddingTop, int paddingBottom, int paddingLeft, int paddingRight);
+
+	@Nonnull
 	ICraftingGridHelper createCraftingGridHelper(int craftInputSlot1, int craftOutputSlot);
 
 	@Nonnull

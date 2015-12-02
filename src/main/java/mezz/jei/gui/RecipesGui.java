@@ -128,8 +128,8 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		if (!isMouseOver(mouseX, mouseY)) {
 			return null;
 		}
-		for (RecipeLayout recipeWidget : recipeLayouts) {
-			Focus focus = recipeWidget.getFocusUnderMouse(mouseX, mouseY);
+		for (RecipeLayout recipeLayouts : this.recipeLayouts) {
+			Focus focus = recipeLayouts.getFocusUnderMouse(mouseX, mouseY);
 			if (focus != null) {
 				return focus;
 			}
@@ -153,6 +153,15 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		} catch (IOException e) {
 			Log.error("IOException on mouse click.", e);
 		}
+
+		if (!guiActionPerformed && (mouseY < guiTop + titleHeight)) {
+			boolean success = logic.setCategoryFocus();
+			if (success) {
+				updateLayout();
+			}
+			return success;
+		}
+
 		return guiActionPerformed;
 	}
 
