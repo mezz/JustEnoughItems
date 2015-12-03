@@ -16,8 +16,9 @@ public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {
 
 	/**
 	 * ItemStacks must be initialized once, and then can be set many times.
+	 *
 	 * @param slotIndex the slot index of this itemStack
-	 * @param input whether this slot is an input. Used for the recipe-fill feature.
+	 * @param input     whether this slot is an input. Used for the recipe-fill feature.
 	 * @param xPosition x position of the slot relative to the recipe background
 	 * @param yPosition y position of the slot relative to the recipe background
 	 */
