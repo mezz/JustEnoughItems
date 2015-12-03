@@ -16,6 +16,7 @@ import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.api.JEIManager;
+import mezz.jei.config.Config;
 import mezz.jei.util.ItemStackElement;
 import mezz.jei.util.Log;
 
@@ -101,6 +102,16 @@ public class ItemFilter {
 								continue;
 							}
 
+							if (JEIManager.itemRegistry.isItemBlacklisted(itemStack)) {
+								if (Config.editModeEnabled) {
+									if (!Config.isItemOnConfigBlacklist(itemStack, true) && !Config.isItemOnConfigBlacklist(itemStack, false)) {
+										continue; // edit mode can only change the config blacklist, not things blacklisted through the API
+									}
+								} else {
+									continue;
+								}
+							}
+
 							ItemStackElement itemStackElement = ItemStackElement.create(itemStack);
 							if (itemStackElement != null) {
 								baseList.add(itemStackElement);
@@ -110,6 +121,10 @@ public class ItemFilter {
 						return baseList.build();
 					}
 				});
+	}
+
+	public void reset() {
+		this.filteredItemMapsCache.invalidateAll();
 	}
 
 	public boolean setFilterText(@Nonnull String filterText) {

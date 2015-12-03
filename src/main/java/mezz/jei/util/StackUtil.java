@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -272,7 +273,12 @@ public class StackUtil {
 	}
 
 	@Nonnull
-	public static String uniqueIdentifierForStack(@Nonnull ItemStack stack, boolean wildcard) {
+	public static String getUniqueIdentifierForStack(@Nonnull ItemStack stack) {
+		return getUniqueIdentifierForStack(stack, false);
+	}
+
+	@Nonnull
+	public static String getUniqueIdentifierForStack(@Nonnull ItemStack stack, boolean wildcard) {
 		Item item = stack.getItem();
 		if (item == null) {
 			throw new NullItemInStackException();
@@ -293,6 +299,14 @@ public class StackUtil {
 		}
 
 		return itemKey.toString();
+	}
+
+	@Nonnull
+	public static List<String> getUniqueIdentifiersWithWildcard(@Nonnull ItemStack itemStack) {
+		return Arrays.asList(
+				getUniqueIdentifierForStack(itemStack, false),
+				getUniqueIdentifierForStack(itemStack, true)
+		);
 	}
 
 	private static NBTTagCompound cleanNbt(NBTTagCompound nbtTagCompound) {

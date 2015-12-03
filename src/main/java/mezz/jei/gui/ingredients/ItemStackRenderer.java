@@ -5,9 +5,13 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
+
+import mezz.jei.config.Config;
 
 public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	@Override
@@ -20,6 +24,15 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 		minecraft.getRenderItem().renderItemOverlayIntoGUI(font, itemStack, xPosition, yPosition, null);
 
 		RenderHelper.disableStandardItemLighting();
+
+		if (Config.editModeEnabled) {
+			if (Config.isItemOnConfigBlacklist(itemStack, false)) {
+				GuiScreen.drawRect(xPosition, yPosition, xPosition + 8, yPosition + 16, 0xFFFFFF00);
+			}
+			if (Config.isItemOnConfigBlacklist(itemStack, true)) {
+				GuiScreen.drawRect(xPosition + 8, yPosition, xPosition + 16, yPosition + 16, 0xFFFF0000);
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -33,6 +46,23 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 				list.set(k, EnumChatFormatting.GRAY + list.get(k));
 			}
 		}
+
+		if (Config.editModeEnabled) {
+			list.add("");
+			list.add(EnumChatFormatting.ITALIC + StatCollector.translateToLocal("gui.jei.editMode.description"));
+			if (Config.isItemOnConfigBlacklist(itemStack, false)) {
+				list.add(EnumChatFormatting.YELLOW + StatCollector.translateToLocal("gui.jei.editMode.description.show"));
+			} else {
+				list.add(EnumChatFormatting.YELLOW + StatCollector.translateToLocal("gui.jei.editMode.description.hide"));
+			}
+
+			if (Config.isItemOnConfigBlacklist(itemStack, true)) {
+				list.add(EnumChatFormatting.RED + StatCollector.translateToLocal("gui.jei.editMode.description.show.wild"));
+			} else {
+				list.add(EnumChatFormatting.RED + StatCollector.translateToLocal("gui.jei.editMode.description.hide.wild"));
+			}
+		}
+
 		return list;
 	}
 

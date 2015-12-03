@@ -15,12 +15,15 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import mezz.jei.api.JEIManager;
 import mezz.jei.config.Config;
+import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.network.packets.PacketJEI;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 
 public class ProxyCommonClient extends ProxyCommon {
+	private ItemFilter itemFilter;
+
 	@Override
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
 		Config.preInit(event);
@@ -38,7 +41,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		JEIManager.itemRegistry = new ItemRegistry();
 		JEIManager.recipeRegistry = JustEnoughItems.pluginRegistry.createRecipeRegistry();
 
-		ItemFilter itemFilter = new ItemFilter();
+		itemFilter = new ItemFilter();
 		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter);
 		GuiEventHandler guiEventHandler = new GuiEventHandler(itemListOverlay);
 		MinecraftForge.EVENT_BUS.register(guiEventHandler);
@@ -58,6 +61,9 @@ public class ProxyCommonClient extends ProxyCommon {
 
 	@SubscribeEvent
 	public void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
-		Config.onConfigChanged(eventArgs);
+		if (eventArgs.modID.equals(Constants.MOD_ID)) {
+			Config.syncConfig();
+			itemFilter.reset();
+		}
 	}
 }

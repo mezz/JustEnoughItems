@@ -7,6 +7,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -129,6 +130,24 @@ public class InputHandler {
 	}
 
 	private boolean handleMouseClickedFocus(int mouseButton, @Nonnull Focus focus) {
+		if (Config.editModeEnabled && GuiScreen.isCtrlKeyDown()) {
+			Boolean wildcard = null;
+			if (mouseButton == 0) {
+				wildcard = false;
+			} else if (mouseButton == 1) {
+				wildcard = true;
+			}
+
+			if (wildcard != null) {
+				if (Config.isItemOnConfigBlacklist(focus.getStack(), wildcard)) {
+					Config.removeItemFromConfigBlacklist(focus.getStack(), wildcard);
+				} else {
+					Config.addItemToConfigBlacklist(focus.getStack(), wildcard);
+				}
+				return true;
+			}
+		}
+
 		EntityPlayerSP player = FMLClientHandler.instance().getClientPlayerEntity();
 		if (Config.cheatItemsEnabled && Permissions.canPlayerSpawnItems(player)) {
 			if (mouseButton == 0) {
@@ -142,15 +161,16 @@ public class InputHandler {
 				}
 				return true;
 			}
-		} else {
-			if (mouseButton == 0) {
-				recipesGui.showRecipes(focus);
-				return true;
-			} else if (mouseButton == 1) {
-				recipesGui.showUses(focus);
-				return true;
-			}
 		}
+
+		if (mouseButton == 0) {
+			recipesGui.showRecipes(focus);
+			return true;
+		} else if (mouseButton == 1) {
+			recipesGui.showUses(focus);
+			return true;
+		}
+
 		return false;
 	}
 

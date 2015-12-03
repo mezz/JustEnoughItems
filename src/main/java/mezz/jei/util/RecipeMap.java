@@ -8,7 +8,6 @@ import com.google.common.collect.Ordering;
 import com.google.common.collect.Table;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +39,7 @@ public class RecipeMap {
 	@Nonnull
 	public ImmutableList<IRecipeCategory> getRecipeCategories(@Nonnull ItemStack itemStack) {
 		Set<IRecipeCategory> recipeCategories = new HashSet<>();
-		for (String stackKey : getNamesWithWildcard(itemStack)) {
+		for (String stackKey : StackUtil.getUniqueIdentifiersWithWildcard(itemStack)) {
 			recipeCategories.addAll(categoryMap.get(stackKey));
 		}
 		return recipeCategoryOrdering.immutableSortedCopy(recipeCategories);
@@ -53,7 +52,7 @@ public class RecipeMap {
 	}
 
 	private void addRecipeCategory(@Nonnull IRecipeCategory recipeCategory, @Nonnull ItemStack itemStack) {
-		String stackKey = StackUtil.uniqueIdentifierForStack(itemStack, false);
+		String stackKey = StackUtil.getUniqueIdentifierForStack(itemStack);
 		List<IRecipeCategory> recipeCategories = categoryMap.get(stackKey);
 		if (!recipeCategories.contains(recipeCategory)) {
 			recipeCategories.add(recipeCategory);
@@ -69,14 +68,6 @@ public class RecipeMap {
 	}
 
 	@Nonnull
-	private List<String> getNamesWithWildcard(@Nonnull ItemStack itemStack) {
-		List<String> names = new ArrayList<>(2);
-		names.add(StackUtil.uniqueIdentifierForStack(itemStack, false));
-		names.add(StackUtil.uniqueIdentifierForStack(itemStack, true));
-		return names;
-	}
-
-	@Nonnull
 	private String getKeyForFluid(Fluid fluid) {
 		return "fluid:" + fluid.getID();
 	}
@@ -86,7 +77,7 @@ public class RecipeMap {
 		Map<String, List<Object>> recipesForType = recipeTable.row(recipeCategory);
 
 		ImmutableList.Builder<Object> listBuilder = ImmutableList.builder();
-		for (String name : getNamesWithWildcard(stack)) {
+		for (String name : StackUtil.getUniqueIdentifiersWithWildcard(stack)) {
 			List<Object> recipes = recipesForType.get(name);
 			if (recipes != null) {
 				listBuilder.addAll(recipes);
@@ -115,7 +106,7 @@ public class RecipeMap {
 				continue;
 			}
 
-			String stackKey = StackUtil.uniqueIdentifierForStack(itemStack, false);
+			String stackKey = StackUtil.getUniqueIdentifierForStack(itemStack);
 			List<Object> recipes = recipesForType.get(stackKey);
 			if (recipes == null) {
 				recipes = Lists.newArrayList();
