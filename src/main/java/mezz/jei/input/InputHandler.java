@@ -214,7 +214,7 @@ public class InputHandler {
 				recipesGui.showUses(focus);
 				return true;
 			}
-		} else if (eventKey == KeyBindings.toggleOverlay.getKeyCode()) {
+		} else if (eventKey == KeyBindings.toggleOverlay.getKeyCode() && GuiScreen.isCtrlKeyDown()) {
 			itemListOverlay.toggleEnabled();
 			return false;
 		}
