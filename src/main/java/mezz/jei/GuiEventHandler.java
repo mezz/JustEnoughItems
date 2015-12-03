@@ -8,7 +8,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -47,6 +47,13 @@ public class GuiEventHandler {
 		if (!minecraft.thePlayer.capabilities.isCreativeMode) {
 			itemListOverlay.open();
 		}
+	}
+	
+	@SubscribeEvent
+	public void onGuiOpen(@Nonnull GuiOpenEvent event) {
+	    if (event.gui == null && itemListOverlay.isOpen()) {
+	        itemListOverlay.close();
+	    }
 	}
 
 	@SubscribeEvent

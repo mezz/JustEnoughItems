@@ -199,9 +199,6 @@ public class InputHandler {
 			if (recipesGui.isOpen()) {
 				recipesGui.close();
 				return true;
-			} else if (itemListOverlay.isOpen()) {
-				itemListOverlay.close();
-				return false;
 			}
 		}
 
