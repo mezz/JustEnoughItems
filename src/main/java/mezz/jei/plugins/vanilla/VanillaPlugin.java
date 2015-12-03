@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.minecraft.inventory.ContainerBrewingStand;
 import net.minecraft.inventory.ContainerFurnace;
 import net.minecraft.inventory.ContainerWorkbench;
 
@@ -15,6 +16,9 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeTransferHelper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
+import mezz.jei.plugins.vanilla.brewing.BrewingRecipeCategory;
+import mezz.jei.plugins.vanilla.brewing.BrewingRecipeHandler;
+import mezz.jei.plugins.vanilla.brewing.BrewingRecipeMaker;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeMaker;
 import mezz.jei.plugins.vanilla.crafting.ShapedOreRecipeHandler;
@@ -41,7 +45,8 @@ public class VanillaPlugin implements IModPlugin {
 		return Arrays.asList(
 				new CraftingRecipeCategory(),
 				new FurnaceFuelCategory(),
-				new FurnaceSmeltingCategory()
+				new FurnaceSmeltingCategory(),
+				new BrewingRecipeCategory()
 		);
 	}
 
@@ -54,7 +59,8 @@ public class VanillaPlugin implements IModPlugin {
 				new ShapelessOreRecipeHandler(),
 				new ShapelessRecipesHandler(),
 				new FuelRecipeHandler(),
-				new SmeltingRecipeHandler()
+				new SmeltingRecipeHandler(),
+				new BrewingRecipeHandler()
 		);
 	}
 
@@ -65,7 +71,8 @@ public class VanillaPlugin implements IModPlugin {
 		return Arrays.asList(
 				guiHelper.createRecipeTransferHelper(ContainerWorkbench.class, VanillaRecipeCategoryUid.CRAFTING, 1, 9, 10, 36),
 				guiHelper.createRecipeTransferHelper(ContainerFurnace.class, VanillaRecipeCategoryUid.SMELTING, 0, 1, 1, 36),
-				guiHelper.createRecipeTransferHelper(ContainerFurnace.class, VanillaRecipeCategoryUid.FUEL, 1, 1, 1, 36)
+				guiHelper.createRecipeTransferHelper(ContainerFurnace.class, VanillaRecipeCategoryUid.FUEL, 1, 1, 1, 36),
+				guiHelper.createRecipeTransferHelper(ContainerBrewingStand.class, VanillaRecipeCategoryUid.BREWING, 0, 4, 4, 36)
 		);
 	}
 
@@ -77,6 +84,7 @@ public class VanillaPlugin implements IModPlugin {
 		recipes.addAll(CraftingRecipeMaker.getCraftingRecipes());
 		recipes.addAll(SmeltingRecipeMaker.getFurnaceRecipes());
 		recipes.addAll(FuelRecipeMaker.getFuelRecipes());
+		recipes.addAll(BrewingRecipeMaker.getBrewingRecipes());
 
 		return recipes;
 	}

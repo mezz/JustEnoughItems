@@ -33,6 +33,8 @@ class ItemRegistry implements IItemRegistry {
 	@Nonnull
 	private final ImmutableList<ItemStack> itemList;
 	@Nonnull
+	private final ImmutableList<ItemStack> potionIngredients;
+	@Nonnull
 	private final ImmutableList<ItemStack> fuels;
 	@Nonnull
 	private final ModList modList;
@@ -52,6 +54,14 @@ class ItemRegistry implements IItemRegistry {
 
 		this.itemList = ImmutableList.copyOf(itemList);
 		this.fuels = ImmutableList.copyOf(fuels);
+
+		ImmutableList.Builder<ItemStack> potionIngredientBuilder = ImmutableList.builder();
+		for (ItemStack itemStack : this.itemList) {
+			if (itemStack.getItem().isPotionIngredient(itemStack)) {
+				potionIngredientBuilder.add(itemStack);
+			}
+		}
+		this.potionIngredients = potionIngredientBuilder.build();
 	}
 
 	@Override
@@ -64,6 +74,12 @@ class ItemRegistry implements IItemRegistry {
 	@Nonnull
 	public ImmutableList<ItemStack> getFuels() {
 		return fuels;
+	}
+
+	@Override
+	@Nonnull
+	public ImmutableList<ItemStack> getPotionIngredients() {
+		return potionIngredients;
 	}
 
 	@Nonnull

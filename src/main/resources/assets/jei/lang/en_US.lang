@@ -34,5 +34,7 @@ gui.jei.smeltingRecipes=Smelting Recipes
 gui.jei.fuelRecipes=Fuel Recipes
 gui.jei.furnaceExperience=%s Exp.
 gui.jei.furnaceBurnTime=Burn Time: %s
+gui.jei.brewingRecipes=Brewing Recipes
+gui.jei.brewingRecipes.steps=Steps: %s
 gui.jei.forestry.centrifugeRecipes=Forestry Centrifuge
 gui.jei.forestry.fabricatorRecipes=Forestry Fabricator

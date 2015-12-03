@@ -20,6 +20,10 @@ public interface IItemRegistry {
 	@Nonnull
 	ImmutableList<ItemStack> getFuels();
 
+	/** Returns a list of all the ItemStacks that return true to isPotionIngredient. */
+	@Nonnull
+	ImmutableList<ItemStack> getPotionIngredients();
+
 	/** Returns a mod name for the given item. */
 	@Nonnull
 	String getModNameForItem(Item item);

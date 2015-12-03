@@ -2,6 +2,7 @@ package mezz.jei.plugins.vanilla.crafting;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 
@@ -52,6 +53,11 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 	@Nonnull
 	public IDrawable getBackground() {
 		return background;
+	}
+
+	@Override
+	public void drawExtras(Minecraft minecraft) {
+
 	}
 
 	@Override

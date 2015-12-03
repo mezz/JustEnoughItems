@@ -20,6 +20,12 @@ public interface IGuiHelper {
 	@Nonnull
 	IDrawable createDrawable(@Nonnull ResourceLocation resourceLocation, int u, int v, int width, int height, int paddingTop, int paddingBottom, int paddingLeft, int paddingRight);
 
+	/**
+	 * Returns a slot drawable for drawing extra slots on guis
+	 */
+	@Nonnull
+	IDrawable getSlotDrawable();
+
 	@Nonnull
 	ICraftingGridHelper createCraftingGridHelper(int craftInputSlot1, int craftOutputSlot);
 

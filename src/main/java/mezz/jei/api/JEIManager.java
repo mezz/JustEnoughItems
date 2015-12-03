@@ -1,5 +1,9 @@
 package mezz.jei.api;
 
+/**
+ * JEIManager is the API entry point.
+ * JEI is almost entirely client-side, expect the API parts to be null on server-side.
+ */
 public class JEIManager {
 
 	/* The following are available during FMLPreInitializationEvent */
