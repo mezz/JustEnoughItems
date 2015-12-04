@@ -27,6 +27,7 @@ targetCompatibility = 1.8
 minecraft {
 	version = mcversion + "-" + forgeversion
 	runDir = "run"
+	replace '@VERSION@', project.version
 	mappings = "snapshot_20151122"
 }
 

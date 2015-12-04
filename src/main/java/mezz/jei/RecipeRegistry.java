@@ -41,7 +41,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final RecipeMap recipeOutputMap;
 	private final Set<Class> unhandledRecipeClasses = new HashSet<>();
 
-	RecipeRegistry(@Nonnull ImmutableList<IRecipeCategory> recipeCategories, @Nonnull ImmutableList<IRecipeHandler> recipeHandlers, @Nonnull ImmutableList<IRecipeTransferHelper> recipeTransferHelpers, @Nonnull ImmutableList<Object> recipes) {
+	public RecipeRegistry(@Nonnull ImmutableList<IRecipeCategory> recipeCategories, @Nonnull ImmutableList<IRecipeHandler> recipeHandlers, @Nonnull ImmutableList<IRecipeTransferHelper> recipeTransferHelpers, @Nonnull ImmutableList<Object> recipes) {
 		recipeCategories = ImmutableSet.copyOf(recipeCategories).asList(); //remove duplicates
 		this.recipeCategoriesMap = buildRecipeCategoriesMap(recipeCategories);
 		this.recipeTransferHelpers = buildRecipeTransferHelperTable(recipeTransferHelpers);

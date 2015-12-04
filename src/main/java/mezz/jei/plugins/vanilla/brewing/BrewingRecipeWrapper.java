@@ -58,7 +58,7 @@ public class BrewingRecipeWrapper extends VanillaRecipeWrapper {
 	public void drawInfo(@Nonnull Minecraft minecraft) {
 		if (brewingSteps > 0) {
 			String steps = StatCollector.translateToLocalFormatted("gui.jei.brewingRecipes.steps", brewingSteps);
-			minecraft.fontRendererObj.drawString(steps, 54, 20, Color.gray.getRGB());
+			minecraft.fontRendererObj.drawString(steps, 70, 28, Color.gray.getRGB());
 		}
 	}
 

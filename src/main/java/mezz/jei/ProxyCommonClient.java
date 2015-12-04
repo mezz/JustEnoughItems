@@ -1,7 +1,5 @@
 package mezz.jei;
 
-import com.google.common.collect.ImmutableList;
-
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,15 +19,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JEIManager;
-import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeHandler;
-import mezz.jei.api.recipe.IRecipeTransferHelper;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.network.packets.PacketJEI;
 import mezz.jei.util.Log;
+import mezz.jei.util.ModRegistry;
 
 public class ProxyCommonClient extends ProxyCommon {
 	private ItemFilter itemFilter;
@@ -95,18 +91,17 @@ public class ProxyCommonClient extends ProxyCommon {
 			}
 		}
 
-		ImmutableList.Builder<IRecipeCategory> recipeCategories = ImmutableList.builder();
-		ImmutableList.Builder<IRecipeHandler> recipeHandlers = ImmutableList.builder();
-		ImmutableList.Builder<IRecipeTransferHelper> recipeTransferHelpers = ImmutableList.builder();
-		ImmutableList.Builder<Object> recipes = ImmutableList.builder();
+		ModRegistry modRegistry = new ModRegistry();
 
 		for (IModPlugin plugin : plugins) {
-			recipeCategories.addAll(plugin.getRecipeCategories());
-			recipeHandlers.addAll(plugin.getRecipeHandlers());
-			recipeTransferHelpers.addAll(plugin.getRecipeTransferHelpers());
-			recipes.addAll(plugin.getRecipes());
+			try {
+				plugin.register(modRegistry);
+			} catch (Throwable e) {
+				FMLLog.bigWarning("Failed to register mod plugin: {}", plugin.getClass());
+				Log.error("Exception: {}", e);
+			}
 		}
 
-		return new RecipeRegistry(recipeCategories.build(), recipeHandlers.build(), recipeTransferHelpers.build(), recipes.build());
+		return modRegistry.createRecipeRegistry();
 	}
 }

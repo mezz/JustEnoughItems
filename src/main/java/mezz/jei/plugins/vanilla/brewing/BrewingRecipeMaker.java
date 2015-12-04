@@ -87,7 +87,7 @@ public class BrewingRecipeMaker {
 				List<List<ItemStack>> ingredients = StackUtil.expandRecipeInputs(Collections.singletonList(brewingRecipe.ingredient), true);
 				BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(ingredients.get(0), brewingRecipe.input, brewingRecipe.output, 0);
 				recipes.add(recipe);
-			} else {
+			} else if (!(iBrewingRecipe instanceof VanillaBrewingRecipe)) {
 				Class recipeClass = iBrewingRecipe.getClass();
 				if (!unhandledRecipeClasses.contains(recipeClass)) {
 					unhandledRecipeClasses.add(recipeClass);

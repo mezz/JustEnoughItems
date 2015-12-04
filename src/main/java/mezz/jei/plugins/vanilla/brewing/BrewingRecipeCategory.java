@@ -25,7 +25,7 @@ public class BrewingRecipeCategory implements IRecipeCategory {
 	private static final int brewIngredientSlot = 3;
 	private static final int outputSlot = 4; // for display only
 
-	private static final int outputSlotX = 60;
+	private static final int outputSlotX = 80;
 	private static final int outputSlotY = 1;
 
 	@Nonnull
@@ -35,7 +35,7 @@ public class BrewingRecipeCategory implements IRecipeCategory {
 
 	public BrewingRecipeCategory() {
 		ResourceLocation location = new ResourceLocation("minecraft:textures/gui/container/brewing_stand.png");
-		background = JEIManager.guiHelper.createDrawable(location, 55, 15, 64, 56);
+		background = JEIManager.guiHelper.createDrawable(location, 55, 15, 64, 56, 0, 0, 0, 40);
 		localizedName = StatCollector.translateToLocal("gui.jei.brewingRecipes");
 	}
 
