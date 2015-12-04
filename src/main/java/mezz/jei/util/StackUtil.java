@@ -283,8 +283,7 @@ public class StackUtil {
 		if (item == null) {
 			throw new NullItemInStackException();
 		}
-		Object itemName = GameData.getItemRegistry().getNameForObject(item);
-		String itemNameString = String.valueOf(itemName);
+		String itemNameString = GameData.getItemRegistry().getNameForObject(item).toString();
 		int metadata = stack.getMetadata();
 		if (wildcard || metadata == OreDictionary.WILDCARD_VALUE) {
 			return itemNameString;
