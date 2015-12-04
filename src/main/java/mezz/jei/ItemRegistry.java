@@ -19,7 +19,6 @@ import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.oredict.OreDictionary;
 
 import mezz.jei.api.IItemRegistry;
-import mezz.jei.config.Config;
 import mezz.jei.util.Log;
 import mezz.jei.util.ModList;
 import mezz.jei.util.StackUtil;
@@ -29,9 +28,9 @@ class ItemRegistry implements IItemRegistry {
 	@Nonnull
 	private final Set<String> itemNameSet = new HashSet<>();
 	@Nonnull
-	private final Set<String> itemBlacklist = new HashSet<>();
-	@Nonnull
 	private final ImmutableList<ItemStack> itemList;
+	@Nonnull
+	private final ImmutableList<ItemStack> potionIngredients;
 	@Nonnull
 	private final ImmutableList<ItemStack> fuels;
 	@Nonnull
@@ -52,6 +51,14 @@ class ItemRegistry implements IItemRegistry {
 
 		this.itemList = ImmutableList.copyOf(itemList);
 		this.fuels = ImmutableList.copyOf(fuels);
+
+		ImmutableList.Builder<ItemStack> potionIngredientBuilder = ImmutableList.builder();
+		for (ItemStack itemStack : this.itemList) {
+			if (itemStack.getItem().isPotionIngredient(itemStack)) {
+				potionIngredientBuilder.add(itemStack);
+			}
+		}
+		this.potionIngredients = potionIngredientBuilder.build();
 	}
 
 	@Override
@@ -66,6 +73,12 @@ class ItemRegistry implements IItemRegistry {
 		return fuels;
 	}
 
+	@Override
+	@Nonnull
+	public ImmutableList<ItemStack> getPotionIngredients() {
+		return potionIngredients;
+	}
+
 	@Nonnull
 	@Override
 	public String getModNameForItem(@Nullable Item item) {
@@ -73,26 +86,6 @@ class ItemRegistry implements IItemRegistry {
 			return "";
 		}
 		return modList.getModNameForItem(item);
-	}
-
-	@Override
-	public void addItemToBlacklist(ItemStack itemStack) {
-		if (itemStack == null) {
-			return;
-		}
-		String uid = StackUtil.getUniqueIdentifierForStack(itemStack);
-		itemBlacklist.add(uid);
-	}
-
-	@Override
-	public boolean isItemBlacklisted(ItemStack itemStack) {
-		List<String> uids = StackUtil.getUniqueIdentifiersWithWildcard(itemStack);
-		for (String uid : uids) {
-			if (itemBlacklist.contains(uid) || Config.itemBlacklist.contains(uid)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private void addItemAndSubItems(@Nullable Item item, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {

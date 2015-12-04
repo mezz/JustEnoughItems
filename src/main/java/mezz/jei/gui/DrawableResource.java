@@ -50,8 +50,15 @@ public class DrawableResource implements IDrawable {
 		return height + paddingTop + paddingBottom;
 	}
 
+	@Override
 	public void draw(@Nonnull Minecraft minecraft) {
 		minecraft.getTextureManager().bindTexture(resourceLocation);
 		GuiUtils.drawTexturedModalRect(paddingLeft, paddingTop, u, v, width, height, 0);
+	}
+
+	@Override
+	public void draw(@Nonnull Minecraft minecraft, int xOffset, int yOffset) {
+		minecraft.getTextureManager().bindTexture(resourceLocation);
+		GuiUtils.drawTexturedModalRect(xOffset + paddingLeft, yOffset + paddingTop, u, v, width, height, 0);
 	}
 }

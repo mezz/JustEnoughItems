@@ -57,6 +57,7 @@ public class RecipeLayout implements IRecipeLayout {
 		GL11.glDisable(GL11.GL_LIGHTING);
 
 		recipeCategory.getBackground().draw(minecraft);
+		recipeCategory.drawExtras(minecraft);
 
 		GL11.glTranslatef(-posX, -posY, 0.0F);
 		recipeTransferButton.drawButton(minecraft, mouseX, mouseY);

@@ -11,6 +11,12 @@ import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IRecipeTransferHelper;
 
 public class GuiHelper implements IGuiHelper {
+	private final IDrawable slotDrawable;
+
+	public GuiHelper() {
+		ResourceLocation location = new ResourceLocation("minecraft:textures/gui/container/furnace.png");
+		slotDrawable = createDrawable(location, 55, 16, 18, 18);
+	}
 
 	@Nonnull
 	@Override
@@ -22,6 +28,12 @@ public class GuiHelper implements IGuiHelper {
 	@Override
 	public IDrawable createDrawable(@Nonnull ResourceLocation resourceLocation, int u, int v, int width, int height, int paddingTop, int paddingBottom, int paddingLeft, int paddingRight) {
 		return new DrawableResource(resourceLocation, u, v, width, height, paddingTop, paddingBottom, paddingLeft, paddingRight);
+	}
+
+	@Nonnull
+	@Override
+	public IDrawable getSlotDrawable() {
+		return slotDrawable;
 	}
 
 	@Nonnull

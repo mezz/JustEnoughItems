@@ -3,7 +3,7 @@ jei.button.next=Next
 jei.button.back=Back
 
 # Key Bindings
-key.jei.toggleOverlay=Toggle Item List Overlay
+key.jei.toggleOverlay=Toggle Item List Overlay (Ctrl + )
 key.jei.showRecipe=Show Item Recipe
 key.jei.showUses=Show Item Uses
 
@@ -34,5 +34,7 @@ gui.jei.smeltingRecipes=Smelting Recipes
 gui.jei.fuelRecipes=Fuel Recipes
 gui.jei.furnaceExperience=%s Exp.
 gui.jei.furnaceBurnTime=Burn Time: %s
+gui.jei.brewingRecipes=Brewing Recipes
+gui.jei.brewingRecipes.steps=Steps: %s
 gui.jei.forestry.centrifugeRecipes=Forestry Centrifuge
 gui.jei.forestry.fabricatorRecipes=Forestry Fabricator

@@ -214,9 +214,12 @@ public class InputHandler {
 				recipesGui.showUses(focus);
 				return true;
 			}
-		} else if (eventKey == KeyBindings.toggleOverlay.getKeyCode()) {
+		} else if (eventKey == KeyBindings.toggleOverlay.getKeyCode() && GuiScreen.isCtrlKeyDown()) {
 			itemListOverlay.toggleEnabled();
 			return false;
+		} else if (eventKey == Keyboard.KEY_F && GuiScreen.isCtrlKeyDown()) {
+			itemListOverlay.setKeyboardFocus(true);
+			return true;
 		}
 
 		for (IKeyable keyable : keyables) {

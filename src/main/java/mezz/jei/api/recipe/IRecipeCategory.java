@@ -2,6 +2,8 @@ package mezz.jei.api.recipe;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.client.Minecraft;
+
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IRecipeLayout;
 
@@ -32,6 +34,11 @@ public interface IRecipeCategory {
 	 */
 	@Nonnull
 	IDrawable getBackground();
+
+	/**
+	 * Optionally draw anything else that might be necessary, like progress bars or icons.
+	 */
+	void drawExtras(Minecraft minecraft);
 
 	/**
 	 * Initialize the IRecipeLayout.

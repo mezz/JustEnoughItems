@@ -1,7 +1,6 @@
 package mezz.jei.config;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,13 +27,8 @@ public class Config {
 	public static Set<String> nbtKeyBlacklist = new HashSet<>();
 	public static Set<String> itemBlacklist = new HashSet<>();
 
-	static {
-		// set defaults
-		nbtKeyBlacklist.addAll(Arrays.asList(
-				"BlockEntityTag",
-				"CanPlaceOn"
-		));
-	}
+	public static final String[] defaultItemBlacklist = new String[]{};
+	public static final String[] defaultNbtKeyBlacklist = new String[] {"BlockEntityTag", "CanPlaceOn"};
 
 	public static void preInit(@Nonnull FMLPreInitializationEvent event) {
 		configFile = new Configuration(event.getSuggestedConfigurationFile());
@@ -62,13 +56,11 @@ public class Config {
 		String tooltipModNameEnabledDescription = StatCollector.translateToLocal("config.jei.tooltipModName.description");
 		tooltipModNameEnabled = configFile.getBoolean("tooltipModName", categoryInterface, tooltipModNameEnabled, tooltipModNameEnabledDescription, "config.jei.tooltipModName");
 
-		String[] defaultNbtKeyBlacklist = nbtKeyBlacklist.toArray(new String[nbtKeyBlacklist.size()]);
 		String nbtKeyBlacklistDescription = StatCollector.translateToLocal("config.jei.nbtKeyBlacklist.description");
 		String[] nbtKeyBlacklistArray = configFile.getStringList("nbtKeyBlacklist", categoryAdvanced, defaultNbtKeyBlacklist, nbtKeyBlacklistDescription, null, "config.jei.nbtKeyBlacklist");
 		nbtKeyBlacklist.clear();
 		Collections.addAll(nbtKeyBlacklist, nbtKeyBlacklistArray);
 
-		String[] defaultItemBlacklist = itemBlacklist.toArray(new String[itemBlacklist.size()]);
 		String itemBlacklistDescription = StatCollector.translateToLocal("config.jei.itemBlacklist.description");
 		String[] itemBlacklistArray = configFile.getStringList("itemBlacklist", categoryAdvanced, defaultItemBlacklist, itemBlacklistDescription, null, "config.jei.itemBlacklist");
 		itemBlacklist.clear();
@@ -80,8 +72,9 @@ public class Config {
 	}
 
 	private static void updateBlacklist() {
+		Property property = configFile.get(categoryAdvanced, "itemBlacklist", defaultItemBlacklist);
+
 		String[] currentBlacklist = itemBlacklist.toArray(new String[itemBlacklist.size()]);
-		Property property = configFile.get(categoryAdvanced, "itemBlacklist", currentBlacklist);
 		property.set(currentBlacklist);
 
 		if (configFile.hasChanged()) {

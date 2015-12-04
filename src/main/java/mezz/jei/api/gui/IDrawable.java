@@ -12,4 +12,6 @@ public interface IDrawable {
 
 	void draw(@Nonnull Minecraft minecraft);
 
+	void draw(@Nonnull Minecraft minecraft, int xOffset, int yOffset);
+
 }

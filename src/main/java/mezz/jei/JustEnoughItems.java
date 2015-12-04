@@ -1,11 +1,13 @@
 package mezz.jei;
 
 import javax.annotation.Nonnull;
+import java.util.Set;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.common.event.FMLModIdMappingEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import mezz.jei.api.JEIManager;
@@ -28,24 +30,25 @@ public class JustEnoughItems {
 
 	public static PacketHandler packetHandler;
 
-	public static PluginRegistry pluginRegistry;
+	private Set<ASMDataTable.ASMData> modPlugins;
 
 	@Mod.EventHandler
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
+		modPlugins = event.getAsmData().getAll("mezz.jei.api.JEIPlugin");
+
 		packetHandler = new PacketHandler();
-		JEIManager.pluginRegistry = pluginRegistry = new PluginRegistry();
 		JEIManager.guiHelper = new GuiHelper();
+		JEIManager.itemBlacklist = new ItemBlacklist();
 		common.preInit(event);
 	}
 
 	@Mod.EventHandler
 	public void init(@Nonnull FMLInitializationEvent event) {
-		pluginRegistry.init();
 		common.init(event);
 	}
 
 	@Mod.EventHandler
-	public void loadComplete(@Nonnull FMLLoadCompleteEvent event) {
-		common.loadComplete(event);
+	public void startJEI(@Nonnull FMLModIdMappingEvent event) {
+		common.startJEI(modPlugins);
 	}
 }
