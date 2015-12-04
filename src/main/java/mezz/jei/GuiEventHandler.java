@@ -51,9 +51,9 @@ public class GuiEventHandler {
 	
 	@SubscribeEvent
 	public void onGuiOpen(@Nonnull GuiOpenEvent event) {
-	    if (event.gui == null && itemListOverlay.isOpen()) {
-	        itemListOverlay.close();
-	    }
+		if (event.gui == null && itemListOverlay.isOpen()) {
+			itemListOverlay.close();
+		}
 	}
 
 	@SubscribeEvent

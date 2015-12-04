@@ -1,7 +1,6 @@
 package mezz.jei.api;
 
 import javax.annotation.Nonnull;
-
 import java.util.List;
 
 import mezz.jei.api.recipe.IRecipeCategory;

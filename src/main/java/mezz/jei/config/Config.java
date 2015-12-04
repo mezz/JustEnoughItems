@@ -28,7 +28,7 @@ public class Config {
 	public static Set<String> itemBlacklist = new HashSet<>();
 
 	public static final String[] defaultItemBlacklist = new String[]{};
-	public static final String[] defaultNbtKeyBlacklist = new String[] {"BlockEntityTag", "CanPlaceOn"};
+	public static final String[] defaultNbtKeyBlacklist = new String[]{"BlockEntityTag", "CanPlaceOn"};
 
 	public static void preInit(@Nonnull FMLPreInitializationEvent event) {
 		configFile = new Configuration(event.getSuggestedConfigurationFile());
