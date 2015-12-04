@@ -102,7 +102,7 @@ public class ItemFilter {
 								continue;
 							}
 
-							if (JEIManager.itemRegistry.isItemBlacklisted(itemStack)) {
+							if (JEIManager.itemBlacklist.isItemBlacklisted(itemStack)) {
 								if (Config.editModeEnabled) {
 									if (!Config.isItemOnConfigBlacklist(itemStack, true) && !Config.isItemOnConfigBlacklist(itemStack, false)) {
 										continue; // edit mode can only change the config blacklist, not things blacklisted through the API

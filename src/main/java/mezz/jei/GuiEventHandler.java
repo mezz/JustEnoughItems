@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -21,14 +22,13 @@ import mezz.jei.input.InputHandler;
 
 public class GuiEventHandler {
 
-	@Nonnull
-	private final ItemListOverlay itemListOverlay;
+	private ItemListOverlay itemListOverlay;
 	@Nonnull
 	private final RecipesGui recipesGui = new RecipesGui();
 	@Nullable
 	private InputHandler inputHandler;
 
-	public GuiEventHandler(@Nonnull ItemListOverlay itemListOverlay) {
+	public void setItemListOverlay(@Nullable ItemListOverlay itemListOverlay) {
 		this.itemListOverlay = itemListOverlay;
 	}
 

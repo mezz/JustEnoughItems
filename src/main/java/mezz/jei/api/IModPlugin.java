@@ -8,7 +8,8 @@ import mezz.jei.api.recipe.IRecipeTransferHelper;
 
 /**
  * The main class for a plugin. Everything passed from a mod into JEI is through this class.
- * This class must not import anything that could be missing at runtime (i.e. code from any mod).
+ * IModPlugins must have the @JEIPlugin annotation to get loaded by JEI.
+ * This class must not import anything that could be missing at runtime (i.e. code from any other mod).
  */
 public interface IModPlugin {
 

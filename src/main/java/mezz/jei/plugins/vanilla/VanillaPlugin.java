@@ -12,6 +12,7 @@ import net.minecraft.inventory.ContainerWorkbench;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JEIManager;
+import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeTransferHelper;
@@ -32,6 +33,7 @@ import mezz.jei.plugins.vanilla.furnace.FurnaceSmeltingCategory;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipeHandler;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipeMaker;
 
+@JEIPlugin
 public class VanillaPlugin implements IModPlugin {
 
 	@Override
