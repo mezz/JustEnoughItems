@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.event.FMLModIdMappingEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import mezz.jei.api.JEIManager;
+import mezz.jei.api.JEIPlugin;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.network.PacketHandler;
@@ -34,8 +35,7 @@ public class JustEnoughItems {
 
 	@Mod.EventHandler
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
-		modPlugins = event.getAsmData().getAll("mezz.jei.api.JEIPlugin");
-
+		modPlugins = event.getAsmData().getAll(JEIPlugin.class.getCanonicalName());
 		packetHandler = new PacketHandler();
 		JEIManager.guiHelper = new GuiHelper();
 		JEIManager.itemBlacklist = new ItemBlacklist();
