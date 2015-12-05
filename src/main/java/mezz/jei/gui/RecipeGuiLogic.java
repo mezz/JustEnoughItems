@@ -6,6 +6,9 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.inventory.Container;
+
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
@@ -58,6 +61,17 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 		this.recipeCategoryIndex = 0;
 		this.pageIndex = 0;
+
+		Container container = Minecraft.getMinecraft().thePlayer.openContainer;
+		if (container != null) {
+			for (int i = 0; i < recipeCategories.size(); i++) {
+				IRecipeCategory recipeCategory = recipeCategories.get(i);
+				if (JEIManager.recipeRegistry.getRecipeTransferHelper(container, recipeCategory) != null) {
+					this.recipeCategoryIndex = i;
+					break;
+				}
+			}
+		}
 
 		updateRecipes();
 
