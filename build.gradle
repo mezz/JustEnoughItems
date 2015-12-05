@@ -2,7 +2,7 @@ plugins {
 	id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 
-version = version_major + '.' + version_minor
+version = version_major + '.' + version_minor + '.' + version_patch
 group = "mezz.jei" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "jei_" + mcversion
 
