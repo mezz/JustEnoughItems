@@ -3,8 +3,8 @@ package mezz.jei.network.packets;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,14 +18,14 @@ import mezz.jei.util.RecipeTransferUtil;
 public class PacketRecipeTransfer extends PacketJEI {
 
 	private Map<Integer, ItemStack> recipeMap;
-	private Collection<Integer> craftingSlots;
-	private Collection<Integer> inventorySlots;
+	private List<Integer> craftingSlots;
+	private List<Integer> inventorySlots;
 
 	public PacketRecipeTransfer() {
 
 	}
 
-	public PacketRecipeTransfer(@Nonnull Map<Integer, ItemStack> recipeMap, @Nonnull Collection<Integer> craftingSlots, @Nonnull Collection<Integer> inventorySlots) {
+	public PacketRecipeTransfer(@Nonnull Map<Integer, ItemStack> recipeMap, @Nonnull List<Integer> craftingSlots, @Nonnull List<Integer> inventorySlots) {
 		this.recipeMap = recipeMap;
 		this.craftingSlots = craftingSlots;
 		this.inventorySlots = inventorySlots;

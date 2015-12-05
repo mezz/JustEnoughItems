@@ -44,6 +44,9 @@ public class ProxyCommonClient extends ProxyCommon {
 		guiEventHandler = new GuiEventHandler();
 		MinecraftForge.EVENT_BUS.register(guiEventHandler);
 		FMLCommonHandler.instance().bus().register(guiEventHandler);
+
+		TooltipEventHandler tooltipEventHandler = new TooltipEventHandler();
+		MinecraftForge.EVENT_BUS.register(tooltipEventHandler);
 	}
 
 	@Override
@@ -54,9 +57,6 @@ public class ProxyCommonClient extends ProxyCommon {
 		itemFilter = new ItemFilter();
 		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter);
 		guiEventHandler.setItemListOverlay(itemListOverlay);
-
-		TooltipEventHandler tooltipEventHandler = new TooltipEventHandler();
-		MinecraftForge.EVENT_BUS.register(tooltipEventHandler);
 	}
 
 	@Override

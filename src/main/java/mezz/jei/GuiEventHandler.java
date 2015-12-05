@@ -22,6 +22,7 @@ import mezz.jei.input.InputHandler;
 
 public class GuiEventHandler {
 
+	@Nullable
 	private ItemListOverlay itemListOverlay;
 	@Nonnull
 	private final RecipesGui recipesGui = new RecipesGui();
@@ -34,6 +35,9 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onGuiInit(@Nonnull GuiScreenEvent.InitGuiEvent.Post event) {
+		if (itemListOverlay == null) {
+			return;
+		}
 		Minecraft minecraft = Minecraft.getMinecraft();
 		GuiContainer guiContainer = asGuiContainer(minecraft.currentScreen);
 		if (guiContainer == null) {
@@ -51,9 +55,12 @@ public class GuiEventHandler {
 	
 	@SubscribeEvent
 	public void onGuiOpen(@Nonnull GuiOpenEvent event) {
-	    if (event.gui == null && itemListOverlay.isOpen()) {
-	        itemListOverlay.close();
-	    }
+		if (itemListOverlay == null) {
+			return;
+		}
+		if (event.gui == null && itemListOverlay.isOpen()) {
+			itemListOverlay.close();
+		}
 	}
 
 	@SubscribeEvent
@@ -70,6 +77,9 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onDrawScreenEventPost(@Nonnull GuiScreenEvent.DrawScreenEvent.Post event) {
+		if (itemListOverlay == null) {
+			return;
+		}
 		GuiContainer guiContainer = asGuiContainer(event.gui);
 		if (guiContainer == null) {
 			return;
@@ -102,7 +112,7 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onClientTick(@Nonnull TickEvent.ClientTickEvent event) {
-		if (event.phase == TickEvent.Phase.END) {
+		if (itemListOverlay == null || event.phase == TickEvent.Phase.END) {
 			return;
 		}
 
