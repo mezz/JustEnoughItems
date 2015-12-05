@@ -3,10 +3,12 @@ package mezz.jei.util;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -101,13 +103,20 @@ public class RecipeTransferUtil {
 			return false;
 		}
 
+		List<Integer> craftingSlotIndexes = new ArrayList<>(craftingSlots.keySet());
+		Collections.sort(craftingSlotIndexes);
+
+		List<Integer> inventorySlotIndexes = new ArrayList<>(inventorySlots.keySet());
+		Collections.sort(inventorySlotIndexes);
+
 		// check that the slots exist and can be altered
 		for (Map.Entry<Integer, ItemStack> entry : slotMap.entrySet()) {
-			int slotIndex = entry.getKey();
-			if (slotIndex >= container.inventorySlots.size()) {
+			int craftNumber = entry.getKey();
+			int slotNumber = craftingSlotIndexes.get(craftNumber);
+			if (slotNumber >= container.inventorySlots.size()) {
 				return false;
 			}
-			Slot slot = container.getSlot(slotIndex);
+			Slot slot = container.getSlot(slotNumber);
 			ItemStack stack = entry.getValue();
 			if (slot == null || !slot.isItemValid(stack)) {
 				return false;
@@ -115,7 +124,7 @@ public class RecipeTransferUtil {
 		}
 
 		if (doTransfer) {
-			PacketRecipeTransfer packet = new PacketRecipeTransfer(slotMap, craftingSlots.keySet(), inventorySlots.keySet());
+			PacketRecipeTransfer packet = new PacketRecipeTransfer(slotMap, craftingSlotIndexes, inventorySlotIndexes);
 			JustEnoughItems.common.sendPacketToServer(packet);
 		}
 
@@ -123,18 +132,23 @@ public class RecipeTransferUtil {
 	}
 
 	/**
-	 * Build slot map (Crafting Slot Index -> ItemStack) for the recipe.
+	 * Build slot map (Crafting Slot Number -> ItemStack) for the recipe.
 	 * Based on slot position info from itemStackGroup the ingredients from the player's inventory in matchingStacks.
 	 */
 	@Nullable
 	private static Map<Integer, ItemStack> buildSlotMap(@Nonnull GuiItemStackGroup itemStackGroup, @Nonnull List<ItemStack> matchingStacks) {
 		Map<Integer, ItemStack> slotMap = new HashMap<>();
+		Map<Integer, GuiIngredient<ItemStack>> ingredientsMap = itemStackGroup.getGuiIngredients();
 
-		for (Map.Entry<Integer, GuiIngredient<ItemStack>> entry : itemStackGroup.getGuiIngredients().entrySet()) {
-			GuiIngredient<ItemStack> guiIngredient = entry.getValue();
+		int recipeSlotNumber = -1;
+		SortedSet<Integer> keys = new TreeSet<>(ingredientsMap.keySet());
+		for (Integer key : keys) {
+
+			GuiIngredient<ItemStack> guiIngredient = ingredientsMap.get(key);
 			if (!guiIngredient.isInput()) {
 				continue;
 			}
+			recipeSlotNumber++;
 
 			List<ItemStack> requiredStacks = guiIngredient.getAll();
 			if (requiredStacks.isEmpty()) {
@@ -143,7 +157,7 @@ public class RecipeTransferUtil {
 
 			ItemStack matchingStack = StackUtil.containsStack(matchingStacks, requiredStacks);
 			if (matchingStack != null) {
-				slotMap.put(entry.getKey(), matchingStack);
+				slotMap.put(recipeSlotNumber, matchingStack);
 				matchingStacks.remove(matchingStack);
 			} else {
 				return null;
@@ -153,7 +167,7 @@ public class RecipeTransferUtil {
 		return slotMap;
 	}
 
-	public static void setItems(@Nonnull EntityPlayer player, @Nonnull Map<Integer, ItemStack> slotMap, @Nonnull Collection<Integer> craftingSlots, @Nonnull Collection<Integer> inventorySlots) {
+	public static void setItems(@Nonnull EntityPlayer player, @Nonnull Map<Integer, ItemStack> slotMap, @Nonnull List<Integer> craftingSlots, @Nonnull List<Integer> inventorySlots) {
 		Container container = player.openContainer;
 
 		// remove required recipe items
@@ -184,8 +198,8 @@ public class RecipeTransferUtil {
 
 		// clear the crafting grid
 		List<ItemStack> clearedCraftingItems = new ArrayList<>();
-		for (Integer craftingSlotIndex : craftingSlots) {
-			Slot craftingSlot = container.getSlot(craftingSlotIndex);
+		for (Integer craftingSlotNumber : craftingSlots) {
+			Slot craftingSlot = container.getSlot(craftingSlotNumber);
 			if (craftingSlot != null && craftingSlot.getHasStack()) {
 				ItemStack craftingItem = craftingSlot.decrStackSize(Integer.MAX_VALUE);
 				clearedCraftingItems.add(craftingItem);
@@ -195,8 +209,9 @@ public class RecipeTransferUtil {
 		// put items into the crafting grid
 		for (Map.Entry<Integer, ItemStack> entry : slotMap.entrySet()) {
 			ItemStack stack = entry.getValue();
-			Integer slotIndex = entry.getKey();
-			Slot slot = container.getSlot(slotIndex);
+			Integer craftNumber = entry.getKey();
+			Integer slotNumber = craftingSlots.get(craftNumber);
+			Slot slot = container.getSlot(slotNumber);
 			slot.putStack(stack);
 		}
 
@@ -250,9 +265,9 @@ public class RecipeTransferUtil {
 	}
 
 	@Nullable
-	private static Slot getSlotWithStack(@Nonnull Container container, @Nonnull Iterable<Integer> slotIndexes, @Nonnull ItemStack stack) {
-		for (Integer slotIndex : slotIndexes) {
-			Slot slot = container.getSlot(slotIndex);
+	private static Slot getSlotWithStack(@Nonnull Container container, @Nonnull Iterable<Integer> slotNumbers, @Nonnull ItemStack stack) {
+		for (Integer slotNumber : slotNumbers) {
+			Slot slot = container.getSlot(slotNumber);
 			if (slot != null) {
 				ItemStack slotStack = slot.getStack();
 				if (StackUtil.isIdentical(stack, slotStack)) {
