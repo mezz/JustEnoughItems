@@ -97,18 +97,6 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		updateLayout();
 	}
 
-	// don't post GUI events or we end up in an infinite loop handling them
-	@Override
-	public void setWorldAndResolution(Minecraft mc, int width, int height) {
-		this.mc = mc;
-		this.itemRender = mc.getRenderItem();
-		this.fontRendererObj = mc.fontRendererObj;
-		this.width = width;
-		this.height = height;
-		this.buttonList.clear();
-		this.initGui();
-	}
-
 	@SuppressWarnings("unchecked")
 	private void addButtons() {
 		this.buttonList.add(nextRecipeCategory);
