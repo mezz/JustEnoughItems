@@ -25,6 +25,15 @@ public class ItemBlacklist implements IItemBlacklist {
 	}
 
 	@Override
+	public void removeItemFromBlacklist(ItemStack itemStack) {
+		if (itemStack == null) {
+			return;
+		}
+		String uid = StackUtil.getUniqueIdentifierForStack(itemStack);
+		itemBlacklist.remove(uid);
+	}
+
+	@Override
 	public boolean isItemBlacklisted(ItemStack itemStack) {
 		List<String> uids = StackUtil.getUniqueIdentifiersWithWildcard(itemStack);
 		for (String uid : uids) {
