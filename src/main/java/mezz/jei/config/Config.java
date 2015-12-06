@@ -37,16 +37,6 @@ public class Config {
 	}
 
 	public static void syncConfig() {
-		configFile.moveProperty(Configuration.CATEGORY_GENERAL, "config.jei.cheatItemsEnabled", categoryMode);
-		configFile.renameProperty(categoryMode, "config.jei.cheatItemsEnabled", "cheatItemsEnabled");
-
-		configFile.moveProperty(Configuration.CATEGORY_GENERAL, "config.jei.tooltipModName", categoryInterface);
-		configFile.renameProperty(categoryMode, "config.jei.tooltipModName", "tooltipModName");
-
-		configFile.moveProperty(Configuration.CATEGORY_GENERAL, "config.jei.nbtKeyBlacklist", categoryAdvanced);
-		configFile.renameProperty(categoryAdvanced, "config.jei.nbtKeyBlacklist", "nbtKeyBlacklist");
-
-
 		String cheatItemsEnabledDescription = StatCollector.translateToLocal("config.jei.cheatItemsEnabled.description");
 		cheatItemsEnabled = configFile.getBoolean("cheatItemsEnabled", categoryMode, cheatItemsEnabled, cheatItemsEnabledDescription, "config.jei.cheatItemsEnabled");
 

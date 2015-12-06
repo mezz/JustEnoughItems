@@ -8,7 +8,6 @@ import net.minecraftforge.fml.client.config.GuiConfig;
 
 public class JEIModConfigGui extends GuiConfig {
 
-	@SuppressWarnings("unchecked")
 	public JEIModConfigGui(GuiScreen parent) {
 		super(parent,
 				new ConfigElement(Config.configFile.getCategory(Configuration.CATEGORY_GENERAL)).getChildElements(),
