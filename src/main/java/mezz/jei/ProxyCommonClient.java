@@ -84,6 +84,7 @@ public class ProxyCommonClient extends ProxyCommon {
 				IModPlugin plugin = modPluginClass.newInstance();
 				if (plugin.isModLoaded()) {
 					plugins.add(plugin);
+					Log.info("Loaded plugin: {}", asmData.getClassName());
 				}
 			} catch (Throwable e) {
 				FMLLog.bigWarning("Failed to load mod plugin: {}", asmData.getClassName());
