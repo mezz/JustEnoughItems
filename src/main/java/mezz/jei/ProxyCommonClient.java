@@ -84,7 +84,6 @@ public class ProxyCommonClient extends ProxyCommon {
 				IModPlugin plugin = modPluginClass.newInstance();
 				if (plugin.isModLoaded()) {
 					plugins.add(plugin);
-					Log.info("Loaded plugin: {}", asmData.getClassName());
 				}
 			} catch (Throwable e) {
 				FMLLog.bigWarning("Failed to load mod plugin: {}", asmData.getClassName());
@@ -97,6 +96,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		for (IModPlugin plugin : plugins) {
 			try {
 				plugin.register(modRegistry);
+				Log.info("Registered plugin: {}", plugin.getClass().getName());
 			} catch (Throwable e) {
 				FMLLog.bigWarning("Failed to register mod plugin: {}", plugin.getClass());
 				Log.error("Exception: {}", e);
