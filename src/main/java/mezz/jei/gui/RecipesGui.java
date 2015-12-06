@@ -13,6 +13,8 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
+import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 
@@ -95,6 +97,24 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		addButtons();
 
 		updateLayout();
+	}
+
+	/**
+	 * Fire our own RecipesGuiInitEvent instead of Forge's GuiInitEvent to avoid confusion.
+	 * When a gui is init, so is this recipes gui, so it would be fired twice.
+	 */
+	@Override
+	public void setWorldAndResolution(Minecraft mc, int width, int height) {
+		this.mc = mc;
+		this.itemRender = mc.getRenderItem();
+		this.fontRendererObj = mc.fontRendererObj;
+		this.width = width;
+		this.height = height;
+
+		MinecraftForge.EVENT_BUS.post(new RecipesGuiInitEvent());
+
+		this.buttonList.clear();
+		this.initGui();
 	}
 
 	@SuppressWarnings("unchecked")
