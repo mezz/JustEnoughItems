@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -30,7 +31,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	/* List of recipes for the currently selected recipeClass */
 	@Nonnull
-	private ImmutableList<Object> recipes = ImmutableList.of();
+	private List<Object> recipes = Collections.emptyList();
 
 	private int recipesPerPage = 0;
 	private int recipeCategoryIndex = 0;
