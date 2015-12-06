@@ -1,12 +1,14 @@
 package mezz.jei;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableListMultimap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import net.minecraft.block.Block;
@@ -16,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
 
 import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
 import mezz.jei.api.IItemRegistry;
@@ -29,6 +32,8 @@ class ItemRegistry implements IItemRegistry {
 	private final Set<String> itemNameSet = new HashSet<>();
 	@Nonnull
 	private final ImmutableList<ItemStack> itemList;
+	@Nonnull
+	private final ImmutableListMultimap<String, ItemStack> itemsByModId;
 	@Nonnull
 	private final ImmutableList<ItemStack> potionIngredients;
 	@Nonnull
@@ -51,6 +56,16 @@ class ItemRegistry implements IItemRegistry {
 
 		this.itemList = ImmutableList.copyOf(itemList);
 		this.fuels = ImmutableList.copyOf(fuels);
+
+		ImmutableListMultimap.Builder<String, ItemStack> itemsByModIdBuilder = ImmutableListMultimap.builder();
+		for (ItemStack itemStack : itemList) {
+			Item item = itemStack.getItem();
+			if (item != null) {
+				String modId = GameRegistry.findUniqueIdentifierFor(item).modId.toLowerCase(Locale.ENGLISH);
+				itemsByModIdBuilder.put(modId, itemStack);
+			}
+		}
+		this.itemsByModId = itemsByModIdBuilder.build();
 
 		ImmutableList.Builder<ItemStack> potionIngredientBuilder = ImmutableList.builder();
 		for (ItemStack itemStack : this.itemList) {
@@ -86,6 +101,13 @@ class ItemRegistry implements IItemRegistry {
 			return "";
 		}
 		return modList.getModNameForItem(item);
+	}
+
+	@Nonnull
+	@Override
+	public ImmutableList<ItemStack> getItemListForModId(String modId) {
+		modId = modId.toLowerCase(Locale.ENGLISH);
+		return itemsByModId.get(modId);
 	}
 
 	private void addItemAndSubItems(@Nullable Item item, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {

@@ -37,4 +37,10 @@ public class ItemRegistryDummy implements IItemRegistry {
 	public String getModNameForItem(Item item) {
 		return modList.getModNameForItem(item);
 	}
+
+	@Nonnull
+	@Override
+	public ImmutableList<ItemStack> getItemListForModId(String modId) {
+		return ImmutableList.of();
+	}
 }
