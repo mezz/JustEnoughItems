@@ -50,9 +50,4 @@ public class SmeltingRecipe extends VanillaRecipeWrapper {
 			fontRendererObj.drawString(experienceString, 69 - fontRendererObj.getStringWidth(experienceString) / 2, 0, Color.gray.getRGB());
 		}
 	}
-
-	@Override
-	public boolean usesOreDictionaryComparison() {
-		return false;
-	}
 }

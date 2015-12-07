@@ -41,9 +41,4 @@ public class FuelRecipe extends VanillaRecipeWrapper {
 	public void drawInfo(@Nonnull Minecraft minecraft) {
 		minecraft.fontRendererObj.drawString(burnTimeString, 24, 12, Color.gray.getRGB());
 	}
-
-	@Override
-	public boolean usesOreDictionaryComparison() {
-		return false;
-	}
 }

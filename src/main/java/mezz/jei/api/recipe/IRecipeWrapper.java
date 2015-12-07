@@ -33,7 +33,4 @@ public interface IRecipeWrapper {
 
 	/** Draw additional info about the recipe. */
 	void drawInfo(@Nonnull Minecraft minecraft);
-
-	/** Return true if this recipe uses the ore dictionary to compare itemStacks with its inputs. */
-	boolean usesOreDictionaryComparison();
 }

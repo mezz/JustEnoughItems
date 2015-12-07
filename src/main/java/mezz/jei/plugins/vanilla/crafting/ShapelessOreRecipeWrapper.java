@@ -45,10 +45,4 @@ public class ShapelessOreRecipeWrapper extends VanillaRecipeWrapper implements I
 	public void drawInfo(@Nonnull Minecraft minecraft) {
 
 	}
-
-	@Override
-	public boolean usesOreDictionaryComparison() {
-		return true;
-	}
-
 }

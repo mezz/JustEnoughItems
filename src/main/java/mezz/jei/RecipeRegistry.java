@@ -144,9 +144,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		List inputs = recipeWrapper.getInputs();
 		List<FluidStack> fluidInputs = recipeWrapper.getFluidInputs();
 		if (inputs != null || fluidInputs != null) {
-			if (recipeWrapper.usesOreDictionaryComparison()) {
-				inputs = StackUtil.expandRecipeInputs(inputs, true);
-			}
 			List<ItemStack> inputStacks = StackUtil.toItemStackList(inputs);
 			if (fluidInputs == null) {
 				fluidInputs = Collections.emptyList();

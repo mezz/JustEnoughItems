@@ -63,11 +63,6 @@ public class BrewingRecipeWrapper extends VanillaRecipeWrapper {
 	}
 
 	@Override
-	public boolean usesOreDictionaryComparison() {
-		return false;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof BrewingRecipeWrapper)) {
 			return false;
