@@ -24,11 +24,11 @@ public class Config {
 	public static boolean cheatItemsEnabled = false;
 	public static boolean editModeEnabled = false;
 	public static boolean tooltipModNameEnabled = true;
-	public static Set<String> nbtKeyBlacklist = new HashSet<>();
+	public static Set<String> nbtKeyIgnoreList = new HashSet<>();
 	public static Set<String> itemBlacklist = new HashSet<>();
 
 	public static final String[] defaultItemBlacklist = new String[]{};
-	public static final String[] defaultNbtKeyBlacklist = new String[]{"BlockEntityTag", "CanPlaceOn"};
+	public static final String[] defaultNbtKeyIgnoreList = new String[]{"BlockEntityTag", "CanPlaceOn"};
 
 	public static void preInit(@Nonnull FMLPreInitializationEvent event) {
 		configFile = new Configuration(event.getSuggestedConfigurationFile());
@@ -46,10 +46,10 @@ public class Config {
 		String tooltipModNameEnabledDescription = StatCollector.translateToLocal("config.jei.tooltipModName.description");
 		tooltipModNameEnabled = configFile.getBoolean("tooltipModName", categoryInterface, tooltipModNameEnabled, tooltipModNameEnabledDescription, "config.jei.tooltipModName");
 
-		String nbtKeyBlacklistDescription = StatCollector.translateToLocal("config.jei.nbtKeyBlacklist.description");
-		String[] nbtKeyBlacklistArray = configFile.getStringList("nbtKeyBlacklist", categoryAdvanced, defaultNbtKeyBlacklist, nbtKeyBlacklistDescription, null, "config.jei.nbtKeyBlacklist");
-		nbtKeyBlacklist.clear();
-		Collections.addAll(nbtKeyBlacklist, nbtKeyBlacklistArray);
+		String nbtKeyIgnoreListDescription = StatCollector.translateToLocal("config.jei.nbtKeyIgnoreList.description");
+		String[] nbtKeyIgnoreListArray = configFile.getStringList("nbtKeyIgnoreList", categoryAdvanced, defaultNbtKeyIgnoreList, nbtKeyIgnoreListDescription, null, "config.jei.nbtKeyIgnoreList");
+		nbtKeyIgnoreList.clear();
+		Collections.addAll(nbtKeyIgnoreList, nbtKeyIgnoreListArray);
 
 		String itemBlacklistDescription = StatCollector.translateToLocal("config.jei.itemBlacklist.description");
 		String[] itemBlacklistArray = configFile.getStringList("itemBlacklist", categoryAdvanced, defaultItemBlacklist, itemBlacklistDescription, null, "config.jei.itemBlacklist");

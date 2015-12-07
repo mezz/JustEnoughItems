@@ -39,6 +39,7 @@ public class JustEnoughItems {
 		packetHandler = new PacketHandler();
 		JEIManager.guiHelper = new GuiHelper();
 		JEIManager.itemBlacklist = new ItemBlacklist();
+		JEIManager.nbtIgnoreList = new NbtIgnoreList();
 		common.preInit(event);
 	}
 

@@ -1,7 +1,5 @@
 package mezz.jei.util;
 
-import com.google.common.collect.Sets;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -21,10 +19,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.oredict.OreDictionary;
 
-import mezz.jei.config.Config;
+import mezz.jei.api.JEIManager;
 
 public class StackUtil {
-
 	@Nonnull
 	public static List<ItemStack> removeDuplicateItemStacks(@Nonnull Iterable<ItemStack> stacks) {
 		List<ItemStack> newStacks = new ArrayList<>();
@@ -310,9 +307,10 @@ public class StackUtil {
 	}
 
 	private static NBTTagCompound cleanNbt(NBTTagCompound nbtTagCompound) {
+		@SuppressWarnings("unchecked")
 		Set<String> keys = nbtTagCompound.getKeySet();
 
-		Set<String> ignoredKeys = Sets.intersection(keys, Config.nbtKeyBlacklist);
+		Set<String> ignoredKeys = JEIManager.nbtIgnoreList.getIgnoredNbtTags(keys);
 		if (ignoredKeys.size() == 0) {
 			return nbtTagCompound;
 		}

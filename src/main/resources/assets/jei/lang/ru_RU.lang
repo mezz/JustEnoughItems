@@ -16,8 +16,8 @@ config.jei.editEnabled.description=Прячьте предметы в списк
 config.jei.tooltipModName=Добавить назв. мода к подсказке
 config.jei.tooltipModName.description=Добавляет название мода к подсказке предмета.
 
-config.jei.nbtKeyBlacklist=Чёрный список для NBT
-config.jei.nbtKeyBlacklist.description=Список NBT, которые будут игнорироваться при отображении рецептов.
+config.jei.nbtKeyIgnoreList=Чёрный список для NBT
+config.jei.nbtKeyIgnoreList.description=Список NBT, которые будут игнорироваться при отображении рецептов.
 config.jei.itemBlacklist=Чёрный список для предметов
 config.jei.itemBlacklist.description=Список предметов, которые не будут отображаться в списке предметов JEI. Формат: modId:name[:meta]. Режим редактирования будет автоматически добавлять записи сюда, или удалять.
 
