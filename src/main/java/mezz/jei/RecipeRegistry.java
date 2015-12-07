@@ -111,7 +111,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		try {
 			addRecipeUnchecked(recipe);
 		} catch (RuntimeException e) {
-			Log.error("Failed to add recipe: {}\nWith error: {}", recipe, e);
+			Log.error("Failed to add recipe: {}", recipe, e);
 		}
 	}
 

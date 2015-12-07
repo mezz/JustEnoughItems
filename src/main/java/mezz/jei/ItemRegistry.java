@@ -182,7 +182,7 @@ class ItemRegistry implements IItemRegistry {
 			}
 		} catch (RuntimeException e) {
 			try {
-				Log.error("Couldn't create unique name for itemStack {}. Exception: {}", stack, e);
+				Log.error("Couldn't create unique name for itemStack {}.", stack, e);
 			} catch (RuntimeException ignored) {
 
 			}

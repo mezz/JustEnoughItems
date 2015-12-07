@@ -22,7 +22,7 @@ public abstract class PacketJEI {
 		try {
 			writePacketData(packetBuffer);
 		} catch (IOException e) {
-			Log.error("Network Error: {}", e);
+			Log.error("Error creating packet", e);
 		}
 
 		return new FMLProxyPacket(packetBuffer, PacketHandler.channelId);
