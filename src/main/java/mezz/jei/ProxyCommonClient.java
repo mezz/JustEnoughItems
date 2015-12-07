@@ -60,6 +60,11 @@ public class ProxyCommonClient extends ProxyCommon {
 	}
 
 	@Override
+	public void resetItemFilter() {
+		itemFilter.reset();
+	}
+
+	@Override
 	public void sendPacketToServer(PacketJEI packet) {
 		NetHandlerPlayClient netHandler = FMLClientHandler.instance().getClient().getNetHandler();
 		if (netHandler != null) {

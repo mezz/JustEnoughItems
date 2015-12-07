@@ -22,6 +22,8 @@ public class ItemBlacklist implements IItemBlacklist {
 		}
 		String uid = StackUtil.getUniqueIdentifierForStack(itemStack);
 		itemBlacklist.add(uid);
+
+		JustEnoughItems.common.resetItemFilter();
 	}
 
 	@Override
@@ -31,6 +33,8 @@ public class ItemBlacklist implements IItemBlacklist {
 		}
 		String uid = StackUtil.getUniqueIdentifierForStack(itemStack);
 		itemBlacklist.remove(uid);
+
+		JustEnoughItems.common.resetItemFilter();
 	}
 
 	@Override

@@ -30,6 +30,10 @@ public class ProxyCommon {
 		JEIManager.recipeRegistry = new RecipeRegistryDummy();
 	}
 
+	public void resetItemFilter() {
+
+	}
+
 	public void sendPacketToServer(PacketJEI packet) {
 		Log.error("Tried to send packet to the server from the server: {}", packet);
 	}
