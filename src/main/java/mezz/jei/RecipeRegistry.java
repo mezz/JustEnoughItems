@@ -40,9 +40,9 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final ListMultimap<IRecipeCategory, Object> recipesForCategories;
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
-	private final Set<Class> unhandledRecipeClasses = new HashSet<>();
+	private final Set<Class> unhandledRecipeClasses;
 
-	public RecipeRegistry(@Nonnull ImmutableList<IRecipeCategory> recipeCategories, @Nonnull ImmutableList<IRecipeHandler> recipeHandlers, @Nonnull ImmutableList<IRecipeTransferHelper> recipeTransferHelpers, @Nonnull ImmutableList<Object> recipes) {
+	public RecipeRegistry(@Nonnull List<IRecipeCategory> recipeCategories, @Nonnull List<IRecipeHandler> recipeHandlers, @Nonnull List<IRecipeTransferHelper> recipeTransferHelpers, @Nonnull List<Object> recipes, @Nonnull List<Class> ignoredRecipeClasses) {
 		recipeCategories = ImmutableSet.copyOf(recipeCategories).asList(); //remove duplicates
 		this.recipeCategoriesMap = buildRecipeCategoriesMap(recipeCategories);
 		this.recipeTransferHelpers = buildRecipeTransferHelperTable(recipeTransferHelpers);
@@ -52,11 +52,13 @@ public class RecipeRegistry implements IRecipeRegistry {
 		this.recipeInputMap = new RecipeMap(recipeCategoryComparator);
 		this.recipeOutputMap = new RecipeMap(recipeCategoryComparator);
 
+		this.unhandledRecipeClasses = new HashSet<>(ignoredRecipeClasses);
+
 		this.recipesForCategories = ArrayListMultimap.create();
 		addRecipes(recipes);
 	}
 
-	private static ImmutableMap<String, IRecipeCategory> buildRecipeCategoriesMap(@Nonnull ImmutableList<IRecipeCategory> recipeCategories) {
+	private static ImmutableMap<String, IRecipeCategory> buildRecipeCategoriesMap(@Nonnull List<IRecipeCategory> recipeCategories) {
 		Map<String, IRecipeCategory> mutableRecipeCategoriesMap = new HashMap<>();
 		for (IRecipeCategory recipeCategory : recipeCategories) {
 			mutableRecipeCategoriesMap.put(recipeCategory.getUid(), recipeCategory);
@@ -90,7 +92,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return builder.build();
 	}
 
-	private void addRecipes(@Nullable ImmutableList<Object> recipes) {
+	private void addRecipes(@Nullable List<Object> recipes) {
 		if (recipes == null) {
 			return;
 		}
