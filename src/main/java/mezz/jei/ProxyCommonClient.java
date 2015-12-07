@@ -61,7 +61,9 @@ public class ProxyCommonClient extends ProxyCommon {
 
 	@Override
 	public void resetItemFilter() {
-		itemFilter.reset();
+		if (itemFilter != null) {
+			itemFilter.reset();
+		}
 	}
 
 	@Override
