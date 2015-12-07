@@ -9,6 +9,7 @@ public class JEIManager {
 	/* The following are available after FMLPreInitializationEvent */
 	public static IGuiHelper guiHelper;
 	public static IItemBlacklist itemBlacklist;
+	public static INbtIgnoreList nbtIgnoreList;
 
 	/* The following are available once the world has loaded */
 	public static IItemRegistry itemRegistry;

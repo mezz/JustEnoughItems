@@ -1,7 +1,5 @@
 package mezz.jei.util;
 
-import com.google.common.collect.ImmutableList;
-
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,19 +16,20 @@ public class ModRegistry implements IModRegistry {
 	private final List<IRecipeHandler> recipeHandlers = new ArrayList<>();
 	private final List<IRecipeTransferHelper> recipeTransferHelpers = new ArrayList<>();
 	private final List<Object> recipes = new ArrayList<>();
+	private final List<Class> ignoredRecipeClasses = new ArrayList<>();
 
 	@Override
-	public void addRecipeCategories(@Nonnull IRecipeCategory... recipeCategories) {
+	public void addRecipeCategories(IRecipeCategory... recipeCategories) {
 		Collections.addAll(this.recipeCategories, recipeCategories);
 	}
 
 	@Override
-	public void addRecipeHandlers(@Nonnull IRecipeHandler... recipeHandlers) {
+	public void addRecipeHandlers(IRecipeHandler... recipeHandlers) {
 		Collections.addAll(this.recipeHandlers, recipeHandlers);
 	}
 
 	@Override
-	public void addRecipeTransferHelpers(@Nonnull IRecipeTransferHelper... recipeTransferHelpers) {
+	public void addRecipeTransferHelpers(IRecipeTransferHelper... recipeTransferHelpers) {
 		Collections.addAll(this.recipeTransferHelpers, recipeTransferHelpers);
 	}
 
@@ -39,7 +38,12 @@ public class ModRegistry implements IModRegistry {
 		this.recipes.addAll(recipes);
 	}
 
+	@Override
+	public void addIgnoredRecipeClasses(Class... ignoredRecipeClasses) {
+		Collections.addAll(this.ignoredRecipeClasses, ignoredRecipeClasses);
+	}
+
 	public RecipeRegistry createRecipeRegistry() {
-		return new RecipeRegistry(ImmutableList.copyOf(recipeCategories), ImmutableList.copyOf(recipeHandlers), ImmutableList.copyOf(recipeTransferHelpers), ImmutableList.copyOf(recipes));
+		return new RecipeRegistry(recipeCategories, recipeHandlers, recipeTransferHelpers, recipes, ignoredRecipeClasses);
 	}
 }

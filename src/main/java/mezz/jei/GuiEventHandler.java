@@ -35,7 +35,7 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onGuiInit(@Nonnull GuiScreenEvent.InitGuiEvent.Post event) {
-		if (itemListOverlay == null) {
+		if (itemListOverlay == null || event.gui instanceof RecipesGui) {
 			return;
 		}
 		Minecraft minecraft = Minecraft.getMinecraft();

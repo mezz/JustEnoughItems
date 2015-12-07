@@ -60,6 +60,13 @@ public class ProxyCommonClient extends ProxyCommon {
 	}
 
 	@Override
+	public void resetItemFilter() {
+		if (itemFilter != null) {
+			itemFilter.reset();
+		}
+	}
+
+	@Override
 	public void sendPacketToServer(PacketJEI packet) {
 		NetHandlerPlayClient netHandler = FMLClientHandler.instance().getClient().getNetHandler();
 		if (netHandler != null) {
@@ -87,7 +94,7 @@ public class ProxyCommonClient extends ProxyCommon {
 				}
 			} catch (Throwable e) {
 				FMLLog.bigWarning("Failed to load mod plugin: {}", asmData.getClassName());
-				Log.error("Exception: {}", e);
+				Log.error("Exception", e);
 			}
 		}
 
@@ -96,9 +103,10 @@ public class ProxyCommonClient extends ProxyCommon {
 		for (IModPlugin plugin : plugins) {
 			try {
 				plugin.register(modRegistry);
+				Log.info("Registered plugin: {}", plugin.getClass().getName());
 			} catch (Throwable e) {
 				FMLLog.bigWarning("Failed to register mod plugin: {}", plugin.getClass());
-				Log.error("Exception: {}", e);
+				Log.error("Exception", e);
 			}
 		}
 

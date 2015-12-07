@@ -10,6 +10,13 @@ public interface IItemBlacklist {
 	 */
 	void addItemToBlacklist(ItemStack itemStack);
 
+	/**
+	 * Undo blacklisting an item.
+	 * This is for mods that hide items initially and reveal them when certain conditions are met.
+	 * Items blacklisted by the user in the config will remain hidden.
+	 */
+	void removeItemFromBlacklist(ItemStack itemStack);
+
 	/** Returns true if the item is blacklisted and will not be displayed in the item list. */
 	boolean isItemBlacklisted(ItemStack itemStack);
 }

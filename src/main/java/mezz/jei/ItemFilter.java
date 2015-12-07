@@ -95,7 +95,7 @@ public class ItemFilter {
 								}
 							} catch (RuntimeException e) {
 								try {
-									Log.error("Couldn't find ItemModelMesher for itemStack {}. Exception: {}", itemStack, e);
+									Log.error("Couldn't find ItemModelMesher for itemStack {}.", itemStack, e);
 								} catch (RuntimeException ignored) {
 
 								}

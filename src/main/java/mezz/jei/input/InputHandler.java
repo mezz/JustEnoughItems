@@ -6,11 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
-
-import net.minecraftforge.fml.client.FMLClientHandler;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -22,7 +19,6 @@ import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.RecipesGui;
 import mezz.jei.util.Commands;
 import mezz.jei.util.MouseHelper;
-import mezz.jei.util.Permissions;
 
 public class InputHandler {
 
@@ -148,8 +144,7 @@ public class InputHandler {
 			}
 		}
 
-		EntityPlayerSP player = FMLClientHandler.instance().getClientPlayerEntity();
-		if (Config.cheatItemsEnabled && Permissions.canPlayerSpawnItems(player)) {
+		if (Config.cheatItemsEnabled) {
 			if (mouseButton == 0) {
 				if (focus.getStack() != null) {
 					Commands.giveFullStack(focus.getStack());

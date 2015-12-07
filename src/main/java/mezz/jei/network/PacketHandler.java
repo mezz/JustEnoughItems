@@ -87,7 +87,7 @@ public class PacketHandler {
 				try {
 					packet.readPacketData(packetBuffer, player);
 				} catch (IOException e) {
-					Log.error("Network Error: {}", e);
+					Log.error("Network Error", e);
 				}
 			});
 		}

@@ -27,4 +27,7 @@ public interface IItemRegistry {
 	/** Returns a mod name for the given item. */
 	@Nonnull
 	String getModNameForItem(Item item);
+
+	@Nonnull
+	ImmutableList<ItemStack> getItemListForModId(String modId);
 }

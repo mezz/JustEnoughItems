@@ -9,6 +9,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.JEIManager;
 import mezz.jei.config.Config;
 
@@ -31,7 +32,12 @@ public class TooltipEventHandler {
 			return;
 		}
 
-		String modName = JEIManager.itemRegistry.getModNameForItem(item);
+		IItemRegistry itemRegistry = JEIManager.itemRegistry;
+		if (itemRegistry == null) {
+			return;
+		}
+
+		String modName = itemRegistry.getModNameForItem(item);
 		event.toolTip.add(chatFormatting + modName);
 	}
 }
