@@ -167,7 +167,13 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Nonnull
 	@Override
 	public ImmutableList<IRecipeCategory> getRecipeCategories() {
-		return ImmutableList.copyOf(recipeCategoriesMap.values());
+		ImmutableList.Builder<IRecipeCategory> builder = ImmutableList.builder();
+		for (IRecipeCategory recipeCategory : recipeCategoriesMap.values()) {
+			if (getRecipes(recipeCategory).size() > 0) {
+				builder.add(recipeCategory);
+			}
+		}
+		return builder.build();
 	}
 
 	@Nullable
