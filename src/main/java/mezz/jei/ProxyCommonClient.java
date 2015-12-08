@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import net.minecraft.client.network.NetHandlerPlayClient;
-
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -14,6 +15,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -31,9 +33,20 @@ public class ProxyCommonClient extends ProxyCommon {
 	private ItemFilter itemFilter;
 	private GuiEventHandler guiEventHandler;
 
+	private void initVersionChecker()
+	{
+		StringBuilder fileNamePattern = new StringBuilder("jei_").append(ForgeVersion.mcVersion).append("-[].jar");
+		
+		final NBTTagCompound compound = new NBTTagCompound();
+		compound.setString( "curseProjectName", "just-enough-items-jei" );
+		compound.setString( "curseFilenameParser", fileNamePattern.toString() );
+		FMLInterModComms.sendRuntimeMessage( Constants.MOD_ID, "VersionChecker", "addCurseCheck", compound );
+	}
+	
 	@Override
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
 		Config.preInit(event);
+		initVersionChecker();
 	}
 
 	@Override
