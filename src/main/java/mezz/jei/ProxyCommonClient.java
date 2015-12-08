@@ -13,7 +13,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
@@ -104,8 +103,7 @@ public class ProxyCommonClient extends ProxyCommon {
 					plugins.add(plugin);
 				}
 			} catch (Throwable e) {
-				FMLLog.bigWarning("Failed to load mod plugin: {}", asmData.getClassName());
-				Log.error("Exception", e);
+				Log.error("Failed to load mod plugin: {}", asmData.getClassName(), e);
 			}
 		}
 
@@ -116,8 +114,7 @@ public class ProxyCommonClient extends ProxyCommon {
 				plugin.register(modRegistry);
 				Log.info("Registered plugin: {}", plugin.getClass().getName());
 			} catch (Throwable e) {
-				FMLLog.bigWarning("Failed to register mod plugin: {}", plugin.getClass());
-				Log.error("Exception", e);
+				Log.error("Failed to register mod plugin: {}", plugin.getClass(), e);
 			}
 		}
 
