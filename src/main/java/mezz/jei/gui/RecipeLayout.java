@@ -43,8 +43,6 @@ public class RecipeLayout implements IRecipeLayout {
 		this.posX = posX;
 		this.posY = posY;
 
-		this.recipeCategory.init(this);
-
 		this.recipeWrapper = recipeWrapper;
 		this.guiItemStackGroup.setFocus(focus);
 		this.recipeCategory.setRecipe(this, recipeWrapper);

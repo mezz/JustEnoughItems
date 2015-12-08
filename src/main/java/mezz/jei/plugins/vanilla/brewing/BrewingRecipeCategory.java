@@ -63,18 +63,15 @@ public class BrewingRecipeCategory implements IRecipeCategory {
 	}
 
 	@Override
-	public void init(@Nonnull IRecipeLayout recipeLayout) {
+	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper) {
 		IGuiItemStackGroup itemStacks = recipeLayout.getItemStacks();
+
 		itemStacks.init(brewPotionSlot1, true, 0, 30);
 		itemStacks.init(brewPotionSlot2, true, 23, 37);
 		itemStacks.init(brewPotionSlot3, true, 46, 30);
 		itemStacks.init(brewIngredientSlot, true, 23, 1);
 		itemStacks.init(outputSlot, false, outputSlotX, outputSlotY);
-	}
 
-	@Override
-	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper) {
-		IGuiItemStackGroup itemStacks = recipeLayout.getItemStacks();
 		if (recipeWrapper instanceof BrewingRecipeWrapper) {
 			List inputs = recipeWrapper.getInputs();
 			List<ItemStack> inputStacks1 = StackUtil.toItemStackList(inputs.get(brewPotionSlot1));
