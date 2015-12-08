@@ -78,15 +78,18 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	}
 
 	@Override
-	public void set(@Nonnull T contained, @Nonnull Focus focus) {
-		set(Collections.singleton(contained), focus);
+	public void set(@Nonnull T contained, @Nonnull Focus focus, @Nonnull Focus.Mode focusMode) {
+		set(Collections.singleton(contained), focus, focusMode);
 	}
 
 	@Override
-	public void set(@Nonnull Collection<T> contained, @Nonnull Focus focus) {
+	public void set(@Nonnull Collection<T> contained, @Nonnull Focus focus, @Nonnull Focus.Mode focusMode) {
 		this.contained.clear();
 		contained = ingredientHelper.expandSubtypes(contained);
-		T match = ingredientHelper.getMatch(contained, focus);
+		T match = null;
+		if ((isInput() && focusMode == Focus.Mode.INPUT) || (!isInput() && focusMode == Focus.Mode.OUTPUT)) {
+			match = ingredientHelper.getMatch(contained, focus);
+		}
 		if (match != null) {
 			this.contained.add(match);
 		} else {

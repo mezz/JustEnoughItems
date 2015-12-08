@@ -19,7 +19,7 @@ import mezz.jei.util.MathUtil;
 
 public class RecipeGuiLogic implements IRecipeGuiLogic {
 	/* Whether this GUI is dispzzlaying input or output recipes */
-	private Mode mode;
+	private Focus.Mode focusMode;
 
 	/* The focus of this GUI */
 	@Nonnull
@@ -38,13 +38,13 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private int pageIndex = 0;
 
 	@Override
-	public boolean setFocus(@Nonnull Focus focus, @Nonnull Mode mode) {
-		if (this.focus.equals(focus) && this.mode == mode) {
+	public boolean setFocus(@Nonnull Focus focus, @Nonnull Focus.Mode focusMode) {
+		if (this.focus.equals(focus) && this.focusMode == focusMode) {
 			return true;
 		}
 
 		ImmutableList<IRecipeCategory> types = null;
-		switch (mode) {
+		switch (focusMode) {
 			case INPUT:
 				types = focus.getCategoriesWithInput();
 				break;
@@ -58,7 +58,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 		this.recipeCategories = types;
 		this.focus = focus;
-		this.mode = mode;
+		this.focusMode = focusMode;
 
 		this.recipeCategoryIndex = 0;
 		this.pageIndex = 0;
@@ -117,7 +117,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		if (focus.isBlank()) {
 			recipes = JEIManager.recipeRegistry.getRecipes(recipeCategory);
 		} else {
-			switch (mode) {
+			switch (focusMode) {
 				case INPUT:
 					recipes = focus.getRecipesWithInput(recipeCategory);
 					break;
@@ -158,7 +158,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			@SuppressWarnings("unchecked")
 			IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
 
-			RecipeLayout recipeWidget = new RecipeLayout(recipeWidgetIndex++, posX, posY, recipeCategory, recipeWrapper, focus);
+			RecipeLayout recipeWidget = new RecipeLayout(recipeWidgetIndex++, posX, posY, recipeCategory, recipeWrapper, focus, focusMode);
 			recipeWidgets.add(recipeWidget);
 
 			posY += spacingY;

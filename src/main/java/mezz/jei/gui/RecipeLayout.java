@@ -34,7 +34,7 @@ public class RecipeLayout implements IRecipeLayout {
 	private final int posX;
 	private final int posY;
 
-	public RecipeLayout(int index, int posX, int posY, @Nonnull IRecipeCategory recipeCategory, @Nonnull IRecipeWrapper recipeWrapper, @Nonnull Focus focus) {
+	public RecipeLayout(int index, int posX, int posY, @Nonnull IRecipeCategory recipeCategory, @Nonnull IRecipeWrapper recipeWrapper, @Nonnull Focus focus, @Nonnull Focus.Mode focusMode) {
 		this.recipeCategory = recipeCategory;
 		this.guiItemStackGroup = new GuiItemStackGroup();
 		this.guiFluidStackGroup = new GuiFluidStackGroup();
@@ -45,7 +45,7 @@ public class RecipeLayout implements IRecipeLayout {
 		this.posY = posY;
 
 		this.recipeWrapper = recipeWrapper;
-		this.guiItemStackGroup.setFocus(focus);
+		this.guiItemStackGroup.setFocus(focus, focusMode);
 		this.recipeCategory.setRecipe(this, recipeWrapper);
 	}
 

@@ -99,4 +99,8 @@ public class Focus {
 			return JEIManager.recipeRegistry.getRecipesWithOutput(recipeCategory, fluid);
 		}
 	}
+
+	public enum Mode {
+		INPUT, OUTPUT, NONE
+	}
 }

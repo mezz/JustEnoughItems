@@ -10,9 +10,9 @@ import net.minecraft.client.Minecraft;
 import mezz.jei.gui.Focus;
 
 public interface IGuiIngredient<T> {
-	void set(@Nonnull T contained, @Nonnull Focus focus);
+	void set(@Nonnull T contained, @Nonnull Focus focus, @Nonnull Focus.Mode focusMode);
 
-	void set(@Nonnull Collection<T> contained, @Nonnull Focus focus);
+	void set(@Nonnull Collection<T> contained, @Nonnull Focus focus, @Nonnull Focus.Mode focusMode);
 
 	void clear();
 

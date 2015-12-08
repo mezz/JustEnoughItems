@@ -7,9 +7,6 @@ import java.util.List;
 import mezz.jei.api.recipe.IRecipeCategory;
 
 public interface IRecipeGuiLogic {
-	enum Mode {
-		INPUT, OUTPUT
-	}
 
 	@Nonnull
 	String getPageString();
@@ -28,7 +25,7 @@ public interface IRecipeGuiLogic {
 
 	void nextPage();
 
-	boolean setFocus(@Nonnull Focus focus, @Nonnull Mode mode);
+	boolean setFocus(@Nonnull Focus focus, @Nonnull Focus.Mode focusMode);
 
 	boolean setCategoryFocus();
 
