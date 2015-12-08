@@ -49,15 +49,12 @@ public class FurnaceSmeltingCategory extends FurnaceRecipeCategory {
 	}
 
 	@Override
-	public void init(@Nonnull IRecipeLayout recipeLayout) {
-		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-		guiItemStacks.init(inputSlot, true, 0, 0);
-		guiItemStacks.init(outputSlot, false, 60, 18);
-	}
-
-	@Override
 	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
+
+		guiItemStacks.init(inputSlot, true, 0, 0);
+		guiItemStacks.init(outputSlot, false, 60, 18);
+
 		guiItemStacks.setFromRecipe(inputSlot, recipeWrapper.getInputs());
 		guiItemStacks.setFromRecipe(outputSlot, recipeWrapper.getOutputs());
 	}

@@ -21,7 +21,6 @@ import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
 
 import mezz.jei.api.JEIManager;
 import mezz.jei.util.Log;
-import mezz.jei.util.StackUtil;
 
 public class BrewingRecipeMaker {
 	private static final Set<Class> unhandledRecipeClasses = new HashSet<>();
@@ -84,8 +83,7 @@ public class BrewingRecipeMaker {
 				recipes.add(recipe);
 			} else if (iBrewingRecipe instanceof BrewingOreRecipe) {
 				BrewingOreRecipe brewingRecipe = (BrewingOreRecipe) iBrewingRecipe;
-				List<List<ItemStack>> ingredients = StackUtil.expandRecipeInputs(Collections.singletonList(brewingRecipe.ingredient), true);
-				BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(ingredients.get(0), brewingRecipe.input, brewingRecipe.output, 0);
+				BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(brewingRecipe.ingredient, brewingRecipe.input, brewingRecipe.output, 0);
 				recipes.add(recipe);
 			} else if (!(iBrewingRecipe instanceof VanillaBrewingRecipe)) {
 				Class recipeClass = iBrewingRecipe.getClass();

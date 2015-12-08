@@ -49,14 +49,10 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory {
 	}
 
 	@Override
-	public void init(@Nonnull IRecipeLayout recipeLayout) {
-		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-		guiItemStacks.init(fuelSlot, true, 0, 14);
-	}
-
-	@Override
 	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
+
+		guiItemStacks.init(fuelSlot, true, 0, 14);
 		guiItemStacks.setFromRecipe(fuelSlot, recipeWrapper.getInputs());
 	}
 }

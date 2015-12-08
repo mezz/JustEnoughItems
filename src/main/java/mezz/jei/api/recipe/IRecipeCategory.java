@@ -41,11 +41,6 @@ public interface IRecipeCategory {
 	void drawExtras(Minecraft minecraft);
 
 	/**
-	 * Initialize the IRecipeLayout.
-	 */
-	void init(@Nonnull IRecipeLayout recipeLayout);
-
-	/**
 	 * Set the IRecipeLayout properties from the RecipeWrapper.
 	 */
 	void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper);

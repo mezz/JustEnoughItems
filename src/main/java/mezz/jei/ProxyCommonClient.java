@@ -6,14 +6,16 @@ import java.util.List;
 import java.util.Set;
 
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.nbt.NBTTagCompound;
 
+import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -31,9 +33,17 @@ public class ProxyCommonClient extends ProxyCommon {
 	private ItemFilter itemFilter;
 	private GuiEventHandler guiEventHandler;
 
+	private void initVersionChecker() {
+		final NBTTagCompound compound = new NBTTagCompound();
+		compound.setString("curseProjectName", "just-enough-items-jei");
+		compound.setString("curseFilenameParser", "jei_" + ForgeVersion.mcVersion + "-[].jar");
+		FMLInterModComms.sendRuntimeMessage(Constants.MOD_ID, "VersionChecker", "addCurseCheck", compound);
+	}
+	
 	@Override
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
 		Config.preInit(event);
+		initVersionChecker();
 	}
 
 	@Override
@@ -93,8 +103,7 @@ public class ProxyCommonClient extends ProxyCommon {
 					plugins.add(plugin);
 				}
 			} catch (Throwable e) {
-				FMLLog.bigWarning("Failed to load mod plugin: {}", asmData.getClassName());
-				Log.error("Exception", e);
+				Log.error("Failed to load mod plugin: {}", asmData.getClassName(), e);
 			}
 		}
 
@@ -105,8 +114,7 @@ public class ProxyCommonClient extends ProxyCommon {
 				plugin.register(modRegistry);
 				Log.info("Registered plugin: {}", plugin.getClass().getName());
 			} catch (Throwable e) {
-				FMLLog.bigWarning("Failed to register mod plugin: {}", plugin.getClass());
-				Log.error("Exception", e);
+				Log.error("Failed to register mod plugin: {}", plugin.getClass(), e);
 			}
 		}
 

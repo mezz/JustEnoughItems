@@ -13,7 +13,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
-import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
@@ -207,14 +206,14 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 	}
 
 	public void showRecipes(@Nonnull Focus focus) {
-		if (logic.setFocus(focus, IRecipeGuiLogic.Mode.OUTPUT)) {
+		if (logic.setFocus(focus, Focus.Mode.OUTPUT)) {
 			updateLayout();
 			open();
 		}
 	}
 
 	public void showUses(@Nonnull Focus focus) {
-		if (logic.setFocus(focus, IRecipeGuiLogic.Mode.INPUT)) {
+		if (logic.setFocus(focus, Focus.Mode.INPUT)) {
 			updateLayout();
 			open();
 		}

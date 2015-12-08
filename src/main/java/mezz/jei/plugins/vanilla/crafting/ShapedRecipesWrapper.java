@@ -39,7 +39,7 @@ public class ShapedRecipesWrapper extends VanillaRecipeWrapper implements IShape
 	}
 
 	@Override
-	public void drawInfo(@Nonnull Minecraft minecraft) {
+	public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight) {
 
 	}
 
@@ -51,10 +51,5 @@ public class ShapedRecipesWrapper extends VanillaRecipeWrapper implements IShape
 	@Override
 	public int getHeight() {
 		return recipe.recipeHeight;
-	}
-
-	@Override
-	public boolean usesOreDictionaryComparison() {
-		return false;
 	}
 }

@@ -48,13 +48,8 @@ public class ShapedOreRecipeWrapper extends VanillaRecipeWrapper implements ISha
 	}
 
 	@Override
-	public void drawInfo(@Nonnull Minecraft minecraft) {
+	public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight) {
 
-	}
-
-	@Override
-	public boolean usesOreDictionaryComparison() {
-		return true;
 	}
 
 	@Override

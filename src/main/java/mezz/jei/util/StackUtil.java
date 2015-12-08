@@ -58,7 +58,7 @@ public class StackUtil {
 		}
 
 		for (ItemStack stack : stacks) {
-			if (isIdentical(stack, contains)) {
+			if (isIdentical(contains, stack)) {
 				return stack;
 			}
 		}
@@ -217,34 +217,6 @@ public class StackUtil {
 			oreNames.add(oreName);
 		}
 		return oreNames;
-	}
-
-	public static List<List<ItemStack>> expandRecipeInputs(@Nullable List recipeInputs, boolean oreDict) {
-		List<List<ItemStack>> expandedRecipeInputs = new ArrayList<>();
-		if (recipeInputs == null) {
-			return expandedRecipeInputs;
-		}
-
-		for (Object recipeInput : recipeInputs) {
-			List<ItemStack> inputStacks = toItemStackList(recipeInput);
-			List<ItemStack> inputExpanded = new ArrayList<>();
-			for (ItemStack stack : inputStacks) {
-				if (oreDict) {
-					List<String> inputOres = getOreNames(stack);
-					if (inputOres.size() > 0) {
-						for (String inputOre : inputOres) {
-							List<ItemStack> ores = OreDictionary.getOres(inputOre);
-							inputExpanded.addAll(ores);
-						}
-					}
-				}
-				List<ItemStack> subtypes = getSubtypes(stack);
-				inputExpanded.addAll(subtypes);
-			}
-			removeDuplicateItemStacks(inputExpanded);
-			expandedRecipeInputs.add(inputExpanded);
-		}
-		return expandedRecipeInputs;
 	}
 
 	@Nonnull
