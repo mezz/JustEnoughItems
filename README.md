@@ -22,6 +22,10 @@ repositories {
   }
 }
 
+minecraft {
+  useDepAts = true
+}
+
 dependencies {
   deobfCompile "mezz.jei:jei_<MINECRAFT-VERSION>:<JEI-VERSION>"
 }
