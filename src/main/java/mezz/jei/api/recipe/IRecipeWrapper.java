@@ -32,5 +32,5 @@ public interface IRecipeWrapper {
 	List<FluidStack> getFluidOutputs();
 
 	/** Draw additional info about the recipe. */
-	void drawInfo(@Nonnull Minecraft minecraft);
+	void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight);
 }

@@ -17,6 +17,6 @@ public interface ICraftingRecipeWrapper extends IRecipeWrapper {
 	List<ItemStack> getOutputs();
 
 	@Override
-	void drawInfo(@Nonnull Minecraft minecraft);
+	void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight);
 
 }

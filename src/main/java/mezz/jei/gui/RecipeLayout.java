@@ -8,6 +8,7 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 import org.lwjgl.opengl.GL11;
 
+import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.IRecipeCategory;
@@ -54,14 +55,15 @@ public class RecipeLayout implements IRecipeLayout {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glDisable(GL11.GL_LIGHTING);
 
-		recipeCategory.getBackground().draw(minecraft);
+		IDrawable background = recipeCategory.getBackground();
+		background.draw(minecraft);
 		recipeCategory.drawExtras(minecraft);
 
 		GL11.glTranslatef(-posX, -posY, 0.0F);
 		recipeTransferButton.drawButton(minecraft, mouseX, mouseY);
 		GL11.glTranslatef(posX, posY, 0.0F);
 
-		recipeWrapper.drawInfo(minecraft);
+		recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight());
 		guiItemStackGroup.draw(minecraft, mouseX - posX, mouseY - posY);
 
 		GL11.glPopMatrix();

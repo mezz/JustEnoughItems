@@ -42,7 +42,7 @@ public class ShapelessOreRecipeWrapper extends VanillaRecipeWrapper implements I
 	}
 
 	@Override
-	public void drawInfo(@Nonnull Minecraft minecraft) {
+	public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight) {
 
 	}
 }

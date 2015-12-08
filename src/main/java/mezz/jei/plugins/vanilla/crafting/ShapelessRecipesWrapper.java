@@ -41,7 +41,7 @@ public class ShapelessRecipesWrapper extends VanillaRecipeWrapper implements ICr
 	}
 
 	@Override
-	public void drawInfo(@Nonnull Minecraft minecraft) {
+	public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight) {
 
 	}
 }
