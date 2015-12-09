@@ -56,9 +56,9 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 
 	// properties of the gui we're beside
 	private int guiLeft;
-	private int xSize;
-	private int width;
-	private int height;
+	private int guiXSize;
+	private int screenWidth;
+	private int screenHeight;
 
 	private boolean open = false;
 	private boolean enabled = true;
@@ -69,9 +69,9 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 
 	public void initGui(@Nonnull GuiContainer guiContainer) {
 		this.guiLeft = guiContainer.guiLeft;
-		this.xSize = guiContainer.xSize;
-		this.width = guiContainer.width;
-		this.height = guiContainer.height;
+		this.guiXSize = guiContainer.xSize;
+		this.screenWidth = guiContainer.width;
+		this.screenHeight = guiContainer.height;
 
 		String next = StatCollector.translateToLocal("jei.button.next");
 		String back = StatCollector.translateToLocal("jei.button.back");
@@ -81,14 +81,18 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		final int backButtonWidth = 10 + fontRenderer.getStringWidth(back);
 		buttonHeight = 5 + fontRenderer.FONT_HEIGHT;
 
-		int rightEdge = createItemButtons();
+		int columns = getColumns();
+		int xSize = columns * itemStackWidth + (2 * itemStackPadding);
+		int xEmptySpace = screenWidth - guiLeft - guiXSize - xSize;
 
-		int leftEdge = this.guiLeft + this.xSize + borderPadding;
+		int leftEdge = guiLeft + guiXSize + (xEmptySpace / 2);
+
+		int rightEdge = createItemButtons(leftEdge);
 
 		nextButton = new GuiButtonExt(0, rightEdge - nextButtonWidth, 0, nextButtonWidth, buttonHeight, next);
 		backButton = new GuiButtonExt(1, leftEdge, 0, backButtonWidth, buttonHeight, back);
 
-		searchField = new GuiTextField(0, fontRenderer, leftEdge, this.height - searchHeight - (2 * borderPadding), rightEdge - leftEdge, searchHeight);
+		searchField = new GuiTextField(0, fontRenderer, leftEdge, screenHeight - searchHeight - (2 * borderPadding), rightEdge - leftEdge, searchHeight);
 		searchField.setMaxStringLength(maxSearchLength);
 		setKeyboardFocus(false);
 		searchField.setText(itemFilter.getFilterText());
@@ -97,17 +101,16 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	}
 
 	// creates buttons and returns the x value of the right edge of the rightmost button
-	private int createItemButtons() {
+	private int createItemButtons(int xStart) {
 		guiItemStacks.clear();
 
-		final int xStart = guiLeft + xSize + borderPadding;
 		final int yStart = buttonHeight + (2 * borderPadding);
 
 		int x = xStart;
 		int y = yStart;
 		int maxX = 0;
 
-		while (y + itemStackHeight + borderPadding <= height - searchHeight) {
+		while (y + itemStackHeight + borderPadding <= screenHeight - searchHeight) {
 			if (x > maxX) {
 				maxX = x;
 			}
@@ -115,7 +118,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 			guiItemStacks.add(GuiItemStackGroup.createGuiItemStack(false, x, y, itemStackPadding));
 
 			x += itemStackWidth;
-			if (x + itemStackWidth + borderPadding > width) {
+			if (x + itemStackWidth + borderPadding > screenWidth) {
 				x = xStart;
 				y += itemStackHeight;
 			}
@@ -209,7 +212,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 
 	@Override
 	public boolean isMouseOver(int mouseX, int mouseY) {
-		return isOpen() && (mouseX >= guiLeft + xSize);
+		return isOpen() && (mouseX >= guiLeft + guiXSize);
 	}
 
 	@Override
@@ -308,14 +311,18 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		return false;
 	}
 
+	private int getColumns() {
+		int xArea = screenWidth - (guiLeft + guiXSize + (2 * borderPadding));
+		return xArea / itemStackWidth;
+	}
+
+	private int getRows() {
+		int yArea = screenHeight - (buttonHeight + searchHeight + (4 * borderPadding));
+		return yArea / itemStackHeight;
+	}
+
 	private int getCountPerPage() {
-		int xArea = width - (guiLeft + xSize + (2 * borderPadding));
-		int yArea = height - (buttonHeight + searchHeight + (4 * borderPadding));
-
-		int xCount = xArea / itemStackWidth;
-		int yCount = yArea / itemStackHeight;
-
-		return xCount * yCount;
+		return getColumns() * getRows();
 	}
 
 	private void updatePageCount() {
