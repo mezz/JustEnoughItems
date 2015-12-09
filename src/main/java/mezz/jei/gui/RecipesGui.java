@@ -208,16 +208,24 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 	}
 
 	public void showRecipes(@Nonnull Focus focus) {
-		if (logic.setFocus(focus, Focus.Mode.OUTPUT)) {
+		focus.setMode(Focus.Mode.OUTPUT);
+		if (logic.setFocus(focus)) {
 			updateLayout();
 			open();
 		}
 	}
 
 	public void showUses(@Nonnull Focus focus) {
-		if (logic.setFocus(focus, Focus.Mode.INPUT)) {
+		focus.setMode(Focus.Mode.INPUT);
+		if (logic.setFocus(focus)) {
 			updateLayout();
 			open();
+		}
+	}
+
+	public void back() {
+		if (logic.back()) {
+			updateLayout();
 		}
 	}
 

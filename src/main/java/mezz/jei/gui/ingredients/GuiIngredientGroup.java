@@ -16,26 +16,23 @@ public abstract class GuiIngredientGroup<V, T extends GuiIngredient<V>> implemen
 	protected final Map<Integer, T> guiIngredients = new HashMap<>();
 	@Nonnull
 	protected Focus focus = new Focus();
-	@Nonnull
-	protected Focus.Mode focusMode = Focus.Mode.OUTPUT;
 
 	/**
 	 * If focus is set and any of the guiIngredients contains focus
 	 * they will only display focus instead of rotating through all their values.
 	 */
-	public void setFocus(@Nonnull Focus focus, @Nonnull Focus.Mode focusMode) {
+	public void setFocus(@Nonnull Focus focus) {
 		this.focus = focus;
-		this.focusMode = focusMode;
 	}
 
 	@Override
 	public void set(int slotIndex, @Nonnull Collection<V> values) {
-		guiIngredients.get(slotIndex).set(values, focus, focusMode);
+		guiIngredients.get(slotIndex).set(values, focus);
 	}
 
 	@Override
 	public void set(int slotIndex, @Nonnull V value) {
-		guiIngredients.get(slotIndex).set(value, focus, focusMode);
+		guiIngredients.get(slotIndex).set(value, focus);
 	}
 
 	@Nonnull

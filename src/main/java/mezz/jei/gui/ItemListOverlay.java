@@ -140,7 +140,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 				itemButton.clear();
 			} else {
 				ItemStack stack = itemList.get(i).getItemStack();
-				itemButton.set(stack, new Focus(), Focus.Mode.NONE);
+				itemButton.set(stack, new Focus());
 			}
 			i++;
 		}
