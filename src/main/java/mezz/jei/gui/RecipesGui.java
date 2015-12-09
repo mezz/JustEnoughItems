@@ -161,12 +161,14 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 			Log.error("IOException on mouse click.", e);
 		}
 
-		if (!guiActionPerformed && (mouseY < guiTop + titleHeight)) {
-			boolean success = logic.setCategoryFocus();
-			if (success) {
-				updateLayout();
+		if (!guiActionPerformed) {
+			if ((mouseY < guiTop + titleHeight) && (mouseX > guiLeft + borderPadding + buttonWidth + 12) && (mouseX < guiLeft + xSize - borderPadding - buttonWidth - 12)) {
+				boolean success = logic.setCategoryFocus();
+				if (success) {
+					updateLayout();
+				}
+				return success;
 			}
-			return success;
 		}
 
 		return guiActionPerformed;
@@ -206,16 +208,24 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 	}
 
 	public void showRecipes(@Nonnull Focus focus) {
-		if (logic.setFocus(focus, Focus.Mode.OUTPUT)) {
+		focus.setMode(Focus.Mode.OUTPUT);
+		if (logic.setFocus(focus)) {
 			updateLayout();
 			open();
 		}
 	}
 
 	public void showUses(@Nonnull Focus focus) {
-		if (logic.setFocus(focus, Focus.Mode.INPUT)) {
+		focus.setMode(Focus.Mode.INPUT);
+		if (logic.setFocus(focus)) {
 			updateLayout();
 			open();
+		}
+	}
+
+	public void back() {
+		if (logic.back()) {
+			updateLayout();
 		}
 	}
 

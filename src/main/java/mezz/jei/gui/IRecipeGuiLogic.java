@@ -25,7 +25,9 @@ public interface IRecipeGuiLogic {
 
 	void nextPage();
 
-	boolean setFocus(@Nonnull Focus focus, @Nonnull Focus.Mode focusMode);
+	boolean setFocus(@Nonnull Focus focus);
+
+	boolean back();
 
 	boolean setCategoryFocus();
 

@@ -215,6 +215,9 @@ public class InputHandler {
 		} else if (eventKey == Keyboard.KEY_F && GuiScreen.isCtrlKeyDown()) {
 			itemListOverlay.setKeyboardFocus(true);
 			return true;
+		} else if (eventKey == Keyboard.KEY_BACK) {
+			recipesGui.back();
+			return true;
 		}
 
 		for (IKeyable keyable : keyables) {

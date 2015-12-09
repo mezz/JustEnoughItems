@@ -3,6 +3,7 @@ package mezz.jei.gui;
 import com.google.common.collect.ImmutableList;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 import net.minecraft.item.ItemStack;
 
@@ -12,8 +13,14 @@ import mezz.jei.api.JEIManager;
 import mezz.jei.api.recipe.IRecipeCategory;
 
 public class Focus {
+	public enum Mode {
+		INPUT, OUTPUT, NONE
+	}
+
 	private final ItemStack stack;
 	private final Fluid fluid;
+	@Nonnull
+	private Mode mode = Mode.NONE;
 
 	public Focus() {
 		this.stack = null;
@@ -55,52 +62,63 @@ public class Focus {
 		return stack == null && fluid == null;
 	}
 
+	public void setMode(@Nonnull Mode mode) {
+		this.mode = mode;
+	}
+
+	@Nonnull
+	public Mode getMode() {
+		return mode;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Focus)) {
 			return false;
 		}
 		Focus other = (Focus) obj;
-		return ItemStack.areItemStacksEqual(this.stack, other.getStack()) && fluid == other.fluid;
+		return ItemStack.areItemStacksEqual(this.stack, other.getStack()) && fluid == other.fluid && mode == other.mode;
 	}
 
 	@Nonnull
-	public ImmutableList<IRecipeCategory> getCategoriesWithInput() {
-		if (stack != null) {
-			return JEIManager.recipeRegistry.getRecipeCategoriesWithInput(stack);
-		} else {
-			return JEIManager.recipeRegistry.getRecipeCategoriesWithInput(fluid);
+	public ImmutableList<IRecipeCategory> getCategories() {
+		switch (mode) {
+			case INPUT: {
+				if (stack != null) {
+					return JEIManager.recipeRegistry.getRecipeCategoriesWithInput(stack);
+				} else {
+					return JEIManager.recipeRegistry.getRecipeCategoriesWithInput(fluid);
+				}
+			}
+			case OUTPUT: {
+				if (stack != null) {
+					return JEIManager.recipeRegistry.getRecipeCategoriesWithOutput(stack);
+				} else {
+					return JEIManager.recipeRegistry.getRecipeCategoriesWithOutput(fluid);
+				}
+			}
 		}
+		return JEIManager.recipeRegistry.getRecipeCategories();
 	}
 
 	@Nonnull
-	public ImmutableList<IRecipeCategory> getCategoriesWithOutput() {
-		if (stack != null) {
-			return JEIManager.recipeRegistry.getRecipeCategoriesWithOutput(stack);
-		} else {
-			return JEIManager.recipeRegistry.getRecipeCategoriesWithOutput(fluid);
+	public List<Object> getRecipes(IRecipeCategory recipeCategory) {
+		switch (mode) {
+			case INPUT: {
+				if (stack != null) {
+					return JEIManager.recipeRegistry.getRecipesWithInput(recipeCategory, stack);
+				} else {
+					return JEIManager.recipeRegistry.getRecipesWithInput(recipeCategory, fluid);
+				}
+			}
+			case OUTPUT: {
+				if (stack != null) {
+					return JEIManager.recipeRegistry.getRecipesWithOutput(recipeCategory, stack);
+				} else {
+					return JEIManager.recipeRegistry.getRecipesWithOutput(recipeCategory, fluid);
+				}
+			}
 		}
-	}
-
-	@Nonnull
-	public ImmutableList<Object> getRecipesWithInput(IRecipeCategory recipeCategory) {
-		if (stack != null) {
-			return JEIManager.recipeRegistry.getRecipesWithInput(recipeCategory, stack);
-		} else {
-			return JEIManager.recipeRegistry.getRecipesWithInput(recipeCategory, fluid);
-		}
-	}
-
-	@Nonnull
-	public ImmutableList<Object> getRecipesWithOutput(IRecipeCategory recipeCategory) {
-		if (stack != null) {
-			return JEIManager.recipeRegistry.getRecipesWithOutput(recipeCategory, stack);
-		} else {
-			return JEIManager.recipeRegistry.getRecipesWithOutput(recipeCategory, fluid);
-		}
-	}
-
-	public enum Mode {
-		INPUT, OUTPUT, NONE
+		return JEIManager.recipeRegistry.getRecipes(recipeCategory);
 	}
 }
