@@ -5,8 +5,36 @@ jei.button.back=返回
 # Key Bindings
 key.jei.toggleOverlay=切换物品列表叠层
 key.jei.showRecipe=显示物品合成表
-key.jei.showUses=显示物品可参与合成表
+key.jei.showUses=显示物品用途
 
 # Config
 config.jei.cheatItemsEnabled=开启物品作弊模式
 config.jei.cheatItemsEnabled.description=/给予物品而非显示其合成表
+config.jei.editEnabled=开启物品编辑模式
+config.jei.editEnabled.description=在列表中点击物品以隐藏或取消隐藏
+
+config.jei.tooltipModName=工具提示(Tooltip)中显示所属模组
+config.jei.tooltipModName.description=在物品的工具提示中显示其所属的模组名
+
+config.jei.nbtKeyIgnoreList=NBT关键字忽略列表
+config.jei.nbtKeyIgnoreList.description=过滤可用合成时，该表所含的NBT关键字将忽略不计。
+config.jei.itemBlacklist=物品黑名单
+config.jei.itemBlacklist.description=该表中物品将不会显示于JEI物品列表。添加格式： modId:name[:meta]。使用编辑模式可自动添加�或删除这里的条目。
+
+# Edit Mode
+gui.jei.editMode.description=JEI物品列表编辑模式：
+gui.jei.editMode.description.hide=按住Ctrl点击以隐藏
+gui.jei.editMode.description.show=已隐藏。按住Ctrl点击以显示。
+gui.jei.editMode.description.hide.wild=按住Ctrl右击以隐藏相同id的物品
+gui.jei.editMode.description.show.wild=相同id物品以隐藏。按住Ctrl右击以显示。
+
+# Recipes
+gui.jei.craftingTableRecipes=工作台合成
+gui.jei.smeltingRecipes=烧炼
+gui.jei.fuelRecipes=燃料
+gui.jei.furnaceExperience=%s点经验
+gui.jei.furnaceBurnTime=燃烧时间：%s
+gui.jei.brewingRecipes=酿造配方
+gui.jei.brewingRecipes.steps=步数：%s
+gui.jei.forestry.centrifugeRecipes=林业离心机
+gui.jei.forestry.fabricatorRecipes=林业热电子加工台
