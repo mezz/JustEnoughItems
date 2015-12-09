@@ -310,7 +310,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 
 	private int getCountPerPage() {
 		int xArea = width - (guiLeft + xSize + (2 * borderPadding));
-		int yArea = height - (buttonHeight + (2 * borderPadding));
+		int yArea = height - (buttonHeight + searchHeight + (4 * borderPadding));
 
 		int xCount = xArea / itemStackWidth;
 		int yCount = yArea / itemStackHeight;
