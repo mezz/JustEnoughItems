@@ -6,20 +6,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import mezz.jei.util.StackUtil;
 
 public class Config {
-	public static Configuration configFile;
+	public static LocalizedConfiguration configFile;
 
-	public static final String categoryMode = Configuration.CATEGORY_GENERAL + ".mode";
-	public static final String categoryInterface = Configuration.CATEGORY_GENERAL + ".interface";
-	public static final String categoryAdvanced = Configuration.CATEGORY_GENERAL + ".zz_advanced";
+	public static final String categoryMode = "mode";
+	public static final String categoryInterface = "interface";
+	public static final String categoryAdvanced = "advanced";
 
 	public static boolean cheatItemsEnabled = false;
 	public static boolean editModeEnabled = false;
@@ -31,28 +29,26 @@ public class Config {
 	public static final String[] defaultNbtKeyIgnoreList = new String[]{"BlockEntityTag", "CanPlaceOn"};
 
 	public static void preInit(@Nonnull FMLPreInitializationEvent event) {
-		configFile = new Configuration(event.getSuggestedConfigurationFile());
+		configFile = new LocalizedConfiguration("config.jei", event.getSuggestedConfigurationFile(), "0.1.0");
 
 		syncConfig();
 	}
 
 	public static void syncConfig() {
-		String cheatItemsEnabledDescription = StatCollector.translateToLocal("config.jei.cheatItemsEnabled.description");
-		cheatItemsEnabled = configFile.getBoolean("cheatItemsEnabled", categoryMode, cheatItemsEnabled, cheatItemsEnabledDescription, "config.jei.cheatItemsEnabled");
+		configFile.addCategory(categoryMode);
+		configFile.addCategory(categoryInterface);
+		configFile.addCategory(categoryAdvanced);
 
-		String editModeEnabledDescription = StatCollector.translateToLocal("config.jei.editEnabled.description");
-		editModeEnabled = configFile.getBoolean("editEnabled", categoryMode, editModeEnabled, editModeEnabledDescription, "config.jei.editEnabled");
+		cheatItemsEnabled = configFile.getBoolean(categoryMode, "cheatItemsEnabled", cheatItemsEnabled);
+		editModeEnabled = configFile.getBoolean(categoryMode, "editEnabled", editModeEnabled);
 
-		String tooltipModNameEnabledDescription = StatCollector.translateToLocal("config.jei.tooltipModName.description");
-		tooltipModNameEnabled = configFile.getBoolean("tooltipModName", categoryInterface, tooltipModNameEnabled, tooltipModNameEnabledDescription, "config.jei.tooltipModName");
+		tooltipModNameEnabled = configFile.getBoolean(categoryInterface, "tooltipModName", tooltipModNameEnabled);
 
-		String nbtKeyIgnoreListDescription = StatCollector.translateToLocal("config.jei.nbtKeyIgnoreList.description");
-		String[] nbtKeyIgnoreListArray = configFile.getStringList("nbtKeyIgnoreList", categoryAdvanced, defaultNbtKeyIgnoreList, nbtKeyIgnoreListDescription, null, "config.jei.nbtKeyIgnoreList");
+		String[] nbtKeyIgnoreListArray = configFile.getStringList("nbtKeyIgnoreList", categoryAdvanced, defaultNbtKeyIgnoreList);
 		nbtKeyIgnoreList.clear();
 		Collections.addAll(nbtKeyIgnoreList, nbtKeyIgnoreListArray);
 
-		String itemBlacklistDescription = StatCollector.translateToLocal("config.jei.itemBlacklist.description");
-		String[] itemBlacklistArray = configFile.getStringList("itemBlacklist", categoryAdvanced, defaultItemBlacklist, itemBlacklistDescription, null, "config.jei.itemBlacklist");
+		String[] itemBlacklistArray = configFile.getStringList("itemBlacklist", categoryAdvanced, defaultItemBlacklist);
 		itemBlacklist.clear();
 		Collections.addAll(itemBlacklist, itemBlacklistArray);
 
@@ -62,7 +58,7 @@ public class Config {
 	}
 
 	private static void updateBlacklist() {
-		Property property = configFile.get(categoryAdvanced, "itemBlacklist", defaultItemBlacklist);
+		Property property = configFile.getConfiguration().get(categoryAdvanced, "itemBlacklist", defaultItemBlacklist);
 
 		String[] currentBlacklist = itemBlacklist.toArray(new String[itemBlacklist.size()]);
 		property.set(currentBlacklist);

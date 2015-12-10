@@ -10,9 +10,9 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 
 import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
+import mezz.jei.util.Translator;
 
 public class BrewingRecipeWrapper extends VanillaRecipeWrapper {
 	private final List<ItemStack> ingredients;
@@ -57,7 +57,7 @@ public class BrewingRecipeWrapper extends VanillaRecipeWrapper {
 	@Override
 	public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight) {
 		if (brewingSteps > 0) {
-			String steps = StatCollector.translateToLocalFormatted("gui.jei.brewingRecipes.steps", brewingSteps);
+			String steps = Translator.translateToLocalFormatted("gui.jei.brewingRecipes.steps", brewingSteps);
 			minecraft.fontRendererObj.drawString(steps, 70, 28, Color.gray.getRGB());
 		}
 	}

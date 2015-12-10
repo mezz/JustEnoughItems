@@ -9,9 +9,9 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 
 import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
+import mezz.jei.util.Translator;
 
 public class SmeltingRecipe extends VanillaRecipeWrapper {
 	@Nonnull
@@ -27,7 +27,7 @@ public class SmeltingRecipe extends VanillaRecipeWrapper {
 		this.outputs = Collections.singletonList(output);
 
 		if (experience > 0.0) {
-			experienceString = StatCollector.translateToLocalFormatted("gui.jei.furnaceExperience", experience);
+			experienceString = Translator.translateToLocalFormatted("gui.jei.furnaceExperience", experience);
 		} else {
 			experienceString = null;
 		}

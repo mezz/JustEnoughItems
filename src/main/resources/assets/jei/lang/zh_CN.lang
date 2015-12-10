@@ -8,18 +8,18 @@ key.jei.showRecipe=显示物品合成表
 key.jei.showUses=显示物品用途
 
 # Config
-config.jei.cheatItemsEnabled=开启物品作弊模式
-config.jei.cheatItemsEnabled.description=/给予物品而非显示其合成表
-config.jei.editEnabled=开启物品编辑模式
-config.jei.editEnabled.description=在列表中点击物品以隐藏或取消隐藏
+config.jei.mode.cheatItemsEnabled=开启物品作弊模式
+config.jei.mode.cheatItemsEnabled.comment=/给予物品而非显示其合成表
+config.jei.mode.editEnabled=开启物品编辑模式
+config.jei.mode.editEnabled.comment=在列表中点击物品以隐藏或取消隐藏
 
-config.jei.tooltipModName=工具提示(Tooltip)中显示所属模组
-config.jei.tooltipModName.description=在物品的工具提示中显示其所属的模组名
+config.jei.interface.tooltipModName=工具提示(Tooltip)中显示所属模组
+config.jei.interface.tooltipModName.comment=在物品的工具提示中显示其所属的模组名
 
-config.jei.nbtKeyIgnoreList=NBT关键字忽略列表
-config.jei.nbtKeyIgnoreList.description=过滤可用合成时，该表所含的NBT关键字将忽略不计。
-config.jei.itemBlacklist=物品黑名单
-config.jei.itemBlacklist.description=该表中物品将不会显示于JEI物品列表。添加格式： modId:name[:meta]。使用编辑模式可自动添加�或删除这里的条目。
+config.jei.advanced.nbtKeyIgnoreList=NBT关键字忽略列表
+config.jei.advanced.nbtKeyIgnoreList.comment=过滤可用合成时，该表所含的NBT关键字将忽略不计。
+config.jei.advanced.itemBlacklist=物品黑名单
+config.jei.advanced.itemBlacklist.comment=该表中物品将不会显示于JEI物品列表。添加格式： modId:name[:meta]。使用编辑模式可自动添加�或删除这里的条目。
 
 # Edit Mode
 gui.jei.editMode.description=JEI物品列表编辑模式：

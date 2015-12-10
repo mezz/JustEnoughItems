@@ -6,21 +6,28 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fml.client.config.HoverChecker;
 
 import org.lwjgl.input.Keyboard;
 
 import mezz.jei.ItemFilter;
+import mezz.jei.api.JEIManager;
+import mezz.jei.api.gui.IDrawable;
+import mezz.jei.config.Constants;
+import mezz.jei.config.JEIModConfigGui;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.input.IKeyable;
@@ -28,6 +35,7 @@ import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.util.ItemStackElement;
 import mezz.jei.util.MathUtil;
+import mezz.jei.util.Translator;
 
 public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKeyable {
 
@@ -45,6 +53,9 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	private final ArrayList<GuiIngredient<ItemStack>> guiItemStacks = new ArrayList<>();
 	private GuiButton nextButton;
 	private GuiButton backButton;
+	private GuiButton configButton;
+	private IDrawable configButtonIcon;
+	private HoverChecker configButtonHoverChecker;
 	private GuiTextField searchField;
 	private int pageCount;
 
@@ -73,8 +84,8 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		this.screenWidth = guiContainer.width;
 		this.screenHeight = guiContainer.height;
 
-		String next = StatCollector.translateToLocal("jei.button.next");
-		String back = StatCollector.translateToLocal("jei.button.back");
+		String next = Translator.translateToLocal("jei.button.next");
+		String back = Translator.translateToLocal("jei.button.back");
 
 		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
 		final int nextButtonWidth = 10 + fontRenderer.getStringWidth(next);
@@ -92,7 +103,13 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		nextButton = new GuiButtonExt(0, rightEdge - nextButtonWidth, 0, nextButtonWidth, buttonHeight, next);
 		backButton = new GuiButtonExt(1, leftEdge, 0, backButtonWidth, buttonHeight, back);
 
-		searchField = new GuiTextField(0, fontRenderer, leftEdge, screenHeight - searchHeight - (2 * borderPadding), rightEdge - leftEdge, searchHeight);
+		int configButtonSize = searchHeight + 4;
+		configButton = new GuiButtonExt(2, rightEdge - configButtonSize + itemStackPadding, screenHeight - configButtonSize, configButtonSize, configButtonSize, null);
+		ResourceLocation configButtonIconLocation = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_GUI_PATH + "recipeBackground.png");
+		configButtonIcon = JEIManager.guiHelper.createDrawable(configButtonIconLocation, 0, 166, 16, 16);
+		configButtonHoverChecker = new HoverChecker(configButton, 0);
+
+		searchField = new GuiTextField(0, fontRenderer, leftEdge, screenHeight - searchHeight - (2 * borderPadding), rightEdge - leftEdge - configButtonSize - itemStackPadding, searchHeight);
 		searchField.setMaxStringLength(maxSearchLength);
 		setKeyboardFocus(false);
 		searchField.setText(itemFilter.getFilterText());
@@ -189,6 +206,8 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 
 		nextButton.drawButton(minecraft, mouseX, mouseY);
 		backButton.drawButton(minecraft, mouseX, mouseY);
+		configButton.drawButton(minecraft, mouseX, mouseY);
+		configButtonIcon.draw(minecraft, configButton.xPosition + 2, configButton.yPosition + 2);
 
 		for (GuiIngredient<ItemStack> guiItemStack : guiItemStacks) {
 			if (hovered == null && guiItemStack.isMouseOver(mouseX, mouseY)) {
@@ -196,6 +215,11 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 			} else {
 				guiItemStack.draw(minecraft);
 			}
+		}
+
+		if (configButtonHoverChecker.checkHover(mouseX, mouseY)) {
+			List<String> tooltipText = minecraft.fontRendererObj.listFormattedStringToWidth("Config", 300);
+			TooltipRenderer.drawHoveringText(minecraft, tooltipText, mouseX, mouseY);
 		}
 	}
 
@@ -267,6 +291,11 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 			return true;
 		} else if (backButton.mousePressed(minecraft, mouseX, mouseY)) {
 			previousPage();
+			return true;
+		} else if (configButton.mousePressed(minecraft, mouseX, mouseY)) {
+			close();
+			GuiScreen configScreen = new JEIModConfigGui(minecraft.currentScreen);
+			minecraft.displayGuiScreen(configScreen);
 			return true;
 		}
 		return false;

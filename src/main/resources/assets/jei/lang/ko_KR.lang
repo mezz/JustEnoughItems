@@ -8,5 +8,5 @@ key.jei.showRecipe=아이템 레시피 보이기
 key.jei.showUses=아이템 사용 보이기
 
 # Config
-config.jei.cheatItemsEnabled=치트 활성화
-config.jei.cheatItemsEnabled.description=/give items 자체 레시피 제작
+config.jei.mode.cheatItemsEnabled=치트 활성화
+config.jei.mode.cheatItemsEnabled.comment=/give items 자체 레시피 제작

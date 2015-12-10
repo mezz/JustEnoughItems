@@ -16,6 +16,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fml.client.config.HoverChecker;
 
 import org.lwjgl.opengl.GL11;
 
@@ -46,6 +47,7 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 	private String pageString;
 	private String title;
 	private ResourceLocation backgroundTexture;
+	private HoverChecker titleHoverChecker;
 
 	private GuiButton nextRecipeCategory;
 	private GuiButton previousRecipeCategory;
@@ -162,7 +164,7 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		}
 
 		if (!guiActionPerformed) {
-			if ((mouseY < guiTop + titleHeight) && (mouseX > guiLeft + borderPadding + buttonWidth + 12) && (mouseX < guiLeft + xSize - borderPadding - buttonWidth - 12)) {
+			if (titleHoverChecker.checkHover(mouseX, mouseY)) {
 				boolean success = logic.setCategoryFocus();
 				if (success) {
 					updateLayout();
@@ -274,6 +276,10 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		logic.setRecipesPerPage(recipesPerPage);
 
 		title = recipeCategory.getTitle();
+		int titleWidth = fontRendererObj.getStringWidth(title);
+		int titleX = guiLeft + (xSize - titleWidth) / 2;
+		int titleY = guiTop + borderPadding;
+		titleHoverChecker = new HoverChecker(titleY, titleY + fontRendererObj.FONT_HEIGHT, titleX, titleX + titleWidth, 0);
 
 		int posX = guiLeft + recipeXOffset;
 		int posY = guiTop + headerHeight + recipeSpacing;
@@ -337,6 +343,13 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		}
 		if (hovered != null) {
 			hovered.draw(minecraft, mouseX, mouseY);
+		}
+		if (titleHoverChecker.checkHover(mouseX, mouseY)) {
+			Focus focus = logic.getFocus();
+			if (focus != null && !focus.isBlank()) {
+				List<String> tooltipText = minecraft.fontRendererObj.listFormattedStringToWidth("Show All Recipes", 300);
+				TooltipRenderer.drawHoveringText(minecraft, tooltipText, mouseX, mouseY);
+			}
 		}
 	}
 

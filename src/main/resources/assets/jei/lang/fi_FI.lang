@@ -4,9 +4,9 @@ jei.button.back=Takaisin
 
 # Key Bindings
 key.jei.toggleOverlay=Kytke tavaralista
-key.jei.showRecipe=Näytä tavaran resepti
-key.jei.showUses=Näytä tavaran käytöt
+key.jei.showRecipe=Nï¿½ytï¿½ tavaran resepti
+key.jei.showUses=Nï¿½ytï¿½ tavaran kï¿½ytï¿½t
 
 # Config
-config.jei.cheatItemsEnabled=Kytke päälle tavaroiden huijaus
-config.jei.cheatItemsEnabled.description=Käytä /give-komentoa tavaroiden antamiseen tavaran reseptin näyttämisen sijaan
+config.jei.mode.cheatItemsEnabled=Kytke pï¿½ï¿½lle tavaroiden huijaus
+config.jei.mode.cheatItemsEnabled.comment=Kï¿½ytï¿½ /give-komentoa tavaroiden antamiseen tavaran reseptin nï¿½yttï¿½misen sijaan

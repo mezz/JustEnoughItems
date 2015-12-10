@@ -14,7 +14,7 @@ public class GuiHelper implements IGuiHelper {
 	private final IDrawable slotDrawable;
 
 	public GuiHelper() {
-		ResourceLocation location = new ResourceLocation("minecraft:textures/gui/container/furnace.png");
+		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/furnace.png");
 		slotDrawable = createDrawable(location, 55, 16, 18, 18);
 	}
 

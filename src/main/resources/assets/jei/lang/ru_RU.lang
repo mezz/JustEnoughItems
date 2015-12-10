@@ -8,18 +8,18 @@ key.jei.showRecipe=Показывать рецепты предметов
 key.jei.showUses=Показывать применения предметов
 
 # Config
-config.jei.cheatItemsEnabled=Включить режим жульничества
-config.jei.cheatItemsEnabled.description=/give предметы, вместо показа рецепта.
-config.jei.editEnabled=Режим редактирования
-config.jei.editEnabled.description=Прячьте предметы в списке простым нажатием клавиши.
+config.jei.mode.cheatItemsEnabled=Включить режим жульничества
+config.jei.mode.cheatItemsEnabled.comment=/give предметы, вместо показа рецепта.
+config.jei.mode.editEnabled=Режим редактирования
+config.jei.mode.editEnabled.comment=Прячьте предметы в списке простым нажатием клавиши.
 
-config.jei.tooltipModName=Добавить назв. мода к подсказке
-config.jei.tooltipModName.description=Добавляет название мода к подсказке предмета.
+config.jei.interface.tooltipModName=Добавить назв. мода к подсказке
+config.jei.interface.tooltipModName.comment=Добавляет название мода к подсказке предмета.
 
-config.jei.nbtKeyIgnoreList=Чёрный список для NBT
-config.jei.nbtKeyIgnoreList.description=Список NBT, которые будут игнорироваться при отображении рецептов.
-config.jei.itemBlacklist=Чёрный список для предметов
-config.jei.itemBlacklist.description=Список предметов, которые не будут отображаться в списке предметов JEI. Формат: modId:name[:meta]. Режим редактирования будет автоматически добавлять записи сюда, или удалять.
+config.jei.advanced.nbtKeyIgnoreList=Чёрный список для NBT
+config.jei.advanced.nbtKeyIgnoreList.comment=Список NBT, которые будут игнорироваться при отображении рецептов.
+config.jei.advanced.itemBlacklist=Чёрный список для предметов
+config.jei.advanced.itemBlacklist.comment=Список предметов, которые не будут отображаться в списке предметов JEI. Формат: modId:name[:meta]. Режим редактирования будет автоматически добавлять записи сюда, или удалять.
 
 # Edit Mode
 gui.jei.editMode.description=Режим редактирования списка предметов JEI:
