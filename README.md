@@ -32,6 +32,6 @@ dependencies {
 ```
 
 `<MINECRAFT-VERSION>` can be `1.8` or `1.8.8`.
-See the list of github tags for available JEI versions.
+Join IRC for available JEI versions. Soon, they will be auto-uploaded to curse and you can get the version there.
 
 Join [#JEI on esper.net IRC](http://webchat.esper.net/?nick=JEIGithub...&channels=JEI&prompt=1) for questions or anything else.
