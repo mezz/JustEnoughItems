@@ -35,7 +35,7 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onGuiInit(@Nonnull GuiScreenEvent.InitGuiEvent.Post event) {
-		if (itemListOverlay == null || event.gui instanceof RecipesGui) {
+		if (itemListOverlay == null) {
 			return;
 		}
 		Minecraft minecraft = Minecraft.getMinecraft();
@@ -48,9 +48,7 @@ public class GuiEventHandler {
 		recipesGui.initGui(minecraft);
 		inputHandler = new InputHandler(recipesGui, itemListOverlay, guiContainer);
 
-		if (!minecraft.thePlayer.capabilities.isCreativeMode) {
-			itemListOverlay.open();
-		}
+		itemListOverlay.open();
 	}
 	
 	@SubscribeEvent
