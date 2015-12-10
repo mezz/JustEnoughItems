@@ -18,6 +18,7 @@ public class Config {
 	public static final String categoryMode = "mode";
 	public static final String categoryInterface = "interface";
 	public static final String categoryAdvanced = "advanced";
+	public static final String categoryAddons = "addons";
 
 	public static boolean cheatItemsEnabled = false;
 	public static boolean editModeEnabled = false;
@@ -38,6 +39,7 @@ public class Config {
 		configFile.addCategory(categoryMode);
 		configFile.addCategory(categoryInterface);
 		configFile.addCategory(categoryAdvanced);
+		configFile.addCategory(categoryAddons);
 
 		cheatItemsEnabled = configFile.getBoolean(categoryMode, "cheatItemsEnabled", cheatItemsEnabled);
 		editModeEnabled = configFile.getBoolean(categoryMode, "editEnabled", editModeEnabled);
