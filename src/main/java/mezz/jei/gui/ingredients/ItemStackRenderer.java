@@ -9,9 +9,9 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.StatCollector;
 
 import mezz.jei.config.Config;
+import mezz.jei.util.Translator;
 
 public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	@Override
@@ -49,17 +49,17 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 
 		if (Config.editModeEnabled) {
 			list.add("");
-			list.add(EnumChatFormatting.ITALIC + StatCollector.translateToLocal("gui.jei.editMode.description"));
+			list.add(EnumChatFormatting.ITALIC + Translator.translateToLocal("gui.jei.editMode.description"));
 			if (Config.isItemOnConfigBlacklist(itemStack, false)) {
-				list.add(EnumChatFormatting.YELLOW + StatCollector.translateToLocal("gui.jei.editMode.description.show"));
+				list.add(EnumChatFormatting.YELLOW + Translator.translateToLocal("gui.jei.editMode.description.show"));
 			} else {
-				list.add(EnumChatFormatting.YELLOW + StatCollector.translateToLocal("gui.jei.editMode.description.hide"));
+				list.add(EnumChatFormatting.YELLOW + Translator.translateToLocal("gui.jei.editMode.description.hide"));
 			}
 
 			if (Config.isItemOnConfigBlacklist(itemStack, true)) {
-				list.add(EnumChatFormatting.RED + StatCollector.translateToLocal("gui.jei.editMode.description.show.wild"));
+				list.add(EnumChatFormatting.RED + Translator.translateToLocal("gui.jei.editMode.description.show.wild"));
 			} else {
-				list.add(EnumChatFormatting.RED + StatCollector.translateToLocal("gui.jei.editMode.description.hide.wild"));
+				list.add(EnumChatFormatting.RED + Translator.translateToLocal("gui.jei.editMode.description.hide.wild"));
 			}
 		}
 

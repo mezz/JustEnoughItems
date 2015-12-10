@@ -130,6 +130,14 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
+	public Focus getFocus() {
+		if (state == null) {
+			return null;
+		}
+		return state.focus;
+	}
+
+	@Override
 	public void setRecipesPerPage(int recipesPerPage) {
 		if (state == null) {
 			return;

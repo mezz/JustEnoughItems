@@ -140,6 +140,9 @@ public class GuiEventHandler {
 	@SubscribeEvent
 	public void onGuiMouseEvent(GuiScreenEvent.MouseInputEvent.Pre event) {
 		GuiScreen gui = event.gui;
+		if (!(gui instanceof GuiContainer)) {
+			return;
+		}
 		if (inputHandler != null) {
 			int x = Mouse.getEventX() * gui.width / gui.mc.displayWidth;
 			int y = gui.height - Mouse.getEventY() * gui.height / gui.mc.displayHeight - 1;

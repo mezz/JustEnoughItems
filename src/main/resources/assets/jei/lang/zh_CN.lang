@@ -8,5 +8,5 @@ key.jei.showRecipe=显示物品合成表
 key.jei.showUses=显示物品可参与合成表
 
 # Config
-config.jei.cheatItemsEnabled=开启物品作弊模式
-config.jei.cheatItemsEnabled.description=/给予物品而非显示其合成表
+config.jei.mode.cheatItemsEnabled=开启物品作弊模式
+config.jei.mode.cheatItemsEnabled.comment=/给予物品而非显示其合成表

@@ -10,9 +10,9 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 
 import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
+import mezz.jei.util.Translator;
 
 public class FuelRecipe extends VanillaRecipeWrapper {
 	@Nonnull
@@ -22,7 +22,7 @@ public class FuelRecipe extends VanillaRecipeWrapper {
 
 	public FuelRecipe(@Nonnull Collection<ItemStack> input, int burnTime) {
 		this.input = new ArrayList<>(input);
-		this.burnTimeString = StatCollector.translateToLocalFormatted("gui.jei.furnaceBurnTime", burnTime);
+		this.burnTimeString = Translator.translateToLocalFormatted("gui.jei.furnaceBurnTime", burnTime);
 	}
 
 	@Nonnull

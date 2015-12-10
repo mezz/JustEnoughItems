@@ -6,7 +6,6 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
 
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
@@ -16,6 +15,7 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.util.StackUtil;
+import mezz.jei.util.Translator;
 
 public class BrewingRecipeCategory implements IRecipeCategory {
 
@@ -34,9 +34,9 @@ public class BrewingRecipeCategory implements IRecipeCategory {
 	private final String localizedName;
 
 	public BrewingRecipeCategory() {
-		ResourceLocation location = new ResourceLocation("minecraft:textures/gui/container/brewing_stand.png");
+		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/brewing_stand.png");
 		background = JEIManager.guiHelper.createDrawable(location, 55, 15, 64, 56, 0, 0, 0, 40);
-		localizedName = StatCollector.translateToLocal("gui.jei.brewingRecipes");
+		localizedName = Translator.translateToLocal("gui.jei.brewingRecipes");
 	}
 
 	@Nonnull
