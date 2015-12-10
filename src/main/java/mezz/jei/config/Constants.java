@@ -13,4 +13,5 @@ public class Constants {
 	public static final String RESOURCE_DOMAIN = MOD_ID.toLowerCase(Locale.ENGLISH);
 	public static final String TEXTURE_GUI_PATH = "textures/gui/";
 
+	public static final int MAX_TOOLTIP_WIDTH = 125;
 }

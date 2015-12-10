@@ -2,6 +2,10 @@
 jei.button.next=Next
 jei.button.back=Back
 
+# Tooltips
+jei.tooltip.config=Config
+jei.tooltip.show.all.recipes=Show All Recipes
+
 # Key Bindings
 key.jei.toggleOverlay=Toggle Item List Overlay (Ctrl + )
 key.jei.showRecipe=Show Item Recipe
