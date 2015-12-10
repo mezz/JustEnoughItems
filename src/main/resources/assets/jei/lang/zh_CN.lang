@@ -1,7 +1,3 @@
-# Buttons
-jei.button.next=下翻
-jei.button.back=返回
-
 # Key Bindings
 key.jei.toggleOverlay=切换物品列表叠层
 key.jei.showRecipe=显示物品合成表

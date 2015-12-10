@@ -1,7 +1,3 @@
-# Buttons
-jei.button.next=След.
-jei.button.back=Пред.
-
 # Key Bindings
 key.jei.toggleOverlay=Переключить оверлей предметов (Ctrl + )
 key.jei.showRecipe=Показывать рецепты предметов

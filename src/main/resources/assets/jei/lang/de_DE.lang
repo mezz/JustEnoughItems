@@ -1,7 +1,3 @@
-# Buttons
-jei.button.next=Weiter
-jei.button.back=Zurück
-
 # Key Bindings
 key.jei.toggleOverlay=Item-Listen-Overlay (de-)aktivieren
 key.jei.showRecipe=Zeige Item-Rezepte

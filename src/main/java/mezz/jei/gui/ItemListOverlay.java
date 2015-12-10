@@ -86,8 +86,8 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		this.screenWidth = guiContainer.width;
 		this.screenHeight = guiContainer.height;
 
-		String next = Translator.translateToLocal("jei.button.next");
-		String back = Translator.translateToLocal("jei.button.back");
+		String next = ">";
+		String back = "<";
 
 		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
 		final int nextButtonWidth = buttonPaddingX + fontRenderer.getStringWidth(next);
