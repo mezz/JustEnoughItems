@@ -7,10 +7,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 
 import mezz.jei.config.Config;
+import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
 
 public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
@@ -51,15 +53,22 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 			list.add("");
 			list.add(EnumChatFormatting.ITALIC + Translator.translateToLocal("gui.jei.editMode.description"));
 			if (Config.isItemOnConfigBlacklist(itemStack, false)) {
-				list.add(EnumChatFormatting.YELLOW + Translator.translateToLocal("gui.jei.editMode.description.show"));
+				String description = EnumChatFormatting.YELLOW + Translator.translateToLocal("gui.jei.editMode.description.show");
+				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
 			} else {
-				list.add(EnumChatFormatting.YELLOW + Translator.translateToLocal("gui.jei.editMode.description.hide"));
+				String description = EnumChatFormatting.YELLOW + Translator.translateToLocal("gui.jei.editMode.description.hide");
+				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
 			}
 
-			if (Config.isItemOnConfigBlacklist(itemStack, true)) {
-				list.add(EnumChatFormatting.RED + Translator.translateToLocal("gui.jei.editMode.description.show.wild"));
-			} else {
-				list.add(EnumChatFormatting.RED + Translator.translateToLocal("gui.jei.editMode.description.hide.wild"));
+			Item item = itemStack.getItem();
+			if (item.getHasSubtypes()) {
+				if (Config.isItemOnConfigBlacklist(itemStack, true)) {
+					String description = EnumChatFormatting.RED + Translator.translateToLocal("gui.jei.editMode.description.show.wild");
+					list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
+				} else {
+					String description = EnumChatFormatting.RED + Translator.translateToLocal("gui.jei.editMode.description.hide.wild");
+					list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
+				}
 			}
 		}
 

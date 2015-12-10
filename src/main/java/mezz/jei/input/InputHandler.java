@@ -8,6 +8,8 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -127,19 +129,7 @@ public class InputHandler {
 
 	private boolean handleMouseClickedFocus(int mouseButton, @Nonnull Focus focus) {
 		if (Config.editModeEnabled && GuiScreen.isCtrlKeyDown()) {
-			Boolean wildcard = null;
-			if (mouseButton == 0) {
-				wildcard = false;
-			} else if (mouseButton == 1) {
-				wildcard = true;
-			}
-
-			if (wildcard != null) {
-				if (Config.isItemOnConfigBlacklist(focus.getStack(), wildcard)) {
-					Config.removeItemFromConfigBlacklist(focus.getStack(), wildcard);
-				} else {
-					Config.addItemToConfigBlacklist(focus.getStack(), wildcard);
-				}
+			if (handleClickEditStack(mouseButton, focus)) {
 				return true;
 			}
 		}
@@ -167,6 +157,33 @@ public class InputHandler {
 		}
 
 		return false;
+	}
+
+	private boolean handleClickEditStack(int mouseButton, @Nonnull Focus focus) {
+		ItemStack itemStack = focus.getStack();
+		if (itemStack == null) {
+			return false;
+		}
+
+		boolean wildcard;
+		if (mouseButton == 0) {
+			wildcard = false;
+		} else if (mouseButton == 1) {
+			wildcard = true;
+		} else {
+			return false;
+		}
+
+		if (Config.isItemOnConfigBlacklist(focus.getStack(), wildcard)) {
+			Config.removeItemFromConfigBlacklist(focus.getStack(), wildcard);
+		} else {
+			Item item = itemStack.getItem();
+			if (wildcard && !item.getHasSubtypes()) {
+				return false;
+			}
+			Config.addItemToConfigBlacklist(focus.getStack(), wildcard);
+		}
+		return true;
 	}
 
 	public boolean handleKeyEvent() {
