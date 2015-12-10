@@ -30,7 +30,7 @@ public class JEIModConfigGui extends GuiConfig {
 		configElements.addAll(new ConfigElement(categoryInterface).getChildElements());
 		configElements.add(new ConfigElement(categoryAdvanced));
 
-		if (!categoryAddons.isEmpty()) {
+		if (!categoryAddons.isEmpty() || categoryAddons.getChildren().size() > 0) {
 			configElements.add(new ConfigElement(categoryAddons));
 		}
 
