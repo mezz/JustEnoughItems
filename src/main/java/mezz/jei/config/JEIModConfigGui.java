@@ -23,11 +23,16 @@ public class JEIModConfigGui extends GuiConfig {
 		ConfigCategory categoryAdvanced = Config.configFile.getCategory(Config.categoryAdvanced);
 		ConfigCategory categoryInterface = Config.configFile.getCategory(Config.categoryInterface);
 		ConfigCategory categoryMode = Config.configFile.getCategory(Config.categoryMode);
+		ConfigCategory categoryAddons = Config.configFile.getCategory(Config.categoryAddons);
 
 		List<IConfigElement> configElements = new ArrayList<>();
 		configElements.addAll(new ConfigElement(categoryMode).getChildElements());
 		configElements.addAll(new ConfigElement(categoryInterface).getChildElements());
 		configElements.add(new ConfigElement(categoryAdvanced));
+
+		if (!categoryAddons.isEmpty() || categoryAddons.getChildren().size() > 0) {
+			configElements.add(new ConfigElement(categoryAddons));
+		}
 
 		return configElements;
 	}

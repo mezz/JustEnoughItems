@@ -6,7 +6,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -218,8 +217,8 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		}
 
 		if (configButtonHoverChecker.checkHover(mouseX, mouseY)) {
-			List<String> tooltipText = minecraft.fontRendererObj.listFormattedStringToWidth("Config", 300);
-			TooltipRenderer.drawHoveringText(minecraft, tooltipText, mouseX, mouseY);
+			String configString = Translator.translateToLocal("jei.tooltip.config");
+			TooltipRenderer.drawHoveringText(minecraft, configString, mouseX, mouseY);
 		}
 	}
 

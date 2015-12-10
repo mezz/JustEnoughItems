@@ -8,6 +8,8 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 
+import mezz.jei.config.Constants;
+
 /**
  * Workaround for GuiScreen.drawHoveringText being protected instead of public.
  * (the method with FontRenderer is added by Forge and can't be AT'd).
@@ -15,7 +17,9 @@ import net.minecraft.client.renderer.RenderHelper;
 public class TooltipRenderer {
 	private static final TooltipGuiScreen tooltipScreen = new TooltipGuiScreen();
 
-	public static void drawHoveringText(Minecraft minecraft, List<String> textLines, int x, int y) {
+	public static void drawHoveringText(Minecraft minecraft, String textLine, int x, int y) {
+		@SuppressWarnings("unchecked")
+		List<String> textLines = minecraft.fontRendererObj.listFormattedStringToWidth(textLine, Constants.MAX_TOOLTIP_WIDTH);
 		drawHoveringText(minecraft, textLines, x, y, minecraft.fontRendererObj);
 	}
 
@@ -38,7 +42,7 @@ public class TooltipRenderer {
 		}
 
 		@Override
-		public void drawHoveringText(List textLines, int x, int y, FontRenderer font) {
+		public void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {
 			super.drawHoveringText(textLines, x, y, font);
 		}
 	}

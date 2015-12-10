@@ -28,6 +28,7 @@ import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.util.Log;
 import mezz.jei.util.RecipeTransferUtil;
 import mezz.jei.util.StringUtil;
+import mezz.jei.util.Translator;
 
 public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouseHandler {
 	private static final int borderPadding = 8;
@@ -347,8 +348,8 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		if (titleHoverChecker.checkHover(mouseX, mouseY)) {
 			Focus focus = logic.getFocus();
 			if (focus != null && !focus.isBlank()) {
-				List<String> tooltipText = minecraft.fontRendererObj.listFormattedStringToWidth("Show All Recipes", 300);
-				TooltipRenderer.drawHoveringText(minecraft, tooltipText, mouseX, mouseY);
+				String showAllRecipesString = Translator.translateToLocal("jei.tooltip.show.all.recipes");
+				TooltipRenderer.drawHoveringText(minecraft, showAllRecipesString, mouseX, mouseY);
 			}
 		}
 	}
