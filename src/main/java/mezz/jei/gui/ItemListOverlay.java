@@ -38,8 +38,11 @@ import mezz.jei.util.Translator;
 
 public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKeyable {
 
-	private static final int borderPadding = 1;
+	private static final int borderPadding = 4;
 	private static final int searchHeight = 16;
+	private static final int buttonPaddingX = 14;
+	private static final int buttonPaddingY = 8;
+
 	private static final int itemStackPadding = 1;
 	private static final int itemStackWidth = GuiItemStackGroup.getWidth(itemStackPadding);
 	private static final int itemStackHeight = GuiItemStackGroup.getHeight(itemStackPadding);
@@ -87,28 +90,38 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		String back = Translator.translateToLocal("jei.button.back");
 
 		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
-		final int nextButtonWidth = 10 + fontRenderer.getStringWidth(next);
-		final int backButtonWidth = 10 + fontRenderer.getStringWidth(back);
-		buttonHeight = 5 + fontRenderer.FONT_HEIGHT;
+		final int nextButtonWidth = buttonPaddingX + fontRenderer.getStringWidth(next);
+		final int backButtonWidth = buttonPaddingX + fontRenderer.getStringWidth(back);
+		buttonHeight = buttonPaddingY + fontRenderer.FONT_HEIGHT;
 
-		int columns = getColumns();
-		int xSize = columns * itemStackWidth + (2 * itemStackPadding);
-		int xEmptySpace = screenWidth - guiLeft - guiXSize - xSize;
+		final int columns = getColumns();
+		final int rows = getRows();
+		final int xSize = columns * itemStackWidth;
+		final int xEmptySpace = screenWidth - guiLeft - guiXSize - xSize;
 
-		int leftEdge = guiLeft + guiXSize + (xEmptySpace / 2);
+		final int leftEdge = guiLeft + guiXSize + (xEmptySpace / 2);
+		final int rightEdge = leftEdge + xSize;
 
-		int rightEdge = createItemButtons(leftEdge);
+		final int yItemButtonSpace = getItemButtonYSpace();
+		final int itemButtonsHeight = rows * itemStackHeight;
 
-		nextButton = new GuiButtonExt(0, rightEdge - nextButtonWidth, 0, nextButtonWidth, buttonHeight, next);
-		backButton = new GuiButtonExt(1, leftEdge, 0, backButtonWidth, buttonHeight, back);
+		final int buttonStartY = buttonHeight + (2 * borderPadding) + (yItemButtonSpace - itemButtonsHeight) / 2;
+		createItemButtons(leftEdge, buttonStartY, columns, rows);
+
+		nextButton = new GuiButtonExt(0, rightEdge - nextButtonWidth, borderPadding, nextButtonWidth, buttonHeight, next);
+		backButton = new GuiButtonExt(1, leftEdge, borderPadding, backButtonWidth, buttonHeight, back);
 
 		int configButtonSize = searchHeight + 4;
-		configButton = new GuiButtonExt(2, rightEdge - configButtonSize + itemStackPadding, screenHeight - configButtonSize, configButtonSize, configButtonSize, null);
+		int configButtonX = rightEdge - configButtonSize + 1;
+		int configButtonY = screenHeight - configButtonSize - borderPadding;
+		configButton = new GuiButtonExt(2, configButtonX, configButtonY, configButtonSize, configButtonSize, null);
 		ResourceLocation configButtonIconLocation = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_GUI_PATH + "recipeBackground.png");
 		configButtonIcon = JEIManager.guiHelper.createDrawable(configButtonIconLocation, 0, 166, 16, 16);
 		configButtonHoverChecker = new HoverChecker(configButton, 0);
 
-		searchField = new GuiTextField(0, fontRenderer, leftEdge, screenHeight - searchHeight - (2 * borderPadding), rightEdge - leftEdge - configButtonSize - itemStackPadding, searchHeight);
+		int searchFieldY = screenHeight - searchHeight - borderPadding - 2;
+		int searchFieldWidth = rightEdge - leftEdge - configButtonSize - 1;
+		searchField = new GuiTextField(0, fontRenderer, leftEdge, searchFieldY, searchFieldWidth, searchHeight);
 		searchField.setMaxStringLength(maxSearchLength);
 		setKeyboardFocus(false);
 		searchField.setText(itemFilter.getFilterText());
@@ -116,31 +129,16 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		updateLayout();
 	}
 
-	// creates buttons and returns the x value of the right edge of the rightmost button
-	private int createItemButtons(int xStart) {
+	private void createItemButtons(final int xStart, final int yStart, final int columnCount, final int rowCount) {
 		guiItemStacks.clear();
 
-		final int yStart = buttonHeight + (2 * borderPadding);
-
-		int x = xStart;
-		int y = yStart;
-		int maxX = 0;
-
-		while (y + itemStackHeight + borderPadding <= screenHeight - searchHeight) {
-			if (x > maxX) {
-				maxX = x;
-			}
-
-			guiItemStacks.add(GuiItemStackGroup.createGuiItemStack(false, x, y, itemStackPadding));
-
-			x += itemStackWidth;
-			if (x + itemStackWidth + borderPadding > screenWidth) {
-				x = xStart;
-				y += itemStackHeight;
+		for (int row = 0; row < rowCount; row++) {
+			int y = yStart + (row * itemStackHeight);
+			for (int column = 0; column < columnCount; column++) {
+				int x = xStart + (column * itemStackWidth);
+				guiItemStacks.add(GuiItemStackGroup.createGuiItemStack(false, x, y, itemStackPadding));
 			}
 		}
-
-		return maxX + itemStackWidth;
 	}
 
 	private void updateLayout() {
@@ -339,14 +337,20 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		return false;
 	}
 
+	private int getItemButtonXSpace() {
+		return screenWidth - (guiLeft + guiXSize + (2 * borderPadding));
+	}
+
+	private int getItemButtonYSpace() {
+		return screenHeight - (buttonHeight + searchHeight + 2 + (4 * borderPadding));
+	}
+
 	private int getColumns() {
-		int xArea = screenWidth - (guiLeft + guiXSize + (2 * borderPadding));
-		return xArea / itemStackWidth;
+		return getItemButtonXSpace() / itemStackWidth;
 	}
 
 	private int getRows() {
-		int yArea = screenHeight - (buttonHeight + searchHeight + (4 * borderPadding));
-		return yArea / itemStackHeight;
+		return getItemButtonYSpace() / itemStackHeight;
 	}
 
 	private int getCountPerPage() {
