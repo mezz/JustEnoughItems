@@ -22,7 +22,6 @@ public class Config {
 
 	public static boolean cheatItemsEnabled = false;
 	public static boolean editModeEnabled = false;
-	public static boolean tooltipModNameEnabled = true;
 	public static boolean recipeTransferEnabled = true;
 
 	public static Set<String> nbtKeyIgnoreList = new HashSet<>();
@@ -45,8 +44,6 @@ public class Config {
 
 		cheatItemsEnabled = configFile.getBoolean(categoryMode, "cheatItemsEnabled", cheatItemsEnabled);
 		editModeEnabled = configFile.getBoolean(categoryMode, "editEnabled", editModeEnabled);
-
-		tooltipModNameEnabled = configFile.getBoolean(categoryInterface, "tooltipModName", tooltipModNameEnabled);
 
 		String[] nbtKeyIgnoreListArray = configFile.getStringList("nbtKeyIgnoreList", categoryAdvanced, defaultNbtKeyIgnoreList);
 		nbtKeyIgnoreList.clear();
