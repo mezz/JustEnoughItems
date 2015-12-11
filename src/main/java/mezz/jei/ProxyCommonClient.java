@@ -88,7 +88,7 @@ public class ProxyCommonClient extends ProxyCommon {
 
 	@SubscribeEvent
 	public void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
-		if (eventArgs.modID.equals(Constants.MOD_ID)) {
+		if (Constants.MOD_ID.equals(eventArgs.modID)) {
 			Config.syncConfig();
 			resetItemFilter();
 		}
