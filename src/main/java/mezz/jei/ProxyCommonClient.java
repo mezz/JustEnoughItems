@@ -1,6 +1,7 @@
 package mezz.jei;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +31,7 @@ import mezz.jei.util.Log;
 import mezz.jei.util.ModRegistry;
 
 public class ProxyCommonClient extends ProxyCommon {
+	@Nullable
 	private ItemFilter itemFilter;
 	private GuiEventHandler guiEventHandler;
 
@@ -88,7 +90,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	public void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
 		if (eventArgs.modID.equals(Constants.MOD_ID)) {
 			Config.syncConfig();
-			itemFilter.reset();
+			resetItemFilter();
 		}
 	}
 
