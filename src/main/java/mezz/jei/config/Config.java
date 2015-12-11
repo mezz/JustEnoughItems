@@ -23,6 +23,8 @@ public class Config {
 	public static boolean cheatItemsEnabled = false;
 	public static boolean editModeEnabled = false;
 	public static boolean tooltipModNameEnabled = true;
+	public static boolean recipeTransferEnabled = true;
+
 	public static Set<String> nbtKeyIgnoreList = new HashSet<>();
 	public static Set<String> itemBlacklist = new HashSet<>();
 

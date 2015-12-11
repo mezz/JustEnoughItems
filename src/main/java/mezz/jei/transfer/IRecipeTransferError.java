@@ -10,10 +10,10 @@ import mezz.jei.gui.RecipeLayout;
 public interface IRecipeTransferError {
 	enum Type {
 		/**
-		 * Errors where the Transfer helper is missing or does not work.
+		 * Errors where the Transfer helper is missing or does not work, or the server is not present.
 		 * These errors will hide the recipe transfer button and do not display anything.
 		 */
-		TRANSFER_HELPER,
+		INTERNAL,
 
 		/**
 		 * Errors that the player can fix. Missing items, inventory full, etc.
