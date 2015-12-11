@@ -2,6 +2,10 @@
 jei.tooltip.config=Config
 jei.tooltip.show.all.recipes=Show All Recipes
 
+# Error Tooltips
+jei.tooltip.error.recipe.transfer.missing=Missing Items
+jei.tooltip.error.recipe.transfer.inventory.full=Inventory is too full
+
 # Key Bindings
 key.jei.toggleOverlay=Toggle Item List Overlay (Ctrl + )
 key.jei.showRecipe=Show Item Recipe

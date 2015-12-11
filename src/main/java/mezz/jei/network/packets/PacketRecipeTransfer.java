@@ -13,7 +13,7 @@ import net.minecraft.network.PacketBuffer;
 
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
-import mezz.jei.util.RecipeTransferUtil;
+import mezz.jei.transfer.RecipeTransferUtil;
 
 public class PacketRecipeTransfer extends PacketJEI {
 

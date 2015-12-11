@@ -2,6 +2,7 @@ package mezz.jei.gui.ingredients;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -10,6 +11,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 
@@ -111,6 +113,13 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		}
 		draw(minecraft, false);
 		drawTooltip(minecraft, mouseX, mouseY, value);
+	}
+
+	@Override
+	public void drawHighlight(@Nonnull Minecraft minecraft, Color color, int xOffset, int yOffset) {
+		int x = xPosition + xOffset;
+		int y = yPosition + yOffset;
+		GuiScreen.drawRect(x, y, x + width, y + height, color.getRGB());
 	}
 
 	private void draw(Minecraft minecraft, boolean cycleIcons) {

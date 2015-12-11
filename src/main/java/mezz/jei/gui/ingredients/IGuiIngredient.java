@@ -2,6 +2,7 @@ package mezz.jei.gui.ingredients;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.Color;
 import java.util.Collection;
 import java.util.List;
 
@@ -27,4 +28,7 @@ public interface IGuiIngredient<T> {
 	void draw(@Nonnull Minecraft minecraft);
 
 	void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY);
+
+	/** Offset is in screen coordinates, unlike the other draw methods */
+	void drawHighlight(@Nonnull Minecraft minecraft, Color color, int xOffset, int yOffset);
 }

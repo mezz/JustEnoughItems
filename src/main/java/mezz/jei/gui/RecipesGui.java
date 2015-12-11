@@ -25,8 +25,8 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.Constants;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
+import mezz.jei.transfer.RecipeTransferUtil;
 import mezz.jei.util.Log;
-import mezz.jei.util.RecipeTransferUtil;
 import mezz.jei.util.StringUtil;
 import mezz.jei.util.Translator;
 
@@ -304,9 +304,8 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 
 		for (RecipeLayout recipeLayout : recipeLayouts) {
-			GuiButtonExt button = recipeLayout.getRecipeTransferButton();
-			button.visible = RecipeTransferUtil.hasTransferHelper(recipeLayout, player);
-			button.enabled = RecipeTransferUtil.canTransferRecipe(recipeLayout, player);
+			RecipeTransferButton button = recipeLayout.getRecipeTransferButton();
+			button.init(recipeLayout, player);
 			buttonList.add(button);
 		}
 	}
