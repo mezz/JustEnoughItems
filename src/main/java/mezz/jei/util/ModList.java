@@ -8,9 +8,11 @@ import java.util.Map;
 import org.apache.commons.lang3.text.WordUtils;
 
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ModList {
@@ -28,10 +30,13 @@ public class ModList {
 
 	@Nonnull
 	public String getModNameForItem(@Nonnull Item item) {
-		String modId = GameRegistry.findUniqueIdentifierFor(item).modId;
-		String modName = modNamesForIds.get(modId.toLowerCase(Locale.ENGLISH));
+		ResourceLocation itemResourceLocation = (ResourceLocation) GameData.getItemRegistry().getNameForObject(item);
+		String modId = itemResourceLocation.getResourceDomain();
+		String lowercaseModId = modId.toLowerCase(Locale.ENGLISH);
+		String modName = modNamesForIds.get(lowercaseModId);
 		if (modName == null) {
 			modName = WordUtils.capitalize(modId);
+			modNamesForIds.put(lowercaseModId, modName);
 		}
 		return modName;
 	}

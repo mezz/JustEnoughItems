@@ -5,7 +5,9 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
+import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import mezz.jei.api.JEIManager;
@@ -36,7 +38,8 @@ public class ItemStackElement {
 		this.itemStack = itemStack;
 		this.localizedName = itemStack.getDisplayName().toLowerCase();
 
-		String modId = GameRegistry.findUniqueIdentifierFor(itemStack.getItem()).modId;
+		ResourceLocation itemResourceLocation = (ResourceLocation) GameData.getItemRegistry().getNameForObject(itemStack.getItem());
+		String modId = itemResourceLocation.getResourceDomain();
 		String modName = JEIManager.itemRegistry.getModNameForItem(itemStack.getItem());
 
 		this.modName = modId.toLowerCase(Locale.ENGLISH) + ' ' + modName.toLowerCase(Locale.ENGLISH);
