@@ -6,16 +6,16 @@ import net.minecraft.client.Minecraft;
 
 import mezz.jei.gui.RecipeLayout;
 
-public class RecipeTransferErrorTransferHelper implements IRecipeTransferError {
-	public static final RecipeTransferErrorTransferHelper instance = new RecipeTransferErrorTransferHelper();
+public class RecipeTransferErrorInternal implements IRecipeTransferError {
+	public static final RecipeTransferErrorInternal instance = new RecipeTransferErrorInternal();
 
-	private RecipeTransferErrorTransferHelper() {
+	private RecipeTransferErrorInternal() {
 
 	}
 
 	@Override
 	public Type getType() {
-		return Type.TRANSFER_HELPER;
+		return Type.INTERNAL;
 	}
 
 	@Override

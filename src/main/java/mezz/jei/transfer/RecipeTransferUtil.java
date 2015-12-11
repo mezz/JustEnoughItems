@@ -21,6 +21,7 @@ import mezz.jei.JustEnoughItems;
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.recipe.IRecipeTransferHelper;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.config.Config;
 import mezz.jei.gui.RecipeLayout;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
@@ -41,6 +42,10 @@ public class RecipeTransferUtil {
 
 	@Nullable
 	private static IRecipeTransferError transferRecipe(@Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean doTransfer) {
+		if (!Config.recipeTransferEnabled) {
+			return RecipeTransferErrorInternal.instance;
+		}
+
 		Container container = player.openContainer;
 
 		IRecipeTransferHelper transferHelper = JEIManager.recipeRegistry.getRecipeTransferHelper(container, recipeLayout.getRecipeCategory());
@@ -48,7 +53,7 @@ public class RecipeTransferUtil {
 			if (doTransfer) {
 				Log.error("No Recipe Transfer helper for container {}", container.getClass());
 			}
-			return RecipeTransferErrorTransferHelper.instance;
+			return RecipeTransferErrorInternal.instance;
 		}
 
 		Map<Integer, Slot> inventorySlots = new HashMap<>();
@@ -64,7 +69,7 @@ public class RecipeTransferUtil {
 		IRecipeWrapper recipeWrapper = recipeLayout.getRecipeWrapper();
 		if (recipeWrapper.getInputs().size() > craftingSlots.size()) {
 			Log.error("Recipe Transfer helper {} does not work for container {}", transferHelper.getClass(), container.getClass());
-			return RecipeTransferErrorTransferHelper.instance;
+			return RecipeTransferErrorInternal.instance;
 		}
 
 		GuiItemStackGroup itemStackGroup = recipeLayout.getItemStacks();
@@ -78,7 +83,7 @@ public class RecipeTransferUtil {
 			if (slot.getHasStack()) {
 				if (!slot.canTakeStack(player)) {
 					Log.error("Recipe Transfer helper {} does not work for container {}. Player can't move item out of Crafting Slot number {}", transferHelper.getClass(), container.getClass(), slot.slotNumber);
-					return RecipeTransferErrorTransferHelper.instance;
+					return RecipeTransferErrorInternal.instance;
 				}
 				filledCraftSlotCount++;
 				availableItemStacks.add(slot.getStack());
@@ -135,17 +140,17 @@ public class RecipeTransferUtil {
 			int slotNumber = craftingSlotIndexes.get(craftNumber);
 			if (slotNumber >= container.inventorySlots.size()) {
 				Log.error("Recipes Transfer Helper {} references slot {} outside of the inventory's size {}", transferHelper.getClass(), slotNumber, container.inventorySlots.size());
-				return RecipeTransferErrorTransferHelper.instance;
+				return RecipeTransferErrorInternal.instance;
 			}
 			Slot slot = container.getSlot(slotNumber);
 			ItemStack stack = entry.getValue();
 			if (slot == null) {
 				Log.error("The slot number {} does not exist in the container.", slotNumber);
-				return RecipeTransferErrorTransferHelper.instance;
+				return RecipeTransferErrorInternal.instance;
 			}
 			if (!slot.isItemValid(stack)) {
 				Log.error("The ItemStack {} is not valid for the slot number {}", stack, slotNumber);
-				return RecipeTransferErrorTransferHelper.instance;
+				return RecipeTransferErrorInternal.instance;
 			}
 		}
 
