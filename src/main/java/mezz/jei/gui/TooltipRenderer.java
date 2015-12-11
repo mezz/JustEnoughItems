@@ -30,7 +30,6 @@ public class TooltipRenderer {
 		GlStateManager.disableRescaleNormal();
 		RenderHelper.disableStandardItemLighting();
 		GlStateManager.disableLighting();
-		GlStateManager.disableDepth();
 	}
 
 	private static class TooltipGuiScreen extends GuiScreen {

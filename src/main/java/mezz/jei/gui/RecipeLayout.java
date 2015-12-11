@@ -4,8 +4,6 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
 
-import net.minecraftforge.fml.client.config.GuiButtonExt;
-
 import org.lwjgl.opengl.GL11;
 
 import mezz.jei.api.gui.IDrawable;
@@ -27,7 +25,7 @@ public class RecipeLayout implements IRecipeLayout {
 	@Nonnull
 	private final GuiFluidStackGroup guiFluidStackGroup;
 	@Nonnull
-	private final GuiButtonExt recipeTransferButton;
+	private final RecipeTransferButton recipeTransferButton;
 	@Nonnull
 	private final IRecipeWrapper recipeWrapper;
 
@@ -40,7 +38,7 @@ public class RecipeLayout implements IRecipeLayout {
 		this.guiFluidStackGroup = new GuiFluidStackGroup();
 		int width = recipeCategory.getBackground().getWidth();
 		int height = recipeCategory.getBackground().getHeight();
-		this.recipeTransferButton = new GuiButtonExt(recipeTransferButtonIndex + index, posX + width + 2, posY + height - RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, "+");
+		this.recipeTransferButton = new RecipeTransferButton(recipeTransferButtonIndex + index, posX + width + 2, posY + height - RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, "+");
 		this.posX = posX;
 		this.posY = posY;
 
@@ -92,7 +90,7 @@ public class RecipeLayout implements IRecipeLayout {
 	}
 
 	@Nonnull
-	public GuiButtonExt getRecipeTransferButton() {
+	public RecipeTransferButton getRecipeTransferButton() {
 		return recipeTransferButton;
 	}
 
@@ -104,5 +102,13 @@ public class RecipeLayout implements IRecipeLayout {
 	@Nonnull
 	public IRecipeCategory getRecipeCategory() {
 		return recipeCategory;
+	}
+
+	public int getPosX() {
+		return posX;
+	}
+
+	public int getPosY() {
+		return posY;
 	}
 }

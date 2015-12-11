@@ -1,12 +1,14 @@
-package mezz.jei.util;
+package mezz.jei.transfer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -23,29 +25,30 @@ import mezz.jei.gui.RecipeLayout;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.network.packets.PacketRecipeTransfer;
+import mezz.jei.util.Log;
+import mezz.jei.util.StackUtil;
+import mezz.jei.util.Translator;
 
 public class RecipeTransferUtil {
-	public static boolean hasTransferHelper(@Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player) {
-		Container container = player.openContainer;
-
-		IRecipeTransferHelper transferHelper = JEIManager.recipeRegistry.getRecipeTransferHelper(container, recipeLayout.getRecipeCategory());
-		return transferHelper != null;
-	}
-
-	public static boolean canTransferRecipe(@Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player) {
+	public static IRecipeTransferError getTransferRecipeError(@Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player) {
 		return transferRecipe(recipeLayout, player, false);
 	}
 
 	public static boolean transferRecipe(@Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player) {
-		return transferRecipe(recipeLayout, player, true);
+		IRecipeTransferError error = transferRecipe(recipeLayout, player, true);
+		return error == null;
 	}
 
-	private static boolean transferRecipe(@Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean doTransfer) {
+	@Nullable
+	private static IRecipeTransferError transferRecipe(@Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean doTransfer) {
 		Container container = player.openContainer;
 
 		IRecipeTransferHelper transferHelper = JEIManager.recipeRegistry.getRecipeTransferHelper(container, recipeLayout.getRecipeCategory());
 		if (transferHelper == null) {
-			return false;
+			if (doTransfer) {
+				Log.error("No Recipe Transfer helper for container {}", container.getClass());
+			}
+			return RecipeTransferErrorTransferHelper.instance;
 		}
 
 		Map<Integer, Slot> inventorySlots = new HashMap<>();
@@ -60,7 +63,8 @@ public class RecipeTransferUtil {
 
 		IRecipeWrapper recipeWrapper = recipeLayout.getRecipeWrapper();
 		if (recipeWrapper.getInputs().size() > craftingSlots.size()) {
-			return false;
+			Log.error("Recipe Transfer helper {} does not work for container {}", transferHelper.getClass(), container.getClass());
+			return RecipeTransferErrorTransferHelper.instance;
 		}
 
 		GuiItemStackGroup itemStackGroup = recipeLayout.getItemStacks();
@@ -73,7 +77,8 @@ public class RecipeTransferUtil {
 		for (Slot slot : craftingSlots.values()) {
 			if (slot.getHasStack()) {
 				if (!slot.canTakeStack(player)) {
-					return false;
+					Log.error("Recipe Transfer helper {} does not work for container {}. Player can't move item out of Crafting Slot number {}", transferHelper.getClass(), container.getClass(), slot.slotNumber);
+					return RecipeTransferErrorTransferHelper.instance;
 				}
 				filledCraftSlotCount++;
 				availableItemStacks.add(slot.getStack());
@@ -90,17 +95,32 @@ public class RecipeTransferUtil {
 
 		// check if we have enough inventory space to shuffle items around to their final locations
 		if (filledCraftSlotCount - recipeWrapper.getInputs().size() > emptySlotCount) {
-			return false;
+			String message = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.inventory.full");
+			return new RecipeTransferErrorTooltip(message);
 		}
 
-		List<ItemStack> matchingStacks = getMatchingItems(availableItemStacks, requiredStackLists);
-		if (matchingStacks == null) {
-			return false;
+		MatchingItemsResult matchingItemsResult = getMatchingItems(availableItemStacks, requiredStackLists);
+
+		if (matchingItemsResult.missingItems.size() > 0) {
+			Set<Integer> missingIngredientIndexes = new HashSet<>();
+			for (Map.Entry<Integer, GuiIngredient<ItemStack>> guiIngredientEntry : itemStackGroup.getGuiIngredients().entrySet()) {
+				GuiIngredient<ItemStack> guiIngredient = guiIngredientEntry.getValue();
+				for (List<ItemStack> missingIngredients : matchingItemsResult.missingItems) {
+					if (StackUtil.containsStack(guiIngredient.getAll(), missingIngredients) != null) {
+						missingIngredientIndexes.add(guiIngredientEntry.getKey());
+						break;
+					}
+				}
+			}
+
+			String message = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.missing");
+			return new RecipeTransferErrorSlots(message, missingIngredientIndexes);
 		}
 
-		Map<Integer, ItemStack> slotMap = buildSlotMap(itemStackGroup, matchingStacks);
+		Map<Integer, ItemStack> slotMap = buildSlotMap(itemStackGroup, matchingItemsResult.matchingItems);
 		if (slotMap == null || StackUtil.containsSets(slotMap.values(), availableItemStacks) == null) {
-			return false;
+			String message = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.missing");
+			return new RecipeTransferErrorTooltip(message);
 		}
 
 		List<Integer> craftingSlotIndexes = new ArrayList<>(craftingSlots.keySet());
@@ -114,12 +134,18 @@ public class RecipeTransferUtil {
 			int craftNumber = entry.getKey();
 			int slotNumber = craftingSlotIndexes.get(craftNumber);
 			if (slotNumber >= container.inventorySlots.size()) {
-				return false;
+				Log.error("Recipes Transfer Helper {} references slot {} outside of the inventory's size {}", transferHelper.getClass(), slotNumber, container.inventorySlots.size());
+				return RecipeTransferErrorTransferHelper.instance;
 			}
 			Slot slot = container.getSlot(slotNumber);
 			ItemStack stack = entry.getValue();
-			if (slot == null || !slot.isItemValid(stack)) {
-				return false;
+			if (slot == null) {
+				Log.error("The slot number {} does not exist in the container.", slotNumber);
+				return RecipeTransferErrorTransferHelper.instance;
+			}
+			if (!slot.isItemValid(stack)) {
+				Log.error("The ItemStack {} is not valid for the slot number {}", stack, slotNumber);
+				return RecipeTransferErrorTransferHelper.instance;
 			}
 		}
 
@@ -128,7 +154,7 @@ public class RecipeTransferUtil {
 			JustEnoughItems.common.sendPacketToServer(packet);
 		}
 
-		return true;
+		return null;
 	}
 
 	/**
@@ -234,13 +260,20 @@ public class RecipeTransferUtil {
 		return inputStacks;
 	}
 
+	public static class MatchingItemsResult {
+		@Nonnull
+		public final List<ItemStack> matchingItems = new ArrayList<>();
+		@Nonnull
+		public final List<List<ItemStack>> missingItems = new ArrayList<>();
+	}
+
 	/**
 	 * Returns a list of items in slots that complete the recipe defined by requiredStacksList.
-	 * Returns null if there are not enough items in slots.
+	 * Returns null if there are not enough items in availableItemStacks.
 	 */
-	@Nullable
-	private static List<ItemStack> getMatchingItems(@Nonnull List<ItemStack> availableItemStacks, @Nonnull List<List<ItemStack>> requiredStacksList) {
-		List<ItemStack> matchingItems = new ArrayList<>();
+	@Nonnull
+	private static MatchingItemsResult getMatchingItems(@Nonnull List<ItemStack> availableItemStacks, @Nonnull List<List<ItemStack>> requiredStacksList) {
+		MatchingItemsResult matchingItemResult = new MatchingItemsResult();
 
 		for (List<ItemStack> requiredStacks : requiredStacksList) {
 			if (requiredStacks.isEmpty()) {
@@ -255,13 +288,13 @@ public class RecipeTransferUtil {
 				}
 			}
 			if (matching == null) {
-				return null;
+				matchingItemResult.missingItems.add(requiredStacks);
 			} else {
-				matchingItems.add(matching);
+				matchingItemResult.matchingItems.add(matching);
 			}
 		}
 
-		return matchingItems;
+		return matchingItemResult;
 	}
 
 	@Nullable

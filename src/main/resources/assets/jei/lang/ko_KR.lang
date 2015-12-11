@@ -1,7 +1,3 @@
-# Buttons
-jei.button.next=다음
-jei.button.back=뒤로
-
 # Key Bindings
 key.jei.toggleOverlay=토글 아이템목록 오버레이
 key.jei.showRecipe=아이템 레시피 보이기

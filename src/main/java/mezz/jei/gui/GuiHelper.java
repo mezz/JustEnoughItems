@@ -9,6 +9,7 @@ import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IRecipeTransferHelper;
+import mezz.jei.transfer.BasicRecipeTransferHelper;
 
 public class GuiHelper implements IGuiHelper {
 	private final IDrawable slotDrawable;

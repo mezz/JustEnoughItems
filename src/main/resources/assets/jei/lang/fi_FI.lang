@@ -1,7 +1,3 @@
-# Buttons
-jei.button.next=Seuraava
-jei.button.back=Takaisin
-
 # Key Bindings
 key.jei.toggleOverlay=Kytke tavaralista
 key.jei.showRecipe=N�yt� tavaran resepti
