@@ -7,6 +7,7 @@ import net.minecraft.item.crafting.IRecipe;
 
 public class CraftingRecipeMaker {
 
+	@SuppressWarnings("unchecked")
 	public static List<IRecipe> getCraftingRecipes() {
 		return CraftingManager.getInstance().getRecipeList();
 	}
