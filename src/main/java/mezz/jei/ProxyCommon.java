@@ -19,7 +19,7 @@ import mezz.jei.util.Log;
 public class ProxyCommon {
 
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
-		ReflectionUtil.initCommon();
+		ReflectionUtil.init();
 	}
 
 	public void init(@Nonnull FMLInitializationEvent event) {

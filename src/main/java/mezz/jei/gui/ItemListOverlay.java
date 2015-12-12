@@ -82,8 +82,12 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	}
 
 	public void initGui(@Nonnull GuiContainer guiContainer) {
-		this.guiLeft = ReflectionUtil.getInt(GuiContainer.class.getName(), "guiLeft", guiContainer);
-		this.guiXSize = ReflectionUtil.getInt(GuiContainer.class.getName(), "xSize", guiContainer);
+		try {
+			this.guiLeft = ReflectionUtil.getInt(GuiContainer.class.getName(), "guiLeft", guiContainer);
+			this.guiXSize = ReflectionUtil.getInt(GuiContainer.class.getName(), "xSize", guiContainer);
+		} catch (ClassNotFoundException|NoSuchFieldException e) {
+			e.printStackTrace();
+		}
 		this.screenWidth = guiContainer.width;
 		this.screenHeight = guiContainer.height;
 

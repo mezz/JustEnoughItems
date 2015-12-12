@@ -107,8 +107,10 @@ public class GuiEventHandler {
 			if (slotUnderMouse != null && slotUnderMouse.getHasStack()) {
 				ItemStack itemStack = slotUnderMouse.getStack();
 				try {
-					ReflectionUtil.invokeMethod(GuiScreen.class.getName(), "renderToolTip", guiContainer, itemStack, event.mouseX, event.mouseY);
-				} catch (InvocationTargetException ignored) {}
+					ReflectionUtil.invokeMethod(GuiScreen.class.getName(), "renderToolTip", guiContainer, new Class[]{ItemStack.class, int.class, int.class}, itemStack, event.mouseX, event.mouseY);
+				} catch (ClassNotFoundException|NoSuchMethodException|InvocationTargetException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

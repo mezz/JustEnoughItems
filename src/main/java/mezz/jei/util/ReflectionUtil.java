@@ -1,11 +1,6 @@
 package mezz.jei.util;
 
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -25,23 +20,10 @@ public class ReflectionUtil {
 	private static Map<String, String> obfMethodNameMap = new HashMap<>();
 
 
-	public static void initCommon() {
+	public static void init() {
 		obfFieldNameMap.put("guiLeft", "field_147003_i");
 		obfFieldNameMap.put("xSize", "field_146999_f");
 		obfMethodNameMap.put("renderToolTip", "func_146285_a");
-	}
-
-	public static void initClient() {
-		try {
-			putField(GuiContainer.class.getName(), "guiLeft");
-			putField(GuiContainer.class.getName(), "xSize");
-
-			putMethod(GuiScreen.class.getName(), "renderToolTip", ItemStack.class, int.class, int.class);
-		} catch (ReflectiveOperationException e) {
-			System.err.println("There was a problem initializing the client-side reflection util");
-			e.printStackTrace();
-			FMLCommonHandler.instance().exitJava(-1, false);
-		}
 	}
 
 	private static void putField(String owner, String name) throws ClassNotFoundException, NoSuchFieldException {
@@ -72,10 +54,13 @@ public class ReflectionUtil {
 	 * @param instance The instance of the owner class
 	 * @return The field value
 	 */
-	public static Object get(String owner, String name, Object instance) {
+	public static Object get(String owner, String name, Object instance) throws ClassNotFoundException, NoSuchFieldException {
+		if (fieldMap.get(owner + "." + name) == null) {
+			putField(owner, name);
+		}
 		try {
 			return fieldMap.get(owner + "." + name).get(instance);
-		} catch (IllegalAccessException ignored) {} // never happens, we allow access in putField
+		} catch (IllegalAccessException ignored) {} // never happens, we allow access
 		return null;
 	}
 
@@ -86,7 +71,10 @@ public class ReflectionUtil {
 	 * @param instance The instance of the owner class
 	 * @return The field value
 	 */
-	public static int getInt(String owner, String name, Object instance) {
+	public static int getInt(String owner, String name, Object instance) throws ClassNotFoundException, NoSuchFieldException {
+		if (fieldMap.get(owner + "." + name) == null) {
+			putField(owner, name);
+		}
 		try {
 			return fieldMap.get(owner + "." + name).getInt(instance);
 		} catch (IllegalAccessException ignored) {} // never happens, we allow access in putField
@@ -102,7 +90,10 @@ public class ReflectionUtil {
 	 * @return The return value of the method
 	 * @throws InvocationTargetException
 	 */
-	public static Object invokeMethod(String owner, String name, Object instance, Object... args) throws InvocationTargetException {
+	public static Object invokeMethod(String owner, String name, Object instance, Class[] paramTypes, Object... args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
+		if (methodMap.get(owner + "." + name) == null) {
+			putMethod(owner, name, paramTypes);
+		}
 		try {
 			return methodMap.get(owner + "." + name).invoke(instance, args);
 		} catch (IllegalAccessException ignored) {} // never happens, we allow access in putField

@@ -44,7 +44,6 @@ public class ProxyCommonClient extends ProxyCommon {
 	@Override
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
 		super.preInit(event);
-		ReflectionUtil.initClient();
 		Config.preInit(event);
 		initVersionChecker();
 	}
