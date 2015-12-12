@@ -23,6 +23,7 @@ public class Config {
 	public static boolean cheatItemsEnabled = false;
 	public static boolean editModeEnabled = false;
 	public static boolean recipeTransferEnabled = true;
+	public static boolean recipeAnimationsEnabled = true;
 
 	public static Set<String> nbtKeyIgnoreList = new HashSet<>();
 	public static Set<String> itemBlacklist = new HashSet<>();
@@ -44,6 +45,8 @@ public class Config {
 
 		cheatItemsEnabled = configFile.getBoolean(categoryMode, "cheatItemsEnabled", cheatItemsEnabled);
 		editModeEnabled = configFile.getBoolean(categoryMode, "editEnabled", editModeEnabled);
+
+		recipeAnimationsEnabled = configFile.getBoolean(categoryInterface, "recipeAnimationsEnabled", recipeAnimationsEnabled);
 
 		String[] nbtKeyIgnoreListArray = configFile.getStringList("nbtKeyIgnoreList", categoryAdvanced, defaultNbtKeyIgnoreList);
 		nbtKeyIgnoreList.clear();

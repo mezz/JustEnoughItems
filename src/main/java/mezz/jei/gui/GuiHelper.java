@@ -2,17 +2,17 @@ package mezz.jei.gui;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.ICraftingGridHelper;
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.recipe.IRecipeTransferHelper;
-import mezz.jei.transfer.BasicRecipeTransferHelper;
+import mezz.jei.api.gui.IDrawableAnimated;
+import mezz.jei.api.gui.IDrawableStatic;
+import mezz.jei.api.gui.ITickTimer;
+import mezz.jei.util.TickTimer;
 
 public class GuiHelper implements IGuiHelper {
-	private final IDrawable slotDrawable;
+	private final IDrawableStatic slotDrawable;
 
 	public GuiHelper() {
 		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/furnace.png");
@@ -21,19 +21,25 @@ public class GuiHelper implements IGuiHelper {
 
 	@Nonnull
 	@Override
-	public IDrawable createDrawable(@Nonnull ResourceLocation resourceLocation, int u, int v, int width, int height) {
+	public IDrawableStatic createDrawable(@Nonnull ResourceLocation resourceLocation, int u, int v, int width, int height) {
 		return new DrawableResource(resourceLocation, u, v, width, height);
 	}
 
 	@Nonnull
 	@Override
-	public IDrawable createDrawable(@Nonnull ResourceLocation resourceLocation, int u, int v, int width, int height, int paddingTop, int paddingBottom, int paddingLeft, int paddingRight) {
+	public IDrawableStatic createDrawable(@Nonnull ResourceLocation resourceLocation, int u, int v, int width, int height, int paddingTop, int paddingBottom, int paddingLeft, int paddingRight) {
 		return new DrawableResource(resourceLocation, u, v, width, height, paddingTop, paddingBottom, paddingLeft, paddingRight);
 	}
 
 	@Nonnull
 	@Override
-	public IDrawable getSlotDrawable() {
+	public IDrawableAnimated createAnimatedDrawable(@Nonnull IDrawableStatic drawable, int ticksPerCycle, @Nonnull IDrawableAnimated.StartDirection startDirection, boolean inverted) {
+		return new DrawableAnimated(drawable, ticksPerCycle, startDirection, inverted);
+	}
+
+	@Nonnull
+	@Override
+	public IDrawableStatic getSlotDrawable() {
 		return slotDrawable;
 	}
 
@@ -45,7 +51,7 @@ public class GuiHelper implements IGuiHelper {
 
 	@Nonnull
 	@Override
-	public IRecipeTransferHelper createRecipeTransferHelper(Class<? extends Container> containerClass, String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
-		return new BasicRecipeTransferHelper(containerClass, recipeCategoryUid, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
+	public ITickTimer createTickTimer(int ticksPerCycle, int maxValue, boolean countDown) {
+		return new TickTimer(ticksPerCycle, maxValue, countDown);
 	}
 }

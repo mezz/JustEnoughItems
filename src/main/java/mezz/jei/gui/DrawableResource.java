@@ -7,9 +7,9 @@ import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.client.config.GuiUtils;
 
-import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.IDrawableStatic;
 
-public class DrawableResource implements IDrawable {
+public class DrawableResource implements IDrawableStatic {
 
 	@Nonnull
 	private final ResourceLocation resourceLocation;
@@ -52,13 +52,24 @@ public class DrawableResource implements IDrawable {
 
 	@Override
 	public void draw(@Nonnull Minecraft minecraft) {
-		minecraft.getTextureManager().bindTexture(resourceLocation);
-		GuiUtils.drawTexturedModalRect(paddingLeft, paddingTop, u, v, width, height, 0);
+		draw(minecraft, 0, 0);
 	}
 
 	@Override
 	public void draw(@Nonnull Minecraft minecraft, int xOffset, int yOffset) {
-		minecraft.getTextureManager().bindTexture(resourceLocation);
-		GuiUtils.drawTexturedModalRect(xOffset + paddingLeft, yOffset + paddingTop, u, v, width, height, 0);
+		draw(minecraft, xOffset, yOffset, 0, 0, 0, 0);
+	}
+
+	@Override
+	public void draw(@Nonnull Minecraft minecraft, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
+		minecraft.getTextureManager().bindTexture(this.resourceLocation);
+
+		int x = xOffset + this.paddingLeft + maskLeft;
+		int y = yOffset + this.paddingTop + maskTop;
+		int u = this.u + maskLeft;
+		int v = this.v + maskTop;
+		int width = this.width - maskRight - maskLeft;
+		int height = this.height - maskBottom - maskTop;
+		GuiUtils.drawTexturedModalRect(x, y, u, v, width, height, 0);
 	}
 }

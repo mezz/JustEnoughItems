@@ -33,4 +33,7 @@ public interface IRecipeWrapper {
 
 	/** Draw additional info about the recipe. */
 	void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight);
+
+	/** Draw animations involving the recipe. Can be disabled in the config. */
+	void drawAnimations(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight);
 }

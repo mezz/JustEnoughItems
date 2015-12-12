@@ -3,6 +3,7 @@ package mezz.jei.gui;
 import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderHelper;
 
 import org.lwjgl.opengl.GL11;
 
@@ -11,6 +12,7 @@ import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.GuiFluidStackGroup;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 
@@ -57,12 +59,20 @@ public class RecipeLayout implements IRecipeLayout {
 		background.draw(minecraft);
 		recipeCategory.drawExtras(minecraft);
 
+		if (Config.recipeAnimationsEnabled) {
+			recipeCategory.drawAnimations(minecraft);
+			recipeWrapper.drawAnimations(minecraft, background.getWidth(), background.getHeight());
+		}
+
 		GL11.glTranslatef(-posX, -posY, 0.0F);
 		recipeTransferButton.drawButton(minecraft, mouseX, mouseY);
 		GL11.glTranslatef(posX, posY, 0.0F);
 
 		recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight());
+
+		RenderHelper.enableGUIStandardItemLighting();
 		guiItemStackGroup.draw(minecraft, mouseX - posX, mouseY - posY);
+		RenderHelper.disableStandardItemLighting();
 
 		GL11.glPopMatrix();
 	}

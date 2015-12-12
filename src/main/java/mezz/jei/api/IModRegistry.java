@@ -3,6 +3,8 @@ package mezz.jei.api;
 import javax.annotation.Nonnull;
 import java.util.List;
 
+import net.minecraft.inventory.Container;
+
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeTransferHelper;
@@ -28,11 +30,17 @@ public interface IModRegistry {
 	void addRecipeTransferHelpers(IRecipeTransferHelper... recipeTransferHelpers);
 
 	/**
+	 * Add a basic recipe transfer helper.
+	 * Gives JEI the information it needs to transfer recipes from the player's inventory into the crafting area.
+	 */
+	void addBasicRecipeTransferHelper(Class<? extends Container> containerClass, String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount);
+
+	/**
 	 * Add the recipes provided by the plugin.
 	 * These can be regular recipes, they will get wrapped by the provided recipe handlers.
 	 * Recipes that are already registered with minecraft's recipe managers don't need to be added here.
 	 */
-	void addRecipes(@Nonnull List<Object> recipes);
+	void addRecipes(@Nonnull List recipes);
 
 	/**
 	 * Notify JEI about recipe classes that should be ignored.

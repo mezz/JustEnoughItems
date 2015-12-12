@@ -14,6 +14,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -206,6 +207,8 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		configButton.drawButton(minecraft, mouseX, mouseY);
 		configButtonIcon.draw(minecraft, configButton.xPosition + 2, configButton.yPosition + 2);
 
+		RenderHelper.enableGUIStandardItemLighting();
+
 		for (GuiIngredient<ItemStack> guiItemStack : guiItemStacks) {
 			if (hovered == null && guiItemStack.isMouseOver(mouseX, mouseY)) {
 				hovered = guiItemStack;
@@ -214,6 +217,8 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 			}
 		}
 
+		RenderHelper.disableStandardItemLighting();
+
 		if (configButtonHoverChecker.checkHover(mouseX, mouseY)) {
 			String configString = Translator.translateToLocal("jei.tooltip.config");
 			TooltipRenderer.drawHoveringText(minecraft, configString, mouseX, mouseY);
@@ -221,10 +226,12 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	}
 
 	public void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+		RenderHelper.enableGUIStandardItemLighting();
 		if (hovered != null) {
 			hovered.drawHovered(minecraft, mouseX, mouseY);
 			hovered = null;
 		}
+		RenderHelper.disableStandardItemLighting();
 	}
 
 	public void handleTick() {
