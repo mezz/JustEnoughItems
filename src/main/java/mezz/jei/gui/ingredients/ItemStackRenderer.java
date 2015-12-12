@@ -20,12 +20,8 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	public void draw(@Nonnull Minecraft minecraft, int xPosition, int yPosition, @Nonnull ItemStack itemStack) {
 		FontRenderer font = getFontRenderer(minecraft, itemStack);
 
-		RenderHelper.enableGUIStandardItemLighting();
-
 		minecraft.getRenderItem().renderItemAndEffectIntoGUI(itemStack, xPosition, yPosition);
 		minecraft.getRenderItem().renderItemOverlayIntoGUI(font, itemStack, xPosition, yPosition, null);
-
-		RenderHelper.disableStandardItemLighting();
 
 		if (Config.editModeEnabled) {
 			if (Config.isItemOnConfigBlacklist(itemStack, false)) {

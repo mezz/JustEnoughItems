@@ -3,6 +3,7 @@ package mezz.jei.gui;
 import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderHelper;
 
 import org.lwjgl.opengl.GL11;
 
@@ -68,7 +69,10 @@ public class RecipeLayout implements IRecipeLayout {
 		GL11.glTranslatef(posX, posY, 0.0F);
 
 		recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight());
+
+		RenderHelper.enableGUIStandardItemLighting();
 		guiItemStackGroup.draw(minecraft, mouseX - posX, mouseY - posY);
+		RenderHelper.disableStandardItemLighting();
 
 		GL11.glPopMatrix();
 	}
