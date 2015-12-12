@@ -35,8 +35,6 @@ public class JustEnoughItems {
 
 	public static PacketHandler packetHandler;
 
-	private Set<ASMDataTable.ASMData> modPlugins;
-
 	@NetworkCheckHandler
 	public boolean checkModLists(Map<String, String> modList, Side side) {
 		Config.recipeTransferEnabled = modList.containsKey(Constants.MOD_ID);
@@ -46,7 +44,6 @@ public class JustEnoughItems {
 
 	@Mod.EventHandler
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
-		modPlugins = event.getAsmData().getAll(JEIPlugin.class.getCanonicalName());
 		packetHandler = new PacketHandler();
 		JEIManager.guiHelper = new GuiHelper();
 		JEIManager.itemBlacklist = new ItemBlacklist();
@@ -61,6 +58,6 @@ public class JustEnoughItems {
 
 	@Mod.EventHandler
 	public void startJEI(@Nonnull FMLModIdMappingEvent event) {
-		common.startJEI(modPlugins);
+		common.startJEI();
 	}
 }

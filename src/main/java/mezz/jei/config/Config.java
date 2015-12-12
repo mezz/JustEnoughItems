@@ -37,7 +37,7 @@ public class Config {
 		syncConfig();
 	}
 
-	public static void syncConfig() {
+	public static boolean syncConfig() {
 		configFile.addCategory(categoryMode);
 		configFile.addCategory(categoryInterface);
 		configFile.addCategory(categoryAdvanced);
@@ -56,9 +56,11 @@ public class Config {
 		itemBlacklist.clear();
 		Collections.addAll(itemBlacklist, itemBlacklistArray);
 
-		if (configFile.hasChanged()) {
+		boolean configChanged = configFile.hasChanged();
+		if (configChanged) {
 			configFile.save();
 		}
+		return configChanged;
 	}
 
 	private static void updateBlacklist() {
