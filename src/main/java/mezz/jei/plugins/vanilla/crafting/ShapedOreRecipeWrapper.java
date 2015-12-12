@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
@@ -45,11 +44,6 @@ public class ShapedOreRecipeWrapper extends VanillaRecipeWrapper implements ISha
 	@Override
 	public List<ItemStack> getOutputs() {
 		return Collections.singletonList(recipe.getRecipeOutput());
-	}
-
-	@Override
-	public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight) {
-
 	}
 
 	@Override

@@ -36,9 +36,14 @@ public interface IRecipeCategory {
 	IDrawable getBackground();
 
 	/**
-	 * Optionally draw anything else that might be necessary, like progress bars or icons.
+	 * Optionally draw anything else that might be necessary, icons or extra slots.
 	 */
 	void drawExtras(Minecraft minecraft);
+
+	/**
+	 * Optionally draw animations like progress bars. These animations can be disabled in the config.
+	 */
+	void drawAnimations(Minecraft minecraft);
 
 	/**
 	 * Set the IRecipeLayout properties from the RecipeWrapper.

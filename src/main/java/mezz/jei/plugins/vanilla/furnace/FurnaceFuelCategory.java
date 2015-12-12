@@ -3,8 +3,8 @@ package mezz.jei.plugins.vanilla.furnace;
 import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
 
+import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStackGroup;
@@ -20,8 +20,9 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory {
 	private final String localizedName;
 
 	public FurnaceFuelCategory() {
-		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/furnace.png");
-		background = JEIManager.guiHelper.createDrawable(location, 55, 38, 18, 32, 0, 0, 0, 80);
+		IGuiHelper guiHelper = JEIManager.guiHelper;
+
+		background = guiHelper.createDrawable(backgroundLocation, 55, 38, 18, 32, 0, 0, 0, 80);
 		localizedName = Translator.translateToLocal("gui.jei.fuelRecipes");
 	}
 
@@ -33,6 +34,11 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory {
 
 	@Override
 	public void drawExtras(Minecraft minecraft) {
+
+	}
+
+	@Override
+	public void drawAnimations(Minecraft minecraft) {
 
 	}
 

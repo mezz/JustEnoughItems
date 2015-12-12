@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.inventory.Container;
+
 import mezz.jei.RecipeRegistry;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeTransferHelper;
+import mezz.jei.transfer.BasicRecipeTransferHelper;
 
 public class ModRegistry implements IModRegistry {
 	private final List<IRecipeCategory> recipeCategories = new ArrayList<>();
@@ -34,7 +37,13 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
-	public void addRecipes(@Nonnull List<Object> recipes) {
+	public void addBasicRecipeTransferHelper(Class<? extends Container> containerClass, String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
+		IRecipeTransferHelper recipeTransferHelper = new BasicRecipeTransferHelper(containerClass, recipeCategoryUid, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
+		recipeTransferHelpers.add(recipeTransferHelper);
+	}
+
+	@Override
+	public void addRecipes(@Nonnull List recipes) {
 		this.recipes.addAll(recipes);
 	}
 

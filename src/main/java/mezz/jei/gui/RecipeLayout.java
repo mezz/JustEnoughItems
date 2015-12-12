@@ -11,6 +11,7 @@ import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.GuiFluidStackGroup;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 
@@ -56,6 +57,11 @@ public class RecipeLayout implements IRecipeLayout {
 		IDrawable background = recipeCategory.getBackground();
 		background.draw(minecraft);
 		recipeCategory.drawExtras(minecraft);
+
+		if (Config.recipeAnimationsEnabled) {
+			recipeCategory.drawAnimations(minecraft);
+			recipeWrapper.drawAnimations(minecraft, background.getWidth(), background.getHeight());
+		}
 
 		GL11.glTranslatef(-posX, -posY, 0.0F);
 		recipeTransferButton.drawButton(minecraft, mouseX, mouseY);
