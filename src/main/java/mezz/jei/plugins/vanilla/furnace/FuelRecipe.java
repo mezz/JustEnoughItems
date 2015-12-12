@@ -16,19 +16,19 @@ import mezz.jei.util.Translator;
 
 public class FuelRecipe extends VanillaRecipeWrapper {
 	@Nonnull
-	private final List<ItemStack> input;
-	@Nullable
+	private final List<List<ItemStack>> inputs;
+	@Nonnull
 	private final String burnTimeString;
 
 	public FuelRecipe(@Nonnull Collection<ItemStack> input, int burnTime) {
-		this.input = new ArrayList<>(input);
+		this.inputs = Collections.singletonList(new ArrayList<>(input));
 		this.burnTimeString = Translator.translateToLocalFormatted("gui.jei.furnaceBurnTime", burnTime);
 	}
 
 	@Nonnull
 	@Override
-	public List<ItemStack> getInputs() {
-		return input;
+	public List<List<ItemStack>> getInputs() {
+		return inputs;
 	}
 
 	@Nonnull
