@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import mezz.jei.util.ReflectionUtil;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -42,6 +43,8 @@ public class ProxyCommonClient extends ProxyCommon {
 	
 	@Override
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
+		super.preInit(event);
+		ReflectionUtil.initClient();
 		Config.preInit(event);
 		initVersionChecker();
 	}
