@@ -22,6 +22,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JEIManager;
+import mezz.jei.api.JEIPlugin;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
@@ -34,6 +35,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	@Nullable
 	private ItemFilter itemFilter;
 	private GuiEventHandler guiEventHandler;
+	private Set<ASMDataTable.ASMData> modPlugins;
 
 	private void initVersionChecker() {
 		final NBTTagCompound compound = new NBTTagCompound();
@@ -46,6 +48,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
 		Config.preInit(event);
 		initVersionChecker();
+		modPlugins = event.getAsmData().getAll(JEIPlugin.class.getCanonicalName());
 	}
 
 	@Override
@@ -59,13 +62,22 @@ public class ProxyCommonClient extends ProxyCommon {
 	}
 
 	@Override
-	public void startJEI(@Nonnull Set<ASMDataTable.ASMData> modPlugins) {
+	public void startJEI() {
 		JEIManager.itemRegistry = new ItemRegistry();
-		JEIManager.recipeRegistry = createRecipeRegistry(modPlugins);
+
+		ModRegistry modRegistry = buildModRegistry(modPlugins);
+		JEIManager.recipeRegistry = modRegistry.createRecipeRegistry();
 
 		itemFilter = new ItemFilter();
 		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter);
 		guiEventHandler.setItemListOverlay(itemListOverlay);
+	}
+
+	private void restartJEI() {
+		// check that JEI has been started before, if not do nothing
+		if (JEIManager.itemRegistry != null) {
+			startJEI();
+		}
 	}
 
 	@Override
@@ -83,15 +95,17 @@ public class ProxyCommonClient extends ProxyCommon {
 		}
 	}
 
+	// subscribe to Post event so that addon mods that use the config can do their stuff first
 	@SubscribeEvent
-	public void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
+	public void onConfigChanged(@Nonnull ConfigChangedEvent.PostConfigChangedEvent eventArgs) {
 		if (Constants.MOD_ID.equals(eventArgs.modID)) {
-			Config.syncConfig();
-			resetItemFilter();
+			if (Config.syncConfig()) {
+				restartJEI(); // reload everything, configs can change available recipes
+			}
 		}
 	}
 
-	private static RecipeRegistry createRecipeRegistry(@Nonnull Set<ASMDataTable.ASMData> modPluginsData) {
+	private static ModRegistry buildModRegistry(@Nonnull Set<ASMDataTable.ASMData> modPluginsData) {
 		List<IModPlugin> plugins = new ArrayList<>();
 		for (ASMDataTable.ASMData asmData : modPluginsData) {
 			try {
@@ -117,6 +131,6 @@ public class ProxyCommonClient extends ProxyCommon {
 			}
 		}
 
-		return modRegistry.createRecipeRegistry();
+		return modRegistry;
 	}
 }

@@ -233,8 +233,10 @@ public class InputHandler {
 			itemListOverlay.setKeyboardFocus(true);
 			return true;
 		} else if (eventKey == Keyboard.KEY_BACK) {
-			recipesGui.back();
-			return true;
+			if (recipesGui.isOpen()) {
+				recipesGui.back();
+				return true;
+			}
 		}
 
 		for (IKeyable keyable : keyables) {

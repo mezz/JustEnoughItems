@@ -24,6 +24,7 @@ public class Config {
 	public static boolean editModeEnabled = false;
 	public static boolean recipeTransferEnabled = true;
 	public static boolean recipeAnimationsEnabled = true;
+	public static boolean hideMissingModelsEnabled = true;
 
 	public static Set<String> nbtKeyIgnoreList = new HashSet<>();
 	public static Set<String> itemBlacklist = new HashSet<>();
@@ -37,7 +38,7 @@ public class Config {
 		syncConfig();
 	}
 
-	public static void syncConfig() {
+	public static boolean syncConfig() {
 		configFile.addCategory(categoryMode);
 		configFile.addCategory(categoryInterface);
 		configFile.addCategory(categoryAdvanced);
@@ -56,9 +57,13 @@ public class Config {
 		itemBlacklist.clear();
 		Collections.addAll(itemBlacklist, itemBlacklistArray);
 
-		if (configFile.hasChanged()) {
+		hideMissingModelsEnabled = configFile.getBoolean(categoryAdvanced, "hideMissingModelsEnabled", hideMissingModelsEnabled);
+
+		boolean configChanged = configFile.hasChanged();
+		if (configChanged) {
 			configFile.save();
 		}
+		return configChanged;
 	}
 
 	private static void updateBlacklist() {

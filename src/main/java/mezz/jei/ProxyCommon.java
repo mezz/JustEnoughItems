@@ -25,7 +25,7 @@ public class ProxyCommon {
 
 	}
 
-	public void startJEI(@Nonnull Set<ASMDataTable.ASMData> modPlugins) {
+	public void startJEI() {
 		JEIManager.itemRegistry = new ItemRegistryDummy();
 		JEIManager.recipeRegistry = new RecipeRegistryDummy();
 	}
