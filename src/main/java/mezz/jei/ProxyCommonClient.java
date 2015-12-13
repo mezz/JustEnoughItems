@@ -18,6 +18,7 @@ import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import mezz.jei.api.IModPlugin;
@@ -95,9 +96,9 @@ public class ProxyCommonClient extends ProxyCommon {
 		}
 	}
 
-	// subscribe to Post event so that addon mods that use the config can do their stuff first
-	@SubscribeEvent
-	public void onConfigChanged(@Nonnull ConfigChangedEvent.PostConfigChangedEvent eventArgs) {
+	// subscribe to event with low priority so that addon mods that use the config can do their stuff first
+	@SubscribeEvent(priority = EventPriority.LOW)
+	public void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
 		if (Constants.MOD_ID.equals(eventArgs.modID)) {
 			if (Config.syncConfig()) {
 				restartJEI(); // reload everything, configs can change available recipes
