@@ -64,7 +64,9 @@ public class ProxyCommonClient extends ProxyCommon {
 	@Override
 	public void startJEI() {
 		JEIManager.itemRegistry = new ItemRegistry();
-		JEIManager.recipeRegistry = createRecipeRegistry(modPlugins);
+
+		ModRegistry modRegistry = buildModRegistry(modPlugins);
+		JEIManager.recipeRegistry = modRegistry.createRecipeRegistry();
 
 		itemFilter = new ItemFilter();
 		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter);
@@ -103,7 +105,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		}
 	}
 
-	private static RecipeRegistry createRecipeRegistry(@Nonnull Set<ASMDataTable.ASMData> modPluginsData) {
+	private static ModRegistry buildModRegistry(@Nonnull Set<ASMDataTable.ASMData> modPluginsData) {
 		List<IModPlugin> plugins = new ArrayList<>();
 		for (ASMDataTable.ASMData asmData : modPluginsData) {
 			try {
@@ -129,6 +131,6 @@ public class ProxyCommonClient extends ProxyCommon {
 			}
 		}
 
-		return modRegistry.createRecipeRegistry();
+		return modRegistry;
 	}
 }

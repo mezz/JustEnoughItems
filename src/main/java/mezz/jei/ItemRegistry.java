@@ -13,6 +13,9 @@ import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentData;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
@@ -54,6 +57,8 @@ class ItemRegistry implements IItemRegistry {
 			addItemAndSubItems(item, itemList, fuels);
 		}
 
+		addEnchantedBooks(itemList);
+
 		this.itemList = ImmutableList.copyOf(itemList);
 		this.fuels = ImmutableList.copyOf(fuels);
 
@@ -74,6 +79,16 @@ class ItemRegistry implements IItemRegistry {
 			}
 		}
 		this.potionIngredients = potionIngredientBuilder.build();
+	}
+
+	private void addEnchantedBooks(List<ItemStack> itemList) {
+		for (Enchantment enchantment : Enchantment.enchantmentsBookList) {
+			if (enchantment != null && enchantment.type != null) {
+				EnchantmentData enchantmentData = new EnchantmentData(enchantment, enchantment.getMaxLevel());
+				ItemStack enchantedBook = Items.enchanted_book.getEnchantedItemStack(enchantmentData);
+				itemList.add(enchantedBook);
+			}
+		}
 	}
 
 	@Override
