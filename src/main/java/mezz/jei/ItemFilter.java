@@ -25,7 +25,7 @@ import mezz.jei.util.Log;
 public class ItemFilter {
 	/** The currently active filter text */
 	@Nonnull
-	private String filterText = "";
+	private static String filterText = "";
 
 	/** A cache for fast searches while typing or using backspace. Maps filterText to filteredItemMaps */
 	private final LoadingCache<String, ImmutableList<ItemStackElement>> filteredItemMapsCache;
@@ -136,11 +136,11 @@ public class ItemFilter {
 
 	public boolean setFilterText(@Nonnull String filterText) {
 		filterText = filterText.toLowerCase();
-		if (this.filterText.equals(filterText)) {
+		if (ItemFilter.filterText.equals(filterText)) {
 			return false;
 		}
 
-		this.filterText = filterText;
+		ItemFilter.filterText = filterText;
 		return true;
 	}
 

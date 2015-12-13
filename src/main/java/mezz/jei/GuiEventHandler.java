@@ -30,7 +30,15 @@ public class GuiEventHandler {
 	private InputHandler inputHandler;
 
 	public void setItemListOverlay(@Nullable ItemListOverlay itemListOverlay) {
+		if (this.itemListOverlay != null) {
+			this.itemListOverlay.close();
+		}
+
 		this.itemListOverlay = itemListOverlay;
+
+		if (this.recipesGui.isOpen()) {
+			this.recipesGui.close();
+		}
 	}
 
 	@SubscribeEvent
