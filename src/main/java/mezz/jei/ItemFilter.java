@@ -88,18 +88,20 @@ public class ItemFilter {
 								continue;
 							}
 
-							// skip over itemStacks that can't be rendered
-							try {
-								if (itemModelMesher.getItemModel(itemStack) == modelManager.getMissingModel()) {
+							if (Config.hideMissingModelsEnabled) {
+								// skip over itemStacks that can't be rendered
+								try {
+									if (itemModelMesher.getItemModel(itemStack) == modelManager.getMissingModel()) {
+										continue;
+									}
+								} catch (RuntimeException e) {
+									try {
+										Log.error("Couldn't find ItemModelMesher for itemStack {}.", itemStack, e);
+									} catch (RuntimeException ignored) {
+										Log.error("Couldn't find ItemModelMesher for itemStack.", e);
+									}
 									continue;
 								}
-							} catch (RuntimeException e) {
-								try {
-									Log.error("Couldn't find ItemModelMesher for itemStack {}.", itemStack, e);
-								} catch (RuntimeException ignored) {
-
-								}
-								continue;
 							}
 
 							if (JEIManager.itemBlacklist.isItemBlacklisted(itemStack)) {
