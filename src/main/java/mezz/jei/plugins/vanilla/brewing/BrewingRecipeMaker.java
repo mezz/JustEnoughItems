@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,7 +34,12 @@ public class BrewingRecipeMaker {
 		addModdedBrewingRecipes(recipes);
 
 		List<BrewingRecipeWrapper> recipeList = new ArrayList<>(recipes);
-		Collections.sort(recipeList, (o1, o2) -> Integer.compare(o1.getBrewingSteps(), o2.getBrewingSteps()));
+		Collections.sort(recipeList, new Comparator<BrewingRecipeWrapper>() {
+			@Override
+			public int compare(BrewingRecipeWrapper o1, BrewingRecipeWrapper o2) {
+				return Integer.compare(o1.getBrewingSteps(), o2.getBrewingSteps());
+			}
+		});
 
 		return recipeList;
 	}

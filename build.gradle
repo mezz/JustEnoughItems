@@ -11,8 +11,8 @@ if (System.getenv().BUILD_NUMBER != null) {//adds the build number to the end of
 }
 
 // java version
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 minecraft {
 	version = mcversion + "-" + forgeversion

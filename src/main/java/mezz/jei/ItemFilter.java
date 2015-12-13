@@ -1,5 +1,6 @@
 package mezz.jei;
 
+import com.google.common.base.Predicate;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -8,6 +9,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 import net.minecraft.client.Minecraft;
@@ -52,25 +54,28 @@ public class ItemFilter {
 						ImmutableList<ItemStackElement> baseItemSet = filteredItemMapsCache.get(prevFilterText);
 
 						Collection<ItemStackElement> filteredItemList = Collections2.filter(baseItemSet,
-								input -> {
-									if (input == null) {
-										return false;
-									}
+								new Predicate<ItemStackElement>() {
+									@Override
+									public boolean apply(@Nullable ItemStackElement input) {
+										if (input == null) {
+											return false;
+										}
 
-									String[] tokens = filterText.split(" ");
-									for (String token : tokens) {
-										if (token.startsWith("@")) {
-											String modNameFilter = token.substring(1);
-											if (modNameFilter.length() > 0 && !input.getModName().contains(modNameFilter)) {
-												return false;
-											}
-										} else {
-											if (!input.getLocalizedName().contains(token)) {
-												return false;
+										String[] tokens = filterText.split(" ");
+										for (String token : tokens) {
+											if (token.startsWith("@")) {
+												String modNameFilter = token.substring(1);
+												if (modNameFilter.length() > 0 && !input.getModName().contains(modNameFilter)) {
+													return false;
+												}
+											} else {
+												if (!input.getLocalizedName().contains(token)) {
+													return false;
+												}
 											}
 										}
+										return true;
 									}
-									return true;
 								}
 						);
 

@@ -83,11 +83,14 @@ public class PacketHandler {
 
 	private static void checkThreadAndEnqueue(final PacketJEI packet, final PacketBuffer packetBuffer, final EntityPlayer player, IThreadListener threadListener) {
 		if (!threadListener.isCallingFromMinecraftThread()) {
-			threadListener.addScheduledTask(() -> {
-				try {
-					packet.readPacketData(packetBuffer, player);
-				} catch (IOException e) {
-					Log.error("Network Error", e);
+			threadListener.addScheduledTask(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						packet.readPacketData(packetBuffer, player);
+					} catch (IOException e) {
+						Log.error("Network Error", e);
+					}
 				}
 			});
 		}
