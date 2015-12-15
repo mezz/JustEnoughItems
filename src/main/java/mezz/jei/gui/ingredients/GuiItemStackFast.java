@@ -123,8 +123,7 @@ public class GuiItemStackFast {
 	private void renderModel(IBakedModel model, int color, ItemStack stack) {
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		worldrenderer.startDrawingQuads();
-		worldrenderer.setVertexFormat(DefaultVertexFormats.ITEM);
+		worldrenderer.func_181668_a(7, DefaultVertexFormats.ITEM);
 
 		for (EnumFacing enumfacing : EnumFacing.VALUES) {
 			this.renderQuads(worldrenderer, model.getFaceQuads(enumfacing), color, stack);
