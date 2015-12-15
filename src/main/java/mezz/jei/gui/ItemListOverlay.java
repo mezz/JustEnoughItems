@@ -29,6 +29,7 @@ import mezz.jei.config.JEIModConfigGui;
 import mezz.jei.gui.ingredients.GuiItemStackFast;
 import mezz.jei.gui.ingredients.GuiItemStackFastBatch;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
+import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IKeyable;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
@@ -46,7 +47,6 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	private static final int itemStackPadding = 1;
 	private static final int itemStackWidth = GuiItemStackGroup.getWidth(itemStackPadding);
 	private static final int itemStackHeight = GuiItemStackGroup.getHeight(itemStackPadding);
-	private static final int maxSearchLength = 32;
 	private static int pageNum = 0;
 
 	private final ItemFilter itemFilter;
@@ -58,7 +58,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	private GuiButton configButton;
 	private IDrawable configButtonIcon;
 	private HoverChecker configButtonHoverChecker;
-	private GuiTextField searchField;
+	private GuiTextFieldFilter searchField;
 	private int pageCount;
 
 	private String pageNumDisplayString;
@@ -121,10 +121,9 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 
 		int searchFieldY = screenHeight - searchHeight - borderPadding - 2;
 		int searchFieldWidth = rightEdge - leftEdge - configButtonSize - 1;
-		searchField = new GuiTextField(0, fontRenderer, leftEdge, searchFieldY, searchFieldWidth, searchHeight);
-		searchField.setMaxStringLength(maxSearchLength);
+		searchField = new GuiTextFieldFilter(0, fontRenderer, leftEdge, searchFieldY, searchFieldWidth, searchHeight);
 		setKeyboardFocus(false);
-		searchField.setText(itemFilter.getFilterText());
+		searchField.setItemFilter(itemFilter);
 
 		updateLayout();
 	}
@@ -158,13 +157,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		pageNumDisplayX = ((backButton.xPosition + backButton.width) + nextButton.xPosition) / 2 - (pageDisplayWidth / 2);
 		pageNumDisplayY = backButton.yPosition + Math.round((backButton.height - fontRendererObj.FONT_HEIGHT) / 2.0f);
 
-		if (itemList.size() == 0) {
-			searchField.setTextColor(Color.red.getRGB());
-			searchField.setMaxStringLength(searchField.getText().length());
-		} else {
-			searchField.setTextColor(Color.white.getRGB());
-			searchField.setMaxStringLength(maxSearchLength);
-		}
+		searchField.update();
 	}
 
 	private void nextPage() {
@@ -288,16 +281,11 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	}
 
 	private boolean handleMouseClickedSearch(int mouseX, int mouseY, int mouseButton) {
-		boolean searchClicked = mouseX >= searchField.xPosition && mouseX < searchField.xPosition + searchField.width && mouseY >= searchField.yPosition && mouseY < searchField.yPosition + searchField.height;
+		boolean searchClicked = searchField.isMouseOver(mouseX, mouseY);
 		setKeyboardFocus(searchClicked);
 		if (searchClicked) {
-			if (mouseButton == 1) {
-				searchField.setText("");
-				if (itemFilter.setFilterText(searchField.getText())) {
-					updateLayout();
-				}
-			} else {
-				searchField.mouseClicked(mouseX, mouseY, mouseButton);
+			if (searchField.handleMouseClicked(mouseX, mouseY, mouseButton)) {
+				updateLayout();
 			}
 		}
 		return searchClicked;
@@ -311,14 +299,13 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	@Override
 	public void setKeyboardFocus(boolean keyboardFocus) {
 		searchField.setFocused(keyboardFocus);
-		Keyboard.enableRepeatEvents(keyboardFocus);
 	}
 
 	@Override
 	public boolean onKeyPressed(int keyCode) {
 		if (searchField.isFocused()) {
 			boolean success = searchField.textboxKeyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
-			if (success && itemFilter.setFilterText(searchField.getText())) {
+			if (success) {
 				updateLayout();
 			}
 			return true;
