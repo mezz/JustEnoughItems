@@ -5,15 +5,8 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
-
-import mezz.jei.config.Config;
-import mezz.jei.config.Constants;
-import mezz.jei.util.Translator;
 
 public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	@Override
@@ -22,15 +15,6 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 
 		minecraft.getRenderItem().renderItemAndEffectIntoGUI(itemStack, xPosition, yPosition);
 		minecraft.getRenderItem().renderItemOverlayIntoGUI(font, itemStack, xPosition, yPosition, null);
-
-		if (Config.editModeEnabled) {
-			if (Config.isItemOnConfigBlacklist(itemStack, false)) {
-				GuiScreen.drawRect(xPosition, yPosition, xPosition + 8, yPosition + 16, 0xFFFFFF00);
-			}
-			if (Config.isItemOnConfigBlacklist(itemStack, true)) {
-				GuiScreen.drawRect(xPosition + 8, yPosition, xPosition + 16, yPosition + 16, 0xFFFF0000);
-			}
-		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -42,29 +26,6 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 				list.set(k, itemStack.getRarity().rarityColor + list.get(k));
 			} else {
 				list.set(k, EnumChatFormatting.GRAY + list.get(k));
-			}
-		}
-
-		if (Config.editModeEnabled) {
-			list.add("");
-			list.add(EnumChatFormatting.ITALIC + Translator.translateToLocal("gui.jei.editMode.description"));
-			if (Config.isItemOnConfigBlacklist(itemStack, false)) {
-				String description = EnumChatFormatting.YELLOW + Translator.translateToLocal("gui.jei.editMode.description.show");
-				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
-			} else {
-				String description = EnumChatFormatting.YELLOW + Translator.translateToLocal("gui.jei.editMode.description.hide");
-				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
-			}
-
-			Item item = itemStack.getItem();
-			if (item.getHasSubtypes()) {
-				if (Config.isItemOnConfigBlacklist(itemStack, true)) {
-					String description = EnumChatFormatting.RED + Translator.translateToLocal("gui.jei.editMode.description.show.wild");
-					list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
-				} else {
-					String description = EnumChatFormatting.RED + Translator.translateToLocal("gui.jei.editMode.description.hide.wild");
-					list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
-				}
 			}
 		}
 
