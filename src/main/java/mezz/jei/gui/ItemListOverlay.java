@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
-import java.util.ArrayList;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -15,7 +14,6 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.client.config.GuiButtonExt;
@@ -28,8 +26,10 @@ import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.config.Constants;
 import mezz.jei.config.JEIModConfigGui;
-import mezz.jei.gui.ingredients.GuiIngredient;
+import mezz.jei.gui.ingredients.GuiItemStackFast;
+import mezz.jei.gui.ingredients.GuiItemStackFastBatch;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
+import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IKeyable;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
@@ -47,26 +47,25 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	private static final int itemStackPadding = 1;
 	private static final int itemStackWidth = GuiItemStackGroup.getWidth(itemStackPadding);
 	private static final int itemStackHeight = GuiItemStackGroup.getHeight(itemStackPadding);
-	private static final int maxSearchLength = 32;
 	private static int pageNum = 0;
 
 	private final ItemFilter itemFilter;
 
 	private int buttonHeight;
-	private final ArrayList<GuiIngredient<ItemStack>> guiItemStacks = new ArrayList<>();
+	private final GuiItemStackFastBatch guiItemStacks = new GuiItemStackFastBatch();
 	private GuiButton nextButton;
 	private GuiButton backButton;
 	private GuiButton configButton;
 	private IDrawable configButtonIcon;
 	private HoverChecker configButtonHoverChecker;
-	private GuiTextField searchField;
+	private GuiTextFieldFilter searchField;
 	private int pageCount;
 
 	private String pageNumDisplayString;
 	private int pageNumDisplayX;
 	private int pageNumDisplayY;
 
-	private GuiIngredient<ItemStack> hovered = null;
+	private GuiItemStackFast hovered = null;
 
 	// properties of the gui we're beside
 	private int guiLeft;
@@ -122,10 +121,9 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 
 		int searchFieldY = screenHeight - searchHeight - borderPadding - 2;
 		int searchFieldWidth = rightEdge - leftEdge - configButtonSize - 1;
-		searchField = new GuiTextField(0, fontRenderer, leftEdge, searchFieldY, searchFieldWidth, searchHeight);
-		searchField.setMaxStringLength(maxSearchLength);
+		searchField = new GuiTextFieldFilter(0, fontRenderer, leftEdge, searchFieldY, searchFieldWidth, searchHeight);
 		setKeyboardFocus(false);
-		searchField.setText(itemFilter.getFilterText());
+		searchField.setItemFilter(itemFilter);
 
 		updateLayout();
 	}
@@ -137,7 +135,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 			int y = yStart + (row * itemStackHeight);
 			for (int column = 0; column < columnCount; column++) {
 				int x = xStart + (column * itemStackWidth);
-				guiItemStacks.add(GuiItemStackGroup.createGuiItemStack(false, x, y, itemStackPadding));
+				guiItemStacks.add(new GuiItemStackFast(x, y, itemStackPadding));
 			}
 		}
 	}
@@ -150,15 +148,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		int i = pageNum * getCountPerPage();
 
 		ImmutableList<ItemStackElement> itemList = itemFilter.getItemList();
-		for (GuiIngredient<ItemStack> itemButton : guiItemStacks) {
-			if (i >= itemList.size()) {
-				itemButton.clear();
-			} else {
-				ItemStack stack = itemList.get(i).getItemStack();
-				itemButton.set(stack, new Focus());
-			}
-			i++;
-		}
+		guiItemStacks.set(i, itemList);
 
 		FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
 
@@ -167,13 +157,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		pageNumDisplayX = ((backButton.xPosition + backButton.width) + nextButton.xPosition) / 2 - (pageDisplayWidth / 2);
 		pageNumDisplayY = backButton.yPosition + Math.round((backButton.height - fontRendererObj.FONT_HEIGHT) / 2.0f);
 
-		if (itemList.size() == 0) {
-			searchField.setTextColor(Color.red.getRGB());
-			searchField.setMaxStringLength(searchField.getText().length());
-		} else {
-			searchField.setTextColor(Color.white.getRGB());
-			searchField.setMaxStringLength(maxSearchLength);
-		}
+		searchField.update();
 	}
 
 	private void nextPage() {
@@ -207,17 +191,8 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		configButton.drawButton(minecraft, mouseX, mouseY);
 		configButtonIcon.draw(minecraft, configButton.xPosition + 2, configButton.yPosition + 2);
 
-		RenderHelper.enableGUIStandardItemLighting();
-
-		for (GuiIngredient<ItemStack> guiItemStack : guiItemStacks) {
-			if (hovered == null && guiItemStack.isMouseOver(mouseX, mouseY)) {
-				hovered = guiItemStack;
-			} else {
-				guiItemStack.draw(minecraft);
-			}
-		}
-
-		RenderHelper.disableStandardItemLighting();
+		boolean mouseOver = isMouseOver(mouseX, mouseY);
+		hovered = guiItemStacks.render(hovered, minecraft, mouseOver, mouseX, mouseY);
 
 		if (configButtonHoverChecker.checkHover(mouseX, mouseY)) {
 			String configString = Translator.translateToLocal("jei.tooltip.config");
@@ -226,12 +201,13 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	}
 
 	public void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
-		RenderHelper.enableGUIStandardItemLighting();
 		if (hovered != null) {
+			RenderHelper.enableGUIStandardItemLighting();
 			hovered.drawHovered(minecraft, mouseX, mouseY);
+			RenderHelper.disableStandardItemLighting();
+
 			hovered = null;
 		}
-		RenderHelper.disableStandardItemLighting();
 	}
 
 	public void handleTick() {
@@ -249,13 +225,12 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		if (!isMouseOver(mouseX, mouseY)) {
 			return null;
 		}
-		for (GuiIngredient<ItemStack> guiItemStack : guiItemStacks) {
-			if (guiItemStack.isMouseOver(mouseX, mouseY)) {
-				setKeyboardFocus(false);
-				return new Focus(guiItemStack.get());
-			}
+
+		Focus focus = guiItemStacks.getFocusUnderMouse(mouseX, mouseY);
+		if (focus != null) {
+			setKeyboardFocus(false);
 		}
-		return null;
+		return focus;
 	}
 
 	@Override
@@ -264,7 +239,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 			setKeyboardFocus(false);
 			return false;
 		}
-		boolean buttonClicked = handleMouseClickedButtons(mouseX, mouseY, mouseButton);
+		boolean buttonClicked = handleMouseClickedButtons(mouseX, mouseY);
 		if (buttonClicked) {
 			setKeyboardFocus(false);
 			return true;
@@ -288,7 +263,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		return false;
 	}
 
-	private boolean handleMouseClickedButtons(int mouseX, int mouseY, int mouseButton) {
+	private boolean handleMouseClickedButtons(int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getMinecraft();
 		if (nextButton.mousePressed(minecraft, mouseX, mouseY)) {
 			nextPage();
@@ -306,16 +281,11 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	}
 
 	private boolean handleMouseClickedSearch(int mouseX, int mouseY, int mouseButton) {
-		boolean searchClicked = mouseX >= searchField.xPosition && mouseX < searchField.xPosition + searchField.width && mouseY >= searchField.yPosition && mouseY < searchField.yPosition + searchField.height;
+		boolean searchClicked = searchField.isMouseOver(mouseX, mouseY);
 		setKeyboardFocus(searchClicked);
 		if (searchClicked) {
-			if (mouseButton == 1) {
-				searchField.setText("");
-				if (itemFilter.setFilterText(searchField.getText())) {
-					updateLayout();
-				}
-			} else {
-				searchField.mouseClicked(mouseX, mouseY, mouseButton);
+			if (searchField.handleMouseClicked(mouseX, mouseY, mouseButton)) {
+				updateLayout();
 			}
 		}
 		return searchClicked;
@@ -328,15 +298,16 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 
 	@Override
 	public void setKeyboardFocus(boolean keyboardFocus) {
-		searchField.setFocused(keyboardFocus);
-		Keyboard.enableRepeatEvents(keyboardFocus);
+		if (searchField != null) {
+			searchField.setFocused(keyboardFocus);
+		}
 	}
 
 	@Override
 	public boolean onKeyPressed(int keyCode) {
 		if (searchField.isFocused()) {
 			boolean success = searchField.textboxKeyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
-			if (success && itemFilter.setFilterText(searchField.getText())) {
+			if (success) {
 				updateLayout();
 			}
 			return true;
