@@ -298,7 +298,9 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 
 	@Override
 	public void setKeyboardFocus(boolean keyboardFocus) {
-		searchField.setFocused(keyboardFocus);
+		if (searchField != null) {
+			searchField.setFocused(keyboardFocus);
+		}
 	}
 
 	@Override
