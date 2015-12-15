@@ -69,7 +69,7 @@ public class RecipeMap {
 
 	@Nonnull
 	private String getKeyForFluid(Fluid fluid) {
-		return "fluid:" + fluid.getID();
+		return "fluid:" + fluid.getName();
 	}
 
 	@Nonnull

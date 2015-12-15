@@ -11,8 +11,8 @@ public class CycleTimer {
 		if (list.isEmpty()) {
 			return null;
 		}
-		Long stackIndex = (drawTime / cycleTime) % list.size();
-		return list.get(stackIndex.intValue());
+		Long index = (drawTime / cycleTime) % list.size();
+		return list.get(index.intValue());
 	}
 
 	public void onDraw(boolean cycleEnabled) {

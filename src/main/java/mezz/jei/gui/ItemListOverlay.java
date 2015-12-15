@@ -10,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -27,7 +26,7 @@ import mezz.jei.api.gui.IDrawable;
 import mezz.jei.config.Constants;
 import mezz.jei.config.JEIModConfigGui;
 import mezz.jei.gui.ingredients.GuiItemStackFast;
-import mezz.jei.gui.ingredients.GuiItemStackFastBatch;
+import mezz.jei.gui.ingredients.GuiItemStackFastList;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IKeyable;
@@ -52,7 +51,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	private final ItemFilter itemFilter;
 
 	private int buttonHeight;
-	private final GuiItemStackFastBatch guiItemStacks = new GuiItemStackFastBatch();
+	private final GuiItemStackFastList guiItemStacks = new GuiItemStackFastList();
 	private GuiButton nextButton;
 	private GuiButton backButton;
 	private GuiButton configButton;

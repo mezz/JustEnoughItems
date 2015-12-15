@@ -1,5 +1,6 @@
 package mezz.jei.gui;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -23,7 +24,7 @@ public class TooltipRenderer {
 		drawHoveringText(minecraft, textLines, x, y, minecraft.fontRendererObj);
 	}
 
-	public static void drawHoveringText(Minecraft minecraft, List<String> textLines, int x, int y, FontRenderer font) {
+	public static void drawHoveringText(Minecraft minecraft, @Nonnull List<String> textLines, int x, int y, FontRenderer font) {
 		tooltipScreen.set(minecraft);
 		tooltipScreen.drawHoveringText(textLines, x, y, font);
 
@@ -41,7 +42,7 @@ public class TooltipRenderer {
 		}
 
 		@Override
-		public void drawHoveringText(List textLines, int x, int y, FontRenderer font) {
+		public void drawHoveringText(@Nonnull List textLines, int x, int y, FontRenderer font) {
 			super.drawHoveringText(textLines, x, y, font);
 		}
 	}

@@ -134,16 +134,12 @@ public class InputHandler {
 			}
 		}
 
-		if (Config.cheatItemsEnabled) {
+		if (Config.cheatItemsEnabled && focus.getStack() != null) {
 			if (mouseButton == 0) {
-				if (focus.getStack() != null) {
-					Commands.giveFullStack(focus.getStack());
-				}
+				Commands.giveFullStack(focus.getStack());
 				return true;
 			} else if (mouseButton == 1) {
-				if (focus.getStack() != null) {
-					Commands.giveOneFromStack(focus.getStack());
-				}
+				Commands.giveOneFromStack(focus.getStack());
 				return true;
 			}
 		}
