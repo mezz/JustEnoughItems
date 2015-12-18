@@ -93,6 +93,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 				GlStateManager.popMatrix();
 				GlStateManager.popAttrib();
 			}
+			GlStateManager.enableBlend();
 		}
 		GlStateManager.popAttrib();
 	}
