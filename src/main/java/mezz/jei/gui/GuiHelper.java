@@ -45,6 +45,12 @@ public class GuiHelper implements IGuiHelper {
 
 	@Nonnull
 	@Override
+	public IDrawableStatic createBlankDrawable(int width, int height) {
+		return new DrawableBlank(width, height);
+	}
+
+	@Nonnull
+	@Override
 	public ICraftingGridHelper createCraftingGridHelper(int craftInputSlot1, int craftOutputSlot) {
 		return new CraftingGridHelper(craftInputSlot1, craftOutputSlot);
 	}

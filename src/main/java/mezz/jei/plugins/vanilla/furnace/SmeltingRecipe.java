@@ -27,7 +27,7 @@ public class SmeltingRecipe extends VanillaRecipeWrapper {
 		this.outputs = Collections.singletonList(output);
 
 		if (experience > 0.0) {
-			experienceString = Translator.translateToLocalFormatted("gui.jei.furnaceExperience", experience);
+			experienceString = Translator.translateToLocalFormatted("gui.jei.category.smelting.experience", experience);
 		} else {
 			experienceString = null;
 		}

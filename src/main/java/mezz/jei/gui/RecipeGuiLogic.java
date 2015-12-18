@@ -40,7 +40,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	/* The previous states of this GUI */
 	@Nonnull
-	private Stack<State> history = new Stack<>();
+	private final Stack<State> history = new Stack<>();
 
 	/* List of Recipe Categories that involve the focus */
 	@Nonnull

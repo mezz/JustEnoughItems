@@ -270,7 +270,7 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 
 		IDrawable recipeBackground = recipeCategory.getBackground();
 
-		final int recipesPerPage = (ySize - headerHeight) / (recipeBackground.getHeight() + borderPadding);
+		final int recipesPerPage = Math.max(1, (ySize - headerHeight) / (recipeBackground.getHeight() + borderPadding));
 		final int recipeXOffset = (xSize - recipeBackground.getWidth()) / 2;
 		final int recipeSpacing = (ySize - headerHeight - (recipesPerPage * recipeBackground.getHeight())) / (recipesPerPage + 1);
 

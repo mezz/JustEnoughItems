@@ -2,11 +2,9 @@ package mezz.jei;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
-import java.util.Set;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLModIdMappingEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -14,7 +12,6 @@ import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
 import mezz.jei.api.JEIManager;
-import mezz.jei.api.JEIPlugin;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.GuiHelper;

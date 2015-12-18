@@ -18,6 +18,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	}
 
 	@SuppressWarnings("unchecked")
+	@Nonnull
 	@Override
 	public List<String> getTooltip(@Nonnull Minecraft minecraft, @Nonnull ItemStack itemStack) {
 		List<String> list = itemStack.getTooltip(minecraft.thePlayer, minecraft.gameSettings.advancedItemTooltips);

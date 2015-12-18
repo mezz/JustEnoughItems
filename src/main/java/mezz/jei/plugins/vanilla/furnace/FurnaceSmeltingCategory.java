@@ -22,7 +22,7 @@ public class FurnaceSmeltingCategory extends FurnaceRecipeCategory {
 	public FurnaceSmeltingCategory() {
 		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/furnace.png");
 		background = JEIManager.guiHelper.createDrawable(location, 55, 16, 82, 54);
-		localizedName = Translator.translateToLocal("gui.jei.smeltingRecipes");
+		localizedName = Translator.translateToLocal("gui.jei.category.smelting");
 	}
 
 	@Override

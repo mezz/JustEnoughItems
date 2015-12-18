@@ -1,9 +1,9 @@
 package mezz.jei.api;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 import net.minecraft.inventory.Container;
+import net.minecraft.item.ItemStack;
 
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
@@ -40,11 +40,21 @@ public interface IModRegistry {
 	 * These can be regular recipes, they will get wrapped by the provided recipe handlers.
 	 * Recipes that are already registered with minecraft's recipe managers don't need to be added here.
 	 */
-	void addRecipes(@Nonnull List recipes);
+	void addRecipes(List recipes);
 
 	/**
-	 * Notify JEI about recipe classes that should be ignored.
-	 * Use this if you are wrapping and adding the recipe to JEI as some other class.
+	 * Add a description page for an itemStack.
+	 * Description pages show in the recipes for an itemStack and tell the player a little bit about it.
+	 *
+	 * @param itemStacks      the itemStack(s) to describe
+	 * @param descriptionKeys Localization keys for description text.
+	 *                        New lines can be added with "\n" or by giving multiple descriptionKeys.
+	 *                     	  Long lines are wrapped automatically.
+	 *                     	  Very long entries will span multiple pages automatically.
 	 */
+	void addDescription(List<ItemStack> itemStacks, String... descriptionKeys);
+
+	/** Turns out this isn't useful at all */
+	@Deprecated
 	void addIgnoredRecipeClasses(Class... ignoredRecipeClasses);
 }

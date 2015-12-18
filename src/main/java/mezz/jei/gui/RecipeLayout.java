@@ -46,6 +46,7 @@ public class RecipeLayout implements IRecipeLayout {
 
 		this.recipeWrapper = recipeWrapper;
 		this.guiItemStackGroup.setFocus(focus);
+		this.guiFluidStackGroup.setFocus(focus);
 		this.recipeCategory.setRecipe(this, recipeWrapper);
 	}
 
@@ -73,12 +74,17 @@ public class RecipeLayout implements IRecipeLayout {
 		RenderHelper.enableGUIStandardItemLighting();
 		guiItemStackGroup.draw(minecraft, mouseX - posX, mouseY - posY);
 		RenderHelper.disableStandardItemLighting();
+		guiFluidStackGroup.draw(minecraft, mouseX - posX, mouseY - posY);
 
 		GL11.glPopMatrix();
 	}
 
 	public Focus getFocusUnderMouse(int mouseX, int mouseY) {
-		return guiItemStackGroup.getFocusUnderMouse(mouseX - posX, mouseY - posY);
+		Focus focus = guiItemStackGroup.getFocusUnderMouse(mouseX - posX, mouseY - posY);
+		if (focus == null) {
+			focus = guiFluidStackGroup.getFocusUnderMouse(mouseX - posX, mouseY - posY);
+		}
+		return focus;
 	}
 
 	@Override

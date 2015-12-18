@@ -15,8 +15,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 
-import org.lwjgl.opengl.GL11;
-
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.util.CycleTimer;
@@ -141,12 +139,10 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		try {
 			GlStateManager.disableDepth();
 
-			this.zLevel = 0;
 			RenderHelper.disableStandardItemLighting();
-			GL11.glEnable(GL11.GL_BLEND);
+			GlStateManager.enableBlend();
 			drawRect(xPosition, yPosition, xPosition + width, yPosition + width, 0x7FFFFFFF);
 
-			this.zLevel = 0;
 			List<String> tooltip = ingredientRenderer.getTooltip(minecraft, value);
 			FontRenderer fontRenderer = ingredientRenderer.getFontRenderer(minecraft, value);
 			TooltipRenderer.drawHoveringText(minecraft, tooltip, mouseX, mouseY, fontRenderer);

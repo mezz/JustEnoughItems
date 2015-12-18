@@ -1,8 +1,58 @@
+# Tooltips
+jei.tooltip.config=Konfiguration
+jei.tooltip.show.all.recipes=Zeige alle Rezepte
+
+# Error Tooltips
+jei.tooltip.error.recipe.transfer.missing=Fehlende Items
+jei.tooltip.error.recipe.transfer.inventory.full=Inventar ist voll
+
 # Key Bindings
 key.jei.toggleOverlay=Item-Listen-Overlay (de-)aktivieren
 key.jei.showRecipe=Zeige Item-Rezepte
 key.jei.showUses=Zeige Item-Nutzung
 
 # Config
+config.jei.default=Standard
+config.jei.valid=Zulässig
+
+config.jei.title=%MODNAME Konfiguration
+
+config.jei.mode=Modus
+config.jei.mode.comment=Ändere den Modus, in dem sich JEI befindet
 config.jei.mode.cheatItemsEnabled=Aktiviere Item-Cheating
-config.jei.mode.cheatItemsEnabled.comment=/give Items, statt das Rezept zu zeigen
+config.jei.mode.cheatItemsEnabled.comment=/give Items, statt das Rezept zu zeigen.
+config.jei.mode.editEnabled=Aktiviere Itemlisteneditiermodus
+config.jei.mode.editEnabled.comment=Verstecke und zeige Items durch Klicken in der Itemliste.
+
+config.jei.interface=Interface
+config.jei.interface.comment=Das User Interface-betreffende Optionen
+config.jei.interface.recipeAnimationsEnabled=Aktiviere Rezeptanimationen
+config.jei.interface.recipeAnimationsEnabled.comment=Zeige Animationen für verschiedene Rezepte (Ofenfeuer, Fortschritssbalken, usw.)
+
+config.jei.advanced=Erweitert
+config.jei.advanced.comment=Erweiterte Konfigurationsoptionen, die ändern, wie JEI funktioniert.
+config.jei.advanced.nbtKeyIgnoreList=NBT-Schlüssel-Ignorierungsliste
+config.jei.advanced.nbtKeyIgnoreList.comment=Liste an NBT-Schlüsseln, die ignoriert werden sollen beim Rezepteauslesen.
+config.jei.advanced.itemBlacklist=Item Blacklist
+config.jei.advanced.itemBlacklist.comment=List an Items, die nicht in the Itemliste gezeigt werden sollen. Format: modId:name[:meta]. Der Listeneditiermodus entfernt und fügt automatisch neue Items zu diese Liste hinzu.
+config.jei.advanced.hideMissingModelsEnabled=Verstecke fehlende Itemmodelle
+config.jei.advanced.hideMissingModelsEnabled.comment=Items in der Itemliste mit fehlenden Modellen werden automatisch verborgen.
+
+config.jei.addons=Addons
+config.jei.addons.comment=Kategorie für JEI Addon-Optionen.
+
+# Edit Mode
+gui.jei.editMode.description=JEI Itemlisteneditiermodus:
+gui.jei.editMode.description.hide=Strg-Klick zum verbergen.
+gui.jei.editMode.description.show=Verborgen. Strg-Klick zum Zeigen.
+gui.jei.editMode.description.hide.wild=Strg-Rechtsklick um mit einer Wildcard zu verstecken.
+gui.jei.editMode.description.show.wild=Verborgen durch Wildcard. Strg-Rechtsklick zum Zeigen.
+
+# Recipes
+gui.jei.category.craftingTable=Craftingrezepte
+gui.jei.category.smelting=Schmelzrezepte
+gui.jei.category.fuel=Kraftstoffrezepte
+gui.jei.category.smelting.experience=%s Exp.
+gui.jei.category.fuel.burnTime=Brennzeit: %s
+gui.jei.category.brewing=Braurezepte
+gui.jei.category.brewing.steps=Schritte: %s

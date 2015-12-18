@@ -45,7 +45,7 @@ public class BrewingRecipeCategory implements IRecipeCategory {
 
 		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/brewing_stand.png");
 		background = guiHelper.createDrawable(location, 55, 15, 64, 56, 0, 0, 0, 40);
-		localizedName = Translator.translateToLocal("gui.jei.brewingRecipes");
+		localizedName = Translator.translateToLocal("gui.jei.category.brewing");
 
 		IDrawableStatic brewArrowDrawable = guiHelper.createDrawable(location, 176, 0, 9, 28);
 		arrow = guiHelper.createAnimatedDrawable(brewArrowDrawable, 400, IDrawableAnimated.StartDirection.TOP, false);

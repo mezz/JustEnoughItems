@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack;
 import mezz.jei.gui.Focus;
 import mezz.jei.util.ItemStackElement;
 
-public class GuiItemStackFastBatch {
+public class GuiItemStackFastList {
 	private final List<GuiItemStackFast> renderItemsAll = new ArrayList<>();
 	private final List<GuiItemStackFast> renderItemsBuiltIn = new ArrayList<>();
 	private final List<GuiItemStackFast> renderItems2d = new ArrayList<>();

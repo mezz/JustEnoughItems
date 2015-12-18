@@ -33,7 +33,7 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 	public CraftingRecipeCategory() {
 		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/crafting_table.png");
 		background = JEIManager.guiHelper.createDrawable(location, 29, 16, 116, 54);
-		localizedName = Translator.translateToLocal("gui.jei.craftingTableRecipes");
+		localizedName = Translator.translateToLocal("gui.jei.category.craftingTable");
 		craftingGridHelper = JEIManager.guiHelper.createCraftingGridHelper(craftInputSlot1, craftOutputSlot);
 	}
 

@@ -26,7 +26,7 @@ public class FuelRecipe extends VanillaRecipeWrapper {
 	public FuelRecipe(@Nonnull Collection<ItemStack> input, int burnTime) {
 		List<ItemStack> inputList = new ArrayList<>(input);
 		this.inputs = Collections.singletonList(inputList);
-		this.burnTimeString = Translator.translateToLocalFormatted("gui.jei.furnaceBurnTime", burnTime);
+		this.burnTimeString = Translator.translateToLocalFormatted("gui.jei.category.fuel.burnTime", burnTime);
 		this.flame = JEIManager.guiHelper.createAnimatedDrawable(flameDrawable, burnTime, IDrawableAnimated.StartDirection.TOP, true);
 	}
 

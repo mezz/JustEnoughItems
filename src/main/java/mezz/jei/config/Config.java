@@ -22,12 +22,14 @@ public class Config {
 
 	public static boolean cheatItemsEnabled = false;
 	public static boolean editModeEnabled = false;
+	public static boolean debugModeEnabled = false;
+
 	public static boolean recipeTransferEnabled = true;
 	public static boolean recipeAnimationsEnabled = true;
 	public static boolean hideMissingModelsEnabled = true;
 
-	public static Set<String> nbtKeyIgnoreList = new HashSet<>();
-	public static Set<String> itemBlacklist = new HashSet<>();
+	public static final Set<String> nbtKeyIgnoreList = new HashSet<>();
+	public static final Set<String> itemBlacklist = new HashSet<>();
 
 	public static final String[] defaultItemBlacklist = new String[]{};
 	public static final String[] defaultNbtKeyIgnoreList = new String[]{"BlockEntityTag", "CanPlaceOn"};
@@ -58,6 +60,8 @@ public class Config {
 		Collections.addAll(itemBlacklist, itemBlacklistArray);
 
 		hideMissingModelsEnabled = configFile.getBoolean(categoryAdvanced, "hideMissingModelsEnabled", hideMissingModelsEnabled);
+
+		debugModeEnabled = configFile.getBoolean(categoryAdvanced, "debugModeEnabled", debugModeEnabled);
 
 		boolean configChanged = configFile.hasChanged();
 		if (configChanged) {

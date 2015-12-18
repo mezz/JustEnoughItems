@@ -1,13 +1,11 @@
 package mezz.jei;
 
 import javax.annotation.Nonnull;
-import java.util.Set;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 

@@ -38,6 +38,12 @@ public interface IGuiHelper {
 	IDrawableStatic getSlotDrawable();
 
 	/**
+	 * Returns a blank drawable for using as a blank recipe background.
+	 */
+	@Nonnull
+	IDrawableStatic createBlankDrawable(int width, int height);
+
+	/**
 	 * Create a crafting grid helper.
 	 * Helps set crafting-grid-style GuiItemStackGroup.
 	 */
