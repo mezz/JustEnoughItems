@@ -51,12 +51,10 @@ gui.jei.editMode.description.hide.wild=Strg-Rechtsklick um mit einer Wildcard zu
 gui.jei.editMode.description.show.wild=Verborgen durch Wildcard. Strg-Rechtsklick zum Zeigen.
 
 # Recipes
-gui.jei.craftingTableRecipes=Craftingrezepte
-gui.jei.smeltingRecipes=Schmelzrezepte
-gui.jei.fuelRecipes=Kraftstoffrezepte
-gui.jei.furnaceExperience=%s Exp.
-gui.jei.furnaceBurnTime=Brennzeit: %s
-gui.jei.brewingRecipes=Braurezepte
-gui.jei.brewingRecipes.steps=Schritte: %s
-gui.jei.forestry.centrifugeRecipes=Forestry-Zentrifuge
-gui.jei.forestry.fabricatorRecipes=Forestry-Hersteller
+gui.jei.category.craftingTable=Craftingrezepte
+gui.jei.category.smelting=Schmelzrezepte
+gui.jei.category.fuel=Kraftstoffrezepte
+gui.jei.category.smelting.experience=%s Exp.
+gui.jei.category.fuel.burnTime=Brennzeit: %s
+gui.jei.category.brewing=Braurezepte
+gui.jei.category.brewing.steps=Schritte: %s

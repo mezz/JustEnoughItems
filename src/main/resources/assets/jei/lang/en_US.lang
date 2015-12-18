@@ -50,13 +50,12 @@ gui.jei.editMode.description.show=Hidden. Ctrl-click to show.
 gui.jei.editMode.description.hide.wild=Ctrl-right-click to hide with wildcard.
 gui.jei.editMode.description.show.wild=Hidden by Wildcard. Ctrl-right-click to show.
 
-# Recipes
-gui.jei.craftingTableRecipes=Crafting Table Recipes
-gui.jei.smeltingRecipes=Smelting Recipes
-gui.jei.fuelRecipes=Fuel Recipes
-gui.jei.furnaceExperience=%s Exp.
-gui.jei.furnaceBurnTime=Burn Time: %s
-gui.jei.brewingRecipes=Brewing Recipes
-gui.jei.brewingRecipes.steps=Steps: %s
-gui.jei.forestry.centrifugeRecipes=Forestry Centrifuge
-gui.jei.forestry.fabricatorRecipes=Forestry Fabricator
+# Recipe Categories
+gui.jei.category.craftingTable=Crafting Table
+gui.jei.category.smelting=Smelting
+gui.jei.category.smelting.experience=%s Exp.
+gui.jei.category.fuel=Fuel
+gui.jei.category.fuel.burnTime=Burn Time: %s
+gui.jei.category.brewing=Brewing
+gui.jei.category.brewing.steps=Steps: %s
+gui.jei.category.itemDescription=Description

@@ -19,11 +19,11 @@ public class GuiTextFieldFilter extends GuiTextField {
 	private static final int maxSearchLength = 32;
 
 	private final List<String> history = new LinkedList<>();
+	private final HoverChecker hoverChecker;
 	private ItemFilter itemFilter;
-	private HoverChecker hoverChecker;
 
-	public GuiTextFieldFilter(int componentId, FontRenderer fontrendererObj, int x, int y, int width, int height) {
-		super(componentId, fontrendererObj, x, y, width, height);
+	public GuiTextFieldFilter(int componentId, FontRenderer fontRenderer, int x, int y, int width, int height) {
+		super(componentId, fontRenderer, x, y, width, height);
 		setMaxStringLength(maxSearchLength);
 		this.hoverChecker = new HoverChecker(y, y + height, x, x + width, 0);
 	}

@@ -26,8 +26,8 @@ public class Config {
 	public static boolean recipeAnimationsEnabled = true;
 	public static boolean hideMissingModelsEnabled = true;
 
-	public static Set<String> nbtKeyIgnoreList = new HashSet<>();
-	public static Set<String> itemBlacklist = new HashSet<>();
+	public static final Set<String> nbtKeyIgnoreList = new HashSet<>();
+	public static final Set<String> itemBlacklist = new HashSet<>();
 
 	public static final String[] defaultItemBlacklist = new String[]{};
 	public static final String[] defaultNbtKeyIgnoreList = new String[]{"BlockEntityTag", "CanPlaceOn"};

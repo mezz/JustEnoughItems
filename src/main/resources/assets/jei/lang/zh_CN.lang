@@ -25,12 +25,10 @@ gui.jei.editMode.description.hide.wild=按住Ctrl右击以隐藏相同id的物�
 gui.jei.editMode.description.show.wild=相同id物品以隐藏。按住Ctrl右击以显示。
 
 # Recipes
-gui.jei.craftingTableRecipes=工作台合成
-gui.jei.smeltingRecipes=烧炼
-gui.jei.fuelRecipes=燃料
-gui.jei.furnaceExperience=%s点经验
-gui.jei.furnaceBurnTime=燃烧时间：%s
-gui.jei.brewingRecipes=酿造配方
-gui.jei.brewingRecipes.steps=步数：%s
-gui.jei.forestry.centrifugeRecipes=林业离心机
-gui.jei.forestry.fabricatorRecipes=林业热电子加工台
+gui.jei.category.craftingTable=工作台合成
+gui.jei.category.smelting=烧炼
+gui.jei.category.fuel=燃料
+gui.jei.category.smelting.experience=%s点经验
+gui.jei.category.fuel.burnTime=燃烧时间：%s
+gui.jei.category.brewing=酿造配方
+gui.jei.category.brewing.steps=步数：%s

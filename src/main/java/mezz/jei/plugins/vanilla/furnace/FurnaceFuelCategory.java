@@ -23,7 +23,7 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory {
 		IGuiHelper guiHelper = JEIManager.guiHelper;
 
 		background = guiHelper.createDrawable(backgroundLocation, 55, 38, 18, 32, 0, 0, 0, 80);
-		localizedName = Translator.translateToLocal("gui.jei.fuelRecipes");
+		localizedName = Translator.translateToLocal("gui.jei.category.fuel");
 	}
 
 	@Override

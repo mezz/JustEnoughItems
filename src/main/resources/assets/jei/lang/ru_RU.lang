@@ -25,10 +25,8 @@ gui.jei.editMode.description.hide.wild=Ctrl-right-click to hide with wildcard.
 gui.jei.editMode.description.show.wild=Hidden by Wildcard. Ctrl-right-click to show.
 
 # Recipes
-gui.jei.craftingTableRecipes=Рецепты верстака
-gui.jei.smeltingRecipes=Рецепты выплавки
-gui.jei.fuelRecipes=Рецепты топлива
-gui.jei.furnaceExperience=Опыт: %s
-gui.jei.furnaceBurnTime=Время горения: %s
-gui.jei.forestry.centrifugeRecipes=Центрифуга Forestry
-gui.jei.forestry.fabricatorRecipes=Завод Forestry
+gui.jei.category.craftingTable=Рецепты верстака
+gui.jei.category.smelting=Рецепты выплавки
+gui.jei.category.fuel=Рецепты топлива
+gui.jei.category.smelting.experience=Опыт: %s
+gui.jei.category.fuel.burnTime=Время горения: %s

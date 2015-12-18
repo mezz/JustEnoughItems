@@ -8,7 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.common.registry.GameData;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import mezz.jei.api.JEIManager;
 
