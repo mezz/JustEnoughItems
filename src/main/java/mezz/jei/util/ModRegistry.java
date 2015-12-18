@@ -1,17 +1,18 @@
 package mezz.jei.util;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.inventory.Container;
+import net.minecraft.item.ItemStack;
 
 import mezz.jei.RecipeRegistry;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeTransferHelper;
+import mezz.jei.plugins.jei.description.ItemDescriptionRecipe;
 import mezz.jei.transfer.BasicRecipeTransferHelper;
 
 public class ModRegistry implements IModRegistry {
@@ -19,7 +20,6 @@ public class ModRegistry implements IModRegistry {
 	private final List<IRecipeHandler> recipeHandlers = new ArrayList<>();
 	private final List<IRecipeTransferHelper> recipeTransferHelpers = new ArrayList<>();
 	private final List<Object> recipes = new ArrayList<>();
-	private final List<Class> ignoredRecipeClasses = new ArrayList<>();
 
 	@Override
 	public void addRecipeCategories(IRecipeCategory... recipeCategories) {
@@ -43,16 +43,34 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
-	public void addRecipes(@Nonnull List recipes) {
+	public void addRecipes(List recipes) {
+		if (recipes != null) {
+			this.recipes.addAll(recipes);
+		}
+	}
+
+	@Override
+	public void addDescription(List<ItemStack> itemStacks, String... descriptionKeys) {
+		if (itemStacks == null || itemStacks.size() == 0) {
+			IllegalArgumentException e = new IllegalArgumentException();
+			Log.error("Tried to add description with no itemStacks.", e);
+			return;
+		}
+		if (descriptionKeys.length == 0) {
+			IllegalArgumentException e = new IllegalArgumentException();
+			Log.error("Tried to add an empty list of descriptionKeys for itemStacks {}.", itemStacks, e);
+			return;
+		}
+		List<ItemDescriptionRecipe> recipes = ItemDescriptionRecipe.create(itemStacks, descriptionKeys);
 		this.recipes.addAll(recipes);
 	}
 
 	@Override
 	public void addIgnoredRecipeClasses(Class... ignoredRecipeClasses) {
-		Collections.addAll(this.ignoredRecipeClasses, ignoredRecipeClasses);
+
 	}
 
 	public RecipeRegistry createRecipeRegistry() {
-		return new RecipeRegistry(recipeCategories, recipeHandlers, recipeTransferHelpers, recipes, ignoredRecipeClasses);
+		return new RecipeRegistry(recipeCategories, recipeHandlers, recipeTransferHelpers, recipes);
 	}
 }

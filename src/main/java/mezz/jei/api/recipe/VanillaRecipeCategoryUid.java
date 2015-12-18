@@ -8,4 +8,6 @@ public class VanillaRecipeCategoryUid {
 	public static final String SMELTING = "minecraft.smelting";
 	public static final String FUEL = "minecraft.fuel";
 	public static final String BREWING = "minecraft.brewing";
+
+	public static final String DESCRIPTION = "jei.description";
 }
