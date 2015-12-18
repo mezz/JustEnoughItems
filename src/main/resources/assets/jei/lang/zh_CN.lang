@@ -9,9 +9,6 @@ config.jei.mode.cheatItemsEnabled.comment=/给予物品而非显示其合成表
 config.jei.mode.editEnabled=开启物品编辑模式
 config.jei.mode.editEnabled.comment=在列表中点击物品以隐藏或取消隐藏
 
-config.jei.interface.tooltipModName=工具提示(Tooltip)中显示所属模组
-config.jei.interface.tooltipModName.comment=在物品的工具提示中显示其所属的模组名
-
 config.jei.advanced.nbtKeyIgnoreList=NBT关键字忽略列表
 config.jei.advanced.nbtKeyIgnoreList.comment=过滤可用合成时，该表所含的NBT关键字将忽略不计。
 config.jei.advanced.itemBlacklist=物品黑名单

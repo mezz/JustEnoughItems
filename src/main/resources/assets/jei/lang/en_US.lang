@@ -26,8 +26,6 @@ config.jei.mode.editEnabled.comment=Hide and unhide items by clicking them in th
 
 config.jei.interface=Interface
 config.jei.interface.comment=Options relating to the User Interface.
-config.jei.interface.tooltipModName=Add Mod Name to Tooltip
-config.jei.interface.tooltipModName.comment=Adds the name of the item's mod to its tooltip.
 config.jei.interface.recipeAnimationsEnabled=Enable Recipe Animations
 config.jei.interface.recipeAnimationsEnabled.comment=Show recipe animations (furnace fire, progress bars, etc)
 

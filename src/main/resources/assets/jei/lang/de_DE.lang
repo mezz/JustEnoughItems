@@ -26,8 +26,6 @@ config.jei.mode.editEnabled.comment=Verstecke und zeige Items durch Klicken in d
 
 config.jei.interface=Interface
 config.jei.interface.comment=Das User Interface-betreffende Optionen
-config.jei.interface.tooltipModName=Zeige Modnamen in Tooltip
-config.jei.interface.tooltipModName.comment=Fügt den Namen der Mod, zu welcher ein Item/Block gehört, dessen Tooltip hinzu.
 config.jei.interface.recipeAnimationsEnabled=Aktiviere Rezeptanimationen
 config.jei.interface.recipeAnimationsEnabled.comment=Zeige Animationen für verschiedene Rezepte (Ofenfeuer, Fortschritssbalken, usw.)
 

@@ -9,9 +9,6 @@ config.jei.mode.cheatItemsEnabled.comment=/give предметы, вместо �
 config.jei.mode.editEnabled=Режим редактирования
 config.jei.mode.editEnabled.comment=Прячьте предметы в списке простым нажатием клавиши.
 
-config.jei.interface.tooltipModName=Добавить назв. мода к подсказке
-config.jei.interface.tooltipModName.comment=Добавляет название мода к подсказке предмета.
-
 config.jei.advanced.nbtKeyIgnoreList=Чёрный список для NBT
 config.jei.advanced.nbtKeyIgnoreList.comment=Список NBT, которые будут игнорироваться при отображении рецептов.
 config.jei.advanced.itemBlacklist=Чёрный список для предметов
