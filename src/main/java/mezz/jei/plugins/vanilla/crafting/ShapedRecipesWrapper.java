@@ -19,7 +19,7 @@ public class ShapedRecipesWrapper extends VanillaRecipeWrapper implements IShape
 	public ShapedRecipesWrapper(@Nonnull ShapedRecipes recipe) {
 		this.recipe = recipe;
 		for (ItemStack itemStack : this.recipe.recipeItems) {
-			if (itemStack != null && itemStack.stackSize > 1) {
+			if (itemStack != null && itemStack.stackSize != 1) {
 				itemStack.stackSize = 1;
 			}
 		}

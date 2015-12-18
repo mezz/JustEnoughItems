@@ -25,7 +25,7 @@ public class ShapedOreRecipeWrapper extends VanillaRecipeWrapper implements ISha
 		for (Object input : this.recipe.getInput()) {
 			if (input instanceof ItemStack) {
 				ItemStack itemStack = (ItemStack) input;
-				if (itemStack.stackSize > 1) {
+				if (itemStack.stackSize != 1) {
 					itemStack.stackSize = 1;
 				}
 			}
