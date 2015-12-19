@@ -5,6 +5,10 @@ import java.util.IllegalFormatException;
 import net.minecraft.util.StatCollector;
 
 public class Translator {
+	private Translator() {
+
+	}
+
 	public static String translateToLocal(String key) {
 		if (StatCollector.canTranslate(key)) {
 			return StatCollector.translateToLocal(key);
@@ -17,8 +21,10 @@ public class Translator {
 		String s = translateToLocal(key);
 		try {
 			return String.format(s, format);
-		} catch (IllegalFormatException var5) {
-			return "Format error: " + s;
+		} catch (IllegalFormatException e) {
+			String errorMessage = "Format error: " + s;
+			Log.error(errorMessage, e);
+			return errorMessage;
 		}
 	}
 }

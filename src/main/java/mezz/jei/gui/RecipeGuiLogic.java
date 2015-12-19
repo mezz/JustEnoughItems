@@ -72,7 +72,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	private boolean setFocus(@Nonnull Focus focus, boolean saveHistory) {
-		if (this.state != null && this.state.focus.equals(focus)) {
+		if (this.state != null && this.state.focus.equalsFocus(focus)) {
 			return true;
 		}
 

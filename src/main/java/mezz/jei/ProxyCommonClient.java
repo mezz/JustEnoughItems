@@ -62,7 +62,7 @@ public class ProxyCommonClient extends ProxyCommon {
 				plugin.onJeiHelpersAvailable(Internal.getHelpers());
 			} catch (AbstractMethodError ignored) {
 				// older plugins don't have this method
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
@@ -92,7 +92,7 @@ public class ProxyCommonClient extends ProxyCommon {
 				plugin.onItemRegistryAvailable(itemRegistry);
 			} catch (AbstractMethodError ignored) {
 				// older plugins don't have this method
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
@@ -106,7 +106,7 @@ public class ProxyCommonClient extends ProxyCommon {
 			try {
 				plugin.register(modRegistry);
 				Log.info("Registered plugin: {}", plugin.getClass().getName());
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				Log.error("Failed to register mod plugin: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
@@ -122,7 +122,7 @@ public class ProxyCommonClient extends ProxyCommon {
 				plugin.onRecipeRegistryAvailable(recipeRegistry);
 			} catch (AbstractMethodError ignored) {
 				// older plugins don't have this method
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
@@ -158,10 +158,12 @@ public class ProxyCommonClient extends ProxyCommon {
 	// subscribe to event with low priority so that addon mods that use the config can do their stuff first
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
-		if (Constants.MOD_ID.equals(eventArgs.modID)) {
-			if (Config.syncConfig()) {
-				restartJEI(); // reload everything, configs can change available recipes
-			}
+		if (!Constants.MOD_ID.equals(eventArgs.modID)) {
+			return;
+		}
+
+		if (Config.syncConfig()) {
+			restartJEI(); // reload everything, configs can change available recipes
 		}
 	}
 }

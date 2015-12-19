@@ -86,76 +86,83 @@ public class Focus {
 		return mode;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof Focus)) {
-			return false;
-		}
-		Focus other = (Focus) obj;
+	public boolean equalsFocus(Focus other) {
 		return ItemStack.areItemStacksEqual(this.stack, other.getStack()) && fluid == other.fluid && mode == other.mode;
 	}
 
 	@Nonnull
 	public List<IRecipeCategory> getCategories() {
 		IRecipeRegistry recipeRegistry = Internal.getRecipeRegistry();
-		switch (mode) {
-			case INPUT: {
-				if (stack != null && fluid != null) {
-					List<IRecipeCategory> categories = new ArrayList<>(recipeRegistry.getRecipeCategoriesWithInput(stack));
-					categories.addAll(recipeRegistry.getRecipeCategoriesWithInput(fluid));
-					return ImmutableSet.copyOf(categories).asList();
-				}
-				if (stack != null) {
-					return recipeRegistry.getRecipeCategoriesWithInput(stack);
-				} else {
-					return recipeRegistry.getRecipeCategoriesWithInput(fluid);
-				}
-			}
-			case OUTPUT: {
-				if (stack != null && fluid != null) {
-					List<IRecipeCategory> categories = new ArrayList<>(recipeRegistry.getRecipeCategoriesWithOutput(stack));
-					categories.addAll(recipeRegistry.getRecipeCategoriesWithOutput(fluid));
-					return ImmutableSet.copyOf(categories).asList();
-				}
-				if (stack != null) {
-					return recipeRegistry.getRecipeCategoriesWithOutput(stack);
-				} else {
-					return recipeRegistry.getRecipeCategoriesWithOutput(fluid);
-				}
-			}
+		if (mode == Mode.INPUT) {
+			return getInputCategories(recipeRegistry);
+		} else if (mode == Mode.OUTPUT) {
+			return getOutputCategories(recipeRegistry);
+		} else {
+			return recipeRegistry.getRecipeCategories();
 		}
-		return recipeRegistry.getRecipeCategories();
+	}
+
+	private List<IRecipeCategory> getInputCategories(IRecipeRegistry recipeRegistry) {
+		if (stack != null && fluid != null) {
+			List<IRecipeCategory> categories = new ArrayList<>(recipeRegistry.getRecipeCategoriesWithInput(stack));
+			categories.addAll(recipeRegistry.getRecipeCategoriesWithInput(fluid));
+			return ImmutableSet.copyOf(categories).asList();
+		}
+		if (stack != null) {
+			return recipeRegistry.getRecipeCategoriesWithInput(stack);
+		} else {
+			return recipeRegistry.getRecipeCategoriesWithInput(fluid);
+		}
+	}
+
+	private List<IRecipeCategory> getOutputCategories(IRecipeRegistry recipeRegistry) {
+		if (stack != null && fluid != null) {
+			List<IRecipeCategory> categories = new ArrayList<>(recipeRegistry.getRecipeCategoriesWithOutput(stack));
+			categories.addAll(recipeRegistry.getRecipeCategoriesWithOutput(fluid));
+			return ImmutableSet.copyOf(categories).asList();
+		}
+		if (stack != null) {
+			return recipeRegistry.getRecipeCategoriesWithOutput(stack);
+		} else {
+			return recipeRegistry.getRecipeCategoriesWithOutput(fluid);
+		}
 	}
 
 	@Nonnull
 	public List<Object> getRecipes(IRecipeCategory recipeCategory) {
 		IRecipeRegistry recipeRegistry = Internal.getRecipeRegistry();
-		switch (mode) {
-			case INPUT: {
-				if (stack != null && fluid != null) {
-					List<Object> recipes = new ArrayList<>(recipeRegistry.getRecipesWithInput(recipeCategory, stack));
-					recipes.addAll(recipeRegistry.getRecipesWithInput(recipeCategory, fluid));
-					return ImmutableSet.copyOf(recipes).asList();
-				}
-				if (stack != null) {
-					return recipeRegistry.getRecipesWithInput(recipeCategory, stack);
-				} else {
-					return recipeRegistry.getRecipesWithInput(recipeCategory, fluid);
-				}
-			}
-			case OUTPUT: {
-				if (stack != null && fluid != null) {
-					List<Object> recipes = new ArrayList<>(recipeRegistry.getRecipesWithOutput(recipeCategory, stack));
-					recipes.addAll(recipeRegistry.getRecipesWithOutput(recipeCategory, fluid));
-					return ImmutableSet.copyOf(recipes).asList();
-				}
-				if (stack != null) {
-					return recipeRegistry.getRecipesWithOutput(recipeCategory, stack);
-				} else {
-					return recipeRegistry.getRecipesWithOutput(recipeCategory, fluid);
-				}
-			}
+		if (mode == Mode.INPUT) {
+			return getInputRecipes(recipeRegistry, recipeCategory);
+		} else if (mode == Mode.OUTPUT) {
+			return getOutputRecipes(recipeRegistry, recipeCategory);
+		} else {
+			return recipeRegistry.getRecipes(recipeCategory);
 		}
-		return recipeRegistry.getRecipes(recipeCategory);
+	}
+
+	private List<Object> getInputRecipes(IRecipeRegistry recipeRegistry, IRecipeCategory recipeCategory) {
+		if (stack != null && fluid != null) {
+			List<Object> recipes = new ArrayList<>(recipeRegistry.getRecipesWithInput(recipeCategory, stack));
+			recipes.addAll(recipeRegistry.getRecipesWithInput(recipeCategory, fluid));
+			return ImmutableSet.copyOf(recipes).asList();
+		}
+		if (stack != null) {
+			return recipeRegistry.getRecipesWithInput(recipeCategory, stack);
+		} else {
+			return recipeRegistry.getRecipesWithInput(recipeCategory, fluid);
+		}
+	}
+
+	private List<Object> getOutputRecipes(IRecipeRegistry recipeRegistry, IRecipeCategory recipeCategory) {
+		if (stack != null && fluid != null) {
+			List<Object> recipes = new ArrayList<>(recipeRegistry.getRecipesWithOutput(recipeCategory, stack));
+			recipes.addAll(recipeRegistry.getRecipesWithOutput(recipeCategory, fluid));
+			return ImmutableSet.copyOf(recipes).asList();
+		}
+		if (stack != null) {
+			return recipeRegistry.getRecipesWithOutput(recipeCategory, stack);
+		} else {
+			return recipeRegistry.getRecipesWithOutput(recipeCategory, fluid);
+		}
 	}
 }

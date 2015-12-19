@@ -23,16 +23,20 @@ import mezz.jei.network.PacketHandler;
 public class JustEnoughItems {
 
 	@SidedProxy(clientSide = "mezz.jei.ProxyCommonClient", serverSide = "mezz.jei.ProxyCommon")
-	public static ProxyCommon common;
+	private static ProxyCommon proxy;
+	private static PacketHandler packetHandler;
 
-	@Mod.Instance(Constants.MOD_ID)
-	public static JustEnoughItems instance;
+	public static PacketHandler getPacketHandler() {
+		return packetHandler;
+	}
 
-	public static PacketHandler packetHandler;
+	public static ProxyCommon getProxy() {
+		return proxy;
+	}
 
 	@NetworkCheckHandler
 	public boolean checkModLists(Map<String, String> modList, Side side) {
-		if (!modList.containsKey(Constants.MOD_ID)) {
+		if (side == Side.SERVER && !modList.containsKey(Constants.MOD_ID)) {
 			Config.disableRecipeTransfer();
 		}
 
@@ -43,16 +47,16 @@ public class JustEnoughItems {
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
 		packetHandler = new PacketHandler();
 		Internal.setHelpers(new JeiHelpers());
-		common.preInit(event);
+		proxy.preInit(event);
 	}
 
 	@Mod.EventHandler
 	public void init(@Nonnull FMLInitializationEvent event) {
-		common.init(event);
+		proxy.init(event);
 	}
 
 	@Mod.EventHandler
 	public void startJEI(@Nonnull FMLModIdMappingEvent event) {
-		common.startJEI();
+		proxy.startJEI();
 	}
 }

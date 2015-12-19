@@ -156,7 +156,7 @@ public class RecipeTransferUtil {
 
 		if (doTransfer) {
 			PacketRecipeTransfer packet = new PacketRecipeTransfer(slotMap, craftingSlotIndexes, inventorySlotIndexes);
-			JustEnoughItems.common.sendPacketToServer(packet);
+			JustEnoughItems.getProxy().sendPacketToServer(packet);
 		}
 
 		return null;

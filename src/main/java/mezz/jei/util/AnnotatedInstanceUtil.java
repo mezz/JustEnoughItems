@@ -38,7 +38,7 @@ public class AnnotatedInstanceUtil {
 				Class<? extends T> asmInstanceClass = asmClass.asSubclass(instanceClass);
 				T instance = asmInstanceClass.newInstance();
 				instances.add(instance);
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				Log.error("Failed to load: {}", asmData.getClassName(), e);
 			}
 		}
