@@ -1,10 +1,7 @@
 package mezz.jei.api;
 
-import com.google.common.collect.ImmutableList;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 import net.minecraft.inventory.Container;
@@ -19,53 +16,53 @@ import mezz.jei.api.recipe.IRecipeTransferHelper;
 /**
  * The IRecipeManager offers several functions for retrieving and handling recipes.
  * The IRecipeManager instance is provided in JEIManager.
- * Available after JEI's FMLLoadCompleteEvent event
+ * Available to IModPlugins
  */
 public interface IRecipeRegistry {
 
 	/** Returns the IRecipeHandler associated with the recipeClass or null if there is none */
 	@Nullable
-	IRecipeHandler getRecipeHandler(Class recipeClass);
+	IRecipeHandler getRecipeHandler(@Nonnull Class recipeClass);
 
-	/** Returns a list of Recipe Categories */
+	/** Returns an unmodifiable list of Recipe Categories */
 	@Nonnull
-	ImmutableList<IRecipeCategory> getRecipeCategories();
+	List<IRecipeCategory> getRecipeCategories();
 
-	/** Returns a list of Recipe Categories that have the ItemStack as an input */
+	/** Returns an unmodifiable list of Recipe Categories that have the ItemStack as an input */
 	@Nonnull
-	ImmutableList<IRecipeCategory> getRecipeCategoriesWithInput(ItemStack input);
+	List<IRecipeCategory> getRecipeCategoriesWithInput(@Nonnull ItemStack input);
 
-	/** Returns a list of Recipe Categories that have the Fluid as an input */
+	/** Returns an unmodifiable list of Recipe Categories that have the Fluid as an input */
 	@Nonnull
-	ImmutableList<IRecipeCategory> getRecipeCategoriesWithInput(Fluid input);
+	List<IRecipeCategory> getRecipeCategoriesWithInput(@Nonnull Fluid input);
 
-	/** Returns a list of Recipe Categories that have the ItemStack as an output */
+	/** Returns an unmodifiable list of Recipe Categories that have the ItemStack as an output */
 	@Nonnull
-	ImmutableList<IRecipeCategory> getRecipeCategoriesWithOutput(ItemStack output);
+	List<IRecipeCategory> getRecipeCategoriesWithOutput(@Nonnull ItemStack output);
 
-	/** Returns a list of Recipe Categories that have the Fluid as an output */
+	/** Returns an unmodifiable list of Recipe Categories that have the Fluid as an output */
 	@Nonnull
-	ImmutableList<IRecipeCategory> getRecipeCategoriesWithOutput(Fluid output);
+	List<IRecipeCategory> getRecipeCategoriesWithOutput(@Nonnull Fluid output);
 
-	/** Returns a list of Recipes of recipeCategory that have the ItemStack as an input */
+	/** Returns an unmodifiable list of Recipes of recipeCategory that have the ItemStack as an input */
 	@Nonnull
-	ImmutableList<Object> getRecipesWithInput(IRecipeCategory recipeCategory, ItemStack input);
+	List<Object> getRecipesWithInput(@Nonnull IRecipeCategory recipeCategory, @Nonnull ItemStack input);
 
-	/** Returns a list of Recipes of recipeCategory that have the Fluid as an input */
+	/** Returns an unmodifiable list of Recipes of recipeCategory that have the Fluid as an input */
 	@Nonnull
-	ImmutableList<Object> getRecipesWithInput(IRecipeCategory recipeCategory, Fluid input);
+	List<Object> getRecipesWithInput(@Nonnull IRecipeCategory recipeCategory, @Nonnull Fluid input);
 
-	/** Returns a list of Recipes of recipeCategory that have the ItemStack as an output */
+	/** Returns an unmodifiable list of Recipes of recipeCategory that have the ItemStack as an output */
 	@Nonnull
-	ImmutableList<Object> getRecipesWithOutput(IRecipeCategory recipeCategory, ItemStack output);
+	List<Object> getRecipesWithOutput(@Nonnull IRecipeCategory recipeCategory, @Nonnull ItemStack output);
 
-	/** Returns a list of Recipes of recipeCategory that have the Fluid as an output */
+	/** Returns an unmodifiable list of Recipes of recipeCategory that have the Fluid as an output */
 	@Nonnull
-	ImmutableList<Object> getRecipesWithOutput(IRecipeCategory recipeCategory, Fluid output);
+	List<Object> getRecipesWithOutput(@Nonnull IRecipeCategory recipeCategory, @Nonnull Fluid output);
 
 	/** Returns an unmodifiable list of Recipes in recipeCategory */
 	@Nonnull
-	List<Object> getRecipes(IRecipeCategory recipeCategory);
+	List<Object> getRecipes(@Nonnull IRecipeCategory recipeCategory);
 
 	/**
 	 * Add a new recipe while the game is running.
@@ -73,8 +70,8 @@ public interface IRecipeRegistry {
 	 * Use your IRecipeHandler.isValid to determine which recipes are hidden, and when a recipe becomes valid you can add it here.
 	 * (note that IRecipeHandler.isValid must be true when the recipe is added here for it to work)
 	 */
-	void addRecipe(Object recipe);
+	void addRecipe(@Nonnull Object recipe);
 
 	@Nullable
-	IRecipeTransferHelper getRecipeTransferHelper(Container container, IRecipeCategory recipeCategory);
+	IRecipeTransferHelper getRecipeTransferHelper(@Nonnull Container container, @Nonnull IRecipeCategory recipeCategory);
 }

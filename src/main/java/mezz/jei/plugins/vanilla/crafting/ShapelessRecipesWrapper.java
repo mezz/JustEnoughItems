@@ -20,7 +20,7 @@ public class ShapelessRecipesWrapper extends VanillaRecipeWrapper implements ICr
 		for (Object input : this.recipe.recipeItems) {
 			if (input instanceof ItemStack) {
 				ItemStack itemStack = (ItemStack) input;
-				if (itemStack.stackSize > 1) {
+				if (itemStack.stackSize != 1) {
 					itemStack.stackSize = 1;
 				}
 			}

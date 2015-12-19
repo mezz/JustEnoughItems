@@ -84,20 +84,30 @@ public class GuiItemStackFast {
 			return;
 		}
 
-		if (Config.editModeEnabled) {
-			renderEditMode();
-		}
-
 		GlStateManager.pushMatrix();
 
 		int x = xPosition + padding + 8;
 		int y = yPosition + padding + 8;
 
 		if (isGui3d) {
+			if (Config.isEditModeEnabled()) {
+				GlStateManager.scale(1.0/20.0F, 1.0/20.0F, 1.0/-20.0F);
+				renderEditMode();
+				GlStateManager.enableBlend();
+				GlStateManager.scale(20.0F, 20.0F, -20.0F);
+			}
+
 			GlStateManager.translate(((float) x) / 20f, ((float) y) / 20f, (100.0F + 50f) / -20f);
 			GlStateManager.rotate(210.0F, 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
 		} else {
+			if (Config.isEditModeEnabled()) {
+				GlStateManager.scale(1.0/32.0F, 1.0/32.0F, 1.0/-32.0F);
+				renderEditMode();
+				GlStateManager.enableBlend();
+				GlStateManager.scale(32.0F, 32.0F, -32.0F);
+			}
+
 			GlStateManager.translate(((float) x) / 32f, ((float) y) / 32f, (100.0F + 50f) / -32f);
 			GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
 		}
@@ -192,7 +202,7 @@ public class GuiItemStackFast {
 	}
 
 	public void renderSlow() {
-		if (Config.editModeEnabled) {
+		if (Config.isEditModeEnabled()) {
 			renderEditMode();
 		}
 
@@ -245,7 +255,7 @@ public class GuiItemStackFast {
 			}
 		}
 
-		if (Config.editModeEnabled) {
+		if (Config.isEditModeEnabled()) {
 			list.add("");
 			list.add(EnumChatFormatting.ITALIC + Translator.translateToLocal("gui.jei.editMode.description"));
 			if (Config.isItemOnConfigBlacklist(itemStack, false)) {

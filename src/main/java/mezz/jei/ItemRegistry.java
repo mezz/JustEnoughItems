@@ -46,24 +46,24 @@ class ItemRegistry implements IItemRegistry {
 
 	public ItemRegistry() {
 		this.modList = new ModList();
-		List<ItemStack> itemList = new ArrayList<>();
-		List<ItemStack> fuels = new ArrayList<>();
+		List<ItemStack> itemListMutable = new ArrayList<>();
+		List<ItemStack> fuelsMutable = new ArrayList<>();
 
 		for (Block block : GameData.getBlockRegistry().typeSafeIterable()) {
-			addBlockAndSubBlocks(block, itemList, fuels);
+			addBlockAndSubBlocks(block, itemListMutable, fuelsMutable);
 		}
 
 		for (Item item : GameData.getItemRegistry().typeSafeIterable()) {
-			addItemAndSubItems(item, itemList, fuels);
+			addItemAndSubItems(item, itemListMutable, fuelsMutable);
 		}
 
-		addEnchantedBooks(itemList);
+		addEnchantedBooks(itemListMutable);
 
-		this.itemList = ImmutableList.copyOf(itemList);
-		this.fuels = ImmutableList.copyOf(fuels);
+		this.itemList = ImmutableList.copyOf(itemListMutable);
+		this.fuels = ImmutableList.copyOf(fuelsMutable);
 
 		ImmutableListMultimap.Builder<String, ItemStack> itemsByModIdBuilder = ImmutableListMultimap.builder();
-		for (ItemStack itemStack : itemList) {
+		for (ItemStack itemStack : itemListMutable) {
 			Item item = itemStack.getItem();
 			if (item != null) {
 				String modId = GameRegistry.findUniqueIdentifierFor(item).modId.toLowerCase(Locale.ENGLISH);
@@ -113,6 +113,7 @@ class ItemRegistry implements IItemRegistry {
 	@Override
 	public String getModNameForItem(@Nullable Item item) {
 		if (item == null) {
+			Log.error("Null item", new NullPointerException());
 			return "";
 		}
 		return modList.getModNameForItem(item);
@@ -120,9 +121,13 @@ class ItemRegistry implements IItemRegistry {
 
 	@Nonnull
 	@Override
-	public ImmutableList<ItemStack> getItemListForModId(String modId) {
-		modId = modId.toLowerCase(Locale.ENGLISH);
-		return itemsByModId.get(modId);
+	public ImmutableList<ItemStack> getItemListForModId(@Nullable String modId) {
+		if (modId == null) {
+			Log.error("Null modId", new NullPointerException());
+			return ImmutableList.of();
+		}
+		String lowerCaseModId = modId.toLowerCase(Locale.ENGLISH);
+		return itemsByModId.get(lowerCaseModId);
 	}
 
 	private void addItemAndSubItems(@Nullable Item item, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {
@@ -196,12 +201,7 @@ class ItemRegistry implements IItemRegistry {
 				fuels.add(stack);
 			}
 		} catch (RuntimeException e) {
-			try {
-				Log.error("Couldn't create unique name for itemStack {}.", stack, e);
-			} catch (RuntimeException ignored) {
-
-			}
+			Log.error("Couldn't create unique name for itemStack {}.", stack.getClass(), e);
 		}
 	}
-
 }

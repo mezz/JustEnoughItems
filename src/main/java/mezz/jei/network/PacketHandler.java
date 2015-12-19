@@ -19,11 +19,11 @@ import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.util.Log;
 
 public class PacketHandler {
-	public static final String channelId = "JEI";
+	public static final String CHANNEL_ID = "JEI";
 	private final FMLEventChannel channel;
 
 	public PacketHandler() {
-		channel = NetworkRegistry.INSTANCE.newEventDrivenChannel(channelId);
+		channel = NetworkRegistry.INSTANCE.newEventDrivenChannel(CHANNEL_ID);
 		channel.register(this);
 	}
 
@@ -49,7 +49,7 @@ public class PacketHandler {
 
 			checkThreadAndEnqueue(packet, packetBuffer, player, player.getServerForPlayer());
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			Log.error("Packet error", ex);
 		}
 	}
 

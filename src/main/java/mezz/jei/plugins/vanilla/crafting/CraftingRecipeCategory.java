@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.JEIManager;
+import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStackGroup;
@@ -30,11 +30,11 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 	@Nonnull
 	private final ICraftingGridHelper craftingGridHelper;
 
-	public CraftingRecipeCategory() {
+	public CraftingRecipeCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/crafting_table.png");
-		background = JEIManager.guiHelper.createDrawable(location, 29, 16, 116, 54);
+		background = guiHelper.createDrawable(location, 29, 16, 116, 54);
 		localizedName = Translator.translateToLocal("gui.jei.category.craftingTable");
-		craftingGridHelper = JEIManager.guiHelper.createCraftingGridHelper(craftInputSlot1, craftOutputSlot);
+		craftingGridHelper = guiHelper.createCraftingGridHelper(craftInputSlot1, craftOutputSlot);
 	}
 
 	@Override

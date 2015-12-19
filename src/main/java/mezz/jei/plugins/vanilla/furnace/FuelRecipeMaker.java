@@ -13,14 +13,15 @@ import net.minecraft.tileentity.TileEntityFurnace;
 
 import net.minecraftforge.oredict.OreDictionary;
 
-import mezz.jei.api.JEIManager;
+import mezz.jei.api.IGuiHelper;
+import mezz.jei.api.IItemRegistry;
 import mezz.jei.util.StackUtil;
 
 public class FuelRecipeMaker {
 
 	@Nonnull
-	public static List<FuelRecipe> getFuelRecipes() {
-		List<ItemStack> fuelStacks = JEIManager.itemRegistry.getFuels();
+	public static List<FuelRecipe> getFuelRecipes(IItemRegistry itemRegistry, IGuiHelper guiHelper) {
+		List<ItemStack> fuelStacks = itemRegistry.getFuels();
 		Set<String> oreDictNames = new HashSet<>();
 		List<FuelRecipe> fuelRecipes = new ArrayList<>(fuelStacks.size());
 		for (ItemStack fuelStack : fuelStacks) {
@@ -45,7 +46,7 @@ public class FuelRecipeMaker {
 					}
 					int burnTime = getBurnTime(oreDictFuels.get(0));
 
-					fuelRecipes.add(new FuelRecipe(oreDictFuelsSet, burnTime));
+					fuelRecipes.add(new FuelRecipe(guiHelper, oreDictFuelsSet, burnTime));
 				}
 			} else {
 				List<ItemStack> fuels = StackUtil.getSubtypes(fuelStack);
@@ -54,7 +55,7 @@ public class FuelRecipeMaker {
 					continue;
 				}
 				int burnTime = getBurnTime(fuels.get(0));
-				fuelRecipes.add(new FuelRecipe(fuels, burnTime));
+				fuelRecipes.add(new FuelRecipe(guiHelper, fuels, burnTime));
 			}
 		}
 		return fuelRecipes;

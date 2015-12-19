@@ -80,7 +80,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 				saveHistory();
 			}
 		}
-		return handled && itemFilter.setFilterText(getText());
+		return handled && ItemFilter.setFilterText(getText());
 	}
 
 	public boolean isMouseOver(int mouseX, int mouseY) {
@@ -90,7 +90,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
 		if (mouseButton == 1) {
 			setText("");
-			return itemFilter.setFilterText("");
+			return ItemFilter.setFilterText("");
 		} else {
 			super.mouseClicked(mouseX, mouseY, mouseButton);
 		}

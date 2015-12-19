@@ -42,6 +42,6 @@ public class ProxyCommon {
 		}
 
 		EntityPlayerMP player = (EntityPlayerMP) entityplayer;
-		JustEnoughItems.packetHandler.sendPacket(packet.getPacket(), player);
+		JustEnoughItems.getPacketHandler().sendPacket(packet.getPacket(), player);
 	}
 }

@@ -25,7 +25,7 @@ public abstract class PacketJEI {
 			Log.error("Error creating packet", e);
 		}
 
-		return new FMLProxyPacket(packetBuffer, PacketHandler.channelId);
+		return new FMLProxyPacket(packetBuffer, PacketHandler.CHANNEL_ID);
 	}
 
 	public abstract IPacketId getPacketId();

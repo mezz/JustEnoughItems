@@ -3,6 +3,9 @@ package mezz.jei.config;
 import java.util.Locale;
 
 public class Constants {
+	private Constants() {
+
+	}
 
 	// Mod info
 	public static final String MOD_ID = "JEI";

@@ -2,9 +2,8 @@ package mezz.jei;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,22 +20,25 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.JEIManager;
-import mezz.jei.api.JEIPlugin;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.network.packets.PacketJEI;
+import mezz.jei.util.AnnotatedInstanceUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.ModRegistry;
 
 public class ProxyCommonClient extends ProxyCommon {
+	private static boolean started = false;
 	@Nullable
 	private ItemFilter itemFilter;
 	private GuiEventHandler guiEventHandler;
-	private Set<ASMDataTable.ASMData> modPlugins;
+	private List<IModPlugin> plugins;
 
 	private void initVersionChecker() {
 		final NBTTagCompound compound = new NBTTagCompound();
@@ -49,7 +51,22 @@ public class ProxyCommonClient extends ProxyCommon {
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
 		Config.preInit(event);
 		initVersionChecker();
-		modPlugins = event.getAsmData().getAll(JEIPlugin.class.getCanonicalName());
+
+		ASMDataTable asmDataTable = event.getAsmData();
+		this.plugins = AnnotatedInstanceUtil.getModPlugins(asmDataTable);
+
+		Iterator<IModPlugin> iterator = plugins.iterator();
+		while (iterator.hasNext()) {
+			IModPlugin plugin = iterator.next();
+			try {
+				plugin.onJeiHelpersAvailable(Internal.getHelpers());
+			} catch (AbstractMethodError ignored) {
+				// older plugins don't have this method
+			} catch (Exception e) {
+				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
+				iterator.remove();
+			}
+		}
 	}
 
 	@Override
@@ -64,19 +81,61 @@ public class ProxyCommonClient extends ProxyCommon {
 
 	@Override
 	public void startJEI() {
-		JEIManager.itemRegistry = new ItemRegistry();
+		started = true;
+		IItemRegistry itemRegistry = JEIManager.itemRegistry = new ItemRegistry();
+		Internal.setItemRegistry(itemRegistry);
 
-		ModRegistry modRegistry = buildModRegistry(modPlugins);
-		JEIManager.recipeRegistry = modRegistry.createRecipeRegistry();
+		Iterator<IModPlugin> iterator = plugins.iterator();
+		while (iterator.hasNext()) {
+			IModPlugin plugin = iterator.next();
+			try {
+				plugin.onItemRegistryAvailable(itemRegistry);
+			} catch (AbstractMethodError ignored) {
+				// older plugins don't have this method
+			} catch (Exception e) {
+				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
+				iterator.remove();
+			}
+		}
 
-		itemFilter = new ItemFilter();
+		ModRegistry modRegistry = new ModRegistry();
+
+		iterator = plugins.iterator();
+		while (iterator.hasNext()) {
+			IModPlugin plugin = iterator.next();
+			try {
+				plugin.register(modRegistry);
+				Log.info("Registered plugin: {}", plugin.getClass().getName());
+			} catch (Exception e) {
+				Log.error("Failed to register mod plugin: {}", plugin.getClass(), e);
+				iterator.remove();
+			}
+		}
+
+		IRecipeRegistry recipeRegistry = JEIManager.recipeRegistry = modRegistry.createRecipeRegistry();
+		Internal.setRecipeRegistry(recipeRegistry);
+
+		iterator = plugins.iterator();
+		while (iterator.hasNext()) {
+			IModPlugin plugin = iterator.next();
+			try {
+				plugin.onRecipeRegistryAvailable(recipeRegistry);
+			} catch (AbstractMethodError ignored) {
+				// older plugins don't have this method
+			} catch (Exception e) {
+				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
+				iterator.remove();
+			}
+		}
+
+		itemFilter = new ItemFilter(itemRegistry);
 		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter);
 		guiEventHandler.setItemListOverlay(itemListOverlay);
 	}
 
 	private void restartJEI() {
-		// check that JEI has been started before, if not do nothing
-		if (JEIManager.itemRegistry != null) {
+		// check that JEI has been started before. if not, do nothing
+		if (started) {
 			startJEI();
 		}
 	}
@@ -99,39 +158,12 @@ public class ProxyCommonClient extends ProxyCommon {
 	// subscribe to event with low priority so that addon mods that use the config can do their stuff first
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
-		if (Constants.MOD_ID.equals(eventArgs.modID)) {
-			if (Config.syncConfig()) {
-				restartJEI(); // reload everything, configs can change available recipes
-			}
-		}
-	}
-
-	private static ModRegistry buildModRegistry(@Nonnull Set<ASMDataTable.ASMData> modPluginsData) {
-		List<IModPlugin> plugins = new ArrayList<>();
-		for (ASMDataTable.ASMData asmData : modPluginsData) {
-			try {
-				Class<?> asmClass = Class.forName(asmData.getClassName());
-				Class<? extends IModPlugin> modPluginClass = asmClass.asSubclass(IModPlugin.class);
-				IModPlugin plugin = modPluginClass.newInstance();
-				if (plugin.isModLoaded()) {
-					plugins.add(plugin);
-				}
-			} catch (Throwable e) {
-				Log.error("Failed to load mod plugin: {}", asmData.getClassName(), e);
-			}
+		if (!Constants.MOD_ID.equals(eventArgs.modID)) {
+			return;
 		}
 
-		ModRegistry modRegistry = new ModRegistry();
-
-		for (IModPlugin plugin : plugins) {
-			try {
-				plugin.register(modRegistry);
-				Log.info("Registered plugin: {}", plugin.getClass().getName());
-			} catch (Throwable e) {
-				Log.error("Failed to register mod plugin: {}", plugin.getClass(), e);
-			}
+		if (Config.syncConfig()) {
+			restartJEI(); // reload everything, configs can change available recipes
 		}
-
-		return modRegistry;
 	}
 }

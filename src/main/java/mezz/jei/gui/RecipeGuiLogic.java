@@ -12,7 +12,8 @@ import java.util.Stack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Container;
 
-import mezz.jei.api.JEIManager;
+import mezz.jei.Internal;
+import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
@@ -44,7 +45,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	/* List of Recipe Categories that involve the focus */
 	@Nonnull
-	private ImmutableList<IRecipeCategory> recipeCategories = ImmutableList.of();
+	private List<IRecipeCategory> recipeCategories = ImmutableList.of();
 
 	/* List of recipes for the currently selected recipeClass */
 	@Nonnull
@@ -71,11 +72,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	private boolean setFocus(@Nonnull Focus focus, boolean saveHistory) {
-		if (this.state != null && this.state.focus.equals(focus)) {
+		if (this.state != null && this.state.focus.equalsFocus(focus)) {
 			return true;
 		}
 
-		ImmutableList<IRecipeCategory> types = focus.getCategories();
+		List<IRecipeCategory> types = focus.getCategories();
 		if (types.isEmpty()) {
 			return false;
 		}
@@ -87,7 +88,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		if (container != null) {
 			for (int i = 0; i < recipeCategories.size(); i++) {
 				IRecipeCategory recipeCategory = recipeCategories.get(i);
-				if (JEIManager.recipeRegistry.getRecipeTransferHelper(container, recipeCategory) != null) {
+				if (Internal.getRecipeRegistry().getRecipeTransferHelper(container, recipeCategory) != null) {
 					recipeCategoryIndex = i;
 					break;
 				}
@@ -118,7 +119,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			history.push(this.state);
 		}
 
-		this.recipeCategories = JEIManager.recipeRegistry.getRecipeCategories();
+		this.recipeCategories = Internal.getRecipeRegistry().getRecipeCategories();
 
 		int recipeCategoryIndex = this.recipeCategories.indexOf(recipeCategory);
 
@@ -181,10 +182,12 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			return recipeWidgets;
 		}
 
+		IRecipeRegistry recipeRegistry = Internal.getRecipeRegistry();
+
 		int recipeWidgetIndex = 0;
 		for (int recipeIndex = state.pageIndex * recipesPerPage; recipeIndex < recipes.size() && recipeWidgets.size() < recipesPerPage; recipeIndex++) {
 			Object recipe = recipes.get(recipeIndex);
-			IRecipeHandler recipeHandler = JEIManager.recipeRegistry.getRecipeHandler(recipe.getClass());
+			IRecipeHandler recipeHandler = recipeRegistry.getRecipeHandler(recipe.getClass());
 			if (recipeHandler == null) {
 				Log.error("Couldn't find recipe handler for recipe: {}", recipe);
 				continue;

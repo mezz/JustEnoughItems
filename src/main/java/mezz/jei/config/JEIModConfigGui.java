@@ -20,10 +20,10 @@ public class JEIModConfigGui extends GuiConfig {
 	}
 
 	private static List<IConfigElement> getConfigElements() {
-		ConfigCategory categoryAdvanced = Config.configFile.getCategory(Config.categoryAdvanced);
-		ConfigCategory categoryInterface = Config.configFile.getCategory(Config.categoryInterface);
-		ConfigCategory categoryMode = Config.configFile.getCategory(Config.categoryMode);
-		ConfigCategory categoryAddons = Config.configFile.getCategory(Config.categoryAddons);
+		ConfigCategory categoryAdvanced = Config.getConfigFile().getCategory(Config.CATEGORY_ADVANCED);
+		ConfigCategory categoryInterface = Config.getConfigFile().getCategory(Config.CATEGORY_INTERFACE);
+		ConfigCategory categoryMode = Config.getConfigFile().getCategory(Config.CATEGORY_MODE);
+		ConfigCategory categoryAddons = Config.getConfigFile().getCategory(Config.CATEGORY_ADDONS);
 
 		List<IConfigElement> configElements = new ArrayList<>();
 		configElements.addAll(new ConfigElement(categoryMode).getChildElements());
@@ -39,7 +39,7 @@ public class JEIModConfigGui extends GuiConfig {
 
 	private static String getTitle(GuiScreen parent) {
 		if (parent instanceof GuiModList) {
-			return GuiConfig.getAbridgedConfigPath(Config.configFile.toString());
+			return GuiConfig.getAbridgedConfigPath(Config.getConfigFile().toString());
 		}
 		return Translator.translateToLocal("config.jei.title").replace("%MODNAME", Constants.NAME);
 	}

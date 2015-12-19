@@ -13,7 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
-import mezz.jei.api.JEIManager;
+import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
 import mezz.jei.config.Config;
@@ -26,6 +26,8 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 	private final List<String> description;
 	@Nonnull
 	private final List<List<ItemStack>> outputs;
+	@Nonnull
+	private final IDrawable slotDrawable;
 
 	public static List<ItemDescriptionRecipe> create(@Nonnull List<ItemStack> itemStacks, String... descriptionKeys) {
 		List<ItemDescriptionRecipe> recipes = new ArrayList<>();
@@ -84,6 +86,7 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 	private ItemDescriptionRecipe(@Nonnull List<ItemStack> itemStacks, @Nonnull List<String> description) {
 		this.description = description;
 		this.outputs = Collections.singletonList(itemStacks);
+		this.slotDrawable = Internal.getHelpers().getGuiHelper().getSlotDrawable();
 	}
 
 	@Nonnull
@@ -94,7 +97,7 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 
 	@Override
 	public List<FluidStack> getFluidInputs() {
-		if (Config.debugModeEnabled) {
+		if (Config.isDebugModeEnabled()) {
 			return Arrays.asList(
 					new FluidStack(FluidRegistry.WATER, 1000 + (int) (Math.random() * 1000)),
 					new FluidStack(FluidRegistry.LAVA, 1000 + (int) (Math.random() * 1000))
@@ -105,7 +108,6 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 
 	@Override
 	public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight) {
-		IDrawable slotDrawable = JEIManager.guiHelper.getSlotDrawable();
 		int xPos = (recipeWidth - slotDrawable.getWidth()) / 2;
 		int yPos = 0;
 		slotDrawable.draw(minecraft, xPos, yPos);

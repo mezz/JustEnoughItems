@@ -105,6 +105,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Override
 	public void addRecipe(@Nullable Object recipe) {
 		if (recipe == null) {
+			Log.error("Null recipe", new NullPointerException());
 			return;
 		}
 
@@ -178,7 +179,12 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Nullable
 	@Override
-	public IRecipeHandler getRecipeHandler(@Nonnull Class recipeClass) {
+	public IRecipeHandler getRecipeHandler(@Nullable Class recipeClass) {
+		if (recipeClass == null) {
+			Log.error("Null recipeClass", new NullPointerException());
+			return null;
+		}
+
 		IRecipeHandler recipeHandler;
 		while ((recipeHandler = recipeHandlers.get(recipeClass)) == null && (recipeClass != Object.class)) {
 			recipeClass = recipeClass.getSuperclass();
@@ -191,6 +197,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Override
 	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithInput(@Nullable ItemStack input) {
 		if (input == null) {
+			Log.error("Null ItemStack input", new NullPointerException());
 			return ImmutableList.of();
 		}
 		return recipeInputMap.getRecipeCategories(input);
@@ -200,6 +207,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Override
 	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithInput(@Nullable Fluid input) {
 		if (input == null) {
+			Log.error("Null Fluid input", new NullPointerException());
 			return ImmutableList.of();
 		}
 		return recipeInputMap.getRecipeCategories(input);
@@ -209,6 +217,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Override
 	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithOutput(@Nullable ItemStack output) {
 		if (output == null) {
+			Log.error("Null ItemStack output", new NullPointerException());
 			return ImmutableList.of();
 		}
 		return recipeOutputMap.getRecipeCategories(output);
@@ -218,6 +227,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Override
 	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithOutput(@Nullable Fluid output) {
 		if (output == null) {
+			Log.error("Null Fluid output", new NullPointerException());
 			return ImmutableList.of();
 		}
 		return recipeOutputMap.getRecipeCategories(output);
@@ -226,7 +236,11 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Nonnull
 	@Override
 	public ImmutableList<Object> getRecipesWithInput(@Nullable IRecipeCategory recipeCategory, @Nullable ItemStack input) {
-		if (recipeCategory == null || input == null) {
+		if (recipeCategory == null) {
+			Log.error("Null recipeCategory", new NullPointerException());
+			return ImmutableList.of();
+		} else if (input == null) {
+			Log.error("Null ItemStack input", new NullPointerException());
 			return ImmutableList.of();
 		}
 		return recipeInputMap.getRecipes(recipeCategory, input);
@@ -234,8 +248,12 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Nonnull
 	@Override
-	public ImmutableList<Object> getRecipesWithInput(@Nullable IRecipeCategory recipeCategory, @Nullable Fluid input) {
-		if (recipeCategory == null || input == null) {
+	public List<Object> getRecipesWithInput(@Nullable IRecipeCategory recipeCategory, @Nullable Fluid input) {
+		if (recipeCategory == null) {
+			Log.error("Null recipeCategory", new NullPointerException());
+			return ImmutableList.of();
+		} else if (input == null) {
+			Log.error("Null Fluid input", new NullPointerException());
 			return ImmutableList.of();
 		}
 		return recipeInputMap.getRecipes(recipeCategory, input);
@@ -244,7 +262,11 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Nonnull
 	@Override
 	public ImmutableList<Object> getRecipesWithOutput(@Nullable IRecipeCategory recipeCategory, @Nullable ItemStack output) {
-		if (recipeCategory == null || output == null) {
+		if (recipeCategory == null) {
+			Log.error("Null recipeCategory", new NullPointerException());
+			return ImmutableList.of();
+		} else if (output == null) {
+			Log.error("Null ItemStack output", new NullPointerException());
 			return ImmutableList.of();
 		}
 		return recipeOutputMap.getRecipes(recipeCategory, output);
@@ -252,8 +274,11 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Nonnull
 	@Override
-	public ImmutableList<Object> getRecipesWithOutput(@Nullable IRecipeCategory recipeCategory, @Nullable Fluid output) {
-		if (recipeCategory == null || output == null) {
+	public List<Object> getRecipesWithOutput(@Nullable IRecipeCategory recipeCategory, @Nullable Fluid output) {
+		if (recipeCategory == null) {
+			return ImmutableList.of();
+		} else if (output == null) {
+			Log.error("Null Fluid output", new NullPointerException());
 			return ImmutableList.of();
 		}
 		return recipeOutputMap.getRecipes(recipeCategory, output);
@@ -263,6 +288,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Override
 	public List<Object> getRecipes(@Nullable IRecipeCategory recipeCategory) {
 		if (recipeCategory == null) {
+			Log.error("Null recipeCategory", new NullPointerException());
 			return ImmutableList.of();
 		}
 		return Collections.unmodifiableList(recipesForCategories.get(recipeCategory));
@@ -271,7 +297,11 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Nullable
 	@Override
 	public IRecipeTransferHelper getRecipeTransferHelper(@Nullable Container container, @Nullable IRecipeCategory recipeCategory) {
-		if (container == null || recipeCategory == null) {
+		if (container == null) {
+			Log.error("Null container", new NullPointerException());
+			return null;
+		} else if (recipeCategory == null) {
+			Log.error("Null recipeCategory", new NullPointerException());
 			return null;
 		}
 		return recipeTransferHelpers.get(container.getClass(), recipeCategory.getUid());

@@ -11,10 +11,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
-import mezz.jei.api.JEIManager;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
-import mezz.jei.gui.GuiHelper;
 import mezz.jei.network.PacketHandler;
 
 @Mod(modid = Constants.MOD_ID,
@@ -25,16 +23,22 @@ import mezz.jei.network.PacketHandler;
 public class JustEnoughItems {
 
 	@SidedProxy(clientSide = "mezz.jei.ProxyCommonClient", serverSide = "mezz.jei.ProxyCommon")
-	public static ProxyCommon common;
+	private static ProxyCommon proxy;
+	private static PacketHandler packetHandler;
 
-	@Mod.Instance(Constants.MOD_ID)
-	public static JustEnoughItems instance;
+	public static PacketHandler getPacketHandler() {
+		return packetHandler;
+	}
 
-	public static PacketHandler packetHandler;
+	public static ProxyCommon getProxy() {
+		return proxy;
+	}
 
 	@NetworkCheckHandler
 	public boolean checkModLists(Map<String, String> modList, Side side) {
-		Config.recipeTransferEnabled = modList.containsKey(Constants.MOD_ID);
+		if (side == Side.SERVER && !modList.containsKey(Constants.MOD_ID)) {
+			Config.disableRecipeTransfer();
+		}
 
 		return true;
 	}
@@ -42,19 +46,17 @@ public class JustEnoughItems {
 	@Mod.EventHandler
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
 		packetHandler = new PacketHandler();
-		JEIManager.guiHelper = new GuiHelper();
-		JEIManager.itemBlacklist = new ItemBlacklist();
-		JEIManager.nbtIgnoreList = new NbtIgnoreList();
-		common.preInit(event);
+		Internal.setHelpers(new JeiHelpers());
+		proxy.preInit(event);
 	}
 
 	@Mod.EventHandler
 	public void init(@Nonnull FMLInitializationEvent event) {
-		common.init(event);
+		proxy.init(event);
 	}
 
 	@Mod.EventHandler
 	public void startJEI(@Nonnull FMLModIdMappingEvent event) {
-		common.startJEI();
+		proxy.startJEI();
 	}
 }

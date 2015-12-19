@@ -1,5 +1,6 @@
 package mezz.jei.api;
 
+import javax.annotation.Nonnull;
 import java.util.Set;
 
 public interface INbtIgnoreList {
@@ -11,10 +12,11 @@ public interface INbtIgnoreList {
 	/**
 	 * Check to see if an NBT tag is ignored.
 	 */
-	boolean isNbtTagIgnored(String nbtTagName);
+	boolean isNbtTagIgnored(@Nonnull String nbtTagName);
 
 	/**
 	 * Get all the ignored tag names out of a set of NBT tag names.
 	 */
-	Set<String> getIgnoredNbtTags(Set<String> nbtTagNames);
+	@Nonnull
+	Set<String> getIgnoredNbtTags(@Nonnull Set<String> nbtTagNames);
 }
