@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 
 import mezz.jei.JustEnoughItems;
 import mezz.jei.api.JEIManager;
+import mezz.jei.api.recipe.IRecipeCustomTransferHelper;
 import mezz.jei.api.recipe.IRecipeTransferHelper;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Config;
@@ -54,6 +55,13 @@ public class RecipeTransferUtil {
 				Log.error("No Recipe Transfer helper for container {}", container.getClass());
 			}
 			return RecipeTransferErrorInternal.instance;
+		}
+		
+		//Handles custom container transfer logic
+		if(transferHelper instanceof IRecipeCustomTransferHelper) {
+			IRecipeCustomTransferHelper customTransferHelper = (IRecipeCustomTransferHelper)transferHelper;
+			customTransferHelper.handleTransfer(player, recipeLayout.getRecipeWrapper());
+			return null;
 		}
 
 		Map<Integer, Slot> inventorySlots = new HashMap<>();
