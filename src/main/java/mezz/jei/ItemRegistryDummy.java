@@ -3,6 +3,7 @@ package mezz.jei;
 import com.google.common.collect.ImmutableList;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -34,13 +35,16 @@ public class ItemRegistryDummy implements IItemRegistry {
 
 	@Nonnull
 	@Override
-	public String getModNameForItem(Item item) {
+	public String getModNameForItem(@Nullable Item item) {
+		if (item == null) {
+			return "";
+		}
 		return modList.getModNameForItem(item);
 	}
 
 	@Nonnull
 	@Override
-	public ImmutableList<ItemStack> getItemListForModId(String modId) {
+	public ImmutableList<ItemStack> getItemListForModId(@Nullable String modId) {
 		return ImmutableList.of();
 	}
 }

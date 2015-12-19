@@ -20,8 +20,8 @@ import net.minecraftforge.fml.client.config.HoverChecker;
 
 import org.lwjgl.input.Keyboard;
 
+import mezz.jei.Internal;
 import mezz.jei.ItemFilter;
-import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.config.Constants;
 import mezz.jei.config.JEIModConfigGui;
@@ -115,7 +115,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		int configButtonY = screenHeight - configButtonSize - borderPadding;
 		configButton = new GuiButtonExt(2, configButtonX, configButtonY, configButtonSize, configButtonSize, null);
 		ResourceLocation configButtonIconLocation = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_GUI_PATH + "recipeBackground.png");
-		configButtonIcon = JEIManager.guiHelper.createDrawable(configButtonIconLocation, 0, 166, 16, 16);
+		configButtonIcon = Internal.getHelpers().getGuiHelper().createDrawable(configButtonIconLocation, 0, 166, 16, 16);
 		configButtonHoverChecker = new HoverChecker(configButton, 0);
 
 		int searchFieldY = screenHeight - searchHeight - borderPadding - 2;

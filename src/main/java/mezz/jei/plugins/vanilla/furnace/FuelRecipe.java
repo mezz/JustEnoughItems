@@ -9,9 +9,11 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.JEIManager;
+import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawableAnimated;
+import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
 import mezz.jei.util.Translator;
 
@@ -23,11 +25,14 @@ public class FuelRecipe extends VanillaRecipeWrapper {
 	@Nonnull
 	private final IDrawableAnimated flame;
 
-	public FuelRecipe(@Nonnull Collection<ItemStack> input, int burnTime) {
+	public FuelRecipe(@Nonnull IGuiHelper guiHelper, @Nonnull Collection<ItemStack> input, int burnTime) {
 		List<ItemStack> inputList = new ArrayList<>(input);
 		this.inputs = Collections.singletonList(inputList);
 		this.burnTimeString = Translator.translateToLocalFormatted("gui.jei.category.fuel.burnTime", burnTime);
-		this.flame = JEIManager.guiHelper.createAnimatedDrawable(flameDrawable, burnTime, IDrawableAnimated.StartDirection.TOP, true);
+
+		ResourceLocation furnaceBackgroundLocation = new ResourceLocation("minecraft", "textures/gui/container/furnace.png");
+		IDrawableStatic flameDrawable = guiHelper.createDrawable(furnaceBackgroundLocation, 176, 0, 14, 14);
+		this.flame = guiHelper.createAnimatedDrawable(flameDrawable, burnTime, IDrawableAnimated.StartDirection.TOP, true);
 	}
 
 	@Nonnull

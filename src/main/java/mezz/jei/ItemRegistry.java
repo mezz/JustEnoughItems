@@ -113,6 +113,7 @@ class ItemRegistry implements IItemRegistry {
 	@Override
 	public String getModNameForItem(@Nullable Item item) {
 		if (item == null) {
+			Log.error("Null item", new NullPointerException());
 			return "";
 		}
 		return modList.getModNameForItem(item);
@@ -120,7 +121,11 @@ class ItemRegistry implements IItemRegistry {
 
 	@Nonnull
 	@Override
-	public ImmutableList<ItemStack> getItemListForModId(String modId) {
+	public ImmutableList<ItemStack> getItemListForModId(@Nullable String modId) {
+		if (modId == null) {
+			Log.error("Null modId", new NullPointerException());
+			return ImmutableList.of();
+		}
 		modId = modId.toLowerCase(Locale.ENGLISH);
 		return itemsByModId.get(modId);
 	}

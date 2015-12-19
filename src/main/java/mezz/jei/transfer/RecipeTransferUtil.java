@@ -17,8 +17,8 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
+import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
-import mezz.jei.api.JEIManager;
 import mezz.jei.api.recipe.IRecipeTransferHelper;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Config;
@@ -42,13 +42,13 @@ public class RecipeTransferUtil {
 
 	@Nullable
 	private static IRecipeTransferError transferRecipe(@Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean doTransfer) {
-		if (!Config.recipeTransferEnabled) {
+		if (!Config.isRecipeTransferEnabled()) {
 			return RecipeTransferErrorInternal.instance;
 		}
 
 		Container container = player.openContainer;
 
-		IRecipeTransferHelper transferHelper = JEIManager.recipeRegistry.getRecipeTransferHelper(container, recipeLayout.getRecipeCategory());
+		IRecipeTransferHelper transferHelper = Internal.getRecipeRegistry().getRecipeTransferHelper(container, recipeLayout.getRecipeCategory());
 		if (transferHelper == null) {
 			if (doTransfer) {
 				Log.error("No Recipe Transfer helper for container {}", container.getClass());

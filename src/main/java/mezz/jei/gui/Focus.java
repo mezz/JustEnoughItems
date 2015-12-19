@@ -1,6 +1,5 @@
 package mezz.jei.gui;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import javax.annotation.Nonnull;
@@ -15,7 +14,8 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
 
-import mezz.jei.api.JEIManager;
+import mezz.jei.Internal;
+import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 
 public class Focus {
@@ -96,64 +96,66 @@ public class Focus {
 	}
 
 	@Nonnull
-	public ImmutableList<IRecipeCategory> getCategories() {
+	public List<IRecipeCategory> getCategories() {
+		IRecipeRegistry recipeRegistry = Internal.getRecipeRegistry();
 		switch (mode) {
 			case INPUT: {
 				if (stack != null && fluid != null) {
-					List<IRecipeCategory> categories = new ArrayList<>(JEIManager.recipeRegistry.getRecipeCategoriesWithInput(stack));
-					categories.addAll(JEIManager.recipeRegistry.getRecipeCategoriesWithInput(fluid));
+					List<IRecipeCategory> categories = new ArrayList<>(recipeRegistry.getRecipeCategoriesWithInput(stack));
+					categories.addAll(recipeRegistry.getRecipeCategoriesWithInput(fluid));
 					return ImmutableSet.copyOf(categories).asList();
 				}
 				if (stack != null) {
-					return JEIManager.recipeRegistry.getRecipeCategoriesWithInput(stack);
+					return recipeRegistry.getRecipeCategoriesWithInput(stack);
 				} else {
-					return JEIManager.recipeRegistry.getRecipeCategoriesWithInput(fluid);
+					return recipeRegistry.getRecipeCategoriesWithInput(fluid);
 				}
 			}
 			case OUTPUT: {
 				if (stack != null && fluid != null) {
-					List<IRecipeCategory> categories = new ArrayList<>(JEIManager.recipeRegistry.getRecipeCategoriesWithOutput(stack));
-					categories.addAll(JEIManager.recipeRegistry.getRecipeCategoriesWithOutput(fluid));
+					List<IRecipeCategory> categories = new ArrayList<>(recipeRegistry.getRecipeCategoriesWithOutput(stack));
+					categories.addAll(recipeRegistry.getRecipeCategoriesWithOutput(fluid));
 					return ImmutableSet.copyOf(categories).asList();
 				}
 				if (stack != null) {
-					return JEIManager.recipeRegistry.getRecipeCategoriesWithOutput(stack);
+					return recipeRegistry.getRecipeCategoriesWithOutput(stack);
 				} else {
-					return JEIManager.recipeRegistry.getRecipeCategoriesWithOutput(fluid);
+					return recipeRegistry.getRecipeCategoriesWithOutput(fluid);
 				}
 			}
 		}
-		return JEIManager.recipeRegistry.getRecipeCategories();
+		return recipeRegistry.getRecipeCategories();
 	}
 
 	@Nonnull
 	public List<Object> getRecipes(IRecipeCategory recipeCategory) {
+		IRecipeRegistry recipeRegistry = Internal.getRecipeRegistry();
 		switch (mode) {
 			case INPUT: {
 				if (stack != null && fluid != null) {
-					List<Object> recipes = new ArrayList<>(JEIManager.recipeRegistry.getRecipesWithInput(recipeCategory, stack));
-					recipes.addAll(JEIManager.recipeRegistry.getRecipesWithInput(recipeCategory, fluid));
+					List<Object> recipes = new ArrayList<>(recipeRegistry.getRecipesWithInput(recipeCategory, stack));
+					recipes.addAll(recipeRegistry.getRecipesWithInput(recipeCategory, fluid));
 					return ImmutableSet.copyOf(recipes).asList();
 				}
 				if (stack != null) {
-					return JEIManager.recipeRegistry.getRecipesWithInput(recipeCategory, stack);
+					return recipeRegistry.getRecipesWithInput(recipeCategory, stack);
 				} else {
-					return JEIManager.recipeRegistry.getRecipesWithInput(recipeCategory, fluid);
+					return recipeRegistry.getRecipesWithInput(recipeCategory, fluid);
 				}
 			}
 			case OUTPUT: {
 				if (stack != null && fluid != null) {
-					List<Object> recipes = new ArrayList<>(JEIManager.recipeRegistry.getRecipesWithOutput(recipeCategory, stack));
-					recipes.addAll(JEIManager.recipeRegistry.getRecipesWithOutput(recipeCategory, fluid));
+					List<Object> recipes = new ArrayList<>(recipeRegistry.getRecipesWithOutput(recipeCategory, stack));
+					recipes.addAll(recipeRegistry.getRecipesWithOutput(recipeCategory, fluid));
 					return ImmutableSet.copyOf(recipes).asList();
 				}
 				if (stack != null) {
-					return JEIManager.recipeRegistry.getRecipesWithOutput(recipeCategory, stack);
+					return recipeRegistry.getRecipesWithOutput(recipeCategory, stack);
 				} else {
-					return JEIManager.recipeRegistry.getRecipesWithOutput(recipeCategory, fluid);
+					return recipeRegistry.getRecipesWithOutput(recipeCategory, fluid);
 				}
 			}
 		}
-		return JEIManager.recipeRegistry.getRecipes(recipeCategory);
+		return recipeRegistry.getRecipes(recipeCategory);
 	}
 }

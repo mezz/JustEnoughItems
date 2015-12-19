@@ -84,7 +84,7 @@ public class GuiItemStackFast {
 			return;
 		}
 
-		if (Config.editModeEnabled) {
+		if (Config.isEditModeEnabled()) {
 			renderEditMode();
 		}
 
@@ -193,7 +193,7 @@ public class GuiItemStackFast {
 	}
 
 	public void renderSlow() {
-		if (Config.editModeEnabled) {
+		if (Config.isEditModeEnabled()) {
 			renderEditMode();
 		}
 
@@ -246,7 +246,7 @@ public class GuiItemStackFast {
 			}
 		}
 
-		if (Config.editModeEnabled) {
+		if (Config.isEditModeEnabled()) {
 			list.add("");
 			list.add(EnumChatFormatting.ITALIC + Translator.translateToLocal("gui.jei.editMode.description"));
 			if (Config.isItemOnConfigBlacklist(itemStack, false)) {

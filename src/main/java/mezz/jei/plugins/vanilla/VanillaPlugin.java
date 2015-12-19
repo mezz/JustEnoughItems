@@ -4,8 +4,12 @@ import net.minecraft.inventory.ContainerBrewingStand;
 import net.minecraft.inventory.ContainerFurnace;
 import net.minecraft.inventory.ContainerWorkbench;
 
+import mezz.jei.api.IGuiHelper;
+import mezz.jei.api.IItemRegistry;
+import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
+import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeCategory;
@@ -26,6 +30,8 @@ import mezz.jei.plugins.vanilla.furnace.SmeltingRecipeMaker;
 
 @JEIPlugin
 public class VanillaPlugin implements IModPlugin {
+	private IItemRegistry itemRegistry;
+	private IJeiHelpers jeiHelpers;
 
 	@Override
 	public boolean isModLoaded() {
@@ -33,12 +39,23 @@ public class VanillaPlugin implements IModPlugin {
 	}
 
 	@Override
+	public void onJeiHelpersAvailable(IJeiHelpers jeiHelpers) {
+		this.jeiHelpers = jeiHelpers;
+	}
+
+	@Override
+	public void onItemRegistryAvailable(IItemRegistry itemRegistry) {
+		this.itemRegistry = itemRegistry;
+	}
+
+	@Override
 	public void register(IModRegistry registry) {
+		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 		registry.addRecipeCategories(
-				new CraftingRecipeCategory(),
-				new FurnaceFuelCategory(),
-				new FurnaceSmeltingCategory(),
-				new BrewingRecipeCategory()
+				new CraftingRecipeCategory(guiHelper),
+				new FurnaceFuelCategory(guiHelper),
+				new FurnaceSmeltingCategory(guiHelper),
+				new BrewingRecipeCategory(guiHelper)
 		);
 
 		registry.addRecipeHandlers(
@@ -58,7 +75,12 @@ public class VanillaPlugin implements IModPlugin {
 
 		registry.addRecipes(CraftingRecipeMaker.getCraftingRecipes());
 		registry.addRecipes(SmeltingRecipeMaker.getFurnaceRecipes());
-		registry.addRecipes(FuelRecipeMaker.getFuelRecipes());
-		registry.addRecipes(BrewingRecipeMaker.getBrewingRecipes());
+		registry.addRecipes(FuelRecipeMaker.getFuelRecipes(itemRegistry, guiHelper));
+		registry.addRecipes(BrewingRecipeMaker.getBrewingRecipes(itemRegistry));
+	}
+
+	@Override
+	public void onRecipeRegistryAvailable(IRecipeRegistry recipeRegistry) {
+
 	}
 }

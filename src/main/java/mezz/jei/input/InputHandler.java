@@ -128,13 +128,13 @@ public class InputHandler {
 	}
 
 	private boolean handleMouseClickedFocus(int mouseButton, @Nonnull Focus focus) {
-		if (Config.editModeEnabled && GuiScreen.isCtrlKeyDown()) {
+		if (Config.isEditModeEnabled() && GuiScreen.isCtrlKeyDown()) {
 			if (handleClickEditStack(mouseButton, focus)) {
 				return true;
 			}
 		}
 
-		if (Config.cheatItemsEnabled && focus.getStack() != null) {
+		if (Config.isCheatItemsEnabled() && focus.getStack() != null) {
 			if (mouseButton == 0) {
 				Commands.giveFullStack(focus.getStack());
 				return true;

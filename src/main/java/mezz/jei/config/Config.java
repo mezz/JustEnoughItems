@@ -13,26 +13,70 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import mezz.jei.util.StackUtil;
 
 public class Config {
+	public static final String CATEGORY_MODE = "mode";
+	public static final String CATEGORY_INTERFACE = "interface";
+	public static final String CATEGORY_ADVANCED = "advanced";
+	public static final String CATEGORY_ADDONS = "addons";
+
 	public static LocalizedConfiguration configFile;
 
-	public static final String categoryMode = "mode";
-	public static final String categoryInterface = "interface";
-	public static final String categoryAdvanced = "advanced";
-	public static final String categoryAddons = "addons";
+	private static boolean cheatItemsEnabled = false;
+	private static boolean editModeEnabled = false;
+	private static boolean debugModeEnabled = false;
 
-	public static boolean cheatItemsEnabled = false;
-	public static boolean editModeEnabled = false;
-	public static boolean debugModeEnabled = false;
+	private static boolean recipeTransferEnabled = true;
+	private static boolean recipeAnimationsEnabled = true;
+	private static boolean hideMissingModelsEnabled = true;
 
-	public static boolean recipeTransferEnabled = true;
-	public static boolean recipeAnimationsEnabled = true;
-	public static boolean hideMissingModelsEnabled = true;
+	private static final Set<String> nbtKeyIgnoreList = new HashSet<>();
+	private static final Set<String> itemBlacklist = new HashSet<>();
 
-	public static final Set<String> nbtKeyIgnoreList = new HashSet<>();
-	public static final Set<String> itemBlacklist = new HashSet<>();
+	private static final String[] defaultItemBlacklist = new String[]{};
+	private static final String[] defaultNbtKeyIgnoreList = new String[]{"BlockEntityTag", "CanPlaceOn"};
 
-	public static final String[] defaultItemBlacklist = new String[]{};
-	public static final String[] defaultNbtKeyIgnoreList = new String[]{"BlockEntityTag", "CanPlaceOn"};
+	private Config() {
+
+	}
+
+	public static boolean isCheatItemsEnabled() {
+		return cheatItemsEnabled;
+	}
+
+	public static boolean isEditModeEnabled() {
+		return editModeEnabled;
+	}
+
+	public static boolean isDebugModeEnabled() {
+		return debugModeEnabled;
+	}
+
+	public static boolean isRecipeTransferEnabled() {
+		return recipeTransferEnabled;
+	}
+
+	public static void disableRecipeTransfer() {
+		recipeTransferEnabled = false;
+	}
+
+	public static boolean isRecipeAnimationsEnabled() {
+		return recipeAnimationsEnabled;
+	}
+
+	public static boolean isHideMissingModelsEnabled() {
+		return hideMissingModelsEnabled;
+	}
+
+	public static Set<String> getNbtKeyIgnoreList() {
+		return nbtKeyIgnoreList;
+	}
+
+	public static Set<String> getItemBlacklist() {
+		return itemBlacklist;
+	}
+
+	public static LocalizedConfiguration getConfigFile() {
+		return configFile;
+	}
 
 	public static void preInit(@Nonnull FMLPreInitializationEvent event) {
 		configFile = new LocalizedConfiguration("config.jei", event.getSuggestedConfigurationFile(), "0.1.0");
@@ -41,27 +85,27 @@ public class Config {
 	}
 
 	public static boolean syncConfig() {
-		configFile.addCategory(categoryMode);
-		configFile.addCategory(categoryInterface);
-		configFile.addCategory(categoryAdvanced);
-		configFile.addCategory(categoryAddons);
+		configFile.addCategory(CATEGORY_MODE);
+		configFile.addCategory(CATEGORY_INTERFACE);
+		configFile.addCategory(CATEGORY_ADVANCED);
+		configFile.addCategory(CATEGORY_ADDONS);
 
-		cheatItemsEnabled = configFile.getBoolean(categoryMode, "cheatItemsEnabled", cheatItemsEnabled);
-		editModeEnabled = configFile.getBoolean(categoryMode, "editEnabled", editModeEnabled);
+		cheatItemsEnabled = configFile.getBoolean(CATEGORY_MODE, "cheatItemsEnabled", cheatItemsEnabled);
+		editModeEnabled = configFile.getBoolean(CATEGORY_MODE, "editEnabled", editModeEnabled);
 
-		recipeAnimationsEnabled = configFile.getBoolean(categoryInterface, "recipeAnimationsEnabled", recipeAnimationsEnabled);
+		recipeAnimationsEnabled = configFile.getBoolean(CATEGORY_INTERFACE, "recipeAnimationsEnabled", recipeAnimationsEnabled);
 
-		String[] nbtKeyIgnoreListArray = configFile.getStringList("nbtKeyIgnoreList", categoryAdvanced, defaultNbtKeyIgnoreList);
+		String[] nbtKeyIgnoreListArray = configFile.getStringList("nbtKeyIgnoreList", CATEGORY_ADVANCED, defaultNbtKeyIgnoreList);
 		nbtKeyIgnoreList.clear();
 		Collections.addAll(nbtKeyIgnoreList, nbtKeyIgnoreListArray);
 
-		String[] itemBlacklistArray = configFile.getStringList("itemBlacklist", categoryAdvanced, defaultItemBlacklist);
+		String[] itemBlacklistArray = configFile.getStringList("itemBlacklist", CATEGORY_ADVANCED, defaultItemBlacklist);
 		itemBlacklist.clear();
 		Collections.addAll(itemBlacklist, itemBlacklistArray);
 
-		hideMissingModelsEnabled = configFile.getBoolean(categoryAdvanced, "hideMissingModelsEnabled", hideMissingModelsEnabled);
+		hideMissingModelsEnabled = configFile.getBoolean(CATEGORY_ADVANCED, "hideMissingModelsEnabled", hideMissingModelsEnabled);
 
-		debugModeEnabled = configFile.getBoolean(categoryAdvanced, "debugModeEnabled", debugModeEnabled);
+		debugModeEnabled = configFile.getBoolean(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
 
 		boolean configChanged = configFile.hasChanged();
 		if (configChanged) {
@@ -71,7 +115,7 @@ public class Config {
 	}
 
 	private static void updateBlacklist() {
-		Property property = configFile.getConfiguration().get(categoryAdvanced, "itemBlacklist", defaultItemBlacklist);
+		Property property = configFile.getConfiguration().get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
 
 		String[] currentBlacklist = itemBlacklist.toArray(new String[itemBlacklist.size()]);
 		property.set(currentBlacklist);

@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
 
-import mezz.jei.api.JEIManager;
+import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
@@ -21,11 +21,14 @@ public class ItemDescriptionRecipeCategory implements IRecipeCategory {
 	@Nonnull
 	private final IDrawable background;
 	@Nonnull
+	private final IDrawable slotDrawable;
+	@Nonnull
 	private final String localizedName;
 
-	public ItemDescriptionRecipeCategory() {
-		background = JEIManager.guiHelper.createBlankDrawable(recipeWidth, recipeHeight);
+	public ItemDescriptionRecipeCategory(IGuiHelper guiHelper) {
+		background = guiHelper.createBlankDrawable(recipeWidth, recipeHeight);
 		localizedName = Translator.translateToLocal("gui.jei.category.itemDescription");
+		slotDrawable = guiHelper.getSlotDrawable();
 	}
 
 	@Nonnull
@@ -64,9 +67,9 @@ public class ItemDescriptionRecipeCategory implements IRecipeCategory {
 		guiItemStacks.init(0, false, xPos, 0);
 		guiItemStacks.setFromRecipe(0, recipeWrapper.getOutputs());
 
-		if (Config.debugModeEnabled) {
+		if (Config.isDebugModeEnabled()) {
 			IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
-			guiFluidStacks.init(0, true, 0, 0, 24, 24, 2000, JEIManager.guiHelper.getSlotDrawable());
+			guiFluidStacks.init(0, true, 0, 0, 24, 24, 2000, slotDrawable);
 			guiFluidStacks.init(1, true, 24, 0, 24, 24, 2000, null);
 			guiFluidStacks.set(0, recipeWrapper.getFluidInputs().get(0));
 			guiFluidStacks.set(1, recipeWrapper.getFluidInputs().get(1));

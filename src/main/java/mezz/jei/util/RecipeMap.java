@@ -8,6 +8,7 @@ import com.google.common.collect.Ordering;
 import com.google.common.collect.Table;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +88,7 @@ public class RecipeMap {
 	}
 
 	@Nonnull
-	public ImmutableList<Object> getRecipes(@Nonnull IRecipeCategory recipeCategory, @Nonnull Fluid fluid) {
+	public List<Object> getRecipes(@Nonnull IRecipeCategory recipeCategory, @Nonnull Fluid fluid) {
 		Map<String, List<Object>> recipesForType = recipeTable.row(recipeCategory);
 
 		String name = getKeyForFluid(fluid);
@@ -95,7 +96,7 @@ public class RecipeMap {
 		if (recipes == null) {
 			return ImmutableList.of();
 		}
-		return ImmutableList.copyOf(recipes);
+		return Collections.unmodifiableList(recipes);
 	}
 
 	public void addRecipe(@Nonnull Object recipe, @Nonnull IRecipeCategory recipeCategory, @Nonnull Iterable<ItemStack> itemStacks, @Nonnull Iterable<FluidStack> fluidStacks) {

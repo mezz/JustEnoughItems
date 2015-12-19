@@ -4,7 +4,6 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
 
-import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.gui.ITickTimer;
@@ -14,29 +13,10 @@ public class DrawableAnimated implements IDrawableAnimated {
 	private final ITickTimer tickTimer;
 	private final StartDirection startDirection;
 
-	public DrawableAnimated(IDrawableStatic drawable, int ticksPerCycle, StartDirection startDirection, boolean inverted) {
+	public DrawableAnimated(IDrawableStatic drawable, ITickTimer tickTimer, StartDirection startDirection) {
 		this.drawable = drawable;
-
-		if (inverted) {
-			if (startDirection == StartDirection.TOP) {
-				startDirection = StartDirection.BOTTOM;
-			} else if (startDirection == StartDirection.BOTTOM) {
-				startDirection = StartDirection.TOP;
-			} else if (startDirection == StartDirection.LEFT) {
-				startDirection = StartDirection.RIGHT;
-			} else {
-				startDirection = StartDirection.LEFT;
-			}
-		}
+		this.tickTimer = tickTimer;
 		this.startDirection = startDirection;
-
-		int tickTimerMaxValue;
-		if (startDirection == StartDirection.TOP || startDirection == StartDirection.BOTTOM) {
-			tickTimerMaxValue = drawable.getHeight();
-		} else {
-			tickTimerMaxValue = drawable.getWidth();
-		}
-		this.tickTimer = JEIManager.guiHelper.createTickTimer(ticksPerCycle, tickTimerMaxValue, !inverted);
 	}
 
 	@Override

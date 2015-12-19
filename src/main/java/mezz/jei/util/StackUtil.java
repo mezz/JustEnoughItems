@@ -19,7 +19,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.oredict.OreDictionary;
 
-import mezz.jei.api.JEIManager;
+import mezz.jei.Internal;
 
 public class StackUtil {
 	@Nonnull
@@ -282,7 +282,7 @@ public class StackUtil {
 		@SuppressWarnings("unchecked")
 		Set<String> keys = nbtTagCompound.getKeySet();
 
-		Set<String> ignoredKeys = JEIManager.nbtIgnoreList.getIgnoredNbtTags(keys);
+		Set<String> ignoredKeys = Internal.getHelpers().getNbtIgnoreList().getIgnoredNbtTags(keys);
 		if (ignoredKeys.size() == 0) {
 			return nbtTagCompound;
 		}

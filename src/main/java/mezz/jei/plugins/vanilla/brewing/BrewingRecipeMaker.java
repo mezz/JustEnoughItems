@@ -20,17 +20,17 @@ import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
 
-import mezz.jei.api.JEIManager;
+import mezz.jei.api.IItemRegistry;
 import mezz.jei.util.Log;
 
 public class BrewingRecipeMaker {
 	private static final Set<Class> unhandledRecipeClasses = new HashSet<>();
 
 	@Nonnull
-	public static List<BrewingRecipeWrapper> getBrewingRecipes() {
+	public static List<BrewingRecipeWrapper> getBrewingRecipes(IItemRegistry itemRegistry) {
 		Set<BrewingRecipeWrapper> recipes = new HashSet<>();
 
-		addVanillaBrewingRecipes(recipes);
+		addVanillaBrewingRecipes(itemRegistry, recipes);
 		addModdedBrewingRecipes(recipes);
 
 		List<BrewingRecipeWrapper> recipeList = new ArrayList<>(recipes);
@@ -44,8 +44,8 @@ public class BrewingRecipeMaker {
 		return recipeList;
 	}
 
-	private static void addVanillaBrewingRecipes(Collection<BrewingRecipeWrapper> recipes) {
-		ImmutableList<ItemStack> potionIngredients = JEIManager.itemRegistry.getPotionIngredients();
+	private static void addVanillaBrewingRecipes(IItemRegistry itemRegistry, Collection<BrewingRecipeWrapper> recipes) {
+		ImmutableList<ItemStack> potionIngredients = itemRegistry.getPotionIngredients();
 		VanillaBrewingRecipe vanillaBrewingRecipe = new VanillaBrewingRecipe();
 		Set<Integer> potionMetas = new HashSet<>();
 		potionMetas.add(0);

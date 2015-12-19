@@ -26,7 +26,7 @@ public interface IGuiHelper {
 	 * @param drawable       the underlying texture to draw
 	 * @param ticksPerCycle  the number of ticks for the animation to run before starting over
 	 * @param startDirection the direction that the animation starts drawing the texture
-	 * @param inverted       when inverted is true, the texture will start full drawn and be hidden over time
+	 * @param inverted       when inverted is true, the texture will start fully drawn and be hidden over time
 	 */
 	@Nonnull
 	IDrawableAnimated createAnimatedDrawable(@Nonnull IDrawableStatic drawable, int ticksPerCycle, @Nonnull IDrawableAnimated.StartDirection startDirection, boolean inverted);

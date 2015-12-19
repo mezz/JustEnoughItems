@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.common.registry.GameData;
 
-import mezz.jei.api.JEIManager;
+import mezz.jei.Internal;
 
 /**
  * For getting properties of ItemStacks efficiently
@@ -39,7 +39,7 @@ public class ItemStackElement {
 
 		ResourceLocation itemResourceLocation = (ResourceLocation) GameData.getItemRegistry().getNameForObject(itemStack.getItem());
 		String modId = itemResourceLocation.getResourceDomain();
-		String modName = JEIManager.itemRegistry.getModNameForItem(itemStack.getItem());
+		String modName = Internal.getItemRegistry().getModNameForItem(itemStack.getItem());
 
 		this.modName = modId.toLowerCase(Locale.ENGLISH) + ' ' + modName.toLowerCase(Locale.ENGLISH);
 	}

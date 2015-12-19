@@ -60,7 +60,7 @@ public class RecipeLayout implements IRecipeLayout {
 		background.draw(minecraft);
 		recipeCategory.drawExtras(minecraft);
 
-		if (Config.recipeAnimationsEnabled) {
+		if (Config.isRecipeAnimationsEnabled()) {
 			recipeCategory.drawAnimations(minecraft);
 			recipeWrapper.drawAnimations(minecraft, background.getWidth(), background.getHeight());
 		}

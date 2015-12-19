@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.JEIManager;
+import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -19,9 +19,10 @@ public class FurnaceSmeltingCategory extends FurnaceRecipeCategory {
 	@Nonnull
 	private final String localizedName;
 
-	public FurnaceSmeltingCategory() {
+	public FurnaceSmeltingCategory(IGuiHelper guiHelper) {
+		super(guiHelper);
 		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/furnace.png");
-		background = JEIManager.guiHelper.createDrawable(location, 55, 16, 82, 54);
+		background = guiHelper.createDrawable(location, 55, 16, 82, 54);
 		localizedName = Translator.translateToLocal("gui.jei.category.smelting");
 	}
 

@@ -20,7 +20,7 @@ import mezz.jei.api.recipe.IRecipeTransferHelper;
 public class RecipeRegistryDummy implements IRecipeRegistry {
 	@Nullable
 	@Override
-	public IRecipeHandler getRecipeHandler(Class recipeClass) {
+	public IRecipeHandler getRecipeHandler(@Nullable Class recipeClass) {
 		return null;
 	}
 
@@ -32,66 +32,66 @@ public class RecipeRegistryDummy implements IRecipeRegistry {
 
 	@Nonnull
 	@Override
-	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithInput(ItemStack input) {
+	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithInput(@Nullable ItemStack input) {
 		return ImmutableList.of();
 	}
 
 	@Nonnull
 	@Override
-	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithInput(Fluid input) {
+	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithInput(@Nullable Fluid input) {
 		return ImmutableList.of();
 	}
 
 	@Nonnull
 	@Override
-	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithOutput(ItemStack output) {
+	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithOutput(@Nullable ItemStack output) {
 		return ImmutableList.of();
 	}
 
 	@Nonnull
 	@Override
-	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithOutput(Fluid output) {
+	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithOutput(@Nullable Fluid output) {
 		return ImmutableList.of();
 	}
 
 	@Nonnull
 	@Override
-	public ImmutableList<Object> getRecipesWithInput(IRecipeCategory recipeCategory, ItemStack input) {
+	public ImmutableList<Object> getRecipesWithInput(@Nullable IRecipeCategory recipeCategory, @Nullable ItemStack input) {
 		return ImmutableList.of();
 	}
 
 	@Nonnull
 	@Override
-	public ImmutableList<Object> getRecipesWithInput(IRecipeCategory recipeCategory, Fluid input) {
+	public ImmutableList<Object> getRecipesWithInput(@Nullable IRecipeCategory recipeCategory, @Nullable Fluid input) {
 		return ImmutableList.of();
 	}
 
 	@Nonnull
 	@Override
-	public ImmutableList<Object> getRecipesWithOutput(IRecipeCategory recipeCategory, ItemStack output) {
+	public ImmutableList<Object> getRecipesWithOutput(@Nullable IRecipeCategory recipeCategory, @Nullable ItemStack output) {
 		return ImmutableList.of();
 	}
 
 	@Nonnull
 	@Override
-	public ImmutableList<Object> getRecipesWithOutput(IRecipeCategory recipeCategory, Fluid output) {
+	public ImmutableList<Object> getRecipesWithOutput(@Nullable IRecipeCategory recipeCategory, @Nullable Fluid output) {
 		return ImmutableList.of();
 	}
 
 	@Nonnull
 	@Override
-	public List<Object> getRecipes(IRecipeCategory recipeCategory) {
+	public List<Object> getRecipes(@Nullable IRecipeCategory recipeCategory) {
 		return Collections.unmodifiableList(Collections.emptyList());
 	}
 
 	@Override
-	public void addRecipe(Object recipe) {
+	public void addRecipe(@Nullable Object recipe) {
 
 	}
 
 	@Nullable
 	@Override
-	public IRecipeTransferHelper getRecipeTransferHelper(Container container, IRecipeCategory recipeCategory) {
+	public IRecipeTransferHelper getRecipeTransferHelper(@Nullable Container container, @Nullable IRecipeCategory recipeCategory) {
 		return null;
 	}
 }

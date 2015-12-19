@@ -17,7 +17,8 @@ import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.item.ItemStack;
 
-import mezz.jei.api.JEIManager;
+import mezz.jei.api.IItemBlacklist;
+import mezz.jei.api.IItemRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.util.ItemStackElement;
 import mezz.jei.util.Log;
@@ -30,7 +31,7 @@ public class ItemFilter {
 	/** A cache for fast searches while typing or using backspace. Maps filterText to filteredItemMaps */
 	private final LoadingCache<String, ImmutableList<ItemStackElement>> filteredItemMapsCache;
 
-	public ItemFilter() {
+	public ItemFilter(final IItemRegistry itemRegistry) {
 		filteredItemMapsCache = CacheBuilder.newBuilder()
 				.maximumWeight(16)
 				.weigher(new Weigher<String, ImmutableList<ItemStackElement>>() {
@@ -83,17 +84,18 @@ public class ItemFilter {
 					}
 
 					private ImmutableList<ItemStackElement> createBaseList() {
+						IItemBlacklist itemBlacklist = Internal.getHelpers().getItemBlacklist();
 						ImmutableList.Builder<ItemStackElement> baseList = ImmutableList.builder();
 
 						ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
 						ModelManager modelManager = itemModelMesher.getModelManager();
 
-						for (ItemStack itemStack : JEIManager.itemRegistry.getItemList()) {
+						for (ItemStack itemStack : itemRegistry.getItemList()) {
 							if (itemStack == null) {
 								continue;
 							}
 
-							if (Config.hideMissingModelsEnabled) {
+							if (Config.isHideMissingModelsEnabled()) {
 								// skip over itemStacks that can't be rendered
 								try {
 									if (itemModelMesher.getItemModel(itemStack) == modelManager.getMissingModel()) {
@@ -109,8 +111,8 @@ public class ItemFilter {
 								}
 							}
 
-							if (JEIManager.itemBlacklist.isItemBlacklisted(itemStack)) {
-								if (Config.editModeEnabled) {
+							if (itemBlacklist.isItemBlacklisted(itemStack)) {
+								if (Config.isEditModeEnabled()) {
 									if (!Config.isItemOnConfigBlacklist(itemStack, true) && !Config.isItemOnConfigBlacklist(itemStack, false)) {
 										continue; // edit mode can only change the config blacklist, not things blacklisted through the API
 									}

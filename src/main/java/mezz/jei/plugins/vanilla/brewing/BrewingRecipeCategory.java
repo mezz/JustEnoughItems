@@ -8,7 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.JEIManager;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
@@ -34,15 +33,15 @@ public class BrewingRecipeCategory implements IRecipeCategory {
 	@Nonnull
 	private final IDrawable background;
 	@Nonnull
+	private final IDrawable slotDrawable;
+	@Nonnull
 	private final String localizedName;
 	@Nonnull
 	private final IDrawableAnimated arrow;
 	@Nonnull
 	private final IDrawableAnimated bubbles;
 
-	public BrewingRecipeCategory() {
-		IGuiHelper guiHelper = JEIManager.guiHelper;
-
+	public BrewingRecipeCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/brewing_stand.png");
 		background = guiHelper.createDrawable(location, 55, 15, 64, 56, 0, 0, 0, 40);
 		localizedName = Translator.translateToLocal("gui.jei.category.brewing");
@@ -52,6 +51,8 @@ public class BrewingRecipeCategory implements IRecipeCategory {
 
 		IDrawableStatic brewBubblesDrawable = guiHelper.createDrawable(location, 185, 0, 12, 29);
 		bubbles = guiHelper.createAnimatedDrawable(brewBubblesDrawable, 20, IDrawableAnimated.StartDirection.BOTTOM, false);
+
+		slotDrawable = guiHelper.getSlotDrawable();
 	}
 
 	@Nonnull
@@ -74,7 +75,7 @@ public class BrewingRecipeCategory implements IRecipeCategory {
 
 	@Override
 	public void drawExtras(Minecraft minecraft) {
-		JEIManager.guiHelper.getSlotDrawable().draw(minecraft, outputSlotX, outputSlotY);
+		slotDrawable.draw(minecraft, outputSlotX, outputSlotY);
 	}
 
 	@Override

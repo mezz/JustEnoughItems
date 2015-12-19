@@ -4,9 +4,10 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
 
+import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
 
-public class DrawableBlank implements IDrawableStatic {
+public class DrawableBlank implements IDrawableStatic, IDrawableAnimated {
 	private final int width;
 	private final int height;
 

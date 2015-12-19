@@ -11,10 +11,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
-import mezz.jei.api.JEIManager;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
-import mezz.jei.gui.GuiHelper;
 import mezz.jei.network.PacketHandler;
 
 @Mod(modid = Constants.MOD_ID,
@@ -34,7 +32,9 @@ public class JustEnoughItems {
 
 	@NetworkCheckHandler
 	public boolean checkModLists(Map<String, String> modList, Side side) {
-		Config.recipeTransferEnabled = modList.containsKey(Constants.MOD_ID);
+		if (!modList.containsKey(Constants.MOD_ID)) {
+			Config.disableRecipeTransfer();
+		}
 
 		return true;
 	}
@@ -42,9 +42,7 @@ public class JustEnoughItems {
 	@Mod.EventHandler
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
 		packetHandler = new PacketHandler();
-		JEIManager.guiHelper = new GuiHelper();
-		JEIManager.itemBlacklist = new ItemBlacklist();
-		JEIManager.nbtIgnoreList = new NbtIgnoreList();
+		Internal.setHelpers(new JeiHelpers());
 		common.preInit(event);
 	}
 
