@@ -9,6 +9,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -25,6 +26,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 
+import net.minecraftforge.client.model.ISmartItemModel;
 import net.minecraftforge.client.model.pipeline.LightUtil;
 
 import mezz.jei.config.Config;
@@ -45,6 +47,7 @@ public class GuiItemStackFast {
 
 	private ItemStack itemStack;
 	private IBakedModel bakedModel;
+	private ISmartItemModel smartItemModel;
 
 	public GuiItemStackFast(int xPosition, int yPosition, int padding) {
 		this.xPosition = xPosition;
@@ -56,7 +59,15 @@ public class GuiItemStackFast {
 
 	public void setItemStack(ItemStack itemStack) {
 		this.itemStack = itemStack;
-		this.bakedModel = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getItemModel(itemStack);
+
+		ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+		this.bakedModel = itemModelMesher.getItemModel(itemStack);
+
+		if (this.bakedModel instanceof ISmartItemModel) {
+			this.smartItemModel = (ISmartItemModel) this.bakedModel;
+		} else {
+			this.smartItemModel = null;
+		}
 	}
 
 	public ItemStack getItemStack() {
@@ -82,6 +93,10 @@ public class GuiItemStackFast {
 	public void renderItemAndEffectIntoGUI(boolean isGui3d) {
 		if (itemStack == null) {
 			return;
+		}
+
+		if (smartItemModel != null) {
+			smartItemModel.handleItemState(itemStack);
 		}
 
 		GlStateManager.pushMatrix();
