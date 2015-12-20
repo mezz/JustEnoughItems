@@ -135,14 +135,8 @@ public class ItemRegistry implements IItemRegistry {
 			return;
 		}
 
-		if (item.getHasSubtypes()) {
-			ItemStack itemStack = new ItemStack(item, 1, OreDictionary.WILDCARD_VALUE);
-			List<ItemStack> items = StackUtil.getSubtypes(itemStack);
-			addItemStacks(items, itemList, fuels);
-		} else {
-			ItemStack itemStack = new ItemStack(item);
-			addItemStack(itemStack, itemList, fuels);
-		}
+		List<ItemStack> items = StackUtil.getSubtypes(item);
+		addItemStacks(items, itemList, fuels);
 	}
 
 	private void addBlockAndSubBlocks(@Nullable Block block, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {

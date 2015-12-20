@@ -12,7 +12,6 @@ import net.minecraftforge.fluids.Fluid;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeTransferHelper;
-import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 
 /**
  * The IRecipeManager offers several functions for retrieving and handling recipes.
