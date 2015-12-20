@@ -143,8 +143,8 @@ public class StackUtil {
 			return false;
 		}
 
-		if (lhs.getItemDamage() != OreDictionary.WILDCARD_VALUE) {
-			if (lhs.getItemDamage() != rhs.getItemDamage()) {
+		if (lhs.getMetadata() != OreDictionary.WILDCARD_VALUE) {
+			if (lhs.getMetadata() != rhs.getMetadata()) {
 				return false;
 			}
 		}
@@ -157,35 +157,34 @@ public class StackUtil {
 	 */
 	@Nonnull
 	public static List<ItemStack> getSubtypes(@Nonnull ItemStack itemStack) {
-
-		List<ItemStack> itemStacks = new ArrayList<>();
-
 		Item item = itemStack.getItem();
 		if (item == null) {
-			return itemStacks;
+			return Collections.emptyList();
 		}
 
-		if (item.getDamage(itemStack) != OreDictionary.WILDCARD_VALUE) {
+		if (item.getMetadata(itemStack) != OreDictionary.WILDCARD_VALUE) {
 			return Collections.singletonList(itemStack);
 		}
 
-		if (!item.getHasSubtypes()) {
-			return Collections.singletonList(new ItemStack(item));
-		}
+		return getSubtypes(item);
+	}
+
+	@Nonnull
+	public static List<ItemStack> getSubtypes(@Nonnull Item item) {
+		List<ItemStack> itemStacks = new ArrayList<>();
 
 		List<ItemStack> subItems = new ArrayList<>();
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
 			subItems.clear();
 			item.getSubItems(item, itemTab, subItems);
 			itemStacks.addAll(subItems);
-
-			if (subItems.isEmpty()) {
-				ItemStack stack = new ItemStack(item);
-				if (stack.getItem() != null) {
-					itemStacks.add(stack);
-				}
-			}
 		}
+
+		if (itemStacks.isEmpty()) {
+			ItemStack stack = new ItemStack(item);
+			itemStacks.add(stack);
+		}
+
 		return removeDuplicateItemStacks(itemStacks);
 	}
 
