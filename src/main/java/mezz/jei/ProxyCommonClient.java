@@ -40,7 +40,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	private GuiEventHandler guiEventHandler;
 	private List<IModPlugin> plugins;
 
-	private void initVersionChecker() {
+	private static void initVersionChecker() {
 		final NBTTagCompound compound = new NBTTagCompound();
 		compound.setString("curseProjectName", "just-enough-items-jei");
 		compound.setString("curseFilenameParser", "jei_" + ForgeVersion.mcVersion + "-[].jar");

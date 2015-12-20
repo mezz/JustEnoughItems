@@ -43,7 +43,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final Set<Class> unhandledRecipeClasses;
 
 	public RecipeRegistry(@Nonnull List<IRecipeCategory> recipeCategories, @Nonnull List<IRecipeHandler> recipeHandlers, @Nonnull List<IRecipeTransferHelper> recipeTransferHelpers, @Nonnull List<Object> recipes) {
-		recipeCategories = ImmutableSet.copyOf(recipeCategories).asList(); //remove duplicates
 		this.recipeCategoriesMap = buildRecipeCategoriesMap(recipeCategories);
 		this.recipeTransferHelpers = buildRecipeTransferHelperTable(recipeTransferHelpers);
 		this.recipeHandlers = buildRecipeHandlersMap(recipeHandlers);
@@ -109,14 +108,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 			return;
 		}
 
-		try {
-			addRecipeUnchecked(recipe);
-		} catch (RuntimeException e) {
-			Log.error("Failed to add recipe: {}", recipe, e);
-		}
-	}
-
-	private void addRecipeUnchecked(@Nonnull Object recipe) throws RuntimeException {
 		Class recipeClass = recipe.getClass();
 		IRecipeHandler recipeHandler = getRecipeHandler(recipeClass);
 		if (recipeHandler == null) {
@@ -139,6 +130,14 @@ public class RecipeRegistry implements IRecipeRegistry {
 			return;
 		}
 
+		try {
+			addRecipeUnchecked(recipe, recipeCategory, recipeHandler);
+		} catch (Exception e) {
+			Log.error("Failed to add recipe: {}", recipe, e);
+		}
+	}
+
+	private void addRecipeUnchecked(@Nonnull Object recipe, IRecipeCategory recipeCategory, IRecipeHandler recipeHandler) {
 		//noinspection unchecked
 		IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
 
@@ -170,7 +169,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	public ImmutableList<IRecipeCategory> getRecipeCategories() {
 		ImmutableList.Builder<IRecipeCategory> builder = ImmutableList.builder();
 		for (IRecipeCategory recipeCategory : recipeCategoriesMap.values()) {
-			if (getRecipes(recipeCategory).size() > 0) {
+			if (!getRecipes(recipeCategory).isEmpty()) {
 				builder.add(recipeCategory);
 			}
 		}
