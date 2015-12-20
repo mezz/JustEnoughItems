@@ -54,8 +54,8 @@ public class Config {
 		return recipeTransferEnabled;
 	}
 
-	public static void disableRecipeTransfer() {
-		recipeTransferEnabled = false;
+	public static void setRecipeTransferEnabled(boolean recipeTransferEnabled) {
+		Config.recipeTransferEnabled = recipeTransferEnabled;
 	}
 
 	public static boolean isRecipeAnimationsEnabled() {
