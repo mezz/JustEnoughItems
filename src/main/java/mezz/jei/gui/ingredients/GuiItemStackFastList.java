@@ -58,9 +58,18 @@ public class GuiItemStackFastList {
 
 	@Nullable
 	public Focus getFocusUnderMouse(int mouseX, int mouseY) {
+		GuiItemStackFast hovered = getHovered(mouseX, mouseY);
+		if (hovered != null) {
+			return new Focus(hovered.getItemStack());
+		}
+		return null;
+	}
+
+	@Nullable
+	private GuiItemStackFast getHovered(int mouseX, int mouseY) {
 		for (GuiItemStackFast guiItemStack : renderItemsAll) {
 			if (guiItemStack.isMouseOver(mouseX, mouseY)) {
-				return new Focus(guiItemStack.getItemStack());
+				return guiItemStack;
 			}
 		}
 		return null;
@@ -70,12 +79,7 @@ public class GuiItemStackFastList {
 	@Nullable
 	public GuiItemStackFast render(@Nullable GuiItemStackFast hovered, @Nonnull Minecraft minecraft, boolean isMouseOver, int mouseX, int mouseY) {
 		if (isMouseOver && hovered == null) {
-			for (GuiItemStackFast guiItemStack : renderItemsAll) {
-				if (guiItemStack.isMouseOver(mouseX, mouseY)) {
-					hovered = guiItemStack;
-					break;
-				}
-			}
+			hovered = getHovered(mouseX, mouseY);
 		}
 
 		RenderHelper.enableGUIStandardItemLighting();
