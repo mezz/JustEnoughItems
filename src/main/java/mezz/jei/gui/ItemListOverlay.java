@@ -282,10 +282,8 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	private boolean handleMouseClickedSearch(int mouseX, int mouseY, int mouseButton) {
 		boolean searchClicked = searchField.isMouseOver(mouseX, mouseY);
 		setKeyboardFocus(searchClicked);
-		if (searchClicked) {
-			if (searchField.handleMouseClicked(mouseX, mouseY, mouseButton)) {
-				updateLayout();
-			}
+		if (searchClicked && searchField.handleMouseClicked(mouseX, mouseY, mouseButton)) {
+			updateLayout();
 		}
 		return searchClicked;
 	}

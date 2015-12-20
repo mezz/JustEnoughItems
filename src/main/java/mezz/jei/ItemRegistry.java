@@ -29,7 +29,7 @@ import mezz.jei.util.Log;
 import mezz.jei.util.ModList;
 import mezz.jei.util.StackUtil;
 
-class ItemRegistry implements IItemRegistry {
+public class ItemRegistry implements IItemRegistry {
 
 	@Nonnull
 	private final Set<String> itemNameSet = new HashSet<>();

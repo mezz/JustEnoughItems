@@ -36,8 +36,9 @@ public class JustEnoughItems {
 
 	@NetworkCheckHandler
 	public boolean checkModLists(Map<String, String> modList, Side side) {
-		if (side == Side.SERVER && !modList.containsKey(Constants.MOD_ID)) {
-			Config.disableRecipeTransfer();
+		if (side == Side.SERVER) {
+			boolean jeiOnServer = modList.containsKey(Constants.MOD_ID);
+			Config.setRecipeTransferEnabled(jeiOnServer);
 		}
 
 		return true;

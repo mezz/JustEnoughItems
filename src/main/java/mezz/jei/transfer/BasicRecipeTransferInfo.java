@@ -6,9 +6,9 @@ import java.util.List;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 
-import mezz.jei.api.recipe.IRecipeTransferHelper;
+import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 
-public class BasicRecipeTransferHelper implements IRecipeTransferHelper {
+public class BasicRecipeTransferInfo implements IRecipeTransferInfo {
 	private final Class<? extends Container> containerClass;
 	private final String recipeCategoryUid;
 	private final int recipeSlotStart;
@@ -16,7 +16,7 @@ public class BasicRecipeTransferHelper implements IRecipeTransferHelper {
 	private final int inventorySlotStart;
 	private final int inventorySlotCount;
 
-	public BasicRecipeTransferHelper(Class<? extends Container> containerClass, String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
+	public BasicRecipeTransferInfo(Class<? extends Container> containerClass, String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
 		this.containerClass = containerClass;
 		this.recipeCategoryUid = recipeCategoryUid;
 		this.recipeSlotStart = recipeSlotStart;

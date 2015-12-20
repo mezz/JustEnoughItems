@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeTransferHelper;
+import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 
 /**
  * Passed to IModPlugins so they can register themselves.
@@ -26,13 +27,17 @@ public interface IModRegistry {
 
 	/**
 	 * Add the recipe transfer helpers provided by the plugin.
+	 * @deprecated use getRecipeTransferRegistry().addRecipeTransferHandler
 	 */
+	@Deprecated
 	void addRecipeTransferHelpers(IRecipeTransferHelper... recipeTransferHelpers);
 
 	/**
 	 * Add a basic recipe transfer helper.
 	 * Gives JEI the information it needs to transfer recipes from the player's inventory into the crafting area.
+	 * @deprecated use getRecipeTransferRegistry().addRecipeTransferHandler
 	 */
+	@Deprecated
 	void addBasicRecipeTransferHelper(Class<? extends Container> containerClass, String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount);
 
 	/**
@@ -53,6 +58,11 @@ public interface IModRegistry {
 	 *                     	  Very long entries will span multiple pages automatically.
 	 */
 	void addDescription(List<ItemStack> itemStacks, String... descriptionKeys);
+
+	/**
+	 * Get the registry for setting up recipe transfer.
+	 */
+	IRecipeTransferRegistry getRecipeTransferRegistry();
 
 	/** Turns out this isn't useful at all */
 	@Deprecated

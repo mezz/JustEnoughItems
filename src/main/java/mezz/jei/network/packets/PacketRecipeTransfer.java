@@ -13,7 +13,7 @@ import net.minecraft.network.PacketBuffer;
 
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
-import mezz.jei.transfer.RecipeTransferUtil;
+import mezz.jei.transfer.BasicRecipeTransferHandler;
 
 public class PacketRecipeTransfer extends PacketJEI {
 
@@ -60,7 +60,7 @@ public class PacketRecipeTransfer extends PacketJEI {
 			inventorySlots.add(slotIndex);
 		}
 
-		RecipeTransferUtil.setItems(player, recipeMap, craftingSlots, inventorySlots);
+		BasicRecipeTransferHandler.setItems(player, recipeMap, craftingSlots, inventorySlots);
 	}
 
 	@Override

@@ -2,7 +2,6 @@ package mezz.jei.transfer;
 
 import javax.annotation.Nonnull;
 import java.awt.Color;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -16,10 +15,6 @@ import mezz.jei.gui.ingredients.GuiItemStackGroup;
 public class RecipeTransferErrorSlots extends RecipeTransferErrorTooltip {
 	private static final Color highlightColor = new Color(1.0f, 0.0f, 0.0f, 0.25f);
 	private final Collection<Integer> slots;
-
-	public RecipeTransferErrorSlots(String message, Integer... slots) {
-		this(message, Arrays.asList(slots));
-	}
 
 	public RecipeTransferErrorSlots(String message, Collection<Integer> slots) {
 		super(message);

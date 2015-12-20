@@ -86,10 +86,8 @@ public class InputHandler {
 
 	private boolean handleMouseClick(int mouseButton, int mouseX, int mouseY) {
 		Focus focus = getFocusUnderMouseForClick(mouseX, mouseY);
-		if (focus != null) {
-			if (handleMouseClickedFocus(mouseButton, focus)) {
-				return true;
-			}
+		if (focus != null && handleMouseClickedFocus(mouseButton, focus)) {
+			return true;
 		}
 
 		for (IMouseHandler clickable : mouseHandlers) {

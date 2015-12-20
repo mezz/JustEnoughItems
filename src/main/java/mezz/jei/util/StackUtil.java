@@ -22,6 +22,10 @@ import net.minecraftforge.oredict.OreDictionary;
 import mezz.jei.Internal;
 
 public class StackUtil {
+	private StackUtil() {
+
+	}
+
 	@Nonnull
 	public static List<ItemStack> removeDuplicateItemStacks(@Nonnull Iterable<ItemStack> stacks) {
 		List<ItemStack> newStacks = new ArrayList<>();
@@ -70,16 +74,13 @@ public class StackUtil {
 		List<ItemStack> condensed = new ArrayList<>();
 
 		for (ItemStack stack : stacks) {
-			if (stack == null) {
-				continue;
-			}
-			if (stack.stackSize <= 0) {
+			if (stack == null || stack.stackSize <= 0) {
 				continue;
 			}
 
 			boolean matched = false;
 			for (ItemStack cached : condensed) {
-				if ((cached.isItemEqual(stack) && ItemStack.areItemStackTagsEqual(cached, stack))) {
+				if (cached.isItemEqual(stack) && ItemStack.areItemStackTagsEqual(cached, stack)) {
 					cached.stackSize += stack.stackSize;
 					matched = true;
 				}
@@ -110,7 +111,7 @@ public class StackUtil {
 			int reqCount = 0;
 			for (ItemStack offer : condensedOffered) {
 				if (isIdentical(req, offer)) {
-					int stackCount = (int) Math.floor(offer.stackSize / req.stackSize);
+					int stackCount = offer.stackSize / req.stackSize;
 					reqCount = Math.max(reqCount, stackCount);
 				}
 			}
@@ -209,17 +210,6 @@ public class StackUtil {
 	}
 
 	@Nonnull
-	public static List<String> getOreNames(@Nonnull ItemStack stack) {
-		List<String> oreNames = new ArrayList<>();
-		int[] oreIds = OreDictionary.getOreIDs(stack);
-		for (int oreId : oreIds) {
-			String oreName = OreDictionary.getOreName(oreId);
-			oreNames.add(oreName);
-		}
-		return oreNames;
-	}
-
-	@Nonnull
 	public static List<ItemStack> toItemStackList(@Nullable Object stacks) {
 		List<ItemStack> itemStacksList = new ArrayList<>();
 		toItemStackList(itemStacksList, stacks);
@@ -283,15 +273,15 @@ public class StackUtil {
 		Set<String> keys = nbtTagCompound.getKeySet();
 
 		Set<String> ignoredKeys = Internal.getHelpers().getNbtIgnoreList().getIgnoredNbtTags(keys);
-		if (ignoredKeys.size() == 0) {
+		if (ignoredKeys.isEmpty()) {
 			return nbtTagCompound;
 		}
 
-		nbtTagCompound = (NBTTagCompound) nbtTagCompound.copy();
+		NBTTagCompound nbtTagCompoundCopy = (NBTTagCompound) nbtTagCompound.copy();
 		for (String ignoredKey : ignoredKeys) {
-			nbtTagCompound.removeTag(ignoredKey);
+			nbtTagCompoundCopy.removeTag(ignoredKey);
 		}
-		return nbtTagCompound;
+		return nbtTagCompoundCopy;
 	}
 
 	public static int addStack(Container container, Collection<Integer> slotIndexes, ItemStack stack, boolean doAdd) {

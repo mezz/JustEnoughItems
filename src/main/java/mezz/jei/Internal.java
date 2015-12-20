@@ -1,40 +1,36 @@
 package mezz.jei;
 
-import mezz.jei.api.IItemRegistry;
-import mezz.jei.api.IJeiHelpers;
-import mezz.jei.api.IRecipeRegistry;
-
 /** For JEI internal use only, these are normally accessed from the API. */
 public class Internal {
-	private static IJeiHelpers helpers;
-	private static IRecipeRegistry recipeRegistry;
-	private static IItemRegistry itemRegistry;
+	private static JeiHelpers helpers;
+	private static RecipeRegistry recipeRegistry;
+	private static ItemRegistry itemRegistry;
 
 	private Internal() {
 
 	}
 
-	public static IJeiHelpers getHelpers() {
+	public static JeiHelpers getHelpers() {
 		return helpers;
 	}
 
-	public static void setHelpers(IJeiHelpers helpers) {
+	public static void setHelpers(JeiHelpers helpers) {
 		Internal.helpers = helpers;
 	}
 
-	public static IRecipeRegistry getRecipeRegistry() {
+	public static RecipeRegistry getRecipeRegistry() {
 		return recipeRegistry;
 	}
 
-	public static void setRecipeRegistry(IRecipeRegistry recipeRegistry) {
+	public static void setRecipeRegistry(RecipeRegistry recipeRegistry) {
 		Internal.recipeRegistry = recipeRegistry;
 	}
 
-	public static IItemRegistry getItemRegistry() {
+	public static ItemRegistry getItemRegistry() {
 		return itemRegistry;
 	}
 
-	public static void setItemRegistry(IItemRegistry itemRegistry) {
+	public static void setItemRegistry(ItemRegistry itemRegistry) {
 		Internal.itemRegistry = itemRegistry;
 	}
 }
