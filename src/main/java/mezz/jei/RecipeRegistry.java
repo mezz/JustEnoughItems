@@ -28,7 +28,6 @@ import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeTransferHelper;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
-import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.util.Log;
 import mezz.jei.util.RecipeCategoryComparator;
 import mezz.jei.util.RecipeMap;
@@ -82,14 +81,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 			mutableRecipeHandlers.put(recipeClass, recipeHandler);
 		}
 		return ImmutableMap.copyOf(mutableRecipeHandlers);
-	}
-
-	private static ImmutableTable<Class, String, IRecipeTransferInfo> buildRecipeTransferHandlers(@Nonnull List<IRecipeTransferInfo> recipeTransferHelpers) {
-		ImmutableTable.Builder<Class, String, IRecipeTransferInfo> builder = ImmutableTable.builder();
-		for (IRecipeTransferInfo recipeTransferHelper : recipeTransferHelpers) {
-			builder.put(recipeTransferHelper.getContainerClass(), recipeTransferHelper.getRecipeCategoryUid(), recipeTransferHelper);
-		}
-		return builder.build();
 	}
 
 	private static ImmutableTable<Class, String, IRecipeTransferHandler> buildRecipeTransferHandlerTable(@Nonnull List<IRecipeTransferHandler> recipeTransferHandlers) {
