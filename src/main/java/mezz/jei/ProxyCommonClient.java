@@ -20,9 +20,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.JEIManager;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
@@ -82,7 +80,8 @@ public class ProxyCommonClient extends ProxyCommon {
 	@Override
 	public void startJEI() {
 		started = true;
-		IItemRegistry itemRegistry = JEIManager.itemRegistry = new ItemRegistry();
+		ItemRegistry itemRegistry = new ItemRegistry();
+		JEIManager.itemRegistry = itemRegistry;
 		Internal.setItemRegistry(itemRegistry);
 
 		Iterator<IModPlugin> iterator = plugins.iterator();
@@ -112,7 +111,8 @@ public class ProxyCommonClient extends ProxyCommon {
 			}
 		}
 
-		IRecipeRegistry recipeRegistry = JEIManager.recipeRegistry = modRegistry.createRecipeRegistry();
+		RecipeRegistry recipeRegistry = modRegistry.createRecipeRegistry();
+		JEIManager.recipeRegistry = recipeRegistry;
 		Internal.setRecipeRegistry(recipeRegistry);
 
 		iterator = plugins.iterator();

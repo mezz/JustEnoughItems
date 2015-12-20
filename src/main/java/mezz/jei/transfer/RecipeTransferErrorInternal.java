@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
 
+import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.gui.RecipeLayout;
 
 public class RecipeTransferErrorInternal implements IRecipeTransferError {

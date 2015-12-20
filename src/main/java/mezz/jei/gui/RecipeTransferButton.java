@@ -5,7 +5,7 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 
-import mezz.jei.transfer.IRecipeTransferError;
+import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.transfer.RecipeTransferUtil;
 
 public class RecipeTransferButton extends GuiButtonExt {

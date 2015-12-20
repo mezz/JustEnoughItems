@@ -1,4 +1,4 @@
-package mezz.jei.transfer;
+package mezz.jei.api.recipe.transfer;
 
 import javax.annotation.Nonnull;
 
@@ -6,12 +6,14 @@ import net.minecraft.client.Minecraft;
 
 import mezz.jei.gui.RecipeLayout;
 
-/** A reason that the recipe transfer couldn't happen. See IRecipeTransferError.Type */
+/**
+ * A reason that the recipe transfer couldn't happen. See IRecipeTransferError.Type
+ */
 public interface IRecipeTransferError {
 	enum Type {
 		/**
-		 * Errors where the Transfer helper is missing or does not work, or the server is not present.
-		 * These errors will hide the recipe transfer button and do not display anything.
+		 * Errors where the Transfer handler is broken, or does not work, or the server is not present.
+		 * These errors will hide the recipe transfer button, but do not display anything to the user.
 		 */
 		INTERNAL,
 

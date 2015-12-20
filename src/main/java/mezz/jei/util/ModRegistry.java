@@ -12,14 +12,15 @@ import mezz.jei.api.IModRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeTransferHelper;
+import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.plugins.jei.description.ItemDescriptionRecipe;
-import mezz.jei.transfer.BasicRecipeTransferHelper;
 
 public class ModRegistry implements IModRegistry {
 	private final List<IRecipeCategory> recipeCategories = new ArrayList<>();
 	private final List<IRecipeHandler> recipeHandlers = new ArrayList<>();
-	private final List<IRecipeTransferHelper> recipeTransferHelpers = new ArrayList<>();
 	private final List<Object> recipes = new ArrayList<>();
+	private final RecipeTransferRegistry recipeTransferRegistry = new RecipeTransferRegistry();
 
 	@Override
 	public void addRecipeCategories(IRecipeCategory... recipeCategories) {
@@ -33,13 +34,12 @@ public class ModRegistry implements IModRegistry {
 
 	@Override
 	public void addRecipeTransferHelpers(IRecipeTransferHelper... recipeTransferHelpers) {
-		Collections.addAll(this.recipeTransferHelpers, recipeTransferHelpers);
+
 	}
 
 	@Override
 	public void addBasicRecipeTransferHelper(Class<? extends Container> containerClass, String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
-		IRecipeTransferHelper recipeTransferHelper = new BasicRecipeTransferHelper(containerClass, recipeCategoryUid, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
-		recipeTransferHelpers.add(recipeTransferHelper);
+		recipeTransferRegistry.addRecipeTransferHandler(containerClass, recipeCategoryUid, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
 	}
 
 	@Override
@@ -66,11 +66,17 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
+	public IRecipeTransferRegistry getRecipeTransferRegistry() {
+		return recipeTransferRegistry;
+	}
+
+	@Override
 	public void addIgnoredRecipeClasses(Class... ignoredRecipeClasses) {
 
 	}
 
 	public RecipeRegistry createRecipeRegistry() {
-		return new RecipeRegistry(recipeCategories, recipeHandlers, recipeTransferHelpers, recipes);
+		List<IRecipeTransferHandler> recipeTransferHandlers = recipeTransferRegistry.getRecipeTransferHandlers();
+		return new RecipeRegistry(recipeCategories, recipeHandlers, recipeTransferHandlers, recipes);
 	}
 }

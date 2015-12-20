@@ -4,13 +4,15 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
 
+import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.gui.RecipeLayout;
 import mezz.jei.gui.TooltipRenderer;
 
 public class RecipeTransferErrorTooltip implements IRecipeTransferError {
+	@Nonnull
 	private final String message;
 
-	public RecipeTransferErrorTooltip(String message) {
+	public RecipeTransferErrorTooltip(@Nonnull String message) {
 		this.message = message;
 	}
 

@@ -1,5 +1,7 @@
 package mezz.jei.api;
 
+import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
+
 /**
  * IJeiHelpers provides helpers and tools for addon mods.
  * Available to IModPlugins
@@ -19,4 +21,9 @@ public interface IJeiHelpers {
 	 * Used to tell JEI to ignore NBT tags when comparing items for recipes.
 	 */
 	INbtIgnoreList getNbtIgnoreList();
+
+	/**
+	 * Helps with the implementation of Recipe Transfer Handlers
+	 */
+	IRecipeTransferHandlerHelper recipeTransferHandlerHelper();
 }

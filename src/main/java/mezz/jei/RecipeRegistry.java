@@ -3,7 +3,6 @@ package mezz.jei;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
@@ -26,8 +25,9 @@ import net.minecraftforge.fluids.FluidStack;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
-import mezz.jei.api.recipe.IRecipeTransferHelper;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.util.Log;
 import mezz.jei.util.RecipeCategoryComparator;
 import mezz.jei.util.RecipeMap;
@@ -35,16 +35,16 @@ import mezz.jei.util.StackUtil;
 
 public class RecipeRegistry implements IRecipeRegistry {
 	private final ImmutableMap<Class, IRecipeHandler> recipeHandlers;
-	private final ImmutableTable<Class, String, IRecipeTransferHelper> recipeTransferHelpers;
+	private final ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers;
 	private final ImmutableMap<String, IRecipeCategory> recipeCategoriesMap;
 	private final ListMultimap<IRecipeCategory, Object> recipesForCategories;
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
 	private final Set<Class> unhandledRecipeClasses;
 
-	public RecipeRegistry(@Nonnull List<IRecipeCategory> recipeCategories, @Nonnull List<IRecipeHandler> recipeHandlers, @Nonnull List<IRecipeTransferHelper> recipeTransferHelpers, @Nonnull List<Object> recipes) {
+	public RecipeRegistry(@Nonnull List<IRecipeCategory> recipeCategories, @Nonnull List<IRecipeHandler> recipeHandlers, @Nonnull List<IRecipeTransferHandler> recipeTransferHandlers, @Nonnull List<Object> recipes) {
 		this.recipeCategoriesMap = buildRecipeCategoriesMap(recipeCategories);
-		this.recipeTransferHelpers = buildRecipeTransferHelperTable(recipeTransferHelpers);
+		this.recipeTransferHandlers = buildRecipeTransferHandlerTable(recipeTransferHandlers);
 		this.recipeHandlers = buildRecipeHandlersMap(recipeHandlers);
 
 		RecipeCategoryComparator recipeCategoryComparator = new RecipeCategoryComparator(recipeCategories);
@@ -83,9 +83,17 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return ImmutableMap.copyOf(mutableRecipeHandlers);
 	}
 
-	private static ImmutableTable<Class, String, IRecipeTransferHelper> buildRecipeTransferHelperTable(@Nonnull List<IRecipeTransferHelper> recipeTransferHelpers) {
-		ImmutableTable.Builder<Class, String, IRecipeTransferHelper> builder = ImmutableTable.builder();
-		for (IRecipeTransferHelper recipeTransferHelper : recipeTransferHelpers) {
+	private static ImmutableTable<Class, String, IRecipeTransferInfo> buildRecipeTransferHandlers(@Nonnull List<IRecipeTransferInfo> recipeTransferHelpers) {
+		ImmutableTable.Builder<Class, String, IRecipeTransferInfo> builder = ImmutableTable.builder();
+		for (IRecipeTransferInfo recipeTransferHelper : recipeTransferHelpers) {
+			builder.put(recipeTransferHelper.getContainerClass(), recipeTransferHelper.getRecipeCategoryUid(), recipeTransferHelper);
+		}
+		return builder.build();
+	}
+
+	private static ImmutableTable<Class, String, IRecipeTransferHandler> buildRecipeTransferHandlerTable(@Nonnull List<IRecipeTransferHandler> recipeTransferHandlers) {
+		ImmutableTable.Builder<Class, String, IRecipeTransferHandler> builder = ImmutableTable.builder();
+		for (IRecipeTransferHandler recipeTransferHelper : recipeTransferHandlers) {
 			builder.put(recipeTransferHelper.getContainerClass(), recipeTransferHelper.getRecipeCategoryUid(), recipeTransferHelper);
 		}
 		return builder.build();
@@ -296,6 +304,11 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Nullable
 	@Override
 	public IRecipeTransferHelper getRecipeTransferHelper(@Nullable Container container, @Nullable IRecipeCategory recipeCategory) {
+		return null;
+	}
+
+	@Nullable
+	public IRecipeTransferHandler getRecipeTransferHandler(@Nullable Container container, @Nullable IRecipeCategory recipeCategory) {
 		if (container == null) {
 			Log.error("Null container", new NullPointerException());
 			return null;
@@ -303,6 +316,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			Log.error("Null recipeCategory", new NullPointerException());
 			return null;
 		}
-		return recipeTransferHelpers.get(container.getClass(), recipeCategory.getUid());
+
+		return recipeTransferHandlers.get(container.getClass(), recipeCategory.getUid());
 	}
 }
