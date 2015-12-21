@@ -15,6 +15,7 @@ import mezz.jei.util.StackUtil;
 public class Config {
 	public static final String CATEGORY_MODE = "mode";
 	public static final String CATEGORY_INTERFACE = "interface";
+	public static final String CATEGORY_SEARCH = "search";
 	public static final String CATEGORY_ADVANCED = "advanced";
 	public static final String CATEGORY_ADDONS = "addons";
 
@@ -25,8 +26,11 @@ public class Config {
 	private static boolean debugModeEnabled = false;
 
 	private static boolean jeiOnServer = true;
+
 	private static boolean recipeAnimationsEnabled = true;
 	private static boolean hideMissingModelsEnabled = true;
+
+	private static boolean atPrefixRequiredForModName = true;
 
 	private static final Set<String> nbtKeyIgnoreList = new HashSet<>();
 	private static final Set<String> itemBlacklist = new HashSet<>();
@@ -66,6 +70,10 @@ public class Config {
 		return hideMissingModelsEnabled;
 	}
 
+	public static boolean isAtPrefixRequiredForModName() {
+		return atPrefixRequiredForModName;
+	}
+
 	public static Set<String> getNbtKeyIgnoreList() {
 		return nbtKeyIgnoreList;
 	}
@@ -87,6 +95,7 @@ public class Config {
 	public static boolean syncConfig() {
 		configFile.addCategory(CATEGORY_MODE);
 		configFile.addCategory(CATEGORY_INTERFACE);
+		configFile.addCategory(CATEGORY_SEARCH);
 		configFile.addCategory(CATEGORY_ADVANCED);
 		configFile.addCategory(CATEGORY_ADDONS);
 
@@ -94,6 +103,8 @@ public class Config {
 		editModeEnabled = configFile.getBoolean(CATEGORY_MODE, "editEnabled", editModeEnabled);
 
 		recipeAnimationsEnabled = configFile.getBoolean(CATEGORY_INTERFACE, "recipeAnimationsEnabled", recipeAnimationsEnabled);
+
+		atPrefixRequiredForModName = configFile.getBoolean(CATEGORY_SEARCH, "atPrefixRequiredForModName", atPrefixRequiredForModName);
 
 		String[] nbtKeyIgnoreListArray = configFile.getStringList("nbtKeyIgnoreList", CATEGORY_ADVANCED, defaultNbtKeyIgnoreList);
 		nbtKeyIgnoreList.clear();

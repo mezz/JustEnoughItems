@@ -32,6 +32,11 @@ config.jei.interface.comment=Options relating to the User Interface.
 config.jei.interface.recipeAnimationsEnabled=Recipe Animations
 config.jei.interface.recipeAnimationsEnabled.comment=Show recipe animations (furnace fire, progress bars, etc)
 
+config.jei.search=Search
+config.jei.search.comment=Options relating to the search bar.
+config.jei.search.atPrefixRequiredForModName=Use @ for Mod Name
+config.jei.search.atPrefixRequiredForModName.comment=Require "@ModName" to search by mod name instead of "ModName".
+
 config.jei.advanced=Advanced
 config.jei.advanced.comment=Advanced config options to change the way JEI functions.
 config.jei.advanced.nbtKeyIgnoreList=NBT Key Ignore List
