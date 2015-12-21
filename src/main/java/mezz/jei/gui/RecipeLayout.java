@@ -3,9 +3,8 @@ package mezz.jei.gui;
 import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-
-import org.lwjgl.opengl.GL11;
 
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
@@ -51,10 +50,10 @@ public class RecipeLayout implements IRecipeLayout {
 	}
 
 	public void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
-		GL11.glPushMatrix();
-		GL11.glTranslatef(posX, posY, 0.0F);
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GL11.glDisable(GL11.GL_LIGHTING);
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(posX, posY, 0.0F);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.disableLighting();
 
 		IDrawable background = recipeCategory.getBackground();
 		background.draw(minecraft);
@@ -65,9 +64,9 @@ public class RecipeLayout implements IRecipeLayout {
 			recipeWrapper.drawAnimations(minecraft, background.getWidth(), background.getHeight());
 		}
 
-		GL11.glTranslatef(-posX, -posY, 0.0F);
+		GlStateManager.translate(-posX, -posY, 0.0F);
 		recipeTransferButton.drawButton(minecraft, mouseX, mouseY);
-		GL11.glTranslatef(posX, posY, 0.0F);
+		GlStateManager.translate(posX, posY, 0.0F);
 
 		recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight());
 
@@ -76,7 +75,7 @@ public class RecipeLayout implements IRecipeLayout {
 		RenderHelper.disableStandardItemLighting();
 		guiFluidStackGroup.draw(minecraft, mouseX - posX, mouseY - posY);
 
-		GL11.glPopMatrix();
+		GlStateManager.popMatrix();
 	}
 
 	public Focus getFocusUnderMouse(int mouseX, int mouseY) {
