@@ -38,7 +38,7 @@ public class JustEnoughItems {
 	public boolean checkModLists(Map<String, String> modList, Side side) {
 		if (side == Side.SERVER) {
 			boolean jeiOnServer = modList.containsKey(Constants.MOD_ID);
-			Config.setRecipeTransferEnabled(jeiOnServer);
+			Config.setJeiOnServer(jeiOnServer);
 		}
 
 		return true;

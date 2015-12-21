@@ -24,7 +24,7 @@ public class Config {
 	private static boolean editModeEnabled = false;
 	private static boolean debugModeEnabled = false;
 
-	private static boolean recipeTransferEnabled = true;
+	private static boolean jeiOnServer = true;
 	private static boolean recipeAnimationsEnabled = true;
 	private static boolean hideMissingModelsEnabled = true;
 
@@ -50,12 +50,12 @@ public class Config {
 		return debugModeEnabled;
 	}
 
-	public static boolean isRecipeTransferEnabled() {
-		return recipeTransferEnabled;
+	public static boolean isJeiOnServer() {
+		return jeiOnServer;
 	}
 
-	public static void setRecipeTransferEnabled(boolean recipeTransferEnabled) {
-		Config.recipeTransferEnabled = recipeTransferEnabled;
+	public static void setJeiOnServer(boolean jeiOnServer) {
+		Config.jeiOnServer = jeiOnServer;
 	}
 
 	public static boolean isRecipeAnimationsEnabled() {
