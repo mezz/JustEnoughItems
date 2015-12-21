@@ -24,6 +24,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
+import mezz.jei.config.Config;
 import mezz.jei.gui.RecipeLayout;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
@@ -53,6 +54,10 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 	@Override
 	public IRecipeTransferError transferRecipe(@Nonnull Container container, @Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean doTransfer) {
 		IRecipeTransferHandlerHelper handlerHelper = Internal.getHelpers().recipeTransferHandlerHelper();
+
+		if (!Config.isJeiOnServer()) {
+			return handlerHelper.createInternalError();
+		}
 		
 		Map<Integer, Slot> inventorySlots = new HashMap<>();
 		for (Slot slot : transferHelper.getInventorySlots(container)) {

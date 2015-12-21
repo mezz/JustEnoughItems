@@ -9,7 +9,6 @@ import net.minecraft.inventory.Container;
 import mezz.jei.Internal;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
-import mezz.jei.config.Config;
 import mezz.jei.gui.RecipeLayout;
 import mezz.jei.util.Log;
 
@@ -25,10 +24,6 @@ public class RecipeTransferUtil {
 
 	@Nullable
 	private static IRecipeTransferError transferRecipe(@Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean doTransfer) {
-		if (!Config.isRecipeTransferEnabled()) {
-			return RecipeTransferErrorInternal.instance;
-		}
-
 		Container container = player.openContainer;
 
 		IRecipeTransferHandler transferHandler = Internal.getRecipeRegistry().getRecipeTransferHandler(container, recipeLayout.getRecipeCategory());

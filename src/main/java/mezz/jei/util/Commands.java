@@ -10,6 +10,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.EnumChatFormatting;
+
+import mezz.jei.config.Config;
+import mezz.jei.network.packets.C01PacketChatMessageBig;
 
 public class Commands {
 
@@ -40,6 +46,24 @@ public class Commands {
 		}
 
 		String fullCommand = StringUtils.join(commandStrings, " ");
-		sender.sendChatMessage(fullCommand);
+		sendChatMessage(sender, fullCommand);
+	}
+
+	private static void sendChatMessage(EntityPlayerSP sender, String chatMessage) {
+		if (chatMessage.length() <= 100) {
+			sender.sendChatMessage(chatMessage);
+		} else {
+			if (Config.isJeiOnServer()) {
+				sender.sendQueue.addToSendQueue(new C01PacketChatMessageBig(chatMessage));
+			} else {
+				ChatComponentTranslation errorMessage = new ChatComponentTranslation("jei.chat.error.command.too.long");
+				errorMessage.getChatStyle().setColor(EnumChatFormatting.RED);
+				sender.addChatComponentMessage(errorMessage);
+
+				ChatComponentText chatMessageComponent = new ChatComponentText(chatMessage);
+				chatMessageComponent.getChatStyle().setColor(EnumChatFormatting.RED);
+				sender.addChatComponentMessage(chatMessageComponent);
+			}
+		}
 	}
 }

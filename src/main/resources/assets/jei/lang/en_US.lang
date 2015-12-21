@@ -6,6 +6,9 @@ jei.tooltip.show.all.recipes=Show All Recipes
 jei.tooltip.error.recipe.transfer.missing=Missing Items
 jei.tooltip.error.recipe.transfer.inventory.full=Inventory is too full
 
+# Error Messages
+jei.chat.error.command.too.long=JEI must be on the server to handle this Chat Command, it is too long for Minecraft to send.
+
 # Key Bindings
 key.jei.toggleOverlay=Toggle Item List Overlay (Ctrl + )
 key.jei.showRecipe=Show Item Recipe
