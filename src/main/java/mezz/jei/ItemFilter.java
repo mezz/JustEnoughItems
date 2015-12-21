@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemModelMesher;
@@ -59,7 +60,15 @@ public class ItemFilter {
 
 	@Nonnull
 	public ImmutableList<ItemStackElement> getItemList() {
-		return filteredItemMapsCache.getUnchecked(filterText);
+		ImmutableList.Builder<ItemStackElement> itemList = ImmutableList.builder();
+
+		String[] filters = filterText.split("\\|");
+		for (String filter : filters) {
+			List<ItemStackElement> itemStackElements = filteredItemMapsCache.getUnchecked(filter);
+			itemList.addAll(itemStackElements);
+		}
+		
+		return itemList.build();
 	}
 
 	public int size() {
