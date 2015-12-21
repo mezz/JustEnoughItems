@@ -31,7 +31,6 @@ dependencies {
 }
 ```
 
-`<MINECRAFT-VERSION>` can be `1.8` or `1.8.8`.
-Join IRC for available JEI versions. Soon, they will be auto-uploaded to curse and you can get the version there.
+`<MINECRAFT-VERSION>` and `<JEI-VERSION>` can be found on [CurseForge](http://minecraft.curseforge.com/projects/just-enough-items-jei/files), check the file name of the version you want.
 
 Join [#JEI on esper.net IRC](http://webchat.esper.net/?nick=JEIGithub...&channels=JEI&prompt=1) for questions or anything else.
