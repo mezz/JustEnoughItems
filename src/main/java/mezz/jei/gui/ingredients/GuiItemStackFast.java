@@ -26,7 +26,6 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 
-import net.minecraftforge.client.model.ISmartItemModel;
 import net.minecraftforge.client.model.pipeline.LightUtil;
 
 import mezz.jei.config.Config;
@@ -44,10 +43,9 @@ public class GuiItemStackFast {
 	private final int width;
 	private final int height;
 	private final int padding;
+	private final ItemModelMesher itemModelMesher;
 
 	private ItemStack itemStack;
-	private IBakedModel bakedModel;
-	private ISmartItemModel smartItemModel;
 
 	public GuiItemStackFast(int xPosition, int yPosition, int padding) {
 		this.xPosition = xPosition;
@@ -55,31 +53,15 @@ public class GuiItemStackFast {
 		this.padding = padding;
 		this.width = 16 + (2 * padding);
 		this.height = 16 + (2 * padding);
+		this.itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
 	}
 
 	public void setItemStack(ItemStack itemStack) {
 		this.itemStack = itemStack;
-
-		ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
-		this.bakedModel = itemModelMesher.getItemModel(itemStack);
-
-		if (this.bakedModel instanceof ISmartItemModel) {
-			this.smartItemModel = (ISmartItemModel) this.bakedModel;
-		} else {
-			this.smartItemModel = null;
-		}
 	}
 
 	public ItemStack getItemStack() {
 		return itemStack;
-	}
-
-	public boolean isBuiltInRenderer() {
-		return bakedModel != null && bakedModel.isBuiltInRenderer();
-	}
-
-	public boolean isGui3d() {
-		return bakedModel != null && bakedModel.isGui3d();
 	}
 
 	public void clear() {
@@ -90,21 +72,19 @@ public class GuiItemStackFast {
 		return (itemStack != null) && (mouseX >= xPosition) && (mouseY >= yPosition) && (mouseX < xPosition + width) && (mouseY < yPosition + height);
 	}
 
-	public void renderItemAndEffectIntoGUI(boolean isGui3d) {
+	public void renderItemAndEffectIntoGUI() {
 		if (itemStack == null) {
 			return;
 		}
 
-		if (smartItemModel != null) {
-			smartItemModel.handleItemState(itemStack);
-		}
+		IBakedModel bakedModel = itemModelMesher.getItemModel(itemStack);
 
 		GlStateManager.pushMatrix();
 
 		int x = xPosition + padding + 8;
 		int y = yPosition + padding + 8;
 
-		if (isGui3d) {
+		if (bakedModel.isGui3d()) {
 			if (Config.isEditModeEnabled()) {
 				GlStateManager.scale(1.0/20.0F, 1.0/20.0F, 1.0/-20.0F);
 				renderEditMode();
@@ -127,7 +107,7 @@ public class GuiItemStackFast {
 			GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
 		}
 
-		net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(this.bakedModel, ItemCameraTransforms.TransformType.GUI);
+		bakedModel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(bakedModel, ItemCameraTransforms.TransformType.GUI);
 
 		GlStateManager.scale(0.5F, 0.5F, 0.5F);
 		GlStateManager.translate(-0.5F, -0.5F, -0.5F);

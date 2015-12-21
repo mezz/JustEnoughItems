@@ -7,10 +7,12 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.gui.Focus;
@@ -38,15 +40,18 @@ public class GuiItemStackFastList {
 		renderItems2d.clear();
 		renderItems3d.clear();
 
+		ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+
 		for (GuiItemStackFast guiItemStack : renderItemsAll) {
 			if (i >= itemList.size()) {
 				guiItemStack.clear();
 			} else {
 				ItemStack stack = itemList.get(i).getItemStack();
+				IBakedModel bakedModel = itemModelMesher.getItemModel(stack);;
 				guiItemStack.setItemStack(stack);
-				if (guiItemStack.isBuiltInRenderer()) {
+				if (bakedModel.isBuiltInRenderer()) {
 					renderItemsBuiltIn.add(guiItemStack);
-				} else if (guiItemStack.isGui3d()) {
+				} else if (bakedModel.isGui3d()) {
 					renderItems3d.add(guiItemStack);
 				} else {
 					renderItems2d.add(guiItemStack);
@@ -104,7 +109,7 @@ public class GuiItemStackFastList {
 			GlStateManager.scale(20.0F, 20.0F, -20.0F);
 			for (GuiItemStackFast guiItemStack : renderItems3d) {
 				if (hovered != guiItemStack) {
-					guiItemStack.renderItemAndEffectIntoGUI(true);
+					guiItemStack.renderItemAndEffectIntoGUI();
 				}
 			}
 		}
@@ -117,7 +122,7 @@ public class GuiItemStackFastList {
 			GlStateManager.scale(32.0F, 32.0F, -32.0F);
 			for (GuiItemStackFast guiItemStack : renderItems2d) {
 				if (hovered != guiItemStack) {
-					guiItemStack.renderItemAndEffectIntoGUI(false);
+					guiItemStack.renderItemAndEffectIntoGUI();
 				}
 			}
 		}
