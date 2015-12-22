@@ -22,12 +22,14 @@ public class JEIModConfigGui extends GuiConfig {
 	private static List<IConfigElement> getConfigElements() {
 		ConfigCategory categoryAdvanced = Config.getConfigFile().getCategory(Config.CATEGORY_ADVANCED);
 		ConfigCategory categoryInterface = Config.getConfigFile().getCategory(Config.CATEGORY_INTERFACE);
+		ConfigCategory categorySearch = Config.getConfigFile().getCategory(Config.CATEGORY_SEARCH);
 		ConfigCategory categoryMode = Config.getConfigFile().getCategory(Config.CATEGORY_MODE);
 		ConfigCategory categoryAddons = Config.getConfigFile().getCategory(Config.CATEGORY_ADDONS);
 
 		List<IConfigElement> configElements = new ArrayList<>();
 		configElements.addAll(new ConfigElement(categoryMode).getChildElements());
-		configElements.addAll(new ConfigElement(categoryInterface).getChildElements());
+		configElements.add(new ConfigElement(categoryInterface));
+		configElements.add(new ConfigElement(categorySearch));
 		configElements.add(new ConfigElement(categoryAdvanced));
 
 		if (!categoryAddons.isEmpty() || categoryAddons.getChildren().size() > 0) {

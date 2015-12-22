@@ -7,12 +7,15 @@ import javax.annotation.Nullable;
 import java.awt.Color;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.client.config.GuiButtonExt;
@@ -22,7 +25,9 @@ import org.lwjgl.input.Keyboard;
 
 import mezz.jei.Internal;
 import mezz.jei.ItemFilter;
+import mezz.jei.JustEnoughItems;
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.config.JEIModConfigGui;
 import mezz.jei.gui.ingredients.GuiItemStackFast;
@@ -32,6 +37,8 @@ import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IKeyable;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
+import mezz.jei.network.packets.PacketDeletePlayerItem;
+import mezz.jei.network.packets.PacketJEI;
 import mezz.jei.util.ItemStackElement;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
@@ -191,12 +198,30 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		configButtonIcon.draw(minecraft, configButton.xPosition + 2, configButton.yPosition + 2);
 
 		boolean mouseOver = isMouseOver(mouseX, mouseY);
-		hovered = guiItemStacks.render(hovered, minecraft, mouseOver, mouseX, mouseY);
+
+		if (mouseOver && shouldShowDeleteItemTooltip(minecraft)) {
+			hovered = guiItemStacks.render(null, minecraft, false, mouseX, mouseY);
+
+			String deleteItem = Translator.translateToLocal("jei.tooltip.delete.item");
+			TooltipRenderer.drawHoveringText(minecraft, deleteItem, mouseX, mouseY);
+		} else {
+			hovered = guiItemStacks.render(hovered, minecraft, mouseOver, mouseX, mouseY);
+		}
 
 		if (configButtonHoverChecker.checkHover(mouseX, mouseY)) {
 			String configString = Translator.translateToLocal("jei.tooltip.config");
 			TooltipRenderer.drawHoveringText(minecraft, configString, mouseX, mouseY);
 		}
+	}
+
+	private boolean shouldShowDeleteItemTooltip(Minecraft minecraft) {
+		if (Config.isDeleteItemsInCheatModeActive()) {
+			EntityPlayer player = minecraft.thePlayer;
+			if (player.inventory.getItemStack() != null) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
@@ -238,6 +263,19 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 			setKeyboardFocus(false);
 			return false;
 		}
+
+		if (Config.isDeleteItemsInCheatModeActive()) {
+			Minecraft minecraft = Minecraft.getMinecraft();
+			EntityPlayerSP player = minecraft.thePlayer;
+			ItemStack itemStack = player.inventory.getItemStack();
+			if (itemStack != null) {
+				player.inventory.setItemStack(null);
+				PacketJEI packet = new PacketDeletePlayerItem(itemStack);
+				JustEnoughItems.getProxy().sendPacketToServer(packet);
+				return true;
+			}
+		}
+
 		boolean buttonClicked = handleMouseClickedButtons(mouseX, mouseY);
 		if (buttonClicked) {
 			setKeyboardFocus(false);

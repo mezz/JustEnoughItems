@@ -10,6 +10,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
@@ -17,8 +18,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
-
-import org.lwjgl.opengl.GL11;
 
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IRecipeCategory;
@@ -319,19 +318,20 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		nextPage.drawButton(minecraft, mouseX, mouseY);
 		previousPage.drawButton(minecraft, mouseX, mouseY);
 
-		GL11.glPushMatrix();
+		GlStateManager.pushMatrix();
 		{
-			GL11.glTranslatef(guiLeft, guiTop, 0.0F);
-			
+			GlStateManager.translate(guiLeft, guiTop, 0.0F);
+
+			GlStateManager.disableBlend();
 			drawRect(borderPadding + buttonWidth, borderPadding - 2, xSize - borderPadding - buttonWidth, borderPadding + 10, 0x30000000);
 			drawRect(borderPadding + buttonWidth, titleHeight + textPadding - 2, xSize - borderPadding - buttonWidth, titleHeight + textPadding + 10, 0x30000000);
 
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
 			StringUtil.drawCenteredString(fontRendererObj, title, xSize, borderPadding, Color.WHITE.getRGB(), true);
 			StringUtil.drawCenteredString(fontRendererObj, pageString, xSize, titleHeight + textPadding, Color.WHITE.getRGB(), true);
 		}
-		GL11.glPopMatrix();
+		GlStateManager.popMatrix();
 
 		RecipeLayout hovered = null;
 		for (RecipeLayout recipeWidget : recipeLayouts) {
@@ -357,7 +357,7 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		this.zLevel = -100;
 		this.drawDefaultBackground();
 
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		bindTexture(backgroundTexture);
 		int x = (width - xSize) / 2;
 		int y = (height - ySize) / 2;
@@ -366,7 +366,7 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 	}
 
 	private void bindTexture(ResourceLocation texturePath) {
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		FMLClientHandler.instance().getClient().getTextureManager().bindTexture(texturePath);
 	}
 

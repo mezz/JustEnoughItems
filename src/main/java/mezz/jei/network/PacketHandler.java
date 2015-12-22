@@ -14,6 +14,7 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 
+import mezz.jei.network.packets.PacketDeletePlayerItem;
 import mezz.jei.network.packets.PacketJEI;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.util.Log;
@@ -40,6 +41,10 @@ public class PacketHandler {
 			switch (packetId) {
 				case RECIPE_TRANSFER: {
 					packet = new PacketRecipeTransfer();
+					break;
+				}
+				case DELETE_ITEM: {
+					packet = new PacketDeletePlayerItem();
 					break;
 				}
 				default: {

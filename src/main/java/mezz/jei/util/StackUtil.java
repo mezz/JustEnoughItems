@@ -185,7 +185,7 @@ public class StackUtil {
 			itemStacks.add(stack);
 		}
 
-		return removeDuplicateItemStacks(itemStacks);
+		return itemStacks;
 	}
 
 	public static List<ItemStack> getAllSubtypes(Iterable stacks) {
