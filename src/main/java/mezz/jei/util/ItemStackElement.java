@@ -16,11 +16,10 @@ import mezz.jei.config.Config;
  * For getting properties of ItemStacks efficiently
  */
 public class ItemStackElement {
-
 	@Nonnull
 	private final ItemStack itemStack;
 	@Nonnull
-	private final String localizedName;
+	private final String searchString;
 	@Nonnull
 	private final String modName;
 
@@ -36,18 +35,19 @@ public class ItemStackElement {
 
 	private ItemStackElement(@Nonnull ItemStack itemStack) {
 		this.itemStack = itemStack;
-		String localizedName = itemStack.getDisplayName().toLowerCase();
 
 		ResourceLocation itemResourceLocation = (ResourceLocation) GameData.getItemRegistry().getNameForObject(itemStack.getItem());
-		String modId = itemResourceLocation.getResourceDomain();
-		String modName = Internal.getItemRegistry().getModNameForItem(itemStack.getItem());
+		String modId = itemResourceLocation.getResourceDomain().toLowerCase(Locale.ENGLISH);
+		String modName = Internal.getItemRegistry().getModNameForItem(itemStack.getItem()).toLowerCase(Locale.ENGLISH);
 
-		this.modName = modId.toLowerCase(Locale.ENGLISH) + ' ' + modName.toLowerCase(Locale.ENGLISH);
+		String searchString = itemStack.getDisplayName().toLowerCase();
+
+		this.modName = modId + ' ' + modName;
 
 		if (Config.isAtPrefixRequiredForModName()) {
-			this.localizedName = localizedName;
+			this.searchString = searchString;
 		} else {
-			this.localizedName = localizedName + ' ' + this.modName;
+			this.searchString = searchString + ' ' + this.modName;
 		}
 	}
 
@@ -57,8 +57,8 @@ public class ItemStackElement {
 	}
 
 	@Nonnull
-	public String getLocalizedName() {
-		return localizedName;
+	public String getSearchString() {
+		return searchString;
 	}
 
 	@Nonnull

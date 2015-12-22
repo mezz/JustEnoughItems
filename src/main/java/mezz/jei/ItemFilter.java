@@ -5,12 +5,11 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.Weigher;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -36,7 +35,11 @@ public class ItemFilter {
 		filteredItemMapsCache = CacheBuilder.newBuilder()
 				.maximumWeight(16)
 				.weigher(new SearchFilterWeigher())
+				.concurrencyLevel(1)
 				.build(new ItemFilterCacheLoader(itemRegistry));
+
+		// preload the base list
+		filteredItemMapsCache.getUnchecked("");
 	}
 
 	public void reset() {
@@ -60,15 +63,19 @@ public class ItemFilter {
 
 	@Nonnull
 	public ImmutableList<ItemStackElement> getItemList() {
-		ImmutableList.Builder<ItemStackElement> itemList = ImmutableList.builder();
-
 		String[] filters = filterText.split("\\|");
-		for (String filter : filters) {
-			List<ItemStackElement> itemStackElements = filteredItemMapsCache.getUnchecked(filter);
-			itemList.addAll(itemStackElements);
+
+		if (filters.length == 1) {
+			String filter = filters[0];
+			return filteredItemMapsCache.getUnchecked(filter);
+		} else {
+			ImmutableList.Builder<ItemStackElement> itemList = ImmutableList.builder();
+			for (String filter : filters) {
+				List<ItemStackElement> itemStackElements = filteredItemMapsCache.getUnchecked(filter);
+				itemList.addAll(itemStackElements);
+			}
+			return itemList.build();
 		}
-		
-		return itemList.build();
 	}
 
 	public int size() {
@@ -125,9 +132,14 @@ public class ItemFilter {
 			ImmutableList<ItemStackElement> baseItemSet = filteredItemMapsCache.get(prevFilterText);
 
 			FilterPredicate filterPredicate = new FilterPredicate(filterText);
-			Collection<ItemStackElement> filteredItemList = Collections2.filter(baseItemSet, filterPredicate);
 
-			return ImmutableList.copyOf(filteredItemList);
+			ImmutableList.Builder<ItemStackElement> itemStackElementsBuilder = ImmutableList.builder();
+			for (ItemStackElement itemStackElement : baseItemSet) {
+				if (filterPredicate.apply(itemStackElement)) {
+					itemStackElementsBuilder.add(itemStackElement);
+				}
+			}
+			return itemStackElementsBuilder.build();
 		}
 	}
 
@@ -182,10 +194,19 @@ public class ItemFilter {
 	}
 
 	private static class FilterPredicate implements Predicate<ItemStackElement> {
-		private final String filterText;
+		private final List<String> itemNameTokens = new ArrayList<>();
+		private final List<String> modNameTokens = new ArrayList<>();
 
 		public FilterPredicate(String filterText) {
-			this.filterText = filterText;
+			String[] tokens = filterText.split(" ");
+			for (String token : tokens) {
+				if (token.startsWith("@")) {
+					String modNameToken = token.substring(1);
+					modNameTokens.add(modNameToken);
+				} else {
+					itemNameTokens.add(token);
+				}
+			}
 		}
 
 		@Override
@@ -194,19 +215,20 @@ public class ItemFilter {
 				return false;
 			}
 
-			String[] tokens = filterText.split(" ");
-			for (String token : tokens) {
-				if (token.startsWith("@")) {
-					String modNameFilter = token.substring(1);
-					if (modNameFilter.length() > 0 && !input.getModName().contains(modNameFilter)) {
-						return false;
-					}
-				} else {
-					if (!input.getLocalizedName().contains(token)) {
-						return false;
-					}
+			String modName = input.getModName();
+			for (String token : modNameTokens) {
+				if (!modName.contains(token)) {
+					return false;
 				}
 			}
+
+			String itemName = input.getSearchString();
+			for (String token : itemNameTokens) {
+				if (!itemName.contains(token)) {
+					return false;
+				}
+			}
+
 			return true;
 		}
 	}

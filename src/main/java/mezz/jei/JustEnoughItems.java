@@ -3,16 +3,20 @@ package mezz.jei;
 import javax.annotation.Nonnull;
 import java.util.Map;
 
+import net.minecraft.item.Item;
+
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLModIdMappingEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
+import mezz.jei.debug.DebugItem;
 import mezz.jei.network.PacketHandler;
 
 @Mod(modid = Constants.MOD_ID,
@@ -49,6 +53,13 @@ public class JustEnoughItems {
 		packetHandler = new PacketHandler();
 		Internal.setHelpers(new JeiHelpers());
 		proxy.preInit(event);
+
+		if (Config.isDebugModeEnabled()) {
+			String name = "jeiDebug";
+			Item debugItem = new DebugItem(name);
+			debugItem.setUnlocalizedName(name);
+			GameRegistry.registerItem(debugItem, name);
+		}
 	}
 
 	@Mod.EventHandler
