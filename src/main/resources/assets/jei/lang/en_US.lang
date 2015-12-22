@@ -1,6 +1,7 @@
 # Tooltips
 jei.tooltip.config=Config
 jei.tooltip.show.all.recipes=Show All Recipes
+jei.tooltip.delete.item=Click to Delete
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Missing Items
@@ -47,6 +48,8 @@ config.jei.advanced.hideMissingModelsEnabled=Hide Missing Item Models
 config.jei.advanced.hideMissingModelsEnabled.comment=Items with missing models will be hidden from the item list.
 config.jei.advanced.debugModeEnabled=Debug Mode
 config.jei.advanced.debugModeEnabled.comment=Adds random things to help with JEI development.
+config.jei.advanced.deleteItemsInCheatModeEnabled=Delete Items in Cheat Mode
+config.jei.advanced.deleteItemsInCheatModeEnabled.comment=In cheat mode, drag an ItemStack over the item list and click to delete it. (requires JEI on server)
 
 config.jei.addons=Addons
 config.jei.addons.comment=Category for JEI addon config options.

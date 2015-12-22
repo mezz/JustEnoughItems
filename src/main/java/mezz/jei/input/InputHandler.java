@@ -64,10 +64,11 @@ public class InputHandler {
 			if (Mouse.getEventButtonState()) {
 				if (!clickHandled) {
 					cancelEvent = handleMouseClick(Mouse.getEventButton(), mouseX, mouseY);
-					clickHandled = true;
+					clickHandled = cancelEvent;
 				}
-			} else {
+			} else if (clickHandled) {
 				clickHandled = false;
+				cancelEvent = true;
 			}
 		} else if (Mouse.getEventDWheel() != 0) {
 			cancelEvent = handleMouseScroll(Mouse.getEventDWheel(), mouseX, mouseY);
@@ -85,15 +86,15 @@ public class InputHandler {
 	}
 
 	private boolean handleMouseClick(int mouseButton, int mouseX, int mouseY) {
-		Focus focus = getFocusUnderMouseForClick(mouseX, mouseY);
-		if (focus != null && handleMouseClickedFocus(mouseButton, focus)) {
-			return true;
-		}
-
 		for (IMouseHandler clickable : mouseHandlers) {
 			if (clickable.handleMouseClicked(mouseX, mouseY, mouseButton)) {
 				return true;
 			}
+		}
+
+		Focus focus = getFocusUnderMouseForClick(mouseX, mouseY);
+		if (focus != null && handleMouseClickedFocus(mouseButton, focus)) {
+			return true;
 		}
 
 		return recipesGui.isOpen();

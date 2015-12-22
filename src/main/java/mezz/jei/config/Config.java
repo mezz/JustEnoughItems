@@ -25,6 +25,8 @@ public class Config {
 	private static boolean editModeEnabled = false;
 	private static boolean debugModeEnabled = false;
 
+	private static boolean deleteItemsInCheatModeEnabled = true;
+
 	private static boolean jeiOnServer = true;
 
 	private static boolean recipeAnimationsEnabled = true;
@@ -52,6 +54,10 @@ public class Config {
 
 	public static boolean isDebugModeEnabled() {
 		return debugModeEnabled;
+	}
+
+	public static boolean isDeleteItemsInCheatModeActive() {
+		return deleteItemsInCheatModeEnabled && cheatItemsEnabled && jeiOnServer;
 	}
 
 	public static boolean isJeiOnServer() {
@@ -101,6 +107,8 @@ public class Config {
 
 		cheatItemsEnabled = configFile.getBoolean(CATEGORY_MODE, "cheatItemsEnabled", cheatItemsEnabled);
 		editModeEnabled = configFile.getBoolean(CATEGORY_MODE, "editEnabled", editModeEnabled);
+
+		deleteItemsInCheatModeEnabled = configFile.getBoolean(CATEGORY_ADVANCED, "deleteItemsInCheatModeEnabled", deleteItemsInCheatModeEnabled);
 
 		recipeAnimationsEnabled = configFile.getBoolean(CATEGORY_INTERFACE, "recipeAnimationsEnabled", recipeAnimationsEnabled);
 
