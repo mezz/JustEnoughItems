@@ -51,12 +51,13 @@ public interface IModRegistry {
 	 * Add a description page for an itemStack.
 	 * Description pages show in the recipes for an itemStack and tell the player a little bit about it.
 	 *
-	 * @param itemStacks      the itemStack(s) to describe
+	 * @param itemStack       the itemStack(s) to describe
 	 * @param descriptionKeys Localization keys for description text.
 	 *                        New lines can be added with "\n" or by giving multiple descriptionKeys.
 	 *                     	  Long lines are wrapped automatically.
 	 *                     	  Very long entries will span multiple pages automatically.
 	 */
+	void addDescription(ItemStack itemStack, String... descriptionKeys);
 	void addDescription(List<ItemStack> itemStacks, String... descriptionKeys);
 
 	/**
