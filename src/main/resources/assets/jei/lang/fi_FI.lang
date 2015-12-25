@@ -1,8 +1,71 @@
+# Tooltips
+jei.tooltip.config=Asetukset
+jei.tooltip.show.all.recipes=Näytä kaikki reseptit
+jei.tooltip.delete.item=Paina poistaaksesi
+
+# Error Tooltips
+jei.tooltip.error.recipe.transfer.missing=Puuttuvat tavarat
+jei.tooltip.error.recipe.transfer.inventory.full=Tavaraluettelo on liian täynnä
+
+# Error Messages
+jei.chat.error.command.too.long=JEI:n täytyy olla asennettuna palvelimella, komento on liian pitkä Minecraftille.
 # Key Bindings
-key.jei.toggleOverlay=Kytke tavaralista
-key.jei.showRecipe=N�yt� tavaran resepti
-key.jei.showUses=N�yt� tavaran k�yt�t
+key.jei.toggleOverlay=Näytä tavaralista (Ctrl + )
+key.jei.showRecipe=Näytä tavaran resepti
+key.jei.showUses=Näytä tavaran käytöt
 
 # Config
-config.jei.mode.cheatItemsEnabled=Kytke p��lle tavaroiden huijaus
-config.jei.mode.cheatItemsEnabled.comment=K�yt� /give-komentoa tavaroiden antamiseen tavaran reseptin n�ytt�misen sijaan
+config.jei.default=Oletus
+config.jei.valid=Virheetön
+
+config.jei.title=%MODNAME-asetukset
+
+config.jei.mode=Tila
+config.jei.mode.comment=Vaihda tilaa, jossa JEI toimii.
+config.jei.mode.cheatItemsEnabled=Tavaroiden huijaus
+config.jei.mode.cheatItemsEnabled.comment=Anna tavaroita /give-komennolla reseptin näyttämisen sijaan.
+config.jei.mode.editEnabled=Tavaralistan muokkaustila
+config.jei.mode.editEnabled.comment=Piilota ja näytä tavaroita painamalla niitä tavaralistassa.
+
+config.jei.interface=Käyttöliittymä
+config.jei.interface.comment=Käyttöliittymään liittyviä asetuksia.
+config.jei.interface.recipeAnimationsEnabled=Reseptien animaatiot
+config.jei.interface.recipeAnimationsEnabled.comment=Näytä reseptien animaatiot (uunin tuli, edistymispalkki jne.)
+
+config.jei.search=Haku
+config.jei.search.comment=Hakuun liittyviä asetuksia.
+config.jei.search.atPrefixRequiredForModName=Käytä @-merkkiä modihakua varten
+config.jei.search.atPrefixRequiredForModName.comment=Vaadi "@ModinNimi" hakeaksesi modin nimellä pelkän "ModinNimi" sijaan.
+
+config.jei.advanced=Edistynyt
+config.jei.advanced.comment=Edistyneitä asetuksia jotka muokkaavat JEI:n toimintaa.
+config.jei.advanced.nbtKeyIgnoreList=NBT-avaimien sivuutuslista
+config.jei.advanced.nbtKeyIgnoreList.comment=Lista NBT-avaimista jotka pitäisi sivuuttaa reseptejä noutaessa.
+config.jei.advanced.itemBlacklist=Tavaroiden musta lista
+config.jei.advanced.itemBlacklist.comment=Lista tavaroista joita ei pitäisi näyttää JEI:n tavaralistassa. Muoto: modinId:nimi[:metadata]. Muokkaustila lisää tai poistaa merkintöjä tästä.
+config.jei.advanced.hideMissingModelsEnabled=Piilota puuttuvat tavaramallit
+config.jei.advanced.hideMissingModelsEnabled.comment=Tavarat joilta puuttuvat mallit poistetaan tavaralistasta.
+config.jei.advanced.debugModeEnabled=Debug-tila
+config.jei.advanced.debugModeEnabled.comment=Lisää muutamia asioita jotka auttavat JEI:n kehitystä.
+config.jei.advanced.deleteItemsInCheatModeEnabled=Poista tavaroita huijaustilassa
+config.jei.advanced.deleteItemsInCheatModeEnabled.comment=Huijaustilassa, vedä tavarapino tavaralistan päälle ja paina tuhotaksesi sen. (tarvii JEI:n palvelimella)
+
+config.jei.addons=Lisäosat
+config.jei.addons.comment=Kategoria JEI:n lisäosa-asetuksille.
+
+# Edit Mode
+gui.jei.editMode.description=JEI:n tavaralistan muokkaustila:
+gui.jei.editMode.description.hide=Paina Ctrl pohjassa piilottaaksesi.
+gui.jei.editMode.description.show=Piilossa. Paina Ctrl pohjassa näyttääksesi.
+gui.jei.editMode.description.hide.wild=Paina hiiren oikeaa painiketta Ctrl pohjassa piilottaaksesi jokerimerkin perusteella.
+gui.jei.editMode.description.show.wild=Piilotettu jokerimerkin perusteella. Näytä painamalla hiiren oikeaa painiketta Ctrl pohjassa.
+
+# Recipe Categories
+gui.jei.category.craftingTable=Työpöytä
+gui.jei.category.smelting=Sulatus
+gui.jei.category.smelting.experience=%s kokemuspistettä
+gui.jei.category.fuel=Polttoaine
+gui.jei.category.fuel.burnTime=Paloaika: %s
+gui.jei.category.brewing=Haudutus
+gui.jei.category.brewing.steps=Vaiheita: %s
+gui.jei.category.itemDescription=Kuvaus
