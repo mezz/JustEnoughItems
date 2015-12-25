@@ -52,11 +52,12 @@ public class GuiEventHandler {
 			return;
 		}
 
-		itemListOverlay.initGui(guiContainer);
+		if (itemListOverlay.initGui(guiContainer)) {
+			itemListOverlay.open();
+		}
+
 		recipesGui.initGui(minecraft);
 		inputHandler = new InputHandler(recipesGui, itemListOverlay, guiContainer);
-
-		itemListOverlay.open();
 	}
 	
 	@SubscribeEvent
