@@ -66,6 +66,11 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
+	public void addDescription(ItemStack itemStack, String... descriptionKeys) {
+		addDescription(Collections.singletonList(itemStack), descriptionKeys);
+	}
+
+	@Override
 	public IRecipeTransferRegistry getRecipeTransferRegistry() {
 		return recipeTransferRegistry;
 	}
