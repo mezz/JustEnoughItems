@@ -25,6 +25,8 @@ import mezz.jei.api.gui.IDrawable;
 public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	private static final int TEX_WIDTH = 16;
 	private static final int TEX_HEIGHT = 16;
+	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
+
 	private final int capacityMb;
 	private final int width;
 	private final int height;
@@ -85,9 +87,12 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 
 		int fluidColor = fluid.getColor(fluidStack);
 
-		int scaledLiquid = (fluidStack.amount * height) / capacityMb;
-		if (scaledLiquid > height) {
-			scaledLiquid = height;
+		int scaledAmount = (fluidStack.amount * height) / capacityMb;
+		if (fluidStack.amount > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
+			scaledAmount = MIN_FLUID_HEIGHT;
+		}
+		if (scaledAmount > height) {
+			scaledAmount = height;
 		}
 
 		minecraft.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
@@ -95,8 +100,8 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 
 		final int xTileCount = width / TEX_WIDTH;
 		final int xRemainder = width - (xTileCount * TEX_WIDTH);
-		final int yTileCount = scaledLiquid / TEX_HEIGHT;
-		final int yRemainder = scaledLiquid - (yTileCount * TEX_HEIGHT);
+		final int yTileCount = scaledAmount / TEX_HEIGHT;
+		final int yRemainder = scaledAmount - (yTileCount * TEX_HEIGHT);
 
 		final int yStart = yPosition + height;
 
