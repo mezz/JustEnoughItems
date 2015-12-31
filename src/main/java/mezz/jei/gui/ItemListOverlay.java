@@ -203,6 +203,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		backButton.drawButton(minecraft, mouseX, mouseY);
 		configButton.drawButton(minecraft, mouseX, mouseY);
 		configButtonIcon.draw(minecraft, configButton.xPosition + 2, configButton.yPosition + 2);
+		GlStateManager.disableBlend();
 
 		boolean mouseOver = isMouseOver(mouseX, mouseY);
 

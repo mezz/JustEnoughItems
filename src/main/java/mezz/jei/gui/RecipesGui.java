@@ -317,6 +317,7 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 
 		nextPage.drawButton(minecraft, mouseX, mouseY);
 		previousPage.drawButton(minecraft, mouseX, mouseY);
+		GlStateManager.disableBlend();
 
 		GlStateManager.pushMatrix();
 		{

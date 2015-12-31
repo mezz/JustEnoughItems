@@ -131,7 +131,6 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 			GlStateManager.disableDepth();
 
 			RenderHelper.disableStandardItemLighting();
-			GlStateManager.enableBlend();
 			drawRect(xPosition, yPosition, xPosition + width, yPosition + height, 0x7FFFFFFF);
 
 			List<String> tooltip = ingredientRenderer.getTooltip(minecraft, value);
