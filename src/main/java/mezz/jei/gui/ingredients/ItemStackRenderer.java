@@ -1,6 +1,7 @@
 package mezz.jei.gui.ingredients;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -10,7 +11,11 @@ import net.minecraft.util.EnumChatFormatting;
 
 public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	@Override
-	public void draw(@Nonnull Minecraft minecraft, int xPosition, int yPosition, @Nonnull ItemStack itemStack) {
+	public void draw(@Nonnull Minecraft minecraft, int xPosition, int yPosition, @Nullable ItemStack itemStack) {
+		if (itemStack == null) {
+			return;
+		}
+
 		FontRenderer font = getFontRenderer(minecraft, itemStack);
 
 		minecraft.getRenderItem().renderItemAndEffectIntoGUI(itemStack, xPosition, yPosition);

@@ -39,7 +39,6 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	private final IIngredientHelper<T> ingredientHelper;
 
 	private boolean enabled;
-	private boolean visible;
 
 	public GuiIngredient(@Nonnull IIngredientRenderer<T> ingredientRenderer, @Nonnull IIngredientHelper<T> ingredientHelper, boolean input, int xPosition, int yPosition, int width, int height, int padding) {
 		this.ingredientRenderer = ingredientRenderer;
@@ -56,13 +55,13 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 
 	@Override
 	public void clear() {
-		visible = enabled = false;
+		enabled = false;
 		contained.clear();
 	}
 
 	@Override
 	public boolean isMouseOver(int mouseX, int mouseY) {
-		return enabled && visible && (mouseX >= xPosition) && (mouseY >= yPosition) && (mouseX < xPosition + width) && (mouseY < yPosition + height);
+		return enabled && (mouseX >= xPosition) && (mouseY >= yPosition) && (mouseX < xPosition + width) && (mouseY < yPosition + height);
 	}
 
 	@Override
@@ -95,7 +94,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		} else {
 			this.contained.addAll(contained);
 		}
-		visible = enabled = !this.contained.isEmpty();
+		enabled = !this.contained.isEmpty();
 	}
 
 	@Override
@@ -121,17 +120,9 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	}
 
 	private void draw(Minecraft minecraft, boolean cycleIcons) {
-		if (!visible) {
-			return;
-		}
-
 		cycleTimer.onDraw(cycleIcons);
 
 		T value = get();
-		if (value == null) {
-			return;
-		}
-
 		ingredientRenderer.draw(minecraft, xPosition + padding, yPosition + padding, value);
 	}
 
@@ -141,7 +132,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 
 			RenderHelper.disableStandardItemLighting();
 			GlStateManager.enableBlend();
-			drawRect(xPosition, yPosition, xPosition + width, yPosition + width, 0x7FFFFFFF);
+			drawRect(xPosition, yPosition, xPosition + width, yPosition + height, 0x7FFFFFFF);
 
 			List<String> tooltip = ingredientRenderer.getTooltip(minecraft, value);
 			FontRenderer fontRenderer = ingredientRenderer.getFontRenderer(minecraft, value);
