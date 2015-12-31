@@ -97,12 +97,6 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 
 	@Override
 	public List<FluidStack> getFluidInputs() {
-		if (Config.isDebugModeEnabled()) {
-			return Arrays.asList(
-					new FluidStack(FluidRegistry.WATER, 1000 + (int) (Math.random() * 1000)),
-					new FluidStack(FluidRegistry.LAVA, 1000 + (int) (Math.random() * 1000))
-			);
-		}
 		return super.getFluidInputs();
 	}
 
