@@ -3,14 +3,18 @@ package mezz.jei.gui;
 import com.google.common.collect.ImmutableSet;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
 
@@ -47,22 +51,31 @@ public class Focus {
 
 	public Focus(ItemStack stack) {
 		this.stack = stack;
-		Item item = stack.getItem();
-		if (item instanceof IFluidContainerItem) {
-			IFluidContainerItem fluidContainerItem = (IFluidContainerItem) item;
-			FluidStack fluidStack = fluidContainerItem.getFluid(stack);
-			this.fluid = fluidStack.getFluid();
-		} else if (FluidContainerRegistry.isFilledContainer(stack)) {
-			FluidStack fluidStack = FluidContainerRegistry.getFluidForFilledItem(stack);
-			this.fluid = fluidStack.getFluid();
-		} else {
-			this.fluid = null;
-		}
+		this.fluid = getFluidFromItemStack(stack);
 	}
 
 	public Focus(Fluid fluid) {
 		this.stack = null;
 		this.fluid = fluid;
+	}
+
+	@Nullable
+	private static Fluid getFluidFromItemStack(ItemStack stack) {
+		Item item = stack.getItem();
+		if (item instanceof IFluidContainerItem) {
+			IFluidContainerItem fluidContainerItem = (IFluidContainerItem) item;
+			FluidStack fluidStack = fluidContainerItem.getFluid(stack);
+			return fluidStack.getFluid();
+		} else if (FluidContainerRegistry.isFilledContainer(stack)) {
+			FluidStack fluidStack = FluidContainerRegistry.getFluidForFilledItem(stack);
+			return fluidStack.getFluid();
+		} else if (item instanceof ItemBlock) {
+			ItemBlock itemBlock = (ItemBlock) item;
+			Block block = itemBlock.getBlock();
+			return FluidRegistry.lookupFluidForBlock(block);
+		}
+
+		return null;
 	}
 
 	public Fluid getFluid() {
