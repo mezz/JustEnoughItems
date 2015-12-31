@@ -14,7 +14,9 @@ import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.ResourceLocation;
 
+import net.minecraftforge.client.model.b3d.B3DModel;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -46,7 +48,15 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		GlStateManager.pushAttrib();
 		{
 			GlStateManager.disableBlend();
-			TextureAtlasSprite fluidStillSprite = minecraft.getTextureMapBlocks().getTextureExtry(fluid.getStill().toString());
+			TextureMap textureMapBlocks = minecraft.getTextureMapBlocks();
+			ResourceLocation fluidStill = fluid.getStill();
+			TextureAtlasSprite fluidStillSprite = null;
+			if (fluidStill != null) {
+				fluidStillSprite = textureMapBlocks.getTextureExtry(fluidStill.toString());
+			}
+			if (fluidStillSprite == null) {
+				fluidStillSprite = textureMapBlocks.getMissingSprite();
+			}
 
 			int fluidColor = fluid.getColor(fluidStack);
 
