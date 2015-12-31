@@ -1,6 +1,7 @@
 package mezz.jei.plugins.jei;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -12,6 +13,9 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.config.Config;
+import mezz.jei.plugins.jei.debug.DebugRecipe;
+import mezz.jei.plugins.jei.debug.DebugRecipeCategory;
+import mezz.jei.plugins.jei.debug.DebugRecipeHandler;
 import mezz.jei.plugins.jei.description.ItemDescriptionRecipeCategory;
 import mezz.jei.plugins.jei.description.ItemDescriptionRecipeHandler;
 
@@ -59,6 +63,13 @@ public class JEIPlugin implements IModPlugin {
 					"description.jei.wooden.door.2",
 					"description.jei.wooden.door.3"
 			);
+
+			registry.addRecipeCategories(new DebugRecipeCategory(guiHelper));
+			registry.addRecipeHandlers(new DebugRecipeHandler());
+			registry.addRecipes(Arrays.asList(
+					new DebugRecipe(),
+					new DebugRecipe()
+			));
 		}
 	}
 
