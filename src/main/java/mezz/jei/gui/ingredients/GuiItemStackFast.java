@@ -206,6 +206,7 @@ public class GuiItemStackFast {
 		RenderItem renderItem = minecraft.getRenderItem();
 		renderItem.renderItemAndEffectIntoGUI(itemStack, xPosition + padding, yPosition + padding);
 		renderItem.renderItemOverlayIntoGUI(font, itemStack, xPosition + padding, yPosition + padding, null);
+		GlStateManager.disableBlend();
 	}
 
 	private void renderEditMode() {

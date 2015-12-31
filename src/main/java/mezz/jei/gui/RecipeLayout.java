@@ -66,6 +66,7 @@ public class RecipeLayout implements IRecipeLayout {
 
 		GlStateManager.translate(-posX, -posY, 0.0F);
 		recipeTransferButton.drawButton(minecraft, mouseX, mouseY);
+		GlStateManager.disableBlend();
 		GlStateManager.translate(posX, posY, 0.0F);
 
 		recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight());

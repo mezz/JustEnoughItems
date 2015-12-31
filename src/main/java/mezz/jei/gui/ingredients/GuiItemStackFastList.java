@@ -129,6 +129,7 @@ public class GuiItemStackFastList {
 		GlStateManager.popMatrix();
 
 		GlStateManager.disableAlpha();
+		GlStateManager.disableBlend();
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.disableLighting();
 

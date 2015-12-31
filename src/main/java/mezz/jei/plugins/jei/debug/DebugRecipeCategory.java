@@ -6,6 +6,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -73,9 +74,8 @@ public class DebugRecipeCategory implements IRecipeCategory {
 	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
-		int xPos = (recipeWidth - 18) / 2;
-		guiItemStacks.init(0, false, xPos, 0);
-		guiItemStacks.set(0, new ItemStack(Blocks.diamond_block));
+		guiItemStacks.init(0, false, 90, 0);
+		guiItemStacks.set(0, new ItemStack(Items.water_bucket));
 
 		IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
 		guiFluidStacks.init(0, true, 4, 4, 12, 47, 2000, true, tankOverlay);
