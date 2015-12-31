@@ -48,7 +48,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 
 			drawFluid(minecraft, xPosition, yPosition, fluidStack);
 
-			GlStateManager.resetColor();
+			GlStateManager.color(1, 1, 1, 1);
 
 			if (overlay != null) {
 				GlStateManager.pushAttrib();
