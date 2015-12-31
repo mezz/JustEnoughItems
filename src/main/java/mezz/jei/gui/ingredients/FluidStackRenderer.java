@@ -39,56 +39,12 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	}
 
 	@Override
-	public void draw(@Nonnull Minecraft minecraft, final int xPosition, final int yPosition, @Nonnull FluidStack fluidStack) {
-		Fluid fluid = fluidStack.getFluid();
-		if (fluid == null) {
-			return;
-		}
-
+	public void draw(@Nonnull Minecraft minecraft, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
 		GlStateManager.pushAttrib();
 		{
 			GlStateManager.disableBlend();
-			TextureMap textureMapBlocks = minecraft.getTextureMapBlocks();
-			ResourceLocation fluidStill = fluid.getStill();
-			TextureAtlasSprite fluidStillSprite = null;
-			if (fluidStill != null) {
-				fluidStillSprite = textureMapBlocks.getTextureExtry(fluidStill.toString());
-			}
-			if (fluidStillSprite == null) {
-				fluidStillSprite = textureMapBlocks.getMissingSprite();
-			}
 
-			int fluidColor = fluid.getColor(fluidStack);
-
-			int scaledLiquid = (fluidStack.amount * height) / capacityMb;
-			if (scaledLiquid > height) {
-				scaledLiquid = height;
-			}
-
-			minecraft.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
-			setGLColorFromInt(fluidColor);
-
-			final int xTileCount = width / TEX_WIDTH;
-			final int xRemainder = width - (xTileCount * TEX_WIDTH);
-			final int yTileCount = scaledLiquid / TEX_HEIGHT;
-			final int yRemainder = scaledLiquid - (yTileCount * TEX_HEIGHT);
-
-			final int yStart = yPosition + height;
-
-			for (int xTile = 0; xTile <= xTileCount; xTile++) {
-				for (int yTile = 0; yTile <= yTileCount; yTile++) {
-					int width = (xTile == xTileCount) ? xRemainder : TEX_WIDTH;
-					int height = (yTile == yTileCount) ? yRemainder : TEX_HEIGHT;
-					int x = xPosition + (xTile * TEX_WIDTH);
-					int y = yStart - ((yTile + 1) * TEX_HEIGHT);
-					if (width > 0 && height > 0) {
-						int maskTop = TEX_HEIGHT - height;
-						int maskRight = TEX_WIDTH - width;
-
-						drawFluidTexture(x, y, fluidStillSprite, maskTop, maskRight, 100);
-					}
-				}
-			}
+			drawFluid(minecraft, xPosition, yPosition, fluidStack);
 
 			GlStateManager.resetColor();
 
@@ -106,6 +62,58 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 			GlStateManager.enableBlend();
 		}
 		GlStateManager.popAttrib();
+	}
+
+	private void drawFluid(@Nonnull Minecraft minecraft, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
+		if (fluidStack == null) {
+			return;
+		}
+		Fluid fluid = fluidStack.getFluid();
+		if (fluid == null) {
+			return;
+		}
+
+		TextureMap textureMapBlocks = minecraft.getTextureMapBlocks();
+		ResourceLocation fluidStill = fluid.getStill();
+		TextureAtlasSprite fluidStillSprite = null;
+		if (fluidStill != null) {
+			fluidStillSprite = textureMapBlocks.getTextureExtry(fluidStill.toString());
+		}
+		if (fluidStillSprite == null) {
+			fluidStillSprite = textureMapBlocks.getMissingSprite();
+		}
+
+		int fluidColor = fluid.getColor(fluidStack);
+
+		int scaledLiquid = (fluidStack.amount * height) / capacityMb;
+		if (scaledLiquid > height) {
+			scaledLiquid = height;
+		}
+
+		minecraft.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
+		setGLColorFromInt(fluidColor);
+
+		final int xTileCount = width / TEX_WIDTH;
+		final int xRemainder = width - (xTileCount * TEX_WIDTH);
+		final int yTileCount = scaledLiquid / TEX_HEIGHT;
+		final int yRemainder = scaledLiquid - (yTileCount * TEX_HEIGHT);
+
+		final int yStart = yPosition + height;
+
+		for (int xTile = 0; xTile <= xTileCount; xTile++) {
+			for (int yTile = 0; yTile <= yTileCount; yTile++) {
+				int width = (xTile == xTileCount) ? xRemainder : TEX_WIDTH;
+				int height = (yTile == yTileCount) ? yRemainder : TEX_HEIGHT;
+				int x = xPosition + (xTile * TEX_WIDTH);
+				int y = yStart - ((yTile + 1) * TEX_HEIGHT);
+				if (width > 0 && height > 0) {
+					int maskTop = TEX_HEIGHT - height;
+					int maskRight = TEX_WIDTH - width;
+
+					drawFluidTexture(x, y, fluidStillSprite, maskTop, maskRight, 100);
+				}
+			}
+		}
 	}
 
 	private static void setGLColorFromInt(int color) {

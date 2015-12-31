@@ -70,7 +70,8 @@ public class ItemDescriptionRecipeCategory implements IRecipeCategory {
 		if (Config.isDebugModeEnabled()) {
 			IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
 			guiFluidStacks.init(0, true, 0, 0, 24, 24, 2000, slotDrawable);
-			guiFluidStacks.init(1, true, 24, 0, 24, 24, 2000, null);
+			guiFluidStacks.init(1, true, 24, 0, 12, 47, 16000, null);
+			guiFluidStacks.init(2, true, 50, 0, 24, 24, 2000, slotDrawable);
 			guiFluidStacks.set(0, recipeWrapper.getFluidInputs().get(0));
 			guiFluidStacks.set(1, recipeWrapper.getFluidInputs().get(1));
 		}
