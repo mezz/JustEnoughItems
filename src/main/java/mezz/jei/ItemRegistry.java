@@ -22,7 +22,6 @@ import net.minecraft.tileentity.TileEntityFurnace;
 
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.oredict.OreDictionary;
 
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.util.Log;
@@ -147,12 +146,7 @@ public class ItemRegistry implements IItemRegistry {
 		Item item = Item.getItemFromBlock(block);
 
 		if (item == null) {
-			ItemStack stack = new ItemStack(block);
-			if (stack.getItem() == null) {
-				Log.debug("Couldn't get itemStack for block: {}", block.getUnlocalizedName());
-				return;
-			}
-			addItemStack(stack, itemList, fuels);
+			Log.debug("Couldn't get itemStack for block: {}", block.getUnlocalizedName());
 			return;
 		}
 

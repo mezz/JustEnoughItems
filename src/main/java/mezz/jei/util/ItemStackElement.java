@@ -40,7 +40,12 @@ public class ItemStackElement {
 		String modId = itemResourceLocation.getResourceDomain().toLowerCase(Locale.ENGLISH);
 		String modName = Internal.getItemRegistry().getModNameForItem(itemStack.getItem()).toLowerCase(Locale.ENGLISH);
 
-		String searchString = itemStack.getDisplayName().toLowerCase();
+		String displayName = itemStack.getDisplayName();
+		if (displayName == null) {
+			throw new NullPointerException("No display name for item. " + itemResourceLocation.toString() + " " + itemStack.getItem().getClass());
+		}
+
+		String searchString = displayName.toLowerCase();
 
 		this.modName = modId + ' ' + modName;
 
