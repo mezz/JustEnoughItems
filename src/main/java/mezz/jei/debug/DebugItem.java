@@ -17,7 +17,7 @@ public class DebugItem extends Item {
 
 	@Override
 	public void getSubItems(Item itemIn, CreativeTabs tab, List subItems) {
-		for (int i = 0; i < 1000000; i++) {
+		for (int i = 0; i < 10000; i++) {
 			String name = RANDOM_STRING_MAKER.nextString();
 			ItemStack itemStack = new ItemStack(itemIn);
 			NBTTagCompound nbt = new NBTTagCompound();
