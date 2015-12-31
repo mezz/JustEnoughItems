@@ -21,6 +21,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.util.Translator;
 
 public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	private static final int TEX_WIDTH = 16;
@@ -28,13 +29,15 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
 
 	private final int capacityMb;
+	private final boolean showCapacity;
 	private final int width;
 	private final int height;
 	@Nullable
 	private final IDrawable overlay;
 
-	public FluidStackRenderer(int capacityMb, int width, int height, @Nullable IDrawable overlay) {
+	public FluidStackRenderer(int capacityMb, boolean showCapacity, int width, int height, @Nullable IDrawable overlay) {
 		this.capacityMb = capacityMb;
+		this.showCapacity = showCapacity;
 		this.width = width;
 		this.height = height;
 		this.overlay = overlay;
@@ -159,8 +162,13 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		String fluidName = fluidType.getLocalizedName(fluidStack);
 		tooltip.add(fluidName);
 
-		String amount = String.format(Locale.ENGLISH, EnumChatFormatting.GRAY + "%,d / %,d", fluidStack.amount, capacityMb);
-		tooltip.add(amount);
+		String amount;
+		if (showCapacity) {
+			amount = Translator.translateToLocalFormatted("jei.tooltip.liquid.amount.with.capacity", fluidStack.amount, capacityMb);
+		} else {
+			amount = Translator.translateToLocalFormatted("jei.tooltip.liquid.amount", fluidStack.amount);
+		}
+		tooltip.add(EnumChatFormatting.GRAY + amount);
 
 		return tooltip;
 	}

@@ -2,10 +2,14 @@ package mezz.jei.plugins.jei.debug;
 
 import javax.annotation.Nonnull;
 
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+
+import net.minecraftforge.fluids.FluidStack;
 
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
@@ -74,12 +78,14 @@ public class DebugRecipeCategory implements IRecipeCategory {
 		guiItemStacks.set(0, new ItemStack(Blocks.diamond_block));
 
 		IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
-		guiFluidStacks.init(0, true, 4, 4, 12, 47, 2000, tankOverlay);
-		guiFluidStacks.init(1, true, 24, 0, 12, 47, 16000, null);
-		guiFluidStacks.init(2, true, 50, 0, 24, 24, 2000, tankOverlay);
-		guiFluidStacks.init(3, true, 75, 0, 12, 47, 100, tankOverlay);
-		guiFluidStacks.set(0, recipeWrapper.getFluidInputs().get(0));
-		guiFluidStacks.set(1, recipeWrapper.getFluidInputs().get(1));
-		guiFluidStacks.set(3, recipeWrapper.getFluidInputs().get(0));
+		guiFluidStacks.init(0, true, 4, 4, 12, 47, 2000, true, tankOverlay);
+		guiFluidStacks.init(1, true, 24, 0, 12, 47, 16000, true, null);
+		guiFluidStacks.init(2, true, 50, 0, 24, 24, 2000, true, tankOverlay);
+		guiFluidStacks.init(3, true, 75, 0, 12, 47, 100, false, tankOverlay);
+
+		List<FluidStack> fluidInputs = recipeWrapper.getFluidInputs();
+		guiFluidStacks.set(0, fluidInputs.get(0));
+		guiFluidStacks.set(1, fluidInputs.get(1));
+		guiFluidStacks.set(3, fluidInputs.get(0));
 	}
 }

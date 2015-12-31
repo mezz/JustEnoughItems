@@ -12,7 +12,12 @@ public class GuiFluidStackGroup extends GuiIngredientGroup<FluidStack, GuiIngred
 
 	@Override
 	public void init(int slotIndex, boolean input, int xPosition, int yPosition, int width, int height, int capacityMb, @Nullable IDrawable overlay) {
-		FluidStackRenderer renderer = new FluidStackRenderer(capacityMb, width, height, overlay);
+		init(slotIndex, input, xPosition, yPosition, width, height, capacityMb, true, overlay);
+	}
+
+	@Override
+	public void init(int slotIndex, boolean input, int xPosition, int yPosition, int width, int height, int capacityMb, boolean showCapacity, @Nullable IDrawable overlay) {
+		FluidStackRenderer renderer = new FluidStackRenderer(capacityMb, showCapacity, width, height, overlay);
 		GuiIngredient<FluidStack> guiIngredient = new GuiIngredient<>(renderer, helper, input, xPosition, yPosition, width, height, 0);
 		guiIngredients.put(slotIndex, guiIngredient);
 	}
