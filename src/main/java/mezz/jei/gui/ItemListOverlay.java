@@ -98,10 +98,6 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 			return false;
 		}
 
-		final int rows = getRows();
-		final int xSize = columns * itemStackWidth;
-		final int xEmptySpace = screenWidth - guiLeft - guiXSize - xSize;
-
 		String next = ">";
 		String back = "<";
 
@@ -109,6 +105,10 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		final int nextButtonWidth = buttonPaddingX + fontRenderer.getStringWidth(next);
 		final int backButtonWidth = buttonPaddingX + fontRenderer.getStringWidth(back);
 		buttonHeight = buttonPaddingY + fontRenderer.FONT_HEIGHT;
+
+		final int rows = getRows();
+		final int xSize = columns * itemStackWidth;
+		final int xEmptySpace = screenWidth - guiLeft - guiXSize - xSize;
 
 		final int leftEdge = guiLeft + guiXSize + (xEmptySpace / 2);
 		final int rightEdge = leftEdge + xSize;
