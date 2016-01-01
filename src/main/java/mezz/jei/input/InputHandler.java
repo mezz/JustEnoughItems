@@ -172,10 +172,6 @@ public class InputHandler {
 		if (Config.isItemOnConfigBlacklist(focus.getStack(), wildcard)) {
 			Config.removeItemFromConfigBlacklist(focus.getStack(), wildcard);
 		} else {
-			Item item = itemStack.getItem();
-			if (wildcard && !item.getHasSubtypes()) {
-				return false;
-			}
 			Config.addItemToConfigBlacklist(focus.getStack(), wildcard);
 		}
 		return true;
