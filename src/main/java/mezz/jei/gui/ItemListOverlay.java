@@ -243,7 +243,9 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	}
 
 	public void handleTick() {
-		searchField.updateCursorCounter();
+		if (searchField != null) {
+			searchField.updateCursorCounter();
+		}
 	}
 
 	@Override
@@ -336,7 +338,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 
 	@Override
 	public boolean hasKeyboardFocus() {
-		return searchField.isFocused();
+		return searchField != null && searchField.isFocused();
 	}
 
 	@Override
@@ -348,7 +350,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 
 	@Override
 	public boolean onKeyPressed(int keyCode) {
-		if (searchField.isFocused()) {
+		if (hasKeyboardFocus()) {
 			boolean success = searchField.textboxKeyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
 			if (success) {
 				updateLayout();
