@@ -15,6 +15,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 
 import mezz.jei.network.packets.PacketDeletePlayerItem;
+import mezz.jei.network.packets.PacketGiveItemMessageBig;
 import mezz.jei.network.packets.PacketJEI;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.util.Log;
@@ -45,6 +46,10 @@ public class PacketHandler {
 				}
 				case DELETE_ITEM: {
 					packet = new PacketDeletePlayerItem();
+					break;
+				}
+				case GIVE_BIG: {
+					packet = new PacketGiveItemMessageBig();
 					break;
 				}
 				default: {
