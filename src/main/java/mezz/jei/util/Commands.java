@@ -14,8 +14,9 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 
+import mezz.jei.JustEnoughItems;
 import mezz.jei.config.Config;
-import mezz.jei.network.packets.C01PacketChatMessageBig;
+import mezz.jei.network.packets.PacketGiveItemMessageBig;
 
 public class Commands {
 
@@ -39,7 +40,7 @@ public class Commands {
 		commandStrings.add(senderName);
 		commandStrings.add(Item.itemRegistry.getNameForObject(itemStack.getItem()).toString());
 		commandStrings.add(String.valueOf(amount));
-		commandStrings.add(String.valueOf(itemStack.getItemDamage()));
+		commandStrings.add(String.valueOf(itemStack.getMetadata()));
 
 		if (itemStack.hasTagCompound()) {
 			commandStrings.add(itemStack.getTagCompound().toString());
@@ -54,7 +55,8 @@ public class Commands {
 			sender.sendChatMessage(chatMessage);
 		} else {
 			if (Config.isJeiOnServer()) {
-				sender.sendQueue.addToSendQueue(new C01PacketChatMessageBig(chatMessage));
+				PacketGiveItemMessageBig packet = new PacketGiveItemMessageBig(chatMessage);
+				JustEnoughItems.getProxy().sendPacketToServer(packet);
 			} else {
 				ChatComponentTranslation errorMessage = new ChatComponentTranslation("jei.chat.error.command.too.long");
 				errorMessage.getChatStyle().setColor(EnumChatFormatting.RED);
