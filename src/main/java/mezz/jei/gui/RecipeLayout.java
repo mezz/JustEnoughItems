@@ -13,6 +13,7 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.GuiFluidStackGroup;
+import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 
 public class RecipeLayout implements IRecipeLayout {
@@ -72,9 +73,19 @@ public class RecipeLayout implements IRecipeLayout {
 		recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight());
 
 		RenderHelper.enableGUIStandardItemLighting();
-		guiItemStackGroup.draw(minecraft, mouseX - posX, mouseY - posY);
+		GuiIngredient hoveredItemStack = guiItemStackGroup.draw(minecraft, mouseX - posX, mouseY - posY);
 		RenderHelper.disableStandardItemLighting();
-		guiFluidStackGroup.draw(minecraft, mouseX - posX, mouseY - posY);
+		GuiIngredient hoveredFluidStack = guiFluidStackGroup.draw(minecraft, mouseX - posX, mouseY - posY);
+
+		if (hoveredItemStack != null) {
+			RenderHelper.enableGUIStandardItemLighting();
+			hoveredItemStack.drawHovered(minecraft, mouseX - posX, mouseY - posY);
+			RenderHelper.disableStandardItemLighting();
+		}
+
+		if (hoveredFluidStack != null) {
+			hoveredFluidStack.drawHovered(minecraft, mouseX - posX, mouseY - posY);
+		}
 
 		GlStateManager.popMatrix();
 	}

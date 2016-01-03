@@ -74,14 +74,14 @@ public class DebugRecipeCategory implements IRecipeCategory {
 	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
-		guiItemStacks.init(0, false, 90, 0);
+		guiItemStacks.init(0, false, 70, 0);
 		guiItemStacks.set(0, new ItemStack(Items.water_bucket));
 
 		IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
 		guiFluidStacks.init(0, true, 4, 4, 12, 47, 2000, true, tankOverlay);
 		guiFluidStacks.init(1, true, 24, 0, 12, 47, 16000, true, null);
 		guiFluidStacks.init(2, true, 50, 0, 24, 24, 2000, true, tankOverlay);
-		guiFluidStacks.init(3, true, 75, 0, 12, 47, 100, false, tankOverlay);
+		guiFluidStacks.init(3, true, 90, 0, 12, 47, 100, false, tankOverlay);
 
 		List<FluidStack> fluidInputs = recipeWrapper.getFluidInputs();
 		guiFluidStacks.set(0, fluidInputs.get(0));
