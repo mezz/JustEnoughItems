@@ -15,7 +15,9 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 
+import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -239,9 +241,16 @@ public class StackUtil {
 	public static String getUniqueIdentifierForStack(@Nonnull ItemStack stack, boolean wildcard) {
 		Item item = stack.getItem();
 		if (item == null) {
-			throw new NullItemInStackException();
+			throw new NullPointerException("Found an itemStack with a null item. This is an error from another mod.");
 		}
-		String itemNameString = GameData.getItemRegistry().getNameForObject(item).toString();
+
+		FMLControlledNamespacedRegistry<Item> itemRegistry = GameData.getItemRegistry();
+		ResourceLocation itemName = (ResourceLocation) itemRegistry.getNameForObject(item);
+		if (itemName == null) {
+			throw new NullPointerException("No name for item in GameData itemRegistry: " + item.getClass());
+		}
+
+		String itemNameString = itemName.toString();
 		int metadata = stack.getMetadata();
 		if (wildcard || metadata == OreDictionary.WILDCARD_VALUE) {
 			return itemNameString;
