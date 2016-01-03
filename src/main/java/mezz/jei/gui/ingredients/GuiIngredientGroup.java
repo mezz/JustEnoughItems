@@ -50,7 +50,8 @@ public abstract class GuiIngredientGroup<V, T extends GuiIngredient<V>> implemen
 		return null;
 	}
 
-	public void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+	@Nullable
+	public T draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 		T hovered = null;
 		for (T ingredient : guiIngredients.values()) {
 			if (hovered == null && ingredient.isMouseOver(mouseX, mouseY)) {
@@ -59,8 +60,6 @@ public abstract class GuiIngredientGroup<V, T extends GuiIngredient<V>> implemen
 				ingredient.draw(minecraft);
 			}
 		}
-		if (hovered != null) {
-			hovered.drawHovered(minecraft, mouseX, mouseY);
-		}
+		return hovered;
 	}
 }
