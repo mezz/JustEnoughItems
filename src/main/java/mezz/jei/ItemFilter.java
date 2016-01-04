@@ -172,7 +172,7 @@ public class ItemFilter {
 				if (itemModelMesher.getItemModel(itemStack) == missingModel) {
 					return true;
 				}
-			} catch (Exception e) {
+			} catch (RuntimeException e) {
 				Log.error("Couldn't get ItemModel for itemStack {}.", itemStack.getClass(), e);
 				return true;
 			}
