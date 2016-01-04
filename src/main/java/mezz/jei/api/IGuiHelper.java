@@ -52,9 +52,10 @@ public interface IGuiHelper {
 
 	/**
 	 * Create a timer to help with rendering things that normally depend on ticks.
+	 *
 	 * @param ticksPerCycle the number of ticks for timer to run before starting over at 0
-	 * @param maxValue the number to count up to before starting over at 0
-	 * @param countDown if true, the tick timer will count backwards from maxValue
+	 * @param maxValue      the number to count up to before starting over at 0
+	 * @param countDown     if true, the tick timer will count backwards from maxValue
 	 */
 	@Nonnull
 	ITickTimer createTickTimer(int ticksPerCycle, int maxValue, boolean countDown);

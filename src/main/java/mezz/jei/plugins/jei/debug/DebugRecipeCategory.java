@@ -1,11 +1,9 @@
 package mezz.jei.plugins.jei.debug;
 
 import javax.annotation.Nonnull;
-
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;

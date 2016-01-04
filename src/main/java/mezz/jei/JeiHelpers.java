@@ -1,7 +1,8 @@
 package mezz.jei;
 
+import javax.annotation.Nonnull;
+
 import mezz.jei.api.IJeiHelpers;
-import mezz.jei.api.JEIManager;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.transfer.RecipeTransferHandlerHelper;
 
@@ -16,27 +17,27 @@ public class JeiHelpers implements IJeiHelpers {
 		this.itemBlacklist = new ItemBlacklist();
 		this.nbtIgnoreList = new NbtIgnoreList();
 		this.recipeTransferHandlerHelper = new RecipeTransferHandlerHelper();
-
-		JEIManager.guiHelper = this.guiHelper;
-		JEIManager.itemBlacklist = this.itemBlacklist;
-		JEIManager.nbtIgnoreList = this.nbtIgnoreList;
 	}
 
+	@Nonnull
 	@Override
 	public GuiHelper getGuiHelper() {
 		return guiHelper;
 	}
 
+	@Nonnull
 	@Override
 	public ItemBlacklist getItemBlacklist() {
 		return itemBlacklist;
 	}
 
+	@Nonnull
 	@Override
 	public NbtIgnoreList getNbtIgnoreList() {
 		return nbtIgnoreList;
 	}
 
+	@Nonnull
 	@Override
 	public RecipeTransferHandlerHelper recipeTransferHandlerHelper() {
 		return recipeTransferHandlerHelper;

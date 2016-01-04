@@ -1,5 +1,7 @@
 package mezz.jei.api;
 
+import javax.annotation.Nonnull;
+
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 
 /**
@@ -10,20 +12,24 @@ public interface IJeiHelpers {
 	/**
 	 * Helps with the implementation of GUIs.
 	 */
+	@Nonnull
 	IGuiHelper getGuiHelper();
 
 	/**
 	 * Used to stop JEI from displaying a specific item in the item list.
 	 */
+	@Nonnull
 	IItemBlacklist getItemBlacklist();
 
 	/**
 	 * Used to tell JEI to ignore NBT tags when comparing items for recipes.
 	 */
+	@Nonnull
 	INbtIgnoreList getNbtIgnoreList();
 
 	/**
 	 * Helps with the implementation of Recipe Transfer Handlers
 	 */
+	@Nonnull
 	IRecipeTransferHandlerHelper recipeTransferHandlerHelper();
 }

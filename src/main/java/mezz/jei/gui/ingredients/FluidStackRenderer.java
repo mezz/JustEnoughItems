@@ -4,7 +4,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -16,7 +15,6 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 
-import net.minecraftforge.client.model.b3d.B3DModel;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -138,10 +136,10 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		Tessellator tessellator = Tessellator.getInstance();
 		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
 		worldrenderer.startDrawingQuads();
-		worldrenderer.addVertexWithUV(xCoord, yCoord + 16, zLevel, uMin,  vMax);
+		worldrenderer.addVertexWithUV(xCoord, yCoord + 16, zLevel, uMin, vMax);
 		worldrenderer.addVertexWithUV(xCoord + 16 - maskRight, yCoord + 16, zLevel, uMax, vMax);
 		worldrenderer.addVertexWithUV(xCoord + 16 - maskRight, yCoord + maskTop, zLevel, uMax, vMin);
-		worldrenderer.addVertexWithUV(xCoord, yCoord + maskTop,  zLevel, uMin, vMin);
+		worldrenderer.addVertexWithUV(xCoord, yCoord + maskTop, zLevel, uMin, vMin);
 		tessellator.draw();
 	}
 

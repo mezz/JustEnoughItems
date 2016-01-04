@@ -88,7 +88,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		if (container != null) {
 			for (int i = 0; i < recipeCategories.size(); i++) {
 				IRecipeCategory recipeCategory = recipeCategories.get(i);
-				if (Internal.getRecipeRegistry().getRecipeTransferHelper(container, recipeCategory) != null) {
+				if (Internal.getRecipeRegistry().getRecipeTransferHandler(container, recipeCategory) != null) {
 					recipeCategoryIndex = i;
 					break;
 				}
