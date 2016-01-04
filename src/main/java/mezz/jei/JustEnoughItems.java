@@ -70,8 +70,6 @@ public class JustEnoughItems {
 
 	@Mod.EventHandler
 	public void startJEI(@Nonnull FMLModIdMappingEvent event) {
-		if (!event.isFrozen) {
-			proxy.startJEI();
-		}
+		proxy.startJEI();
 	}
 }
