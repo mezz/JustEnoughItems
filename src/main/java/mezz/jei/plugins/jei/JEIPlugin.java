@@ -1,7 +1,6 @@
 package mezz.jei.plugins.jei;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
