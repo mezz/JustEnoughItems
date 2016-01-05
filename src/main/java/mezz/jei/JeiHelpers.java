@@ -42,4 +42,9 @@ public class JeiHelpers implements IJeiHelpers {
 	public RecipeTransferHandlerHelper recipeTransferHandlerHelper() {
 		return recipeTransferHandlerHelper;
 	}
+
+	@Override
+	public void reload() {
+		JustEnoughItems.getProxy().restartJEI();
+	}
 }

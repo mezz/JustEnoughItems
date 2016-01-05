@@ -130,7 +130,8 @@ public class ProxyCommonClient extends ProxyCommon {
 		guiEventHandler.setItemListOverlay(itemListOverlay);
 	}
 
-	private void restartJEI() {
+	@Override
+	public void restartJEI() {
 		// check that JEI has been started before. if not, do nothing
 		if (started) {
 			startJEI();

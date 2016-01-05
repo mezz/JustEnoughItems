@@ -26,6 +26,10 @@ public class ProxyCommon {
 
 	}
 
+	public void restartJEI() {
+
+	}
+
 	public void resetItemFilter() {
 
 	}

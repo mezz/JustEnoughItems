@@ -32,4 +32,10 @@ public interface IJeiHelpers {
 	 */
 	@Nonnull
 	IRecipeTransferHandlerHelper recipeTransferHandlerHelper();
+
+	/**
+	 * Reload JEI at runtime.
+	 * Used by mods that add and remove items or recipes like MineTweaker's /mt reload.
+	 */
+	void reload();
 }
