@@ -1,6 +1,9 @@
 # Tooltips
 jei.tooltip.config=Konfiguration
 jei.tooltip.show.all.recipes=Zeige alle Rezepte
+jei.tooltip.delete.item=Klicke zum Löschen
+jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
+jei.tooltip.liquid.amount=%,d mB
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Fehlende Items
@@ -32,6 +35,11 @@ config.jei.interface.comment=Das User Interface-betreffende Optionen
 config.jei.interface.recipeAnimationsEnabled=Aktiviere Rezeptanimationen
 config.jei.interface.recipeAnimationsEnabled.comment=Zeige Animationen für verschiedene Rezepte (Ofenfeuer, Fortschritssbalken, usw.)
 
+config.jei.search=Suche
+config.jei.search.comment=Suchleisteneinstellungen
+config.jei.search.atPrefixRequiredForModName=Benutze @ für den Modnamen.
+config.jei.search.atPrefixRequiredForModName.comment=Benötigt "@ModName" anstelle von "ModName", um nach Mod zu filtern.
+
 config.jei.advanced=Erweitert
 config.jei.advanced.comment=Erweiterte Konfigurationsoptionen, die ändern, wie JEI funktioniert.
 config.jei.advanced.nbtKeyIgnoreList=NBT-Schlüssel-Ignorierungsliste
@@ -42,6 +50,8 @@ config.jei.advanced.hideMissingModelsEnabled=Verstecke fehlende Item-Modelle
 config.jei.advanced.hideMissingModelsEnabled.comment=Items in der Item-Liste mit fehlenden Modellen werden automatisch verborgen.
 config.jei.advanced.debugModeEnabled=Debug-Modus
 config.jei.advanced.debugModeEnabled.comment=Fügt zufällige Strings hinzu um bei der JEI-Entwicklung zu helfen.
+config.jei.advanced.deleteItemsInCheatModeEnabled=Zerstöre Items im Cheat-Modus
+config.jei.advanced.deleteItemsInCheatModeEnabled.comment=Im Cheat-Modus, ziehe und lasse einen Item-Stapel über der Item-Liste fallen, um diesen zu zerstören. (benötigt JEI auf dem Server)
 
 config.jei.addons=Addons
 config.jei.addons.comment=Kategorie für JEI Addon-Optionen.
