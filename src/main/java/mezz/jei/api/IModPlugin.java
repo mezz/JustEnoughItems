@@ -6,15 +6,6 @@ package mezz.jei.api;
  * This class must not import anything that could be missing at runtime (i.e. code from any other mod).
  */
 public interface IModPlugin {
-
-	/**
-	 * Returns true if this plugin's mod is loaded.
-	 *
-	 * @deprecated handle this in register, if the mod isn't loaded then don't register anything.
-	 */
-	@Deprecated
-	boolean isModLoaded();
-
 	/**
 	 * Called when the IJeiHelpers is available.
 	 * IModPlugins should store IJeiHelpers here if they need it.

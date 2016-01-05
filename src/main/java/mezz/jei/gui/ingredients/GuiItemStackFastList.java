@@ -47,7 +47,7 @@ public class GuiItemStackFastList {
 				guiItemStack.clear();
 			} else {
 				ItemStack stack = itemList.get(i).getItemStack();
-				IBakedModel bakedModel = itemModelMesher.getItemModel(stack);;
+				IBakedModel bakedModel = itemModelMesher.getItemModel(stack);
 				guiItemStack.setItemStack(stack);
 				if (bakedModel.isBuiltInRenderer()) {
 					renderItemsBuiltIn.add(guiItemStack);

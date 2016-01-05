@@ -20,7 +20,6 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.model.IBakedModel;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
@@ -86,7 +85,7 @@ public class GuiItemStackFast {
 
 		if (bakedModel.isGui3d()) {
 			if (Config.isEditModeEnabled()) {
-				GlStateManager.scale(1.0/20.0F, 1.0/20.0F, 1.0/-20.0F);
+				GlStateManager.scale(1.0 / 20.0F, 1.0 / 20.0F, 1.0 / -20.0F);
 				renderEditMode();
 				GlStateManager.enableBlend();
 				GlStateManager.scale(20.0F, 20.0F, -20.0F);
@@ -97,7 +96,7 @@ public class GuiItemStackFast {
 			GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
 		} else {
 			if (Config.isEditModeEnabled()) {
-				GlStateManager.scale(1.0/32.0F, 1.0/32.0F, 1.0/-32.0F);
+				GlStateManager.scale(1.0 / 32.0F, 1.0 / 32.0F, 1.0 / -32.0F);
 				renderEditMode();
 				GlStateManager.enableBlend();
 				GlStateManager.scale(32.0F, 32.0F, -32.0F);

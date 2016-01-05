@@ -4,14 +4,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 
 import net.minecraftforge.fluids.Fluid;
 
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
-import mezz.jei.api.recipe.IRecipeTransferHelper;
 
 /**
  * The IRecipeManager offers several functions for retrieving and handling recipes.
@@ -71,11 +69,4 @@ public interface IRecipeRegistry {
 	 * (note that IRecipeHandler.isValid must be true when the recipe is added here for it to work)
 	 */
 	void addRecipe(@Nonnull Object recipe);
-
-	/**
-	 * @deprecated this is internal to JEI
-	 */
-	@Deprecated
-	@Nullable
-	IRecipeTransferHelper getRecipeTransferHelper(@Nonnull Container container, @Nonnull IRecipeCategory recipeCategory);
 }

@@ -25,7 +25,6 @@ import net.minecraftforge.fluids.FluidStack;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
-import mezz.jei.api.recipe.IRecipeTransferHelper;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.util.Log;
@@ -343,12 +342,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 			return ImmutableList.of();
 		}
 		return Collections.unmodifiableList(recipesForCategories.get(recipeCategory));
-	}
-
-	@Nullable
-	@Override
-	public IRecipeTransferHelper getRecipeTransferHelper(@Nullable Container container, @Nullable IRecipeCategory recipeCategory) {
-		return null;
 	}
 
 	@Nullable

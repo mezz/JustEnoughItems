@@ -1,6 +1,7 @@
 package mezz.jei.api.recipe;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -36,4 +37,15 @@ public interface IRecipeWrapper {
 
 	/** Draw animations involving the recipe. Can be disabled in the config. */
 	void drawAnimations(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight);
+
+	/**
+	 * Get the tooltip for whatever's under the mouse.
+	 * ItemStack and fluid tooltips are already handled by JEI, this is for anything else.
+	 *
+	 * @param mouseX the X position of the mouse, relative to the recipe.
+	 * @param mouseY the Y position of the mouse, relative to the recipe.
+	 * @return tooltip strings. If there is no tooltip at this position, return null or an empty list.
+	 */
+	@Nullable
+	List<String> getTooltipStrings(int mouseX, int mouseY);
 }

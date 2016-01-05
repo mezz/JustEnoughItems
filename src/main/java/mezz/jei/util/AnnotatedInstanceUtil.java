@@ -2,7 +2,6 @@ package mezz.jei.util;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -17,15 +16,7 @@ public class AnnotatedInstanceUtil {
 	}
 
 	public static List<IModPlugin> getModPlugins(@Nonnull ASMDataTable asmDataTable) {
-		List<IModPlugin> modPlugins = getInstances(asmDataTable, JEIPlugin.class, IModPlugin.class);
-		Iterator<IModPlugin> iterator = modPlugins.iterator();
-		while (iterator.hasNext()) {
-			IModPlugin modPlugin = iterator.next();
-			if (!modPlugin.isModLoaded()) {
-				iterator.remove();
-			}
-		}
-		return modPlugins;
+		return getInstances(asmDataTable, JEIPlugin.class, IModPlugin.class);
 	}
 
 	private static <T> List<T> getInstances(@Nonnull ASMDataTable asmDataTable, Class annotationClass, Class<T> instanceClass) {

@@ -23,11 +23,6 @@ public class JEIPlugin implements IModPlugin {
 	private IJeiHelpers jeiHelpers;
 
 	@Override
-	public boolean isModLoaded() {
-		return true;
-	}
-
-	@Override
 	public void onJeiHelpersAvailable(IJeiHelpers jeiHelpers) {
 		this.jeiHelpers = jeiHelpers;
 	}

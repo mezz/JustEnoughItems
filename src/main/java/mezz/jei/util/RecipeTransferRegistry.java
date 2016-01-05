@@ -27,8 +27,7 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 		}
 
 		IRecipeTransferInfo recipeTransferHelper = new BasicRecipeTransferInfo(containerClass, recipeCategoryUid, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
-		IRecipeTransferHandler recipeTransferHandler = new BasicRecipeTransferHandler(recipeTransferHelper);
-		this.recipeTransferHandlers.add(recipeTransferHandler);
+		addRecipeTransferHandler(recipeTransferHelper);
 	}
 
 	@Override
@@ -38,7 +37,7 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 			return;
 		}
 		IRecipeTransferHandler recipeTransferHandler = new BasicRecipeTransferHandler(recipeTransferInfo);
-		this.recipeTransferHandlers.add(recipeTransferHandler);
+		addRecipeTransferHandler(recipeTransferHandler);
 	}
 
 	@Override

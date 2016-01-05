@@ -24,6 +24,10 @@ public class TooltipRenderer {
 		drawHoveringText(minecraft, textLines, x, y, minecraft.fontRendererObj);
 	}
 
+	public static void drawHoveringText(Minecraft minecraft, @Nonnull List<String> textLines, int x, int y) {
+		drawHoveringText(minecraft, textLines, x, y, minecraft.fontRendererObj);
+	}
+
 	public static void drawHoveringText(Minecraft minecraft, @Nonnull List<String> textLines, int x, int y, FontRenderer font) {
 		tooltipScreen.set(minecraft);
 		tooltipScreen.drawHoveringText(textLines, x, y, font);

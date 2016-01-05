@@ -3,20 +3,17 @@ package mezz.jei.plugins.jei.description;
 import javax.annotation.Nonnull;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
-import mezz.jei.config.Config;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
 

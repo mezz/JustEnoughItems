@@ -1,17 +1,16 @@
 package mezz.jei.util;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.RecipeRegistry;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
-import mezz.jei.api.recipe.IRecipeTransferHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.plugins.jei.description.ItemDescriptionRecipe;
@@ -30,16 +29,6 @@ public class ModRegistry implements IModRegistry {
 	@Override
 	public void addRecipeHandlers(IRecipeHandler... recipeHandlers) {
 		Collections.addAll(this.recipeHandlers, recipeHandlers);
-	}
-
-	@Override
-	public void addRecipeTransferHelpers(IRecipeTransferHelper... recipeTransferHelpers) {
-
-	}
-
-	@Override
-	public void addBasicRecipeTransferHelper(Class<? extends Container> containerClass, String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
-		recipeTransferRegistry.addRecipeTransferHandler(containerClass, recipeCategoryUid, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
 	}
 
 	@Override
@@ -75,11 +64,7 @@ public class ModRegistry implements IModRegistry {
 		return recipeTransferRegistry;
 	}
 
-	@Override
-	public void addIgnoredRecipeClasses(Class... ignoredRecipeClasses) {
-
-	}
-
+	@Nonnull
 	public RecipeRegistry createRecipeRegistry() {
 		List<IRecipeTransferHandler> recipeTransferHandlers = recipeTransferRegistry.getRecipeTransferHandlers();
 		return new RecipeRegistry(recipeCategories, recipeHandlers, recipeTransferHandlers, recipes);
