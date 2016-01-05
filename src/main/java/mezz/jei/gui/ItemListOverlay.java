@@ -86,7 +86,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		this.itemFilter = itemFilter;
 	}
 
-	public boolean initGui(@Nonnull GuiContainer guiContainer) {
+	public void initGui(@Nonnull GuiContainer guiContainer) {
 		this.guiLeft = guiContainer.guiLeft;
 		this.guiXSize = guiContainer.xSize;
 		this.screenWidth = guiContainer.width;
@@ -95,7 +95,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		final int columns = getColumns();
 		if (columns < 4) {
 			close();
-			return false;
+			return;
 		}
 
 		String next = ">";
@@ -138,7 +138,13 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 
 		updateLayout();
 
-		return true;
+		open();
+	}
+
+	public void updateGui(@Nonnull GuiContainer guiContainer) {
+		if (this.guiLeft != guiContainer.guiLeft || this.guiXSize != guiContainer.xSize || this.screenWidth != guiContainer.width || this.screenHeight != guiContainer.height) {
+			initGui(guiContainer);
+		}
 	}
 
 	private void createItemButtons(final int xStart, final int yStart, final int columnCount, final int rowCount) {
