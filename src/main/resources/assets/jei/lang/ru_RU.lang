@@ -1,18 +1,60 @@
+# Tooltips
+jei.tooltip.config=Конфигурация
+jei.tooltip.show.all.recipes=Показать все рецепты
+jei.tooltip.delete.item=Нажмите, чтобы удалить
+jei.tooltip.liquid.amount.with.capacity=%,d / %,d мВ
+jei.tooltip.liquid.amount=%,d мВ
+
+# Error Tooltips
+jei.tooltip.error.recipe.transfer.missing=Отсутствуют предметы
+jei.tooltip.error.recipe.transfer.inventory.full=Инвентарь заполнен
+
+# Error Messages
+jei.chat.error.command.too.long=JEI необходимо установить на сервер, чтобы использовать эту команду, она слишком длинна для отправки.
+
 # Key Bindings
 key.jei.toggleOverlay=Переключить оверлей предметов (Ctrl + )
 key.jei.showRecipe=Показывать рецепты предметов
 key.jei.showUses=Показывать применения предметов
 
 # Config
-config.jei.mode.cheatItemsEnabled=Включить режим жульничества
-config.jei.mode.cheatItemsEnabled.comment=/give предметы, вместо показа рецепта.
+config.jei.default=По-умолчанию
+config.jei.valid=Valid
+
+config.jei.title=Конфигурация %MODNAME
+
+config.jei.mode=Режим
+config.jei.mode.comment=Изменение режима JEI.
+config.jei.mode.cheatItemsEnabled=Режим жульничества
+config.jei.mode.cheatItemsEnabled.comment=Давать предметы вместо отображения рецепта.
 config.jei.mode.editEnabled=Режим редактирования
 config.jei.mode.editEnabled.comment=Прячьте предметы в списке простым нажатием клавиши.
 
+config.jei.interface=Интерфейс
+config.jei.interface.comment=Настройки, отвечающие за интерфейс пользователя.
+config.jei.interface.recipeAnimationsEnabled=Анимации рецептов
+config.jei.interface.recipeAnimationsEnabled.comment=Показывать анимации рецептов (огонь в печи, индикаторы и т.д)
+
+config.jei.search=Поиск
+config.jei.search.comment=Настройки, отвечающие за поиск.
+config.jei.search.atPrefixRequiredForModName=Использовать @ для имени мода
+config.jei.search.atPrefixRequiredForModName.comment=Требовать "@ИмяМода" для поиска по имени модификации вместо просто "ИмяМода".
+
+config.jei.advanced=Продвинутое
+config.jei.advanced.comment=Продвинутые настройки функций JEI.
 config.jei.advanced.nbtKeyIgnoreList=Чёрный список для NBT
 config.jei.advanced.nbtKeyIgnoreList.comment=Список NBT, которые будут игнорироваться при отображении рецептов.
 config.jei.advanced.itemBlacklist=Чёрный список для предметов
 config.jei.advanced.itemBlacklist.comment=Список предметов, которые не будут отображаться в списке предметов JEI. Формат: modId:name[:meta]. Режим редактирования будет автоматически добавлять записи сюда, или удалять.
+config.jei.advanced.hideMissingModelsEnabled=Скрывать предметы без моделей
+config.jei.advanced.hideMissingModelsEnabled.comment=Предметы без моделей будут скрыты.
+config.jei.advanced.debugModeEnabled=Режим отладки
+config.jei.advanced.debugModeEnabled.comment=Добавляет разные вещи, чтобы помочь в разработке JEI.
+config.jei.advanced.deleteItemsInCheatModeEnabled=Удаление предметов в режиме жульничества
+config.jei.advanced.deleteItemsInCheatModeEnabled.comment=В режиме жульничества, перенесите предмет из списка и нажмите, чтобы удалить его. (JEI требуется на сервере)
+
+config.jei.addons=Дополнения
+config.jei.addons.comment=Категория для настроек дополнений JEI.
 
 # Edit Mode
 gui.jei.editMode.description=Режим редактирования списка предметов JEI:
@@ -22,8 +64,16 @@ gui.jei.editMode.description.hide.wild=Ctrl-right-click to hide with wildcard.
 gui.jei.editMode.description.show.wild=Hidden by Wildcard. Ctrl-right-click to show.
 
 # Recipes
-gui.jei.category.craftingTable=Рецепты верстака
-gui.jei.category.smelting=Рецепты выплавки
-gui.jei.category.fuel=Рецепты топлива
+gui.jei.category.craftingTable=Верстак
+gui.jei.category.smelting=Плавка
 gui.jei.category.smelting.experience=Опыт: %s
+gui.jei.category.fuel=Топливо
 gui.jei.category.fuel.burnTime=Время горения: %s
+gui.jei.category.brewing=Варка
+gui.jei.category.brewing.steps=Шаги: %s
+gui.jei.category.itemDescription=Описание
+
+# DEBUG (for debug mode, do not need translation)
+description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.
+description.jei.wooden.door.2=Clicking on a door changes its state from open to closed and visa versa.
+description.jei.wooden.door.3=Wooden Doors can be opened/closed via Redstone Circuits.

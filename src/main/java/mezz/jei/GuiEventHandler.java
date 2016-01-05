@@ -52,9 +52,7 @@ public class GuiEventHandler {
 			return;
 		}
 
-		if (itemListOverlay.initGui(guiContainer)) {
-			itemListOverlay.open();
-		}
+		itemListOverlay.initGui(guiContainer);
 
 		recipesGui.initGui(minecraft);
 		inputHandler = new InputHandler(recipesGui, itemListOverlay, guiContainer);
@@ -96,12 +94,10 @@ public class GuiEventHandler {
 			recipesGui.drawBackground();
 		}
 
+		itemListOverlay.updateGui(guiContainer);
+
 		itemListOverlay.drawScreen(guiContainer.mc, event.mouseX, event.mouseY);
-
-		if (recipesGui.isOpen()) {
-			recipesGui.draw(event.mouseX, event.mouseY);
-		}
-
+		recipesGui.draw(event.mouseX, event.mouseY);
 		itemListOverlay.drawHovered(guiContainer.mc, event.mouseX, event.mouseY);
 
 		if (!recipesGui.isOpen()) {

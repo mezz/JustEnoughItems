@@ -310,6 +310,10 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 	}
 
 	public void draw(int mouseX, int mouseY) {
+		if (!isOpen()) {
+			return;
+		}
+
 		Minecraft minecraft = Minecraft.getMinecraft();
 
 		nextRecipeCategory.drawButton(minecraft, mouseX, mouseY);
