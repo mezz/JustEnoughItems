@@ -72,19 +72,30 @@ public class RecipeLayout implements IRecipeLayout {
 
 		recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight());
 
+		final int recipeMouseX = mouseX - posX;
+		final int recipeMouseY = mouseY - posY;
+
 		RenderHelper.enableGUIStandardItemLighting();
-		GuiIngredient hoveredItemStack = guiItemStackGroup.draw(minecraft, mouseX - posX, mouseY - posY);
+		GuiIngredient hoveredItemStack = guiItemStackGroup.draw(minecraft, recipeMouseX, recipeMouseY);
 		RenderHelper.disableStandardItemLighting();
-		GuiIngredient hoveredFluidStack = guiFluidStackGroup.draw(minecraft, mouseX - posX, mouseY - posY);
+		GuiIngredient hoveredFluidStack = guiFluidStackGroup.draw(minecraft, recipeMouseX, recipeMouseY);
 
 		if (hoveredItemStack != null) {
 			RenderHelper.enableGUIStandardItemLighting();
-			hoveredItemStack.drawHovered(minecraft, mouseX - posX, mouseY - posY);
+			hoveredItemStack.drawHovered(minecraft, recipeMouseX, recipeMouseY);
 			RenderHelper.disableStandardItemLighting();
-		}
-
-		if (hoveredFluidStack != null) {
-			hoveredFluidStack.drawHovered(minecraft, mouseX - posX, mouseY - posY);
+		} else if (hoveredFluidStack != null) {
+			hoveredFluidStack.drawHovered(minecraft, recipeMouseX, recipeMouseY);
+		} else if (recipeMouseX >= 0 && recipeMouseX < background.getWidth() && recipeMouseY >= 0 && recipeMouseY < background.getHeight()) {
+			List<String> tooltipStrings = null;
+			try {
+				tooltipStrings = recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY);
+			} catch (AbstractMethodError ignored) {
+				// older wrappers don't have this method
+			}
+			if (tooltipStrings != null && !tooltipStrings.isEmpty()) {
+				TooltipRenderer.drawHoveringText(minecraft, tooltipStrings, recipeMouseX, recipeMouseY);
+			}
 		}
 
 		GlStateManager.popMatrix();
