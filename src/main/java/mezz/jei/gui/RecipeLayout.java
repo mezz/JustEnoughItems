@@ -2,6 +2,8 @@ package mezz.jei.gui;
 
 import javax.annotation.Nonnull;
 
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
