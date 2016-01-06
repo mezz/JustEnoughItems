@@ -9,6 +9,7 @@ import java.util.Map;
 import net.minecraft.client.Minecraft;
 
 import mezz.jei.api.gui.IGuiIngredientGroup;
+import mezz.jei.api.gui.ITooltipCallback;
 import mezz.jei.gui.Focus;
 
 public abstract class GuiIngredientGroup<V, T extends GuiIngredient<V>> implements IGuiIngredientGroup<V> {
@@ -16,6 +17,8 @@ public abstract class GuiIngredientGroup<V, T extends GuiIngredient<V>> implemen
 	protected final Map<Integer, T> guiIngredients = new HashMap<>();
 	@Nonnull
 	protected Focus focus = new Focus();
+	@Nullable
+	private ITooltipCallback<V> tooltipCallback;
 
 	/**
 	 * If focus is set and any of the guiIngredients contains focus
@@ -33,6 +36,11 @@ public abstract class GuiIngredientGroup<V, T extends GuiIngredient<V>> implemen
 	@Override
 	public void set(int slotIndex, @Nonnull V value) {
 		guiIngredients.get(slotIndex).set(value, focus);
+	}
+
+	@Override
+	public void addTooltipCallback(@Nonnull ITooltipCallback<V> tooltipCallback) {
+		this.tooltipCallback = tooltipCallback;
 	}
 
 	@Nonnull
@@ -56,6 +64,7 @@ public abstract class GuiIngredientGroup<V, T extends GuiIngredient<V>> implemen
 		for (T ingredient : guiIngredients.values()) {
 			if (hovered == null && ingredient.isMouseOver(mouseX, mouseY)) {
 				hovered = ingredient;
+				hovered.setTooltipCallback(tooltipCallback);
 			} else {
 				ingredient.draw(minecraft);
 			}

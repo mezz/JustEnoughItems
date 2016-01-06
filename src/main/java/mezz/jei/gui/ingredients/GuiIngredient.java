@@ -15,12 +15,14 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 
+import mezz.jei.api.gui.ITooltipCallback;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.util.CycleTimer;
 import mezz.jei.util.Log;
 
 public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
+	private final int slotIndex;
 	private final boolean input;
 
 	private final int xPosition;
@@ -37,13 +39,16 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	private final IIngredientRenderer<T> ingredientRenderer;
 	@Nonnull
 	private final IIngredientHelper<T> ingredientHelper;
+	@Nullable
+	private ITooltipCallback<T> tooltipCallback;
 
 	private boolean enabled;
 
-	public GuiIngredient(@Nonnull IIngredientRenderer<T> ingredientRenderer, @Nonnull IIngredientHelper<T> ingredientHelper, boolean input, int xPosition, int yPosition, int width, int height, int padding) {
+	public GuiIngredient(@Nonnull IIngredientRenderer<T> ingredientRenderer, @Nonnull IIngredientHelper<T> ingredientHelper, int slotIndex, boolean input, int xPosition, int yPosition, int width, int height, int padding) {
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredientHelper = ingredientHelper;
 
+		this.slotIndex = slotIndex;
 		this.input = input;
 
 		this.xPosition = xPosition;
@@ -97,6 +102,10 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		enabled = !this.contained.isEmpty();
 	}
 
+	public void setTooltipCallback(@Nonnull ITooltipCallback<T> tooltipCallback) {
+		this.tooltipCallback = tooltipCallback;
+	}
+
 	@Override
 	public void draw(@Nonnull Minecraft minecraft) {
 		draw(minecraft, true);
@@ -134,6 +143,11 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 			drawRect(xPosition, yPosition, xPosition + width, yPosition + height, 0x7FFFFFFF);
 
 			List<String> tooltip = ingredientRenderer.getTooltip(minecraft, value);
+
+			if (tooltipCallback != null) {
+				tooltipCallback.onTooltip(slotIndex, input, value, tooltip);
+			}
+
 			FontRenderer fontRenderer = ingredientRenderer.getFontRenderer(minecraft, value);
 			TooltipRenderer.drawHoveringText(minecraft, tooltip, mouseX, mouseY, fontRenderer);
 

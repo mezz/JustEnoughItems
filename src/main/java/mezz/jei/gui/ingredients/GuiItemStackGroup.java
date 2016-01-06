@@ -22,8 +22,8 @@ public class GuiItemStackGroup extends GuiIngredientGroup<ItemStack, GuiIngredie
 		return baseHeight + (2 * padding);
 	}
 
-	public static GuiIngredient<ItemStack> createGuiItemStack(boolean input, int xPosition, int yPosition, int padding) {
-		return new GuiIngredient<>(renderer, helper, input, xPosition, yPosition, getWidth(padding), getHeight(padding), padding);
+	private static GuiIngredient<ItemStack> createGuiItemStack(int index, boolean input, int xPosition, int yPosition, int padding) {
+		return new GuiIngredient<>(renderer, helper, index, input, xPosition, yPosition, getWidth(padding), getHeight(padding), padding);
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class GuiItemStackGroup extends GuiIngredientGroup<ItemStack, GuiIngredie
 	}
 
 	public void init(int index, boolean input, int xPosition, int yPosition, int padding) {
-		GuiIngredient<ItemStack> guiIngredient = createGuiItemStack(input, xPosition, yPosition, padding);
+		GuiIngredient<ItemStack> guiIngredient = createGuiItemStack(index, input, xPosition, yPosition, padding);
 		guiIngredients.put(index, guiIngredient);
 	}
 }
