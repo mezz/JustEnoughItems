@@ -14,4 +14,6 @@ public interface IGuiIngredientGroup<T> {
 	void set(int slotIndex, @Nonnull Collection<T> ingredients);
 
 	void set(int slotIndex, @Nonnull T ingredient);
+
+	void addTooltipCallback(@Nonnull ITooltipCallback<T> tooltipCallback);
 }

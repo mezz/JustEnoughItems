@@ -34,4 +34,6 @@ public interface IGuiFluidStackGroup extends IGuiIngredientGroup<FluidStack> {
 	@Override
 	void set(int slotIndex, @Nonnull FluidStack fluidStack);
 
+	@Override
+	void addTooltipCallback(@Nonnull ITooltipCallback<FluidStack> tooltipCallback);
 }
