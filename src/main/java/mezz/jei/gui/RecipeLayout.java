@@ -57,6 +57,7 @@ public class RecipeLayout implements IRecipeLayout {
 		GlStateManager.translate(posX, posY, 0.0F);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.disableLighting();
+		GlStateManager.enableAlpha();
 
 		IDrawable background = recipeCategory.getBackground();
 		background.draw(minecraft);
@@ -100,6 +101,7 @@ public class RecipeLayout implements IRecipeLayout {
 			}
 		}
 
+		GlStateManager.disableAlpha();
 		GlStateManager.popMatrix();
 	}
 

@@ -327,7 +327,6 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		{
 			GlStateManager.translate(guiLeft, guiTop, 0.0F);
 
-			GlStateManager.disableBlend();
 			drawRect(borderPadding + buttonWidth, borderPadding - 2, xSize - borderPadding - buttonWidth, borderPadding + 10, 0x30000000);
 			drawRect(borderPadding + buttonWidth, titleHeight + textPadding - 2, xSize - borderPadding - buttonWidth, titleHeight + textPadding + 10, 0x30000000);
 

@@ -6,8 +6,6 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 
 import mezz.jei.config.Constants;
 
@@ -31,10 +29,6 @@ public class TooltipRenderer {
 	public static void drawHoveringText(Minecraft minecraft, @Nonnull List<String> textLines, int x, int y, FontRenderer font) {
 		tooltipScreen.set(minecraft);
 		tooltipScreen.drawHoveringText(textLines, x, y, font);
-
-		GlStateManager.disableRescaleNormal();
-		RenderHelper.disableStandardItemLighting();
-		GlStateManager.disableLighting();
 	}
 
 	private static class TooltipGuiScreen extends GuiScreen {
