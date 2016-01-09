@@ -65,9 +65,15 @@ public class Focus {
 		if (item instanceof IFluidContainerItem) {
 			IFluidContainerItem fluidContainerItem = (IFluidContainerItem) item;
 			FluidStack fluidStack = fluidContainerItem.getFluid(stack);
+			if (fluidStack == null) {
+				return null;
+			}
 			return fluidStack.getFluid();
 		} else if (FluidContainerRegistry.isFilledContainer(stack)) {
 			FluidStack fluidStack = FluidContainerRegistry.getFluidForFilledItem(stack);
+			if (fluidStack == null) {
+				return null;
+			}
 			return fluidStack.getFluid();
 		} else if (item instanceof ItemBlock) {
 			ItemBlock itemBlock = (ItemBlock) item;
