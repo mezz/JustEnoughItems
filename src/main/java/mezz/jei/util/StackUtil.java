@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.inventory.Container;
@@ -245,7 +244,7 @@ public class StackUtil {
 		}
 
 		FMLControlledNamespacedRegistry<Item> itemRegistry = GameData.getItemRegistry();
-		ResourceLocation itemName = (ResourceLocation) itemRegistry.getNameForObject(item);
+		ResourceLocation itemName = itemRegistry.getNameForObject(item);
 		if (itemName == null) {
 			throw new NullPointerException("No name for item in GameData itemRegistry: " + item.getClass());
 		}
@@ -258,9 +257,8 @@ public class StackUtil {
 
 		StringBuilder itemKey = new StringBuilder(itemNameString).append(':').append(metadata);
 		if (stack.hasTagCompound()) {
-			NBTTagCompound nbtTagCompound = stack.getTagCompound();
-			nbtTagCompound = cleanNbt(nbtTagCompound);
-			if (!nbtTagCompound.hasNoTags()) {
+			NBTTagCompound nbtTagCompound = Internal.getHelpers().getNbtIgnoreList().getNbt(stack);
+			if (nbtTagCompound != null && !nbtTagCompound.hasNoTags()) {
 				itemKey.append(':').append(nbtTagCompound);
 			}
 		}
@@ -274,22 +272,6 @@ public class StackUtil {
 				getUniqueIdentifierForStack(itemStack, false),
 				getUniqueIdentifierForStack(itemStack, true)
 		);
-	}
-
-	private static NBTTagCompound cleanNbt(NBTTagCompound nbtTagCompound) {
-		@SuppressWarnings("unchecked")
-		Set<String> keys = nbtTagCompound.getKeySet();
-
-		Set<String> ignoredKeys = Internal.getHelpers().getNbtIgnoreList().getIgnoredNbtTags(keys);
-		if (ignoredKeys.isEmpty()) {
-			return nbtTagCompound;
-		}
-
-		NBTTagCompound nbtTagCompoundCopy = (NBTTagCompound) nbtTagCompound.copy();
-		for (String ignoredKey : ignoredKeys) {
-			nbtTagCompoundCopy.removeTag(ignoredKey);
-		}
-		return nbtTagCompoundCopy;
 	}
 
 	public static int addStack(Container container, Collection<Integer> slotIndexes, ItemStack stack, boolean doAdd) {
