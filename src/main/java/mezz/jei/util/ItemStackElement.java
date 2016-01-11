@@ -36,13 +36,13 @@ public class ItemStackElement {
 	private ItemStackElement(@Nonnull ItemStack itemStack) {
 		this.itemStack = itemStack;
 
-		ResourceLocation itemResourceLocation = (ResourceLocation) GameData.getItemRegistry().getNameForObject(itemStack.getItem());
+		ResourceLocation itemResourceLocation = GameData.getItemRegistry().getNameForObject(itemStack.getItem());
 		String modId = itemResourceLocation.getResourceDomain().toLowerCase(Locale.ENGLISH);
 		String modName = Internal.getItemRegistry().getModNameForItem(itemStack.getItem()).toLowerCase(Locale.ENGLISH);
 
 		String displayName = itemStack.getDisplayName();
 		if (displayName == null) {
-			throw new NullPointerException("No display name for item. " + itemResourceLocation.toString() + " " + itemStack.getItem().getClass());
+			throw new NullPointerException("No display name for item. " + itemResourceLocation + ' ' + itemStack.getItem().getClass());
 		}
 
 		String searchString = displayName.toLowerCase();

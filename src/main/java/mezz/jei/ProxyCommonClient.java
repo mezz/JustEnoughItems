@@ -12,7 +12,6 @@ import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
@@ -59,7 +58,7 @@ public class ProxyCommonClient extends ProxyCommon {
 				plugin.onJeiHelpersAvailable(Internal.getHelpers());
 			} catch (AbstractMethodError ignored) {
 				// older plugins don't have this method
-			} catch (Exception e) {
+			} catch (RuntimeException e) {
 				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
@@ -69,11 +68,10 @@ public class ProxyCommonClient extends ProxyCommon {
 	@Override
 	public void init(@Nonnull FMLInitializationEvent event) {
 		KeyBindings.init();
-		FMLCommonHandler.instance().bus().register(this);
+		MinecraftForge.EVENT_BUS.register(this);
 
 		guiEventHandler = new GuiEventHandler();
 		MinecraftForge.EVENT_BUS.register(guiEventHandler);
-		FMLCommonHandler.instance().bus().register(guiEventHandler);
 	}
 
 	@Override
@@ -89,7 +87,7 @@ public class ProxyCommonClient extends ProxyCommon {
 				plugin.onItemRegistryAvailable(itemRegistry);
 			} catch (AbstractMethodError ignored) {
 				// older plugins don't have this method
-			} catch (Exception e) {
+			} catch (RuntimeException e) {
 				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
@@ -103,7 +101,7 @@ public class ProxyCommonClient extends ProxyCommon {
 			try {
 				plugin.register(modRegistry);
 				Log.info("Registered plugin: {}", plugin.getClass().getName());
-			} catch (Exception e) {
+			} catch (RuntimeException e) {
 				Log.error("Failed to register mod plugin: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
@@ -119,7 +117,7 @@ public class ProxyCommonClient extends ProxyCommon {
 				plugin.onRecipeRegistryAvailable(recipeRegistry);
 			} catch (AbstractMethodError ignored) {
 				// older plugins don't have this method
-			} catch (Exception e) {
+			} catch (RuntimeException e) {
 				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
 				iterator.remove();
 			}

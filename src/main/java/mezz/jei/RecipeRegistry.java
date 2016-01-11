@@ -27,6 +27,7 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.config.Config;
 import mezz.jei.util.Log;
 import mezz.jei.util.RecipeCategoryComparator;
 import mezz.jei.util.RecipeMap;
@@ -112,7 +113,9 @@ public class RecipeRegistry implements IRecipeRegistry {
 		if (recipeHandler == null) {
 			if (!unhandledRecipeClasses.contains(recipeClass)) {
 				unhandledRecipeClasses.add(recipeClass);
-				Log.debug("Can't handle recipe: {}", recipeClass);
+				if (Config.isDebugModeEnabled()) {
+					Log.debug("Can't handle recipe: {}", recipeClass);
+				}
 			}
 			return;
 		}
@@ -141,7 +144,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private String getInfoFromBrokenRecipe(@Nonnull Object recipe, @Nonnull IRecipeHandler recipeHandler) {
 		StringBuilder recipeInfoBuilder = new StringBuilder();
 		try {
-			recipeInfoBuilder.append(recipe.toString());
+			recipeInfoBuilder.append(recipe);
 		} catch (RuntimeException e) {
 			Log.error("Failed recipe.toString", e);
 			recipeInfoBuilder.append(recipe.getClass());

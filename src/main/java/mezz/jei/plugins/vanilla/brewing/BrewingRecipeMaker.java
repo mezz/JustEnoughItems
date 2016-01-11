@@ -21,6 +21,7 @@ import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
 
 import mezz.jei.api.IItemRegistry;
+import mezz.jei.config.Config;
 import mezz.jei.util.Log;
 
 public class BrewingRecipeMaker {
@@ -95,7 +96,9 @@ public class BrewingRecipeMaker {
 				Class recipeClass = iBrewingRecipe.getClass();
 				if (!unhandledRecipeClasses.contains(recipeClass)) {
 					unhandledRecipeClasses.add(recipeClass);
-					Log.debug("Can't handle brewing recipe class: {}", recipeClass);
+					if (Config.isDebugModeEnabled()) {
+						Log.debug("Can't handle brewing recipe class: {}", recipeClass);
+					}
 				}
 			}
 		}

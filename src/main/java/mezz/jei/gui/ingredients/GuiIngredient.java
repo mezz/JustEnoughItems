@@ -102,7 +102,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		enabled = !this.contained.isEmpty();
 	}
 
-	public void setTooltipCallback(@Nonnull ITooltipCallback<T> tooltipCallback) {
+	public void setTooltipCallback(@Nullable ITooltipCallback<T> tooltipCallback) {
 		this.tooltipCallback = tooltipCallback;
 	}
 

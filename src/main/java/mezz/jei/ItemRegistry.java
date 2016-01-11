@@ -19,9 +19,9 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.common.registry.GameData;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.util.Log;
@@ -65,7 +65,8 @@ public class ItemRegistry implements IItemRegistry {
 		for (ItemStack itemStack : itemListMutable) {
 			Item item = itemStack.getItem();
 			if (item != null) {
-				String modId = GameRegistry.findUniqueIdentifierFor(item).modId.toLowerCase(Locale.ENGLISH);
+				ResourceLocation itemResourceLocation = GameData.getItemRegistry().getNameForObject(itemStack.getItem());
+				String modId = itemResourceLocation.getResourceDomain().toLowerCase(Locale.ENGLISH);
 				itemsByModIdBuilder.put(modId, itemStack);
 			}
 		}
@@ -146,7 +147,6 @@ public class ItemRegistry implements IItemRegistry {
 		Item item = Item.getItemFromBlock(block);
 
 		if (item == null) {
-			Log.debug("Couldn't get itemStack for block: {}", block.getUnlocalizedName());
 			return;
 		}
 
@@ -159,7 +159,6 @@ public class ItemRegistry implements IItemRegistry {
 			if (subItems.isEmpty()) {
 				ItemStack stack = new ItemStack(block);
 				if (stack.getItem() == null) {
-					Log.debug("Couldn't get itemStack for block: {}", block.getUnlocalizedName());
 					return;
 				}
 				addItemStack(stack, itemList, fuels);

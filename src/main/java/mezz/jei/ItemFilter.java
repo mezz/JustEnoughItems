@@ -144,10 +144,10 @@ public class ItemFilter {
 	}
 
 	private static class ItemStackChecker {
-		private IItemBlacklist itemBlacklist;
-		private ItemModelMesher itemModelMesher;
+		private final IItemBlacklist itemBlacklist;
+		private final ItemModelMesher itemModelMesher;
 		@SuppressWarnings("deprecation")
-		private IBakedModel missingModel;
+		private final IBakedModel missingModel;
 
 		public ItemStackChecker() {
 			itemBlacklist = Internal.getHelpers().getItemBlacklist();
