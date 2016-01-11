@@ -29,7 +29,11 @@ public class NbtIgnoreList implements INbtIgnoreList {
 	}
 
 	@Override
-	public void ignoreNbtTagNames(@Nonnull Item item, String... nbtTagNames) {
+	public void ignoreNbtTagNames(@Nullable Item item, String... nbtTagNames) {
+		if (item == null) {
+			Log.error("Null item", new NullPointerException());
+			return;
+		}
 		Collection<String> ignoredNbtTagNames = itemNbtTagNameBlacklist.get(item);
 		Collections.addAll(ignoredNbtTagNames, nbtTagNames);
 	}
