@@ -145,6 +145,12 @@ public class GuiItemStackFastList {
 			}
 		}
 
+		for (GuiItemStackFast guiItemStack : renderItemsAll) {
+			if (hovered != guiItemStack) {
+				guiItemStack.renderOverlay(minecraft);
+			}
+		}
+
 		RenderHelper.disableStandardItemLighting();
 
 		return hovered;

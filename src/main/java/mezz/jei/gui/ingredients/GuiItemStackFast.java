@@ -1,6 +1,7 @@
 package mezz.jei.gui.ingredients;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -20,6 +21,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.model.IBakedModel;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
@@ -44,6 +46,7 @@ public class GuiItemStackFast {
 	private final int padding;
 	private final ItemModelMesher itemModelMesher;
 
+	@Nullable
 	private ItemStack itemStack;
 
 	public GuiItemStackFast(int xPosition, int yPosition, int padding) {
@@ -55,10 +58,11 @@ public class GuiItemStackFast {
 		this.itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
 	}
 
-	public void setItemStack(ItemStack itemStack) {
+	public void setItemStack(@Nonnull ItemStack itemStack) {
 		this.itemStack = itemStack;
 	}
 
+	@Nullable
 	public ItemStack getItemStack() {
 		return itemStack;
 	}
@@ -201,11 +205,18 @@ public class GuiItemStackFast {
 		}
 
 		Minecraft minecraft = Minecraft.getMinecraft();
-		FontRenderer font = getFontRenderer(minecraft, itemStack);
 		RenderItem renderItem = minecraft.getRenderItem();
 		renderItem.renderItemAndEffectIntoGUI(itemStack, xPosition + padding, yPosition + padding);
-		renderItem.renderItemOverlayIntoGUI(font, itemStack, xPosition + padding, yPosition + padding, null);
 		GlStateManager.disableBlend();
+	}
+
+	public void renderOverlay(Minecraft minecraft) {
+		if (itemStack == null) {
+			return;
+		}
+		FontRenderer font = getFontRenderer(minecraft, itemStack);
+		RenderItem renderItem = minecraft.getRenderItem();
+		renderItem.renderItemOverlayIntoGUI(font, itemStack, xPosition + padding, yPosition + padding, null);
 	}
 
 	private void renderEditMode() {
@@ -218,7 +229,8 @@ public class GuiItemStackFast {
 	}
 
 	public FontRenderer getFontRenderer(@Nonnull Minecraft minecraft, @Nonnull ItemStack itemStack) {
-		FontRenderer fontRenderer = itemStack.getItem().getFontRenderer(itemStack);
+		Item item = itemStack.getItem();
+		FontRenderer fontRenderer = item.getFontRenderer(itemStack);
 		if (fontRenderer == null) {
 			fontRenderer = minecraft.fontRendererObj;
 		}
@@ -226,8 +238,13 @@ public class GuiItemStackFast {
 	}
 
 	public void drawHovered(Minecraft minecraft, int mouseX, int mouseY) {
+		if (itemStack == null) {
+			return;
+		}
+
 		try {
 			renderSlow();
+			renderOverlay(minecraft);
 
 			GlStateManager.disableDepth();
 
