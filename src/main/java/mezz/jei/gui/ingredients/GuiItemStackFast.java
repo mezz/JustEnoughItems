@@ -227,13 +227,17 @@ public class GuiItemStackFast {
 
 	public void drawHovered(Minecraft minecraft, int mouseX, int mouseY) {
 		try {
-			Gui.drawRect(xPosition, yPosition, xPosition + width, yPosition + width, 0x7FFFFFFF);
-
 			renderSlow();
+
+			GlStateManager.disableDepth();
+
+			Gui.drawRect(xPosition, yPosition, xPosition + width, yPosition + width, 0x7FFFFFFF);
 
 			List<String> tooltip = getTooltip(minecraft, itemStack);
 			FontRenderer fontRenderer = getFontRenderer(minecraft, itemStack);
 			TooltipRenderer.drawHoveringText(minecraft, tooltip, mouseX, mouseY, fontRenderer);
+
+			GlStateManager.enableDepth();
 		} catch (RuntimeException e) {
 			Log.error("Exception when rendering tooltip on {}.", itemStack, e);
 		}
