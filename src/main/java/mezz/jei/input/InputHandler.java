@@ -6,8 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiRepair;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.item.ItemStack;
 
 import org.lwjgl.input.Keyboard;
@@ -197,45 +200,62 @@ public class InputHandler {
 			}
 		}
 
-		if (isInventoryCloseKey(eventKey) || isInventoryToggleKey(eventKey)) {
-			if (recipesGui.isOpen()) {
+		if (recipesGui.isOpen()) {
+			if (isInventoryCloseKey(eventKey) || isInventoryToggleKey(eventKey)) {
 				recipesGui.close();
 				return true;
-			}
-		}
-
-		if (eventKey == KeyBindings.showRecipe.getKeyCode()) {
-			Focus focus = getFocusUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
-			if (focus != null) {
-				recipesGui.showRecipes(focus);
-				return true;
-			}
-		} else if (eventKey == KeyBindings.showUses.getKeyCode()) {
-			Focus focus = getFocusUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
-			if (focus != null) {
-				recipesGui.showUses(focus);
-				return true;
-			}
-		} else if (eventKey == KeyBindings.toggleOverlay.getKeyCode() && GuiScreen.isCtrlKeyDown()) {
-			itemListOverlay.toggleEnabled();
-			return false;
-		} else if (eventKey == Keyboard.KEY_F && GuiScreen.isCtrlKeyDown()) {
-			itemListOverlay.setKeyboardFocus(true);
-			return true;
-		} else if (eventKey == Keyboard.KEY_BACK) {
-			if (recipesGui.isOpen()) {
+			} else if (eventKey == Keyboard.KEY_BACK) {
 				recipesGui.back();
 				return true;
 			}
 		}
 
-		for (IKeyable keyable : keyables) {
-			if (keyable.isOpen() && keyable.onKeyPressed(eventKey)) {
+		if (GuiScreen.isCtrlKeyDown()) {
+			if (eventKey == KeyBindings.toggleOverlay.getKeyCode()) {
+				itemListOverlay.toggleEnabled();
+				return false;
+			} else if (eventKey == Keyboard.KEY_F) {
+				itemListOverlay.setKeyboardFocus(true);
 				return true;
 			}
 		}
 
+		if (!isContainerTextFieldFocused()) {
+			if (eventKey == KeyBindings.showRecipe.getKeyCode()) {
+				Focus focus = getFocusUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
+				if (focus != null) {
+					recipesGui.showRecipes(focus);
+					return true;
+				}
+			} else if (eventKey == KeyBindings.showUses.getKeyCode()) {
+				Focus focus = getFocusUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
+				if (focus != null) {
+					recipesGui.showUses(focus);
+					return true;
+				}
+			}
+
+			for (IKeyable keyable : keyables) {
+				if (keyable.isOpen() && keyable.onKeyPressed(eventKey)) {
+					return true;
+				}
+			}
+		}
+
 		return false;
+	}
+
+	private boolean isContainerTextFieldFocused() {
+		GuiScreen gui = Minecraft.getMinecraft().currentScreen;
+		GuiTextField textField = null;
+
+		if (gui instanceof GuiContainerCreative) {
+			textField = ((GuiContainerCreative) gui).searchField;
+		} else if (gui instanceof GuiRepair) {
+			textField = ((GuiRepair) gui).nameField;
+		}
+
+		return textField != null && textField.getVisible() && textField.isEnabled && textField.isFocused();
 	}
 
 	private boolean isInventoryToggleKey(int keyCode) {
