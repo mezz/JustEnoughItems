@@ -135,7 +135,7 @@ public class ItemRegistry implements IItemRegistry {
 			return;
 		}
 
-		List<ItemStack> items = StackUtil.getSubtypes(item);
+		List<ItemStack> items = StackUtil.getSubtypes(new ItemStack(item));
 		addItemStacks(items, itemList, fuels);
 	}
 

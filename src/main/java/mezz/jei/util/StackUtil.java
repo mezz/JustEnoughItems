@@ -167,23 +167,24 @@ public class StackUtil {
 			return Collections.singletonList(itemStack);
 		}
 
-		return getSubtypes(item);
-	}
-
-	@Nonnull
-	public static List<ItemStack> getSubtypes(@Nonnull Item item) {
 		List<ItemStack> itemStacks = new ArrayList<>();
 
-		List<ItemStack> subItems = new ArrayList<>();
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
-			subItems.clear();
+			List<ItemStack> subItems = new ArrayList<>();
 			item.getSubItems(item, itemTab, subItems);
-			itemStacks.addAll(subItems);
+			for (ItemStack subItem : subItems) {
+				if (subItem.stackSize != itemStack.stackSize) {
+					ItemStack subItemCopy = subItem.copy();
+					subItemCopy.stackSize = itemStack.stackSize;
+					itemStacks.add(subItemCopy);
+				} else {
+					itemStacks.add(subItem);
+				}
+			}
 		}
 
 		if (itemStacks.isEmpty()) {
-			ItemStack stack = new ItemStack(item);
-			itemStacks.add(stack);
+			itemStacks.add(itemStack);
 		}
 
 		return itemStacks;
