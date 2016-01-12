@@ -260,7 +260,6 @@ public class GuiItemStackFast {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static List<String> getTooltip(@Nonnull Minecraft minecraft, @Nonnull ItemStack itemStack) {
 		List<String> list = itemStack.getTooltip(minecraft.thePlayer, minecraft.gameSettings.advancedItemTooltips);
 		for (int k = 0; k < list.size(); ++k) {

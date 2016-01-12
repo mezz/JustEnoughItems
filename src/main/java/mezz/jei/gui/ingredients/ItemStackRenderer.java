@@ -24,7 +24,6 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 		GlStateManager.disableBlend();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Nonnull
 	@Override
 	public List<String> getTooltip(@Nonnull Minecraft minecraft, @Nonnull ItemStack itemStack) {

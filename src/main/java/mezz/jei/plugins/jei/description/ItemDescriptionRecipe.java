@@ -73,7 +73,6 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 		Minecraft minecraft = Minecraft.getMinecraft();
 		List<String> descriptionLinesWrapped = new ArrayList<>();
 		for (String descriptionLine : descriptionLines) {
-			@SuppressWarnings("unchecked")
 			List<String> textLines = minecraft.fontRendererObj.listFormattedStringToWidth(descriptionLine, ItemDescriptionRecipeCategory.recipeWidth);
 			descriptionLinesWrapped.addAll(textLines);
 		}

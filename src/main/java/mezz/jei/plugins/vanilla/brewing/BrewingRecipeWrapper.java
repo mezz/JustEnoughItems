@@ -18,7 +18,7 @@ public class BrewingRecipeWrapper extends VanillaRecipeWrapper {
 	private final List<ItemStack> ingredients;
 	private final ItemStack potionInput;
 	private final ItemStack potionOutput;
-	private final List inputs;
+	private final List<Object> inputs;
 	private final int brewingSteps;
 	private final int hashCode;
 
@@ -26,7 +26,6 @@ public class BrewingRecipeWrapper extends VanillaRecipeWrapper {
 		this(Collections.singletonList(ingredient), potionInput, potionOutput, brewingSteps);
 	}
 
-	@SuppressWarnings("unchecked")
 	public BrewingRecipeWrapper(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput, int brewingSteps) {
 		this.ingredients = ingredients;
 		this.potionInput = potionInput;

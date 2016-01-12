@@ -17,7 +17,6 @@ public class TooltipRenderer {
 	private static final TooltipGuiScreen tooltipScreen = new TooltipGuiScreen();
 
 	public static void drawHoveringText(Minecraft minecraft, String textLine, int x, int y) {
-		@SuppressWarnings("unchecked")
 		List<String> textLines = minecraft.fontRendererObj.listFormattedStringToWidth(textLine, Constants.MAX_TOOLTIP_WIDTH);
 		drawHoveringText(minecraft, textLines, x, y, minecraft.fontRendererObj);
 	}

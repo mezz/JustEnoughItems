@@ -118,7 +118,6 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		this.initGui();
 	}
 
-	@SuppressWarnings("unchecked")
 	private void addButtons() {
 		this.buttonList.add(nextRecipeCategory);
 		this.buttonList.add(previousRecipeCategory);
@@ -295,7 +294,6 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		pageString = logic.getPageString();
 	}
 
-	@SuppressWarnings("unchecked")
 	private void addRecipeTransferButtons(List<RecipeLayout> recipeLayouts) {
 		buttonList.clear();
 		addButtons();

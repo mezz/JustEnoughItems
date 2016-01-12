@@ -3,6 +3,7 @@ package mezz.jei.plugins.vanilla;
 import net.minecraft.inventory.ContainerBrewingStand;
 import net.minecraft.inventory.ContainerFurnace;
 import net.minecraft.inventory.ContainerWorkbench;
+import net.minecraft.item.crafting.CraftingManager;
 
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IItemRegistry;
@@ -17,7 +18,6 @@ import mezz.jei.plugins.vanilla.brewing.BrewingRecipeCategory;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeHandler;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeMaker;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
-import mezz.jei.plugins.vanilla.crafting.CraftingRecipeMaker;
 import mezz.jei.plugins.vanilla.crafting.ShapedOreRecipeHandler;
 import mezz.jei.plugins.vanilla.crafting.ShapedRecipesHandler;
 import mezz.jei.plugins.vanilla.crafting.ShapelessOreRecipeHandler;
@@ -71,7 +71,7 @@ public class VanillaPlugin implements IModPlugin {
 		recipeTransferRegistry.addRecipeTransferHandler(ContainerFurnace.class, VanillaRecipeCategoryUid.FUEL, 1, 1, 1, 36);
 		recipeTransferRegistry.addRecipeTransferHandler(ContainerBrewingStand.class, VanillaRecipeCategoryUid.BREWING, 0, 4, 4, 36);
 
-		registry.addRecipes(CraftingRecipeMaker.getCraftingRecipes());
+		registry.addRecipes(CraftingManager.getInstance().getRecipeList());
 		registry.addRecipes(SmeltingRecipeMaker.getFurnaceRecipes());
 		registry.addRecipes(FuelRecipeMaker.getFuelRecipes(itemRegistry, guiHelper));
 		registry.addRecipes(BrewingRecipeMaker.getBrewingRecipes(itemRegistry));

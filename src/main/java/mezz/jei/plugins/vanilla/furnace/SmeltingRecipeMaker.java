@@ -15,7 +15,7 @@ public class SmeltingRecipeMaker {
 	@Nonnull
 	public static List<SmeltingRecipe> getFurnaceRecipes() {
 		FurnaceRecipes furnaceRecipes = FurnaceRecipes.instance();
-		Map<ItemStack, ItemStack> smeltingMap = getSmeltingMap(furnaceRecipes);
+		Map<ItemStack, ItemStack> smeltingMap = furnaceRecipes.getSmeltingList();
 
 		List<SmeltingRecipe> recipes = new ArrayList<>();
 
@@ -33,8 +33,4 @@ public class SmeltingRecipeMaker {
 		return recipes;
 	}
 
-	@SuppressWarnings("unchecked")
-	private static Map<ItemStack, ItemStack> getSmeltingMap(@Nonnull FurnaceRecipes furnaceRecipes) {
-		return furnaceRecipes.getSmeltingList();
-	}
 }
