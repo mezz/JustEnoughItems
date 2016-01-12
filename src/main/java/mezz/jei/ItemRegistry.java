@@ -22,6 +22,7 @@ import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.oredict.OreDictionary;
 
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.util.Log;
@@ -135,7 +136,7 @@ public class ItemRegistry implements IItemRegistry {
 			return;
 		}
 
-		List<ItemStack> items = StackUtil.getSubtypes(new ItemStack(item));
+		List<ItemStack> items = StackUtil.getSubtypes(new ItemStack(item, 1, OreDictionary.WILDCARD_VALUE));
 		addItemStacks(items, itemList, fuels);
 	}
 
