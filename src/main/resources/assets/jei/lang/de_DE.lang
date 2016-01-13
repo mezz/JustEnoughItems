@@ -26,7 +26,7 @@ config.jei.title=%MODNAME Konfiguration
 config.jei.mode=Modus
 config.jei.mode.comment=Ändere den Modus, in dem sich JEI befindet
 config.jei.mode.cheatItemsEnabled=Aktiviere Item-Cheating
-config.jei.mode.cheatItemsEnabled.comment=/give Items, statt das Rezept zu zeigen.
+config.jei.mode.cheatItemsEnabled.comment=Gibt Items, statt die Rezepte zu zeigen.
 config.jei.mode.editEnabled=Aktiviere Item-Listeneditiermodus
 config.jei.mode.editEnabled.comment=Verstecke und zeige Items durch Klicken in der Item-Liste.
 
@@ -49,7 +49,7 @@ config.jei.advanced.itemBlacklist.comment=Items, die nicht in der Item-Liste gez
 config.jei.advanced.hideMissingModelsEnabled=Verstecke fehlende Item-Modelle
 config.jei.advanced.hideMissingModelsEnabled.comment=Items in der Item-Liste mit fehlenden Modellen werden automatisch verborgen.
 config.jei.advanced.debugModeEnabled=Debug-Modus
-config.jei.advanced.debugModeEnabled.comment=Fügt zufällige Strings hinzu, um bei der JEI-Entwicklung zu helfen.
+config.jei.advanced.debugModeEnabled.comment=Fügt zufällige Strings hinzu, um bei der JEI-Entwicklung zu helfen. Nur für Entwickler bestimmt.
 config.jei.advanced.deleteItemsInCheatModeEnabled=Zerstöre Items im Cheat-Modus
 config.jei.advanced.deleteItemsInCheatModeEnabled.comment=Im Cheat-Modus, ziehe und lasse einen Item-Stapel über der Item-Liste fallen, um diesen zu zerstören. (benötigt JEI auf dem Server)
 
