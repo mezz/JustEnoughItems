@@ -26,7 +26,7 @@ config.jei.title=%MODNAME Config
 config.jei.mode=Mode
 config.jei.mode.comment=Change the mode that JEI is operating in.
 config.jei.mode.cheatItemsEnabled=Item Cheating
-config.jei.mode.cheatItemsEnabled.comment=/give items instead of showing the recipe.
+config.jei.mode.cheatItemsEnabled.comment=Give items instead of showing the recipe.
 config.jei.mode.editEnabled=Item List Edit Mode
 config.jei.mode.editEnabled.comment=Hide and unhide items by clicking them in the item list.
 
