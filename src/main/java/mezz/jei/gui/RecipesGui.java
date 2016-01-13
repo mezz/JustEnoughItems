@@ -54,6 +54,9 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 	private GuiButton nextPage;
 	private GuiButton previousPage;
 
+	@Nullable
+	private RecipeLayout hovered;
+
 	private boolean isOpen = false;
 
 	private int guiLeft;
@@ -335,7 +338,7 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		}
 		GlStateManager.popMatrix();
 
-		RecipeLayout hovered = null;
+		hovered = null;
 		for (RecipeLayout recipeWidget : recipeLayouts) {
 			if (recipeWidget.getFocusUnderMouse(mouseX, mouseY) != null) {
 				hovered = recipeWidget;
@@ -343,6 +346,15 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 				recipeWidget.draw(minecraft, mouseX, mouseY);
 			}
 		}
+	}
+
+	public void drawHovered(int mouseX, int mouseY) {
+		if (!isOpen()) {
+			return;
+		}
+
+		Minecraft minecraft = Minecraft.getMinecraft();
+
 		if (hovered != null) {
 			hovered.draw(minecraft, mouseX, mouseY);
 		}
@@ -359,6 +371,7 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		this.zLevel = -100;
 		this.drawDefaultBackground();
 
+		GlStateManager.enableAlpha();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		bindTexture(backgroundTexture);
 		int x = (width - xSize) / 2;

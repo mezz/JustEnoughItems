@@ -77,7 +77,22 @@ public class GuiEventHandler {
 
 		if (recipesGui.isOpen()) {
 			event.setCanceled(true);
+			recipesGui.drawBackground();
 		}
+	}
+
+	@SubscribeEvent
+	public void onDrawBackgroundEventPost(@Nonnull GuiScreenEvent.BackgroundDrawnEvent event) {
+		if (itemListOverlay == null) {
+			return;
+		}
+
+		GuiContainer guiContainer = asGuiContainer(event.gui);
+		if (guiContainer != null) {
+			itemListOverlay.updateGui(guiContainer);
+		}
+
+		itemListOverlay.drawScreen(event.gui.mc, event.getMouseX(), event.getMouseY());
 	}
 
 	@SubscribeEvent
@@ -85,32 +100,15 @@ public class GuiEventHandler {
 		if (itemListOverlay == null) {
 			return;
 		}
+
 		GuiContainer guiContainer = asGuiContainer(event.gui);
 		if (guiContainer == null) {
 			return;
 		}
 
-		if (recipesGui.isOpen()) {
-			recipesGui.drawBackground();
-		}
-
-		itemListOverlay.updateGui(guiContainer);
-
-		itemListOverlay.drawScreen(guiContainer.mc, event.mouseX, event.mouseY);
 		recipesGui.draw(event.mouseX, event.mouseY);
+		recipesGui.drawHovered(event.mouseX, event.mouseY);
 		itemListOverlay.drawHovered(guiContainer.mc, event.mouseX, event.mouseY);
-
-		if (!recipesGui.isOpen()) {
-			/**
-			 * There is no way to render between the existing inventory tooltip and the dark background layer,
-			 * so we have to re-render the inventory tooltip over the item list.
-			 **/
-			Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
-			if (slotUnderMouse != null && slotUnderMouse.getHasStack()) {
-				ItemStack itemStack = slotUnderMouse.getStack();
-				guiContainer.renderToolTip(itemStack, event.mouseX, event.mouseY);
-			}
-		}
 	}
 
 	@SubscribeEvent

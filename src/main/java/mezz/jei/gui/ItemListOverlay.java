@@ -215,16 +215,8 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 
 		if (mouseOver && shouldShowDeleteItemTooltip(minecraft)) {
 			hovered = guiItemStacks.render(null, minecraft, false, mouseX, mouseY);
-
-			String deleteItem = Translator.translateToLocal("jei.tooltip.delete.item");
-			TooltipRenderer.drawHoveringText(minecraft, deleteItem, mouseX, mouseY);
 		} else {
 			hovered = guiItemStacks.render(hovered, minecraft, mouseOver, mouseX, mouseY);
-		}
-
-		if (configButtonHoverChecker.checkHover(mouseX, mouseY)) {
-			String configString = Translator.translateToLocal("jei.tooltip.config");
-			TooltipRenderer.drawHoveringText(minecraft, configString, mouseX, mouseY);
 		}
 	}
 
@@ -239,12 +231,23 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	}
 
 	public void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+		boolean mouseOver = isMouseOver(mouseX, mouseY);
+		if (mouseOver && shouldShowDeleteItemTooltip(minecraft)) {
+			String deleteItem = Translator.translateToLocal("jei.tooltip.delete.item");
+			TooltipRenderer.drawHoveringText(minecraft, deleteItem, mouseX, mouseY);
+		}
+
 		if (hovered != null) {
 			RenderHelper.enableGUIStandardItemLighting();
 			hovered.drawHovered(minecraft, mouseX, mouseY);
 			RenderHelper.disableStandardItemLighting();
 
 			hovered = null;
+		}
+
+		if (configButtonHoverChecker.checkHover(mouseX, mouseY)) {
+			String configString = Translator.translateToLocal("jei.tooltip.config");
+			TooltipRenderer.drawHoveringText(minecraft, configString, mouseX, mouseY);
 		}
 	}
 
