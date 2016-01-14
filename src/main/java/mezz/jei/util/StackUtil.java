@@ -163,30 +163,29 @@ public class StackUtil {
 			return Collections.emptyList();
 		}
 
-		if (item.getMetadata(itemStack) != OreDictionary.WILDCARD_VALUE) {
+		if (itemStack.getItemDamage() != OreDictionary.WILDCARD_VALUE) {
 			return Collections.singletonList(itemStack);
 		}
 
+		return getSubtypes(item, itemStack.stackSize);
+	}
+
+	@Nonnull
+	public static List<ItemStack> getSubtypes(@Nonnull Item item, int stackSize) {
 		List<ItemStack> itemStacks = new ArrayList<>();
 
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
 			List<ItemStack> subItems = new ArrayList<>();
 			item.getSubItems(item, itemTab, subItems);
 			for (ItemStack subItem : subItems) {
-				if (subItem.stackSize != itemStack.stackSize) {
+				if (subItem.stackSize != stackSize) {
 					ItemStack subItemCopy = subItem.copy();
-					subItemCopy.stackSize = itemStack.stackSize;
+					subItemCopy.stackSize = stackSize;
 					itemStacks.add(subItemCopy);
 				} else {
 					itemStacks.add(subItem);
 				}
 			}
-		}
-
-		if (itemStacks.isEmpty()) {
-			ItemStack copy = itemStack.copy();
-			copy.setItemDamage(0);
-			itemStacks.add(copy);
 		}
 
 		return itemStacks;

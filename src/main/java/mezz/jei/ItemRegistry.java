@@ -136,7 +136,7 @@ public class ItemRegistry implements IItemRegistry {
 			return;
 		}
 
-		List<ItemStack> items = StackUtil.getSubtypes(new ItemStack(item, 1, OreDictionary.WILDCARD_VALUE));
+		List<ItemStack> items = StackUtil.getSubtypes(item, 1);
 		addItemStacks(items, itemList, fuels);
 	}
 
