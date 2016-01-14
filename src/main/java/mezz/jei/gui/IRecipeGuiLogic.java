@@ -18,12 +18,16 @@ public interface IRecipeGuiLogic {
 	void previousRecipeCategory();
 
 	void nextRecipeCategory();
+	
+	void setRecipeCategory(int recipeCategoryIndex);
 
 	boolean hasMultiplePages();
 
 	void previousPage();
 
 	void nextPage();
+	
+	void setPage(int pageIndex);
 
 	boolean setFocus(@Nonnull Focus focus);
 

@@ -160,4 +160,9 @@ public class GuiEventHandler {
 		}
 		return (GuiContainer) guiScreen;
 	}
+	
+	@Nonnull
+	public RecipesGui getRecipesGui() {
+		return recipesGui;
+	}
 }

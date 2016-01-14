@@ -24,6 +24,7 @@ import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.ItemListOverlay;
+import mezz.jei.gui.RecipesGui;
 import mezz.jei.network.packets.PacketJEI;
 import mezz.jei.util.AnnotatedInstanceUtil;
 import mezz.jei.util.Log;
@@ -161,5 +162,12 @@ public class ProxyCommonClient extends ProxyCommon {
 		if (Config.syncConfig()) {
 			restartJEI(); // reload everything, configs can change available recipes
 		}
+	}
+	
+	@Nullable
+	public RecipesGui getRecipesGui() {
+		if(guiEventHandler != null)
+			return guiEventHandler.getRecipesGui();
+		return null;
 	}
 }
