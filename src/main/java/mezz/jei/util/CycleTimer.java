@@ -12,7 +12,9 @@ public class CycleTimer {
 	private long pausedDuration = 0;
 
 	public CycleTimer(int offset) {
-		this.startTime = System.currentTimeMillis() - (offset * cycleTime);
+		long time = System.currentTimeMillis();
+		this.startTime = time - (offset * cycleTime);
+		this.drawTime = time;
 	}
 
 	public <T> T getCycledItem(List<T> list) {
