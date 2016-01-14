@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.client.config.GuiButtonExt;
@@ -361,11 +362,12 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	@Override
 	public boolean onKeyPressed(int keyCode) {
 		if (hasKeyboardFocus()) {
-			boolean success = searchField.textboxKeyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
-			if (success) {
+			char character = Keyboard.getEventCharacter();
+			boolean changed = searchField.textboxKeyTyped(character, Keyboard.getEventKey());
+			if (changed) {
 				updateLayout();
 			}
-			return true;
+			return changed || ChatAllowedCharacters.isAllowedCharacter(character);
 		}
 		return false;
 	}
