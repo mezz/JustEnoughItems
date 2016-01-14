@@ -241,13 +241,13 @@ public class StackUtil {
 	public static String getUniqueIdentifierForStack(@Nonnull ItemStack stack, boolean wildcard) {
 		Item item = stack.getItem();
 		if (item == null) {
-			throw new NullPointerException("Found an itemStack with a null item. This is an error from another mod.");
+			throw new ItemUidException("Found an itemStack with a null item. This is an error from another mod.");
 		}
 
 		FMLControlledNamespacedRegistry<Item> itemRegistry = GameData.getItemRegistry();
 		ResourceLocation itemName = itemRegistry.getNameForObject(item);
 		if (itemName == null) {
-			throw new NullPointerException("No name for item in GameData itemRegistry: " + item.getClass());
+			throw new ItemUidException("No name for item in GameData itemRegistry: " + item.getClass());
 		}
 
 		String itemNameString = itemName.toString();

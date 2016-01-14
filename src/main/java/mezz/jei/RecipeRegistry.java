@@ -28,6 +28,7 @@ import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.config.Config;
+import mezz.jei.util.ItemUidException;
 import mezz.jei.util.Log;
 import mezz.jei.util.RecipeCategoryComparator;
 import mezz.jei.util.RecipeMap;
@@ -136,7 +137,11 @@ public class RecipeRegistry implements IRecipeRegistry {
 			addRecipeUnchecked(recipe, recipeCategory, recipeHandler);
 		} catch (RuntimeException e) {
 			String recipeInfo = getInfoFromBrokenRecipe(recipe, recipeHandler);
-			Log.error("Failed to add recipe: {}", recipeInfo, e);
+			if (e instanceof ItemUidException) {
+				Log.error("Found broken recipe: {}\n{}\n", e.getMessage(), recipeInfo);
+			} else {
+				Log.error("Found broken recipe: {}\n", recipeInfo, e);
+			}
 		}
 	}
 
