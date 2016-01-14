@@ -184,7 +184,9 @@ public class StackUtil {
 		}
 
 		if (itemStacks.isEmpty()) {
-			itemStacks.add(itemStack);
+			ItemStack copy = itemStack.copy();
+			copy.setItemDamage(0);
+			itemStacks.add(copy);
 		}
 
 		return itemStacks;
