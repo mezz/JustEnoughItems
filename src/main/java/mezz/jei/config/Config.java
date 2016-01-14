@@ -21,6 +21,7 @@ public class Config {
 
 	public static LocalizedConfiguration configFile;
 
+	private static boolean overlayEnabled = true;
 	private static boolean cheatItemsEnabled = false;
 	private static boolean editModeEnabled = false;
 	private static boolean debugModeEnabled = false;
@@ -42,6 +43,21 @@ public class Config {
 
 	private Config() {
 
+	}
+
+	public static boolean isOverlayEnabled() {
+		return overlayEnabled;
+	}
+
+	public static void toggleOverlayEnabled() {
+		overlayEnabled = !overlayEnabled;
+
+		Property property = configFile.getConfiguration().get(CATEGORY_INTERFACE, "overlayEnabled", overlayEnabled);
+		property.set(overlayEnabled);
+
+		if (configFile.hasChanged()) {
+			configFile.save();
+		}
 	}
 
 	public static boolean isCheatItemsEnabled() {
@@ -104,6 +120,8 @@ public class Config {
 		configFile.addCategory(CATEGORY_SEARCH);
 		configFile.addCategory(CATEGORY_ADVANCED);
 		configFile.addCategory(CATEGORY_ADDONS);
+
+		overlayEnabled = configFile.getBoolean(CATEGORY_INTERFACE, "overlayEnabled", overlayEnabled);
 
 		cheatItemsEnabled = configFile.getBoolean(CATEGORY_MODE, "cheatItemsEnabled", cheatItemsEnabled);
 		editModeEnabled = configFile.getBoolean(CATEGORY_MODE, "editEnabled", editModeEnabled);

@@ -32,6 +32,8 @@ config.jei.mode.editEnabled.comment=Hide and unhide items by clicking them in th
 
 config.jei.interface=Interface
 config.jei.interface.comment=Options relating to the User Interface.
+config.jei.interface.overlayEnabled=Item List Overlay
+config.jei.interface.overlayEnabled.comment=Show the list of items next to open guis.
 config.jei.interface.recipeAnimationsEnabled=Recipe Animations
 config.jei.interface.recipeAnimationsEnabled.comment=Show recipe animations (furnace fire, progress bars, etc)
 

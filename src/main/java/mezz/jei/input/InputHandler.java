@@ -212,7 +212,7 @@ public class InputHandler {
 
 		if (GuiScreen.isCtrlKeyDown()) {
 			if (eventKey == KeyBindings.toggleOverlay.getKeyCode()) {
-				itemListOverlay.toggleEnabled();
+				Config.toggleOverlayEnabled();
 				return false;
 			} else if (eventKey == Keyboard.KEY_F) {
 				itemListOverlay.setKeyboardFocus(true);

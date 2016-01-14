@@ -80,7 +80,6 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	private int screenHeight;
 
 	private boolean open = false;
-	private boolean enabled = true;
 
 	public ItemListOverlay(ItemFilter itemFilter) {
 		this.itemFilter = itemFilter;
@@ -427,10 +426,6 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 
 	@Override
 	public boolean isOpen() {
-		return open && enabled;
-	}
-
-	public void toggleEnabled() {
-		enabled = !enabled;
+		return open && Config.isOverlayEnabled();
 	}
 }

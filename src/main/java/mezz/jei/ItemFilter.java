@@ -173,7 +173,7 @@ public class ItemFilter {
 					return true;
 				}
 			} catch (RuntimeException e) {
-				Log.error("Couldn't get ItemModel for itemStack {}.", itemStack.getClass(), e);
+				Log.error("Couldn't get ItemModel for itemStack.", e);
 				return true;
 			}
 			return false;
