@@ -32,7 +32,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	private final int padding;
 
 	@Nonnull
-	private final CycleTimer cycleTimer = new CycleTimer();
+	private final CycleTimer cycleTimer;
 	@Nonnull
 	private final List<T> contained = new ArrayList<>();
 	@Nonnull
@@ -44,7 +44,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 
 	private boolean enabled;
 
-	public GuiIngredient(@Nonnull IIngredientRenderer<T> ingredientRenderer, @Nonnull IIngredientHelper<T> ingredientHelper, int slotIndex, boolean input, int xPosition, int yPosition, int width, int height, int padding) {
+	public GuiIngredient(@Nonnull IIngredientRenderer<T> ingredientRenderer, @Nonnull IIngredientHelper<T> ingredientHelper, int slotIndex, boolean input, int xPosition, int yPosition, int width, int height, int padding, int itemCycleOffset) {
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredientHelper = ingredientHelper;
 
@@ -56,6 +56,8 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		this.width = width;
 		this.height = height;
 		this.padding = padding;
+
+		this.cycleTimer = new CycleTimer(itemCycleOffset);
 	}
 
 	@Override
@@ -108,7 +110,10 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 
 	@Override
 	public void draw(@Nonnull Minecraft minecraft) {
-		draw(minecraft, true);
+		cycleTimer.onDraw();
+
+		T value = get();
+		ingredientRenderer.draw(minecraft, xPosition + padding, yPosition + padding, value);
 	}
 
 	@Override
@@ -117,7 +122,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		if (value == null) {
 			return;
 		}
-		draw(minecraft, false);
+		draw(minecraft);
 		drawTooltip(minecraft, mouseX, mouseY, value);
 	}
 
@@ -126,13 +131,6 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		int x = xPosition + xOffset;
 		int y = yPosition + yOffset;
 		GuiScreen.drawRect(x, y, x + width, y + height, color.getRGB());
-	}
-
-	private void draw(Minecraft minecraft, boolean cycleIcons) {
-		cycleTimer.onDraw(cycleIcons);
-
-		T value = get();
-		ingredientRenderer.draw(minecraft, xPosition + padding, yPosition + padding, value);
 	}
 
 	private void drawTooltip(@Nonnull Minecraft minecraft, int mouseX, int mouseY, @Nonnull T value) {

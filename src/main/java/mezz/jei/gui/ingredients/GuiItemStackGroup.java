@@ -22,8 +22,8 @@ public class GuiItemStackGroup extends GuiIngredientGroup<ItemStack, GuiIngredie
 		return baseHeight + (2 * padding);
 	}
 
-	private static GuiIngredient<ItemStack> createGuiItemStack(int index, boolean input, int xPosition, int yPosition, int padding) {
-		return new GuiIngredient<>(renderer, helper, index, input, xPosition, yPosition, getWidth(padding), getHeight(padding), padding);
+	private GuiIngredient<ItemStack> createGuiItemStack(int index, boolean input, int xPosition, int yPosition, int padding) {
+		return new GuiIngredient<>(renderer, helper, index, input, xPosition, yPosition, getWidth(padding), getHeight(padding), padding, itemCycleOffset);
 	}
 
 	@Override

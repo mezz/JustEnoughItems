@@ -13,6 +13,7 @@ import mezz.jei.api.gui.ITooltipCallback;
 import mezz.jei.gui.Focus;
 
 public abstract class GuiIngredientGroup<V, T extends GuiIngredient<V>> implements IGuiIngredientGroup<V> {
+	protected final int itemCycleOffset = (int) (Math.random() * 1000);
 	@Nonnull
 	protected final Map<Integer, T> guiIngredients = new HashMap<>();
 	@Nonnull
