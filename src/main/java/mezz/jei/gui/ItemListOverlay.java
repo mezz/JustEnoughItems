@@ -217,6 +217,8 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		} else {
 			hovered = guiItemStacks.render(hovered, minecraft, mouseOver, mouseX, mouseY);
 		}
+
+		GlStateManager.enableAlpha();
 	}
 
 	private boolean shouldShowDeleteItemTooltip(Minecraft minecraft) {

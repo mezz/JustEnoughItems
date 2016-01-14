@@ -371,7 +371,6 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		this.zLevel = -100;
 		this.drawDefaultBackground();
 
-		GlStateManager.enableAlpha();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		bindTexture(backgroundTexture);
 		int x = (width - xSize) / 2;
