@@ -256,7 +256,11 @@ public class StackUtil {
 			return itemNameString;
 		}
 
-		StringBuilder itemKey = new StringBuilder(itemNameString).append(':').append(metadata);
+		StringBuilder itemKey = new StringBuilder(itemNameString);
+		if (stack.getHasSubtypes()) {
+			itemKey.append(':').append(metadata);
+		}
+
 		if (stack.hasTagCompound()) {
 			NBTTagCompound nbtTagCompound = Internal.getHelpers().getNbtIgnoreList().getNbt(stack);
 			if (nbtTagCompound != null && !nbtTagCompound.hasNoTags()) {
@@ -269,10 +273,14 @@ public class StackUtil {
 
 	@Nonnull
 	public static List<String> getUniqueIdentifiersWithWildcard(@Nonnull ItemStack itemStack) {
-		return Arrays.asList(
-				getUniqueIdentifierForStack(itemStack, false),
-				getUniqueIdentifierForStack(itemStack, true)
-		);
+		String uid = getUniqueIdentifierForStack(itemStack, false);
+		String uidWild = getUniqueIdentifierForStack(itemStack, true);
+
+		if (uid.equals(uidWild)) {
+			return Collections.singletonList(uid);
+		} else {
+			return Arrays.asList(uid, uidWild);
+		}
 	}
 
 	public static int addStack(Container container, Collection<Integer> slotIndexes, ItemStack stack, boolean doAdd) {
