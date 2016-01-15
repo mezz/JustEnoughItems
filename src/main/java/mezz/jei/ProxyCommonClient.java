@@ -5,7 +5,11 @@ import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.resources.IResourceManagerReloadListener;
+import net.minecraft.client.resources.SimpleReloadableResourceManager;
 import net.minecraft.nbt.NBTTagCompound;
 
 import net.minecraftforge.common.ForgeVersion;
@@ -63,6 +67,12 @@ public class ProxyCommonClient extends ProxyCommon {
 				iterator.remove();
 			}
 		}
+
+		// Prevent localized caches from being out of date
+		((SimpleReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(new IResourceManagerReloadListener() {
+			@Override
+			public void onResourceManagerReload(IResourceManager resourceManager) { restartJEI(); }
+		});
 	}
 
 	@Override
