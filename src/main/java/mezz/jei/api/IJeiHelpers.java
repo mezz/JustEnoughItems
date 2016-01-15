@@ -2,6 +2,7 @@ package mezz.jei.api;
 
 import javax.annotation.Nonnull;
 
+import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 
 /**
@@ -14,6 +15,12 @@ public interface IJeiHelpers {
 	 */
 	@Nonnull
 	IGuiHelper getGuiHelper();
+
+	/**
+	 * Helps with getting itemStacks from recipes.
+	 */
+	@Nonnull
+	IStackHelper getStackHelper();
 
 	/**
 	 * Used to stop JEI from displaying a specific item in the item list.

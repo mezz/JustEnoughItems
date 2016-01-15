@@ -8,12 +8,14 @@ import java.util.Map;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 
-import mezz.jei.util.StackUtil;
+import mezz.jei.api.IJeiHelpers;
+import mezz.jei.api.recipe.IStackHelper;
 
 public class SmeltingRecipeMaker {
 
 	@Nonnull
-	public static List<SmeltingRecipe> getFurnaceRecipes() {
+	public static List<SmeltingRecipe> getFurnaceRecipes(IJeiHelpers helpers) {
+		IStackHelper stackHelper = helpers.getStackHelper();
 		FurnaceRecipes furnaceRecipes = FurnaceRecipes.instance();
 		Map<ItemStack, ItemStack> smeltingMap = furnaceRecipes.getSmeltingList();
 
@@ -25,7 +27,7 @@ public class SmeltingRecipeMaker {
 
 			float experience = furnaceRecipes.getSmeltingExperience(output);
 
-			List<ItemStack> inputs = StackUtil.getSubtypes(input);
+			List<ItemStack> inputs = stackHelper.getSubtypes(input);
 			SmeltingRecipe recipe = new SmeltingRecipe(inputs, output, experience);
 			recipes.add(recipe);
 		}

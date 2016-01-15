@@ -4,7 +4,6 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.IGuiHelper;
@@ -16,7 +15,6 @@ import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
-import mezz.jei.util.StackUtil;
 import mezz.jei.util.Translator;
 
 public class BrewingRecipeCategory implements IRecipeCategory {
@@ -96,15 +94,11 @@ public class BrewingRecipeCategory implements IRecipeCategory {
 
 		if (recipeWrapper instanceof BrewingRecipeWrapper) {
 			List inputs = recipeWrapper.getInputs();
-			List<ItemStack> inputStacks1 = StackUtil.toItemStackList(inputs.get(brewPotionSlot1));
-			List<ItemStack> inputStacks2 = StackUtil.toItemStackList(inputs.get(brewPotionSlot2));
-			List<ItemStack> inputStacks3 = StackUtil.toItemStackList(inputs.get(brewPotionSlot3));
-			List<ItemStack> ingredientStacks = StackUtil.toItemStackList(inputs.get(brewIngredientSlot));
 
-			itemStacks.setFromRecipe(brewPotionSlot1, inputStacks1);
-			itemStacks.setFromRecipe(brewPotionSlot2, inputStacks2);
-			itemStacks.setFromRecipe(brewPotionSlot3, inputStacks3);
-			itemStacks.setFromRecipe(brewIngredientSlot, ingredientStacks);
+			itemStacks.setFromRecipe(brewPotionSlot1, inputs.get(brewPotionSlot1));
+			itemStacks.setFromRecipe(brewPotionSlot2, inputs.get(brewPotionSlot2));
+			itemStacks.setFromRecipe(brewPotionSlot3, inputs.get(brewPotionSlot3));
+			itemStacks.setFromRecipe(brewIngredientSlot, inputs.get(brewIngredientSlot));
 			itemStacks.setFromRecipe(outputSlot, recipeWrapper.getOutputs());
 		}
 	}

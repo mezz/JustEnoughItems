@@ -30,7 +30,7 @@ import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.util.Log;
-import mezz.jei.util.StackUtil;
+import mezz.jei.util.StackHelper;
 import mezz.jei.util.Translator;
 
 public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
@@ -114,7 +114,7 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 			for (Map.Entry<Integer, GuiIngredient<ItemStack>> guiIngredientEntry : itemStackGroup.getGuiIngredients().entrySet()) {
 				GuiIngredient<ItemStack> guiIngredient = guiIngredientEntry.getValue();
 				for (List<ItemStack> missingIngredients : matchingItemsResult.missingItems) {
-					if (StackUtil.containsStack(guiIngredient.getAll(), missingIngredients) != null) {
+					if (Internal.getStackHelper().containsStack(guiIngredient.getAll(), missingIngredients) != null) {
 						missingIngredientIndexes.add(guiIngredientEntry.getKey());
 						break;
 					}
@@ -126,7 +126,7 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 		}
 
 		Map<Integer, ItemStack> slotMap = buildSlotMap(itemStackGroup, matchingItemsResult.matchingItems);
-		if (slotMap == null || StackUtil.containsSets(slotMap.values(), availableItemStacks) == null) {
+		if (slotMap == null || Internal.getStackHelper().containsSets(slotMap.values(), availableItemStacks) == null) {
 			String message = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.missing");
 			return handlerHelper.createUserErrorWithTooltip(message);
 		}
@@ -173,6 +173,7 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 	private static Map<Integer, ItemStack> buildSlotMap(@Nonnull GuiItemStackGroup itemStackGroup, @Nonnull List<ItemStack> matchingStacks) {
 		Map<Integer, ItemStack> slotMap = new HashMap<>();
 		Map<Integer, GuiIngredient<ItemStack>> ingredientsMap = itemStackGroup.getGuiIngredients();
+		StackHelper stackHelper = Internal.getStackHelper();
 
 		int recipeSlotNumber = -1;
 		SortedSet<Integer> keys = new TreeSet<>(ingredientsMap.keySet());
@@ -189,7 +190,7 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 				continue;
 			}
 
-			ItemStack matchingStack = StackUtil.containsStack(matchingStacks, requiredStacks);
+			ItemStack matchingStack = stackHelper.containsStack(matchingStacks, requiredStacks);
 			if (matchingStack != null) {
 				slotMap.put(recipeSlotNumber, matchingStack);
 				matchingStacks.remove(matchingStack);
@@ -203,6 +204,7 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 
 	public static void setItems(@Nonnull EntityPlayer player, @Nonnull Map<Integer, ItemStack> slotMap, @Nonnull List<Integer> craftingSlots, @Nonnull List<Integer> inventorySlots) {
 		Container container = player.openContainer;
+		StackHelper stackHelper = Internal.getStackHelper();
 
 		// remove required recipe items
 		List<ItemStack> removeRecipeItems = new ArrayList<>();
@@ -219,7 +221,7 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 						allSlots.addAll(inventorySlots);
 						allSlots.addAll(craftingSlots);
 						for (ItemStack removedRecipeItem : removeRecipeItems) {
-							StackUtil.addStack(container, allSlots, removedRecipeItem, true);
+							stackHelper.addStack(container, allSlots, removedRecipeItem, true);
 						}
 						return;
 					}
@@ -251,7 +253,7 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 
 		// put cleared items back into the player's inventory
 		for (ItemStack oldCraftingItem : clearedCraftingItems) {
-			StackUtil.addStack(container, inventorySlots, oldCraftingItem, true);
+			stackHelper.addStack(container, inventorySlots, oldCraftingItem, true);
 		}
 
 		container.detectAndSendChanges();
@@ -282,6 +284,7 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 	@Nonnull
 	private static MatchingItemsResult getMatchingItems(@Nonnull List<ItemStack> availableItemStacks, @Nonnull List<List<ItemStack>> requiredStacksList) {
 		MatchingItemsResult matchingItemResult = new MatchingItemsResult();
+		StackHelper stackHelper = Internal.getStackHelper();
 
 		for (List<ItemStack> requiredStacks : requiredStacksList) {
 			if (requiredStacks.isEmpty()) {
@@ -290,7 +293,7 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 
 			ItemStack matching = null;
 			for (ItemStack requiredStack : requiredStacks) {
-				if (StackUtil.containsStack(availableItemStacks, requiredStack) != null) {
+				if (stackHelper.containsStack(availableItemStacks, requiredStack) != null) {
 					matching = requiredStack.copy();
 					break;
 				}
@@ -307,11 +310,13 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 
 	@Nullable
 	private static Slot getSlotWithStack(@Nonnull Container container, @Nonnull Iterable<Integer> slotNumbers, @Nonnull ItemStack stack) {
+		StackHelper stackHelper = Internal.getStackHelper();
+
 		for (Integer slotNumber : slotNumbers) {
 			Slot slot = container.getSlot(slotNumber);
 			if (slot != null) {
 				ItemStack slotStack = slot.getStack();
-				if (StackUtil.isIdentical(stack, slotStack)) {
+				if (stackHelper.isIdentical(stack, slotStack)) {
 					return slot;
 				}
 			}

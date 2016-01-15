@@ -6,9 +6,9 @@ import java.util.List;
 
 import net.minecraft.item.ItemStack;
 
+import mezz.jei.Internal;
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IGuiItemStackGroup;
-import mezz.jei.util.StackUtil;
 
 public class CraftingGridHelper implements ICraftingGridHelper {
 
@@ -40,7 +40,7 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 			Object recipeItem = input.get(i);
 			int index = getCraftingIndex(i, width, height);
 
-			List<ItemStack> itemStacks = StackUtil.toItemStackList(recipeItem);
+			List<ItemStack> itemStacks = Internal.getStackHelper().toItemStackList(recipeItem);
 			setInput(guiItemStacks, index, itemStacks);
 		}
 	}

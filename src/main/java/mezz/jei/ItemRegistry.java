@@ -22,12 +22,10 @@ import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.common.registry.GameData;
-import net.minecraftforge.oredict.OreDictionary;
 
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.util.Log;
 import mezz.jei.util.ModList;
-import mezz.jei.util.StackUtil;
 
 public class ItemRegistry implements IItemRegistry {
 
@@ -136,7 +134,7 @@ public class ItemRegistry implements IItemRegistry {
 			return;
 		}
 
-		List<ItemStack> items = StackUtil.getSubtypes(item, 1);
+		List<ItemStack> items = Internal.getStackHelper().getSubtypes(item, 1);
 		addItemStacks(items, itemList, fuels);
 	}
 
@@ -177,7 +175,7 @@ public class ItemRegistry implements IItemRegistry {
 
 	private void addItemStack(@Nonnull ItemStack stack, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {
 		try {
-			String itemKey = StackUtil.getUniqueIdentifierForStack(stack);
+			String itemKey = Internal.getStackHelper().getUniqueIdentifierForStack(stack);
 
 			if (itemNameSet.contains(itemKey)) {
 				return;

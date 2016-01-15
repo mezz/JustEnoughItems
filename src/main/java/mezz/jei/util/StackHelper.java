@@ -21,20 +21,11 @@ import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.oredict.OreDictionary;
 
 import mezz.jei.Internal;
+import mezz.jei.api.recipe.IStackHelper;
 
-/**
- * @deprecated Use IJeiHelpers.getStackHelper()
- */
-@Deprecated
-@SuppressWarnings("deprecated")
-public class StackUtil {
-	private StackUtil() {
-
-	}
-
-	@Deprecated
+public class StackHelper implements IStackHelper {
 	@Nonnull
-	public static List<ItemStack> removeDuplicateItemStacks(@Nonnull Iterable<ItemStack> stacks) {
+	public List<ItemStack> removeDuplicateItemStacks(@Nonnull Iterable<ItemStack> stacks) {
 		List<ItemStack> newStacks = new ArrayList<>();
 		for (ItemStack stack : stacks) {
 			if (stack != null && containsStack(newStacks, stack) == null) {
@@ -45,9 +36,8 @@ public class StackUtil {
 	}
 
 	/* Returns an ItemStack from "stacks" if it isIdentical to an ItemStack from "contains" */
-	@Deprecated
 	@Nullable
-	public static ItemStack containsStack(@Nullable Iterable<ItemStack> stacks, @Nullable Iterable<ItemStack> contains) {
+	public ItemStack containsStack(@Nullable Iterable<ItemStack> stacks, @Nullable Iterable<ItemStack> contains) {
 		if (stacks == null || contains == null) {
 			return null;
 		}
@@ -63,9 +53,8 @@ public class StackUtil {
 	}
 
 	/* Returns an ItemStack from "stacks" if it isIdentical to "contains" */
-	@Deprecated
 	@Nullable
-	public static ItemStack containsStack(@Nullable Iterable<ItemStack> stacks, @Nullable ItemStack contains) {
+	public ItemStack containsStack(@Nullable Iterable<ItemStack> stacks, @Nullable ItemStack contains) {
 		if (stacks == null || contains == null) {
 			return null;
 		}
@@ -78,9 +67,8 @@ public class StackUtil {
 		return null;
 	}
 
-	@Deprecated
 	@Nonnull
-	public static List<ItemStack> condenseStacks(Collection<ItemStack> stacks) {
+	public List<ItemStack> condenseStacks(Collection<ItemStack> stacks) {
 		List<ItemStack> condensed = new ArrayList<>();
 
 		for (ItemStack stack : stacks) {
@@ -109,9 +97,8 @@ public class StackUtil {
 	 * Counts how many full sets are contained in the passed stock.
 	 * Returns a list of matching stacks from set, or null if there aren't enough for a complete match.
 	 */
-	@Deprecated
 	@Nullable
-	public static List<ItemStack> containsSets(Collection<ItemStack> required, Collection<ItemStack> offered) {
+	public List<ItemStack> containsSets(Collection<ItemStack> required, Collection<ItemStack> offered) {
 		int totalSets = 0;
 
 		List<ItemStack> matching = new ArrayList<>();
@@ -141,8 +128,7 @@ public class StackUtil {
 		return matching;
 	}
 
-	@Deprecated
-	public static boolean isIdentical(@Nullable ItemStack lhs, @Nullable ItemStack rhs) {
+	public boolean isIdentical(@Nullable ItemStack lhs, @Nullable ItemStack rhs) {
 		if (lhs == rhs) {
 			return true;
 		}
@@ -164,12 +150,9 @@ public class StackUtil {
 		return ItemStack.areItemStackTagsEqual(lhs, rhs);
 	}
 
-	/**
-	 * Returns all the subtypes of itemStack if it has a wildcard meta value.
-	 */
-	@Deprecated
+	@Override
 	@Nonnull
-	public static List<ItemStack> getSubtypes(@Nonnull ItemStack itemStack) {
+	public List<ItemStack> getSubtypes(@Nonnull ItemStack itemStack) {
 		Item item = itemStack.getItem();
 		if (item == null) {
 			return Collections.emptyList();
@@ -182,9 +165,8 @@ public class StackUtil {
 		return getSubtypes(item, itemStack.stackSize);
 	}
 
-	@Deprecated
 	@Nonnull
-	public static List<ItemStack> getSubtypes(@Nonnull Item item, int stackSize) {
+	public List<ItemStack> getSubtypes(@Nonnull Item item, int stackSize) {
 		List<ItemStack> itemStacks = new ArrayList<>();
 
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
@@ -204,15 +186,15 @@ public class StackUtil {
 		return itemStacks;
 	}
 
-	@Deprecated
-	public static List<ItemStack> getAllSubtypes(Iterable stacks) {
+	@Override
+	@Nonnull
+	public List<ItemStack> getAllSubtypes(Iterable stacks) {
 		List<ItemStack> allSubtypes = new ArrayList<>();
 		getAllSubtypes(allSubtypes, stacks);
 		return allSubtypes;
 	}
 
-	@Deprecated
-	private static void getAllSubtypes(List<ItemStack> subtypesList, Iterable stacks) {
+	private void getAllSubtypes(List<ItemStack> subtypesList, Iterable stacks) {
 		for (Object obj : stacks) {
 			if (obj instanceof ItemStack) {
 				ItemStack itemStack = (ItemStack) obj;
@@ -226,16 +208,15 @@ public class StackUtil {
 		}
 	}
 
-	@Deprecated
+	@Override
 	@Nonnull
-	public static List<ItemStack> toItemStackList(@Nullable Object stacks) {
+	public List<ItemStack> toItemStackList(@Nullable Object stacks) {
 		List<ItemStack> itemStacksList = new ArrayList<>();
 		toItemStackList(itemStacksList, stacks);
 		return removeDuplicateItemStacks(itemStacksList);
 	}
 
-	@Deprecated
-	private static void toItemStackList(@Nonnull List<ItemStack> itemStackList, @Nullable Object input) {
+	private void toItemStackList(@Nonnull List<ItemStack> itemStackList, @Nullable Object input) {
 		if (input instanceof ItemStack) {
 			itemStackList.add((ItemStack) input);
 		} else if (input instanceof String) {
@@ -250,15 +231,13 @@ public class StackUtil {
 		}
 	}
 
-	@Deprecated
 	@Nonnull
-	public static String getUniqueIdentifierForStack(@Nonnull ItemStack stack) {
+	public String getUniqueIdentifierForStack(@Nonnull ItemStack stack) {
 		return getUniqueIdentifierForStack(stack, false);
 	}
 
-	@Deprecated
 	@Nonnull
-	public static String getUniqueIdentifierForStack(@Nonnull ItemStack stack, boolean wildcard) {
+	public String getUniqueIdentifierForStack(@Nonnull ItemStack stack, boolean wildcard) {
 		Item item = stack.getItem();
 		if (item == null) {
 			throw new ItemUidException("Found an itemStack with a null item. This is an error from another mod.");
@@ -291,9 +270,8 @@ public class StackUtil {
 		return itemKey.toString();
 	}
 
-	@Deprecated
 	@Nonnull
-	public static List<String> getUniqueIdentifiersWithWildcard(@Nonnull ItemStack itemStack) {
+	public List<String> getUniqueIdentifiersWithWildcard(@Nonnull ItemStack itemStack) {
 		String uid = getUniqueIdentifierForStack(itemStack, false);
 		String uidWild = getUniqueIdentifierForStack(itemStack, true);
 
@@ -304,8 +282,7 @@ public class StackUtil {
 		}
 	}
 
-	@Deprecated
-	public static int addStack(Container container, Collection<Integer> slotIndexes, ItemStack stack, boolean doAdd) {
+	public int addStack(Container container, Collection<Integer> slotIndexes, ItemStack stack, boolean doAdd) {
 		int added = 0;
 		// Add to existing stacks first
 		for (Integer slotIndex : slotIndexes) {

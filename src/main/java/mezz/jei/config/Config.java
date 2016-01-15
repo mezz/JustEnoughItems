@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-import mezz.jei.util.StackUtil;
+import mezz.jei.Internal;
 
 public class Config {
 	public static final String CATEGORY_MODE = "mode";
@@ -166,7 +166,7 @@ public class Config {
 		if (itemStack == null) {
 			return;
 		}
-		String uid = StackUtil.getUniqueIdentifierForStack(itemStack, wildcard);
+		String uid = Internal.getStackHelper().getUniqueIdentifierForStack(itemStack, wildcard);
 		if (itemBlacklist.add(uid)) {
 			updateBlacklist();
 		}
@@ -176,14 +176,14 @@ public class Config {
 		if (itemStack == null) {
 			return;
 		}
-		String uid = StackUtil.getUniqueIdentifierForStack(itemStack, wildcard);
+		String uid = Internal.getStackHelper().getUniqueIdentifierForStack(itemStack, wildcard);
 		if (itemBlacklist.remove(uid)) {
 			updateBlacklist();
 		}
 	}
 
 	public static boolean isItemOnConfigBlacklist(ItemStack itemStack, boolean wildcard) {
-		String uid = StackUtil.getUniqueIdentifierForStack(itemStack, wildcard);
+		String uid = Internal.getStackHelper().getUniqueIdentifierForStack(itemStack, wildcard);
 		return itemBlacklist.contains(uid);
 	}
 }

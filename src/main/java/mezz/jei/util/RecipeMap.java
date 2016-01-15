@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
+import mezz.jei.Internal;
 import mezz.jei.api.recipe.IRecipeCategory;
 
 /**
@@ -40,7 +41,7 @@ public class RecipeMap {
 	@Nonnull
 	public ImmutableList<IRecipeCategory> getRecipeCategories(@Nonnull ItemStack itemStack) {
 		Set<IRecipeCategory> recipeCategories = new HashSet<>();
-		for (String stackKey : StackUtil.getUniqueIdentifiersWithWildcard(itemStack)) {
+		for (String stackKey : Internal.getStackHelper().getUniqueIdentifiersWithWildcard(itemStack)) {
 			recipeCategories.addAll(categoryMap.get(stackKey));
 		}
 		return recipeCategoryOrdering.immutableSortedCopy(recipeCategories);
@@ -53,7 +54,7 @@ public class RecipeMap {
 	}
 
 	private void addRecipeCategory(@Nonnull IRecipeCategory recipeCategory, @Nonnull ItemStack itemStack) {
-		String stackKey = StackUtil.getUniqueIdentifierForStack(itemStack);
+		String stackKey = Internal.getStackHelper().getUniqueIdentifierForStack(itemStack);
 		List<IRecipeCategory> recipeCategories = categoryMap.get(stackKey);
 		if (!recipeCategories.contains(recipeCategory)) {
 			recipeCategories.add(recipeCategory);
@@ -78,7 +79,7 @@ public class RecipeMap {
 		Map<String, List<Object>> recipesForType = recipeTable.row(recipeCategory);
 
 		ImmutableList.Builder<Object> listBuilder = ImmutableList.builder();
-		for (String name : StackUtil.getUniqueIdentifiersWithWildcard(stack)) {
+		for (String name : Internal.getStackHelper().getUniqueIdentifiersWithWildcard(stack)) {
 			List<Object> recipes = recipesForType.get(name);
 			if (recipes != null) {
 				listBuilder.addAll(recipes);
@@ -101,13 +102,14 @@ public class RecipeMap {
 
 	public void addRecipe(@Nonnull Object recipe, @Nonnull IRecipeCategory recipeCategory, @Nonnull Iterable<ItemStack> itemStacks, @Nonnull Iterable<FluidStack> fluidStacks) {
 		Map<String, List<Object>> recipesForType = recipeTable.row(recipeCategory);
+		StackHelper stackHelper = Internal.getStackHelper();
 
 		for (ItemStack itemStack : itemStacks) {
 			if (itemStack == null) {
 				continue;
 			}
 
-			String stackKey = StackUtil.getUniqueIdentifierForStack(itemStack);
+			String stackKey = stackHelper.getUniqueIdentifierForStack(itemStack);
 			List<Object> recipes = recipesForType.get(stackKey);
 			if (recipes == null) {
 				recipes = Lists.newArrayList();

@@ -72,8 +72,8 @@ public class VanillaPlugin implements IModPlugin {
 		recipeTransferRegistry.addRecipeTransferHandler(ContainerBrewingStand.class, VanillaRecipeCategoryUid.BREWING, 0, 4, 4, 36);
 
 		registry.addRecipes(CraftingManager.getInstance().getRecipeList());
-		registry.addRecipes(SmeltingRecipeMaker.getFurnaceRecipes());
-		registry.addRecipes(FuelRecipeMaker.getFuelRecipes(itemRegistry, guiHelper));
+		registry.addRecipes(SmeltingRecipeMaker.getFurnaceRecipes(jeiHelpers));
+		registry.addRecipes(FuelRecipeMaker.getFuelRecipes(itemRegistry, jeiHelpers));
 		registry.addRecipes(BrewingRecipeMaker.getBrewingRecipes(itemRegistry));
 	}
 

@@ -15,12 +15,16 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IItemRegistry;
-import mezz.jei.util.StackUtil;
+import mezz.jei.api.IJeiHelpers;
+import mezz.jei.api.recipe.IStackHelper;
+import mezz.jei.util.StackHelper;
 
 public class FuelRecipeMaker {
 
 	@Nonnull
-	public static List<FuelRecipe> getFuelRecipes(IItemRegistry itemRegistry, IGuiHelper guiHelper) {
+	public static List<FuelRecipe> getFuelRecipes(IItemRegistry itemRegistry, IJeiHelpers helpers) {
+		IGuiHelper guiHelper = helpers.getGuiHelper();
+		IStackHelper stackHelper = helpers.getStackHelper();
 		List<ItemStack> fuelStacks = itemRegistry.getFuels();
 		Set<String> oreDictNames = new HashSet<>();
 		List<FuelRecipe> fuelRecipes = new ArrayList<>(fuelStacks.size());
@@ -39,7 +43,7 @@ public class FuelRecipeMaker {
 
 					oreDictNames.add(name);
 					List<ItemStack> oreDictFuels = OreDictionary.getOres(name);
-					Collection<ItemStack> oreDictFuelsSet = StackUtil.getAllSubtypes(oreDictFuels);
+					Collection<ItemStack> oreDictFuelsSet = stackHelper.getAllSubtypes(oreDictFuels);
 					removeNoBurnTime(oreDictFuelsSet);
 					if (oreDictFuels.isEmpty()) {
 						continue;
@@ -49,7 +53,7 @@ public class FuelRecipeMaker {
 					fuelRecipes.add(new FuelRecipe(guiHelper, oreDictFuelsSet, burnTime));
 				}
 			} else {
-				List<ItemStack> fuels = StackUtil.getSubtypes(fuelStack);
+				List<ItemStack> fuels = stackHelper.getSubtypes(fuelStack);
 				removeNoBurnTime(fuels);
 				if (fuels.isEmpty()) {
 					continue;

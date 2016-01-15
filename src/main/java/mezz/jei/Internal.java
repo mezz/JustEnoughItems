@@ -1,5 +1,7 @@
 package mezz.jei;
 
+import mezz.jei.util.StackHelper;
+
 /** For JEI internal use only, these are normally accessed from the API. */
 public class Internal {
 	private static JeiHelpers helpers;
@@ -12,6 +14,10 @@ public class Internal {
 
 	public static JeiHelpers getHelpers() {
 		return helpers;
+	}
+
+	public static StackHelper getStackHelper() {
+		return helpers.getStackHelper();
 	}
 
 	public static void setHelpers(JeiHelpers helpers) {

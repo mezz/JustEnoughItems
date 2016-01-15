@@ -7,9 +7,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 
+import mezz.jei.Internal;
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
-import mezz.jei.util.StackUtil;
 
 public class PacketDeletePlayerItem extends PacketJEI {
 	private ItemStack itemStack;
@@ -36,7 +36,7 @@ public class PacketDeletePlayerItem extends PacketJEI {
 	public void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
 		itemStack = buf.readItemStackFromBuffer();
 		ItemStack playerItem = player.inventory.getItemStack();
-		if (StackUtil.isIdentical(itemStack, playerItem)) {
+		if (Internal.getStackHelper().isIdentical(itemStack, playerItem)) {
 			player.inventory.setItemStack(null);
 		}
 	}

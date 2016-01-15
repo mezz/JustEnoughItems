@@ -5,8 +5,8 @@ import java.util.List;
 
 import net.minecraft.item.ItemStack;
 
+import mezz.jei.Internal;
 import mezz.jei.api.gui.IGuiItemStackGroup;
-import mezz.jei.util.StackUtil;
 
 public class GuiItemStackGroup extends GuiIngredientGroup<ItemStack, GuiIngredient<ItemStack>> implements IGuiItemStackGroup {
 	private static final int baseWidth = 16;
@@ -28,7 +28,12 @@ public class GuiItemStackGroup extends GuiIngredientGroup<ItemStack, GuiIngredie
 
 	@Override
 	public void setFromRecipe(int slotIndex, @Nonnull List ingredients) {
-		set(slotIndex, StackUtil.toItemStackList(ingredients));
+		set(slotIndex, Internal.getStackHelper().toItemStackList(ingredients));
+	}
+
+	@Override
+	public void setFromRecipe(int slotIndex, @Nonnull Object ingredients) {
+		set(slotIndex, Internal.getStackHelper().toItemStackList(ingredients));
 	}
 
 	@Override

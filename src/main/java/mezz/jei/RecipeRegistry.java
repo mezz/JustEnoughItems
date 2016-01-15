@@ -32,7 +32,6 @@ import mezz.jei.util.ItemUidException;
 import mezz.jei.util.Log;
 import mezz.jei.util.RecipeCategoryComparator;
 import mezz.jei.util.RecipeMap;
-import mezz.jei.util.StackUtil;
 
 public class RecipeRegistry implements IRecipeRegistry {
 	private final ImmutableMap<Class, IRecipeHandler> recipeHandlers;
@@ -203,7 +202,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		List inputs = recipeWrapper.getInputs();
 		List<FluidStack> fluidInputs = recipeWrapper.getFluidInputs();
 		if (inputs != null || fluidInputs != null) {
-			List<ItemStack> inputStacks = StackUtil.toItemStackList(inputs);
+			List<ItemStack> inputStacks = Internal.getStackHelper().toItemStackList(inputs);
 			if (fluidInputs == null) {
 				fluidInputs = Collections.emptyList();
 			}
@@ -213,7 +212,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		List outputs = recipeWrapper.getOutputs();
 		List<FluidStack> fluidOutputs = recipeWrapper.getFluidOutputs();
 		if (outputs != null || fluidOutputs != null) {
-			List<ItemStack> outputStacks = StackUtil.toItemStackList(outputs);
+			List<ItemStack> outputStacks = Internal.getStackHelper().toItemStackList(outputs);
 			if (fluidOutputs == null) {
 				fluidOutputs = Collections.emptyList();
 			}

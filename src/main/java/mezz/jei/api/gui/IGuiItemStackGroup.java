@@ -29,6 +29,11 @@ public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {
 	 */
 	void setFromRecipe(int slotIndex, @Nonnull List ingredients);
 
+	/**
+	 * Takes an Object from IRecipeWrapper getInputs or getOutputs
+	 */
+	void setFromRecipe(int slotIndex, @Nonnull Object ingredients);
+
 	@Override
 	void set(int slotIndex, @Nonnull Collection<ItemStack> itemStacks);
 
