@@ -25,8 +25,8 @@ import mezz.jei.Internal;
 /**
  * @deprecated Use IJeiHelpers.getStackHelper()
  */
+@SuppressWarnings("deprecation")
 @Deprecated
-@SuppressWarnings("deprecated")
 public class StackUtil {
 	private StackUtil() {
 

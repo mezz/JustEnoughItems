@@ -17,7 +17,6 @@ import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.recipe.IStackHelper;
-import mezz.jei.util.StackHelper;
 
 public class FuelRecipeMaker {
 

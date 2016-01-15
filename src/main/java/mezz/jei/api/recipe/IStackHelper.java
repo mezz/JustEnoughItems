@@ -1,7 +1,6 @@
 package mezz.jei.api.recipe;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
@@ -21,11 +20,11 @@ public interface IStackHelper {
 	 * returns all the subtypes of itemStacks if they have wildcard meta value.
 	 */
 	@Nonnull
-	List<ItemStack> getAllSubtypes(Iterable stacks);
+	List<ItemStack> getAllSubtypes(@Nonnull Iterable stacks);
 
 	/**
 	 * Flattens ItemStacks, OreDict Strings, and Iterables into a list of ItemStacks.
 	 */
 	@Nonnull
-	List<ItemStack> toItemStackList(@Nullable Object stacks);
+	List<ItemStack> toItemStackList(@Nonnull Object stacks);
 }

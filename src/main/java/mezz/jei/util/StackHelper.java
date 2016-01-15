@@ -152,9 +152,15 @@ public class StackHelper implements IStackHelper {
 
 	@Override
 	@Nonnull
-	public List<ItemStack> getSubtypes(@Nonnull ItemStack itemStack) {
+	public List<ItemStack> getSubtypes(@Nullable ItemStack itemStack) {
+		if (itemStack == null) {
+			Log.error("Null itemStack", new NullPointerException());
+			return Collections.emptyList();
+		}
+
 		Item item = itemStack.getItem();
 		if (item == null) {
+			Log.error("Null item in itemStack", new NullPointerException());
 			return Collections.emptyList();
 		}
 
@@ -188,7 +194,12 @@ public class StackHelper implements IStackHelper {
 
 	@Override
 	@Nonnull
-	public List<ItemStack> getAllSubtypes(Iterable stacks) {
+	public List<ItemStack> getAllSubtypes(@Nullable Iterable stacks) {
+		if (stacks == null) {
+			Log.error("Null stacks", new NullPointerException());
+			return Collections.emptyList();
+		}
+
 		List<ItemStack> allSubtypes = new ArrayList<>();
 		getAllSubtypes(allSubtypes, stacks);
 		return allSubtypes;
@@ -211,6 +222,11 @@ public class StackHelper implements IStackHelper {
 	@Override
 	@Nonnull
 	public List<ItemStack> toItemStackList(@Nullable Object stacks) {
+		if (stacks == null) {
+			Log.error("Null stacks", new NullPointerException());
+			return Collections.emptyList();
+		}
+
 		List<ItemStack> itemStacksList = new ArrayList<>();
 		toItemStackList(itemStacksList, stacks);
 		return removeDuplicateItemStacks(itemStacksList);
