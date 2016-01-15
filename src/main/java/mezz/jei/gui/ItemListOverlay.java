@@ -233,6 +233,10 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	}
 
 	public void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+		if (!isOpen()) {
+			return;
+		}
+		
 		boolean mouseOver = isMouseOver(mouseX, mouseY);
 		if (mouseOver && shouldShowDeleteItemTooltip(minecraft)) {
 			String deleteItem = Translator.translateToLocal("jei.tooltip.delete.item");
