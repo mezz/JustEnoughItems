@@ -13,7 +13,7 @@ import net.minecraftforge.fluids.FluidStack;
  */
 public interface IGuiFluidStackGroup extends IGuiIngredientGroup<FluidStack> {
 	/**
-	 * Sets up the fluid at slotIndex.
+	 * Initialize the fluid at slotIndex.
 	 *
 	 * @param slotIndex    the slot index of this fluid
 	 * @param input        whether this slot is an input
