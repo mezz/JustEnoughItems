@@ -1,7 +1,6 @@
 package mezz.jei.gui;
 
 import javax.annotation.Nonnull;
-
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -73,10 +72,15 @@ public class RecipeLayout implements IRecipeLayout {
 		GlStateManager.disableBlend();
 		GlStateManager.translate(posX, posY, 0.0F);
 
-		recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight());
-
 		final int recipeMouseX = mouseX - posX;
 		final int recipeMouseY = mouseY - posY;
+
+		try {
+			recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight(), recipeMouseX, recipeMouseY);
+		} catch (AbstractMethodError ignored) {
+			// older wrappers don't have this method
+		}
+		recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight());
 
 		RenderHelper.enableGUIStandardItemLighting();
 		GuiIngredient hoveredItemStack = guiItemStackGroup.draw(minecraft, recipeMouseX, recipeMouseY);
@@ -111,6 +115,14 @@ public class RecipeLayout implements IRecipeLayout {
 			focus = guiFluidStackGroup.getFocusUnderMouse(mouseX - posX, mouseY - posY);
 		}
 		return focus;
+	}
+
+	public boolean handleClick(@Nonnull Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
+		try {
+			return recipeWrapper.handleClick(minecraft, mouseX - posX, mouseY - posY, mouseButton);
+		} catch (AbstractMethodError ignored) { // older wrappers don't have this method
+			return false;
+		}
 	}
 
 	@Override

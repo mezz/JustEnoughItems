@@ -97,7 +97,7 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 	}
 
 	@Override
-	public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight) {
+	public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 		int xPos = (recipeWidth - slotDrawable.getWidth()) / 2;
 		int yPos = 0;
 		slotDrawable.draw(minecraft, xPos, yPos);

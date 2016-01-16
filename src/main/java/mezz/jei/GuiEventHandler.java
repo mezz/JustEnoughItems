@@ -26,6 +26,8 @@ public class GuiEventHandler {
 	private final RecipesGui recipesGui = new RecipesGui();
 	@Nullable
 	private InputHandler inputHandler;
+	@Nullable
+	private GuiScreen previousGui = null;
 
 	public void setItemListOverlay(@Nullable ItemListOverlay itemListOverlay) {
 		if (this.itemListOverlay != null) {
@@ -61,8 +63,14 @@ public class GuiEventHandler {
 		if (itemListOverlay == null) {
 			return;
 		}
-		if (event.gui == null && itemListOverlay.isOpen()) {
-			itemListOverlay.close();
+		if (previousGui != event.gui) {
+			previousGui = event.gui;
+			if (itemListOverlay.isOpen()) {
+				itemListOverlay.close();
+			}
+			if (recipesGui.isOpen()) {
+				recipesGui.close();
+			}
 		}
 	}
 

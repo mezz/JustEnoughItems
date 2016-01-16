@@ -166,6 +166,13 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		}
 
 		if (!guiActionPerformed) {
+			Minecraft minecraft = Minecraft.getMinecraft();
+			for (RecipeLayout recipeLayout : recipeLayouts) {
+				if (recipeLayout.handleClick(minecraft, mouseX, mouseY, mouseButton)) {
+					return true;
+				}
+			}
+
 			if (titleHoverChecker.checkHover(mouseX, mouseY)) {
 				boolean success = logic.setCategoryFocus();
 				if (success) {

@@ -32,8 +32,24 @@ public interface IRecipeWrapper {
 	/** Return a list of recipe fluid outputs. */
 	List<FluidStack> getFluidOutputs();
 
-	/** Draw additional info about the recipe. */
+	/**
+	 * Draw additional info about the recipe.
+	 *
+	 * @deprecated since JEI 2.19.0, use the mouse-aware version
+	 */
+	@Deprecated
 	void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight);
+
+	/**
+	 * Draw additional info about the recipe.
+	 * Use the mouse position for things like button highlights.
+	 * Tooltips are handled by IRecipeWrapper.getTooltipStrings()
+	 *
+	 * @param mouseX the X position of the mouse, relative to the recipe.
+	 * @param mouseY the Y position of the mouse, relative to the recipe.
+	 * @since JEI 2.19.0
+	 */
+	void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY);
 
 	/** Draw animations involving the recipe. Can be disabled in the config. */
 	void drawAnimations(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight);
@@ -48,4 +64,16 @@ public interface IRecipeWrapper {
 	 */
 	@Nullable
 	List<String> getTooltipStrings(int mouseX, int mouseY);
+
+	/**
+	 * Called when a player clicks the recipe.
+	 * Useful for implementing buttons, hyperlinks, and other interactions to your recipe.
+	 *
+	 * @param mouseX      the X position of the mouse, relative to the recipe.
+	 * @param mouseY      the Y position of the mouse, relative to the recipe.
+	 * @param mouseButton the current mouse event button.
+	 * @return true if the click was handled, false otherwise
+	 * @since JEI 2.19.0
+	 */
+	boolean handleClick(@Nonnull Minecraft minecraft, int mouseX, int mouseY, int mouseButton);
 }
