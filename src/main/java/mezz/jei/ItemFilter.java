@@ -5,7 +5,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.Weigher;
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Multiset;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -15,6 +17,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.resources.model.IBakedModel;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.api.IItemBlacklist;
@@ -101,6 +104,15 @@ public class ItemFilter {
 			}
 		}
 
+		for (Multiset.Entry<Item> brokenItem : itemStackChecker.getBrokenItems().entrySet()) {
+			int count = brokenItem.getCount();
+			if (count > 1) {
+				Item item = brokenItem.getElement();
+				String modName = Internal.getItemRegistry().getModNameForItem(item);
+				Log.error("Couldn't get ItemModel for {} item {}. Suppressed {} similar errors.", modName, item, count);
+			}
+		}
+
 		return baseList.build();
 	}
 
@@ -148,6 +160,7 @@ public class ItemFilter {
 		private final ItemModelMesher itemModelMesher;
 		@SuppressWarnings("deprecation")
 		private final IBakedModel missingModel;
+		private final Multiset<Item> brokenItems = HashMultiset.create();
 
 		public ItemStackChecker() {
 			itemBlacklist = Internal.getHelpers().getItemBlacklist();
@@ -163,17 +176,22 @@ public class ItemFilter {
 			return isItemHiddenByBlacklist(itemStack);
 		}
 
-		private boolean isItemStackHiddenByMissingModel(@Nonnull ItemStack itemStack) {
-			if (!Config.isHideMissingModelsEnabled()) {
-				return false;
-			}
+		public Multiset<Item> getBrokenItems() {
+			return brokenItems;
+		}
 
+		private boolean isItemStackHiddenByMissingModel(@Nonnull ItemStack itemStack) {
 			try {
-				if (itemModelMesher.getItemModel(itemStack) == missingModel) {
+				if (itemModelMesher.getItemModel(itemStack) == missingModel && Config.isHideMissingModelsEnabled()) {
 					return true;
 				}
 			} catch (RuntimeException e) {
-				Log.error("Couldn't get ItemModel for itemStack.", e);
+				Item item = itemStack.getItem();
+				if (!brokenItems.contains(item)) {
+					String modName = Internal.getItemRegistry().getModNameForItem(item);
+					Log.error("Couldn't get ItemModel for {} itemStack {}.", modName, itemStack, e);
+				}
+				brokenItems.add(item);
 				return true;
 			}
 			return false;
