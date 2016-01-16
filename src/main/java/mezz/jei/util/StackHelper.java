@@ -223,7 +223,6 @@ public class StackHelper implements IStackHelper {
 	@Nonnull
 	public List<ItemStack> toItemStackList(@Nullable Object stacks) {
 		if (stacks == null) {
-			Log.error("Null stacks", new NullPointerException());
 			return Collections.emptyList();
 		}
 

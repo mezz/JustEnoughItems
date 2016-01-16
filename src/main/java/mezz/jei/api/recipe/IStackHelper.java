@@ -1,6 +1,7 @@
 package mezz.jei.api.recipe;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
@@ -26,5 +27,5 @@ public interface IStackHelper {
 	 * Flattens ItemStacks, OreDict Strings, and Iterables into a list of ItemStacks.
 	 */
 	@Nonnull
-	List<ItemStack> toItemStackList(@Nonnull Object stacks);
+	List<ItemStack> toItemStackList(@Nullable Object stacks);
 }
