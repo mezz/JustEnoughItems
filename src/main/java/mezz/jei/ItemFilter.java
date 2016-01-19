@@ -185,7 +185,7 @@ public class ItemFilter {
 				if (itemModelMesher.getItemModel(itemStack) == missingModel && Config.isHideMissingModelsEnabled()) {
 					return true;
 				}
-			} catch (RuntimeException e) {
+			} catch (RuntimeException | AbstractMethodError e) {
 				Item item = itemStack.getItem();
 				if (!brokenItems.contains(item)) {
 					String modName = Internal.getItemRegistry().getModNameForItem(item);
