@@ -23,7 +23,7 @@ import mezz.jei.network.PacketHandler;
 		name = Constants.NAME,
 		version = Constants.VERSION,
 		guiFactory = "mezz.jei.config.JEIModGuiFactory",
-		acceptedMinecraftVersions = "[1.8.8,1.8.9]",
+		acceptedMinecraftVersions = "[1.8.9]",
 		dependencies = "required-after:Forge@[11.15.0.1697,);")
 public class JustEnoughItems {
 

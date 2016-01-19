@@ -10,6 +10,11 @@ buildscript {
 		classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
 	}
 }
+
+plugins {
+	id "com.matthewprenger.cursegradle" version "1.0.7"
+}
+
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = version_major + '.' + version_minor + '.' + version_patch
@@ -59,6 +64,15 @@ processResources {
 
 	// Move access transformers to META-INF
 	rename '(.+_at.cfg)', 'META-INF/$1'
+}
+
+curseforge {
+	apiKey = project.hasProperty('curseforge_apikey') ? project.curseforge_apikey : '0'
+	project {
+		id = curse_project_id
+		changelog = 'Automatically uploaded. See https://github.com/mezz/JustEnoughItems/commits/'
+		releaseType = 'beta'
+	}
 }
 
 // prevent java 8's strict doclint for javadocs from failing builds
