@@ -13,7 +13,7 @@ import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 
 public class RecipeTransferErrorSlots extends RecipeTransferErrorTooltip {
-	private static final Color highlightColor = new Color(1.0f, 0.0f, 0.0f, 0.25f);
+	private static final Color highlightColor = new Color(1.0f, 0.0f, 0.0f, 0.4f);
 	private final Collection<Integer> slots;
 
 	public RecipeTransferErrorSlots(String message, Collection<Integer> slots) {

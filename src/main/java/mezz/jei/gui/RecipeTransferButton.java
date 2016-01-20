@@ -7,8 +7,10 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.transfer.RecipeTransferUtil;
+import mezz.jei.util.Translator;
 
 public class RecipeTransferButton extends GuiButtonExt {
+	private static final String transferTooltip = Translator.translateToLocal("jei.tooltip.transfer");
 	private RecipeLayout recipeLayout;
 	private IRecipeTransferError recipeTransferError;
 
@@ -33,8 +35,12 @@ public class RecipeTransferButton extends GuiButtonExt {
 	@Override
 	public void drawButton(Minecraft mc, int mouseX, int mouseY) {
 		super.drawButton(mc, mouseX, mouseY);
-		if (hovered && visible && recipeTransferError != null) {
-			recipeTransferError.showError(mc, mouseX, mouseY, recipeLayout);
+		if (hovered && visible) {
+			if (recipeTransferError != null) {
+				recipeTransferError.showError(mc, mouseX, mouseY, recipeLayout);
+			} else {
+				TooltipRenderer.drawHoveringText(mc, transferTooltip, mouseX, mouseY);
+			}
 		}
 	}
 }

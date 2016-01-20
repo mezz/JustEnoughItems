@@ -4,6 +4,7 @@ jei.tooltip.show.all.recipes=Show All Recipes
 jei.tooltip.delete.item=Click to Delete
 jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
 jei.tooltip.liquid.amount=%,d mB
+jei.tooltip.transfer=Transfer Items
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Missing Items

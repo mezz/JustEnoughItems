@@ -6,7 +6,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.inventory.Container;
@@ -22,8 +26,62 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import mezz.jei.Internal;
 import mezz.jei.api.recipe.IStackHelper;
+import mezz.jei.gui.ingredients.GuiIngredient;
 
 public class StackHelper implements IStackHelper {
+	/**
+	 * Returns a list of items in slots that complete the recipe defined by requiredStacksList.
+	 * Returns a result that contains missingItems if there are not enough items in availableItemStacks.
+	 */
+	@Nonnull
+	public MatchingItemsResult getMatchingItems(@Nonnull List<ItemStack> availableItemStacks, @Nonnull Map<Integer, GuiIngredient<ItemStack>> ingredientsMap) {
+		MatchingItemsResult matchingItemResult = new MatchingItemsResult();
+
+		int recipeSlotNumber = -1;
+		SortedSet<Integer> keys = new TreeSet<>(ingredientsMap.keySet());
+		for (Integer key : keys) {
+			GuiIngredient<ItemStack> ingredient = ingredientsMap.get(key);
+			if (!ingredient.isInput()) {
+				continue;
+			}
+			recipeSlotNumber++;
+
+			List<ItemStack> requiredStacks = ingredient.getAll();
+			if (requiredStacks.isEmpty()) {
+				continue;
+			}
+
+			ItemStack matching = containsStack(availableItemStacks, requiredStacks);
+			if (matching == null) {
+				matchingItemResult.missingItems.add(key);
+			} else {
+				ItemStack matchingSplit = matching.splitStack(1);
+				if (matching.stackSize == 0) {
+					availableItemStacks.remove(matching);
+				}
+				matchingItemResult.matchingItems.put(recipeSlotNumber, matchingSplit);
+			}
+		}
+
+		return matchingItemResult;
+	}
+
+	@Nullable
+	public Slot getSlotWithStack(@Nonnull Container container, @Nonnull Iterable<Integer> slotNumbers, @Nonnull ItemStack stack) {
+		StackHelper stackHelper = Internal.getStackHelper();
+
+		for (Integer slotNumber : slotNumbers) {
+			Slot slot = container.getSlot(slotNumber);
+			if (slot != null) {
+				ItemStack slotStack = slot.getStack();
+				if (stackHelper.isIdentical(stack, slotStack)) {
+					return slot;
+				}
+			}
+		}
+		return null;
+	}
+
 	@Nonnull
 	public List<ItemStack> removeDuplicateItemStacks(@Nonnull Iterable<ItemStack> stacks) {
 		List<ItemStack> newStacks = new ArrayList<>();
@@ -50,6 +108,25 @@ public class StackHelper implements IStackHelper {
 		}
 
 		return null;
+	}
+
+	/* Returns all ItemStacks from "stacks" that are isIdentical to an ItemStack from "contains" */
+	@Nonnull
+	public List<ItemStack> containsStacks(@Nullable Iterable<ItemStack> stacks, @Nullable Iterable<ItemStack> contains) {
+		if (stacks == null || contains == null) {
+			return Collections.emptyList();
+		}
+
+		List<ItemStack> matching = new ArrayList<>();
+
+		for (ItemStack containStack : contains) {
+			ItemStack matchingStack = containsStack(stacks, containStack);
+			if (matchingStack != null) {
+				matching.add(matchingStack);
+			}
+		}
+
+		return matching;
 	}
 
 	/* Returns an ItemStack from "stacks" if it isIdentical to "contains" */
@@ -362,5 +439,12 @@ public class StackHelper implements IStackHelper {
 		}
 
 		return added;
+	}
+
+	public static class MatchingItemsResult {
+		@Nonnull
+		public final Map<Integer, ItemStack> matchingItems = new HashMap<>();
+		@Nonnull
+		public final List<Integer> missingItems = new ArrayList<>();
 	}
 }
