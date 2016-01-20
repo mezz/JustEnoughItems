@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 
@@ -28,6 +29,7 @@ import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.config.Config;
+import mezz.jei.gui.RecipeClickableArea;
 import mezz.jei.util.ItemUidException;
 import mezz.jei.util.Log;
 import mezz.jei.util.RecipeCategoryComparator;
@@ -36,16 +38,18 @@ import mezz.jei.util.RecipeMap;
 public class RecipeRegistry implements IRecipeRegistry {
 	private final ImmutableMap<Class, IRecipeHandler> recipeHandlers;
 	private final ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers;
+	private final ImmutableMap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas;
 	private final ImmutableMap<String, IRecipeCategory> recipeCategoriesMap;
 	private final ListMultimap<IRecipeCategory, Object> recipesForCategories;
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
 	private final Set<Class> unhandledRecipeClasses;
 
-	public RecipeRegistry(@Nonnull List<IRecipeCategory> recipeCategories, @Nonnull List<IRecipeHandler> recipeHandlers, @Nonnull List<IRecipeTransferHandler> recipeTransferHandlers, @Nonnull List<Object> recipes) {
+	public RecipeRegistry(@Nonnull List<IRecipeCategory> recipeCategories, @Nonnull List<IRecipeHandler> recipeHandlers, @Nonnull List<IRecipeTransferHandler> recipeTransferHandlers, @Nonnull List<Object> recipes, @Nonnull Map<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas) {
 		this.recipeCategoriesMap = buildRecipeCategoriesMap(recipeCategories);
 		this.recipeTransferHandlers = buildRecipeTransferHandlerTable(recipeTransferHandlers);
 		this.recipeHandlers = buildRecipeHandlersMap(recipeHandlers);
+		this.recipeClickableAreas = ImmutableMap.copyOf(recipeClickableAreas);
 
 		RecipeCategoryComparator recipeCategoryComparator = new RecipeCategoryComparator(recipeCategories);
 		this.recipeInputMap = new RecipeMap(recipeCategoryComparator);
@@ -234,6 +238,24 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return builder.build();
 	}
 
+	@Nonnull
+	@Override
+	public ImmutableList<IRecipeCategory> getRecipeCategories(@Nullable List<String> recipeCategoryUids) {
+		if (recipeCategoryUids == null) {
+			Log.error("Null recipeCategoryUids", new NullPointerException());
+			return ImmutableList.of();
+		}
+
+		ImmutableList.Builder<IRecipeCategory> builder = ImmutableList.builder();
+		for (String recipeCategoryUid : recipeCategoryUids) {
+			IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
+			if (recipeCategory != null && !getRecipes(recipeCategory).isEmpty()) {
+				builder.add(recipeCategory);
+			}
+		}
+		return builder.build();
+	}
+
 	@Nullable
 	@Override
 	public IRecipeHandler getRecipeHandler(@Nullable Class recipeClass) {
@@ -248,6 +270,11 @@ public class RecipeRegistry implements IRecipeRegistry {
 		}
 
 		return recipeHandler;
+	}
+
+	@Nullable
+	public RecipeClickableArea getRecipeClickableArea(@Nonnull GuiContainer gui) {
+		return recipeClickableAreas.get(gui.getClass());
 	}
 
 	@Nonnull

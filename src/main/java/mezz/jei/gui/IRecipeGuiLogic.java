@@ -31,6 +31,8 @@ public interface IRecipeGuiLogic {
 
 	boolean setCategoryFocus();
 
+	boolean setCategoryFocus(List<String> recipeCategoryUids);
+
 	@Nullable
 	Focus getFocus();
 

@@ -234,6 +234,13 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		}
 	}
 
+	public void showCategories(@Nonnull List<String> recipeCategoryUids) {
+		if (logic.setCategoryFocus(recipeCategoryUids)) {
+			updateLayout();
+			open();
+		}
+	}
+
 	public void back() {
 		if (logic.back()) {
 			updateLayout();

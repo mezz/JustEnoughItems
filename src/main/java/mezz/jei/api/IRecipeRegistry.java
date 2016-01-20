@@ -22,9 +22,13 @@ public interface IRecipeRegistry {
 	@Nullable
 	IRecipeHandler getRecipeHandler(@Nonnull Class recipeClass);
 
-	/** Returns an unmodifiable list of Recipe Categories */
+	/** Returns an unmodifiable list of all Recipe Categories */
 	@Nonnull
 	List<IRecipeCategory> getRecipeCategories();
+
+	/** Returns an unmodifiable list of Recipe Categories */
+	@Nonnull
+	List<IRecipeCategory> getRecipeCategories(@Nonnull List<String> recipeCategoryUids);
 
 	/** Returns an unmodifiable list of Recipe Categories that have the ItemStack as an input */
 	@Nonnull

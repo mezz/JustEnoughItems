@@ -113,9 +113,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 
 		if (this.state != null) {
-			if (this.state.focus.isBlank()) {
-				return false;
-			}
 			history.push(this.state);
 		}
 
@@ -124,6 +121,26 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		int recipeCategoryIndex = this.recipeCategories.indexOf(recipeCategory);
 
 		this.state = new State(new Focus(), recipeCategoryIndex, 0);
+
+		updateRecipes();
+
+		return true;
+	}
+
+	@Override
+	public boolean setCategoryFocus(List<String> recipeCategoryUids) {
+		List<IRecipeCategory> recipeCategories = Internal.getRecipeRegistry().getRecipeCategories(recipeCategoryUids);
+		if (recipeCategories.isEmpty()) {
+			return false;
+		}
+
+		if (this.state != null) {
+			history.push(this.state);
+		}
+
+		this.recipeCategories = recipeCategories;
+
+		this.state = new State(new Focus(), 0, 0);
 
 		updateRecipes();
 
