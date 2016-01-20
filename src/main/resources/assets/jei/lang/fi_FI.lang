@@ -1,7 +1,11 @@
 # Tooltips
 jei.tooltip.config=Asetukset
+jei.tooltip.show.recipes=Näytä reseptit
 jei.tooltip.show.all.recipes=Näytä kaikki reseptit
 jei.tooltip.delete.item=Paina poistaaksesi
+jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
+jei.tooltip.liquid.amount=%,d mB
+jei.tooltip.transfer=Siirrä tavaroita
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Puuttuvat tavarat
@@ -13,6 +17,7 @@ jei.chat.error.command.too.long=JEI:n täytyy olla asennettuna palvelimella, kom
 key.jei.toggleOverlay=Näytä tavaralista (Ctrl + )
 key.jei.showRecipe=Näytä tavaran resepti
 key.jei.showUses=Näytä tavaran käytöt
+key.jei.recipeBack=Näytä edellinen reseptisivu
 
 # Config
 config.jei.default=Oletus
@@ -23,12 +28,14 @@ config.jei.title=%MODNAME-asetukset
 config.jei.mode=Tila
 config.jei.mode.comment=Vaihda tilaa, jossa JEI toimii.
 config.jei.mode.cheatItemsEnabled=Tavaroiden huijaus
-config.jei.mode.cheatItemsEnabled.comment=Anna tavaroita /give-komennolla reseptin näyttämisen sijaan.
+config.jei.mode.cheatItemsEnabled.comment=Anna tavaroita reseptin näyttämisen sijaan.
 config.jei.mode.editEnabled=Tavaralistan muokkaustila
 config.jei.mode.editEnabled.comment=Piilota ja näytä tavaroita painamalla niitä tavaralistassa.
 
 config.jei.interface=Käyttöliittymä
 config.jei.interface.comment=Käyttöliittymään liittyviä asetuksia.
+config.jei.interface.overlayEnabled=Tavaralista
+config.jei.interface.overlayEnabled.comment=Näytä tavaralista avointen käyttöliittymien vieressä.
 config.jei.interface.recipeAnimationsEnabled=Reseptien animaatiot
 config.jei.interface.recipeAnimationsEnabled.comment=Näytä reseptien animaatiot (uunin tuli, edistymispalkki jne.)
 
