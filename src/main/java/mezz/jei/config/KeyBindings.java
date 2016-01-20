@@ -17,10 +17,13 @@ public class KeyBindings {
 	public static final KeyBinding showRecipe = new KeyBinding("key.jei.showRecipe", Keyboard.KEY_R, categoryName);
 	@Nonnull
 	public static final KeyBinding showUses = new KeyBinding("key.jei.showUses", Keyboard.KEY_U, categoryName);
+	@Nonnull
+	public static final KeyBinding recipeBack = new KeyBinding("key.jei.recipeBack", Keyboard.KEY_BACK, categoryName);
 
 	public static void init() {
 		ClientRegistry.registerKeyBinding(toggleOverlay);
 		ClientRegistry.registerKeyBinding(showRecipe);
 		ClientRegistry.registerKeyBinding(showUses);
+		ClientRegistry.registerKeyBinding(recipeBack);
 	}
 }

@@ -17,6 +17,7 @@ jei.chat.error.command.too.long=JEI must be on the server to handle this Chat Co
 key.jei.toggleOverlay=Toggle Item List Overlay (Ctrl + )
 key.jei.showRecipe=Show Item Recipe
 key.jei.showUses=Show Item Uses
+key.jei.recipeBack=Show Previous Recipe Page
 
 # Config
 config.jei.default=Default

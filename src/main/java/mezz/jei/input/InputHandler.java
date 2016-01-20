@@ -204,7 +204,7 @@ public class InputHandler {
 			if (isInventoryCloseKey(eventKey) || isInventoryToggleKey(eventKey)) {
 				recipesGui.close();
 				return true;
-			} else if (eventKey == Keyboard.KEY_BACK) {
+			} else if (eventKey == KeyBindings.recipeBack.getKeyCode()) {
 				recipesGui.back();
 				return true;
 			}
