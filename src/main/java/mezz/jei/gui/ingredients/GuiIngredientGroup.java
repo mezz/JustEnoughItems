@@ -44,6 +44,7 @@ public abstract class GuiIngredientGroup<V, T extends GuiIngredient<V>> implemen
 		this.tooltipCallback = tooltipCallback;
 	}
 
+	@Override
 	@Nonnull
 	public Map<Integer, T> getGuiIngredients() {
 		return guiIngredients;

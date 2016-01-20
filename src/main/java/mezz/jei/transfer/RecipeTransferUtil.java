@@ -14,16 +14,16 @@ import mezz.jei.util.Log;
 
 public class RecipeTransferUtil {
 	public static IRecipeTransferError getTransferRecipeError(@Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player) {
-		return transferRecipe(recipeLayout, player, false);
+		return transferRecipe(recipeLayout, player, false, false);
 	}
 
-	public static boolean transferRecipe(@Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player) {
-		IRecipeTransferError error = transferRecipe(recipeLayout, player, true);
+	public static boolean transferRecipe(@Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean maxTransfer) {
+		IRecipeTransferError error = transferRecipe(recipeLayout, player, maxTransfer, true);
 		return error == null;
 	}
 
 	@Nullable
-	private static IRecipeTransferError transferRecipe(@Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean doTransfer) {
+	private static IRecipeTransferError transferRecipe(@Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean maxTransfer, boolean doTransfer) {
 		Container container = player.openContainer;
 
 		IRecipeTransferHandler transferHandler = Internal.getRecipeRegistry().getRecipeTransferHandler(container, recipeLayout.getRecipeCategory());
@@ -34,6 +34,11 @@ public class RecipeTransferUtil {
 			return RecipeTransferErrorInternal.instance;
 		}
 
-		return transferHandler.transferRecipe(container, recipeLayout, player, doTransfer);
+		try {
+			return transferHandler.transferRecipe(container, recipeLayout, player, maxTransfer, doTransfer);
+		} catch (AbstractMethodError ignored) {
+			// older transferHandlers do not have the new method
+			return transferHandler.transferRecipe(container, recipeLayout, player, doTransfer);
+		}
 	}
 }

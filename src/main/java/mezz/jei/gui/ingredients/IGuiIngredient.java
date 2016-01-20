@@ -23,6 +23,8 @@ public interface IGuiIngredient<T> {
 	@Nonnull
 	List<T> getAll();
 
+	boolean isInput();
+
 	boolean isMouseOver(int mouseX, int mouseY);
 
 	void draw(@Nonnull Minecraft minecraft);

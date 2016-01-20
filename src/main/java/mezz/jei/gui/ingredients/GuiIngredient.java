@@ -160,6 +160,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		}
 	}
 
+	@Override
 	public boolean isInput() {
 		return input;
 	}

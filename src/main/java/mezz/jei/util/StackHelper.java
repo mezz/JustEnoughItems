@@ -26,7 +26,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import mezz.jei.Internal;
 import mezz.jei.api.recipe.IStackHelper;
-import mezz.jei.gui.ingredients.GuiIngredient;
+import mezz.jei.gui.ingredients.IGuiIngredient;
 
 public class StackHelper implements IStackHelper {
 	/**
@@ -34,13 +34,13 @@ public class StackHelper implements IStackHelper {
 	 * Returns a result that contains missingItems if there are not enough items in availableItemStacks.
 	 */
 	@Nonnull
-	public MatchingItemsResult getMatchingItems(@Nonnull List<ItemStack> availableItemStacks, @Nonnull Map<Integer, GuiIngredient<ItemStack>> ingredientsMap) {
+	public MatchingItemsResult getMatchingItems(@Nonnull List<ItemStack> availableItemStacks, @Nonnull Map<Integer, ? extends IGuiIngredient<ItemStack>> ingredientsMap) {
 		MatchingItemsResult matchingItemResult = new MatchingItemsResult();
 
 		int recipeSlotNumber = -1;
 		SortedSet<Integer> keys = new TreeSet<>(ingredientsMap.keySet());
 		for (Integer key : keys) {
-			GuiIngredient<ItemStack> ingredient = ingredientsMap.get(key);
+			IGuiIngredient<ItemStack> ingredient = ingredientsMap.get(key);
 			if (!ingredient.isInput()) {
 				continue;
 			}
@@ -110,25 +110,6 @@ public class StackHelper implements IStackHelper {
 		return null;
 	}
 
-	/* Returns all ItemStacks from "stacks" that are isIdentical to an ItemStack from "contains" */
-	@Nonnull
-	public List<ItemStack> containsStacks(@Nullable Iterable<ItemStack> stacks, @Nullable Iterable<ItemStack> contains) {
-		if (stacks == null || contains == null) {
-			return Collections.emptyList();
-		}
-
-		List<ItemStack> matching = new ArrayList<>();
-
-		for (ItemStack containStack : contains) {
-			ItemStack matchingStack = containsStack(stacks, containStack);
-			if (matchingStack != null) {
-				matching.add(matchingStack);
-			}
-		}
-
-		return matching;
-	}
-
 	/* Returns an ItemStack from "stacks" if it isIdentical to "contains" */
 	@Nullable
 	public ItemStack containsStack(@Nullable Iterable<ItemStack> stacks, @Nullable ItemStack contains) {
@@ -142,67 +123,6 @@ public class StackHelper implements IStackHelper {
 			}
 		}
 		return null;
-	}
-
-	@Nonnull
-	public List<ItemStack> condenseStacks(Collection<ItemStack> stacks) {
-		List<ItemStack> condensed = new ArrayList<>();
-
-		for (ItemStack stack : stacks) {
-			if (stack == null || stack.stackSize <= 0) {
-				continue;
-			}
-
-			boolean matched = false;
-			for (ItemStack cached : condensed) {
-				if (cached.isItemEqual(stack) && ItemStack.areItemStackTagsEqual(cached, stack)) {
-					cached.stackSize += stack.stackSize;
-					matched = true;
-				}
-			}
-
-			if (!matched) {
-				ItemStack cached = stack.copy();
-				condensed.add(cached);
-			}
-		}
-
-		return condensed;
-	}
-
-	/**
-	 * Counts how many full sets are contained in the passed stock.
-	 * Returns a list of matching stacks from set, or null if there aren't enough for a complete match.
-	 */
-	@Nullable
-	public List<ItemStack> containsSets(Collection<ItemStack> required, Collection<ItemStack> offered) {
-		int totalSets = 0;
-
-		List<ItemStack> matching = new ArrayList<>();
-		List<ItemStack> condensedRequired = condenseStacks(required);
-		List<ItemStack> condensedOffered = condenseStacks(offered);
-
-		for (ItemStack req : condensedRequired) {
-			int reqCount = 0;
-			for (ItemStack offer : condensedOffered) {
-				if (isIdentical(req, offer)) {
-					int stackCount = offer.stackSize / req.stackSize;
-					reqCount = Math.max(reqCount, stackCount);
-				}
-			}
-
-			if (reqCount == 0) {
-				return null;
-			} else {
-				matching.add(req);
-
-				if (totalSets == 0 || totalSets > reqCount) {
-					totalSets = reqCount;
-				}
-			}
-		}
-
-		return matching;
 	}
 
 	public boolean isIdentical(@Nullable ItemStack lhs, @Nullable ItemStack rhs) {
@@ -282,7 +202,7 @@ public class StackHelper implements IStackHelper {
 		return allSubtypes;
 	}
 
-	private void getAllSubtypes(List<ItemStack> subtypesList, Iterable stacks) {
+	private void getAllSubtypes(@Nonnull List<ItemStack> subtypesList, @Nonnull Iterable stacks) {
 		for (Object obj : stacks) {
 			if (obj instanceof ItemStack) {
 				ItemStack itemStack = (ItemStack) obj;
@@ -374,7 +294,7 @@ public class StackHelper implements IStackHelper {
 		}
 	}
 
-	public int addStack(Container container, Collection<Integer> slotIndexes, ItemStack stack, boolean doAdd) {
+	public int addStack(@Nonnull Container container, @Nonnull Collection<Integer> slotIndexes, @Nonnull ItemStack stack, boolean doAdd) {
 		int added = 0;
 		// Add to existing stacks first
 		for (Integer slotIndex : slotIndexes) {

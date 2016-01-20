@@ -20,15 +20,17 @@ public class PacketRecipeTransfer extends PacketJEI {
 	private Map<Integer, ItemStack> recipeMap;
 	private List<Integer> craftingSlots;
 	private List<Integer> inventorySlots;
+	private boolean maxTransfer;
 
 	public PacketRecipeTransfer() {
 
 	}
 
-	public PacketRecipeTransfer(@Nonnull Map<Integer, ItemStack> recipeMap, @Nonnull List<Integer> craftingSlots, @Nonnull List<Integer> inventorySlots) {
+	public PacketRecipeTransfer(@Nonnull Map<Integer, ItemStack> recipeMap, @Nonnull List<Integer> craftingSlots, @Nonnull List<Integer> inventorySlots, boolean maxTransfer) {
 		this.recipeMap = recipeMap;
 		this.craftingSlots = craftingSlots;
 		this.inventorySlots = inventorySlots;
+		this.maxTransfer = maxTransfer;
 	}
 
 	@Override
@@ -60,7 +62,9 @@ public class PacketRecipeTransfer extends PacketJEI {
 			inventorySlots.add(slotIndex);
 		}
 
-		BasicRecipeTransferHandler.setItems(player, recipeMap, craftingSlots, inventorySlots);
+		maxTransfer = buf.readBoolean();
+
+		BasicRecipeTransferHandler.setItems(player, recipeMap, craftingSlots, inventorySlots, maxTransfer);
 	}
 
 	@Override
@@ -80,5 +84,7 @@ public class PacketRecipeTransfer extends PacketJEI {
 		for (Integer inventorySlot : inventorySlots) {
 			buf.writeVarIntToBuffer(inventorySlot);
 		}
+
+		buf.writeBoolean(maxTransfer);
 	}
 }

@@ -255,7 +255,8 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		} else if (guibutton.id >= RecipeLayout.recipeTransferButtonIndex) {
 			int recipeIndex = guibutton.id - RecipeLayout.recipeTransferButtonIndex;
 			RecipeLayout recipeLayout = recipeLayouts.get(recipeIndex);
-			if (RecipeTransferUtil.transferRecipe(recipeLayout, Minecraft.getMinecraft().thePlayer)) {
+			boolean maxTransfer = GuiScreen.isShiftKeyDown();
+			if (RecipeTransferUtil.transferRecipe(recipeLayout, Minecraft.getMinecraft().thePlayer, maxTransfer)) {
 				close();
 				guiActionPerformed = true;
 				updateLayout = false;
