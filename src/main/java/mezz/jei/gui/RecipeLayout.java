@@ -71,6 +71,7 @@ public class RecipeLayout implements IRecipeLayout {
 		recipeTransferButton.drawButton(minecraft, mouseX, mouseY);
 		GlStateManager.disableBlend();
 		GlStateManager.translate(posX, posY, 0.0F);
+		GlStateManager.disableLighting();
 
 		final int recipeMouseX = mouseX - posX;
 		final int recipeMouseY = mouseY - posY;
