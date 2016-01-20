@@ -191,7 +191,7 @@ public class InputHandler {
 	private boolean handleKeyDown(int eventKey) {
 		for (IKeyable keyable : keyables) {
 			if (keyable.isOpen() && keyable.hasKeyboardFocus()) {
-				if (isInventoryCloseKey(eventKey)) {
+				if (isInventoryCloseKey(eventKey) || isEnterKey(eventKey)) {
 					keyable.setKeyboardFocus(false);
 					return true;
 				} else if (keyable.onKeyPressed(eventKey)) {
@@ -258,12 +258,15 @@ public class InputHandler {
 		return textField != null && textField.getVisible() && textField.isEnabled && textField.isFocused();
 	}
 
-	private boolean isInventoryToggleKey(int keyCode) {
+	private static boolean isInventoryToggleKey(int keyCode) {
 		return keyCode == Minecraft.getMinecraft().gameSettings.keyBindInventory.getKeyCode();
 	}
 
-	private boolean isInventoryCloseKey(int keyCode) {
+	private static boolean isInventoryCloseKey(int keyCode) {
 		return keyCode == Keyboard.KEY_ESCAPE;
 	}
 
+	private static boolean isEnterKey(int keyCode) {
+		return keyCode == Keyboard.KEY_RETURN;
+	}
 }

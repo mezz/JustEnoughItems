@@ -50,6 +50,8 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	private static final int searchHeight = 16;
 	private static final int buttonPaddingX = 14;
 	private static final int buttonPaddingY = 8;
+	private static final String nextLabel = ">";
+	private static final String backLabel = "<";
 
 	private static final int itemStackPadding = 1;
 	private static final int itemStackWidth = GuiItemStackGroup.getWidth(itemStackPadding);
@@ -98,12 +100,9 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 			return;
 		}
 
-		String next = ">";
-		String back = "<";
-
 		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
-		final int nextButtonWidth = buttonPaddingX + fontRenderer.getStringWidth(next);
-		final int backButtonWidth = buttonPaddingX + fontRenderer.getStringWidth(back);
+		final int nextButtonWidth = buttonPaddingX + fontRenderer.getStringWidth(nextLabel);
+		final int backButtonWidth = buttonPaddingX + fontRenderer.getStringWidth(backLabel);
 		buttonHeight = buttonPaddingY + fontRenderer.FONT_HEIGHT;
 
 		final int rows = getRows();
@@ -119,8 +118,8 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		final int buttonStartY = buttonHeight + (2 * borderPadding) + (yItemButtonSpace - itemButtonsHeight) / 2;
 		createItemButtons(leftEdge, buttonStartY, columns, rows);
 
-		nextButton = new GuiButtonExt(0, rightEdge - nextButtonWidth, borderPadding, nextButtonWidth, buttonHeight, next);
-		backButton = new GuiButtonExt(1, leftEdge, borderPadding, backButtonWidth, buttonHeight, back);
+		nextButton = new GuiButtonExt(0, rightEdge - nextButtonWidth, borderPadding, nextButtonWidth, buttonHeight, nextLabel);
+		backButton = new GuiButtonExt(1, leftEdge, borderPadding, backButtonWidth, buttonHeight, backLabel);
 
 		int configButtonSize = searchHeight + 4;
 		int configButtonX = rightEdge - configButtonSize + 1;
