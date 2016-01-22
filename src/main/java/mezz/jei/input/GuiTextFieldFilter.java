@@ -16,7 +16,7 @@ import mezz.jei.util.ItemStackElement;
 
 public class GuiTextFieldFilter extends GuiTextField {
 	private static final int MAX_HISTORY = 100;
-	private static final int maxSearchLength = 32;
+	private static final int maxSearchLength = 128;
 
 	private final List<String> history = new LinkedList<>();
 	private final HoverChecker hoverChecker;
@@ -37,10 +37,8 @@ public class GuiTextFieldFilter extends GuiTextField {
 		List<ItemStackElement> itemList = itemFilter.getItemList();
 		if (itemList.size() == 0) {
 			setTextColor(Color.red.getRGB());
-			setMaxStringLength(getText().length());
 		} else {
 			setTextColor(Color.white.getRGB());
-			setMaxStringLength(maxSearchLength);
 		}
 	}
 
