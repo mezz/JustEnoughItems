@@ -54,7 +54,7 @@ config.jei.advanced.itemBlacklist.comment=List of items that should not be displ
 config.jei.advanced.hideMissingModelsEnabled=Hide Missing Item Models
 config.jei.advanced.hideMissingModelsEnabled.comment=Items with missing models will be hidden from the item list.
 config.jei.advanced.debugModeEnabled=Debug Mode
-config.jei.advanced.debugModeEnabled.comment=Adds random things to help with JEI development.
+config.jei.advanced.debugModeEnabled.comment=Only useful for JEI developers, adds thousands of test items and some debug recipes.
 config.jei.advanced.deleteItemsInCheatModeEnabled=Delete Items in Cheat Mode
 config.jei.advanced.deleteItemsInCheatModeEnabled.comment=In cheat mode, drag an ItemStack over the item list and click to delete it. (requires JEI on server)
 

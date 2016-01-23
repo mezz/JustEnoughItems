@@ -139,10 +139,18 @@ public class Config {
 		String[] itemBlacklistArray = configFile.getStringList("itemBlacklist", CATEGORY_ADVANCED, defaultItemBlacklist);
 		itemBlacklist.clear();
 		Collections.addAll(itemBlacklist, itemBlacklistArray);
+		{
+			Property property = configFile.getConfiguration().get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
+			property.setShowInGui(false);
+		}
 
 		hideMissingModelsEnabled = configFile.getBoolean(CATEGORY_ADVANCED, "hideMissingModelsEnabled", hideMissingModelsEnabled);
 
 		debugModeEnabled = configFile.getBoolean(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
+		{
+			Property property = configFile.getConfiguration().get(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
+			property.setShowInGui(false);
+		}
 
 		boolean configChanged = configFile.hasChanged();
 		if (configChanged) {
