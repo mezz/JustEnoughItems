@@ -234,7 +234,11 @@ public class InputHandler {
 			if (eventKey == KeyBindings.showRecipe.getKeyCode()) {
 				Focus focus = getFocusUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
 				if (focus != null) {
-					recipesGui.showRecipes(focus);
+					if (!GuiScreen.isShiftKeyDown()) {
+						recipesGui.showRecipes(focus);
+					} else {
+						recipesGui.showUses(focus);
+					}
 					return true;
 				}
 			} else if (eventKey == KeyBindings.showUses.getKeyCode()) {
