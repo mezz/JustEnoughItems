@@ -46,10 +46,9 @@ import mezz.jei.util.Translator;
 
 public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKeyable {
 
-	private static final int borderPadding = 4;
+	private static final int borderPadding = 2;
 	private static final int searchHeight = 16;
-	private static final int buttonPaddingX = 14;
-	private static final int buttonPaddingY = 8;
+	private static final int buttonSize = 20;
 	private static final String nextLabel = ">";
 	private static final String backLabel = "<";
 
@@ -60,7 +59,6 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 
 	private final ItemFilter itemFilter;
 
-	private int buttonHeight;
 	private final GuiItemStackFastList guiItemStacks = new GuiItemStackFastList();
 	private GuiButton nextButton;
 	private GuiButton backButton;
@@ -100,11 +98,6 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 			return;
 		}
 
-		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
-		final int nextButtonWidth = buttonPaddingX + fontRenderer.getStringWidth(nextLabel);
-		final int backButtonWidth = buttonPaddingX + fontRenderer.getStringWidth(backLabel);
-		buttonHeight = buttonPaddingY + fontRenderer.FONT_HEIGHT;
-
 		final int rows = getRows();
 		final int xSize = columns * itemStackWidth;
 		final int xEmptySpace = screenWidth - guiLeft - guiXSize - xSize;
@@ -115,22 +108,22 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		final int yItemButtonSpace = getItemButtonYSpace();
 		final int itemButtonsHeight = rows * itemStackHeight;
 
-		final int buttonStartY = buttonHeight + (2 * borderPadding) + (yItemButtonSpace - itemButtonsHeight) / 2;
+		final int buttonStartY = buttonSize + (2 * borderPadding) + (yItemButtonSpace - itemButtonsHeight) / 2;
 		createItemButtons(leftEdge, buttonStartY, columns, rows);
 
-		nextButton = new GuiButtonExt(0, rightEdge - nextButtonWidth, borderPadding, nextButtonWidth, buttonHeight, nextLabel);
-		backButton = new GuiButtonExt(1, leftEdge, borderPadding, backButtonWidth, buttonHeight, backLabel);
+		nextButton = new GuiButtonExt(0, rightEdge - buttonSize, borderPadding, buttonSize, buttonSize, nextLabel);
+		backButton = new GuiButtonExt(1, leftEdge, borderPadding, buttonSize, buttonSize, backLabel);
 
-		int configButtonSize = searchHeight + 4;
-		int configButtonX = rightEdge - configButtonSize + 1;
-		int configButtonY = screenHeight - configButtonSize - borderPadding;
-		configButton = new GuiButtonExt(2, configButtonX, configButtonY, configButtonSize, configButtonSize, null);
+		int configButtonX = rightEdge - buttonSize + 1;
+		int configButtonY = screenHeight - buttonSize - borderPadding;
+		configButton = new GuiButtonExt(2, configButtonX, configButtonY, buttonSize, buttonSize, null);
 		ResourceLocation configButtonIconLocation = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_GUI_PATH + "recipeBackground.png");
 		configButtonIcon = Internal.getHelpers().getGuiHelper().createDrawable(configButtonIconLocation, 0, 166, 16, 16);
 		configButtonHoverChecker = new HoverChecker(configButton, 0);
 
 		int searchFieldY = screenHeight - searchHeight - borderPadding - 2;
-		int searchFieldWidth = rightEdge - leftEdge - configButtonSize - 1;
+		int searchFieldWidth = rightEdge - leftEdge - buttonSize - 1;
+		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
 		searchField = new GuiTextFieldFilter(0, fontRenderer, leftEdge, searchFieldY, searchFieldWidth, searchHeight);
 		setKeyboardFocus(false);
 		searchField.setItemFilter(itemFilter);
@@ -328,12 +321,15 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		Minecraft minecraft = Minecraft.getMinecraft();
 		if (nextButton.mousePressed(minecraft, mouseX, mouseY)) {
 			nextPage();
+			nextButton.playPressSound(minecraft.getSoundHandler());
 			return true;
 		} else if (backButton.mousePressed(minecraft, mouseX, mouseY)) {
 			previousPage();
+			backButton.playPressSound(minecraft.getSoundHandler());
 			return true;
 		} else if (configButton.mousePressed(minecraft, mouseX, mouseY)) {
 			close();
+			configButton.playPressSound(minecraft.getSoundHandler());
 			GuiScreen configScreen = new JEIModConfigGui(minecraft.currentScreen);
 			minecraft.displayGuiScreen(configScreen);
 			return true;
@@ -380,7 +376,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	}
 
 	private int getItemButtonYSpace() {
-		return screenHeight - (buttonHeight + searchHeight + 2 + (4 * borderPadding));
+		return screenHeight - (buttonSize + searchHeight + 2 + (4 * borderPadding));
 	}
 
 	private int getColumns() {
