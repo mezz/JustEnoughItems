@@ -44,6 +44,8 @@ config.jei.search=Search
 config.jei.search.comment=Options relating to the search bar.
 config.jei.search.atPrefixRequiredForModName=Use @ for Mod Name
 config.jei.search.atPrefixRequiredForModName.comment=Require "@ModName" to search by mod name instead of "ModName".
+config.jei.search.prefixRequiredForTooltipSearch=Use # for Tooltip
+config.jei.search.prefixRequiredForTooltipSearch.comment=Require "#TooltipWord" to search words in tooltips instead of "TooltipWord".
 
 config.jei.advanced=Advanced
 config.jei.advanced.comment=Advanced config options to change the way JEI functions.

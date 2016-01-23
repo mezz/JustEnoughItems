@@ -214,6 +214,7 @@ public class ItemFilter {
 	private static class FilterPredicate implements Predicate<ItemStackElement> {
 		private final List<String> itemNameTokens = new ArrayList<>();
 		private final List<String> modNameTokens = new ArrayList<>();
+		private final List<String> tooltipTokens = new ArrayList<>();
 
 		public FilterPredicate(String filterText) {
 			String[] tokens = filterText.split(" ");
@@ -221,6 +222,9 @@ public class ItemFilter {
 				if (token.startsWith("@")) {
 					String modNameToken = token.substring(1);
 					modNameTokens.add(modNameToken);
+				} else if (token.startsWith("#")) {
+					String modNameToken = token.substring(1);
+					tooltipTokens.add(modNameToken);
 				} else {
 					itemNameTokens.add(token);
 				}
@@ -236,6 +240,13 @@ public class ItemFilter {
 			String modName = input.getModName();
 			for (String token : modNameTokens) {
 				if (!modName.contains(token)) {
+					return false;
+				}
+			}
+
+			String tooltipString = input.getTooltipString();
+			for (String token : tooltipTokens) {
+				if (!tooltipString.contains(token)) {
 					return false;
 				}
 			}

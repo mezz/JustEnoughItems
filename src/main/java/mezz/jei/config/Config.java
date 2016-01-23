@@ -33,7 +33,8 @@ public class Config {
 	private static boolean recipeAnimationsEnabled = true;
 	private static boolean hideMissingModelsEnabled = true;
 
-	private static boolean atPrefixRequiredForModName = true;
+	private static boolean prefixRequiredForModNameSearch = true;
+	private static boolean prefixRequiredForTooltipSearch = false;
 
 	private static final Set<String> nbtKeyIgnoreList = new HashSet<>();
 	private static final Set<String> itemBlacklist = new HashSet<>();
@@ -92,8 +93,12 @@ public class Config {
 		return hideMissingModelsEnabled;
 	}
 
-	public static boolean isAtPrefixRequiredForModName() {
-		return atPrefixRequiredForModName;
+	public static boolean isPrefixRequiredForModNameSearch() {
+		return prefixRequiredForModNameSearch;
+	}
+
+	public static boolean isPrefixRequiredForTooltipSearch() {
+		return prefixRequiredForTooltipSearch;
 	}
 
 	public static Set<String> getNbtKeyIgnoreList() {
@@ -130,7 +135,8 @@ public class Config {
 
 		recipeAnimationsEnabled = configFile.getBoolean(CATEGORY_INTERFACE, "recipeAnimationsEnabled", recipeAnimationsEnabled);
 
-		atPrefixRequiredForModName = configFile.getBoolean(CATEGORY_SEARCH, "atPrefixRequiredForModName", atPrefixRequiredForModName);
+		prefixRequiredForModNameSearch = configFile.getBoolean(CATEGORY_SEARCH, "atPrefixRequiredForModName", prefixRequiredForModNameSearch);
+		prefixRequiredForTooltipSearch = configFile.getBoolean(CATEGORY_SEARCH, "prefixRequiredForTooltipSearch", prefixRequiredForTooltipSearch);
 
 		String[] nbtKeyIgnoreListArray = configFile.getStringList("nbtKeyIgnoreList", CATEGORY_ADVANCED, defaultNbtKeyIgnoreList);
 		nbtKeyIgnoreList.clear();
