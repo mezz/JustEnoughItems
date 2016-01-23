@@ -11,6 +11,7 @@ import net.minecraft.nbt.NBTTagCompound;
 public interface INbtIgnoreList {
 	/**
 	 * Tell JEI to ignore NBT tags on a specific item when comparing items for recipes.
+	 * @since JEI 2.22.0, NBT is automatically ignored on items that don't have subtypes.
 	 */
 	void ignoreNbtTagNames(@Nonnull Item item, String... nbtTagNames);
 

@@ -270,12 +270,11 @@ public class StackHelper implements IStackHelper {
 		StringBuilder itemKey = new StringBuilder(itemNameString);
 		if (stack.getHasSubtypes()) {
 			itemKey.append(':').append(metadata);
-		}
-
-		if (stack.hasTagCompound()) {
-			NBTTagCompound nbtTagCompound = Internal.getHelpers().getNbtIgnoreList().getNbt(stack);
-			if (nbtTagCompound != null && !nbtTagCompound.hasNoTags()) {
-				itemKey.append(':').append(nbtTagCompound);
+			if (stack.hasTagCompound()) {
+				NBTTagCompound nbtTagCompound = Internal.getHelpers().getNbtIgnoreList().getNbt(stack);
+				if (nbtTagCompound != null && !nbtTagCompound.hasNoTags()) {
+					itemKey.append(':').append(nbtTagCompound);
+				}
 			}
 		}
 
