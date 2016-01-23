@@ -29,6 +29,7 @@ import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.network.packets.PacketJEI;
+import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.util.AnnotatedInstanceUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.ModRegistry;
@@ -55,6 +56,12 @@ public class ProxyCommonClient extends ProxyCommon {
 		ASMDataTable asmDataTable = event.getAsmData();
 		this.plugins = AnnotatedInstanceUtil.getModPlugins(asmDataTable);
 
+		IModPlugin vanillaPlugin = getVanillaPlugin(this.plugins);
+		if (vanillaPlugin != null) {
+			this.plugins.remove(vanillaPlugin);
+			this.plugins.add(0, vanillaPlugin);
+		}
+
 		Iterator<IModPlugin> iterator = plugins.iterator();
 		while (iterator.hasNext()) {
 			IModPlugin plugin = iterator.next();
@@ -77,6 +84,16 @@ public class ProxyCommonClient extends ProxyCommon {
 				restartJEI();
 			}
 		});
+	}
+
+	@Nullable
+	private IModPlugin getVanillaPlugin(List<IModPlugin> modPlugins) {
+		for (IModPlugin modPlugin : modPlugins) {
+			if (modPlugin instanceof VanillaPlugin) {
+				return modPlugin;
+			}
+		}
+		return null;
 	}
 
 	@Override

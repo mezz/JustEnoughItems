@@ -5,12 +5,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Maps;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -62,15 +60,16 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	private static ImmutableMap<String, IRecipeCategory> buildRecipeCategoriesMap(@Nonnull List<IRecipeCategory> recipeCategories) {
-		Map<String, IRecipeCategory> mutableRecipeCategoriesMap = new HashMap<>();
+		ImmutableMap.Builder<String, IRecipeCategory> mapBuilder = ImmutableMap.builder();
 		for (IRecipeCategory recipeCategory : recipeCategories) {
-			mutableRecipeCategoriesMap.put(recipeCategory.getUid(), recipeCategory);
+			mapBuilder.put(recipeCategory.getUid(), recipeCategory);
 		}
-		return ImmutableMap.copyOf(mutableRecipeCategoriesMap);
+		return mapBuilder.build();
 	}
 
 	private static ImmutableMap<Class, IRecipeHandler> buildRecipeHandlersMap(@Nonnull List<IRecipeHandler> recipeHandlers) {
-		HashMap<Class, IRecipeHandler> mutableRecipeHandlers = Maps.newHashMap();
+		ImmutableMap.Builder<Class, IRecipeHandler> mapBuilder = ImmutableMap.builder();
+		Set<Class> recipeHandlerClasses = new HashSet<>();
 		for (IRecipeHandler recipeHandler : recipeHandlers) {
 			if (recipeHandler == null) {
 				continue;
@@ -78,13 +77,14 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 			Class recipeClass = recipeHandler.getRecipeClass();
 
-			if (mutableRecipeHandlers.containsKey(recipeClass)) {
+			if (recipeHandlerClasses.contains(recipeClass)) {
 				throw new IllegalArgumentException("A Recipe Handler has already been registered for this recipe class: " + recipeClass.getName());
 			}
 
-			mutableRecipeHandlers.put(recipeClass, recipeHandler);
+			recipeHandlerClasses.add(recipeClass);
+			mapBuilder.put(recipeClass, recipeHandler);
 		}
-		return ImmutableMap.copyOf(mutableRecipeHandlers);
+		return mapBuilder.build();
 	}
 
 	private static ImmutableTable<Class, String, IRecipeTransferHandler> buildRecipeTransferHandlerTable(@Nonnull List<IRecipeTransferHandler> recipeTransferHandlers) {
