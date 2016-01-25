@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Locale;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -25,23 +25,13 @@ public class ItemStackElement {
 	@Nonnull
 	private final ItemStack itemStack;
 	@Nonnull
-	private final String searchString;
+	private String searchString;
 	@Nonnull
-	private final String modName;
-	@Nonnull
-	private final String tooltipString;
-
+	private final String modNameString;
 	@Nullable
-	public static ItemStackElement create(@Nonnull ItemStack itemStack) {
-		try {
-			return new ItemStackElement(itemStack);
-		} catch (RuntimeException e) {
-			Log.warning("Found broken itemStack.", e);
-			return null;
-		}
-	}
+	private String tooltipString;
 
-	private ItemStackElement(@Nonnull ItemStack itemStack) {
+	public ItemStackElement(@Nonnull ItemStack itemStack) {
 		this.itemStack = itemStack;
 
 		ResourceLocation itemResourceLocation = GameData.getItemRegistry().getNameForObject(itemStack.getItem());
@@ -53,32 +43,39 @@ public class ItemStackElement {
 			throw new NullPointerException("No display name for item. " + itemResourceLocation + ' ' + itemStack.getItem().getClass());
 		}
 
-		String tooltipString;
-		try {
-			Minecraft minecraft = Minecraft.getMinecraft();
-			List<String> tooltip = itemStack.getTooltip(minecraft.thePlayer, false);
-			tooltipString = Joiner.on(' ').join(tooltip).toLowerCase();
-			tooltipString = ChatFormatting.stripFormatting(tooltipString);
-			tooltipString = tooltipString.replace(modId, "");
-			tooltipString = tooltipString.replace(modName, "");
-		} catch (RuntimeException ignored) {
-			// some tooltips require a real player, and minecraft.thePlayer is normally null here.
-			tooltipString = "";
-		}
-		this.tooltipString = tooltipString;
-		this.modName = modId + ' ' + modName;
+		this.modNameString = modId + ' ' + modName;
 
 		StringBuilder searchStringBuilder = new StringBuilder(displayName.toLowerCase());
 
 		if (!Config.isPrefixRequiredForModNameSearch()) {
-			searchStringBuilder.append(' ').append(this.modName);
-		}
-
-		if (!Config.isPrefixRequiredForTooltipSearch()) {
-			searchStringBuilder.append(' ').append(this.tooltipString);
+			searchStringBuilder.append(' ').append(this.modNameString);
 		}
 
 		this.searchString = searchStringBuilder.toString();
+	}
+
+	public void setTooltip(EntityPlayer player) {
+		ResourceLocation itemResourceLocation = GameData.getItemRegistry().getNameForObject(itemStack.getItem());
+		String modId = itemResourceLocation.getResourceDomain().toLowerCase(Locale.ENGLISH);
+		String modName = Internal.getItemRegistry().getModNameForItem(itemStack.getItem()).toLowerCase(Locale.ENGLISH);
+		String displayName = itemStack.getDisplayName().toLowerCase();
+
+		String tooltipString;
+		try {
+			List<String> tooltip = itemStack.getTooltip(player, false);
+			tooltipString = Joiner.on(' ').join(tooltip).toLowerCase();
+			tooltipString = ChatFormatting.stripFormatting(tooltipString);
+			tooltipString = tooltipString.replace(modId, "");
+			tooltipString = tooltipString.replace(modName, "");
+			tooltipString = tooltipString.replace(displayName, "");
+		} catch (RuntimeException ignored) {
+			tooltipString = "";
+		}
+		this.tooltipString = tooltipString;
+
+		if (!Config.isPrefixRequiredForTooltipSearch()) {
+			this.searchString = this.searchString + ' ' + this.tooltipString;
+		}
 	}
 
 	@Nonnull
@@ -92,11 +89,11 @@ public class ItemStackElement {
 	}
 
 	@Nonnull
-	public String getModName() {
-		return modName;
+	public String getModNameString() {
+		return modNameString;
 	}
 
-	@Nonnull
+	@Nullable
 	public String getTooltipString() {
 		return tooltipString;
 	}

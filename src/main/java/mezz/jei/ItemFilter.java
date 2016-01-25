@@ -24,12 +24,15 @@ import mezz.jei.api.IItemBlacklist;
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.util.ItemStackElement;
+import mezz.jei.util.ItemStackElementFactory;
 import mezz.jei.util.Log;
 
 public class ItemFilter {
 	/** The currently active filter text */
 	@Nonnull
 	private static String filterText = "";
+	@Nonnull
+	private final ItemStackElementFactory itemStackElementFactory = new ItemStackElementFactory();
 
 	/** A cache for fast searches while typing or using backspace. Maps filterText to filteredItemMaps */
 	private final LoadingCache<String, ImmutableList<ItemStackElement>> filteredItemMapsCache;
@@ -85,7 +88,7 @@ public class ItemFilter {
 		return getItemList().size();
 	}
 
-	private static ImmutableList<ItemStackElement> createBaseList(IItemRegistry itemRegistry) {
+	private ImmutableList<ItemStackElement> createBaseList(IItemRegistry itemRegistry) {
 		ItemStackChecker itemStackChecker = new ItemStackChecker();
 
 		ImmutableList.Builder<ItemStackElement> baseList = ImmutableList.builder();
@@ -98,7 +101,7 @@ public class ItemFilter {
 				continue;
 			}
 
-			ItemStackElement itemStackElement = ItemStackElement.create(itemStack);
+			ItemStackElement itemStackElement = itemStackElementFactory.create(itemStack);
 			if (itemStackElement != null) {
 				baseList.add(itemStackElement);
 			}
@@ -223,8 +226,8 @@ public class ItemFilter {
 					String modNameToken = token.substring(1);
 					modNameTokens.add(modNameToken);
 				} else if (token.startsWith("#")) {
-					String modNameToken = token.substring(1);
-					tooltipTokens.add(modNameToken);
+					String tooltipToken = token.substring(1);
+					tooltipTokens.add(tooltipToken);
 				} else {
 					itemNameTokens.add(token);
 				}
@@ -237,7 +240,7 @@ public class ItemFilter {
 				return false;
 			}
 
-			String modName = input.getModName();
+			String modName = input.getModNameString();
 			for (String token : modNameTokens) {
 				if (!modName.contains(token)) {
 					return false;
@@ -245,9 +248,11 @@ public class ItemFilter {
 			}
 
 			String tooltipString = input.getTooltipString();
-			for (String token : tooltipTokens) {
-				if (!tooltipString.contains(token)) {
-					return false;
+			if (tooltipString != null) {
+				for (String token : tooltipTokens) {
+					if (!tooltipString.contains(token)) {
+						return false;
+					}
 				}
 			}
 
