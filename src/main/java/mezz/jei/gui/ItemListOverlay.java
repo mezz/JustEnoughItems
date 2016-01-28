@@ -35,6 +35,7 @@ import mezz.jei.gui.ingredients.GuiItemStackFast;
 import mezz.jei.gui.ingredients.GuiItemStackFastList;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.input.GuiTextFieldFilter;
+import mezz.jei.input.ICloseable;
 import mezz.jei.input.IKeyable;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
@@ -44,7 +45,7 @@ import mezz.jei.util.ItemStackElement;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
 
-public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKeyable {
+public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKeyable, ICloseable {
 
 	private static final int borderPadding = 2;
 	private static final int searchHeight = 16;
@@ -275,6 +276,11 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	}
 
 	@Override
+	public boolean canSetFocusWithMouse() {
+		return true;
+	}
+
+	@Override
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
 		if (!isMouseOver(mouseX, mouseY)) {
 			setKeyboardFocus(false);
@@ -415,7 +421,6 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		updateLayout();
 	}
 
-	@Override
 	public void open() {
 		open = true;
 		setKeyboardFocus(false);

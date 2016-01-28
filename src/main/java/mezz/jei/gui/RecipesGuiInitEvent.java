@@ -8,5 +8,6 @@ import net.minecraftforge.fml.common.eventhandler.Event;
  * Creating a delay here can harm the perceived responsiveness of JEI, this event
  * will be removed when a better workaround can be found for Thaumcraft's research gating.
  */
+@Deprecated
 public class RecipesGuiInitEvent extends Event {
 }

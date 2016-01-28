@@ -13,19 +13,17 @@ import mezz.jei.gui.RecipeLayout;
 import mezz.jei.util.Log;
 
 public class RecipeTransferUtil {
-	public static IRecipeTransferError getTransferRecipeError(@Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player) {
-		return transferRecipe(recipeLayout, player, false, false);
+	public static IRecipeTransferError getTransferRecipeError(@Nonnull Container container, @Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player) {
+		return transferRecipe(container, recipeLayout, player, false, false);
 	}
 
-	public static boolean transferRecipe(@Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean maxTransfer) {
-		IRecipeTransferError error = transferRecipe(recipeLayout, player, maxTransfer, true);
+	public static boolean transferRecipe(@Nonnull Container container, @Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean maxTransfer) {
+		IRecipeTransferError error = transferRecipe(container, recipeLayout, player, maxTransfer, true);
 		return error == null;
 	}
 
 	@Nullable
-	private static IRecipeTransferError transferRecipe(@Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean maxTransfer, boolean doTransfer) {
-		Container container = player.openContainer;
-
+	private static IRecipeTransferError transferRecipe(@Nonnull Container container, @Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean maxTransfer, boolean doTransfer) {
 		IRecipeTransferHandler transferHandler = Internal.getRecipeRegistry().getRecipeTransferHandler(container, recipeLayout.getRecipeCategory());
 		if (transferHandler == null) {
 			if (doTransfer) {

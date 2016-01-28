@@ -1,6 +1,6 @@
 package mezz.jei.input;
 
-public interface IKeyable extends ICloseable {
+public interface IKeyable {
 
 	/**
 	 * Returns true if all keyboard input should go to this IKeyable.

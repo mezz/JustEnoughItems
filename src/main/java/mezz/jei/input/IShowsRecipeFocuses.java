@@ -9,4 +9,6 @@ public interface IShowsRecipeFocuses {
 	@Nullable
 	Focus getFocusUnderMouse(int mouseX, int mouseY);
 
+	boolean canSetFocusWithMouse();
+
 }

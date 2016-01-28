@@ -3,7 +3,6 @@ package mezz.jei;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
@@ -40,10 +39,6 @@ public class GuiEventHandler {
 		}
 
 		this.itemListOverlay = itemListOverlay;
-
-		if (this.recipesGui.isOpen()) {
-			this.recipesGui.close();
-		}
 	}
 
 	@SubscribeEvent
@@ -51,16 +46,15 @@ public class GuiEventHandler {
 		if (itemListOverlay == null) {
 			return;
 		}
-		Minecraft minecraft = Minecraft.getMinecraft();
-		GuiContainer guiContainer = asGuiContainer(minecraft.currentScreen);
+
+		GuiContainer guiContainer = asGuiContainer(event.gui);
 		if (guiContainer == null) {
 			return;
 		}
 
 		itemListOverlay.initGui(guiContainer);
 
-		recipesGui.initGui(minecraft);
-		inputHandler = new InputHandler(recipesGui, itemListOverlay, guiContainer);
+		inputHandler = new InputHandler(recipesGui, itemListOverlay);
 	}
 	
 	@SubscribeEvent
@@ -68,27 +62,11 @@ public class GuiEventHandler {
 		if (itemListOverlay == null) {
 			return;
 		}
-		if (previousGui != event.gui) {
+		if (previousGui != event.gui && recipesGui != event.gui) {
 			previousGui = event.gui;
 			if (itemListOverlay.isOpen()) {
 				itemListOverlay.close();
 			}
-			if (recipesGui.isOpen()) {
-				recipesGui.close();
-			}
-		}
-	}
-
-	@SubscribeEvent
-	public void onDrawScreenEventPre(@Nonnull GuiScreenEvent.DrawScreenEvent.Pre event) {
-		GuiContainer guiContainer = asGuiContainer(event.gui);
-		if (guiContainer == null) {
-			return;
-		}
-
-		if (recipesGui.isOpen()) {
-			event.setCanceled(true);
-			recipesGui.drawBackground();
 		}
 	}
 
@@ -117,14 +95,9 @@ public class GuiEventHandler {
 			return;
 		}
 
-		if (recipesGui.isOpen()) {
-			recipesGui.draw(event.mouseX, event.mouseY);
-			recipesGui.drawHovered(event.mouseX, event.mouseY);
-		} else {
-			RecipeClickableArea clickableArea = Internal.getRecipeRegistry().getRecipeClickableArea(guiContainer);
-			if (clickableArea != null && clickableArea.checkHover(event.mouseX - guiContainer.guiLeft, event.mouseY - guiContainer.guiTop)) {
-				TooltipRenderer.drawHoveringText(guiContainer.mc, showRecipesText, event.mouseX, event.mouseY);
-			}
+		RecipeClickableArea clickableArea = Internal.getRecipeRegistry().getRecipeClickableArea(guiContainer);
+		if (clickableArea != null && clickableArea.checkHover(event.mouseX - guiContainer.guiLeft, event.mouseY - guiContainer.guiTop)) {
+			TooltipRenderer.drawHoveringText(guiContainer.mc, showRecipesText, event.mouseX, event.mouseY);
 		}
 
 		itemListOverlay.drawHovered(guiContainer.mc, event.mouseX, event.mouseY);
@@ -155,14 +128,13 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onGuiMouseEvent(GuiScreenEvent.MouseInputEvent.Pre event) {
-		GuiScreen gui = event.gui;
-		if (!(gui instanceof GuiContainer)) {
+		if (!(event.gui instanceof GuiContainer)) {
 			return;
 		}
-		GuiContainer guiContainer = (GuiContainer) gui;
+		GuiContainer guiContainer = (GuiContainer) event.gui;
 		if (inputHandler != null) {
-			int x = Mouse.getEventX() * gui.width / gui.mc.displayWidth;
-			int y = gui.height - Mouse.getEventY() * gui.height / gui.mc.displayHeight - 1;
+			int x = Mouse.getEventX() * guiContainer.width / guiContainer.mc.displayWidth;
+			int y = guiContainer.height - Mouse.getEventY() * guiContainer.height / guiContainer.mc.displayHeight - 1;
 			if (inputHandler.handleMouseEvent(guiContainer, x, y)) {
 				event.setCanceled(true);
 			}

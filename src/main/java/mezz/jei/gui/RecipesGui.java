@@ -10,32 +10,35 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
+
+import org.lwjgl.input.Mouse;
 
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.Constants;
-import mezz.jei.input.IMouseHandler;
+import mezz.jei.config.KeyBindings;
 import mezz.jei.input.IShowsRecipeFocuses;
+import mezz.jei.input.InputHandler;
 import mezz.jei.transfer.RecipeTransferUtil;
-import mezz.jei.util.Log;
 import mezz.jei.util.StringUtil;
 import mezz.jei.util.Translator;
 
-public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouseHandler {
+public class RecipesGui extends GuiContainer implements IShowsRecipeFocuses {
 	private static final int borderPadding = 8;
 	private static final int textPadding = 5;
+	private static final int buttonWidth = 13;
+	private static final int buttonHeight = 12;
 
 	private int titleHeight;
 	private int headerHeight;
-	private int buttonWidth;
 
 	/* Internal logic for the gui, handles finding recipes */
 	private final IRecipeGuiLogic logic = new RecipeGuiLogic();
@@ -55,17 +58,18 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 	private GuiButton previousPage;
 
 	@Nullable
-	private RecipeLayout hovered;
+	private GuiScreen parentScreen;
 
-	private boolean isOpen = false;
+	public RecipesGui() {
+		super(new EmptyContainer());
+		this.mc = Minecraft.getMinecraft();
+	}
 
-	private int guiLeft;
-	private int guiTop;
-	private int xSize;
-	private int ySize;
 
-	public void initGui(@Nonnull Minecraft minecraft) {
-		setWorldAndResolution(minecraft, minecraft.currentScreen.width, minecraft.currentScreen.height);
+	@Override
+	public void setWorldAndResolution(Minecraft mc, int width, int height) {
+		this.inventorySlots = new EmptyContainer(mc.thePlayer);
+		super.setWorldAndResolution(mc, width, height);
 
 		this.xSize = 176;
 
@@ -77,48 +81,26 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 			this.backgroundTexture = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_GUI_PATH + "recipeBackground.png");
 		}
 
-		this.guiLeft = (minecraft.currentScreen.width - this.xSize) / 2;
-		this.guiTop = (minecraft.currentScreen.height - this.ySize) / 2;
+		this.guiLeft = (width - this.xSize) / 2;
+		this.guiTop = (height - this.ySize) / 2;
 
 		this.titleHeight = fontRendererObj.FONT_HEIGHT + borderPadding;
 		this.headerHeight = titleHeight + fontRendererObj.FONT_HEIGHT + textPadding;
 
-		buttonWidth = 13;
-		
-		int buttonHeight = fontRendererObj.FONT_HEIGHT + 3;
+		final int rightButtonX = xSize - borderPadding - buttonWidth;
+		final int leftButtonX = borderPadding;
 
-		int rightButtonX = guiLeft + xSize - borderPadding - buttonWidth;
-		int leftButtonX = guiLeft + borderPadding;
-
-		int recipeClassButtonTop = guiTop + borderPadding - 2;
+		int recipeClassButtonTop = borderPadding - 2;
 		nextRecipeCategory = new GuiButtonExt(2, rightButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, ">");
 		previousRecipeCategory = new GuiButtonExt(3, leftButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, "<");
 
-		int pageButtonTop = guiTop + titleHeight + 3;
+		int pageButtonTop = titleHeight + 3;
 		nextPage = new GuiButtonExt(4, rightButtonX, pageButtonTop, buttonWidth, buttonHeight, ">");
 		previousPage = new GuiButtonExt(5, leftButtonX, pageButtonTop, buttonWidth, buttonHeight, "<");
 
 		addButtons();
 
 		updateLayout();
-	}
-
-	/**
-	 * Fire our own RecipesGuiInitEvent instead of Forge's GuiInitEvent to avoid confusion.
-	 * When a gui is init, so is this recipes gui, so it would be fired twice.
-	 */
-	@Override
-	public void setWorldAndResolution(Minecraft mc, int width, int height) {
-		this.mc = mc;
-		this.itemRender = mc.getRenderItem();
-		this.fontRendererObj = mc.fontRendererObj;
-		this.width = width;
-		this.height = height;
-
-		MinecraftForge.EVENT_BUS.post(new RecipesGuiInitEvent());
-
-		this.buttonList.clear();
-		this.initGui();
 	}
 
 	private void addButtons() {
@@ -129,8 +111,68 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 	}
 
 	@Override
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
+
+		GlStateManager.disableBlend();
+
+		final int recipeMouseX = mouseX - guiLeft;
+		final int recipeMouseY = mouseY - guiTop;
+
+		GlStateManager.pushMatrix();
+		{
+			GlStateManager.translate(guiLeft, guiTop, 0.0F);
+
+			drawRect(borderPadding + buttonWidth, borderPadding - 2, xSize - borderPadding - buttonWidth, borderPadding + 10, 0x30000000);
+			drawRect(borderPadding + buttonWidth, titleHeight + textPadding - 2, xSize - borderPadding - buttonWidth, titleHeight + textPadding + 10, 0x30000000);
+
+			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+
+			StringUtil.drawCenteredString(fontRendererObj, title, xSize, borderPadding, Color.WHITE.getRGB(), true);
+			StringUtil.drawCenteredString(fontRendererObj, pageString, xSize, titleHeight + textPadding, Color.WHITE.getRGB(), true);
+
+			nextRecipeCategory.drawButton(mc, recipeMouseX, recipeMouseY);
+			previousRecipeCategory.drawButton(mc, recipeMouseX, recipeMouseY);
+			nextPage.drawButton(mc, recipeMouseX, recipeMouseY);
+			previousPage.drawButton(mc, recipeMouseX, recipeMouseY);
+
+			RecipeLayout hovered = null;
+			for (RecipeLayout recipeWidget : recipeLayouts) {
+				if (recipeWidget.getFocusUnderMouse(recipeMouseX, recipeMouseY) != null) {
+					hovered = recipeWidget;
+				} else {
+					recipeWidget.draw(mc, recipeMouseX, recipeMouseY);
+				}
+			}
+
+			if (hovered != null) {
+				hovered.draw(mc, recipeMouseX, recipeMouseY);
+			}
+
+			if (titleHoverChecker.checkHover(recipeMouseX, recipeMouseY)) {
+				Focus focus = logic.getFocus();
+				if (focus != null && !focus.isBlank()) {
+					String showAllRecipesString = Translator.translateToLocal("jei.tooltip.show.all.recipes");
+					TooltipRenderer.drawHoveringText(mc, showAllRecipesString, recipeMouseX, recipeMouseY);
+				}
+			}
+		}
+		GlStateManager.popMatrix();
+	}
+
+	@Override
+	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+		drawDefaultBackground();
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		mc.getTextureManager().bindTexture(backgroundTexture);
+		int x = (width - xSize) / 2;
+		int y = (height - ySize) / 2;
+		this.zLevel = 0;
+		drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
+	}
+
 	public boolean isMouseOver(int mouseX, int mouseY) {
-		return isOpen() && (mouseX >= guiLeft) && (mouseY >= guiTop) && (mouseX < guiLeft + xSize) && (mouseY < guiTop + ySize);
+		return mc.currentScreen == this && (mouseX >= guiLeft) && (mouseY >= guiTop) && (mouseX < guiLeft + xSize) && (mouseY < guiTop + ySize);
 	}
 
 	@Nullable
@@ -139,8 +181,12 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		if (!isMouseOver(mouseX, mouseY)) {
 			return null;
 		}
+
+		final int recipeMouseX = mouseX - guiLeft;
+		final int recipeMouseY = mouseY - guiTop;
+
 		for (RecipeLayout recipeLayouts : this.recipeLayouts) {
-			Focus focus = recipeLayouts.getFocusUnderMouse(mouseX, mouseY);
+			Focus focus = recipeLayouts.getFocusUnderMouse(recipeMouseX, recipeMouseY);
 			if (focus != null) {
 				return focus;
 			}
@@ -148,80 +194,82 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		return null;
 	}
 
-	// workaround to see if a button was clicked
-	private boolean guiActionPerformed = false;
+	@Override
+	public boolean canSetFocusWithMouse() {
+		return true;
+	}
 
 	@Override
-	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
+	public void handleMouseInput() throws IOException {
+		final int x = Mouse.getEventX() * width / mc.displayWidth;
+		final int y = height - Mouse.getEventY() * height / mc.displayHeight - 1;
+		if (isMouseOver(x, y)) {
+			int scrollDelta = Mouse.getEventDWheel();
+			if (scrollDelta < 0) {
+				logic.nextPage();
+				updateLayout();
+				return;
+			} else if (scrollDelta > 0) {
+				logic.previousPage();
+				updateLayout();
+				return;
+			}
+		}
+		super.handleMouseInput();
+	}
+
+	@Override
+	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		if (!isMouseOver(mouseX, mouseY)) {
-			return false;
+			return;
 		}
 
-		guiActionPerformed = false;
+		final int recipeMouseX = mouseX - guiLeft;
+		final int recipeMouseY = mouseY - guiTop;
 
-		try {
-			handleMouseInput();
-		} catch (IOException e) {
-			Log.error("IOException on mouse click.", e);
-		}
-
-		if (!guiActionPerformed) {
-			Minecraft minecraft = Minecraft.getMinecraft();
+		if (titleHoverChecker.checkHover(recipeMouseX, recipeMouseY)) {
+			if (logic.setCategoryFocus()) {
+				updateLayout();
+			}
+		} else {
 			for (RecipeLayout recipeLayout : recipeLayouts) {
-				if (recipeLayout.handleClick(minecraft, mouseX, mouseY, mouseButton)) {
-					return true;
+				if (recipeLayout.handleClick(mc, recipeMouseX, recipeMouseY, mouseButton)) {
+					return;
 				}
 			}
-
-			if (titleHoverChecker.checkHover(mouseX, mouseY)) {
-				boolean success = logic.setCategoryFocus();
-				if (success) {
-					updateLayout();
-				}
-				return success;
-			}
 		}
 
-		return guiActionPerformed;
+		super.mouseClicked(recipeMouseX, recipeMouseY, mouseButton);
 	}
 
 	@Override
-	public boolean handleMouseScrolled(int mouseX, int mouseY, int scrollDelta) {
-		if (!isMouseOver(mouseX, mouseY)) {
-			return false;
+	protected void keyTyped(char typedChar, int keyCode) throws IOException {
+		if (InputHandler.isInventoryCloseKey(keyCode) || InputHandler.isInventoryToggleKey(keyCode)) {
+			close();
+		} else if (keyCode == KeyBindings.recipeBack.getKeyCode()) {
+			back();
 		}
+	}
 
-		if (scrollDelta < 0) {
-			logic.nextPage();
-			updateLayout();
-			return true;
-		} else if (scrollDelta > 0) {
-			logic.previousPage();
-			updateLayout();
-			return true;
+	private void open() {
+		if (mc.currentScreen != this) {
+			parentScreen = mc.currentScreen;
 		}
-		return false;
+		mc.displayGuiScreen(this);
 	}
 
-	@Override
-	public void open() {
-		this.isOpen = true;
-	}
-
-	@Override
-	public void close() {
-		this.isOpen = false;
-	}
-
-	@Override
-	public boolean isOpen() {
-		return isOpen && logic.getRecipeCategory() != null;
+	private void close() {
+		if (parentScreen != null) {
+			mc.displayGuiScreen(parentScreen);
+			parentScreen = null;
+		} else {
+			mc.thePlayer.closeScreen();
+		}
 	}
 
 	public void showRecipes(@Nonnull Focus focus) {
 		focus.setMode(Focus.Mode.OUTPUT);
 		if (logic.setFocus(focus)) {
-			updateLayout();
 			open();
 		}
 	}
@@ -229,14 +277,12 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 	public void showUses(@Nonnull Focus focus) {
 		focus.setMode(Focus.Mode.INPUT);
 		if (logic.setFocus(focus)) {
-			updateLayout();
 			open();
 		}
 	}
 
 	public void showCategories(@Nonnull List<String> recipeCategoryUids) {
 		if (logic.setCategoryFocus(recipeCategoryUids)) {
-			updateLayout();
 			open();
 		}
 	}
@@ -263,9 +309,9 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 			int recipeIndex = guibutton.id - RecipeLayout.recipeTransferButtonIndex;
 			RecipeLayout recipeLayout = recipeLayouts.get(recipeIndex);
 			boolean maxTransfer = GuiScreen.isShiftKeyDown();
-			if (RecipeTransferUtil.transferRecipe(recipeLayout, Minecraft.getMinecraft().thePlayer, maxTransfer)) {
+			Container container = getParentContainer();
+			if (container != null && RecipeTransferUtil.transferRecipe(container, recipeLayout, mc.thePlayer, maxTransfer)) {
 				close();
-				guiActionPerformed = true;
 				updateLayout = false;
 			}
 		} else {
@@ -274,7 +320,6 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 
 		if (updateLayout) {
 			updateLayout();
-			guiActionPerformed = true;
 		}
 	}
 
@@ -293,17 +338,15 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		logic.setRecipesPerPage(recipesPerPage);
 
 		title = recipeCategory.getTitle();
-		int titleWidth = fontRendererObj.getStringWidth(title);
-		int titleX = guiLeft + (xSize - titleWidth) / 2;
-		int titleY = guiTop + borderPadding;
+		final int titleWidth = fontRendererObj.getStringWidth(title);
+		final int titleX = (xSize - titleWidth) / 2;
+		final int titleY = borderPadding;
 		titleHoverChecker = new HoverChecker(titleY, titleY + fontRendererObj.FONT_HEIGHT, titleX, titleX + titleWidth, 0);
 
-		int posX = guiLeft + recipeXOffset;
-		int posY = guiTop + headerHeight + recipeSpacing;
 		int spacingY = recipeBackground.getHeight() + recipeSpacing;
 
 		recipeLayouts.clear();
-		recipeLayouts.addAll(logic.getRecipeWidgets(posX, posY, spacingY));
+		recipeLayouts.addAll(logic.getRecipeWidgets(recipeXOffset, headerHeight + recipeSpacing, spacingY));
 		addRecipeTransferButtons(recipeLayouts);
 
 		nextPage.enabled = previousPage.enabled = logic.hasMultiplePages();
@@ -316,87 +359,26 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		buttonList.clear();
 		addButtons();
 
-		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+		EntityPlayer player = mc.thePlayer;
+		Container container = getParentContainer();
 
 		for (RecipeLayout recipeLayout : recipeLayouts) {
 			RecipeTransferButton button = recipeLayout.getRecipeTransferButton();
-			button.init(recipeLayout, player);
+			button.init(container, recipeLayout, player);
 			buttonList.add(button);
 		}
 	}
 
-	public void draw(int mouseX, int mouseY) {
-		if (!isOpen()) {
-			return;
-		}
-
-		Minecraft minecraft = Minecraft.getMinecraft();
-
-		nextRecipeCategory.drawButton(minecraft, mouseX, mouseY);
-		previousRecipeCategory.drawButton(minecraft, mouseX, mouseY);
-
-		nextPage.drawButton(minecraft, mouseX, mouseY);
-		previousPage.drawButton(minecraft, mouseX, mouseY);
-		GlStateManager.disableBlend();
-
-		GlStateManager.pushMatrix();
-		{
-			GlStateManager.translate(guiLeft, guiTop, 0.0F);
-
-			drawRect(borderPadding + buttonWidth, borderPadding - 2, xSize - borderPadding - buttonWidth, borderPadding + 10, 0x30000000);
-			drawRect(borderPadding + buttonWidth, titleHeight + textPadding - 2, xSize - borderPadding - buttonWidth, titleHeight + textPadding + 10, 0x30000000);
-
-			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-
-			StringUtil.drawCenteredString(fontRendererObj, title, xSize, borderPadding, Color.WHITE.getRGB(), true);
-			StringUtil.drawCenteredString(fontRendererObj, pageString, xSize, titleHeight + textPadding, Color.WHITE.getRGB(), true);
-		}
-		GlStateManager.popMatrix();
-
-		hovered = null;
-		for (RecipeLayout recipeWidget : recipeLayouts) {
-			if (recipeWidget.getFocusUnderMouse(mouseX, mouseY) != null) {
-				hovered = recipeWidget;
-			} else {
-				recipeWidget.draw(minecraft, mouseX, mouseY);
-			}
-		}
+	@Nullable
+	public GuiScreen getParentScreen() {
+		return parentScreen;
 	}
 
-	public void drawHovered(int mouseX, int mouseY) {
-		if (!isOpen()) {
-			return;
+	@Nullable
+	private Container getParentContainer() {
+		if (parentScreen instanceof GuiContainer) {
+			return ((GuiContainer) parentScreen).inventorySlots;
 		}
-
-		Minecraft minecraft = Minecraft.getMinecraft();
-
-		if (hovered != null) {
-			hovered.draw(minecraft, mouseX, mouseY);
-		}
-		if (titleHoverChecker.checkHover(mouseX, mouseY)) {
-			Focus focus = logic.getFocus();
-			if (focus != null && !focus.isBlank()) {
-				String showAllRecipesString = Translator.translateToLocal("jei.tooltip.show.all.recipes");
-				TooltipRenderer.drawHoveringText(minecraft, showAllRecipesString, mouseX, mouseY);
-			}
-		}
+		return null;
 	}
-
-	public void drawBackground() {
-		this.zLevel = -100;
-		this.drawDefaultBackground();
-
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		bindTexture(backgroundTexture);
-		int x = (width - xSize) / 2;
-		int y = (height - ySize) / 2;
-		this.zLevel = 0;
-		drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
-	}
-
-	private void bindTexture(ResourceLocation texturePath) {
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		FMLClientHandler.instance().getClient().getTextureManager().bindTexture(texturePath);
-	}
-
 }

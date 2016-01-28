@@ -11,12 +11,21 @@ import net.minecraftforge.fml.client.GuiModList;
 import net.minecraftforge.fml.client.config.GuiConfig;
 import net.minecraftforge.fml.client.config.IConfigElement;
 
+import mezz.jei.gui.RecipesGui;
 import mezz.jei.util.Translator;
 
 public class JEIModConfigGui extends GuiConfig {
 
 	public JEIModConfigGui(GuiScreen parent) {
-		super(parent, getConfigElements(), Constants.MOD_ID, false, false, getTitle(parent));
+		super(getParent(parent), getConfigElements(), Constants.MOD_ID, false, false, getTitle(parent));
+	}
+
+	/** Don't return to a RecipesGui, it will not be valid after configs are changed. */
+	private static GuiScreen getParent(GuiScreen parent) {
+		if (parent instanceof RecipesGui) {
+			return ((RecipesGui) parent).getParentScreen();
+		}
+		return parent;
 	}
 
 	private static List<IConfigElement> getConfigElements() {
