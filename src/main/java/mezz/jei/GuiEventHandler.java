@@ -95,7 +95,7 @@ public class GuiEventHandler {
 			return;
 		}
 
-		RecipeClickableArea clickableArea = Internal.getRecipeRegistry().getRecipeClickableArea(guiContainer);
+		RecipeClickableArea clickableArea = Internal.getRuntime().getRecipeRegistry().getRecipeClickableArea(guiContainer);
 		if (clickableArea != null && clickableArea.checkHover(event.mouseX - guiContainer.guiLeft, event.mouseY - guiContainer.guiTop)) {
 			TooltipRenderer.drawHoveringText(guiContainer.mc, showRecipesText, event.mouseX, event.mouseY);
 		}

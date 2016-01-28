@@ -5,7 +5,7 @@ import mezz.jei.util.StackHelper;
 /** For JEI internal use only, these are normally accessed from the API. */
 public class Internal {
 	private static JeiHelpers helpers;
-	private static RecipeRegistry recipeRegistry;
+	private static JeiRuntime runtime;
 	private static ItemRegistry itemRegistry;
 
 	private Internal() {
@@ -24,12 +24,12 @@ public class Internal {
 		Internal.helpers = helpers;
 	}
 
-	public static RecipeRegistry getRecipeRegistry() {
-		return recipeRegistry;
+	public static JeiRuntime getRuntime() {
+		return runtime;
 	}
 
-	public static void setRecipeRegistry(RecipeRegistry recipeRegistry) {
-		Internal.recipeRegistry = recipeRegistry;
+	public static void setRuntime(JeiRuntime runtime) {
+		Internal.runtime = runtime;
 	}
 
 	public static ItemRegistry getItemRegistry() {

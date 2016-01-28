@@ -11,6 +11,7 @@ import net.minecraft.item.crafting.CraftingManager;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.IJeiHelpers;
+import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.IRecipeRegistry;
@@ -86,6 +87,11 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void onRecipeRegistryAvailable(IRecipeRegistry recipeRegistry) {
+
+	}
+
+	@Override
+	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 
 	}
 }

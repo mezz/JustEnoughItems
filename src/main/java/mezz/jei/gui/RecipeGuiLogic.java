@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Container;
 
 import mezz.jei.Internal;
+import mezz.jei.RecipeRegistry;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
@@ -86,9 +87,10 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 		Container container = Minecraft.getMinecraft().thePlayer.openContainer;
 		if (container != null) {
+			RecipeRegistry recipeRegistry = Internal.getRuntime().getRecipeRegistry();
 			for (int i = 0; i < recipeCategories.size(); i++) {
 				IRecipeCategory recipeCategory = recipeCategories.get(i);
-				if (Internal.getRecipeRegistry().getRecipeTransferHandler(container, recipeCategory) != null) {
+				if (recipeRegistry.getRecipeTransferHandler(container, recipeCategory) != null) {
 					recipeCategoryIndex = i;
 					break;
 				}
@@ -116,7 +118,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			history.push(this.state);
 		}
 
-		this.recipeCategories = Internal.getRecipeRegistry().getRecipeCategories();
+		this.recipeCategories = Internal.getRuntime().getRecipeRegistry().getRecipeCategories();
 
 		int recipeCategoryIndex = this.recipeCategories.indexOf(recipeCategory);
 
@@ -129,7 +131,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public boolean setCategoryFocus(List<String> recipeCategoryUids) {
-		List<IRecipeCategory> recipeCategories = Internal.getRecipeRegistry().getRecipeCategories(recipeCategoryUids);
+		List<IRecipeCategory> recipeCategories = Internal.getRuntime().getRecipeRegistry().getRecipeCategories(recipeCategoryUids);
 		if (recipeCategories.isEmpty()) {
 			return false;
 		}
@@ -199,7 +201,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			return recipeWidgets;
 		}
 
-		IRecipeRegistry recipeRegistry = Internal.getRecipeRegistry();
+		IRecipeRegistry recipeRegistry = Internal.getRuntime().getRecipeRegistry();
 
 		int recipeWidgetIndex = 0;
 		for (int recipeIndex = state.pageIndex * recipesPerPage; recipeIndex < recipes.size() && recipeWidgets.size() < recipesPerPage; recipeIndex++) {

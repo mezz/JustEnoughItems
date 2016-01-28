@@ -26,6 +26,15 @@ public interface IModPlugin {
 
 	/**
 	 * Called when the IRecipeRegistry is available, after all mods have registered.
+	 * @deprecated since JEI 2.23.0. Get the recipe registry from jeiRuntime, passed in onRuntimeAvailable
 	 */
+	@Deprecated
 	void onRecipeRegistryAvailable(IRecipeRegistry recipeRegistry);
+
+	/**
+	 * Called when jei's runtime features are available, after all mods have registered.
+	 *
+	 * @since JEI 2.23.0
+	 */
+	void onRuntimeAvailable(IJeiRuntime jeiRuntime);
 }

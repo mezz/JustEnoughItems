@@ -79,7 +79,7 @@ public class InputHandler {
 			return true;
 		}
 
-		RecipeClickableArea clickableArea = Internal.getRecipeRegistry().getRecipeClickableArea(guiContainer);
+		RecipeClickableArea clickableArea = Internal.getRuntime().getRecipeRegistry().getRecipeClickableArea(guiContainer);
 		if (clickableArea != null && clickableArea.checkHover(mouseX - guiContainer.guiLeft, mouseY - guiContainer.guiTop)) {
 			List<String> recipeCategoryUids = clickableArea.getRecipeCategoryUids();
 			recipesGui.showCategories(recipeCategoryUids);

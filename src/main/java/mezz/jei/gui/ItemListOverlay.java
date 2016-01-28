@@ -27,6 +27,7 @@ import org.lwjgl.input.Keyboard;
 import mezz.jei.Internal;
 import mezz.jei.ItemFilter;
 import mezz.jei.JustEnoughItems;
+import mezz.jei.api.IItemListOverlay;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
@@ -45,7 +46,7 @@ import mezz.jei.util.ItemStackElement;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
 
-public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKeyable, ICloseable {
+public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, IMouseHandler, IKeyable, ICloseable {
 
 	private static final int borderPadding = 2;
 	private static final int searchHeight = 16;
@@ -58,6 +59,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	private static final int itemStackHeight = GuiItemStackGroup.getHeight(itemStackPadding);
 	private static int pageNum = 0;
 
+	@Nonnull
 	private final ItemFilter itemFilter;
 
 	private final GuiItemStackFastList guiItemStacks = new GuiItemStackFastList();
@@ -83,7 +85,7 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 
 	private boolean open = false;
 
-	public ItemListOverlay(ItemFilter itemFilter) {
+	public ItemListOverlay(@Nonnull ItemFilter itemFilter) {
 		this.itemFilter = itemFilter;
 	}
 
@@ -204,12 +206,11 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 		configButtonIcon.draw(minecraft, configButton.xPosition + 2, configButton.yPosition + 2);
 		GlStateManager.disableBlend();
 
-		boolean mouseOver = isMouseOver(mouseX, mouseY);
-
-		if (mouseOver && shouldShowDeleteItemTooltip(minecraft)) {
-			hovered = guiItemStacks.render(null, minecraft, false, mouseX, mouseY);
+		if (shouldShowDeleteItemTooltip(minecraft)) {
+			hovered = guiItemStacks.render(minecraft, false, mouseX, mouseY);
 		} else {
-			hovered = guiItemStacks.render(hovered, minecraft, mouseOver, mouseX, mouseY);
+			boolean mouseOver = isMouseOver(mouseX, mouseY);
+			hovered = guiItemStacks.render(minecraft, mouseOver, mouseX, mouseY);
 		}
 
 		GlStateManager.enableAlpha();
@@ -240,8 +241,6 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 			RenderHelper.enableGUIStandardItemLighting();
 			hovered.drawHovered(minecraft, mouseX, mouseY);
 			RenderHelper.disableStandardItemLighting();
-
-			hovered = null;
 		}
 
 		if (configButtonHoverChecker.checkHover(mouseX, mouseY)) {
@@ -435,5 +434,26 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	@Override
 	public boolean isOpen() {
 		return open && Config.isOverlayEnabled();
+	}
+
+	@Nullable
+	@Override
+	public ItemStack getStackUnderMouse() {
+		if (hovered == null) {
+			return null;
+		} else {
+			return hovered.getItemStack();
+		}
+	}
+
+	@Override
+	public void setFilterText(String filterText) {
+		ItemFilter.setFilterText(filterText);
+	}
+
+	@Nonnull
+	@Override
+	public String getFilterText() {
+		return itemFilter.getFilterText();
 	}
 }

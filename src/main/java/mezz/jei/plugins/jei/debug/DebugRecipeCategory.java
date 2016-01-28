@@ -10,7 +10,9 @@ import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fluids.FluidStack;
 
+import mezz.jei.Internal;
 import mezz.jei.api.IGuiHelper;
+import mezz.jei.api.IItemListOverlay;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
@@ -62,6 +64,9 @@ public class DebugRecipeCategory implements IRecipeCategory {
 	@Override
 	public void drawExtras(Minecraft minecraft) {
 		tankBackground.draw(minecraft);
+		IItemListOverlay itemListOverlay = Internal.getRuntime().getItemListOverlay();
+		minecraft.fontRendererObj.drawString(itemListOverlay.getFilterText(), 20, 52, 0);
+		minecraft.fontRendererObj.drawString(String.valueOf(itemListOverlay.getStackUnderMouse()), 50, 52, 0);
 	}
 
 	@Override

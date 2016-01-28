@@ -17,6 +17,8 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
 
+import mezz.jei.Internal;
+import mezz.jei.api.IItemListOverlay;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
 
 public class DebugRecipe extends BlankRecipeWrapper {
@@ -60,6 +62,10 @@ public class DebugRecipe extends BlankRecipeWrapper {
 		if (mouseButton == 0 && button.mousePressed(minecraft, mouseX, mouseY)) {
 			GuiScreen screen = new GuiInventory(minecraft.thePlayer);
 			minecraft.displayGuiScreen(screen);
+
+			IItemListOverlay itemListOverlay = Internal.getRuntime().getItemListOverlay();
+			String filterText = itemListOverlay.getFilterText();
+			itemListOverlay.setFilterText(filterText + " test");
 			return true;
 		}
 		return false;

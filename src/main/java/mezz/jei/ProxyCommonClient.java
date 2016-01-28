@@ -139,12 +139,12 @@ public class ProxyCommonClient extends ProxyCommon {
 		}
 
 		RecipeRegistry recipeRegistry = modRegistry.createRecipeRegistry();
-		Internal.setRecipeRegistry(recipeRegistry);
 
 		iterator = plugins.iterator();
 		while (iterator.hasNext()) {
 			IModPlugin plugin = iterator.next();
 			try {
+				//noinspection deprecation
 				plugin.onRecipeRegistryAvailable(recipeRegistry);
 			} catch (AbstractMethodError ignored) {
 				// older plugins don't have this method
@@ -157,6 +157,22 @@ public class ProxyCommonClient extends ProxyCommon {
 		itemFilter = new ItemFilter(itemRegistry);
 		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter);
 		guiEventHandler.setItemListOverlay(itemListOverlay);
+
+		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, itemListOverlay);
+		Internal.setRuntime(jeiRuntime);
+
+		iterator = plugins.iterator();
+		while (iterator.hasNext()) {
+			IModPlugin plugin = iterator.next();
+			try {
+				plugin.onRuntimeAvailable(jeiRuntime);
+			} catch (AbstractMethodError ignored) {
+				// older plugins don't have this method
+			} catch (RuntimeException e) {
+				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
+				iterator.remove();
+			}
+		}
 	}
 
 	@Override

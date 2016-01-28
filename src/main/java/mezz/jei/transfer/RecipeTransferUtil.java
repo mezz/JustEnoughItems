@@ -24,7 +24,7 @@ public class RecipeTransferUtil {
 
 	@Nullable
 	private static IRecipeTransferError transferRecipe(@Nonnull Container container, @Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean maxTransfer, boolean doTransfer) {
-		IRecipeTransferHandler transferHandler = Internal.getRecipeRegistry().getRecipeTransferHandler(container, recipeLayout.getRecipeCategory());
+		IRecipeTransferHandler transferHandler = Internal.getRuntime().getRecipeRegistry().getRecipeTransferHandler(container, recipeLayout.getRecipeCategory());
 		if (transferHandler == null) {
 			if (doTransfer) {
 				Log.error("No Recipe Transfer handler for container {}", container.getClass());
@@ -36,6 +36,7 @@ public class RecipeTransferUtil {
 			return transferHandler.transferRecipe(container, recipeLayout, player, maxTransfer, doTransfer);
 		} catch (AbstractMethodError ignored) {
 			// older transferHandlers do not have the new method
+			//noinspection deprecation
 			return transferHandler.transferRecipe(container, recipeLayout, player, doTransfer);
 		}
 	}

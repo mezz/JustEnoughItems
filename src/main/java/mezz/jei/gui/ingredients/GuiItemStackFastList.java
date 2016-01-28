@@ -82,8 +82,9 @@ public class GuiItemStackFastList {
 
 	/** renders all ItemStacks and returns hovered gui item stack for later render pass */
 	@Nullable
-	public GuiItemStackFast render(@Nullable GuiItemStackFast hovered, @Nonnull Minecraft minecraft, boolean isMouseOver, int mouseX, int mouseY) {
-		if (isMouseOver && hovered == null) {
+	public GuiItemStackFast render(@Nonnull Minecraft minecraft, boolean isMouseOver, int mouseX, int mouseY) {
+		GuiItemStackFast hovered = null;
+		if (isMouseOver) {
 			hovered = getHovered(mouseX, mouseY);
 		}
 

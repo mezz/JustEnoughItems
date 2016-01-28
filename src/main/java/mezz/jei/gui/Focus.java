@@ -111,7 +111,7 @@ public class Focus {
 
 	@Nonnull
 	public List<IRecipeCategory> getCategories() {
-		IRecipeRegistry recipeRegistry = Internal.getRecipeRegistry();
+		IRecipeRegistry recipeRegistry = Internal.getRuntime().getRecipeRegistry();
 		if (mode == Mode.INPUT) {
 			return getInputCategories(recipeRegistry);
 		} else if (mode == Mode.OUTPUT) {
@@ -149,7 +149,7 @@ public class Focus {
 
 	@Nonnull
 	public List<Object> getRecipes(IRecipeCategory recipeCategory) {
-		IRecipeRegistry recipeRegistry = Internal.getRecipeRegistry();
+		IRecipeRegistry recipeRegistry = Internal.getRuntime().getRecipeRegistry();
 		if (mode == Mode.INPUT) {
 			return getInputRecipes(recipeRegistry, recipeCategory);
 		} else if (mode == Mode.OUTPUT) {
