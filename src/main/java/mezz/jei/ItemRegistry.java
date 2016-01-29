@@ -135,7 +135,11 @@ public class ItemRegistry implements IItemRegistry {
 		}
 
 		List<ItemStack> items = Internal.getStackHelper().getSubtypes(item, 1);
-		addItemStacks(items, itemList, fuels);
+		for (ItemStack stack : items) {
+			if (stack != null) {
+				addItemStack(stack, itemList, fuels);
+			}
+		}
 	}
 
 	private void addBlockAndSubBlocks(@Nullable Block block, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {
@@ -149,26 +153,17 @@ public class ItemRegistry implements IItemRegistry {
 			return;
 		}
 
-		List<ItemStack> subItems = new ArrayList<>();
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
-			subItems.clear();
-			block.getSubBlocks(item, itemTab, subItems);
-			addItemStacks(subItems, itemList, fuels);
-
-			if (subItems.isEmpty()) {
-				ItemStack stack = new ItemStack(block);
-				if (stack.getItem() == null) {
-					return;
+			List<ItemStack> subBlocks = new ArrayList<>();
+			block.getSubBlocks(item, itemTab, subBlocks);
+			for (ItemStack subBlock : subBlocks) {
+				if (subBlock == null) {
+					Log.error("Found null subBlock of {}", block);
+				} else if (subBlock.getItem() == null) {
+					Log.error("Found subBlock of {} with null item", block);
+				} else {
+					addItemStack(subBlock, itemList, fuels);
 				}
-				addItemStack(stack, itemList, fuels);
-			}
-		}
-	}
-
-	private void addItemStacks(@Nonnull Iterable<ItemStack> stacks, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {
-		for (ItemStack stack : stacks) {
-			if (stack != null) {
-				addItemStack(stack, itemList, fuels);
 			}
 		}
 	}

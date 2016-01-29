@@ -15,6 +15,7 @@ public class DebugItem extends Item {
 		setUnlocalizedName(name);
 		setCreativeTab(CreativeTabs.tabAllSearch);
 		setMaxDamage(MAX_DAMAGE);
+		setHasSubtypes(true);
 	}
 
 	@Override

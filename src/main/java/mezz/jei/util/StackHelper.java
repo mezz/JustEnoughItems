@@ -169,19 +169,25 @@ public class StackHelper implements IStackHelper {
 	}
 
 	@Nonnull
-	public List<ItemStack> getSubtypes(@Nonnull Item item, int stackSize) {
+	public List<ItemStack> getSubtypes(@Nonnull final Item item, final int stackSize) {
 		List<ItemStack> itemStacks = new ArrayList<>();
 
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
 			List<ItemStack> subItems = new ArrayList<>();
 			item.getSubItems(item, itemTab, subItems);
 			for (ItemStack subItem : subItems) {
-				if (subItem.stackSize != stackSize) {
-					ItemStack subItemCopy = subItem.copy();
-					subItemCopy.stackSize = stackSize;
-					itemStacks.add(subItemCopy);
+				if (subItem == null) {
+					Log.error("Found null subItem of {}", item);
+				} else if (subItem.getItem() == null) {
+					Log.error("Found subItem of {} with null item", item);
 				} else {
-					itemStacks.add(subItem);
+					if (subItem.stackSize != stackSize) {
+						ItemStack subItemCopy = subItem.copy();
+						subItemCopy.stackSize = stackSize;
+						itemStacks.add(subItemCopy);
+					} else {
+						itemStacks.add(subItem);
+					}
 				}
 			}
 		}
