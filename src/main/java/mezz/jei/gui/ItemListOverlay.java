@@ -5,6 +5,9 @@ import com.google.common.collect.ImmutableList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
+import java.awt.Rectangle;
+import java.util.List;
+import java.util.Objects;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -28,6 +31,7 @@ import mezz.jei.Internal;
 import mezz.jei.ItemFilter;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.api.IItemListOverlay;
+import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
@@ -43,6 +47,7 @@ import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
 import mezz.jei.network.packets.PacketJEI;
 import mezz.jei.util.ItemStackElement;
+import mezz.jei.util.Log;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
 
@@ -57,10 +62,12 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	private static final int itemStackPadding = 1;
 	private static final int itemStackWidth = GuiItemStackGroup.getWidth(itemStackPadding);
 	private static final int itemStackHeight = GuiItemStackGroup.getHeight(itemStackPadding);
-	private static int pageNum = 0;
+	private static int firstItemIndex = 0;
 
 	@Nonnull
 	private final ItemFilter itemFilter;
+	@Nonnull
+	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers;
 
 	private final GuiItemStackFastList guiItemStacks = new GuiItemStackFastList();
 	private GuiButton nextButton;
@@ -69,7 +76,6 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	private IDrawable configButtonIcon;
 	private HoverChecker configButtonHoverChecker;
 	private GuiTextFieldFilter searchField;
-	private int pageCount;
 
 	private String pageNumDisplayString;
 	private int pageNumDisplayX;
@@ -82,11 +88,16 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	private int guiXSize;
 	private int screenWidth;
 	private int screenHeight;
+	@Nullable
+	private List<Rectangle> guiAreas;
+	@Nullable
+	IAdvancedGuiHandler advancedGuiHandler;
 
 	private boolean open = false;
 
-	public ItemListOverlay(@Nonnull ItemFilter itemFilter) {
+	public ItemListOverlay(@Nonnull ItemFilter itemFilter, @Nonnull List<IAdvancedGuiHandler<?>> advancedGuiHandlers) {
 		this.itemFilter = itemFilter;
+		this.advancedGuiHandlers = advancedGuiHandlers;
 	}
 
 	public void initGui(@Nonnull GuiContainer guiContainer) {
@@ -94,6 +105,13 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		this.guiXSize = guiContainer.xSize;
 		this.screenWidth = guiContainer.width;
 		this.screenHeight = guiContainer.height;
+		this.advancedGuiHandler = getAdvancedGuiHandler(guiContainer);
+		if (advancedGuiHandler == null) {
+			guiAreas = null;
+		} else {
+			//noinspection unchecked
+			guiAreas = advancedGuiHandler.getGuiExtraAreas(guiContainer);
+		}
 
 		final int columns = getColumns();
 		if (columns < 4) {
@@ -112,7 +130,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		final int itemButtonsHeight = rows * itemStackHeight;
 
 		final int buttonStartY = buttonSize + (2 * borderPadding) + (yItemButtonSpace - itemButtonsHeight) / 2;
-		createItemButtons(leftEdge, buttonStartY, columns, rows);
+		createItemButtons(guiItemStacks, guiAreas, leftEdge, buttonStartY, columns, rows);
 
 		nextButton = new GuiButtonExt(0, rightEdge - buttonSize, borderPadding, buttonSize, buttonSize, nextLabel);
 		backButton = new GuiButtonExt(1, leftEdge, borderPadding, buttonSize, buttonSize, backLabel);
@@ -136,33 +154,59 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		open();
 	}
 
+	@Nullable
+	private IAdvancedGuiHandler<?> getAdvancedGuiHandler(@Nonnull GuiContainer guiContainer) {
+		for (IAdvancedGuiHandler<?> advancedGuiHandler : advancedGuiHandlers) {
+			if (advancedGuiHandler.getGuiContainerClass().isAssignableFrom(guiContainer.getClass())) {
+				return advancedGuiHandler;
+			}
+		}
+		return null;
+	}
+
 	public void updateGui(@Nonnull GuiContainer guiContainer) {
 		if (this.guiLeft != guiContainer.guiLeft || this.guiXSize != guiContainer.xSize || this.screenWidth != guiContainer.width || this.screenHeight != guiContainer.height) {
 			initGui(guiContainer);
+		} else if (advancedGuiHandler != null) {
+			//noinspection unchecked
+			List<Rectangle> guiAreas = advancedGuiHandler.getGuiExtraAreas(guiContainer);
+			if (!Objects.equals(this.guiAreas, guiAreas)) {
+				initGui(guiContainer);
+			}
 		}
 	}
 
-	private void createItemButtons(final int xStart, final int yStart, final int columnCount, final int rowCount) {
+	private static void createItemButtons(@Nonnull GuiItemStackFastList guiItemStacks, @Nullable List<Rectangle> guiAreas, final int xStart, final int yStart, final int columnCount, final int rowCount) {
 		guiItemStacks.clear();
 
 		for (int row = 0; row < rowCount; row++) {
 			int y = yStart + (row * itemStackHeight);
 			for (int column = 0; column < columnCount; column++) {
 				int x = xStart + (column * itemStackWidth);
-				guiItemStacks.add(new GuiItemStackFast(x, y, itemStackPadding));
+				GuiItemStackFast guiItemStackFast = new GuiItemStackFast(x, y, itemStackPadding);
+				if (guiAreas != null) {
+					Rectangle stackArea = guiItemStackFast.getArea();
+					if (intersects(guiAreas, stackArea)) {
+						continue;
+					}
+				}
+				guiItemStacks.add(guiItemStackFast);
 			}
 		}
 	}
 
-	private void updateLayout() {
-		updatePageCount();
-		if (pageNum >= getPageCount()) {
-			pageNum = 0;
+	private static boolean intersects(List<Rectangle> areas, Rectangle comparisonArea) {
+		for (Rectangle area : areas) {
+			if (area.intersects(comparisonArea)) {
+				return true;
+			}
 		}
-		int i = pageNum * getCountPerPage();
+		return false;
+	}
 
+	private void updateLayout() {
 		ImmutableList<ItemStackElement> itemList = itemFilter.getItemList();
-		guiItemStacks.set(i, itemList);
+		guiItemStacks.set(firstItemIndex, itemList);
 
 		FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
 
@@ -175,19 +219,28 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	}
 
 	private void nextPage() {
-		if (pageNum == getPageCount() - 1) {
-			setPageNum(0);
-		} else {
-			setPageNum(pageNum + 1);
+		final int itemsCount = itemFilter.size();
+
+		firstItemIndex += guiItemStacks.size();
+		while (firstItemIndex >= itemsCount) {
+			firstItemIndex = 0;
 		}
+		updateLayout();
 	}
 
 	private void previousPage() {
+		final int itemsPerPage = guiItemStacks.size();
+		final int itemsCount = itemFilter.size();
+
+		int pageNum = firstItemIndex / itemsPerPage;
 		if (pageNum == 0) {
-			setPageNum(getPageCount() - 1);
+			pageNum = itemsCount / itemsPerPage;
 		} else {
-			setPageNum(pageNum - 1);
+			pageNum--;
 		}
+
+		firstItemIndex = itemsPerPage * pageNum;
+		updateLayout();
 	}
 
 	public void drawScreen(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
@@ -392,32 +445,15 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		return getItemButtonYSpace() / itemStackHeight;
 	}
 
-	private int getCountPerPage() {
-		return getColumns() * getRows();
-	}
-
-	private void updatePageCount() {
-		int count = itemFilter.size();
-		pageCount = MathUtil.divideCeil(count, getCountPerPage());
-		if (pageCount == 0) {
-			pageCount = 1;
-		}
-	}
-
 	private int getPageCount() {
+		final int itemCount = itemFilter.size();
+		int pageCount = MathUtil.divideCeil(itemCount, guiItemStacks.size());
+		pageCount = Math.max(1, pageCount);
 		return pageCount;
 	}
 
 	private int getPageNum() {
-		return pageNum;
-	}
-
-	private void setPageNum(int pageNum) {
-		if (ItemListOverlay.pageNum == pageNum) {
-			return;
-		}
-		ItemListOverlay.pageNum = pageNum;
-		updateLayout();
+		return firstItemIndex / guiItemStacks.size();
 	}
 
 	public void open() {
@@ -447,7 +483,11 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	}
 
 	@Override
-	public void setFilterText(String filterText) {
+	public void setFilterText(@Nullable String filterText) {
+		if (filterText == null) {
+			Log.error("null filterText", new NullPointerException());
+			return;
+		}
 		ItemFilter.setFilterText(filterText);
 	}
 

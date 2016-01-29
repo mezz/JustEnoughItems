@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 
 import mezz.jei.RecipeRegistry;
 import mezz.jei.api.IModRegistry;
+import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
@@ -22,6 +23,7 @@ import mezz.jei.plugins.jei.description.ItemDescriptionRecipe;
 public class ModRegistry implements IModRegistry {
 	private final List<IRecipeCategory> recipeCategories = new ArrayList<>();
 	private final List<IRecipeHandler> recipeHandlers = new ArrayList<>();
+	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers = new ArrayList<>();
 	private final List<Object> recipes = new ArrayList<>();
 	private final RecipeTransferRegistry recipeTransferRegistry = new RecipeTransferRegistry();
 	private final Map<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas = new HashMap<>();
@@ -50,6 +52,11 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
+	public void addAdvancedGuiHandlers(@Nonnull IAdvancedGuiHandler<?>... advancedGuiHandlers) {
+		Collections.addAll(this.advancedGuiHandlers, advancedGuiHandlers);
+	}
+
+	@Override
 	public void addDescription(List<ItemStack> itemStacks, String... descriptionKeys) {
 		if (itemStacks == null || itemStacks.size() == 0) {
 			IllegalArgumentException e = new IllegalArgumentException();
@@ -73,6 +80,11 @@ public class ModRegistry implements IModRegistry {
 	@Override
 	public IRecipeTransferRegistry getRecipeTransferRegistry() {
 		return recipeTransferRegistry;
+	}
+
+	@Nonnull
+	public List<IAdvancedGuiHandler<?>> getAdvancedGuiHandlers() {
+		return advancedGuiHandlers;
 	}
 
 	@Nonnull

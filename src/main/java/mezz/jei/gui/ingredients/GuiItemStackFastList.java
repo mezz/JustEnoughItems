@@ -31,6 +31,10 @@ public class GuiItemStackFastList {
 		renderItems3d.clear();
 	}
 
+	public int size() {
+		return renderItemsAll.size();
+	}
+
 	public void add(GuiItemStackFast guiItemStack) {
 		renderItemsAll.add(guiItemStack);
 	}

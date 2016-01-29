@@ -20,7 +20,7 @@ public interface IItemListOverlay {
 	/**
 	 * Set the search filter string for the item list.
 	 */
-	void setFilterText(String filterText);
+	void setFilterText(@Nonnull String filterText);
 
 	/**
 	 * @return the current search filter string for the item list

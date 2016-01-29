@@ -6,6 +6,7 @@ import java.util.List;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 
+import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
@@ -35,14 +36,20 @@ public interface IModRegistry {
 	/**
 	 * Add a clickable area on a gui to jump to specific categories of recipes in JEI.
 	 *
-	 * @param guiClass           the gui class for JEI to detect.
+	 * @param guiContainerClass  the gui class for JEI to detect.
 	 * @param xPos               left x position of the clickable area, relative to the left edge of the gui.
 	 * @param yPos               top y position of the clickable area, relative to the top edge of the gui.
 	 * @param width              the width of the clickable area.
 	 * @param height             the height of the clickable area.
 	 * @param recipeCategoryUids the recipe categories that JEI should display.
 	 */
-	void addRecipeClickArea(@Nonnull Class<? extends GuiContainer> guiClass, int xPos, int yPos, int width, int height, @Nonnull String... recipeCategoryUids);
+	void addRecipeClickArea(@Nonnull Class<? extends GuiContainer> guiContainerClass, int xPos, int yPos, int width, int height, @Nonnull String... recipeCategoryUids);
+
+	/**
+	 * Add a handler to give JEI extra information about how to layout the item list next to a specific type of GuiContainer.
+	 * Used for guis with tabs on the side that would normally intersect with JEI's item list.
+	 */
+	void addAdvancedGuiHandlers(@Nonnull IAdvancedGuiHandler<?>... advancedGuiHandlers);
 
 	/**
 	 * Add a description page for an itemStack.

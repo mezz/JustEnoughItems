@@ -2,6 +2,7 @@ package mezz.jei.gui.ingredients;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.Rectangle;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -39,10 +40,8 @@ import mezz.jei.util.Translator;
 public class GuiItemStackFast {
 	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
 
-	private final int xPosition;
-	private final int yPosition;
-	private final int width;
-	private final int height;
+	@Nonnull
+	private final Rectangle area;
 	private final int padding;
 	private final ItemModelMesher itemModelMesher;
 
@@ -50,12 +49,15 @@ public class GuiItemStackFast {
 	private ItemStack itemStack;
 
 	public GuiItemStackFast(int xPosition, int yPosition, int padding) {
-		this.xPosition = xPosition;
-		this.yPosition = yPosition;
 		this.padding = padding;
-		this.width = 16 + (2 * padding);
-		this.height = 16 + (2 * padding);
+		final int size = 16 + (2 * padding);
+		this.area = new Rectangle(xPosition, yPosition, size, size);
 		this.itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+	}
+
+	@Nonnull
+	public Rectangle getArea() {
+		return area;
 	}
 
 	public void setItemStack(@Nonnull ItemStack itemStack) {
@@ -72,7 +74,7 @@ public class GuiItemStackFast {
 	}
 
 	public boolean isMouseOver(int mouseX, int mouseY) {
-		return (itemStack != null) && (mouseX >= xPosition) && (mouseY >= yPosition) && (mouseX < xPosition + width) && (mouseY < yPosition + height);
+		return (itemStack != null) && area.contains(mouseX, mouseY);
 	}
 
 	public void renderItemAndEffectIntoGUI() {
@@ -84,8 +86,8 @@ public class GuiItemStackFast {
 
 		GlStateManager.pushMatrix();
 
-		int x = xPosition + padding + 8;
-		int y = yPosition + padding + 8;
+		int x = area.x + padding + 8;
+		int y = area.y + padding + 8;
 
 		if (bakedModel.isGui3d()) {
 			if (Config.isEditModeEnabled()) {
@@ -206,7 +208,7 @@ public class GuiItemStackFast {
 
 		Minecraft minecraft = Minecraft.getMinecraft();
 		RenderItem renderItem = minecraft.getRenderItem();
-		renderItem.renderItemAndEffectIntoGUI(itemStack, xPosition + padding, yPosition + padding);
+		renderItem.renderItemAndEffectIntoGUI(itemStack, area.x + padding, area.y + padding);
 		GlStateManager.disableBlend();
 	}
 
@@ -216,15 +218,15 @@ public class GuiItemStackFast {
 		}
 		FontRenderer font = getFontRenderer(minecraft, itemStack);
 		RenderItem renderItem = minecraft.getRenderItem();
-		renderItem.renderItemOverlayIntoGUI(font, itemStack, xPosition + padding, yPosition + padding, null);
+		renderItem.renderItemOverlayIntoGUI(font, itemStack, area.x + padding, area.y + padding, null);
 	}
 
 	private void renderEditMode() {
 		if (Config.isItemOnConfigBlacklist(itemStack, false)) {
-			GuiScreen.drawRect(xPosition + padding, yPosition + padding, xPosition + 8 + padding, yPosition + 16 + padding, 0xFFFFFF00);
+			GuiScreen.drawRect(area.x + padding, area.y + padding, area.x + 8 + padding, area.y + 16 + padding, 0xFFFFFF00);
 		}
 		if (Config.isItemOnConfigBlacklist(itemStack, true)) {
-			GuiScreen.drawRect(xPosition + 8 + padding, yPosition + padding, xPosition + 16 + padding, yPosition + 16 + padding, 0xFFFF0000);
+			GuiScreen.drawRect(area.x + 8 + padding, area.y + padding, area.x + 16 + padding, area.y + 16 + padding, 0xFFFF0000);
 		}
 	}
 
@@ -248,7 +250,7 @@ public class GuiItemStackFast {
 
 			GlStateManager.disableDepth();
 
-			Gui.drawRect(xPosition, yPosition, xPosition + width, yPosition + width, 0x7FFFFFFF);
+			Gui.drawRect(area.x, area.y, area.x + area.width, area.y + area.height, 0x7FFFFFFF);
 
 			List<String> tooltip = getTooltip(minecraft, itemStack);
 			FontRenderer fontRenderer = getFontRenderer(minecraft, itemStack);

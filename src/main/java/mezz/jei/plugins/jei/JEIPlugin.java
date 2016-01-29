@@ -1,7 +1,13 @@
 package mezz.jei.plugins.jei;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.awt.Rectangle;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
+import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
@@ -12,6 +18,7 @@ import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.IRecipeRegistry;
+import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.config.Config;
 import mezz.jei.plugins.jei.debug.DebugRecipe;
 import mezz.jei.plugins.jei.debug.DebugRecipeCategory;
@@ -65,6 +72,24 @@ public class JEIPlugin implements IModPlugin {
 					new DebugRecipe(),
 					new DebugRecipe()
 			));
+
+			registry.addAdvancedGuiHandlers(new IAdvancedGuiHandler<GuiBrewingStand>() {
+				@Nonnull
+				@Override
+				public Class<GuiBrewingStand> getGuiContainerClass() {
+					return GuiBrewingStand.class;
+				}
+
+				@Nullable
+				@Override
+				public List<Rectangle> getGuiExtraAreas(GuiBrewingStand guiContainer) {
+					int widthMovement = (int) ((System.currentTimeMillis() / 100) % 100);
+					int size = 25 + widthMovement;
+					return Collections.singletonList(
+							new Rectangle(guiContainer.guiLeft + guiContainer.xSize, guiContainer.guiTop + 40, size, size)
+					);
+				}
+			});
 		}
 	}
 

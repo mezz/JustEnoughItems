@@ -24,6 +24,7 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
@@ -154,8 +155,10 @@ public class ProxyCommonClient extends ProxyCommon {
 			}
 		}
 
+		List<IAdvancedGuiHandler<?>> advancedGuiHandlers = modRegistry.getAdvancedGuiHandlers();
+
 		itemFilter = new ItemFilter(itemRegistry);
-		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter);
+		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter, advancedGuiHandlers);
 		guiEventHandler.setItemListOverlay(itemListOverlay);
 
 		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, itemListOverlay);
