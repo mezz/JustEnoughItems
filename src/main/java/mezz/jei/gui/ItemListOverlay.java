@@ -230,6 +230,9 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 
 	private void previousPage() {
 		final int itemsPerPage = guiItemStacks.size();
+		if (itemsPerPage == 0) {
+			return;
+		}
 		final int itemsCount = itemFilter.size();
 
 		int pageNum = firstItemIndex / itemsPerPage;
@@ -447,13 +450,21 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 
 	private int getPageCount() {
 		final int itemCount = itemFilter.size();
-		int pageCount = MathUtil.divideCeil(itemCount, guiItemStacks.size());
+		final int stacksPerPage = guiItemStacks.size();
+		if (stacksPerPage == 0) {
+			return 1;
+		}
+		int pageCount = MathUtil.divideCeil(itemCount, stacksPerPage);
 		pageCount = Math.max(1, pageCount);
 		return pageCount;
 	}
 
 	private int getPageNum() {
-		return firstItemIndex / guiItemStacks.size();
+		final int stacksPerPage = guiItemStacks.size();
+		if (stacksPerPage == 0) {
+			return 1;
+		}
+		return firstItemIndex / stacksPerPage;
 	}
 
 	public void open() {
