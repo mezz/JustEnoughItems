@@ -313,7 +313,19 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 
 	@Override
 	public boolean isMouseOver(int mouseX, int mouseY) {
-		return isOpen() && (mouseX >= guiLeft + guiXSize);
+		if (!isOpen() || (mouseX < guiLeft + guiXSize)) {
+			return false;
+		}
+
+		if (guiAreas != null) {
+			for (Rectangle guiArea : guiAreas) {
+				if (guiArea.contains(mouseX, mouseY)) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	@Override
