@@ -8,7 +8,6 @@ import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLModIdMappingEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -66,12 +65,5 @@ public class JustEnoughItems {
 	@Mod.EventHandler
 	public void init(@Nonnull FMLInitializationEvent event) {
 		proxy.init(event);
-	}
-
-	@Mod.EventHandler
-	public void startJEI(@Nonnull FMLModIdMappingEvent event) {
-		if (!event.isFrozen) {
-			proxy.startJEI();
-		}
 	}
 }

@@ -22,10 +22,6 @@ public class ProxyCommon {
 
 	}
 
-	public void startJEI() {
-
-	}
-
 	public void restartJEI() {
 
 	}

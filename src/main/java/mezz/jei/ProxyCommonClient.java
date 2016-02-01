@@ -14,6 +14,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
@@ -106,8 +107,14 @@ public class ProxyCommonClient extends ProxyCommon {
 		MinecraftForge.EVENT_BUS.register(guiEventHandler);
 	}
 
-	@Override
-	public void startJEI() {
+	@SubscribeEvent
+	public void onEntityJoinedWorld(EntityJoinWorldEvent event) {
+		if (!started && Minecraft.getMinecraft().thePlayer != null) {
+			startJEI();
+		}
+	}
+
+	private void startJEI() {
 		started = true;
 		ItemRegistry itemRegistry = new ItemRegistry();
 		Internal.setItemRegistry(itemRegistry);

@@ -24,15 +24,12 @@ import mezz.jei.api.IItemBlacklist;
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.util.ItemStackElement;
-import mezz.jei.util.ItemStackElementFactory;
 import mezz.jei.util.Log;
 
 public class ItemFilter {
 	/** The currently active filter text */
 	@Nonnull
 	private static String filterText = "";
-	@Nonnull
-	private final ItemStackElementFactory itemStackElementFactory = new ItemStackElementFactory();
 
 	/** A cache for fast searches while typing or using backspace. Maps filterText to filteredItemMaps */
 	private final LoadingCache<String, ImmutableList<ItemStackElement>> filteredItemMapsCache;
@@ -88,7 +85,7 @@ public class ItemFilter {
 		return getItemList().size();
 	}
 
-	private ImmutableList<ItemStackElement> createBaseList(IItemRegistry itemRegistry) {
+	private static ImmutableList<ItemStackElement> createBaseList(IItemRegistry itemRegistry) {
 		ItemStackChecker itemStackChecker = new ItemStackChecker();
 
 		ImmutableList.Builder<ItemStackElement> baseList = ImmutableList.builder();
@@ -101,7 +98,7 @@ public class ItemFilter {
 				continue;
 			}
 
-			ItemStackElement itemStackElement = itemStackElementFactory.create(itemStack);
+			ItemStackElement itemStackElement = ItemStackElement.create(itemStack);
 			if (itemStackElement != null) {
 				baseList.add(itemStackElement);
 			}
@@ -215,7 +212,7 @@ public class ItemFilter {
 	}
 
 	private static class FilterPredicate implements Predicate<ItemStackElement> {
-		private final List<String> itemNameTokens = new ArrayList<>();
+		private final List<String> searchTokens = new ArrayList<>();
 		private final List<String> modNameTokens = new ArrayList<>();
 		private final List<String> tooltipTokens = new ArrayList<>();
 
@@ -229,7 +226,7 @@ public class ItemFilter {
 					String tooltipToken = token.substring(1);
 					tooltipTokens.add(tooltipToken);
 				} else {
-					itemNameTokens.add(token);
+					searchTokens.add(token);
 				}
 			}
 		}
@@ -240,25 +237,23 @@ public class ItemFilter {
 				return false;
 			}
 
-			String modName = input.getModNameString();
+			final String modName = input.getModNameString();
 			for (String token : modNameTokens) {
 				if (!modName.contains(token)) {
 					return false;
 				}
 			}
 
-			String tooltipString = input.getTooltipString();
-			if (tooltipString != null) {
-				for (String token : tooltipTokens) {
-					if (!tooltipString.contains(token)) {
-						return false;
-					}
+			final String tooltipString = input.getTooltipString();
+			for (String token : tooltipTokens) {
+				if (!tooltipString.contains(token)) {
+					return false;
 				}
 			}
 
-			String itemName = input.getSearchString();
-			for (String token : itemNameTokens) {
-				if (!itemName.contains(token)) {
+			final String searchString = input.getSearchString();
+			for (String token : searchTokens) {
+				if (!searchString.contains(token)) {
 					return false;
 				}
 			}
