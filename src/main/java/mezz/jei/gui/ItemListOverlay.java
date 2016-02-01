@@ -220,9 +220,13 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 
 	private void nextPage() {
 		final int itemsCount = itemFilter.size();
+		if (itemsCount == 0) {
+			firstItemIndex = 0;
+			return;
+		}
 
 		firstItemIndex += guiItemStacks.size();
-		while (firstItemIndex >= itemsCount) {
+		if (firstItemIndex >= itemsCount) {
 			firstItemIndex = 0;
 		}
 		updateLayout();
@@ -231,6 +235,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	private void previousPage() {
 		final int itemsPerPage = guiItemStacks.size();
 		if (itemsPerPage == 0) {
+			firstItemIndex = 0;
 			return;
 		}
 		final int itemsCount = itemFilter.size();
@@ -437,6 +442,9 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 			char character = Keyboard.getEventCharacter();
 			boolean changed = searchField.textboxKeyTyped(character, Keyboard.getEventKey());
 			if (changed) {
+				while (firstItemIndex >= itemFilter.size() && firstItemIndex > 0) {
+					previousPage();
+				}
 				updateLayout();
 			}
 			return changed || ChatAllowedCharacters.isAllowedCharacter(character);
