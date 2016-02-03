@@ -13,6 +13,7 @@ import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import mezz.jei.Internal;
+import mezz.jei.util.StackHelper;
 
 public class Config {
 	public static final String CATEGORY_MODE = "mode";
@@ -194,28 +195,51 @@ public class Config {
 		}
 	}
 
-	public static void addItemToConfigBlacklist(ItemStack itemStack, boolean wildcard) {
-		if (itemStack == null) {
-			return;
-		}
-		String uid = Internal.getStackHelper().getUniqueIdentifierForStack(itemStack, wildcard);
+	public static void addItemToConfigBlacklist(@Nonnull ItemStack itemStack, @Nonnull ItemBlacklistType blacklistType) {
+		final String uid = getItemStackUid(itemStack, blacklistType);
 		if (itemBlacklist.add(uid)) {
 			updateBlacklist();
 		}
 	}
 
-	public static void removeItemFromConfigBlacklist(ItemStack itemStack, boolean wildcard) {
-		if (itemStack == null) {
-			return;
-		}
-		String uid = Internal.getStackHelper().getUniqueIdentifierForStack(itemStack, wildcard);
+	public static void removeItemFromConfigBlacklist(@Nonnull ItemStack itemStack, @Nonnull ItemBlacklistType blacklistType) {
+		final String uid = getItemStackUid(itemStack, blacklistType);
 		if (itemBlacklist.remove(uid)) {
 			updateBlacklist();
 		}
 	}
 
-	public static boolean isItemOnConfigBlacklist(ItemStack itemStack, boolean wildcard) {
-		String uid = Internal.getStackHelper().getUniqueIdentifierForStack(itemStack, wildcard);
+	public static boolean isItemOnConfigBlacklist(@Nonnull ItemStack itemStack) {
+		for (ItemBlacklistType itemBlacklistType : ItemBlacklistType.VALUES) {
+			if (isItemOnConfigBlacklist(itemStack, itemBlacklistType)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean isItemOnConfigBlacklist(@Nonnull ItemStack itemStack, @Nonnull ItemBlacklistType blacklistType) {
+		final String uid = getItemStackUid(itemStack, blacklistType);
 		return itemBlacklist.contains(uid);
+	}
+
+	private static String getItemStackUid(@Nonnull ItemStack itemStack, @Nonnull ItemBlacklistType blacklistType) {
+		StackHelper stackHelper = Internal.getStackHelper();
+		switch (blacklistType) {
+			case ITEM:
+				return stackHelper.getUniqueIdentifierForStack(itemStack, false);
+			case WILDCARD:
+				return stackHelper.getUniqueIdentifierForStack(itemStack, true);
+			case MOD_ID:
+				return stackHelper.getModIdForStack(itemStack);
+
+		}
+		return "";
+	}
+
+	public enum ItemBlacklistType {
+		ITEM, WILDCARD, MOD_ID;
+
+		public static final ItemBlacklistType[] VALUES = values();
 	}
 }

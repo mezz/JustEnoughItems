@@ -51,7 +51,7 @@ config.jei.search.prefixRequiredForTooltipSearch.comment=Require "#TooltipWord" 
 config.jei.advanced=Advanced
 config.jei.advanced.comment=Advanced config options to change the way JEI functions.
 config.jei.advanced.itemBlacklist=Item Blacklist
-config.jei.advanced.itemBlacklist.comment=List of items that should not be displayed in the item list. Format: modId:name[:meta]. Edit Mode will automatically add or remove entries here.
+config.jei.advanced.itemBlacklist.comment=List of items that should not be displayed in the item list. Format: modId[:name[:meta]]. Edit Mode will automatically add or remove entries here.
 config.jei.advanced.hideMissingModelsEnabled=Hide Missing Item Models
 config.jei.advanced.hideMissingModelsEnabled.comment=Items with missing models will be hidden from the item list.
 config.jei.advanced.debugModeEnabled=Debug Mode
@@ -68,6 +68,8 @@ gui.jei.editMode.description.hide=Ctrl-click to hide.
 gui.jei.editMode.description.show=Hidden. Ctrl-click to show.
 gui.jei.editMode.description.hide.wild=Ctrl-right-click to hide with wildcard.
 gui.jei.editMode.description.show.wild=Hidden by Wildcard. Ctrl-right-click to show.
+gui.jei.editMode.description.hide.mod.id=Ctrl-Shift-click to hide by ModId.
+gui.jei.editMode.description.show.mod.id=Hidden by ModId. Ctrl-Shift-click to show.
 
 # Recipe Categories
 gui.jei.category.craftingTable=Crafting Table

@@ -2,6 +2,7 @@ package mezz.jei.gui.ingredients;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.List;
 
@@ -39,6 +40,9 @@ import mezz.jei.util.Translator;
 @SuppressWarnings("deprecation")
 public class GuiItemStackFast {
 	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
+	private static final int blacklistItemColor = Color.yellow.getRGB();
+	private static final int blacklistWildColor = Color.red.getRGB();
+	private static final int blacklistModColor = Color.blue.getRGB();
 
 	@Nonnull
 	private final Rectangle area;
@@ -222,11 +226,18 @@ public class GuiItemStackFast {
 	}
 
 	private void renderEditMode() {
-		if (Config.isItemOnConfigBlacklist(itemStack, false)) {
-			GuiScreen.drawRect(area.x + padding, area.y + padding, area.x + 8 + padding, area.y + 16 + padding, 0xFFFFFF00);
+		if (itemStack == null) {
+			return;
 		}
-		if (Config.isItemOnConfigBlacklist(itemStack, true)) {
-			GuiScreen.drawRect(area.x + 8 + padding, area.y + padding, area.x + 16 + padding, area.y + 16 + padding, 0xFFFF0000);
+
+		if (Config.isItemOnConfigBlacklist(itemStack, Config.ItemBlacklistType.ITEM)) {
+			GuiScreen.drawRect(area.x + padding, area.y + padding, area.x + 8 + padding, area.y + 16 + padding, blacklistItemColor);
+		}
+		if (Config.isItemOnConfigBlacklist(itemStack, Config.ItemBlacklistType.WILDCARD)) {
+			GuiScreen.drawRect(area.x + 8 + padding, area.y + padding, area.x + 16 + padding, area.y + 16 + padding, blacklistWildColor);
+		}
+		if (Config.isItemOnConfigBlacklist(itemStack, Config.ItemBlacklistType.MOD_ID)) {
+			GuiScreen.drawRect(area.x + padding, area.y + 8 + padding, area.x + 16 + padding, area.y + 16 + padding, blacklistModColor);
 		}
 	}
 
@@ -275,7 +286,7 @@ public class GuiItemStackFast {
 		if (Config.isEditModeEnabled()) {
 			list.add("");
 			list.add(EnumChatFormatting.ITALIC + Translator.translateToLocal("gui.jei.editMode.description"));
-			if (Config.isItemOnConfigBlacklist(itemStack, false)) {
+			if (Config.isItemOnConfigBlacklist(itemStack, Config.ItemBlacklistType.ITEM)) {
 				String description = EnumChatFormatting.YELLOW + Translator.translateToLocal("gui.jei.editMode.description.show");
 				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
 			} else {
@@ -283,11 +294,19 @@ public class GuiItemStackFast {
 				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
 			}
 
-			if (Config.isItemOnConfigBlacklist(itemStack, true)) {
+			if (Config.isItemOnConfigBlacklist(itemStack, Config.ItemBlacklistType.WILDCARD)) {
 				String description = EnumChatFormatting.RED + Translator.translateToLocal("gui.jei.editMode.description.show.wild");
 				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
 			} else {
 				String description = EnumChatFormatting.RED + Translator.translateToLocal("gui.jei.editMode.description.hide.wild");
+				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
+			}
+
+			if (Config.isItemOnConfigBlacklist(itemStack, Config.ItemBlacklistType.MOD_ID)) {
+				String description = EnumChatFormatting.BLUE + Translator.translateToLocal("gui.jei.editMode.description.show.mod.id");
+				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
+			} else {
+				String description = EnumChatFormatting.BLUE + Translator.translateToLocal("gui.jei.editMode.description.hide.mod.id");
 				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
 			}
 		}

@@ -12,7 +12,7 @@ config.jei.mode.editEnabled.comment=在列表中点击物品以隐藏或取消�
 config.jei.advanced.nbtKeyIgnoreList=NBT关键字忽略列表
 config.jei.advanced.nbtKeyIgnoreList.comment=过滤可用合成时，该表所含的NBT关键字将忽略不计。
 config.jei.advanced.itemBlacklist=物品黑名单
-config.jei.advanced.itemBlacklist.comment=该表中物品将不会显示于JEI物品列表。添加格式： modId:name[:meta]。使用编辑模式可自动添加�或删除这里的条目。
+config.jei.advanced.itemBlacklist.comment=该表中物品将不会显示于JEI物品列表。添加格式： modId[:name[:meta]]。使用编辑模式可自动添加�或删除这里的条目。
 
 # Edit Mode
 gui.jei.editMode.description=JEI物品列表编辑模式：

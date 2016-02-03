@@ -204,7 +204,7 @@ public class ItemFilter {
 
 			if (Config.isEditModeEnabled()) {
 				// edit mode can only change the config blacklist, not things blacklisted through the API
-				return !Config.isItemOnConfigBlacklist(itemStack, true) && !Config.isItemOnConfigBlacklist(itemStack, false);
+				return !Config.isItemOnConfigBlacklist(itemStack);
 			}
 
 			return true;

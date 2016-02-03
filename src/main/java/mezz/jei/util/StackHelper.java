@@ -267,6 +267,22 @@ public class StackHelper implements IStackHelper {
 	}
 
 	@Nonnull
+	public String getModIdForStack(@Nonnull ItemStack stack) {
+		Item item = stack.getItem();
+		if (item == null) {
+			throw new ItemUidException("Found an itemStack with a null item. This is an error from another mod.");
+		}
+
+		FMLControlledNamespacedRegistry<Item> itemRegistry = GameData.getItemRegistry();
+		ResourceLocation itemName = itemRegistry.getNameForObject(item);
+		if (itemName == null) {
+			throw new ItemUidException("No name for item in GameData itemRegistry: " + item.getClass());
+		}
+
+		return itemName.getResourceDomain();
+	}
+
+	@Nonnull
 	public String getUniqueIdentifierForStack(@Nonnull ItemStack stack) {
 		return getUniqueIdentifierForStack(stack, false);
 	}

@@ -48,10 +48,10 @@ public class ItemBlacklist implements IItemBlacklist {
 		}
 		List<String> uids = Internal.getStackHelper().getUniqueIdentifiersWithWildcard(itemStack);
 		for (String uid : uids) {
-			if (itemBlacklist.contains(uid) || Config.getItemBlacklist().contains(uid)) {
+			if (itemBlacklist.contains(uid)) {
 				return true;
 			}
 		}
-		return false;
+		return Config.isItemOnConfigBlacklist(itemStack);
 	}
 }

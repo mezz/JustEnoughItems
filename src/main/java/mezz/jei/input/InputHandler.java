@@ -113,7 +113,7 @@ public class InputHandler {
 	}
 
 	private boolean handleMouseClickedFocus(int mouseButton, @Nonnull Focus focus) {
-		if (Config.isEditModeEnabled() && GuiScreen.isCtrlKeyDown()) {
+		if (Config.isEditModeEnabled()) {
 			if (handleClickEditStack(mouseButton, focus)) {
 				return true;
 			}
@@ -146,19 +146,29 @@ public class InputHandler {
 			return false;
 		}
 
-		boolean wildcard;
-		if (mouseButton == 0) {
-			wildcard = false;
-		} else if (mouseButton == 1) {
-			wildcard = true;
-		} else {
+		Config.ItemBlacklistType blacklistType = null;
+		if (GuiScreen.isCtrlKeyDown()) {
+			if (GuiScreen.isShiftKeyDown()) {
+				if (mouseButton == 0) {
+					blacklistType = Config.ItemBlacklistType.MOD_ID;
+				}
+			} else {
+				if (mouseButton == 0) {
+					blacklistType = Config.ItemBlacklistType.ITEM;
+				} else if (mouseButton == 1) {
+					blacklistType = Config.ItemBlacklistType.WILDCARD;
+				}
+			}
+		}
+
+		if (blacklistType == null) {
 			return false;
 		}
 
-		if (Config.isItemOnConfigBlacklist(focus.getStack(), wildcard)) {
-			Config.removeItemFromConfigBlacklist(focus.getStack(), wildcard);
+		if (Config.isItemOnConfigBlacklist(focus.getStack(), blacklistType)) {
+			Config.removeItemFromConfigBlacklist(focus.getStack(), blacklistType);
 		} else {
-			Config.addItemToConfigBlacklist(focus.getStack(), wildcard);
+			Config.addItemToConfigBlacklist(focus.getStack(), blacklistType);
 		}
 		return true;
 	}
