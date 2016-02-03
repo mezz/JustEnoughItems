@@ -3,6 +3,7 @@ package mezz.jei.gui.ingredients;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -40,6 +41,11 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		this.width = width;
 		this.height = height;
 		this.overlay = overlay;
+	}
+
+	@Override
+	public void setIngredients(@Nonnull Collection<FluidStack> ingredients) {
+
 	}
 
 	@Override

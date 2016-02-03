@@ -11,7 +11,6 @@ import mezz.jei.api.gui.IGuiItemStackGroup;
 public class GuiItemStackGroup extends GuiIngredientGroup<ItemStack, GuiIngredient<ItemStack>> implements IGuiItemStackGroup {
 	private static final int baseWidth = 16;
 	private static final int baseHeight = 16;
-	private static final ItemStackRenderer renderer = new ItemStackRenderer();
 	private static final ItemStackHelper helper = new ItemStackHelper();
 
 	public static int getWidth(int padding) {
@@ -23,6 +22,7 @@ public class GuiItemStackGroup extends GuiIngredientGroup<ItemStack, GuiIngredie
 	}
 
 	private GuiIngredient<ItemStack> createGuiItemStack(int index, boolean input, int xPosition, int yPosition, int padding) {
+		ItemStackRenderer renderer = new ItemStackRenderer();
 		return new GuiIngredient<>(renderer, helper, index, input, xPosition, yPosition, getWidth(padding), getHeight(padding), padding, itemCycleOffset);
 	}
 

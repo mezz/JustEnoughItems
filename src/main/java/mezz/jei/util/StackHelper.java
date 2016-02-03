@@ -93,6 +93,23 @@ public class StackHelper implements IStackHelper {
 		return newStacks;
 	}
 
+	/** Returns true if all stacks from "contains" are found in "stacks" and the opposite is true as well. */
+	public boolean containsSameStacks(@Nonnull Iterable<ItemStack> stacks, @Nonnull Iterable<ItemStack> contains) {
+		for (ItemStack stack : contains) {
+			if (containsStack(stacks, stack) == null) {
+				return false;
+			}
+		}
+
+		for (ItemStack stack : stacks) {
+			if (containsStack(contains, stack) == null) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	/* Returns an ItemStack from "stacks" if it isIdentical to an ItemStack from "contains" */
 	@Nullable
 	public ItemStack containsStack(@Nullable Iterable<ItemStack> stacks, @Nullable Iterable<ItemStack> contains) {

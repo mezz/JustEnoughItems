@@ -104,6 +104,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		} else {
 			this.contained.addAll(contained);
 		}
+		this.ingredientRenderer.setIngredients(contained);
 		this.allContained.addAll(contained);
 		enabled = !this.contained.isEmpty();
 	}
