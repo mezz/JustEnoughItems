@@ -1,6 +1,7 @@
 package mezz.jei.config;
 
 import javax.annotation.Nonnull;
+import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,6 +23,7 @@ public class Config {
 	public static final String CATEGORY_ADDONS = "addons";
 
 	public static LocalizedConfiguration configFile;
+	public static LocalizedConfiguration itemBlacklistFile;
 
 	private static boolean overlayEnabled = true;
 	private static boolean cheatItemsEnabled = false;
@@ -110,7 +112,11 @@ public class Config {
 	}
 
 	public static void preInit(@Nonnull FMLPreInitializationEvent event) {
-		configFile = new LocalizedConfiguration("config.jei", event.getSuggestedConfigurationFile(), "0.1.0");
+		final String configKeyPrefix = "config.jei";
+		final File configurationDir = event.getModConfigurationDirectory();
+
+		configFile = new LocalizedConfiguration(configKeyPrefix, event.getSuggestedConfigurationFile(), "0.2.0");
+		itemBlacklistFile = new LocalizedConfiguration(configKeyPrefix, new File(configurationDir, Constants.MOD_ID + "-itemBlacklist.cfg"), "0.1.0");
 
 		syncConfig();
 	}
@@ -120,6 +126,8 @@ public class Config {
 		configFile.addCategory(CATEGORY_INTERFACE);
 		configFile.addCategory(CATEGORY_SEARCH);
 		configFile.addCategory(CATEGORY_ADVANCED);
+
+		itemBlacklistFile.addCategory(CATEGORY_ADVANCED);
 
 		ConfigCategory addonsCategory = configFile.getCategory("addons");
 		if (addonsCategory != null) {
@@ -141,13 +149,18 @@ public class Config {
 		ConfigCategory categoryAdvanced = configFile.getCategory(CATEGORY_ADVANCED);
 		categoryAdvanced.remove("nbtKeyIgnoreList");
 
-		String[] itemBlacklistArray = configFile.getStringList("itemBlacklist", CATEGORY_ADVANCED, defaultItemBlacklist);
+		// migrate item blacklist to new file
+		if (configFile.hasKey(CATEGORY_ADVANCED, "itemBlacklist")) {
+			Property oldItemBlacklistProperty = configFile.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
+			String[] itemBlacklistArray = oldItemBlacklistProperty.getStringList();
+			Property newItemBlacklistProperty = itemBlacklistFile.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
+			newItemBlacklistProperty.set(itemBlacklistArray);
+			categoryAdvanced.remove("itemBlacklist");
+		}
+
+		String[] itemBlacklistArray = itemBlacklistFile.getStringList("itemBlacklist", CATEGORY_ADVANCED, defaultItemBlacklist);
 		itemBlacklist.clear();
 		Collections.addAll(itemBlacklist, itemBlacklistArray);
-		{
-			Property property = configFile.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
-			property.setShowInGui(false);
-		}
 
 		hideMissingModelsEnabled = configFile.getBoolean(CATEGORY_ADVANCED, "hideMissingModelsEnabled", hideMissingModelsEnabled);
 
@@ -157,21 +170,27 @@ public class Config {
 			property.setShowInGui(false);
 		}
 
-		boolean configChanged = configFile.hasChanged();
+		final boolean configChanged = configFile.hasChanged();
 		if (configChanged) {
 			configFile.save();
 		}
-		return configChanged;
+
+		final boolean itemBlacklistChanged = itemBlacklistFile.hasChanged();
+		if (itemBlacklistChanged) {
+			itemBlacklistFile.save();
+		}
+
+		return configChanged || itemBlacklistChanged;
 	}
 
 	private static void updateBlacklist() {
-		Property property = configFile.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
+		Property property = itemBlacklistFile.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
 
 		String[] currentBlacklist = itemBlacklist.toArray(new String[itemBlacklist.size()]);
 		property.set(currentBlacklist);
 
-		if (configFile.hasChanged()) {
-			configFile.save();
+		if (itemBlacklistFile.hasChanged()) {
+			itemBlacklistFile.save();
 		}
 	}
 
