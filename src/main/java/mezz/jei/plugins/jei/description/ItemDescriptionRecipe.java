@@ -9,8 +9,6 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
-import net.minecraftforge.fluids.FluidStack;
-
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
@@ -22,7 +20,7 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 	@Nonnull
 	private final List<String> description;
 	@Nonnull
-	private final List<List<ItemStack>> outputs;
+	private final List<ItemStack> itemStacks;
 	@Nonnull
 	private final IDrawable slotDrawable;
 
@@ -81,19 +79,19 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 
 	private ItemDescriptionRecipe(@Nonnull List<ItemStack> itemStacks, @Nonnull List<String> description) {
 		this.description = description;
-		this.outputs = Collections.singletonList(itemStacks);
+		this.itemStacks = itemStacks;
 		this.slotDrawable = Internal.getHelpers().getGuiHelper().getSlotDrawable();
+	}
+
+	@Override
+	public List<ItemStack> getInputs() {
+		return itemStacks;
 	}
 
 	@Nonnull
 	@Override
-	public List<List<ItemStack>> getOutputs() {
-		return outputs;
-	}
-
-	@Override
-	public List<FluidStack> getFluidInputs() {
-		return super.getFluidInputs();
+	public List<ItemStack> getOutputs() {
+		return itemStacks;
 	}
 
 	@Override
