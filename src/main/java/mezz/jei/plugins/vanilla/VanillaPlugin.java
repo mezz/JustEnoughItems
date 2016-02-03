@@ -14,6 +14,7 @@ import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
+import mezz.jei.api.INbtIgnoreList;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
@@ -41,6 +42,15 @@ public class VanillaPlugin implements IModPlugin {
 	@Override
 	public void onJeiHelpersAvailable(IJeiHelpers jeiHelpers) {
 		this.jeiHelpers = jeiHelpers;
+		INbtIgnoreList nbtIgnoreList = jeiHelpers.getNbtIgnoreList();
+
+		// normally you should ignore nbt per-item, but these tags are universally understood
+		// and apply to many vanilla and modded items
+		nbtIgnoreList.ignoreNbtTagNames(
+				"BlockEntityTag",
+				"CanPlaceOn",
+				"RepairCost"
+		);
 	}
 
 	@Override

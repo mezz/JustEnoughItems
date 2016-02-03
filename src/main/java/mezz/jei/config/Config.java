@@ -7,6 +7,7 @@ import java.util.Set;
 
 import net.minecraft.item.ItemStack;
 
+import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -17,6 +18,7 @@ public class Config {
 	public static final String CATEGORY_INTERFACE = "interface";
 	public static final String CATEGORY_SEARCH = "search";
 	public static final String CATEGORY_ADVANCED = "advanced";
+	@Deprecated
 	public static final String CATEGORY_ADDONS = "addons";
 
 	public static LocalizedConfiguration configFile;
@@ -36,11 +38,9 @@ public class Config {
 	private static boolean prefixRequiredForModNameSearch = true;
 	private static boolean prefixRequiredForTooltipSearch = false;
 
-	private static final Set<String> nbtKeyIgnoreList = new HashSet<>();
 	private static final Set<String> itemBlacklist = new HashSet<>();
 
 	private static final String[] defaultItemBlacklist = new String[]{};
-	private static final String[] defaultNbtKeyIgnoreList = new String[]{"BlockEntityTag", "CanPlaceOn"};
 
 	private Config() {
 
@@ -53,7 +53,7 @@ public class Config {
 	public static void toggleOverlayEnabled() {
 		overlayEnabled = !overlayEnabled;
 
-		Property property = configFile.getConfiguration().get(CATEGORY_INTERFACE, "overlayEnabled", overlayEnabled);
+		Property property = configFile.get(CATEGORY_INTERFACE, "overlayEnabled", overlayEnabled);
 		property.set(overlayEnabled);
 
 		if (configFile.hasChanged()) {
@@ -101,10 +101,6 @@ public class Config {
 		return prefixRequiredForTooltipSearch;
 	}
 
-	public static Set<String> getNbtKeyIgnoreList() {
-		return nbtKeyIgnoreList;
-	}
-
 	public static Set<String> getItemBlacklist() {
 		return itemBlacklist;
 	}
@@ -124,7 +120,11 @@ public class Config {
 		configFile.addCategory(CATEGORY_INTERFACE);
 		configFile.addCategory(CATEGORY_SEARCH);
 		configFile.addCategory(CATEGORY_ADVANCED);
-		configFile.addCategory(CATEGORY_ADDONS);
+
+		ConfigCategory addonsCategory = configFile.getCategory("addons");
+		if (addonsCategory != null) {
+			configFile.removeCategory(addonsCategory);
+		}
 
 		overlayEnabled = configFile.getBoolean(CATEGORY_INTERFACE, "overlayEnabled", overlayEnabled);
 
@@ -138,15 +138,14 @@ public class Config {
 		prefixRequiredForModNameSearch = configFile.getBoolean(CATEGORY_SEARCH, "atPrefixRequiredForModName", prefixRequiredForModNameSearch);
 		prefixRequiredForTooltipSearch = configFile.getBoolean(CATEGORY_SEARCH, "prefixRequiredForTooltipSearch", prefixRequiredForTooltipSearch);
 
-		String[] nbtKeyIgnoreListArray = configFile.getStringList("nbtKeyIgnoreList", CATEGORY_ADVANCED, defaultNbtKeyIgnoreList);
-		nbtKeyIgnoreList.clear();
-		Collections.addAll(nbtKeyIgnoreList, nbtKeyIgnoreListArray);
+		ConfigCategory categoryAdvanced = configFile.getCategory(CATEGORY_ADVANCED);
+		categoryAdvanced.remove("nbtKeyIgnoreList");
 
 		String[] itemBlacklistArray = configFile.getStringList("itemBlacklist", CATEGORY_ADVANCED, defaultItemBlacklist);
 		itemBlacklist.clear();
 		Collections.addAll(itemBlacklist, itemBlacklistArray);
 		{
-			Property property = configFile.getConfiguration().get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
+			Property property = configFile.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
 			property.setShowInGui(false);
 		}
 
@@ -154,7 +153,7 @@ public class Config {
 
 		debugModeEnabled = configFile.getBoolean(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
 		{
-			Property property = configFile.getConfiguration().get(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
+			Property property = configFile.get(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
 			property.setShowInGui(false);
 		}
 
@@ -166,7 +165,7 @@ public class Config {
 	}
 
 	private static void updateBlacklist() {
-		Property property = configFile.getConfiguration().get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
+		Property property = configFile.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
 
 		String[] currentBlacklist = itemBlacklist.toArray(new String[itemBlacklist.size()]);
 		property.set(currentBlacklist);

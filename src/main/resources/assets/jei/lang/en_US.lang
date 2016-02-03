@@ -50,8 +50,6 @@ config.jei.search.prefixRequiredForTooltipSearch.comment=Require "#TooltipWord" 
 
 config.jei.advanced=Advanced
 config.jei.advanced.comment=Advanced config options to change the way JEI functions.
-config.jei.advanced.nbtKeyIgnoreList=NBT Key Ignore List
-config.jei.advanced.nbtKeyIgnoreList.comment=List of NBT Keys that should be ignored when retrieving recipes.
 config.jei.advanced.itemBlacklist=Item Blacklist
 config.jei.advanced.itemBlacklist.comment=List of items that should not be displayed in the item list. Format: modId:name[:meta]. Edit Mode will automatically add or remove entries here.
 config.jei.advanced.hideMissingModelsEnabled=Hide Missing Item Models

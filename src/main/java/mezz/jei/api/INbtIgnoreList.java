@@ -16,27 +16,29 @@ public interface INbtIgnoreList {
 	void ignoreNbtTagNames(@Nonnull Item item, String... nbtTagNames);
 
 	/**
-	 * Check to see if an NBT tag is ignored.
+	 * Tell JEI to ignore NBT tags when comparing items for recipes.
+	 * To avoid nbt conflicts with other mods, use the item-specific version.
 	 */
-	boolean isNbtTagIgnored(@Nonnull String nbtTagName);
+	void ignoreNbtTagNames(String... nbtTagNames);
 
 	/**
 	 * Get NBT from an itemStack, minus the NBT that is being ignored.
 	 * Returns null if the itemStack has no NBT.
+	 * @since JEI 2.16.0
 	 */
 	@Nullable
 	NBTTagCompound getNbt(@Nonnull ItemStack itemStack);
 
 	/**
-	 * Tell JEI to ignore NBT tags when comparing items for recipes.
-	 * @deprecated use the item-specific version, to avoid nbt conflicts with other mods
+	 * Check to see if an NBT tag is ignored.
+	 * @deprecated since JEI 2.25.0, use getNbt
 	 */
 	@Deprecated
-	void ignoreNbtTagNames(String... nbtTagNames);
+	boolean isNbtTagIgnored(@Nonnull String nbtTagName);
 
 	/**
 	 * Get all the ignored tag names out of a set of NBT tag names.
-	 * @deprecated use getNbt
+	 * @deprecated since JEI 2.16.0. use getNbt
 	 */
 	@Deprecated
 	@Nonnull

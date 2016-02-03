@@ -15,14 +15,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import mezz.jei.api.INbtIgnoreList;
-import mezz.jei.config.Config;
 import mezz.jei.util.Log;
 
 public class NbtIgnoreList implements INbtIgnoreList {
 	private final Set<String> nbtTagNameBlacklist = new HashSet<>();
 	private final HashMultimap<Item, String> itemNbtTagNameBlacklist = HashMultimap.create();
 
-	@Deprecated
 	@Override
 	public void ignoreNbtTagNames(String... nbtTagNames) {
 		Collections.addAll(nbtTagNameBlacklist, nbtTagNames);
@@ -44,7 +42,7 @@ public class NbtIgnoreList implements INbtIgnoreList {
 			Log.error("Null nbtTagName", new NullPointerException());
 			return false;
 		}
-		return Config.getNbtKeyIgnoreList().contains(nbtTagName) || nbtTagNameBlacklist.contains(nbtTagName);
+		return nbtTagNameBlacklist.contains(nbtTagName);
 	}
 
 	@Override
@@ -54,9 +52,7 @@ public class NbtIgnoreList implements INbtIgnoreList {
 			Log.error("Null nbtTagNames", new NullPointerException());
 			return Collections.emptySet();
 		}
-		Set<String> ignoredKeysConfig = Sets.intersection(nbtTagNames, Config.getNbtKeyIgnoreList());
-		Set<String> ignoredKeysApi = Sets.intersection(nbtTagNames, nbtTagNameBlacklist);
-		return Sets.union(ignoredKeysConfig, ignoredKeysApi);
+		return Sets.intersection(nbtTagNames, nbtTagNameBlacklist);
 	}
 
 	@Nullable
@@ -76,12 +72,10 @@ public class NbtIgnoreList implements INbtIgnoreList {
 
 		Set<String> allIgnoredKeysForItem = itemNbtTagNameBlacklist.get(itemStack.getItem());
 
-		Set<String> ignoredKeysConfig = Sets.intersection(keys, Config.getNbtKeyIgnoreList());
-		Set<String> ignoredKeysApi = Sets.intersection(keys, nbtTagNameBlacklist);
-		Set<String> ignoredKeysApiForItem = Sets.intersection(keys, allIgnoredKeysForItem);
+		Set<String> ignoredKeys = Sets.intersection(keys, nbtTagNameBlacklist);
+		Set<String> ignoredKeysForItem = Sets.intersection(keys, allIgnoredKeysForItem);
 
-		Set<String> ignoredKeys = Sets.union(ignoredKeysConfig, ignoredKeysApi);
-		ignoredKeys = Sets.union(ignoredKeys, ignoredKeysApiForItem);
+		ignoredKeys = Sets.union(ignoredKeys, ignoredKeysForItem);
 
 		if (ignoredKeys.isEmpty()) {
 			return nbtTagCompound;
