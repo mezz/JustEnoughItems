@@ -6,6 +6,8 @@ import com.google.common.collect.ImmutableListMultimap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -24,6 +26,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameData;
 
 import mezz.jei.api.IItemRegistry;
+import mezz.jei.config.Constants;
 import mezz.jei.util.Log;
 import mezz.jei.util.ModList;
 
@@ -56,6 +59,24 @@ public class ItemRegistry implements IItemRegistry {
 		}
 
 		addEnchantedBooks(itemListMutable);
+
+		Collections.sort(itemListMutable, new Comparator<ItemStack>() {
+			@Override
+			public int compare(ItemStack stack1, ItemStack stack2) {
+				final String stack1ModName = getModNameForItem(stack1.getItem());
+				final String stack2ModName = getModNameForItem(stack2.getItem());
+
+				if (stack1ModName.equals(stack2ModName)) {
+					return 0;
+				} else if (stack1ModName.equals(Constants.minecraftModName)) {
+					return -1;
+				} else if (stack2ModName.equals(Constants.minecraftModName)) {
+					return 1;
+				} else {
+					return stack1ModName.compareTo(stack2ModName);
+				}
+			}
+		});
 
 		this.itemList = ImmutableList.copyOf(itemListMutable);
 		this.fuels = ImmutableList.copyOf(fuelsMutable);
