@@ -23,7 +23,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
-import mezz.jei.config.Config;
+import mezz.jei.config.SessionData;
 import mezz.jei.gui.RecipeLayout;
 import mezz.jei.gui.ingredients.IGuiIngredient;
 import mezz.jei.network.packets.PacketRecipeTransfer;
@@ -60,7 +60,7 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 		IRecipeTransferHandlerHelper handlerHelper = Internal.getHelpers().recipeTransferHandlerHelper();
 		StackHelper stackHelper = Internal.getStackHelper();
 
-		if (!Config.isJeiOnServer()) {
+		if (!SessionData.isJeiOnServer()) {
 			return handlerHelper.createInternalError();
 		}
 		

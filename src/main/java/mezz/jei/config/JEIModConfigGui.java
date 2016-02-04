@@ -29,28 +29,21 @@ public class JEIModConfigGui extends GuiConfig {
 	}
 
 	private static List<IConfigElement> getConfigElements() {
-		ConfigCategory categoryAdvanced = Config.getConfigFile().getCategory(Config.CATEGORY_ADVANCED);
-		ConfigCategory categoryInterface = Config.getConfigFile().getCategory(Config.CATEGORY_INTERFACE);
-		ConfigCategory categorySearch = Config.getConfigFile().getCategory(Config.CATEGORY_SEARCH);
-		ConfigCategory categoryMode = Config.getConfigFile().getCategory(Config.CATEGORY_MODE);
-		ConfigCategory categoryAddons = Config.getConfigFile().getCategory(Config.CATEGORY_ADDONS);
+		ConfigCategory categoryWorldConfig = Config.getWorldConfig().getCategory(SessionData.getWorldUid());
+		ConfigCategory categoryAdvanced = Config.getConfig().getCategory(Config.CATEGORY_ADVANCED);
+		ConfigCategory categorySearch = Config.getConfig().getCategory(Config.CATEGORY_SEARCH);
 
 		List<IConfigElement> configElements = new ArrayList<>();
-		configElements.addAll(new ConfigElement(categoryMode).getChildElements());
-		configElements.add(new ConfigElement(categoryInterface));
+		configElements.addAll(new ConfigElement(categoryWorldConfig).getChildElements());
+		configElements.addAll(new ConfigElement(categoryAdvanced).getChildElements());
 		configElements.add(new ConfigElement(categorySearch));
-		configElements.add(new ConfigElement(categoryAdvanced));
-
-		if (!categoryAddons.isEmpty() || categoryAddons.getChildren().size() > 0) {
-			configElements.add(new ConfigElement(categoryAddons));
-		}
 
 		return configElements;
 	}
 
 	private static String getTitle(GuiScreen parent) {
 		if (parent instanceof GuiModList) {
-			return GuiConfig.getAbridgedConfigPath(Config.getConfigFile().toString());
+			return GuiConfig.getAbridgedConfigPath(Config.getConfig().toString());
 		}
 		return Translator.translateToLocal("config.jei.title").replace("%MODNAME", Constants.NAME);
 	}

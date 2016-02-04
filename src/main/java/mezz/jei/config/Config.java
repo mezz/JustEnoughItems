@@ -9,40 +9,47 @@ import java.util.Set;
 import net.minecraft.item.ItemStack;
 
 import net.minecraftforge.common.config.ConfigCategory;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import mezz.jei.Internal;
+import mezz.jei.util.Log;
 import mezz.jei.util.StackHelper;
+import mezz.jei.util.Translator;
 
 public class Config {
-	public static final String CATEGORY_MODE = "mode";
-	public static final String CATEGORY_INTERFACE = "interface";
+	private static final String configKeyPrefix = "config.jei";
+	private static File jeiConfigurationDir;
+
 	public static final String CATEGORY_SEARCH = "search";
 	public static final String CATEGORY_ADVANCED = "advanced";
 	@Deprecated
 	public static final String CATEGORY_ADDONS = "addons";
 
-	public static LocalizedConfiguration configFile;
-	public static LocalizedConfiguration itemBlacklistFile;
+	public static LocalizedConfiguration config;
+	public static Configuration worldConfig;
+	public static LocalizedConfiguration itemBlacklistConfig;
 
-	private static boolean overlayEnabled = true;
-	private static boolean cheatItemsEnabled = false;
-	private static boolean editModeEnabled = false;
+	// advanced
 	private static boolean debugModeEnabled = false;
-
+	private static boolean hideMissingModelsEnabled = true;
 	private static boolean deleteItemsInCheatModeEnabled = true;
 
-	private static boolean jeiOnServer = true;
-
-	private static boolean recipeAnimationsEnabled = true;
-	private static boolean hideMissingModelsEnabled = true;
-
+	// search
 	private static boolean prefixRequiredForModNameSearch = true;
 	private static boolean prefixRequiredForTooltipSearch = false;
 
-	private static final Set<String> itemBlacklist = new HashSet<>();
+	// per-world
+	private static final boolean defaultOverlayEnabled = true;
+	private static final boolean defaultCheatItemsEnabled = false;
+	private static final boolean defaultEditModeEnabled = false;
+	private static boolean overlayEnabled = defaultOverlayEnabled;
+	private static boolean cheatItemsEnabled = defaultCheatItemsEnabled;
+	private static boolean editModeEnabled = defaultEditModeEnabled;
 
+	// item blacklist
+	private static final Set<String> itemBlacklist = new HashSet<>();
 	private static final String[] defaultItemBlacklist = new String[]{};
 
 	private Config() {
@@ -56,11 +63,12 @@ public class Config {
 	public static void toggleOverlayEnabled() {
 		overlayEnabled = !overlayEnabled;
 
-		Property property = configFile.get(CATEGORY_INTERFACE, "overlayEnabled", overlayEnabled);
+		final String worldCategory = SessionData.getWorldUid();
+		Property property = worldConfig.get(worldCategory, "overlayEnabled", overlayEnabled);
 		property.set(overlayEnabled);
 
-		if (configFile.hasChanged()) {
-			configFile.save();
+		if (worldConfig.hasChanged()) {
+			worldConfig.save();
 		}
 	}
 
@@ -77,19 +85,7 @@ public class Config {
 	}
 
 	public static boolean isDeleteItemsInCheatModeActive() {
-		return deleteItemsInCheatModeEnabled && cheatItemsEnabled && jeiOnServer;
-	}
-
-	public static boolean isJeiOnServer() {
-		return jeiOnServer;
-	}
-
-	public static void setJeiOnServer(boolean jeiOnServer) {
-		Config.jeiOnServer = jeiOnServer;
-	}
-
-	public static boolean isRecipeAnimationsEnabled() {
-		return recipeAnimationsEnabled;
+		return deleteItemsInCheatModeEnabled && cheatItemsEnabled && SessionData.isJeiOnServer();
 	}
 
 	public static boolean isHideMissingModelsEnabled() {
@@ -108,90 +104,190 @@ public class Config {
 		return itemBlacklist;
 	}
 
-	public static LocalizedConfiguration getConfigFile() {
-		return configFile;
+	public static LocalizedConfiguration getConfig() {
+		return config;
+	}
+
+	public static Configuration getWorldConfig() {
+		return worldConfig;
 	}
 
 	public static void preInit(@Nonnull FMLPreInitializationEvent event) {
-		final String configKeyPrefix = "config.jei";
-		final File configurationDir = event.getModConfigurationDirectory();
 
-		configFile = new LocalizedConfiguration(configKeyPrefix, event.getSuggestedConfigurationFile(), "0.2.0");
-		itemBlacklistFile = new LocalizedConfiguration(configKeyPrefix, new File(configurationDir, Constants.MOD_ID + "-itemBlacklist.cfg"), "0.1.0");
-
-		syncConfig();
-	}
-
-	public static boolean syncConfig() {
-		configFile.addCategory(CATEGORY_MODE);
-		configFile.addCategory(CATEGORY_INTERFACE);
-		configFile.addCategory(CATEGORY_SEARCH);
-		configFile.addCategory(CATEGORY_ADVANCED);
-
-		itemBlacklistFile.addCategory(CATEGORY_ADVANCED);
-
-		ConfigCategory addonsCategory = configFile.getCategory("addons");
-		if (addonsCategory != null) {
-			configFile.removeCategory(addonsCategory);
+		jeiConfigurationDir = new File(event.getModConfigurationDirectory(), Constants.MOD_ID);
+		if (!jeiConfigurationDir.exists()) {
+			try {
+				if (!jeiConfigurationDir.mkdir()) {
+					Log.error("Could not create config directory {}", jeiConfigurationDir);
+					return;
+				}
+			} catch (SecurityException e) {
+				Log.error("Could not create config directory {}", jeiConfigurationDir, e);
+				return;
+			}
 		}
 
-		overlayEnabled = configFile.getBoolean(CATEGORY_INTERFACE, "overlayEnabled", overlayEnabled);
+		final File configFile = new File(jeiConfigurationDir, "jei.cfg");
+		final File itemBlacklistConfigFile = new File(jeiConfigurationDir, "itemBlacklist.cfg");
 
-		cheatItemsEnabled = configFile.getBoolean(CATEGORY_MODE, "cheatItemsEnabled", cheatItemsEnabled);
-		editModeEnabled = configFile.getBoolean(CATEGORY_MODE, "editEnabled", editModeEnabled);
+		{
+			final File oldConfigFile = event.getSuggestedConfigurationFile();
+			if (oldConfigFile.exists()) {
+				try {
+					if (!oldConfigFile.renameTo(configFile)) {
+						Log.error("Could not move old config file {}", oldConfigFile);
+					}
+				} catch (SecurityException e) {
+					Log.error("Could not move old config file {}", oldConfigFile, e);
+				}
+			}
+		}
 
-		deleteItemsInCheatModeEnabled = configFile.getBoolean(CATEGORY_ADVANCED, "deleteItemsInCheatModeEnabled", deleteItemsInCheatModeEnabled);
+		{
+			final File oldItemBlacklistConfigFile = new File(event.getModConfigurationDirectory(), Constants.MOD_ID + "-itemBlacklist.cfg");
+			if (oldItemBlacklistConfigFile.exists()) {
+				try {
+					if (!oldItemBlacklistConfigFile.renameTo(itemBlacklistConfigFile)) {
+						Log.error("Could not move old config file {}", oldItemBlacklistConfigFile);
+					}
+				} catch (SecurityException e) {
+					Log.error("Could not move old config file {}", oldItemBlacklistConfigFile, e);
+				}
+			}
+		}
 
-		recipeAnimationsEnabled = configFile.getBoolean(CATEGORY_INTERFACE, "recipeAnimationsEnabled", recipeAnimationsEnabled);
+		config = new LocalizedConfiguration(configKeyPrefix, configFile, "0.2.0");
+		itemBlacklistConfig = new LocalizedConfiguration(configKeyPrefix, itemBlacklistConfigFile, "0.1.0");
 
-		prefixRequiredForModNameSearch = configFile.getBoolean(CATEGORY_SEARCH, "atPrefixRequiredForModName", prefixRequiredForModNameSearch);
-		prefixRequiredForTooltipSearch = configFile.getBoolean(CATEGORY_SEARCH, "prefixRequiredForTooltipSearch", prefixRequiredForTooltipSearch);
+		syncConfig();
+		syncItemBlacklistConfig();
+	}
 
-		ConfigCategory categoryAdvanced = configFile.getCategory(CATEGORY_ADVANCED);
+	public static void startJei() {
+		final File worldConfigFile = new File(jeiConfigurationDir, "worldSettings.cfg");
+		worldConfig = new Configuration(worldConfigFile, "0.1.0");
+		syncWorldConfig();
+	}
+
+	public static boolean syncAllConfig() {
+		boolean configChanged = false;
+		if (syncConfig()) {
+			configChanged = true;
+		}
+
+		if (syncItemBlacklistConfig()) {
+			configChanged = true;
+		}
+
+		if (syncWorldConfig()) {
+			configChanged = true;
+		}
+
+		return configChanged;
+	}
+
+	private static boolean syncConfig() {
+		config.addCategory(CATEGORY_SEARCH);
+		config.addCategory(CATEGORY_ADVANCED);
+
+		ConfigCategory modeCategory = config.getCategory("mode");
+		if (modeCategory != null) {
+			config.removeCategory(modeCategory);
+		}
+
+		ConfigCategory addonsCategory = config.getCategory("addons");
+		if (addonsCategory != null) {
+			config.removeCategory(addonsCategory);
+		}
+
+		ConfigCategory interfaceCategory = config.getCategory("interface");
+		if (interfaceCategory != null) {
+			config.removeCategory(interfaceCategory);
+		}
+
+		deleteItemsInCheatModeEnabled = config.getBoolean(CATEGORY_ADVANCED, "deleteItemsInCheatModeEnabled", deleteItemsInCheatModeEnabled);
+		{
+			Property property = config.get(CATEGORY_ADVANCED, "deleteItemsInCheatModeEnabled", deleteItemsInCheatModeEnabled);
+			property.setShowInGui(false);
+		}
+
+		prefixRequiredForModNameSearch = config.getBoolean(CATEGORY_SEARCH, "atPrefixRequiredForModName", prefixRequiredForModNameSearch);
+		prefixRequiredForTooltipSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForTooltipSearch", prefixRequiredForTooltipSearch);
+
+		ConfigCategory categoryAdvanced = config.getCategory(CATEGORY_ADVANCED);
 		categoryAdvanced.remove("nbtKeyIgnoreList");
 
+		hideMissingModelsEnabled = config.getBoolean(CATEGORY_ADVANCED, "hideMissingModelsEnabled", hideMissingModelsEnabled);
+
+		debugModeEnabled = config.getBoolean(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
+		{
+			Property property = config.get(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
+			property.setShowInGui(false);
+		}
+
 		// migrate item blacklist to new file
-		if (configFile.hasKey(CATEGORY_ADVANCED, "itemBlacklist")) {
-			Property oldItemBlacklistProperty = configFile.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
+		if (config.hasKey(CATEGORY_ADVANCED, "itemBlacklist")) {
+			Property oldItemBlacklistProperty = config.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
 			String[] itemBlacklistArray = oldItemBlacklistProperty.getStringList();
-			Property newItemBlacklistProperty = itemBlacklistFile.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
+			Property newItemBlacklistProperty = itemBlacklistConfig.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
 			newItemBlacklistProperty.set(itemBlacklistArray);
 			categoryAdvanced.remove("itemBlacklist");
 		}
 
-		String[] itemBlacklistArray = itemBlacklistFile.getStringList("itemBlacklist", CATEGORY_ADVANCED, defaultItemBlacklist);
+		final boolean configChanged = config.hasChanged();
+		if (configChanged) {
+			config.save();
+		}
+		return configChanged;
+	}
+
+	private static boolean syncItemBlacklistConfig() {
+		itemBlacklistConfig.addCategory(CATEGORY_ADVANCED);
+
+		String[] itemBlacklistArray = itemBlacklistConfig.getStringList("itemBlacklist", CATEGORY_ADVANCED, defaultItemBlacklist);
 		itemBlacklist.clear();
 		Collections.addAll(itemBlacklist, itemBlacklistArray);
 
-		hideMissingModelsEnabled = configFile.getBoolean(CATEGORY_ADVANCED, "hideMissingModelsEnabled", hideMissingModelsEnabled);
-
-		debugModeEnabled = configFile.getBoolean(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
-		{
-			Property property = configFile.get(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
-			property.setShowInGui(false);
-		}
-
-		final boolean configChanged = configFile.hasChanged();
+		final boolean configChanged = itemBlacklistConfig.hasChanged();
 		if (configChanged) {
-			configFile.save();
+			itemBlacklistConfig.save();
 		}
+		return configChanged;
+	}
 
-		final boolean itemBlacklistChanged = itemBlacklistFile.hasChanged();
-		if (itemBlacklistChanged) {
-			itemBlacklistFile.save();
+	private static boolean syncWorldConfig() {
+		final String worldCategory = SessionData.getWorldUid();
+
+		Property property = worldConfig.get(worldCategory, "overlayEnabled", defaultOverlayEnabled);
+		property.setLanguageKey("config.jei.interface.overlayEnabled");
+		property.comment = Translator.translateToLocal("config.jei.interface.overlayEnabled.comment");
+		overlayEnabled = property.getBoolean();
+
+		property = worldConfig.get(worldCategory, "cheatItemsEnabled", defaultCheatItemsEnabled);
+		property.setLanguageKey("config.jei.mode.cheatItemsEnabled");
+		property.comment = Translator.translateToLocal("config.jei.mode.cheatItemsEnabled.comment");
+		cheatItemsEnabled = property.getBoolean();
+
+		property = worldConfig.get(worldCategory, "editEnabled", defaultEditModeEnabled);
+		property.setLanguageKey("config.jei.mode.editEnabled");
+		property.comment = Translator.translateToLocal("config.jei.mode.editEnabled.comment");
+		editModeEnabled = property.getBoolean();
+
+		final boolean configChanged = worldConfig.hasChanged();
+		if (configChanged) {
+			worldConfig.save();
 		}
-
-		return configChanged || itemBlacklistChanged;
+		return configChanged;
 	}
 
 	private static void updateBlacklist() {
-		Property property = itemBlacklistFile.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
+		Property property = itemBlacklistConfig.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
 
 		String[] currentBlacklist = itemBlacklist.toArray(new String[itemBlacklist.size()]);
 		property.set(currentBlacklist);
 
-		if (itemBlacklistFile.hasChanged()) {
-			itemBlacklistFile.save();
+		if (itemBlacklistConfig.hasChanged()) {
+			itemBlacklistConfig.save();
 		}
 	}
 

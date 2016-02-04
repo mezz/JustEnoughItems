@@ -15,7 +15,7 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 
 import mezz.jei.JustEnoughItems;
-import mezz.jei.config.Config;
+import mezz.jei.config.SessionData;
 import mezz.jei.network.packets.PacketGiveItemMessageBig;
 
 public class Commands {
@@ -54,7 +54,7 @@ public class Commands {
 		if (chatMessage.length() <= 100) {
 			sender.sendChatMessage(chatMessage);
 		} else {
-			if (Config.isJeiOnServer()) {
+			if (SessionData.isJeiOnServer()) {
 				PacketGiveItemMessageBig packet = new PacketGiveItemMessageBig(chatMessage);
 				JustEnoughItems.getProxy().sendPacketToServer(packet);
 			} else {

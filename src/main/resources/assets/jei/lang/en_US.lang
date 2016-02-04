@@ -29,19 +29,19 @@ config.jei.title=%MODNAME Config
 
 config.jei.mode=Mode
 config.jei.mode.comment=Change the mode that JEI is operating in.
-config.jei.mode.cheatItemsEnabled=Item Cheating
+config.jei.mode.cheatItemsEnabled=Item Cheating Mode
 config.jei.mode.cheatItemsEnabled.comment=Give items instead of showing the recipe.
-config.jei.mode.editEnabled=Item List Edit Mode
+config.jei.mode.editEnabled=Item Hiding Mode
 config.jei.mode.editEnabled.comment=Hide and unhide items by clicking them in the item list.
 
 config.jei.interface=Interface
 config.jei.interface.comment=Options relating to the User Interface.
-config.jei.interface.overlayEnabled=Item List Overlay
+config.jei.interface.overlayEnabled=Item List Enabled
 config.jei.interface.overlayEnabled.comment=Show the list of items next to open guis.
 config.jei.interface.recipeAnimationsEnabled=Recipe Animations
 config.jei.interface.recipeAnimationsEnabled.comment=Show recipe animations (furnace fire, progress bars, etc)
 
-config.jei.search=Search
+config.jei.search=Search Options
 config.jei.search.comment=Options relating to the search bar.
 config.jei.search.atPrefixRequiredForModName=Use @ for Mod Name
 config.jei.search.atPrefixRequiredForModName.comment=Require "@ModName" to search by mod name instead of "ModName".
@@ -52,7 +52,7 @@ config.jei.advanced=Advanced
 config.jei.advanced.comment=Advanced config options to change the way JEI functions.
 config.jei.advanced.itemBlacklist=Item Blacklist
 config.jei.advanced.itemBlacklist.comment=List of items that should not be displayed in the item list. Format: modId[:name[:meta]]. Edit Mode will automatically add or remove entries here.
-config.jei.advanced.hideMissingModelsEnabled=Hide Missing Item Models
+config.jei.advanced.hideMissingModelsEnabled=Hide Items with Missing Models
 config.jei.advanced.hideMissingModelsEnabled.comment=Items with missing models will be hidden from the item list.
 config.jei.advanced.debugModeEnabled=Debug Mode
 config.jei.advanced.debugModeEnabled.comment=Only useful for JEI developers, adds thousands of test items and some debug recipes.

@@ -15,6 +15,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
+import mezz.jei.config.SessionData;
 import mezz.jei.debug.DebugItem;
 import mezz.jei.network.PacketHandler;
 
@@ -42,7 +43,7 @@ public class JustEnoughItems {
 	public boolean checkModLists(Map<String, String> modList, Side side) {
 		if (side == Side.SERVER) {
 			boolean jeiOnServer = modList.containsKey(Constants.MOD_ID);
-			Config.setJeiOnServer(jeiOnServer);
+			SessionData.onConnectedToServer(jeiOnServer);
 		}
 
 		return true;

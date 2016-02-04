@@ -29,6 +29,7 @@ import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
+import mezz.jei.config.SessionData;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.network.packets.PacketJEI;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
@@ -37,7 +38,6 @@ import mezz.jei.util.Log;
 import mezz.jei.util.ModRegistry;
 
 public class ProxyCommonClient extends ProxyCommon {
-	private static boolean started = false;
 	@Nullable
 	private ItemFilter itemFilter;
 	private GuiEventHandler guiEventHandler;
@@ -109,13 +109,16 @@ public class ProxyCommonClient extends ProxyCommon {
 
 	@SubscribeEvent
 	public void onEntityJoinedWorld(EntityJoinWorldEvent event) {
-		if (!started && Minecraft.getMinecraft().thePlayer != null) {
+		if (!SessionData.isJeiStarted() && Minecraft.getMinecraft().thePlayer != null) {
 			startJEI();
 		}
 	}
 
 	private void startJEI() {
-		started = true;
+		SessionData.setJeiStarted();
+
+		Config.startJei();
+
 		ItemRegistry itemRegistry = new ItemRegistry();
 		Internal.setItemRegistry(itemRegistry);
 
@@ -188,7 +191,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	@Override
 	public void restartJEI() {
 		// check that JEI has been started before. if not, do nothing
-		if (started) {
+		if (SessionData.isJeiStarted()) {
 			startJEI();
 		}
 	}
@@ -215,7 +218,7 @@ public class ProxyCommonClient extends ProxyCommon {
 			return;
 		}
 
-		if (Config.syncConfig()) {
+		if (SessionData.isJeiStarted() && Config.syncAllConfig()) {
 			restartJEI(); // reload everything, configs can change available recipes
 		}
 	}
