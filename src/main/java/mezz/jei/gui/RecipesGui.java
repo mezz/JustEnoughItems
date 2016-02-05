@@ -31,7 +31,7 @@ import mezz.jei.transfer.RecipeTransferUtil;
 import mezz.jei.util.StringUtil;
 import mezz.jei.util.Translator;
 
-public class RecipesGui extends GuiContainer implements IShowsRecipeFocuses {
+public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 	private static final int borderPadding = 8;
 	private static final int textPadding = 5;
 	private static final int buttonWidth = 13;
@@ -59,16 +59,22 @@ public class RecipesGui extends GuiContainer implements IShowsRecipeFocuses {
 
 	@Nullable
 	private GuiScreen parentScreen;
+	private int xSize;
+	private int ySize;
+	private int guiLeft;
+	private int guiTop;
 
 	public RecipesGui() {
-		super(new EmptyContainer());
 		this.mc = Minecraft.getMinecraft();
 	}
 
+	@Override
+	public boolean doesGuiPauseGame() {
+		return false;
+	}
 
 	@Override
 	public void setWorldAndResolution(Minecraft mc, int width, int height) {
-		this.inventorySlots = new EmptyContainer(mc.thePlayer);
 		super.setWorldAndResolution(mc, width, height);
 
 		this.xSize = 176;
@@ -160,7 +166,6 @@ public class RecipesGui extends GuiContainer implements IShowsRecipeFocuses {
 		GlStateManager.popMatrix();
 	}
 
-	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		drawDefaultBackground();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

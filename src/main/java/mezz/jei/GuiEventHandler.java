@@ -21,17 +21,14 @@ import mezz.jei.input.InputHandler;
 import mezz.jei.util.Translator;
 
 public class GuiEventHandler {
-
-	@Nullable
-	private ItemListOverlay itemListOverlay;
-	@Nonnull
-	private final RecipesGui recipesGui = new RecipesGui();
 	@Nonnull
 	private final String showRecipesText = Translator.translateToLocal("jei.tooltip.show.recipes");
 	@Nullable
+	private ItemListOverlay itemListOverlay;
+	@Nullable
 	private InputHandler inputHandler;
 	@Nullable
-	private GuiScreen previousGui = null;
+	private GuiContainer previousGui = null;
 
 	public void setItemListOverlay(@Nullable ItemListOverlay itemListOverlay) {
 		if (this.itemListOverlay != null) {
@@ -47,14 +44,13 @@ public class GuiEventHandler {
 			return;
 		}
 
-		GuiContainer guiContainer = asGuiContainer(event.gui);
-		if (guiContainer == null) {
-			return;
+		if (event.gui instanceof GuiContainer) {
+			GuiContainer guiContainer = (GuiContainer) event.gui;
+			itemListOverlay.initGui(guiContainer);
+
+			RecipesGui recipesGui = new RecipesGui();
+			inputHandler = new InputHandler(recipesGui, itemListOverlay);
 		}
-
-		itemListOverlay.initGui(guiContainer);
-
-		inputHandler = new InputHandler(recipesGui, itemListOverlay);
 	}
 	
 	@SubscribeEvent
@@ -62,11 +58,17 @@ public class GuiEventHandler {
 		if (itemListOverlay == null) {
 			return;
 		}
-		if (previousGui != event.gui && recipesGui != event.gui) {
-			previousGui = event.gui;
-			if (itemListOverlay.isOpen()) {
-				itemListOverlay.close();
+
+		if (event.gui instanceof GuiContainer) {
+			GuiContainer guiContainer = (GuiContainer) event.gui;
+			if (previousGui != guiContainer) {
+				previousGui = guiContainer;
+				if (itemListOverlay.isOpen()) {
+					itemListOverlay.close();
+				}
 			}
+		} else if (!(event.gui instanceof RecipesGui)) {
+			itemListOverlay.close();
 		}
 	}
 
@@ -76,12 +78,14 @@ public class GuiEventHandler {
 			return;
 		}
 
-		GuiContainer guiContainer = asGuiContainer(event.gui);
-		if (guiContainer != null) {
+		if (event.gui instanceof GuiContainer) {
+			GuiContainer guiContainer = (GuiContainer) event.gui;
 			itemListOverlay.updateGui(guiContainer);
 		}
 
-		itemListOverlay.drawScreen(event.gui.mc, event.getMouseX(), event.getMouseY());
+		if (itemListOverlay.isOpen()) {
+			itemListOverlay.drawScreen(event.gui.mc, event.getMouseX(), event.getMouseY());
+		}
 	}
 
 	@SubscribeEvent
@@ -90,17 +94,17 @@ public class GuiEventHandler {
 			return;
 		}
 
-		GuiContainer guiContainer = asGuiContainer(event.gui);
-		if (guiContainer == null) {
-			return;
+		if (event.gui instanceof GuiContainer) {
+			GuiContainer guiContainer = (GuiContainer) event.gui;
+			RecipeClickableArea clickableArea = Internal.getRuntime().getRecipeRegistry().getRecipeClickableArea(guiContainer);
+			if (clickableArea != null && clickableArea.checkHover(event.mouseX - guiContainer.guiLeft, event.mouseY - guiContainer.guiTop)) {
+				TooltipRenderer.drawHoveringText(guiContainer.mc, showRecipesText, event.mouseX, event.mouseY);
+			}
 		}
 
-		RecipeClickableArea clickableArea = Internal.getRuntime().getRecipeRegistry().getRecipeClickableArea(guiContainer);
-		if (clickableArea != null && clickableArea.checkHover(event.mouseX - guiContainer.guiLeft, event.mouseY - guiContainer.guiTop)) {
-			TooltipRenderer.drawHoveringText(guiContainer.mc, showRecipesText, event.mouseX, event.mouseY);
+		if (itemListOverlay.isOpen()) {
+			itemListOverlay.drawHovered(event.gui.mc, event.mouseX, event.mouseY);
 		}
-
-		itemListOverlay.drawHovered(guiContainer.mc, event.mouseX, event.mouseY);
 	}
 
 	@SubscribeEvent
@@ -116,9 +120,6 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onGuiKeyboardEvent(GuiScreenEvent.KeyboardInputEvent.Pre event) {
-		if (!(event.gui instanceof GuiContainer)) {
-			return;
-		}
 		if (inputHandler != null) {
 			if (inputHandler.handleKeyEvent()) {
 				event.setCanceled(true);
@@ -128,24 +129,13 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onGuiMouseEvent(GuiScreenEvent.MouseInputEvent.Pre event) {
-		if (!(event.gui instanceof GuiContainer)) {
-			return;
-		}
-		GuiContainer guiContainer = (GuiContainer) event.gui;
+		GuiScreen guiScreen = event.gui;
 		if (inputHandler != null) {
-			int x = Mouse.getEventX() * guiContainer.width / guiContainer.mc.displayWidth;
-			int y = guiContainer.height - Mouse.getEventY() * guiContainer.height / guiContainer.mc.displayHeight - 1;
-			if (inputHandler.handleMouseEvent(guiContainer, x, y)) {
+			int x = Mouse.getEventX() * guiScreen.width / guiScreen.mc.displayWidth;
+			int y = guiScreen.height - Mouse.getEventY() * guiScreen.height / guiScreen.mc.displayHeight - 1;
+			if (inputHandler.handleMouseEvent(guiScreen, x, y)) {
 				event.setCanceled(true);
 			}
 		}
-	}
-
-	@Nullable
-	private GuiContainer asGuiContainer(GuiScreen guiScreen) {
-		if (!(guiScreen instanceof GuiContainer)) {
-			return null;
-		}
-		return (GuiContainer) guiScreen;
 	}
 }

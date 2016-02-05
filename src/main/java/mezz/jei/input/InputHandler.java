@@ -28,15 +28,18 @@ import mezz.jei.util.MouseHelper;
 
 public class InputHandler {
 
+	@Nonnull
 	private final RecipesGui recipesGui;
+	@Nonnull
 	private final ItemListOverlay itemListOverlay;
+	@Nonnull
 	private final MouseHelper mouseHelper;
-
+	@Nonnull
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<>();
 
 	private boolean clickHandled = false;
 
-	public InputHandler(RecipesGui recipesGui, ItemListOverlay itemListOverlay) {
+	public InputHandler(@Nonnull RecipesGui recipesGui, @Nonnull ItemListOverlay itemListOverlay) {
 		this.recipesGui = recipesGui;
 		this.itemListOverlay = itemListOverlay;
 
@@ -47,12 +50,12 @@ public class InputHandler {
 		showsRecipeFocuses.add(new GuiContainerWrapper());
 	}
 
-	public boolean handleMouseEvent(@Nonnull GuiContainer guiContainer, int mouseX, int mouseY) {
+	public boolean handleMouseEvent(@Nonnull GuiScreen guiScreen, int mouseX, int mouseY) {
 		boolean cancelEvent = false;
 		if (Mouse.getEventButton() > -1) {
 			if (Mouse.getEventButtonState()) {
 				if (!clickHandled) {
-					cancelEvent = handleMouseClick(guiContainer, Mouse.getEventButton(), mouseX, mouseY);
+					cancelEvent = handleMouseClick(guiScreen, Mouse.getEventButton(), mouseX, mouseY);
 					clickHandled = cancelEvent;
 				}
 			} else if (clickHandled) {
@@ -69,7 +72,7 @@ public class InputHandler {
 		return itemListOverlay.handleMouseScrolled(mouseX, mouseY, dWheel);
 	}
 
-	private boolean handleMouseClick(@Nonnull GuiContainer guiContainer, int mouseButton, int mouseX, int mouseY) {
+	private boolean handleMouseClick(@Nonnull GuiScreen guiScreen, int mouseButton, int mouseX, int mouseY) {
 		if (itemListOverlay.handleMouseClicked(mouseX, mouseY, mouseButton)) {
 			return true;
 		}
@@ -79,10 +82,13 @@ public class InputHandler {
 			return true;
 		}
 
-		RecipeClickableArea clickableArea = Internal.getRuntime().getRecipeRegistry().getRecipeClickableArea(guiContainer);
-		if (clickableArea != null && clickableArea.checkHover(mouseX - guiContainer.guiLeft, mouseY - guiContainer.guiTop)) {
-			List<String> recipeCategoryUids = clickableArea.getRecipeCategoryUids();
-			recipesGui.showCategories(recipeCategoryUids);
+		if (guiScreen instanceof GuiContainer) {
+			GuiContainer guiContainer = (GuiContainer) guiScreen;
+			RecipeClickableArea clickableArea = Internal.getRuntime().getRecipeRegistry().getRecipeClickableArea(guiContainer);
+			if (clickableArea != null && clickableArea.checkHover(mouseX - guiContainer.guiLeft, mouseY - guiContainer.guiTop)) {
+				List<String> recipeCategoryUids = clickableArea.getRecipeCategoryUids();
+				recipesGui.showCategories(recipeCategoryUids);
+			}
 		}
 
 		return false;
