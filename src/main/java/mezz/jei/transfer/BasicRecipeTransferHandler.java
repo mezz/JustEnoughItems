@@ -77,7 +77,7 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 		int inputCount = 0;
 		IGuiItemStackGroup itemStackGroup = recipeLayout.getItemStacks();
 		for (IGuiIngredient<ItemStack> ingredient : itemStackGroup.getGuiIngredients().values()) {
-			if (ingredient.isInput() && !ingredient.getAll().isEmpty()) {
+			if (ingredient.isInput() && !ingredient.getAllIngredients().isEmpty()) {
 				inputCount++;
 			}
 		}

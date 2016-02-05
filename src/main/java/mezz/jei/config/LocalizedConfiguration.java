@@ -3,7 +3,6 @@ package mezz.jei.config;
 import java.io.File;
 import java.util.Arrays;
 
-import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 

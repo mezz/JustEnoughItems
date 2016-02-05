@@ -46,7 +46,7 @@ public class StackHelper implements IStackHelper {
 			}
 			recipeSlotNumber++;
 
-			List<ItemStack> requiredStacks = ingredient.getAll();
+			List<ItemStack> requiredStacks = ingredient.getAllIngredients();
 			if (requiredStacks.isEmpty()) {
 				continue;
 			}

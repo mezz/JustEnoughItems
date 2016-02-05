@@ -32,18 +32,6 @@ public class Focus {
 	@Nonnull
 	private Mode mode = Mode.NONE;
 
-	public static Focus create(Object focus) {
-		if (focus instanceof ItemStack) {
-			return new Focus((ItemStack) focus);
-		} else if (focus instanceof Fluid) {
-			return new Focus((Fluid) focus);
-		} else if (focus instanceof FluidStack) {
-			return new Focus(((FluidStack) focus).getFluid());
-		} else {
-			return new Focus();
-		}
-	}
-
 	public Focus() {
 		this.stack = null;
 		this.fluid = null;
@@ -60,7 +48,7 @@ public class Focus {
 	}
 
 	@Nullable
-	private static Fluid getFluidFromItemStack(ItemStack stack) {
+	private static Fluid getFluidFromItemStack(@Nonnull ItemStack stack) {
 		Item item = stack.getItem();
 		if (item instanceof IFluidContainerItem) {
 			IFluidContainerItem fluidContainerItem = (IFluidContainerItem) item;
@@ -105,8 +93,8 @@ public class Focus {
 		return mode;
 	}
 
-	public boolean equalsFocus(Focus other) {
-		return ItemStack.areItemStacksEqual(this.stack, other.getStack()) && fluid == other.fluid && mode == other.mode;
+	public boolean equalsFocus(@Nonnull Focus other) {
+		return ItemStack.areItemStacksEqual(this.stack, other.getStack()) && fluid == other.getFluid() && mode == other.getMode();
 	}
 
 	@Nonnull
@@ -121,7 +109,8 @@ public class Focus {
 		}
 	}
 
-	private List<IRecipeCategory> getInputCategories(IRecipeRegistry recipeRegistry) {
+	@Nonnull
+	private List<IRecipeCategory> getInputCategories(@Nonnull IRecipeRegistry recipeRegistry) {
 		if (stack != null && fluid != null) {
 			List<IRecipeCategory> categories = new ArrayList<>(recipeRegistry.getRecipeCategoriesWithInput(stack));
 			categories.addAll(recipeRegistry.getRecipeCategoriesWithInput(fluid));
@@ -134,7 +123,8 @@ public class Focus {
 		}
 	}
 
-	private List<IRecipeCategory> getOutputCategories(IRecipeRegistry recipeRegistry) {
+	@Nonnull
+	private List<IRecipeCategory> getOutputCategories(@Nonnull IRecipeRegistry recipeRegistry) {
 		if (stack != null && fluid != null) {
 			List<IRecipeCategory> categories = new ArrayList<>(recipeRegistry.getRecipeCategoriesWithOutput(stack));
 			categories.addAll(recipeRegistry.getRecipeCategoriesWithOutput(fluid));
@@ -148,7 +138,7 @@ public class Focus {
 	}
 
 	@Nonnull
-	public List<Object> getRecipes(IRecipeCategory recipeCategory) {
+	public List<Object> getRecipes(@Nonnull IRecipeCategory recipeCategory) {
 		IRecipeRegistry recipeRegistry = Internal.getRuntime().getRecipeRegistry();
 		if (mode == Mode.INPUT) {
 			return getInputRecipes(recipeRegistry, recipeCategory);
@@ -159,7 +149,8 @@ public class Focus {
 		}
 	}
 
-	private List<Object> getInputRecipes(IRecipeRegistry recipeRegistry, IRecipeCategory recipeCategory) {
+	@Nonnull
+	private List<Object> getInputRecipes(@Nonnull IRecipeRegistry recipeRegistry, @Nonnull IRecipeCategory recipeCategory) {
 		if (stack != null && fluid != null) {
 			List<Object> recipes = new ArrayList<>(recipeRegistry.getRecipesWithInput(recipeCategory, stack));
 			recipes.addAll(recipeRegistry.getRecipesWithInput(recipeCategory, fluid));
@@ -172,7 +163,8 @@ public class Focus {
 		}
 	}
 
-	private List<Object> getOutputRecipes(IRecipeRegistry recipeRegistry, IRecipeCategory recipeCategory) {
+	@Nonnull
+	private List<Object> getOutputRecipes(@Nonnull IRecipeRegistry recipeRegistry, @Nonnull IRecipeCategory recipeCategory) {
 		if (stack != null && fluid != null) {
 			List<Object> recipes = new ArrayList<>(recipeRegistry.getRecipesWithOutput(recipeCategory, stack));
 			recipes.addAll(recipeRegistry.getRecipesWithOutput(recipeCategory, fluid));

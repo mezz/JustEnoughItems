@@ -265,6 +265,7 @@ public class RecipesGui extends GuiContainer implements IShowsRecipeFocuses {
 		} else {
 			mc.thePlayer.closeScreen();
 		}
+		logic.clearHistory();
 	}
 
 	public void showRecipes(@Nonnull Focus focus) {

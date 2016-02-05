@@ -29,6 +29,8 @@ public interface IRecipeGuiLogic {
 
 	boolean back();
 
+	void clearHistory();
+
 	boolean setCategoryFocus();
 
 	boolean setCategoryFocus(List<String> recipeCategoryUids);

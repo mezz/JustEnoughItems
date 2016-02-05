@@ -15,7 +15,13 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
-	public ItemStack getMatch(Iterable<ItemStack> contained, @Nonnull Focus toMatch) {
-		return Internal.getStackHelper().containsStack(contained, toMatch.getStack());
+	public ItemStack getMatch(Iterable<ItemStack> ingredients, @Nonnull Focus toMatch) {
+		return Internal.getStackHelper().containsStack(ingredients, toMatch.getStack());
+	}
+
+	@Nonnull
+	@Override
+	public Focus createFocus(@Nonnull ItemStack ingredient) {
+		return new Focus(ingredient);
 	}
 }

@@ -34,9 +34,9 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	@Nonnull
 	private final CycleTimer cycleTimer;
 	@Nonnull
-	private final List<T> contained = new ArrayList<>(); // contained, taking focus into account
+	private final List<T> displayIngredients = new ArrayList<>(); // ingredients, taking focus into account
 	@Nonnull
-	private final List<T> allContained = new ArrayList<>(); // contained, ignoring focus
+	private final List<T> allIngredients = new ArrayList<>(); // all ingredients, ignoring focus
 	@Nonnull
 	private final IIngredientRenderer<T> ingredientRenderer;
 	@Nonnull
@@ -65,7 +65,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	@Override
 	public void clear() {
 		enabled = false;
-		contained.clear();
+		displayIngredients.clear();
 	}
 
 	@Override
@@ -73,40 +73,48 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		return enabled && (mouseX >= xPosition) && (mouseY >= yPosition) && (mouseX < xPosition + width) && (mouseY < yPosition + height);
 	}
 
-	@Override
 	@Nullable
-	public T get() {
-		return cycleTimer.getCycledItem(contained);
+	public T getIngredient() {
+		return cycleTimer.getCycledItem(displayIngredients);
+	}
+
+	@Override
+	public Focus getFocus() {
+		T ingredient = getIngredient();
+		if (ingredient == null) {
+			return null;
+		}
+		return ingredientHelper.createFocus(ingredient);
 	}
 
 	@Nonnull
 	@Override
-	public List<T> getAll() {
-		return allContained;
+	public List<T> getAllIngredients() {
+		return allIngredients;
 	}
 
 	@Override
-	public void set(@Nonnull T contained, @Nonnull Focus focus) {
-		set(Collections.singleton(contained), focus);
+	public void set(@Nonnull T ingredient, @Nonnull Focus focus) {
+		set(Collections.singleton(ingredient), focus);
 	}
 
 	@Override
-	public void set(@Nonnull Collection<T> contained, @Nonnull Focus focus) {
-		this.contained.clear();
-		this.allContained.clear();
-		contained = ingredientHelper.expandSubtypes(contained);
+	public void set(@Nonnull Collection<T> ingredients, @Nonnull Focus focus) {
+		this.displayIngredients.clear();
+		this.allIngredients.clear();
+		ingredients = ingredientHelper.expandSubtypes(ingredients);
 		T match = null;
 		if ((isInput() && focus.getMode() == Focus.Mode.INPUT) || (!isInput() && focus.getMode() == Focus.Mode.OUTPUT)) {
-			match = ingredientHelper.getMatch(contained, focus);
+			match = ingredientHelper.getMatch(ingredients, focus);
 		}
 		if (match != null) {
-			this.contained.add(match);
+			this.displayIngredients.add(match);
 		} else {
-			this.contained.addAll(contained);
+			this.displayIngredients.addAll(ingredients);
 		}
-		this.ingredientRenderer.setIngredients(contained);
-		this.allContained.addAll(contained);
-		enabled = !this.contained.isEmpty();
+		this.ingredientRenderer.setIngredients(ingredients);
+		this.allIngredients.addAll(ingredients);
+		enabled = !this.displayIngredients.isEmpty();
 	}
 
 	public void setTooltipCallback(@Nullable ITooltipCallback<T> tooltipCallback) {
@@ -117,13 +125,13 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	public void draw(@Nonnull Minecraft minecraft) {
 		cycleTimer.onDraw();
 
-		T value = get();
+		T value = getIngredient();
 		ingredientRenderer.draw(minecraft, xPosition + padding, yPosition + padding, value);
 	}
 
 	@Override
 	public void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
-		T value = get();
+		T value = getIngredient();
 		if (value == null) {
 			return;
 		}

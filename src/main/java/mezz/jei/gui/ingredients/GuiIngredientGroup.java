@@ -54,7 +54,7 @@ public abstract class GuiIngredientGroup<V, T extends GuiIngredient<V>> implemen
 	public Focus getFocusUnderMouse(int mouseX, int mouseY) {
 		for (T widget : guiIngredients.values()) {
 			if (widget != null && widget.isMouseOver(mouseX, mouseY)) {
-				return Focus.create(widget.get());
+				return widget.getFocus();
 			}
 		}
 		return null;

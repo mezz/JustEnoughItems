@@ -18,10 +18,10 @@ public interface IGuiIngredient<T> {
 	void clear();
 
 	@Nullable
-	T get();
+	Focus getFocus();
 
 	@Nonnull
-	List<T> getAll();
+	List<T> getAllIngredients();
 
 	boolean isInput();
 
