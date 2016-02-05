@@ -119,7 +119,7 @@ public class InputHandler {
 			}
 		}
 
-		if (Config.isCheatItemsEnabled() && focus.getStack() != null) {
+		if (Config.isCheatItemsEnabled() && focus.getStack() != null && focus.allowsCheating()) {
 			if (mouseButton == 0) {
 				Commands.giveFullStack(focus.getStack());
 				return true;

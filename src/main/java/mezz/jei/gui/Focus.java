@@ -31,6 +31,7 @@ public class Focus {
 	private final Fluid fluid;
 	@Nonnull
 	private Mode mode = Mode.NONE;
+	private boolean allowsCheating = false;
 
 	public Focus() {
 		this.stack = null;
@@ -91,6 +92,14 @@ public class Focus {
 	@Nonnull
 	public Mode getMode() {
 		return mode;
+	}
+
+	public void setAllowsCheating() {
+		allowsCheating = true;
+	}
+
+	public boolean allowsCheating() {
+		return allowsCheating;
 	}
 
 	public boolean equalsFocus(@Nonnull Focus other) {

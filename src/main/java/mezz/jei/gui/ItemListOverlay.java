@@ -343,6 +343,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		Focus focus = guiItemStacks.getFocusUnderMouse(mouseX, mouseY);
 		if (focus != null) {
 			setKeyboardFocus(false);
+			focus.setAllowsCheating();
 		}
 		return focus;
 	}
