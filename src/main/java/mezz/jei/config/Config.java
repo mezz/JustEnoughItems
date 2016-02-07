@@ -323,11 +323,11 @@ public class Config {
 		StackHelper stackHelper = Internal.getStackHelper();
 		switch (blacklistType) {
 			case ITEM:
-				return stackHelper.getUniqueIdentifierForStack(itemStack, false);
+				return stackHelper.getUniqueIdentifierForStack(itemStack, StackHelper.UidMode.NORMAL);
 			case WILDCARD:
-				return stackHelper.getUniqueIdentifierForStack(itemStack, true);
+				return stackHelper.getUniqueIdentifierForStack(itemStack, StackHelper.UidMode.WILDCARD);
 			case MOD_ID:
-				return stackHelper.getModIdForStack(itemStack);
+				return stackHelper.getModId(itemStack);
 
 		}
 		return "";

@@ -40,7 +40,6 @@ Q: Why isn't my gradle working?
  * A: See the build.gradle of any of the many mods that include JEI integration (listed in the "Plugin Examples" section below).
 
 Q: Why aren't all of my items showing up in the item list? They are shown in the creative menu.
- * A: If your item is missing its subtypes, make sure your item returns true from `item.getHasSubtypes()`.
  * A: JEI hides items with missing item models (purple and black). You can show them by changing the config option in the Advanced section.
 
 Q: Where is the deobfuscated jar for developers?

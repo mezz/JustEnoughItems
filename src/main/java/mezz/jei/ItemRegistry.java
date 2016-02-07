@@ -29,6 +29,7 @@ import mezz.jei.api.IItemRegistry;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Log;
 import mezz.jei.util.ModList;
+import mezz.jei.util.StackHelper;
 
 public class ItemRegistry implements IItemRegistry {
 
@@ -191,7 +192,7 @@ public class ItemRegistry implements IItemRegistry {
 
 	private void addItemStack(@Nonnull ItemStack stack, @Nonnull List<ItemStack> itemList, @Nonnull List<ItemStack> fuels) {
 		try {
-			String itemKey = Internal.getStackHelper().getUniqueIdentifierForStack(stack);
+			String itemKey = Internal.getStackHelper().getUniqueIdentifierForStack(stack, StackHelper.UidMode.FULL);
 
 			if (itemNameSet.contains(itemKey)) {
 				return;

@@ -267,12 +267,17 @@ public class StackHelper implements IStackHelper {
 	}
 
 	@Nonnull
-	public String getModIdForStack(@Nonnull ItemStack stack) {
+	public String getModId(@Nonnull ItemStack stack) {
 		Item item = stack.getItem();
 		if (item == null) {
 			throw new ItemUidException("Found an itemStack with a null item. This is an error from another mod.");
 		}
 
+		return getModId(item);
+	}
+
+	@Nonnull
+	public String getModId(@Nonnull Item item) {
 		FMLControlledNamespacedRegistry<Item> itemRegistry = GameData.getItemRegistry();
 		ResourceLocation itemName = itemRegistry.getNameForObject(item);
 		if (itemName == null) {
@@ -284,11 +289,11 @@ public class StackHelper implements IStackHelper {
 
 	@Nonnull
 	public String getUniqueIdentifierForStack(@Nonnull ItemStack stack) {
-		return getUniqueIdentifierForStack(stack, false);
+		return getUniqueIdentifierForStack(stack, UidMode.NORMAL);
 	}
 
 	@Nonnull
-	public String getUniqueIdentifierForStack(@Nonnull ItemStack stack, boolean wildcard) {
+	public String getUniqueIdentifierForStack(@Nonnull ItemStack stack, @Nonnull UidMode mode) {
 		Item item = stack.getItem();
 		if (item == null) {
 			throw new ItemUidException("Found an itemStack with a null item. This is an error from another mod.");
@@ -302,12 +307,12 @@ public class StackHelper implements IStackHelper {
 
 		String itemNameString = itemName.toString();
 		int metadata = stack.getMetadata();
-		if (wildcard || metadata == OreDictionary.WILDCARD_VALUE) {
+		if (mode == UidMode.WILDCARD || metadata == OreDictionary.WILDCARD_VALUE) {
 			return itemNameString;
 		}
 
 		StringBuilder itemKey = new StringBuilder(itemNameString);
-		if (stack.getHasSubtypes()) {
+		if (mode == UidMode.FULL || stack.getHasSubtypes()) {
 			itemKey.append(':').append(metadata);
 			if (stack.hasTagCompound()) {
 				NBTTagCompound nbtTagCompound = Internal.getHelpers().getNbtIgnoreList().getNbt(stack);
@@ -320,10 +325,14 @@ public class StackHelper implements IStackHelper {
 		return itemKey.toString();
 	}
 
+	public enum UidMode {
+		NORMAL, WILDCARD, FULL
+	}
+
 	@Nonnull
 	public List<String> getUniqueIdentifiersWithWildcard(@Nonnull ItemStack itemStack) {
-		String uid = getUniqueIdentifierForStack(itemStack, false);
-		String uidWild = getUniqueIdentifierForStack(itemStack, true);
+		String uid = getUniqueIdentifierForStack(itemStack, UidMode.NORMAL);
+		String uidWild = getUniqueIdentifierForStack(itemStack, UidMode.WILDCARD);
 
 		if (uid.equals(uidWild)) {
 			return Collections.singletonList(uid);
