@@ -1,15 +1,15 @@
 JustEnoughItems (JEI)
 ===============
-JustEnoughItems is an Item and Recipe viewing mod which only contains the basics.
+JustEnoughItems is an Item and Recipe viewing mod with a focus on stability, performance, and ease of use.
 
 This means:
  * not a coremod
  * no dependencies
+ * clean API for developers
  * nothing but items and recipes
 
 Download
 ===============
-JEI has versions built for Minecraft 1.8 and 1.8.8.
 [Grab the latest versions from curseforge.](http://minecraft.curseforge.com/projects/just-enough-items-jei/files)
 
 Developing Addons
@@ -40,11 +40,10 @@ Q: Why isn't my gradle working?
  * A: See the build.gradle of any of the many mods that include JEI integration (listed in the "Plugin Examples" section below).
 
 Q: Why aren't all of my items showing up in the item list? They are shown in the creative menu.
- * A: JEI hides items with missing item models (purple and black). You can show them by changing the config option in the Advanced section.
+ * A: JEI hides items with missing item models (purple and black). You can show them by changing the config option in the in-game config menu.
 
 Q: Where is the deobfuscated jar for developers?
  * A: Use the regular jar file. Recent Forge 1.8.9 versions automatically deobfuscate jars in the mods directory.
- * A: Get it from Maven as described in the "Developing Addons" section above.
 
 Still have questions? Join [#JEI on esper.net IRC](http://webchat.esper.net/?nick=JEIGithub...&channels=JEI&prompt=1) for questions or anything else!
 
