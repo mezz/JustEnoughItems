@@ -1,17 +1,19 @@
 package mezz.jei;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -36,18 +38,18 @@ import mezz.jei.util.RecipeMap;
 public class RecipeRegistry implements IRecipeRegistry {
 	private final ImmutableMap<Class, IRecipeHandler> recipeHandlers;
 	private final ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers;
-	private final ImmutableMap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas;
+	private final ImmutableMultimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap;
 	private final ImmutableMap<String, IRecipeCategory> recipeCategoriesMap;
 	private final ListMultimap<IRecipeCategory, Object> recipesForCategories;
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
 	private final Set<Class> unhandledRecipeClasses;
 
-	public RecipeRegistry(@Nonnull List<IRecipeCategory> recipeCategories, @Nonnull List<IRecipeHandler> recipeHandlers, @Nonnull List<IRecipeTransferHandler> recipeTransferHandlers, @Nonnull List<Object> recipes, @Nonnull Map<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas) {
+	public RecipeRegistry(@Nonnull List<IRecipeCategory> recipeCategories, @Nonnull List<IRecipeHandler> recipeHandlers, @Nonnull List<IRecipeTransferHandler> recipeTransferHandlers, @Nonnull List<Object> recipes, @Nonnull Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap) {
 		this.recipeCategoriesMap = buildRecipeCategoriesMap(recipeCategories);
 		this.recipeTransferHandlers = buildRecipeTransferHandlerTable(recipeTransferHandlers);
 		this.recipeHandlers = buildRecipeHandlersMap(recipeHandlers);
-		this.recipeClickableAreas = ImmutableMap.copyOf(recipeClickableAreas);
+		this.recipeClickableAreasMap = ImmutableMultimap.copyOf(recipeClickableAreasMap);
 
 		RecipeCategoryComparator recipeCategoryComparator = new RecipeCategoryComparator(recipeCategories);
 		this.recipeInputMap = new RecipeMap(recipeCategoryComparator);
@@ -273,8 +275,14 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Nullable
-	public RecipeClickableArea getRecipeClickableArea(@Nonnull GuiContainer gui) {
-		return recipeClickableAreas.get(gui.getClass());
+	public RecipeClickableArea getRecipeClickableArea(@Nonnull GuiContainer gui, int mouseX, int mouseY) {
+		ImmutableCollection<RecipeClickableArea> recipeClickableAreas = recipeClickableAreasMap.get(gui.getClass());
+		for (RecipeClickableArea recipeClickableArea : recipeClickableAreas) {
+			if (recipeClickableArea.checkHover(mouseX, mouseY)) {
+				return recipeClickableArea;
+			}
+		}
+		return null;
 	}
 
 	@Nonnull

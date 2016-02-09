@@ -1,11 +1,12 @@
 package mezz.jei.util;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
@@ -26,7 +27,7 @@ public class ModRegistry implements IModRegistry {
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers = new ArrayList<>();
 	private final List<Object> recipes = new ArrayList<>();
 	private final RecipeTransferRegistry recipeTransferRegistry = new RecipeTransferRegistry();
-	private final Map<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas = new HashMap<>();
+	private final Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas = HashMultimap.create();
 
 	@Override
 	public void addRecipeCategories(IRecipeCategory... recipeCategories) {

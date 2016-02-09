@@ -17,6 +17,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import mezz.jei.Internal;
+import mezz.jei.RecipeRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
@@ -84,8 +85,9 @@ public class InputHandler {
 
 		if (guiScreen instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) guiScreen;
-			RecipeClickableArea clickableArea = Internal.getRuntime().getRecipeRegistry().getRecipeClickableArea(guiContainer);
-			if (clickableArea != null && clickableArea.checkHover(mouseX - guiContainer.guiLeft, mouseY - guiContainer.guiTop)) {
+			RecipeRegistry recipeRegistry = Internal.getRuntime().getRecipeRegistry();
+			RecipeClickableArea clickableArea = recipeRegistry.getRecipeClickableArea(guiContainer, mouseX - guiContainer.guiLeft, mouseY - guiContainer.guiTop);
+			if (clickableArea != null) {
 				List<String> recipeCategoryUids = clickableArea.getRecipeCategoryUids();
 				recipesGui.showCategories(recipeCategoryUids);
 			}
