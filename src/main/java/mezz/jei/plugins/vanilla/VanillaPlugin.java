@@ -47,9 +47,13 @@ public class VanillaPlugin implements IModPlugin {
 		// normally you should ignore nbt per-item, but these tags are universally understood
 		// and apply to many vanilla and modded items
 		nbtIgnoreList.ignoreNbtTagNames(
-				"BlockEntityTag",
+				"AttributeModifiers",
+				"CanDestroy",
 				"CanPlaceOn",
-				"RepairCost"
+				"display",
+				"HideFlags",
+				"RepairCost",
+				"Unbreakable"
 		);
 	}
 
