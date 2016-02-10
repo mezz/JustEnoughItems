@@ -32,12 +32,6 @@ public class RecipeTransferUtil {
 			return RecipeTransferErrorInternal.instance;
 		}
 
-		try {
-			return transferHandler.transferRecipe(container, recipeLayout, player, maxTransfer, doTransfer);
-		} catch (AbstractMethodError ignored) {
-			// older transferHandlers do not have the new method
-			//noinspection deprecation
-			return transferHandler.transferRecipe(container, recipeLayout, player, doTransfer);
-		}
+		return transferHandler.transferRecipe(container, recipeLayout, player, maxTransfer, doTransfer);
 	}
 }

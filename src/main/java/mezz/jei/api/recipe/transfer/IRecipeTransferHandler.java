@@ -7,7 +7,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 
 import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.gui.RecipeLayout;
 
 /**
  * A recipe transfer handler moves items into a crafting area, based on the items in a recipe.
@@ -25,12 +24,6 @@ public interface IRecipeTransferHandler {
 	 * The type of recipe that this recipe transfer handler deals with.
 	 */
 	String getRecipeCategoryUid();
-
-	/**
-	 * @deprecated since JEI 2.20.0, use the version with the maxTransfer parameter
-	 */
-	@Deprecated
-	IRecipeTransferError transferRecipe(@Nonnull Container container, @Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean doTransfer);
 
 	/**
 	 * @param container    the container to act on

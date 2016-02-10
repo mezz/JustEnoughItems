@@ -24,7 +24,6 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.config.SessionData;
-import mezz.jei.gui.RecipeLayout;
 import mezz.jei.gui.ingredients.IGuiIngredient;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.util.Log;
@@ -47,11 +46,6 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 	@Override
 	public String getRecipeCategoryUid() {
 		return transferHelper.getRecipeCategoryUid();
-	}
-
-	@Override
-	public IRecipeTransferError transferRecipe(@Nonnull Container container, @Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean doTransfer) {
-		return transferRecipe(container, recipeLayout, player, false, doTransfer);
 	}
 
 	@Nullable
