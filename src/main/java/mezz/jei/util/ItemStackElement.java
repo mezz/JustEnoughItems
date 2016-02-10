@@ -8,13 +8,16 @@ import java.util.List;
 import java.util.Locale;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.oredict.OreDictionary;
 
 import mezz.jei.Internal;
 import mezz.jei.config.Config;
@@ -31,6 +34,10 @@ public class ItemStackElement {
 	private final String modNameString;
 	@Nonnull
 	private final String tooltipString;
+	@Nonnull
+	private final String oreDictString;
+	@Nonnull
+	private final String creativeTabsString;
 
 	@Nullable
 	public static ItemStackElement create(@Nonnull ItemStack itemStack) {
@@ -44,15 +51,16 @@ public class ItemStackElement {
 
 	private ItemStackElement(@Nonnull ItemStack itemStack) {
 		this.itemStack = itemStack;
+		Item item = itemStack.getItem();
 
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-		ResourceLocation itemResourceLocation = GameData.getItemRegistry().getNameForObject(itemStack.getItem());
+		ResourceLocation itemResourceLocation = GameData.getItemRegistry().getNameForObject(item);
 		String modId = itemResourceLocation.getResourceDomain().toLowerCase(Locale.ENGLISH);
-		String modName = Internal.getItemRegistry().getModNameForItem(itemStack.getItem()).toLowerCase(Locale.ENGLISH);
+		String modName = Internal.getItemRegistry().getModNameForItem(item).toLowerCase(Locale.ENGLISH);
 
 		String displayName = itemStack.getDisplayName();
 		if (displayName == null) {
-			throw new NullPointerException("No display name for item. " + itemResourceLocation + ' ' + itemStack.getItem().getClass());
+			throw new NullPointerException("No display name for item. " + itemResourceLocation + ' ' + item.getClass());
 		}
 		displayName = displayName.toLowerCase();
 
@@ -71,6 +79,22 @@ public class ItemStackElement {
 		}
 		this.tooltipString = tooltipString;
 
+		StringBuilder oreDictStringBuilder = new StringBuilder();
+		for (int oreId : OreDictionary.getOreIDs(itemStack)) {
+			String oreName = OreDictionary.getOreName(oreId);
+			oreDictStringBuilder.append(oreName).append(' ');
+		}
+		this.oreDictString = oreDictStringBuilder.toString();
+
+		StringBuilder creativeTabStringBuilder = new StringBuilder();
+		for (CreativeTabs creativeTab : item.getCreativeTabs()) {
+			if (creativeTab != null) {
+				String creativeTabName = creativeTab.getTranslatedTabLabel();
+				creativeTabStringBuilder.append(creativeTabName).append(' ');
+			}
+		}
+		this.creativeTabsString = creativeTabStringBuilder.toString();
+
 		StringBuilder searchStringBuilder = new StringBuilder(displayName);
 
 		if (!Config.isPrefixRequiredForModNameSearch()) {
@@ -79,6 +103,14 @@ public class ItemStackElement {
 
 		if (!Config.isPrefixRequiredForTooltipSearch()) {
 			searchStringBuilder.append(' ').append(this.tooltipString);
+		}
+
+		if (!Config.isPrefixRequiredForOreDictSearch()) {
+			searchStringBuilder.append(' ').append(this.oreDictString);
+		}
+
+		if (!Config.isPrefixRequiredForCreativeTabSearch()) {
+			searchStringBuilder.append(' ').append(this.creativeTabsString);
 		}
 
 		this.searchString = searchStringBuilder.toString();
@@ -102,5 +134,15 @@ public class ItemStackElement {
 	@Nonnull
 	public String getTooltipString() {
 		return tooltipString;
+	}
+
+	@Nonnull
+	public String getOreDictString() {
+		return oreDictString;
+	}
+
+	@Nonnull
+	public String getCreativeTabsString() {
+		return creativeTabsString;
 	}
 }

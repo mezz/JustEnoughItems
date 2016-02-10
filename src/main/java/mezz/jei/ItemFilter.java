@@ -215,20 +215,36 @@ public class ItemFilter {
 		private final List<String> searchTokens = new ArrayList<>();
 		private final List<String> modNameTokens = new ArrayList<>();
 		private final List<String> tooltipTokens = new ArrayList<>();
+		private final List<String> oreDictTokens = new ArrayList<>();
+		private final List<String> creativeTabTokens = new ArrayList<>();
 
 		public FilterPredicate(String filterText) {
 			String[] tokens = filterText.split(" ");
 			for (String token : tokens) {
+				if (token.isEmpty()) {
+					continue;
+				}
+
 				if (token.startsWith("@")) {
-					String modNameToken = token.substring(1);
-					modNameTokens.add(modNameToken);
+					addTokenWithoutPrefix(token, modNameTokens);
 				} else if (token.startsWith("#")) {
-					String tooltipToken = token.substring(1);
-					tooltipTokens.add(tooltipToken);
+					addTokenWithoutPrefix(token, tooltipTokens);
+				} else if (token.startsWith("$")) {
+					addTokenWithoutPrefix(token, oreDictTokens);
+				} else if (token.startsWith("%")) {
+					addTokenWithoutPrefix(token, creativeTabTokens);
 				} else {
 					searchTokens.add(token);
 				}
 			}
+		}
+
+		private static void addTokenWithoutPrefix(String token, List<String> tokensList) {
+			if (token.length() < 2) {
+				return;
+			}
+			String tokenText = token.substring(1);
+			tokensList.add(tokenText);
 		}
 
 		@Override
@@ -237,27 +253,31 @@ public class ItemFilter {
 				return false;
 			}
 
-			final String modName = input.getModNameString();
-			for (String token : modNameTokens) {
-				if (!modName.contains(token)) {
+			if (!stringContainsTokens(input.getModNameString(), modNameTokens)) {
+				return false;
+			}
+
+			if (!stringContainsTokens(input.getTooltipString(), tooltipTokens)) {
+				return false;
+			}
+
+			if (!stringContainsTokens(input.getOreDictString(), oreDictTokens)) {
+				return false;
+			}
+
+			if (!stringContainsTokens(input.getCreativeTabsString(), creativeTabTokens)) {
+				return false;
+			}
+
+			return stringContainsTokens(input.getSearchString(), searchTokens);
+		}
+
+		private static boolean stringContainsTokens(String comparisonString, List<String> tokens) {
+			for (String token : tokens) {
+				if (!comparisonString.contains(token)) {
 					return false;
 				}
 			}
-
-			final String tooltipString = input.getTooltipString();
-			for (String token : tooltipTokens) {
-				if (!tooltipString.contains(token)) {
-					return false;
-				}
-			}
-
-			final String searchString = input.getSearchString();
-			for (String token : searchTokens) {
-				if (!searchString.contains(token)) {
-					return false;
-				}
-			}
-
 			return true;
 		}
 	}

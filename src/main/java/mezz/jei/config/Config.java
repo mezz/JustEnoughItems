@@ -24,8 +24,6 @@ public class Config {
 
 	public static final String CATEGORY_SEARCH = "search";
 	public static final String CATEGORY_ADVANCED = "advanced";
-	@Deprecated
-	public static final String CATEGORY_ADDONS = "addons";
 
 	public static LocalizedConfiguration config;
 	public static Configuration worldConfig;
@@ -39,6 +37,8 @@ public class Config {
 	// search
 	private static boolean prefixRequiredForModNameSearch = true;
 	private static boolean prefixRequiredForTooltipSearch = false;
+	private static boolean prefixRequiredForOreDictSearch = true;
+	private static boolean prefixRequiredForCreativeTabSearch = true;
 
 	// per-world
 	private static final boolean defaultOverlayEnabled = true;
@@ -100,8 +100,12 @@ public class Config {
 		return prefixRequiredForTooltipSearch;
 	}
 
-	public static Set<String> getItemBlacklist() {
-		return itemBlacklist;
+	public static boolean isPrefixRequiredForOreDictSearch() {
+		return prefixRequiredForOreDictSearch;
+	}
+
+	public static boolean isPrefixRequiredForCreativeTabSearch() {
+		return prefixRequiredForCreativeTabSearch;
 	}
 
 	public static LocalizedConfiguration getConfig() {
@@ -213,6 +217,8 @@ public class Config {
 
 		prefixRequiredForModNameSearch = config.getBoolean(CATEGORY_SEARCH, "atPrefixRequiredForModName", prefixRequiredForModNameSearch);
 		prefixRequiredForTooltipSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForTooltipSearch", prefixRequiredForTooltipSearch);
+		prefixRequiredForOreDictSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForOreDictSearch", prefixRequiredForOreDictSearch);
+		prefixRequiredForCreativeTabSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForCreativeTabSearch", prefixRequiredForCreativeTabSearch);
 
 		ConfigCategory categoryAdvanced = config.getCategory(CATEGORY_ADVANCED);
 		categoryAdvanced.remove("nbtKeyIgnoreList");
