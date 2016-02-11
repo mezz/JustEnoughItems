@@ -23,7 +23,7 @@ public interface INbtIgnoreList {
 
 	/**
 	 * Get NBT from an itemStack, minus the NBT that is being ignored.
-	 * Returns null if the itemStack has no NBT.
+	 * Returns null if the itemStack has no NBT or the resulting NBT would be empty.
 	 * @since JEI 2.16.0
 	 */
 	@Nullable

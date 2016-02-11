@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -25,6 +26,7 @@ import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.oredict.OreDictionary;
 
 import mezz.jei.Internal;
+import mezz.jei.api.INbtIgnoreList;
 import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.gui.ingredients.IGuiIngredient;
 
@@ -74,7 +76,7 @@ public class StackHelper implements IStackHelper {
 			Slot slot = container.getSlot(slotNumber);
 			if (slot != null) {
 				ItemStack slotStack = slot.getStack();
-				if (stackHelper.isIdentical(stack, slotStack)) {
+				if (stackHelper.isEquivalent(stack, slotStack)) {
 					return slot;
 				}
 			}
@@ -110,7 +112,7 @@ public class StackHelper implements IStackHelper {
 		return true;
 	}
 
-	/* Returns an ItemStack from "stacks" if it isIdentical to an ItemStack from "contains" */
+	/* Returns an ItemStack from "stacks" if it isEquivalent to an ItemStack from "contains" */
 	@Nullable
 	public ItemStack containsStack(@Nullable Iterable<ItemStack> stacks, @Nullable Iterable<ItemStack> contains) {
 		if (stacks == null || contains == null) {
@@ -127,7 +129,7 @@ public class StackHelper implements IStackHelper {
 		return null;
 	}
 
-	/* Returns an ItemStack from "stacks" if it isIdentical to "contains" */
+	/* Returns an ItemStack from "stacks" if it isEquivalent to "contains" */
 	@Nullable
 	public ItemStack containsStack(@Nullable Iterable<ItemStack> stacks, @Nullable ItemStack contains) {
 		if (stacks == null || contains == null) {
@@ -135,14 +137,17 @@ public class StackHelper implements IStackHelper {
 		}
 
 		for (ItemStack stack : stacks) {
-			if (isIdentical(contains, stack)) {
+			if (isEquivalent(contains, stack)) {
 				return stack;
 			}
 		}
 		return null;
 	}
 
-	public boolean isIdentical(@Nullable ItemStack lhs, @Nullable ItemStack rhs) {
+	/**
+	 * Similar to ItemStack.areItemStacksEqual but ignores NBT on items without subtypes, and uses the INbtIgnoreList
+	 */
+	public boolean isEquivalent(@Nullable ItemStack lhs, @Nullable ItemStack rhs) {
 		if (lhs == rhs) {
 			return true;
 		}
@@ -161,7 +166,14 @@ public class StackHelper implements IStackHelper {
 			}
 		}
 
-		return ItemStack.areItemStackTagsEqual(lhs, rhs);
+		if (lhs.getHasSubtypes()) {
+			INbtIgnoreList nbtIgnoreList = Internal.getHelpers().getNbtIgnoreList();
+			NBTTagCompound lhsNbt = nbtIgnoreList.getNbt(lhs);
+			NBTTagCompound rhsNbt = nbtIgnoreList.getNbt(rhs);
+			return Objects.equals(lhsNbt, rhsNbt);
+		} else {
+			return true;
+		}
 	}
 
 	@Override

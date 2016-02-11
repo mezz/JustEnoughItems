@@ -64,7 +64,7 @@ public class NbtIgnoreList implements INbtIgnoreList {
 		}
 
 		NBTTagCompound nbtTagCompound = itemStack.getTagCompound();
-		if (nbtTagCompound == null) {
+		if (nbtTagCompound == null || nbtTagCompound.hasNoTags()) {
 			return null;
 		}
 
@@ -84,6 +84,10 @@ public class NbtIgnoreList implements INbtIgnoreList {
 		NBTTagCompound nbtTagCompoundCopy = (NBTTagCompound) nbtTagCompound.copy();
 		for (String ignoredKey : ignoredKeys) {
 			nbtTagCompoundCopy.removeTag(ignoredKey);
+		}
+
+		if (nbtTagCompoundCopy.hasNoTags()) {
+			return null;
 		}
 		return nbtTagCompoundCopy;
 	}
