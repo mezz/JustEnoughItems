@@ -70,7 +70,7 @@ curseforge {
 	apiKey = project.hasProperty('curseforge_apikey') ? project.curseforge_apikey : '0'
 	project {
 		id = curse_project_id
-		changelog = 'Automatically uploaded. See https://github.com/mezz/JustEnoughItems/commits/'
+		changelog = file('changelog.txt')
 		releaseType = 'beta'
 	}
 }
