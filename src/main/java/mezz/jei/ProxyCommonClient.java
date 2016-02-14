@@ -119,7 +119,8 @@ public class ProxyCommonClient extends ProxyCommon {
 
 		Config.startJei();
 
-		ItemRegistry itemRegistry = new ItemRegistry();
+		ItemRegistryFactory itemRegistryFactory = new ItemRegistryFactory();
+		ItemRegistry itemRegistry = itemRegistryFactory.createItemRegistry();
 		Internal.setItemRegistry(itemRegistry);
 
 		Iterator<IModPlugin> iterator = plugins.iterator();
