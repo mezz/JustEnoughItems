@@ -1,3 +1,9 @@
+2.25.12
+Features:
+ * Add changelog.txt
+Fixes:
+ * Get items from creative tabs for better compatibility with custom tabs
+
 2.25.11
 Fixes:
  * Add more ignored vanilla NBT tags
