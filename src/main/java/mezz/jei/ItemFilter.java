@@ -8,23 +8,21 @@ import com.google.common.cache.Weigher;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multiset;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-
+import mezz.jei.api.IItemBlacklist;
+import mezz.jei.api.IItemRegistry;
+import mezz.jei.config.Config;
+import mezz.jei.util.ItemStackElement;
+import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-import mezz.jei.api.IItemBlacklist;
-import mezz.jei.api.IItemRegistry;
-import mezz.jei.config.Config;
-import mezz.jei.util.ItemStackElement;
-import mezz.jei.util.Log;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemFilter {
 	/** The currently active filter text */
@@ -217,6 +215,7 @@ public class ItemFilter {
 		private final List<String> tooltipTokens = new ArrayList<>();
 		private final List<String> oreDictTokens = new ArrayList<>();
 		private final List<String> creativeTabTokens = new ArrayList<>();
+		private final List<String> colorTokens = new ArrayList<>();
 
 		public FilterPredicate(String filterText) {
 			String[] tokens = filterText.split(" ");
@@ -233,6 +232,8 @@ public class ItemFilter {
 					addTokenWithoutPrefix(token, oreDictTokens);
 				} else if (token.startsWith("%")) {
 					addTokenWithoutPrefix(token, creativeTabTokens);
+				} else if (token.startsWith("^")) {
+					addTokenWithoutPrefix(token, colorTokens);
 				} else {
 					searchTokens.add(token);
 				}
@@ -266,6 +267,10 @@ public class ItemFilter {
 			}
 
 			if (!stringContainsTokens(input.getCreativeTabsString(), creativeTabTokens)) {
+				return false;
+			}
+
+			if (!stringContainsTokens(input.getColorString(), colorTokens)) {
 				return false;
 			}
 

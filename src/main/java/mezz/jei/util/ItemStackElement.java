@@ -1,26 +1,23 @@
 package mezz.jei.util;
 
 import com.google.common.base.Joiner;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Locale;
-
+import com.mojang.realmsclient.gui.ChatFormatting;
+import mezz.jei.Internal;
+import mezz.jei.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-
-import com.mojang.realmsclient.gui.ChatFormatting;
-
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.oredict.OreDictionary;
 
-import mezz.jei.Internal;
-import mezz.jei.config.Config;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * For getting properties of ItemStacks efficiently
@@ -38,13 +35,19 @@ public class ItemStackElement {
 	private final String oreDictString;
 	@Nonnull
 	private final String creativeTabsString;
+	@Nonnull
+	private final String colorString;
 
 	@Nullable
 	public static ItemStackElement create(@Nonnull ItemStack itemStack) {
 		try {
 			return new ItemStackElement(itemStack);
 		} catch (RuntimeException e) {
-			Log.warning("Found broken itemStack.", e);
+			try {
+				Log.warning("Found broken itemStack {}.", itemStack, e);
+			} catch (RuntimeException e2) {
+				Log.warning("Found broken itemStack.", e2);
+			}
 			return null;
 		}
 	}
@@ -95,6 +98,13 @@ public class ItemStackElement {
 		}
 		this.creativeTabsString = creativeTabStringBuilder.toString();
 
+		if (Config.isColorSearchEnabled()) {
+			Collection<String> colorNames = Internal.getColorNamer().getColorNames(itemStack);
+			this.colorString = Joiner.on(' ').join(colorNames).toLowerCase();
+		} else {
+			this.colorString = "";
+		}
+
 		StringBuilder searchStringBuilder = new StringBuilder(displayName);
 
 		if (!Config.isPrefixRequiredForModNameSearch()) {
@@ -111,6 +121,10 @@ public class ItemStackElement {
 
 		if (!Config.isPrefixRequiredForCreativeTabSearch()) {
 			searchStringBuilder.append(' ').append(this.creativeTabsString);
+		}
+
+		if (!Config.isPrefixRequiredForColorSearch()) {
+			searchStringBuilder.append(' ').append(this.colorString);
 		}
 
 		this.searchString = searchStringBuilder.toString();
@@ -144,5 +158,10 @@ public class ItemStackElement {
 	@Nonnull
 	public String getCreativeTabsString() {
 		return creativeTabsString;
+	}
+
+	@Nonnull
+	public String getColorString() {
+		return colorString;
 	}
 }

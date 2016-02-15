@@ -1,11 +1,12 @@
 package mezz.jei.gui.ingredients;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.Color;
-import java.awt.Rectangle;
-import java.util.List;
-
+import com.google.common.base.Joiner;
+import mezz.jei.Internal;
+import mezz.jei.config.Config;
+import mezz.jei.config.Constants;
+import mezz.jei.gui.TooltipRenderer;
+import mezz.jei.util.Log;
+import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -28,14 +29,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-
 import net.minecraftforge.client.model.pipeline.LightUtil;
 
-import mezz.jei.config.Config;
-import mezz.jei.config.Constants;
-import mezz.jei.gui.TooltipRenderer;
-import mezz.jei.util.Log;
-import mezz.jei.util.Translator;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.awt.*;
+import java.util.Collection;
+import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class GuiItemStackFast {
@@ -283,31 +283,48 @@ public class GuiItemStackFast {
 			}
 		}
 
+		int maxWidth = Constants.MAX_TOOLTIP_WIDTH;
+		for (String tooltipLine : list) {
+			int width = minecraft.fontRendererObj.getStringWidth(tooltipLine);
+			if (width > maxWidth) {
+				maxWidth = width;
+			}
+		}
+
+		if (Config.isColorSearchEnabled()) {
+			Collection<String> colorNames = Internal.getColorNamer().getColorNames(itemStack);
+			if (!colorNames.isEmpty()) {
+				String colorNamesString = Joiner.on(", ").join(colorNames);
+				String colorNamesLocalizedString = EnumChatFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.item.colors", colorNamesString);
+				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(colorNamesLocalizedString, maxWidth));
+			}
+		}
+
 		if (Config.isEditModeEnabled()) {
 			list.add("");
 			list.add(EnumChatFormatting.ITALIC + Translator.translateToLocal("gui.jei.editMode.description"));
 			if (Config.isItemOnConfigBlacklist(itemStack, Config.ItemBlacklistType.ITEM)) {
 				String description = EnumChatFormatting.YELLOW + Translator.translateToLocal("gui.jei.editMode.description.show");
-				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
+				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, maxWidth));
 			} else {
 				String description = EnumChatFormatting.YELLOW + Translator.translateToLocal("gui.jei.editMode.description.hide");
-				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
+				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, maxWidth));
 			}
 
 			if (Config.isItemOnConfigBlacklist(itemStack, Config.ItemBlacklistType.WILDCARD)) {
 				String description = EnumChatFormatting.RED + Translator.translateToLocal("gui.jei.editMode.description.show.wild");
-				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
+				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, maxWidth));
 			} else {
 				String description = EnumChatFormatting.RED + Translator.translateToLocal("gui.jei.editMode.description.hide.wild");
-				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
+				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, maxWidth));
 			}
 
 			if (Config.isItemOnConfigBlacklist(itemStack, Config.ItemBlacklistType.MOD_ID)) {
 				String description = EnumChatFormatting.BLUE + Translator.translateToLocal("gui.jei.editMode.description.show.mod.id");
-				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
+				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, maxWidth));
 			} else {
 				String description = EnumChatFormatting.BLUE + Translator.translateToLocal("gui.jei.editMode.description.hide.mod.id");
-				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, Constants.MAX_TOOLTIP_WIDTH));
+				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, maxWidth));
 			}
 		}
 

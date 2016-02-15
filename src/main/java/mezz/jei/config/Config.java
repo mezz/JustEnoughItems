@@ -1,22 +1,24 @@
 package mezz.jei.config;
 
-import javax.annotation.Nonnull;
-import java.io.File;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
+import com.google.common.collect.ImmutableMap;
+import mezz.jei.Internal;
+import mezz.jei.util.Log;
+import mezz.jei.util.StackHelper;
+import mezz.jei.util.Translator;
+import mezz.jei.util.color.ColorGetter;
+import mezz.jei.util.color.ColorNamer;
 import net.minecraft.item.ItemStack;
-
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-import mezz.jei.Internal;
-import mezz.jei.util.Log;
-import mezz.jei.util.StackHelper;
-import mezz.jei.util.Translator;
+import javax.annotation.Nonnull;
+import java.awt.*;
+import java.io.File;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Config {
 	private static final String configKeyPrefix = "config.jei";
@@ -24,21 +26,25 @@ public class Config {
 
 	public static final String CATEGORY_SEARCH = "search";
 	public static final String CATEGORY_ADVANCED = "advanced";
+	public static final String CATEGORY_SEARCH_COLORS = "searchColors";
 
-	public static LocalizedConfiguration config;
-	public static Configuration worldConfig;
-	public static LocalizedConfiguration itemBlacklistConfig;
+	private static LocalizedConfiguration config;
+	private static Configuration worldConfig;
+	private static LocalizedConfiguration itemBlacklistConfig;
+	private static LocalizedConfiguration searchColorsConfig;
 
 	// advanced
 	private static boolean debugModeEnabled = false;
 	private static boolean hideMissingModelsEnabled = true;
 	private static boolean deleteItemsInCheatModeEnabled = true;
+	private static boolean colorSearchEnabled = false;
 
 	// search
 	private static boolean prefixRequiredForModNameSearch = true;
 	private static boolean prefixRequiredForTooltipSearch = false;
 	private static boolean prefixRequiredForOreDictSearch = true;
 	private static boolean prefixRequiredForCreativeTabSearch = true;
+	private static boolean prefixRequiredForColorSearch = true;
 
 	// per-world
 	private static final boolean defaultOverlayEnabled = true;
@@ -92,6 +98,10 @@ public class Config {
 		return hideMissingModelsEnabled;
 	}
 
+	public static boolean isColorSearchEnabled() {
+		return colorSearchEnabled;
+	}
+
 	public static boolean isPrefixRequiredForModNameSearch() {
 		return prefixRequiredForModNameSearch;
 	}
@@ -106,6 +116,10 @@ public class Config {
 
 	public static boolean isPrefixRequiredForCreativeTabSearch() {
 		return prefixRequiredForCreativeTabSearch;
+	}
+
+	public static boolean isPrefixRequiredForColorSearch() {
+		return prefixRequiredForColorSearch;
 	}
 
 	public static LocalizedConfiguration getConfig() {
@@ -133,6 +147,7 @@ public class Config {
 
 		final File configFile = new File(jeiConfigurationDir, "jei.cfg");
 		final File itemBlacklistConfigFile = new File(jeiConfigurationDir, "itemBlacklist.cfg");
+		final File searchColorsConfigFile = new File(jeiConfigurationDir, "searchColors.cfg");
 
 		{
 			final File oldConfigFile = event.getSuggestedConfigurationFile();
@@ -162,6 +177,7 @@ public class Config {
 
 		config = new LocalizedConfiguration(configKeyPrefix, configFile, "0.2.0");
 		itemBlacklistConfig = new LocalizedConfiguration(configKeyPrefix, itemBlacklistConfigFile, "0.1.0");
+		searchColorsConfig = new LocalizedConfiguration(configKeyPrefix, searchColorsConfigFile, "0.1.0");
 
 		syncConfig();
 		syncItemBlacklistConfig();
@@ -171,6 +187,7 @@ public class Config {
 		final File worldConfigFile = new File(jeiConfigurationDir, "worldSettings.cfg");
 		worldConfig = new Configuration(worldConfigFile, "0.1.0");
 		syncWorldConfig();
+		syncSearchColorsConfig();
 	}
 
 	public static boolean syncAllConfig() {
@@ -184,6 +201,10 @@ public class Config {
 		}
 
 		if (syncWorldConfig()) {
+			configChanged = true;
+		}
+
+		if (syncSearchColorsConfig()) {
 			configChanged = true;
 		}
 
@@ -219,11 +240,13 @@ public class Config {
 		prefixRequiredForTooltipSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForTooltipSearch", prefixRequiredForTooltipSearch);
 		prefixRequiredForOreDictSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForOreDictSearch", prefixRequiredForOreDictSearch);
 		prefixRequiredForCreativeTabSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForCreativeTabSearch", prefixRequiredForCreativeTabSearch);
+		prefixRequiredForColorSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForColorSearch", prefixRequiredForColorSearch);
 
 		ConfigCategory categoryAdvanced = config.getCategory(CATEGORY_ADVANCED);
 		categoryAdvanced.remove("nbtKeyIgnoreList");
 
 		hideMissingModelsEnabled = config.getBoolean(CATEGORY_ADVANCED, "hideMissingModelsEnabled", hideMissingModelsEnabled);
+		colorSearchEnabled = config.getBoolean(CATEGORY_ADVANCED, "colorSearchEnabled", colorSearchEnabled);
 
 		debugModeEnabled = config.getBoolean(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
 		{
@@ -282,6 +305,38 @@ public class Config {
 		final boolean configChanged = worldConfig.hasChanged();
 		if (configChanged) {
 			worldConfig.save();
+		}
+		return configChanged;
+	}
+
+	private static boolean syncSearchColorsConfig() {
+		searchColorsConfig.addCategory(CATEGORY_SEARCH_COLORS);
+
+		final String[] searchColorDefaults = ColorGetter.getColorDefaults();
+		final String[] searchColors = searchColorsConfig.getStringList("searchColors", CATEGORY_SEARCH_COLORS, searchColorDefaults);
+
+		final ImmutableMap.Builder<Color, String> searchColorsMapBuilder = ImmutableMap.builder();
+		for (String entry : searchColors) {
+			final String[] values = entry.split(":");
+			if (values.length != 2) {
+				Log.error("Invalid format for searchColor entry: {}", entry);
+			} else {
+				try {
+					final String name = values[0];
+					final int colorValue = Integer.decode("0x" + values[1]);
+					final Color color = new Color(colorValue);
+					searchColorsMapBuilder.put(color, name);
+				} catch (NumberFormatException e) {
+					Log.error("Invalid number format for searchColor entry: {}", entry, e);
+				}
+			}
+		}
+		final ColorNamer colorNamer = new ColorNamer(searchColorsMapBuilder.build());
+		Internal.setColorNamer(colorNamer);
+
+		final boolean configChanged = searchColorsConfig.hasChanged();
+		if (configChanged) {
+			searchColorsConfig.save();
 		}
 		return configChanged;
 	}
