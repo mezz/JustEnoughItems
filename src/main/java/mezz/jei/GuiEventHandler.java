@@ -91,7 +91,7 @@ public class GuiEventHandler {
 		}
 
 		if (itemListOverlay.isOpen()) {
-			itemListOverlay.drawHovered(event.gui.mc, event.mouseX, event.mouseY);
+			itemListOverlay.drawTooltips(event.gui.mc, event.mouseX, event.mouseY);
 		}
 	}
 

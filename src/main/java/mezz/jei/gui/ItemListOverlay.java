@@ -282,6 +282,12 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 			hovered = guiItemStacks.render(minecraft, mouseOver, mouseX, mouseY);
 		}
 
+		if (hovered != null) {
+			RenderHelper.enableGUIStandardItemLighting();
+			hovered.drawHovered(minecraft);
+			RenderHelper.disableStandardItemLighting();
+		}
+
 		GlStateManager.enableAlpha();
 	}
 
@@ -295,7 +301,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		return false;
 	}
 
-	public void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawTooltips(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 		if (!isOpen()) {
 			return;
 		}
@@ -307,9 +313,10 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		}
 
 		if (hovered != null) {
-			RenderHelper.enableGUIStandardItemLighting();
-			hovered.drawHovered(minecraft, mouseX, mouseY);
-			RenderHelper.disableStandardItemLighting();
+			List<String> tooltip = hovered.getTooltip(minecraft);
+			if (tooltip != null) {
+				TooltipRenderer.drawHoveringText(minecraft, tooltip, mouseX, mouseY);
+			}
 		}
 
 		if (configButtonHoverChecker.checkHover(mouseX, mouseY)) {
