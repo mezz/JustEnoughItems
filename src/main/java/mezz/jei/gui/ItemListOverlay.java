@@ -541,6 +541,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 			Log.error("null filterText", new NullPointerException());
 			return;
 		}
+		searchField.setText(filterText);
 		ItemFilter.setFilterText(filterText);
 	}
 
