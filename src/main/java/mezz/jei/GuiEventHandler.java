@@ -1,23 +1,20 @@
 package mezz.jei;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-
-import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-
-import org.lwjgl.input.Mouse;
-
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.RecipesGui;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.input.InputHandler;
 import mezz.jei.util.Translator;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.lwjgl.input.Mouse;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class GuiEventHandler {
 	@Nonnull
@@ -73,16 +70,8 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onDrawBackgroundEventPost(@Nonnull GuiScreenEvent.BackgroundDrawnEvent event) {
-		if (itemListOverlay == null) {
-			return;
-		}
-
-		if (event.gui instanceof GuiContainer) {
-			GuiContainer guiContainer = (GuiContainer) event.gui;
-			itemListOverlay.updateGui(guiContainer);
-		}
-
-		if (itemListOverlay.isOpen()) {
+		if (itemListOverlay != null && itemListOverlay.isOpen()) {
+			itemListOverlay.updateGui(event.gui);
 			itemListOverlay.drawScreen(event.gui.mc, event.getMouseX(), event.getMouseY());
 		}
 	}

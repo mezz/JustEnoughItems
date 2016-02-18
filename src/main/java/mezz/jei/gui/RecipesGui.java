@@ -1,26 +1,5 @@
 package mezz.jei.gui;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.Color;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.util.ResourceLocation;
-
-import net.minecraftforge.fml.client.config.GuiButtonExt;
-import net.minecraftforge.fml.client.config.HoverChecker;
-
-import org.lwjgl.input.Mouse;
-
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.Constants;
@@ -30,6 +9,24 @@ import mezz.jei.input.InputHandler;
 import mezz.jei.transfer.RecipeTransferUtil;
 import mezz.jei.util.StringUtil;
 import mezz.jei.util.Translator;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fml.client.config.HoverChecker;
+import org.lwjgl.input.Mouse;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 	private static final int borderPadding = 8;
@@ -66,6 +63,14 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 
 	public RecipesGui() {
 		this.mc = Minecraft.getMinecraft();
+	}
+
+	public int getGuiLeft() {
+		return guiLeft;
+	}
+
+	public int getXSize() {
+		return xSize;
 	}
 
 	@Override

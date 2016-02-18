@@ -1,32 +1,6 @@
 package mezz.jei.gui;
 
 import com.google.common.collect.ImmutableList;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.Color;
-import java.awt.Rectangle;
-import java.util.List;
-import java.util.Objects;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatAllowedCharacters;
-import net.minecraft.util.ResourceLocation;
-
-import net.minecraftforge.fml.client.config.GuiButtonExt;
-import net.minecraftforge.fml.client.config.HoverChecker;
-
-import org.lwjgl.input.Keyboard;
-
 import mezz.jei.Internal;
 import mezz.jei.ItemFilter;
 import mezz.jei.JustEnoughItems;
@@ -50,6 +24,27 @@ import mezz.jei.util.ItemStackElement;
 import mezz.jei.util.Log;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatAllowedCharacters;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fml.client.config.HoverChecker;
+import org.lwjgl.input.Keyboard;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.awt.*;
+import java.util.List;
+import java.util.Objects;
 
 public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, IMouseHandler, IKeyable, ICloseable {
 
@@ -84,10 +79,8 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	private GuiItemStackFast hovered = null;
 
 	// properties of the gui we're beside
-	private int guiLeft;
-	private int guiXSize;
-	private int screenWidth;
-	private int screenHeight;
+	@Nullable
+	private GuiProperties guiProperties;
 	@Nullable
 	private List<Rectangle> guiAreas;
 	@Nullable
@@ -100,17 +93,20 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		this.advancedGuiHandlers = advancedGuiHandlers;
 	}
 
-	public void initGui(@Nonnull GuiContainer guiContainer) {
-		this.guiLeft = guiContainer.guiLeft;
-		this.guiXSize = guiContainer.xSize;
-		this.screenWidth = guiContainer.width;
-		this.screenHeight = guiContainer.height;
-		this.advancedGuiHandler = getAdvancedGuiHandler(guiContainer);
-		if (advancedGuiHandler == null) {
-			guiAreas = null;
-		} else {
+	public void initGui(@Nonnull GuiScreen guiScreen) {
+		GuiProperties guiProperties = GuiProperties.create(guiScreen);
+		if (guiProperties == null) {
+			return;
+		}
+
+		this.guiProperties = guiProperties;
+		this.advancedGuiHandler = getAdvancedGuiHandler(guiScreen);
+		if (advancedGuiHandler != null && guiScreen instanceof GuiContainer) {
+			GuiContainer guiContainer = (GuiContainer) guiScreen;
 			//noinspection unchecked
 			guiAreas = advancedGuiHandler.getGuiExtraAreas(guiContainer);
+		} else {
+			guiAreas = null;
 		}
 
 		final int columns = getColumns();
@@ -121,9 +117,9 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 
 		final int rows = getRows();
 		final int xSize = columns * itemStackWidth;
-		final int xEmptySpace = screenWidth - guiLeft - guiXSize - xSize;
+		final int xEmptySpace = guiProperties.getScreenWidth() - guiProperties.getGuiLeft() - guiProperties.getGuiXSize() - xSize;
 
-		final int leftEdge = guiLeft + guiXSize + (xEmptySpace / 2);
+		final int leftEdge = guiProperties.getGuiLeft() + guiProperties.getGuiXSize() + (xEmptySpace / 2);
 		final int rightEdge = leftEdge + xSize;
 
 		final int yItemButtonSpace = getItemButtonYSpace();
@@ -136,13 +132,13 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		backButton = new GuiButtonExt(1, leftEdge, borderPadding, buttonSize, buttonSize, backLabel);
 
 		int configButtonX = rightEdge - buttonSize + 1;
-		int configButtonY = screenHeight - buttonSize - borderPadding;
+		int configButtonY = guiProperties.getScreenHeight() - buttonSize - borderPadding;
 		configButton = new GuiButtonExt(2, configButtonX, configButtonY, buttonSize, buttonSize, null);
 		ResourceLocation configButtonIconLocation = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_GUI_PATH + "recipeBackground.png");
 		configButtonIcon = Internal.getHelpers().getGuiHelper().createDrawable(configButtonIconLocation, 0, 166, 16, 16);
 		configButtonHoverChecker = new HoverChecker(configButton, 0);
 
-		int searchFieldY = screenHeight - searchHeight - borderPadding - 2;
+		int searchFieldY = guiProperties.getScreenHeight() - searchHeight - borderPadding - 2;
 		int searchFieldWidth = rightEdge - leftEdge - buttonSize - 1;
 		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
 		searchField = new GuiTextFieldFilter(0, fontRenderer, leftEdge, searchFieldY, searchFieldWidth, searchHeight);
@@ -155,23 +151,35 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	}
 
 	@Nullable
-	private IAdvancedGuiHandler<?> getAdvancedGuiHandler(@Nonnull GuiContainer guiContainer) {
-		for (IAdvancedGuiHandler<?> advancedGuiHandler : advancedGuiHandlers) {
-			if (advancedGuiHandler.getGuiContainerClass().isAssignableFrom(guiContainer.getClass())) {
-				return advancedGuiHandler;
+	private IAdvancedGuiHandler<?> getAdvancedGuiHandler(@Nonnull GuiScreen guiScreen) {
+		if (guiScreen instanceof GuiContainer) {
+			GuiContainer guiContainer = (GuiContainer) guiScreen;
+			for (IAdvancedGuiHandler<?> advancedGuiHandler : advancedGuiHandlers) {
+				if (advancedGuiHandler.getGuiContainerClass().isAssignableFrom(guiContainer.getClass())) {
+					return advancedGuiHandler;
+				}
 			}
 		}
 		return null;
 	}
 
-	public void updateGui(@Nonnull GuiContainer guiContainer) {
-		if (this.guiLeft != guiContainer.guiLeft || this.guiXSize != guiContainer.xSize || this.screenWidth != guiContainer.width || this.screenHeight != guiContainer.height) {
-			initGui(guiContainer);
-		} else if (advancedGuiHandler != null) {
-			//noinspection unchecked
-			List<Rectangle> guiAreas = advancedGuiHandler.getGuiExtraAreas(guiContainer);
-			if (!Objects.equals(this.guiAreas, guiAreas)) {
-				initGui(guiContainer);
+	public void updateGui(@Nonnull GuiScreen guiScreen) {
+		if (this.guiProperties == null) {
+			initGui(guiScreen);
+		} else {
+			GuiProperties guiProperties = GuiProperties.create(guiScreen);
+			if (guiProperties == null) {
+				return;
+			}
+			if (!this.guiProperties.equals(guiProperties)) {
+				initGui(guiScreen);
+			} else if (advancedGuiHandler != null && guiScreen instanceof GuiContainer) {
+				GuiContainer guiContainer = (GuiContainer) guiScreen;
+				//noinspection unchecked
+				List<Rectangle> guiAreas = advancedGuiHandler.getGuiExtraAreas(guiContainer);
+				if (!Objects.equals(this.guiAreas, guiAreas)) {
+					initGui(guiContainer);
+				}
 			}
 		}
 	}
@@ -318,7 +326,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 
 	@Override
 	public boolean isMouseOver(int mouseX, int mouseY) {
-		if (!isOpen() || (mouseX < guiLeft + guiXSize)) {
+		if (guiProperties == null || !isOpen() || (mouseX < guiProperties.getGuiLeft() + guiProperties.getGuiXSize())) {
 			return false;
 		}
 
@@ -454,11 +462,17 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	}
 
 	private int getItemButtonXSpace() {
-		return screenWidth - (guiLeft + guiXSize + (2 * borderPadding));
+		if (guiProperties == null) {
+			return 0;
+		}
+		return guiProperties.getScreenWidth() - (guiProperties.getGuiLeft() + guiProperties.getGuiXSize() + (2 * borderPadding));
 	}
 
 	private int getItemButtonYSpace() {
-		return screenHeight - (buttonSize + searchHeight + 2 + (4 * borderPadding));
+		if (guiProperties == null) {
+			return 0;
+		}
+		return guiProperties.getScreenHeight() - (buttonSize + searchHeight + 2 + (4 * borderPadding));
 	}
 
 	private int getColumns() {
