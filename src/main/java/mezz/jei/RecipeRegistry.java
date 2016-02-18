@@ -8,21 +8,6 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.inventory.Container;
-import net.minecraft.item.ItemStack;
-
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
@@ -34,6 +19,19 @@ import mezz.jei.util.ItemUidException;
 import mezz.jei.util.Log;
 import mezz.jei.util.RecipeCategoryComparator;
 import mezz.jei.util.RecipeMap;
+import mezz.jei.util.StackHelper;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.Container;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class RecipeRegistry implements IRecipeRegistry {
 	private final ImmutableMap<Class, IRecipeHandler> recipeHandlers;
@@ -202,13 +200,14 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	private void addRecipeUnchecked(@Nonnull Object recipe, IRecipeCategory recipeCategory, IRecipeHandler recipeHandler) {
+		StackHelper stackHelper = Internal.getStackHelper();
 		//noinspection unchecked
 		IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
 
 		List inputs = recipeWrapper.getInputs();
 		List<FluidStack> fluidInputs = recipeWrapper.getFluidInputs();
 		if (inputs != null || fluidInputs != null) {
-			List<ItemStack> inputStacks = Internal.getStackHelper().toItemStackList(inputs);
+			List<ItemStack> inputStacks = stackHelper.toItemStackList(inputs);
 			if (fluidInputs == null) {
 				fluidInputs = Collections.emptyList();
 			}
@@ -218,7 +217,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		List outputs = recipeWrapper.getOutputs();
 		List<FluidStack> fluidOutputs = recipeWrapper.getFluidOutputs();
 		if (outputs != null || fluidOutputs != null) {
-			List<ItemStack> outputStacks = Internal.getStackHelper().toItemStackList(outputs);
+			List<ItemStack> outputStacks = stackHelper.toItemStackList(outputs);
 			if (fluidOutputs == null) {
 				fluidOutputs = Collections.emptyList();
 			}

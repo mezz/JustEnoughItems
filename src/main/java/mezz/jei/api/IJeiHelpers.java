@@ -1,13 +1,13 @@
 package mezz.jei.api;
 
-import javax.annotation.Nonnull;
-
 import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 
+import javax.annotation.Nonnull;
+
 /**
  * IJeiHelpers provides helpers and tools for addon mods.
- * Available to IModPlugins
+ * Get it from IModRegistry, which is available to IModPlugins.
  */
 public interface IJeiHelpers {
 	/**

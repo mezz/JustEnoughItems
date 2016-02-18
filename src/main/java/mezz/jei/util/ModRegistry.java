@@ -2,16 +2,9 @@ package mezz.jei.util;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.item.ItemStack;
-
 import mezz.jei.RecipeRegistry;
+import mezz.jei.api.IItemRegistry;
+import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.recipe.IRecipeCategory;
@@ -20,14 +13,43 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.gui.RecipeClickableArea;
 import mezz.jei.plugins.jei.description.ItemDescriptionRecipe;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.item.ItemStack;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ModRegistry implements IModRegistry {
+	@Nonnull
+	private final IJeiHelpers jeiHelpers;
+	@Nonnull
+	private final IItemRegistry itemRegistry;
 	private final List<IRecipeCategory> recipeCategories = new ArrayList<>();
 	private final List<IRecipeHandler> recipeHandlers = new ArrayList<>();
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers = new ArrayList<>();
 	private final List<Object> recipes = new ArrayList<>();
 	private final RecipeTransferRegistry recipeTransferRegistry = new RecipeTransferRegistry();
 	private final Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas = HashMultimap.create();
+
+
+	public ModRegistry(@Nonnull IJeiHelpers jeiHelpers, @Nonnull IItemRegistry itemRegistry) {
+		this.jeiHelpers = jeiHelpers;
+		this.itemRegistry = itemRegistry;
+	}
+
+	@Nonnull
+	@Override
+	public IJeiHelpers getJeiHelpers() {
+		return jeiHelpers;
+	}
+
+	@Nonnull
+	@Override
+	public IItemRegistry getItemRegistry() {
+		return itemRegistry;
+	}
 
 	@Override
 	public void addRecipeCategories(IRecipeCategory... recipeCategories) {

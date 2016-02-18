@@ -1,12 +1,5 @@
 package mezz.jei.gui;
 
-import javax.annotation.Nonnull;
-import java.util.List;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -15,6 +8,12 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.gui.ingredients.GuiFluidStackGroup;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+
+import javax.annotation.Nonnull;
+import java.util.List;
 
 public class RecipeLayout implements IRecipeLayout {
 	private static final int RECIPE_BUTTON_SIZE = 12;
@@ -77,6 +76,7 @@ public class RecipeLayout implements IRecipeLayout {
 		} catch (AbstractMethodError ignored) {
 			// older wrappers don't have this method
 		}
+		//noinspection deprecation
 		recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight());
 
 		RenderHelper.enableGUIStandardItemLighting();

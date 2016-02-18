@@ -1,15 +1,14 @@
 package mezz.jei.plugins.vanilla.furnace;
 
-import javax.annotation.Nonnull;
-
-import net.minecraft.util.ResourceLocation;
-
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
-import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.BlankRecipeCategory;
+import net.minecraft.util.ResourceLocation;
 
-public abstract class FurnaceRecipeCategory implements IRecipeCategory {
+import javax.annotation.Nonnull;
+
+public abstract class FurnaceRecipeCategory extends BlankRecipeCategory {
 	protected static final int inputSlot = 0;
 	protected static final int fuelSlot = 1;
 	protected static final int outputSlot = 2;

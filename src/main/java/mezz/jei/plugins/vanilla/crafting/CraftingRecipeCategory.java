@@ -1,24 +1,22 @@
 package mezz.jei.plugins.vanilla.crafting;
 
-import javax.annotation.Nonnull;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
-
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.BlankRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
+import net.minecraft.util.ResourceLocation;
 
-public class CraftingRecipeCategory implements IRecipeCategory {
+import javax.annotation.Nonnull;
+
+public class CraftingRecipeCategory extends BlankRecipeCategory {
 
 	private static final int craftOutputSlot = 0;
 	private static final int craftInputSlot1 = 1;
@@ -53,16 +51,6 @@ public class CraftingRecipeCategory implements IRecipeCategory {
 	@Nonnull
 	public IDrawable getBackground() {
 		return background;
-	}
-
-	@Override
-	public void drawExtras(Minecraft minecraft) {
-
-	}
-
-	@Override
-	public void drawAnimations(Minecraft minecraft) {
-
 	}
 
 	@Override

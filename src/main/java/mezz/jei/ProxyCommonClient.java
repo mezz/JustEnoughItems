@@ -1,29 +1,5 @@
 package mezz.jei;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Iterator;
-import java.util.List;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.client.resources.IReloadableResourceManager;
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.client.resources.IResourceManagerReloadListener;
-import net.minecraft.nbt.NBTTagCompound;
-
-import net.minecraftforge.common.ForgeVersion;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.discovery.ASMDataTable;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLInterModComms;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.config.Config;
@@ -36,6 +12,28 @@ import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.util.AnnotatedInstanceUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.ModRegistry;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.client.resources.IReloadableResourceManager;
+import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.resources.IResourceManagerReloadListener;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.ForgeVersion;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Iterator;
+import java.util.List;
 
 public class ProxyCommonClient extends ProxyCommon {
 	@Nullable
@@ -52,6 +50,9 @@ public class ProxyCommonClient extends ProxyCommon {
 	
 	@Override
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
+		final JeiHelpers jeiHelpers = new JeiHelpers();
+		Internal.setHelpers(jeiHelpers);
+
 		Config.preInit(event);
 		initVersionChecker();
 
@@ -68,7 +69,8 @@ public class ProxyCommonClient extends ProxyCommon {
 		while (iterator.hasNext()) {
 			IModPlugin plugin = iterator.next();
 			try {
-				plugin.onJeiHelpersAvailable(Internal.getHelpers());
+				//noinspection deprecation
+				plugin.onJeiHelpersAvailable(jeiHelpers);
 			} catch (AbstractMethodError ignored) {
 				// older plugins don't have this method
 			} catch (RuntimeException e) {
@@ -127,6 +129,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		while (iterator.hasNext()) {
 			IModPlugin plugin = iterator.next();
 			try {
+				//noinspection deprecation
 				plugin.onItemRegistryAvailable(itemRegistry);
 			} catch (AbstractMethodError ignored) {
 				// older plugins don't have this method
@@ -136,7 +139,7 @@ public class ProxyCommonClient extends ProxyCommon {
 			}
 		}
 
-		ModRegistry modRegistry = new ModRegistry();
+		ModRegistry modRegistry = new ModRegistry(Internal.getHelpers(), itemRegistry);
 
 		iterator = plugins.iterator();
 		while (iterator.hasNext()) {

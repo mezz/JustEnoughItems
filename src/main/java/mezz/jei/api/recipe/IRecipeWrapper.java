@@ -1,12 +1,11 @@
 package mezz.jei.api.recipe;
 
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.fluids.FluidStack;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-
-import net.minecraft.client.Minecraft;
-
-import net.minecraftforge.fluids.FluidStack;
 
 /**
  * A wrapper around a normal recipe with methods that allow JEI can make sense of it.

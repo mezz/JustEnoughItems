@@ -1,35 +1,39 @@
 package mezz.jei.api.recipe;
 
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.fluids.FluidStack;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
-
-import net.minecraftforge.fluids.FluidStack;
-
 public abstract class BlankRecipeWrapper implements IRecipeWrapper {
 	@Override
+	@Nonnull
 	public List getInputs() {
 		return Collections.emptyList();
 	}
 
 	@Override
+	@Nonnull
 	public List getOutputs() {
 		return Collections.emptyList();
 	}
 
 	@Override
+	@Nonnull
 	public List<FluidStack> getFluidInputs() {
 		return Collections.emptyList();
 	}
 
 	@Override
+	@Nonnull
 	public List<FluidStack> getFluidOutputs() {
 		return Collections.emptyList();
 	}
 
+	@Deprecated
 	@Override
 	public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight) {
 

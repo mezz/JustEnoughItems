@@ -1,21 +1,10 @@
 package mezz.jei.plugins.vanilla;
 
-import net.minecraft.client.gui.inventory.GuiBrewingStand;
-import net.minecraft.client.gui.inventory.GuiCrafting;
-import net.minecraft.client.gui.inventory.GuiFurnace;
-import net.minecraft.inventory.ContainerBrewingStand;
-import net.minecraft.inventory.ContainerFurnace;
-import net.minecraft.inventory.ContainerWorkbench;
-import net.minecraft.item.crafting.CraftingManager;
-
+import mezz.jei.api.BlankModPlugin;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.IJeiHelpers;
-import mezz.jei.api.IJeiRuntime;
-import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
-import mezz.jei.api.INbtIgnoreList;
-import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
@@ -33,20 +22,26 @@ import mezz.jei.plugins.vanilla.furnace.FurnaceFuelCategory;
 import mezz.jei.plugins.vanilla.furnace.FurnaceSmeltingCategory;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipeHandler;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipeMaker;
+import net.minecraft.client.gui.inventory.GuiBrewingStand;
+import net.minecraft.client.gui.inventory.GuiCrafting;
+import net.minecraft.client.gui.inventory.GuiFurnace;
+import net.minecraft.inventory.ContainerBrewingStand;
+import net.minecraft.inventory.ContainerFurnace;
+import net.minecraft.inventory.ContainerWorkbench;
+import net.minecraft.item.crafting.CraftingManager;
+
+import javax.annotation.Nonnull;
 
 @JEIPlugin
-public class VanillaPlugin implements IModPlugin {
-	private IItemRegistry itemRegistry;
-	private IJeiHelpers jeiHelpers;
-
+public class VanillaPlugin extends BlankModPlugin {
 	@Override
-	public void onJeiHelpersAvailable(IJeiHelpers jeiHelpers) {
-		this.jeiHelpers = jeiHelpers;
-		INbtIgnoreList nbtIgnoreList = jeiHelpers.getNbtIgnoreList();
+	public void register(@Nonnull IModRegistry registry) {
+		IItemRegistry itemRegistry = registry.getItemRegistry();
+		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
 
 		// normally you should ignore nbt per-item, but these tags are universally understood
 		// and apply to many vanilla and modded items
-		nbtIgnoreList.ignoreNbtTagNames(
+		jeiHelpers.getNbtIgnoreList().ignoreNbtTagNames(
 				"AttributeModifiers",
 				"CanDestroy",
 				"CanPlaceOn",
@@ -55,15 +50,7 @@ public class VanillaPlugin implements IModPlugin {
 				"RepairCost",
 				"Unbreakable"
 		);
-	}
 
-	@Override
-	public void onItemRegistryAvailable(IItemRegistry itemRegistry) {
-		this.itemRegistry = itemRegistry;
-	}
-
-	@Override
-	public void register(IModRegistry registry) {
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 		registry.addRecipeCategories(
 				new CraftingRecipeCategory(guiHelper),
@@ -97,15 +84,5 @@ public class VanillaPlugin implements IModPlugin {
 		registry.addRecipes(SmeltingRecipeMaker.getFurnaceRecipes(jeiHelpers));
 		registry.addRecipes(FuelRecipeMaker.getFuelRecipes(itemRegistry, jeiHelpers));
 		registry.addRecipes(BrewingRecipeMaker.getBrewingRecipes(itemRegistry));
-	}
-
-	@Override
-	public void onRecipeRegistryAvailable(IRecipeRegistry recipeRegistry) {
-
-	}
-
-	@Override
-	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
-
 	}
 }

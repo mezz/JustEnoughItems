@@ -1,20 +1,33 @@
 package mezz.jei.api;
 
-import javax.annotation.Nonnull;
-import java.util.List;
-
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.item.ItemStack;
-
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.item.ItemStack;
+
+import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
  * Passed to IModPlugins so they can register themselves.
  */
 public interface IModRegistry {
+
+	/**
+	 * Get helpers and tools for addon mods.
+	 * @since JEI 2.27.0
+	 */
+	@Nonnull
+	IJeiHelpers getJeiHelpers();
+
+	/**
+	 * Get useful functions relating to items.
+	 * @since JEI 2.27.0
+	 */
+	@Nonnull
+	IItemRegistry getItemRegistry();
 
 	/**
 	 * Add the recipe categories provided by this plugin.

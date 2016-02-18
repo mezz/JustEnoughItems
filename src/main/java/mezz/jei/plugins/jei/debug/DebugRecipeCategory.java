@@ -1,15 +1,5 @@
 package mezz.jei.plugins.jei.debug;
 
-import javax.annotation.Nonnull;
-import java.util.List;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-
-import net.minecraftforge.fluids.FluidStack;
-
 import mezz.jei.Internal;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IItemListOverlay;
@@ -18,11 +8,19 @@ import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITooltipCallback;
-import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.BlankRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
+import net.minecraft.client.Minecraft;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.FluidStack;
 
-public class DebugRecipeCategory implements IRecipeCategory {
+import javax.annotation.Nonnull;
+import java.util.List;
+
+public class DebugRecipeCategory extends BlankRecipeCategory {
 	public static final int recipeWidth = 160;
 	public static final int recipeHeight = 60;
 	@Nonnull
@@ -62,16 +60,11 @@ public class DebugRecipeCategory implements IRecipeCategory {
 	}
 
 	@Override
-	public void drawExtras(Minecraft minecraft) {
+	public void drawExtras(@Nonnull Minecraft minecraft) {
 		tankBackground.draw(minecraft);
 		IItemListOverlay itemListOverlay = Internal.getRuntime().getItemListOverlay();
 		minecraft.fontRendererObj.drawString(itemListOverlay.getFilterText(), 20, 52, 0);
 		minecraft.fontRendererObj.drawString(String.valueOf(itemListOverlay.getStackUnderMouse()), 50, 52, 0);
-	}
-
-	@Override
-	public void drawAnimations(Minecraft minecraft) {
-
 	}
 
 	@Override
@@ -111,7 +104,8 @@ public class DebugRecipeCategory implements IRecipeCategory {
 		guiFluidStacks.init(2, false, 50, 0, 24, 24, 2000, true, tankOverlay);
 		guiFluidStacks.init(3, false, 90, 0, 12, 47, 100, false, tankOverlay);
 
-		List<FluidStack> fluidInputs = recipeWrapper.getFluidInputs();
+		DebugRecipe debugRecipe = (DebugRecipe) recipeWrapper;
+		List<FluidStack> fluidInputs = debugRecipe.getFluidInputs();
 		guiFluidStacks.set(0, fluidInputs.get(0));
 		guiFluidStacks.set(1, fluidInputs.get(1));
 		guiFluidStacks.set(3, fluidInputs.get(0));

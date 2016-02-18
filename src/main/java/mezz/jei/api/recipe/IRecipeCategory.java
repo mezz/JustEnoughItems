@@ -1,11 +1,10 @@
 package mezz.jei.api.recipe;
 
-import javax.annotation.Nonnull;
-
-import net.minecraft.client.Minecraft;
-
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IRecipeLayout;
+import net.minecraft.client.Minecraft;
+
+import javax.annotation.Nonnull;
 
 /**
  * Defines a category of recipe, (i.e. Crafting Table Recipe, Furnace Recipe)
@@ -38,12 +37,12 @@ public interface IRecipeCategory {
 	/**
 	 * Optionally draw anything else that might be necessary, icons or extra slots.
 	 */
-	void drawExtras(Minecraft minecraft);
+	void drawExtras(@Nonnull Minecraft minecraft);
 
 	/**
 	 * Optionally draw animations like progress bars. These animations can be disabled in the config.
 	 */
-	void drawAnimations(Minecraft minecraft);
+	void drawAnimations(@Nonnull Minecraft minecraft);
 
 	/**
 	 * Set the IRecipeLayout properties from the RecipeWrapper.

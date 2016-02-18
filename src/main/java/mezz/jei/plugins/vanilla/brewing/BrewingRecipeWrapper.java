@@ -1,18 +1,16 @@
 package mezz.jei.plugins.vanilla.brewing;
 
 import com.google.common.base.Objects;
-
-import javax.annotation.Nonnull;
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
+import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
-import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
-import mezz.jei.util.Translator;
+import javax.annotation.Nonnull;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class BrewingRecipeWrapper extends VanillaRecipeWrapper {
 	private final List<ItemStack> ingredients;
@@ -43,11 +41,13 @@ public class BrewingRecipeWrapper extends VanillaRecipeWrapper {
 		this.hashCode = Objects.hashCode(potionInput.getMetadata(), potionOutput.getMetadata(), firstIngredient.getItem(), firstIngredient.getMetadata());
 	}
 
+	@Nonnull
 	@Override
 	public List getInputs() {
 		return inputs;
 	}
 
+	@Nonnull
 	@Override
 	public List<ItemStack> getOutputs() {
 		return Collections.singletonList(potionOutput);

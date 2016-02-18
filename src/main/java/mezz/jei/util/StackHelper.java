@@ -1,5 +1,20 @@
 package mezz.jei.util;
 
+import mezz.jei.Internal;
+import mezz.jei.api.INbtIgnoreList;
+import mezz.jei.api.recipe.IStackHelper;
+import mezz.jei.gui.ingredients.IGuiIngredient;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
+import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.oredict.OreDictionary;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -12,23 +27,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
-import net.minecraftforge.fml.common.registry.GameData;
-import net.minecraftforge.oredict.OreDictionary;
-
-import mezz.jei.Internal;
-import mezz.jei.api.INbtIgnoreList;
-import mezz.jei.api.recipe.IStackHelper;
-import mezz.jei.gui.ingredients.IGuiIngredient;
 
 public class StackHelper implements IStackHelper {
 	/**
@@ -327,7 +325,12 @@ public class StackHelper implements IStackHelper {
 		if (mode == UidMode.FULL || stack.getHasSubtypes()) {
 			itemKey.append(':').append(metadata);
 			if (stack.hasTagCompound()) {
-				NBTTagCompound nbtTagCompound = Internal.getHelpers().getNbtIgnoreList().getNbt(stack);
+				NBTTagCompound nbtTagCompound;
+				if (mode == UidMode.FULL) {
+					nbtTagCompound = stack.getTagCompound();
+				} else {
+					nbtTagCompound = Internal.getHelpers().getNbtIgnoreList().getNbt(stack);
+				}
 				if (nbtTagCompound != null && !nbtTagCompound.hasNoTags()) {
 					itemKey.append(':').append(nbtTagCompound);
 				}

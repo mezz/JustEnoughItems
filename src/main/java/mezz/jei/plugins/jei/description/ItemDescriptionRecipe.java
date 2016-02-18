@@ -1,19 +1,18 @@
 package mezz.jei.plugins.jei.description;
 
-import javax.annotation.Nonnull;
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+
+import javax.annotation.Nonnull;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 	private static final int lineSpacing = 2;
@@ -83,6 +82,7 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 		this.slotDrawable = Internal.getHelpers().getGuiHelper().getSlotDrawable();
 	}
 
+	@Nonnull
 	@Override
 	public List<ItemStack> getInputs() {
 		return itemStacks;

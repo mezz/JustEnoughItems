@@ -1,10 +1,5 @@
 package mezz.jei.plugins.vanilla.furnace;
 
-import javax.annotation.Nonnull;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
-
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStackGroup;
@@ -12,6 +7,10 @@ import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.util.Translator;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.ResourceLocation;
+
+import javax.annotation.Nonnull;
 
 public class FurnaceSmeltingCategory extends FurnaceRecipeCategory {
 	@Nonnull
@@ -33,12 +32,7 @@ public class FurnaceSmeltingCategory extends FurnaceRecipeCategory {
 	}
 
 	@Override
-	public void drawExtras(Minecraft minecraft) {
-
-	}
-
-	@Override
-	public void drawAnimations(Minecraft minecraft) {
+	public void drawAnimations(@Nonnull Minecraft minecraft) {
 		flame.draw(minecraft, 2, 20);
 		arrow.draw(minecraft, 24, 18);
 	}

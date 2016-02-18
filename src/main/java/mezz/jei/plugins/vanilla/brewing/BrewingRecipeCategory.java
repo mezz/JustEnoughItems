@@ -1,11 +1,5 @@
 package mezz.jei.plugins.vanilla.brewing;
 
-import javax.annotation.Nonnull;
-import java.util.List;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
-
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;
@@ -16,6 +10,11 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.util.Translator;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.ResourceLocation;
+
+import javax.annotation.Nonnull;
+import java.util.List;
 
 public class BrewingRecipeCategory implements IRecipeCategory {
 
@@ -72,12 +71,12 @@ public class BrewingRecipeCategory implements IRecipeCategory {
 	}
 
 	@Override
-	public void drawExtras(Minecraft minecraft) {
+	public void drawExtras(@Nonnull Minecraft minecraft) {
 		slotDrawable.draw(minecraft, outputSlotX, outputSlotY);
 	}
 
 	@Override
-	public void drawAnimations(Minecraft minecraft) {
+	public void drawAnimations(@Nonnull Minecraft minecraft) {
 		bubbles.draw(minecraft, 10, 0);
 		arrow.draw(minecraft, 42, 1);
 	}
@@ -93,13 +92,14 @@ public class BrewingRecipeCategory implements IRecipeCategory {
 		itemStacks.init(outputSlot, false, outputSlotX, outputSlotY);
 
 		if (recipeWrapper instanceof BrewingRecipeWrapper) {
-			List inputs = recipeWrapper.getInputs();
+			BrewingRecipeWrapper brewingRecipeWrapper = (BrewingRecipeWrapper) recipeWrapper;
+			List inputs = brewingRecipeWrapper.getInputs();
 
 			itemStacks.setFromRecipe(brewPotionSlot1, inputs.get(brewPotionSlot1));
 			itemStacks.setFromRecipe(brewPotionSlot2, inputs.get(brewPotionSlot2));
 			itemStacks.setFromRecipe(brewPotionSlot3, inputs.get(brewPotionSlot3));
 			itemStacks.setFromRecipe(brewIngredientSlot, inputs.get(brewIngredientSlot));
-			itemStacks.setFromRecipe(outputSlot, recipeWrapper.getOutputs());
+			itemStacks.setFromRecipe(outputSlot, brewingRecipeWrapper.getOutputs());
 		}
 	}
 }
