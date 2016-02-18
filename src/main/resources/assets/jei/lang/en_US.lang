@@ -83,7 +83,7 @@ gui.jei.editMode.description.show.mod.id=Hidden by ModId. Ctrl-Shift-click to sh
 # Recipe Categories
 gui.jei.category.craftingTable=Crafting Table
 gui.jei.category.smelting=Smelting
-gui.jei.category.smelting.experience=%s Exp.
+gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=Fuel
 gui.jei.category.fuel.burnTime=Burn Time: %s
 gui.jei.category.brewing=Brewing
