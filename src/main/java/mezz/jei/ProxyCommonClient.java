@@ -50,9 +50,6 @@ public class ProxyCommonClient extends ProxyCommon {
 	
 	@Override
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
-		final JeiHelpers jeiHelpers = new JeiHelpers();
-		Internal.setHelpers(jeiHelpers);
-
 		Config.preInit(event);
 		initVersionChecker();
 
@@ -70,7 +67,7 @@ public class ProxyCommonClient extends ProxyCommon {
 			IModPlugin plugin = iterator.next();
 			try {
 				//noinspection deprecation
-				plugin.onJeiHelpersAvailable(jeiHelpers);
+				plugin.onJeiHelpersAvailable(Internal.getHelpers());
 			} catch (AbstractMethodError ignored) {
 				// older plugins don't have this method
 			} catch (RuntimeException e) {
