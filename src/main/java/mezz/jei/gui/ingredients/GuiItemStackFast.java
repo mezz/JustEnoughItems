@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import mezz.jei.Internal;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
+import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -239,7 +240,8 @@ public class GuiItemStackFast {
 		}
 	}
 
-	public FontRenderer getFontRenderer(@Nonnull Minecraft minecraft, @Nonnull ItemStack itemStack) {
+	@Nonnull
+	public static FontRenderer getFontRenderer(@Nonnull Minecraft minecraft, @Nonnull ItemStack itemStack) {
 		Item item = itemStack.getItem();
 		FontRenderer fontRenderer = item.getFontRenderer(itemStack);
 		if (fontRenderer == null) {
@@ -261,12 +263,13 @@ public class GuiItemStackFast {
 		GlStateManager.enableDepth();
 	}
 
-	@Nullable
-	public List<String> getTooltip(@Nonnull Minecraft minecraft) {
+	public void drawTooltip(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 		if (itemStack == null) {
-			return null;
+			return;
 		}
-		return getTooltip(minecraft, itemStack);
+		List<String> tooltip = getTooltip(minecraft, itemStack);
+		FontRenderer fontRenderer = getFontRenderer(minecraft, itemStack);
+		TooltipRenderer.drawHoveringText(minecraft, tooltip, mouseX, mouseY, fontRenderer);
 	}
 
 	@Nonnull

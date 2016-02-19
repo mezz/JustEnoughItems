@@ -313,10 +313,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		}
 
 		if (hovered != null) {
-			List<String> tooltip = hovered.getTooltip(minecraft);
-			if (tooltip != null) {
-				TooltipRenderer.drawHoveringText(minecraft, tooltip, mouseX, mouseY);
-			}
+			hovered.drawTooltip(minecraft, mouseX, mouseY);
 		}
 
 		if (configButtonHoverChecker.checkHover(mouseX, mouseY)) {
