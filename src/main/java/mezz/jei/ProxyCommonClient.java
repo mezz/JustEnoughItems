@@ -8,6 +8,7 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.config.SessionData;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.network.packets.PacketJEI;
+import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.util.AnnotatedInstanceUtil;
 import mezz.jei.util.Log;
@@ -62,6 +63,12 @@ public class ProxyCommonClient extends ProxyCommon {
 			this.plugins.add(0, vanillaPlugin);
 		}
 
+		IModPlugin jeiInternalPlugin = getJeiInternalPlugin(this.plugins);
+		if (jeiInternalPlugin != null) {
+			this.plugins.remove(jeiInternalPlugin);
+			this.plugins.add(jeiInternalPlugin);
+		}
+
 		Iterator<IModPlugin> iterator = plugins.iterator();
 		while (iterator.hasNext()) {
 			IModPlugin plugin = iterator.next();
@@ -88,9 +95,19 @@ public class ProxyCommonClient extends ProxyCommon {
 	}
 
 	@Nullable
-	private IModPlugin getVanillaPlugin(List<IModPlugin> modPlugins) {
+	private IModPlugin getVanillaPlugin(@Nonnull List<IModPlugin> modPlugins) {
 		for (IModPlugin modPlugin : modPlugins) {
 			if (modPlugin instanceof VanillaPlugin) {
+				return modPlugin;
+			}
+		}
+		return null;
+	}
+
+	@Nullable
+	private IModPlugin getJeiInternalPlugin(@Nonnull List<IModPlugin> modPlugins) {
+		for (IModPlugin modPlugin : modPlugins) {
+			if (modPlugin instanceof JEIInternalPlugin) {
 				return modPlugin;
 			}
 		}
