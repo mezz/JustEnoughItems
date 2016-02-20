@@ -515,6 +515,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	public void close() {
 		open = false;
 		setKeyboardFocus(false);
+		Config.saveFilterText();
 	}
 
 	@Override
@@ -539,7 +540,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 			return;
 		}
 		searchField.setText(filterText);
-		ItemFilter.setFilterText(filterText);
+		Config.setFilterText(filterText);
 	}
 
 	@Nonnull

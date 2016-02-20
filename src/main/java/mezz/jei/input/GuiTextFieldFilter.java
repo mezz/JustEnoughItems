@@ -1,18 +1,16 @@
 package mezz.jei.input;
 
-import java.awt.Color;
-import java.util.LinkedList;
-import java.util.List;
-
+import mezz.jei.ItemFilter;
+import mezz.jei.config.Config;
+import mezz.jei.util.ItemStackElement;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;
-
 import net.minecraftforge.fml.client.config.HoverChecker;
-
 import org.lwjgl.input.Keyboard;
 
-import mezz.jei.ItemFilter;
-import mezz.jei.util.ItemStackElement;
+import java.awt.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class GuiTextFieldFilter extends GuiTextField {
 	private static final int MAX_HISTORY = 100;
@@ -78,7 +76,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 				saveHistory();
 			}
 		}
-		return handled && ItemFilter.setFilterText(getText());
+		return handled && Config.setFilterText(getText());
 	}
 
 	public boolean isMouseOver(int mouseX, int mouseY) {
@@ -88,7 +86,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
 		if (mouseButton == 1) {
 			setText("");
-			return ItemFilter.setFilterText("");
+			return Config.setFilterText("");
 		} else {
 			super.mouseClicked(mouseX, mouseY, mouseButton);
 		}

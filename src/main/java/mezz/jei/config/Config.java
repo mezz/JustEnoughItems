@@ -50,9 +50,12 @@ public class Config {
 	private static final boolean defaultOverlayEnabled = true;
 	private static final boolean defaultCheatItemsEnabled = false;
 	private static final boolean defaultEditModeEnabled = false;
+	private static final String defaultFilterText = "";
 	private static boolean overlayEnabled = defaultOverlayEnabled;
 	private static boolean cheatItemsEnabled = defaultCheatItemsEnabled;
 	private static boolean editModeEnabled = defaultEditModeEnabled;
+	@Nonnull
+	private static String filterText = defaultFilterText;
 
 	// item blacklist
 	private static final Set<String> itemBlacklist = new HashSet<>();
@@ -120,6 +123,31 @@ public class Config {
 
 	public static boolean isPrefixRequiredForColorSearch() {
 		return prefixRequiredForColorSearch;
+	}
+
+	public static boolean setFilterText(@Nonnull String filterText) {
+		String lowercaseFilterText = filterText.toLowerCase();
+		if (Config.filterText.equals(lowercaseFilterText)) {
+			return false;
+		}
+
+		Config.filterText = lowercaseFilterText;
+		return true;
+	}
+
+	@Nonnull
+	public static String getFilterText() {
+		return filterText;
+	}
+
+	public static void saveFilterText() {
+		final String worldCategory = SessionData.getWorldUid();
+		Property property = worldConfig.get(worldCategory, "filterText", defaultFilterText);
+		property.set(Config.filterText);
+
+		if (worldConfig.hasChanged()) {
+			worldConfig.save();
+		}
 	}
 
 	public static LocalizedConfiguration getConfig() {
@@ -301,6 +329,10 @@ public class Config {
 		property.setLanguageKey("config.jei.mode.editEnabled");
 		property.comment = Translator.translateToLocal("config.jei.mode.editEnabled.comment");
 		editModeEnabled = property.getBoolean();
+
+		property = worldConfig.get(worldCategory, "filterText", defaultFilterText);
+		property.setShowInGui(false);
+		filterText = property.getString();
 
 		final boolean configChanged = worldConfig.hasChanged();
 		if (configChanged) {

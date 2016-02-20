@@ -25,9 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemFilter {
-	/** The currently active filter text */
-	@Nonnull
-	private static String filterText = "";
 
 	/** A cache for fast searches while typing or using backspace. Maps filterText to filteredItemMaps */
 	private final LoadingCache<String, ImmutableList<ItemStackElement>> filteredItemMapsCache;
@@ -47,24 +44,14 @@ public class ItemFilter {
 		this.filteredItemMapsCache.invalidateAll();
 	}
 
-	public static boolean setFilterText(@Nonnull String filterText) {
-		String lowercaseFilterText = filterText.toLowerCase();
-		if (ItemFilter.filterText.equals(lowercaseFilterText)) {
-			return false;
-		}
-
-		ItemFilter.filterText = lowercaseFilterText;
-		return true;
-	}
-
 	@Nonnull
 	public String getFilterText() {
-		return filterText;
+		return Config.getFilterText();
 	}
 
 	@Nonnull
 	public ImmutableList<ItemStackElement> getItemList() {
-		String[] filters = filterText.split("\\|");
+		String[] filters = getFilterText().split("\\|");
 
 		if (filters.length == 1) {
 			String filter = filters[0];

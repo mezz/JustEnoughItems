@@ -27,7 +27,7 @@ public class GuiEventHandler {
 	private GuiContainer previousGui = null;
 
 	public void setItemListOverlay(@Nullable ItemListOverlay itemListOverlay) {
-		if (this.itemListOverlay != null) {
+		if (this.itemListOverlay != null && this.itemListOverlay.isOpen()) {
 			this.itemListOverlay.close();
 		}
 
@@ -64,7 +64,9 @@ public class GuiEventHandler {
 				}
 			}
 		} else if (!(event.gui instanceof RecipesGui)) {
-			itemListOverlay.close();
+			if (itemListOverlay.isOpen()) {
+				itemListOverlay.close();
+			}
 		}
 	}
 
