@@ -79,8 +79,8 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 	}
 
 	@Override
-	public void setWorldAndResolution(Minecraft mc, int width, int height) {
-		super.setWorldAndResolution(mc, width, height);
+	public void initGui() {
+		super.initGui();
 
 		this.xSize = 176;
 
