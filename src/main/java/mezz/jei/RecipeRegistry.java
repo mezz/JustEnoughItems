@@ -265,12 +265,13 @@ public class RecipeRegistry implements IRecipeRegistry {
 			return null;
 		}
 
-		IRecipeHandler recipeHandler;
-		while ((recipeHandler = recipeHandlers.get(recipeClass)) == null && (recipeClass != Object.class)) {
-			recipeClass = recipeClass.getSuperclass();
+		for (Class<?> handledClass : recipeHandlers.keySet()) {
+			if (handledClass.isAssignableFrom(recipeClass)) {
+				return recipeHandlers.get(handledClass);
+			}
 		}
 
-		return recipeHandler;
+		return null;
 	}
 
 	@Nullable
