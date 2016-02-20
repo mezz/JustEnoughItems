@@ -44,15 +44,15 @@ config.jei.interface.recipeAnimationsEnabled.comment=Show recipe animations (fur
 
 config.jei.search=Search Options
 config.jei.search.comment=Options relating to the search bar.
-config.jei.search.atPrefixRequiredForModName=Use @ for Mod Name
+config.jei.search.atPrefixRequiredForModName=Require @ for Mod Name
 config.jei.search.atPrefixRequiredForModName.comment=Require "@" in front of a word to search by mod name.
-config.jei.search.prefixRequiredForTooltipSearch=Use # for Tooltip
+config.jei.search.prefixRequiredForTooltipSearch=Require # for Tooltip
 config.jei.search.prefixRequiredForTooltipSearch.comment=Require "#" in front of a word to search tooltips.
-config.jei.search.prefixRequiredForOreDictSearch=Use $ for Ore Dictionary
+config.jei.search.prefixRequiredForOreDictSearch=Require $ for Ore Dictionary
 config.jei.search.prefixRequiredForOreDictSearch.comment=Require "$" in front of a word to search ore dictionary names.
-config.jei.search.prefixRequiredForCreativeTabSearch=Use %% for Creative Tab Name
+config.jei.search.prefixRequiredForCreativeTabSearch=Require %% for Creative Tab Name
 config.jei.search.prefixRequiredForCreativeTabSearch.comment=Require "%" in front of a word to search creative tab names.
-config.jei.search.prefixRequiredForColorSearch=Use ^ for Colors
+config.jei.search.prefixRequiredForColorSearch=Require ^ for Colors
 config.jei.search.prefixRequiredForColorSearch.comment=Require "^" in front of a word to search item colors.
 
 config.jei.advanced=Advanced
