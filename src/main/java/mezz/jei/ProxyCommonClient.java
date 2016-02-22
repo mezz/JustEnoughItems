@@ -126,7 +126,11 @@ public class ProxyCommonClient extends ProxyCommon {
 	@SubscribeEvent
 	public void onEntityJoinedWorld(EntityJoinWorldEvent event) {
 		if (!SessionData.isJeiStarted() && Minecraft.getMinecraft().thePlayer != null) {
-			startJEI();
+			try {
+				startJEI();
+			} catch (RuntimeException e) {
+				FMLClientHandler.instance().haltGame("JEI failed to start:", e);
+			}
 		}
 	}
 
