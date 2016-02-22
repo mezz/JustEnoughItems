@@ -47,7 +47,13 @@ public class ItemRegistryFactory {
 			List<ItemStack> creativeTabItemStacks = new ArrayList<>();
 			creativeTab.displayAllReleventItems(creativeTabItemStacks);
 			for (ItemStack itemStack : creativeTabItemStacks) {
-				addItemStack(itemStack);
+				if (itemStack == null) {
+					Log.error("Found a null itemStack in creative tab: {}", creativeTab);
+				} else if (itemStack.getItem() == null) {
+					Log.error("Found a null item in an itemStack from creative tab: {}", creativeTab);
+				} else {
+					addItemStack(itemStack);
+				}
 			}
 		}
 
