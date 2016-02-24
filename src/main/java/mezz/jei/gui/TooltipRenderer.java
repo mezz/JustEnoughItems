@@ -4,6 +4,7 @@ import mezz.jei.config.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -33,8 +34,9 @@ public class TooltipRenderer {
 		public void set(@Nonnull Minecraft minecraft) {
 			this.mc = minecraft;
 			this.itemRender = minecraft.getRenderItem();
-			this.width = minecraft.currentScreen.width;
-			this.height = minecraft.currentScreen.height;
+			ScaledResolution scaledresolution = new ScaledResolution(minecraft);
+			this.width = scaledresolution.getScaledWidth();
+			this.height = scaledresolution.getScaledHeight();
 		}
 
 		@Override
