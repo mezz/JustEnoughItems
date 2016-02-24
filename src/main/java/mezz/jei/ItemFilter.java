@@ -154,11 +154,11 @@ public class ItemFilter {
 		}
 
 		public boolean isItemStackHidden(@Nonnull ItemStack itemStack) {
-			if (isItemStackHiddenByMissingModel(itemStack)) {
+			if (isItemHiddenByBlacklist(itemStack)) {
 				return true;
 			}
 
-			return isItemHiddenByBlacklist(itemStack);
+			return isItemStackHiddenByMissingModel(itemStack);
 		}
 
 		public Multiset<Item> getBrokenItems() {
@@ -166,16 +166,18 @@ public class ItemFilter {
 		}
 
 		private boolean isItemStackHiddenByMissingModel(@Nonnull ItemStack itemStack) {
+			Item item = itemStack.getItem();
+			if (brokenItems.contains(item)) {
+				return true;
+			}
+
 			try {
 				if (itemModelMesher.getItemModel(itemStack) == missingModel && Config.isHideMissingModelsEnabled()) {
 					return true;
 				}
 			} catch (RuntimeException | AbstractMethodError e) {
-				Item item = itemStack.getItem();
-				if (!brokenItems.contains(item)) {
-					String modName = Internal.getItemRegistry().getModNameForItem(item);
-					Log.error("Couldn't get ItemModel for {} itemStack {}.", modName, itemStack, e);
-				}
+				String modName = Internal.getItemRegistry().getModNameForItem(item);
+				Log.error("Couldn't get ItemModel for {} itemStack {}.", modName, itemStack, e);
 				brokenItems.add(item);
 				return true;
 			}
