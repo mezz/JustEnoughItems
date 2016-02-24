@@ -1,5 +1,4 @@
 [![Build Status](https://dvs1.progwml6.com/jenkins/job/Just_Enough_Items-MC1.8.9/badge/icon?style=plastic)](https://dvs1.progwml6.com/jenkins/job/Just_Enough_Items-MC1.8.9/?style=plastic)
-[![Issue Stats](http://issuestats.com/github/mezz/JustEnoughItems/badge/issue)](http://issuestats.com/github/mezz/JustEnoughItems)
 
 JustEnoughItems (JEI)
 ===============
