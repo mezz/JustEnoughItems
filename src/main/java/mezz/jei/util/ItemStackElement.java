@@ -5,6 +5,7 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import mezz.jei.Internal;
 import mezz.jei.config.Config;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -84,7 +85,7 @@ public class ItemStackElement {
 
 		StringBuilder oreDictStringBuilder = new StringBuilder();
 		for (int oreId : OreDictionary.getOreIDs(itemStack)) {
-			String oreName = OreDictionary.getOreName(oreId);
+			String oreName = OreDictionary.getOreName(oreId).toLowerCase(Locale.ENGLISH);
 			oreDictStringBuilder.append(oreName).append(' ');
 		}
 		this.oreDictString = oreDictStringBuilder.toString();
@@ -92,7 +93,7 @@ public class ItemStackElement {
 		StringBuilder creativeTabStringBuilder = new StringBuilder();
 		for (CreativeTabs creativeTab : item.getCreativeTabs()) {
 			if (creativeTab != null) {
-				String creativeTabName = creativeTab.getTranslatedTabLabel();
+				String creativeTabName = I18n.format(creativeTab.getTranslatedTabLabel()).toLowerCase();
 				creativeTabStringBuilder.append(creativeTabName).append(' ');
 			}
 		}
