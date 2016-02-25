@@ -201,7 +201,11 @@ public class StackHelper implements IStackHelper {
 
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
 			List<ItemStack> subItems = new ArrayList<>();
-			item.getSubItems(item, itemTab, subItems);
+			try {
+				item.getSubItems(item, itemTab, subItems);
+			} catch (RuntimeException e) {
+				Log.error("Caught a crash while getting sub-items of {}", item, e);
+			}
 			for (ItemStack subItem : subItems) {
 				if (subItem == null) {
 					Log.error("Found null subItem of {}", item);
