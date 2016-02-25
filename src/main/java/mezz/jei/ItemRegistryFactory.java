@@ -45,7 +45,11 @@ public class ItemRegistryFactory {
 
 		for (CreativeTabs creativeTab : CreativeTabs.creativeTabArray) {
 			List<ItemStack> creativeTabItemStacks = new ArrayList<>();
-			creativeTab.displayAllReleventItems(creativeTabItemStacks);
+			try {
+				creativeTab.displayAllReleventItems(creativeTabItemStacks);
+			} catch (RuntimeException e) {
+				Log.error("Creative tab crashed while getting items. Some items from this tab will be missing from the item list. {}", creativeTab, e);
+			}
 			for (ItemStack itemStack : creativeTabItemStacks) {
 				if (itemStack == null) {
 					Log.error("Found a null itemStack in creative tab: {}", creativeTab);
