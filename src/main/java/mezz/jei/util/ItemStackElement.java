@@ -45,9 +45,9 @@ public class ItemStackElement {
 			return new ItemStackElement(itemStack);
 		} catch (RuntimeException e) {
 			try {
-				Log.warning("Found broken itemStack {}.", itemStack, e);
+				Log.warning("Found a broken itemStack {}.", itemStack, e);
 			} catch (RuntimeException e2) {
-				Log.warning("Found broken itemStack.", e2);
+				Log.warning("Found a broken itemStack.", e2);
 			}
 			return null;
 		}

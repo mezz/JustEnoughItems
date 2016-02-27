@@ -284,7 +284,7 @@ public class StackHelper implements IStackHelper {
 	public String getModId(@Nonnull ItemStack stack) {
 		Item item = stack.getItem();
 		if (item == null) {
-			throw new ItemUidException("Found an itemStack with a null item. This is an error from another mod.");
+			throw new NullPointerException("Found an itemStack with a null item. This is an error from another mod.");
 		}
 
 		return getModId(item);
@@ -295,7 +295,7 @@ public class StackHelper implements IStackHelper {
 		FMLControlledNamespacedRegistry<Item> itemRegistry = GameData.getItemRegistry();
 		ResourceLocation itemName = itemRegistry.getNameForObject(item);
 		if (itemName == null) {
-			throw new ItemUidException("No name for item in GameData itemRegistry: " + item.getClass());
+			throw new NullPointerException("GameData.getItemRegistry().getNameForObject returned null for: " + item.getClass());
 		}
 
 		return itemName.getResourceDomain();
@@ -310,13 +310,13 @@ public class StackHelper implements IStackHelper {
 	public String getUniqueIdentifierForStack(@Nonnull ItemStack stack, @Nonnull UidMode mode) {
 		Item item = stack.getItem();
 		if (item == null) {
-			throw new ItemUidException("Found an itemStack with a null item. This is an error from another mod.");
+			throw new NullPointerException("Found an itemStack with a null item. This is an error from another mod.");
 		}
 
 		FMLControlledNamespacedRegistry<Item> itemRegistry = GameData.getItemRegistry();
 		ResourceLocation itemName = itemRegistry.getNameForObject(item);
 		if (itemName == null) {
-			throw new ItemUidException("No name for item in GameData itemRegistry: " + item.getClass());
+			throw new NullPointerException("GameData.getItemRegistry().getNameForObject returned null for: " + item.getClass());
 		}
 
 		String itemNameString = itemName.toString();
