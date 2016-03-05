@@ -2,9 +2,12 @@ package mezz.jei.gui;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.Container;
+import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class GuiProperties {
 	@Nonnull
@@ -24,6 +27,14 @@ public class GuiProperties {
 			guiXSize = recipesGui.getXSize();
 		} else if (guiScreen instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) guiScreen;
+			Container inventorySlots = guiContainer.inventorySlots;
+			if (inventorySlots == null) {
+				return null;
+			}
+			List<ItemStack> inventory = inventorySlots.getInventory();
+			if (inventory == null || inventory.isEmpty()) {
+				return null;
+			}
 			guiLeft = guiContainer.guiLeft;
 			guiXSize = guiContainer.xSize;
 		} else {
