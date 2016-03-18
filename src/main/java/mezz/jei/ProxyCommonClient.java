@@ -18,6 +18,8 @@ import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
@@ -33,9 +35,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class ProxyCommonClient extends ProxyCommon {
 	@Nullable
 	private ItemFilter itemFilter;
@@ -107,6 +111,22 @@ public class ProxyCommonClient extends ProxyCommon {
 
 		guiEventHandler = new GuiEventHandler();
 		MinecraftForge.EVENT_BUS.register(guiEventHandler);
+
+		fixVanillaItemHasSubtypes();
+	}
+
+	/** fix vanilla items that don't mark themselves as having subtypes */
+	private static void fixVanillaItemHasSubtypes() {
+		List<Item> items = Arrays.asList(
+				Items.potionitem,
+				Items.lingering_potion,
+				Items.splash_potion,
+				Items.tipped_arrow,
+				Items.enchanted_book
+		);
+		for (Item item : items) {
+			item.setHasSubtypes(true);
+		}
 	}
 
 	@SubscribeEvent
