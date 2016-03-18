@@ -16,6 +16,8 @@ import mezz.jei.plugins.vanilla.crafting.ShapedOreRecipeHandler;
 import mezz.jei.plugins.vanilla.crafting.ShapedRecipesHandler;
 import mezz.jei.plugins.vanilla.crafting.ShapelessOreRecipeHandler;
 import mezz.jei.plugins.vanilla.crafting.ShapelessRecipesHandler;
+import mezz.jei.plugins.vanilla.crafting.TippedArrowRecipeHandler;
+import mezz.jei.plugins.vanilla.crafting.TippedArrowRecipeMaker;
 import mezz.jei.plugins.vanilla.furnace.FuelRecipeHandler;
 import mezz.jei.plugins.vanilla.furnace.FuelRecipeMaker;
 import mezz.jei.plugins.vanilla.furnace.FurnaceFuelCategory;
@@ -64,6 +66,7 @@ public class VanillaPlugin extends BlankModPlugin {
 				new ShapedRecipesHandler(),
 				new ShapelessOreRecipeHandler(),
 				new ShapelessRecipesHandler(),
+				new TippedArrowRecipeHandler(),
 				new FuelRecipeHandler(),
 				new SmeltingRecipeHandler(),
 				new BrewingRecipeHandler()
@@ -84,5 +87,6 @@ public class VanillaPlugin extends BlankModPlugin {
 		registry.addRecipes(SmeltingRecipeMaker.getFurnaceRecipes(jeiHelpers));
 		registry.addRecipes(FuelRecipeMaker.getFuelRecipes(itemRegistry, jeiHelpers));
 		registry.addRecipes(BrewingRecipeMaker.getBrewingRecipes(itemRegistry));
+		registry.addRecipes(TippedArrowRecipeMaker.getTippedArrowRecipes());
 	}
 }
