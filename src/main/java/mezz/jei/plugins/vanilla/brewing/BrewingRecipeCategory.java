@@ -37,17 +37,21 @@ public class BrewingRecipeCategory implements IRecipeCategory {
 	private final IDrawableAnimated arrow;
 	@Nonnull
 	private final IDrawableAnimated bubbles;
+	@Nonnull
+	private final IDrawableStatic blazeHeat;
 
 	public BrewingRecipeCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/brewing_stand.png");
-		background = guiHelper.createDrawable(location, 55, 15, 64, 56, 0, 0, 0, 40);
+		background = guiHelper.createDrawable(location, 55, 15, 64, 60, 0, 0, 0, 40);
 		localizedName = Translator.translateToLocal("gui.jei.category.brewing");
 
 		IDrawableStatic brewArrowDrawable = guiHelper.createDrawable(location, 176, 0, 9, 28);
 		arrow = guiHelper.createAnimatedDrawable(brewArrowDrawable, 400, IDrawableAnimated.StartDirection.TOP, false);
 
-		IDrawableStatic brewBubblesDrawable = guiHelper.createDrawable(location, 185, 0, 12, 29);
+		IDrawableStatic brewBubblesDrawable = guiHelper.createDrawable(location, 185, 1, 12, 28);
 		bubbles = guiHelper.createAnimatedDrawable(brewBubblesDrawable, 20, IDrawableAnimated.StartDirection.BOTTOM, false);
+
+		blazeHeat = guiHelper.createDrawable(location, 176, 29, 18, 4);
 
 		slotDrawable = guiHelper.getSlotDrawable();
 	}
@@ -73,11 +77,12 @@ public class BrewingRecipeCategory implements IRecipeCategory {
 	@Override
 	public void drawExtras(@Nonnull Minecraft minecraft) {
 		slotDrawable.draw(minecraft, outputSlotX, outputSlotY);
+		blazeHeat.draw(minecraft, 5, 29);
 	}
 
 	@Override
 	public void drawAnimations(@Nonnull Minecraft minecraft) {
-		bubbles.draw(minecraft, 10, 0);
+		bubbles.draw(minecraft, 8, 0);
 		arrow.draw(minecraft, 42, 1);
 	}
 
@@ -85,9 +90,9 @@ public class BrewingRecipeCategory implements IRecipeCategory {
 	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper) {
 		IGuiItemStackGroup itemStacks = recipeLayout.getItemStacks();
 
-		itemStacks.init(brewPotionSlot1, true, 0, 30);
-		itemStacks.init(brewPotionSlot2, true, 23, 37);
-		itemStacks.init(brewPotionSlot3, true, 46, 30);
+		itemStacks.init(brewPotionSlot1, true, 0, 35);
+		itemStacks.init(brewPotionSlot2, true, 23, 42);
+		itemStacks.init(brewPotionSlot3, true, 46, 35);
 		itemStacks.init(brewIngredientSlot, true, 23, 1);
 		itemStacks.init(outputSlot, false, outputSlotX, outputSlotY);
 

@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
-	private static final int borderPadding = 8;
+	private static final int borderPadding = 6;
 	private static final int textPadding = 5;
 	private static final int buttonWidth = 13;
 	private static final int buttonHeight = 12;
@@ -101,7 +101,7 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 		final int rightButtonX = xSize - borderPadding - buttonWidth;
 		final int leftButtonX = borderPadding;
 
-		int recipeClassButtonTop = borderPadding - 2;
+		int recipeClassButtonTop = titleHeight - buttonHeight + 1;
 		nextRecipeCategory = new GuiButtonExt(2, rightButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, ">");
 		previousRecipeCategory = new GuiButtonExt(3, leftButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, "<");
 

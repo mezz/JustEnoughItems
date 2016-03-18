@@ -5,6 +5,8 @@ import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionType;
+import net.minecraft.potion.PotionUtils;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -38,7 +40,11 @@ public class BrewingRecipeWrapper extends VanillaRecipeWrapper {
 
 		ItemStack firstIngredient = ingredients.get(0);
 
-		this.hashCode = Objects.hashCode(potionInput.getMetadata(), potionOutput.getMetadata(), firstIngredient.getItem(), firstIngredient.getMetadata());
+		PotionType typeIn = PotionUtils.getPotionFromItem(potionInput);
+		PotionType typeOut = PotionUtils.getPotionFromItem(potionOutput);
+		this.hashCode = Objects.hashCode(potionInput.getItem(), PotionType.getID(typeIn),
+				potionOutput.getItem(), PotionType.getID(typeOut),
+				firstIngredient.getItem(), firstIngredient.getMetadata());
 	}
 
 	@Nonnull
@@ -90,7 +96,12 @@ public class BrewingRecipeWrapper extends VanillaRecipeWrapper {
 	}
 
 	private static boolean arePotionsEqual(ItemStack potion1, ItemStack potion2) {
-		return potion1.getMetadata() == potion2.getMetadata();
+		if (potion1.getItem() != potion2.getItem()) {
+			return false;
+		}
+		PotionType type1 = PotionUtils.getPotionFromItem(potion1);
+		PotionType type2 = PotionUtils.getPotionFromItem(potion2);
+		return PotionType.getID(type1) == PotionType.getID(type2);
 	}
 
 	public int getBrewingSteps() {
@@ -104,6 +115,8 @@ public class BrewingRecipeWrapper extends VanillaRecipeWrapper {
 
 	@Override
 	public String toString() {
-		return ingredients + " + " + potionInput + " = " + potionOutput;
+		PotionType inputType = PotionUtils.getPotionFromItem(potionInput);
+		PotionType outputType = PotionUtils.getPotionFromItem(potionOutput);
+		return ingredients + " + [" + potionInput.getItem() + " " + inputType.getNamePrefixed("") + "] = [" + potionOutput + " " + outputType.getNamePrefixed("") + "]";
 	}
 }
