@@ -38,7 +38,6 @@ import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 
-@SuppressWarnings("deprecation")
 public class GuiItemStackFast {
 	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
 	private static final int blacklistItemColor = Color.yellow.getRGB();
@@ -129,26 +128,23 @@ public class GuiItemStackFast {
 		tessellator.draw();
 	}
 
-	private void renderQuads(VertexBuffer vertexBuffer, List quads, int color, ItemStack stack) {
+	private void renderQuads(VertexBuffer vertexBuffer, List<BakedQuad> quads, final int color, ItemStack stack) {
 		boolean flag = color == -1 && stack != null;
-		BakedQuad bakedquad;
-		int j;
 
 		ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
 
-		for (Object quad : quads) {
-			bakedquad = (BakedQuad) quad;
-			j = color;
+		for (BakedQuad bakedquad : quads) {
+			int quadColor = color;
 
 			if (flag && bakedquad.hasTintIndex()) {
-				j = itemColors.getColorFromItemstack(stack, bakedquad.getTintIndex());
+				quadColor = itemColors.getColorFromItemstack(stack, bakedquad.getTintIndex());
 				if (EntityRenderer.anaglyphEnable) {
-					j = TextureUtil.anaglyphColor(j);
+					quadColor = TextureUtil.anaglyphColor(quadColor);
 				}
 
-				j |= -16777216;
+				quadColor |= -16777216;
 			}
-			LightUtil.renderQuadColor(vertexBuffer, bakedquad, j);
+			LightUtil.renderQuadColor(vertexBuffer, bakedquad, quadColor);
 		}
 	}
 
