@@ -1,16 +1,15 @@
 package mezz.jei.network.packets;
 
-import javax.annotation.Nonnull;
-import java.io.IOException;
-
+import mezz.jei.network.IPacketId;
+import mezz.jei.network.PacketIdServer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;
-import net.minecraft.network.play.client.C01PacketChatMessage;
+import net.minecraft.network.play.client.CPacketChatMessage;
 
-import mezz.jei.network.IPacketId;
-import mezz.jei.network.PacketIdServer;
+import javax.annotation.Nonnull;
+import java.io.IOException;
 
 public class PacketGiveItemMessageBig extends PacketJEI {
 	private String message;
@@ -37,21 +36,21 @@ public class PacketGiveItemMessageBig extends PacketJEI {
 	public void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
 		if (player instanceof EntityPlayerMP) {
 			String message = buf.readStringFromBuffer(32767);
-			C01PacketChatMessageBig packet = new C01PacketChatMessageBig(message);
+			CPacketChatMessageBig packet = new CPacketChatMessageBig(message);
 			EntityPlayerMP playerMP = (EntityPlayerMP) player;
 			playerMP.playerNetServerHandler.processChatMessage(packet);
 		}
 	}
 
 	/** Get around the 100 character limit on chat messages */
-	private static class C01PacketChatMessageBig extends C01PacketChatMessage {
+	private static class CPacketChatMessageBig extends CPacketChatMessage {
 		private String message;
 
 		@SuppressWarnings("unused")
-		public C01PacketChatMessageBig() {
+		public CPacketChatMessageBig() {
 		}
 
-		public C01PacketChatMessageBig(String messageIn) {
+		public CPacketChatMessageBig(String messageIn) {
 			this.message = messageIn;
 		}
 

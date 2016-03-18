@@ -15,7 +15,7 @@ import mezz.jei.util.ItemStackElement;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.resources.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -143,7 +143,6 @@ public class ItemFilter {
 	private static class ItemStackChecker {
 		private final IItemBlacklist itemBlacklist;
 		private final ItemModelMesher itemModelMesher;
-		@SuppressWarnings("deprecation")
 		private final IBakedModel missingModel;
 		private final Multiset<Item> brokenItems = HashMultiset.create();
 

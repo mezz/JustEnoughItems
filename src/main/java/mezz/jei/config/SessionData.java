@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.server.MinecraftServer;
-
 import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class SessionData {
@@ -28,9 +27,10 @@ public class SessionData {
 
 	public static String getWorldUid() {
 		if (worldUid == null) {
-			final NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
+			FMLClientHandler fmlClientHandler = FMLClientHandler.instance();
+			final NetworkManager networkManager = fmlClientHandler.getClientToServerNetworkManager();
 			if (networkManager.isLocalChannel()) {
-				final MinecraftServer minecraftServer = MinecraftServer.getServer();
+				final MinecraftServer minecraftServer = fmlClientHandler.getServer();
 				if (minecraftServer != null) {
 					worldUid = minecraftServer.getFolderName();
 				}

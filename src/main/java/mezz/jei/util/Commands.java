@@ -1,22 +1,21 @@
 package mezz.jei.util;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-
+import mezz.jei.JustEnoughItems;
+import mezz.jei.config.SessionData;
+import mezz.jei.network.packets.PacketGiveItemMessageBig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
+import org.apache.commons.lang3.StringUtils;
 
-import mezz.jei.JustEnoughItems;
-import mezz.jei.config.SessionData;
-import mezz.jei.network.packets.PacketGiveItemMessageBig;
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Commands {
 
@@ -58,12 +57,12 @@ public class Commands {
 				PacketGiveItemMessageBig packet = new PacketGiveItemMessageBig(chatMessage);
 				JustEnoughItems.getProxy().sendPacketToServer(packet);
 			} else {
-				ChatComponentTranslation errorMessage = new ChatComponentTranslation("jei.chat.error.command.too.long");
-				errorMessage.getChatStyle().setColor(EnumChatFormatting.RED);
+				ITextComponent errorMessage = new TextComponentTranslation("jei.chat.error.command.too.long");
+				errorMessage.getChatStyle().setColor(TextFormatting.RED);
 				sender.addChatComponentMessage(errorMessage);
 
-				ChatComponentText chatMessageComponent = new ChatComponentText(chatMessage);
-				chatMessageComponent.getChatStyle().setColor(EnumChatFormatting.RED);
+				ITextComponent chatMessageComponent = new TextComponentString(chatMessage);
+				chatMessageComponent.getChatStyle().setColor(TextFormatting.RED);
 				sender.addChatComponentMessage(chatMessageComponent);
 			}
 		}

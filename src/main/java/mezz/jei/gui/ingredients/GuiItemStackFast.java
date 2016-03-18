@@ -13,21 +13,22 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemModelMesher;
+import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.model.pipeline.LightUtil;
 
 import javax.annotation.Nonnull;
@@ -115,7 +116,7 @@ public class GuiItemStackFast {
 			GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
 		}
 
-		bakedModel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(bakedModel, ItemCameraTransforms.TransformType.GUI);
+		bakedModel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(bakedModel, ItemCameraTransforms.TransformType.GUI, false);
 
 		GlStateManager.scale(0.5F, 0.5F, 0.5F);
 		GlStateManager.translate(-0.5F, -0.5F, -0.5F);
@@ -135,36 +136,37 @@ public class GuiItemStackFast {
 
 	private void renderModel(IBakedModel model, int color, ItemStack stack) {
 		Tessellator tessellator = Tessellator.getInstance();
-		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		worldrenderer.begin(7, DefaultVertexFormats.ITEM);
+		VertexBuffer vertexBuffer = tessellator.getBuffer();
+		vertexBuffer.begin(7, DefaultVertexFormats.ITEM);
 
 		for (EnumFacing enumfacing : EnumFacing.VALUES) {
-			this.renderQuads(worldrenderer, model.getFaceQuads(enumfacing), color, stack);
+			this.renderQuads(vertexBuffer, model.getQuads(null, enumfacing, 0), color, stack);
 		}
 
-		this.renderQuads(worldrenderer, model.getGeneralQuads(), color, stack);
+		this.renderQuads(vertexBuffer, model.getQuads(null, null, 0), color, stack);
 		tessellator.draw();
 	}
 
-	private void renderQuads(WorldRenderer renderer, List quads, int color, ItemStack stack) {
+	private void renderQuads(VertexBuffer vertexBuffer, List quads, int color, ItemStack stack) {
 		boolean flag = color == -1 && stack != null;
 		BakedQuad bakedquad;
 		int j;
+
+		ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
 
 		for (Object quad : quads) {
 			bakedquad = (BakedQuad) quad;
 			j = color;
 
 			if (flag && bakedquad.hasTintIndex()) {
-				j = stack.getItem().getColorFromItemStack(stack, bakedquad.getTintIndex());
-
+				j = itemColors.getColorFromItemstack(stack, bakedquad.getTintIndex());
 				if (EntityRenderer.anaglyphEnable) {
 					j = TextureUtil.anaglyphColor(j);
 				}
 
 				j |= -16777216;
 			}
-			LightUtil.renderQuadColor(renderer, bakedquad, j);
+			LightUtil.renderQuadColor(vertexBuffer, bakedquad, j);
 		}
 	}
 
@@ -279,7 +281,7 @@ public class GuiItemStackFast {
 			if (k == 0) {
 				list.set(k, itemStack.getRarity().rarityColor + list.get(k));
 			} else {
-				list.set(k, EnumChatFormatting.GRAY + list.get(k));
+				list.set(k, TextFormatting.GRAY + list.get(k));
 			}
 		}
 
@@ -295,35 +297,35 @@ public class GuiItemStackFast {
 			Collection<String> colorNames = Internal.getColorNamer().getColorNames(itemStack);
 			if (!colorNames.isEmpty()) {
 				String colorNamesString = Joiner.on(", ").join(colorNames);
-				String colorNamesLocalizedString = EnumChatFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.item.colors", colorNamesString);
+				String colorNamesLocalizedString = TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.item.colors", colorNamesString);
 				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(colorNamesLocalizedString, maxWidth));
 			}
 		}
 
 		if (Config.isEditModeEnabled()) {
 			list.add("");
-			list.add(EnumChatFormatting.ITALIC + Translator.translateToLocal("gui.jei.editMode.description"));
+			list.add(TextFormatting.ITALIC + Translator.translateToLocal("gui.jei.editMode.description"));
 			if (Config.isItemOnConfigBlacklist(itemStack, Config.ItemBlacklistType.ITEM)) {
-				String description = EnumChatFormatting.YELLOW + Translator.translateToLocal("gui.jei.editMode.description.show");
+				String description = TextFormatting.YELLOW + Translator.translateToLocal("gui.jei.editMode.description.show");
 				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, maxWidth));
 			} else {
-				String description = EnumChatFormatting.YELLOW + Translator.translateToLocal("gui.jei.editMode.description.hide");
+				String description = TextFormatting.YELLOW + Translator.translateToLocal("gui.jei.editMode.description.hide");
 				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, maxWidth));
 			}
 
 			if (Config.isItemOnConfigBlacklist(itemStack, Config.ItemBlacklistType.WILDCARD)) {
-				String description = EnumChatFormatting.RED + Translator.translateToLocal("gui.jei.editMode.description.show.wild");
+				String description = TextFormatting.RED + Translator.translateToLocal("gui.jei.editMode.description.show.wild");
 				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, maxWidth));
 			} else {
-				String description = EnumChatFormatting.RED + Translator.translateToLocal("gui.jei.editMode.description.hide.wild");
+				String description = TextFormatting.RED + Translator.translateToLocal("gui.jei.editMode.description.hide.wild");
 				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, maxWidth));
 			}
 
 			if (Config.isItemOnConfigBlacklist(itemStack, Config.ItemBlacklistType.MOD_ID)) {
-				String description = EnumChatFormatting.BLUE + Translator.translateToLocal("gui.jei.editMode.description.show.mod.id");
+				String description = TextFormatting.BLUE + Translator.translateToLocal("gui.jei.editMode.description.show.mod.id");
 				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, maxWidth));
 			} else {
-				String description = EnumChatFormatting.BLUE + Translator.translateToLocal("gui.jei.editMode.description.hide.mod.id");
+				String description = TextFormatting.BLUE + Translator.translateToLocal("gui.jei.editMode.description.hide.mod.id");
 				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, maxWidth));
 			}
 		}

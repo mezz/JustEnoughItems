@@ -7,9 +7,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.color.BlockColors;
+import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -90,7 +92,8 @@ public class ColorGetter {
 
 	@Nonnull
 	private static List<Color> getColors(@Nonnull ItemStack itemStack, @Nonnull Item item, int colorCount) {
-		final int renderColor = item.getColorFromItemStack(itemStack, 0);
+		final ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
+		final int renderColor = itemColors.getColorFromItemstack(itemStack, 0);
 		final TextureAtlasSprite textureAtlasSprite = getTextureAtlasSprite(itemStack);
 		if (textureAtlasSprite == null) {
 			return Collections.emptyList();
@@ -108,7 +111,8 @@ public class ColorGetter {
 			blockState = block.getDefaultState();
 		}
 
-		final int renderColor = block.getRenderColor(blockState);
+		final BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
+		final int renderColor = blockColors.colorMultiplier(blockState, null, null, 0);
 		final TextureAtlasSprite textureAtlasSprite = getTextureAtlasSprite(blockState);
 		if (textureAtlasSprite == null) {
 			return Collections.emptyList();

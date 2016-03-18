@@ -1,27 +1,25 @@
 package mezz.jei.gui.ingredients;
 
+import mezz.jei.api.gui.IDrawable;
+import mezz.jei.util.Translator;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.ResourceLocation;
-
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.util.Translator;
 
 public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	private static final int TEX_WIDTH = 16;
@@ -141,12 +139,12 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		vMax = vMax - (maskTop / 16.0 * (vMax - vMin));
 
 		Tessellator tessellator = Tessellator.getInstance();
-		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-		worldrenderer.pos(xCoord, yCoord + 16, zLevel).tex(uMin,  vMax).endVertex();
-		worldrenderer.pos(xCoord + 16 - maskRight, yCoord + 16, zLevel).tex(uMax, vMax).endVertex();
-		worldrenderer.pos(xCoord + 16 - maskRight, yCoord + maskTop, zLevel).tex(uMax, vMin).endVertex();
-		worldrenderer.pos(xCoord, yCoord + maskTop,  zLevel).tex(uMin, vMin).endVertex();
+		VertexBuffer vertexBuffer = tessellator.getBuffer();
+		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+		vertexBuffer.pos(xCoord, yCoord + 16, zLevel).tex(uMin, vMax).endVertex();
+		vertexBuffer.pos(xCoord + 16 - maskRight, yCoord + 16, zLevel).tex(uMax, vMax).endVertex();
+		vertexBuffer.pos(xCoord + 16 - maskRight, yCoord + maskTop, zLevel).tex(uMax, vMin).endVertex();
+		vertexBuffer.pos(xCoord, yCoord + maskTop, zLevel).tex(uMin, vMin).endVertex();
 		tessellator.draw();
 	}
 
@@ -168,7 +166,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		} else {
 			amount = Translator.translateToLocalFormatted("jei.tooltip.liquid.amount", fluidStack.amount);
 		}
-		tooltip.add(EnumChatFormatting.GRAY + amount);
+		tooltip.add(TextFormatting.GRAY + amount);
 
 		return tooltip;
 	}

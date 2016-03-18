@@ -5,6 +5,11 @@ buildscript {
 			name = "forge"
 			url = "http://files.minecraftforge.net/maven"
 		}
+		// early forge 1.9
+		maven {
+			name = "modmuss50"
+			url = "http://maven.modmuss50.me/"
+		}
 	}
 	dependencies {
 		classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
@@ -37,11 +42,15 @@ minecraft {
 }
 
 repositories {
-
+	// early forge 1.9
+	maven {
+		name = "modmuss50"
+		url = "http://maven.modmuss50.me/"
+	}
 }
 
 dependencies {
-
+	
 }
 
 processResources {

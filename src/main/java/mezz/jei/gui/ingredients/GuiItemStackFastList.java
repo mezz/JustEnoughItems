@@ -1,22 +1,21 @@
 package mezz.jei.gui.ingredients;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-
+import mezz.jei.gui.Focus;
+import mezz.jei.util.ItemStackElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.item.ItemStack;
 
-import mezz.jei.gui.Focus;
-import mezz.jei.util.ItemStackElement;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiItemStackFastList {
 	private final List<GuiItemStackFast> renderItemsAll = new ArrayList<>();

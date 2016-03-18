@@ -2,6 +2,16 @@ package mezz.jei;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
+import mezz.jei.config.Constants;
+import mezz.jei.util.Log;
+import mezz.jei.util.ModList;
+import mezz.jei.util.StackHelper;
+import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionHelper;
+import net.minecraft.tileentity.TileEntityFurnace;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -12,17 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
-import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntityFurnace;
-
-import mezz.jei.config.Constants;
-import mezz.jei.util.Log;
-import mezz.jei.util.ModList;
-import mezz.jei.util.StackHelper;
 
 public class ItemRegistryFactory {
 	@Nonnull
@@ -46,7 +45,7 @@ public class ItemRegistryFactory {
 		for (CreativeTabs creativeTab : CreativeTabs.creativeTabArray) {
 			List<ItemStack> creativeTabItemStacks = new ArrayList<>();
 			try {
-				creativeTab.displayAllReleventItems(creativeTabItemStacks);
+				creativeTab.displayAllRelevantItems(creativeTabItemStacks);
 			} catch (RuntimeException e) {
 				Log.error("Creative tab crashed while getting items. Some items from this tab will be missing from the item list. {}", creativeTab, e);
 			}
@@ -163,7 +162,7 @@ public class ItemRegistryFactory {
 				fuels.add(stack);
 			}
 
-			if (stack.getItem().isPotionIngredient(stack)) {
+			if (PotionHelper.isReagent(stack)) {
 				potionIngredients.add(stack);
 			}
 		} catch (RuntimeException e) {

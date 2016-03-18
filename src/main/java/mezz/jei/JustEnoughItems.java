@@ -21,8 +21,8 @@ import java.util.Map;
 		name = Constants.NAME,
 		version = Constants.VERSION,
 		guiFactory = "mezz.jei.config.JEIModGuiFactory",
-		acceptedMinecraftVersions = "[1.8.9]",
-		dependencies = "required-after:Forge@[11.15.0.1697,);")
+		acceptedMinecraftVersions = "[1.9]",
+		dependencies = "required-after:Forge@[12.16.0.0,);")
 public class JustEnoughItems {
 
 	@SidedProxy(clientSide = "mezz.jei.ProxyCommonClient", serverSide = "mezz.jei.ProxyCommon")

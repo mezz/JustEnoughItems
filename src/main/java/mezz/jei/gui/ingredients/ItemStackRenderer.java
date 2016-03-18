@@ -1,21 +1,19 @@
 package mezz.jei.gui.ingredients;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.List;
-
+import mezz.jei.Internal;
+import mezz.jei.util.StackHelper;
+import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.oredict.OreDictionary;
 
-import mezz.jei.Internal;
-import mezz.jei.util.StackHelper;
-import mezz.jei.util.Translator;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.List;
 
 public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	private static final String oreDictionaryIngredient = Translator.translateToLocal("jei.tooltip.recipe.ore.dict");
@@ -71,13 +69,13 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 			if (k == 0) {
 				list.set(k, itemStack.getRarity().rarityColor + list.get(k));
 			} else {
-				list.set(k, EnumChatFormatting.GRAY + list.get(k));
+				list.set(k, TextFormatting.GRAY + list.get(k));
 			}
 		}
 
 		if (oreDictEquivalent != null) {
 			final String acceptsAny = String.format(oreDictionaryIngredient, oreDictEquivalent);
-			list.add(EnumChatFormatting.GRAY + acceptsAny);
+			list.add(TextFormatting.GRAY + acceptsAny);
 		}
 
 		return list;
