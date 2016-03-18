@@ -33,14 +33,6 @@ public interface IRecipeWrapper {
 
 	/**
 	 * Draw additional info about the recipe.
-	 *
-	 * @deprecated since JEI 2.19.0, use the mouse-aware version
-	 */
-	@Deprecated
-	void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight);
-
-	/**
-	 * Draw additional info about the recipe.
 	 * Use the mouse position for things like button highlights.
 	 * Tooltips are handled by IRecipeWrapper.getTooltipStrings()
 	 *

@@ -1,12 +1,11 @@
 package mezz.jei.api;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Set;
-
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public interface INbtIgnoreList {
 	/**
@@ -28,19 +27,4 @@ public interface INbtIgnoreList {
 	 */
 	@Nullable
 	NBTTagCompound getNbt(@Nonnull ItemStack itemStack);
-
-	/**
-	 * Check to see if an NBT tag is ignored.
-	 * @deprecated since JEI 2.25.0, use getNbt
-	 */
-	@Deprecated
-	boolean isNbtTagIgnored(@Nonnull String nbtTagName);
-
-	/**
-	 * Get all the ignored tag names out of a set of NBT tag names.
-	 * @deprecated since JEI 2.16.0. use getNbt
-	 */
-	@Deprecated
-	@Nonnull
-	Set<String> getIgnoredNbtTags(@Nonnull Set<String> nbtTagNames);
 }

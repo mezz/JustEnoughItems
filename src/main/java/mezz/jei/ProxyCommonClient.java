@@ -69,20 +69,6 @@ public class ProxyCommonClient extends ProxyCommon {
 			this.plugins.add(jeiInternalPlugin);
 		}
 
-		Iterator<IModPlugin> iterator = plugins.iterator();
-		while (iterator.hasNext()) {
-			IModPlugin plugin = iterator.next();
-			try {
-				//noinspection deprecation
-				plugin.onJeiHelpersAvailable(Internal.getHelpers());
-			} catch (AbstractMethodError ignored) {
-				// older plugins don't have this method
-			} catch (RuntimeException e) {
-				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
-				iterator.remove();
-			}
-		}
-
 		// Reload when localization changes
 		Minecraft minecraft = Minecraft.getMinecraft();
 		IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) minecraft.getResourceManager();
@@ -143,23 +129,9 @@ public class ProxyCommonClient extends ProxyCommon {
 		ItemRegistry itemRegistry = itemRegistryFactory.createItemRegistry();
 		Internal.setItemRegistry(itemRegistry);
 
-		Iterator<IModPlugin> iterator = plugins.iterator();
-		while (iterator.hasNext()) {
-			IModPlugin plugin = iterator.next();
-			try {
-				//noinspection deprecation
-				plugin.onItemRegistryAvailable(itemRegistry);
-			} catch (AbstractMethodError ignored) {
-				// older plugins don't have this method
-			} catch (RuntimeException e) {
-				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
-				iterator.remove();
-			}
-		}
-
 		ModRegistry modRegistry = new ModRegistry(Internal.getHelpers(), itemRegistry);
 
-		iterator = plugins.iterator();
+		Iterator<IModPlugin> iterator = plugins.iterator();
 		while (iterator.hasNext()) {
 			IModPlugin plugin = iterator.next();
 			try {
@@ -172,20 +144,6 @@ public class ProxyCommonClient extends ProxyCommon {
 		}
 
 		RecipeRegistry recipeRegistry = modRegistry.createRecipeRegistry();
-
-		iterator = plugins.iterator();
-		while (iterator.hasNext()) {
-			IModPlugin plugin = iterator.next();
-			try {
-				//noinspection deprecation
-				plugin.onRecipeRegistryAvailable(recipeRegistry);
-			} catch (AbstractMethodError ignored) {
-				// older plugins don't have this method
-			} catch (RuntimeException e) {
-				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
-				iterator.remove();
-			}
-		}
 
 		List<IAdvancedGuiHandler<?>> advancedGuiHandlers = modRegistry.getAdvancedGuiHandlers();
 
@@ -201,8 +159,6 @@ public class ProxyCommonClient extends ProxyCommon {
 			IModPlugin plugin = iterator.next();
 			try {
 				plugin.onRuntimeAvailable(jeiRuntime);
-			} catch (AbstractMethodError ignored) {
-				// older plugins don't have this method
 			} catch (RuntimeException e) {
 				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
 				iterator.remove();

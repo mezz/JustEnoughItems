@@ -71,13 +71,7 @@ public class RecipeLayout implements IRecipeLayout {
 		final int recipeMouseX = mouseX - posX;
 		final int recipeMouseY = mouseY - posY;
 
-		try {
-			recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight(), recipeMouseX, recipeMouseY);
-		} catch (AbstractMethodError ignored) {
-			// older wrappers don't have this method
-		}
-		//noinspection deprecation
-		recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight());
+		recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight(), recipeMouseX, recipeMouseY);
 
 		RenderHelper.enableGUIStandardItemLighting();
 		GuiIngredient hoveredItemStack = guiItemStackGroup.draw(minecraft, recipeMouseX, recipeMouseY);
@@ -91,12 +85,7 @@ public class RecipeLayout implements IRecipeLayout {
 		} else if (hoveredFluidStack != null) {
 			hoveredFluidStack.drawHovered(minecraft, recipeMouseX, recipeMouseY);
 		} else if (recipeMouseX >= 0 && recipeMouseX < background.getWidth() && recipeMouseY >= 0 && recipeMouseY < background.getHeight()) {
-			List<String> tooltipStrings = null;
-			try {
-				tooltipStrings = recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY);
-			} catch (AbstractMethodError ignored) {
-				// older wrappers don't have this method
-			}
+			List<String> tooltipStrings = recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY);
 			if (tooltipStrings != null && !tooltipStrings.isEmpty()) {
 				TooltipRenderer.drawHoveringText(minecraft, tooltipStrings, recipeMouseX, recipeMouseY);
 			}
@@ -115,11 +104,7 @@ public class RecipeLayout implements IRecipeLayout {
 	}
 
 	public boolean handleClick(@Nonnull Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
-		try {
-			return recipeWrapper.handleClick(minecraft, mouseX - posX, mouseY - posY, mouseButton);
-		} catch (AbstractMethodError ignored) { // older wrappers don't have this method
-			return false;
-		}
+		return recipeWrapper.handleClick(minecraft, mouseX - posX, mouseY - posY, mouseButton);
 	}
 
 	@Override
