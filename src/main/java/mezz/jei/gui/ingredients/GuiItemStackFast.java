@@ -191,7 +191,7 @@ public class GuiItemStackFast {
 
 		Minecraft minecraft = Minecraft.getMinecraft();
 		RenderItem renderItem = minecraft.getRenderItem();
-		renderItem.renderItemAndEffectIntoGUI(itemStack, area.x + padding, area.y + padding);
+		renderItem.renderItemAndEffectIntoGUI(null, itemStack, area.x + padding, area.y + padding);
 		GlStateManager.disableBlend();
 	}
 

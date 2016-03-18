@@ -56,7 +56,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 
 		FontRenderer font = getFontRenderer(minecraft, itemStack);
 
-		minecraft.getRenderItem().renderItemAndEffectIntoGUI(itemStack, xPosition, yPosition);
+		minecraft.getRenderItem().renderItemAndEffectIntoGUI(null, itemStack, xPosition, yPosition);
 		minecraft.getRenderItem().renderItemOverlayIntoGUI(font, itemStack, xPosition, yPosition, null);
 		GlStateManager.disableBlend();
 	}
