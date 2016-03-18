@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -101,36 +102,26 @@ public class GuiItemStackFastList {
 		textureManager.getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(false, false);
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.enableAlpha();
-		GlStateManager.alphaFunc(516, 0.1F);
+		GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(770, 771);
+		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
 		// 3d Items
-		GlStateManager.pushMatrix();
-		{
-			GlStateManager.enableLighting();
-			GlStateManager.scale(20.0F, 20.0F, -20.0F);
-			for (GuiItemStackFast guiItemStack : renderItems3d) {
-				if (hovered != guiItemStack) {
-					guiItemStack.renderItemAndEffectIntoGUI();
-				}
+		GlStateManager.enableLighting();
+		for (GuiItemStackFast guiItemStack : renderItems3d) {
+			if (hovered != guiItemStack) {
+				guiItemStack.renderItemAndEffectIntoGUI();
 			}
 		}
-		GlStateManager.popMatrix();
 
 		// 2d Items
-		GlStateManager.pushMatrix();
-		{
-			GlStateManager.disableLighting();
-			GlStateManager.scale(32.0F, 32.0F, -32.0F);
-			for (GuiItemStackFast guiItemStack : renderItems2d) {
-				if (hovered != guiItemStack) {
-					guiItemStack.renderItemAndEffectIntoGUI();
-				}
+		GlStateManager.disableLighting();
+		for (GuiItemStackFast guiItemStack : renderItems2d) {
+			if (hovered != guiItemStack) {
+				guiItemStack.renderItemAndEffectIntoGUI();
 			}
 		}
-		GlStateManager.popMatrix();
 
 		GlStateManager.disableAlpha();
 		GlStateManager.disableBlend();

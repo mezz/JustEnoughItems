@@ -29,6 +29,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.model.pipeline.LightUtil;
 
 import javax.annotation.Nonnull;
@@ -88,45 +89,26 @@ public class GuiItemStackFast {
 
 		IBakedModel bakedModel = itemModelMesher.getItemModel(itemStack);
 
+		if (Config.isEditModeEnabled()) {
+			renderEditMode();
+			GlStateManager.enableBlend();
+		}
+
 		GlStateManager.pushMatrix();
+		{
+			GlStateManager.translate(area.x + padding + 8.0f, area.y + padding + 8.0f, 150.0F);
+			GlStateManager.scale(16F, -16F, 16F);
 
-		int x = area.x + padding + 8;
-		int y = area.y + padding + 8;
+			bakedModel = ForgeHooksClient.handleCameraTransforms(bakedModel, ItemCameraTransforms.TransformType.GUI, false);
 
-		if (bakedModel.isGui3d()) {
-			if (Config.isEditModeEnabled()) {
-				GlStateManager.scale(1.0 / 20.0F, 1.0 / 20.0F, 1.0 / -20.0F);
-				renderEditMode();
-				GlStateManager.enableBlend();
-				GlStateManager.scale(20.0F, 20.0F, -20.0F);
+			GlStateManager.translate(-0.5F, -0.5F, -0.5F);
+
+			renderModel(bakedModel, itemStack);
+
+			if (itemStack.hasEffect()) {
+				renderEffect(bakedModel);
 			}
-
-			GlStateManager.translate(((float) x) / 20f, ((float) y) / 20f, (100.0F + 50f) / -20f);
-			GlStateManager.rotate(210.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
-		} else {
-			if (Config.isEditModeEnabled()) {
-				GlStateManager.scale(1.0 / 32.0F, 1.0 / 32.0F, 1.0 / -32.0F);
-				renderEditMode();
-				GlStateManager.enableBlend();
-				GlStateManager.scale(32.0F, 32.0F, -32.0F);
-			}
-
-			GlStateManager.translate(((float) x) / 32f, ((float) y) / 32f, (100.0F + 50f) / -32f);
-			GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
 		}
-
-		bakedModel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(bakedModel, ItemCameraTransforms.TransformType.GUI, false);
-
-		GlStateManager.scale(0.5F, 0.5F, 0.5F);
-		GlStateManager.translate(-0.5F, -0.5F, -0.5F);
-
-		renderModel(bakedModel, itemStack);
-
-		if (itemStack.hasEffect()) {
-			renderEffect(bakedModel);
-		}
-
 		GlStateManager.popMatrix();
 	}
 
