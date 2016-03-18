@@ -29,17 +29,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class StackHelper implements IStackHelper {
-	private final Map<Item, Boolean> hasSubtypesMap = new HashMap<>();
-
-	public boolean actuallyHasSubtypes(@Nonnull Item item) {
-		Boolean hasSubtypes = hasSubtypesMap.get(item);
-		if (hasSubtypes == null) {
-			List<ItemStack> subtypes = getSubtypes(item, 1);
-			hasSubtypes = subtypes.size() > 1;
-		}
-		return hasSubtypes;
-	}
-
 	/**
 	 * Returns a list of items in slots that complete the recipe defined by requiredStacksList.
 	 * Returns a result that contains missingItems if there are not enough items in availableItemStacks.
@@ -175,7 +164,7 @@ public class StackHelper implements IStackHelper {
 			}
 		}
 
-		if (actuallyHasSubtypes(lhs.getItem())) {
+		if (lhs.getHasSubtypes()) {
 			INbtIgnoreList nbtIgnoreList = Internal.getHelpers().getNbtIgnoreList();
 			NBTTagCompound lhsNbt = nbtIgnoreList.getNbt(lhs);
 			NBTTagCompound rhsNbt = nbtIgnoreList.getNbt(rhs);
@@ -233,9 +222,6 @@ public class StackHelper implements IStackHelper {
 				}
 			}
 		}
-
-		boolean hasSubtypes = itemStacks.size() > 1;
-		hasSubtypesMap.put(item, hasSubtypes);
 
 		return itemStacks;
 	}
@@ -340,7 +326,7 @@ public class StackHelper implements IStackHelper {
 		}
 
 		StringBuilder itemKey = new StringBuilder(itemNameString);
-		if (mode == UidMode.FULL || actuallyHasSubtypes(item)) {
+		if (mode == UidMode.FULL || stack.getHasSubtypes()) {
 			itemKey.append(':').append(metadata);
 			if (stack.hasTagCompound()) {
 				NBTTagCompound nbtTagCompound;
