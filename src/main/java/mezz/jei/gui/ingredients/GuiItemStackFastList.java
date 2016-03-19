@@ -44,14 +44,14 @@ public class GuiItemStackFastList {
 		renderItems2d.clear();
 		renderItems3d.clear();
 
-		ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
 
 		for (GuiItemStackFast guiItemStack : renderItemsAll) {
 			if (i >= itemList.size()) {
 				guiItemStack.clear();
 			} else {
 				ItemStack stack = itemList.get(i).getItemStack();
-				IBakedModel bakedModel = itemModelMesher.getItemModel(stack);
+				IBakedModel bakedModel = renderItem.getItemModelWithOverrides(stack, null, null);
 				guiItemStack.setItemStack(stack);
 				if (bakedModel.isBuiltInRenderer()) {
 					renderItemsBuiltIn.add(guiItemStack);
