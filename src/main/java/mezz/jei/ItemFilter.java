@@ -15,6 +15,7 @@ import mezz.jei.util.ItemStackElement;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemModelMesher;
+import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -170,16 +171,21 @@ public class ItemFilter {
 				return true;
 			}
 
+			final RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
+			final IBakedModel itemModel;
 			try {
-				if (itemModelMesher.getItemModel(itemStack) == missingModel && Config.isHideMissingModelsEnabled()) {
-					return true;
-				}
+				itemModel = renderItem.getItemModelWithOverrides(itemStack, null, null);
 			} catch (RuntimeException | AbstractMethodError e) {
 				String modName = Internal.getItemRegistry().getModNameForItem(item);
 				Log.error("Couldn't get ItemModel for {} itemStack {}.", modName, itemStack, e);
 				brokenItems.add(item);
 				return true;
 			}
+
+			if (Config.isHideMissingModelsEnabled()) {
+				return itemModel == null || itemModel == missingModel;
+			}
+
 			return false;
 		}
 
