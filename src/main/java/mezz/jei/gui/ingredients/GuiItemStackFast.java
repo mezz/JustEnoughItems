@@ -87,6 +87,7 @@ public class GuiItemStackFast {
 		}
 
 		IBakedModel bakedModel = itemModelMesher.getItemModel(itemStack);
+		bakedModel = bakedModel.getOverrides().handleItemState(bakedModel, itemStack, null, null);
 
 		if (Config.isEditModeEnabled()) {
 			renderEditMode();
