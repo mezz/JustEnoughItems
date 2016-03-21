@@ -190,8 +190,13 @@ public class ItemFilter {
 		}
 
 		private boolean isItemHiddenByBlacklist(@Nonnull ItemStack itemStack) {
-			if (!itemBlacklist.isItemBlacklisted(itemStack)) {
-				return false;
+			try {
+				if (!itemBlacklist.isItemBlacklisted(itemStack)) {
+					return false;
+				}
+			} catch (RuntimeException e) {
+				Log.error("Could not check blacklist for stack {}", itemStack, e);
+				return true;
 			}
 
 			if (Config.isEditModeEnabled()) {
