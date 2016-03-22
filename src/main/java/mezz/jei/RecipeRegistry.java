@@ -15,6 +15,7 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.config.Config;
 import mezz.jei.gui.RecipeClickableArea;
+import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.RecipeCategoryComparator;
 import mezz.jei.util.RecipeMap;
@@ -138,60 +139,9 @@ public class RecipeRegistry implements IRecipeRegistry {
 		try {
 			addRecipeUnchecked(recipe, recipeCategory, recipeHandler);
 		} catch (RuntimeException e) {
-			String recipeInfo = getInfoFromBrokenRecipe(recipe, recipeHandler);
+			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, recipeHandler);
 			Log.error("Found a broken recipe: {}\n", recipeInfo, e);
 		}
-	}
-
-	@Nonnull
-	private String getInfoFromBrokenRecipe(@Nonnull Object recipe, @Nonnull IRecipeHandler recipeHandler) {
-		StringBuilder recipeInfoBuilder = new StringBuilder();
-		try {
-			recipeInfoBuilder.append(recipe);
-		} catch (RuntimeException e) {
-			Log.error("Failed recipe.toString", e);
-			recipeInfoBuilder.append(recipe.getClass());
-		}
-
-		IRecipeWrapper recipeWrapper;
-
-		try {
-			//noinspection unchecked
-			recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
-		} catch (RuntimeException ignored) {
-			recipeInfoBuilder.append("\nFailed to create recipe wrapper");
-			return recipeInfoBuilder.toString();
-		}
-
-		recipeInfoBuilder.append("\nOutput ItemStacks: ");
-		try {
-			recipeInfoBuilder.append(recipeWrapper.getOutputs());
-		} catch (RuntimeException e) {
-			recipeInfoBuilder.append(e.getMessage());
-		}
-
-		recipeInfoBuilder.append("\nOutput Fluids: ");
-		try {
-			recipeInfoBuilder.append(recipeWrapper.getFluidOutputs());
-		} catch (RuntimeException e) {
-			recipeInfoBuilder.append(e.getMessage());
-		}
-
-		recipeInfoBuilder.append("\nInput ItemStacks: ");
-		try {
-			recipeInfoBuilder.append(recipeWrapper.getInputs());
-		} catch (RuntimeException e) {
-			recipeInfoBuilder.append(e.getMessage());
-		}
-
-		recipeInfoBuilder.append("\nInput Fluids: ");
-		try {
-			recipeInfoBuilder.append(recipeWrapper.getFluidInputs());
-		} catch (RuntimeException e) {
-			recipeInfoBuilder.append(e.getMessage());
-		}
-
-		return recipeInfoBuilder.toString();
 	}
 
 	private void addRecipeUnchecked(@Nonnull Object recipe, IRecipeCategory recipeCategory, IRecipeHandler recipeHandler) {
