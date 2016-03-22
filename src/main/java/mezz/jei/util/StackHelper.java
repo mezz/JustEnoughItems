@@ -29,6 +29,26 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class StackHelper implements IStackHelper {
+	@Nullable
+	public String getOreDictEquivalent(@Nonnull Collection<ItemStack> itemStacks) {
+		if (itemStacks.size() < 2) {
+			return null;
+		}
+
+		final ItemStack firstStack = itemStacks.iterator().next();
+		if (firstStack != null) {
+			for (final int oreId : OreDictionary.getOreIDs(firstStack)) {
+				final String oreName = OreDictionary.getOreName(oreId);
+				List<ItemStack> ores = OreDictionary.getOres(oreName);
+				ores = getAllSubtypes(ores);
+				if (containsSameStacks(itemStacks, ores)) {
+					return oreName;
+				}
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Returns a list of items in slots that complete the recipe defined by requiredStacksList.
 	 * Returns a result that contains missingItems if there are not enough items in availableItemStacks.

@@ -23,29 +23,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 
 	@Override
 	public void setIngredients(@Nonnull Collection<ItemStack> itemStacks) {
-		oreDictEquivalent = getOreDictEquivalent(itemStacks);
-	}
-
-	@Nullable
-	private static String getOreDictEquivalent(@Nonnull Collection<ItemStack> itemStacks) {
-		if (itemStacks.size() < 2) {
-			return null;
-		}
-
-		StackHelper stackHelper = Internal.getStackHelper();
-
-		final ItemStack firstStack = itemStacks.iterator().next();
-		if (firstStack != null) {
-			for (final int oreId : OreDictionary.getOreIDs(firstStack)) {
-				final String oreName = OreDictionary.getOreName(oreId);
-				List<ItemStack> ores = OreDictionary.getOres(oreName);
-				ores = stackHelper.getAllSubtypes(ores);
-				if (stackHelper.containsSameStacks(itemStacks, ores)) {
-					return oreName;
-				}
-			}
-		}
-		return null;
+		oreDictEquivalent = Internal.getStackHelper().getOreDictEquivalent(itemStacks);
 	}
 
 	@Override
