@@ -69,6 +69,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	private GuiButton backButton;
 	private GuiButton configButton;
 	private IDrawable configButtonIcon;
+	private IDrawable configButtonCheatIcon;
 	private HoverChecker configButtonHoverChecker;
 	private GuiTextFieldFilter searchField;
 
@@ -135,7 +136,9 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		int configButtonY = guiProperties.getScreenHeight() - buttonSize - borderPadding;
 		configButton = new GuiButtonExt(2, configButtonX, configButtonY, buttonSize, buttonSize, null);
 		ResourceLocation configButtonIconLocation = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_GUI_PATH + "recipeBackground.png");
-		configButtonIcon = Internal.getHelpers().getGuiHelper().createDrawable(configButtonIconLocation, 0, 166, 16, 16);
+		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
+		configButtonIcon = guiHelper.createDrawable(configButtonIconLocation, 0, 166, 16, 16);
+		configButtonCheatIcon = guiHelper.createDrawable(configButtonIconLocation, 16, 166, 16, 16);
 		configButtonHoverChecker = new HoverChecker(configButton, 0);
 
 		int searchFieldY = guiProperties.getScreenHeight() - searchHeight - borderPadding - 2;
@@ -272,7 +275,10 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		nextButton.drawButton(minecraft, mouseX, mouseY);
 		backButton.drawButton(minecraft, mouseX, mouseY);
 		configButton.drawButton(minecraft, mouseX, mouseY);
-		configButtonIcon.draw(minecraft, configButton.xPosition + 2, configButton.yPosition + 2);
+
+		IDrawable icon = Config.isCheatItemsEnabled() ? configButtonCheatIcon : configButtonIcon;
+		icon.draw(minecraft, configButton.xPosition + 2, configButton.yPosition + 2);
+
 		GlStateManager.disableBlend();
 
 		if (shouldShowDeleteItemTooltip(minecraft)) {
