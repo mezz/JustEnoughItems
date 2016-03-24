@@ -40,8 +40,9 @@ public class GuiEventHandler {
 			return;
 		}
 
-		if (event.gui instanceof GuiContainer) {
-			GuiContainer guiContainer = (GuiContainer) event.gui;
+		GuiScreen gui = event.getGui();
+		if (gui instanceof GuiContainer) {
+			GuiContainer guiContainer = (GuiContainer) gui;
 			itemListOverlay.initGui(guiContainer);
 
 			RecipesGui recipesGui = new RecipesGui();
@@ -55,15 +56,16 @@ public class GuiEventHandler {
 			return;
 		}
 
-		if (event.gui instanceof GuiContainer) {
-			GuiContainer guiContainer = (GuiContainer) event.gui;
+		GuiScreen gui = event.getGui();
+		if (gui instanceof GuiContainer) {
+			GuiContainer guiContainer = (GuiContainer) gui;
 			if (previousGui != guiContainer) {
 				previousGui = guiContainer;
 				if (itemListOverlay.isOpen()) {
 					itemListOverlay.close();
 				}
 			}
-		} else if (!(event.gui instanceof RecipesGui)) {
+		} else if (!(gui instanceof RecipesGui)) {
 			if (itemListOverlay.isOpen()) {
 				itemListOverlay.close();
 			}
@@ -73,8 +75,9 @@ public class GuiEventHandler {
 	@SubscribeEvent
 	public void onDrawBackgroundEventPost(@Nonnull GuiScreenEvent.BackgroundDrawnEvent event) {
 		if (itemListOverlay != null && itemListOverlay.isOpen()) {
-			itemListOverlay.updateGui(event.gui);
-			itemListOverlay.drawScreen(event.gui.mc, event.getMouseX(), event.getMouseY());
+			GuiScreen gui = event.getGui();
+			itemListOverlay.updateGui(gui);
+			itemListOverlay.drawScreen(gui.mc, event.getMouseX(), event.getMouseY());
 		}
 	}
 
@@ -84,16 +87,17 @@ public class GuiEventHandler {
 			return;
 		}
 
-		if (event.gui instanceof GuiContainer) {
-			GuiContainer guiContainer = (GuiContainer) event.gui;
+		GuiScreen gui = event.getGui();
+		if (gui instanceof GuiContainer) {
+			GuiContainer guiContainer = (GuiContainer) gui;
 			RecipeRegistry recipeRegistry = Internal.getRuntime().getRecipeRegistry();
-			if (recipeRegistry.getRecipeClickableArea(guiContainer, event.mouseX - guiContainer.guiLeft, event.mouseY - guiContainer.guiTop) != null) {
-				TooltipRenderer.drawHoveringText(guiContainer.mc, showRecipesText, event.mouseX, event.mouseY);
+			if (recipeRegistry.getRecipeClickableArea(guiContainer, event.getMouseX() - guiContainer.guiLeft, event.getMouseY() - guiContainer.guiTop) != null) {
+				TooltipRenderer.drawHoveringText(guiContainer.mc, showRecipesText, event.getMouseX(), event.getMouseY());
 			}
 		}
 
 		if (itemListOverlay.isOpen()) {
-			itemListOverlay.drawTooltips(event.gui.mc, event.mouseX, event.mouseY);
+			itemListOverlay.drawTooltips(gui.mc, event.getMouseX(), event.getMouseY());
 		}
 	}
 
@@ -119,7 +123,7 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onGuiMouseEvent(GuiScreenEvent.MouseInputEvent.Pre event) {
-		GuiScreen guiScreen = event.gui;
+		GuiScreen guiScreen = event.getGui();
 		if (inputHandler != null) {
 			int x = Mouse.getEventX() * guiScreen.width / guiScreen.mc.displayWidth;
 			int y = guiScreen.height - Mouse.getEventY() * guiScreen.height / guiScreen.mc.displayHeight - 1;

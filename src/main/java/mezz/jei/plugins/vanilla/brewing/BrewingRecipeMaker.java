@@ -105,11 +105,11 @@ public class BrewingRecipeMaker {
 		for (IBrewingRecipe iBrewingRecipe : brewingRecipes) {
 			if (iBrewingRecipe instanceof BrewingRecipe) {
 				BrewingRecipe brewingRecipe = (BrewingRecipe) iBrewingRecipe;
-				BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(brewingRecipe.ingredient, brewingRecipe.input, brewingRecipe.output, 0);
+				BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(brewingRecipe.getIngredient(), brewingRecipe.getInput(), brewingRecipe.getOutput(), 0);
 				recipes.add(recipe);
 			} else if (iBrewingRecipe instanceof BrewingOreRecipe) {
 				BrewingOreRecipe brewingRecipe = (BrewingOreRecipe) iBrewingRecipe;
-				BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(brewingRecipe.ingredient, brewingRecipe.input, brewingRecipe.output, 0);
+				BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(brewingRecipe.getIngredient(), brewingRecipe.getInput(), brewingRecipe.getOutput(), 0);
 				recipes.add(recipe);
 			} else if (!(iBrewingRecipe instanceof VanillaBrewingRecipe)) {
 				Class recipeClass = iBrewingRecipe.getClass();

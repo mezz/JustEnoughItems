@@ -212,7 +212,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	// subscribe to event with low priority so that addon mods that use the config can do their stuff first
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
-		if (!Constants.MOD_ID.equals(eventArgs.modID)) {
+		if (!Constants.MOD_ID.equals(eventArgs.getModID())) {
 			return;
 		}
 

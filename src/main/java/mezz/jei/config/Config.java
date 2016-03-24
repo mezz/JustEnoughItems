@@ -317,17 +317,17 @@ public class Config {
 
 		Property property = worldConfig.get(worldCategory, "overlayEnabled", defaultOverlayEnabled);
 		property.setLanguageKey("config.jei.interface.overlayEnabled");
-		property.comment = Translator.translateToLocal("config.jei.interface.overlayEnabled.comment");
+		property.setComment(Translator.translateToLocal("config.jei.interface.overlayEnabled.comment"));
 		overlayEnabled = property.getBoolean();
 
 		property = worldConfig.get(worldCategory, "cheatItemsEnabled", defaultCheatItemsEnabled);
 		property.setLanguageKey("config.jei.mode.cheatItemsEnabled");
-		property.comment = Translator.translateToLocal("config.jei.mode.cheatItemsEnabled.comment");
+		property.setComment(Translator.translateToLocal("config.jei.mode.cheatItemsEnabled.comment"));
 		cheatItemsEnabled = property.getBoolean();
 
 		property = worldConfig.get(worldCategory, "editEnabled", defaultEditModeEnabled);
 		property.setLanguageKey("config.jei.mode.editEnabled");
-		property.comment = Translator.translateToLocal("config.jei.mode.editEnabled.comment");
+		property.setComment(Translator.translateToLocal("config.jei.mode.editEnabled.comment"));
 		editModeEnabled = property.getBoolean();
 
 		property = worldConfig.get(worldCategory, "filterText", defaultFilterText);

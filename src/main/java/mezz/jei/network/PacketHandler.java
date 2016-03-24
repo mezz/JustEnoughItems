@@ -31,8 +31,8 @@ public class PacketHandler {
 
 	@SubscribeEvent
 	public void onPacket(FMLNetworkEvent.ServerCustomPacketEvent event) {
-		PacketBuffer packetBuffer = new PacketBuffer(event.packet.payload());
-		EntityPlayerMP player = ((NetHandlerPlayServer) event.handler).playerEntity;
+		PacketBuffer packetBuffer = new PacketBuffer(event.getPacket().payload());
+		EntityPlayerMP player = ((NetHandlerPlayServer) event.getHandler()).playerEntity;
 
 		try {
 			byte packetIdOrdinal = packetBuffer.readByte();

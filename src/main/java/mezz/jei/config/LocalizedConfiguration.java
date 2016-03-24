@@ -51,7 +51,7 @@ public class LocalizedConfiguration extends Configuration {
 		Property prop = get(category, name, defaultValue);
 		prop.setValidValues(validValues);
 		prop.setLanguageKey(langKey);
-		prop.comment = comment + " [" + defaultLocalized + ": " + defaultValue + "] [" + validLocalized + ": " + Arrays.toString(prop.getValidValues()) + ']';
+		prop.setComment(comment + " [" + defaultLocalized + ": " + defaultValue + "] [" + validLocalized + ": " + Arrays.toString(prop.getValidValues()) + ']');
 		return prop.getString();
 	}
 	
@@ -69,7 +69,7 @@ public class LocalizedConfiguration extends Configuration {
 		
 		prop.setValidValues(validValues);
 		prop.setLanguageKey(langKey);
-		prop.comment = comment + " [" + defaultLocalized + ": " + defaultValue + "] [" + validLocalized + ": " + Arrays.toString(prop.getValidValues()) + ']';
+		prop.setComment(comment + " [" + defaultLocalized + ": " + defaultValue + "] [" + validLocalized + ": " + Arrays.toString(prop.getValidValues()) + ']');
 		String stringValue = prop.getString();
 		
 		T enumValue = defaultValue;
@@ -89,7 +89,7 @@ public class LocalizedConfiguration extends Configuration {
 
 		Property prop = get(category, name, defaultValue);
 		prop.setLanguageKey(langKey);
-		prop.comment = comment + " [" + defaultLocalized + ": " + Arrays.toString(defaultValue) + ']';
+		prop.setComment(comment + " [" + defaultLocalized + ": " + Arrays.toString(defaultValue) + ']');
 		return prop.getStringList();
 	}
 	
@@ -101,7 +101,7 @@ public class LocalizedConfiguration extends Configuration {
 		Property prop = get(category, name, defaultValue);
 		prop.setLanguageKey(langKey);
 		prop.setValidValues(validValues);
-		prop.comment = comment + " [" + defaultLocalized + ": " + Arrays.toString(defaultValue) + "] [" + validLocalized + ": " + Arrays.toString(prop.getValidValues()) + ']';
+		prop.setComment(comment + " [" + defaultLocalized + ": " + Arrays.toString(defaultValue) + "] [" + validLocalized + ": " + Arrays.toString(prop.getValidValues()) + ']');
 		return prop.getStringList();
 	}
 	
