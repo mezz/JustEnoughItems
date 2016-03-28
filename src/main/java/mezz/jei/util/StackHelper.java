@@ -1,7 +1,6 @@
 package mezz.jei.util;
 
 import mezz.jei.Internal;
-import mezz.jei.api.INbtIgnoreList;
 import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.gui.ingredients.IGuiIngredient;
 import net.minecraft.creativetab.CreativeTabs;
@@ -21,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +29,27 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class StackHelper implements IStackHelper {
+	/** Uids are cached during loading to improve startup performance. */
+	private final Map<UidMode, Map<ItemStack, String>> uidCache = new EnumMap<>(UidMode.class);
+	private boolean uidCacheEnabled = true;
+
+	public StackHelper() {
+		for (UidMode mode : UidMode.values()) {
+			uidCache.put(mode, new HashMap<ItemStack, String>());
+		}
+	}
+
+	public void enableUidCache() {
+		uidCacheEnabled = true;
+	}
+
+	public void disableUidCache() {
+		for (UidMode mode : UidMode.values()) {
+			uidCache.get(mode).clear();
+		}
+		uidCacheEnabled = false;
+	}
+
 	@Nullable
 	public String getOreDictEquivalent(@Nonnull Collection<ItemStack> itemStacks) {
 		if (itemStacks.size() < 2) {
@@ -88,29 +109,16 @@ public class StackHelper implements IStackHelper {
 
 	@Nullable
 	public Slot getSlotWithStack(@Nonnull Container container, @Nonnull Iterable<Integer> slotNumbers, @Nonnull ItemStack stack) {
-		StackHelper stackHelper = Internal.getStackHelper();
-
 		for (Integer slotNumber : slotNumbers) {
 			Slot slot = container.getSlot(slotNumber);
 			if (slot != null) {
 				ItemStack slotStack = slot.getStack();
-				if (stackHelper.isEquivalent(stack, slotStack)) {
+				if (isEquivalent(stack, slotStack)) {
 					return slot;
 				}
 			}
 		}
 		return null;
-	}
-
-	@Nonnull
-	public List<ItemStack> removeDuplicateItemStacks(@Nonnull Iterable<ItemStack> stacks) {
-		List<ItemStack> newStacks = new ArrayList<>();
-		for (ItemStack stack : stacks) {
-			if (stack != null && containsStack(newStacks, stack) == null) {
-				newStacks.add(stack);
-			}
-		}
-		return newStacks;
 	}
 
 	/** Returns true if all stacks from "contains" are found in "stacks" and the opposite is true as well. */
@@ -185,10 +193,9 @@ public class StackHelper implements IStackHelper {
 		}
 
 		if (lhs.getHasSubtypes()) {
-			INbtIgnoreList nbtIgnoreList = Internal.getHelpers().getNbtIgnoreList();
-			NBTTagCompound lhsNbt = nbtIgnoreList.getNbt(lhs);
-			NBTTagCompound rhsNbt = nbtIgnoreList.getNbt(rhs);
-			return Objects.equals(lhsNbt, rhsNbt);
+			String keyLhs = getUniqueIdentifierForStack(lhs, UidMode.NORMAL);
+			String keyRhs = getUniqueIdentifierForStack(rhs, UidMode.NORMAL);
+			return Objects.equals(keyLhs, keyRhs);
 		} else {
 			return true;
 		}
@@ -280,20 +287,23 @@ public class StackHelper implements IStackHelper {
 			return Collections.emptyList();
 		}
 
-		List<ItemStack> itemStacksList = new ArrayList<>();
-		toItemStackList(itemStacksList, stacks);
-		return removeDuplicateItemStacks(itemStacksList);
+		UniqueItemStackListBuilder itemStackListBuilder = new UniqueItemStackListBuilder();
+		toItemStackList(itemStackListBuilder, stacks);
+		return itemStackListBuilder.build();
 	}
 
-	private void toItemStackList(@Nonnull List<ItemStack> itemStackList, @Nullable Object input) {
+	private void toItemStackList(@Nonnull UniqueItemStackListBuilder itemStackListBuilder, @Nullable Object input) {
 		if (input instanceof ItemStack) {
-			itemStackList.add((ItemStack) input);
+			ItemStack stack = (ItemStack) input;
+			itemStackListBuilder.add(stack);
 		} else if (input instanceof String) {
 			List<ItemStack> stacks = OreDictionary.getOres((String) input);
-			itemStackList.addAll(stacks);
+			for (ItemStack stack : stacks) {
+				itemStackListBuilder.add(stack);
+			}
 		} else if (input instanceof Iterable) {
 			for (Object obj : (Iterable) input) {
-				toItemStackList(itemStackList, obj);
+				toItemStackList(itemStackListBuilder, obj);
 			}
 		} else if (input != null) {
 			Log.error("Unknown object found: {}", input);
@@ -328,6 +338,13 @@ public class StackHelper implements IStackHelper {
 
 	@Nonnull
 	public String getUniqueIdentifierForStack(@Nonnull ItemStack stack, @Nonnull UidMode mode) {
+		if (uidCacheEnabled) {
+			String result = uidCache.get(mode).get(stack);
+			if (result != null) {
+				return result;
+			}
+		}
+
 		Item item = stack.getItem();
 		if (item == null) {
 			throw new NullPointerException("Found an itemStack with a null item. This is an error from another mod.");
@@ -361,7 +378,11 @@ public class StackHelper implements IStackHelper {
 			}
 		}
 
-		return itemKey.toString();
+		String result = itemKey.toString();
+		if (uidCacheEnabled) {
+			uidCache.get(mode).put(stack, result);
+		}
+		return result;
 	}
 
 	public enum UidMode {
