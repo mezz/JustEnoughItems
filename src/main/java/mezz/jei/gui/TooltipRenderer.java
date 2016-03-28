@@ -1,24 +1,17 @@
 package mezz.jei.gui;
 
-import mezz.jei.config.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraftforge.fml.client.config.GuiUtils;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 
-/**
- * Workaround for GuiScreen.drawHoveringText being protected instead of public.
- * (the method with FontRenderer is added by Forge and can't be AT'd).
- */
 public class TooltipRenderer {
-	private static final TooltipGuiScreen tooltipScreen = new TooltipGuiScreen();
-
 	public static void drawHoveringText(@Nonnull Minecraft minecraft, @Nonnull String textLine, int x, int y) {
-		List<String> textLines = minecraft.fontRendererObj.listFormattedStringToWidth(textLine, Constants.MAX_TOOLTIP_WIDTH);
-		drawHoveringText(minecraft, textLines, x, y, minecraft.fontRendererObj);
+		drawHoveringText(minecraft, Collections.singletonList(textLine), x, y, minecraft.fontRendererObj);
 	}
 
 	public static void drawHoveringText(@Nonnull Minecraft minecraft, @Nonnull List<String> textLines, int x, int y) {
@@ -26,22 +19,7 @@ public class TooltipRenderer {
 	}
 
 	public static void drawHoveringText(@Nonnull Minecraft minecraft, @Nonnull List<String> textLines, int x, int y, @Nonnull FontRenderer font) {
-		tooltipScreen.set(minecraft);
-		tooltipScreen.drawHoveringText(textLines, x, y, font);
-	}
-
-	private static class TooltipGuiScreen extends GuiScreen {
-		public void set(@Nonnull Minecraft minecraft) {
-			this.mc = minecraft;
-			this.itemRender = minecraft.getRenderItem();
-			ScaledResolution scaledresolution = new ScaledResolution(minecraft);
-			this.width = scaledresolution.getScaledWidth();
-			this.height = scaledresolution.getScaledHeight();
-		}
-
-		@Override
-		public void drawHoveringText(@Nonnull List<String> textLines, int x, int y, @Nonnull FontRenderer font) {
-			super.drawHoveringText(textLines, x, y, font);
-		}
+		ScaledResolution scaledresolution = new ScaledResolution(minecraft);
+		GuiUtils.drawHoveringText(textLines, x, y, scaledresolution.getScaledWidth(), scaledresolution.getScaledHeight(), -1, font);
 	}
 }

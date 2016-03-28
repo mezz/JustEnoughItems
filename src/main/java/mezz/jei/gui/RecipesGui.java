@@ -98,14 +98,14 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 		this.titleHeight = fontRendererObj.FONT_HEIGHT + borderPadding;
 		this.headerHeight = titleHeight + fontRendererObj.FONT_HEIGHT + textPadding;
 
-		final int rightButtonX = xSize - borderPadding - buttonWidth;
-		final int leftButtonX = borderPadding;
+		final int rightButtonX = guiLeft + xSize - borderPadding - buttonWidth;
+		final int leftButtonX = guiLeft + borderPadding;
 
-		int recipeClassButtonTop = borderPadding - 2;
+		int recipeClassButtonTop = guiTop + borderPadding - 2;
 		nextRecipeCategory = new GuiButtonExt(2, rightButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, ">");
 		previousRecipeCategory = new GuiButtonExt(3, leftButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, "<");
 
-		int pageButtonTop = titleHeight + 3;
+		int pageButtonTop = guiTop + titleHeight + 3;
 		nextPage = new GuiButtonExt(4, rightButtonX, pageButtonTop, buttonWidth, buttonHeight, ">");
 		previousPage = new GuiButtonExt(5, leftButtonX, pageButtonTop, buttonWidth, buttonHeight, "<");
 
@@ -127,48 +127,47 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 
 		GlStateManager.disableBlend();
 
-		final int recipeMouseX = mouseX - guiLeft;
-		final int recipeMouseY = mouseY - guiTop;
+		drawRect(guiLeft + borderPadding + buttonWidth,
+				guiTop + borderPadding - 2,
+				guiLeft + xSize - borderPadding - buttonWidth,
+				guiTop + borderPadding + 10,
+				0x30000000);
+		drawRect(guiLeft + borderPadding + buttonWidth,
+				guiTop + titleHeight + textPadding - 2,
+				guiLeft + xSize - borderPadding - buttonWidth,
+				guiTop + titleHeight + textPadding + 10,
+				0x30000000);
 
-		GlStateManager.pushMatrix();
-		{
-			GlStateManager.translate(guiLeft, guiTop, 0.0F);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-			drawRect(borderPadding + buttonWidth, borderPadding - 2, xSize - borderPadding - buttonWidth, borderPadding + 10, 0x30000000);
-			drawRect(borderPadding + buttonWidth, titleHeight + textPadding - 2, xSize - borderPadding - buttonWidth, titleHeight + textPadding + 10, 0x30000000);
+		StringUtil.drawCenteredString(fontRendererObj, title, xSize, guiLeft, guiTop + borderPadding, Color.WHITE.getRGB(), true);
+		StringUtil.drawCenteredString(fontRendererObj, pageString, xSize, guiLeft, guiTop + titleHeight + textPadding, Color.WHITE.getRGB(), true);
 
-			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		nextRecipeCategory.drawButton(mc, mouseX, mouseY);
+		previousRecipeCategory.drawButton(mc, mouseX, mouseY);
+		nextPage.drawButton(mc, mouseX, mouseY);
+		previousPage.drawButton(mc, mouseX, mouseY);
 
-			StringUtil.drawCenteredString(fontRendererObj, title, xSize, borderPadding, Color.WHITE.getRGB(), true);
-			StringUtil.drawCenteredString(fontRendererObj, pageString, xSize, titleHeight + textPadding, Color.WHITE.getRGB(), true);
-
-			nextRecipeCategory.drawButton(mc, recipeMouseX, recipeMouseY);
-			previousRecipeCategory.drawButton(mc, recipeMouseX, recipeMouseY);
-			nextPage.drawButton(mc, recipeMouseX, recipeMouseY);
-			previousPage.drawButton(mc, recipeMouseX, recipeMouseY);
-
-			RecipeLayout hovered = null;
-			for (RecipeLayout recipeWidget : recipeLayouts) {
-				if (recipeWidget.getFocusUnderMouse(recipeMouseX, recipeMouseY) != null) {
-					hovered = recipeWidget;
-				} else {
-					recipeWidget.draw(mc, recipeMouseX, recipeMouseY);
-				}
-			}
-
-			if (hovered != null) {
-				hovered.draw(mc, recipeMouseX, recipeMouseY);
-			}
-
-			if (titleHoverChecker.checkHover(recipeMouseX, recipeMouseY)) {
-				Focus focus = logic.getFocus();
-				if (focus != null && !focus.isBlank()) {
-					String showAllRecipesString = Translator.translateToLocal("jei.tooltip.show.all.recipes");
-					TooltipRenderer.drawHoveringText(mc, showAllRecipesString, recipeMouseX, recipeMouseY);
-				}
+		RecipeLayout hovered = null;
+		for (RecipeLayout recipeWidget : recipeLayouts) {
+			if (recipeWidget.getFocusUnderMouse(guiLeft, guiTop, mouseX, mouseY) != null) {
+				hovered = recipeWidget;
+			} else {
+				recipeWidget.draw(mc, guiLeft, guiTop, mouseX, mouseY);
 			}
 		}
-		GlStateManager.popMatrix();
+
+		if (hovered != null) {
+			hovered.draw(mc, guiLeft, guiTop, mouseX, mouseY);
+		}
+
+		if (titleHoverChecker.checkHover(mouseX, mouseY)) {
+			Focus focus = logic.getFocus();
+			if (focus != null && !focus.isBlank()) {
+				String showAllRecipesString = Translator.translateToLocal("jei.tooltip.show.all.recipes");
+				TooltipRenderer.drawHoveringText(mc, showAllRecipesString, mouseX, mouseY);
+			}
+		}
 	}
 
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
@@ -192,11 +191,8 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 			return null;
 		}
 
-		final int recipeMouseX = mouseX - guiLeft;
-		final int recipeMouseY = mouseY - guiTop;
-
 		for (RecipeLayout recipeLayouts : this.recipeLayouts) {
-			Focus focus = recipeLayouts.getFocusUnderMouse(recipeMouseX, recipeMouseY);
+			Focus focus = recipeLayouts.getFocusUnderMouse(guiLeft, guiTop, mouseX, mouseY);
 			if (focus != null) {
 				return focus;
 			}
@@ -234,22 +230,19 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 			return;
 		}
 
-		final int recipeMouseX = mouseX - guiLeft;
-		final int recipeMouseY = mouseY - guiTop;
-
-		if (titleHoverChecker.checkHover(recipeMouseX, recipeMouseY)) {
+		if (titleHoverChecker.checkHover(mouseX, mouseY)) {
 			if (logic.setCategoryFocus()) {
 				updateLayout();
 			}
 		} else {
 			for (RecipeLayout recipeLayout : recipeLayouts) {
-				if (recipeLayout.handleClick(mc, recipeMouseX, recipeMouseY, mouseButton)) {
+				if (recipeLayout.handleClick(mc, mouseX, mouseY, mouseButton)) {
 					return;
 				}
 			}
 		}
 
-		super.mouseClicked(recipeMouseX, recipeMouseY, mouseButton);
+		super.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 
 	@Override
@@ -350,8 +343,8 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 
 		title = recipeCategory.getTitle();
 		final int titleWidth = fontRendererObj.getStringWidth(title);
-		final int titleX = (xSize - titleWidth) / 2;
-		final int titleY = borderPadding;
+		final int titleX = guiLeft + (xSize - titleWidth) / 2;
+		final int titleY = guiTop + borderPadding;
 		titleHoverChecker = new HoverChecker(titleY, titleY + fontRendererObj.FONT_HEIGHT, titleX, titleX + titleWidth, 0);
 
 		int spacingY = recipeBackground.getHeight() + recipeSpacing;
