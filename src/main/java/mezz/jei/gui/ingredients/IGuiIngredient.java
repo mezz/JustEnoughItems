@@ -1,14 +1,13 @@
 package mezz.jei.gui.ingredients;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.Color;
-import java.util.Collection;
-import java.util.List;
-
+import mezz.jei.gui.Focus;
 import net.minecraft.client.Minecraft;
 
-import mezz.jei.gui.Focus;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.awt.*;
+import java.util.Collection;
+import java.util.List;
 
 public interface IGuiIngredient<T> {
 	void set(@Nonnull T contained, @Nonnull Focus focus);
@@ -25,12 +24,11 @@ public interface IGuiIngredient<T> {
 
 	boolean isInput();
 
-	boolean isMouseOver(int mouseX, int mouseY);
+	boolean isMouseOver(int xOffset, int yOffset, int mouseX, int mouseY);
 
-	void draw(@Nonnull Minecraft minecraft);
+	void draw(@Nonnull Minecraft minecraft, int xOffset, int yOffset);
 
-	void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY);
+	void drawHovered(@Nonnull Minecraft minecraft, int xOffset, int yOffset, int mouseX, int mouseY);
 
-	/** Offset is in screen coordinates, unlike the other draw methods */
 	void drawHighlight(@Nonnull Minecraft minecraft, Color color, int xOffset, int yOffset);
 }

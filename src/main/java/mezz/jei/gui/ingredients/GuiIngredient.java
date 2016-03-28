@@ -1,13 +1,10 @@
 package mezz.jei.gui.ingredients;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
+import mezz.jei.api.gui.ITooltipCallback;
+import mezz.jei.gui.Focus;
+import mezz.jei.gui.TooltipRenderer;
+import mezz.jei.util.CycleTimer;
+import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -15,11 +12,13 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 
-import mezz.jei.api.gui.ITooltipCallback;
-import mezz.jei.gui.Focus;
-import mezz.jei.gui.TooltipRenderer;
-import mezz.jei.util.CycleTimer;
-import mezz.jei.util.Log;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	private final int slotIndex;
@@ -69,8 +68,8 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	}
 
 	@Override
-	public boolean isMouseOver(int mouseX, int mouseY) {
-		return enabled && (mouseX >= xPosition) && (mouseY >= yPosition) && (mouseX < xPosition + width) && (mouseY < yPosition + height);
+	public boolean isMouseOver(int xOffset, int yOffset, int mouseX, int mouseY) {
+		return enabled && (mouseX >= xOffset + xPosition) && (mouseY >= yOffset + yPosition) && (mouseX < xOffset + xPosition + width) && (mouseY < yOffset + yPosition + height);
 	}
 
 	@Nullable
@@ -122,21 +121,21 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	}
 
 	@Override
-	public void draw(@Nonnull Minecraft minecraft) {
+	public void draw(@Nonnull Minecraft minecraft, int xOffset, int yOffset) {
 		cycleTimer.onDraw();
 
 		T value = getIngredient();
-		ingredientRenderer.draw(minecraft, xPosition + padding, yPosition + padding, value);
+		ingredientRenderer.draw(minecraft, xOffset + xPosition + padding, yOffset + yPosition + padding, value);
 	}
 
 	@Override
-	public void drawHovered(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawHovered(@Nonnull Minecraft minecraft, int xOffset, int yOffset, int mouseX, int mouseY) {
 		T value = getIngredient();
 		if (value == null) {
 			return;
 		}
-		draw(minecraft);
-		drawTooltip(minecraft, mouseX, mouseY, value);
+		draw(minecraft, xOffset, yOffset);
+		drawTooltip(minecraft, xOffset, yOffset, mouseX, mouseY, value);
 	}
 
 	@Override
@@ -147,12 +146,16 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		GuiScreen.drawRect(x, y, x + width - padding * 2, y + height - padding * 2, color.getRGB());
 	}
 
-	private void drawTooltip(@Nonnull Minecraft minecraft, int mouseX, int mouseY, @Nonnull T value) {
+	private void drawTooltip(@Nonnull Minecraft minecraft, int xOffset, int yOffset, int mouseX, int mouseY, @Nonnull T value) {
 		try {
 			GlStateManager.disableDepth();
 
 			RenderHelper.disableStandardItemLighting();
-			drawRect(xPosition + padding, yPosition + padding, xPosition + width - padding, yPosition + height - padding, 0x7FFFFFFF);
+			drawRect(xOffset + xPosition + padding,
+					yOffset + yPosition + padding,
+					xOffset + xPosition + width - padding,
+					yOffset + yPosition + height - padding,
+					0x7FFFFFFF);
 
 			List<String> tooltip = ingredientRenderer.getTooltip(minecraft, value);
 
@@ -161,7 +164,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 			}
 
 			FontRenderer fontRenderer = ingredientRenderer.getFontRenderer(minecraft, value);
-			TooltipRenderer.drawHoveringText(minecraft, tooltip, mouseX, mouseY, fontRenderer);
+			TooltipRenderer.drawHoveringText(minecraft, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
 
 			GlStateManager.enableDepth();
 		} catch (RuntimeException e) {
