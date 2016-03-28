@@ -139,6 +139,8 @@ public class ProxyCommonClient extends ProxyCommon {
 
 		Config.startJei();
 
+		Internal.getStackHelper().enableUidCache();
+
 		ItemRegistryFactory itemRegistryFactory = new ItemRegistryFactory();
 		ItemRegistry itemRegistry = itemRegistryFactory.createItemRegistry();
 		Internal.setItemRegistry(itemRegistry);
@@ -208,6 +210,8 @@ public class ProxyCommonClient extends ProxyCommon {
 				iterator.remove();
 			}
 		}
+
+		Internal.getStackHelper().disableUidCache();
 	}
 
 	@Override
