@@ -49,7 +49,7 @@ public class RecipeLayout implements IRecipeLayout {
 		this.recipeCategory.setRecipe(this, recipeWrapper);
 	}
 
-	public void draw(@Nonnull Minecraft minecraft, int offsetX, int offsetY, int mouseX, int mouseY) {
+	public void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
 		IDrawable background = recipeCategory.getBackground();
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -57,7 +57,7 @@ public class RecipeLayout implements IRecipeLayout {
 		GlStateManager.enableAlpha();
 
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(offsetX + posX, offsetY + posY, 0.0F);
+		GlStateManager.translate(posX, posY, 0.0F);
 		{
 			background.draw(minecraft);
 			recipeCategory.drawExtras(minecraft);
@@ -70,11 +70,11 @@ public class RecipeLayout implements IRecipeLayout {
 		GlStateManager.disableBlend();
 		GlStateManager.disableLighting();
 
-		final int recipeMouseX = mouseX - offsetX - posX;
-		final int recipeMouseY = mouseY - offsetY - posY;
+		final int recipeMouseX = mouseX - posX;
+		final int recipeMouseY = mouseY - posY;
 
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(offsetX + posX, offsetY + posY, 0.0F);
+		GlStateManager.translate(posX, posY, 0.0F);
 		{
 			try {
 				recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight(), recipeMouseX, recipeMouseY);
@@ -87,16 +87,16 @@ public class RecipeLayout implements IRecipeLayout {
 		GlStateManager.popMatrix();
 
 		RenderHelper.enableGUIStandardItemLighting();
-		GuiIngredient hoveredItemStack = guiItemStackGroup.draw(minecraft, offsetX + posX, offsetY + posY, mouseX, mouseY);
+		GuiIngredient hoveredItemStack = guiItemStackGroup.draw(minecraft, posX, posY, mouseX, mouseY);
 		RenderHelper.disableStandardItemLighting();
-		GuiIngredient hoveredFluidStack = guiFluidStackGroup.draw(minecraft, offsetX + posX, offsetY + posY, mouseX, mouseY);
+		GuiIngredient hoveredFluidStack = guiFluidStackGroup.draw(minecraft, posX, posY, mouseX, mouseY);
 
 		if (hoveredItemStack != null) {
 			RenderHelper.enableGUIStandardItemLighting();
-			hoveredItemStack.drawHovered(minecraft, offsetX + posX, offsetY + posY, recipeMouseX, recipeMouseY);
+			hoveredItemStack.drawHovered(minecraft, posX, posY, recipeMouseX, recipeMouseY);
 			RenderHelper.disableStandardItemLighting();
 		} else if (hoveredFluidStack != null) {
-			hoveredFluidStack.drawHovered(minecraft, offsetX + posX, offsetY + posY, recipeMouseX, recipeMouseY);
+			hoveredFluidStack.drawHovered(minecraft, posX, posY, recipeMouseX, recipeMouseY);
 		} else if (recipeMouseX >= 0 && recipeMouseX < background.getWidth() && recipeMouseY >= 0 && recipeMouseY < background.getHeight()) {
 			List<String> tooltipStrings = null;
 			try {
@@ -105,17 +105,17 @@ public class RecipeLayout implements IRecipeLayout {
 				// older wrappers don't have this method
 			}
 			if (tooltipStrings != null && !tooltipStrings.isEmpty()) {
-				TooltipRenderer.drawHoveringText(minecraft, tooltipStrings, offsetX + posX + mouseX, offsetY + posY + mouseY);
+				TooltipRenderer.drawHoveringText(minecraft, tooltipStrings, mouseX, mouseY);
 			}
 		}
 
 		GlStateManager.disableAlpha();
 	}
 
-	public Focus getFocusUnderMouse(int offsetX, int offsetY, int mouseX, int mouseY) {
-		Focus focus = guiItemStackGroup.getFocusUnderMouse(offsetX + posX, offsetY + posY, mouseX, mouseY);
+	public Focus getFocusUnderMouse(int mouseX, int mouseY) {
+		Focus focus = guiItemStackGroup.getFocusUnderMouse(posX, posY, mouseX, mouseY);
 		if (focus == null) {
-			focus = guiFluidStackGroup.getFocusUnderMouse(offsetX + posX, offsetY + posY, mouseX, mouseY);
+			focus = guiFluidStackGroup.getFocusUnderMouse(posX, posY, mouseX, mouseY);
 		}
 		return focus;
 	}

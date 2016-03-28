@@ -150,15 +150,15 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 
 		RecipeLayout hovered = null;
 		for (RecipeLayout recipeWidget : recipeLayouts) {
-			if (recipeWidget.getFocusUnderMouse(guiLeft, guiTop, mouseX, mouseY) != null) {
+			if (recipeWidget.getFocusUnderMouse(mouseX, mouseY) != null) {
 				hovered = recipeWidget;
 			} else {
-				recipeWidget.draw(mc, guiLeft, guiTop, mouseX, mouseY);
+				recipeWidget.draw(mc, mouseX, mouseY);
 			}
 		}
 
 		if (hovered != null) {
-			hovered.draw(mc, guiLeft, guiTop, mouseX, mouseY);
+			hovered.draw(mc, mouseX, mouseY);
 		}
 
 		if (titleHoverChecker.checkHover(mouseX, mouseY)) {
@@ -192,7 +192,7 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 		}
 
 		for (RecipeLayout recipeLayouts : this.recipeLayouts) {
-			Focus focus = recipeLayouts.getFocusUnderMouse(guiLeft, guiTop, mouseX, mouseY);
+			Focus focus = recipeLayouts.getFocusUnderMouse(mouseX, mouseY);
 			if (focus != null) {
 				return focus;
 			}
@@ -336,7 +336,7 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 		IDrawable recipeBackground = recipeCategory.getBackground();
 
 		final int recipesPerPage = Math.max(1, (ySize - headerHeight) / (recipeBackground.getHeight() + borderPadding));
-		final int recipeXOffset = (xSize - recipeBackground.getWidth()) / 2;
+		final int recipeXOffset = guiLeft + (xSize - recipeBackground.getWidth()) / 2;
 		final int recipeSpacing = (ySize - headerHeight - (recipesPerPage * recipeBackground.getHeight())) / (recipesPerPage + 1);
 
 		logic.setRecipesPerPage(recipesPerPage);
@@ -350,7 +350,7 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 		int spacingY = recipeBackground.getHeight() + recipeSpacing;
 
 		recipeLayouts.clear();
-		recipeLayouts.addAll(logic.getRecipeWidgets(recipeXOffset, headerHeight + recipeSpacing, spacingY));
+		recipeLayouts.addAll(logic.getRecipeWidgets(recipeXOffset, guiTop + headerHeight + recipeSpacing, spacingY));
 		addRecipeTransferButtons(recipeLayouts);
 
 		nextPage.enabled = previousPage.enabled = logic.hasMultiplePages();
