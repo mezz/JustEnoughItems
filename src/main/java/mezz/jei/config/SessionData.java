@@ -30,7 +30,7 @@ public class SessionData {
 			FMLClientHandler fmlClientHandler = FMLClientHandler.instance();
 			final NetworkManager networkManager = fmlClientHandler.getClientToServerNetworkManager();
 			if (networkManager == null) { // when opened in main window before a game is started
-				return null;	
+				return "none";	
 			} else if (networkManager.isLocalChannel()) {
 				final MinecraftServer minecraftServer = fmlClientHandler.getServer();
 				if (minecraftServer != null) {
