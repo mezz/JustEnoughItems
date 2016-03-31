@@ -30,23 +30,25 @@ public class SessionData {
 			FMLClientHandler fmlClientHandler = FMLClientHandler.instance();
 			final NetworkManager networkManager = fmlClientHandler.getClientToServerNetworkManager();
 			if (networkManager == null) { // when opened in main window before a game is started
-				return "none";	
-			} else if (networkManager.isLocalChannel()) {
-				final MinecraftServer minecraftServer = fmlClientHandler.getServer();
-				if (minecraftServer != null) {
-					worldUid = minecraftServer.getFolderName();
-				}
+				worldUid = "none";	
 			} else {
-				final ServerData serverData = Minecraft.getMinecraft().getCurrentServerData();
-				if (serverData != null) {
-					worldUid = serverData.serverIP + ' ' + serverData.serverName;
+				if (networkManager.isLocalChannel()) {
+					final MinecraftServer minecraftServer = fmlClientHandler.getServer();
+					if (minecraftServer != null) {
+						worldUid = minecraftServer.getFolderName();
+					}
+				} else {
+					final ServerData serverData = Minecraft.getMinecraft().getCurrentServerData();
+					if (serverData != null) {
+						worldUid = serverData.serverIP + ' ' + serverData.serverName;
+					}
 				}
-			}
 
-			if (worldUid == null) {
-				worldUid = "default";
+				if (worldUid == null) {
+					worldUid = "default";
+				}
+				worldUid = "world" + Integer.toString(worldUid.hashCode());
 			}
-			worldUid = "world" + Integer.toString(worldUid.hashCode());
 		}
 		return worldUid;
 	}
