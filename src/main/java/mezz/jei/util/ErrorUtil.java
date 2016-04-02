@@ -5,6 +5,7 @@ import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -99,9 +100,9 @@ public class ErrorUtil {
 		}
 
 		final String itemName;
-		String registryName = item.getRegistryName();
+		ResourceLocation registryName = item.getRegistryName();
 		if (registryName != null) {
-			itemName = registryName;
+			itemName = registryName.toString();
 		} else {
 			itemName = item.getClass().getName();
 		}
