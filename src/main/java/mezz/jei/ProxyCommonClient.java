@@ -134,7 +134,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		if (!SessionData.isJeiStarted() && Minecraft.getMinecraft().thePlayer != null) {
 			try {
 				startJEI();
-			} catch (RuntimeException e) {
+			} catch (Throwable e) {
 				FMLClientHandler.instance().haltGame("JEI failed to start:", e);
 			}
 		}
