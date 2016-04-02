@@ -541,6 +541,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		}
 		searchField.setText(filterText);
 		Config.setFilterText(filterText);
+		updateLayout();
 	}
 
 	@Nonnull
