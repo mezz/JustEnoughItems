@@ -99,7 +99,7 @@ public class ErrorUtil {
 		}
 
 		final String itemName;
-		String registryName = item.getRegistryName();
+		String registryName = item.getRegistryName().toString();
 		if (registryName != null) {
 			itemName = registryName;
 		} else {

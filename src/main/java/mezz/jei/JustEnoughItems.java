@@ -56,7 +56,8 @@ public class JustEnoughItems {
 			String name = "jeiDebug";
 			Item debugItem = new DebugItem(name);
 			debugItem.setUnlocalizedName(name);
-			GameRegistry.registerItem(debugItem, name);
+			debugItem.setRegistryName(name);
+			GameRegistry.register(debugItem);
 		}
 	}
 

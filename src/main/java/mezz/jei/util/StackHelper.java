@@ -10,6 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.RegistryNamespaced;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.oredict.OreDictionary;
@@ -322,10 +323,10 @@ public class StackHelper implements IStackHelper {
 
 	@Nonnull
 	public String getModId(@Nonnull Item item) {
-		FMLControlledNamespacedRegistry<Item> itemRegistry = GameData.getItemRegistry();
+		RegistryNamespaced<ResourceLocation, Item> itemRegistry = Item.itemRegistry;
 		ResourceLocation itemName = itemRegistry.getNameForObject(item);
 		if (itemName == null) {
-			throw new NullPointerException("GameData.getItemRegistry().getNameForObject returned null for: " + item.getClass());
+			throw new NullPointerException("Item.itemRegistry.getNameForObject returned null for: " + item.getClass());
 		}
 
 		return itemName.getResourceDomain();
@@ -350,10 +351,10 @@ public class StackHelper implements IStackHelper {
 			throw new NullPointerException("Found an itemStack with a null item. This is an error from another mod.");
 		}
 
-		FMLControlledNamespacedRegistry<Item> itemRegistry = GameData.getItemRegistry();
+		RegistryNamespaced<ResourceLocation, Item> itemRegistry = Item.itemRegistry;
 		ResourceLocation itemName = itemRegistry.getNameForObject(item);
 		if (itemName == null) {
-			throw new NullPointerException("GameData.getItemRegistry().getNameForObject returned null for: " + item.getClass());
+			throw new NullPointerException("Item.itemRegistry.getNameForObject returned null for: " + item.getClass());
 		}
 
 		String itemNameString = itemName.toString();
