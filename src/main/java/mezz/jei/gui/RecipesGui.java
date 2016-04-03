@@ -249,7 +249,7 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
 		if (InputHandler.isInventoryCloseKey(keyCode) || InputHandler.isInventoryToggleKey(keyCode)) {
 			close();
-		} else if (keyCode == KeyBindings.recipeBack.getKeyCode()) {
+		} else if (KeyBindings.recipeBack.isActiveAndMatches(keyCode)) {
 			back();
 		}
 	}

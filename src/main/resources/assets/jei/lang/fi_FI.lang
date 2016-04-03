@@ -14,7 +14,7 @@ jei.tooltip.error.recipe.transfer.inventory.full=Tavaraluettelo on liian täynn�
 # Error Messages
 jei.chat.error.command.too.long=JEI:n täytyy olla asennettuna palvelimella, komento on liian pitkä Minecraftille.
 # Key Bindings
-key.jei.toggleOverlay=Näytä tavaralista (Ctrl + )
+key.jei.toggleOverlay=Näytä tavaralista
 key.jei.showRecipe=Näytä tavaran resepti
 key.jei.showUses=Näytä tavaran käytöt
 key.jei.recipeBack=Näytä edellinen reseptisivu

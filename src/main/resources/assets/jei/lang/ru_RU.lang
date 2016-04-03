@@ -13,7 +13,7 @@ jei.tooltip.error.recipe.transfer.inventory.full=Инвентарь заполн
 jei.chat.error.command.too.long=JEI необходимо установить на сервер, чтобы использовать эту команду, она слишком длинна для отправки.
 
 # Key Bindings
-key.jei.toggleOverlay=Переключить оверлей предметов (Ctrl + )
+key.jei.toggleOverlay=Переключить оверлей предметов
 key.jei.showRecipe=Показывать рецепты предметов
 key.jei.showUses=Показывать применения предметов
 

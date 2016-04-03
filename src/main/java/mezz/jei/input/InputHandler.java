@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.ItemStack;
 
 import org.lwjgl.input.Keyboard;
@@ -200,28 +201,24 @@ public class InputHandler {
 			}
 		}
 
-		if (GuiScreen.isCtrlKeyDown()) {
-			if (eventKey == KeyBindings.toggleOverlay.getKeyCode()) {
-				Config.toggleOverlayEnabled();
-				return false;
-			} else if (eventKey == Keyboard.KEY_F) {
-				itemListOverlay.setKeyboardFocus(true);
-				return true;
-			}
+		if (KeyBindings.toggleOverlay.isActiveAndMatches(eventKey)) {
+			Config.toggleOverlayEnabled();
+			return false;
+		}
+
+		if (KeyBindings.focusSearch.isActiveAndMatches(eventKey)) {
+			itemListOverlay.setKeyboardFocus(true);
+			return true;
 		}
 
 		if (!isContainerTextFieldFocused()) {
-			if (eventKey == KeyBindings.showRecipe.getKeyCode()) {
+			if (KeyBindings.showRecipe.isActiveAndMatches(eventKey)) {
 				Focus focus = getFocusUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
 				if (focus != null) {
-					if (!GuiScreen.isShiftKeyDown()) {
-						recipesGui.showRecipes(focus);
-					} else {
-						recipesGui.showUses(focus);
-					}
+					recipesGui.showRecipes(focus);
 					return true;
 				}
-			} else if (eventKey == KeyBindings.showUses.getKeyCode()) {
+			} else if (KeyBindings.showUses.isActiveAndMatches(eventKey)) {
 				Focus focus = getFocusUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
 				if (focus != null) {
 					recipesGui.showUses(focus);
@@ -251,7 +248,7 @@ public class InputHandler {
 	}
 
 	public static boolean isInventoryToggleKey(int keyCode) {
-		return keyCode == Minecraft.getMinecraft().gameSettings.keyBindInventory.getKeyCode();
+		return Minecraft.getMinecraft().gameSettings.keyBindInventory.isActiveAndMatches(keyCode);
 	}
 
 	public static boolean isInventoryCloseKey(int keyCode) {
