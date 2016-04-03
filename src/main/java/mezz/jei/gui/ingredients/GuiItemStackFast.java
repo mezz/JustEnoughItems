@@ -10,27 +10,18 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.texture.TextureUtil;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.client.model.pipeline.LightUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -103,7 +94,9 @@ public class GuiItemStackFast {
 
 			GlStateManager.translate(-0.5F, -0.5F, -0.5F);
 
-			renderModel(bakedModel, itemStack);
+			Minecraft minecraft = Minecraft.getMinecraft();
+			RenderItem renderItem = minecraft.getRenderItem();
+			renderItem.renderModel(bakedModel, itemStack);
 
 			if (itemStack.hasEffect()) {
 				renderEffect(bakedModel);
@@ -112,45 +105,10 @@ public class GuiItemStackFast {
 		GlStateManager.popMatrix();
 	}
 
-	private void renderModel(IBakedModel model, ItemStack stack) {
-		this.renderModel(model, -1, stack);
-	}
-
-	private void renderModel(IBakedModel model, int color, ItemStack stack) {
-		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getBuffer();
-		vertexBuffer.begin(7, DefaultVertexFormats.ITEM);
-
-		for (EnumFacing enumfacing : EnumFacing.VALUES) {
-			this.renderQuads(vertexBuffer, model.getQuads(null, enumfacing, 0), color, stack);
-		}
-
-		this.renderQuads(vertexBuffer, model.getQuads(null, null, 0), color, stack);
-		tessellator.draw();
-	}
-
-	private void renderQuads(VertexBuffer vertexBuffer, List<BakedQuad> quads, final int color, ItemStack stack) {
-		boolean flag = color == -1 && stack != null;
-
-		ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
-
-		for (BakedQuad bakedquad : quads) {
-			int quadColor = color;
-
-			if (flag && bakedquad.hasTintIndex()) {
-				quadColor = itemColors.getColorFromItemstack(stack, bakedquad.getTintIndex());
-				if (EntityRenderer.anaglyphEnable) {
-					quadColor = TextureUtil.anaglyphColor(quadColor);
-				}
-
-				quadColor |= -16777216;
-			}
-			LightUtil.renderQuadColor(vertexBuffer, bakedquad, quadColor);
-		}
-	}
-
 	private void renderEffect(IBakedModel model) {
-		TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
+		Minecraft minecraft = Minecraft.getMinecraft();
+		TextureManager textureManager = minecraft.getTextureManager();
+		RenderItem renderItem = minecraft.getRenderItem();
 
 		GlStateManager.depthMask(false);
 		GlStateManager.depthFunc(514);
@@ -163,7 +121,7 @@ public class GuiItemStackFast {
 		float f = (float) (Minecraft.getSystemTime() % 3000L) / 3000.0F / 8.0F;
 		GlStateManager.translate(f, 0.0F, 0.0F);
 		GlStateManager.rotate(-50.0F, 0.0F, 0.0F, 1.0F);
-		this.renderModel(model, -8372020);
+		renderItem.renderModel(model, -8372020);
 		GlStateManager.popMatrix();
 
 		GlStateManager.pushMatrix();
@@ -171,7 +129,7 @@ public class GuiItemStackFast {
 		float f1 = (float) (Minecraft.getSystemTime() % 4873L) / 4873.0F / 8.0F;
 		GlStateManager.translate(-f1, 0.0F, 0.0F);
 		GlStateManager.rotate(10.0F, 0.0F, 0.0F, 1.0F);
-		this.renderModel(model, -8372020);
+		renderItem.renderModel(model, -8372020);
 		GlStateManager.popMatrix();
 
 		GlStateManager.matrixMode(5888);
@@ -179,10 +137,6 @@ public class GuiItemStackFast {
 		GlStateManager.depthFunc(515);
 		GlStateManager.depthMask(true);
 		textureManager.bindTexture(TextureMap.locationBlocksTexture);
-	}
-
-	private void renderModel(IBakedModel model, int color) {
-		this.renderModel(model, color, null);
 	}
 
 	public void renderSlow() {
