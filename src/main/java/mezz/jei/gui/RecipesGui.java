@@ -150,7 +150,7 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 
 		RecipeLayout hovered = null;
 		for (RecipeLayout recipeWidget : recipeLayouts) {
-			if (recipeWidget.getFocusUnderMouse(mouseX, mouseY) != null) {
+			if (recipeWidget.isMouseOver(mouseX, mouseY)) {
 				hovered = recipeWidget;
 			} else {
 				recipeWidget.draw(mc, mouseX, mouseY);
