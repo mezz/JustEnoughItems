@@ -29,7 +29,9 @@ public class SessionData {
 		if (worldUid == null) {
 			FMLClientHandler fmlClientHandler = FMLClientHandler.instance();
 			final NetworkManager networkManager = fmlClientHandler.getClientToServerNetworkManager();
-			if (networkManager.isLocalChannel()) {
+			if (networkManager == null) {
+				worldUid = "default";
+			} else if (networkManager.isLocalChannel()) {
 				final MinecraftServer minecraftServer = fmlClientHandler.getServer();
 				if (minecraftServer != null) {
 					worldUid = minecraftServer.getFolderName();

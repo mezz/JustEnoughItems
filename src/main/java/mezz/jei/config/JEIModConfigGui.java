@@ -3,10 +3,12 @@ package mezz.jei.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.ConfigElement;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.GuiModList;
 import net.minecraftforge.fml.client.config.GuiConfig;
 import net.minecraftforge.fml.client.config.IConfigElement;
@@ -29,13 +31,20 @@ public class JEIModConfigGui extends GuiConfig {
 	}
 
 	private static List<IConfigElement> getConfigElements() {
-		ConfigCategory categoryWorldConfig = Config.getWorldConfig().getCategory(SessionData.getWorldUid());
-		ConfigCategory categoryAdvanced = Config.getConfig().getCategory(Config.CATEGORY_ADVANCED);
-		ConfigCategory categorySearch = Config.getConfig().getCategory(Config.CATEGORY_SEARCH);
-
 		List<IConfigElement> configElements = new ArrayList<>();
-		configElements.addAll(new ConfigElement(categoryWorldConfig).getChildElements());
+
+		if (Minecraft.getMinecraft().theWorld != null) {
+			Configuration worldConfig = Config.getWorldConfig();
+			if (worldConfig != null) {
+				ConfigCategory categoryWorldConfig = worldConfig.getCategory(SessionData.getWorldUid());
+				configElements.addAll(new ConfigElement(categoryWorldConfig).getChildElements());
+			}
+		}
+
+		ConfigCategory categoryAdvanced = Config.getConfig().getCategory(Config.CATEGORY_ADVANCED);
 		configElements.addAll(new ConfigElement(categoryAdvanced).getChildElements());
+
+		ConfigCategory categorySearch = Config.getConfig().getCategory(Config.CATEGORY_SEARCH);
 		configElements.add(new ConfigElement(categorySearch));
 
 		return configElements;
