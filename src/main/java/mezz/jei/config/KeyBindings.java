@@ -25,12 +25,6 @@ public class KeyBindings {
 	public static final KeyBinding recipeBack = new KeyBinding("key.jei.recipeBack", KeyConflictContext.GUI, Keyboard.KEY_BACK, categoryName);
 
 	public static void init() {
-		toggleOverlay.setAllowsKeyModifiers();
-		focusSearch.setAllowsKeyModifiers();
-		showRecipe.setAllowsKeyModifiers();
-		showUses.setAllowsKeyModifiers();
-		recipeBack.setAllowsKeyModifiers();
-
 		ClientRegistry.registerKeyBinding(toggleOverlay);
 		ClientRegistry.registerKeyBinding(focusSearch);
 		ClientRegistry.registerKeyBinding(showRecipe);
