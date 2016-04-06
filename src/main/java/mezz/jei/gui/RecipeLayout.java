@@ -91,7 +91,7 @@ public class RecipeLayout implements IRecipeLayout {
 			RenderHelper.disableStandardItemLighting();
 		} else if (hoveredFluidStack != null) {
 			hoveredFluidStack.drawHovered(minecraft, posX, posY, recipeMouseX, recipeMouseY);
-		} else if (recipeMouseX >= 0 && recipeMouseX < background.getWidth() && recipeMouseY >= 0 && recipeMouseY < background.getHeight()) {
+		} else if (isMouseOver(mouseX, mouseY)) {
 			List<String> tooltipStrings = recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY);
 			if (tooltipStrings != null && !tooltipStrings.isEmpty()) {
 				TooltipRenderer.drawHoveringText(minecraft, tooltipStrings, mouseX, mouseY);
@@ -99,6 +99,13 @@ public class RecipeLayout implements IRecipeLayout {
 		}
 
 		GlStateManager.disableAlpha();
+	}
+
+	public boolean isMouseOver(int mouseX, int mouseY) {
+		final int recipeMouseX = mouseX - posX;
+		final int recipeMouseY = mouseY - posY;
+		final IDrawable background = recipeCategory.getBackground();
+		return recipeMouseX >= 0 && recipeMouseX < background.getWidth() && recipeMouseY >= 0 && recipeMouseY < background.getHeight();
 	}
 
 	public Focus getFocusUnderMouse(int mouseX, int mouseY) {
