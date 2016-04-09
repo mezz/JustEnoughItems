@@ -3,6 +3,7 @@ package mezz.jei;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.config.Constants;
+import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.ModList;
 import mezz.jei.util.StackHelper;
@@ -166,7 +167,8 @@ public class ItemRegistryFactory {
 				potionIngredients.add(stack);
 			}
 		} catch (RuntimeException e) {
-			Log.error("Couldn't create unique name for itemStack {}.", stack.getClass(), e);
+			String stackInfo = ErrorUtil.getItemStackInfo(stack);
+			Log.error("Couldn't create unique name for itemStack {}", stackInfo, e);
 		}
 	}
 }
