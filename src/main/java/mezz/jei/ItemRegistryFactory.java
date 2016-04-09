@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import mezz.jei.util.ErrorUtil;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -167,7 +168,8 @@ public class ItemRegistryFactory {
 				potionIngredients.add(stack);
 			}
 		} catch (RuntimeException e) {
-			Log.error("Couldn't create unique name for itemStack {}.", stack.getClass(), e);
+			String stackInfo = ErrorUtil.getItemStackInfo(stack);
+			Log.error("Couldn't create unique name for itemStack {}", stackInfo, e);
 		}
 	}
 }

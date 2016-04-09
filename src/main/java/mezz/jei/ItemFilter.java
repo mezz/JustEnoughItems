@@ -11,6 +11,7 @@ import com.google.common.collect.Multiset;
 import mezz.jei.api.IItemBlacklist;
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.config.Config;
+import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.ItemStackElement;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
@@ -177,7 +178,8 @@ public class ItemFilter {
 				}
 			} catch (RuntimeException | LinkageError e) {
 				String modName = Internal.getItemRegistry().getModNameForItem(item);
-				Log.error("Couldn't get ItemModel for {} itemStack {}", modName, itemStack, e);
+				String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
+				Log.error("Couldn't get ItemModel for {} itemStack {}", modName, stackInfo, e);
 				brokenItems.add(item);
 				return true;
 			}
@@ -190,7 +192,8 @@ public class ItemFilter {
 					return false;
 				}
 			} catch (RuntimeException e) {
-				Log.error("Could not check blacklist for stack {}", itemStack, e);
+				String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
+				Log.error("Could not check blacklist for stack {}", stackInfo, e);
 				return true;
 			}
 
