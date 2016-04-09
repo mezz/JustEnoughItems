@@ -230,14 +230,14 @@ public class StackHelper implements IStackHelper {
 			List<ItemStack> subItems = new ArrayList<>();
 			try {
 				item.getSubItems(item, itemTab, subItems);
-			} catch (RuntimeException e) {
-				Log.error("Caught a crash while getting sub-items of {}", item, e);
+			} catch (RuntimeException | LinkageError e) {
+				Log.warning("Caught a crash while getting sub-items of {}", item, e);
 			}
 			for (ItemStack subItem : subItems) {
 				if (subItem == null) {
-					Log.error("Found null subItem of {}", item);
+					Log.warning("Found a null subItem of {}", item);
 				} else if (subItem.getItem() == null) {
-					Log.error("Found subItem of {} with null item", item);
+					Log.warning("Found a subItem of {} with a null item", item);
 				} else {
 					if (subItem.stackSize != stackSize) {
 						ItemStack subItemCopy = subItem.copy();

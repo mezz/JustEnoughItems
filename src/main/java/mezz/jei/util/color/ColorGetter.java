@@ -118,8 +118,11 @@ public class ColorGetter {
 
 	@Nonnull
 	private static List<Color> getColors(@Nonnull TextureAtlasSprite textureAtlasSprite, int renderColor, int colorCount) {
-		final List<Color> colors = new ArrayList<>(colorCount);
 		final BufferedImage bufferedImage = getBufferedImage(textureAtlasSprite);
+		if (bufferedImage == null) {
+			return Collections.emptyList();
+		}
+		final List<Color> colors = new ArrayList<>(colorCount);
 		final int[][] palette = ColorThief.getPalette(bufferedImage, colorCount);
 		if (palette != null) {
 			for (int[] colorInt : palette) {
@@ -136,13 +139,17 @@ public class ColorGetter {
 		return colors;
 	}
 
-	@Nonnull
+	@Nullable
 	private static BufferedImage getBufferedImage(@Nonnull TextureAtlasSprite textureAtlasSprite) {
 		final int iconWidth = textureAtlasSprite.getIconWidth();
 		final int iconHeight = textureAtlasSprite.getIconHeight();
-		BufferedImage bufferedImage = new BufferedImage(iconWidth, iconHeight * textureAtlasSprite.getFrameCount(), BufferedImage.TYPE_4BYTE_ABGR);
+		final int frameCount = textureAtlasSprite.getFrameCount();
+		if (iconWidth <= 0 || iconHeight <= 0 || frameCount <= 0) {
+			return null;
+		}
 
-		for (int i = 0; i < textureAtlasSprite.getFrameCount(); i++) {
+		BufferedImage bufferedImage = new BufferedImage(iconWidth, iconHeight * frameCount, BufferedImage.TYPE_4BYTE_ABGR);
+		for (int i = 0; i < frameCount; i++) {
 			int[][] frameTextureData = textureAtlasSprite.getFrameTextureData(i);
 			int[] largestMipMapTextureData = frameTextureData[0];
 			bufferedImage.setRGB(0, i * iconHeight, iconWidth, iconHeight, largestMipMapTextureData, 0, iconWidth);

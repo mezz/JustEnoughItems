@@ -18,6 +18,7 @@ import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
+import net.minecraft.crash.CrashReport;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
@@ -128,8 +129,8 @@ public class ProxyCommonClient extends ProxyCommon {
 		if (!SessionData.isJeiStarted() && Minecraft.getMinecraft().thePlayer != null) {
 			try {
 				startJEI();
-			} catch (RuntimeException e) {
-				FMLClientHandler.instance().haltGame("JEI failed to start:", e);
+			} catch (Throwable e) {
+				Minecraft.getMinecraft().displayCrashReport(new CrashReport("JEI failed to start:", e));
 			}
 		}
 	}
@@ -167,7 +168,7 @@ public class ProxyCommonClient extends ProxyCommon {
 			try {
 				plugin.register(modRegistry);
 				Log.info("Registered plugin: {}", plugin.getClass().getName());
-			} catch (RuntimeException e) {
+			} catch (RuntimeException | LinkageError e) {
 				Log.error("Failed to register mod plugin: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
@@ -205,7 +206,7 @@ public class ProxyCommonClient extends ProxyCommon {
 				plugin.onRuntimeAvailable(jeiRuntime);
 			} catch (AbstractMethodError ignored) {
 				// older plugins don't have this method
-			} catch (RuntimeException e) {
+			} catch (RuntimeException | LinkageError e) {
 				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
