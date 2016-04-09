@@ -138,7 +138,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 		try {
 			addRecipeUnchecked(recipe, recipeCategory, recipeHandler);
-		} catch (RuntimeException e) {
+		} catch (RuntimeException | LinkageError e) {
 			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, recipeHandler);
 			Log.error("Found a broken recipe: {}\n", recipeInfo, e);
 		}

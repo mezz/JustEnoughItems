@@ -175,9 +175,9 @@ public class ItemFilter {
 			final IBakedModel itemModel;
 			try {
 				itemModel = renderItem.getItemModelWithOverrides(itemStack, null, null);
-			} catch (RuntimeException | AbstractMethodError e) {
+			} catch (RuntimeException | LinkageError e) {
 				String modName = Internal.getItemRegistry().getModNameForItem(item);
-				Log.error("Couldn't get ItemModel for {} itemStack {}.", modName, itemStack, e);
+				Log.error("Couldn't get ItemModel for {} itemStack {}", modName, itemStack, e);
 				brokenItems.add(item);
 				return true;
 			}

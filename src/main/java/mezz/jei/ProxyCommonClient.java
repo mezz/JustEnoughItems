@@ -18,6 +18,7 @@ import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
+import net.minecraft.crash.CrashReport;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
@@ -135,7 +136,7 @@ public class ProxyCommonClient extends ProxyCommon {
 			try {
 				startJEI();
 			} catch (Throwable e) {
-				FMLClientHandler.instance().haltGame("JEI failed to start:", e);
+				Minecraft.getMinecraft().displayCrashReport(new CrashReport("JEI failed to start:", e));
 			}
 		}
 	}
@@ -159,7 +160,7 @@ public class ProxyCommonClient extends ProxyCommon {
 			try {
 				plugin.register(modRegistry);
 				Log.info("Registered plugin: {}", plugin.getClass().getName());
-			} catch (RuntimeException e) {
+			} catch (RuntimeException | LinkageError e) {
 				Log.error("Failed to register mod plugin: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
@@ -181,7 +182,7 @@ public class ProxyCommonClient extends ProxyCommon {
 			IModPlugin plugin = iterator.next();
 			try {
 				plugin.onRuntimeAvailable(jeiRuntime);
-			} catch (RuntimeException e) {
+			} catch (RuntimeException | LinkageError e) {
 				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
 				iterator.remove();
 			}

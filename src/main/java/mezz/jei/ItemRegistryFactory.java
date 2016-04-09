@@ -46,7 +46,7 @@ public class ItemRegistryFactory {
 			List<ItemStack> creativeTabItemStacks = new ArrayList<>();
 			try {
 				creativeTab.displayAllRelevantItems(creativeTabItemStacks);
-			} catch (RuntimeException e) {
+			} catch (RuntimeException | LinkageError e) {
 				Log.error("Creative tab crashed while getting items. Some items from this tab will be missing from the item list. {}", creativeTab, e);
 			}
 			for (ItemStack itemStack : creativeTabItemStacks) {
