@@ -1,5 +1,6 @@
 package mezz.jei;
 
+import mezz.jei.config.Config;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.RecipesGui;
 import mezz.jei.gui.TooltipRenderer;
@@ -130,6 +131,13 @@ public class GuiEventHandler {
 			if (inputHandler.handleMouseEvent(guiScreen, x, y)) {
 				event.setCanceled(true);
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onPotionShiftEvent(GuiScreenEvent.PotionShiftEvent event) {
+		if (Config.isOverlayEnabled()) {
+			event.setCanceled(true);
 		}
 	}
 }
