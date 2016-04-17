@@ -64,8 +64,8 @@ public class VanillaPlugin extends BlankModPlugin {
 		registry.addRecipeHandlers(
 				new ShapedOreRecipeHandler(),
 				new ShapedRecipesHandler(),
-				new ShapelessOreRecipeHandler(),
-				new ShapelessRecipesHandler(),
+				new ShapelessOreRecipeHandler(guiHelper),
+				new ShapelessRecipesHandler(guiHelper),
 				new TippedArrowRecipeHandler(),
 				new FuelRecipeHandler(),
 				new SmeltingRecipeHandler(),

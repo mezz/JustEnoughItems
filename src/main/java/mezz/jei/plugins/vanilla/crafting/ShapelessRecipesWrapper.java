@@ -1,21 +1,20 @@
 package mezz.jei.plugins.vanilla.crafting;
 
+import mezz.jei.api.IGuiHelper;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ShapelessRecipes;
+
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ShapelessRecipes;
-
-import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
-import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
-
-public class ShapelessRecipesWrapper extends VanillaRecipeWrapper implements ICraftingRecipeWrapper {
+public class ShapelessRecipesWrapper extends AbstractShapelessRecipeWrapper {
 
 	@Nonnull
 	private final ShapelessRecipes recipe;
 
-	public ShapelessRecipesWrapper(@Nonnull ShapelessRecipes recipe) {
+	public ShapelessRecipesWrapper(@Nonnull IGuiHelper guiHelper, @Nonnull ShapelessRecipes recipe) {
+		super(guiHelper);
 		this.recipe = recipe;
 		for (Object input : this.recipe.recipeItems) {
 			if (input instanceof ItemStack) {
@@ -29,7 +28,7 @@ public class ShapelessRecipesWrapper extends VanillaRecipeWrapper implements ICr
 
 	@Nonnull
 	@Override
-	public List getInputs() {
+	public List<ItemStack> getInputs() {
 		return recipe.recipeItems;
 	}
 

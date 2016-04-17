@@ -21,6 +21,9 @@ public class CraftingRecipeCategory extends BlankRecipeCategory {
 	private static final int craftOutputSlot = 0;
 	private static final int craftInputSlot1 = 1;
 
+	public static final int width = 116;
+	public static final int height = 54;
+
 	@Nonnull
 	private final IDrawable background;
 	@Nonnull
@@ -30,7 +33,7 @@ public class CraftingRecipeCategory extends BlankRecipeCategory {
 
 	public CraftingRecipeCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/crafting_table.png");
-		background = guiHelper.createDrawable(location, 29, 16, 116, 54);
+		background = guiHelper.createDrawable(location, 29, 16, width, height);
 		localizedName = Translator.translateToLocal("gui.jei.category.craftingTable");
 		craftingGridHelper = guiHelper.createCraftingGridHelper(craftInputSlot1, craftOutputSlot);
 	}

@@ -1,22 +1,20 @@
 package mezz.jei.plugins.vanilla.crafting;
 
+import mezz.jei.api.IGuiHelper;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
+
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.item.ItemStack;
-
-import net.minecraftforge.oredict.ShapelessOreRecipe;
-
-import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
-import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
-
-public class ShapelessOreRecipeWrapper extends VanillaRecipeWrapper implements ICraftingRecipeWrapper {
+public class ShapelessOreRecipeWrapper extends AbstractShapelessRecipeWrapper {
 
 	@Nonnull
 	private final ShapelessOreRecipe recipe;
 
-	public ShapelessOreRecipeWrapper(@Nonnull ShapelessOreRecipe recipe) {
+	public ShapelessOreRecipeWrapper(@Nonnull IGuiHelper guiHelper, @Nonnull ShapelessOreRecipe recipe) {
+		super(guiHelper);
 		this.recipe = recipe;
 		for (Object input : this.recipe.getInput()) {
 			if (input instanceof ItemStack) {

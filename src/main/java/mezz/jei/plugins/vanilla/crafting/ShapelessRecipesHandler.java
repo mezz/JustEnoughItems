@@ -1,15 +1,21 @@
 package mezz.jei.plugins.vanilla.crafting;
 
-import javax.annotation.Nonnull;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ShapelessRecipes;
-
+import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ShapelessRecipes;
+
+import javax.annotation.Nonnull;
 
 public class ShapelessRecipesHandler implements IRecipeHandler<ShapelessRecipes> {
+	@Nonnull
+	private final IGuiHelper guiHelper;
+
+	public ShapelessRecipesHandler(@Nonnull IGuiHelper guiHelper) {
+		this.guiHelper = guiHelper;
+	}
 
 	@Override
 	@Nonnull
@@ -26,7 +32,7 @@ public class ShapelessRecipesHandler implements IRecipeHandler<ShapelessRecipes>
 	@Override
 	@Nonnull
 	public IRecipeWrapper getRecipeWrapper(@Nonnull ShapelessRecipes recipe) {
-		return new ShapelessRecipesWrapper(recipe);
+		return new ShapelessRecipesWrapper(guiHelper, recipe);
 	}
 
 	@Override

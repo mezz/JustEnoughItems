@@ -8,6 +8,7 @@ jei.tooltip.liquid.amount=%,d mB
 jei.tooltip.transfer=Transfer Items
 jei.tooltip.recipe.ore.dict=Accepts any: %s
 jei.tooltip.item.colors=Colors: %s
+jei.tooltip.shapeless.recipe=Shapeless Recipe
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Missing Items
