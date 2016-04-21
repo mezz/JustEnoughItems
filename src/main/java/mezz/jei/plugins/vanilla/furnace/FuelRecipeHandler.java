@@ -5,6 +5,8 @@ import javax.annotation.Nonnull;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 
 public class FuelRecipeHandler implements IRecipeHandler<FuelRecipe> {
 	@Override
@@ -27,6 +29,14 @@ public class FuelRecipeHandler implements IRecipeHandler<FuelRecipe> {
 
 	@Override
 	public boolean isRecipeValid(@Nonnull FuelRecipe recipe) {
-		return recipe.getInputs().size() > 0 && recipe.getOutputs().size() == 0;
+		if (recipe.getInputs().isEmpty()) {
+			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			Log.error("Recipe has no inputs. {}", recipeInfo);
+		}
+		if (!recipe.getOutputs().isEmpty()) {
+			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			Log.error("Fuel Recipe should not have outputs. {}", recipeInfo);
+		}
+		return true;
 	}
 }

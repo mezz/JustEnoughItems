@@ -6,6 +6,8 @@ import java.util.List;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 
 public class ItemDescriptionRecipeHandler implements IRecipeHandler<ItemDescriptionRecipe> {
 	@Nonnull
@@ -29,6 +31,10 @@ public class ItemDescriptionRecipeHandler implements IRecipeHandler<ItemDescript
 	@Override
 	public boolean isRecipeValid(@Nonnull ItemDescriptionRecipe recipe) {
 		List<String> description = recipe.getDescription();
-		return description.size() > 0;
+		if (description.isEmpty()) {
+			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			Log.error("Recipe has no description text. {}", recipeInfo);
+		}
+		return true;
 	}
 }
