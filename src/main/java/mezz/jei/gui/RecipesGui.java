@@ -1,5 +1,6 @@
 package mezz.jei.gui;
 
+import mezz.jei.api.IRecipesGui;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.Constants;
@@ -7,6 +8,7 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.InputHandler;
 import mezz.jei.transfer.RecipeTransferUtil;
+import mezz.jei.util.Log;
 import mezz.jei.util.StringUtil;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -16,7 +18,9 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
 import org.lwjgl.input.Mouse;
@@ -28,7 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
+public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFocuses {
 	private static final int borderPadding = 6;
 	private static final int textPadding = 5;
 	private static final int buttonWidth = 13;
@@ -254,21 +258,45 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 		}
 	}
 
+	public boolean isOpen() {
+		return mc.currentScreen == this;
+	}
+
 	private void open() {
-		if (mc.currentScreen != this) {
+		if (!isOpen()) {
 			parentScreen = mc.currentScreen;
 		}
 		mc.displayGuiScreen(this);
 	}
 
-	private void close() {
-		if (parentScreen != null) {
-			mc.displayGuiScreen(parentScreen);
-			parentScreen = null;
-		} else {
-			mc.thePlayer.closeScreen();
+	public void close() {
+		if (isOpen()) {
+			if (parentScreen != null) {
+				mc.displayGuiScreen(parentScreen);
+				parentScreen = null;
+			} else {
+				mc.thePlayer.closeScreen();
+			}
+			logic.clearHistory();
 		}
-		logic.clearHistory();
+	}
+
+	@Override
+	public void showRecipes(@Nullable ItemStack focus) {
+		if (focus == null) {
+			Log.error("Null focus", new NullPointerException());
+			return;
+		}
+		showRecipes(new Focus(focus));
+	}
+
+	@Override
+	public void showRecipes(@Nullable Fluid focus) {
+		if (focus == null) {
+			Log.error("Null focus", new NullPointerException());
+			return;
+		}
+		showRecipes(new Focus(focus));
 	}
 
 	public void showRecipes(@Nonnull Focus focus) {
@@ -278,6 +306,24 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 		}
 	}
 
+	@Override
+	public void showUses(@Nullable ItemStack focus) {
+		if (focus == null) {
+			Log.error("Null focus", new NullPointerException());
+			return;
+		}
+		showUses(new Focus(focus));
+	}
+
+	@Override
+	public void showUses(@Nullable Fluid focus) {
+		if (focus == null) {
+			Log.error("Null focus", new NullPointerException());
+			return;
+		}
+		showUses(new Focus(focus));
+	}
+
 	public void showUses(@Nonnull Focus focus) {
 		focus.setMode(Focus.Mode.INPUT);
 		if (logic.setFocus(focus)) {
@@ -285,7 +331,16 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 		}
 	}
 
-	public void showCategories(@Nonnull List<String> recipeCategoryUids) {
+	@Override
+	public void showCategories(@Nullable List<String> recipeCategoryUids) {
+		if (recipeCategoryUids == null) {
+			Log.error("Null recipeCategoryUids", new NullPointerException());
+			return;
+		}
+		if (recipeCategoryUids.isEmpty()) {
+			Log.error("Empty recipeCategoryUids", new IllegalArgumentException());
+			return;
+		}
 		if (logic.setCategoryFocus(recipeCategoryUids)) {
 			open();
 		}

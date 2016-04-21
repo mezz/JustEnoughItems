@@ -9,4 +9,10 @@ public interface IJeiRuntime {
 
 	@Nonnull
 	IItemListOverlay getItemListOverlay();
+
+	/**
+	 * @since JEI 3.2.12
+	 */
+	@Nonnull
+	IRecipesGui getRecipesGui();
 }

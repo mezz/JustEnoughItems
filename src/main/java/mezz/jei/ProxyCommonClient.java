@@ -7,6 +7,7 @@ import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.SessionData;
 import mezz.jei.gui.ItemListOverlay;
+import mezz.jei.gui.RecipesGui;
 import mezz.jei.network.packets.PacketJEI;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
@@ -44,7 +45,6 @@ import java.util.List;
 public class ProxyCommonClient extends ProxyCommon {
 	@Nullable
 	private ItemFilter itemFilter;
-	private GuiEventHandler guiEventHandler;
 	private List<IModPlugin> plugins;
 
 	private static void initVersionChecker() {
@@ -110,7 +110,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		KeyBindings.init();
 		MinecraftForge.EVENT_BUS.register(this);
 
-		guiEventHandler = new GuiEventHandler();
+		GuiEventHandler guiEventHandler = new GuiEventHandler();
 		MinecraftForge.EVENT_BUS.register(guiEventHandler);
 
 		fixVanillaItemHasSubtypes();
@@ -172,9 +172,9 @@ public class ProxyCommonClient extends ProxyCommon {
 
 		itemFilter = new ItemFilter(itemRegistry);
 		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter, advancedGuiHandlers);
-		guiEventHandler.setItemListOverlay(itemListOverlay);
+		RecipesGui recipesGui = new RecipesGui();
 
-		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, itemListOverlay);
+		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, itemListOverlay, recipesGui);
 		Internal.setRuntime(jeiRuntime);
 
 		iterator = plugins.iterator();

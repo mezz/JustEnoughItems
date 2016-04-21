@@ -21,25 +21,17 @@ public class GuiEventHandler {
 	@Nonnull
 	private static final String showRecipesText = Translator.translateToLocal("jei.tooltip.show.recipes");
 	@Nullable
-	private ItemListOverlay itemListOverlay;
-	@Nullable
 	private InputHandler inputHandler;
 	@Nullable
 	private GuiContainer previousGui = null;
 
-	public void setItemListOverlay(@Nullable ItemListOverlay itemListOverlay) {
-		if (this.itemListOverlay != null && this.itemListOverlay.isOpen()) {
-			this.itemListOverlay.close();
-		}
-
-		this.itemListOverlay = itemListOverlay;
-	}
-
 	@SubscribeEvent
 	public void onGuiInit(@Nonnull GuiScreenEvent.InitGuiEvent.Post event) {
-		if (itemListOverlay == null) {
+		JeiRuntime runtime = Internal.getRuntime();
+		if (runtime == null) {
 			return;
 		}
+		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
 
 		GuiScreen gui = event.getGui();
 		if (gui instanceof GuiContainer) {
@@ -53,9 +45,11 @@ public class GuiEventHandler {
 	
 	@SubscribeEvent
 	public void onGuiOpen(@Nonnull GuiOpenEvent event) {
-		if (itemListOverlay == null) {
+		JeiRuntime runtime = Internal.getRuntime();
+		if (runtime == null) {
 			return;
 		}
+		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
 
 		GuiScreen gui = event.getGui();
 		if (gui instanceof GuiContainer) {
@@ -75,7 +69,13 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onDrawBackgroundEventPost(@Nonnull GuiScreenEvent.BackgroundDrawnEvent event) {
-		if (itemListOverlay != null && itemListOverlay.isOpen()) {
+		JeiRuntime runtime = Internal.getRuntime();
+		if (runtime == null) {
+			return;
+		}
+
+		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
+		if (itemListOverlay.isOpen()) {
 			GuiScreen gui = event.getGui();
 			itemListOverlay.updateGui(gui);
 			itemListOverlay.drawScreen(gui.mc, event.getMouseX(), event.getMouseY());
@@ -84,7 +84,8 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onDrawScreenEventPost(@Nonnull GuiScreenEvent.DrawScreenEvent.Post event) {
-		if (itemListOverlay == null) {
+		JeiRuntime runtime = Internal.getRuntime();
+		if (runtime == null) {
 			return;
 		}
 
@@ -97,6 +98,7 @@ public class GuiEventHandler {
 			}
 		}
 
+		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
 		if (itemListOverlay.isOpen()) {
 			itemListOverlay.drawTooltips(gui.mc, event.getMouseX(), event.getMouseY());
 		}
@@ -104,10 +106,16 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onClientTick(@Nonnull TickEvent.ClientTickEvent event) {
-		if (itemListOverlay == null || event.phase == TickEvent.Phase.END) {
+		JeiRuntime runtime = Internal.getRuntime();
+		if (runtime == null) {
 			return;
 		}
 
+		if (event.phase == TickEvent.Phase.END) {
+			return;
+		}
+
+		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
 		if (itemListOverlay.isOpen()) {
 			itemListOverlay.handleTick();
 		}

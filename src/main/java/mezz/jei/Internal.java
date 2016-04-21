@@ -27,6 +27,9 @@ public class Internal {
 	}
 
 	public static void setRuntime(JeiRuntime runtime) {
+		if (Internal.runtime != null) {
+			Internal.runtime.close();
+		}
 		Internal.runtime = runtime;
 	}
 
