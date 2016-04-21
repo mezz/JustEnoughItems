@@ -166,8 +166,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		}
 
 		if (titleHoverChecker.checkHover(mouseX, mouseY)) {
-			Focus focus = logic.getFocus();
-			if (focus != null && !focus.isBlank()) {
+			if (!logic.hasAllCategories()) {
 				String showAllRecipesString = Translator.translateToLocal("jei.tooltip.show.all.recipes");
 				TooltipRenderer.drawHoveringText(mc, showAllRecipesString, mouseX, mouseY);
 			}

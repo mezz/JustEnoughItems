@@ -1,10 +1,10 @@
 package mezz.jei.gui;
 
+import mezz.jei.api.recipe.IRecipeCategory;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-
-import mezz.jei.api.recipe.IRecipeCategory;
 
 public interface IRecipeGuiLogic {
 
@@ -14,6 +14,8 @@ public interface IRecipeGuiLogic {
 	void setRecipesPerPage(int recipesPerPage);
 
 	boolean hasMultipleCategories();
+
+	boolean hasAllCategories();
 
 	void previousRecipeCategory();
 

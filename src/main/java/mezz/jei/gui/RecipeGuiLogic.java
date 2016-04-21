@@ -1,17 +1,6 @@
 package mezz.jei.gui;
 
 import com.google.common.collect.ImmutableList;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Stack;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.inventory.Container;
-
 import mezz.jei.Internal;
 import mezz.jei.RecipeRegistry;
 import mezz.jei.api.IRecipeRegistry;
@@ -20,6 +9,15 @@ import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.util.Log;
 import mezz.jei.util.MathUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.inventory.Container;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Stack;
 
 public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private static class State {
@@ -303,5 +301,10 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	@Override
 	public boolean hasMultipleCategories() {
 		return state != null && state.recipeCategories.size() > 1;
+	}
+
+	@Override
+	public boolean hasAllCategories() {
+		return state != null && state.recipeCategories.size() == Internal.getRuntime().getRecipeRegistry().getRecipeCategories().size();
 	}
 }
