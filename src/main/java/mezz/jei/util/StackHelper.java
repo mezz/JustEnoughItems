@@ -320,7 +320,7 @@ public class StackHelper implements IStackHelper {
 
 	@Nonnull
 	public String getModId(@Nonnull Item item) {
-		ResourceLocation itemName = Item.itemRegistry.getNameForObject(item);
+		ResourceLocation itemName = Item.REGISTRY.getNameForObject(item);
 		if (itemName == null) {
 			throw new NullPointerException("Item.itemRegistry.getNameForObject returned null for: " + item.getClass());
 		}
@@ -347,7 +347,7 @@ public class StackHelper implements IStackHelper {
 			throw new NullPointerException("Found an itemStack with a null item. This is an error from another mod.");
 		}
 
-		ResourceLocation itemName = Item.itemRegistry.getNameForObject(item);
+		ResourceLocation itemName = Item.REGISTRY.getNameForObject(item);
 		if (itemName == null) {
 			throw new NullPointerException("Item.itemRegistry.getNameForObject returned null for: " + item.getClass());
 		}

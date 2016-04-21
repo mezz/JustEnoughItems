@@ -98,8 +98,8 @@ public class GuiItemStackFastList {
 		TextureManager textureManager = minecraft.getTextureManager();
 		renderItem.zLevel += 50.0F;
 
-		textureManager.bindTexture(TextureMap.locationBlocksTexture);
-		textureManager.getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(false, false);
+		textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.enableAlpha();
 		GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
@@ -128,8 +128,8 @@ public class GuiItemStackFastList {
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.disableLighting();
 
-		textureManager.bindTexture(TextureMap.locationBlocksTexture);
-		textureManager.getTexture(TextureMap.locationBlocksTexture).restoreLastBlurMipmap();
+		textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
 
 		renderItem.zLevel -= 50.0F;
 

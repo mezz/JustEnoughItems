@@ -59,7 +59,7 @@ public class ItemStackElement {
 		Item item = itemStack.getItem();
 
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-		ResourceLocation itemResourceLocation = Item.itemRegistry.getNameForObject(item);
+		ResourceLocation itemResourceLocation = Item.REGISTRY.getNameForObject(item);
 		String modId = itemResourceLocation.getResourceDomain().toLowerCase(Locale.ENGLISH);
 		String modName = Internal.getItemRegistry().getModNameForItem(item).toLowerCase(Locale.ENGLISH);
 

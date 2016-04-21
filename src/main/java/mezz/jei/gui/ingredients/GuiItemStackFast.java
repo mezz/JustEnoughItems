@@ -136,7 +136,7 @@ public class GuiItemStackFast {
 		GlStateManager.blendFunc(770, 771);
 		GlStateManager.depthFunc(515);
 		GlStateManager.depthMask(true);
-		textureManager.bindTexture(TextureMap.locationBlocksTexture);
+		textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 	}
 
 	public void renderSlow() {
