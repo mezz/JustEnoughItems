@@ -57,7 +57,7 @@ public class PacketHandler {
 				}
 			}
 
-			checkThreadAndEnqueue(packet, packetBuffer, player, player.getServerForPlayer());
+			checkThreadAndEnqueue(packet, packetBuffer, player, player.getServer());
 		} catch (RuntimeException ex) {
 			Log.error("Packet error", ex);
 		}

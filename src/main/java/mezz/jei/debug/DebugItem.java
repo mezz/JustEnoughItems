@@ -13,7 +13,7 @@ public class DebugItem extends Item {
 
 	public DebugItem(String name) {
 		setUnlocalizedName(name);
-		setCreativeTab(CreativeTabs.tabAllSearch);
+		setCreativeTab(CreativeTabs.SEARCH);
 		setMaxDamage(MAX_DAMAGE);
 		setHasSubtypes(true);
 	}

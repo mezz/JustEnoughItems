@@ -84,8 +84,8 @@ public class DebugRecipeCategory extends BlankRecipeCategory {
 
 		guiItemStacks.init(0, false, 70, 0);
 		guiItemStacks.init(1, true, 110, 0);
-		guiItemStacks.set(0, new ItemStack(Items.water_bucket));
-		guiItemStacks.set(1, new ItemStack(Items.lava_bucket));
+		guiItemStacks.set(0, new ItemStack(Items.WATER_BUCKET));
+		guiItemStacks.set(1, new ItemStack(Items.LAVA_BUCKET));
 
 		IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
 		guiFluidStacks.addTooltipCallback(new ITooltipCallback<FluidStack>() {

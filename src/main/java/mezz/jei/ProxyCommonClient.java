@@ -119,11 +119,11 @@ public class ProxyCommonClient extends ProxyCommon {
 	/** fix vanilla items that don't mark themselves as having subtypes */
 	private static void fixVanillaItemHasSubtypes() {
 		List<Item> items = Arrays.asList(
-				Items.potionitem,
-				Items.lingering_potion,
-				Items.splash_potion,
-				Items.tipped_arrow,
-				Items.enchanted_book
+				Items.POTIONITEM,
+				Items.LINGERING_POTION,
+				Items.SPLASH_POTION,
+				Items.TIPPED_ARROW,
+				Items.ENCHANTED_BOOK
 		);
 		for (Item item : items) {
 			item.setHasSubtypes(true);

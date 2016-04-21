@@ -37,7 +37,7 @@ public class Commands {
 		List<String> commandStrings = new ArrayList<>();
 		commandStrings.add("/give");
 		commandStrings.add(senderName);
-		commandStrings.add(Item.itemRegistry.getNameForObject(itemStack.getItem()).toString());
+		commandStrings.add(Item.REGISTRY.getNameForObject(itemStack.getItem()).toString());
 		commandStrings.add(String.valueOf(amount));
 		commandStrings.add(String.valueOf(itemStack.getMetadata()));
 
@@ -58,11 +58,11 @@ public class Commands {
 				JustEnoughItems.getProxy().sendPacketToServer(packet);
 			} else {
 				ITextComponent errorMessage = new TextComponentTranslation("jei.chat.error.command.too.long");
-				errorMessage.getChatStyle().setColor(TextFormatting.RED);
+				errorMessage.getStyle().setColor(TextFormatting.RED);
 				sender.addChatComponentMessage(errorMessage);
 
 				ITextComponent chatMessageComponent = new TextComponentString(chatMessage);
-				chatMessageComponent.getChatStyle().setColor(TextFormatting.RED);
+				chatMessageComponent.getStyle().setColor(TextFormatting.RED);
 				sender.addChatComponentMessage(chatMessageComponent);
 			}
 		}

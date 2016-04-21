@@ -40,12 +40,12 @@ public class JEIInternalPlugin extends BlankModPlugin {
 
 		if (Config.isDebugModeEnabled()) {
 			registry.addDescription(Arrays.asList(
-					new ItemStack(Items.oak_door),
-					new ItemStack(Items.spruce_door),
-					new ItemStack(Items.birch_door),
-					new ItemStack(Items.jungle_door),
-					new ItemStack(Items.acacia_door),
-					new ItemStack(Items.dark_oak_door)
+					new ItemStack(Items.OAK_DOOR),
+					new ItemStack(Items.SPRUCE_DOOR),
+					new ItemStack(Items.BIRCH_DOOR),
+					new ItemStack(Items.JUNGLE_DOOR),
+					new ItemStack(Items.ACACIA_DOOR),
+					new ItemStack(Items.DARK_OAK_DOOR)
 					),
 					"description.jei.wooden.door.1", // actually 2 lines
 					"description.jei.wooden.door.2",

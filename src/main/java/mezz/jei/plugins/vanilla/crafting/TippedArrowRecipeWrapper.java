@@ -19,14 +19,14 @@ public class TippedArrowRecipeWrapper extends BlankRecipeWrapper implements ISha
 	private final List<ItemStack> outputs;
 
 	public TippedArrowRecipeWrapper(@Nonnull PotionType type) {
-		ItemStack arrowStack = new ItemStack(Items.arrow);
-		ItemStack lingeringPotion = PotionUtils.addPotionToItemStack(new ItemStack(Items.lingering_potion), type);
+		ItemStack arrowStack = new ItemStack(Items.ARROW);
+		ItemStack lingeringPotion = PotionUtils.addPotionToItemStack(new ItemStack(Items.LINGERING_POTION), type);
 		this.inputs = Arrays.asList(
 				arrowStack, arrowStack, arrowStack,
 				arrowStack, lingeringPotion, arrowStack,
 				arrowStack, arrowStack, arrowStack
 		);
-		ItemStack outputStack = new ItemStack(Items.tipped_arrow, 8);
+		ItemStack outputStack = new ItemStack(Items.TIPPED_ARROW, 8);
 		PotionUtils.addPotionToItemStack(outputStack, type);
 		this.outputs = Collections.singletonList(outputStack);
 	}

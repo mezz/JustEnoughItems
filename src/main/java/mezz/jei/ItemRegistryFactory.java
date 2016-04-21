@@ -43,7 +43,7 @@ public class ItemRegistryFactory {
 	public ItemRegistry createItemRegistry() {
 		final ModList modList = new ModList();
 
-		for (CreativeTabs creativeTab : CreativeTabs.creativeTabArray) {
+		for (CreativeTabs creativeTab : CreativeTabs.CREATIVE_TAB_ARRAY) {
 			List<ItemStack> creativeTabItemStacks = new ArrayList<>();
 			try {
 				creativeTab.displayAllRelevantItems(creativeTabItemStacks);
@@ -61,10 +61,10 @@ public class ItemRegistryFactory {
 			}
 		}
 
-		for (Block block : Block.blockRegistry) {
+		for (Block block : Block.REGISTRY) {
 			addBlockAndSubBlocks(block);
 		}
-		for (Item item : Item.itemRegistry) {
+		for (Item item : Item.REGISTRY) {
 			addItemAndSubItems(item);
 		}
 

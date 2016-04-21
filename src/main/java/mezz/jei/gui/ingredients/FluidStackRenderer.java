@@ -96,7 +96,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 			scaledAmount = height;
 		}
 
-		minecraft.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
+		minecraft.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		setGLColorFromInt(fluidColor);
 
 		final int xTileCount = width / TEX_WIDTH;

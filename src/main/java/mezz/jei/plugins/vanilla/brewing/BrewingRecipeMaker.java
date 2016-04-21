@@ -49,7 +49,7 @@ public class BrewingRecipeMaker {
 	private static void addVanillaBrewingRecipes(IItemRegistry itemRegistry, Collection<BrewingRecipeWrapper> recipes) {
 		ImmutableList<ItemStack> potionIngredients = itemRegistry.getPotionIngredients();
 		List<ItemStack> knownPotions = new ArrayList<>();
-		ItemStack waterBottle = PotionUtils.addPotionToItemStack(new ItemStack(Items.potionitem), PotionTypes.water);
+		ItemStack waterBottle = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionTypes.WATER);
 		knownPotions.add(waterBottle);
 
 		int brewingStep = 1;
@@ -78,7 +78,7 @@ public class BrewingRecipeMaker {
 
 				if (potionInput.getItem() == potionOutput.getItem()) {
 					PotionType potionOutputType = PotionUtils.getPotionFromItem(potionOutput);
-					if (potionOutputType == PotionTypes.water) {
+					if (potionOutputType == PotionTypes.WATER) {
 						continue;
 					}
 
