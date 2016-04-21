@@ -2,6 +2,8 @@ package mezz.jei.plugins.vanilla.crafting;
 
 import javax.annotation.Nonnull;
 
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
 
@@ -32,6 +34,8 @@ public class ShapedRecipesHandler implements IRecipeHandler<ShapedRecipes> {
 	@Override
 	public boolean isRecipeValid(@Nonnull ShapedRecipes recipe) {
 		if (recipe.getRecipeOutput() == null) {
+			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			Log.error("Recipe has no outputs. {}", recipeInfo);
 			return false;
 		}
 		int inputCount = 0;
@@ -40,6 +44,16 @@ public class ShapedRecipesHandler implements IRecipeHandler<ShapedRecipes> {
 				inputCount++;
 			}
 		}
-		return inputCount > 0;
+		if (inputCount > 9) {
+			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			Log.error("Recipe has too many inputs. {}", recipeInfo);
+			return false;
+		}
+		if (inputCount == 0) {
+			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			Log.error("Recipe has no inputs. {}", recipeInfo);
+			return false;
+		}
+		return true;
 	}
 }

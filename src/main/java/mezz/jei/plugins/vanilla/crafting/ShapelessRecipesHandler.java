@@ -4,6 +4,8 @@ import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 
@@ -38,6 +40,8 @@ public class ShapelessRecipesHandler implements IRecipeHandler<ShapelessRecipes>
 	@Override
 	public boolean isRecipeValid(@Nonnull ShapelessRecipes recipe) {
 		if (recipe.getRecipeOutput() == null) {
+			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			Log.error("Recipe has no output. {}", recipeInfo);
 			return false;
 		}
 		int inputCount = 0;
@@ -45,8 +49,15 @@ public class ShapelessRecipesHandler implements IRecipeHandler<ShapelessRecipes>
 			if (input instanceof ItemStack) {
 				inputCount++;
 			} else {
+				String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+				Log.error("Recipe has an input that is not an ItemStack. {}", recipeInfo);
 				return false;
 			}
+		}
+		if (inputCount > 9) {
+			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			Log.error("Recipe has too many inputs. {}", recipeInfo);
+			return false;
 		}
 		return inputCount > 0;
 	}

@@ -5,6 +5,8 @@ import javax.annotation.Nonnull;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 
 public class BrewingRecipeHandler implements IRecipeHandler<BrewingRecipeWrapper> {
 	@Nonnull
@@ -27,6 +29,14 @@ public class BrewingRecipeHandler implements IRecipeHandler<BrewingRecipeWrapper
 
 	@Override
 	public boolean isRecipeValid(@Nonnull BrewingRecipeWrapper recipe) {
-		return recipe.getInputs().size() == 4 && recipe.getOutputs().size() == 1;
+		if (recipe.getInputs().size() != 4) {
+			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			Log.error("Recipe has the wrong number of inputs (needs 4). {}", recipeInfo);
+		}
+		if (recipe.getOutputs().size() != 1) {
+			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			Log.error("Recipe has the wrong number of outputs (needs 1). {}", recipeInfo);
+		}
+		return true;
 	}
 }
