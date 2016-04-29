@@ -103,7 +103,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			this.backgroundTexture = recipeBackgroundResource;
 		}
 
-		this.recipeCategoryCraftItemBox = Internal.getHelpers().getGuiHelper().createDrawable(recipeBackgroundResource, 215, 0, 28, 24);
+		this.recipeCategoryCraftItemBox = Internal.getHelpers().getGuiHelper().createDrawable(recipeBackgroundResource, 215, 0, 28, 25);
 
 		this.guiLeft = (width - this.xSize) / 2;
 		this.guiTop = (height - this.ySize) / 2;
@@ -212,7 +212,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			return null;
 		}
 		int x = guiLeft + ((xSize - recipeCategoryCraftItemBox.getWidth()) / 2);
-		int y = guiTop - recipeCategoryCraftItemBox.getHeight();
+		int y = guiTop - recipeCategoryCraftItemBox.getHeight() + 3;
 		return new Rectangle(x, y, recipeCategoryCraftItemBox.getWidth(), recipeCategoryCraftItemBox.getHeight());
 	}
 
