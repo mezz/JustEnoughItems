@@ -143,7 +143,8 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		int x = xPosition + xOffset + padding;
 		int y = yPosition + yOffset + padding;
 		GlStateManager.disableLighting();
-		GuiScreen.drawRect(x, y, x + width - padding * 2, y + height - padding * 2, color.getRGB());
+		drawRect(x, y, x + width - padding * 2, y + height - padding * 2, color.getRGB());
+		GlStateManager.color(1f, 1f, 1f, 1f);
 	}
 
 	private void drawTooltip(@Nonnull Minecraft minecraft, int xOffset, int yOffset, int mouseX, int mouseY, @Nonnull T value) {
@@ -156,6 +157,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 					xOffset + xPosition + width - padding,
 					yOffset + yPosition + height - padding,
 					0x7FFFFFFF);
+			GlStateManager.color(1f, 1f, 1f, 1f);
 
 			List<String> tooltip = ingredientRenderer.getTooltip(minecraft, value);
 

@@ -42,6 +42,7 @@ public abstract class AbstractShapelessRecipeWrapper extends VanillaRecipeWrappe
 
 			GlStateManager.pushMatrix();
 			GlStateManager.scale(shapelessIconScale, shapelessIconScale, 1.0);
+			GlStateManager.color(1f, 1f, 1f, 1f);
 			shapelessIcon.draw(minecraft, (int) (shapelessIconX / shapelessIconScale), 0);
 			GlStateManager.popMatrix();
 		}

@@ -166,12 +166,15 @@ public class GuiItemStackFast {
 
 		if (Config.isItemOnConfigBlacklist(itemStack, Config.ItemBlacklistType.ITEM)) {
 			GuiScreen.drawRect(area.x + padding, area.y + padding, area.x + 8 + padding, area.y + 16 + padding, blacklistItemColor);
+			GlStateManager.color(1f, 1f, 1f, 1f);
 		}
 		if (Config.isItemOnConfigBlacklist(itemStack, Config.ItemBlacklistType.WILDCARD)) {
 			GuiScreen.drawRect(area.x + 8 + padding, area.y + padding, area.x + 16 + padding, area.y + 16 + padding, blacklistWildColor);
+			GlStateManager.color(1f, 1f, 1f, 1f);
 		}
 		if (Config.isItemOnConfigBlacklist(itemStack, Config.ItemBlacklistType.MOD_ID)) {
 			GuiScreen.drawRect(area.x + padding, area.y + 8 + padding, area.x + 16 + padding, area.y + 16 + padding, blacklistModColor);
+			GlStateManager.color(1f, 1f, 1f, 1f);
 		}
 	}
 
@@ -195,6 +198,7 @@ public class GuiItemStackFast {
 
 		GlStateManager.disableDepth();
 		Gui.drawRect(area.x, area.y, area.x + area.width, area.y + area.height, 0x7FFFFFFF);
+		GlStateManager.color(1f, 1f, 1f, 1f);
 		GlStateManager.enableDepth();
 	}
 
