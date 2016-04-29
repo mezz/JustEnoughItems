@@ -1,9 +1,11 @@
 package mezz.jei.gui;
 
 import mezz.jei.api.recipe.IRecipeCategory;
+import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 
 public interface IRecipeGuiLogic {
@@ -42,6 +44,9 @@ public interface IRecipeGuiLogic {
 
 	@Nullable
 	IRecipeCategory getRecipeCategory();
+
+	@Nonnull
+	Collection<ItemStack> getRecipeCategoryCraftingItems();
 
 	@Nonnull
 	List<RecipeLayout> getRecipeWidgets(int posX, int posY, int spacingY);

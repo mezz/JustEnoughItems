@@ -59,6 +59,17 @@ public interface IModRegistry {
 	void addRecipeClickArea(@Nonnull Class<? extends GuiContainer> guiContainerClass, int xPos, int yPos, int width, int height, @Nonnull String... recipeCategoryUids);
 
 	/**
+	 * Add an association between an item and what it can craft. (i.e. Furnace ItemStack -> Smelting and Fuel Recipes)
+	 * Allows players to see what item they need to craft in order to make recipes in that recipe category.
+	 *
+	 * @param craftingItem the item that can craft recipes (like a furnace or crafting table item)
+	 * @param recipeCategoryUids the recipe categories handled by the item
+	 *
+	 * @since JEI 3.3.0
+	 */
+	void addRecipeCategoryCraftingItem(@Nonnull ItemStack craftingItem, @Nonnull String... recipeCategoryUids);
+
+	/**
 	 * Add a handler to give JEI extra information about how to layout the item list next to a specific type of GuiContainer.
 	 * Used for guis with tabs on the side that would normally intersect with JEI's item list.
 	 */

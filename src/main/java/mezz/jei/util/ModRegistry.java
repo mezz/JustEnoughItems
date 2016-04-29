@@ -32,7 +32,7 @@ public class ModRegistry implements IModRegistry {
 	private final List<Object> recipes = new ArrayList<>();
 	private final RecipeTransferRegistry recipeTransferRegistry = new RecipeTransferRegistry();
 	private final Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas = HashMultimap.create();
-
+	private final Multimap<String, ItemStack> craftItemsForCategories = HashMultimap.create();
 
 	public ModRegistry(@Nonnull IJeiHelpers jeiHelpers, @Nonnull IItemRegistry itemRegistry) {
 		this.jeiHelpers = jeiHelpers;
@@ -75,6 +75,13 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
+	public void addRecipeCategoryCraftingItem(@Nonnull ItemStack craftingItem, @Nonnull String... recipeCategoryUids) {
+		for (String recipeCategoryUid : recipeCategoryUids) {
+			this.craftItemsForCategories.put(recipeCategoryUid, craftingItem);
+		}
+	}
+
+	@Override
 	public void addAdvancedGuiHandlers(@Nonnull IAdvancedGuiHandler<?>... advancedGuiHandlers) {
 		Collections.addAll(this.advancedGuiHandlers, advancedGuiHandlers);
 	}
@@ -113,6 +120,6 @@ public class ModRegistry implements IModRegistry {
 	@Nonnull
 	public RecipeRegistry createRecipeRegistry() {
 		List<IRecipeTransferHandler> recipeTransferHandlers = recipeTransferRegistry.getRecipeTransferHandlers();
-		return new RecipeRegistry(recipeCategories, recipeHandlers, recipeTransferHandlers, recipes, recipeClickableAreas);
+		return new RecipeRegistry(recipeCategories, recipeHandlers, recipeTransferHandlers, recipes, recipeClickableAreas, craftItemsForCategories);
 	}
 }

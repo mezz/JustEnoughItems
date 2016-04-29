@@ -3,6 +3,7 @@ package mezz.jei.gui;
 import com.google.common.collect.ImmutableList;
 import mezz.jei.Internal;
 import mezz.jei.RecipeRegistry;
+import mezz.jei.api.IModRegistry;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
@@ -11,10 +12,12 @@ import mezz.jei.util.Log;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Container;
+import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
@@ -49,6 +52,14 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	/** List of recipes for the currently selected recipeClass */
 	@Nonnull
 	private List<Object> recipes = Collections.emptyList();
+
+	/**
+	 * List of items that can craft recipes from the current recipe category
+	 *
+	 * @see IModRegistry#addRecipeCategoryCraftingItem(ItemStack, String...)
+	 */
+	@Nonnull
+	private Collection<ItemStack> recipeCategoryCraftingItems = Collections.emptyList();
 
 	private int recipesPerPage = 0;
 
@@ -162,6 +173,12 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
+	@Nonnull
+	public Collection<ItemStack> getRecipeCategoryCraftingItems() {
+		return recipeCategoryCraftingItems;
+	}
+
+	@Override
 	public void setRecipesPerPage(int recipesPerPage) {
 		if (state == null) {
 			return;
@@ -183,8 +200,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		final IRecipeCategory recipeCategory = getRecipeCategory();
 		if (recipeCategory == null) {
 			recipes = Collections.emptyList();
+			recipeCategoryCraftingItems = Collections.emptyList();
 		} else {
 			recipes = state.focus.getRecipes(recipeCategory);
+			IRecipeRegistry recipeRegistry = Internal.getRuntime().getRecipeRegistry();
+			recipeCategoryCraftingItems = recipeRegistry.getCraftingItems(recipeCategory);
 		}
 	}
 

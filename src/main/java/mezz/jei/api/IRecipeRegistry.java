@@ -1,15 +1,14 @@
 package mezz.jei.api;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
-
-import net.minecraft.item.ItemStack;
-
-import net.minecraftforge.fluids.Fluid;
-
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * The IRecipeManager offers several functions for retrieving and handling recipes.
@@ -65,6 +64,15 @@ public interface IRecipeRegistry {
 	/** Returns an unmodifiable list of Recipes in recipeCategory */
 	@Nonnull
 	List<Object> getRecipes(@Nonnull IRecipeCategory recipeCategory);
+
+	/**
+	 * Returns an unmodifiable collection of ItemStacks that can craft recipes from recipeCategory.
+	 * These are registered with {@link IModRegistry#addRecipeCategoryCraftingItem(ItemStack, String...)}.
+	 *
+	 * @since JEI 3.3.0
+	 */
+	@Nonnull
+	Collection<ItemStack> getCraftingItems(@Nonnull IRecipeCategory recipeCategory);
 
 	/**
 	 * Add a new recipe while the game is running.

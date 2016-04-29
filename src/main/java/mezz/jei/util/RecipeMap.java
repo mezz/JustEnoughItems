@@ -6,6 +6,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Table;
+import mezz.jei.Internal;
+import mezz.jei.api.recipe.IRecipeCategory;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -13,14 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import net.minecraft.item.ItemStack;
-
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-
-import mezz.jei.Internal;
-import mezz.jei.api.recipe.IRecipeCategory;
 
 /**
  * A RecipeMap efficiently links Recipes, IRecipeCategory, and ItemStacks.
@@ -53,7 +50,7 @@ public class RecipeMap {
 		return recipeCategoryOrdering.immutableSortedCopy(categoryMap.get(key));
 	}
 
-	private void addRecipeCategory(@Nonnull IRecipeCategory recipeCategory, @Nonnull ItemStack itemStack) {
+	public void addRecipeCategory(@Nonnull IRecipeCategory recipeCategory, @Nonnull ItemStack itemStack) {
 		String stackKey = Internal.getStackHelper().getUniqueIdentifierForStack(itemStack);
 		List<IRecipeCategory> recipeCategories = categoryMap.get(stackKey);
 		if (!recipeCategories.contains(recipeCategory)) {
