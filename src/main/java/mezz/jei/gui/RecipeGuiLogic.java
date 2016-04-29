@@ -202,9 +202,9 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			recipes = Collections.emptyList();
 			recipeCategoryCraftingItems = Collections.emptyList();
 		} else {
-			recipes = state.focus.getRecipes(recipeCategory);
-			IRecipeRegistry recipeRegistry = Internal.getRuntime().getRecipeRegistry();
-			recipeCategoryCraftingItems = recipeRegistry.getCraftingItems(recipeCategory);
+			Focus focus = state.focus;
+			recipes = focus.getRecipes(recipeCategory);
+			recipeCategoryCraftingItems = focus.getRecipeCategoryCraftingItems(recipeCategory);
 		}
 	}
 

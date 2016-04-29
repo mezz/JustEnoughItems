@@ -5,8 +5,11 @@ import com.google.common.collect.ImmutableSet;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+import mezz.jei.util.StackHelper;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -156,6 +159,20 @@ public class Focus {
 		} else {
 			return recipeRegistry.getRecipes(recipeCategory);
 		}
+	}
+
+	@Nonnull
+	public Collection<ItemStack> getRecipeCategoryCraftingItems(@Nonnull IRecipeCategory recipeCategory) {
+		IRecipeRegistry recipeRegistry = Internal.getRuntime().getRecipeRegistry();
+		Collection<ItemStack> craftingItems = recipeRegistry.getCraftingItems(recipeCategory);
+		if (stack != null && mode == Mode.INPUT) {
+			StackHelper stackHelper = Internal.getStackHelper();
+			ItemStack matchingStack = stackHelper.containsStack(craftingItems, stack);
+			if (matchingStack != null) {
+				return Collections.singletonList(matchingStack);
+			}
+		}
+		return craftingItems;
 	}
 
 	@Nonnull

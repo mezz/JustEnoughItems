@@ -57,6 +57,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	private String title;
 	private ResourceLocation backgroundTexture;
 	private IDrawable recipeCategoryCraftItemBox;
+	private final GuiItemStackGroup recipeCategoryCraftingItem = new GuiItemStackGroup();
 	private HoverChecker titleHoverChecker;
 
 	private GuiButton nextRecipeCategory;
@@ -180,10 +181,6 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 				recipeCategoryCraftItemBox.draw(mc, recipeCraftingItemArea.x, recipeCraftingItemArea.y);
 				GlStateManager.disableAlpha();
 
-				GuiItemStackGroup recipeCategoryCraftingItem = new GuiItemStackGroup();
-				recipeCategoryCraftingItem.init(0, true, recipeCraftingItemArea.x + 5, recipeCraftingItemArea.y + 5);
-				recipeCategoryCraftingItem.set(0, recipeCategoryCraftingItems);
-
 				RenderHelper.enableGUIStandardItemLighting();
 				hoveredItemStack = recipeCategoryCraftingItem.draw(mc, 0, 0, mouseX, mouseY);
 				RenderHelper.disableStandardItemLighting();
@@ -235,15 +232,9 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	public Focus getFocusUnderMouse(int mouseX, int mouseY) {
 		Rectangle recipeCraftingItemArea = getRecipeCraftingItemArea();
 		if (recipeCraftingItemArea != null && recipeCraftingItemArea.contains(mouseX, mouseY)) {
-			Collection<ItemStack> recipeCategoryCraftingItems = logic.getRecipeCategoryCraftingItems();
-			if (!recipeCategoryCraftingItems.isEmpty()) {
-				GuiItemStackGroup recipeCategoryCraftingItem = new GuiItemStackGroup();
-				recipeCategoryCraftingItem.init(0, true, recipeCraftingItemArea.x + 5, recipeCraftingItemArea.y + 5);
-				recipeCategoryCraftingItem.set(0, recipeCategoryCraftingItems);
-				Focus focus = recipeCategoryCraftingItem.getFocusUnderMouse(0, 0, mouseX, mouseY);
-				if (focus != null) {
-					return focus;
-				}
+			Focus focus = recipeCategoryCraftingItem.getFocusUnderMouse(0, 0, mouseX, mouseY);
+			if (focus != null) {
+				return focus;
 			}
 		}
 
@@ -466,6 +457,15 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		nextRecipeCategory.enabled = previousRecipeCategory.enabled = logic.hasMultipleCategories();
 
 		pageString = logic.getPageString();
+
+		Collection<ItemStack> recipeCategoryCraftingItems = logic.getRecipeCategoryCraftingItems();
+		if (!recipeCategoryCraftingItems.isEmpty()) {
+			Rectangle recipeCraftingItemArea = getRecipeCraftingItemArea();
+			if (recipeCraftingItemArea != null) {
+				recipeCategoryCraftingItem.init(0, true, recipeCraftingItemArea.x + 5, recipeCraftingItemArea.y + 5);
+				recipeCategoryCraftingItem.set(0, recipeCategoryCraftingItems);
+			}
+		}
 	}
 
 	private void addRecipeTransferButtons(List<RecipeLayout> recipeLayouts) {
