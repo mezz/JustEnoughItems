@@ -99,17 +99,9 @@ task sourcesJar(type: Jar) {
 	classifier = 'sources'
 }
 
-task apiJar(type: Jar) {
-	from sourceSets.main.allSource
-	from sourceSets.main.output
-	include 'mezz/jei/api/**/*'
-	classifier = 'api'
-}
-
 artifacts {
 	archives javadocJar
 	archives sourcesJar
-	archives apiJar
 }
 
 task("uploadJars", dependsOn: "build") {
