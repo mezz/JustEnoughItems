@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
@@ -28,6 +29,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -308,13 +310,25 @@ public class RecipeRegistry implements IRecipeRegistry {
 			Log.error("Null ItemStack input", new NullPointerException());
 			return ImmutableList.of();
 		}
+
+		ImmutableList<Object> recipes = recipeInputMap.getRecipes(recipeCategory, input);
+
 		String recipeCategoryUid = recipeCategory.getUid();
 		for (String inputKey : Internal.getStackHelper().getUniqueIdentifiersWithWildcard(input)) {
 			if (categoriesForCraftItemKeys.get(inputKey).contains(recipeCategoryUid)) {
-				return recipesForCategories.get(recipeCategory);
+				ImmutableSet<Object> specificRecipes = ImmutableSet.copyOf(recipes);
+				List<Object> recipesForCategory = recipesForCategories.get(recipeCategory);
+				List<Object> allRecipes = new ArrayList<>(recipes);
+				for (Object recipe : recipesForCategory) {
+					if (!specificRecipes.contains(recipe)) {
+						allRecipes.add(recipe);
+					}
+				}
+				return allRecipes;
 			}
 		}
-		return recipeInputMap.getRecipes(recipeCategory, input);
+
+		return recipes;
 	}
 
 	@Nonnull
