@@ -30,6 +30,7 @@ import java.util.List;
 
 public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 	private static final int borderPadding = 8;
+	private static final int innerPadding = 5;
 	private static final int textPadding = 5;
 	private static final int buttonWidth = 13;
 	private static final int buttonHeight = 12;
@@ -335,7 +336,7 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses {
 
 		IDrawable recipeBackground = recipeCategory.getBackground();
 
-		final int recipesPerPage = Math.max(1, (ySize - headerHeight) / (recipeBackground.getHeight() + borderPadding));
+		final int recipesPerPage = Math.max(1, (ySize - headerHeight) / (recipeBackground.getHeight() + innerPadding));
 		final int recipeXOffset = guiLeft + (xSize - recipeBackground.getWidth()) / 2;
 		final int recipeSpacing = (ySize - headerHeight - (recipesPerPage * recipeBackground.getHeight())) / (recipesPerPage + 1);
 
