@@ -46,16 +46,16 @@ config.jei.interface.recipeAnimationsEnabled.comment=Affiche les animations des 
 
 config.jei.search=Search Options
 config.jei.search.comment=Options relatives à la barre de recherche.
-config.jei.search.atPrefixRequiredForModName=Require @ for Mod Name
-config.jei.search.atPrefixRequiredForModName.comment=Require "@" in front of a word to search by mod name.
-config.jei.search.prefixRequiredForTooltipSearch=Require # for Tooltip
-config.jei.search.prefixRequiredForTooltipSearch.comment=Require "#" in front of a word to search tooltips.
-config.jei.search.prefixRequiredForOreDictSearch=Require $ for Ore Dictionary
-config.jei.search.prefixRequiredForOreDictSearch.comment=Require "$" in front of a word to search ore dictionary names.
-config.jei.search.prefixRequiredForCreativeTabSearch=Require %% for Creative Tab Name
-config.jei.search.prefixRequiredForCreativeTabSearch.comment=Require "%" in front of a word to search creative tab names.
-config.jei.search.prefixRequiredForColorSearch=Require ^ for Colors
-config.jei.search.prefixRequiredForColorSearch.comment=Require "^" in front of a word to search item colors.
+config.jei.search.atPrefixRequiredForModName=Préfixe @ pour ModID
+config.jei.search.atPrefixRequiredForModName.comment=Ajouter "@" au début d'un mot pour rechercher par nom de mod.
+config.jei.search.prefixRequiredForTooltipSearch=Préfixe # pour Tooltip
+config.jei.search.prefixRequiredForTooltipSearch.comment=Ajoutez "#" au début d'un mot pour rechercher par tooltips.
+config.jei.search.prefixRequiredForOreDictSearch=Préfixe $ pour Ore Dictionary
+config.jei.search.prefixRequiredForOreDictSearch.comment=Ajoutez "$" au début d'un mot pour rechercher par nom ore dictionary.
+config.jei.search.prefixRequiredForCreativeTabSearch=Préfixe %% pour Creative Tab Name
+config.jei.search.prefixRequiredForCreativeTabSearch.comment=Ajoutez "%" au début d'un mot pour rechercher par nom de menu créatif.
+config.jei.search.prefixRequiredForColorSearch=Préfixe ^ pour Couleurs
+config.jei.search.prefixRequiredForColorSearch.comment=Ajoutez "^" au début d'un mot pour rechercher par couleur d'item.
 
 config.jei.advanced=Avancé
 config.jei.advanced.comment=Configuration avancée pour changer les fonctions de JEI.
