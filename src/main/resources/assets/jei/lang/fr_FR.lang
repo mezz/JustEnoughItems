@@ -1,0 +1,98 @@
+# Tooltips
+jei.tooltip.config=Configuration
+jei.tooltip.show.recipes=Montrer les recettes
+jei.tooltip.show.all.recipes=Montrer toutes les recettes
+jei.tooltip.delete.item=Cliquez pour supprimer
+jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
+jei.tooltip.liquid.amount=%,d mB
+jei.tooltip.transfer=Transférer les items
+jei.tooltip.recipe.ore.dict=Accepte n'importe: %s
+jei.tooltip.item.colors=Couleurs: %s
+jei.tooltip.shapeless.recipe=Recette Shapeless
+
+# Error Tooltips
+jei.tooltip.error.recipe.transfer.missing=Items Manquants
+jei.tooltip.error.recipe.transfer.inventory.full=L'inventaire est trop rempli
+
+# Error Messages
+jei.chat.error.command.too.long=JEI doit être sur le serveur pour utiliser cette commande du chat, elle est trop longue pour Minecraft à envoyer.
+
+# Key Bindings
+key.jei.toggleOverlay=Alterner l'overlay-liste
+key.jei.focusSearch=Selectionner la barre de recherche
+key.jei.showRecipe=Montrer la recette
+key.jei.showUses=Montrer les utilisations
+key.jei.recipeBack=Montrer la page précedente
+
+# Config
+config.jei.default=Default
+config.jei.valid=Valide
+
+config.jei.title=Configuration de %MODNAME
+
+config.jei.mode=Mode
+config.jei.mode.comment=Changer le mode JEI utilise.
+config.jei.mode.cheatItemsEnabled=Item Cheating Mode
+config.jei.mode.cheatItemsEnabled.comment=Donne les items au lieu de donner leur recette.
+config.jei.mode.editEnabled=Item Hiding Mode
+config.jei.mode.editEnabled.comment=Cache ou non les items par click dans la liste.
+
+config.jei.interface=Interface
+config.jei.interface.comment=Options relatives à l'interface utilisateur.
+config.jei.interface.overlayEnabled=Item List Enabled
+config.jei.interface.overlayEnabled.comment=Montre la liste d'items à côté des interfaces ouvertes.
+config.jei.interface.recipeAnimationsEnabled=Animations des recettes
+config.jei.interface.recipeAnimationsEnabled.comment=Affiche les animations des recettes (four, progressions, etc)
+
+config.jei.search=Search Options
+config.jei.search.comment=Options relatives à la barre de recherche.
+config.jei.search.atPrefixRequiredForModName=Require @ for Mod Name
+config.jei.search.atPrefixRequiredForModName.comment=Require "@" in front of a word to search by mod name.
+config.jei.search.prefixRequiredForTooltipSearch=Require # for Tooltip
+config.jei.search.prefixRequiredForTooltipSearch.comment=Require "#" in front of a word to search tooltips.
+config.jei.search.prefixRequiredForOreDictSearch=Require $ for Ore Dictionary
+config.jei.search.prefixRequiredForOreDictSearch.comment=Require "$" in front of a word to search ore dictionary names.
+config.jei.search.prefixRequiredForCreativeTabSearch=Require %% for Creative Tab Name
+config.jei.search.prefixRequiredForCreativeTabSearch.comment=Require "%" in front of a word to search creative tab names.
+config.jei.search.prefixRequiredForColorSearch=Require ^ for Colors
+config.jei.search.prefixRequiredForColorSearch.comment=Require "^" in front of a word to search item colors.
+
+config.jei.advanced=Avancé
+config.jei.advanced.comment=Configuration avancée pour changer les fonctions de JEI.
+config.jei.advanced.itemBlacklist=Blacklist d'items
+config.jei.advanced.itemBlacklist.comment=Liste d'items qui ne doivent pas être affichés. Format: modId[:name[:meta]]. Le mode édition ajoute et enlève automatiquement les items.
+config.jei.advanced.hideMissingModelsEnabled=Chacher les items à modèle manquant
+config.jei.advanced.hideMissingModelsEnabled.comment=Les items ayant leur modèle manquant ne seront pas affichés.
+config.jei.advanced.colorSearchEnabled=Activer la recherche par couleur
+config.jei.advanced.colorSearchEnabled.comment=Recherche d'items par couleur et affiche les items compatibles via leur tooltip.
+config.jei.advanced.debugModeEnabled=Mode Debug
+config.jei.advanced.debugModeEnabled.comment=Seulement utile aux développeurs, ajoute des centaines d'items de test et quelques recettes factices.
+config.jei.advanced.deleteItemsInCheatModeEnabled=Supprimer les items en Cheat Mode
+config.jei.advanced.deleteItemsInCheatModeEnabled.comment=En cheat mode, déplacer un item vers la liste et clicker le supprimera. (JEI sur serveur requis)
+
+config.jei.addons=Addons
+config.jei.addons.comment=catéorie pour les configurations des addons.
+
+# Edit Mode
+gui.jei.editMode.description=JEI Item List Edit Mode:
+gui.jei.editMode.description.hide=Ctrl-click pour cacher.
+gui.jei.editMode.description.show=Cachcé. Ctrl-click pour ré-afficher.
+gui.jei.editMode.description.hide.wild=Ctrl-right-click pour cahcer par wildcard.
+gui.jei.editMode.description.show.wild=Cachcé par Wildcard. Ctrl-right-click pour ré-afficher.
+gui.jei.editMode.description.hide.mod.id=Ctrl-Shift-click pour cacher par modID.
+gui.jei.editMode.description.show.mod.id=Caché par ModId. Ctrl-Shift-click pour ré-afficher.
+
+# Recipe Categories
+gui.jei.category.craftingTable=Table d'artisanat
+gui.jei.category.smelting=Forge
+gui.jei.category.smelting.experience=%s XP
+gui.jei.category.fuel=Fuel
+gui.jei.category.fuel.burnTime=Temps de cuisson: %s
+gui.jei.category.brewing=Création de potions
+gui.jei.category.brewing.steps=Etapes: %s
+gui.jei.category.itemDescription=Description
+
+# DEBUG (for debug mode, do not need translation)
+description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.
+description.jei.wooden.door.2=Clicking on a door changes its state from open to closed and visa versa.
+description.jei.wooden.door.3=Wooden Doors can be opened/closed via Redstone Circuits.
