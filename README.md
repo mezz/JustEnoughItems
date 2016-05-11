@@ -53,10 +53,12 @@ Plugin Examples (how to use the API)
 ===
 The API is pretty well documented but it can still be confusing to get started without an example.
 Thankfully there are many working examples:
- * [Vanilla Minecraft](https://github.com/mezz/JustEnoughItems/tree/1.8.9/src/main/java/mezz/jei/plugins/vanilla) (written as a plugin in JEI to serve as a canonical example)
- * [Blood Magic](https://github.com/WayofTime/BloodMagic/tree/1.8/src/main/java/WayofTime/bloodmagic/compat/jei)
- * [Botania](https://github.com/williewillus/Botania/tree/MC18/src/main/java/vazkii/botania/client/integration/jei)
- * [TechReborn](https://github.com/TechReborn/TechReborn/tree/1.8.9/src/main/java/techreborn/compat/jei)
- * [IronBackpacks](https://github.com/gr8pefish/IronBackpacks/tree/master-1.8.9/src/main/java/gr8pefish/ironbackpacks/integration/jei)
- * [Mantle](https://github.com/SlimeKnights/Mantle/pull/49/files) (How to move JEI's item list out of the way of extra gui tabs)
- * [PneumaticCraft](https://github.com/MineMaarten/PneumaticCraft/tree/MC1.8.8/src/pneumaticCraft/common/thirdparty/jei)
+ * [Vanilla Minecraft](https://github.com/mezz/JustEnoughItems/tree/1.9/src/main/java/mezz/jei/plugins/vanilla) (written as a plugin in JEI to serve as a canonical example)
+ * [Blood Magic](https://github.com/WayofTime/BloodMagic/tree/1.9/src/main/java/WayofTime/bloodmagic/compat/jei)
+ * [Botania](https://github.com/williewillus/Botania/tree/MC19/src/main/java/vazkii/botania/client/integration/jei)
+ * [TechReborn](https://github.com/TechReborn/TechReborn/tree/1.9/src/main/java/techreborn/compat/jei)
+ * [Mantle](https://github.com/mezz/Mantle/blob/master/src/main/java/slimeknights/mantle/util/JeiPlugin.java) (How to move JEI's item list out of the way of extra gui tabs)
+ * [Forestry (Apiculture descriptions)](https://github.com/ForestryMC/ForestryMC/blob/mc-1.9/src/main/java/forestry/apiculture/compat/ApicultureJeiPlugin.java)
+ * [Forestry (Machines)](https://github.com/ForestryMC/ForestryMC/tree/c30c3d75756a7cdd1ad2dee304d1e294cce21ec1/src/main/java/forestry/factory/recipes/jei)
+ * [Simple Covers (Scala)](https://github.com/bdew/covers/tree/6dcedda97c64dd8a2fb8d8a2e8062085c50519b2/src/net/bdew/covers/compat/jei)
+ 
