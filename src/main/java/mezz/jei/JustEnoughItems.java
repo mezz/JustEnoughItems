@@ -21,7 +21,7 @@ import java.util.Map;
 		name = Constants.NAME,
 		version = Constants.VERSION,
 		guiFactory = "mezz.jei.config.JEIModGuiFactory",
-		acceptedMinecraftVersions = "[1.9]",
+		acceptedMinecraftVersions = "[1.9,1.9.4]",
 		dependencies = "required-after:Forge@[12.16.0.1865,);")
 public class JustEnoughItems {
 
