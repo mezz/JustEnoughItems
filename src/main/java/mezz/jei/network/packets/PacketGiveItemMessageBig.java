@@ -38,7 +38,7 @@ public class PacketGiveItemMessageBig extends PacketJEI {
 			String message = buf.readStringFromBuffer(32767);
 			CPacketChatMessageBig packet = new CPacketChatMessageBig(message);
 			EntityPlayerMP playerMP = (EntityPlayerMP) player;
-			playerMP.playerNetServerHandler.processChatMessage(packet);
+			playerMP.connection.processChatMessage(packet);
 		}
 	}
 

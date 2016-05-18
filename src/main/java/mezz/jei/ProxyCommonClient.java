@@ -208,9 +208,9 @@ public class ProxyCommonClient extends ProxyCommon {
 
 	@Override
 	public void sendPacketToServer(PacketJEI packet) {
-		NetHandlerPlayClient netHandler = FMLClientHandler.instance().getClient().getNetHandler();
+		NetHandlerPlayClient netHandler = FMLClientHandler.instance().getClient().getConnection();
 		if (netHandler != null) {
-			netHandler.addToSendQueue(packet.getPacket());
+			netHandler.sendPacket(packet.getPacket());
 		}
 	}
 

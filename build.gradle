@@ -73,6 +73,7 @@ curseforge {
 		changelog = file('changelog.html')
 		changelogType = 'html'
 		releaseType = 'beta'
+		addGameVersion '1.9' // works on 1.9 in addition to 1.9.4
 	}
 }
 
