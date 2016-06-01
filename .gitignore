@@ -20,3 +20,4 @@ out/
 .idea
 build/*
 /bin/
+changelog.html
