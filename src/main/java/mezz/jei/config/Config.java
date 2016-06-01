@@ -219,27 +219,29 @@ public class Config {
 	}
 
 	public static boolean syncAllConfig() {
-		boolean configChanged = false;
+		boolean needsReload = false;
 		if (syncConfig()) {
-			configChanged = true;
+			needsReload = true;
 		}
 
 		if (syncItemBlacklistConfig()) {
-			configChanged = true;
+			needsReload = true;
 		}
 
 		if (syncWorldConfig()) {
-			configChanged = true;
+			needsReload = true;
 		}
 
 		if (syncSearchColorsConfig()) {
-			configChanged = true;
+			needsReload = true;
 		}
 
-		return configChanged;
+		return needsReload;
 	}
 
 	private static boolean syncConfig() {
+		boolean needsReload = false;
+
 		config.addCategory(CATEGORY_SEARCH);
 		config.addCategory(CATEGORY_ADVANCED);
 
@@ -258,28 +260,39 @@ public class Config {
 			config.removeCategory(interfaceCategory);
 		}
 
+		prefixRequiredForModNameSearch = config.getBoolean(CATEGORY_SEARCH, "atPrefixRequiredForModName", prefixRequiredForModNameSearch);
+		prefixRequiredForTooltipSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForTooltipSearch", prefixRequiredForTooltipSearch);
+		prefixRequiredForOreDictSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForOreDictSearch", prefixRequiredForOreDictSearch);
+		prefixRequiredForCreativeTabSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForCreativeTabSearch", prefixRequiredForCreativeTabSearch);
+		prefixRequiredForColorSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForColorSearch", prefixRequiredForColorSearch);
+		if (config.getCategory(CATEGORY_SEARCH).hasChanged()) {
+			needsReload = true;
+		}
+
+		ConfigCategory categoryAdvanced = config.getCategory(CATEGORY_ADVANCED);
+		categoryAdvanced.remove("nbtKeyIgnoreList");
+
 		deleteItemsInCheatModeEnabled = config.getBoolean(CATEGORY_ADVANCED, "deleteItemsInCheatModeEnabled", deleteItemsInCheatModeEnabled);
 		{
 			Property property = config.get(CATEGORY_ADVANCED, "deleteItemsInCheatModeEnabled", deleteItemsInCheatModeEnabled);
 			property.setShowInGui(false);
 		}
 
-		prefixRequiredForModNameSearch = config.getBoolean(CATEGORY_SEARCH, "atPrefixRequiredForModName", prefixRequiredForModNameSearch);
-		prefixRequiredForTooltipSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForTooltipSearch", prefixRequiredForTooltipSearch);
-		prefixRequiredForOreDictSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForOreDictSearch", prefixRequiredForOreDictSearch);
-		prefixRequiredForCreativeTabSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForCreativeTabSearch", prefixRequiredForCreativeTabSearch);
-		prefixRequiredForColorSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForColorSearch", prefixRequiredForColorSearch);
-
-		ConfigCategory categoryAdvanced = config.getCategory(CATEGORY_ADVANCED);
-		categoryAdvanced.remove("nbtKeyIgnoreList");
-
 		hideMissingModelsEnabled = config.getBoolean(CATEGORY_ADVANCED, "hideMissingModelsEnabled", hideMissingModelsEnabled);
+		if (categoryAdvanced.get("hideMissingModelsEnabled").hasChanged()) {
+			needsReload = true;
+		}
+
 		colorSearchEnabled = config.getBoolean(CATEGORY_ADVANCED, "colorSearchEnabled", colorSearchEnabled);
+		if (categoryAdvanced.get("colorSearchEnabled").hasChanged()) {
+			needsReload = true;
+		}
 
 		debugModeEnabled = config.getBoolean(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
 		{
 			Property property = config.get(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
 			property.setShowInGui(false);
+			property.setRequiresMcRestart(true);
 		}
 
 		// migrate item blacklist to new file
@@ -295,7 +308,7 @@ public class Config {
 		if (configChanged) {
 			config.save();
 		}
-		return configChanged;
+		return needsReload;
 	}
 
 	private static boolean syncItemBlacklistConfig() {
@@ -313,11 +326,13 @@ public class Config {
 	}
 
 	private static boolean syncWorldConfig() {
+		boolean needsReload = false;
 		final String worldCategory = SessionData.getWorldUid();
 
 		Property property = worldConfig.get(worldCategory, "overlayEnabled", defaultOverlayEnabled);
 		property.setLanguageKey("config.jei.interface.overlayEnabled");
 		property.setComment(Translator.translateToLocal("config.jei.interface.overlayEnabled.comment"));
+		property.setShowInGui(false);
 		overlayEnabled = property.getBoolean();
 
 		property = worldConfig.get(worldCategory, "cheatItemsEnabled", defaultCheatItemsEnabled);
@@ -329,6 +344,9 @@ public class Config {
 		property.setLanguageKey("config.jei.mode.editEnabled");
 		property.setComment(Translator.translateToLocal("config.jei.mode.editEnabled.comment"));
 		editModeEnabled = property.getBoolean();
+		if (property.hasChanged()) {
+			needsReload = true;
+		}
 
 		property = worldConfig.get(worldCategory, "filterText", defaultFilterText);
 		property.setShowInGui(false);
@@ -338,7 +356,7 @@ public class Config {
 		if (configChanged) {
 			worldConfig.save();
 		}
-		return configChanged;
+		return needsReload;
 	}
 
 	private static boolean syncSearchColorsConfig() {
@@ -373,15 +391,17 @@ public class Config {
 		return configChanged;
 	}
 
-	private static void updateBlacklist() {
+	private static boolean updateBlacklist() {
 		Property property = itemBlacklistConfig.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
 
 		String[] currentBlacklist = itemBlacklist.toArray(new String[itemBlacklist.size()]);
 		property.set(currentBlacklist);
 
-		if (itemBlacklistConfig.hasChanged()) {
+		boolean changed = itemBlacklistConfig.hasChanged();
+		if (changed) {
 			itemBlacklistConfig.save();
 		}
+		return changed;
 	}
 
 	public static void addItemToConfigBlacklist(@Nonnull ItemStack itemStack, @Nonnull ItemBlacklistType blacklistType) {
