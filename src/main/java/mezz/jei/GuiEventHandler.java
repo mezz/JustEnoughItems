@@ -40,6 +40,8 @@ public class GuiEventHandler {
 
 			RecipesGui recipesGui = new RecipesGui();
 			inputHandler = new InputHandler(recipesGui, itemListOverlay);
+		} else if (!(gui instanceof RecipesGui)) {
+			inputHandler = null;
 		}
 	}
 	

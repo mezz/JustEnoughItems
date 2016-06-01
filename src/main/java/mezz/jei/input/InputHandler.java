@@ -206,7 +206,7 @@ public class InputHandler {
 			return false;
 		}
 
-		if (KeyBindings.focusSearch.isActiveAndMatches(eventKey)) {
+		if (itemListOverlay.isOpen() && KeyBindings.focusSearch.isActiveAndMatches(eventKey)) {
 			itemListOverlay.setKeyboardFocus(true);
 			return true;
 		}
