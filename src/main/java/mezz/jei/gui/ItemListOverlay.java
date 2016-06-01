@@ -43,6 +43,8 @@ import org.lwjgl.input.Keyboard;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -84,8 +86,8 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	private GuiProperties guiProperties;
 	@Nullable
 	private List<Rectangle> guiAreas;
-	@Nullable
-	IAdvancedGuiHandler advancedGuiHandler;
+	@Nonnull
+	private List<IAdvancedGuiHandler<?>> activeAdvancedGuiHandlers = Collections.emptyList();
 
 	private boolean open = false;
 
@@ -101,11 +103,11 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		}
 
 		this.guiProperties = guiProperties;
-		this.advancedGuiHandler = getAdvancedGuiHandler(guiScreen);
-		if (advancedGuiHandler != null && guiScreen instanceof GuiContainer) {
+		this.activeAdvancedGuiHandlers = getActiveAdvancedGuiHandlers(guiScreen);
+		if (!activeAdvancedGuiHandlers.isEmpty() && guiScreen instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) guiScreen;
 			//noinspection unchecked
-			guiAreas = advancedGuiHandler.getGuiExtraAreas(guiContainer);
+			guiAreas = getGuiAreas(guiContainer);
 		} else {
 			guiAreas = null;
 		}
@@ -153,17 +155,30 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		open();
 	}
 
-	@Nullable
-	private IAdvancedGuiHandler<?> getAdvancedGuiHandler(@Nonnull GuiScreen guiScreen) {
+	@Nonnull
+	private List<IAdvancedGuiHandler<?>> getActiveAdvancedGuiHandlers(@Nonnull GuiScreen guiScreen) {
+		List<IAdvancedGuiHandler<?>> activeAdvancedGuiHandler = new ArrayList<>();
 		if (guiScreen instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) guiScreen;
 			for (IAdvancedGuiHandler<?> advancedGuiHandler : advancedGuiHandlers) {
 				if (advancedGuiHandler.getGuiContainerClass().isAssignableFrom(guiContainer.getClass())) {
-					return advancedGuiHandler;
+					activeAdvancedGuiHandler.add(advancedGuiHandler);
 				}
 			}
 		}
-		return null;
+		return activeAdvancedGuiHandler;
+	}
+
+	private List<Rectangle> getGuiAreas(GuiContainer guiContainer) {
+		List<Rectangle> guiAreas = new ArrayList<>();
+		for (IAdvancedGuiHandler advancedGuiHandler : activeAdvancedGuiHandlers) {
+			//noinspection unchecked
+			List<Rectangle> guiExtraAreas = advancedGuiHandler.getGuiExtraAreas(guiContainer);
+			if (guiExtraAreas != null) {
+				guiAreas.addAll(guiExtraAreas);
+			}
+		}
+		return guiAreas;
 	}
 
 	public void updateGui(@Nonnull GuiScreen guiScreen) {
@@ -176,10 +191,9 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 			}
 			if (!this.guiProperties.equals(guiProperties)) {
 				initGui(guiScreen);
-			} else if (advancedGuiHandler != null && guiScreen instanceof GuiContainer) {
+			} else if (!activeAdvancedGuiHandlers.isEmpty() && guiScreen instanceof GuiContainer) {
 				GuiContainer guiContainer = (GuiContainer) guiScreen;
-				//noinspection unchecked
-				List<Rectangle> guiAreas = advancedGuiHandler.getGuiExtraAreas(guiContainer);
+				List<Rectangle> guiAreas = getGuiAreas(guiContainer);
 				if (!Objects.equals(this.guiAreas, guiAreas)) {
 					initGui(guiContainer);
 				}
