@@ -9,6 +9,7 @@ jei.tooltip.transfer=Transfer Items
 jei.tooltip.recipe.ore.dict=Accepts any: %s
 jei.tooltip.item.colors=Colors: %s
 jei.tooltip.shapeless.recipe=Shapeless Recipe
+jei.tooltip.cheat.mode=Cheat Mode
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Missing Items

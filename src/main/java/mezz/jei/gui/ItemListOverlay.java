@@ -1,6 +1,7 @@
 package mezz.jei.gui;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.realmsclient.gui.ChatFormatting;
 import mezz.jei.Internal;
 import mezz.jei.ItemFilter;
 import mezz.jei.JustEnoughItems;
@@ -44,6 +45,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -338,7 +340,15 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 
 		if (configButtonHoverChecker.checkHover(mouseX, mouseY)) {
 			String configString = Translator.translateToLocal("jei.tooltip.config");
-			TooltipRenderer.drawHoveringText(minecraft, configString, mouseX, mouseY);
+			if (Config.isCheatItemsEnabled()) {
+				List<String> tooltip = Arrays.asList(
+						configString,
+						ChatFormatting.RED + Translator.translateToLocal("jei.tooltip.cheat.mode")
+				);
+				TooltipRenderer.drawHoveringText(minecraft, tooltip, mouseX, mouseY);
+			} else {
+				TooltipRenderer.drawHoveringText(minecraft, configString, mouseX, mouseY);
+			}
 		}
 	}
 
