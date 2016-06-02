@@ -33,6 +33,10 @@ public class DebugItem extends Item {
 
 	@Override
 	public String getItemStackDisplayName(ItemStack stack) {
-		return stack.getTagCompound().getString("name");
+		NBTTagCompound tagCompound = stack.getTagCompound();
+		if (tagCompound == null) {
+			return "no nbt";
+		}
+		return tagCompound.getString("name");
 	}
 }
