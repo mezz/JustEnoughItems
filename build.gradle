@@ -80,8 +80,6 @@ task makeChangelog(type: se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask) {
     <li>{{{message}}}</li>
     {{/commits}}
   </ul>
-  <br/>
-  <hr/>
 {{/tags}}
 """
 }
