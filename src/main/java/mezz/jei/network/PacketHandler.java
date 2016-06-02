@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 
 import mezz.jei.network.packets.PacketDeletePlayerItem;
-import mezz.jei.network.packets.PacketGiveItemMessageBig;
+import mezz.jei.network.packets.PacketGiveItemStack;
 import mezz.jei.network.packets.PacketJEI;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.util.Log;
@@ -49,7 +49,7 @@ public class PacketHandler {
 					break;
 				}
 				case GIVE_BIG: {
-					packet = new PacketGiveItemMessageBig();
+					packet = new PacketGiveItemStack();
 					break;
 				}
 				default: {
