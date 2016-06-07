@@ -17,6 +17,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -75,9 +76,20 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
-	public void addRecipeCategoryCraftingItem(@Nonnull ItemStack craftingItem, @Nonnull String... recipeCategoryUids) {
+	public void addRecipeCategoryCraftingItem(@Nullable ItemStack craftingItem, @Nonnull String... recipeCategoryUids) {
+		if (craftingItem == null) {
+			NullPointerException e = new NullPointerException();
+			Log.error("Tried to add a RecipeCategoryCraftingItem with null craftingItem.", e);
+			return;
+		}
+
 		for (String recipeCategoryUid : recipeCategoryUids) {
-			this.craftItemsForCategories.put(recipeCategoryUid, craftingItem);
+			if (recipeCategoryUid == null) {
+				IllegalArgumentException e = new IllegalArgumentException();
+				Log.error("Tried to add a RecipeCategoryCraftingItem with null recipeCategoryUid.", e);
+			} else {
+				this.craftItemsForCategories.put(recipeCategoryUid, craftingItem);
+			}
 		}
 	}
 
