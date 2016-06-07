@@ -47,9 +47,8 @@ public class ShapelessOreRecipeHandler implements IRecipeHandler<ShapelessOreRec
 		int inputCount = 0;
 		for (Object input : recipe.getInput()) {
 			if (input instanceof List) {
-				if (((List) input).size() == 0) {
-					String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
-					Log.error("Recipe has an empty list as an input. {}", recipeInfo);
+				if (((List) input).isEmpty()) {
+					// missing items for an oreDict name. This is normal behavior, but the recipe is invalid.
 					return false;
 				}
 			}
