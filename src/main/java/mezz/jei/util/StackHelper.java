@@ -1,17 +1,5 @@
 package mezz.jei.util;
 
-import mezz.jei.Internal;
-import mezz.jei.api.recipe.IStackHelper;
-import mezz.jei.gui.ingredients.IGuiIngredient;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.oredict.OreDictionary;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -26,7 +14,21 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import mezz.jei.Internal;
+import mezz.jei.api.recipe.IStackHelper;
+import mezz.jei.gui.ingredients.IGuiIngredient;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.oredict.OreDictionary;
+
 public class StackHelper implements IStackHelper {
+	public static final String nullItemInStack = "Found an itemStack with a null item. This is an error from another mod.";
+
 	/** Uids are cached during loading to improve startup performance. */
 	private final Map<UidMode, Map<ItemStack, String>> uidCache = new EnumMap<>(UidMode.class);
 	private boolean uidCacheEnabled = true;
@@ -312,17 +314,13 @@ public class StackHelper implements IStackHelper {
 	public String getModId(@Nonnull ItemStack stack) {
 		Item item = stack.getItem();
 		if (item == null) {
-			throw new NullPointerException("Found an itemStack with a null item. This is an error from another mod.");
+			throw new NullPointerException(nullItemInStack);
 		}
 
-		return getModId(item);
-	}
-
-	@Nonnull
-	public String getModId(@Nonnull Item item) {
 		ResourceLocation itemName = Item.REGISTRY.getNameForObject(item);
 		if (itemName == null) {
-			throw new NullPointerException("Item.itemRegistry.getNameForObject returned null for: " + item.getClass());
+			String stackInfo = ErrorUtil.getItemStackInfo(stack);
+			throw new NullPointerException("Item.itemRegistry.getNameForObject returned null for: " + stackInfo);
 		}
 
 		return itemName.getResourceDomain();
@@ -344,7 +342,7 @@ public class StackHelper implements IStackHelper {
 
 		Item item = stack.getItem();
 		if (item == null) {
-			throw new NullPointerException("Found an itemStack with a null item. This is an error from another mod.");
+			throw new NullPointerException(nullItemInStack);
 		}
 
 		ResourceLocation itemName = Item.REGISTRY.getNameForObject(item);

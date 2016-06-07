@@ -1,5 +1,14 @@
 package mezz.jei;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
@@ -26,15 +35,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class RecipeRegistry implements IRecipeRegistry {
 	private final ImmutableMap<Class, IRecipeHandler> recipeHandlers;
@@ -170,7 +170,13 @@ public class RecipeRegistry implements IRecipeRegistry {
 			addRecipeUnchecked(recipe, recipeCategory, recipeHandler);
 		} catch (RuntimeException | LinkageError e) {
 			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, recipeHandler);
-			Log.error("Found a broken recipe: {}\n", recipeInfo, e);
+
+			// suppress the null item in stack exception, that information is redundant here.
+			if (e.getMessage().equals(StackHelper.nullItemInStack)) {
+				Log.error("Found a broken recipe: {}\n", recipeInfo);
+			} else {
+				Log.error("Found a broken recipe: {}\n", recipeInfo, e);
+			}
 		}
 	}
 

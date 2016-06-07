@@ -1,5 +1,12 @@
 package mezz.jei;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.config.Config;
@@ -34,12 +41,6 @@ import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 
 @SuppressWarnings("unused")
 public class ProxyCommonClient extends ProxyCommon {
@@ -158,8 +159,11 @@ public class ProxyCommonClient extends ProxyCommon {
 		while (iterator.hasNext()) {
 			IModPlugin plugin = iterator.next();
 			try {
+				long start_time = System.nanoTime();
+				Log.info("Registering plugin: {}", plugin.getClass().getName());
 				plugin.register(modRegistry);
-				Log.info("Registered plugin: {}", plugin.getClass().getName());
+				long timeElapsedSeconds = TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - start_time);
+				Log.info("Registered  plugin: {} in {} seconds", plugin.getClass().getName(), timeElapsedSeconds);
 			} catch (RuntimeException | LinkageError e) {
 				Log.error("Failed to register mod plugin: {}", plugin.getClass(), e);
 				iterator.remove();
