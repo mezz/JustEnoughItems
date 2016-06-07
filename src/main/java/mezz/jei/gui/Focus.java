@@ -1,7 +1,5 @@
 package mezz.jei.gui;
 
-import com.google.common.collect.ImmutableSet;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -9,21 +7,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.ImmutableSet;
+import mezz.jei.Internal;
+import mezz.jei.api.IRecipeRegistry;
+import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.util.StackHelper;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidContainerItem;
-
-import mezz.jei.Internal;
-import mezz.jei.api.IRecipeRegistry;
-import mezz.jei.api.recipe.IRecipeCategory;
+import net.minecraftforge.fluids.FluidUtil;
 
 public class Focus {
 	public enum Mode {
@@ -54,23 +50,20 @@ public class Focus {
 	@Nullable
 	private static Fluid getFluidFromItemStack(@Nonnull ItemStack stack) {
 		Item item = stack.getItem();
-		if (item instanceof IFluidContainerItem) {
-			IFluidContainerItem fluidContainerItem = (IFluidContainerItem) item;
-			FluidStack fluidStack = fluidContainerItem.getFluid(stack);
-			if (fluidStack == null) {
-				return null;
+		if (item instanceof ItemBlock) {
+			Block block = ((ItemBlock) item).getBlock();
+			Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
+			if (fluid != null) {
+				return fluid;
 			}
-			return fluidStack.getFluid();
-		} else if (FluidContainerRegistry.isFilledContainer(stack)) {
-			FluidStack fluidStack = FluidContainerRegistry.getFluidForFilledItem(stack);
-			if (fluidStack == null) {
-				return null;
+		}
+
+		FluidStack fluidContained = FluidUtil.getFluidContained(stack);
+		if (fluidContained != null) {
+			Fluid fluid = fluidContained.getFluid();
+			if (fluid != null) {
+				return fluid;
 			}
-			return fluidStack.getFluid();
-		} else if (item instanceof ItemBlock) {
-			ItemBlock itemBlock = (ItemBlock) item;
-			Block block = itemBlock.getBlock();
-			return FluidRegistry.lookupFluidForBlock(block);
 		}
 
 		return null;
@@ -82,10 +75,6 @@ public class Focus {
 
 	public ItemStack getStack() {
 		return stack;
-	}
-
-	public boolean isBlank() {
-		return stack == null && fluid == null;
 	}
 
 	public void setMode(@Nonnull Mode mode) {
