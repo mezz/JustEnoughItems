@@ -20,6 +20,12 @@ public class DebugRecipeHandler implements IRecipeHandler<DebugRecipe> {
 
 	@Nonnull
 	@Override
+	public String getRecipeCategoryUid(@Nonnull DebugRecipe recipe) {
+		return "debug";
+	}
+
+	@Nonnull
+	@Override
 	public IRecipeWrapper getRecipeWrapper(@Nonnull DebugRecipe recipe) {
 		return recipe;
 	}

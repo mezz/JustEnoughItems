@@ -1,5 +1,13 @@
 package mezz.jei.gui;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Stack;
+
 import com.google.common.collect.ImmutableList;
 import mezz.jei.Internal;
 import mezz.jei.RecipeRegistry;
@@ -13,14 +21,6 @@ import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Stack;
 
 public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private static class State {
@@ -236,14 +236,10 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		int recipeWidgetIndex = 0;
 		for (int recipeIndex = state.pageIndex * recipesPerPage; recipeIndex < recipes.size() && recipeWidgets.size() < recipesPerPage; recipeIndex++) {
 			Object recipe = recipes.get(recipeIndex);
-			IRecipeHandler recipeHandler = recipeRegistry.getRecipeHandler(recipe.getClass());
-			if (recipeHandler == null) {
-				Log.error("Couldn't find recipe handler for recipe: {}", recipe);
+			IRecipeWrapper recipeWrapper = getRecipeWrapper(recipeRegistry, recipe, recipe.getClass());
+			if (recipeWrapper == null) {
 				continue;
 			}
-
-			@SuppressWarnings("unchecked")
-			IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
 
 			RecipeLayout recipeWidget = new RecipeLayout(recipeWidgetIndex++, posX, posY, recipeCategory, recipeWrapper, state.focus);
 			recipeWidgets.add(recipeWidget);
@@ -252,6 +248,17 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 
 		return recipeWidgets;
+	}
+
+	@Nullable
+	private <T> IRecipeWrapper getRecipeWrapper(IRecipeRegistry recipeRegistry, T recipe, Class<? extends T> recipeClass) {
+		IRecipeHandler<T> recipeHandler = recipeRegistry.getRecipeHandler(recipeClass);
+		if (recipeHandler == null) {
+			Log.error("Couldn't find recipe handler for recipe: {}", recipe);
+			return null;
+		}
+
+		return recipeHandler.getRecipeWrapper(recipe);
 	}
 
 	@Override

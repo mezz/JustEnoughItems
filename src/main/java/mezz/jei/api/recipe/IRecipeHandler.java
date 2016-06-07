@@ -11,9 +11,22 @@ public interface IRecipeHandler<T> {
 	@Nonnull
 	Class<T> getRecipeClass();
 
-	/** Returns this recipe's category unique id. */
+	/**
+	 * Returns this recipe's unique category id.
+	 *
+	 * @deprecated since 3.5.0. Use {@link #getRecipeCategoryUid(Object)}
+	 */
+	@Deprecated
 	@Nonnull
 	String getRecipeCategoryUid();
+
+	/**
+	 * Returns this recipe's unique category id.
+	 *
+	 * @since 3.5.0
+	 */
+	@Nonnull
+	String getRecipeCategoryUid(@Nonnull T recipe);
 
 	/** Returns a recipe wrapper for the given recipe. */
 	@Nonnull

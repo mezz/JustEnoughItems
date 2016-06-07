@@ -2,14 +2,13 @@ package mezz.jei.plugins.vanilla.crafting;
 
 import javax.annotation.Nonnull;
 
+import mezz.jei.api.recipe.IRecipeHandler;
+import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
-
-import mezz.jei.api.recipe.IRecipeHandler;
-import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 
 public class ShapedRecipesHandler implements IRecipeHandler<ShapedRecipes> {
 
@@ -22,6 +21,12 @@ public class ShapedRecipesHandler implements IRecipeHandler<ShapedRecipes> {
 	@Nonnull
 	@Override
 	public String getRecipeCategoryUid() {
+		return VanillaRecipeCategoryUid.CRAFTING;
+	}
+
+	@Nonnull
+	@Override
+	public String getRecipeCategoryUid(@Nonnull ShapedRecipes recipe) {
 		return VanillaRecipeCategoryUid.CRAFTING;
 	}
 

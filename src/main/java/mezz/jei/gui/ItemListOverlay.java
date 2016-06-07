@@ -1,5 +1,14 @@
 package mezz.jei.gui;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
 import com.google.common.collect.ImmutableList;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import mezz.jei.Internal;
@@ -40,15 +49,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
 import org.lwjgl.input.Keyboard;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 
 public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, IMouseHandler, IKeyable, ICloseable {
 
@@ -108,7 +108,6 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		this.activeAdvancedGuiHandlers = getActiveAdvancedGuiHandlers(guiScreen);
 		if (!activeAdvancedGuiHandlers.isEmpty() && guiScreen instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) guiScreen;
-			//noinspection unchecked
 			guiAreas = getGuiAreas(guiContainer);
 		} else {
 			guiAreas = null;
@@ -173,14 +172,21 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 
 	private List<Rectangle> getGuiAreas(GuiContainer guiContainer) {
 		List<Rectangle> guiAreas = new ArrayList<>();
-		for (IAdvancedGuiHandler advancedGuiHandler : activeAdvancedGuiHandlers) {
-			//noinspection unchecked
-			List<Rectangle> guiExtraAreas = advancedGuiHandler.getGuiExtraAreas(guiContainer);
+		for (IAdvancedGuiHandler<?> advancedGuiHandler : activeAdvancedGuiHandlers) {
+			List<Rectangle> guiExtraAreas = getGuiAreas(guiContainer, advancedGuiHandler);
 			if (guiExtraAreas != null) {
 				guiAreas.addAll(guiExtraAreas);
 			}
 		}
 		return guiAreas;
+	}
+
+	private <T extends GuiContainer> List<Rectangle> getGuiAreas(GuiContainer guiContainer, IAdvancedGuiHandler<T> advancedGuiHandler) {
+		if (advancedGuiHandler.getGuiContainerClass().isAssignableFrom(guiContainer.getClass())) {
+			T guiT = advancedGuiHandler.getGuiContainerClass().cast(guiContainer);
+			return advancedGuiHandler.getGuiExtraAreas(guiT);
+		}
+		return null;
 	}
 
 	public void updateGui(@Nonnull GuiScreen guiScreen) {

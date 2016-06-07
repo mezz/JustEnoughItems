@@ -1,5 +1,8 @@
 package mezz.jei.plugins.vanilla.crafting;
 
+import javax.annotation.Nonnull;
+import java.util.List;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
@@ -7,9 +10,6 @@ import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-
-import javax.annotation.Nonnull;
-import java.util.List;
 
 public class ShapelessOreRecipeHandler implements IRecipeHandler<ShapelessOreRecipe> {
 	@Nonnull
@@ -28,6 +28,12 @@ public class ShapelessOreRecipeHandler implements IRecipeHandler<ShapelessOreRec
 	@Nonnull
 	@Override
 	public String getRecipeCategoryUid() {
+		return VanillaRecipeCategoryUid.CRAFTING;
+	}
+
+	@Nonnull
+	@Override
+	public String getRecipeCategoryUid(@Nonnull ShapelessOreRecipe recipe) {
 		return VanillaRecipeCategoryUid.CRAFTING;
 	}
 

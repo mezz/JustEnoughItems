@@ -15,7 +15,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class ErrorUtil {
 	@Nonnull
-	public static String getInfoFromBrokenRecipe(@Nonnull Object recipe, @Nonnull IRecipeHandler recipeHandler) {
+	public static <T> String getInfoFromBrokenRecipe(@Nonnull T recipe, @Nonnull IRecipeHandler<T> recipeHandler) {
 		StringBuilder recipeInfoBuilder = new StringBuilder();
 		try {
 			recipeInfoBuilder.append(recipe);
@@ -27,7 +27,6 @@ public class ErrorUtil {
 		IRecipeWrapper recipeWrapper;
 
 		try {
-			//noinspection unchecked
 			recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
 		} catch (RuntimeException ignored) {
 			recipeInfoBuilder.append("\nFailed to create recipe wrapper");

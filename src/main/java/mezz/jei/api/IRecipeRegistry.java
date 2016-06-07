@@ -1,14 +1,14 @@
 package mezz.jei.api;
 
-import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeHandler;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.Fluid;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
+
+import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.IRecipeHandler;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
 
 /**
  * The IRecipeManager offers several functions for retrieving and handling recipes.
@@ -19,7 +19,7 @@ public interface IRecipeRegistry {
 
 	/** Returns the IRecipeHandler associated with the recipeClass or null if there is none */
 	@Nullable
-	IRecipeHandler getRecipeHandler(@Nonnull Class recipeClass);
+	<T> IRecipeHandler<T> getRecipeHandler(@Nonnull Class<? extends T> recipeClass);
 
 	/** Returns an unmodifiable list of all Recipe Categories */
 	@Nonnull

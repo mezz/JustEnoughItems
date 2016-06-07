@@ -23,6 +23,12 @@ public class BrewingRecipeHandler implements IRecipeHandler<BrewingRecipeWrapper
 
 	@Nonnull
 	@Override
+	public String getRecipeCategoryUid(@Nonnull BrewingRecipeWrapper recipe) {
+		return VanillaRecipeCategoryUid.BREWING;
+	}
+
+	@Nonnull
+	@Override
 	public IRecipeWrapper getRecipeWrapper(@Nonnull BrewingRecipeWrapper recipe) {
 		return recipe;
 	}

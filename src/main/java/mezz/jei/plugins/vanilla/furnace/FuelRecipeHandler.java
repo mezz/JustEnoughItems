@@ -21,6 +21,12 @@ public class FuelRecipeHandler implements IRecipeHandler<FuelRecipe> {
 		return VanillaRecipeCategoryUid.FUEL;
 	}
 
+	@Nonnull
+	@Override
+	public String getRecipeCategoryUid(@Nonnull FuelRecipe recipe) {
+		return VanillaRecipeCategoryUid.FUEL;
+	}
+
 	@Override
 	@Nonnull
 	public IRecipeWrapper getRecipeWrapper(@Nonnull FuelRecipe recipe) {

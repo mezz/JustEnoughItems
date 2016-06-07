@@ -24,6 +24,12 @@ public class ItemDescriptionRecipeHandler implements IRecipeHandler<ItemDescript
 
 	@Nonnull
 	@Override
+	public String getRecipeCategoryUid(@Nonnull ItemDescriptionRecipe recipe) {
+		return VanillaRecipeCategoryUid.DESCRIPTION;
+	}
+
+	@Nonnull
+	@Override
 	public IRecipeWrapper getRecipeWrapper(@Nonnull ItemDescriptionRecipe recipe) {
 		return recipe;
 	}
