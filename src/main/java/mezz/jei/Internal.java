@@ -5,7 +5,7 @@ import mezz.jei.util.color.ColorNamer;
 
 /** For JEI internal use only, these are normally accessed from the API. */
 public class Internal {
-	private static final JeiHelpers helpers = new JeiHelpers();
+	private static JeiHelpers helpers;
 	private static JeiRuntime runtime;
 	private static ItemRegistry itemRegistry;
 	private static ColorNamer colorNamer;
@@ -16,6 +16,10 @@ public class Internal {
 
 	public static JeiHelpers getHelpers() {
 		return helpers;
+	}
+
+	public static void setHelpers(JeiHelpers helpers) {
+		Internal.helpers = helpers;
 	}
 
 	public static StackHelper getStackHelper() {

@@ -147,6 +147,7 @@ public class ProxyCommonClient extends ProxyCommon {
 
 		Config.startJei();
 
+		Internal.setHelpers(new JeiHelpers());
 		Internal.getStackHelper().enableUidCache();
 
 		ItemRegistryFactory itemRegistryFactory = new ItemRegistryFactory();
