@@ -11,6 +11,7 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
 public class ErrorUtil {
@@ -108,6 +109,11 @@ public class ErrorUtil {
 			itemName = "ItemBlock(" + ((ItemBlock) item).getBlock() + ")";
 		} else {
 			itemName = item.getClass().getName();
+		}
+
+		NBTTagCompound nbt = itemStack.getTagCompound();
+		if (nbt != null) {
+			return itemStack.toString() + " " + itemName + " nbt:" + nbt;
 		}
 		return itemStack.toString() + " " + itemName;
 	}
