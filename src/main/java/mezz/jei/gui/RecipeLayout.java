@@ -33,7 +33,7 @@ public class RecipeLayout implements IRecipeLayout {
 	private final int posX;
 	private final int posY;
 
-	public RecipeLayout(int index, int posX, int posY, @Nonnull IRecipeCategory recipeCategory, @Nonnull IRecipeWrapper recipeWrapper, @Nonnull Focus focus) {
+	public <T extends IRecipeWrapper> RecipeLayout(int index, int posX, int posY, @Nonnull IRecipeCategory<T> recipeCategory, @Nonnull T recipeWrapper, @Nonnull Focus focus) {
 		this.recipeCategory = recipeCategory;
 		this.guiItemStackGroup = new GuiItemStackGroup();
 		this.guiFluidStackGroup = new GuiFluidStackGroup();
@@ -46,7 +46,7 @@ public class RecipeLayout implements IRecipeLayout {
 		this.recipeWrapper = recipeWrapper;
 		this.guiItemStackGroup.setFocus(focus);
 		this.guiFluidStackGroup.setFocus(focus);
-		this.recipeCategory.setRecipe(this, recipeWrapper);
+		recipeCategory.setRecipe(this, recipeWrapper);
 	}
 
 	public void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {

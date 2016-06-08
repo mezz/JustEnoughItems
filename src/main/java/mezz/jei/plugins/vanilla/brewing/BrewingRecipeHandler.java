@@ -29,7 +29,7 @@ public class BrewingRecipeHandler implements IRecipeHandler<BrewingRecipeWrapper
 
 	@Nonnull
 	@Override
-	public IRecipeWrapper getRecipeWrapper(@Nonnull BrewingRecipeWrapper recipe) {
+	public BrewingRecipeWrapper getRecipeWrapper(@Nonnull BrewingRecipeWrapper recipe) {
 		return recipe;
 	}
 

@@ -16,7 +16,7 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class BrewingRecipeCategory implements IRecipeCategory {
+public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipeWrapper> {
 
 	private static final int brewPotionSlot1 = 0;
 	private static final int brewPotionSlot2 = 1;
@@ -87,7 +87,7 @@ public class BrewingRecipeCategory implements IRecipeCategory {
 	}
 
 	@Override
-	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper) {
+	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull BrewingRecipeWrapper recipeWrapper) {
 		IGuiItemStackGroup itemStacks = recipeLayout.getItemStacks();
 
 		itemStacks.init(brewPotionSlot1, true, 0, 35);
@@ -96,15 +96,12 @@ public class BrewingRecipeCategory implements IRecipeCategory {
 		itemStacks.init(brewIngredientSlot, true, 23, 1);
 		itemStacks.init(outputSlot, false, outputSlotX, outputSlotY);
 
-		if (recipeWrapper instanceof BrewingRecipeWrapper) {
-			BrewingRecipeWrapper brewingRecipeWrapper = (BrewingRecipeWrapper) recipeWrapper;
-			List inputs = brewingRecipeWrapper.getInputs();
+		List inputs = recipeWrapper.getInputs();
 
-			itemStacks.setFromRecipe(brewPotionSlot1, inputs.get(brewPotionSlot1));
-			itemStacks.setFromRecipe(brewPotionSlot2, inputs.get(brewPotionSlot2));
-			itemStacks.setFromRecipe(brewPotionSlot3, inputs.get(brewPotionSlot3));
-			itemStacks.setFromRecipe(brewIngredientSlot, inputs.get(brewIngredientSlot));
-			itemStacks.setFromRecipe(outputSlot, brewingRecipeWrapper.getOutputs());
-		}
+		itemStacks.setFromRecipe(brewPotionSlot1, inputs.get(brewPotionSlot1));
+		itemStacks.setFromRecipe(brewPotionSlot2, inputs.get(brewPotionSlot2));
+		itemStacks.setFromRecipe(brewPotionSlot3, inputs.get(brewPotionSlot3));
+		itemStacks.setFromRecipe(brewIngredientSlot, inputs.get(brewIngredientSlot));
+		itemStacks.setFromRecipe(outputSlot, recipeWrapper.getOutputs());
 	}
 }

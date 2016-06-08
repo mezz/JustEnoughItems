@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
  * Defines a category of recipe, (i.e. Crafting Table Recipe, Furnace Recipe)
  * and handles setting up the GUI for its recipe category.
  */
-public interface IRecipeCategory {
+public interface IRecipeCategory<T extends IRecipeWrapper> {
 
 	/**
 	 * Returns a unique ID for this recipe category.
@@ -45,8 +45,8 @@ public interface IRecipeCategory {
 	void drawAnimations(@Nonnull Minecraft minecraft);
 
 	/**
-	 * Set the IRecipeLayout properties from the RecipeWrapper.
+	 * Set the IRecipeLayout properties from the IRecipeWrapper.
 	 */
-	void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper);
+	void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull T recipeWrapper);
 
 }

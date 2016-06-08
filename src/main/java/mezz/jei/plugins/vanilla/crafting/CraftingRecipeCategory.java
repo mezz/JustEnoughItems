@@ -16,7 +16,7 @@ import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
-public class CraftingRecipeCategory extends BlankRecipeCategory {
+public class CraftingRecipeCategory extends BlankRecipeCategory<ICraftingRecipeWrapper> {
 
 	private static final int craftOutputSlot = 0;
 	private static final int craftInputSlot1 = 1;
@@ -57,7 +57,7 @@ public class CraftingRecipeCategory extends BlankRecipeCategory {
 	}
 
 	@Override
-	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper) {
+	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull ICraftingRecipeWrapper recipeWrapper) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		guiItemStacks.init(craftOutputSlot, false, 94, 18);
@@ -73,12 +73,9 @@ public class CraftingRecipeCategory extends BlankRecipeCategory {
 			IShapedCraftingRecipeWrapper wrapper = (IShapedCraftingRecipeWrapper) recipeWrapper;
 			craftingGridHelper.setInput(guiItemStacks, wrapper.getInputs(), wrapper.getWidth(), wrapper.getHeight());
 			craftingGridHelper.setOutput(guiItemStacks, wrapper.getOutputs());
-		} else if (recipeWrapper instanceof ICraftingRecipeWrapper) {
-			ICraftingRecipeWrapper wrapper = (ICraftingRecipeWrapper) recipeWrapper;
-			craftingGridHelper.setInput(guiItemStacks, wrapper.getInputs());
-			craftingGridHelper.setOutput(guiItemStacks, wrapper.getOutputs());
 		} else {
-			Log.error("RecipeWrapper is not a known crafting wrapper type: {}", recipeWrapper);
+			craftingGridHelper.setInput(guiItemStacks, recipeWrapper.getInputs());
+			craftingGridHelper.setOutput(guiItemStacks, recipeWrapper.getOutputs());
 		}
 	}
 

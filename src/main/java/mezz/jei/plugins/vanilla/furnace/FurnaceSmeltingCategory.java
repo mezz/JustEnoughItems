@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
-public class FurnaceSmeltingCategory extends FurnaceRecipeCategory {
+public class FurnaceSmeltingCategory extends FurnaceRecipeCategory<SmeltingRecipe> {
 	@Nonnull
 	private final IDrawable background;
 	@Nonnull
@@ -50,7 +50,7 @@ public class FurnaceSmeltingCategory extends FurnaceRecipeCategory {
 	}
 
 	@Override
-	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper) {
+	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull SmeltingRecipe recipeWrapper) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		guiItemStacks.init(inputSlot, true, 0, 0);

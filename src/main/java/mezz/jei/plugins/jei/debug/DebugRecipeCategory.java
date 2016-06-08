@@ -20,7 +20,7 @@ import net.minecraftforge.fluids.FluidStack;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class DebugRecipeCategory extends BlankRecipeCategory {
+public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 	public static final int recipeWidth = 160;
 	public static final int recipeHeight = 60;
 	@Nonnull
@@ -68,7 +68,7 @@ public class DebugRecipeCategory extends BlankRecipeCategory {
 	}
 
 	@Override
-	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper) {
+	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull DebugRecipe recipeWrapper) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		guiItemStacks.addTooltipCallback(new ITooltipCallback<ItemStack>() {
@@ -104,8 +104,7 @@ public class DebugRecipeCategory extends BlankRecipeCategory {
 		guiFluidStacks.init(2, false, 50, 0, 24, 24, 2000, true, tankOverlay);
 		guiFluidStacks.init(3, false, 90, 0, 12, 47, 100, false, tankOverlay);
 
-		DebugRecipe debugRecipe = (DebugRecipe) recipeWrapper;
-		List<FluidStack> fluidInputs = debugRecipe.getFluidInputs();
+		List<FluidStack> fluidInputs = recipeWrapper.getFluidInputs();
 		guiFluidStacks.set(0, fluidInputs.get(0));
 		guiFluidStacks.set(1, fluidInputs.get(1));
 		guiFluidStacks.set(3, fluidInputs.get(0));

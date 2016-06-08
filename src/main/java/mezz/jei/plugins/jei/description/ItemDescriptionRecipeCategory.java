@@ -11,7 +11,7 @@ import mezz.jei.util.Translator;
 
 import javax.annotation.Nonnull;
 
-public class ItemDescriptionRecipeCategory extends BlankRecipeCategory {
+public class ItemDescriptionRecipeCategory extends BlankRecipeCategory<ItemDescriptionRecipe> {
 	public static final int recipeWidth = 160;
 	public static final int recipeHeight = 125;
 	@Nonnull
@@ -43,7 +43,7 @@ public class ItemDescriptionRecipeCategory extends BlankRecipeCategory {
 	}
 
 	@Override
-	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper) {
+	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull ItemDescriptionRecipe recipeWrapper) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		int xPos = (recipeWidth - 18) / 2;

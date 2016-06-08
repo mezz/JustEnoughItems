@@ -10,7 +10,7 @@ import mezz.jei.util.Translator;
 
 import javax.annotation.Nonnull;
 
-public class FurnaceFuelCategory extends FurnaceRecipeCategory {
+public class FurnaceFuelCategory extends FurnaceRecipeCategory<FuelRecipe> {
 	@Nonnull
 	private final IDrawable background;
 	@Nonnull
@@ -41,7 +41,7 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory {
 	}
 
 	@Override
-	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull IRecipeWrapper recipeWrapper) {
+	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull FuelRecipe recipeWrapper) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		guiItemStacks.init(fuelSlot, true, 0, 14);

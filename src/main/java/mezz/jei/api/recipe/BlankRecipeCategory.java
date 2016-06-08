@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 
 import javax.annotation.Nonnull;
 
-public abstract class BlankRecipeCategory implements IRecipeCategory {
+public abstract class BlankRecipeCategory<T extends IRecipeWrapper> implements IRecipeCategory<T> {
 	@Override
 	public void drawExtras(@Nonnull Minecraft minecraft) {
 
