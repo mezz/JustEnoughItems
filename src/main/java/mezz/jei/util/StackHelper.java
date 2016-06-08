@@ -360,14 +360,24 @@ public class StackHelper implements IStackHelper {
 		if (mode == UidMode.FULL || stack.getHasSubtypes()) {
 			itemKey.append(':').append(metadata);
 			if (stack.hasTagCompound()) {
-				NBTTagCompound nbtTagCompound;
 				if (mode == UidMode.FULL) {
-					nbtTagCompound = stack.getTagCompound();
+					NBTTagCompound nbtTagCompound = stack.getTagCompound();
+					if (nbtTagCompound != null && !nbtTagCompound.hasNoTags()) {
+						itemKey.append(':').append(nbtTagCompound);
+					}
 				} else {
-					nbtTagCompound = Internal.getHelpers().getNbtIgnoreList().getNbt(stack);
-				}
-				if (nbtTagCompound != null && !nbtTagCompound.hasNoTags()) {
-					itemKey.append(':').append(nbtTagCompound);
+					NBTTagCompound nbtTagCompound = Internal.getHelpers().getNbtIgnoreList().getNbt(stack);
+
+					if (stack.getTagCompound() != nbtTagCompound) { // legacy handling for mods using nbtIgnoreList
+						if (nbtTagCompound != null && !nbtTagCompound.hasNoTags()) {
+							itemKey.append(':').append(nbtTagCompound);
+						}
+					} else { // nbtIgnoreList was not used
+						String subtypeInfo = Internal.getHelpers().getNbtRegistry().getSubtypeInfoFromNbt(stack);
+						if (subtypeInfo != null) {
+							itemKey.append(':').append(subtypeInfo);
+						}
+					}
 				}
 			}
 		}

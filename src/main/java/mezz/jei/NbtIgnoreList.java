@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+@Deprecated
 public class NbtIgnoreList implements INbtIgnoreList {
 	private final Set<String> nbtTagNameBlacklist = new HashSet<>();
 	private final HashMultimap<Item, String> itemNbtTagNameBlacklist = HashMultimap.create();

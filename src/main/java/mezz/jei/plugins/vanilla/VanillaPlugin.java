@@ -5,6 +5,7 @@ import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModRegistry;
+import mezz.jei.api.INbtRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
@@ -34,8 +35,13 @@ import net.minecraft.inventory.ContainerFurnace;
 import net.minecraft.inventory.ContainerWorkbench;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.ForgeModContainer;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.UniversalBucket;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @JEIPlugin
 public class VanillaPlugin extends BlankModPlugin {
@@ -55,6 +61,21 @@ public class VanillaPlugin extends BlankModPlugin {
 				"RepairCost",
 				"Unbreakable"
 		);
+
+		INbtRegistry nbtRegistry = jeiHelpers.getNbtRegistry();
+		nbtRegistry.useNbtForSubtypes(
+				Items.BANNER,
+				Items.SPAWN_EGG,
+				Items.TIPPED_ARROW,
+				Items.ENCHANTED_BOOK,
+				Items.POTIONITEM,
+				Items.SPLASH_POTION,
+				Items.LINGERING_POTION
+		);
+
+		if (FluidRegistry.isUniversalBucketEnabled()) {
+			nbtRegistry.useNbtForSubtypes(ForgeModContainer.getInstance().universalBucket);
+		}
 
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 		registry.addRecipeCategories(

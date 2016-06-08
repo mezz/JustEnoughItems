@@ -30,9 +30,16 @@ public interface IJeiHelpers {
 
 	/**
 	 * Used to tell JEI to ignore NBT tags when comparing items for recipes.
+	 * @deprecated all nbt is now ignored by default. If you have nbt that is used to identify your item's subtype, see {@link #getNbtRegistry()}.
 	 */
 	@Nonnull
+	@Deprecated
 	INbtIgnoreList getNbtIgnoreList();
+
+	/**
+	 * If your item has subtypes that depend on NBT, use this to help JEI identify those subtypes correctly.
+	 */
+	INbtRegistry getNbtRegistry();
 
 	/**
 	 * Helps with the implementation of Recipe Transfer Handlers
