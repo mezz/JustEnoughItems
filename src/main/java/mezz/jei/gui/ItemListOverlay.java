@@ -495,9 +495,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 			char character = Keyboard.getEventCharacter();
 			boolean changed = searchField.textboxKeyTyped(character, Keyboard.getEventKey());
 			if (changed) {
-				while (firstItemIndex >= itemFilter.size() && firstItemIndex > 0) {
-					previousPage();
-				}
+				firstItemIndex = 0;
 				updateLayout();
 			}
 			return changed || ChatAllowedCharacters.isAllowedCharacter(character);
