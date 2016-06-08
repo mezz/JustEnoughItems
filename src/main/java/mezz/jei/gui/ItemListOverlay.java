@@ -281,6 +281,10 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		}
 
 		firstItemIndex = itemsPerPage * pageNum;
+		if (firstItemIndex > 0 && firstItemIndex == itemsCount) {
+			pageNum--;
+			firstItemIndex = itemsPerPage * pageNum;
+		}
 		updateLayout();
 	}
 
