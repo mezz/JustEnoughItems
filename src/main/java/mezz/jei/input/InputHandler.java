@@ -7,6 +7,7 @@ import java.util.List;
 
 import mezz.jei.Internal;
 import mezz.jei.RecipeRegistry;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
@@ -80,7 +81,7 @@ public class InputHandler {
 			return true;
 		}
 
-		Focus focus = getFocusUnderMouseForClick(mouseX, mouseY);
+		Focus<?> focus = getFocusUnderMouseForClick(mouseX, mouseY);
 		if (focus != null && handleMouseClickedFocus(mouseButton, focus)) {
 			return true;
 		}
@@ -99,10 +100,10 @@ public class InputHandler {
 	}
 
 	@Nullable
-	private Focus getFocusUnderMouseForClick(int mouseX, int mouseY) {
+	private Focus<?> getFocusUnderMouseForClick(int mouseX, int mouseY) {
 		for (IShowsRecipeFocuses gui : showsRecipeFocuses) {
 			if (gui.canSetFocusWithMouse()) {
-				Focus focus = gui.getFocusUnderMouse(mouseX, mouseY);
+				Focus<?> focus = gui.getFocusUnderMouse(mouseX, mouseY);
 				if (focus != null) {
 					return focus;
 				}
@@ -112,9 +113,9 @@ public class InputHandler {
 	}
 
 	@Nullable
-	private Focus getFocusUnderMouseForKey(int mouseX, int mouseY) {
+	private IFocus<?> getFocusUnderMouseForKey(int mouseX, int mouseY) {
 		for (IShowsRecipeFocuses gui : showsRecipeFocuses) {
-			Focus focus = gui.getFocusUnderMouse(mouseX, mouseY);
+			IFocus<?> focus = gui.getFocusUnderMouse(mouseX, mouseY);
 			if (focus != null) {
 				return focus;
 			}
@@ -122,19 +123,25 @@ public class InputHandler {
 		return null;
 	}
 
-	private boolean handleMouseClickedFocus(int mouseButton, @Nonnull Focus focus) {
+	private boolean handleMouseClickedFocus(int mouseButton, @Nonnull Focus<?> focus) {
 		if (Config.isEditModeEnabled()) {
 			if (handleClickEditStack(mouseButton, focus)) {
 				return true;
 			}
 		}
 
-		if (Config.isCheatItemsEnabled() && focus.getStack() != null && focus.allowsCheating()) {
+		Object focusValue = focus.getValue();
+		if (!(focusValue instanceof ItemStack)) {
+			return false;
+		}
+		ItemStack itemStack = (ItemStack) focusValue;
+
+		if (Config.isCheatItemsEnabled() && focus.allowsCheating()) {
 			if (mouseButton == 0) {
-				Commands.giveFullStack(focus.getStack());
+				Commands.giveFullStack(itemStack);
 				return true;
 			} else if (mouseButton == 1) {
-				Commands.giveOneFromStack(focus.getStack());
+				Commands.giveOneFromStack(itemStack);
 				return true;
 			}
 		}
@@ -150,11 +157,12 @@ public class InputHandler {
 		return false;
 	}
 
-	private boolean handleClickEditStack(int mouseButton, @Nonnull Focus focus) {
-		ItemStack itemStack = focus.getStack();
-		if (itemStack == null) {
+	private boolean handleClickEditStack(int mouseButton, @Nonnull IFocus<?> focus) {
+		Object focusValue = focus.getValue();
+		if (!(focusValue instanceof ItemStack)) {
 			return false;
 		}
+		ItemStack itemStack = (ItemStack) focusValue;
 
 		Config.ItemBlacklistType blacklistType = null;
 		if (GuiScreen.isCtrlKeyDown()) {
@@ -175,10 +183,10 @@ public class InputHandler {
 			return false;
 		}
 
-		if (Config.isItemOnConfigBlacklist(focus.getStack(), blacklistType)) {
-			Config.removeItemFromConfigBlacklist(focus.getStack(), blacklistType);
+		if (Config.isItemOnConfigBlacklist(itemStack, blacklistType)) {
+			Config.removeItemFromConfigBlacklist(itemStack, blacklistType);
 		} else {
-			Config.addItemToConfigBlacklist(focus.getStack(), blacklistType);
+			Config.addItemToConfigBlacklist(itemStack, blacklistType);
 		}
 		return true;
 	}
@@ -215,13 +223,13 @@ public class InputHandler {
 
 		if (!isContainerTextFieldFocused()) {
 			if (KeyBindings.showRecipe.isActiveAndMatches(eventKey)) {
-				Focus focus = getFocusUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
+				IFocus<?> focus = getFocusUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
 				if (focus != null) {
 					recipesGui.showRecipes(focus);
 					return true;
 				}
 			} else if (KeyBindings.showUses.isActiveAndMatches(eventKey)) {
-				Focus focus = getFocusUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
+				IFocus<?> focus = getFocusUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
 				if (focus != null) {
 					recipesGui.showUses(focus);
 					return true;

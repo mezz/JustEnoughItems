@@ -1,10 +1,10 @@
 package mezz.jei.api;
 
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.Fluid;
-
 import javax.annotation.Nonnull;
 import java.util.List;
+
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 
 /**
  * JEI's gui for displaying recipes. Use this interface to open recipes.
@@ -21,12 +21,12 @@ public interface IRecipesGui {
 	void showRecipes(@Nonnull ItemStack focus);
 
 	/**
-	 * Show recipes for a {@link Fluid}.
+	 * Show recipes for a {@link FluidStack}.
 	 * Opens the {@link IRecipesGui} if it is closed.
 	 *
-	 * @param focus the {@link Fluid} result.
+	 * @param focus the {@link FluidStack} result.
 	 */
-	void showRecipes(@Nonnull Fluid focus);
+	void showRecipes(@Nonnull FluidStack focus);
 
 	/**
 	 * Show recipes that use an {@link ItemStack} as an ingredient.
@@ -37,12 +37,12 @@ public interface IRecipesGui {
 	void showUses(@Nonnull ItemStack focus);
 
 	/**
-	 * Show recipes that use a {@link Fluid} as an ingredient.
+	 * Show recipes that use a {@link FluidStack} as an ingredient.
 	 * Opens the {@link IRecipesGui} if it is closed.
 	 *
-	 * @param focus the {@link Fluid} ingredient.
+	 * @param focus the {@link FluidStack} ingredient.
 	 */
-	void showUses(@Nonnull Fluid focus);
+	void showUses(@Nonnull FluidStack focus);
 
 	/**
 	 * Show entire categories of recipes.

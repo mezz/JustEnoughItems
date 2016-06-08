@@ -3,10 +3,10 @@ package mezz.jei.gui.ingredients;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
-import net.minecraft.item.ItemStack;
-
 import mezz.jei.Internal;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.gui.Focus;
+import net.minecraft.item.ItemStack;
 
 public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
@@ -15,13 +15,13 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
-	public ItemStack getMatch(Iterable<ItemStack> ingredients, @Nonnull Focus toMatch) {
-		return Internal.getStackHelper().containsStack(ingredients, toMatch.getStack());
+	public ItemStack getMatch(Iterable<ItemStack> ingredients, @Nonnull IFocus<ItemStack> toMatch) {
+		return Internal.getStackHelper().containsStack(ingredients, toMatch.getValue());
 	}
 
 	@Nonnull
 	@Override
-	public Focus createFocus(@Nonnull ItemStack ingredient) {
-		return new Focus(ingredient);
+	public Focus<ItemStack> createFocus(@Nonnull ItemStack ingredient) {
+		return new Focus<>(ingredient);
 	}
 }

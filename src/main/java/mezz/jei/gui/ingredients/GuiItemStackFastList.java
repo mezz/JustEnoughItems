@@ -71,10 +71,10 @@ public class GuiItemStackFastList {
 	}
 
 	@Nullable
-	public Focus getFocusUnderMouse(int mouseX, int mouseY) {
+	public Focus<?> getFocusUnderMouse(int mouseX, int mouseY) {
 		GuiItemStackFast hovered = getHovered(mouseX, mouseY);
 		if (hovered != null) {
-			return new Focus(hovered.getItemStack());
+			return new Focus<>(hovered.getItemStack());
 		}
 		return null;
 	}

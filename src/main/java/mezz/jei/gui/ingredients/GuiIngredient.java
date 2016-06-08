@@ -1,17 +1,5 @@
 package mezz.jei.gui.ingredients;
 
-import mezz.jei.api.gui.ITooltipCallback;
-import mezz.jei.gui.Focus;
-import mezz.jei.gui.TooltipRenderer;
-import mezz.jei.util.CycleTimer;
-import mezz.jei.util.Log;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -19,6 +7,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import mezz.jei.api.gui.ITooltipCallback;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.gui.Focus;
+import mezz.jei.gui.TooltipRenderer;
+import mezz.jei.util.CycleTimer;
+import mezz.jei.util.Log;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 
 public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	private final int slotIndex;
@@ -62,12 +62,6 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	}
 
 	@Override
-	public void clear() {
-		enabled = false;
-		displayIngredients.clear();
-	}
-
-	@Override
 	public boolean isMouseOver(int xOffset, int yOffset, int mouseX, int mouseY) {
 		return enabled && (mouseX >= xOffset + xPosition) && (mouseY >= yOffset + yPosition) && (mouseX < xOffset + xPosition + width) && (mouseY < yOffset + yPosition + height);
 	}
@@ -78,7 +72,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	}
 
 	@Override
-	public Focus getFocus() {
+	public Focus<T> getFocus() {
 		T ingredient = getIngredient();
 		if (ingredient == null) {
 			return null;
@@ -93,17 +87,17 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	}
 
 	@Override
-	public void set(@Nonnull T ingredient, @Nonnull Focus focus) {
+	public void set(@Nonnull T ingredient, @Nonnull IFocus<T> focus) {
 		set(Collections.singleton(ingredient), focus);
 	}
 
 	@Override
-	public void set(@Nonnull Collection<T> ingredients, @Nonnull Focus focus) {
+	public void set(@Nonnull Collection<T> ingredients, @Nonnull IFocus<T> focus) {
 		this.displayIngredients.clear();
 		this.allIngredients.clear();
 		ingredients = ingredientHelper.expandSubtypes(ingredients);
 		T match = null;
-		if ((isInput() && focus.getMode() == Focus.Mode.INPUT) || (!isInput() && focus.getMode() == Focus.Mode.OUTPUT)) {
+		if ((isInput() && focus.getMode() == IFocus.Mode.INPUT) || (!isInput() && focus.getMode() == IFocus.Mode.OUTPUT)) {
 			match = ingredientHelper.getMatch(ingredients, focus);
 		}
 		if (match != null) {

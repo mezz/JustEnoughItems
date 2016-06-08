@@ -3,9 +3,9 @@ package mezz.jei.gui.ingredients;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
-import net.minecraftforge.fluids.FluidStack;
-
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.gui.Focus;
+import net.minecraftforge.fluids.FluidStack;
 
 public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	@Override
@@ -14,12 +14,12 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	}
 
 	@Override
-	public FluidStack getMatch(Iterable<FluidStack> ingredients, @Nonnull Focus toMatch) {
-		if (toMatch.getFluid() == null) {
+	public FluidStack getMatch(Iterable<FluidStack> ingredients, @Nonnull IFocus<FluidStack> toMatch) {
+		if (toMatch.getValue() == null) {
 			return null;
 		}
 		for (FluidStack fluidStack : ingredients) {
-			if (toMatch.getFluid() == fluidStack.getFluid()) {
+			if (toMatch.getValue().getFluid() == fluidStack.getFluid()) {
 				return fluidStack;
 			}
 		}
@@ -28,7 +28,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Nonnull
 	@Override
-	public Focus createFocus(@Nonnull FluidStack ingredient) {
-		return new Focus(ingredient.getFluid());
+	public Focus<FluidStack> createFocus(@Nonnull FluidStack ingredient) {
+		return new Focus<>(ingredient);
 	}
 }

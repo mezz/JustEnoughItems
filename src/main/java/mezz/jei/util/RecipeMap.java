@@ -1,5 +1,12 @@
 package mezz.jei.util;
 
+import javax.annotation.Nonnull;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
@@ -9,15 +16,7 @@ import com.google.common.collect.Table;
 import mezz.jei.Internal;
 import mezz.jei.api.recipe.IRecipeCategory;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-
-import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * A RecipeMap efficiently links Recipes, IRecipeCategory, and ItemStacks.
@@ -45,7 +44,7 @@ public class RecipeMap {
 	}
 
 	@Nonnull
-	public ImmutableList<IRecipeCategory> getRecipeCategories(@Nonnull Fluid fluid) {
+	public ImmutableList<IRecipeCategory> getRecipeCategories(@Nonnull FluidStack fluid) {
 		String key = getKeyForFluid(fluid);
 		return recipeCategoryOrdering.immutableSortedCopy(categoryMap.get(key));
 	}
@@ -58,8 +57,8 @@ public class RecipeMap {
 		}
 	}
 
-	private void addRecipeCategory(@Nonnull IRecipeCategory recipeCategory, @Nonnull Fluid fluid) {
-		String key = getKeyForFluid(fluid);
+	private void addRecipeCategory(@Nonnull IRecipeCategory recipeCategory, @Nonnull FluidStack fluidStack) {
+		String key = getKeyForFluid(fluidStack);
 		List<IRecipeCategory> recipeCategories = categoryMap.get(key);
 		if (!recipeCategories.contains(recipeCategory)) {
 			recipeCategories.add(recipeCategory);
@@ -67,8 +66,11 @@ public class RecipeMap {
 	}
 
 	@Nonnull
-	private String getKeyForFluid(Fluid fluid) {
-		return "fluid:" + fluid.getName();
+	private String getKeyForFluid(FluidStack fluidStack) {
+		if (fluidStack.tag != null) {
+			return "fluid:" + fluidStack.getFluid().getName() + ":" + fluidStack.tag;
+		}
+		return "fluid:" + fluidStack.getFluid().getName();
 	}
 
 	@Nonnull
@@ -86,10 +88,10 @@ public class RecipeMap {
 	}
 
 	@Nonnull
-	public List<Object> getRecipes(@Nonnull IRecipeCategory recipeCategory, @Nonnull Fluid fluid) {
+	public List<Object> getRecipes(@Nonnull IRecipeCategory recipeCategory, @Nonnull FluidStack fluidStack) {
 		Map<String, List<Object>> recipesForType = recipeTable.row(recipeCategory);
 
-		String name = getKeyForFluid(fluid);
+		String name = getKeyForFluid(fluidStack);
 		List<Object> recipes = recipesForType.get(name);
 		if (recipes == null) {
 			return ImmutableList.of();
@@ -118,15 +120,11 @@ public class RecipeMap {
 		}
 
 		for (FluidStack fluidStack : fluidStacks) {
-			if (fluidStack == null) {
-				continue;
-			}
-			Fluid fluid = fluidStack.getFluid();
-			if (fluid == null) {
+			if (fluidStack == null || fluidStack.getFluid() == null) {
 				continue;
 			}
 
-			String fluidKey = getKeyForFluid(fluid);
+			String fluidKey = getKeyForFluid(fluidStack);
 			List<Object> recipes = recipesForType.get(fluidKey);
 			if (recipes == null) {
 				recipes = Lists.newArrayList();
@@ -134,7 +132,7 @@ public class RecipeMap {
 			}
 			recipes.add(recipe);
 
-			addRecipeCategory(recipeCategory, fluid);
+			addRecipeCategory(recipeCategory, fluidStack);
 		}
 	}
 }

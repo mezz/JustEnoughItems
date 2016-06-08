@@ -1,5 +1,8 @@
 package mezz.jei.gui;
 
+import javax.annotation.Nonnull;
+import java.util.List;
+
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -11,9 +14,6 @@ import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-
-import javax.annotation.Nonnull;
-import java.util.List;
 
 public class RecipeLayout implements IRecipeLayout {
 	private static final int RECIPE_BUTTON_SIZE = 12;
@@ -33,10 +33,10 @@ public class RecipeLayout implements IRecipeLayout {
 	private final int posX;
 	private final int posY;
 
-	public <T extends IRecipeWrapper> RecipeLayout(int index, int posX, int posY, @Nonnull IRecipeCategory<T> recipeCategory, @Nonnull T recipeWrapper, @Nonnull Focus focus) {
+	public <T extends IRecipeWrapper> RecipeLayout(int index, int posX, int posY, @Nonnull IRecipeCategory<T> recipeCategory, @Nonnull T recipeWrapper, @Nonnull MasterFocus focus) {
 		this.recipeCategory = recipeCategory;
-		this.guiItemStackGroup = new GuiItemStackGroup();
-		this.guiFluidStackGroup = new GuiFluidStackGroup();
+		this.guiItemStackGroup = new GuiItemStackGroup(new Focus<>(focus.getMode(), focus.getItemStack()));
+		this.guiFluidStackGroup = new GuiFluidStackGroup(new Focus<>(focus.getMode(), focus.getFluidStack()));
 		int width = recipeCategory.getBackground().getWidth();
 		int height = recipeCategory.getBackground().getHeight();
 		this.recipeTransferButton = new RecipeTransferButton(recipeTransferButtonIndex + index, posX + width + 2, posY + height - RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, "+");
@@ -44,8 +44,6 @@ public class RecipeLayout implements IRecipeLayout {
 		this.posY = posY;
 
 		this.recipeWrapper = recipeWrapper;
-		this.guiItemStackGroup.setFocus(focus);
-		this.guiFluidStackGroup.setFocus(focus);
 		recipeCategory.setRecipe(this, recipeWrapper);
 	}
 
@@ -108,8 +106,8 @@ public class RecipeLayout implements IRecipeLayout {
 		return recipeMouseX >= 0 && recipeMouseX < background.getWidth() && recipeMouseY >= 0 && recipeMouseY < background.getHeight();
 	}
 
-	public Focus getFocusUnderMouse(int mouseX, int mouseY) {
-		Focus focus = guiItemStackGroup.getFocusUnderMouse(posX, posY, mouseX, mouseY);
+	public Focus<?> getFocusUnderMouse(int mouseX, int mouseY) {
+		Focus<?> focus = guiItemStackGroup.getFocusUnderMouse(posX, posY, mouseX, mouseY);
 		if (focus == null) {
 			focus = guiFluidStackGroup.getFocusUnderMouse(posX, posY, mouseX, mouseY);
 		}

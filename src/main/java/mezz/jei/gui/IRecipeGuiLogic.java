@@ -1,12 +1,12 @@
 package mezz.jei.gui;
 
-import mezz.jei.api.recipe.IRecipeCategory;
-import net.minecraft.item.ItemStack;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
+
+import mezz.jei.api.recipe.IRecipeCategory;
+import net.minecraft.item.ItemStack;
 
 public interface IRecipeGuiLogic {
 
@@ -29,7 +29,7 @@ public interface IRecipeGuiLogic {
 
 	void nextPage();
 
-	boolean setFocus(@Nonnull Focus focus);
+	boolean setFocus(@Nonnull MasterFocus focus);
 
 	boolean back();
 
@@ -40,7 +40,7 @@ public interface IRecipeGuiLogic {
 	boolean setCategoryFocus(List<String> recipeCategoryUids);
 
 	@Nullable
-	Focus getFocus();
+	MasterFocus getFocus();
 
 	@Nullable
 	IRecipeCategory getRecipeCategory();

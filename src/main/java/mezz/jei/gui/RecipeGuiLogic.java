@@ -26,7 +26,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private static class State {
 		/** The focus of this GUI */
 		@Nonnull
-		public final Focus focus;
+		public final MasterFocus focus;
 		/** List of Recipe Categories that involve the focus */
 		@Nonnull
 		public ImmutableList<IRecipeCategory> recipeCategories;
@@ -34,7 +34,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		public int pageIndex;
 		public int recipesPerPage;
 
-		public State(@Nonnull Focus focus, @Nonnull List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int pageIndex) {
+		public State(@Nonnull MasterFocus focus, @Nonnull List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int pageIndex) {
 			this.focus = focus;
 			this.recipeCategories = ImmutableList.copyOf(recipeCategories);
 			this.recipeCategoryIndex = recipeCategoryIndex;
@@ -63,7 +63,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private Collection<ItemStack> recipeCategoryCraftingItems = Collections.emptyList();
 
 	@Override
-	public boolean setFocus(@Nonnull Focus focus) {
+	public boolean setFocus(@Nonnull MasterFocus focus) {
 		return setFocus(focus, true);
 	}
 
@@ -84,7 +84,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 	}
 
-	private boolean setFocus(@Nonnull Focus focus, boolean saveHistory) {
+	private boolean setFocus(@Nonnull MasterFocus focus, boolean saveHistory) {
 		if (this.state != null && this.state.focus.equalsFocus(focus)) {
 			return true;
 		}
@@ -140,7 +140,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 		final List<IRecipeCategory> recipeCategories = Internal.getRuntime().getRecipeRegistry().getRecipeCategories();
 		final int recipeCategoryIndex = recipeCategories.indexOf(recipeCategory);
-		final State state = new State(new Focus(), recipeCategories, recipeCategoryIndex, 0);
+		final State state = new State(new MasterFocus(), recipeCategories, recipeCategoryIndex, 0);
 		setState(state);
 
 		return true;
@@ -157,14 +157,14 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			history.push(this.state);
 		}
 
-		final State state = new State(new Focus(), recipeCategories, 0, 0);
+		final State state = new State(new MasterFocus(), recipeCategories, 0, 0);
 		setState(state);
 
 		return true;
 	}
 
 	@Override
-	public Focus getFocus() {
+	public MasterFocus getFocus() {
 		if (state == null) {
 			return null;
 		}
@@ -201,7 +201,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			recipes = Collections.emptyList();
 			recipeCategoryCraftingItems = Collections.emptyList();
 		} else {
-			Focus focus = state.focus;
+			MasterFocus focus = state.focus;
 			recipes = focus.getRecipes(recipeCategory);
 			recipeCategoryCraftingItems = focus.getRecipeCategoryCraftingItems(recipeCategory);
 		}

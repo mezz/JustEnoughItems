@@ -8,7 +8,7 @@ import java.util.List;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 
 /**
  * The IRecipeManager offers several functions for retrieving and handling recipes.
@@ -35,7 +35,7 @@ public interface IRecipeRegistry {
 
 	/** Returns an unmodifiable list of Recipe Categories that have the Fluid as an input */
 	@Nonnull
-	List<IRecipeCategory> getRecipeCategoriesWithInput(@Nonnull Fluid input);
+	List<IRecipeCategory> getRecipeCategoriesWithInput(@Nonnull FluidStack input);
 
 	/** Returns an unmodifiable list of Recipe Categories that have the ItemStack as an output */
 	@Nonnull
@@ -43,7 +43,7 @@ public interface IRecipeRegistry {
 
 	/** Returns an unmodifiable list of Recipe Categories that have the Fluid as an output */
 	@Nonnull
-	List<IRecipeCategory> getRecipeCategoriesWithOutput(@Nonnull Fluid output);
+	List<IRecipeCategory> getRecipeCategoriesWithOutput(@Nonnull FluidStack output);
 
 	/** Returns an unmodifiable list of Recipes of recipeCategory that have the ItemStack as an input */
 	@Nonnull
@@ -51,7 +51,7 @@ public interface IRecipeRegistry {
 
 	/** Returns an unmodifiable list of Recipes of recipeCategory that have the Fluid as an input */
 	@Nonnull
-	List<Object> getRecipesWithInput(@Nonnull IRecipeCategory recipeCategory, @Nonnull Fluid input);
+	List<Object> getRecipesWithInput(@Nonnull IRecipeCategory recipeCategory, @Nonnull FluidStack input);
 
 	/** Returns an unmodifiable list of Recipes of recipeCategory that have the ItemStack as an output */
 	@Nonnull
@@ -59,7 +59,7 @@ public interface IRecipeRegistry {
 
 	/** Returns an unmodifiable list of Recipes of recipeCategory that have the Fluid as an output */
 	@Nonnull
-	List<Object> getRecipesWithOutput(@Nonnull IRecipeCategory recipeCategory, @Nonnull Fluid output);
+	List<Object> getRecipesWithOutput(@Nonnull IRecipeCategory recipeCategory, @Nonnull FluidStack output);
 
 	/** Returns an unmodifiable list of Recipes in recipeCategory */
 	@Nonnull

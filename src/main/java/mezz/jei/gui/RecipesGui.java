@@ -1,8 +1,17 @@
 package mezz.jei.gui;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import mezz.jei.Internal;
 import mezz.jei.api.IRecipesGui;
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
@@ -24,18 +33,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
 import org.lwjgl.input.Mouse;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFocuses {
 	private static final int borderPadding = 6;
@@ -58,7 +59,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	private String title;
 	private ResourceLocation backgroundTexture;
 	private IDrawable recipeCategoryCraftItemBox;
-	private final GuiItemStackGroup recipeCategoryCraftingItem = new GuiItemStackGroup();
+	private final GuiItemStackGroup recipeCategoryCraftingItem = new GuiItemStackGroup(new Focus<ItemStack>(null));
 	private HoverChecker titleHoverChecker;
 
 	private GuiButton nextRecipeCategory;
@@ -230,10 +231,10 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	@Nullable
 	@Override
-	public Focus getFocusUnderMouse(int mouseX, int mouseY) {
+	public Focus<?> getFocusUnderMouse(int mouseX, int mouseY) {
 		Rectangle recipeCraftingItemArea = getRecipeCraftingItemArea();
 		if (recipeCraftingItemArea != null && recipeCraftingItemArea.contains(mouseX, mouseY)) {
-			Focus focus = recipeCategoryCraftingItem.getFocusUnderMouse(0, 0, mouseX, mouseY);
+			Focus<?> focus = recipeCategoryCraftingItem.getFocusUnderMouse(0, 0, mouseX, mouseY);
 			if (focus != null) {
 				return focus;
 			}
@@ -241,7 +242,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 		if (isMouseOver(mouseX, mouseY)) {
 			for (RecipeLayout recipeLayouts : this.recipeLayouts) {
-				Focus focus = recipeLayouts.getFocusUnderMouse(mouseX, mouseY);
+				Focus<?> focus = recipeLayouts.getFocusUnderMouse(mouseX, mouseY);
 				if (focus != null) {
 					return focus;
 				}
@@ -333,21 +334,26 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			Log.error("Null focus", new NullPointerException());
 			return;
 		}
-		showRecipes(new Focus(focus));
+		showRecipes(new MasterFocus(focus));
 	}
 
 	@Override
-	public void showRecipes(@Nullable Fluid focus) {
+	public void showRecipes(@Nullable FluidStack focus) {
 		if (focus == null) {
 			Log.error("Null focus", new NullPointerException());
 			return;
 		}
-		showRecipes(new Focus(focus));
+		showRecipes(new MasterFocus(focus));
 	}
 
-	public void showRecipes(@Nonnull Focus focus) {
-		focus.setMode(Focus.Mode.OUTPUT);
-		if (logic.setFocus(focus)) {
+	public void showRecipes(@Nonnull IFocus<?> focus) {
+		MasterFocus masterFocus = MasterFocus.create(focus);
+		showRecipes(masterFocus);
+	}
+
+	public void showRecipes(@Nonnull MasterFocus masterFocus) {
+		masterFocus.setMode(IFocus.Mode.OUTPUT);
+		if (logic.setFocus(masterFocus)) {
 			open();
 		}
 	}
@@ -358,20 +364,25 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			Log.error("Null focus", new NullPointerException());
 			return;
 		}
-		showUses(new Focus(focus));
+		showUses(new MasterFocus(focus));
 	}
 
 	@Override
-	public void showUses(@Nullable Fluid focus) {
+	public void showUses(@Nullable FluidStack focus) {
 		if (focus == null) {
 			Log.error("Null focus", new NullPointerException());
 			return;
 		}
-		showUses(new Focus(focus));
+		showUses(new MasterFocus(focus));
 	}
 
-	public void showUses(@Nonnull Focus focus) {
-		focus.setMode(Focus.Mode.INPUT);
+	public void showUses(@Nonnull IFocus<?> focus) {
+		MasterFocus masterFocus = MasterFocus.create(focus);
+		showUses(masterFocus);
+	}
+
+	public void showUses(@Nonnull MasterFocus focus) {
+		focus.setMode(IFocus.Mode.INPUT);
 		if (logic.setFocus(focus)) {
 			open();
 		}

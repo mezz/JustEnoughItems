@@ -1,23 +1,22 @@
 package mezz.jei.gui.ingredients;
 
-import mezz.jei.gui.Focus;
-import net.minecraft.client.Minecraft;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.gui.Focus;
+import net.minecraft.client.Minecraft;
+
 public interface IGuiIngredient<T> {
-	void set(@Nonnull T contained, @Nonnull Focus focus);
+	void set(@Nonnull T contained, @Nonnull IFocus<T> focus);
 
-	void set(@Nonnull Collection<T> contained, @Nonnull Focus focus);
-
-	void clear();
+	void set(@Nonnull Collection<T> contained, @Nonnull IFocus<T> focus);
 
 	@Nullable
-	Focus getFocus();
+	Focus<T> getFocus();
 
 	@Nonnull
 	List<T> getAllIngredients();

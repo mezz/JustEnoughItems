@@ -7,7 +7,7 @@ import mezz.jei.gui.Focus;
 public interface IShowsRecipeFocuses {
 
 	@Nullable
-	Focus getFocusUnderMouse(int mouseX, int mouseY);
+	Focus<?> getFocusUnderMouse(int mouseX, int mouseY);
 
 	boolean canSetFocusWithMouse();
 
