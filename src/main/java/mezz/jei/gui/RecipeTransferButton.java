@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 
@@ -47,7 +48,7 @@ public class RecipeTransferButton extends GuiButtonExt {
 		super.drawButton(mc, mouseX, mouseY);
 		if (hovered && visible) {
 			if (recipeTransferError != null) {
-				recipeTransferError.showError(mc, mouseX, mouseY, recipeLayout);
+				recipeTransferError.showError(mc, mouseX, mouseY, recipeLayout, recipeLayout.getPosX(), recipeLayout.getPosY());
 			} else {
 				TooltipRenderer.drawHoveringText(mc, transferTooltip, mouseX, mouseY);
 			}

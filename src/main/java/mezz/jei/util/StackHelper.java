@@ -16,7 +16,7 @@ import java.util.TreeSet;
 
 import mezz.jei.Internal;
 import mezz.jei.api.recipe.IStackHelper;
-import mezz.jei.gui.ingredients.IGuiIngredient;
+import mezz.jei.api.gui.IGuiIngredient;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;

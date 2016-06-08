@@ -2,6 +2,7 @@ package mezz.jei.transfer;
 
 import javax.annotation.Nonnull;
 
+import mezz.jei.api.gui.IRecipeLayout;
 import net.minecraft.client.Minecraft;
 
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
@@ -16,13 +17,14 @@ public class RecipeTransferErrorTooltip implements IRecipeTransferError {
 		this.message = message;
 	}
 
+	@Nonnull
 	@Override
 	public Type getType() {
 		return Type.USER_FACING;
 	}
 
 	@Override
-	public void showError(@Nonnull Minecraft minecraft, int mouseX, int mouseY, @Nonnull RecipeLayout recipeLayout) {
+	public void showError(@Nonnull Minecraft minecraft, int mouseX, int mouseY, @Nonnull IRecipeLayout recipeLayout, int recipeX, int recipeY) {
 		TooltipRenderer.drawHoveringText(minecraft, message, mouseX, mouseY);
 	}
 }

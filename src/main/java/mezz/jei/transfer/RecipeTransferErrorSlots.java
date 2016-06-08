@@ -1,16 +1,15 @@
 package mezz.jei.transfer;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
+import java.awt.*;
 import java.util.Collection;
 import java.util.Map;
 
+import mezz.jei.api.gui.IGuiIngredient;
+import mezz.jei.api.gui.IGuiItemStackGroup;
+import mezz.jei.api.gui.IRecipeLayout;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-
-import mezz.jei.gui.RecipeLayout;
-import mezz.jei.gui.ingredients.GuiIngredient;
-import mezz.jei.gui.ingredients.GuiItemStackGroup;
 
 public class RecipeTransferErrorSlots extends RecipeTransferErrorTooltip {
 	private static final Color highlightColor = new Color(1.0f, 0.0f, 0.0f, 0.4f);
@@ -22,14 +21,14 @@ public class RecipeTransferErrorSlots extends RecipeTransferErrorTooltip {
 	}
 
 	@Override
-	public void showError(@Nonnull Minecraft minecraft, int mouseX, int mouseY, @Nonnull RecipeLayout recipeLayout) {
-		super.showError(minecraft, mouseX, mouseY, recipeLayout);
+	public void showError(@Nonnull Minecraft minecraft, int mouseX, int mouseY, @Nonnull IRecipeLayout recipeLayout, int recipeX, int recipeY) {
+		super.showError(minecraft, mouseX, mouseY, recipeLayout, recipeX, recipeY);
 
-		GuiItemStackGroup itemStackGroup = recipeLayout.getItemStacks();
-		Map<Integer, GuiIngredient<ItemStack>> ingredients = itemStackGroup.getGuiIngredients();
+		IGuiItemStackGroup itemStackGroup = recipeLayout.getItemStacks();
+		Map<Integer, ? extends IGuiIngredient<ItemStack>>  ingredients = itemStackGroup.getGuiIngredients();
 		for (Integer slotIndex : slots) {
-			GuiIngredient<ItemStack> ingredient = ingredients.get(slotIndex);
-			ingredient.drawHighlight(minecraft, highlightColor, recipeLayout.getPosX(), recipeLayout.getPosY());
+			IGuiIngredient<ItemStack> ingredient = ingredients.get(slotIndex);
+			ingredient.drawHighlight(minecraft, highlightColor, recipeX, recipeY);
 		}
 	}
 }

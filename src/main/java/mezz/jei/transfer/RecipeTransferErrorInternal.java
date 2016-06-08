@@ -2,6 +2,7 @@ package mezz.jei.transfer;
 
 import javax.annotation.Nonnull;
 
+import mezz.jei.api.gui.IRecipeLayout;
 import net.minecraft.client.Minecraft;
 
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
@@ -14,13 +15,14 @@ public class RecipeTransferErrorInternal implements IRecipeTransferError {
 
 	}
 
+	@Nonnull
 	@Override
 	public Type getType() {
 		return Type.INTERNAL;
 	}
 
 	@Override
-	public void showError(@Nonnull Minecraft minecraft, int mouseX, int mouseY, @Nonnull RecipeLayout recipeLayout) {
+	public void showError(@Nonnull Minecraft minecraft, int mouseX, int mouseY, @Nonnull IRecipeLayout recipeLayout, int recipeX, int recipeY) {
 
 	}
 }

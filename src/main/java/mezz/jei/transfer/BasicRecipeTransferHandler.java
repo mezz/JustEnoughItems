@@ -24,7 +24,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.config.SessionData;
-import mezz.jei.gui.ingredients.IGuiIngredient;
+import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.util.Log;
 import mezz.jei.util.StackHelper;

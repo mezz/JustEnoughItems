@@ -2,12 +2,12 @@ package mezz.jei.api.recipe.transfer;
 
 import javax.annotation.Nonnull;
 
+import mezz.jei.api.gui.IRecipeLayout;
 import net.minecraft.client.Minecraft;
 
-import mezz.jei.gui.RecipeLayout;
-
 /**
- * A reason that the recipe transfer couldn't happen. See IRecipeTransferError.Type
+ * A reason that the recipe transfer couldn't happen.
+ * See {@link Type#INTERNAL} and {@link Type#USER_FACING}.
  */
 public interface IRecipeTransferError {
 	enum Type {
@@ -24,8 +24,9 @@ public interface IRecipeTransferError {
 		USER_FACING
 	}
 
+	@Nonnull
 	Type getType();
 
 	/** Called on USER_FACING errors */
-	void showError(@Nonnull Minecraft minecraft, int mouseX, int mouseY, @Nonnull RecipeLayout recipeLayout);
+	void showError(@Nonnull Minecraft minecraft, int mouseX, int mouseY, @Nonnull IRecipeLayout recipeLayout, int recipeX, int recipeY);
 }

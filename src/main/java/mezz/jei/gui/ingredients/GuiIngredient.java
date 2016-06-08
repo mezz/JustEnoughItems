@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.gui.ITooltipCallback;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.gui.Focus;
@@ -61,7 +62,6 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		this.cycleTimer = new CycleTimer(itemCycleOffset);
 	}
 
-	@Override
 	public boolean isMouseOver(int xOffset, int yOffset, int mouseX, int mouseY) {
 		return enabled && (mouseX >= xOffset + xPosition) && (mouseY >= yOffset + yPosition) && (mouseX < xOffset + xPosition + width) && (mouseY < yOffset + yPosition + height);
 	}
@@ -72,7 +72,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	}
 
 	@Override
-	public Focus<T> getFocus() {
+	public Focus<T> getCurrentlyDisplayed() {
 		T ingredient = getIngredient();
 		if (ingredient == null) {
 			return null;
@@ -86,12 +86,10 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		return allIngredients;
 	}
 
-	@Override
 	public void set(@Nonnull T ingredient, @Nonnull IFocus<T> focus) {
 		set(Collections.singleton(ingredient), focus);
 	}
 
-	@Override
 	public void set(@Nonnull Collection<T> ingredients, @Nonnull IFocus<T> focus) {
 		this.displayIngredients.clear();
 		this.allIngredients.clear();
@@ -114,7 +112,6 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		this.tooltipCallback = tooltipCallback;
 	}
 
-	@Override
 	public void draw(@Nonnull Minecraft minecraft, int xOffset, int yOffset) {
 		cycleTimer.onDraw();
 
@@ -122,7 +119,6 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		ingredientRenderer.draw(minecraft, xOffset + xPosition + padding, yOffset + yPosition + padding, value);
 	}
 
-	@Override
 	public void drawHovered(@Nonnull Minecraft minecraft, int xOffset, int yOffset, int mouseX, int mouseY) {
 		T value = getIngredient();
 		if (value == null) {

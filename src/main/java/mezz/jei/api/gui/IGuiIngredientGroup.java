@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import mezz.jei.api.recipe.IFocus;
-import mezz.jei.gui.ingredients.IGuiIngredient;
 
 /**
  * IGuiIngredientGroup displays recipe ingredients in a gui.
