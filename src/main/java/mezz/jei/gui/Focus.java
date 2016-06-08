@@ -15,6 +15,7 @@ import mezz.jei.util.StackHelper;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -56,6 +57,11 @@ public class Focus {
 			if (fluid != null) {
 				return fluid;
 			}
+		}
+
+		// workaround for broken FluidContainerRegistry entry for potions
+		if (item instanceof ItemPotion) {
+			return null;
 		}
 
 		FluidStack fluidContained = FluidUtil.getFluidContained(stack);
