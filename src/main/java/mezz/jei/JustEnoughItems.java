@@ -52,7 +52,7 @@ public class JustEnoughItems {
 		packetHandler = new PacketHandler();
 		proxy.preInit(event);
 
-		if (Config.isDebugModeEnabled()) {
+		if (Config.isDebugItemEnabled()) {
 			String name = "jeiDebug";
 			Item debugItem = new DebugItem(name);
 			debugItem.setUnlocalizedName(name);

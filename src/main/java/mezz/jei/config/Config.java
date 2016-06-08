@@ -35,6 +35,7 @@ public class Config {
 
 	// advanced
 	private static boolean debugModeEnabled = false;
+	private static boolean debugItemEnabled = false;
 	private static boolean hideMissingModelsEnabled = true;
 	private static boolean deleteItemsInCheatModeEnabled = true;
 	private static boolean colorSearchEnabled = false;
@@ -91,6 +92,10 @@ public class Config {
 
 	public static boolean isDebugModeEnabled() {
 		return debugModeEnabled;
+	}
+
+	public static boolean isDebugItemEnabled() {
+		return debugItemEnabled;
 	}
 
 	public static boolean isDeleteItemsInCheatModeActive() {
@@ -291,6 +296,12 @@ public class Config {
 		debugModeEnabled = config.getBoolean(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
 		{
 			Property property = config.get(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
+			property.setShowInGui(false);
+		}
+
+		debugItemEnabled = config.getBoolean(CATEGORY_ADVANCED, "debugItemEnabled", debugItemEnabled);
+		{
+			Property property = config.get(CATEGORY_ADVANCED, "debugItemEnabled", debugItemEnabled);
 			property.setShowInGui(false);
 			property.setRequiresMcRestart(true);
 		}
