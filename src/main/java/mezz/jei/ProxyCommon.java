@@ -7,6 +7,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import mezz.jei.network.packets.PacketJEI;
@@ -19,6 +20,10 @@ public class ProxyCommon {
 	}
 
 	public void init(@Nonnull FMLInitializationEvent event) {
+
+	}
+
+	public void postInit(@Nonnull FMLPostInitializationEvent event) {
 
 	}
 

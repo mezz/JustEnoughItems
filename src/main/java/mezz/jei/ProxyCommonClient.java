@@ -38,6 +38,7 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -74,16 +75,6 @@ public class ProxyCommonClient extends ProxyCommon {
 			this.plugins.remove(jeiInternalPlugin);
 			this.plugins.add(jeiInternalPlugin);
 		}
-
-		// Reload when localization changes
-		Minecraft minecraft = Minecraft.getMinecraft();
-		IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) minecraft.getResourceManager();
-		reloadableResourceManager.registerReloadListener(new IResourceManagerReloadListener() {
-			@Override
-			public void onResourceManagerReload(IResourceManager resourceManager) {
-				restartJEI();
-			}
-		});
 	}
 
 	@Nullable
@@ -115,6 +106,19 @@ public class ProxyCommonClient extends ProxyCommon {
 		MinecraftForge.EVENT_BUS.register(guiEventHandler);
 
 		fixVanillaItemHasSubtypes();
+	}
+
+	@Override
+	public void postInit(@Nonnull FMLPostInitializationEvent event) {
+		// Reload when resources change
+		Minecraft minecraft = Minecraft.getMinecraft();
+		IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) minecraft.getResourceManager();
+		reloadableResourceManager.registerReloadListener(new IResourceManagerReloadListener() {
+			@Override
+			public void onResourceManagerReload(IResourceManager resourceManager) {
+				restartJEI();
+			}
+		});
 	}
 
 	/** fix vanilla items that don't mark themselves as having subtypes */
