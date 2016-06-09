@@ -1,11 +1,14 @@
 package mezz.jei;
 
+import javax.annotation.Nonnull;
+
 import mezz.jei.util.StackHelper;
 import mezz.jei.util.color.ColorNamer;
 
 /** For JEI internal use only, these are normally accessed from the API. */
 public class Internal {
-	private static JeiHelpers helpers;
+	@Nonnull
+	private static JeiHelpers helpers = new JeiHelpers();
 	private static JeiRuntime runtime;
 	private static ItemRegistry itemRegistry;
 	private static ColorNamer colorNamer;
@@ -14,14 +17,16 @@ public class Internal {
 
 	}
 
+	@Nonnull
 	public static JeiHelpers getHelpers() {
 		return helpers;
 	}
 
-	public static void setHelpers(JeiHelpers helpers) {
+	public static void setHelpers(@Nonnull JeiHelpers helpers) {
 		Internal.helpers = helpers;
 	}
 
+	@Nonnull
 	public static StackHelper getStackHelper() {
 		return helpers.getStackHelper();
 	}

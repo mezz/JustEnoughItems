@@ -9,11 +9,17 @@ import mezz.jei.transfer.RecipeTransferHandlerHelper;
 import mezz.jei.util.StackHelper;
 
 public class JeiHelpers implements IJeiHelpers {
+	@Nonnull
 	private final GuiHelper guiHelper;
+	@Nonnull
 	private final StackHelper stackHelper;
+	@Nonnull
 	private final ItemBlacklist itemBlacklist;
+	@Nonnull
 	private final NbtIgnoreList nbtIgnoreList;
+	@Nonnull
 	private final NbtRegistry nbtRegistry;
+	@Nonnull
 	private final RecipeTransferHandlerHelper recipeTransferHandlerHelper;
 
 	public JeiHelpers() {
