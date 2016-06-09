@@ -8,6 +8,7 @@ import java.util.List;
 import mezz.jei.Internal;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -106,15 +107,27 @@ public class ErrorUtil {
 		if (registryName != null) {
 			itemName = registryName.toString();
 		} else if (item instanceof ItemBlock) {
-			itemName = "ItemBlock(" + ((ItemBlock) item).getBlock() + ")";
+			final String blockName;
+			Block block = ((ItemBlock) item).getBlock();
+			if (block == null) {
+				blockName = "null";
+			} else {
+				ResourceLocation blockRegistryName = block.getRegistryName();
+				if (blockRegistryName != null) {
+					blockName = blockRegistryName.toString();
+				} else {
+					blockName = block.getClass().getName();
+				}
+			}
+			itemName = "ItemBlock(" + blockName + ")";
 		} else {
 			itemName = item.getClass().getName();
 		}
 
 		NBTTagCompound nbt = itemStack.getTagCompound();
 		if (nbt != null) {
-			return itemStack.toString() + " " + itemName + " nbt:" + nbt;
+			return itemStack + " " + itemName + " nbt:" + nbt;
 		}
-		return itemStack.toString() + " " + itemName;
+		return itemStack + " " + itemName;
 	}
 }

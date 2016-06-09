@@ -347,7 +347,8 @@ public class StackHelper implements IStackHelper {
 
 		ResourceLocation itemName = Item.REGISTRY.getNameForObject(item);
 		if (itemName == null) {
-			throw new NullPointerException("Item.itemRegistry.getNameForObject returned null for: " + item.getClass());
+			String stackInfo = ErrorUtil.getItemStackInfo(stack);
+			throw new NullPointerException("Item is not registered. Item.REGISTRY.getNameForObject returned null for: " + stackInfo);
 		}
 
 		String itemNameString = itemName.toString();

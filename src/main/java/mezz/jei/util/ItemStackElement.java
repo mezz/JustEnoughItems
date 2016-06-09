@@ -65,7 +65,8 @@ public class ItemStackElement {
 
 		String displayName = itemStack.getDisplayName();
 		if (displayName == null) {
-			throw new NullPointerException("No display name for item. " + itemResourceLocation + ' ' + item.getClass());
+			String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
+			throw new NullPointerException("No display name for item. " + stackInfo);
 		}
 		displayName = displayName.toLowerCase();
 
