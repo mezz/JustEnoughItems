@@ -1,10 +1,15 @@
 package mezz.jei.gui.ingredients;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+
 import mezz.jei.gui.Focus;
+import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.ItemStackElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -12,11 +17,6 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GuiItemStackFastList {
 	private final List<GuiItemStackFast> renderItemsAll = new ArrayList<>();
@@ -52,13 +52,18 @@ public class GuiItemStackFastList {
 			} else {
 				ItemStack stack = itemList.get(i).getItemStack();
 				IBakedModel bakedModel = renderItem.getItemModelWithOverrides(stack, null, null);
-				guiItemStack.setItemStack(stack);
-				if (bakedModel.isBuiltInRenderer()) {
-					renderItemsBuiltIn.add(guiItemStack);
-				} else if (bakedModel.isGui3d()) {
-					renderItems3d.add(guiItemStack);
+				if (bakedModel == null) {
+					String stackInfo = ErrorUtil.getItemStackInfo(stack);
+					throw new NullPointerException("ItemStack returned null IBakedModel from RenderItem.getItemModelWithOverrides(stack, null, null). " + stackInfo);
 				} else {
-					renderItems2d.add(guiItemStack);
+					guiItemStack.setItemStack(stack);
+					if (bakedModel.isBuiltInRenderer()) {
+						renderItemsBuiltIn.add(guiItemStack);
+					} else if (bakedModel.isGui3d()) {
+						renderItems3d.add(guiItemStack);
+					} else {
+						renderItems2d.add(guiItemStack);
+					}
 				}
 			}
 			i++;
