@@ -151,6 +151,9 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 		return null;
 	}
 
+	/**
+	 * Called server-side to actually put the items in place.
+	 */
 	public static void setItems(@Nonnull EntityPlayer player, @Nonnull Map<Integer, ItemStack> slotMap, @Nonnull List<Integer> craftingSlots, @Nonnull List<Integer> inventorySlots, boolean maxTransfer) {
 		Container container = player.openContainer;
 		StackHelper stackHelper = Internal.getStackHelper();
@@ -173,14 +176,17 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 
 		// put items into the crafting grid
 		for (Map.Entry<Integer, ItemStack> entry : slotMap.entrySet()) {
-			ItemStack stack = entry.getValue();
-			if (stack.isStackable()) {
-				int maxSets = stack.getMaxStackSize() / stack.stackSize;
-				stack.stackSize *= Math.min(maxSets, removedSets);
-			}
 			Integer craftNumber = entry.getKey();
 			Integer slotNumber = craftingSlots.get(craftNumber);
 			Slot slot = container.getSlot(slotNumber);
+
+			ItemStack stack = entry.getValue();
+			if (stack.isStackable()) {
+				int maxStackSize = Math.min(slot.getItemStackLimit(stack), stack.getMaxStackSize());
+				int maxSets = maxStackSize / stack.stackSize;
+				stack.stackSize *= Math.min(maxSets, removedSets);
+			}
+
 			slot.putStack(stack);
 		}
 

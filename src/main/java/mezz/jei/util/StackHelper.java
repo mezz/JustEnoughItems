@@ -425,7 +425,8 @@ public class StackHelper implements IStackHelper {
 			}
 
 			int remain = stack.stackSize - added;
-			int space = inventoryStack.getMaxStackSize() - inventoryStack.stackSize;
+			int maxStackSize = Math.min(slot.getItemStackLimit(inventoryStack), inventoryStack.getMaxStackSize());
+			int space = maxStackSize - inventoryStack.stackSize;
 			if (space <= 0) {
 				continue;
 			}
