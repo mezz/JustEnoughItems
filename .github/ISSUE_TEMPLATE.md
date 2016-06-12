@@ -1,7 +1,7 @@
 Thank you for reporting!
 
-Please do not suggest features from NEI that are not about recipes, JEI is a recipe viewer. [NotEnoughWidgets](https://github.com/TheCBProject/NotEnoughWidgets) will have those features.
-
-If there is an issue:
- * It may already be fixed, please try the [latest version](http://minecraft.curseforge.com/projects/just-enough-items-jei/files).
- * If JEI crashed, please paste the crash log to [gist](https://gist.github.com/) and link it in this issue.
+When reporting:
+ * If you use ForeverEnoughItems, please remove it and try again or [report here instead](https://github.com/elix-x/Forever-Enough-Items/issues).  
+ * Please do not suggest features from NEI. [NotEnoughWidgets will have those features.](https://github.com/TheCBProject/NotEnoughItems/issues/6)
+ * Try the [latest version](http://minecraft.curseforge.com/projects/just-enough-items-jei/files), it may have fixed the issue already.
+ * If you crashed, please paste the crash log to https://gist.github.com/ and link it here.
