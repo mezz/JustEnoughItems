@@ -345,41 +345,37 @@ public class StackHelper implements IStackHelper {
 			throw new NullPointerException(nullItemInStack);
 		}
 
-		ResourceLocation itemName = Item.REGISTRY.getNameForObject(item);
-		if (itemName == null) {
-			String stackInfo = ErrorUtil.getItemStackInfo(stack);
-			throw new NullPointerException("Item is not registered. Item.REGISTRY.getNameForObject returned null for: " + stackInfo);
-		}
-
-		String itemNameString = itemName.toString();
 		int metadata = stack.getMetadata();
 		if (mode == UidMode.WILDCARD || metadata == OreDictionary.WILDCARD_VALUE) {
-			return itemNameString;
+			ResourceLocation itemName = Item.REGISTRY.getNameForObject(item);
+			if (itemName == null) {
+				String stackInfo = ErrorUtil.getItemStackInfo(stack);
+				throw new NullPointerException("Item is not registered. Item.REGISTRY.getNameForObject returned null for: " + stackInfo);
+			}
+			return itemName.toString();
 		}
 
-		StringBuilder itemKey = new StringBuilder(itemNameString);
-		if (mode == UidMode.FULL || stack.getHasSubtypes()) {
+		NBTTagCompound serializedNbt = stack.serializeNBT();
+		StringBuilder itemKey = new StringBuilder(serializedNbt.getString("id"));
+		if (mode == UidMode.FULL) {
 			itemKey.append(':').append(metadata);
-			if (stack.hasTagCompound()) {
-				if (mode == UidMode.FULL) {
-					NBTTagCompound nbtTagCompound = stack.getTagCompound();
-					if (nbtTagCompound != null && !nbtTagCompound.hasNoTags()) {
-						itemKey.append(':').append(nbtTagCompound);
-					}
-				} else {
-					NBTTagCompound nbtTagCompound = Internal.getHelpers().getNbtIgnoreList().getNbt(stack);
 
-					if (stack.getTagCompound() != nbtTagCompound) { // legacy handling for mods using nbtIgnoreList
-						if (nbtTagCompound != null && !nbtTagCompound.hasNoTags()) {
-							itemKey.append(':').append(nbtTagCompound);
-						}
-					} else { // nbtIgnoreList was not used
-						String subtypeInfo = Internal.getHelpers().getNbtRegistry().getSubtypeInfoFromNbt(stack);
-						if (subtypeInfo != null) {
-							itemKey.append(':').append(subtypeInfo);
-						}
-					}
+			NBTTagCompound nbtTagCompound = serializedNbt.getCompoundTag("tag");
+			if (serializedNbt.hasKey("ForgeCaps")) {
+				if (nbtTagCompound == null) {
+					nbtTagCompound = new NBTTagCompound();
 				}
+				nbtTagCompound.setTag("ForgeCaps", serializedNbt.getCompoundTag("ForgeCaps"));
+			}
+			if (nbtTagCompound != null && !nbtTagCompound.hasNoTags()) {
+				itemKey.append(':').append(nbtTagCompound);
+			}
+		} else if (stack.getHasSubtypes()) {
+			itemKey.append(':').append(metadata);
+
+			String subtypeInfo = Internal.getHelpers().getSubtypeRegistry().getSubtypeInfo(stack);
+			if (subtypeInfo != null) {
+				itemKey.append(':').append(subtypeInfo);
 			}
 		}
 

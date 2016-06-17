@@ -17,7 +17,9 @@ import net.minecraft.nbt.NBTTagCompound;
  * Replaces {@link INbtIgnoreList}.
  *
  * @since 3.6.0
+ * @deprecated since 3.6.4. Use {@link ISubtypeRegistry}
  */
+@Deprecated
 public interface INbtRegistry {
 	/**
 	 * Tells JEI to treat all NBT as relevant to these items' subtypes.

@@ -1,11 +1,13 @@
 package mezz.jei.plugins.vanilla;
 
+import javax.annotation.Nonnull;
+
 import mezz.jei.api.BlankModPlugin;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModRegistry;
-import mezz.jei.api.INbtRegistry;
+import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
@@ -35,13 +37,8 @@ import net.minecraft.inventory.ContainerFurnace;
 import net.minecraft.inventory.ContainerWorkbench;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeModContainer;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.UniversalBucket;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 @JEIPlugin
 public class VanillaPlugin extends BlankModPlugin {
@@ -50,19 +47,7 @@ public class VanillaPlugin extends BlankModPlugin {
 		IItemRegistry itemRegistry = registry.getItemRegistry();
 		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
 
-		// normally you should ignore nbt per-item, but these tags are universally understood
-		// and apply to many vanilla and modded items
-		jeiHelpers.getNbtIgnoreList().ignoreNbtTagNames(
-				"AttributeModifiers",
-				"CanDestroy",
-				"CanPlaceOn",
-				"display",
-				"HideFlags",
-				"RepairCost",
-				"Unbreakable"
-		);
-
-		INbtRegistry nbtRegistry = jeiHelpers.getNbtRegistry();
+		ISubtypeRegistry nbtRegistry = jeiHelpers.getSubtypeRegistry();
 		nbtRegistry.useNbtForSubtypes(
 				Items.BANNER,
 				Items.SPAWN_EGG,
