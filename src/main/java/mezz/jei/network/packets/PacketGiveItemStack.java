@@ -14,6 +14,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.SoundCategory;
@@ -39,7 +40,7 @@ public class PacketGiveItemStack extends PacketJEI {
 
 	@Override
 	public void writePacketData(PacketBuffer buf) throws IOException {
-		buf.writeItemStackToBuffer(itemStack);
+		buf.writeNBTTagCompoundToBuffer(itemStack.serializeNBT());
 	}
 
 	@Override
@@ -52,8 +53,13 @@ public class PacketGiveItemStack extends PacketJEI {
 			Map<String, ICommand> commands = commandManager.getCommands();
 			ICommand giveCommand = commands.get("give");
 			if (giveCommand != null && giveCommand.checkPermission(minecraftServer, sender)) {
-				ItemStack itemStack = buf.readItemStackFromBuffer();
-				executeGive(sender, itemStack);
+				NBTTagCompound itemStackSerialized = buf.readNBTTagCompoundFromBuffer();
+				if (itemStackSerialized != null) {
+					ItemStack itemStack = ItemStack.loadItemStackFromNBT(itemStackSerialized);
+					if (itemStack != null) {
+						executeGive(sender, itemStack);
+					}
+				}
 			} else {
 				TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.generic.permission");
 				textcomponenttranslation1.getStyle().setColor(TextFormatting.RED);
