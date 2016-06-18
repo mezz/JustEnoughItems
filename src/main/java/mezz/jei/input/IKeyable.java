@@ -12,6 +12,6 @@ public interface IKeyable {
 	/**
 	 * Returns true if the key press was used.
 	 */
-	boolean onKeyPressed(int keyCode);
+	boolean onKeyPressed(char typedChar, int keyCode);
 
 }

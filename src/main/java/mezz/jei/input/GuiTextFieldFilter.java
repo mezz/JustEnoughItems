@@ -41,8 +41,8 @@ public class GuiTextFieldFilter extends GuiTextField {
 	}
 
 	@Override
-	public boolean textboxKeyTyped(char character, int keyCode) {
-		boolean handled = super.textboxKeyTyped(character, keyCode);
+	public boolean textboxKeyTyped(char typedChar, int keyCode) {
+		boolean handled = super.textboxKeyTyped(typedChar, keyCode);
 		if (!handled && !history.isEmpty()) {
 			if (keyCode == Keyboard.KEY_UP) {
 				String currentText = getText();

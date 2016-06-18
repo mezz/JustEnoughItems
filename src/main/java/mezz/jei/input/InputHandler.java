@@ -184,20 +184,21 @@ public class InputHandler {
 	}
 
 	public boolean handleKeyEvent() {
-		boolean cancelEvent = false;
-		if (Keyboard.getEventKeyState()) {
-			int eventKey = Keyboard.getEventKey();
-			cancelEvent = handleKeyDown(eventKey);
+		char typedChar = Keyboard.getEventCharacter();
+		int eventKey = Keyboard.getEventKey();
+
+		if ((eventKey == 0 && typedChar >= 32) || Keyboard.getEventKeyState()) {
+			return handleKeyDown(typedChar, eventKey);
 		}
-		return cancelEvent;
+		return false;
 	}
 
-	private boolean handleKeyDown(int eventKey) {
+	private boolean handleKeyDown(char typedChar, int eventKey) {
 		if (itemListOverlay.isOpen() && itemListOverlay.hasKeyboardFocus()) {
 			if (isInventoryCloseKey(eventKey) || isEnterKey(eventKey)) {
 				itemListOverlay.setKeyboardFocus(false);
 				return true;
-			} else if (itemListOverlay.onKeyPressed(eventKey)) {
+			} else if (itemListOverlay.onKeyPressed(typedChar, eventKey)) {
 				return true;
 			}
 		}
@@ -227,7 +228,7 @@ public class InputHandler {
 				}
 			}
 
-			if (itemListOverlay.isOpen() && itemListOverlay.onKeyPressed(eventKey)) {
+			if (itemListOverlay.isOpen() && itemListOverlay.onKeyPressed(typedChar, eventKey)) {
 				return true;
 			}
 		}

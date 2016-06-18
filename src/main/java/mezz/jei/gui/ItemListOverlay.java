@@ -490,15 +490,14 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	}
 
 	@Override
-	public boolean onKeyPressed(int keyCode) {
+	public boolean onKeyPressed(char typedChar, int keyCode) {
 		if (hasKeyboardFocus()) {
-			char character = Keyboard.getEventCharacter();
-			boolean changed = searchField.textboxKeyTyped(character, Keyboard.getEventKey());
+			boolean changed = searchField.textboxKeyTyped(typedChar, keyCode);
 			if (changed) {
 				firstItemIndex = 0;
 				updateLayout();
 			}
-			return changed || ChatAllowedCharacters.isAllowedCharacter(character);
+			return changed || ChatAllowedCharacters.isAllowedCharacter(typedChar);
 		}
 		return false;
 	}
