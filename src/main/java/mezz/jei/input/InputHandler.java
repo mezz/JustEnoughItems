@@ -5,18 +5,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiRepair;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiContainerCreative;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.item.ItemStack;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
 import mezz.jei.Internal;
 import mezz.jei.RecipeRegistry;
 import mezz.jei.config.Config;
@@ -27,6 +15,15 @@ import mezz.jei.gui.RecipeClickableArea;
 import mezz.jei.gui.RecipesGui;
 import mezz.jei.util.Commands;
 import mezz.jei.util.MouseHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiRepair;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
+import net.minecraft.item.ItemStack;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 public class InputHandler {
 
@@ -35,7 +32,7 @@ public class InputHandler {
 	@Nonnull
 	private final ItemListOverlay itemListOverlay;
 	@Nonnull
-	private final MouseHelper mouseHelper;
+	private MouseHelper mouseHelper;
 	@Nonnull
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<>();
 
@@ -50,6 +47,10 @@ public class InputHandler {
 		showsRecipeFocuses.add(recipesGui);
 		showsRecipeFocuses.add(itemListOverlay);
 		showsRecipeFocuses.add(new GuiContainerWrapper());
+	}
+
+	public void onScreenResized() {
+		this.mouseHelper = new MouseHelper();
 	}
 
 	public boolean handleMouseEvent(@Nonnull GuiScreen guiScreen, int mouseX, int mouseY) {

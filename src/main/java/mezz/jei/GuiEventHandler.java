@@ -1,5 +1,8 @@
 package mezz.jei;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import mezz.jei.config.Config;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.RecipesGui;
@@ -13,9 +16,6 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Mouse;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class GuiEventHandler {
 	@Nonnull
@@ -40,7 +40,11 @@ public class GuiEventHandler {
 
 			RecipesGui recipesGui = new RecipesGui();
 			inputHandler = new InputHandler(recipesGui, itemListOverlay);
-		} else if (!(gui instanceof RecipesGui)) {
+		} else if (gui instanceof RecipesGui) {
+			if (inputHandler != null) {
+				inputHandler.onScreenResized();
+			}
+		} else {
 			inputHandler = null;
 		}
 	}
