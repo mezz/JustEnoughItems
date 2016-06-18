@@ -32,6 +32,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		public ImmutableList<IRecipeCategory> recipeCategories;
 		public int recipeCategoryIndex;
 		public int pageIndex;
+		public int recipesPerPage;
 
 		public State(@Nonnull Focus focus, @Nonnull List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int pageIndex) {
 			this.focus = focus;
@@ -60,8 +61,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	 */
 	@Nonnull
 	private Collection<ItemStack> recipeCategoryCraftingItems = Collections.emptyList();
-
-	private int recipesPerPage = 0;
 
 	@Override
 	public boolean setFocus(@Nonnull Focus focus) {
@@ -183,11 +182,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		if (state == null) {
 			return;
 		}
-		if (this.recipesPerPage != recipesPerPage) {
-			int recipeIndex = state.pageIndex * this.recipesPerPage;
+		if (state.recipesPerPage != recipesPerPage) {
+			int recipeIndex = state.pageIndex * state.recipesPerPage;
 			state.pageIndex = recipeIndex / recipesPerPage;
 
-			this.recipesPerPage = recipesPerPage;
+			state.recipesPerPage = recipesPerPage;
 			updateRecipes();
 		}
 	}
@@ -234,7 +233,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		IRecipeRegistry recipeRegistry = Internal.getRuntime().getRecipeRegistry();
 
 		int recipeWidgetIndex = 0;
-		for (int recipeIndex = state.pageIndex * recipesPerPage; recipeIndex < recipes.size() && recipeWidgets.size() < recipesPerPage; recipeIndex++) {
+		for (int recipeIndex = state.pageIndex * state.recipesPerPage; recipeIndex < recipes.size() && recipeWidgets.size() < state.recipesPerPage; recipeIndex++) {
 			Object recipe = recipes.get(recipeIndex);
 			IRecipeWrapper recipeWrapper = getRecipeWrapper(recipeRegistry, recipe, recipe.getClass());
 			if (recipeWrapper == null) {
@@ -274,7 +273,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public boolean hasMultiplePages() {
-		return recipes.size() > recipesPerPage;
+		return state != null && recipes.size() > state.recipesPerPage;
 	}
 
 	@Override
@@ -293,7 +292,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		if (state == null) {
 			return;
 		}
-		int pageCount = pageCount(recipesPerPage);
+		int pageCount = pageCount(state.recipesPerPage);
 		state.pageIndex = (state.pageIndex + 1) % pageCount;
 		updateRecipes();
 	}
@@ -303,7 +302,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		if (state == null) {
 			return;
 		}
-		int pageCount = pageCount(recipesPerPage);
+		int pageCount = pageCount(state.recipesPerPage);
 		state.pageIndex = (pageCount + state.pageIndex - 1) % pageCount;
 		updateRecipes();
 	}
@@ -322,7 +321,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		if (state == null) {
 			return "1/1";
 		}
-		return (state.pageIndex + 1) + "/" + pageCount(recipesPerPage);
+		return (state.pageIndex + 1) + "/" + pageCount(state.recipesPerPage);
 	}
 
 	@Override
