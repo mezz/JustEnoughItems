@@ -20,20 +20,20 @@ Add to your build.gradle:
 ```gradle
 repositories {
   maven {
+    // location of the maven that hosts JEI files
     url "http://dvs1.progwml6.com/files/maven"
   }
 }
 
-minecraft {
-  useDepAts = true
-}
-
 dependencies {
-  deobfCompile "mezz.jei:jei_<MINECRAFT-VERSION>:<JEI-VERSION>"
+  // compile against the JEI API
+  deobfCompile "mezz.jei:jei_${mcversion}:${jei_version}:api"
+  // at runtime, use the full JEI jar
+  runtime "mezz.jei:jei_${mcversion}:${jei_version}"
 }
 ```
 
-`<MINECRAFT-VERSION>` and `<JEI-VERSION>` can be found on [CurseForge](http://minecraft.curseforge.com/projects/just-enough-items-jei/files), check the file name of the version you want.
+`${mcversion}` and `${jei_version}` can be found [here](http://dvs1.progwml6.com/files/maven/mezz/jei/) or on [CurseForge](http://minecraft.curseforge.com/projects/just-enough-items-jei/files), check the file name of the version you want.
 
 Developer FAQ
 ===
