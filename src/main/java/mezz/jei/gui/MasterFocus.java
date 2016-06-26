@@ -71,11 +71,6 @@ public class MasterFocus {
 			}
 		}
 
-		// workaround for broken FluidContainerRegistry entry for potions
-		if (item instanceof ItemPotion) {
-			return null;
-		}
-
 		FluidStack fluidContained = FluidUtil.getFluidContained(stack);
 		if (fluidContained != null) {
 			return fluidContained;
