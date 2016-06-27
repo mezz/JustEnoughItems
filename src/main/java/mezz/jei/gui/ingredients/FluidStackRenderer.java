@@ -48,23 +48,22 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 
 	@Override
 	public void draw(@Nonnull Minecraft minecraft, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
-		GlStateManager.disableBlend();
+		GlStateManager.enableBlend();
+		GlStateManager.enableAlpha();
+
 		drawFluid(minecraft, xPosition, yPosition, fluidStack);
 
 		GlStateManager.color(1, 1, 1, 1);
 
 		if (overlay != null) {
-			GlStateManager.enableAlpha();
-			GlStateManager.enableBlend();
-
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(0, 0, 200);
 			overlay.draw(minecraft, xPosition, yPosition);
 			GlStateManager.popMatrix();
-
-			GlStateManager.disableBlend();
-			GlStateManager.disableAlpha();
 		}
+
+		GlStateManager.disableAlpha();
+		GlStateManager.disableBlend();
 	}
 
 	private void drawFluid(@Nonnull Minecraft minecraft, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
