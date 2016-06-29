@@ -47,8 +47,8 @@ public class VanillaPlugin extends BlankModPlugin {
 		IItemRegistry itemRegistry = registry.getItemRegistry();
 		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
 
-		ISubtypeRegistry nbtRegistry = jeiHelpers.getSubtypeRegistry();
-		nbtRegistry.useNbtForSubtypes(
+		ISubtypeRegistry subtypeRegistry = jeiHelpers.getSubtypeRegistry();
+		subtypeRegistry.useNbtForSubtypes(
 				Items.BANNER,
 				Items.SPAWN_EGG,
 				Items.TIPPED_ARROW,
@@ -59,7 +59,7 @@ public class VanillaPlugin extends BlankModPlugin {
 		);
 
 		if (FluidRegistry.isUniversalBucketEnabled()) {
-			nbtRegistry.useNbtForSubtypes(ForgeModContainer.getInstance().universalBucket);
+			subtypeRegistry.useNbtForSubtypes(ForgeModContainer.getInstance().universalBucket);
 		}
 
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
