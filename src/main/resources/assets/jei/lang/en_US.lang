@@ -84,7 +84,7 @@ gui.jei.editMode.description.hide.mod.id=Ctrl-Shift-click to hide by ModId.
 gui.jei.editMode.description.show.mod.id=Hidden by ModId. Ctrl-Shift-click to show.
 
 # Recipe Categories
-gui.jei.category.craftingTable=Crafting Table
+gui.jei.category.craftingTable=Crafting
 gui.jei.category.smelting=Smelting
 gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=Fuel
