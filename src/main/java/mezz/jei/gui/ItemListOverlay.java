@@ -48,7 +48,6 @@ import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
-import org.lwjgl.input.Keyboard;
 
 public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, IMouseHandler, IKeyable, ICloseable {
 
@@ -576,14 +575,18 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 			Log.error("null filterText", new NullPointerException());
 			return;
 		}
-		searchField.setText(filterText);
+
 		Config.setFilterText(filterText);
-		updateLayout();
+
+		if (searchField != null) {
+			searchField.setText(filterText);
+			updateLayout();
+		}
 	}
 
 	@Nonnull
 	@Override
 	public String getFilterText() {
-		return itemFilter.getFilterText();
+		return Config.getFilterText();
 	}
 }

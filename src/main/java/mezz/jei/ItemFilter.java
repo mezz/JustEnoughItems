@@ -1,5 +1,10 @@
 package mezz.jei;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.common.base.Predicate;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -20,11 +25,6 @@ import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ItemFilter {
 
@@ -47,13 +47,8 @@ public class ItemFilter {
 	}
 
 	@Nonnull
-	public String getFilterText() {
-		return Config.getFilterText();
-	}
-
-	@Nonnull
 	public ImmutableList<ItemStackElement> getItemList() {
-		String[] filters = getFilterText().split("\\|");
+		String[] filters = Config.getFilterText().split("\\|");
 
 		if (filters.length == 1) {
 			String filter = filters[0];
