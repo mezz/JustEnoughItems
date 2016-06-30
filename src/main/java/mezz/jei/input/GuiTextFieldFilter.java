@@ -1,5 +1,9 @@
 package mezz.jei.input;
 
+import java.awt.*;
+import java.util.LinkedList;
+import java.util.List;
+
 import mezz.jei.ItemFilter;
 import mezz.jei.config.Config;
 import mezz.jei.util.ItemStackElement;
@@ -7,10 +11,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraftforge.fml.client.config.HoverChecker;
 import org.lwjgl.input.Keyboard;
-
-import java.awt.*;
-import java.util.LinkedList;
-import java.util.List;
 
 public class GuiTextFieldFilter extends GuiTextField {
 	private static final int MAX_HISTORY = 100;
@@ -28,7 +28,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 
 	public void setItemFilter(ItemFilter itemFilter) {
 		this.itemFilter = itemFilter;
-		setText(itemFilter.getFilterText());
+		setText(Config.getFilterText());
 	}
 
 	public void update() {
