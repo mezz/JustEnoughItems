@@ -84,7 +84,7 @@ gui.jei.editMode.description.hide.mod.id=Ctrl+Shift+ЛКМ, чтобы спря�
 gui.jei.editMode.description.show.mod.id=Спрятано по ID-мода. Ctrl+Shift+ЛКМ, чтобы показать.
 
 # Recipe Categories
-gui.jei.category.craftingTable=Верстак
+gui.jei.category.craftingTable=Крафт
 gui.jei.category.smelting=Плавка
 gui.jei.category.smelting.experience=Опыт: %s
 gui.jei.category.fuel=Топливо
