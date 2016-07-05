@@ -6,7 +6,6 @@ import java.util.Map;
 
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
-import net.minecraft.command.CommandGive;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandManager;
 import net.minecraft.entity.item.EntityItem;
@@ -17,10 +16,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.UserListOps;
+import net.minecraft.server.management.UserListOpsEntry;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.server.FMLServerHandler;
 
 public class PacketGiveItemStack extends PacketJEI {
 	private ItemStack itemStack;
@@ -48,11 +48,7 @@ public class PacketGiveItemStack extends PacketJEI {
 		if (player instanceof EntityPlayerMP) {
 			EntityPlayerMP sender = (EntityPlayerMP) player;
 
-			MinecraftServer minecraftServer = sender.mcServer;
-			ICommandManager commandManager = minecraftServer.getCommandManager();
-			Map<String, ICommand> commands = commandManager.getCommands();
-			ICommand giveCommand = commands.get("give");
-			if (giveCommand != null && giveCommand.checkPermission(minecraftServer, sender)) {
+			if (hasPermission(sender)) {
 				NBTTagCompound itemStackSerialized = buf.readNBTTagCompoundFromBuffer();
 				if (itemStackSerialized != null) {
 					ItemStack itemStack = ItemStack.loadItemStackFromNBT(itemStackSerialized);
@@ -68,7 +64,25 @@ public class PacketGiveItemStack extends PacketJEI {
 		}
 	}
 
-	public void executeGive(EntityPlayer entityplayer, ItemStack itemStack) {
+	private static boolean hasPermission(EntityPlayerMP sender) {
+		if (sender.isCreative()) {
+			return true;
+		}
+
+		MinecraftServer minecraftServer = sender.mcServer;
+		ICommandManager commandManager = minecraftServer.getCommandManager();
+		Map<String, ICommand> commands = commandManager.getCommands();
+		ICommand giveCommand = commands.get("give");
+		if (giveCommand != null && giveCommand.checkPermission(minecraftServer, sender)) {
+			return true;
+		} else {
+			UserListOps oppedPlayers = minecraftServer.getPlayerList().getOppedPlayers();
+			UserListOpsEntry userlistopsentry = oppedPlayers.getEntry(sender.getGameProfile());
+			return userlistopsentry != null && userlistopsentry.getPermissionLevel() >= minecraftServer.getOpPermissionLevel();
+		}
+	}
+
+	private static void executeGive(EntityPlayer entityplayer, ItemStack itemStack) {
 		boolean addedToInventory = entityplayer.inventory.addItemStackToInventory(itemStack);
 
 		if (addedToInventory) {
