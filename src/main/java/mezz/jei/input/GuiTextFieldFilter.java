@@ -19,6 +19,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 	private final List<String> history = new LinkedList<>();
 	private final HoverChecker hoverChecker;
 	private ItemFilter itemFilter;
+	private boolean previousKeyboardRepeatEnabled;
 
 	public GuiTextFieldFilter(int componentId, FontRenderer fontRenderer, int x, int y, int width, int height) {
 		super(componentId, fontRenderer, x, y, width, height);
@@ -95,11 +96,20 @@ public class GuiTextFieldFilter extends GuiTextField {
 
 	@Override
 	public void setFocused(boolean keyboardFocus) {
+		final boolean previousFocus = isFocused();
 		super.setFocused(keyboardFocus);
-		Keyboard.enableRepeatEvents(keyboardFocus);
 
-		if (!keyboardFocus) {
-			saveHistory();
+		if (previousFocus != keyboardFocus) {
+			if (keyboardFocus) {
+				previousKeyboardRepeatEnabled = Keyboard.areRepeatEventsEnabled();
+				Keyboard.enableRepeatEvents(true);
+			} else {
+				Keyboard.enableRepeatEvents(previousKeyboardRepeatEnabled);
+			}
+
+			if (!keyboardFocus) {
+				saveHistory();
+			}
 		}
 	}
 
