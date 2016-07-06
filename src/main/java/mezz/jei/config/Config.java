@@ -37,6 +37,7 @@ public class Config {
 	private static boolean debugModeEnabled = false;
 	private static boolean debugItemEnabled = false;
 	private static boolean hideMissingModelsEnabled = true;
+	private static boolean hideLaggyModelsEnabled = true;
 	private static boolean deleteItemsInCheatModeEnabled = true;
 	private static boolean colorSearchEnabled = false;
 
@@ -104,6 +105,10 @@ public class Config {
 
 	public static boolean isHideMissingModelsEnabled() {
 		return hideMissingModelsEnabled;
+	}
+
+	public static boolean isHideLaggyModelsEnabled() {
+		return hideLaggyModelsEnabled;
 	}
 
 	public static boolean isColorSearchEnabled() {
@@ -285,6 +290,11 @@ public class Config {
 
 		hideMissingModelsEnabled = config.getBoolean(CATEGORY_ADVANCED, "hideMissingModelsEnabled", hideMissingModelsEnabled);
 		if (categoryAdvanced.get("hideMissingModelsEnabled").hasChanged()) {
+			needsReload = true;
+		}
+
+		hideLaggyModelsEnabled = config.getBoolean(CATEGORY_ADVANCED, "hideLaggyModelsEnabled", hideLaggyModelsEnabled);
+		if (categoryAdvanced.get("hideLaggyModelsEnabled").hasChanged()) {
 			needsReload = true;
 		}
 

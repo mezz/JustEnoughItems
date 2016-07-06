@@ -24,6 +24,7 @@ import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemSkull;
 import net.minecraft.item.ItemStack;
 
 public class ItemFilter {
@@ -154,14 +155,6 @@ public class ItemFilter {
 				return true;
 			}
 
-			return isItemStackHiddenByMissingModel(itemStack);
-		}
-
-		public Multiset<Item> getBrokenItems() {
-			return brokenItems;
-		}
-
-		private boolean isItemStackHiddenByMissingModel(@Nonnull ItemStack itemStack) {
 			Item item = itemStack.getItem();
 			if (brokenItems.contains(item)) {
 				return true;
@@ -180,10 +173,23 @@ public class ItemFilter {
 			}
 
 			if (Config.isHideMissingModelsEnabled()) {
-				return itemModel == null || itemModel == missingModel;
+				if (itemModel == null || itemModel == missingModel) {
+					return true;
+				}
+			}
+
+			if (Config.isHideLaggyModelsEnabled()) {
+				// Game freezes when loading player skulls, see https://bugs.mojang.com/browse/MC-65587
+				if (item instanceof ItemSkull && itemStack.getMetadata() == 3) {
+					return true;
+				}
 			}
 
 			return false;
+		}
+
+		public Multiset<Item> getBrokenItems() {
+			return brokenItems;
 		}
 
 		private boolean isItemHiddenByBlacklist(@Nonnull ItemStack itemStack) {
