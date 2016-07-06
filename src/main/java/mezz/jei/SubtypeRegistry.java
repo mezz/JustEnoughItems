@@ -71,7 +71,7 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 		@Override
 		public String getSubtypeInfo(@Nonnull ItemStack itemStack) {
 			NBTTagCompound nbtTagCompound = itemStack.getTagCompound();
-			if (nbtTagCompound == null) {
+			if (nbtTagCompound == null || nbtTagCompound.hasNoTags()) {
 				return null;
 			}
 			return nbtTagCompound.toString();
