@@ -34,7 +34,7 @@ public interface ISubtypeRegistry {
 
 	/**
 	 * Get the data from an itemStack that is relevant to comparing and telling subtypes apart.
-	 * Returns null if the itemStack has information used for subtypes.
+	 * Returns null if the itemStack has no information used for subtypes.
 	 */
 	@Nullable
 	String getSubtypeInfo(@Nonnull ItemStack itemStack);
