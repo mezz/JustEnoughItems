@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import net.minecraft.item.ItemStack;
 import org.apache.commons.lang3.text.WordUtils;
 
 import net.minecraft.item.Item;
@@ -30,6 +31,10 @@ public class ModList {
 	@Nonnull
 	public String getModNameForItem(@Nonnull Item item) {
 		ResourceLocation itemResourceLocation = Item.REGISTRY.getNameForObject(item);
+		if (itemResourceLocation == null) {
+			String stackInfo = ErrorUtil.getItemStackInfo(new ItemStack(item));
+			throw new NullPointerException("Item.itemRegistry.getNameForObject returned null for: " + stackInfo);
+		}
 		String modId = itemResourceLocation.getResourceDomain();
 		String lowercaseModId = modId.toLowerCase(Locale.ENGLISH);
 		String modName = modNamesForIds.get(lowercaseModId);
