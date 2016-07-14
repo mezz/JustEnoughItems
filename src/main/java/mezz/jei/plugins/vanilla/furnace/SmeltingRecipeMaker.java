@@ -25,10 +25,8 @@ public class SmeltingRecipeMaker {
 			ItemStack input = itemStackItemStackEntry.getKey();
 			ItemStack output = itemStackItemStackEntry.getValue();
 
-			float experience = furnaceRecipes.getSmeltingExperience(output);
-
 			List<ItemStack> inputs = stackHelper.getSubtypes(input);
-			SmeltingRecipe recipe = new SmeltingRecipe(inputs, output, experience);
+			SmeltingRecipe recipe = new SmeltingRecipe(inputs, output);
 			recipes.add(recipe);
 		}
 
