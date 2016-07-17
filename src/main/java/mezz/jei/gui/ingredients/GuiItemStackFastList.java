@@ -39,6 +39,10 @@ public class GuiItemStackFastList {
 		renderItemsAll.add(guiItemStack);
 	}
 
+	public List<GuiItemStackFast> getAllGuiStacks() {
+		return renderItemsAll;
+	}
+
 	public void set(int i, List<ItemStackElement> itemList) {
 		renderItemsBuiltIn.clear();
 		renderItems2d.clear();
