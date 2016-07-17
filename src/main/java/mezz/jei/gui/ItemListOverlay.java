@@ -5,9 +5,12 @@ import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.realmsclient.gui.ChatFormatting;
@@ -33,6 +36,7 @@ import mezz.jei.network.packets.PacketJEI;
 import mezz.jei.util.ItemStackElement;
 import mezz.jei.util.Log;
 import mezz.jei.util.MathUtil;
+import mezz.jei.util.StackHelper;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -66,6 +70,8 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	private final ItemFilter itemFilter;
 	@Nonnull
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers;
+	@Nonnull
+	private final Set<ItemStack> highlightedStacks = new HashSet<>();
 
 	private final GuiItemStackFastList guiItemStacks = new GuiItemStackFastList();
 	private GuiButton nextButton;
@@ -311,6 +317,13 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		} else {
 			boolean mouseOver = isMouseOver(mouseX, mouseY);
 			hovered = guiItemStacks.render(minecraft, mouseOver, mouseX, mouseY);
+		}
+
+		StackHelper helper = Internal.getHelpers().getStackHelper();
+		for (GuiItemStackFast guiItemStack : guiItemStacks.getAllGuiStacks()) {
+			if (helper.containsStack(highlightedStacks, guiItemStack.getItemStack()) != null) {
+				guiItemStack.drawHighlight();
+			}
 		}
 
 		if (hovered != null) {
@@ -589,5 +602,23 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	@Override
 	public String getFilterText() {
 		return Config.getFilterText();
+	}
+
+	@Override
+	public ImmutableList<ItemStack> getVisibleStacks() {
+		List<ItemStack> stacks = new ArrayList<>();
+		for(GuiItemStackFast guiItemStack : guiItemStacks.getAllGuiStacks()) {
+			ItemStack itemStack = guiItemStack.getItemStack();
+			if(itemStack != null) {
+				stacks.add(itemStack);
+			}
+		}
+		return ImmutableList.copyOf(stacks);
+	}
+
+	@Override
+	public void highlightStacks(@Nonnull Collection<ItemStack> stacks) {
+		highlightedStacks.clear();
+		highlightedStacks.addAll(stacks);
 	}
 }
