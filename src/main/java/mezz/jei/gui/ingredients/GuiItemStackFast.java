@@ -195,6 +195,13 @@ public class GuiItemStackFast {
 
 		renderSlow();
 		renderOverlay(minecraft);
+		drawHighlight();
+	}
+
+	public void drawHighlight() {
+		if (itemStack == null) {
+			return;
+		}
 
 		GlStateManager.disableDepth();
 		Gui.drawRect(area.x, area.y, area.x + area.width, area.y + area.height, 0x7FFFFFFF);

@@ -3,6 +3,7 @@ package mezz.jei.plugins.jei;
 import mezz.jei.api.BlankModPlugin;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
+import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
@@ -76,6 +77,15 @@ public class JEIInternalPlugin extends BlankModPlugin {
 					);
 				}
 			});
+		}
+	}
+
+	@Override
+	public void onRuntimeAvailable(@Nonnull IJeiRuntime jeiRuntime) {
+		super.onRuntimeAvailable(jeiRuntime);
+
+		if (Config.isDebugModeEnabled()) {
+			jeiRuntime.getItemListOverlay().highlightStacks(Collections.singleton(new ItemStack(Items.STICK)));
 		}
 	}
 }
