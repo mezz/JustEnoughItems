@@ -13,7 +13,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.realmsclient.gui.ChatFormatting;
 import mezz.jei.Internal;
 import mezz.jei.ItemFilter;
 import mezz.jei.JustEnoughItems;
@@ -50,6 +49,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
 
@@ -365,7 +365,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 			if (Config.isCheatItemsEnabled()) {
 				List<String> tooltip = Arrays.asList(
 						configString,
-						ChatFormatting.RED + Translator.translateToLocal("jei.tooltip.cheat.mode")
+						TextFormatting.RED + Translator.translateToLocal("jei.tooltip.cheat.mode")
 				);
 				TooltipRenderer.drawHoveringText(minecraft, tooltip, mouseX, mouseY);
 			} else {

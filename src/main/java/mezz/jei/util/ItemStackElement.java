@@ -1,7 +1,12 @@
 package mezz.jei.util;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+
 import com.google.common.base.Joiner;
-import com.mojang.realmsclient.gui.ChatFormatting;
 import mezz.jei.Internal;
 import mezz.jei.config.Config;
 import net.minecraft.client.Minecraft;
@@ -11,14 +16,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.oredict.OreDictionary;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * For getting properties of ItemStacks efficiently
@@ -76,7 +75,7 @@ public class ItemStackElement {
 		try {
 			List<String> tooltip = itemStack.getTooltip(player, false);
 			tooltipString = Joiner.on(' ').join(tooltip).toLowerCase();
-			tooltipString = ChatFormatting.stripFormatting(tooltipString);
+			tooltipString = TextFormatting.getTextWithoutFormattingCodes(tooltipString);
 			tooltipString = tooltipString.replace(modId, "");
 			tooltipString = tooltipString.replace(modName, "");
 			tooltipString = tooltipString.replace(displayName, "");

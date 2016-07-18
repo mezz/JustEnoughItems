@@ -1,22 +1,22 @@
 package mezz.jei.plugins.jei.debug;
 
-import com.mojang.realmsclient.gui.ChatFormatting;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import mezz.jei.Internal;
 import mezz.jei.api.IItemListOverlay;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class DebugRecipe extends BlankRecipeWrapper {
 	private final GuiButtonExt button;
@@ -49,7 +49,7 @@ public class DebugRecipe extends BlankRecipeWrapper {
 		if (buttonHoverChecker.checkHover(mouseX, mouseY)) {
 			tooltipStrings.add("button tooltip!");
 		} else {
-			tooltipStrings.add(ChatFormatting.BOLD + "tooltip debug");
+			tooltipStrings.add(TextFormatting.BOLD + "tooltip debug");
 		}
 		tooltipStrings.add(mouseX + ", " + mouseY);
 		return tooltipStrings;
