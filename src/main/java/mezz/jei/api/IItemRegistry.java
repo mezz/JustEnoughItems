@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 
 /**
  * The IItemRegistry is provided by JEI and has some useful functions related to items.
- * Get it from IModRegistry, which is available to IModPlugins.
+ * Get the instance from {@link IModRegistry#getItemRegistry()}.
  */
 public interface IItemRegistry {
 
@@ -18,18 +18,27 @@ public interface IItemRegistry {
 	@Nonnull
 	ImmutableList<ItemStack> getItemList();
 
-	/** Returns a list of all the ItemStacks that can be used as fuel in a vanilla furnace. */
+	/**
+	 * Returns a list of all the ItemStacks that can be used as fuel in a vanilla furnace.
+	 */
 	@Nonnull
 	ImmutableList<ItemStack> getFuels();
 
-	/** Returns a list of all the ItemStacks that return true to isPotionIngredient. */
+	/**
+	 * Returns a list of all the ItemStacks that return true to isPotionIngredient.
+	 */
 	@Nonnull
 	ImmutableList<ItemStack> getPotionIngredients();
 
-	/** Returns a mod name for the given item. */
+	/**
+	 * Returns a mod name for the given item.
+	 */
 	@Nonnull
 	String getModNameForItem(@Nonnull Item item);
 
+	/**
+	 * Returns all the items registered by a specific mod.
+	 */
 	@Nonnull
 	ImmutableList<ItemStack> getItemListForModId(@Nonnull String modId);
 }

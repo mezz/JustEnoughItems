@@ -11,6 +11,7 @@ import java.util.Collection;
 /**
  * The IItemListOverlay is JEI's gui that displays all the items next to an open container gui.
  * Use this interface to get information from and interact with it.
+ * Get the instance from {@link IJeiRuntime#getItemListOverlay()}.
  */
 public interface IItemListOverlay {
 

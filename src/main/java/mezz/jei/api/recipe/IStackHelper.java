@@ -4,10 +4,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import mezz.jei.api.IJeiHelpers;
 import net.minecraft.item.ItemStack;
 
 /**
  * Helps get ItemStacks from common formats used in recipes.
+ * Get the instance from {@link IJeiHelpers#getStackHelper()}.
  */
 public interface IStackHelper {
 	/**

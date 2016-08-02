@@ -8,6 +8,9 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * An {@link IRecipeWrapper} that does nothing, inherit from this to avoid implementing methods you don't need.
+ */
 public abstract class BlankRecipeWrapper implements IRecipeWrapper {
 	@Override
 	@Nonnull

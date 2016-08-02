@@ -13,7 +13,7 @@ import net.minecraftforge.fluids.FluidStack;
 /**
  * The IRecipeManager offers several functions for retrieving and handling recipes.
  * The IRecipeManager instance is provided in JEIManager.
- * Available to IModPlugins
+ * Get the instance from {@link IJeiRuntime#getRecipeRegistry()}.
  */
 public interface IRecipeRegistry {
 

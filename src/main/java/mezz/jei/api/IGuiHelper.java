@@ -11,6 +11,7 @@ import mezz.jei.api.gui.ITickTimer;
 
 /**
  * Helps with the implementation of GUIs.
+ * Get the instance from {@link IJeiHelpers#getGuiHelper()}.
  */
 public interface IGuiHelper {
 

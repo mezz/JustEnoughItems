@@ -4,10 +4,14 @@ import javax.annotation.Nonnull;
 
 import mezz.jei.api.gui.IRecipeLayout;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
 
 /**
- * A reason that the recipe transfer couldn't happen.
- * See {@link Type#INTERNAL} and {@link Type#USER_FACING}.
+ * A reason that a recipe transfer couldn't happen.
+ *
+ * Recipe transfer errors can be created with {@link IRecipeTransferHandlerHelper} or you can implement your own.
+ * These errors are returned from {@link IRecipeTransferHandler#transferRecipe(Container, IRecipeLayout, EntityPlayer, boolean, boolean)}.
  */
 public interface IRecipeTransferError {
 	enum Type {
@@ -27,6 +31,8 @@ public interface IRecipeTransferError {
 	@Nonnull
 	Type getType();
 
-	/** Called on USER_FACING errors */
+	/**
+	 * Called on {@link Type#USER_FACING} errors.
+	 */
 	void showError(@Nonnull Minecraft minecraft, int mouseX, int mouseY, @Nonnull IRecipeLayout recipeLayout, int recipeX, int recipeY);
 }

@@ -3,11 +3,13 @@ package mezz.jei.api.gui;
 import javax.annotation.Nonnull;
 import java.util.List;
 
+import mezz.jei.api.IGuiHelper;
 import net.minecraft.item.ItemStack;
 
 /**
- * Helps set crafting-grid-style GuiItemStackGroup.
- * Get an instance from IGuiHelper.
+ * Helps set crafting-grid-style {@link IGuiItemStackGroup}.
+ * This places smaller recipes in the grid in a consistent way.
+ * Get an instance from {@link IGuiHelper#createCraftingGridHelper(int, int)}.
  */
 public interface ICraftingGridHelper {
 

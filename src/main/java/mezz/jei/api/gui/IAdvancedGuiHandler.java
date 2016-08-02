@@ -5,10 +5,12 @@ import javax.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.List;
 
+import mezz.jei.api.IModRegistry;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
 /**
- * Allows mods to change how JEI is displayed next to their gui.
+ * Allows plugins to change how JEI is displayed next to their mod's guis.
+ * Register your implementation with {@link IModRegistry#addAdvancedGuiHandlers(IAdvancedGuiHandler[])}.
  */
 public interface IAdvancedGuiHandler<T extends GuiContainer> {
 	/**

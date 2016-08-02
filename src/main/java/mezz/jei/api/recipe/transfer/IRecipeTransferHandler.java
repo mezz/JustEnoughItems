@@ -12,7 +12,9 @@ import mezz.jei.api.gui.IRecipeLayout;
  * A recipe transfer handler moves items into a crafting area, based on the items in a recipe.
  *
  * Implementing this interface gives full control over the recipe transfer process.
- * Mods that use a regular slotted inventory can use IRecipeTransferInfo instead, which is much simpler.
+ * Mods that use a regular slotted inventory can use {@link IRecipeTransferInfo} instead, which is much simpler.
+ *
+ * Useful functions for implementing a recipe transfer handler can be found in {@link IRecipeTransferHandlerHelper}.
  */
 public interface IRecipeTransferHandler {
 	/**

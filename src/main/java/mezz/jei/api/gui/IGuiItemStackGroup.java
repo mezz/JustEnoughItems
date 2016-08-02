@@ -11,6 +11,8 @@ import net.minecraft.item.ItemStack;
  *
  * If multiple ItemStacks are set, they will be displayed in rotation.
  * ItemStacks with subtypes and wildcard metadata will be displayed as multiple ItemStacks.
+ *
+ * Get an instance from {@link IRecipeLayout#getItemStacks()}.
  */
 public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {
 

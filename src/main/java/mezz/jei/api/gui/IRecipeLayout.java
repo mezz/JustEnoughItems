@@ -2,6 +2,14 @@ package mezz.jei.api.gui;
 
 import javax.annotation.Nonnull;
 
+import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.IRecipeWrapper;
+
+/**
+ * Represents the layout of one recipe on-screen.
+ * Plugins interpret a recipe wrapper to set the properties here.
+ * It is passed to plugins in {@link IRecipeCategory#setRecipe(IRecipeLayout, IRecipeWrapper)}.
+ */
 public interface IRecipeLayout {
 	/**
 	 * Contains all the itemStacks displayed on this recipe layout.

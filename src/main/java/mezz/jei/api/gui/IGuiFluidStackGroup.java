@@ -7,9 +7,11 @@ import java.util.Collection;
 import net.minecraftforge.fluids.FluidStack;
 
 /**
- * IGuiFluidStackGroup displays FluidStacks in a gui.
+ * IGuiFluidStackGroup displays one or more {@link FluidStack} in a gui.
  *
  * If multiple FluidStacks are set, they will be displayed in rotation.
+ *
+ * Get an instance from {@link IRecipeLayout#getFluidStacks()}.
  */
 public interface IGuiFluidStackGroup extends IGuiIngredientGroup<FluidStack> {
 	/**

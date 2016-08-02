@@ -14,7 +14,7 @@ import net.minecraft.item.ItemStack;
  *
  * Replaces {@link INbtIgnoreList}.
  *
- * Get the instance from {@link IJeiHelpers#getSubtypeRegistry()}
+ * Get the instance from {@link IJeiHelpers#getSubtypeRegistry()}.
  *
  * @since 3.6.4
  */

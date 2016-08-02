@@ -2,10 +2,12 @@ package mezz.jei.api.recipe.transfer;
 
 import javax.annotation.Nonnull;
 
+import mezz.jei.api.IModRegistry;
 import net.minecraft.inventory.Container;
 
 /**
  * Register recipe transfer handlers here to give JEI the information it needs to transfer recipes into the crafting area.
+ * Get the instance from {@link IModRegistry#getRecipeTransferRegistry()}.
  */
 public interface IRecipeTransferRegistry {
 	/**

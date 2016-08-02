@@ -1,5 +1,8 @@
 package mezz.jei.api.recipe;
 
+import mezz.jei.api.IGuiHelper;
+import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.IDrawableAnimated;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -9,7 +12,11 @@ import java.util.List;
 
 /**
  * A wrapper around a normal recipe with methods that allow JEI can make sense of it.
- * Implementers will have to create a wrapper for each type of recipe they have.
+ * Plugins implement these to wrap each type of recipe they have.
+ *
+ * Normal recipes are converted to wrapped recipes by {@link IRecipeHandler#getRecipeWrapper(Object)}.
+ *
+ * @see BlankRecipeWrapper
  */
 public interface IRecipeWrapper {
 
@@ -25,10 +32,14 @@ public interface IRecipeWrapper {
 	 */
 	List getOutputs();
 
-	/** Return a list of recipe fluid inputs. */
+	/**
+	 * Return a list of recipe fluid inputs.
+	 */
 	List<FluidStack> getFluidInputs();
 
-	/** Return a list of recipe fluid outputs. */
+	/**
+	 * Return a list of recipe fluid outputs.
+	 */
 	List<FluidStack> getFluidOutputs();
 
 	/**
@@ -39,10 +50,16 @@ public interface IRecipeWrapper {
 	 * @param mouseX the X position of the mouse, relative to the recipe.
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
 	 * @since JEI 2.19.0
+	 * @see IDrawable for a simple class for drawing things.
+	 * @see IGuiHelper for useful functions.
 	 */
 	void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY);
 
-	/** Draw animations involving the recipe. Can be disabled in the config. */
+	/**
+	 * Draw animations involving the recipe. Can be disabled in the config.
+	 * @see IDrawableAnimated for a simple class for drawing animated things.
+	 * @see IGuiHelper for useful functions.
+	 */
 	void drawAnimations(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight);
 
 	/**

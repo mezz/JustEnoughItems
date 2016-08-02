@@ -8,6 +8,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 /**
  * JEI's gui for displaying recipes. Use this interface to open recipes.
+ * Get the instance from {@link IJeiRuntime#getRecipesGui()}.
  *
  * @since JEI 3.2.12
  */

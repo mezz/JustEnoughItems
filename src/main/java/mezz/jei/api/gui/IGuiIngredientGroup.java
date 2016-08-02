@@ -11,7 +11,10 @@ import mezz.jei.api.recipe.IFocus;
  *
  * If multiple ingredients are set for one index, they will be displayed in rotation.
  *
- * @see IGuiItemStackGroup and IGuiFluidStackGroup
+ * Get an instance from {@link IRecipeLayout}.
+ *
+ * @see IGuiItemStackGroup
+ * @see IGuiFluidStackGroup
  */
 public interface IGuiIngredientGroup<T> {
 	/**

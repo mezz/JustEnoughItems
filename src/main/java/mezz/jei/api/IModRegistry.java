@@ -11,12 +11,13 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * Passed to IModPlugins so they can register themselves.
+ * Entry point for the JEI API, functions for registering recipes are available from here.
+ * The IModRegistry instance is passed to your mod plugin in {@link IModPlugin#register(IModRegistry)}.
  */
 public interface IModRegistry {
 
 	/**
-	 * Get helpers and tools for addon mods.
+	 * Get helpers and tools for implementing JEI plugins.
 	 * @since JEI 2.27.0
 	 */
 	@Nonnull

@@ -7,7 +7,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 
 /**
  * IJeiHelpers provides helpers and tools for addon mods.
- * Get it from IModRegistry, which is available to IModPlugins.
+ * Get the instance from {@link IModRegistry#getJeiHelpers()}.
  */
 public interface IJeiHelpers {
 	/**
