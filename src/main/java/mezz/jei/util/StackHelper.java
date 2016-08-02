@@ -15,6 +15,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import mezz.jei.Internal;
+import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.gui.IGuiIngredient;
 import net.minecraft.creativetab.CreativeTabs;
@@ -345,21 +346,29 @@ public class StackHelper implements IStackHelper {
 			throw new NullPointerException(nullItemInStack);
 		}
 
-		int metadata = stack.getMetadata();
-		if (mode == UidMode.WILDCARD || metadata == OreDictionary.WILDCARD_VALUE) {
-			ResourceLocation itemName = Item.REGISTRY.getNameForObject(item);
-			if (itemName == null) {
-				String stackInfo = ErrorUtil.getItemStackInfo(stack);
-				throw new NullPointerException("Item is not registered. Item.REGISTRY.getNameForObject returned null for: " + stackInfo);
-			}
-			return itemName.toString();
+		ResourceLocation itemName = item.getRegistryName();
+		if (itemName == null) {
+			String stackInfo = ErrorUtil.getItemStackInfo(stack);
+			throw new NullPointerException("Item has no registry name: " + stackInfo);
 		}
 
-		NBTTagCompound serializedNbt = stack.serializeNBT();
-		StringBuilder itemKey = new StringBuilder(serializedNbt.getString("id"));
+		StringBuilder itemKey = new StringBuilder(itemName.toString());
+
+		ISubtypeRegistry subtypeRegistry = Internal.getHelpers().getSubtypeRegistry();
+		String subtypeInfo = subtypeRegistry.getSubtypeInfo(stack);
+		if (subtypeInfo != null) {
+			itemKey.append(':').append(subtypeInfo);
+		}
+
+		int metadata = stack.getMetadata();
+		if (mode == UidMode.WILDCARD || metadata == OreDictionary.WILDCARD_VALUE) {
+			return itemKey.toString();
+		}
+
 		if (mode == UidMode.FULL) {
 			itemKey.append(':').append(metadata);
 
+			NBTTagCompound serializedNbt = stack.serializeNBT();
 			NBTTagCompound nbtTagCompound = serializedNbt.getCompoundTag("tag");
 			if (serializedNbt.hasKey("ForgeCaps")) {
 				if (nbtTagCompound == null) {
@@ -372,11 +381,6 @@ public class StackHelper implements IStackHelper {
 			}
 		} else if (stack.getHasSubtypes()) {
 			itemKey.append(':').append(metadata);
-
-			String subtypeInfo = Internal.getHelpers().getSubtypeRegistry().getSubtypeInfo(stack);
-			if (subtypeInfo != null) {
-				itemKey.append(':').append(subtypeInfo);
-			}
 		}
 
 		String result = itemKey.toString();
