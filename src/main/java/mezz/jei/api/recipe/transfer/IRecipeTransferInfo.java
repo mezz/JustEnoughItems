@@ -12,11 +12,11 @@ import net.minecraft.inventory.Slot;
  * Containers with slot ranges that contain gaps or other oddities can implement this interface directly.
  * Containers that need full control over the recipe transfer or do not use slots can implement {@link IRecipeTransferHandler}.
  */
-public interface IRecipeTransferInfo {
+public interface IRecipeTransferInfo<C extends Container> {
 	/**
 	 * Return the container class that this recipe transfer helper supports.
 	 */
-	Class<? extends Container> getContainerClass();
+	Class<C> getContainerClass();
 
 	/**
 	 * Return the recipe category that this container can handle.
@@ -26,10 +26,10 @@ public interface IRecipeTransferInfo {
 	/**
 	 * Return a list of slots for the recipe area.
 	 */
-	List<Slot> getRecipeSlots(Container container);
+	List<Slot> getRecipeSlots(C container);
 
 	/**
 	 * Return a list of slots that the transfer can use to get items for crafting, or place leftover items.
 	 */
-	List<Slot> getInventorySlots(Container container);
+	List<Slot> getInventorySlots(C container);
 }

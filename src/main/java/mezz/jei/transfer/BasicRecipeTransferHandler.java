@@ -30,16 +30,16 @@ import mezz.jei.util.Log;
 import mezz.jei.util.StackHelper;
 import mezz.jei.util.Translator;
 
-public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
+public class BasicRecipeTransferHandler<C extends Container> implements IRecipeTransferHandler<C> {
 	@Nonnull
-	private final IRecipeTransferInfo transferHelper;
+	private final IRecipeTransferInfo<C> transferHelper;
 
-	public BasicRecipeTransferHandler(@Nonnull IRecipeTransferInfo transferHelper) {
+	public BasicRecipeTransferHandler(@Nonnull IRecipeTransferInfo<C> transferHelper) {
 		this.transferHelper = transferHelper;
 	}
 
 	@Override
-	public Class<? extends Container> getContainerClass() {
+	public Class<C> getContainerClass() {
 		return transferHelper.getContainerClass();
 	}
 
@@ -50,7 +50,7 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 
 	@Nullable
 	@Override
-	public IRecipeTransferError transferRecipe(@Nonnull Container container, @Nonnull IRecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean maxTransfer, boolean doTransfer) {
+	public IRecipeTransferError transferRecipe(@Nonnull C container, @Nonnull IRecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean maxTransfer, boolean doTransfer) {
 		IRecipeTransferHandlerHelper handlerHelper = Internal.getHelpers().recipeTransferHandlerHelper();
 		StackHelper stackHelper = Internal.getStackHelper();
 

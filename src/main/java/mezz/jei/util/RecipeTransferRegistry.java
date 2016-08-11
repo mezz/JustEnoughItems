@@ -4,13 +4,12 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.inventory.Container;
-
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.transfer.BasicRecipeTransferHandler;
 import mezz.jei.transfer.BasicRecipeTransferInfo;
+import net.minecraft.inventory.Container;
 
 public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 	private final List<IRecipeTransferHandler> recipeTransferHandlers = new ArrayList<>();
@@ -31,17 +30,17 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 	}
 
 	@Override
-	public void addRecipeTransferHandler(@Nullable IRecipeTransferInfo recipeTransferInfo) {
+	public void addRecipeTransferHandler(@Nullable IRecipeTransferInfo<?> recipeTransferInfo) {
 		if (recipeTransferInfo == null) {
 			Log.error("Null recipeTransferInfo", new NullPointerException());
 			return;
 		}
-		IRecipeTransferHandler recipeTransferHandler = new BasicRecipeTransferHandler(recipeTransferInfo);
+		IRecipeTransferHandler recipeTransferHandler = new BasicRecipeTransferHandler<>(recipeTransferInfo);
 		addRecipeTransferHandler(recipeTransferHandler);
 	}
 
 	@Override
-	public void addRecipeTransferHandler(@Nullable IRecipeTransferHandler recipeTransferHandler) {
+	public void addRecipeTransferHandler(@Nullable IRecipeTransferHandler<?> recipeTransferHandler) {
 		if (recipeTransferHandler == null) {
 			Log.error("Null recipeTransferHandler", new NullPointerException());
 			return;

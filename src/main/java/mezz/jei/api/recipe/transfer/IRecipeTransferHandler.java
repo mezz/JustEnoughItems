@@ -16,11 +16,11 @@ import mezz.jei.api.gui.IRecipeLayout;
  *
  * Useful functions for implementing a recipe transfer handler can be found in {@link IRecipeTransferHandlerHelper}.
  */
-public interface IRecipeTransferHandler {
+public interface IRecipeTransferHandler<C extends Container> {
 	/**
 	 * The container that this recipe transfer handler can use.
 	 */
-	Class<? extends Container> getContainerClass();
+	Class<C> getContainerClass();
 
 	/**
 	 * The type of recipe that this recipe transfer handler deals with.
@@ -37,5 +37,5 @@ public interface IRecipeTransferHandler {
 	 * @since JEI 2.20.0
 	 */
 	@Nullable
-	IRecipeTransferError transferRecipe(@Nonnull Container container, @Nonnull IRecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean maxTransfer, boolean doTransfer);
+	IRecipeTransferError transferRecipe(@Nonnull C container, @Nonnull IRecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean maxTransfer, boolean doTransfer);
 }
