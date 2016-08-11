@@ -146,23 +146,24 @@ public class StackHelper implements IStackHelper {
 	}
 
 	public Integer containsAnyStackIndexed(@Nullable Map<Integer, ItemStack> stacks, @Nullable Iterable<ItemStack> contains) {
-		return containsStackMatchable(stacks == null ? null : new MatchingIndexed(stacks), contains == null ? null : (Iterable<ItemStackMatchable<?>>) (Iterable<?>) new MatchingIterable(contains));
+		MatchingIndexed matchingStacks = new MatchingIndexed(stacks);
+		MatchingIterable matchingContains = new MatchingIterable(contains);
+		return containsStackMatchable(matchingStacks, matchingContains);
 	}
 
 	public ItemStack containsStack(@Nullable Iterable<ItemStack> stacks, @Nullable ItemStack contains) {
-		return containsAnyStack(stacks == null ? null : stacks, contains == null ? null : Collections.singletonList(contains));
+		List<ItemStack> containsList = contains == null ? null : Collections.singletonList(contains);
+		return containsAnyStack(stacks, containsList);
 	}
 
 	public ItemStack containsAnyStack(@Nullable Iterable<ItemStack> stacks, @Nullable Iterable<ItemStack> contains) {
-		return containsStackMatchable(stacks == null ? null : new MatchingIterable(stacks), contains == null ? null : (Iterable<ItemStackMatchable<?>>) (Iterable<?>) new MatchingIterable(contains));
+		MatchingIterable matchingStacks = new MatchingIterable(stacks);
+		MatchingIterable matchingContains = new MatchingIterable(contains);
+		return containsStackMatchable(matchingStacks, matchingContains);
 	}
 
 	/* Returns an ItemStack from "stacks" if it isEquivalent to an ItemStack from "contains" */
-	public <R> R containsStackMatchable(@Nullable Iterable<ItemStackMatchable<R>> stacks, @Nullable Iterable<ItemStackMatchable<?>> contains) {
-		if (stacks == null || contains == null) {
-			return null;
-		}
-
+	public <R, T> R containsStackMatchable(@Nonnull Iterable<ItemStackMatchable<R>> stacks, @Nonnull Iterable<ItemStackMatchable<T>> contains) {
 		for (ItemStackMatchable<?> containStack : contains) {
 			R matchingStack = containsStack(stacks, containStack);
 			if (matchingStack != null) {
@@ -174,11 +175,7 @@ public class StackHelper implements IStackHelper {
 	}
 
 	/* Returns an ItemStack from "stacks" if it isEquivalent to "contains" */
-	public <R> R containsStack(@Nullable Iterable<ItemStackMatchable<R>> stacks, @Nullable ItemStackMatchable<?> contains) {
-		if (stacks == null || contains == null) {
-			return null;
-		}
-
+	public <R> R containsStack(@Nonnull Iterable<ItemStackMatchable<R>> stacks, @Nonnull ItemStackMatchable<?> contains) {
 		for (ItemStackMatchable<R> stack : stacks) {
 			if (isEquivalent(contains.getStack(), stack.getStack())) {
 				return stack.getResult();
@@ -527,8 +524,12 @@ public class StackHelper implements IStackHelper {
 		@Nonnull
 		private final Iterable<ItemStack> list;
 
-		public MatchingIterable(@Nonnull Iterable<ItemStack> list) {
-			this.list = list;
+		public MatchingIterable(@Nullable Iterable<ItemStack> list) {
+			if (list == null) {
+				this.list = Collections.emptyList();
+			} else {
+				this.list = list;
+			}
 		}
 
 		@Nonnull
@@ -561,8 +562,12 @@ public class StackHelper implements IStackHelper {
 		@Nonnull
 		private final Map<Integer, ItemStack> map;
 
-		public MatchingIndexed(@Nonnull Map<Integer, ItemStack> map) {
-			this.map = map;
+		public MatchingIndexed(@Nullable Map<Integer, ItemStack> map) {
+			if (map == null) {
+				this.map = Collections.emptyMap();
+			} else {
+				this.map = map;
+			}
 		}
 
 		@Nonnull
