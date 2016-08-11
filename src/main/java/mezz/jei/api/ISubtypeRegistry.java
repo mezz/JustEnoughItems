@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
  * Tell JEI how to interpret NBT tags and capabilities when comparing and looking up items.
  *
  * Some items have subtypes, most of them use meta values for this and JEI handles them by default.
- * If your item has subtypes that depend on NBT or capabilities instead or meta, use this interface so JEI can tell those subtypes apart.
+ * If your item has subtypes that depend on NBT or capabilities instead of meta, use this interface so JEI can tell those subtypes apart.
  *
  * Note: JEI has built-in support for differentiating items that implement {@link net.minecraftforge.fluids.capability.CapabilityFluidHandler},
  * adding a subtype interpreter here will override that functionality.
