@@ -16,8 +16,8 @@ import net.minecraft.inventory.Container;
 public interface IRecipeTransferError {
 	enum Type {
 		/**
-		 * Errors where the Transfer handler is broken, or does not work, or the server is not present.
-		 * These errors will hide the recipe transfer button, but do not display anything to the user.
+		 * Errors where the Transfer handler is broken or does not work.
+		 * These errors will hide the recipe transfer button, and do not display anything to the user.
 		 */
 		INTERNAL,
 

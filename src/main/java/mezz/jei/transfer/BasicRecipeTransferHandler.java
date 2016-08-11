@@ -55,7 +55,8 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 		StackHelper stackHelper = Internal.getStackHelper();
 
 		if (!SessionData.isJeiOnServer()) {
-			return handlerHelper.createInternalError();
+			String tooltipMessage = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.no.server");
+			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
 		}
 		
 		Map<Integer, Slot> inventorySlots = new HashMap<>();

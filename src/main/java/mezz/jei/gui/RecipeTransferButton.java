@@ -3,20 +3,16 @@ package mezz.jei.gui;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-
-import net.minecraftforge.fml.client.config.GuiButtonExt;
-
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
+import mezz.jei.config.Constants;
 import mezz.jei.transfer.RecipeTransferErrorInternal;
 import mezz.jei.transfer.RecipeTransferUtil;
-import mezz.jei.util.Translator;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 public class RecipeTransferButton extends GuiButtonExt {
-	private static final String transferTooltip = Translator.translateToLocal("jei.tooltip.transfer");
 	private RecipeLayout recipeLayout;
 	private IRecipeTransferError recipeTransferError;
 
@@ -30,7 +26,7 @@ public class RecipeTransferButton extends GuiButtonExt {
 		if (container != null) {
 			this.recipeTransferError = RecipeTransferUtil.getTransferRecipeError(container, recipeLayout, player);
 		} else {
-			this.recipeTransferError = RecipeTransferErrorInternal.instance;
+			this.recipeTransferError = RecipeTransferErrorInternal.INSTANCE;
 		}
 
 		if (this.recipeTransferError == null) {
@@ -50,7 +46,7 @@ public class RecipeTransferButton extends GuiButtonExt {
 			if (recipeTransferError != null) {
 				recipeTransferError.showError(mc, mouseX, mouseY, recipeLayout, recipeLayout.getPosX(), recipeLayout.getPosY());
 			} else {
-				TooltipRenderer.drawHoveringText(mc, transferTooltip, mouseX, mouseY);
+				TooltipRenderer.drawHoveringText(mc, Constants.RECIPE_TRANSFER_TOOLTIP, mouseX, mouseY);
 			}
 		}
 	}

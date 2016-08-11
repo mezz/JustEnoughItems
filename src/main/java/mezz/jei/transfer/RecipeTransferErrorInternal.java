@@ -9,7 +9,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.gui.RecipeLayout;
 
 public class RecipeTransferErrorInternal implements IRecipeTransferError {
-	public static final RecipeTransferErrorInternal instance = new RecipeTransferErrorInternal();
+	public static final RecipeTransferErrorInternal INSTANCE = new RecipeTransferErrorInternal();
 
 	private RecipeTransferErrorInternal() {
 
