@@ -64,7 +64,6 @@ public class RecipeLayout implements IRecipeLayout {
 		}
 		GlStateManager.popMatrix();
 
-		recipeTransferButton.drawButton(minecraft, mouseX, mouseY);
 		GlStateManager.disableBlend();
 		GlStateManager.disableLighting();
 
@@ -97,6 +96,8 @@ public class RecipeLayout implements IRecipeLayout {
 		}
 
 		GlStateManager.disableAlpha();
+
+		recipeTransferButton.drawButton(minecraft, mouseX, mouseY);
 	}
 
 	public boolean isMouseOver(int mouseX, int mouseY) {
