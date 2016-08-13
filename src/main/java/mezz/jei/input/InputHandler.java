@@ -130,19 +130,18 @@ public class InputHandler {
 			}
 		}
 
-		Object focusValue = focus.getValue();
-		if (!(focusValue instanceof ItemStack)) {
-			return false;
-		}
-		ItemStack itemStack = (ItemStack) focusValue;
-
 		if (Config.isCheatItemsEnabled() && focus.allowsCheating()) {
-			if (mouseButton == 0) {
-				Commands.giveFullStack(itemStack);
-				return true;
-			} else if (mouseButton == 1) {
-				Commands.giveOneFromStack(itemStack);
-				return true;
+			Object focusValue = focus.getValue();
+			if (focusValue instanceof ItemStack) {
+				ItemStack itemStack = (ItemStack) focusValue;
+
+				if (mouseButton == 0) {
+					Commands.giveFullStack(itemStack);
+					return true;
+				} else if (mouseButton == 1) {
+					Commands.giveOneFromStack(itemStack);
+					return true;
+				}
 			}
 		}
 

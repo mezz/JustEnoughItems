@@ -2,6 +2,8 @@ package mezz.jei.config;
 
 import java.util.Locale;
 
+import mezz.jei.util.Translator;
+
 public class Constants {
 	public static final String minecraftModName = "Minecraft";
 
@@ -15,6 +17,8 @@ public class Constants {
 	public static final String TEXTURE_GUI_PATH = "textures/gui/";
 
 	public static final int MAX_TOOLTIP_WIDTH = 125;
+
+	public static final String RECIPE_TRANSFER_TOOLTIP = Translator.translateToLocal("jei.tooltip.transfer");
 
 	private Constants() {
 

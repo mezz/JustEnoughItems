@@ -179,7 +179,8 @@ public class RecipeRegistry implements IRecipeRegistry {
 			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, recipeHandler);
 
 			// suppress the null item in stack exception, that information is redundant here.
-			if (e.getMessage().equals(StackHelper.nullItemInStack)) {
+			String errorMessage = e.getMessage();
+			if (StackHelper.nullItemInStack.equals(errorMessage)) {
 				Log.error("Found a broken recipe: {}\n", recipeInfo);
 			} else {
 				Log.error("Found a broken recipe: {}\n", recipeInfo, e);

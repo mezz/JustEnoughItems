@@ -29,7 +29,7 @@ public class RecipeTransferUtil {
 			if (doTransfer) {
 				Log.error("No Recipe Transfer handler for container {}", container.getClass());
 			}
-			return RecipeTransferErrorInternal.instance;
+			return RecipeTransferErrorInternal.INSTANCE;
 		}
 
 		return transferHandler.transferRecipe(container, recipeLayout, player, maxTransfer, doTransfer);

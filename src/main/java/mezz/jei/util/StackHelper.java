@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -76,7 +77,7 @@ public class StackHelper implements IStackHelper {
 	 * Returns a result that contains missingItems if there are not enough items in availableItemStacks.
 	 */
 	@Nonnull
-	public MatchingItemsResult getMatchingItems(@Nonnull List<ItemStack> availableItemStacks, @Nonnull Map<Integer, ? extends IGuiIngredient<ItemStack>> ingredientsMap) {
+	public MatchingItemsResult getMatchingItems(@Nonnull Map<Integer, ItemStack> availableItemStacks, @Nonnull Map<Integer, ? extends IGuiIngredient<ItemStack>> ingredientsMap) {
 		MatchingItemsResult matchingItemResult = new MatchingItemsResult();
 
 		int recipeSlotNumber = -1;
@@ -92,16 +93,17 @@ public class StackHelper implements IStackHelper {
 			if (requiredStacks.isEmpty()) {
 				continue;
 			}
-
-			ItemStack matching = containsStack(availableItemStacks, requiredStacks);
+			
+			Integer matching = containsAnyStackIndexed(availableItemStacks, requiredStacks);
 			if (matching == null) {
 				matchingItemResult.missingItems.add(key);
 			} else {
-				ItemStack matchingSplit = matching.splitStack(1);
-				if (matching.stackSize == 0) {
+				ItemStack matchingStack = availableItemStacks.get(matching);
+				matchingStack.stackSize--;
+				if (matchingStack.stackSize == 0) {
 					availableItemStacks.remove(matching);
 				}
-				matchingItemResult.matchingItems.put(recipeSlotNumber, matchingSplit);
+				matchingItemResult.matchingItems.put(recipeSlotNumber, matching);
 			}
 		}
 
@@ -122,15 +124,19 @@ public class StackHelper implements IStackHelper {
 		return null;
 	}
 
+	public boolean containsSameStacks(@Nonnull Collection<ItemStack> stacks, @Nonnull Collection<ItemStack> contains) {
+		return containsSameStacks(new MatchingIterable(stacks), new MatchingIterable(contains));
+	}
+
 	/** Returns true if all stacks from "contains" are found in "stacks" and the opposite is true as well. */
-	public boolean containsSameStacks(@Nonnull Iterable<ItemStack> stacks, @Nonnull Iterable<ItemStack> contains) {
-		for (ItemStack stack : contains) {
+	public <R> boolean containsSameStacks(@Nonnull Iterable<ItemStackMatchable<R>> stacks, @Nonnull Iterable<ItemStackMatchable<R>> contains) {
+		for (ItemStackMatchable stack : contains) {
 			if (containsStack(stacks, stack) == null) {
 				return false;
 			}
 		}
 
-		for (ItemStack stack : stacks) {
+		for (ItemStackMatchable stack : stacks) {
 			if (containsStack(contains, stack) == null) {
 				return false;
 			}
@@ -139,15 +145,27 @@ public class StackHelper implements IStackHelper {
 		return true;
 	}
 
-	/* Returns an ItemStack from "stacks" if it isEquivalent to an ItemStack from "contains" */
-	@Nullable
-	public ItemStack containsStack(@Nullable Iterable<ItemStack> stacks, @Nullable Iterable<ItemStack> contains) {
-		if (stacks == null || contains == null) {
-			return null;
-		}
+	public Integer containsAnyStackIndexed(@Nullable Map<Integer, ItemStack> stacks, @Nullable Iterable<ItemStack> contains) {
+		MatchingIndexed matchingStacks = new MatchingIndexed(stacks);
+		MatchingIterable matchingContains = new MatchingIterable(contains);
+		return containsStackMatchable(matchingStacks, matchingContains);
+	}
 
-		for (ItemStack containStack : contains) {
-			ItemStack matchingStack = containsStack(stacks, containStack);
+	public ItemStack containsStack(@Nullable Iterable<ItemStack> stacks, @Nullable ItemStack contains) {
+		List<ItemStack> containsList = contains == null ? null : Collections.singletonList(contains);
+		return containsAnyStack(stacks, containsList);
+	}
+
+	public ItemStack containsAnyStack(@Nullable Iterable<ItemStack> stacks, @Nullable Iterable<ItemStack> contains) {
+		MatchingIterable matchingStacks = new MatchingIterable(stacks);
+		MatchingIterable matchingContains = new MatchingIterable(contains);
+		return containsStackMatchable(matchingStacks, matchingContains);
+	}
+
+	/* Returns an ItemStack from "stacks" if it isEquivalent to an ItemStack from "contains" */
+	public <R, T> R containsStackMatchable(@Nonnull Iterable<ItemStackMatchable<R>> stacks, @Nonnull Iterable<ItemStackMatchable<T>> contains) {
+		for (ItemStackMatchable<?> containStack : contains) {
+			R matchingStack = containsStack(stacks, containStack);
 			if (matchingStack != null) {
 				return matchingStack;
 			}
@@ -157,15 +175,10 @@ public class StackHelper implements IStackHelper {
 	}
 
 	/* Returns an ItemStack from "stacks" if it isEquivalent to "contains" */
-	@Nullable
-	public ItemStack containsStack(@Nullable Iterable<ItemStack> stacks, @Nullable ItemStack contains) {
-		if (stacks == null || contains == null) {
-			return null;
-		}
-
-		for (ItemStack stack : stacks) {
-			if (isEquivalent(contains, stack)) {
-				return stack;
+	public <R> R containsStack(@Nonnull Iterable<ItemStackMatchable<R>> stacks, @Nonnull ItemStackMatchable<?> contains) {
+		for (ItemStackMatchable<R> stack : stacks) {
+			if (isEquivalent(contains.getStack(), stack.getStack())) {
+				return stack.getResult();
 			}
 		}
 		return null;
@@ -476,8 +489,109 @@ public class StackHelper implements IStackHelper {
 
 	public static class MatchingItemsResult {
 		@Nonnull
-		public final Map<Integer, ItemStack> matchingItems = new HashMap<>();
+		public final Map<Integer, Integer> matchingItems = new HashMap<>();
 		@Nonnull
 		public final List<Integer> missingItems = new ArrayList<>();
+	}
+
+	private interface ItemStackMatchable<R> {
+		@Nonnull
+		ItemStack getStack();
+		@Nonnull
+		R getResult();
+	}
+
+	private static abstract class DelegateIterator<T, R> implements Iterator<R> {
+		@Nonnull
+		protected final Iterator<T> delegate;
+
+		public DelegateIterator(@Nonnull Iterator<T> delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return delegate.hasNext();
+		}
+
+		@Override
+		public void remove() {
+			delegate.remove();
+		}
+	}
+
+	private static class MatchingIterable implements Iterable<ItemStackMatchable<ItemStack>> {
+		@Nonnull
+		private final Iterable<ItemStack> list;
+
+		public MatchingIterable(@Nullable Iterable<ItemStack> list) {
+			if (list == null) {
+				this.list = Collections.emptyList();
+			} else {
+				this.list = list;
+			}
+		}
+
+		@Nonnull
+		@Override
+		public Iterator<ItemStackMatchable<ItemStack>> iterator() {
+			Iterator<ItemStack> stacks = list.iterator();
+			return new DelegateIterator<ItemStack, ItemStackMatchable<ItemStack>>(stacks) {
+				@Override
+				public ItemStackMatchable<ItemStack> next() {
+					final ItemStack stack = delegate.next();
+					return new ItemStackMatchable<ItemStack>() {
+						@Nonnull
+						@Override
+						public ItemStack getStack() {
+							return stack;
+						}
+
+						@Nonnull
+						@Override
+						public ItemStack getResult() {
+							return stack;
+						}
+					};
+				}
+			};
+		}
+	}
+
+	private static class MatchingIndexed implements Iterable<ItemStackMatchable<Integer>> {
+		@Nonnull
+		private final Map<Integer, ItemStack> map;
+
+		public MatchingIndexed(@Nullable Map<Integer, ItemStack> map) {
+			if (map == null) {
+				this.map = Collections.emptyMap();
+			} else {
+				this.map = map;
+			}
+		}
+
+		@Nonnull
+		@Override
+		public Iterator<ItemStackMatchable<Integer>> iterator() {
+			return new DelegateIterator<Map.Entry<Integer, ItemStack>, ItemStackMatchable<Integer>>(map.entrySet().iterator()) {
+				@Override
+				public ItemStackMatchable<Integer> next() {
+					final Map.Entry<Integer, ItemStack> entry = delegate.next();
+					return new ItemStackMatchable<Integer>() {
+						@Nonnull
+						@Override
+						public ItemStack getStack() {
+							return entry.getValue();
+						}
+
+						@Nonnull
+						@Override
+						public Integer getResult() {
+							return entry.getKey();
+						}
+					};
+				}
+			};
+		}
 	}
 }

@@ -5,7 +5,7 @@ jei.tooltip.show.all.recipes=Показать все рецепты
 jei.tooltip.delete.item=Нажмите, чтобы удалить
 jei.tooltip.liquid.amount.with.capacity=%,d / %,d мВ
 jei.tooltip.liquid.amount=%,d мВ
-jei.tooltip.transfer=Передача предметов
+jei.tooltip.transfer=Перемещение предметов
 jei.tooltip.recipe.ore.dict=Принимает любые: %s
 jei.tooltip.item.colors=Цвета: %s
 jei.tooltip.shapeless.recipe=Бесформенный рецепт
@@ -14,6 +14,8 @@ jei.tooltip.cheat.mode=Режим жульничества
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Отсутствуют предметы
 jei.tooltip.error.recipe.transfer.inventory.full=Инвентарь заполнен
+jei.tooltip.error.recipe.transfer.unknown=Неизвестная ошибка, смотрите логи
+jei.tooltip.error.recipe.transfer.no.server=На сервере должен быть установлен JEI
 
 # Error Messages
 jei.chat.error.command.too.long=JEI необходимо установить на сервер, чтобы использовать эту команду, она слишком длинна для отправки.

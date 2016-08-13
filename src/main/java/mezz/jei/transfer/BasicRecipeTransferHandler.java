@@ -30,16 +30,16 @@ import mezz.jei.util.Log;
 import mezz.jei.util.StackHelper;
 import mezz.jei.util.Translator;
 
-public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
+public class BasicRecipeTransferHandler<C extends Container> implements IRecipeTransferHandler<C> {
 	@Nonnull
-	private final IRecipeTransferInfo transferHelper;
+	private final IRecipeTransferInfo<C> transferHelper;
 
-	public BasicRecipeTransferHandler(@Nonnull IRecipeTransferInfo transferHelper) {
+	public BasicRecipeTransferHandler(@Nonnull IRecipeTransferInfo<C> transferHelper) {
 		this.transferHelper = transferHelper;
 	}
 
 	@Override
-	public Class<? extends Container> getContainerClass() {
+	public Class<C> getContainerClass() {
 		return transferHelper.getContainerClass();
 	}
 
@@ -50,12 +50,13 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 
 	@Nullable
 	@Override
-	public IRecipeTransferError transferRecipe(@Nonnull Container container, @Nonnull IRecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean maxTransfer, boolean doTransfer) {
+	public IRecipeTransferError transferRecipe(@Nonnull C container, @Nonnull IRecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean maxTransfer, boolean doTransfer) {
 		IRecipeTransferHandlerHelper handlerHelper = Internal.getHelpers().recipeTransferHandlerHelper();
 		StackHelper stackHelper = Internal.getStackHelper();
 
 		if (!SessionData.isJeiOnServer()) {
-			return handlerHelper.createInternalError();
+			String tooltipMessage = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.no.server");
+			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
 		}
 		
 		Map<Integer, Slot> inventorySlots = new HashMap<>();
@@ -81,7 +82,7 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 			return handlerHelper.createInternalError();
 		}
 
-		List<ItemStack> availableItemStacks = new ArrayList<>();
+		Map<Integer, ItemStack> availableItemStacks = new HashMap<>();
 		int filledCraftSlotCount = 0;
 		int emptySlotCount = 0;
 
@@ -92,13 +93,13 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 					return handlerHelper.createInternalError();
 				}
 				filledCraftSlotCount++;
-				availableItemStacks.add(slot.getStack().copy());
+				availableItemStacks.put(slot.slotNumber, slot.getStack().copy());
 			}
 		}
 
 		for (Slot slot : inventorySlots.values()) {
 			if (slot.getHasStack()) {
-				availableItemStacks.add(slot.getStack().copy());
+				availableItemStacks.put(slot.slotNumber, slot.getStack().copy());
 			} else {
 				emptySlotCount++;
 			}
@@ -124,7 +125,7 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 		Collections.sort(inventorySlotIndexes);
 
 		// check that the slots exist and can be altered
-		for (Map.Entry<Integer, ItemStack> entry : matchingItemsResult.matchingItems.entrySet()) {
+		for (Map.Entry<Integer, Integer> entry : matchingItemsResult.matchingItems.entrySet()) {
 			int craftNumber = entry.getKey();
 			int slotNumber = craftingSlotIndexes.get(craftNumber);
 			if (slotNumber >= container.inventorySlots.size()) {
@@ -132,7 +133,7 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 				return handlerHelper.createInternalError();
 			}
 			Slot slot = container.getSlot(slotNumber);
-			ItemStack stack = entry.getValue();
+			ItemStack stack = container.getSlot(entry.getValue()).getStack();
 			if (slot == null) {
 				Log.error("The slot number {} does not exist in the container.", slotNumber);
 				return handlerHelper.createInternalError();
@@ -154,9 +155,21 @@ public class BasicRecipeTransferHandler implements IRecipeTransferHandler {
 	/**
 	 * Called server-side to actually put the items in place.
 	 */
-	public static void setItems(@Nonnull EntityPlayer player, @Nonnull Map<Integer, ItemStack> slotMap, @Nonnull List<Integer> craftingSlots, @Nonnull List<Integer> inventorySlots, boolean maxTransfer) {
+	public static void setItems(@Nonnull EntityPlayer player, @Nonnull Map<Integer, Integer> slotIdMap, @Nonnull List<Integer> craftingSlots, @Nonnull List<Integer> inventorySlots, boolean maxTransfer) {
 		Container container = player.openContainer;
 		StackHelper stackHelper = Internal.getStackHelper();
+
+		// grab items from slots
+		Map<Integer, ItemStack> slotMap = new HashMap<>(slotIdMap.size());
+		for (Map.Entry<Integer, Integer> entry : slotIdMap.entrySet()) {
+			Slot slot = container.getSlot(entry.getValue());
+			if (slot == null || !slot.getHasStack()) {
+				return;
+			}
+			ItemStack stack = slot.getStack().copy();
+			stack.stackSize = 1;
+			slotMap.put(entry.getKey(), stack);
+		}
 
 		// remove required recipe items
 		int removedSets = removeSetsFromInventory(container, slotMap.values(), craftingSlots, inventorySlots, maxTransfer);

@@ -20,6 +20,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.item.ItemStack;
 
 public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	private final int slotIndex;
@@ -156,7 +157,11 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 			}
 
 			FontRenderer fontRenderer = ingredientRenderer.getFontRenderer(minecraft, value);
-			TooltipRenderer.drawHoveringText(minecraft, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
+			if (value instanceof ItemStack) {
+				TooltipRenderer.drawHoveringText((ItemStack) value, minecraft, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
+			} else {
+				TooltipRenderer.drawHoveringText(minecraft, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
+			}
 
 			GlStateManager.enableDepth();
 		} catch (RuntimeException e) {

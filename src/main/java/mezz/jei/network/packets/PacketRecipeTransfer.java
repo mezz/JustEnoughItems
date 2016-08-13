@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 
 import mezz.jei.network.IPacketId;
@@ -17,7 +16,7 @@ import mezz.jei.transfer.BasicRecipeTransferHandler;
 
 public class PacketRecipeTransfer extends PacketJEI {
 
-	private Map<Integer, ItemStack> recipeMap;
+	private Map<Integer, Integer> recipeMap;
 	private List<Integer> craftingSlots;
 	private List<Integer> inventorySlots;
 	private boolean maxTransfer;
@@ -26,7 +25,7 @@ public class PacketRecipeTransfer extends PacketJEI {
 
 	}
 
-	public PacketRecipeTransfer(@Nonnull Map<Integer, ItemStack> recipeMap, @Nonnull List<Integer> craftingSlots, @Nonnull List<Integer> inventorySlots, boolean maxTransfer) {
+	public PacketRecipeTransfer(@Nonnull Map<Integer, Integer> recipeMap, @Nonnull List<Integer> craftingSlots, @Nonnull List<Integer> inventorySlots, boolean maxTransfer) {
 		this.recipeMap = recipeMap;
 		this.craftingSlots = craftingSlots;
 		this.inventorySlots = inventorySlots;
@@ -44,7 +43,7 @@ public class PacketRecipeTransfer extends PacketJEI {
 		recipeMap = new HashMap<>(recipeMapSize);
 		for (int i = 0; i < recipeMapSize; i++) {
 			int slotIndex = buf.readVarIntFromBuffer();
-			ItemStack recipeItem = buf.readItemStackFromBuffer();
+			int recipeItem = buf.readVarIntFromBuffer();
 			recipeMap.put(slotIndex, recipeItem);
 		}
 
@@ -70,9 +69,9 @@ public class PacketRecipeTransfer extends PacketJEI {
 	@Override
 	public void writePacketData(PacketBuffer buf) throws IOException {
 		buf.writeVarIntToBuffer(recipeMap.size());
-		for (Map.Entry<Integer, ItemStack> recipeMapEntry : recipeMap.entrySet()) {
+		for (Map.Entry<Integer, Integer> recipeMapEntry : recipeMap.entrySet()) {
 			buf.writeVarIntToBuffer(recipeMapEntry.getKey());
-			buf.writeItemStackToBuffer(recipeMapEntry.getValue());
+			buf.writeVarIntToBuffer(recipeMapEntry.getValue());
 		}
 
 		buf.writeVarIntToBuffer(craftingSlots.size());
