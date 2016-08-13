@@ -64,9 +64,6 @@ public class RecipeLayout implements IRecipeLayout {
 		}
 		GlStateManager.popMatrix();
 
-		GlStateManager.disableBlend();
-		GlStateManager.disableLighting();
-
 		final int recipeMouseX = mouseX - posX;
 		final int recipeMouseY = mouseY - posY;
 
@@ -82,6 +79,10 @@ public class RecipeLayout implements IRecipeLayout {
 		RenderHelper.disableStandardItemLighting();
 		GuiIngredient hoveredFluidStack = guiFluidStackGroup.draw(minecraft, posX, posY, mouseX, mouseY);
 
+		recipeTransferButton.drawButton(minecraft, mouseX, mouseY);
+		GlStateManager.disableBlend();
+		GlStateManager.disableLighting();
+
 		if (hoveredItemStack != null) {
 			RenderHelper.enableGUIStandardItemLighting();
 			hoveredItemStack.drawHovered(minecraft, posX, posY, recipeMouseX, recipeMouseY);
@@ -96,8 +97,6 @@ public class RecipeLayout implements IRecipeLayout {
 		}
 
 		GlStateManager.disableAlpha();
-
-		recipeTransferButton.drawButton(minecraft, mouseX, mouseY);
 	}
 
 	public boolean isMouseOver(int mouseX, int mouseY) {
