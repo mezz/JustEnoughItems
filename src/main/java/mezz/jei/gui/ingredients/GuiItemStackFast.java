@@ -215,7 +215,7 @@ public class GuiItemStackFast {
 		}
 		List<String> tooltip = getTooltip(minecraft, itemStack);
 		FontRenderer fontRenderer = getFontRenderer(minecraft, itemStack);
-		TooltipRenderer.drawHoveringText(minecraft, tooltip, mouseX, mouseY, fontRenderer);
+		TooltipRenderer.drawHoveringText(itemStack, minecraft, tooltip, mouseX, mouseY, fontRenderer);
 	}
 
 	@Nonnull
