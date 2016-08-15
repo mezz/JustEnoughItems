@@ -22,6 +22,6 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Nonnull
 	@Override
 	public Focus<ItemStack> createFocus(@Nonnull ItemStack ingredient) {
-		return new Focus<>(ingredient);
+		return new Focus<ItemStack>(ingredient);
 	}
 }

@@ -76,9 +76,9 @@ public class ErrorUtil {
 		}
 		StackHelper stackHelper = Internal.getStackHelper();
 
-		List<String> ingredientsInfo = new ArrayList<>();
+		List<String> ingredientsInfo = new ArrayList<String>();
 		for (Object ingredient : list) {
-			List<String> ingredientInfo = new ArrayList<>();
+			List<String> ingredientInfo = new ArrayList<String>();
 
 			List<ItemStack> stacks = stackHelper.toItemStackList(ingredient);
 			String oreDict = stackHelper.getOreDictEquivalent(stacks);

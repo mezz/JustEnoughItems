@@ -5,19 +5,16 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import net.minecraft.item.ItemStack;
-import org.apache.commons.lang3.text.WordUtils;
-
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.registry.GameData;
+import org.apache.commons.lang3.text.WordUtils;
 
 public class ModList {
 
-	private final Map<String, String> modNamesForIds = new HashMap<>();
+	private final Map<String, String> modNamesForIds = new HashMap<String, String>();
 
 	public ModList() {
 		Map<String, ModContainer> modMap = Loader.instance().getIndexedModList();

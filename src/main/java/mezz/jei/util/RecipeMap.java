@@ -36,7 +36,7 @@ public class RecipeMap {
 
 	@Nonnull
 	public ImmutableList<IRecipeCategory> getRecipeCategories(@Nonnull ItemStack itemStack) {
-		Set<IRecipeCategory> recipeCategories = new HashSet<>();
+		Set<IRecipeCategory> recipeCategories = new HashSet<IRecipeCategory>();
 		for (String stackKey : Internal.getStackHelper().getUniqueIdentifiersWithWildcard(itemStack)) {
 			recipeCategories.addAll(categoryMap.get(stackKey));
 		}

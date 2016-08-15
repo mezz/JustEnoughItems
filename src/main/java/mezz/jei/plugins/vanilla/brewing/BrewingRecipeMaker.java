@@ -1,8 +1,18 @@
 package mezz.jei.plugins.vanilla.brewing;
 
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.config.Config;
+import mezz.jei.util.Java6Helper;
 import mezz.jei.util.Log;
 import net.minecraft.init.Items;
 import net.minecraft.init.PotionTypes;
@@ -16,30 +26,21 @@ import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 public class BrewingRecipeMaker {
-	private static final Set<Class> unhandledRecipeClasses = new HashSet<>();
+	private static final Set<Class> unhandledRecipeClasses = new HashSet<Class>();
 
 	@Nonnull
 	public static List<BrewingRecipeWrapper> getBrewingRecipes(IItemRegistry itemRegistry) {
-		Set<BrewingRecipeWrapper> recipes = new HashSet<>();
+		Set<BrewingRecipeWrapper> recipes = new HashSet<BrewingRecipeWrapper>();
 
 		addVanillaBrewingRecipes(itemRegistry, recipes);
 		addModdedBrewingRecipes(recipes);
 
-		List<BrewingRecipeWrapper> recipeList = new ArrayList<>(recipes);
+		List<BrewingRecipeWrapper> recipeList = new ArrayList<BrewingRecipeWrapper>(recipes);
 		Collections.sort(recipeList, new Comparator<BrewingRecipeWrapper>() {
 			@Override
 			public int compare(BrewingRecipeWrapper o1, BrewingRecipeWrapper o2) {
-				return Integer.compare(o1.getBrewingSteps(), o2.getBrewingSteps());
+				return Java6Helper.compare(o1.getBrewingSteps(), o2.getBrewingSteps());
 			}
 		});
 
@@ -48,7 +49,7 @@ public class BrewingRecipeMaker {
 
 	private static void addVanillaBrewingRecipes(IItemRegistry itemRegistry, Collection<BrewingRecipeWrapper> recipes) {
 		ImmutableList<ItemStack> potionIngredients = itemRegistry.getPotionIngredients();
-		List<ItemStack> knownPotions = new ArrayList<>();
+		List<ItemStack> knownPotions = new ArrayList<ItemStack>();
 		ItemStack waterBottle = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionTypes.WATER);
 		knownPotions.add(waterBottle);
 
@@ -68,7 +69,7 @@ public class BrewingRecipeMaker {
 	}
 
 	private static List<ItemStack> getNewPotions(final int brewingStep, List<ItemStack> knownPotions, ImmutableList<ItemStack> potionIngredients, Collection<BrewingRecipeWrapper> recipes) {
-		List<ItemStack> newPotions = new ArrayList<>();
+		List<ItemStack> newPotions = new ArrayList<ItemStack>();
 		for (ItemStack potionInput : knownPotions) {
 			for (ItemStack potionIngredient : potionIngredients) {
 				ItemStack potionOutput = PotionHelper.doReaction(potionIngredient, potionInput.copy());

@@ -15,7 +15,7 @@ import net.minecraft.client.Minecraft;
 public abstract class GuiIngredientGroup<T, V extends GuiIngredient<T>> implements IGuiIngredientGroup<T> {
 	protected final int itemCycleOffset = (int) (Math.random() * 1000);
 	@Nonnull
-	protected final Map<Integer, V> guiIngredients = new HashMap<>();
+	protected final Map<Integer, V> guiIngredients = new HashMap<Integer, V>();
 	/**
 	 * If focus is set and any of the guiIngredients contains focus
 	 * they will only display focus instead of rotating through all their values.

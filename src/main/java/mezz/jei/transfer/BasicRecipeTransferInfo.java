@@ -3,10 +3,9 @@ package mezz.jei.transfer;
 import java.util.ArrayList;
 import java.util.List;
 
+import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
-
-import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 
 public class BasicRecipeTransferInfo implements IRecipeTransferInfo {
 	private final Class<? extends Container> containerClass;
@@ -37,7 +36,7 @@ public class BasicRecipeTransferInfo implements IRecipeTransferInfo {
 
 	@Override
 	public List<Slot> getRecipeSlots(Container container) {
-		List<Slot> slots = new ArrayList<>();
+		List<Slot> slots = new ArrayList<Slot>();
 		for (int i = recipeSlotStart; i < recipeSlotStart + recipeSlotCount; i++) {
 			Slot slot = container.getSlot(i);
 			slots.add(slot);
@@ -47,7 +46,7 @@ public class BasicRecipeTransferInfo implements IRecipeTransferInfo {
 
 	@Override
 	public List<Slot> getInventorySlots(Container container) {
-		List<Slot> slots = new ArrayList<>();
+		List<Slot> slots = new ArrayList<Slot>();
 		for (int i = inventorySlotStart; i < inventorySlotStart + inventorySlotCount; i++) {
 			Slot slot = container.getSlot(i);
 			slots.add(slot);

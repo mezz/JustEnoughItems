@@ -12,7 +12,7 @@ import mezz.jei.transfer.BasicRecipeTransferInfo;
 import net.minecraft.inventory.Container;
 
 public class RecipeTransferRegistry implements IRecipeTransferRegistry {
-	private final List<IRecipeTransferHandler> recipeTransferHandlers = new ArrayList<>();
+	private final List<IRecipeTransferHandler> recipeTransferHandlers = new ArrayList<IRecipeTransferHandler>();
 
 	@Override
 	public void addRecipeTransferHandler(@Nullable Class<? extends Container> containerClass, @Nullable String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
@@ -30,12 +30,12 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 	}
 
 	@Override
-	public void addRecipeTransferHandler(@Nullable IRecipeTransferInfo<?> recipeTransferInfo) {
+	public <C extends Container> void addRecipeTransferHandler(@Nullable IRecipeTransferInfo<C> recipeTransferInfo) {
 		if (recipeTransferInfo == null) {
 			Log.error("Null recipeTransferInfo", new NullPointerException());
 			return;
 		}
-		IRecipeTransferHandler recipeTransferHandler = new BasicRecipeTransferHandler<>(recipeTransferInfo);
+		IRecipeTransferHandler<C> recipeTransferHandler = new BasicRecipeTransferHandler<C>(recipeTransferInfo);
 		addRecipeTransferHandler(recipeTransferHandler);
 	}
 

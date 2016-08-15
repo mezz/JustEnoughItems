@@ -11,14 +11,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import mezz.jei.Internal;
 import mezz.jei.api.ISubtypeRegistry;
-import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.gui.IGuiIngredient;
+import mezz.jei.api.recipe.IStackHelper;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -32,7 +31,7 @@ public class StackHelper implements IStackHelper {
 	public static final String nullItemInStack = "Found an itemStack with a null item. This is an error from another mod.";
 
 	/** Uids are cached during loading to improve startup performance. */
-	private final Map<UidMode, Map<ItemStack, String>> uidCache = new EnumMap<>(UidMode.class);
+	private final Map<UidMode, Map<ItemStack, String>> uidCache = new EnumMap<UidMode, Map<ItemStack, String>>(UidMode.class);
 	private boolean uidCacheEnabled = true;
 
 	public StackHelper() {
@@ -81,7 +80,7 @@ public class StackHelper implements IStackHelper {
 		MatchingItemsResult matchingItemResult = new MatchingItemsResult();
 
 		int recipeSlotNumber = -1;
-		SortedSet<Integer> keys = new TreeSet<>(ingredientsMap.keySet());
+		SortedSet<Integer> keys = new TreeSet<Integer>(ingredientsMap.keySet());
 		for (Integer key : keys) {
 			IGuiIngredient<ItemStack> ingredient = ingredientsMap.get(key);
 			if (!ingredient.isInput()) {
@@ -209,7 +208,7 @@ public class StackHelper implements IStackHelper {
 		if (lhs.getHasSubtypes()) {
 			String keyLhs = getUniqueIdentifierForStack(lhs, UidMode.NORMAL);
 			String keyRhs = getUniqueIdentifierForStack(rhs, UidMode.NORMAL);
-			return Objects.equals(keyLhs, keyRhs);
+			return Java6Helper.equals(keyLhs, keyRhs);
 		} else {
 			return true;
 		}
@@ -238,15 +237,18 @@ public class StackHelper implements IStackHelper {
 
 	@Nonnull
 	public List<ItemStack> getSubtypes(@Nonnull final Item item, final int stackSize) {
-		List<ItemStack> itemStacks = new ArrayList<>();
+		List<ItemStack> itemStacks = new ArrayList<ItemStack>();
 
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
-			List<ItemStack> subItems = new ArrayList<>();
+			List<ItemStack> subItems = new ArrayList<ItemStack>();
 			try {
 				item.getSubItems(item, itemTab, subItems);
-			} catch (RuntimeException | LinkageError e) {
+			} catch (RuntimeException e) {
+				Log.warning("Caught a crash while getting sub-items of {}", item, e);
+			} catch (LinkageError e) {
 				Log.warning("Caught a crash while getting sub-items of {}", item, e);
 			}
+
 			for (ItemStack subItem : subItems) {
 				if (subItem == null) {
 					Log.warning("Found a null subItem of {}", item);
@@ -275,7 +277,7 @@ public class StackHelper implements IStackHelper {
 			return Collections.emptyList();
 		}
 
-		List<ItemStack> allSubtypes = new ArrayList<>();
+		List<ItemStack> allSubtypes = new ArrayList<ItemStack>();
 		getAllSubtypes(allSubtypes, stacks);
 		return allSubtypes;
 	}
@@ -489,9 +491,9 @@ public class StackHelper implements IStackHelper {
 
 	public static class MatchingItemsResult {
 		@Nonnull
-		public final Map<Integer, Integer> matchingItems = new HashMap<>();
+		public final Map<Integer, Integer> matchingItems = new HashMap<Integer, Integer>();
 		@Nonnull
-		public final List<Integer> missingItems = new ArrayList<>();
+		public final List<Integer> missingItems = new ArrayList<Integer>();
 	}
 
 	private interface ItemStackMatchable<R> {

@@ -10,13 +10,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-
 import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
+import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
@@ -24,11 +20,14 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.config.SessionData;
-import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.util.Log;
 import mezz.jei.util.StackHelper;
 import mezz.jei.util.Translator;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 
 public class BasicRecipeTransferHandler<C extends Container> implements IRecipeTransferHandler<C> {
 	@Nonnull
@@ -58,13 +57,13 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 			String tooltipMessage = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.no.server");
 			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
 		}
-		
-		Map<Integer, Slot> inventorySlots = new HashMap<>();
+
+		Map<Integer, Slot> inventorySlots = new HashMap<Integer, Slot>();
 		for (Slot slot : transferHelper.getInventorySlots(container)) {
 			inventorySlots.put(slot.slotNumber, slot);
 		}
 
-		Map<Integer, Slot> craftingSlots = new HashMap<>();
+		Map<Integer, Slot> craftingSlots = new HashMap<Integer, Slot>();
 		for (Slot slot : transferHelper.getRecipeSlots(container)) {
 			craftingSlots.put(slot.slotNumber, slot);
 		}
@@ -82,7 +81,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 			return handlerHelper.createInternalError();
 		}
 
-		Map<Integer, ItemStack> availableItemStacks = new HashMap<>();
+		Map<Integer, ItemStack> availableItemStacks = new HashMap<Integer, ItemStack>();
 		int filledCraftSlotCount = 0;
 		int emptySlotCount = 0;
 
@@ -118,10 +117,10 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 			return handlerHelper.createUserErrorForSlots(message, matchingItemsResult.missingItems);
 		}
 
-		List<Integer> craftingSlotIndexes = new ArrayList<>(craftingSlots.keySet());
+		List<Integer> craftingSlotIndexes = new ArrayList<Integer>(craftingSlots.keySet());
 		Collections.sort(craftingSlotIndexes);
 
-		List<Integer> inventorySlotIndexes = new ArrayList<>(inventorySlots.keySet());
+		List<Integer> inventorySlotIndexes = new ArrayList<Integer>(inventorySlots.keySet());
 		Collections.sort(inventorySlotIndexes);
 
 		// check that the slots exist and can be altered
@@ -160,7 +159,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 		StackHelper stackHelper = Internal.getStackHelper();
 
 		// grab items from slots
-		Map<Integer, ItemStack> slotMap = new HashMap<>(slotIdMap.size());
+		Map<Integer, ItemStack> slotMap = new HashMap<Integer, ItemStack>(slotIdMap.size());
 		for (Map.Entry<Integer, Integer> entry : slotIdMap.entrySet()) {
 			Slot slot = container.getSlot(entry.getValue());
 			if (slot == null || !slot.getHasStack()) {
@@ -178,7 +177,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 		}
 
 		// clear the crafting grid
-		List<ItemStack> clearedCraftingItems = new ArrayList<>();
+		List<ItemStack> clearedCraftingItems = new ArrayList<ItemStack>();
 		for (Integer craftingSlotNumber : craftingSlots) {
 			Slot craftingSlot = container.getSlot(craftingSlotNumber);
 			if (craftingSlot != null && craftingSlot.getHasStack()) {
@@ -213,7 +212,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 
 	private static int removeSetsFromInventory(@Nonnull Container container, @Nonnull Collection<ItemStack> required, @Nonnull List<Integer> craftingSlots, @Nonnull List<Integer> inventorySlots, boolean maxTransfer) {
 		if (maxTransfer) {
-			List<ItemStack> requiredCopy = new ArrayList<>();
+			List<ItemStack> requiredCopy = new ArrayList<ItemStack>();
 			requiredCopy.addAll(required);
 
 			int removedSets = 0;
@@ -235,7 +234,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 	}
 
 	private static boolean removeSetsFromInventory(@Nonnull Container container, @Nonnull Iterable<ItemStack> required, @Nonnull List<Integer> craftingSlots, @Nonnull List<Integer> inventorySlots) {
-		final Map<Slot, ItemStack> originalSlotContents = new HashMap<>();
+		final Map<Slot, ItemStack> originalSlotContents = new HashMap<Slot, ItemStack>();
 
 		for (ItemStack matchingStack : required) {
 			final ItemStack requiredStack = matchingStack.copy();

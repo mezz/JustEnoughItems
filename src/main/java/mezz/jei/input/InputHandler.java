@@ -35,7 +35,7 @@ public class InputHandler {
 	@Nonnull
 	private MouseHelper mouseHelper;
 	@Nonnull
-	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<>();
+	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<IShowsRecipeFocuses>();
 
 	private boolean clickHandled = false;
 

@@ -14,6 +14,8 @@ import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 
 public class RecipeLayout implements IRecipeLayout {
 	private static final int RECIPE_BUTTON_SIZE = 12;
@@ -35,8 +37,8 @@ public class RecipeLayout implements IRecipeLayout {
 
 	public <T extends IRecipeWrapper> RecipeLayout(int index, int posX, int posY, @Nonnull IRecipeCategory<T> recipeCategory, @Nonnull T recipeWrapper, @Nonnull MasterFocus focus) {
 		this.recipeCategory = recipeCategory;
-		this.guiItemStackGroup = new GuiItemStackGroup(new Focus<>(focus.getMode(), focus.getItemStack()));
-		this.guiFluidStackGroup = new GuiFluidStackGroup(new Focus<>(focus.getMode(), focus.getFluidStack()));
+		this.guiItemStackGroup = new GuiItemStackGroup(new Focus<ItemStack>(focus.getMode(), focus.getItemStack()));
+		this.guiFluidStackGroup = new GuiFluidStackGroup(new Focus<FluidStack>(focus.getMode(), focus.getFluidStack()));
 		int width = recipeCategory.getBackground().getWidth();
 		int height = recipeCategory.getBackground().getHeight();
 		this.recipeTransferButton = new RecipeTransferButton(recipeTransferButtonIndex + index, posX + width + 2, posY + height - RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, "+");

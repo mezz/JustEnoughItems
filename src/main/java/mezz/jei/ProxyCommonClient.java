@@ -169,7 +169,10 @@ public class ProxyCommonClient extends ProxyCommon {
 				plugin.register(modRegistry);
 				long timeElapsedSeconds = TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - start_time);
 				Log.info("Registered  plugin: {} in {} seconds", plugin.getClass().getName(), timeElapsedSeconds);
-			} catch (RuntimeException | LinkageError e) {
+			} catch (RuntimeException e) {
+				Log.error("Failed to register mod plugin: {}", plugin.getClass(), e);
+				iterator.remove();
+			} catch (LinkageError e) {
 				Log.error("Failed to register mod plugin: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
@@ -191,7 +194,10 @@ public class ProxyCommonClient extends ProxyCommon {
 			IModPlugin plugin = iterator.next();
 			try {
 				plugin.onRuntimeAvailable(jeiRuntime);
-			} catch (RuntimeException | LinkageError e) {
+			} catch (RuntimeException e) {
+				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
+				iterator.remove();
+			} catch (LinkageError e) {
 				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
 				iterator.remove();
 			}

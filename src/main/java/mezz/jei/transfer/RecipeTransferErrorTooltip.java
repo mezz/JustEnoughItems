@@ -13,7 +13,7 @@ import net.minecraft.util.text.TextFormatting;
 
 public class RecipeTransferErrorTooltip implements IRecipeTransferError {
 	@Nonnull
-	private final List<String> message = new ArrayList<>();
+	private final List<String> message = new ArrayList<String>();
 
 	public RecipeTransferErrorTooltip(@Nonnull String message) {
 		this.message.add(Constants.RECIPE_TRANSFER_TOOLTIP);

@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 
 public class GuiContainerWrapper implements IShowsRecipeFocuses {
 	@Nullable
@@ -19,7 +20,7 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 		GuiContainer guiContainer = (GuiContainer) guiScreen;
 		Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
 		if (slotUnderMouse != null && slotUnderMouse.getHasStack()) {
-			return new Focus<>(slotUnderMouse.getStack());
+			return new Focus<ItemStack>(slotUnderMouse.getStack());
 		}
 		return null;
 	}

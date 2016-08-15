@@ -164,7 +164,13 @@ public class ItemFilter {
 			final IBakedModel itemModel;
 			try {
 				itemModel = renderItem.getItemModelWithOverrides(itemStack, null, null);
-			} catch (RuntimeException | LinkageError e) {
+			} catch (RuntimeException e) {
+				String modName = Internal.getItemRegistry().getModNameForItem(item);
+				String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
+				Log.error("Couldn't get ItemModel for {} itemStack {}", modName, stackInfo, e);
+				brokenItems.add(item);
+				return true;
+			} catch (LinkageError e) {
 				String modName = Internal.getItemRegistry().getModNameForItem(item);
 				String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
 				Log.error("Couldn't get ItemModel for {} itemStack {}", modName, stackInfo, e);
@@ -213,12 +219,12 @@ public class ItemFilter {
 	}
 
 	private static class FilterPredicate implements Predicate<ItemStackElement> {
-		private final List<String> searchTokens = new ArrayList<>();
-		private final List<String> modNameTokens = new ArrayList<>();
-		private final List<String> tooltipTokens = new ArrayList<>();
-		private final List<String> oreDictTokens = new ArrayList<>();
-		private final List<String> creativeTabTokens = new ArrayList<>();
-		private final List<String> colorTokens = new ArrayList<>();
+		private final List<String> searchTokens = new ArrayList<String>();
+		private final List<String> modNameTokens = new ArrayList<String>();
+		private final List<String> tooltipTokens = new ArrayList<String>();
+		private final List<String> oreDictTokens = new ArrayList<String>();
+		private final List<String> creativeTabTokens = new ArrayList<String>();
+		private final List<String> colorTokens = new ArrayList<String>();
 
 		public FilterPredicate(String filterText) {
 			String[] tokens = filterText.split(" ");

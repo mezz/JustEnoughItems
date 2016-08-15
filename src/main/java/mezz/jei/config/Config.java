@@ -1,5 +1,12 @@
 package mezz.jei.config;
 
+import javax.annotation.Nonnull;
+import java.awt.*;
+import java.io.File;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
 import mezz.jei.util.Log;
@@ -12,13 +19,6 @@ import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-
-import javax.annotation.Nonnull;
-import java.awt.*;
-import java.io.File;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 public class Config {
 	private static final String configKeyPrefix = "config.jei";
@@ -60,7 +60,7 @@ public class Config {
 	private static String filterText = defaultFilterText;
 
 	// item blacklist
-	private static final Set<String> itemBlacklist = new HashSet<>();
+	private static final Set<String> itemBlacklist = new HashSet<String>();
 	private static final String[] defaultItemBlacklist = new String[]{};
 
 	private Config() {

@@ -53,7 +53,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	/* List of RecipeLayout to display */
 	@Nonnull
-	private final List<RecipeLayout> recipeLayouts = new ArrayList<>();
+	private final List<RecipeLayout> recipeLayouts = new ArrayList<RecipeLayout>();
 
 	private String pageString;
 	private String title;

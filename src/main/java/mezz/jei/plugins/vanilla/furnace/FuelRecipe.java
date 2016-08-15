@@ -1,21 +1,20 @@
 package mezz.jei.plugins.vanilla.furnace;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
 import mezz.jei.util.Translator;
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 public class FuelRecipe extends VanillaRecipeWrapper {
 	@Nonnull
@@ -26,7 +25,7 @@ public class FuelRecipe extends VanillaRecipeWrapper {
 	private final IDrawableAnimated flame;
 
 	public FuelRecipe(@Nonnull IGuiHelper guiHelper, @Nonnull Collection<ItemStack> input, int burnTime) {
-		List<ItemStack> inputList = new ArrayList<>(input);
+		List<ItemStack> inputList = new ArrayList<ItemStack>(input);
 		this.inputs = Collections.singletonList(inputList);
 		this.burnTimeString = Translator.translateToLocalFormatted("gui.jei.category.fuel.burnTime", burnTime);
 

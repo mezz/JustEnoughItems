@@ -1,5 +1,11 @@
 package mezz.jei.gui.ingredients;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -14,12 +20,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	private static final int TEX_WIDTH = 16;
@@ -150,7 +150,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	@Nonnull
 	@Override
 	public List<String> getTooltip(@Nonnull Minecraft minecraft, @Nonnull FluidStack fluidStack) {
-		List<String> tooltip = new ArrayList<>();
+		List<String> tooltip = new ArrayList<String>();
 		Fluid fluidType = fluidStack.getFluid();
 		if (fluidType == null) {
 			return tooltip;

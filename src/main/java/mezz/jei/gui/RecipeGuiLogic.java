@@ -48,7 +48,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	/** The previous states of this GUI */
 	@Nonnull
-	private final Stack<State> history = new Stack<>();
+	private final Stack<State> history = new Stack<State>();
 
 	/** List of recipes for the currently selected recipeClass */
 	@Nonnull
@@ -223,7 +223,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			return Collections.emptyList();
 		}
 
-		List<RecipeLayout> recipeWidgets = new ArrayList<>();
+		List<RecipeLayout> recipeWidgets = new ArrayList<RecipeLayout>();
 
 		IRecipeCategory recipeCategory = getRecipeCategory();
 		if (recipeCategory == null) {

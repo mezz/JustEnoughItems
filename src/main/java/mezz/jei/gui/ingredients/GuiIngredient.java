@@ -35,9 +35,9 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	@Nonnull
 	private final CycleTimer cycleTimer;
 	@Nonnull
-	private final List<T> displayIngredients = new ArrayList<>(); // ingredients, taking focus into account
+	private final List<T> displayIngredients = new ArrayList<T>(); // ingredients, taking focus into account
 	@Nonnull
-	private final List<T> allIngredients = new ArrayList<>(); // all ingredients, ignoring focus
+	private final List<T> allIngredients = new ArrayList<T>(); // all ingredients, ignoring focus
 	@Nonnull
 	private final IIngredientRenderer<T> ingredientRenderer;
 	@Nonnull

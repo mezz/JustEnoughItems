@@ -1,19 +1,5 @@
 package mezz.jei;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableListMultimap;
-import mezz.jei.config.Constants;
-import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
-import mezz.jei.util.ModList;
-import mezz.jei.util.StackHelper;
-import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionHelper;
-import net.minecraft.tileentity.TileEntityFurnace;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -24,30 +10,47 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableListMultimap;
+import mezz.jei.config.Constants;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Java6Helper;
+import mezz.jei.util.Log;
+import mezz.jei.util.ModList;
+import mezz.jei.util.StackHelper;
+import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionHelper;
+import net.minecraft.tileentity.TileEntityFurnace;
+
 public class ItemRegistryFactory {
 	@Nonnull
-	private final Set<String> itemNameSet = new HashSet<>();
+	private final Set<String> itemNameSet = new HashSet<String>();
 	@Nonnull
-	private final List<ItemStack> itemList = new ArrayList<>();
+	private final List<ItemStack> itemList = new ArrayList<ItemStack>();
 	@Nonnull
-	private final List<ItemStack> fuels = new ArrayList<>();
+	private final List<ItemStack> fuels = new ArrayList<ItemStack>();
 	@Nonnull
-	private final List<ItemStack> potionIngredients = new ArrayList<>();
+	private final List<ItemStack> potionIngredients = new ArrayList<ItemStack>();
 
 	@Nonnull
-	private final Set<String> itemWildcardNameSet = new HashSet<>();
+	private final Set<String> itemWildcardNameSet = new HashSet<String>();
 	/** The order that items were added, using wildcard. Used to keep similar items together. */
 	@Nonnull
-	private final List<String> itemAddedOrder = new ArrayList<>();
+	private final List<String> itemAddedOrder = new ArrayList<String>();
 
 	public ItemRegistry createItemRegistry() {
 		final ModList modList = new ModList();
 
 		for (CreativeTabs creativeTab : CreativeTabs.CREATIVE_TAB_ARRAY) {
-			List<ItemStack> creativeTabItemStacks = new ArrayList<>();
+			List<ItemStack> creativeTabItemStacks = new ArrayList<ItemStack>();
 			try {
 				creativeTab.displayAllRelevantItems(creativeTabItemStacks);
-			} catch (RuntimeException | LinkageError e) {
+			} catch (RuntimeException e) {
+				Log.error("Creative tab crashed while getting items. Some items from this tab will be missing from the item list. {}", creativeTab, e);
+			} catch (LinkageError e) {
 				Log.error("Creative tab crashed while getting items. Some items from this tab will be missing from the item list. {}", creativeTab, e);
 			}
 			for (ItemStack itemStack : creativeTabItemStacks) {
@@ -81,7 +84,7 @@ public class ItemRegistryFactory {
 					final String itemUid2 = stackHelper.getUniqueIdentifierForStack(stack2, StackHelper.UidMode.WILDCARD);
 					final int itemOrderIndex1 = itemAddedOrder.indexOf(itemUid1);
 					final int itemOrderIndex2 = itemAddedOrder.indexOf(itemUid2);
-					return Integer.compare(itemOrderIndex1, itemOrderIndex2);
+					return Java6Helper.compare(itemOrderIndex1, itemOrderIndex2);
 				} else if (stack1ModName.equals(Constants.minecraftModName)) {
 					return -1;
 				} else if (stack2ModName.equals(Constants.minecraftModName)) {
@@ -128,7 +131,7 @@ public class ItemRegistryFactory {
 		}
 
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
-			List<ItemStack> subBlocks = new ArrayList<>();
+			List<ItemStack> subBlocks = new ArrayList<ItemStack>();
 			block.getSubBlocks(item, itemTab, subBlocks);
 			for (ItemStack subBlock : subBlocks) {
 				if (subBlock == null) {

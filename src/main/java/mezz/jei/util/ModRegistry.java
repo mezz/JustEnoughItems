@@ -1,5 +1,11 @@
 package mezz.jei.util;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import mezz.jei.RecipeRegistry;
@@ -16,21 +22,15 @@ import mezz.jei.plugins.jei.description.ItemDescriptionRecipe;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class ModRegistry implements IModRegistry {
 	@Nonnull
 	private final IJeiHelpers jeiHelpers;
 	@Nonnull
 	private final IItemRegistry itemRegistry;
-	private final List<IRecipeCategory> recipeCategories = new ArrayList<>();
-	private final List<IRecipeHandler> recipeHandlers = new ArrayList<>();
-	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers = new ArrayList<>();
-	private final List<Object> recipes = new ArrayList<>();
+	private final List<IRecipeCategory> recipeCategories = new ArrayList<IRecipeCategory>();
+	private final List<IRecipeHandler> recipeHandlers = new ArrayList<IRecipeHandler>();
+	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers = new ArrayList<IAdvancedGuiHandler<?>>();
+	private final List<Object> recipes = new ArrayList<Object>();
 	private final RecipeTransferRegistry recipeTransferRegistry = new RecipeTransferRegistry();
 	private final Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas = HashMultimap.create();
 	private final Multimap<String, ItemStack> craftItemsForCategories = HashMultimap.create();

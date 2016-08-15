@@ -1,5 +1,13 @@
 package mezz.jei.util.color;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import mezz.jei.util.MathUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -15,14 +23,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class ColorGetter {
 	private static final String[] defaultColors = new String[] {
@@ -126,7 +126,7 @@ public class ColorGetter {
 		if (bufferedImage == null) {
 			return Collections.emptyList();
 		}
-		final List<Color> colors = new ArrayList<>(colorCount);
+		final List<Color> colors = new ArrayList<Color>(colorCount);
 		final int[][] palette = ColorThief.getPalette(bufferedImage, colorCount);
 		if (palette != null) {
 			for (int[] colorInt : palette) {

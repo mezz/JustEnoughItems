@@ -27,7 +27,7 @@ public class GuiItemStackGroup extends GuiIngredientGroup<ItemStack, GuiIngredie
 
 	private GuiIngredient<ItemStack> createGuiItemStack(int index, boolean input, int xPosition, int yPosition, int padding) {
 		ItemStackRenderer renderer = new ItemStackRenderer();
-		return new GuiIngredient<>(renderer, helper, index, input, xPosition, yPosition, getWidth(padding), getHeight(padding), padding, itemCycleOffset);
+		return new GuiIngredient<ItemStack>(renderer, helper, index, input, xPosition, yPosition, getWidth(padding), getHeight(padding), padding, itemCycleOffset);
 	}
 
 	@Override

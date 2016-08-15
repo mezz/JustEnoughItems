@@ -19,10 +19,10 @@ import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
 public class GuiItemStackFastList {
-	private final List<GuiItemStackFast> renderItemsAll = new ArrayList<>();
-	private final List<GuiItemStackFast> renderItemsBuiltIn = new ArrayList<>();
-	private final List<GuiItemStackFast> renderItems2d = new ArrayList<>();
-	private final List<GuiItemStackFast> renderItems3d = new ArrayList<>();
+	private final List<GuiItemStackFast> renderItemsAll = new ArrayList<GuiItemStackFast>();
+	private final List<GuiItemStackFast> renderItemsBuiltIn = new ArrayList<GuiItemStackFast>();
+	private final List<GuiItemStackFast> renderItems2d = new ArrayList<GuiItemStackFast>();
+	private final List<GuiItemStackFast> renderItems3d = new ArrayList<GuiItemStackFast>();
 
 	public void clear() {
 		renderItemsAll.clear();
@@ -78,7 +78,7 @@ public class GuiItemStackFastList {
 	public Focus<?> getFocusUnderMouse(int mouseX, int mouseY) {
 		GuiItemStackFast hovered = getHovered(mouseX, mouseY);
 		if (hovered != null) {
-			return new Focus<>(hovered.getItemStack());
+			return new Focus<ItemStack>(hovered.getItemStack());
 		}
 		return null;
 	}

@@ -45,7 +45,7 @@ public class DebugRecipe extends BlankRecipeWrapper {
 	@Nullable
 	@Override
 	public List<String> getTooltipStrings(int mouseX, int mouseY) {
-		List<String> tooltipStrings = new ArrayList<>();
+		List<String> tooltipStrings = new ArrayList<String>();
 		if (buttonHoverChecker.checkHover(mouseX, mouseY)) {
 			tooltipStrings.add("button tooltip!");
 		} else {

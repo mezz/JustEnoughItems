@@ -64,7 +64,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		this.recipeInputMap = new RecipeMap(recipeCategoryComparator);
 		this.recipeOutputMap = new RecipeMap(recipeCategoryComparator);
 
-		this.unhandledRecipeClasses = new HashSet<>();
+		this.unhandledRecipeClasses = new HashSet<Class>();
 
 		this.recipesForCategories = ArrayListMultimap.create();
 		addRecipes(recipes);
@@ -98,7 +98,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	private static ImmutableList<IRecipeHandler> buildRecipeHandlersList(@Nonnull List<IRecipeHandler> recipeHandlers) {
 		ImmutableList.Builder<IRecipeHandler> listBuilder = ImmutableList.builder();
-		Set<Class> recipeHandlerClasses = new HashSet<>();
+		Set<Class> recipeHandlerClasses = new HashSet<Class>();
 		for (IRecipeHandler recipeHandler : recipeHandlers) {
 			if (recipeHandler == null) {
 				continue;
@@ -175,7 +175,17 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 		try {
 			addRecipeUnchecked(recipe, recipeCategory, recipeHandler);
-		} catch (RuntimeException | LinkageError e) {
+		} catch (RuntimeException e) {
+			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, recipeHandler);
+
+			// suppress the null item in stack exception, that information is redundant here.
+			String errorMessage = e.getMessage();
+			if (StackHelper.nullItemInStack.equals(errorMessage)) {
+				Log.error("Found a broken recipe: {}\n", recipeInfo);
+			} else {
+				Log.error("Found a broken recipe: {}\n", recipeInfo, e);
+			}
+		} catch (LinkageError e) {
 			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, recipeHandler);
 
 			// suppress the null item in stack exception, that information is redundant here.
@@ -332,7 +342,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			if (categoriesForCraftItemKeys.get(inputKey).contains(recipeCategoryUid)) {
 				ImmutableSet<Object> specificRecipes = ImmutableSet.copyOf(recipes);
 				List<Object> recipesForCategory = recipesForCategories.get(recipeCategory);
-				List<Object> allRecipes = new ArrayList<>(recipes);
+				List<Object> allRecipes = new ArrayList<Object>(recipes);
 				for (Object recipe : recipesForCategory) {
 					if (!specificRecipes.contains(recipe)) {
 						allRecipes.add(recipe);

@@ -1,16 +1,15 @@
 package mezz.jei.util.color;
 
-import com.google.common.collect.ImmutableMap;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.Color;
+import java.awt.*;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.item.ItemStack;
 
 public class ColorNamer {
@@ -29,7 +28,7 @@ public class ColorNamer {
 
 	@Nonnull
 	private Collection<String> getColorNames(@Nonnull List<Color> colors) {
-		final Set<String> allColorNames = new LinkedHashSet<>();
+		final Set<String> allColorNames = new LinkedHashSet<String>();
 		for (Color color : colors) {
 			final String colorName = getClosestColorName(color);
 			if (colorName != null) {

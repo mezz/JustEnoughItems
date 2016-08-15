@@ -1,5 +1,11 @@
 package mezz.jei.plugins.jei.description;
 
+import javax.annotation.Nonnull;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
@@ -7,12 +13,6 @@ import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nonnull;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 	private static final int lineSpacing = 2;
@@ -24,7 +24,7 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 	private final IDrawable slotDrawable;
 
 	public static List<ItemDescriptionRecipe> create(@Nonnull List<ItemStack> itemStacks, String... descriptionKeys) {
-		List<ItemDescriptionRecipe> recipes = new ArrayList<>();
+		List<ItemDescriptionRecipe> recipes = new ArrayList<ItemDescriptionRecipe>();
 
 		List<String> descriptionLines = translateDescriptionLines(descriptionKeys);
 		descriptionLines = expandNewlines(descriptionLines);
@@ -47,7 +47,7 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 
 	@Nonnull
 	private static List<String> translateDescriptionLines(String... descriptionKeys) {
-		List<String> descriptionLines = new ArrayList<>();
+		List<String> descriptionLines = new ArrayList<String>();
 		for (String descriptionKey : descriptionKeys) {
 			String translatedLine = Translator.translateToLocal(descriptionKey);
 			descriptionLines.add(translatedLine);
@@ -57,7 +57,7 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 
 	@Nonnull
 	private static List<String> expandNewlines(@Nonnull List<String> descriptionLines) {
-		List<String> descriptionLinesExpanded = new ArrayList<>();
+		List<String> descriptionLinesExpanded = new ArrayList<String>();
 		for (String descriptionLine : descriptionLines) {
 			String[] descriptionLineExpanded = descriptionLine.split("\\\\n");
 			Collections.addAll(descriptionLinesExpanded, descriptionLineExpanded);
@@ -68,7 +68,7 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 	@Nonnull
 	private static List<String> wrapDescriptionLines(@Nonnull List<String> descriptionLines) {
 		Minecraft minecraft = Minecraft.getMinecraft();
-		List<String> descriptionLinesWrapped = new ArrayList<>();
+		List<String> descriptionLinesWrapped = new ArrayList<String>();
 		for (String descriptionLine : descriptionLines) {
 			List<String> textLines = minecraft.fontRendererObj.listFormattedStringToWidth(descriptionLine, ItemDescriptionRecipeCategory.recipeWidth);
 			descriptionLinesWrapped.addAll(textLines);

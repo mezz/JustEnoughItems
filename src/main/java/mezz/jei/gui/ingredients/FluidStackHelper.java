@@ -29,6 +29,6 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	@Nonnull
 	@Override
 	public Focus<FluidStack> createFocus(@Nonnull FluidStack ingredient) {
-		return new Focus<>(ingredient);
+		return new Focus<FluidStack>(ingredient);
 	}
 }

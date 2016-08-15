@@ -1,5 +1,11 @@
 package mezz.jei.plugins.vanilla.brewing;
 
+import javax.annotation.Nonnull;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.google.common.base.Objects;
 import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
 import mezz.jei.util.Translator;
@@ -7,12 +13,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
-
-import javax.annotation.Nonnull;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class BrewingRecipeWrapper extends VanillaRecipeWrapper {
 	private final List<ItemStack> ingredients;
@@ -32,7 +32,7 @@ public class BrewingRecipeWrapper extends VanillaRecipeWrapper {
 		this.potionOutput = potionOutput;
 		this.brewingSteps = brewingSteps;
 
-		this.inputs = new ArrayList<>();
+		this.inputs = new ArrayList<Object>();
 		this.inputs.add(potionInput);
 		this.inputs.add(potionInput);
 		this.inputs.add(potionInput);

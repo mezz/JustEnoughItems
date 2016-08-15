@@ -48,8 +48,8 @@ public class Commands {
 	private static void giveStackVanilla(@Nonnull ItemStack itemStack, int amount) {
 		EntityPlayerSP sender = Minecraft.getMinecraft().thePlayer;
 		String senderName = sender.getName();
-		
-		List<String> commandStrings = new ArrayList<>();
+
+		List<String> commandStrings = new ArrayList<String>();
 		commandStrings.add("/give");
 		commandStrings.add(senderName);
 		commandStrings.add(Item.REGISTRY.getNameForObject(itemStack.getItem()).toString());

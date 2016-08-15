@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
@@ -33,6 +32,7 @@ import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
 import mezz.jei.network.packets.PacketJEI;
 import mezz.jei.util.ItemStackElement;
+import mezz.jei.util.Java6Helper;
 import mezz.jei.util.Log;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.StackHelper;
@@ -71,7 +71,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	@Nonnull
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers;
 	@Nonnull
-	private final Set<ItemStack> highlightedStacks = new HashSet<>();
+	private final Set<ItemStack> highlightedStacks = new HashSet<ItemStack>();
 
 	private final GuiItemStackFastList guiItemStacks = new GuiItemStackFastList();
 	private GuiButton nextButton;
@@ -163,7 +163,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 
 	@Nonnull
 	private List<IAdvancedGuiHandler<?>> getActiveAdvancedGuiHandlers(@Nonnull GuiScreen guiScreen) {
-		List<IAdvancedGuiHandler<?>> activeAdvancedGuiHandler = new ArrayList<>();
+		List<IAdvancedGuiHandler<?>> activeAdvancedGuiHandler = new ArrayList<IAdvancedGuiHandler<?>>();
 		if (guiScreen instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) guiScreen;
 			for (IAdvancedGuiHandler<?> advancedGuiHandler : advancedGuiHandlers) {
@@ -176,7 +176,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	}
 
 	private List<Rectangle> getGuiAreas(GuiContainer guiContainer) {
-		List<Rectangle> guiAreas = new ArrayList<>();
+		List<Rectangle> guiAreas = new ArrayList<Rectangle>();
 		for (IAdvancedGuiHandler<?> advancedGuiHandler : activeAdvancedGuiHandlers) {
 			List<Rectangle> guiExtraAreas = getGuiAreas(guiContainer, advancedGuiHandler);
 			if (guiExtraAreas != null) {
@@ -207,7 +207,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 			} else if (!activeAdvancedGuiHandlers.isEmpty() && guiScreen instanceof GuiContainer) {
 				GuiContainer guiContainer = (GuiContainer) guiScreen;
 				List<Rectangle> guiAreas = getGuiAreas(guiContainer);
-				if (!Objects.equals(this.guiAreas, guiAreas)) {
+				if (!Java6Helper.equals(this.guiAreas, guiAreas)) {
 					initGui(guiContainer);
 				}
 			}

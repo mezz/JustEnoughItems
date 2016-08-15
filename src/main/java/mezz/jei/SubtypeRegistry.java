@@ -17,7 +17,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 public class SubtypeRegistry implements ISubtypeRegistry {
-	private final Map<Item, ISubtypeInterpreter> interpreters = new HashMap<>();
+	private final Map<Item, ISubtypeInterpreter> interpreters = new HashMap<Item, ISubtypeInterpreter>();
 
 	@Override
 	public void useNbtForSubtypes(@Nonnull Item... items) {

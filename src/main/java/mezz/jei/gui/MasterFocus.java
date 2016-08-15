@@ -16,7 +16,6 @@ import mezz.jei.util.StackHelper;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -123,7 +122,7 @@ public class MasterFocus {
 	@Nonnull
 	private List<IRecipeCategory> getInputCategories(@Nonnull IRecipeRegistry recipeRegistry) {
 		if (itemStack != null && fluidStack != null) {
-			List<IRecipeCategory> categories = new ArrayList<>(recipeRegistry.getRecipeCategoriesWithInput(itemStack));
+			List<IRecipeCategory> categories = new ArrayList<IRecipeCategory>(recipeRegistry.getRecipeCategoriesWithInput(itemStack));
 			categories.addAll(recipeRegistry.getRecipeCategoriesWithInput(fluidStack));
 			return ImmutableSet.copyOf(categories).asList();
 		}
@@ -137,7 +136,7 @@ public class MasterFocus {
 	@Nonnull
 	private List<IRecipeCategory> getOutputCategories(@Nonnull IRecipeRegistry recipeRegistry) {
 		if (itemStack != null && fluidStack != null) {
-			List<IRecipeCategory> categories = new ArrayList<>(recipeRegistry.getRecipeCategoriesWithOutput(itemStack));
+			List<IRecipeCategory> categories = new ArrayList<IRecipeCategory>(recipeRegistry.getRecipeCategoriesWithOutput(itemStack));
 			categories.addAll(recipeRegistry.getRecipeCategoriesWithOutput(fluidStack));
 			return ImmutableSet.copyOf(categories).asList();
 		}
@@ -177,7 +176,7 @@ public class MasterFocus {
 	@Nonnull
 	private List<Object> getInputRecipes(@Nonnull IRecipeRegistry recipeRegistry, @Nonnull IRecipeCategory recipeCategory) {
 		if (itemStack != null && fluidStack != null) {
-			List<Object> recipes = new ArrayList<>(recipeRegistry.getRecipesWithInput(recipeCategory, itemStack));
+			List<Object> recipes = new ArrayList<Object>(recipeRegistry.getRecipesWithInput(recipeCategory, itemStack));
 			recipes.addAll(recipeRegistry.getRecipesWithInput(recipeCategory, fluidStack));
 			return ImmutableSet.copyOf(recipes).asList();
 		}
@@ -191,7 +190,7 @@ public class MasterFocus {
 	@Nonnull
 	private List<Object> getOutputRecipes(@Nonnull IRecipeRegistry recipeRegistry, @Nonnull IRecipeCategory recipeCategory) {
 		if (itemStack != null && fluidStack != null) {
-			List<Object> recipes = new ArrayList<>(recipeRegistry.getRecipesWithOutput(recipeCategory, itemStack));
+			List<Object> recipes = new ArrayList<Object>(recipeRegistry.getRecipesWithOutput(recipeCategory, itemStack));
 			recipes.addAll(recipeRegistry.getRecipesWithOutput(recipeCategory, fluidStack));
 			return ImmutableSet.copyOf(recipes).asList();
 		}

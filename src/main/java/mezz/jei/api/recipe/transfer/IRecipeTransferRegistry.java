@@ -27,7 +27,7 @@ public interface IRecipeTransferRegistry {
 	 *
 	 * Use this when recipe slots or inventory slots are spread out in different number ranges.
 	 */
-	void addRecipeTransferHandler(@Nonnull IRecipeTransferInfo<?> recipeTransferInfo);
+	<C extends Container> void addRecipeTransferHandler(@Nonnull IRecipeTransferInfo<C> recipeTransferInfo);
 
 	/**
 	 * Complete control over recipe transfer.
