@@ -14,8 +14,8 @@ jei.tooltip.cheat.mode=Modo Trampa
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Hay objetos que faltan
 jei.tooltip.error.recipe.transfer.inventory.full=Tu inventorario esta lleno
-jei.tooltip.error.recipe.transfer.unknown=Unknown Error, see logs
-jei.tooltip.error.recipe.transfer.no.server=The server must have JEI installed
+jei.tooltip.error.recipe.transfer.unknown=Error Desconocido, mira tu launched
+jei.tooltip.error.recipe.transfer.no.server=El servidor deve de tener JEI instalado
 
 # Error Messages
 jei.chat.error.command.too.long=JEI debe de estar instaldo en ese servidor para poder encargarse de este comando. El comando es muy largo
