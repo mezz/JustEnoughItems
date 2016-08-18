@@ -1,0 +1,103 @@
+# Tooltips
+jei.tooltip.config=Configuracion
+jei.tooltip.show.recipes=Mostrar Crafteos
+jei.tooltip.show.all.recipes=Mostrar todos los Crafteos
+jei.tooltip.delete.item=Click para Borrar
+jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
+jei.tooltip.liquid.amount=%,d mB
+jei.tooltip.transfer=Transferir Objetos
+jei.tooltip.recipe.ore.dict=Accepts any: %s
+jei.tooltip.item.colors=Colors: %s
+jei.tooltip.shapeless.recipe=El Orden no Importa
+jei.tooltip.cheat.mode=Modo Trampa
+
+# Error Tooltips
+jei.tooltip.error.recipe.transfer.missing=Hay objetos que faltan
+jei.tooltip.error.recipe.transfer.inventory.full=Tu inventorario esta lleno
+jei.tooltip.error.recipe.transfer.unknown=Error Desconocido, mira tu launched
+jei.tooltip.error.recipe.transfer.no.server=El servidor deve de tener JEI instalado
+
+# Error Messages
+jei.chat.error.command.too.long=JEI debe de estar instaldo en ese servidor para poder encargarse de este comando. El comando es muy largo
+
+# Key Bindings
+key.jei.toggleOverlay=Activar la Lista de Objetos
+key.jei.focusSearch=Seleccionar la Barra de Busqueda 
+key.jei.showRecipe=Mostrar el Crafteo
+key.jei.showUses=Mostrar los Usos
+key.jei.recipeBack=Mostrar la Pagina Anterior
+
+# Config
+config.jei.default=Por defecto 
+config.jei.valid=Valido
+
+config.jei.title=%MODNAME Config
+
+config.jei.mode=Modo
+config.jei.mode.comment=Cambia el modo en el JEI esta operando.
+config.jei.mode.cheatItemsEnabled=Modo Trampa
+config.jei.mode.cheatItemsEnabled.comment=Te da objetos en lugar de mostrarte el crafteo.
+config.jei.mode.editEnabled=Modo Ocultar
+config.jei.mode.editEnabled.comment=Oculta y desocutala objetos con solo clickearlos en la lista de objetos.
+
+config.jei.interface=Interfaz
+config.jei.interface.comment=Opciones relacionadas con la Interfaz del Usuario.
+config.jei.interface.overlayEnabled=Modo Lista Activado
+config.jei.interface.overlayEnabled.comment=Muestra la lista de objetos al abrir la GUI.
+config.jei.interface.recipeAnimationsEnabled=Animaciones de los Crafteos
+config.jei.interface.recipeAnimationsEnabled.comment=Muestra las animaciones de los Crafteos
+
+config.jei.search=Opciones de Busqueda
+config.jei.search.comment=Opciones relacionadas con la Barra de Busqueda.
+config.jei.search.atPrefixRequiredForModName=Requiere @ para Nombre del mod
+config.jei.search.atPrefixRequiredForModName.comment=Requiere "@" en el inicio de una palabra para buscar en el Nombre del Mod.
+config.jei.search.prefixRequiredForTooltipSearch=Requiere # para Descripcion
+config.jei.search.prefixRequiredForTooltipSearch.comment=Requiere "#" en el inicio de una palabra para buscar descripciones.
+config.jei.search.prefixRequiredForOreDictSearch=Requiere $ Para Ore Dictionary
+config.jei.search.prefixRequiredForOreDictSearch.comment=Requiere "$" en el inicio de una palabra para buscar nombres en el ore dictionary.
+config.jei.search.prefixRequiredForCreativeTabSearch=Requiere %% para nombre en el Menu del Modo Creativo
+config.jei.search.prefixRequiredForCreativeTabSearch.comment=Requiere "%" en el inicio de una palabra para buscar nombres en el menu del modo creativo.
+config.jei.search.prefixRequiredForColorSearch=Requiere ^ para Colores
+config.jei.search.prefixRequiredForColorSearch.comment=Requiere "^" en el inicio de una palabra para buscar colores de los objetos.
+
+config.jei.advanced=Avanzado
+config.jei.advanced.comment=Opciones Avanzadas que cambian las funciones de JEI.
+config.jei.advanced.itemBlacklist=Modo Blacklist
+config.jei.advanced.itemBlacklist.comment=Objetos que no deverian ser mostrados en la lista de objetos. Format: modId[:name[:meta]]. Edit Mode will automatically add or remove entries here.
+config.jei.advanced.hideMissingModelsEnabled=Esconder Objetos Sin Textura
+config.jei.advanced.hideMissingModelsEnabled.comment=Los objetos sin textura van a ser escondidos de la lista de objetos.
+config.jei.advanced.hideLaggyModelsEnabled=Esconder Objetos Con Texturas Complejas
+config.jei.advanced.hideLaggyModelsEnabled.comment=Los Objetos con Texturas complejas van a ser escondidos de la lista de objetos.
+config.jei.advanced.colorSearchEnabled=Habilitar Busqueda Con Color
+config.jei.advanced.colorSearchEnabled.comment=Activa la busqueda de objetos con color.
+config.jei.advanced.debugModeEnabled=Modo Debug
+config.jei.advanced.debugModeEnabled.comment=Solo util para modders, aniade miles de objetos de testeo y algunos crafteos de debug.
+config.jei.advanced.deleteItemsInCheatModeEnabled=Borrar Objetos en Modo Trampa
+config.jei.advanced.deleteItemsInCheatModeEnabled.comment=En modo trampa, lleva un objeto de tu inventario sobre la lista de objetos y has click. (require  que JEI este instalado en el servidor)
+
+config.jei.addons=Addons
+config.jei.addons.comment=Category for JEI addon config options.
+
+# Edit Mode
+gui.jei.editMode.description=Modo Editar Lista de Objetos de JEI:
+gui.jei.editMode.description.hide=Ctrl-click para esconder.
+gui.jei.editMode.description.show=Hidden. Ctrl-click para mostrar.
+gui.jei.editMode.description.hide.wild=Ctrl-click-derecho para escondelo con un caracter comodin.
+gui.jei.editMode.description.show.wild=Escondido por un Caracter comodin. Ctrl-click para mostrar.
+gui.jei.editMode.description.hide.mod.id=Ctrl-Shift-click para esconderlo con una ModId.
+gui.jei.editMode.description.show.mod.id=Econdido por una ModId. Ctrl-Shift-click para mostrar.
+
+# Recipe Categories
+gui.jei.category.craftingTable=Mesa de Trabajo
+gui.jei.category.smelting=Horno
+gui.jei.category.smelting.experience=%s XP
+gui.jei.category.fuel=Combustible
+gui.jei.category.fuel.burnTime=Consumo: %s
+gui.jei.category.brewing=Soporte para Pociones
+gui.jei.category.brewing.steps=Pasos: %s
+gui.jei.category.itemDescription=Descripcion
+
+# DEBUG (for debug mode, do not need translation)
+description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.
+description.jei.wooden.door.2=Clicking on a door changes its state from open to closed and visa versa.
+description.jei.wooden.door.3=Wooden Doors can be opened/closed via Redstone Circuits.
