@@ -21,17 +21,17 @@ jei.tooltip.error.recipe.transfer.no.server=TСървъра трябва да и
 jei.chat.error.command.too.long=JEI must be on the server to handle this Chat Command, it is too long for Minecraft to send.
 
 # Key Bindings
-key.jei.toggleOverlay=Toggle Item List Overlay
-key.jei.focusSearch=Select Search Bar
-key.jei.showRecipe=Show Item Recipe
-key.jei.showUses=Show Item Uses
-key.jei.recipeBack=Show Previous Recipe Page
+key.jei.toggleOverlay=Превключване на облицовката на предметния лист
+key.jei.focusSearch=Изберете лентата за търсене
+key.jei.showRecipe=Покажи рецептите на предметите
+key.jei.showUses=Покажи ползата на предметите
+key.jei.recipeBack=Покажи Предишната Страницата с рецепти
 
 # Config
 config.jei.default=Default
-config.jei.valid=Valid
+config.jei.valid=Валиден
 
-config.jei.title=%MODNAME Config
+config.jei.title=%MODNAME Конфигурация
 
 config.jei.mode=Mode
 config.jei.mode.comment=Change the mode that JEI is operating in.
