@@ -14,6 +14,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeCategory;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeHandler;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeMaker;
+import mezz.jei.plugins.vanilla.brewing.PotionSubtypeInterpreter;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.plugins.vanilla.crafting.ShapedOreRecipeHandler;
 import mezz.jei.plugins.vanilla.crafting.ShapedRecipesHandler;
@@ -51,12 +52,13 @@ public class VanillaPlugin extends BlankModPlugin {
 		subtypeRegistry.useNbtForSubtypes(
 				Items.BANNER,
 				Items.SPAWN_EGG,
-				Items.TIPPED_ARROW,
-				Items.ENCHANTED_BOOK,
-				Items.POTIONITEM,
-				Items.SPLASH_POTION,
-				Items.LINGERING_POTION
+				Items.ENCHANTED_BOOK
 		);
+
+		subtypeRegistry.registerNbtInterpreter(Items.TIPPED_ARROW, PotionSubtypeInterpreter.INSTANCE);
+		subtypeRegistry.registerNbtInterpreter(Items.POTIONITEM, PotionSubtypeInterpreter.INSTANCE);
+		subtypeRegistry.registerNbtInterpreter(Items.SPLASH_POTION, PotionSubtypeInterpreter.INSTANCE);
+		subtypeRegistry.registerNbtInterpreter(Items.LINGERING_POTION, PotionSubtypeInterpreter.INSTANCE);
 
 		if (FluidRegistry.isUniversalBucketEnabled()) {
 			subtypeRegistry.useNbtForSubtypes(ForgeModContainer.getInstance().universalBucket);
