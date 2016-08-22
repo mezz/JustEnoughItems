@@ -1,14 +1,14 @@
 # Tooltips
-jei.tooltip.config=Config
-jei.tooltip.show.recipes=Show Recipes
-jei.tooltip.show.all.recipes=Show All Recipes
-jei.tooltip.delete.item=Click to Delete
+jei.tooltip.config=Конфигурация
+jei.tooltip.show.recipes=Покажи Рецепти
+jei.tooltip.show.all.recipes=Покажи Всички Речепти
+jei.tooltip.delete.item=Натисни за да Изтриеш
 jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
 jei.tooltip.liquid.amount=%,d mB
-jei.tooltip.transfer=Move Items
-jei.tooltip.recipe.ore.dict=Accepts any: %s
+jei.tooltip.transfer=Премести Предмети
+jei.tooltip.recipe.ore.dict=Приема всички: %s
 jei.tooltip.item.colors=Colors: %s
-jei.tooltip.shapeless.recipe=Shapeless Recipe
+jei.tooltip.shapeless.recipe=Безформени рецепти
 jei.tooltip.cheat.mode=Cheat Mode
 
 # Error Tooltips
