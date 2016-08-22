@@ -12,10 +12,10 @@ jei.tooltip.shapeless.recipe=Безформени рецепти
 jei.tooltip.cheat.mode=Cheat Mode
 
 # Error Tooltips
-jei.tooltip.error.recipe.transfer.missing=Missing Items
-jei.tooltip.error.recipe.transfer.inventory.full=Inventory is too full
-jei.tooltip.error.recipe.transfer.unknown=Unknown Error, see logs
-jei.tooltip.error.recipe.transfer.no.server=The server must have JEI installed
+jei.tooltip.error.recipe.transfer.missing=Липсващи Предмети
+jei.tooltip.error.recipe.transfer.inventory.full=Инвентара е прикалено пълен
+jei.tooltip.error.recipe.transfer.unknown=Неизвестна Грешка, погледнете записките
+jei.tooltip.error.recipe.transfer.no.server=TСървъра трябва да има JEI инсталиран
 
 # Error Messages
 jei.chat.error.command.too.long=JEI must be on the server to handle this Chat Command, it is too long for Minecraft to send.
