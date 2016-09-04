@@ -18,7 +18,7 @@ jei.tooltip.error.recipe.transfer.unknown=Неизвестна Грешка, п�
 jei.tooltip.error.recipe.transfer.no.server=TСървъра трябва да има JEI инсталиран
 
 # Error Messages
-jei.chat.error.command.too.long=JEI must be on the server to handle this Chat Command, it is too long for Minecraft to send.
+jei.chat.error.command.too.long=JEI трябва да е в сървара за да изпълни тази Чат Команда, тя е твърде дълга за Minecraft да я изпрати.
 
 # Key Bindings
 key.jei.toggleOverlay=Превключване на облицовката на предметния лист
@@ -34,11 +34,11 @@ config.jei.valid=Валиден
 config.jei.title=%MODNAME Конфигурация
 
 config.jei.mode=Mode
-config.jei.mode.comment=Change the mode that JEI is operating in.
+config.jei.mode.comment=Смени Рижима в който JEI оперира в.
 config.jei.mode.cheatItemsEnabled=Item Cheating Mode
-config.jei.mode.cheatItemsEnabled.comment=Give items instead of showing the recipe.
+config.jei.mode.cheatItemsEnabled.comment=Дава предмета вмисто да показва техните рецепти 
 config.jei.mode.editEnabled=Item Hiding Mode
-config.jei.mode.editEnabled.comment=Hide and unhide items by clicking them in the item list.
+config.jei.mode.editEnabled.comment=Покажи и Скри предмети като натиснеш с десен бутон върху тях в списака.
 
 config.jei.interface=Interface
 config.jei.interface.comment=Options relating to the User Interface.
