@@ -69,9 +69,9 @@ config.jei.advanced.hideMissingModelsEnabled.comment=Предмет с липс�
 config.jei.advanced.hideLaggyModelsEnabled=Скрии Предмети с Лагващи Модели
 config.jei.advanced.hideLaggyModelsEnabled.comment==Предмет с модели които причиняват голямо закъснение ще бъдат скрити от списъка с предвети.
 config.jei.advanced.colorSearchEnabled=Включи Цветово Търсене
-config.jei.advanced.colorSearchEnabled.comment=Search items by color and show the searchable item colors on tooltips in the item list.
+config.jei.advanced.colorSearchEnabled.comment=Търси предмета с цвят и покажи предмети с цвят върху родсказките в спасъка на предмети.
 config.jei.advanced.debugModeEnabled=Debug Mode
-config.jei.advanced.debugModeEnabled.comment=Only useful for JEI developers, adds thousands of test items and some debug recipes.
+config.jei.advanced.debugModeEnabled.comment=Полезно е само за JEI developers, добавя хиляди тестващи предмити и няколко Debug рецепти.
 config.jei.advanced.deleteItemsInCheatModeEnabled=Изтрий Предмети в Режим на Мамене
 config.jei.advanced.deleteItemsInCheatModeEnabled.comment=В режим на мамене, дръпни ItemStack над списъка с предмети и кликни за да Изриеш. (Изисква JEI в сървър)
 
