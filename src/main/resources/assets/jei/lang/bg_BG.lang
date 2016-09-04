@@ -63,11 +63,11 @@ config.jei.search.prefixRequiredForColorSearch.comment=Изискваи "^" пр
 config.jei.advanced=За напреднали
 config.jei.advanced.comment=Напреднали настройки за конфигурация как JEI функционира.
 config.jei.advanced.itemBlacklist=Черен списак на Предмети
-config.jei.advanced.itemBlacklist.comment=List of items that should not be displayed in the item list. Format: modId[:name[:meta]]. Edit Mode will automatically add or remove entries here.
-config.jei.advanced.hideMissingModelsEnabled=Hide Items with Missing Models
-config.jei.advanced.hideMissingModelsEnabled.comment=Items with missing models will be hidden from the item list.
-config.jei.advanced.hideLaggyModelsEnabled=Hide Items with Laggy Models
-config.jei.advanced.hideLaggyModelsEnabled.comment=Items with models that cause a long delay will be hidden from the item list.
+config.jei.advanced.itemBlacklist.comment=Списък с предмети, които не би трябвало да се покажат в списака. Format: modId[:name[:meta]]. Режим на Редактираве автоматично ще добави или премахне предмети тук.
+config.jei.advanced.hideMissingModelsEnabled=Скрии Предмети с Липсващи Модели
+config.jei.advanced.hideMissingModelsEnabled.comment=Предмет с липсващи модели ще бъдат скрити от списъка с предвети.
+config.jei.advanced.hideLaggyModelsEnabled=Скрии Предмети с Лагващи Модели
+config.jei.advanced.hideLaggyModelsEnabled.comment==Предмет с модели които причиняват голямо закъснение ще бъдат скрити от списъка с предвети.
 config.jei.advanced.colorSearchEnabled=Включи Цветово Търсене
 config.jei.advanced.colorSearchEnabled.comment=Search items by color and show the searchable item colors on tooltips in the item list.
 config.jei.advanced.debugModeEnabled=Debug Mode
