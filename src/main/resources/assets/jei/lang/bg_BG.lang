@@ -67,7 +67,7 @@ config.jei.advanced.itemBlacklist.comment=Списък с предмети, ко
 config.jei.advanced.hideMissingModelsEnabled=Скрии Предмети с Липсващи Модели
 config.jei.advanced.hideMissingModelsEnabled.comment=Предмет с липсващи модели ще бъдат скрити от списъка с предвети.
 config.jei.advanced.hideLaggyModelsEnabled=Скрии Предмети с Лагващи Модели
-config.jei.advanced.hideLaggyModelsEnabled.comment==Предмет с модели които причиняват голямо закъснение ще бъдат скрити от списъка с предвети.
+config.jei.advanced.hideLaggyModelsEnabled.comment=Предмет с модели които причиняват голямо закъснение ще бъдат скрити от списъка с предвети.
 config.jei.advanced.colorSearchEnabled=Включи Цветово Търсене
 config.jei.advanced.colorSearchEnabled.comment=Търси предмета с цвят и покажи предмети с цвят върху родсказките в спасъка на предмети.
 config.jei.advanced.debugModeEnabled=Debug Mode
