@@ -15,7 +15,7 @@ jei.tooltip.cheat.mode=Режим на Мамене
 jei.tooltip.error.recipe.transfer.missing=Липсващи Предмети
 jei.tooltip.error.recipe.transfer.inventory.full=Инвентара е прикалено пълен
 jei.tooltip.error.recipe.transfer.unknown=Неизвестна Грешка, погледнете записките
-jei.tooltip.error.recipe.transfer.no.server=TСървъра трябва да има JEI инсталиран
+jei.tooltip.error.recipe.transfer.no.server=Сървъра трябва да има JEI инсталиран
 
 # Error Messages
 jei.chat.error.command.too.long=JEI трябва да е в сървара за да изпълни тази Чат Команда, тя е твърде дълга за Minecraft да я изпрати.
