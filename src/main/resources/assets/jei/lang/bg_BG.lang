@@ -33,7 +33,7 @@ config.jei.valid=Валиден
 
 config.jei.title=%MODNAME Конфигурация
 
-config.jei.mode=Mode
+config.jei.mode=Режим
 config.jei.mode.comment=Смени Рижима в който JEI оперира в.
 config.jei.mode.cheatItemsEnabled=Режим на Мамене на Предмети
 config.jei.mode.cheatItemsEnabled.comment=Дава предмета вмисто да показва техните рецепти 
