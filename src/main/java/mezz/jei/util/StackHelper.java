@@ -390,7 +390,7 @@ public class StackHelper implements IStackHelper {
 					nbtTagCompound = new NBTTagCompound();
 				}
 				NBTTagCompound forgeCaps = serializedNbt.getCompoundTag("ForgeCaps");
-				if (0 != forgeCaps.getSize()) { // ForgeCaps should never be empty
+				if (!forgeCaps.hasNoTags()) { // ForgeCaps should never be empty
 					nbtTagCompound.setTag("ForgeCaps", forgeCaps);
 				}
 			}
