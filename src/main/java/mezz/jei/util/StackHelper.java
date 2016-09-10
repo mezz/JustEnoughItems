@@ -384,7 +384,7 @@ public class StackHelper implements IStackHelper {
 			itemKey.append(':').append(metadata);
 
 			NBTTagCompound serializedNbt = stack.serializeNBT();
-			NBTTagCompound nbtTagCompound = serializedNbt.getCompoundTag("tag");
+			NBTTagCompound nbtTagCompound = serializedNbt.getCompoundTag("tag").copy();
 			if (serializedNbt.hasKey("ForgeCaps")) {
 				if (nbtTagCompound == null) {
 					nbtTagCompound = new NBTTagCompound();
