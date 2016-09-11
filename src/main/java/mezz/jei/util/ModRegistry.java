@@ -83,6 +83,12 @@ public class ModRegistry implements IModRegistry {
 			return;
 		}
 
+		if (craftingItem.getItem() == null) {
+			NullPointerException e = new NullPointerException();
+			Log.error("Tried to add a RecipeCategoryCraftingItem with null item in the craftingItem.", e);
+			return;
+		}
+
 		for (String recipeCategoryUid : recipeCategoryUids) {
 			if (recipeCategoryUid == null) {
 				IllegalArgumentException e = new IllegalArgumentException();
