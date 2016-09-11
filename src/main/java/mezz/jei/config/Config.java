@@ -38,6 +38,7 @@ public class Config {
 	private static boolean debugItemEnabled = false;
 	private static boolean hideMissingModelsEnabled = true;
 	private static boolean colorSearchEnabled = false;
+	private static boolean centerSearchBarEnabled = false;
 
 	// search
 	private static boolean prefixRequiredForModNameSearch = true;
@@ -112,6 +113,10 @@ public class Config {
 
 	public static boolean isColorSearchEnabled() {
 		return colorSearchEnabled;
+	}
+
+	public static boolean isCenterSearchBarEnabled() {
+		return centerSearchBarEnabled;
 	}
 
 	public static boolean isPrefixRequiredForModNameSearch() {
@@ -292,6 +297,8 @@ public class Config {
 		if (categoryAdvanced.get("colorSearchEnabled").hasChanged()) {
 			needsReload = true;
 		}
+
+		centerSearchBarEnabled = config.getBoolean(CATEGORY_ADVANCED, "centerSearchBarEnabled", centerSearchBarEnabled);
 
 		debugModeEnabled = config.getBoolean(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
 		{

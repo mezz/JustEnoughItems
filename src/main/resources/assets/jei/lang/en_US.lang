@@ -71,6 +71,8 @@ config.jei.advanced.colorSearchEnabled=Enable Color Search
 config.jei.advanced.colorSearchEnabled.comment=Search items by color and show the searchable item colors on tooltips in the item list.
 config.jei.advanced.debugModeEnabled=Debug Mode
 config.jei.advanced.debugModeEnabled.comment=Only useful for JEI developers, adds thousands of test items and some debug recipes.
+config.jei.advanced.centerSearchBarEnabled=Center Search Bar
+config.jei.advanced.centerSearchBarEnabled.comment=Move the JEI search bar to the bottom center of the screen.
 
 config.jei.addons=Addons
 config.jei.addons.comment=Category for JEI addon config options.

@@ -82,8 +82,16 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		return guiLeft;
 	}
 
+	public int getGuiTop() {
+		return guiTop;
+	}
+
 	public int getXSize() {
 		return xSize;
+	}
+
+	public int getYSize() {
+		return ySize;
 	}
 
 	@Override

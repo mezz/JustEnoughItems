@@ -13,18 +13,24 @@ public class GuiProperties {
 	@Nonnull
 	private final Class guiClass;
 	private final int guiLeft;
+	private final int guiTop;
 	private final int guiXSize;
+	private final int guiYSize;
 	private final int screenWidth;
 	private final int screenHeight;
 
 	@Nullable
 	public static GuiProperties create(@Nonnull GuiScreen guiScreen) {
 		final int guiLeft;
+		final int guiTop;
 		final int guiXSize;
+		final int guiYSize;
 		if (guiScreen instanceof RecipesGui) {
 			RecipesGui recipesGui = (RecipesGui) guiScreen;
 			guiLeft = recipesGui.getGuiLeft();
+			guiTop = recipesGui.getGuiTop();
 			guiXSize = recipesGui.getXSize();
+			guiYSize = recipesGui.getYSize();
 		} else if (guiScreen instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) guiScreen;
 			Container inventorySlots = guiContainer.inventorySlots;
@@ -36,18 +42,22 @@ public class GuiProperties {
 				return null;
 			}
 			guiLeft = guiContainer.guiLeft;
+			guiTop = guiContainer.guiTop;
 			guiXSize = guiContainer.xSize;
+			guiYSize = guiContainer.ySize;
 		} else {
 			return null;
 		}
 
-		return new GuiProperties(guiScreen.getClass(), guiLeft, guiXSize, guiScreen.width, guiScreen.height);
+		return new GuiProperties(guiScreen.getClass(), guiLeft, guiTop, guiXSize, guiYSize, guiScreen.width, guiScreen.height);
 	}
 
-	private GuiProperties(@Nonnull Class guiClass, int guiLeft, int guiXSize, int screenWidth, int screenHeight) {
+	private GuiProperties(@Nonnull Class guiClass, int guiLeft, int guiTop, int guiXSize, int guiYSize, int screenWidth, int screenHeight) {
 		this.guiClass = guiClass;
 		this.guiLeft = guiLeft;
+		this.guiTop = guiTop;
 		this.guiXSize = guiXSize;
+		this.guiYSize = guiYSize;
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
 	}
@@ -61,8 +71,16 @@ public class GuiProperties {
 		return guiLeft;
 	}
 
+	public int getGuiTop() {
+		return guiTop;
+	}
+
 	public int getGuiXSize() {
 		return guiXSize;
+	}
+
+	public int getGuiYSize() {
+		return guiYSize;
 	}
 
 	public int getScreenWidth() {
