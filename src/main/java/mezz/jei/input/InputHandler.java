@@ -130,7 +130,7 @@ public class InputHandler {
 			}
 		}
 
-		if (Config.isCheatItemsEnabled() && focus.allowsCheating()) {
+		if (Config.isCheatItemsEnabled() && focus.allowsCheating() && !recipesGui.isOpen()) {
 			Object focusValue = focus.getValue();
 			if (focusValue instanceof ItemStack) {
 				ItemStack itemStack = (ItemStack) focusValue;
