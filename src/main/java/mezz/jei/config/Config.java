@@ -87,6 +87,10 @@ public class Config {
 		return cheatItemsEnabled;
 	}
 
+	public static void toggleCheatItemsEnabled() {
+		cheatItemsEnabled = !cheatItemsEnabled;
+	}
+
 	public static boolean isEditModeEnabled() {
 		return editModeEnabled;
 	}

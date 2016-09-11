@@ -26,6 +26,7 @@ key.jei.focusSearch=Select Search Bar
 key.jei.showRecipe=Show Item Recipe
 key.jei.showUses=Show Item Uses
 key.jei.recipeBack=Show Previous Recipe Page
+key.jei.toggleCheatMode=Toggle Item Cheating Mode
 
 # Config
 config.jei.default=Default

@@ -23,6 +23,8 @@ public class KeyBindings {
 	public static final KeyBinding showUses = new KeyBinding("key.jei.showUses", KeyConflictContext.GUI, Keyboard.KEY_U, categoryName);
 	@Nonnull
 	public static final KeyBinding recipeBack = new KeyBinding("key.jei.recipeBack", KeyConflictContext.GUI, Keyboard.KEY_BACK, categoryName);
+	@Nonnull
+	public static final KeyBinding toggleCheatMode = new KeyBinding("key.jei.toggleCheatMode", KeyConflictContext.GUI, Keyboard.KEY_NONE, categoryName);
 
 	public static void init() {
 		ClientRegistry.registerKeyBinding(toggleOverlay);
@@ -30,5 +32,6 @@ public class KeyBindings {
 		ClientRegistry.registerKeyBinding(showRecipe);
 		ClientRegistry.registerKeyBinding(showUses);
 		ClientRegistry.registerKeyBinding(recipeBack);
+		ClientRegistry.registerKeyBinding(toggleCheatMode);
 	}
 }

@@ -215,9 +215,16 @@ public class InputHandler {
 			return false;
 		}
 
-		if (itemListOverlay.isOpen() && KeyBindings.focusSearch.isActiveAndMatches(eventKey)) {
-			itemListOverlay.setKeyboardFocus(true);
-			return true;
+		if (itemListOverlay.isOpen()) {
+			if (KeyBindings.toggleCheatMode.isActiveAndMatches(eventKey)) {
+				Config.toggleCheatItemsEnabled();
+				return true;
+			}
+
+			if (KeyBindings.focusSearch.isActiveAndMatches(eventKey)) {
+				itemListOverlay.setKeyboardFocus(true);
+				return true;
+			}
 		}
 
 		if (!isContainerTextFieldFocused()) {
