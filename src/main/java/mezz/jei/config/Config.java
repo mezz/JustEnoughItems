@@ -37,8 +37,6 @@ public class Config {
 	private static boolean debugModeEnabled = false;
 	private static boolean debugItemEnabled = false;
 	private static boolean hideMissingModelsEnabled = true;
-	private static boolean hideLaggyModelsEnabled = true;
-	private static boolean deleteItemsInCheatModeEnabled = true;
 	private static boolean colorSearchEnabled = false;
 
 	// search
@@ -53,6 +51,7 @@ public class Config {
 	private static final boolean defaultCheatItemsEnabled = false;
 	private static final boolean defaultEditModeEnabled = false;
 	private static final String defaultFilterText = "";
+
 	private static boolean overlayEnabled = defaultOverlayEnabled;
 	private static boolean cheatItemsEnabled = defaultCheatItemsEnabled;
 	private static boolean editModeEnabled = defaultEditModeEnabled;
@@ -104,15 +103,11 @@ public class Config {
 	}
 
 	public static boolean isDeleteItemsInCheatModeActive() {
-		return deleteItemsInCheatModeEnabled && cheatItemsEnabled && SessionData.isJeiOnServer();
+		return cheatItemsEnabled && SessionData.isJeiOnServer();
 	}
 
 	public static boolean isHideMissingModelsEnabled() {
 		return hideMissingModelsEnabled;
-	}
-
-	public static boolean isHideLaggyModelsEnabled() {
-		return hideLaggyModelsEnabled;
 	}
 
 	public static boolean isColorSearchEnabled() {
@@ -285,20 +280,11 @@ public class Config {
 
 		ConfigCategory categoryAdvanced = config.getCategory(CATEGORY_ADVANCED);
 		categoryAdvanced.remove("nbtKeyIgnoreList");
-
-		deleteItemsInCheatModeEnabled = config.getBoolean(CATEGORY_ADVANCED, "deleteItemsInCheatModeEnabled", deleteItemsInCheatModeEnabled);
-		{
-			Property property = config.get(CATEGORY_ADVANCED, "deleteItemsInCheatModeEnabled", deleteItemsInCheatModeEnabled);
-			property.setShowInGui(false);
-		}
+		categoryAdvanced.remove("deleteItemsInCheatModeEnabled");
+		categoryAdvanced.remove("hideLaggyModelsEnabled");
 
 		hideMissingModelsEnabled = config.getBoolean(CATEGORY_ADVANCED, "hideMissingModelsEnabled", hideMissingModelsEnabled);
 		if (categoryAdvanced.get("hideMissingModelsEnabled").hasChanged()) {
-			needsReload = true;
-		}
-
-		hideLaggyModelsEnabled = config.getBoolean(CATEGORY_ADVANCED, "hideLaggyModelsEnabled", hideLaggyModelsEnabled);
-		if (categoryAdvanced.get("hideLaggyModelsEnabled").hasChanged()) {
 			needsReload = true;
 		}
 

@@ -67,8 +67,6 @@ config.jei.advanced.colorSearchEnabled=启用颜色搜索
 config.jei.advanced.colorSearchEnabled.comment=按颜色搜索物品，并在可以此法搜索的物品的Tooltip中加以注明。
 config.jei.advanced.debugModeEnabled=调试模式
 config.jei.advanced.debugModeEnabled.comment=仅对JEI开发者有用，启用后会添加数千测试物品以及一些测试合成表。
-config.jei.advanced.deleteItemsInCheatModeEnabled=启用作弊模式时允许销毁物品
-config.jei.advanced.deleteItemsInCheatModeEnabled.comment=启用后，在作弊模式下，将物品放到物品列表上即可销毁该物品。若在服务器环境下，服务器亦需安装JEI方可使用该功能。
 
 config.jei.addons=Addons
 config.jei.addons.comment=为JEI扩展准备的分类。

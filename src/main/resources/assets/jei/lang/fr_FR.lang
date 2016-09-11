@@ -67,8 +67,6 @@ config.jei.advanced.colorSearchEnabled=Activer la recherche par couleur
 config.jei.advanced.colorSearchEnabled.comment=Recherche d'items par couleur et affiche les items compatibles via leur tooltip.
 config.jei.advanced.debugModeEnabled=Mode Debug
 config.jei.advanced.debugModeEnabled.comment=Seulement utile aux développeurs, ajoute des centaines d'items de test et quelques recettes factices.
-config.jei.advanced.deleteItemsInCheatModeEnabled=Supprimer les items en Cheat Mode
-config.jei.advanced.deleteItemsInCheatModeEnabled.comment=En cheat mode, déplacer un item vers la liste et clicker le supprimera. (JEI sur serveur requis)
 
 config.jei.addons=Addons
 config.jei.addons.comment=catéorie pour les configurations des addons.

@@ -54,8 +54,6 @@ config.jei.advanced.hideMissingModelsEnabled=Piilota puuttuvat tavaramallit
 config.jei.advanced.hideMissingModelsEnabled.comment=Tavarat joilta puuttuvat mallit poistetaan tavaralistasta.
 config.jei.advanced.debugModeEnabled=Debug-tila
 config.jei.advanced.debugModeEnabled.comment=Lisää muutamia asioita jotka auttavat JEI:n kehitystä.
-config.jei.advanced.deleteItemsInCheatModeEnabled=Poista tavaroita huijaustilassa
-config.jei.advanced.deleteItemsInCheatModeEnabled.comment=Huijaustilassa, vedä tavarapino tavaralistan päälle ja paina tuhotaksesi sen. (tarvii JEI:n palvelimella)
 
 config.jei.addons=Lisäosat
 config.jei.addons.comment=Kategoria JEI:n lisäosa-asetuksille.

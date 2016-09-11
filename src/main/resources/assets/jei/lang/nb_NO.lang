@@ -67,8 +67,6 @@ config.jei.advanced.colorSearchEnabled=Aktiver Fargesøk
 config.jei.advanced.colorSearchEnabled.comment=Søk etter artikler med fargenavn og vis navnet på artiklers farge i verktøytipset.
 config.jei.advanced.debugModeEnabled=Feilsøkings Modus
 config.jei.advanced.debugModeEnabled.comment=Nyttig for utviklerne av JEI. Legger til tusenvis av test artikler og noen feilsøkings oppskrifter.
-config.jei.advanced.deleteItemsInCheatModeEnabled=Slett Artikler i Jukse Modus
-config.jei.advanced.deleteItemsInCheatModeEnabled.comment=I jukse modus, dra og hold en artikkel over artikkel listen og klikk for å slette. (krever JEI på serveren)
 
 config.jei.addons=Tillegg
 config.jei.addons.comment=Kategori for JEI tilleggs innstillinger.
