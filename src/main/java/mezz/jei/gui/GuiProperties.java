@@ -1,53 +1,64 @@
 package mezz.jei.gui;
 
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.inventory.Container;
-import net.minecraft.item.ItemStack;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
+
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
 
 public class GuiProperties {
 	@Nonnull
 	private final Class guiClass;
 	private final int guiLeft;
+	private final int guiTop;
 	private final int guiXSize;
+	private final int guiYSize;
 	private final int screenWidth;
 	private final int screenHeight;
 
 	@Nullable
 	public static GuiProperties create(@Nonnull GuiScreen guiScreen) {
-		final int guiLeft;
-		final int guiXSize;
 		if (guiScreen instanceof RecipesGui) {
-			RecipesGui recipesGui = (RecipesGui) guiScreen;
-			guiLeft = recipesGui.getGuiLeft();
-			guiXSize = recipesGui.getXSize();
+			return create((RecipesGui) guiScreen);
 		} else if (guiScreen instanceof GuiContainer) {
-			GuiContainer guiContainer = (GuiContainer) guiScreen;
-			Container inventorySlots = guiContainer.inventorySlots;
-			if (inventorySlots == null) {
-				return null;
-			}
-			List<ItemStack> inventory = inventorySlots.getInventory();
-			if (inventory == null || inventory.isEmpty()) {
-				return null;
-			}
-			guiLeft = guiContainer.guiLeft;
-			guiXSize = guiContainer.xSize;
+			return create((GuiContainer) guiScreen);
 		} else {
 			return null;
 		}
-
-		return new GuiProperties(guiScreen.getClass(), guiLeft, guiXSize, guiScreen.width, guiScreen.height);
 	}
 
-	private GuiProperties(@Nonnull Class guiClass, int guiLeft, int guiXSize, int screenWidth, int screenHeight) {
+	@Nonnull
+	public static GuiProperties create(@Nonnull GuiContainer guiContainer) {
+		return new GuiProperties(
+				guiContainer.getClass(),
+				guiContainer.guiLeft,
+				guiContainer.guiTop,
+				guiContainer.xSize,
+				guiContainer.ySize,
+				guiContainer.width,
+				guiContainer.height
+		);
+	}
+
+	@Nonnull
+	public static GuiProperties create(@Nonnull RecipesGui recipesGui) {
+		return new GuiProperties(
+				recipesGui.getClass(),
+				recipesGui.getGuiLeft(),
+				recipesGui.getGuiTop(),
+				recipesGui.getXSize(),
+				recipesGui.getYSize(),
+				recipesGui.width,
+				recipesGui.height
+		);
+	}
+
+	private GuiProperties(@Nonnull Class guiClass, int guiLeft, int guiTop, int guiXSize, int guiYSize, int screenWidth, int screenHeight) {
 		this.guiClass = guiClass;
 		this.guiLeft = guiLeft;
+		this.guiTop = guiTop;
 		this.guiXSize = guiXSize;
+		this.guiYSize = guiYSize;
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
 	}
@@ -61,8 +72,16 @@ public class GuiProperties {
 		return guiLeft;
 	}
 
+	public int getGuiTop() {
+		return guiTop;
+	}
+
 	public int getGuiXSize() {
 		return guiXSize;
+	}
+
+	public int getGuiYSize() {
+		return guiYSize;
 	}
 
 	public int getScreenWidth() {

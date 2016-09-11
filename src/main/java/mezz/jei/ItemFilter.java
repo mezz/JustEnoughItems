@@ -184,11 +184,9 @@ public class ItemFilter {
 				}
 			}
 
-			if (Config.isHideLaggyModelsEnabled()) {
-				// Game freezes when loading player skulls, see https://bugs.mojang.com/browse/MC-65587
-				if (item instanceof ItemSkull && itemStack.getMetadata() == 3) {
-					return true;
-				}
+			// Game freezes when loading player skulls, see https://bugs.mojang.com/browse/MC-65587
+			if (item instanceof ItemSkull && itemStack.getMetadata() == 3) {
+				return true;
 			}
 
 			return false;

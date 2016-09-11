@@ -118,20 +118,20 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 			guiAreas = null;
 		}
 
-		final int columns = getColumns();
+		final int columns = getColumns(guiProperties);
 		if (columns < 4) {
 			close();
 			return;
 		}
 
-		final int rows = getRows();
+		final int rows = getRows(guiProperties);
 		final int xSize = columns * itemStackWidth;
 		final int xEmptySpace = guiProperties.getScreenWidth() - guiProperties.getGuiLeft() - guiProperties.getGuiXSize() - xSize;
 
 		final int leftEdge = guiProperties.getGuiLeft() + guiProperties.getGuiXSize() + (xEmptySpace / 2);
 		final int rightEdge = leftEdge + xSize;
 
-		final int yItemButtonSpace = getItemButtonYSpace();
+		final int yItemButtonSpace = getItemButtonYSpace(guiProperties);
 		final int itemButtonsHeight = rows * itemStackHeight;
 
 		final int buttonStartY = buttonSize + (2 * borderPadding) + (yItemButtonSpace - itemButtonsHeight) / 2;
@@ -140,7 +140,24 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		nextButton = new GuiButtonExt(0, rightEdge - buttonSize, borderPadding, buttonSize, buttonSize, nextLabel);
 		backButton = new GuiButtonExt(1, leftEdge, borderPadding, buttonSize, buttonSize, backLabel);
 
-		int configButtonX = rightEdge - buttonSize + 1;
+		final int searchFieldX;
+		final int searchFieldY = guiProperties.getScreenHeight() - searchHeight - borderPadding - 2;
+		final int searchFieldWidth;
+
+		if (isSearchBarCentered(guiProperties)) {
+			searchFieldX = guiProperties.getGuiLeft();
+			searchFieldWidth = guiProperties.getGuiXSize() - buttonSize - 1;
+		} else {
+			searchFieldX = leftEdge;
+			searchFieldWidth = rightEdge - leftEdge - buttonSize - 1;
+		}
+
+		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
+		searchField = new GuiTextFieldFilter(0, fontRenderer, searchFieldX, searchFieldY, searchFieldWidth, searchHeight);
+		setKeyboardFocus(false);
+		searchField.setItemFilter(itemFilter);
+
+		int configButtonX = searchFieldX + searchFieldWidth + 1;
 		int configButtonY = guiProperties.getScreenHeight() - buttonSize - borderPadding;
 		configButton = new GuiButtonExt(2, configButtonX, configButtonY, buttonSize, buttonSize, null);
 		ResourceLocation configButtonIconLocation = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_GUI_PATH + "recipeBackground.png");
@@ -149,16 +166,14 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		configButtonCheatIcon = guiHelper.createDrawable(configButtonIconLocation, 16, 166, 16, 16);
 		configButtonHoverChecker = new HoverChecker(configButton, 0);
 
-		int searchFieldY = guiProperties.getScreenHeight() - searchHeight - borderPadding - 2;
-		int searchFieldWidth = rightEdge - leftEdge - buttonSize - 1;
-		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
-		searchField = new GuiTextFieldFilter(0, fontRenderer, leftEdge, searchFieldY, searchFieldWidth, searchHeight);
-		setKeyboardFocus(false);
-		searchField.setItemFilter(itemFilter);
-
 		updateLayout();
 
 		open();
+	}
+
+	private static boolean isSearchBarCentered(@Nonnull GuiProperties guiProperties) {
+		return Config.isCenterSearchBarEnabled() &&
+				guiProperties.getGuiTop() + guiProperties.getGuiYSize() + searchHeight < guiProperties.getScreenHeight();
 	}
 
 	@Nonnull
@@ -382,8 +397,11 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 
 	@Override
 	public boolean isMouseOver(int mouseX, int mouseY) {
-		if (guiProperties == null || !isOpen() || (mouseX < guiProperties.getGuiLeft() + guiProperties.getGuiXSize())) {
+		if (guiProperties == null || !isOpen()) {
 			return false;
+		} else if (mouseX < guiProperties.getGuiLeft() + guiProperties.getGuiXSize()) {
+			return isSearchBarCentered(guiProperties) &&
+					(searchField.isMouseOver(mouseX, mouseY) || configButtonHoverChecker.checkHover(mouseX, mouseY));
 		}
 
 		if (guiAreas != null) {
@@ -514,26 +532,23 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		return false;
 	}
 
-	private int getItemButtonXSpace() {
-		if (guiProperties == null) {
-			return 0;
-		}
+	private static int getItemButtonXSpace(@Nonnull GuiProperties guiProperties) {
 		return guiProperties.getScreenWidth() - (guiProperties.getGuiLeft() + guiProperties.getGuiXSize() + (2 * borderPadding));
 	}
 
-	private int getItemButtonYSpace() {
-		if (guiProperties == null) {
-			return 0;
+	private static int getItemButtonYSpace(@Nonnull GuiProperties guiProperties) {
+		if (isSearchBarCentered(guiProperties)) {
+			return guiProperties.getScreenHeight() - (buttonSize + (3 * borderPadding));
 		}
 		return guiProperties.getScreenHeight() - (buttonSize + searchHeight + 2 + (4 * borderPadding));
 	}
 
-	private int getColumns() {
-		return getItemButtonXSpace() / itemStackWidth;
+	private int getColumns(@Nonnull GuiProperties guiProperties) {
+		return getItemButtonXSpace(guiProperties) / itemStackWidth;
 	}
 
-	private int getRows() {
-		return getItemButtonYSpace() / itemStackHeight;
+	private int getRows(GuiProperties guiProperties) {
+		return getItemButtonYSpace(guiProperties) / itemStackHeight;
 	}
 
 	private int getPageCount() {

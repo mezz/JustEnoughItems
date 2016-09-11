@@ -50,8 +50,6 @@ config.jei.advanced.hideMissingModelsEnabled=Verstecke fehlende Item-Modelle
 config.jei.advanced.hideMissingModelsEnabled.comment=Items in der Item-Liste mit fehlenden Modellen werden automatisch verborgen.
 config.jei.advanced.debugModeEnabled=Debug-Modus
 config.jei.advanced.debugModeEnabled.comment=Fügt zufällige Strings hinzu, um bei der JEI-Entwicklung zu helfen. Nur für Entwickler bestimmt.
-config.jei.advanced.deleteItemsInCheatModeEnabled=Zerstöre Items im Cheat-Modus
-config.jei.advanced.deleteItemsInCheatModeEnabled.comment=Im Cheat-Modus, ziehe und lasse einen Item-Stapel über der Item-Liste fallen, um diesen zu zerstören. (benötigt JEI auf dem Server)
 
 config.jei.addons=Addons
 config.jei.addons.comment=Kategorie für JEI Addon-Optionen.

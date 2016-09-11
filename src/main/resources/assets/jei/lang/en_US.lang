@@ -1,5 +1,5 @@
 # Tooltips
-jei.tooltip.config=Config
+jei.tooltip.config=JEI Config
 jei.tooltip.show.recipes=Show Recipes
 jei.tooltip.show.all.recipes=Show All Recipes
 jei.tooltip.delete.item=Click to Delete
@@ -67,14 +67,12 @@ config.jei.advanced.itemBlacklist=Item Blacklist
 config.jei.advanced.itemBlacklist.comment=List of items that should not be displayed in the item list. Format: modId[:name[:meta]]. Edit Mode will automatically add or remove entries here.
 config.jei.advanced.hideMissingModelsEnabled=Hide Items with Missing Models
 config.jei.advanced.hideMissingModelsEnabled.comment=Items with missing models will be hidden from the item list.
-config.jei.advanced.hideLaggyModelsEnabled=Hide Items with Laggy Models
-config.jei.advanced.hideLaggyModelsEnabled.comment=Items with models that cause a long delay will be hidden from the item list.
 config.jei.advanced.colorSearchEnabled=Enable Color Search
 config.jei.advanced.colorSearchEnabled.comment=Search items by color and show the searchable item colors on tooltips in the item list.
 config.jei.advanced.debugModeEnabled=Debug Mode
 config.jei.advanced.debugModeEnabled.comment=Only useful for JEI developers, adds thousands of test items and some debug recipes.
-config.jei.advanced.deleteItemsInCheatModeEnabled=Delete Items in Cheat Mode
-config.jei.advanced.deleteItemsInCheatModeEnabled.comment=In cheat mode, drag an ItemStack over the item list and click to delete it. (requires JEI on server)
+config.jei.advanced.centerSearchBarEnabled=Center Search Bar
+config.jei.advanced.centerSearchBarEnabled.comment=Move the JEI search bar to the bottom center of the screen.
 
 config.jei.addons=Addons
 config.jei.addons.comment=Category for JEI addon config options.

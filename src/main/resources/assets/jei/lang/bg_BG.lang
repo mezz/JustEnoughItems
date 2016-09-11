@@ -66,14 +66,10 @@ config.jei.advanced.itemBlacklist=Черен списак на Предмети
 config.jei.advanced.itemBlacklist.comment=Списък с предмети, които не би трябвало да се покажат в списака. Format: modId[:name[:meta]]. Режим на Редактираве автоматично ще добави или премахне предмети тук.
 config.jei.advanced.hideMissingModelsEnabled=Скрии Предмети с Липсващи Модели
 config.jei.advanced.hideMissingModelsEnabled.comment=Предмет с липсващи модели ще бъдат скрити от списъка с предвети.
-config.jei.advanced.hideLaggyModelsEnabled=Скрии Предмети с Лагващи Модели
-config.jei.advanced.hideLaggyModelsEnabled.comment=Предмет с модели които причиняват голямо закъснение ще бъдат скрити от списъка с предвети.
 config.jei.advanced.colorSearchEnabled=Включи Цветово Търсене
 config.jei.advanced.colorSearchEnabled.comment=Търси предмета с цвят и покажи предмети с цвят върху родсказките в спасъка на предмети.
 config.jei.advanced.debugModeEnabled=Debug Mode
 config.jei.advanced.debugModeEnabled.comment=Полезно е само за JEI developers, добавя хиляди тестващи предмити и няколко Debug рецепти.
-config.jei.advanced.deleteItemsInCheatModeEnabled=Изтрий Предмети в Режим на Мамене
-config.jei.advanced.deleteItemsInCheatModeEnabled.comment=В режим на мамене, дръпни ItemStack над списъка с предмети и кликни за да Изриеш. (Изисква JEI в сървър)
 
 config.jei.addons=Добавки
 config.jei.addons.comment=Категория за JEI добавки конфигурационни опций.

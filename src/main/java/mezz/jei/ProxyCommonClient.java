@@ -167,8 +167,8 @@ public class ProxyCommonClient extends ProxyCommon {
 				long start_time = System.nanoTime();
 				Log.info("Registering plugin: {}", plugin.getClass().getName());
 				plugin.register(modRegistry);
-				long timeElapsedSeconds = TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - start_time);
-				Log.info("Registered  plugin: {} in {} seconds", plugin.getClass().getName(), timeElapsedSeconds);
+				long timeElapsedMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start_time);
+				Log.info("Registered  plugin: {} in {} milliseconds", plugin.getClass().getName(), timeElapsedMs);
 			} catch (RuntimeException e) {
 				Log.error("Failed to register mod plugin: {}", plugin.getClass(), e);
 				iterator.remove();
