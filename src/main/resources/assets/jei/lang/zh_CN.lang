@@ -9,10 +9,13 @@ jei.tooltip.transfer=转移物品
 jei.tooltip.recipe.ore.dict=接受下列任何物品：%s
 jei.tooltip.item.colors=颜色：%s
 jei.tooltip.shapeless.recipe=无序合成
+jei.tooltip.cheat.mode=作弊模式
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=缺失物品
 jei.tooltip.error.recipe.transfer.inventory.full=物品栏已满
+jei.tooltip.error.recipe.transfer.unknown=未知错误请查看日志
+jei.tooltip.error.recipe.transfer.no.server=服务器必须也安装JEI
 
 # Error Messages
 jei.chat.error.command.too.long=JEI必须安装于服务器上，方能处理本指令，这条指令对Minecraft来说太长了。
@@ -63,6 +66,8 @@ config.jei.advanced.itemBlacklist=物品黑名单
 config.jei.advanced.itemBlacklist.comment=该表中物品将不会显示于JEI物品列表。添加格式：modId[:name[:meta]]。使用编辑模式可自动添加�或删除这里的条目。
 config.jei.advanced.hideMissingModelsEnabled=隐藏丢失模型的物品
 config.jei.advanced.hideMissingModelsEnabled.comment=开启后，丢失物品模型的物品将不会出现在物品列表中。
+config.jei.advanced.hideLaggyModelsEnabled=隐藏物品延迟模型
+config.jei.advanced.hideLaggyModelsEnabled.comment=开启后，延迟的物品模型将不会出现在物品列表中。
 config.jei.advanced.colorSearchEnabled=启用颜色搜索
 config.jei.advanced.colorSearchEnabled.comment=按颜色搜索物品，并在可以此法搜索的物品的Tooltip中加以注明。
 config.jei.advanced.debugModeEnabled=调试模式
