@@ -3,16 +3,19 @@ jei.tooltip.config=设定
 jei.tooltip.show.recipes=显示合成表
 jei.tooltip.show.all.recipes=显示全部合成表
 jei.tooltip.delete.item=单击以删除
-jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
-jei.tooltip.liquid.amount=%,d mB
+#jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
+#jei.tooltip.liquid.amount=%,d mB
 jei.tooltip.transfer=转移物品
 jei.tooltip.recipe.ore.dict=接受下列任何物品：%s
 jei.tooltip.item.colors=颜色：%s
 jei.tooltip.shapeless.recipe=无序合成
+jei.tooltip.cheat.mode=作弊模式
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=缺失物品
 jei.tooltip.error.recipe.transfer.inventory.full=物品栏已满
+jei.tooltip.error.recipe.transfer.unknown=未知错误，请查阅日志获得详细信息
+jei.tooltip.error.recipe.transfer.no.server=服务器必须安装JEI
 
 # Error Messages
 jei.chat.error.command.too.long=JEI必须安装于服务器上，方能处理本指令，这条指令对Minecraft来说太长了。
@@ -23,6 +26,7 @@ key.jei.focusSearch=高亮搜索框
 key.jei.showRecipe=显示物品合成表
 key.jei.showUses=显示物品用途
 key.jei.recipeBack=显示上一页
+key.jei.toggleCheatMode=作弊模式开关
 
 # Config
 config.jei.default=默认
@@ -41,15 +45,15 @@ config.jei.interface=用户界面
 config.jei.interface.comment=用户使用界面的相关设定。
 config.jei.interface.overlayEnabled=启用物品列表
 config.jei.interface.overlayEnabled.comment=在打开的GUI一侧显示物品列表。
-config.jei.interface.recipeAnimationsEnabled=合成表动画Recipe Animations
+config.jei.interface.recipeAnimationsEnabled=合成界面动画
 config.jei.interface.recipeAnimationsEnabled.comment=显示部分合成表的动画效果，如熔炉火焰，进度条，等等。
 
 config.jei.search=搜索选项
-config.jei.search.comment=搜索框的相关设定。
+config.jei.search.comment=搜索的相关设定。
 config.jei.search.atPrefixRequiredForModName=按Mod名搜索时强制@前缀
 config.jei.search.atPrefixRequiredForModName.comment=当按模组名搜索物品时，要求使用"@"作为前缀。
-config.jei.search.prefixRequiredForTooltipSearch=按工具提示搜索时强制#前缀
-config.jei.search.prefixRequiredForTooltipSearch.comment=当按Tooltip(工具提示)搜索时，要求使用"#"作为前缀。
+config.jei.search.prefixRequiredForTooltipSearch=按信息提示搜索时强制#前缀
+config.jei.search.prefixRequiredForTooltipSearch.comment=当按Tooltip(信息提示)搜索时，要求使用"#"作为前缀。
 config.jei.search.prefixRequiredForOreDictSearch=按矿物字典搜索时强制$前缀
 config.jei.search.prefixRequiredForOreDictSearch.comment=当按矿物字典搜索时，要求使用"$"作为前缀。
 config.jei.search.prefixRequiredForCreativeTabSearch=按创造标签页搜索时强制%%前缀
@@ -60,16 +64,18 @@ config.jei.search.prefixRequiredForColorSearch.comment=当按物品颜色搜索�
 config.jei.advanced=高级设定
 config.jei.advanced.comment=用于更改JEI功能的高级选项。
 config.jei.advanced.itemBlacklist=物品黑名单
-config.jei.advanced.itemBlacklist.comment=该表中物品将不会显示于JEI物品列表。添加格式：modId[:name[:meta]]。使用编辑模式可自动添加�或删除这里的条目。
-config.jei.advanced.hideMissingModelsEnabled=隐藏丢失模型的物品
-config.jei.advanced.hideMissingModelsEnabled.comment=开启后，丢失物品模型的物品将不会出现在物品列表中。
+config.jei.advanced.itemBlacklist.comment=黑名单中物品将不会显示于JEI物品列表。添加格式：modId[:name[:meta]]。使用编辑模式可自动添加或删除这里的条目。
+config.jei.advanced.hideMissingModelsEnabled=隐藏模型丢失的物品
+config.jei.advanced.hideMissingModelsEnabled.comment=开启后，缺失模型的物品将不会出现在物品列表中。
 config.jei.advanced.colorSearchEnabled=启用颜色搜索
 config.jei.advanced.colorSearchEnabled.comment=按颜色搜索物品，并在可以此法搜索的物品的Tooltip中加以注明。
 config.jei.advanced.debugModeEnabled=调试模式
 config.jei.advanced.debugModeEnabled.comment=仅对JEI开发者有用，启用后会添加数千测试物品以及一些测试合成表。
+config.jei.advanced.centerSearchBarEnabled=搜索框居中
+config.jei.advanced.centerSearchBarEnabled.comment=启用后，搜索框会被移动至底部居中的位置。
 
-config.jei.addons=Addons
-config.jei.addons.comment=为JEI扩展准备的分类。
+#config.jei.addons=Addons
+config.jei.addons.comment=为JEI的Addon们准备的分类。
 
 # Edit Mode
 gui.jei.editMode.description=JEI物品列表编辑模式：
@@ -90,7 +96,7 @@ gui.jei.category.brewing=酿造配方
 gui.jei.category.brewing.steps=步数：%s
 gui.jei.category.itemDescription=描述
 
-# DEBUG (for debug mode, do not need translation) -> Just occupy the space so that line number is still the same as of en_US - needs more OCD cure
-#description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.
-#description.jei.wooden.door.2=Clicking on a door changes its state from open to closed and visa versa.
-#description.jei.wooden.door.3=Wooden Doors can be opened/closed via Redstone Circuits.
+# DEBUG (for debug mode, do not need translation) 调试信息不需要翻译 -> Just occupy the space to keep line number same as of en_US
+# description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.
+# description.jei.wooden.door.2=Clicking on a door changes its state from open to closed and visa versa.
+# description.jei.wooden.door.3=Wooden Doors can be opened/closed via Redstone Circuits.
