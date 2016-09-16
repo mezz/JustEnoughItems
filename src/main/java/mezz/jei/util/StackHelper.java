@@ -109,13 +109,21 @@ public class StackHelper implements IStackHelper {
 		return matchingItemResult;
 	}
 
+	/**
+	 * Get the slot which contains a specific itemStack.
+	 *
+	 * @param container   the container to search
+	 * @param slotNumbers the slots in the container to search
+	 * @param itemStack   the itemStack to find
+	 * @return the slot that contains the itemStack. returns null if no slot contains the itemStack.
+	 */
 	@Nullable
-	public Slot getSlotWithStack(@Nonnull Container container, @Nonnull Iterable<Integer> slotNumbers, @Nonnull ItemStack stack) {
+	public Slot getSlotWithStack(@Nonnull Container container, @Nonnull Iterable<Integer> slotNumbers, @Nonnull ItemStack itemStack) {
 		for (Integer slotNumber : slotNumbers) {
 			Slot slot = container.getSlot(slotNumber);
 			if (slot != null) {
 				ItemStack slotStack = slot.getStack();
-				if (isEquivalent(stack, slotStack)) {
+				if (ItemStack.areItemStacksEqual(itemStack, slotStack)) {
 					return slot;
 				}
 			}
