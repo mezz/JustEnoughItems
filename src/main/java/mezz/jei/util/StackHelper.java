@@ -184,7 +184,7 @@ public class StackHelper implements IStackHelper {
 	}
 
 	/**
-	 * Similar to ItemStack.areItemStacksEqual but ignores NBT on items without subtypes, and uses the INbtIgnoreList
+	 * Similar to ItemStack.areItemStacksEqual but ignores NBT on items without subtypes, and uses the {@link ISubtypeRegistry}
 	 */
 	public boolean isEquivalent(@Nullable ItemStack lhs, @Nullable ItemStack rhs) {
 		if (lhs == rhs) {
