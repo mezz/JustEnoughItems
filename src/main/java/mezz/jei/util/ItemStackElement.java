@@ -8,6 +8,7 @@ import java.util.Locale;
 
 import com.google.common.base.Joiner;
 import mezz.jei.Internal;
+import mezz.jei.ItemRegistry;
 import mezz.jei.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
@@ -65,7 +66,8 @@ public class ItemStackElement {
 		}
 
 		String modId = itemResourceLocation.getResourceDomain().toLowerCase(Locale.ENGLISH);
-		String modName = Internal.getItemRegistry().getModNameForItem(item).toLowerCase(Locale.ENGLISH);
+		ItemRegistry itemRegistry = Internal.getItemRegistry();
+		String modName = itemRegistry.getModNameForModId(modId).toLowerCase(Locale.ENGLISH);
 
 		String displayName = itemStack.getDisplayName();
 		if (displayName == null) {

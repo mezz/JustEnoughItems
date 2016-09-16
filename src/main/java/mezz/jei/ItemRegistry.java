@@ -67,6 +67,11 @@ public class ItemRegistry implements IItemRegistry {
 	}
 
 	@Nonnull
+	public String getModNameForModId(@Nonnull String modId) {
+		return modList.getModNameForModId(modId);
+	}
+
+	@Nonnull
 	@Override
 	public ImmutableList<ItemStack> getItemListForModId(@Nullable String modId) {
 		if (modId == null) {
