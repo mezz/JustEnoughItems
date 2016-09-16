@@ -8,6 +8,7 @@ import java.util.List;
 import mezz.jei.gui.Focus;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.ItemStackElement;
+import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -58,7 +59,7 @@ public class GuiItemStackFastList {
 				IBakedModel bakedModel = renderItem.getItemModelWithOverrides(stack, null, null);
 				if (bakedModel == null) {
 					String stackInfo = ErrorUtil.getItemStackInfo(stack);
-					throw new NullPointerException("ItemStack returned null IBakedModel from RenderItem.getItemModelWithOverrides(stack, null, null). " + stackInfo);
+					Log.error("ItemStack returned null IBakedModel from RenderItem.getItemModelWithOverrides(stack, null, null). " + stackInfo, new NullPointerException());
 				} else {
 					guiItemStack.setItemStack(stack);
 					if (bakedModel.isBuiltInRenderer()) {

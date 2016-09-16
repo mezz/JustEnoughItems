@@ -107,7 +107,9 @@ public class ColorGetter {
 		IBlockState blockState;
 		try {
 			blockState = block.getStateFromMeta(meta);
-		} catch (IllegalArgumentException ignored) {
+		} catch (RuntimeException ignored) {
+			blockState = block.getDefaultState();
+		} catch (LinkageError ignored) {
 			blockState = block.getDefaultState();
 		}
 

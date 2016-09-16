@@ -27,10 +27,10 @@ public class ModList {
 
 	@Nonnull
 	public String getModNameForItem(@Nonnull Item item) {
-		ResourceLocation itemResourceLocation = Item.REGISTRY.getNameForObject(item);
+		ResourceLocation itemResourceLocation = item.getRegistryName();
 		if (itemResourceLocation == null) {
 			String stackInfo = ErrorUtil.getItemStackInfo(new ItemStack(item));
-			throw new NullPointerException("Item.itemRegistry.getNameForObject returned null for: " + stackInfo);
+			throw new NullPointerException("item.getRegistryName() returned null for: " + stackInfo);
 		}
 		String modId = itemResourceLocation.getResourceDomain();
 		String lowercaseModId = modId.toLowerCase(Locale.ENGLISH);

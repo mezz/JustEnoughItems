@@ -333,10 +333,10 @@ public class StackHelper implements IStackHelper {
 			throw new NullPointerException(nullItemInStack);
 		}
 
-		ResourceLocation itemName = Item.REGISTRY.getNameForObject(item);
+		ResourceLocation itemName = item.getRegistryName();
 		if (itemName == null) {
 			String stackInfo = ErrorUtil.getItemStackInfo(stack);
-			throw new NullPointerException("Item.itemRegistry.getNameForObject returned null for: " + stackInfo);
+			throw new NullPointerException("item.getRegistryName() returned null for: " + stackInfo);
 		}
 
 		return itemName.getResourceDomain();

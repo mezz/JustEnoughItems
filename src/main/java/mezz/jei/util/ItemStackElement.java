@@ -58,7 +58,12 @@ public class ItemStackElement {
 		Item item = itemStack.getItem();
 
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-		ResourceLocation itemResourceLocation = Item.REGISTRY.getNameForObject(item);
+		ResourceLocation itemResourceLocation = item.getRegistryName();
+		if (itemResourceLocation == null) {
+			String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
+			throw new NullPointerException("No registry name for item. " + stackInfo);
+		}
+
 		String modId = itemResourceLocation.getResourceDomain().toLowerCase(Locale.ENGLISH);
 		String modName = Internal.getItemRegistry().getModNameForItem(item).toLowerCase(Locale.ENGLISH);
 
@@ -80,6 +85,8 @@ public class ItemStackElement {
 			tooltipString = tooltipString.replace(modName, "");
 			tooltipString = tooltipString.replace(displayName, "");
 		} catch (RuntimeException ignored) {
+			tooltipString = "";
+		} catch (LinkageError ignored) {
 			tooltipString = "";
 		}
 		this.tooltipString = tooltipString;

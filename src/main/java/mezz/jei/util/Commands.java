@@ -12,6 +12,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -46,13 +47,27 @@ public class Commands {
 	 * Fallback for when JEI is not on the server, tries to use the /give command.
 	 */
 	private static void giveStackVanilla(@Nonnull ItemStack itemStack, int amount) {
+		Item item = itemStack.getItem();
+		if (item == null) {
+			String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
+			Log.error("Null item in itemStack: " + stackInfo, new NullPointerException());
+			return;
+		}
+
+		ResourceLocation itemResourceLocation = item.getRegistryName();
+		if (itemResourceLocation == null) {
+			String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
+			Log.error("item.getRegistryName() returned null for: " + stackInfo, new NullPointerException());
+			return;
+		}
+
 		EntityPlayerSP sender = Minecraft.getMinecraft().thePlayer;
 		String senderName = sender.getName();
 
 		List<String> commandStrings = new ArrayList<String>();
 		commandStrings.add("/give");
 		commandStrings.add(senderName);
-		commandStrings.add(Item.REGISTRY.getNameForObject(itemStack.getItem()).toString());
+		commandStrings.add(itemResourceLocation.toString());
 		commandStrings.add(String.valueOf(amount));
 		commandStrings.add(String.valueOf(itemStack.getMetadata()));
 
