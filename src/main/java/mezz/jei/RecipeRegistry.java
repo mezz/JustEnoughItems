@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -73,14 +74,17 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 		ImmutableMultimap.Builder<IRecipeCategory, ItemStack> craftItemsForCategoriesBuilder = ImmutableMultimap.builder();
 		ImmutableMultimap.Builder<String, String> categoriesForCraftItemKeysBuilder = ImmutableMultimap.builder();
-		for (String recipeCategoryUid : craftItemsForCategories.keySet()) {
+		for (Map.Entry<String, Collection<ItemStack>> recipeCategoryEntry : craftItemsForCategories.asMap().entrySet()) {
+			String recipeCategoryUid = recipeCategoryEntry.getKey();
 			IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
-			Collection<ItemStack> craftItems = craftItemsForCategories.get(recipeCategoryUid);
-			craftItemsForCategoriesBuilder.putAll(recipeCategory, craftItems);
-			for (ItemStack craftItem : craftItems) {
-				recipeInputMap.addRecipeCategory(recipeCategory, craftItem);
-				String craftItemKey = stackHelper.getUniqueIdentifierForStack(craftItem);
-				categoriesForCraftItemKeysBuilder.put(craftItemKey, recipeCategoryUid);
+			if (recipeCategory != null) {
+				Collection<ItemStack> craftItems = recipeCategoryEntry.getValue();
+				craftItemsForCategoriesBuilder.putAll(recipeCategory, craftItems);
+				for (ItemStack craftItem : craftItems) {
+					recipeInputMap.addRecipeCategory(recipeCategory, craftItem);
+					String craftItemKey = stackHelper.getUniqueIdentifierForStack(craftItem);
+					categoriesForCraftItemKeysBuilder.put(craftItemKey, recipeCategoryUid);
+				}
 			}
 		}
 
