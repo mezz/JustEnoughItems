@@ -24,6 +24,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionHelper;
 import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class ItemRegistryFactory {
 	@Nonnull
@@ -64,10 +65,10 @@ public class ItemRegistryFactory {
 			}
 		}
 
-		for (Block block : Block.REGISTRY) {
+		for (Block block : ForgeRegistries.BLOCKS) {
 			addBlockAndSubBlocks(block);
 		}
-		for (Item item : Item.REGISTRY) {
+		for (Item item : ForgeRegistries.ITEMS) {
 			addItemAndSubItems(item);
 		}
 
