@@ -9,7 +9,7 @@ import java.util.Map;
 
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
-import mezz.jei.transfer.BasicRecipeTransferHandler;
+import mezz.jei.transfer.BasicRecipeTransferHandlerServer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 
@@ -62,7 +62,7 @@ public class PacketRecipeTransfer extends PacketJEI {
 
 		maxTransfer = buf.readBoolean();
 
-		BasicRecipeTransferHandler.setItems(player, recipeMap, craftingSlots, inventorySlots, maxTransfer);
+		BasicRecipeTransferHandlerServer.setItems(player, recipeMap, craftingSlots, inventorySlots, maxTransfer);
 	}
 
 	@Override
