@@ -123,7 +123,7 @@ public class StackHelper implements IStackHelper {
 			Slot slot = container.getSlot(slotNumber);
 			if (slot != null) {
 				ItemStack slotStack = slot.getStack();
-				if (ItemStack.areItemStacksEqual(itemStack, slotStack)) {
+				if (ItemStack.areItemsEqual(itemStack, slotStack) && ItemStack.areItemStackTagsEqual(itemStack, slotStack)) {
 					return slot;
 				}
 			}
