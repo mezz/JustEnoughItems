@@ -1,6 +1,7 @@
 package mezz.jei.plugins.vanilla;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import mezz.jei.api.BlankModPlugin;
 import mezz.jei.api.IGuiHelper;
@@ -36,6 +37,9 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerBrewingStand;
 import net.minecraft.inventory.ContainerFurnace;
 import net.minecraft.inventory.ContainerWorkbench;
+import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.ItemBanner;
+import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraftforge.common.ForgeModContainer;
@@ -50,8 +54,6 @@ public class VanillaPlugin extends BlankModPlugin {
 
 		ISubtypeRegistry subtypeRegistry = jeiHelpers.getSubtypeRegistry();
 		subtypeRegistry.useNbtForSubtypes(
-				Items.BANNER,
-				Items.SPAWN_EGG,
 				Items.ENCHANTED_BOOK
 		);
 
@@ -59,6 +61,21 @@ public class VanillaPlugin extends BlankModPlugin {
 		subtypeRegistry.registerNbtInterpreter(Items.POTIONITEM, PotionSubtypeInterpreter.INSTANCE);
 		subtypeRegistry.registerNbtInterpreter(Items.SPLASH_POTION, PotionSubtypeInterpreter.INSTANCE);
 		subtypeRegistry.registerNbtInterpreter(Items.LINGERING_POTION, PotionSubtypeInterpreter.INSTANCE);
+		subtypeRegistry.registerNbtInterpreter(Items.BANNER, new ISubtypeRegistry.ISubtypeInterpreter() {
+			@Nullable
+			@Override
+			public String getSubtypeInfo(@Nonnull ItemStack itemStack) {
+				EnumDyeColor baseColor = ItemBanner.getBaseColor(itemStack);
+				return baseColor.toString();
+			}
+		});
+		subtypeRegistry.registerNbtInterpreter(Items.SPAWN_EGG, new ISubtypeRegistry.ISubtypeInterpreter() {
+			@Nullable
+			@Override
+			public String getSubtypeInfo(@Nonnull ItemStack itemStack) {
+				return ItemMonsterPlacer.getEntityIdFromItem(itemStack);
+			}
+		});
 
 		if (FluidRegistry.isUniversalBucketEnabled()) {
 			subtypeRegistry.useNbtForSubtypes(ForgeModContainer.getInstance().universalBucket);
