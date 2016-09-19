@@ -30,17 +30,20 @@ import net.minecraft.item.ItemStack;
 public class ItemFilter {
 
 	/** A cache for fast searches while typing or using backspace. Maps filterText to filteredItemMaps */
+	@Nonnull
 	private final LoadingCache<String, ImmutableList<ItemStackElement>> filteredItemMapsCache;
+	@Nonnull
+	private final ImmutableList<ItemStackElement> baseList;
 
 	public ItemFilter(final IItemRegistry itemRegistry) {
 		filteredItemMapsCache = CacheBuilder.newBuilder()
 				.maximumWeight(16)
-				.weigher(new SearchFilterWeigher())
+				.weigher(new OneWeigher())
 				.concurrencyLevel(1)
-				.build(new ItemFilterCacheLoader(itemRegistry));
+				.build(new ItemFilterCacheLoader());
 
 		// preload the base list
-		filteredItemMapsCache.getUnchecked("");
+		this.baseList = createBaseList(itemRegistry);
 	}
 
 	public void reset() {
@@ -88,6 +91,7 @@ public class ItemFilter {
 		return getItemList().size();
 	}
 
+	@Nonnull
 	private static ImmutableList<ItemStackElement> createBaseList(IItemRegistry itemRegistry) {
 		ItemStackChecker itemStackChecker = new ItemStackChecker();
 
@@ -119,24 +123,17 @@ public class ItemFilter {
 		return baseList.build();
 	}
 
-	private static class SearchFilterWeigher implements Weigher<String, ImmutableList<ItemStackElement>> {
+	private static class OneWeigher implements Weigher<String, ImmutableList<ItemStackElement>> {
 		public int weigh(@Nonnull String key, @Nonnull ImmutableList<ItemStackElement> value) {
-			// The CacheLoader is recursive, so keep the base value in the cache permanently by setting its weight to 0
-			return (key.length() == 0) ? 0 : 1;
+			return 1;
 		}
 	}
 
 	private class ItemFilterCacheLoader extends CacheLoader<String, ImmutableList<ItemStackElement>> {
-		private final IItemRegistry itemRegistry;
-
-		public ItemFilterCacheLoader(IItemRegistry itemRegistry) {
-			this.itemRegistry = itemRegistry;
-		}
-
 		@Override
 		public ImmutableList<ItemStackElement> load(@Nonnull final String filterText) throws Exception {
 			if (filterText.length() == 0) {
-				return createBaseList(itemRegistry);
+				return baseList;
 			}
 
 			// Recursive.
