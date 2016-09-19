@@ -64,6 +64,26 @@ public class ItemFilter {
 		}
 	}
 
+	/**
+	 * {@link #getItemStacks()} is slow, so cache the previous value in case someone requests it often.
+	 */
+	@Nonnull
+	private ImmutableList<ItemStack> itemStacksCached = ImmutableList.of();
+	private String filterCached;
+
+	@Nonnull
+	public ImmutableList<ItemStack> getItemStacks() {
+		if (!Config.getFilterText().equals(filterCached)) {
+			ImmutableList.Builder<ItemStack> filteredStacks = ImmutableList.builder();
+			for (ItemStackElement element : getItemList()) {
+				filteredStacks.add(element.getItemStack());
+			}
+			itemStacksCached = filteredStacks.build();
+			filterCached = Config.getFilterText();
+		}
+		return itemStacksCached;
+	}
+
 	public int size() {
 		return getItemList().size();
 	}

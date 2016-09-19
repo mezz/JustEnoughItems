@@ -632,6 +632,12 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		return visibleStacks.build();
 	}
 
+	@Nonnull
+	@Override
+	public ImmutableList<ItemStack> getFilteredStacks() {
+		return itemFilter.getItemStacks();
+	}
+
 	@Override
 	public void highlightStacks(@Nonnull Collection<ItemStack> stacks) {
 		highlightedStacks.clear();

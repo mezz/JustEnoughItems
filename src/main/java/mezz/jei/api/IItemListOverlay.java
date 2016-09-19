@@ -33,6 +33,13 @@ public interface IItemListOverlay {
 	String getFilterText();
 
 	/**
+	 * @return a list containing all stacks that match the current filter.
+	 * For the list of all ItemStacks known to JEI, see {@link IItemRegistry#getItemList()}.
+	 */
+	@Nonnull
+	ImmutableList<ItemStack> getFilteredStacks();
+
+	/**
 	 * @return a list containing all currently visible stacks. If JEI is hidden, the list will be empty.
 	 */
 	@Nonnull
