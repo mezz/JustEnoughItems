@@ -110,8 +110,7 @@ public class ItemStackElement {
 		this.creativeTabsString = creativeTabStringBuilder.toString();
 
 		if (Config.isColorSearchEnabled()) {
-			Collection<String> colorNames = Internal.getColorNamer().getColorNames(itemStack);
-			this.colorString = Joiner.on(' ').join(colorNames).toLowerCase();
+			this.colorString = getColorString(itemStack);
 		} else {
 			this.colorString = "";
 		}
@@ -139,6 +138,20 @@ public class ItemStackElement {
 		}
 
 		this.searchString = searchStringBuilder.toString();
+	}
+
+	@Nonnull
+	private static String getColorString(ItemStack itemStack) {
+		final Collection<String> colorNames;
+		try {
+			colorNames = Internal.getColorNamer().getColorNames(itemStack);
+		} catch (RuntimeException ignored) {
+			return "";
+		} catch (LinkageError ignored) {
+			return "";
+		}
+
+		return Joiner.on(' ').join(colorNames).toLowerCase();
 	}
 
 	@Nonnull
