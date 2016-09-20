@@ -32,7 +32,7 @@ public class RecipeCategoryCraftingItemsArea implements IShowsRecipeFocuses {
 	private int top = 0;
 
 	public RecipeCategoryCraftingItemsArea() {
-		ResourceLocation recipeBackgroundResource = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_GUI_PATH + "recipeBackground.png");
+		ResourceLocation recipeBackgroundResource = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
 
 		IGuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
 		leftDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 15, 5, 25);

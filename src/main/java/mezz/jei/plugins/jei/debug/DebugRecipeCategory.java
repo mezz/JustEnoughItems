@@ -31,7 +31,7 @@ public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 		background = guiHelper.createBlankDrawable(recipeWidth, recipeHeight);
 		localizedName = "debug";
 
-		ResourceLocation backgroundTexture = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_GUI_PATH + "recipeBackground.png");
+		ResourceLocation backgroundTexture = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
 		tankBackground = guiHelper.createDrawable(backgroundTexture, 176, 0, 20, 55);
 		tankOverlay = guiHelper.createDrawable(backgroundTexture, 176, 55, 12, 47);
 	}

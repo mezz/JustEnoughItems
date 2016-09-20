@@ -21,7 +21,7 @@ public abstract class AbstractShapelessRecipeWrapper extends VanillaRecipeWrappe
 	private final HoverChecker shapelessIconHoverChecker;
 
 	public AbstractShapelessRecipeWrapper(IGuiHelper guiHelper) {
-		ResourceLocation shapelessIconLocation = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_GUI_PATH + "recipeBackground.png");
+		ResourceLocation shapelessIconLocation = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
 		shapelessIcon = guiHelper.createDrawable(shapelessIconLocation, 196, 0, 19, 15);
 
 		int iconBottom = (int) (shapelessIcon.getHeight() * shapelessIconScale);

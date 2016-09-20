@@ -156,7 +156,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		int configButtonX = searchFieldX + searchFieldWidth + 1;
 		int configButtonY = guiProperties.getScreenHeight() - buttonSize - borderPadding;
 		configButton = new GuiButtonExt(2, configButtonX, configButtonY, buttonSize, buttonSize, null);
-		ResourceLocation configButtonIconLocation = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_GUI_PATH + "recipeBackground.png");
+		ResourceLocation configButtonIconLocation = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
 		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
 		configButtonIcon = guiHelper.createDrawable(configButtonIconLocation, 0, 166, 16, 16);
 		configButtonCheatIcon = guiHelper.createDrawable(configButtonIconLocation, 16, 166, 16, 16);
