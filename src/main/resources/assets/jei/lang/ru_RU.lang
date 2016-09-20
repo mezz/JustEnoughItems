@@ -26,6 +26,7 @@ key.jei.focusSearch=Выбрать строку поиска
 key.jei.showRecipe=Показывать рецепты предметов
 key.jei.showUses=Показывать применения предметов
 key.jei.recipeBack=Показать предыдущую страницу рецептов
+key.jei.toggleCheatMode=Переключить предметный Чит-Режим
 
 # Config
 config.jei.default=По-умолчанию
@@ -70,6 +71,8 @@ config.jei.advanced.colorSearchEnabled=Поиск по цвету
 config.jei.advanced.colorSearchEnabled.comment=Искать предметы по цвету и показывать доступные цвета предметов в всплывающей подсказке в списке предмета.		  
 config.jei.advanced.debugModeEnabled=Режим отладки
 config.jei.advanced.debugModeEnabled.comment=Добавляет разные вещи, чтобы помочь в разработке JEI.
+config.jei.advanced.centerSearchBarEnabled=Строка поиска по центру
+config.jei.advanced.centerSearchBarEnabled.comment=Перемещение JEI строки поиска в центр нижней части экрана.
 
 config.jei.addons=Дополнения
 config.jei.addons.comment=Категория для настроек дополнений JEI.
