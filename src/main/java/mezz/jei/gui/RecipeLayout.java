@@ -1,6 +1,6 @@
 package mezz.jei.gui;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 import mezz.jei.api.gui.IDrawable;
@@ -21,21 +21,16 @@ public class RecipeLayout implements IRecipeLayout {
 	private static final int RECIPE_BUTTON_SIZE = 12;
 	public static final int recipeTransferButtonIndex = 100;
 
-	@Nonnull
 	private final IRecipeCategory recipeCategory;
-	@Nonnull
 	private final GuiItemStackGroup guiItemStackGroup;
-	@Nonnull
 	private final GuiFluidStackGroup guiFluidStackGroup;
-	@Nonnull
 	private final RecipeTransferButton recipeTransferButton;
-	@Nonnull
 	private final IRecipeWrapper recipeWrapper;
 
 	private final int posX;
 	private final int posY;
 
-	public <T extends IRecipeWrapper> RecipeLayout(int index, int posX, int posY, @Nonnull IRecipeCategory<T> recipeCategory, @Nonnull T recipeWrapper, @Nonnull MasterFocus focus) {
+	public <T extends IRecipeWrapper> RecipeLayout(int index, int posX, int posY, IRecipeCategory<T> recipeCategory, T recipeWrapper, MasterFocus focus) {
 		this.recipeCategory = recipeCategory;
 		this.guiItemStackGroup = new GuiItemStackGroup(new Focus<ItemStack>(focus.getMode(), focus.getItemStack()));
 		this.guiFluidStackGroup = new GuiFluidStackGroup(new Focus<FluidStack>(focus.getMode(), focus.getFluidStack()));
@@ -49,7 +44,7 @@ public class RecipeLayout implements IRecipeLayout {
 		recipeCategory.setRecipe(this, recipeWrapper);
 	}
 
-	public void draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+	public void draw(Minecraft minecraft, int mouseX, int mouseY) {
 		IDrawable background = recipeCategory.getBackground();
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -108,6 +103,7 @@ public class RecipeLayout implements IRecipeLayout {
 		return recipeMouseX >= 0 && recipeMouseX < background.getWidth() && recipeMouseY >= 0 && recipeMouseY < background.getHeight();
 	}
 
+	@Nullable
 	public Focus<?> getFocusUnderMouse(int mouseX, int mouseY) {
 		Focus<?> focus = guiItemStackGroup.getFocusUnderMouse(posX, posY, mouseX, mouseY);
 		if (focus == null) {
@@ -116,18 +112,16 @@ public class RecipeLayout implements IRecipeLayout {
 		return focus;
 	}
 
-	public boolean handleClick(@Nonnull Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
+	public boolean handleClick(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
 		return recipeWrapper.handleClick(minecraft, mouseX - posX, mouseY - posY, mouseButton);
 	}
 
 	@Override
-	@Nonnull
 	public GuiItemStackGroup getItemStacks() {
 		return guiItemStackGroup;
 	}
 
 	@Override
-	@Nonnull
 	public IGuiFluidStackGroup getFluidStacks() {
 		return guiFluidStackGroup;
 	}
@@ -138,17 +132,14 @@ public class RecipeLayout implements IRecipeLayout {
 		recipeTransferButton.yPosition = posY + this.posY;
 	}
 
-	@Nonnull
 	public RecipeTransferButton getRecipeTransferButton() {
 		return recipeTransferButton;
 	}
 
-	@Nonnull
 	public IRecipeWrapper getRecipeWrapper() {
 		return recipeWrapper;
 	}
 
-	@Nonnull
 	public IRecipeCategory getRecipeCategory() {
 		return recipeCategory;
 	}

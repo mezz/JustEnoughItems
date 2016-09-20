@@ -1,6 +1,5 @@
 package mezz.jei.network.packets;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Map;
 
@@ -29,7 +28,7 @@ public class PacketGiveItemStack extends PacketJEI {
 
 	}
 
-	public PacketGiveItemStack(@Nonnull ItemStack itemStack) {
+	public PacketGiveItemStack(ItemStack itemStack) {
 		this.itemStack = itemStack;
 	}
 
@@ -39,7 +38,7 @@ public class PacketGiveItemStack extends PacketJEI {
 	}
 
 	@Override
-	public void writePacketData(PacketBuffer buf) throws IOException {
+	public void writePacketData(PacketBuffer buf) {
 		buf.writeNBTTagCompoundToBuffer(itemStack.serializeNBT());
 	}
 

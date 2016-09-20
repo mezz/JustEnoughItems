@@ -1,6 +1,5 @@
 package mezz.jei.gui.ingredients;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 import mezz.jei.Internal;
@@ -13,7 +12,7 @@ public class GuiItemStackGroup extends GuiIngredientGroup<ItemStack, GuiIngredie
 	private static final int baseHeight = 16;
 	private static final ItemStackHelper helper = new ItemStackHelper();
 
-	public GuiItemStackGroup(@Nonnull IFocus<ItemStack> focus) {
+	public GuiItemStackGroup(IFocus<ItemStack> focus) {
 		super(focus);
 	}
 
@@ -31,12 +30,12 @@ public class GuiItemStackGroup extends GuiIngredientGroup<ItemStack, GuiIngredie
 	}
 
 	@Override
-	public void setFromRecipe(int slotIndex, @Nonnull List ingredients) {
+	public void setFromRecipe(int slotIndex, List ingredients) {
 		set(slotIndex, Internal.getStackHelper().toItemStackList(ingredients));
 	}
 
 	@Override
-	public void setFromRecipe(int slotIndex, @Nonnull Object ingredients) {
+	public void setFromRecipe(int slotIndex, Object ingredients) {
 		set(slotIndex, Internal.getStackHelper().toItemStackList(ingredients));
 	}
 

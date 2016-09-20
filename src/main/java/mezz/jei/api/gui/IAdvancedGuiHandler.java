@@ -1,6 +1,5 @@
 package mezz.jei.api.gui;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.List;
@@ -16,7 +15,6 @@ public interface IAdvancedGuiHandler<T extends GuiContainer> {
 	/**
 	 * @return the class that this IAdvancedGuiHandler handles.
 	 */
-	@Nonnull
 	Class<T> getGuiContainerClass();
 
 	/**

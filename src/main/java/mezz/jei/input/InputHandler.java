@@ -1,11 +1,9 @@
 package mezz.jei.input;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import mezz.jei.Internal;
 import mezz.jei.RecipeRegistry;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.config.Config;
@@ -27,19 +25,16 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 public class InputHandler {
-
-	@Nonnull
+	private final RecipeRegistry recipeRegistry;
 	private final RecipesGui recipesGui;
-	@Nonnull
 	private final ItemListOverlay itemListOverlay;
-	@Nonnull
 	private MouseHelper mouseHelper;
-	@Nonnull
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<IShowsRecipeFocuses>();
 
 	private boolean clickHandled = false;
 
-	public InputHandler(@Nonnull RecipesGui recipesGui, @Nonnull ItemListOverlay itemListOverlay) {
+	public InputHandler(RecipeRegistry recipeRegistry, RecipesGui recipesGui, ItemListOverlay itemListOverlay) {
+		this.recipeRegistry = recipeRegistry;
 		this.recipesGui = recipesGui;
 		this.itemListOverlay = itemListOverlay;
 
@@ -54,7 +49,7 @@ public class InputHandler {
 		this.mouseHelper = new MouseHelper();
 	}
 
-	public boolean handleMouseEvent(@Nonnull GuiScreen guiScreen, int mouseX, int mouseY) {
+	public boolean handleMouseEvent(GuiScreen guiScreen, int mouseX, int mouseY) {
 		boolean cancelEvent = false;
 		if (Mouse.getEventButton() > -1) {
 			if (Mouse.getEventButtonState()) {
@@ -76,7 +71,7 @@ public class InputHandler {
 		return itemListOverlay.handleMouseScrolled(mouseX, mouseY, dWheel);
 	}
 
-	private boolean handleMouseClick(@Nonnull GuiScreen guiScreen, int mouseButton, int mouseX, int mouseY) {
+	private boolean handleMouseClick(GuiScreen guiScreen, int mouseButton, int mouseX, int mouseY) {
 		if (itemListOverlay.handleMouseClicked(mouseX, mouseY, mouseButton)) {
 			return true;
 		}
@@ -88,7 +83,6 @@ public class InputHandler {
 
 		if (guiScreen instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) guiScreen;
-			RecipeRegistry recipeRegistry = Internal.getRuntime().getRecipeRegistry();
 			RecipeClickableArea clickableArea = recipeRegistry.getRecipeClickableArea(guiContainer, mouseX - guiContainer.guiLeft, mouseY - guiContainer.guiTop);
 			if (clickableArea != null) {
 				List<String> recipeCategoryUids = clickableArea.getRecipeCategoryUids();
@@ -123,7 +117,7 @@ public class InputHandler {
 		return null;
 	}
 
-	private boolean handleMouseClickedFocus(int mouseButton, @Nonnull Focus<?> focus) {
+	private boolean handleMouseClickedFocus(int mouseButton, Focus<?> focus) {
 		if (Config.isEditModeEnabled()) {
 			if (handleClickEditStack(mouseButton, focus)) {
 				return true;
@@ -156,7 +150,7 @@ public class InputHandler {
 		return false;
 	}
 
-	private boolean handleClickEditStack(int mouseButton, @Nonnull IFocus<?> focus) {
+	private boolean handleClickEditStack(int mouseButton, IFocus<?> focus) {
 		Object focusValue = focus.getValue();
 		if (!(focusValue instanceof ItemStack)) {
 			return false;

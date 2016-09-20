@@ -1,8 +1,8 @@
 package mezz.jei.gui;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -66,11 +66,8 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	private static final int itemStackHeight = GuiItemStackGroup.getHeight(itemStackPadding);
 	private static int firstItemIndex = 0;
 
-	@Nonnull
 	private final ItemFilter itemFilter;
-	@Nonnull
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers;
-	@Nonnull
 	private final Set<ItemStack> highlightedStacks = new HashSet<ItemStack>();
 
 	private final GuiItemStackFastList guiItemStacks = new GuiItemStackFastList();
@@ -93,17 +90,16 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	private GuiProperties guiProperties;
 	@Nullable
 	private List<Rectangle> guiAreas;
-	@Nonnull
 	private List<IAdvancedGuiHandler<?>> activeAdvancedGuiHandlers = Collections.emptyList();
 
 	private boolean open = false;
 
-	public ItemListOverlay(@Nonnull ItemFilter itemFilter, @Nonnull List<IAdvancedGuiHandler<?>> advancedGuiHandlers) {
+	public ItemListOverlay(ItemFilter itemFilter, List<IAdvancedGuiHandler<?>> advancedGuiHandlers) {
 		this.itemFilter = itemFilter;
 		this.advancedGuiHandlers = advancedGuiHandlers;
 	}
 
-	public void initGui(@Nonnull GuiScreen guiScreen) {
+	public void initGui(GuiScreen guiScreen) {
 		GuiProperties guiProperties = GuiProperties.create(guiScreen);
 		if (guiProperties == null) {
 			return;
@@ -171,13 +167,12 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		open();
 	}
 
-	private static boolean isSearchBarCentered(@Nonnull GuiProperties guiProperties) {
+	private static boolean isSearchBarCentered(GuiProperties guiProperties) {
 		return Config.isCenterSearchBarEnabled() &&
 				guiProperties.getGuiTop() + guiProperties.getGuiYSize() + searchHeight < guiProperties.getScreenHeight();
 	}
 
-	@Nonnull
-	private List<IAdvancedGuiHandler<?>> getActiveAdvancedGuiHandlers(@Nonnull GuiScreen guiScreen) {
+	private List<IAdvancedGuiHandler<?>> getActiveAdvancedGuiHandlers(GuiScreen guiScreen) {
 		List<IAdvancedGuiHandler<?>> activeAdvancedGuiHandler = new ArrayList<IAdvancedGuiHandler<?>>();
 		if (guiScreen instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) guiScreen;
@@ -209,7 +204,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		return null;
 	}
 
-	public void updateGui(@Nonnull GuiScreen guiScreen) {
+	public void updateGui(GuiScreen guiScreen) {
 		if (this.guiProperties == null) {
 			initGui(guiScreen);
 		} else {
@@ -229,7 +224,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		}
 	}
 
-	private static void createItemButtons(@Nonnull GuiItemStackFastList guiItemStacks, @Nullable List<Rectangle> guiAreas, final int xStart, final int yStart, final int columnCount, final int rowCount) {
+	private static void createItemButtons(GuiItemStackFastList guiItemStacks, @Nullable List<Rectangle> guiAreas, final int xStart, final int yStart, final int columnCount, final int rowCount) {
 		guiItemStacks.clear();
 
 		for (int row = 0; row < rowCount; row++) {
@@ -308,7 +303,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		updateLayout();
 	}
 
-	public void drawScreen(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY) {
 		if (!isOpen()) {
 			return;
 		}
@@ -360,7 +355,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		return false;
 	}
 
-	public void drawTooltips(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
 		if (!isOpen()) {
 			return;
 		}
@@ -491,8 +486,10 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		} else if (configButton.mousePressed(minecraft, mouseX, mouseY)) {
 			close();
 			configButton.playPressSound(minecraft.getSoundHandler());
-			GuiScreen configScreen = new JEIModConfigGui(minecraft.currentScreen);
-			minecraft.displayGuiScreen(configScreen);
+			if (minecraft.currentScreen != null) {
+				GuiScreen configScreen = new JEIModConfigGui(minecraft.currentScreen);
+				minecraft.displayGuiScreen(configScreen);
+			}
 			return true;
 		}
 		return false;
@@ -532,18 +529,18 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		return false;
 	}
 
-	private static int getItemButtonXSpace(@Nonnull GuiProperties guiProperties) {
+	private static int getItemButtonXSpace(GuiProperties guiProperties) {
 		return guiProperties.getScreenWidth() - (guiProperties.getGuiLeft() + guiProperties.getGuiXSize() + (2 * borderPadding));
 	}
 
-	private static int getItemButtonYSpace(@Nonnull GuiProperties guiProperties) {
+	private static int getItemButtonYSpace(GuiProperties guiProperties) {
 		if (isSearchBarCentered(guiProperties)) {
 			return guiProperties.getScreenHeight() - (buttonSize + (3 * borderPadding));
 		}
 		return guiProperties.getScreenHeight() - (buttonSize + searchHeight + 2 + (4 * borderPadding));
 	}
 
-	private int getColumns(@Nonnull GuiProperties guiProperties) {
+	private int getColumns(GuiProperties guiProperties) {
 		return getItemButtonXSpace(guiProperties) / itemStackWidth;
 	}
 
@@ -613,13 +610,11 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		}
 	}
 
-	@Nonnull
 	@Override
 	public String getFilterText() {
 		return Config.getFilterText();
 	}
 
-	@Nonnull
 	@Override
 	public ImmutableList<ItemStack> getVisibleStacks() {
 		ImmutableList.Builder<ItemStack> visibleStacks = ImmutableList.builder();
@@ -632,14 +627,13 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		return visibleStacks.build();
 	}
 
-	@Nonnull
 	@Override
 	public ImmutableList<ItemStack> getFilteredStacks() {
 		return itemFilter.getItemStacks();
 	}
 
 	@Override
-	public void highlightStacks(@Nonnull Collection<ItemStack> stacks) {
+	public void highlightStacks(Collection<ItemStack> stacks) {
 		highlightedStacks.clear();
 		highlightedStacks.addAll(stacks);
 	}

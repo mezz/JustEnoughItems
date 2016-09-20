@@ -1,7 +1,6 @@
 package mezz.jei.plugins.jei.description;
 
-import javax.annotation.Nonnull;
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,14 +15,11 @@ import net.minecraft.item.ItemStack;
 
 public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 	private static final int lineSpacing = 2;
-	@Nonnull
 	private final List<String> description;
-	@Nonnull
 	private final List<ItemStack> itemStacks;
-	@Nonnull
 	private final IDrawable slotDrawable;
 
-	public static List<ItemDescriptionRecipe> create(@Nonnull List<ItemStack> itemStacks, String... descriptionKeys) {
+	public static List<ItemDescriptionRecipe> create(List<ItemStack> itemStacks, String... descriptionKeys) {
 		List<ItemDescriptionRecipe> recipes = new ArrayList<ItemDescriptionRecipe>();
 
 		List<String> descriptionLines = translateDescriptionLines(descriptionKeys);
@@ -45,7 +41,6 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 		return recipes;
 	}
 
-	@Nonnull
 	private static List<String> translateDescriptionLines(String... descriptionKeys) {
 		List<String> descriptionLines = new ArrayList<String>();
 		for (String descriptionKey : descriptionKeys) {
@@ -55,8 +50,7 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 		return descriptionLines;
 	}
 
-	@Nonnull
-	private static List<String> expandNewlines(@Nonnull List<String> descriptionLines) {
+	private static List<String> expandNewlines(List<String> descriptionLines) {
 		List<String> descriptionLinesExpanded = new ArrayList<String>();
 		for (String descriptionLine : descriptionLines) {
 			String[] descriptionLineExpanded = descriptionLine.split("\\\\n");
@@ -65,8 +59,7 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 		return descriptionLinesExpanded;
 	}
 
-	@Nonnull
-	private static List<String> wrapDescriptionLines(@Nonnull List<String> descriptionLines) {
+	private static List<String> wrapDescriptionLines(List<String> descriptionLines) {
 		Minecraft minecraft = Minecraft.getMinecraft();
 		List<String> descriptionLinesWrapped = new ArrayList<String>();
 		for (String descriptionLine : descriptionLines) {
@@ -76,26 +69,24 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 		return descriptionLinesWrapped;
 	}
 
-	private ItemDescriptionRecipe(@Nonnull List<ItemStack> itemStacks, @Nonnull List<String> description) {
+	private ItemDescriptionRecipe(List<ItemStack> itemStacks, List<String> description) {
 		this.description = description;
 		this.itemStacks = itemStacks;
 		this.slotDrawable = Internal.getHelpers().getGuiHelper().getSlotDrawable();
 	}
 
-	@Nonnull
 	@Override
 	public List<ItemStack> getInputs() {
 		return itemStacks;
 	}
 
-	@Nonnull
 	@Override
 	public List<ItemStack> getOutputs() {
 		return itemStacks;
 	}
 
 	@Override
-	public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
+	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 		int xPos = (recipeWidth - slotDrawable.getWidth()) / 2;
 		int yPos = 0;
 		slotDrawable.draw(minecraft, xPos, yPos);
@@ -108,7 +99,6 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 		}
 	}
 
-	@Nonnull
 	public List<String> getDescription() {
 		return description;
 	}

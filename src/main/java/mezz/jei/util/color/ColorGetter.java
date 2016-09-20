@@ -1,8 +1,7 @@
 package mezz.jei.util.color;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,13 +67,11 @@ public class ColorGetter {
 
 	}
 
-	@Nonnull
 	public static String[] getColorDefaults() {
 		return defaultColors;
 	}
 
-	@Nonnull
-	public static List<Color> getColors(@Nonnull ItemStack itemStack, int colorCount) {
+	public static List<Color> getColors(ItemStack itemStack, int colorCount) {
 		final Item item = itemStack.getItem();
 		if (item == null) {
 			return Collections.emptyList();
@@ -90,8 +87,7 @@ public class ColorGetter {
 		}
 	}
 
-	@Nonnull
-	private static List<Color> getColors(@Nonnull ItemStack itemStack, @Nonnull Item item, int colorCount) {
+	private static List<Color> getColors(ItemStack itemStack, Item item, int colorCount) {
 		final ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
 		final int renderColor = itemColors.getColorFromItemstack(itemStack, 0);
 		final TextureAtlasSprite textureAtlasSprite = getTextureAtlasSprite(itemStack);
@@ -101,8 +97,7 @@ public class ColorGetter {
 		return getColors(textureAtlasSprite, renderColor, colorCount);
 	}
 
-	@Nonnull
-	private static List<Color> getColors(@Nonnull ItemStack itemStack, @Nonnull Block block, int colorCount) {
+	private static List<Color> getColors(ItemStack itemStack, Block block, int colorCount) {
 		final int meta = itemStack.getMetadata();
 		IBlockState blockState;
 		try {
@@ -122,8 +117,7 @@ public class ColorGetter {
 		return getColors(textureAtlasSprite, renderColor, colorCount);
 	}
 
-	@Nonnull
-	private static List<Color> getColors(@Nonnull TextureAtlasSprite textureAtlasSprite, int renderColor, int colorCount) {
+	private static List<Color> getColors(TextureAtlasSprite textureAtlasSprite, int renderColor, int colorCount) {
 		final BufferedImage bufferedImage = getBufferedImage(textureAtlasSprite);
 		if (bufferedImage == null) {
 			return Collections.emptyList();
@@ -146,7 +140,7 @@ public class ColorGetter {
 	}
 
 	@Nullable
-	private static BufferedImage getBufferedImage(@Nonnull TextureAtlasSprite textureAtlasSprite) {
+	private static BufferedImage getBufferedImage(TextureAtlasSprite textureAtlasSprite) {
 		final int iconWidth = textureAtlasSprite.getIconWidth();
 		final int iconHeight = textureAtlasSprite.getIconHeight();
 		final int frameCount = textureAtlasSprite.getFrameCount();

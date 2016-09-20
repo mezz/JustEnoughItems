@@ -1,6 +1,5 @@
 package mezz.jei.util;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
@@ -8,8 +7,9 @@ import java.util.Locale;
 
 import com.google.common.base.Joiner;
 import mezz.jei.Internal;
-import mezz.jei.ItemRegistry;
+import mezz.jei.api.IItemRegistry;
 import mezz.jei.config.Config;
+import mezz.jei.util.color.ColorNamer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
@@ -24,25 +24,18 @@ import net.minecraftforge.oredict.OreDictionary;
  * For getting properties of ItemStacks efficiently
  */
 public class ItemStackElement {
-	@Nonnull
 	private final ItemStack itemStack;
-	@Nonnull
 	private final String searchString;
-	@Nonnull
 	private final String modNameString;
-	@Nonnull
 	private final String tooltipString;
-	@Nonnull
 	private final String oreDictString;
-	@Nonnull
 	private final String creativeTabsString;
-	@Nonnull
 	private final String colorString;
 
 	@Nullable
-	public static ItemStackElement create(@Nonnull ItemStack itemStack) {
+	public static ItemStackElement create(ItemStack itemStack, IItemRegistry itemRegistry) {
 		try {
-			return new ItemStackElement(itemStack);
+			return new ItemStackElement(itemStack, itemRegistry);
 		} catch (RuntimeException e) {
 			try {
 				String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
@@ -54,7 +47,7 @@ public class ItemStackElement {
 		}
 	}
 
-	private ItemStackElement(@Nonnull ItemStack itemStack) {
+	private ItemStackElement(ItemStack itemStack, IItemRegistry itemRegistry) {
 		this.itemStack = itemStack;
 		Item item = itemStack.getItem();
 
@@ -66,7 +59,6 @@ public class ItemStackElement {
 		}
 
 		String modId = itemResourceLocation.getResourceDomain().toLowerCase(Locale.ENGLISH);
-		ItemRegistry itemRegistry = Internal.getItemRegistry();
 		String modName = itemRegistry.getModNameForModId(modId).toLowerCase(Locale.ENGLISH);
 
 		String displayName = itemStack.getDisplayName();
@@ -83,9 +75,11 @@ public class ItemStackElement {
 			List<String> tooltip = itemStack.getTooltip(player, false);
 			tooltipString = Joiner.on(' ').join(tooltip).toLowerCase();
 			tooltipString = TextFormatting.getTextWithoutFormattingCodes(tooltipString);
-			tooltipString = tooltipString.replace(modId, "");
-			tooltipString = tooltipString.replace(modName, "");
-			tooltipString = tooltipString.replace(displayName, "");
+			if (tooltipString != null) {
+				tooltipString = tooltipString.replace(modId, "");
+				tooltipString = tooltipString.replace(modName, "");
+				tooltipString = tooltipString.replace(displayName, "");
+			}
 		} catch (RuntimeException ignored) {
 			tooltipString = "";
 		} catch (LinkageError ignored) {
@@ -140,11 +134,15 @@ public class ItemStackElement {
 		this.searchString = searchStringBuilder.toString();
 	}
 
-	@Nonnull
 	private static String getColorString(ItemStack itemStack) {
+		ColorNamer colorNamer = Internal.getColorNamer();
+		if (colorNamer == null) {
+			return "";
+		}
+
 		final Collection<String> colorNames;
 		try {
-			colorNames = Internal.getColorNamer().getColorNames(itemStack);
+			colorNames = colorNamer.getColorNames(itemStack);
 		} catch (RuntimeException ignored) {
 			return "";
 		} catch (LinkageError ignored) {
@@ -154,37 +152,30 @@ public class ItemStackElement {
 		return Joiner.on(' ').join(colorNames).toLowerCase();
 	}
 
-	@Nonnull
 	public ItemStack getItemStack() {
 		return itemStack;
 	}
 
-	@Nonnull
 	public String getSearchString() {
 		return searchString;
 	}
 
-	@Nonnull
 	public String getModNameString() {
 		return modNameString;
 	}
 
-	@Nonnull
 	public String getTooltipString() {
 		return tooltipString;
 	}
 
-	@Nonnull
 	public String getOreDictString() {
 		return oreDictString;
 	}
 
-	@Nonnull
 	public String getCreativeTabsString() {
 		return creativeTabsString;
 	}
 
-	@Nonnull
 	public String getColorString() {
 		return colorString;
 	}

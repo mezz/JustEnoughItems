@@ -6,8 +6,6 @@ import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IRecipeLayout;
 import net.minecraft.client.Minecraft;
 
-import javax.annotation.Nonnull;
-
 /**
  * Defines a category of recipe, (i.e. Crafting Table Recipe, Furnace Recipe).
  * Handles setting up the GUI for its recipe category in {@link #setRecipe(IRecipeLayout, IRecipeWrapper)}.
@@ -24,20 +22,17 @@ public interface IRecipeCategory<T extends IRecipeWrapper> {
 	 * @see IRecipeHandler#getRecipeCategoryUid(Object)
 	 * @see VanillaRecipeCategoryUid
 	 */
-	@Nonnull
 	String getUid();
 
 	/**
 	 * Returns the localized name for this recipe type.
 	 * Drawn at the top of the recipe GUI pages for this category.
 	 */
-	@Nonnull
 	String getTitle();
 
 	/**
 	 * Returns the drawable background for a single recipe in this category.
 	 */
-	@Nonnull
 	IDrawable getBackground();
 
 	/**
@@ -45,7 +40,7 @@ public interface IRecipeCategory<T extends IRecipeWrapper> {
 	 * @see IDrawable for a simple class for drawing things.
 	 * @see IGuiHelper for useful functions.
 	 */
-	void drawExtras(@Nonnull Minecraft minecraft);
+	void drawExtras(Minecraft minecraft);
 
 	/**
 	 * Draw any animations like progress bars or flashy effects.
@@ -53,11 +48,11 @@ public interface IRecipeCategory<T extends IRecipeWrapper> {
 	 * @see IDrawableAnimated for a simple class for drawing animated things.
 	 * @see IGuiHelper for useful functions.
 	 */
-	void drawAnimations(@Nonnull Minecraft minecraft);
+	void drawAnimations(Minecraft minecraft);
 
 	/**
 	 * Set the {@link IRecipeLayout} properties from the {@link IRecipeWrapper}.
 	 */
-	void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull T recipeWrapper);
+	void setRecipe(IRecipeLayout recipeLayout, T recipeWrapper);
 
 }

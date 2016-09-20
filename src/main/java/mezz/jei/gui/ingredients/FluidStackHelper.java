@@ -1,6 +1,6 @@
 package mezz.jei.gui.ingredients;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 import mezz.jei.api.recipe.IFocus;
@@ -14,7 +14,8 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	}
 
 	@Override
-	public FluidStack getMatch(Iterable<FluidStack> ingredients, @Nonnull IFocus<FluidStack> toMatch) {
+	@Nullable
+	public FluidStack getMatch(Iterable<FluidStack> ingredients, IFocus<FluidStack> toMatch) {
 		if (toMatch.getValue() == null) {
 			return null;
 		}
@@ -26,9 +27,8 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		return null;
 	}
 
-	@Nonnull
 	@Override
-	public Focus<FluidStack> createFocus(@Nonnull FluidStack ingredient) {
+	public Focus<FluidStack> createFocus(FluidStack ingredient) {
 		return new Focus<FluidStack>(ingredient);
 	}
 }

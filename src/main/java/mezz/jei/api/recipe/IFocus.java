@@ -1,6 +1,5 @@
 package mezz.jei.api.recipe;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import mezz.jei.api.gui.IGuiIngredient;
@@ -30,6 +29,5 @@ public interface IFocus<V> {
 	 * When a player looks up the uses for an item, that item is an {@link Mode#INPUT} focus.
 	 * When the mode is {@link Mode#NONE} there is no focus, the recipe is being browsed as part of a category.
 	 */
-	@Nonnull
 	Mode getMode();
 }

@@ -1,13 +1,13 @@
 package mezz.jei.gui;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.RecipeRegistry;
 import mezz.jei.api.IRecipesGui;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IFocus;
@@ -43,14 +43,15 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	private static final int buttonWidth = 13;
 	private static final int buttonHeight = 12;
 
+	private final RecipeRegistry recipeRegistry;
+
 	private int titleHeight;
 	private int headerHeight;
 
 	/* Internal logic for the gui, handles finding recipes */
-	private final IRecipeGuiLogic logic = new RecipeGuiLogic();
+	private final IRecipeGuiLogic logic;
 
 	/* List of RecipeLayout to display */
-	@Nonnull
 	private final List<RecipeLayout> recipeLayouts = new ArrayList<RecipeLayout>();
 
 	private String pageString;
@@ -72,7 +73,9 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	private int guiLeft;
 	private int guiTop;
 
-	public RecipesGui() {
+	public RecipesGui(RecipeRegistry recipeRegistry) {
+		this.recipeRegistry = recipeRegistry;
+		this.logic = new RecipeGuiLogic(recipeRegistry);
 		this.mc = Minecraft.getMinecraft();
 	}
 
@@ -312,7 +315,9 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			Log.error("Null focus", new NullPointerException());
 			return;
 		}
-		showRecipes(new MasterFocus(focus));
+
+		MasterFocus masterFocus = new MasterFocus(recipeRegistry, focus);
+		showRecipes(masterFocus);
 	}
 
 	@Override
@@ -321,15 +326,17 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			Log.error("Null focus", new NullPointerException());
 			return;
 		}
-		showRecipes(new MasterFocus(focus));
-	}
 
-	public void showRecipes(@Nonnull IFocus<?> focus) {
-		MasterFocus masterFocus = MasterFocus.create(focus);
+		MasterFocus masterFocus = new MasterFocus(recipeRegistry, focus);
 		showRecipes(masterFocus);
 	}
 
-	public void showRecipes(@Nonnull MasterFocus masterFocus) {
+	public void showRecipes(IFocus<?> focus) {
+		MasterFocus masterFocus = MasterFocus.create(recipeRegistry, focus);
+		showRecipes(masterFocus);
+	}
+
+	public void showRecipes(MasterFocus masterFocus) {
 		masterFocus.setMode(IFocus.Mode.OUTPUT);
 		if (logic.setFocus(masterFocus)) {
 			open();
@@ -342,7 +349,9 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			Log.error("Null focus", new NullPointerException());
 			return;
 		}
-		showUses(new MasterFocus(focus));
+
+		MasterFocus masterFocus = new MasterFocus(recipeRegistry, focus);
+		showUses(masterFocus);
 	}
 
 	@Override
@@ -351,15 +360,17 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			Log.error("Null focus", new NullPointerException());
 			return;
 		}
-		showUses(new MasterFocus(focus));
-	}
 
-	public void showUses(@Nonnull IFocus<?> focus) {
-		MasterFocus masterFocus = MasterFocus.create(focus);
+		MasterFocus masterFocus = new MasterFocus(recipeRegistry, focus);
 		showUses(masterFocus);
 	}
 
-	public void showUses(@Nonnull MasterFocus focus) {
+	public void showUses(IFocus<?> focus) {
+		MasterFocus masterFocus = MasterFocus.create(recipeRegistry, focus);
+		showUses(masterFocus);
+	}
+
+	public void showUses(MasterFocus focus) {
 		focus.setMode(IFocus.Mode.INPUT);
 		if (logic.setFocus(focus)) {
 			open();
@@ -388,7 +399,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	}
 
 	@Override
-	protected void actionPerformed(@Nonnull GuiButton guibutton) {
+	protected void actionPerformed(GuiButton guibutton) {
 		boolean updateLayout = true;
 
 		if (guibutton.id == nextPage.id) {

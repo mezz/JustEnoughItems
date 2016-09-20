@@ -7,6 +7,7 @@ import mezz.jei.gui.RecipesGui;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
@@ -23,7 +24,12 @@ public class JEIModConfigGui extends GuiConfig {
 	/** Don't return to a RecipesGui, it will not be valid after configs are changed. */
 	private static GuiScreen getParent(GuiScreen parent) {
 		if (parent instanceof RecipesGui) {
-			return ((RecipesGui) parent).getParentScreen();
+			GuiScreen parentScreen = ((RecipesGui) parent).getParentScreen();
+			if (parentScreen != null) {
+				return parentScreen;
+			} else {
+				return new GuiInventory(parent.mc.thePlayer);
+			}
 		}
 		return parent;
 	}

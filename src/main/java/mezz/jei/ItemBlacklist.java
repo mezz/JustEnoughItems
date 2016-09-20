@@ -1,6 +1,5 @@
 package mezz.jei;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.List;
@@ -12,7 +11,6 @@ import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 
 public class ItemBlacklist implements IItemBlacklist {
-	@Nonnull
 	private final Set<String> itemBlacklist = new HashSet<String>();
 
 	@Override

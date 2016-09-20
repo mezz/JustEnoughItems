@@ -1,6 +1,5 @@
 package mezz.jei.gui;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,16 +22,11 @@ import net.minecraft.util.ResourceLocation;
  * The area drawn on top of the {@link RecipesGui} that shows which items can craft the current recipe category.
  */
 public class RecipeCategoryCraftingItemsArea implements IShowsRecipeFocuses {
-	@Nonnull
 	private final IDrawable leftDrawable;
-	@Nonnull
 	private final IDrawable spacerDrawable;
-	@Nonnull
 	private final IDrawable rightDrawable;
-	@Nonnull
 	private final IDrawable boxDrawable;
 
-	@Nonnull
 	private GuiItemStackGroup craftingItems = new GuiItemStackGroup(new Focus<ItemStack>(null));
 	private int left = 0;
 	private int top = 0;
@@ -47,7 +41,7 @@ public class RecipeCategoryCraftingItemsArea implements IShowsRecipeFocuses {
 		boxDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 40, 18, 25);
 	}
 
-	public void updateLayout(@Nonnull Collection<ItemStack> itemStacks, @Nonnull GuiProperties guiProperties) {
+	public void updateLayout(Collection<ItemStack> itemStacks, GuiProperties guiProperties) {
 		craftingItems = new GuiItemStackGroup(new Focus<ItemStack>(null));
 
 		if (!itemStacks.isEmpty()) {
@@ -83,7 +77,7 @@ public class RecipeCategoryCraftingItemsArea implements IShowsRecipeFocuses {
 	}
 
 	@Nullable
-	public GuiIngredient<ItemStack> draw(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+	public GuiIngredient<ItemStack> draw(Minecraft minecraft, int mouseX, int mouseY) {
 		int ingredientCount = craftingItems.getGuiIngredients().keySet().size();
 		if (ingredientCount > 0) {
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

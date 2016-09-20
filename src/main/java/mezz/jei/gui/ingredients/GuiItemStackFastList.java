@@ -1,6 +1,5 @@
 package mezz.jei.gui.ingredients;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +95,7 @@ public class GuiItemStackFastList {
 
 	/** renders all ItemStacks and returns hovered gui item stack for later render pass */
 	@Nullable
-	public GuiItemStackFast render(@Nonnull Minecraft minecraft, boolean isMouseOver, int mouseX, int mouseY) {
+	public GuiItemStackFast render(Minecraft minecraft, boolean isMouseOver, int mouseX, int mouseY) {
 		GuiItemStackFast hovered = null;
 		if (isMouseOver) {
 			hovered = getHovered(mouseX, mouseY);

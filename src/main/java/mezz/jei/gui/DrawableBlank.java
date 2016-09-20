@@ -1,11 +1,8 @@
 package mezz.jei.gui;
 
-import javax.annotation.Nonnull;
-
-import net.minecraft.client.Minecraft;
-
 import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
+import net.minecraft.client.Minecraft;
 
 public class DrawableBlank implements IDrawableStatic, IDrawableAnimated {
 	private final int width;
@@ -27,17 +24,17 @@ public class DrawableBlank implements IDrawableStatic, IDrawableAnimated {
 	}
 
 	@Override
-	public void draw(@Nonnull Minecraft minecraft, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
+	public void draw(Minecraft minecraft, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
 
 	}
 
 	@Override
-	public void draw(@Nonnull Minecraft minecraft) {
+	public void draw(Minecraft minecraft) {
 
 	}
 
 	@Override
-	public void draw(@Nonnull Minecraft minecraft, int xOffset, int yOffset) {
+	public void draw(Minecraft minecraft, int xOffset, int yOffset) {
 
 	}
 }

@@ -226,8 +226,7 @@ public class MMCQ {
 	 * Histo (1-d array, giving the number of pixels in each quantized region of
 	 * color space), or null on error.
 	 */
-	@Nonnull
-	private static int[] getHisto(@Nonnull int[][] pixels) {
+	private static int[] getHisto(int[][] pixels) {
 		int[] histo = new int[HISTOSIZE];
 		int index, rval, gval, bval;
 
@@ -243,8 +242,7 @@ public class MMCQ {
 		return histo;
 	}
 
-	@Nonnull
-	private static VBox vboxFromPixels(@Nonnull int[][] pixels, int[] histo) {
+	private static VBox vboxFromPixels(int[][] pixels, int[] histo) {
 		int rmin = 1000000, rmax = 0;
 		int gmin = 1000000, gmax = 0;
 		int bmin = 1000000, bmax = 0;
@@ -281,7 +279,7 @@ public class MMCQ {
 		return new VBox(rmin, rmax, gmin, gmax, bmin, bmax, histo);
 	}
 
-	private static VBox[] medianCutApply(int[] histo, @Nonnull VBox vbox) {
+	private static VBox[] medianCutApply(int[] histo, VBox vbox) {
 		if (vbox.count(false) == 0) {
 			return null;
 		}
@@ -355,8 +353,7 @@ public class MMCQ {
 				: doCut('b', vbox, partialsum, lookaheadsum, total);
 	}
 
-	@Nonnull
-	private static VBox[] doCut(char color, @Nonnull VBox vbox, int[] partialsum, int[] lookaheadsum, int total) {
+	private static VBox[] doCut(char color, VBox vbox, int[] partialsum, int[] lookaheadsum, int total) {
 		int vbox_dim1;
 		int vbox_dim2;
 
@@ -422,7 +419,7 @@ public class MMCQ {
 	}
 
 	@Nullable
-	public static CMap quantize(@Nonnull int[][] pixels, int maxcolors) {
+	public static CMap quantize(int[][] pixels, int maxcolors) {
 		// short-circuit
 		if (pixels.length == 0 || maxcolors < 1 || maxcolors > 256) {
 			return null;
@@ -463,7 +460,7 @@ public class MMCQ {
 	/**
 	 * Inner function to do the iteration.
 	 */
-	private static void iter(@Nonnull List<VBox> lh, Comparator<VBox> comparator, int target, int[] histo) {
+	private static void iter(List<VBox> lh, Comparator<VBox> comparator, int target, int[] histo) {
 		int ncolors = 1;
 		int niters = 0;
 		VBox vbox;
@@ -505,14 +502,14 @@ public class MMCQ {
 
 	private static final Comparator<VBox> COMPARATOR_COUNT = new Comparator<VBox>() {
 		@Override
-		public int compare(@Nonnull VBox a, @Nonnull VBox b) {
+		public int compare(VBox a, VBox b) {
 			return a.count(false) - b.count(false);
 		}
 	};
 
 	private static final Comparator<VBox> COMPARATOR_PRODUCT = new Comparator<VBox>() {
 		@Override
-		public int compare(@Nonnull VBox a, @Nonnull VBox b) {
+		public int compare(VBox a, VBox b) {
 			int aCount = a.count(false);
 			int bCount = b.count(false);
 			int aVolume = a.volume(false);

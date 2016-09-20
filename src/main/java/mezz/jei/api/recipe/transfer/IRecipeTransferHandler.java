@@ -1,12 +1,10 @@
 package mezz.jei.api.recipe.transfer;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import mezz.jei.api.gui.IRecipeLayout;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
-
-import mezz.jei.api.gui.IRecipeLayout;
 
 /**
  * A recipe transfer handler moves items into a crafting area, based on the items in a recipe.
@@ -37,5 +35,5 @@ public interface IRecipeTransferHandler<C extends Container> {
 	 * @since JEI 2.20.0
 	 */
 	@Nullable
-	IRecipeTransferError transferRecipe(@Nonnull C container, @Nonnull IRecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean maxTransfer, boolean doTransfer);
+	IRecipeTransferError transferRecipe(C container, IRecipeLayout recipeLayout, EntityPlayer player, boolean maxTransfer, boolean doTransfer);
 }

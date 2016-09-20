@@ -1,6 +1,5 @@
 package mezz.jei.plugins.vanilla.brewing;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,7 +28,6 @@ import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
 public class BrewingRecipeMaker {
 	private static final Set<Class> unhandledRecipeClasses = new HashSet<Class>();
 
-	@Nonnull
 	public static List<BrewingRecipeWrapper> getBrewingRecipes(IItemRegistry itemRegistry) {
 		Set<BrewingRecipeWrapper> recipes = new HashSet<BrewingRecipeWrapper>();
 

@@ -1,19 +1,17 @@
 package mezz.jei.plugins.vanilla.crafting;
 
+import java.util.Collections;
+import java.util.List;
+
 import mezz.jei.api.IGuiHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
-import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.List;
-
 public class ShapelessOreRecipeWrapper extends AbstractShapelessRecipeWrapper {
 
-	@Nonnull
 	private final ShapelessOreRecipe recipe;
 
-	public ShapelessOreRecipeWrapper(@Nonnull IGuiHelper guiHelper, @Nonnull ShapelessOreRecipe recipe) {
+	public ShapelessOreRecipeWrapper(IGuiHelper guiHelper, ShapelessOreRecipe recipe) {
 		super(guiHelper);
 		this.recipe = recipe;
 		for (Object input : this.recipe.getInput()) {
@@ -26,13 +24,11 @@ public class ShapelessOreRecipeWrapper extends AbstractShapelessRecipeWrapper {
 		}
 	}
 
-	@Nonnull
 	@Override
 	public List getInputs() {
 		return recipe.getInput();
 	}
 
-	@Nonnull
 	@Override
 	public List<ItemStack> getOutputs() {
 		return Collections.singletonList(recipe.getRecipeOutput());

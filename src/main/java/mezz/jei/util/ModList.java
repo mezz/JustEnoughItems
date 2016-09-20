@@ -1,6 +1,5 @@
 package mezz.jei.util;
 
-import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -25,8 +24,7 @@ public class ModList {
 		}
 	}
 
-	@Nonnull
-	public String getModNameForItem(@Nonnull Item item) {
+	public String getModNameForItem(Item item) {
 		ResourceLocation itemResourceLocation = item.getRegistryName();
 		if (itemResourceLocation == null) {
 			String stackInfo = ErrorUtil.getItemStackInfo(new ItemStack(item));
@@ -36,8 +34,7 @@ public class ModList {
 		return getModNameForModId(modId);
 	}
 
-	@Nonnull
-	public String getModNameForModId(@Nonnull String modId) {
+	public String getModNameForModId(String modId) {
 		String lowercaseModId = modId.toLowerCase(Locale.ENGLISH);
 		String modName = modNamesForIds.get(lowercaseModId);
 		if (modName == null) {

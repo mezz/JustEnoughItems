@@ -1,5 +1,9 @@
 package mezz.jei.gui.ingredients;
 
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.List;
+
 import mezz.jei.Internal;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -8,11 +12,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.List;
-
 public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	private static final String oreDictionaryIngredient = Translator.translateToLocal("jei.tooltip.recipe.ore.dict");
 
@@ -20,12 +19,12 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	private String oreDictEquivalent;
 
 	@Override
-	public void setIngredients(@Nonnull Collection<ItemStack> itemStacks) {
+	public void setIngredients(Collection<ItemStack> itemStacks) {
 		oreDictEquivalent = Internal.getStackHelper().getOreDictEquivalent(itemStacks);
 	}
 
 	@Override
-	public void draw(@Nonnull Minecraft minecraft, int xPosition, int yPosition, @Nullable ItemStack itemStack) {
+	public void draw(Minecraft minecraft, int xPosition, int yPosition, @Nullable ItemStack itemStack) {
 		if (itemStack == null) {
 			return;
 		}
@@ -37,9 +36,8 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 		GlStateManager.disableBlend();
 	}
 
-	@Nonnull
 	@Override
-	public List<String> getTooltip(@Nonnull Minecraft minecraft, @Nonnull ItemStack itemStack) {
+	public List<String> getTooltip(Minecraft minecraft, ItemStack itemStack) {
 		List<String> list = itemStack.getTooltip(minecraft.thePlayer, minecraft.gameSettings.advancedItemTooltips);
 		for (int k = 0; k < list.size(); ++k) {
 			if (k == 0) {
@@ -58,7 +56,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	}
 
 	@Override
-	public FontRenderer getFontRenderer(@Nonnull Minecraft minecraft, @Nonnull ItemStack itemStack) {
+	public FontRenderer getFontRenderer(Minecraft minecraft, ItemStack itemStack) {
 		FontRenderer fontRenderer = itemStack.getItem().getFontRenderer(itemStack);
 		if (fontRenderer == null) {
 			fontRenderer = minecraft.fontRendererObj;

@@ -1,6 +1,5 @@
 package mezz.jei.util;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,9 +22,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 
 public class ModRegistry implements IModRegistry {
-	@Nonnull
 	private final IJeiHelpers jeiHelpers;
-	@Nonnull
 	private final IItemRegistry itemRegistry;
 	private final List<IRecipeCategory> recipeCategories = new ArrayList<IRecipeCategory>();
 	private final List<IRecipeHandler> recipeHandlers = new ArrayList<IRecipeHandler>();
@@ -35,48 +32,67 @@ public class ModRegistry implements IModRegistry {
 	private final Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas = HashMultimap.create();
 	private final Multimap<String, ItemStack> craftItemsForCategories = HashMultimap.create();
 
-	public ModRegistry(@Nonnull IJeiHelpers jeiHelpers, @Nonnull IItemRegistry itemRegistry) {
+	public ModRegistry(IJeiHelpers jeiHelpers, IItemRegistry itemRegistry) {
 		this.jeiHelpers = jeiHelpers;
 		this.itemRegistry = itemRegistry;
 	}
 
-	@Nonnull
 	@Override
 	public IJeiHelpers getJeiHelpers() {
 		return jeiHelpers;
 	}
 
-	@Nonnull
 	@Override
 	public IItemRegistry getItemRegistry() {
 		return itemRegistry;
 	}
 
 	@Override
-	public void addRecipeCategories(IRecipeCategory... recipeCategories) {
-		Collections.addAll(this.recipeCategories, recipeCategories);
+	public void addRecipeCategories(@Nullable IRecipeCategory... recipeCategories) {
+		if (recipeCategories != null) {
+			Collections.addAll(this.recipeCategories, recipeCategories);
+		}
 	}
 
 	@Override
-	public void addRecipeHandlers(IRecipeHandler... recipeHandlers) {
-		Collections.addAll(this.recipeHandlers, recipeHandlers);
+	public void addRecipeHandlers(@Nullable IRecipeHandler... recipeHandlers) {
+		if (recipeHandlers != null) {
+			Collections.addAll(this.recipeHandlers, recipeHandlers);
+		}
 	}
 
 	@Override
-	public void addRecipes(List recipes) {
+	public void addRecipes(@Nullable List recipes) {
 		if (recipes != null) {
 			this.recipes.addAll(recipes);
 		}
 	}
 
 	@Override
-	public void addRecipeClickArea(@Nonnull Class<? extends GuiContainer> guiClass, int xPos, int yPos, int width, int height, @Nonnull String... recipeCategoryUids) {
+	public void addRecipeClickArea(@Nullable Class<? extends GuiContainer> guiClass, int xPos, int yPos, int width, int height, @Nullable String... recipeCategoryUids) {
+		if (guiClass == null) {
+			NullPointerException e = new NullPointerException();
+			Log.error("Tried to add a RecipeClickArea with null guiClass.", e);
+			return;
+		}
+
+		if (recipeCategoryUids == null) {
+			NullPointerException e = new NullPointerException();
+			Log.error("Tried to add a RecipeClickArea with null recipeCategoryUids.", e);
+			return;
+		}
+
+		if (recipeCategoryUids.length == 0) {
+			NullPointerException e = new NullPointerException();
+			Log.error("Tried to add a RecipeClickArea with empty list of recipeCategoryUids.", e);
+			return;
+		}
 		RecipeClickableArea recipeClickableArea = new RecipeClickableArea(yPos, yPos + height, xPos, xPos + width, recipeCategoryUids);
 		this.recipeClickableAreas.put(guiClass, recipeClickableArea);
 	}
 
 	@Override
-	public void addRecipeCategoryCraftingItem(@Nullable ItemStack craftingItem, @Nonnull String... recipeCategoryUids) {
+	public void addRecipeCategoryCraftingItem(@Nullable ItemStack craftingItem, @Nullable String... recipeCategoryUids) {
 		if (craftingItem == null) {
 			NullPointerException e = new NullPointerException();
 			Log.error("Tried to add a RecipeCategoryCraftingItem with null craftingItem.", e);
@@ -86,6 +102,18 @@ public class ModRegistry implements IModRegistry {
 		if (craftingItem.getItem() == null) {
 			NullPointerException e = new NullPointerException();
 			Log.error("Tried to add a RecipeCategoryCraftingItem with null item in the craftingItem.", e);
+			return;
+		}
+
+		if (recipeCategoryUids == null) {
+			NullPointerException e = new NullPointerException();
+			Log.error("Tried to add a RecipeCategoryCraftingItem with null recipeCategoryUids.", e);
+			return;
+		}
+
+		if (recipeCategoryUids.length == 0) {
+			NullPointerException e = new NullPointerException();
+			Log.error("Tried to add a RecipeCategoryCraftingItem with an empty list of recipeCategoryUids.", e);
 			return;
 		}
 
@@ -100,28 +128,38 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
-	public void addAdvancedGuiHandlers(@Nonnull IAdvancedGuiHandler<?>... advancedGuiHandlers) {
-		Collections.addAll(this.advancedGuiHandlers, advancedGuiHandlers);
+	public void addAdvancedGuiHandlers(@Nullable IAdvancedGuiHandler<?>... advancedGuiHandlers) {
+		if (advancedGuiHandlers != null) {
+			Collections.addAll(this.advancedGuiHandlers, advancedGuiHandlers);
+		}
 	}
 
 	@Override
-	public void addDescription(List<ItemStack> itemStacks, String... descriptionKeys) {
+	public void addDescription(@Nullable List<ItemStack> itemStacks, @Nullable String... descriptionKeys) {
 		if (itemStacks == null || itemStacks.size() == 0) {
 			IllegalArgumentException e = new IllegalArgumentException();
 			Log.error("Tried to add description with no itemStacks.", e);
 			return;
 		}
+
+		if (descriptionKeys == null) {
+			IllegalArgumentException e = new IllegalArgumentException();
+			Log.error("Tried to add a null descriptionKey for itemStacks {}.", itemStacks, e);
+			return;
+		}
+
 		if (descriptionKeys.length == 0) {
 			IllegalArgumentException e = new IllegalArgumentException();
 			Log.error("Tried to add an empty list of descriptionKeys for itemStacks {}.", itemStacks, e);
 			return;
 		}
+
 		List<ItemDescriptionRecipe> recipes = ItemDescriptionRecipe.create(itemStacks, descriptionKeys);
 		this.recipes.addAll(recipes);
 	}
 
 	@Override
-	public void addDescription(ItemStack itemStack, String... descriptionKeys) {
+	public void addDescription(@Nullable ItemStack itemStack, @Nullable String... descriptionKeys) {
 		addDescription(Collections.singletonList(itemStack), descriptionKeys);
 	}
 
@@ -130,12 +168,10 @@ public class ModRegistry implements IModRegistry {
 		return recipeTransferRegistry;
 	}
 
-	@Nonnull
 	public List<IAdvancedGuiHandler<?>> getAdvancedGuiHandlers() {
 		return advancedGuiHandlers;
 	}
 
-	@Nonnull
 	public RecipeRegistry createRecipeRegistry() {
 		List<IRecipeTransferHandler> recipeTransferHandlers = recipeTransferRegistry.getRecipeTransferHandlers();
 		return new RecipeRegistry(recipeCategories, recipeHandlers, recipeTransferHandlers, recipes, recipeClickableAreas, craftItemsForCategories);

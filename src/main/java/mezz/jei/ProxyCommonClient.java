@@ -1,6 +1,5 @@
 package mezz.jei;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -57,7 +56,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	}
 	
 	@Override
-	public void preInit(@Nonnull FMLPreInitializationEvent event) {
+	public void preInit(FMLPreInitializationEvent event) {
 		Config.preInit(event);
 		initVersionChecker();
 
@@ -78,7 +77,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	}
 
 	@Nullable
-	private IModPlugin getVanillaPlugin(@Nonnull List<IModPlugin> modPlugins) {
+	private IModPlugin getVanillaPlugin(List<IModPlugin> modPlugins) {
 		for (IModPlugin modPlugin : modPlugins) {
 			if (modPlugin instanceof VanillaPlugin) {
 				return modPlugin;
@@ -88,7 +87,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	}
 
 	@Nullable
-	private IModPlugin getJeiInternalPlugin(@Nonnull List<IModPlugin> modPlugins) {
+	private IModPlugin getJeiInternalPlugin(List<IModPlugin> modPlugins) {
 		for (IModPlugin modPlugin : modPlugins) {
 			if (modPlugin instanceof JEIInternalPlugin) {
 				return modPlugin;
@@ -98,7 +97,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	}
 
 	@Override
-	public void init(@Nonnull FMLInitializationEvent event) {
+	public void init(FMLInitializationEvent event) {
 		KeyBindings.init();
 		MinecraftForge.EVENT_BUS.register(this);
 
@@ -109,7 +108,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	}
 
 	@Override
-	public void postInit(@Nonnull FMLPostInitializationEvent event) {
+	public void postInit(FMLPostInitializationEvent event) {
 		// Reload when resources change
 		Minecraft minecraft = Minecraft.getMinecraft();
 		IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) minecraft.getResourceManager();
@@ -184,7 +183,7 @@ public class ProxyCommonClient extends ProxyCommon {
 
 		itemFilter = new ItemFilter(itemRegistry);
 		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter, advancedGuiHandlers);
-		RecipesGui recipesGui = new RecipesGui();
+		RecipesGui recipesGui = new RecipesGui(recipeRegistry);
 
 		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, itemListOverlay, recipesGui);
 		Internal.setRuntime(jeiRuntime);
@@ -231,7 +230,7 @@ public class ProxyCommonClient extends ProxyCommon {
 
 	// subscribe to event with low priority so that addon mods that use the config can do their stuff first
 	@SubscribeEvent(priority = EventPriority.LOW)
-	public void onConfigChanged(@Nonnull ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
+	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
 		if (!Constants.MOD_ID.equals(eventArgs.getModID())) {
 			return;
 		}

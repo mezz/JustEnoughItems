@@ -6,15 +6,11 @@ import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.BlankRecipeCategory;
-import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
-import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import net.minecraft.util.ResourceLocation;
-
-import javax.annotation.Nonnull;
 
 public class CraftingRecipeCategory extends BlankRecipeCategory<ICraftingRecipeWrapper> {
 
@@ -24,11 +20,8 @@ public class CraftingRecipeCategory extends BlankRecipeCategory<ICraftingRecipeW
 	public static final int width = 116;
 	public static final int height = 54;
 
-	@Nonnull
 	private final IDrawable background;
-	@Nonnull
 	private final String localizedName;
-	@Nonnull
 	private final ICraftingGridHelper craftingGridHelper;
 
 	public CraftingRecipeCategory(IGuiHelper guiHelper) {
@@ -39,25 +32,22 @@ public class CraftingRecipeCategory extends BlankRecipeCategory<ICraftingRecipeW
 	}
 
 	@Override
-	@Nonnull
 	public String getUid() {
 		return VanillaRecipeCategoryUid.CRAFTING;
 	}
 
-	@Nonnull
 	@Override
 	public String getTitle() {
 		return localizedName;
 	}
 
 	@Override
-	@Nonnull
 	public IDrawable getBackground() {
 		return background;
 	}
 
 	@Override
-	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull ICraftingRecipeWrapper recipeWrapper) {
+	public void setRecipe(IRecipeLayout recipeLayout, ICraftingRecipeWrapper recipeWrapper) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		guiItemStacks.init(craftOutputSlot, false, 94, 18);

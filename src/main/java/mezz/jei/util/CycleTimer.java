@@ -1,5 +1,6 @@
 package mezz.jei.util;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiScreen;
@@ -17,6 +18,7 @@ public class CycleTimer {
 		this.drawTime = time;
 	}
 
+	@Nullable
 	public <T> T getCycledItem(List<T> list) {
 		if (list.isEmpty()) {
 			return null;

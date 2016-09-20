@@ -1,6 +1,5 @@
 package mezz.jei.api;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
@@ -19,7 +18,7 @@ public interface IRecipesGui {
 	 *
 	 * @param focus the {@link ItemStack} result.
 	 */
-	void showRecipes(@Nonnull ItemStack focus);
+	void showRecipes(ItemStack focus);
 
 	/**
 	 * Show recipes for a {@link FluidStack}.
@@ -27,7 +26,7 @@ public interface IRecipesGui {
 	 *
 	 * @param focus the {@link FluidStack} result.
 	 */
-	void showRecipes(@Nonnull FluidStack focus);
+	void showRecipes(FluidStack focus);
 
 	/**
 	 * Show recipes that use an {@link ItemStack} as an ingredient.
@@ -35,7 +34,7 @@ public interface IRecipesGui {
 	 *
 	 * @param focus the {@link ItemStack} ingredient.
 	 */
-	void showUses(@Nonnull ItemStack focus);
+	void showUses(ItemStack focus);
 
 	/**
 	 * Show recipes that use a {@link FluidStack} as an ingredient.
@@ -43,12 +42,12 @@ public interface IRecipesGui {
 	 *
 	 * @param focus the {@link FluidStack} ingredient.
 	 */
-	void showUses(@Nonnull FluidStack focus);
+	void showUses(FluidStack focus);
 
 	/**
 	 * Show entire categories of recipes.
 	 *
 	 * @param recipeCategoryUids a list of categories to display, in order. Must not be empty.
 	 */
-	void showCategories(@Nonnull List<String> recipeCategoryUids);
+	void showCategories(List<String> recipeCategoryUids);
 }

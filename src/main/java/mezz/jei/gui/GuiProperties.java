@@ -1,13 +1,11 @@
 package mezz.jei.gui;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
 public class GuiProperties {
-	@Nonnull
 	private final Class guiClass;
 	private final int guiLeft;
 	private final int guiTop;
@@ -17,7 +15,7 @@ public class GuiProperties {
 	private final int screenHeight;
 
 	@Nullable
-	public static GuiProperties create(@Nonnull GuiScreen guiScreen) {
+	public static GuiProperties create(GuiScreen guiScreen) {
 		if (guiScreen instanceof RecipesGui) {
 			return create((RecipesGui) guiScreen);
 		} else if (guiScreen instanceof GuiContainer) {
@@ -27,8 +25,7 @@ public class GuiProperties {
 		}
 	}
 
-	@Nonnull
-	public static GuiProperties create(@Nonnull GuiContainer guiContainer) {
+	public static GuiProperties create(GuiContainer guiContainer) {
 		return new GuiProperties(
 				guiContainer.getClass(),
 				guiContainer.guiLeft,
@@ -40,8 +37,7 @@ public class GuiProperties {
 		);
 	}
 
-	@Nonnull
-	public static GuiProperties create(@Nonnull RecipesGui recipesGui) {
+	public static GuiProperties create(RecipesGui recipesGui) {
 		return new GuiProperties(
 				recipesGui.getClass(),
 				recipesGui.getGuiLeft(),
@@ -53,7 +49,7 @@ public class GuiProperties {
 		);
 	}
 
-	private GuiProperties(@Nonnull Class guiClass, int guiLeft, int guiTop, int guiXSize, int guiYSize, int screenWidth, int screenHeight) {
+	private GuiProperties(Class guiClass, int guiLeft, int guiTop, int guiXSize, int guiYSize, int screenWidth, int screenHeight) {
 		this.guiClass = guiClass;
 		this.guiLeft = guiLeft;
 		this.guiTop = guiTop;
@@ -63,7 +59,6 @@ public class GuiProperties {
 		this.screenHeight = screenHeight;
 	}
 
-	@Nonnull
 	public Class getGuiClass() {
 		return guiClass;
 	}

@@ -1,7 +1,6 @@
 package mezz.jei.plugins.vanilla.brewing;
 
-import javax.annotation.Nonnull;
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,20 +46,18 @@ public class BrewingRecipeWrapper extends VanillaRecipeWrapper {
 				firstIngredient.getItem(), firstIngredient.getMetadata());
 	}
 
-	@Nonnull
 	@Override
 	public List getInputs() {
 		return inputs;
 	}
 
-	@Nonnull
 	@Override
 	public List<ItemStack> getOutputs() {
 		return Collections.singletonList(potionOutput);
 	}
 
 	@Override
-	public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
+	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 		if (brewingSteps > 0) {
 			String steps = Translator.translateToLocalFormatted("gui.jei.category.brewing.steps", brewingSteps);
 			minecraft.fontRendererObj.drawString(steps, 70, 28, Color.gray.getRGB());

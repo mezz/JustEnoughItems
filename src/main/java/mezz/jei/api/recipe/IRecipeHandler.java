@@ -1,7 +1,5 @@
 package mezz.jei.api.recipe;
 
-import javax.annotation.Nonnull;
-
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.IRecipeRegistry;
 
@@ -19,7 +17,6 @@ public interface IRecipeHandler<T> {
 	/**
 	 * Returns the class of the Recipe handled by this IRecipeHandler.
 	 */
-	@Nonnull
 	Class<T> getRecipeClass();
 
 	/**
@@ -28,7 +25,6 @@ public interface IRecipeHandler<T> {
 	 * @deprecated since 3.5.0. Use {@link #getRecipeCategoryUid(Object)}
 	 */
 	@Deprecated
-	@Nonnull
 	String getRecipeCategoryUid();
 
 	/**
@@ -39,17 +35,15 @@ public interface IRecipeHandler<T> {
 	 * @see IRecipeCategory#getUid()
 	 * @see VanillaRecipeCategoryUid
 	 */
-	@Nonnull
-	String getRecipeCategoryUid(@Nonnull T recipe);
+	String getRecipeCategoryUid(T recipe);
 
 	/**
 	 * Returns a recipe wrapper for the given recipe.
 	 */
-	@Nonnull
-	IRecipeWrapper getRecipeWrapper(@Nonnull T recipe);
+	IRecipeWrapper getRecipeWrapper(T recipe);
 
 	/**
 	 * Returns true if a recipe is valid and can be used.
 	 */
-	boolean isRecipeValid(@Nonnull T recipe);
+	boolean isRecipeValid(T recipe);
 }

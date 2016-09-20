@@ -1,6 +1,5 @@
 package mezz.jei.gui;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
@@ -20,7 +19,7 @@ public class RecipeTransferButton extends GuiButtonExt {
 		super(id, xPos, yPos, width, height, displayString);
 	}
 
-	public void init(@Nullable Container container, @Nonnull RecipeLayout recipeLayout, @Nonnull EntityPlayer player) {
+	public void init(@Nullable Container container, RecipeLayout recipeLayout, EntityPlayer player) {
 		this.recipeLayout = recipeLayout;
 
 		if (container != null) {

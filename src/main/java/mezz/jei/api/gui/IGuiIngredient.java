@@ -1,8 +1,7 @@
 package mezz.jei.api.gui;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Color;
 import java.util.Collection;
 import java.util.List;
 
@@ -28,7 +27,6 @@ public interface IGuiIngredient<T> {
 	 * All ingredient variations that can be shown.
 	 * For ingredients that rotate through several values, this will have them all even if a focus is set.
 	 */
-	@Nonnull
 	List<T> getAllIngredients();
 
 	/**
@@ -42,5 +40,5 @@ public interface IGuiIngredient<T> {
 	 *
 	 * @see IRecipeTransferHandlerHelper#createUserErrorForSlots(String, Collection).
 	 */
-	void drawHighlight(@Nonnull Minecraft minecraft, Color color, int xOffset, int yOffset);
+	void drawHighlight(Minecraft minecraft, Color color, int xOffset, int yOffset);
 }

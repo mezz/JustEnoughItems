@@ -1,6 +1,5 @@
 package mezz.jei;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +29,7 @@ import net.minecraft.item.ItemStack;
 public class ItemFilter {
 
 	/** A cache for fast searches while typing or using backspace. Maps filterText to filteredItemMaps */
-	@Nonnull
 	private final LoadingCache<String, ImmutableList<ItemStackElement>> filteredItemMapsCache;
-	@Nonnull
 	private final ImmutableList<ItemStackElement> baseList;
 
 	public ItemFilter(final IItemRegistry itemRegistry) {
@@ -50,7 +47,6 @@ public class ItemFilter {
 		this.filteredItemMapsCache.invalidateAll();
 	}
 
-	@Nonnull
 	public ImmutableList<ItemStackElement> getItemList() {
 		String[] filters = Config.getFilterText().split("\\|");
 
@@ -70,11 +66,9 @@ public class ItemFilter {
 	/**
 	 * {@link #getItemStacks()} is slow, so cache the previous value in case someone requests it often.
 	 */
-	@Nonnull
 	private ImmutableList<ItemStack> itemStacksCached = ImmutableList.of();
 	private String filterCached;
 
-	@Nonnull
 	public ImmutableList<ItemStack> getItemStacks() {
 		if (!Config.getFilterText().equals(filterCached)) {
 			ImmutableList.Builder<ItemStack> filteredStacks = ImmutableList.builder();
@@ -91,7 +85,6 @@ public class ItemFilter {
 		return getItemList().size();
 	}
 
-	@Nonnull
 	private static ImmutableList<ItemStackElement> createBaseList(IItemRegistry itemRegistry) {
 		ItemStackChecker itemStackChecker = new ItemStackChecker();
 
@@ -101,11 +94,11 @@ public class ItemFilter {
 				continue;
 			}
 
-			if (itemStackChecker.isItemStackHidden(itemStack)) {
+			if (itemStackChecker.isItemStackHidden(itemStack, itemRegistry)) {
 				continue;
 			}
 
-			ItemStackElement itemStackElement = ItemStackElement.create(itemStack);
+			ItemStackElement itemStackElement = ItemStackElement.create(itemStack, itemRegistry);
 			if (itemStackElement != null) {
 				baseList.add(itemStackElement);
 			}
@@ -115,7 +108,7 @@ public class ItemFilter {
 			int count = brokenItem.getCount();
 			if (count > 1) {
 				Item item = brokenItem.getElement();
-				String modName = Internal.getItemRegistry().getModNameForItem(item);
+				String modName = itemRegistry.getModNameForItem(item);
 				Log.error("Couldn't get ItemModel for {} item {}. Suppressed {} similar errors.", modName, item, count);
 			}
 		}
@@ -124,14 +117,14 @@ public class ItemFilter {
 	}
 
 	private static class OneWeigher implements Weigher<String, ImmutableList<ItemStackElement>> {
-		public int weigh(@Nonnull String key, @Nonnull ImmutableList<ItemStackElement> value) {
+		public int weigh(String key, ImmutableList<ItemStackElement> value) {
 			return 1;
 		}
 	}
 
 	private class ItemFilterCacheLoader extends CacheLoader<String, ImmutableList<ItemStackElement>> {
 		@Override
-		public ImmutableList<ItemStackElement> load(@Nonnull final String filterText) throws Exception {
+		public ImmutableList<ItemStackElement> load(final String filterText) throws Exception {
 			if (filterText.length() == 0) {
 				return baseList;
 			}
@@ -167,7 +160,7 @@ public class ItemFilter {
 			missingModel = itemModelMesher.getModelManager().getMissingModel();
 		}
 
-		public boolean isItemStackHidden(@Nonnull ItemStack itemStack) {
+		public boolean isItemStackHidden(ItemStack itemStack, IItemRegistry itemRegistry) {
 			if (isItemHiddenByBlacklist(itemStack)) {
 				return true;
 			}
@@ -182,13 +175,13 @@ public class ItemFilter {
 			try {
 				itemModel = renderItem.getItemModelWithOverrides(itemStack, null, null);
 			} catch (RuntimeException e) {
-				String modName = Internal.getItemRegistry().getModNameForItem(item);
+				String modName = itemRegistry.getModNameForItem(item);
 				String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
 				Log.error("Couldn't get ItemModel for {} itemStack {}", modName, stackInfo, e);
 				brokenItems.add(item);
 				return true;
 			} catch (LinkageError e) {
-				String modName = Internal.getItemRegistry().getModNameForItem(item);
+				String modName = itemRegistry.getModNameForItem(item);
 				String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
 				Log.error("Couldn't get ItemModel for {} itemStack {}", modName, stackInfo, e);
 				brokenItems.add(item);
@@ -213,7 +206,7 @@ public class ItemFilter {
 			return brokenItems;
 		}
 
-		private boolean isItemHiddenByBlacklist(@Nonnull ItemStack itemStack) {
+		private boolean isItemHiddenByBlacklist(ItemStack itemStack) {
 			try {
 				if (!itemBlacklist.isItemBlacklisted(itemStack)) {
 					return false;

@@ -1,6 +1,5 @@
 package mezz.jei;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import mezz.jei.api.IJeiHelpers;
@@ -13,17 +12,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class JeiHelpers implements IJeiHelpers {
-	@Nonnull
 	private final GuiHelper guiHelper;
-	@Nonnull
 	private final StackHelper stackHelper;
-	@Nonnull
 	private final ItemBlacklist itemBlacklist;
-	@Nonnull
 	private final NbtIgnoreList nbtIgnoreList;
-	@Nonnull
 	private final SubtypeRegistry subtypeRegistry;
-	@Nonnull
 	private final RecipeTransferHandlerHelper recipeTransferHandlerHelper;
 
 	public JeiHelpers() {
@@ -35,25 +28,21 @@ public class JeiHelpers implements IJeiHelpers {
 		this.recipeTransferHandlerHelper = new RecipeTransferHandlerHelper();
 	}
 
-	@Nonnull
 	@Override
 	public GuiHelper getGuiHelper() {
 		return guiHelper;
 	}
 
-	@Nonnull
 	@Override
 	public StackHelper getStackHelper() {
 		return stackHelper;
 	}
 
-	@Nonnull
 	@Override
 	public ItemBlacklist getItemBlacklist() {
 		return itemBlacklist;
 	}
 
-	@Nonnull
 	@Override
 	@Deprecated
 	public NbtIgnoreList getNbtIgnoreList() {
@@ -69,24 +58,23 @@ public class JeiHelpers implements IJeiHelpers {
 	public INbtRegistry getNbtRegistry() {
 		return new INbtRegistry() {
 			@Override
-			public void useNbtForSubtypes(@Nonnull Item... items) {
+			public void useNbtForSubtypes(Item... items) {
 
 			}
 
 			@Override
-			public void registerNbtInterpreter(@Nonnull Item item, @Nonnull INbtInterpreter nbtInterpreter) {
+			public void registerNbtInterpreter(Item item, INbtInterpreter nbtInterpreter) {
 
 			}
 
 			@Nullable
 			@Override
-			public String getSubtypeInfoFromNbt(@Nonnull ItemStack itemStack) {
+			public String getSubtypeInfoFromNbt(ItemStack itemStack) {
 				return null;
 			}
 		};
 	}
 
-	@Nonnull
 	@Override
 	public RecipeTransferHandlerHelper recipeTransferHandlerHelper() {
 		return recipeTransferHandlerHelper;

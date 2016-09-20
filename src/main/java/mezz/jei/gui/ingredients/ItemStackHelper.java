@@ -1,6 +1,6 @@
 package mezz.jei.gui.ingredients;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 import mezz.jei.Internal;
@@ -15,13 +15,13 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
-	public ItemStack getMatch(Iterable<ItemStack> ingredients, @Nonnull IFocus<ItemStack> toMatch) {
+	@Nullable
+	public ItemStack getMatch(Iterable<ItemStack> ingredients, IFocus<ItemStack> toMatch) {
 		return Internal.getStackHelper().containsStack(ingredients, toMatch.getValue());
 	}
 
-	@Nonnull
 	@Override
-	public Focus<ItemStack> createFocus(@Nonnull ItemStack ingredient) {
+	public Focus<ItemStack> createFocus(ItemStack ingredient) {
 		return new Focus<ItemStack>(ingredient);
 	}
 }

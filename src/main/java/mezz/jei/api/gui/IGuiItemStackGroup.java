@@ -1,6 +1,5 @@
 package mezz.jei.api.gui;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,19 +28,19 @@ public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {
 	/**
 	 * Takes a list of ingredients from IRecipeWrapper getInputs or getOutputs
 	 */
-	void setFromRecipe(int slotIndex, @Nonnull List ingredients);
+	void setFromRecipe(int slotIndex, List ingredients);
 
 	/**
 	 * Takes an Object from IRecipeWrapper getInputs or getOutputs
 	 */
-	void setFromRecipe(int slotIndex, @Nonnull Object ingredients);
+	void setFromRecipe(int slotIndex, Object ingredients);
 
 	@Override
-	void set(int slotIndex, @Nonnull Collection<ItemStack> itemStacks);
+	void set(int slotIndex, Collection<ItemStack> itemStacks);
 
 	@Override
-	void set(int slotIndex, @Nonnull ItemStack itemStack);
+	void set(int slotIndex, ItemStack itemStack);
 
 	@Override
-	void addTooltipCallback(@Nonnull ITooltipCallback<ItemStack> tooltipCallback);
+	void addTooltipCallback(ITooltipCallback<ItemStack> tooltipCallback);
 }

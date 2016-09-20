@@ -1,5 +1,9 @@
 package mezz.jei.plugins.vanilla.crafting;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import mezz.jei.api.recipe.BlankRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 import net.minecraft.init.Items;
@@ -7,18 +11,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 
-import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 public class TippedArrowRecipeWrapper extends BlankRecipeWrapper implements IShapedCraftingRecipeWrapper {
-	@Nonnull
 	private final List<ItemStack> inputs;
-	@Nonnull
 	private final List<ItemStack> outputs;
 
-	public TippedArrowRecipeWrapper(@Nonnull PotionType type) {
+	public TippedArrowRecipeWrapper(PotionType type) {
 		ItemStack arrowStack = new ItemStack(Items.ARROW);
 		ItemStack lingeringPotion = PotionUtils.addPotionToItemStack(new ItemStack(Items.LINGERING_POTION), type);
 		this.inputs = Arrays.asList(
@@ -32,13 +29,11 @@ public class TippedArrowRecipeWrapper extends BlankRecipeWrapper implements ISha
 	}
 
 	@Override
-	@Nonnull
 	public List<ItemStack> getInputs() {
 		return inputs;
 	}
 
 	@Override
-	@Nonnull
 	public List<ItemStack> getOutputs() {
 		return outputs;
 	}

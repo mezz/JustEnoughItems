@@ -1,24 +1,23 @@
 package mezz.jei.network;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.IThreadListener;
-
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.FMLEventChannel;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 
 import mezz.jei.network.packets.PacketDeletePlayerItem;
 import mezz.jei.network.packets.PacketGiveItemStack;
 import mezz.jei.network.packets.PacketJEI;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.util.Log;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.IThreadListener;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.FMLEventChannel;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 
 public class PacketHandler {
 	public static final String CHANNEL_ID = "JEI";
@@ -91,8 +90,8 @@ public class PacketHandler {
 		channel.sendTo(packet, player);
 	}
 
-	private static void checkThreadAndEnqueue(final PacketJEI packet, final PacketBuffer packetBuffer, final EntityPlayer player, IThreadListener threadListener) {
-		if (!threadListener.isCallingFromMinecraftThread()) {
+	private static void checkThreadAndEnqueue(final PacketJEI packet, final PacketBuffer packetBuffer, final EntityPlayer player, @Nullable IThreadListener threadListener) {
+		if (threadListener != null && !threadListener.isCallingFromMinecraftThread()) {
 			threadListener.addScheduledTask(new Runnable() {
 				@Override
 				public void run() {

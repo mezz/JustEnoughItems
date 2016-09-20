@@ -1,7 +1,5 @@
 package mezz.jei.api.recipe.transfer;
 
-import javax.annotation.Nonnull;
-
 import mezz.jei.api.gui.IRecipeLayout;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,11 +26,10 @@ public interface IRecipeTransferError {
 		USER_FACING
 	}
 
-	@Nonnull
 	Type getType();
 
 	/**
 	 * Called on {@link Type#USER_FACING} errors.
 	 */
-	void showError(@Nonnull Minecraft minecraft, int mouseX, int mouseY, @Nonnull IRecipeLayout recipeLayout, int recipeX, int recipeY);
+	void showError(Minecraft minecraft, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY);
 }

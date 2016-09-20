@@ -1,7 +1,5 @@
 package mezz.jei.api;
 
-import javax.annotation.Nonnull;
-
 import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 
@@ -13,26 +11,22 @@ public interface IJeiHelpers {
 	/**
 	 * Helps with the implementation of GUIs.
 	 */
-	@Nonnull
 	IGuiHelper getGuiHelper();
 
 	/**
 	 * Helps with getting itemStacks from recipes.
 	 */
-	@Nonnull
 	IStackHelper getStackHelper();
 
 	/**
 	 * Used to stop JEI from displaying a specific item in the item list.
 	 */
-	@Nonnull
 	IItemBlacklist getItemBlacklist();
 
 	/**
 	 * Used to tell JEI to ignore NBT tags when comparing items for recipes.
 	 * @deprecated all nbt is now ignored by default. If you have nbt that is used to identify your item's subtype, see {@link #getSubtypeRegistry()}.
 	 */
-	@Nonnull
 	@Deprecated
 	INbtIgnoreList getNbtIgnoreList();
 
@@ -50,7 +44,6 @@ public interface IJeiHelpers {
 	/**
 	 * Helps with the implementation of Recipe Transfer Handlers
 	 */
-	@Nonnull
 	IRecipeTransferHandlerHelper recipeTransferHandlerHelper();
 
 	/**

@@ -1,6 +1,5 @@
 package mezz.jei.plugins.vanilla.crafting;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 import mezz.jei.api.recipe.IRecipeHandler;
@@ -13,31 +12,27 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 public class ShapedOreRecipeHandler implements IRecipeHandler<ShapedOreRecipe> {
 
 	@Override
-	@Nonnull
 	public Class<ShapedOreRecipe> getRecipeClass() {
 		return ShapedOreRecipe.class;
 	}
 
-	@Nonnull
 	@Override
 	public String getRecipeCategoryUid() {
 		return VanillaRecipeCategoryUid.CRAFTING;
 	}
 
-	@Nonnull
 	@Override
-	public String getRecipeCategoryUid(@Nonnull ShapedOreRecipe recipe) {
+	public String getRecipeCategoryUid(ShapedOreRecipe recipe) {
 		return VanillaRecipeCategoryUid.CRAFTING;
 	}
 
 	@Override
-	@Nonnull
-	public IRecipeWrapper getRecipeWrapper(@Nonnull ShapedOreRecipe recipe) {
+	public IRecipeWrapper getRecipeWrapper(ShapedOreRecipe recipe) {
 		return new ShapedOreRecipeWrapper(recipe);
 	}
 
 	@Override
-	public boolean isRecipeValid(@Nonnull ShapedOreRecipe recipe) {
+	public boolean isRecipeValid(ShapedOreRecipe recipe) {
 		if (recipe.getRecipeOutput() == null) {
 			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
 			Log.error("Recipe has no output. {}", recipeInfo);

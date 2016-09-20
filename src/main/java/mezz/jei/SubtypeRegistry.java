@@ -1,6 +1,5 @@
 package mezz.jei;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +19,7 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 	private final Map<Item, ISubtypeInterpreter> interpreters = new HashMap<Item, ISubtypeInterpreter>();
 
 	@Override
-	public void useNbtForSubtypes(@Nonnull Item... items) {
+	public void useNbtForSubtypes(Item... items) {
 		for (Item item : items) {
 			registerNbtInterpreter(item, AllNbt.INSTANCE);
 		}
@@ -93,7 +92,7 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 
 		@Nullable
 		@Override
-		public String getSubtypeInfo(@Nonnull ItemStack itemStack) {
+		public String getSubtypeInfo(ItemStack itemStack) {
 			NBTTagCompound nbtTagCompound = itemStack.getTagCompound();
 			if (nbtTagCompound == null || nbtTagCompound.hasNoTags()) {
 				return null;

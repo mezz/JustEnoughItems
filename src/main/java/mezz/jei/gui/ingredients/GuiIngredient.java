@@ -1,8 +1,7 @@
 package mezz.jei.gui.ingredients;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,22 +31,17 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	private final int height;
 	private final int padding;
 
-	@Nonnull
 	private final CycleTimer cycleTimer;
-	@Nonnull
 	private final List<T> displayIngredients = new ArrayList<T>(); // ingredients, taking focus into account
-	@Nonnull
 	private final List<T> allIngredients = new ArrayList<T>(); // all ingredients, ignoring focus
-	@Nonnull
 	private final IIngredientRenderer<T> ingredientRenderer;
-	@Nonnull
 	private final IIngredientHelper<T> ingredientHelper;
 	@Nullable
 	private ITooltipCallback<T> tooltipCallback;
 
 	private boolean enabled;
 
-	public GuiIngredient(@Nonnull IIngredientRenderer<T> ingredientRenderer, @Nonnull IIngredientHelper<T> ingredientHelper, int slotIndex, boolean input, int xPosition, int yPosition, int width, int height, int padding, int itemCycleOffset) {
+	public GuiIngredient(IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper, int slotIndex, boolean input, int xPosition, int yPosition, int width, int height, int padding, int itemCycleOffset) {
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredientHelper = ingredientHelper;
 
@@ -73,6 +67,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	}
 
 	@Override
+	@Nullable
 	public Focus<T> getCurrentlyDisplayed() {
 		T ingredient = getIngredient();
 		if (ingredient == null) {
@@ -81,17 +76,16 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		return ingredientHelper.createFocus(ingredient);
 	}
 
-	@Nonnull
 	@Override
 	public List<T> getAllIngredients() {
 		return allIngredients;
 	}
 
-	public void set(@Nonnull T ingredient, @Nonnull IFocus<T> focus) {
+	public void set(T ingredient, IFocus<T> focus) {
 		set(Collections.singleton(ingredient), focus);
 	}
 
-	public void set(@Nonnull Collection<T> ingredients, @Nonnull IFocus<T> focus) {
+	public void set(Collection<T> ingredients, IFocus<T> focus) {
 		this.displayIngredients.clear();
 		this.allIngredients.clear();
 		ingredients = ingredientHelper.expandSubtypes(ingredients);
@@ -113,14 +107,14 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		this.tooltipCallback = tooltipCallback;
 	}
 
-	public void draw(@Nonnull Minecraft minecraft, int xOffset, int yOffset) {
+	public void draw(Minecraft minecraft, int xOffset, int yOffset) {
 		cycleTimer.onDraw();
 
 		T value = getIngredient();
 		ingredientRenderer.draw(minecraft, xOffset + xPosition + padding, yOffset + yPosition + padding, value);
 	}
 
-	public void drawHovered(@Nonnull Minecraft minecraft, int xOffset, int yOffset, int mouseX, int mouseY) {
+	public void drawHovered(Minecraft minecraft, int xOffset, int yOffset, int mouseX, int mouseY) {
 		T value = getIngredient();
 		if (value == null) {
 			return;
@@ -130,7 +124,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	}
 
 	@Override
-	public void drawHighlight(@Nonnull Minecraft minecraft, Color color, int xOffset, int yOffset) {
+	public void drawHighlight(Minecraft minecraft, Color color, int xOffset, int yOffset) {
 		int x = xPosition + xOffset + padding;
 		int y = yPosition + yOffset + padding;
 		GlStateManager.disableLighting();
@@ -138,7 +132,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		GlStateManager.color(1f, 1f, 1f, 1f);
 	}
 
-	private void drawTooltip(@Nonnull Minecraft minecraft, int xOffset, int yOffset, int mouseX, int mouseY, @Nonnull T value) {
+	private void drawTooltip(Minecraft minecraft, int xOffset, int yOffset, int mouseX, int mouseY, T value) {
 		try {
 			GlStateManager.disableDepth();
 

@@ -1,6 +1,5 @@
 package mezz.jei.gui;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,44 +22,46 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 
 public class MasterFocus {
-	public static MasterFocus create(IFocus<?> focus) {
+	public static MasterFocus create(IRecipeRegistry recipeRegistry, IFocus<?> focus) {
 		MasterFocus masterFocus;
 		Object value = focus.getValue();
 		if (value instanceof ItemStack) {
-			masterFocus = new MasterFocus((ItemStack) value);
+			masterFocus = new MasterFocus(recipeRegistry, (ItemStack) value);
 		} else if (value instanceof FluidStack) {
-			masterFocus = new MasterFocus((FluidStack) value);
+			masterFocus = new MasterFocus(recipeRegistry, (FluidStack) value);
 		} else {
-			masterFocus = new MasterFocus();
+			masterFocus = new MasterFocus(recipeRegistry);
 		}
 
 		masterFocus.setMode(focus.getMode());
 		return masterFocus;
 	}
 
+	private final IRecipeRegistry recipeRegistry;
 	private final ItemStack itemStack;
 	private final FluidStack fluidStack;
-	@Nonnull
 	private IFocus.Mode mode = IFocus.Mode.NONE;
-	private boolean allowsCheating = false;
 
-	public MasterFocus() {
+	public MasterFocus(IRecipeRegistry recipeRegistry) {
+		this.recipeRegistry = recipeRegistry;
 		this.itemStack = null;
 		this.fluidStack = null;
 	}
 
-	public MasterFocus(ItemStack itemStack) {
+	public MasterFocus(IRecipeRegistry recipeRegistry, ItemStack itemStack) {
+		this.recipeRegistry = recipeRegistry;
 		this.itemStack = itemStack;
 		this.fluidStack = getFluidFromItemStack(itemStack);
 	}
 
-	public MasterFocus(FluidStack fluidStack) {
+	public MasterFocus(IRecipeRegistry recipeRegistry, FluidStack fluidStack) {
+		this.recipeRegistry = recipeRegistry;
 		this.itemStack = null;
 		this.fluidStack = fluidStack;
 	}
 
 	@Nullable
-	private static FluidStack getFluidFromItemStack(@Nonnull ItemStack stack) {
+	private static FluidStack getFluidFromItemStack(ItemStack stack) {
 		Item item = stack.getItem();
 		if (item instanceof ItemBlock) {
 			Block block = ((ItemBlock) item).getBlock();
@@ -86,30 +87,19 @@ public class MasterFocus {
 		return itemStack;
 	}
 
-	public void setMode(@Nonnull IFocus.Mode mode) {
+	public void setMode(IFocus.Mode mode) {
 		this.mode = mode;
 	}
 
-	@Nonnull
 	public IFocus.Mode getMode() {
 		return mode;
 	}
 
-	public void setAllowsCheating() {
-		allowsCheating = true;
-	}
-
-	public boolean allowsCheating() {
-		return allowsCheating;
-	}
-
-	public boolean equalsFocus(@Nonnull MasterFocus other) {
+	public boolean equalsFocus(MasterFocus other) {
 		return ItemStack.areItemStacksEqual(this.itemStack, other.getItemStack()) && fluidStack == other.getFluidStack() && mode == other.getMode();
 	}
 
-	@Nonnull
 	public List<IRecipeCategory> getCategories() {
-		IRecipeRegistry recipeRegistry = Internal.getRuntime().getRecipeRegistry();
 		if (mode == IFocus.Mode.INPUT) {
 			return getInputCategories(recipeRegistry);
 		} else if (mode == IFocus.Mode.OUTPUT) {
@@ -119,8 +109,7 @@ public class MasterFocus {
 		}
 	}
 
-	@Nonnull
-	private List<IRecipeCategory> getInputCategories(@Nonnull IRecipeRegistry recipeRegistry) {
+	private List<IRecipeCategory> getInputCategories(IRecipeRegistry recipeRegistry) {
 		if (itemStack != null && fluidStack != null) {
 			List<IRecipeCategory> categories = new ArrayList<IRecipeCategory>(recipeRegistry.getRecipeCategoriesWithInput(itemStack));
 			categories.addAll(recipeRegistry.getRecipeCategoriesWithInput(fluidStack));
@@ -133,8 +122,7 @@ public class MasterFocus {
 		}
 	}
 
-	@Nonnull
-	private List<IRecipeCategory> getOutputCategories(@Nonnull IRecipeRegistry recipeRegistry) {
+	private List<IRecipeCategory> getOutputCategories(IRecipeRegistry recipeRegistry) {
 		if (itemStack != null && fluidStack != null) {
 			List<IRecipeCategory> categories = new ArrayList<IRecipeCategory>(recipeRegistry.getRecipeCategoriesWithOutput(itemStack));
 			categories.addAll(recipeRegistry.getRecipeCategoriesWithOutput(fluidStack));
@@ -147,9 +135,7 @@ public class MasterFocus {
 		}
 	}
 
-	@Nonnull
-	public List<Object> getRecipes(@Nonnull IRecipeCategory recipeCategory) {
-		IRecipeRegistry recipeRegistry = Internal.getRuntime().getRecipeRegistry();
+	public List<Object> getRecipes(IRecipeCategory recipeCategory) {
 		if (mode == IFocus.Mode.INPUT) {
 			return getInputRecipes(recipeRegistry, recipeCategory);
 		} else if (mode == IFocus.Mode.OUTPUT) {
@@ -159,9 +145,7 @@ public class MasterFocus {
 		}
 	}
 
-	@Nonnull
-	public Collection<ItemStack> getRecipeCategoryCraftingItems(@Nonnull IRecipeCategory recipeCategory) {
-		IRecipeRegistry recipeRegistry = Internal.getRuntime().getRecipeRegistry();
+	public Collection<ItemStack> getRecipeCategoryCraftingItems(IRecipeCategory recipeCategory) {
 		Collection<ItemStack> craftingItems = recipeRegistry.getCraftingItems(recipeCategory);
 		if (itemStack != null && mode == IFocus.Mode.INPUT) {
 			StackHelper stackHelper = Internal.getStackHelper();
@@ -173,8 +157,7 @@ public class MasterFocus {
 		return craftingItems;
 	}
 
-	@Nonnull
-	private List<Object> getInputRecipes(@Nonnull IRecipeRegistry recipeRegistry, @Nonnull IRecipeCategory recipeCategory) {
+	private List<Object> getInputRecipes(IRecipeRegistry recipeRegistry, IRecipeCategory recipeCategory) {
 		if (itemStack != null && fluidStack != null) {
 			List<Object> recipes = new ArrayList<Object>(recipeRegistry.getRecipesWithInput(recipeCategory, itemStack));
 			recipes.addAll(recipeRegistry.getRecipesWithInput(recipeCategory, fluidStack));
@@ -187,8 +170,7 @@ public class MasterFocus {
 		}
 	}
 
-	@Nonnull
-	private List<Object> getOutputRecipes(@Nonnull IRecipeRegistry recipeRegistry, @Nonnull IRecipeCategory recipeCategory) {
+	private List<Object> getOutputRecipes(IRecipeRegistry recipeRegistry, IRecipeCategory recipeCategory) {
 		if (itemStack != null && fluidStack != null) {
 			List<Object> recipes = new ArrayList<Object>(recipeRegistry.getRecipesWithOutput(recipeCategory, itemStack));
 			recipes.addAll(recipeRegistry.getRecipesWithOutput(recipeCategory, fluidStack));

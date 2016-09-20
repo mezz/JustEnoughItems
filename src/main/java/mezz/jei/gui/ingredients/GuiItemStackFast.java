@@ -1,11 +1,18 @@
 package mezz.jei.gui.ingredients;
 
+import javax.annotation.Nullable;
+import java.awt.Color;
+import java.awt.Rectangle;
+import java.util.Collection;
+import java.util.List;
+
 import com.google.common.base.Joiner;
 import mezz.jei.Internal;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.util.Translator;
+import mezz.jei.util.color.ColorNamer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -23,19 +30,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.ForgeHooksClient;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.Collection;
-import java.util.List;
-
 public class GuiItemStackFast {
 	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
 	private static final int blacklistItemColor = Color.yellow.getRGB();
 	private static final int blacklistWildColor = Color.red.getRGB();
 	private static final int blacklistModColor = Color.blue.getRGB();
 
-	@Nonnull
 	private final Rectangle area;
 	private final int padding;
 	private final ItemModelMesher itemModelMesher;
@@ -50,12 +50,11 @@ public class GuiItemStackFast {
 		this.itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
 	}
 
-	@Nonnull
 	public Rectangle getArea() {
 		return area;
 	}
 
-	public void setItemStack(@Nonnull ItemStack itemStack) {
+	public void setItemStack(ItemStack itemStack) {
 		this.itemStack = itemStack;
 	}
 
@@ -178,8 +177,7 @@ public class GuiItemStackFast {
 		}
 	}
 
-	@Nonnull
-	public static FontRenderer getFontRenderer(@Nonnull Minecraft minecraft, @Nonnull ItemStack itemStack) {
+	public static FontRenderer getFontRenderer(Minecraft minecraft, ItemStack itemStack) {
 		Item item = itemStack.getItem();
 		FontRenderer fontRenderer = item.getFontRenderer(itemStack);
 		if (fontRenderer == null) {
@@ -209,7 +207,7 @@ public class GuiItemStackFast {
 		GlStateManager.enableDepth();
 	}
 
-	public void drawTooltip(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawTooltip(Minecraft minecraft, int mouseX, int mouseY) {
 		if (itemStack == null) {
 			return;
 		}
@@ -218,8 +216,7 @@ public class GuiItemStackFast {
 		TooltipRenderer.drawHoveringText(itemStack, minecraft, tooltip, mouseX, mouseY, fontRenderer);
 	}
 
-	@Nonnull
-	private static List<String> getTooltip(@Nonnull Minecraft minecraft, @Nonnull ItemStack itemStack) {
+	private static List<String> getTooltip(Minecraft minecraft, ItemStack itemStack) {
 		List<String> list = itemStack.getTooltip(minecraft.thePlayer, minecraft.gameSettings.advancedItemTooltips);
 		for (int k = 0; k < list.size(); ++k) {
 			if (k == 0) {
@@ -238,11 +235,14 @@ public class GuiItemStackFast {
 		}
 
 		if (Config.isColorSearchEnabled()) {
-			Collection<String> colorNames = Internal.getColorNamer().getColorNames(itemStack);
-			if (!colorNames.isEmpty()) {
-				String colorNamesString = Joiner.on(", ").join(colorNames);
-				String colorNamesLocalizedString = TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.item.colors", colorNamesString);
-				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(colorNamesLocalizedString, maxWidth));
+			ColorNamer colorNamer = Internal.getColorNamer();
+			if (colorNamer != null) {
+				Collection<String> colorNames = colorNamer.getColorNames(itemStack);
+				if (!colorNames.isEmpty()) {
+					String colorNamesString = Joiner.on(", ").join(colorNames);
+					String colorNamesLocalizedString = TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.item.colors", colorNamesString);
+					list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(colorNamesLocalizedString, maxWidth));
+				}
 			}
 		}
 

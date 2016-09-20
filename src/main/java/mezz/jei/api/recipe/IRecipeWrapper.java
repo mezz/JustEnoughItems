@@ -1,14 +1,13 @@
 package mezz.jei.api.recipe;
 
+import javax.annotation.Nullable;
+import java.util.List;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fluids.FluidStack;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * A wrapper around a normal recipe with methods that allow JEI can make sense of it.
@@ -53,14 +52,14 @@ public interface IRecipeWrapper {
 	 * @see IDrawable for a simple class for drawing things.
 	 * @see IGuiHelper for useful functions.
 	 */
-	void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY);
+	void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY);
 
 	/**
 	 * Draw animations involving the recipe. Can be disabled in the config.
 	 * @see IDrawableAnimated for a simple class for drawing animated things.
 	 * @see IGuiHelper for useful functions.
 	 */
-	void drawAnimations(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight);
+	void drawAnimations(Minecraft minecraft, int recipeWidth, int recipeHeight);
 
 	/**
 	 * Get the tooltip for whatever's under the mouse.
@@ -83,5 +82,5 @@ public interface IRecipeWrapper {
 	 * @return true if the click was handled, false otherwise
 	 * @since JEI 2.19.0
 	 */
-	boolean handleClick(@Nonnull Minecraft minecraft, int mouseX, int mouseY, int mouseButton);
+	boolean handleClick(Minecraft minecraft, int mouseX, int mouseY, int mouseButton);
 }

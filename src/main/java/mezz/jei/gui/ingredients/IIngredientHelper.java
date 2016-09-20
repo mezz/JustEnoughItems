@@ -1,6 +1,6 @@
 package mezz.jei.gui.ingredients;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 import mezz.jei.api.recipe.IFocus;
@@ -9,8 +9,8 @@ import mezz.jei.gui.Focus;
 public interface IIngredientHelper<T> {
 	Collection<T> expandSubtypes(Collection<T> contained);
 
-	T getMatch(Iterable<T> ingredients, @Nonnull IFocus<T> toMatch);
+	@Nullable
+	T getMatch(Iterable<T> ingredients, IFocus<T> toMatch);
 
-	@Nonnull
-	Focus<T> createFocus(@Nonnull T ingredient);
+	Focus<T> createFocus(T ingredient);
 }

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Stack;
 
 import com.google.common.collect.ImmutableList;
-import mezz.jei.Internal;
 import mezz.jei.RecipeRegistry;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.IRecipeRegistry;
@@ -29,12 +28,12 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		public final MasterFocus focus;
 		/** List of Recipe Categories that involve the focus */
 		@Nonnull
-		public ImmutableList<IRecipeCategory> recipeCategories;
+		public final ImmutableList<IRecipeCategory> recipeCategories;
 		public int recipeCategoryIndex;
 		public int pageIndex;
 		public int recipesPerPage;
 
-		public State(@Nonnull MasterFocus focus, @Nonnull List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int pageIndex) {
+		public State(MasterFocus focus, List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int pageIndex) {
 			this.focus = focus;
 			this.recipeCategories = ImmutableList.copyOf(recipeCategories);
 			this.recipeCategoryIndex = recipeCategoryIndex;
@@ -42,16 +41,16 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 	}
 
+	private final RecipeRegistry recipeRegistry;
+
 	/** The current state of this GUI */
 	@Nullable
 	private State state = null;
 
 	/** The previous states of this GUI */
-	@Nonnull
 	private final Stack<State> history = new Stack<State>();
 
 	/** List of recipes for the currently selected recipeClass */
-	@Nonnull
 	private List<Object> recipes = Collections.emptyList();
 
 	/**
@@ -59,11 +58,14 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	 *
 	 * @see IModRegistry#addRecipeCategoryCraftingItem(ItemStack, String...)
 	 */
-	@Nonnull
 	private Collection<ItemStack> recipeCategoryCraftingItems = Collections.emptyList();
 
+	public RecipeGuiLogic(RecipeRegistry recipeRegistry) {
+		this.recipeRegistry = recipeRegistry;
+	}
+
 	@Override
-	public boolean setFocus(@Nonnull MasterFocus focus) {
+	public boolean setFocus(MasterFocus focus) {
 		return setFocus(focus, true);
 	}
 
@@ -84,7 +86,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 	}
 
-	private boolean setFocus(@Nonnull MasterFocus focus, boolean saveHistory) {
+	private boolean setFocus(MasterFocus focus, boolean saveHistory) {
 		if (this.state != null && this.state.focus.equalsFocus(focus)) {
 			return true;
 		}
@@ -106,24 +108,24 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		return true;
 	}
 
-	private void setState(@Nonnull State state) {
+	private void setState(State state) {
 		this.state = state;
 		updateRecipes();
 	}
 
-	private static int getRecipeCategoryIndex(@Nonnull List<IRecipeCategory> recipeCategories) {
+	private int getRecipeCategoryIndex(List<IRecipeCategory> recipeCategories) {
 		final Container container = Minecraft.getMinecraft().thePlayer.openContainer;
 		if (container == null) {
 			return 0;
 		}
 
-		final RecipeRegistry recipeRegistry = Internal.getRuntime().getRecipeRegistry();
 		for (int i = 0; i < recipeCategories.size(); i++) {
 			IRecipeCategory recipeCategory = recipeCategories.get(i);
 			if (recipeRegistry.getRecipeTransferHandler(container, recipeCategory) != null) {
 				return i;
 			}
 		}
+
 		return 0;
 	}
 
@@ -138,9 +140,9 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			history.push(this.state);
 		}
 
-		final List<IRecipeCategory> recipeCategories = Internal.getRuntime().getRecipeRegistry().getRecipeCategories();
+		final List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories();
 		final int recipeCategoryIndex = recipeCategories.indexOf(recipeCategory);
-		final State state = new State(new MasterFocus(), recipeCategories, recipeCategoryIndex, 0);
+		final State state = new State(new MasterFocus(recipeRegistry), recipeCategories, recipeCategoryIndex, 0);
 		setState(state);
 
 		return true;
@@ -148,7 +150,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public boolean setCategoryFocus(List<String> recipeCategoryUids) {
-		List<IRecipeCategory> recipeCategories = Internal.getRuntime().getRecipeRegistry().getRecipeCategories(recipeCategoryUids);
+		List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories(recipeCategoryUids);
 		if (recipeCategories.isEmpty()) {
 			return false;
 		}
@@ -157,7 +159,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			history.push(this.state);
 		}
 
-		final State state = new State(new MasterFocus(), recipeCategories, 0, 0);
+		final State state = new State(new MasterFocus(recipeRegistry), recipeCategories, 0, 0);
 		setState(state);
 
 		return true;
@@ -172,7 +174,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	@Nonnull
 	public Collection<ItemStack> getRecipeCategoryCraftingItems() {
 		return recipeCategoryCraftingItems;
 	}
@@ -217,7 +218,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	@Nonnull
 	public List<RecipeLayout> getRecipeWidgets(int posX, int posY, int spacingY) {
 		if (state == null) {
 			return Collections.emptyList();
@@ -229,8 +229,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		if (recipeCategory == null) {
 			return recipeWidgets;
 		}
-
-		IRecipeRegistry recipeRegistry = Internal.getRuntime().getRecipeRegistry();
 
 		int recipeWidgetIndex = 0;
 		for (int recipeIndex = state.pageIndex * state.recipesPerPage; recipeIndex < recipes.size() && recipeWidgets.size() < state.recipesPerPage; recipeIndex++) {
@@ -316,7 +314,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	@Nonnull
 	public String getPageString() {
 		if (state == null) {
 			return "1/1";
@@ -331,6 +328,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public boolean hasAllCategories() {
-		return state != null && state.recipeCategories.size() == Internal.getRuntime().getRecipeRegistry().getRecipeCategories().size();
+		return state != null && state.recipeCategories.size() == recipeRegistry.getRecipeCategories().size();
 	}
 }

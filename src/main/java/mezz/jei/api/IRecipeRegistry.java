@@ -1,6 +1,5 @@
 package mezz.jei.api;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
@@ -19,51 +18,40 @@ public interface IRecipeRegistry {
 
 	/** Returns the IRecipeHandler associated with the recipeClass or null if there is none */
 	@Nullable
-	<T> IRecipeHandler<T> getRecipeHandler(@Nonnull Class<? extends T> recipeClass);
+	<T> IRecipeHandler<T> getRecipeHandler(Class<? extends T> recipeClass);
 
 	/** Returns an unmodifiable list of all Recipe Categories */
-	@Nonnull
 	List<IRecipeCategory> getRecipeCategories();
 
 	/** Returns an unmodifiable list of Recipe Categories */
-	@Nonnull
-	List<IRecipeCategory> getRecipeCategories(@Nonnull List<String> recipeCategoryUids);
+	List<IRecipeCategory> getRecipeCategories(List<String> recipeCategoryUids);
 
 	/** Returns an unmodifiable list of Recipe Categories that have the ItemStack as an input */
-	@Nonnull
-	List<IRecipeCategory> getRecipeCategoriesWithInput(@Nonnull ItemStack input);
+	List<IRecipeCategory> getRecipeCategoriesWithInput(ItemStack input);
 
 	/** Returns an unmodifiable list of Recipe Categories that have the Fluid as an input */
-	@Nonnull
-	List<IRecipeCategory> getRecipeCategoriesWithInput(@Nonnull FluidStack input);
+	List<IRecipeCategory> getRecipeCategoriesWithInput(FluidStack input);
 
 	/** Returns an unmodifiable list of Recipe Categories that have the ItemStack as an output */
-	@Nonnull
-	List<IRecipeCategory> getRecipeCategoriesWithOutput(@Nonnull ItemStack output);
+	List<IRecipeCategory> getRecipeCategoriesWithOutput(ItemStack output);
 
 	/** Returns an unmodifiable list of Recipe Categories that have the Fluid as an output */
-	@Nonnull
-	List<IRecipeCategory> getRecipeCategoriesWithOutput(@Nonnull FluidStack output);
+	List<IRecipeCategory> getRecipeCategoriesWithOutput(FluidStack output);
 
 	/** Returns an unmodifiable list of Recipes of recipeCategory that have the ItemStack as an input */
-	@Nonnull
-	List<Object> getRecipesWithInput(@Nonnull IRecipeCategory recipeCategory, @Nonnull ItemStack input);
+	List<Object> getRecipesWithInput(IRecipeCategory recipeCategory, ItemStack input);
 
 	/** Returns an unmodifiable list of Recipes of recipeCategory that have the Fluid as an input */
-	@Nonnull
-	List<Object> getRecipesWithInput(@Nonnull IRecipeCategory recipeCategory, @Nonnull FluidStack input);
+	List<Object> getRecipesWithInput(IRecipeCategory recipeCategory, FluidStack input);
 
 	/** Returns an unmodifiable list of Recipes of recipeCategory that have the ItemStack as an output */
-	@Nonnull
-	List<Object> getRecipesWithOutput(@Nonnull IRecipeCategory recipeCategory, @Nonnull ItemStack output);
+	List<Object> getRecipesWithOutput(IRecipeCategory recipeCategory, ItemStack output);
 
 	/** Returns an unmodifiable list of Recipes of recipeCategory that have the Fluid as an output */
-	@Nonnull
-	List<Object> getRecipesWithOutput(@Nonnull IRecipeCategory recipeCategory, @Nonnull FluidStack output);
+	List<Object> getRecipesWithOutput(IRecipeCategory recipeCategory, FluidStack output);
 
 	/** Returns an unmodifiable list of Recipes in recipeCategory */
-	@Nonnull
-	List<Object> getRecipes(@Nonnull IRecipeCategory recipeCategory);
+	List<Object> getRecipes(IRecipeCategory recipeCategory);
 
 	/**
 	 * Returns an unmodifiable collection of ItemStacks that can craft recipes from recipeCategory.
@@ -71,8 +59,7 @@ public interface IRecipeRegistry {
 	 *
 	 * @since JEI 3.3.0
 	 */
-	@Nonnull
-	Collection<ItemStack> getCraftingItems(@Nonnull IRecipeCategory recipeCategory);
+	Collection<ItemStack> getCraftingItems(IRecipeCategory recipeCategory);
 
 	/**
 	 * Add a new recipe while the game is running.
@@ -80,5 +67,5 @@ public interface IRecipeRegistry {
 	 * Use your IRecipeHandler.isValid to determine which recipes are hidden, and when a recipe becomes valid you can add it here.
 	 * (note that IRecipeHandler.isValid must be true when the recipe is added here for it to work)
 	 */
-	void addRecipe(@Nonnull Object recipe);
+	void addRecipe(Object recipe);
 }

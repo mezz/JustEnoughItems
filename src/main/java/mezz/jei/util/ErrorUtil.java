@@ -1,6 +1,5 @@
 package mezz.jei.util;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +15,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
 public class ErrorUtil {
-	@Nonnull
-	public static <T> String getInfoFromBrokenRecipe(@Nonnull T recipe, @Nonnull IRecipeHandler<T> recipeHandler) {
+	public static <T> String getInfoFromBrokenRecipe(T recipe, IRecipeHandler<T> recipeHandler) {
 		StringBuilder recipeInfoBuilder = new StringBuilder();
 		try {
 			recipeInfoBuilder.append(recipe);
@@ -70,6 +68,7 @@ public class ErrorUtil {
 		return recipeInfoBuilder.toString();
 	}
 
+	@Nullable
 	public static List<String> getItemStackIngredientsInfo(@Nullable List list) {
 		if (list == null) {
 			return null;
@@ -96,7 +95,7 @@ public class ErrorUtil {
 		return ingredientsInfo;
 	}
 
-	public static String getItemStackInfo(@Nonnull ItemStack itemStack) {
+	public static String getItemStackInfo(ItemStack itemStack) {
 		Item item = itemStack.getItem();
 		if (item == null) {
 			return itemStack.stackSize + "x (null)";

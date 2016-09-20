@@ -1,18 +1,15 @@
 package mezz.jei.util;
 
-import com.google.common.collect.ImmutableList;
-
-import javax.annotation.Nonnull;
 import java.util.Comparator;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
 import mezz.jei.api.recipe.IRecipeCategory;
 
 public class RecipeCategoryComparator implements Comparator<IRecipeCategory> {
-	@Nonnull
 	private final ImmutableList<IRecipeCategory> recipeCategories;
 
-	public RecipeCategoryComparator(@Nonnull List<IRecipeCategory> recipeCategories) {
+	public RecipeCategoryComparator(List<IRecipeCategory> recipeCategories) {
 		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
 	}
 

@@ -1,8 +1,7 @@
 package mezz.jei.util.color;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Color;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -13,21 +12,18 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.item.ItemStack;
 
 public class ColorNamer {
-	@Nonnull
 	private final ImmutableMap<Color, String> colorNames;
 
-	public ColorNamer(@Nonnull ImmutableMap<Color, String> colorNames) {
+	public ColorNamer(ImmutableMap<Color, String> colorNames) {
 		this.colorNames = colorNames;
 	}
 
-	@Nonnull
-	public Collection<String> getColorNames(@Nonnull ItemStack itemStack) {
+	public Collection<String> getColorNames(ItemStack itemStack) {
 		List<Color> colors = ColorGetter.getColors(itemStack, 2);
 		return getColorNames(colors);
 	}
 
-	@Nonnull
-	private Collection<String> getColorNames(@Nonnull List<Color> colors) {
+	private Collection<String> getColorNames(List<Color> colors) {
 		final Set<String> allColorNames = new LinkedHashSet<String>();
 		for (Color color : colors) {
 			final String colorName = getClosestColorName(color);
@@ -39,7 +35,7 @@ public class ColorNamer {
 	}
 
 	@Nullable
-	private String getClosestColorName(@Nonnull Color color) {
+	private String getClosestColorName(Color color) {
 		if (colorNames.isEmpty()) {
 			return null;
 		}

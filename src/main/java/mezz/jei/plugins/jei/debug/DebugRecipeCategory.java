@@ -1,15 +1,17 @@
 package mezz.jei.plugins.jei.debug;
 
+import java.util.List;
+
 import mezz.jei.Internal;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IItemListOverlay;
+import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITooltipCallback;
 import mezz.jei.api.recipe.BlankRecipeCategory;
-import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
@@ -17,19 +19,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
-import javax.annotation.Nonnull;
-import java.util.List;
-
 public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 	public static final int recipeWidth = 160;
 	public static final int recipeHeight = 60;
-	@Nonnull
 	private final IDrawable background;
-	@Nonnull
 	private final String localizedName;
-	@Nonnull
 	private final IDrawable tankBackground;
-	@Nonnull
 	private final IDrawable tankOverlay;
 
 	public DebugRecipeCategory(IGuiHelper guiHelper) {
@@ -41,34 +36,34 @@ public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 		tankOverlay = guiHelper.createDrawable(backgroundTexture, 176, 55, 12, 47);
 	}
 
-	@Nonnull
 	@Override
 	public String getUid() {
 		return "debug";
 	}
 
-	@Nonnull
 	@Override
 	public String getTitle() {
 		return localizedName;
 	}
 
-	@Nonnull
 	@Override
 	public IDrawable getBackground() {
 		return background;
 	}
 
 	@Override
-	public void drawExtras(@Nonnull Minecraft minecraft) {
+	public void drawExtras(Minecraft minecraft) {
 		tankBackground.draw(minecraft);
-		IItemListOverlay itemListOverlay = Internal.getRuntime().getItemListOverlay();
-		minecraft.fontRendererObj.drawString(itemListOverlay.getFilterText(), 20, 52, 0);
-		minecraft.fontRendererObj.drawString(String.valueOf(itemListOverlay.getStackUnderMouse()), 50, 52, 0);
+		IJeiRuntime runtime = Internal.getRuntime();
+		if (runtime != null) {
+			IItemListOverlay itemListOverlay = runtime.getItemListOverlay();
+			minecraft.fontRendererObj.drawString(itemListOverlay.getFilterText(), 20, 52, 0);
+			minecraft.fontRendererObj.drawString(String.valueOf(itemListOverlay.getStackUnderMouse()), 50, 52, 0);
+		}
 	}
 
 	@Override
-	public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull DebugRecipe recipeWrapper) {
+	public void setRecipe(IRecipeLayout recipeLayout, DebugRecipe recipeWrapper) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		guiItemStacks.addTooltipCallback(new ITooltipCallback<ItemStack>() {

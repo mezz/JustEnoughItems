@@ -1,7 +1,7 @@
 package mezz.jei.config;
 
-import javax.annotation.Nonnull;
-import java.awt.*;
+import javax.annotation.Nullable;
+import java.awt.Color;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,6 +29,7 @@ public class Config {
 	public static final String CATEGORY_SEARCH_COLORS = "searchColors";
 
 	private static LocalizedConfiguration config;
+	@Nullable
 	private static Configuration worldConfig;
 	private static LocalizedConfiguration itemBlacklistConfig;
 	private static LocalizedConfiguration searchColorsConfig;
@@ -56,7 +57,6 @@ public class Config {
 	private static boolean overlayEnabled = defaultOverlayEnabled;
 	private static boolean cheatItemsEnabled = defaultCheatItemsEnabled;
 	private static boolean editModeEnabled = defaultEditModeEnabled;
-	@Nonnull
 	private static String filterText = defaultFilterText;
 
 	// item blacklist
@@ -74,12 +74,14 @@ public class Config {
 	public static void toggleOverlayEnabled() {
 		overlayEnabled = !overlayEnabled;
 
-		final String worldCategory = SessionData.getWorldUid();
-		Property property = worldConfig.get(worldCategory, "overlayEnabled", overlayEnabled);
-		property.set(overlayEnabled);
+		if (worldConfig != null) {
+			final String worldCategory = SessionData.getWorldUid();
+			Property property = worldConfig.get(worldCategory, "overlayEnabled", overlayEnabled);
+			property.set(overlayEnabled);
 
-		if (worldConfig.hasChanged()) {
-			worldConfig.save();
+			if (worldConfig.hasChanged()) {
+				worldConfig.save();
+			}
 		}
 	}
 
@@ -139,7 +141,7 @@ public class Config {
 		return prefixRequiredForColorSearch;
 	}
 
-	public static boolean setFilterText(@Nonnull String filterText) {
+	public static boolean setFilterText(String filterText) {
 		String lowercaseFilterText = filterText.toLowerCase();
 		if (Config.filterText.equals(lowercaseFilterText)) {
 			return false;
@@ -149,18 +151,19 @@ public class Config {
 		return true;
 	}
 
-	@Nonnull
 	public static String getFilterText() {
 		return filterText;
 	}
 
 	public static void saveFilterText() {
-		final String worldCategory = SessionData.getWorldUid();
-		Property property = worldConfig.get(worldCategory, "filterText", defaultFilterText);
-		property.set(Config.filterText);
+		if (worldConfig != null) {
+			final String worldCategory = SessionData.getWorldUid();
+			Property property = worldConfig.get(worldCategory, "filterText", defaultFilterText);
+			property.set(Config.filterText);
 
-		if (worldConfig.hasChanged()) {
-			worldConfig.save();
+			if (worldConfig.hasChanged()) {
+				worldConfig.save();
+			}
 		}
 	}
 
@@ -168,11 +171,12 @@ public class Config {
 		return config;
 	}
 
+	@Nullable
 	public static Configuration getWorldConfig() {
 		return worldConfig;
 	}
 
-	public static void preInit(@Nonnull FMLPreInitializationEvent event) {
+	public static void preInit(FMLPreInitializationEvent event) {
 
 		jeiConfigurationDir = new File(event.getModConfigurationDirectory(), Constants.MOD_ID);
 		if (!jeiConfigurationDir.exists()) {
@@ -344,6 +348,10 @@ public class Config {
 	}
 
 	private static boolean syncWorldConfig() {
+		if (worldConfig == null) {
+			return false;
+		}
+
 		boolean needsReload = false;
 		final String worldCategory = SessionData.getWorldUid();
 
@@ -422,21 +430,21 @@ public class Config {
 		return changed;
 	}
 
-	public static void addItemToConfigBlacklist(@Nonnull ItemStack itemStack, @Nonnull ItemBlacklistType blacklistType) {
+	public static void addItemToConfigBlacklist(ItemStack itemStack, ItemBlacklistType blacklistType) {
 		final String uid = getItemStackUid(itemStack, blacklistType);
 		if (itemBlacklist.add(uid)) {
 			updateBlacklist();
 		}
 	}
 
-	public static void removeItemFromConfigBlacklist(@Nonnull ItemStack itemStack, @Nonnull ItemBlacklistType blacklistType) {
+	public static void removeItemFromConfigBlacklist(ItemStack itemStack, ItemBlacklistType blacklistType) {
 		final String uid = getItemStackUid(itemStack, blacklistType);
 		if (itemBlacklist.remove(uid)) {
 			updateBlacklist();
 		}
 	}
 
-	public static boolean isItemOnConfigBlacklist(@Nonnull ItemStack itemStack) {
+	public static boolean isItemOnConfigBlacklist(ItemStack itemStack) {
 		for (ItemBlacklistType itemBlacklistType : ItemBlacklistType.VALUES) {
 			if (isItemOnConfigBlacklist(itemStack, itemBlacklistType)) {
 				return true;
@@ -445,12 +453,12 @@ public class Config {
 		return false;
 	}
 
-	public static boolean isItemOnConfigBlacklist(@Nonnull ItemStack itemStack, @Nonnull ItemBlacklistType blacklistType) {
+	public static boolean isItemOnConfigBlacklist(ItemStack itemStack, ItemBlacklistType blacklistType) {
 		final String uid = getItemStackUid(itemStack, blacklistType);
 		return itemBlacklist.contains(uid);
 	}
 
-	private static String getItemStackUid(@Nonnull ItemStack itemStack, @Nonnull ItemBlacklistType blacklistType) {
+	private static String getItemStackUid(ItemStack itemStack, ItemBlacklistType blacklistType) {
 		StackHelper stackHelper = Internal.getStackHelper();
 		switch (blacklistType) {
 			case ITEM:

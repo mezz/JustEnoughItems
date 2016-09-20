@@ -1,6 +1,5 @@
 package mezz.jei.transfer;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,22 +11,20 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
 
 public class RecipeTransferErrorTooltip implements IRecipeTransferError {
-	@Nonnull
 	private final List<String> message = new ArrayList<String>();
 
-	public RecipeTransferErrorTooltip(@Nonnull String message) {
+	public RecipeTransferErrorTooltip(String message) {
 		this.message.add(Constants.RECIPE_TRANSFER_TOOLTIP);
 		this.message.add(TextFormatting.RED + message);
 	}
 
-	@Nonnull
 	@Override
 	public Type getType() {
 		return Type.USER_FACING;
 	}
 
 	@Override
-	public void showError(@Nonnull Minecraft minecraft, int mouseX, int mouseY, @Nonnull IRecipeLayout recipeLayout, int recipeX, int recipeY) {
+	public void showError(Minecraft minecraft, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY) {
 		TooltipRenderer.drawHoveringText(minecraft, message, mouseX, mouseY);
 	}
 }

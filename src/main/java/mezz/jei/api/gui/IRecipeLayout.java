@@ -1,7 +1,5 @@
 package mezz.jei.api.gui;
 
-import javax.annotation.Nonnull;
-
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 
@@ -15,14 +13,12 @@ public interface IRecipeLayout {
 	 * Contains all the itemStacks displayed on this recipe layout.
 	 * Init and set them in your recipe category.
 	 */
-	@Nonnull
 	IGuiItemStackGroup getItemStacks();
 
 	/**
 	 * Contains all the fluidStacks displayed on this recipe layout.
 	 * Init and set them in your recipe category.
 	 */
-	@Nonnull
 	IGuiFluidStackGroup getFluidStacks();
 
 	/**

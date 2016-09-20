@@ -1,6 +1,6 @@
 package mezz.jei.transfer;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,7 +19,7 @@ public class BasicRecipeTransferHandlerServer {
 	/**
 	 * Called server-side to actually put the items in place.
 	 */
-	public static void setItems(@Nonnull EntityPlayer player, @Nonnull Map<Integer, Integer> slotIdMap, @Nonnull List<Integer> craftingSlots, @Nonnull List<Integer> inventorySlots, boolean maxTransfer) {
+	public static void setItems(EntityPlayer player, Map<Integer, Integer> slotIdMap, List<Integer> craftingSlots, List<Integer> inventorySlots, boolean maxTransfer) {
 		Container container = player.openContainer;
 		StackHelper stackHelper = Internal.getStackHelper();
 
@@ -27,10 +27,11 @@ public class BasicRecipeTransferHandlerServer {
 		Map<Integer, ItemStack> slotMap = new HashMap<Integer, ItemStack>(slotIdMap.size());
 		for (Map.Entry<Integer, Integer> entry : slotIdMap.entrySet()) {
 			Slot slot = container.getSlot(entry.getValue());
-			if (slot == null || !slot.getHasStack()) {
+			final ItemStack slotStack = slot.getStack();
+			if (slotStack == null) {
 				return;
 			}
-			ItemStack stack = slot.getStack().copy();
+			ItemStack stack = slotStack.copy();
 			stack.stackSize = 1;
 			slotMap.put(entry.getKey(), stack);
 		}
@@ -45,7 +46,7 @@ public class BasicRecipeTransferHandlerServer {
 		List<ItemStack> clearedCraftingItems = new ArrayList<ItemStack>();
 		for (Integer craftingSlotNumber : craftingSlots) {
 			Slot craftingSlot = container.getSlot(craftingSlotNumber);
-			if (craftingSlot != null && craftingSlot.getHasStack()) {
+			if (craftingSlot.getHasStack()) {
 				ItemStack craftingItem = craftingSlot.decrStackSize(Integer.MAX_VALUE);
 				clearedCraftingItems.add(craftingItem);
 			}
@@ -75,7 +76,7 @@ public class BasicRecipeTransferHandlerServer {
 		container.detectAndSendChanges();
 	}
 
-	private static int removeSetsFromInventory(@Nonnull Container container, @Nonnull Collection<ItemStack> required, @Nonnull List<Integer> craftingSlots, @Nonnull List<Integer> inventorySlots, boolean maxTransfer) {
+	private static int removeSetsFromInventory(Container container, Collection<ItemStack> required, List<Integer> craftingSlots, List<Integer> inventorySlots, boolean maxTransfer) {
 		if (maxTransfer) {
 			List<ItemStack> requiredCopy = new ArrayList<ItemStack>();
 			requiredCopy.addAll(required);
@@ -98,15 +99,15 @@ public class BasicRecipeTransferHandlerServer {
 		}
 	}
 
-	private static boolean removeSetsFromInventory(@Nonnull Container container, @Nonnull Iterable<ItemStack> required, @Nonnull List<Integer> craftingSlots, @Nonnull List<Integer> inventorySlots) {
+	private static boolean removeSetsFromInventory(Container container, Iterable<ItemStack> required, List<Integer> craftingSlots, List<Integer> inventorySlots) {
 		final Map<Slot, ItemStack> originalSlotContents = new HashMap<Slot, ItemStack>();
 
 		for (ItemStack matchingStack : required) {
 			final ItemStack requiredStack = matchingStack.copy();
 			while (requiredStack.stackSize > 0) {
 				final Slot slot = getSlotWithStack(container, requiredStack, craftingSlots, inventorySlots);
-				if (slot == null) {
-					// abort! put removed items back where the came from
+				if (slot == null || slot.getStack() == null) {
+					// abort! put removed items back where they came from
 					for (Map.Entry<Slot, ItemStack> slotEntry : originalSlotContents.entrySet()) {
 						ItemStack stack = slotEntry.getValue();
 						slotEntry.getKey().putStack(stack);
@@ -126,7 +127,8 @@ public class BasicRecipeTransferHandlerServer {
 		return true;
 	}
 
-	private static Slot getSlotWithStack(@Nonnull Container container, @Nonnull ItemStack stack, @Nonnull List<Integer> craftingSlots, @Nonnull List<Integer> inventorySlots) {
+	@Nullable
+	private static Slot getSlotWithStack(Container container, ItemStack stack, List<Integer> craftingSlots, List<Integer> inventorySlots) {
 		StackHelper stackHelper = Internal.getStackHelper();
 
 		Slot slot = stackHelper.getSlotWithStack(container, craftingSlots, stack);

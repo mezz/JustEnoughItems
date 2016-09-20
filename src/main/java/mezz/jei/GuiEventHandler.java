@@ -1,6 +1,5 @@
 package mezz.jei;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import mezz.jei.config.Config;
@@ -18,7 +17,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Mouse;
 
 public class GuiEventHandler {
-	@Nonnull
 	private static final String showRecipesText = Translator.translateToLocal("jei.tooltip.show.recipes");
 	@Nullable
 	private InputHandler inputHandler;
@@ -26,7 +24,7 @@ public class GuiEventHandler {
 	private GuiContainer previousGui = null;
 
 	@SubscribeEvent
-	public void onGuiInit(@Nonnull GuiScreenEvent.InitGuiEvent.Post event) {
+	public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
 		JeiRuntime runtime = Internal.getRuntime();
 		if (runtime == null) {
 			return;
@@ -38,8 +36,9 @@ public class GuiEventHandler {
 			GuiContainer guiContainer = (GuiContainer) gui;
 			itemListOverlay.initGui(guiContainer);
 
-			RecipesGui recipesGui = new RecipesGui();
-			inputHandler = new InputHandler(recipesGui, itemListOverlay);
+			RecipeRegistry recipeRegistry = runtime.getRecipeRegistry();
+			RecipesGui recipesGui = new RecipesGui(recipeRegistry);
+			inputHandler = new InputHandler(recipeRegistry, recipesGui, itemListOverlay);
 		} else if (gui instanceof RecipesGui) {
 			if (inputHandler != null) {
 				inputHandler.onScreenResized();
@@ -50,7 +49,7 @@ public class GuiEventHandler {
 	}
 	
 	@SubscribeEvent
-	public void onGuiOpen(@Nonnull GuiOpenEvent event) {
+	public void onGuiOpen(GuiOpenEvent event) {
 		JeiRuntime runtime = Internal.getRuntime();
 		if (runtime == null) {
 			return;
@@ -74,7 +73,7 @@ public class GuiEventHandler {
 	}
 
 	@SubscribeEvent
-	public void onDrawBackgroundEventPost(@Nonnull GuiScreenEvent.BackgroundDrawnEvent event) {
+	public void onDrawBackgroundEventPost(GuiScreenEvent.BackgroundDrawnEvent event) {
 		JeiRuntime runtime = Internal.getRuntime();
 		if (runtime == null) {
 			return;
@@ -89,7 +88,7 @@ public class GuiEventHandler {
 	}
 
 	@SubscribeEvent
-	public void onDrawScreenEventPost(@Nonnull GuiScreenEvent.DrawScreenEvent.Post event) {
+	public void onDrawScreenEventPost(GuiScreenEvent.DrawScreenEvent.Post event) {
 		JeiRuntime runtime = Internal.getRuntime();
 		if (runtime == null) {
 			return;
@@ -98,7 +97,7 @@ public class GuiEventHandler {
 		GuiScreen gui = event.getGui();
 		if (gui instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) gui;
-			RecipeRegistry recipeRegistry = Internal.getRuntime().getRecipeRegistry();
+			RecipeRegistry recipeRegistry = runtime.getRecipeRegistry();
 			if (recipeRegistry.getRecipeClickableArea(guiContainer, event.getMouseX() - guiContainer.guiLeft, event.getMouseY() - guiContainer.guiTop) != null) {
 				TooltipRenderer.drawHoveringText(guiContainer.mc, showRecipesText, event.getMouseX(), event.getMouseY());
 			}
@@ -111,7 +110,7 @@ public class GuiEventHandler {
 	}
 
 	@SubscribeEvent
-	public void onClientTick(@Nonnull TickEvent.ClientTickEvent event) {
+	public void onClientTick(TickEvent.ClientTickEvent event) {
 		JeiRuntime runtime = Internal.getRuntime();
 		if (runtime == null) {
 			return;

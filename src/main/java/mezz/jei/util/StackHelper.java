@@ -52,7 +52,7 @@ public class StackHelper implements IStackHelper {
 	}
 
 	@Nullable
-	public String getOreDictEquivalent(@Nonnull Collection<ItemStack> itemStacks) {
+	public String getOreDictEquivalent(Collection<ItemStack> itemStacks) {
 		if (itemStacks.size() < 2) {
 			return null;
 		}
@@ -75,8 +75,7 @@ public class StackHelper implements IStackHelper {
 	 * Returns a list of items in slots that complete the recipe defined by requiredStacksList.
 	 * Returns a result that contains missingItems if there are not enough items in availableItemStacks.
 	 */
-	@Nonnull
-	public MatchingItemsResult getMatchingItems(@Nonnull Map<Integer, ItemStack> availableItemStacks, @Nonnull Map<Integer, ? extends IGuiIngredient<ItemStack>> ingredientsMap) {
+	public MatchingItemsResult getMatchingItems(Map<Integer, ItemStack> availableItemStacks, Map<Integer, ? extends IGuiIngredient<ItemStack>> ingredientsMap) {
 		MatchingItemsResult matchingItemResult = new MatchingItemsResult();
 
 		int recipeSlotNumber = -1;
@@ -118,10 +117,10 @@ public class StackHelper implements IStackHelper {
 	 * @return the slot that contains the itemStack. returns null if no slot contains the itemStack.
 	 */
 	@Nullable
-	public Slot getSlotWithStack(@Nonnull Container container, @Nonnull Iterable<Integer> slotNumbers, @Nonnull ItemStack itemStack) {
+	public Slot getSlotWithStack(Container container, Iterable<Integer> slotNumbers, ItemStack itemStack) {
 		for (Integer slotNumber : slotNumbers) {
-			Slot slot = container.getSlot(slotNumber);
-			if (slot != null) {
+			if (slotNumber >= 0 && slotNumber < container.inventorySlots.size()) {
+				Slot slot = container.getSlot(slotNumber);
 				ItemStack slotStack = slot.getStack();
 				if (ItemStack.areItemsEqual(itemStack, slotStack) && ItemStack.areItemStackTagsEqual(itemStack, slotStack)) {
 					return slot;
@@ -131,12 +130,12 @@ public class StackHelper implements IStackHelper {
 		return null;
 	}
 
-	public boolean containsSameStacks(@Nonnull Collection<ItemStack> stacks, @Nonnull Collection<ItemStack> contains) {
+	public boolean containsSameStacks(Collection<ItemStack> stacks, Collection<ItemStack> contains) {
 		return containsSameStacks(new MatchingIterable(stacks), new MatchingIterable(contains));
 	}
 
 	/** Returns true if all stacks from "contains" are found in "stacks" and the opposite is true as well. */
-	public <R> boolean containsSameStacks(@Nonnull Iterable<ItemStackMatchable<R>> stacks, @Nonnull Iterable<ItemStackMatchable<R>> contains) {
+	public <R> boolean containsSameStacks(Iterable<ItemStackMatchable<R>> stacks, Iterable<ItemStackMatchable<R>> contains) {
 		for (ItemStackMatchable stack : contains) {
 			if (containsStack(stacks, stack) == null) {
 				return false;
@@ -152,17 +151,20 @@ public class StackHelper implements IStackHelper {
 		return true;
 	}
 
+	@Nullable
 	public Integer containsAnyStackIndexed(@Nullable Map<Integer, ItemStack> stacks, @Nullable Iterable<ItemStack> contains) {
 		MatchingIndexed matchingStacks = new MatchingIndexed(stacks);
 		MatchingIterable matchingContains = new MatchingIterable(contains);
 		return containsStackMatchable(matchingStacks, matchingContains);
 	}
 
+	@Nullable
 	public ItemStack containsStack(@Nullable Iterable<ItemStack> stacks, @Nullable ItemStack contains) {
 		List<ItemStack> containsList = contains == null ? null : Collections.singletonList(contains);
 		return containsAnyStack(stacks, containsList);
 	}
 
+	@Nullable
 	public ItemStack containsAnyStack(@Nullable Iterable<ItemStack> stacks, @Nullable Iterable<ItemStack> contains) {
 		MatchingIterable matchingStacks = new MatchingIterable(stacks);
 		MatchingIterable matchingContains = new MatchingIterable(contains);
@@ -170,7 +172,8 @@ public class StackHelper implements IStackHelper {
 	}
 
 	/* Returns an ItemStack from "stacks" if it isEquivalent to an ItemStack from "contains" */
-	public <R, T> R containsStackMatchable(@Nonnull Iterable<ItemStackMatchable<R>> stacks, @Nonnull Iterable<ItemStackMatchable<T>> contains) {
+	@Nullable
+	public <R, T> R containsStackMatchable(Iterable<ItemStackMatchable<R>> stacks, Iterable<ItemStackMatchable<T>> contains) {
 		for (ItemStackMatchable<?> containStack : contains) {
 			R matchingStack = containsStack(stacks, containStack);
 			if (matchingStack != null) {
@@ -182,7 +185,8 @@ public class StackHelper implements IStackHelper {
 	}
 
 	/* Returns an ItemStack from "stacks" if it isEquivalent to "contains" */
-	public <R> R containsStack(@Nonnull Iterable<ItemStackMatchable<R>> stacks, @Nonnull ItemStackMatchable<?> contains) {
+	@Nullable
+	public <R> R containsStack(Iterable<ItemStackMatchable<R>> stacks, ItemStackMatchable<?> contains) {
 		for (ItemStackMatchable<R> stack : stacks) {
 			if (isEquivalent(contains.getStack(), stack.getStack())) {
 				return stack.getResult();
@@ -223,7 +227,6 @@ public class StackHelper implements IStackHelper {
 	}
 
 	@Override
-	@Nonnull
 	public List<ItemStack> getSubtypes(@Nullable ItemStack itemStack) {
 		if (itemStack == null) {
 			Log.error("Null itemStack", new NullPointerException());
@@ -243,8 +246,7 @@ public class StackHelper implements IStackHelper {
 		return getSubtypes(item, itemStack.stackSize);
 	}
 
-	@Nonnull
-	public List<ItemStack> getSubtypes(@Nonnull final Item item, final int stackSize) {
+	public List<ItemStack> getSubtypes(final Item item, final int stackSize) {
 		List<ItemStack> itemStacks = new ArrayList<ItemStack>();
 
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
@@ -278,7 +280,6 @@ public class StackHelper implements IStackHelper {
 	}
 
 	@Override
-	@Nonnull
 	public List<ItemStack> getAllSubtypes(@Nullable Iterable stacks) {
 		if (stacks == null) {
 			Log.error("Null stacks", new NullPointerException());
@@ -290,7 +291,7 @@ public class StackHelper implements IStackHelper {
 		return allSubtypes;
 	}
 
-	private void getAllSubtypes(@Nonnull List<ItemStack> subtypesList, @Nonnull Iterable stacks) {
+	private void getAllSubtypes(List<ItemStack> subtypesList, Iterable stacks) {
 		for (Object obj : stacks) {
 			if (obj instanceof ItemStack) {
 				ItemStack itemStack = (ItemStack) obj;
@@ -305,7 +306,6 @@ public class StackHelper implements IStackHelper {
 	}
 
 	@Override
-	@Nonnull
 	public List<ItemStack> toItemStackList(@Nullable Object stacks) {
 		if (stacks == null) {
 			return Collections.emptyList();
@@ -316,7 +316,7 @@ public class StackHelper implements IStackHelper {
 		return itemStackListBuilder.build();
 	}
 
-	private void toItemStackList(@Nonnull UniqueItemStackListBuilder itemStackListBuilder, @Nullable Object input) {
+	private void toItemStackList(UniqueItemStackListBuilder itemStackListBuilder, @Nullable Object input) {
 		if (input instanceof ItemStack) {
 			ItemStack stack = (ItemStack) input;
 			itemStackListBuilder.add(stack);
@@ -334,8 +334,7 @@ public class StackHelper implements IStackHelper {
 		}
 	}
 
-	@Nonnull
-	public String getModId(@Nonnull ItemStack stack) {
+	public String getModId(ItemStack stack) {
 		Item item = stack.getItem();
 		if (item == null) {
 			throw new NullPointerException(nullItemInStack);
@@ -350,13 +349,11 @@ public class StackHelper implements IStackHelper {
 		return itemName.getResourceDomain();
 	}
 
-	@Nonnull
-	public String getUniqueIdentifierForStack(@Nonnull ItemStack stack) {
+	public String getUniqueIdentifierForStack(ItemStack stack) {
 		return getUniqueIdentifierForStack(stack, UidMode.NORMAL);
 	}
 
-	@Nonnull
-	public String getUniqueIdentifierForStack(@Nonnull ItemStack stack, @Nonnull UidMode mode) {
+	public String getUniqueIdentifierForStack(ItemStack stack, UidMode mode) {
 		if (uidCacheEnabled) {
 			String result = uidCache.get(mode).get(stack);
 			if (result != null) {
@@ -394,15 +391,12 @@ public class StackHelper implements IStackHelper {
 			NBTTagCompound serializedNbt = stack.serializeNBT();
 			NBTTagCompound nbtTagCompound = serializedNbt.getCompoundTag("tag").copy();
 			if (serializedNbt.hasKey("ForgeCaps")) {
-				if (nbtTagCompound == null) {
-					nbtTagCompound = new NBTTagCompound();
-				}
 				NBTTagCompound forgeCaps = serializedNbt.getCompoundTag("ForgeCaps");
 				if (!forgeCaps.hasNoTags()) { // ForgeCaps should never be empty
 					nbtTagCompound.setTag("ForgeCaps", forgeCaps);
 				}
 			}
-			if (nbtTagCompound != null && !nbtTagCompound.hasNoTags()) {
+			if (!nbtTagCompound.hasNoTags()) {
 				itemKey.append(':').append(nbtTagCompound);
 			}
 		} else if (stack.getHasSubtypes()) {
@@ -420,8 +414,7 @@ public class StackHelper implements IStackHelper {
 		NORMAL, WILDCARD, FULL
 	}
 
-	@Nonnull
-	public List<String> getUniqueIdentifiersWithWildcard(@Nonnull ItemStack itemStack) {
+	public List<String> getUniqueIdentifiersWithWildcard(ItemStack itemStack) {
 		String uid = getUniqueIdentifierForStack(itemStack, UidMode.NORMAL);
 		String uidWild = getUniqueIdentifierForStack(itemStack, UidMode.WILDCARD);
 
@@ -432,69 +425,61 @@ public class StackHelper implements IStackHelper {
 		}
 	}
 
-	public int addStack(@Nonnull Container container, @Nonnull Collection<Integer> slotIndexes, @Nonnull ItemStack stack, boolean doAdd) {
+	public int addStack(Container container, Collection<Integer> slotIndexes, ItemStack stack, boolean doAdd) {
 		int added = 0;
 		// Add to existing stacks first
-		for (Integer slotIndex : slotIndexes) {
-			Slot slot = container.getSlot(slotIndex);
-			if (slot == null) {
-				continue;
-			}
+		for (final Integer slotIndex : slotIndexes) {
+			if (slotIndex >= 0 && slotIndex < container.inventorySlots.size()) {
+				final Slot slot = container.getSlot(slotIndex);
+				final ItemStack inventoryStack = slot.getStack();
+				// Check that the slot's contents are stackable with this stack
+				if (inventoryStack != null &&
+						inventoryStack.getItem() != null &&
+						inventoryStack.isStackable() &&
+						inventoryStack.isItemEqual(stack) &&
+						ItemStack.areItemStackTagsEqual(inventoryStack, stack)) {
 
-			ItemStack inventoryStack = slot.getStack();
-			if (inventoryStack == null || inventoryStack.getItem() == null) {
-				continue;
-			}
+					final int remain = stack.stackSize - added;
+					final int maxStackSize = Math.min(slot.getItemStackLimit(inventoryStack), inventoryStack.getMaxStackSize());
+					final int space = maxStackSize - inventoryStack.stackSize;
+					if (space > 0) {
 
-			// Already occupied by different item, skip this slot.
-			if (!inventoryStack.isStackable() || !inventoryStack.isItemEqual(stack) || !ItemStack.areItemStackTagsEqual(inventoryStack, stack)) {
-				continue;
-			}
+						// Enough space
+						if (space >= remain) {
+							if (doAdd) {
+								inventoryStack.stackSize += remain;
+							}
+							return stack.stackSize;
+						}
 
-			int remain = stack.stackSize - added;
-			int maxStackSize = Math.min(slot.getItemStackLimit(inventoryStack), inventoryStack.getMaxStackSize());
-			int space = maxStackSize - inventoryStack.stackSize;
-			if (space <= 0) {
-				continue;
-			}
+						// Not enough space
+						if (doAdd) {
+							inventoryStack.stackSize = inventoryStack.getMaxStackSize();
+						}
 
-			// Enough space
-			if (space >= remain) {
-				if (doAdd) {
-					inventoryStack.stackSize += remain;
+						added += space;
+					}
 				}
-				return stack.stackSize;
 			}
-
-			// Not enough space
-			if (doAdd) {
-				inventoryStack.stackSize = inventoryStack.getMaxStackSize();
-			}
-
-			added += space;
 		}
 
 		if (added >= stack.stackSize) {
 			return added;
 		}
 
-		for (Integer slotIndex : slotIndexes) {
-			Slot slot = container.getSlot(slotIndex);
-			if (slot == null) {
-				continue;
+		for (final Integer slotIndex : slotIndexes) {
+			if (slotIndex >= 0 && slotIndex < container.inventorySlots.size()) {
+				final Slot slot = container.getSlot(slotIndex);
+				final ItemStack inventoryStack = slot.getStack();
+				if (inventoryStack == null) {
+					if (doAdd) {
+						ItemStack stackToAdd = stack.copy();
+						stackToAdd.stackSize = stack.stackSize - added;
+						slot.putStack(stackToAdd);
+					}
+					return stack.stackSize;
+				}
 			}
-
-			ItemStack inventoryStack = slot.getStack();
-			if (inventoryStack != null) {
-				continue;
-			}
-
-			if (doAdd) {
-				ItemStack stackToAdd = stack.copy();
-				stackToAdd.stackSize = stack.stackSize - added;
-				slot.putStack(stackToAdd);
-			}
-			return stack.stackSize;
 		}
 
 		return added;
@@ -518,7 +503,7 @@ public class StackHelper implements IStackHelper {
 		@Nonnull
 		protected final Iterator<T> delegate;
 
-		public DelegateIterator(@Nonnull Iterator<T> delegate) {
+		public DelegateIterator(Iterator<T> delegate) {
 			this.delegate = delegate;
 		}
 

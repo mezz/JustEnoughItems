@@ -1,5 +1,12 @@
 package mezz.jei.plugins.jei;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.awt.Rectangle;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import mezz.jei.api.BlankModPlugin;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
@@ -17,17 +24,10 @@ import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 @JEIPlugin
 public class JEIInternalPlugin extends BlankModPlugin {
 	@Override
-	public void register(@Nonnull IModRegistry registry) {
+	public void register(IModRegistry registry) {
 		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 
@@ -81,7 +81,7 @@ public class JEIInternalPlugin extends BlankModPlugin {
 	}
 
 	@Override
-	public void onRuntimeAvailable(@Nonnull IJeiRuntime jeiRuntime) {
+	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 		super.onRuntimeAvailable(jeiRuntime);
 
 		if (Config.isDebugModeEnabled()) {

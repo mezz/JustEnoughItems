@@ -1,5 +1,9 @@
 package mezz.jei.plugins.vanilla.crafting;
 
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
@@ -11,16 +15,9 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.HoverChecker;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
-
 public abstract class AbstractShapelessRecipeWrapper extends VanillaRecipeWrapper implements ICraftingRecipeWrapper {
 	private static final double shapelessIconScale = 0.5;
-	@Nonnull
 	private final IDrawable shapelessIcon;
-	@Nonnull
 	private final HoverChecker shapelessIconHoverChecker;
 
 	public AbstractShapelessRecipeWrapper(IGuiHelper guiHelper) {
@@ -34,7 +31,7 @@ public abstract class AbstractShapelessRecipeWrapper extends VanillaRecipeWrappe
 	}
 
 	@Override
-	public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
+	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 		super.drawInfo(minecraft, recipeWidth, recipeHeight, mouseX, mouseY);
 
 		if (hasMultipleIngredients()) {

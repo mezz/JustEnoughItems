@@ -1,14 +1,12 @@
 package mezz.jei.network.packets;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
 
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 
 public class PacketDeletePlayerItem extends PacketJEI {
 	private ItemStack itemStack;
@@ -17,7 +15,7 @@ public class PacketDeletePlayerItem extends PacketJEI {
 
 	}
 
-	public PacketDeletePlayerItem(@Nonnull ItemStack itemStack) {
+	public PacketDeletePlayerItem(ItemStack itemStack) {
 		this.itemStack = itemStack;
 	}
 
@@ -27,7 +25,7 @@ public class PacketDeletePlayerItem extends PacketJEI {
 	}
 
 	@Override
-	public void writePacketData(PacketBuffer buf) throws IOException {
+	public void writePacketData(PacketBuffer buf) {
 		buf.writeItemStackToBuffer(itemStack);
 	}
 

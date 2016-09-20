@@ -1,6 +1,5 @@
 package mezz.jei.api;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.item.Item;
@@ -18,7 +17,7 @@ public interface INbtIgnoreList {
 	 * @deprecated since 3.6.0. all nbt is now ignored by default. See {@link ISubtypeRegistry}.
 	 */
 	@Deprecated
-	void ignoreNbtTagNames(@Nonnull Item item, String... nbtTagNames);
+	void ignoreNbtTagNames(Item item, String... nbtTagNames);
 
 	/**
 	 * Tell JEI to ignore NBT tags when comparing items for recipes.
@@ -36,5 +35,5 @@ public interface INbtIgnoreList {
 	 */
 	@Deprecated
 	@Nullable
-	NBTTagCompound getNbt(@Nonnull ItemStack itemStack);
+	NBTTagCompound getNbt(ItemStack itemStack);
 }

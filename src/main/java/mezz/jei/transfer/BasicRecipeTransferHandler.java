@@ -1,6 +1,5 @@
 package mezz.jei.transfer;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,10 +27,9 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 public class BasicRecipeTransferHandler<C extends Container> implements IRecipeTransferHandler<C> {
-	@Nonnull
 	private final IRecipeTransferInfo<C> transferHelper;
 
-	public BasicRecipeTransferHandler(@Nonnull IRecipeTransferInfo<C> transferHelper) {
+	public BasicRecipeTransferHandler(IRecipeTransferInfo<C> transferHelper) {
 		this.transferHelper = transferHelper;
 	}
 
@@ -47,7 +45,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 
 	@Nullable
 	@Override
-	public IRecipeTransferError transferRecipe(@Nonnull C container, @Nonnull IRecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean maxTransfer, boolean doTransfer) {
+	public IRecipeTransferError transferRecipe(C container, IRecipeLayout recipeLayout, EntityPlayer player, boolean maxTransfer, boolean doTransfer) {
 		IRecipeTransferHandlerHelper handlerHelper = Internal.getHelpers().recipeTransferHandlerHelper();
 		StackHelper stackHelper = Internal.getStackHelper();
 
@@ -84,19 +82,21 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 		int emptySlotCount = 0;
 
 		for (Slot slot : craftingSlots.values()) {
-			if (slot.getHasStack()) {
+			final ItemStack stack = slot.getStack();
+			if (stack != null) {
 				if (!slot.canTakeStack(player)) {
 					Log.error("Recipe Transfer helper {} does not work for container {}. Player can't move item out of Crafting Slot number {}", transferHelper.getClass(), container.getClass(), slot.slotNumber);
 					return handlerHelper.createInternalError();
 				}
 				filledCraftSlotCount++;
-				availableItemStacks.put(slot.slotNumber, slot.getStack().copy());
+				availableItemStacks.put(slot.slotNumber, stack.copy());
 			}
 		}
 
 		for (Slot slot : inventorySlots.values()) {
-			if (slot.getHasStack()) {
-				availableItemStacks.put(slot.slotNumber, slot.getStack().copy());
+			final ItemStack stack = slot.getStack();
+			if (stack != null) {
+				availableItemStacks.put(slot.slotNumber, stack.copy());
 			} else {
 				emptySlotCount++;
 			}
@@ -125,16 +125,12 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 		for (Map.Entry<Integer, Integer> entry : matchingItemsResult.matchingItems.entrySet()) {
 			int craftNumber = entry.getKey();
 			int slotNumber = craftingSlotIndexes.get(craftNumber);
-			if (slotNumber >= container.inventorySlots.size()) {
+			if (slotNumber < 0 || slotNumber >= container.inventorySlots.size()) {
 				Log.error("Recipes Transfer Helper {} references slot {} outside of the inventory's size {}", transferHelper.getClass(), slotNumber, container.inventorySlots.size());
 				return handlerHelper.createInternalError();
 			}
 			Slot slot = container.getSlot(slotNumber);
 			ItemStack stack = container.getSlot(entry.getValue()).getStack();
-			if (slot == null) {
-				Log.error("The slot number {} does not exist in the container.", slotNumber);
-				return handlerHelper.createInternalError();
-			}
 			if (!slot.isItemValid(stack)) {
 				Log.error("The ItemStack {} is not valid for the slot number {}", stack, slotNumber);
 				return handlerHelper.createInternalError();

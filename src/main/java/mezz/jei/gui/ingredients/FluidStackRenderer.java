@@ -1,6 +1,5 @@
 package mezz.jei.gui.ingredients;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,12 +41,12 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	}
 
 	@Override
-	public void setIngredients(@Nonnull Collection<FluidStack> ingredients) {
+	public void setIngredients(Collection<FluidStack> ingredients) {
 
 	}
 
 	@Override
-	public void draw(@Nonnull Minecraft minecraft, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
+	public void draw(Minecraft minecraft, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
 		GlStateManager.enableBlend();
 		GlStateManager.enableAlpha();
 
@@ -66,7 +65,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		GlStateManager.disableBlend();
 	}
 
-	private void drawFluid(@Nonnull Minecraft minecraft, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
+	private void drawFluid(Minecraft minecraft, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
 		if (fluidStack == null) {
 			return;
 		}
@@ -147,9 +146,8 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		tessellator.draw();
 	}
 
-	@Nonnull
 	@Override
-	public List<String> getTooltip(@Nonnull Minecraft minecraft, @Nonnull FluidStack fluidStack) {
+	public List<String> getTooltip(Minecraft minecraft, FluidStack fluidStack) {
 		List<String> tooltip = new ArrayList<String>();
 		Fluid fluidType = fluidStack.getFluid();
 		if (fluidType == null) {
@@ -171,7 +169,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	}
 
 	@Override
-	public FontRenderer getFontRenderer(@Nonnull Minecraft minecraft, @Nonnull FluidStack fluidStack) {
+	public FontRenderer getFontRenderer(Minecraft minecraft, FluidStack fluidStack) {
 		return minecraft.fontRendererObj;
 	}
 }

@@ -1,6 +1,5 @@
 package mezz.jei.util;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,18 +20,18 @@ import org.apache.commons.lang3.StringUtils;
 
 public class Commands {
 
-	public static void giveFullStack(@Nonnull ItemStack itemstack) {
+	public static void giveFullStack(ItemStack itemstack) {
 		giveStack(itemstack, itemstack.getMaxStackSize());
 	}
 
-	public static void giveOneFromStack(@Nonnull ItemStack itemstack) {
+	public static void giveOneFromStack(ItemStack itemstack) {
 		giveStack(itemstack, 1);
 	}
 
 	/**
 	 * /give <player> <item> [amount] [data] [dataTag]
 	 */
-	public static void giveStack(@Nonnull ItemStack itemStack, int amount) {
+	public static void giveStack(ItemStack itemStack, int amount) {
 		if (SessionData.isJeiOnServer()) {
 			ItemStack sendStack = itemStack.copy();
 			sendStack.stackSize = amount;
@@ -46,7 +45,7 @@ public class Commands {
 	/**
 	 * Fallback for when JEI is not on the server, tries to use the /give command.
 	 */
-	private static void giveStackVanilla(@Nonnull ItemStack itemStack, int amount) {
+	private static void giveStackVanilla(ItemStack itemStack, int amount) {
 		Item item = itemStack.getItem();
 		if (item == null) {
 			String stackInfo = ErrorUtil.getItemStackInfo(itemStack);

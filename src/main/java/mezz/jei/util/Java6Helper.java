@@ -1,10 +1,12 @@
 package mezz.jei.util;
 
+import javax.annotation.Nullable;
+
 /**
  * Some useful Java library methods are only available in Java 7 so I copy them here.
  */
 public class Java6Helper {
-	public static boolean equals(Object a, Object b) {
+	public static boolean equals(@Nullable Object a, @Nullable Object b) {
 		return (a == b) || (a != null && a.equals(b));
 	}
 

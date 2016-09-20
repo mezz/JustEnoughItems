@@ -1,6 +1,5 @@
 package mezz.jei;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,19 +26,13 @@ import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class ItemRegistryFactory {
-	@Nonnull
 	private final Set<String> itemNameSet = new HashSet<String>();
-	@Nonnull
 	private final List<ItemStack> itemList = new ArrayList<ItemStack>();
-	@Nonnull
 	private final List<ItemStack> fuels = new ArrayList<ItemStack>();
-	@Nonnull
 	private final List<ItemStack> potionIngredients = new ArrayList<ItemStack>();
 
-	@Nonnull
 	private final Set<String> itemWildcardNameSet = new HashSet<String>();
 	/** The order that items were added, using wildcard. Used to keep similar items together. */
-	@Nonnull
 	private final List<String> itemAddedOrder = new ArrayList<String>();
 
 	public ItemRegistry createItemRegistry() {
@@ -146,7 +139,7 @@ public class ItemRegistryFactory {
 		}
 	}
 
-	private void addItemStack(@Nonnull ItemStack stack) {
+	private void addItemStack(ItemStack stack) {
 		StackHelper stackHelper = Internal.getStackHelper();
 		try {
 			final String itemKey = stackHelper.getUniqueIdentifierForStack(stack, StackHelper.UidMode.FULL);

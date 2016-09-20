@@ -1,6 +1,5 @@
 package mezz.jei.plugins.vanilla;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import mezz.jei.api.BlankModPlugin;
@@ -48,7 +47,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 @JEIPlugin
 public class VanillaPlugin extends BlankModPlugin {
 	@Override
-	public void register(@Nonnull IModRegistry registry) {
+	public void register(IModRegistry registry) {
 		IItemRegistry itemRegistry = registry.getItemRegistry();
 		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
 
@@ -64,7 +63,7 @@ public class VanillaPlugin extends BlankModPlugin {
 		subtypeRegistry.registerNbtInterpreter(Items.BANNER, new ISubtypeRegistry.ISubtypeInterpreter() {
 			@Nullable
 			@Override
-			public String getSubtypeInfo(@Nonnull ItemStack itemStack) {
+			public String getSubtypeInfo(ItemStack itemStack) {
 				EnumDyeColor baseColor = ItemBanner.getBaseColor(itemStack);
 				return baseColor.toString();
 			}
@@ -72,7 +71,7 @@ public class VanillaPlugin extends BlankModPlugin {
 		subtypeRegistry.registerNbtInterpreter(Items.SPAWN_EGG, new ISubtypeRegistry.ISubtypeInterpreter() {
 			@Nullable
 			@Override
-			public String getSubtypeInfo(@Nonnull ItemStack itemStack) {
+			public String getSubtypeInfo(ItemStack itemStack) {
 				return ItemMonsterPlacer.getEntityIdFromItem(itemStack);
 			}
 		});

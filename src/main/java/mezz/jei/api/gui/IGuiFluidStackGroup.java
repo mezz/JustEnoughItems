@@ -1,6 +1,5 @@
 package mezz.jei.api.gui;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
@@ -31,11 +30,11 @@ public interface IGuiFluidStackGroup extends IGuiIngredientGroup<FluidStack> {
 	void init(int slotIndex, boolean input, int xPosition, int yPosition, int width, int height, int capacityMb, boolean showCapacity, @Nullable IDrawable overlay);
 
 	@Override
-	void set(int slotIndex, @Nonnull Collection<FluidStack> fluidStacks);
+	void set(int slotIndex, Collection<FluidStack> fluidStacks);
 
 	@Override
-	void set(int slotIndex, @Nonnull FluidStack fluidStack);
+	void set(int slotIndex, FluidStack fluidStack);
 
 	@Override
-	void addTooltipCallback(@Nonnull ITooltipCallback<FluidStack> tooltipCallback);
+	void addTooltipCallback(ITooltipCallback<FluidStack> tooltipCallback);
 }

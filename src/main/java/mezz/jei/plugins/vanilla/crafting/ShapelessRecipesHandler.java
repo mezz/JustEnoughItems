@@ -1,7 +1,5 @@
 package mezz.jei.plugins.vanilla.crafting;
 
-import javax.annotation.Nonnull;
-
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
@@ -12,39 +10,34 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 
 public class ShapelessRecipesHandler implements IRecipeHandler<ShapelessRecipes> {
-	@Nonnull
 	private final IGuiHelper guiHelper;
 
-	public ShapelessRecipesHandler(@Nonnull IGuiHelper guiHelper) {
+	public ShapelessRecipesHandler(IGuiHelper guiHelper) {
 		this.guiHelper = guiHelper;
 	}
 
 	@Override
-	@Nonnull
 	public Class<ShapelessRecipes> getRecipeClass() {
 		return ShapelessRecipes.class;
 	}
 
-	@Nonnull
 	@Override
 	public String getRecipeCategoryUid() {
 		return VanillaRecipeCategoryUid.CRAFTING;
 	}
 
-	@Nonnull
 	@Override
-	public String getRecipeCategoryUid(@Nonnull ShapelessRecipes recipe) {
+	public String getRecipeCategoryUid(ShapelessRecipes recipe) {
 		return VanillaRecipeCategoryUid.CRAFTING;
 	}
 
 	@Override
-	@Nonnull
-	public IRecipeWrapper getRecipeWrapper(@Nonnull ShapelessRecipes recipe) {
+	public IRecipeWrapper getRecipeWrapper(ShapelessRecipes recipe) {
 		return new ShapelessRecipesWrapper(guiHelper, recipe);
 	}
 
 	@Override
-	public boolean isRecipeValid(@Nonnull ShapelessRecipes recipe) {
+	public boolean isRecipeValid(ShapelessRecipes recipe) {
 		if (recipe.getRecipeOutput() == null) {
 			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
 			Log.error("Recipe has no output. {}", recipeInfo);

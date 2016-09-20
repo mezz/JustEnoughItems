@@ -1,6 +1,5 @@
 package mezz.jei.plugins.vanilla.furnace;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,8 +17,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 public class FuelRecipeMaker {
 
-	@Nonnull
-	public static List<FuelRecipe> getFuelRecipes(@Nonnull IItemRegistry itemRegistry, @Nonnull IJeiHelpers helpers) {
+	public static List<FuelRecipe> getFuelRecipes(IItemRegistry itemRegistry, IJeiHelpers helpers) {
 		IGuiHelper guiHelper = helpers.getGuiHelper();
 		IStackHelper stackHelper = helpers.getStackHelper();
 		List<ItemStack> fuelStacks = itemRegistry.getFuels();

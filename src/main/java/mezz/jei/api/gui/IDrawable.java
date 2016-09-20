@@ -1,7 +1,5 @@
 package mezz.jei.api.gui;
 
-import javax.annotation.Nonnull;
-
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
@@ -21,8 +19,8 @@ public interface IDrawable {
 
 	int getHeight();
 
-	void draw(@Nonnull Minecraft minecraft);
+	void draw(Minecraft minecraft);
 
-	void draw(@Nonnull Minecraft minecraft, int xOffset, int yOffset);
+	void draw(Minecraft minecraft, int xOffset, int yOffset);
 
 }

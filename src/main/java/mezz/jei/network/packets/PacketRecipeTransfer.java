@@ -1,6 +1,5 @@
 package mezz.jei.network.packets;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +23,7 @@ public class PacketRecipeTransfer extends PacketJEI {
 
 	}
 
-	public PacketRecipeTransfer(@Nonnull Map<Integer, Integer> recipeMap, @Nonnull List<Integer> craftingSlots, @Nonnull List<Integer> inventorySlots, boolean maxTransfer) {
+	public PacketRecipeTransfer(Map<Integer, Integer> recipeMap, List<Integer> craftingSlots, List<Integer> inventorySlots, boolean maxTransfer) {
 		this.recipeMap = recipeMap;
 		this.craftingSlots = craftingSlots;
 		this.inventorySlots = inventorySlots;
@@ -66,7 +65,7 @@ public class PacketRecipeTransfer extends PacketJEI {
 	}
 
 	@Override
-	public void writePacketData(PacketBuffer buf) throws IOException {
+	public void writePacketData(PacketBuffer buf) {
 		buf.writeVarIntToBuffer(recipeMap.size());
 		for (Map.Entry<Integer, Integer> recipeMapEntry : recipeMap.entrySet()) {
 			buf.writeVarIntToBuffer(recipeMapEntry.getKey());

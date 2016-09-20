@@ -1,6 +1,5 @@
 package mezz.jei;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,12 +48,12 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final Set<Class> unhandledRecipeClasses;
 
 	public RecipeRegistry(
-			@Nonnull List<IRecipeCategory> recipeCategories,
-			@Nonnull List<IRecipeHandler> recipeHandlers,
-			@Nonnull List<IRecipeTransferHandler> recipeTransferHandlers,
-			@Nonnull List<Object> recipes,
-			@Nonnull Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap,
-			@Nonnull Multimap<String, ItemStack> craftItemsForCategories
+			List<IRecipeCategory> recipeCategories,
+			List<IRecipeHandler> recipeHandlers,
+			List<IRecipeTransferHandler> recipeTransferHandlers,
+			List<Object> recipes,
+			Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap,
+			Multimap<String, ItemStack> craftItemsForCategories
 	) {
 		this.recipeCategoriesMap = buildRecipeCategoriesMap(recipeCategories);
 		this.recipeTransferHandlers = buildRecipeTransferHandlerTable(recipeTransferHandlers);
@@ -92,7 +91,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		this.categoriesForCraftItemKeys = categoriesForCraftItemKeysBuilder.build();
 	}
 
-	private static ImmutableMap<String, IRecipeCategory> buildRecipeCategoriesMap(@Nonnull List<IRecipeCategory> recipeCategories) {
+	private static ImmutableMap<String, IRecipeCategory> buildRecipeCategoriesMap(List<IRecipeCategory> recipeCategories) {
 		ImmutableMap.Builder<String, IRecipeCategory> mapBuilder = ImmutableMap.builder();
 		for (IRecipeCategory recipeCategory : recipeCategories) {
 			mapBuilder.put(recipeCategory.getUid(), recipeCategory);
@@ -100,7 +99,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return mapBuilder.build();
 	}
 
-	private static ImmutableList<IRecipeHandler> buildRecipeHandlersList(@Nonnull List<IRecipeHandler> recipeHandlers) {
+	private static ImmutableList<IRecipeHandler> buildRecipeHandlersList(List<IRecipeHandler> recipeHandlers) {
 		ImmutableList.Builder<IRecipeHandler> listBuilder = ImmutableList.builder();
 		Set<Class> recipeHandlerClasses = new HashSet<Class>();
 		for (IRecipeHandler recipeHandler : recipeHandlers) {
@@ -120,7 +119,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return listBuilder.build();
 	}
 
-	private static ImmutableTable<Class, String, IRecipeTransferHandler> buildRecipeTransferHandlerTable(@Nonnull List<IRecipeTransferHandler> recipeTransferHandlers) {
+	private static ImmutableTable<Class, String, IRecipeTransferHandler> buildRecipeTransferHandlerTable(List<IRecipeTransferHandler> recipeTransferHandlers) {
 		ImmutableTable.Builder<Class, String, IRecipeTransferHandler> builder = ImmutableTable.builder();
 		for (IRecipeTransferHandler recipeTransferHelper : recipeTransferHandlers) {
 			builder.put(recipeTransferHelper.getContainerClass(), recipeTransferHelper.getRecipeCategoryUid(), recipeTransferHelper);
@@ -148,7 +147,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		addRecipe(recipe, recipe.getClass());
 	}
 
-	private <T> void addRecipe(@Nonnull T recipe, Class<? extends T> recipeClass) {
+	private <T> void addRecipe(T recipe, Class<? extends T> recipeClass) {
 		IRecipeHandler<T> recipeHandler = getRecipeHandler(recipeClass);
 		if (recipeHandler == null) {
 			if (!unhandledRecipeClasses.contains(recipeClass)) {
@@ -202,7 +201,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		}
 	}
 
-	private <T> void addRecipeUnchecked(@Nonnull T recipe, IRecipeCategory recipeCategory, IRecipeHandler<T> recipeHandler) {
+	private <T> void addRecipeUnchecked(T recipe, IRecipeCategory recipeCategory, IRecipeHandler<T> recipeHandler) {
 		StackHelper stackHelper = Internal.getStackHelper();
 		IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
 
@@ -229,7 +228,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		recipesForCategories.put(recipeCategory, recipe);
 	}
 
-	@Nonnull
 	@Override
 	public ImmutableList<IRecipeCategory> getRecipeCategories() {
 		ImmutableList.Builder<IRecipeCategory> builder = ImmutableList.builder();
@@ -241,7 +239,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return builder.build();
 	}
 
-	@Nonnull
 	@Override
 	public ImmutableList<IRecipeCategory> getRecipeCategories(@Nullable List<String> recipeCategoryUids) {
 		if (recipeCategoryUids == null) {
@@ -278,7 +275,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Nullable
-	public RecipeClickableArea getRecipeClickableArea(@Nonnull GuiContainer gui, int mouseX, int mouseY) {
+	public RecipeClickableArea getRecipeClickableArea(GuiContainer gui, int mouseX, int mouseY) {
 		ImmutableCollection<RecipeClickableArea> recipeClickableAreas = recipeClickableAreasMap.get(gui.getClass());
 		for (RecipeClickableArea recipeClickableArea : recipeClickableAreas) {
 			if (recipeClickableArea.checkHover(mouseX, mouseY)) {
@@ -288,7 +285,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return null;
 	}
 
-	@Nonnull
 	@Override
 	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithInput(@Nullable ItemStack input) {
 		if (input == null) {
@@ -298,7 +294,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return recipeInputMap.getRecipeCategories(input);
 	}
 
-	@Nonnull
 	@Override
 	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithInput(@Nullable FluidStack input) {
 		if (input == null) {
@@ -308,7 +303,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return recipeInputMap.getRecipeCategories(input);
 	}
 
-	@Nonnull
 	@Override
 	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithOutput(@Nullable ItemStack output) {
 		if (output == null) {
@@ -318,7 +312,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return recipeOutputMap.getRecipeCategories(output);
 	}
 
-	@Nonnull
 	@Override
 	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithOutput(@Nullable FluidStack output) {
 		if (output == null) {
@@ -328,7 +321,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return recipeOutputMap.getRecipeCategories(output);
 	}
 
-	@Nonnull
 	@Override
 	public List<Object> getRecipesWithInput(@Nullable IRecipeCategory recipeCategory, @Nullable ItemStack input) {
 		if (recipeCategory == null) {
@@ -359,7 +351,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return recipes;
 	}
 
-	@Nonnull
 	@Override
 	public List<Object> getRecipesWithInput(@Nullable IRecipeCategory recipeCategory, @Nullable FluidStack input) {
 		if (recipeCategory == null) {
@@ -372,7 +363,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return recipeInputMap.getRecipes(recipeCategory, input);
 	}
 
-	@Nonnull
 	@Override
 	public ImmutableList<Object> getRecipesWithOutput(@Nullable IRecipeCategory recipeCategory, @Nullable ItemStack output) {
 		if (recipeCategory == null) {
@@ -385,7 +375,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return recipeOutputMap.getRecipes(recipeCategory, output);
 	}
 
-	@Nonnull
 	@Override
 	public List<Object> getRecipesWithOutput(@Nullable IRecipeCategory recipeCategory, @Nullable FluidStack output) {
 		if (recipeCategory == null) {
@@ -397,7 +386,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return recipeOutputMap.getRecipes(recipeCategory, output);
 	}
 
-	@Nonnull
 	@Override
 	public List<Object> getRecipes(@Nullable IRecipeCategory recipeCategory) {
 		if (recipeCategory == null) {
@@ -407,9 +395,8 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return Collections.unmodifiableList(recipesForCategories.get(recipeCategory));
 	}
 
-	@Nonnull
 	@Override
-	public ImmutableCollection<ItemStack> getCraftingItems(@Nonnull IRecipeCategory recipeCategory) {
+	public ImmutableCollection<ItemStack> getCraftingItems(IRecipeCategory recipeCategory) {
 		return craftItemsForCategories.get(recipeCategory);
 	}
 

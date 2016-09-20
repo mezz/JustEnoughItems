@@ -18,7 +18,6 @@ package mezz.jei.util.color;
  * available at http://lokeshdhakar.com/projects/color-thief/
  */
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -38,7 +37,7 @@ public class ColorThief {
 	 * @return the dominant color as RGB array
 	 */
 	@Nullable
-	public static int[] getColor(@Nonnull BufferedImage sourceImage) {
+	public static int[] getColor(BufferedImage sourceImage) {
 		int[][] palette = getPalette(sourceImage, 5);
 		if (palette == null) {
 			return null;
@@ -61,7 +60,7 @@ public class ColorThief {
 	 * @return the dominant color as RGB array
 	 */
 	@Nullable
-	public static int[] getColor(@Nonnull BufferedImage sourceImage, int quality, boolean ignoreWhite) {
+	public static int[] getColor(BufferedImage sourceImage, int quality, boolean ignoreWhite) {
 		int[][] palette = getPalette(sourceImage, 5, quality, ignoreWhite);
 		if (palette == null) {
 			return null;
@@ -78,7 +77,7 @@ public class ColorThief {
 	 * @return the palette as array of RGB arrays
 	 */
 	@Nullable
-	public static int[][] getPalette(@Nonnull BufferedImage sourceImage, int colorCount) {
+	public static int[][] getPalette(BufferedImage sourceImage, int colorCount) {
 		MMCQ.CMap cmap = getColorMap(sourceImage, colorCount);
 		if (cmap == null) {
 			return null;
@@ -99,7 +98,7 @@ public class ColorThief {
 	 * @return the palette as array of RGB arrays
 	 */
 	@Nullable
-	public static int[][] getPalette(@Nonnull BufferedImage sourceImage, int colorCount, int quality, boolean ignoreWhite) {
+	public static int[][] getPalette(BufferedImage sourceImage, int colorCount, int quality, boolean ignoreWhite) {
 		MMCQ.CMap cmap = getColorMap(sourceImage, colorCount, quality, ignoreWhite);
 		if (cmap == null) {
 			return null;
@@ -115,7 +114,7 @@ public class ColorThief {
 	 * @return the color map
 	 */
 	@Nullable
-	public static MMCQ.CMap getColorMap(@Nonnull BufferedImage sourceImage, int colorCount) {
+	public static MMCQ.CMap getColorMap(BufferedImage sourceImage, int colorCount) {
 		return getColorMap(sourceImage, colorCount, DEFAULT_QUALITY, DEFAULT_IGNORE_WHITE);
 	}
 
@@ -132,7 +131,7 @@ public class ColorThief {
 	 * @return the color map
 	 */
 	@Nullable
-	public static MMCQ.CMap getColorMap(@Nonnull BufferedImage sourceImage, int colorCount, int quality, boolean ignoreWhite) {
+	public static MMCQ.CMap getColorMap(BufferedImage sourceImage, int colorCount, int quality, boolean ignoreWhite) {
 		int[][] pixelArray;
 
 		switch (sourceImage.getType()) {
@@ -163,8 +162,7 @@ public class ColorThief {
 	 * @param ignoreWhite if <code>true</code>, white pixels are ignored
 	 * @return an array of pixels (each an RGB int array)
 	 */
-	@Nonnull
-	private static int[][] getPixelsFast(@Nonnull BufferedImage sourceImage, int quality, boolean ignoreWhite) {
+	private static int[][] getPixelsFast(BufferedImage sourceImage, int quality, boolean ignoreWhite) {
 		DataBufferByte imageData = (DataBufferByte) sourceImage
 				.getRaster()
 				.getDataBuffer();
@@ -257,8 +255,7 @@ public class ColorThief {
 	 * @param ignoreWhite if <code>true</code>, white pixels are ignored
 	 * @return an array of pixels (each an RGB int array)
 	 */
-	@Nonnull
-	private static int[][] getPixelsSlow(@Nonnull BufferedImage sourceImage, int quality, boolean ignoreWhite) {
+	private static int[][] getPixelsSlow(BufferedImage sourceImage, int quality, boolean ignoreWhite) {
 		int width = sourceImage.getWidth();
 		int height = sourceImage.getHeight();
 
