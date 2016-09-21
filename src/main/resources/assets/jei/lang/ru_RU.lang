@@ -1,5 +1,5 @@
 # Tooltips
-jei.tooltip.config=Конфигурация
+jei.tooltip.config=Конфигурация JEI
 jei.tooltip.show.recipes=Показать рецепты
 jei.tooltip.show.all.recipes=Показать все рецепты
 jei.tooltip.delete.item=Нажмите, чтобы удалить
@@ -26,7 +26,7 @@ key.jei.focusSearch=Выбрать строку поиска
 key.jei.showRecipe=Показывать рецепты предметов
 key.jei.showUses=Показывать применения предметов
 key.jei.recipeBack=Показать предыдущую страницу рецептов
-key.jei.toggleCheatMode=Переключить предметный Чит-Режим
+key.jei.toggleCheatMode=Переключить режим жульничества
 
 # Config
 config.jei.default=По-умолчанию
@@ -72,7 +72,7 @@ config.jei.advanced.colorSearchEnabled.comment=Искать предметы п�
 config.jei.advanced.debugModeEnabled=Режим отладки
 config.jei.advanced.debugModeEnabled.comment=Добавляет разные вещи, чтобы помочь в разработке JEI.
 config.jei.advanced.centerSearchBarEnabled=Строка поиска по центру
-config.jei.advanced.centerSearchBarEnabled.comment=Перемещение JEI строки поиска в центр нижней части экрана.
+config.jei.advanced.centerSearchBarEnabled.comment=Переместить строку поиска JEI в центр нижней части экрана.
 
 config.jei.addons=Дополнения
 config.jei.addons.comment=Категория для настроек дополнений JEI.
