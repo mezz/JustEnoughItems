@@ -72,6 +72,16 @@ public class ColorGetter {
 	}
 
 	public static List<Color> getColors(ItemStack itemStack, int colorCount) {
+		try {
+			return _getColors(itemStack, colorCount);
+		} catch (RuntimeException ignored) {
+			return Collections.emptyList();
+		} catch (LinkageError ignored) {
+			return Collections.emptyList();
+		}
+	}
+
+	private static List<Color> _getColors(ItemStack itemStack, int colorCount) {
 		final Item item = itemStack.getItem();
 		if (item == null) {
 			return Collections.emptyList();

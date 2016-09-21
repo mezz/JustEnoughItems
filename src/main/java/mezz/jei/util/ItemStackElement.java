@@ -140,15 +140,7 @@ public class ItemStackElement {
 			return "";
 		}
 
-		final Collection<String> colorNames;
-		try {
-			colorNames = colorNamer.getColorNames(itemStack);
-		} catch (RuntimeException ignored) {
-			return "";
-		} catch (LinkageError ignored) {
-			return "";
-		}
-
+		Collection<String> colorNames = colorNamer.getColorNames(itemStack);
 		return Joiner.on(' ').join(colorNames).toLowerCase();
 	}
 
