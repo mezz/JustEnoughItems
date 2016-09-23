@@ -54,6 +54,7 @@ Plugin Examples (how to use the API)
 The API is pretty well documented but it can still be confusing to get started without an example.
 Thankfully there are many working examples:
  * [Vanilla Minecraft](https://github.com/mezz/JustEnoughItems/tree/1.10/src/main/java/mezz/jei/plugins/vanilla) (written as a plugin in JEI to serve as a canonical example)
+ * [Iron Backpacks](https://github.com/gr8pefish/IronBackpacks/tree/master-1.10/src/main/java/gr8pefish/ironbackpacks/integration/jei)
  * [Blood Magic](https://github.com/WayofTime/BloodMagic/tree/1.9/src/main/java/WayofTime/bloodmagic/compat/jei)
  * [Botania](https://github.com/williewillus/Botania/tree/MC19/src/main/java/vazkii/botania/client/integration/jei)
  * [TechReborn](https://github.com/TechReborn/TechReborn/tree/1.10/src/main/java/techreborn/compat/jei)
