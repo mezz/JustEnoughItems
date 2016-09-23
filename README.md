@@ -2,6 +2,8 @@
 
 JustEnoughItems (JEI)
 ===============
+[![](http://cf.way2muchnoise.eu/full_just-enough-items-jei_downloads.svg)](http://minecraft.curseforge.com/projects/just-enough-items-jei) [![](http://cf.way2muchnoise.eu/versions/Available%20For%20Minecraft_just-enough-items-jei_all.svg)]((http://minecraft.curseforge.com/projects/just-enough-items-jei))
+
 JustEnoughItems is an Item and Recipe viewing mod with a focus on stability, performance, and ease of use.
 
 This means:
