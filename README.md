@@ -1,4 +1,4 @@
-[![Build Status](https://dvs1.progwml6.com/jenkins/job/JustEnoughItems/badge/icon)](https://dvs1.progwml6.com/jenkins/job/JustEnoughItems) [![](http://cf.way2muchnoise.eu/full_just-enough-items-jei_downloads.svg)](http://minecraft.curseforge.com/projects/just-enough-items-jei) [![](http://cf.way2muchnoise.eu/versions/Available%20For%20Minecraft_just-enough-items-jei_all.svg)]((http://minecraft.curseforge.com/projects/just-enough-items-jei))
+[![Build Status](https://dvs1.progwml6.com/jenkins/job/JustEnoughItems/badge/icon)](https://dvs1.progwml6.com/jenkins/job/JustEnoughItems) [![](http://cf.way2muchnoise.eu/full_just-enough-items-jei_downloads.svg)](http://minecraft.curseforge.com/projects/just-enough-items-jei) [![](http://cf.way2muchnoise.eu/versions/Available%20For%20Minecraft_just-enough-items-jei_all.svg)](http://minecraft.curseforge.com/projects/just-enough-items-jei)
 JustEnoughItems (JEI)
 ===============
 JustEnoughItems is an Item and Recipe viewing mod with a focus on stability, performance, and ease of use.
