@@ -264,6 +264,15 @@ public class RecipeRegistry implements IRecipeRegistry {
 			return null;
 		}
 
+		// first try to find the exact handler for this recipeClass
+		for (IRecipeHandler<?> recipeHandler : recipeHandlers) {
+			if (recipeHandler.getRecipeClass().equals(recipeClass)) {
+				// noinspection unchecked
+				return (IRecipeHandler<T>) recipeHandler;
+			}
+		}
+
+		// fall back on any handler that can accept this recipeClass
 		for (IRecipeHandler<?> recipeHandler : recipeHandlers) {
 			if (recipeHandler.getRecipeClass().isAssignableFrom(recipeClass)) {
 				// noinspection unchecked
