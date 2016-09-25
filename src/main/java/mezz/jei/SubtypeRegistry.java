@@ -68,12 +68,11 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 			IFluidTankProperties[] tankPropertiesList = capability.getTankProperties();
 			StringBuilder info = new StringBuilder();
 			for (IFluidTankProperties tankProperties : tankPropertiesList) {
-				FluidStack contents = tankProperties.getContents();
-				if (contents != null) {
-					Fluid fluid = contents.getFluid();
-					if (fluid != null) {
-						info.append(fluid.getName()).append(";");
-					}
+				String contentsName = getContentsName(tankProperties);
+				if (contentsName != null) {
+					info.append(contentsName).append(";");
+				} else {
+					info.append("empty").append(";");
 				}
 			}
 			if (info.length() > 0) {
@@ -82,7 +81,18 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 		}
 
 		return null;
+	}
 
+	@Nullable
+	private static String getContentsName(IFluidTankProperties fluidTankProperties) {
+		FluidStack contents = fluidTankProperties.getContents();
+		if (contents != null) {
+			Fluid fluid = contents.getFluid();
+			if (fluid != null) {
+				return fluid.getName();
+			}
+		}
+		return null;
 	}
 
 	private static class AllNbt implements ISubtypeInterpreter {
