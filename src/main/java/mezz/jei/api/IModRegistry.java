@@ -3,6 +3,7 @@ package mezz.jei.api;
 import java.util.List;
 
 import mezz.jei.api.gui.IAdvancedGuiHandler;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
@@ -24,8 +25,17 @@ public interface IModRegistry {
 	/**
 	 * Get useful functions relating to items.
 	 * @since JEI 2.27.0
+	 * @deprecated since JEI 3.11.0. Use {@link #getIngredientRegistry()} instead.
 	 */
+	@Deprecated
 	IItemRegistry getItemRegistry();
+
+	/**
+	 * Get useful functions relating to recipe ingredients.
+	 *
+	 * @since JEI 3.11.0
+	 */
+	IIngredientRegistry getIngredientRegistry();
 
 	/**
 	 * Add the recipe categories provided by this plugin.

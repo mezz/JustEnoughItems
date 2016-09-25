@@ -1,5 +1,6 @@
 package mezz.jei.api.recipe;
 
+import mezz.jei.api.gui.IRecipeLayout;
 import net.minecraft.client.Minecraft;
 
 /**
@@ -13,6 +14,12 @@ public abstract class BlankRecipeCategory<T extends IRecipeWrapper> implements I
 
 	@Override
 	public void drawAnimations(Minecraft minecraft) {
+
+	}
+
+	@Override
+	@Deprecated
+	public void setRecipe(IRecipeLayout recipeLayout, T recipeWrapper) {
 
 	}
 }

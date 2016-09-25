@@ -19,6 +19,7 @@ import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.util.AnnotatedInstanceUtil;
 import mezz.jei.util.Log;
+import mezz.jei.util.ModIdUtil;
 import mezz.jei.util.ModRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -153,13 +154,30 @@ public class ProxyCommonClient extends ProxyCommon {
 		Internal.setHelpers(new JeiHelpers());
 		Internal.getStackHelper().enableUidCache();
 
-		ItemRegistryFactory itemRegistryFactory = new ItemRegistryFactory();
-		ItemRegistry itemRegistry = itemRegistryFactory.createItemRegistry();
-		Internal.setItemRegistry(itemRegistry);
-
-		ModRegistry modRegistry = new ModRegistry(Internal.getHelpers(), itemRegistry);
+		ModIngredientRegistration modIngredientRegistry = new ModIngredientRegistration();
 
 		Iterator<IModPlugin> iterator = plugins.iterator();
+		while (iterator.hasNext()) {
+			IModPlugin plugin = iterator.next();
+			try {
+				plugin.registerIngredients(modIngredientRegistry);
+			} catch (RuntimeException e) {
+				Log.error("Failed to register Ingredients for mod plugin: {}", plugin.getClass(), e);
+				iterator.remove();
+			} catch (LinkageError ignored) {
+				// legacy mod plugins do not have registerIngredients
+			}
+		}
+
+		IngredientRegistry ingredientRegistry = modIngredientRegistry.createIngredientRegistry();
+		Internal.setIngredientRegistry(ingredientRegistry);
+
+		ModIdUtil modIdUtil = Internal.getHelpers().getModIdUtil();
+		ItemRegistry itemRegistry = ItemRegistryFactory.createItemRegistry(ingredientRegistry, modIdUtil);
+
+		ModRegistry modRegistry = new ModRegistry(Internal.getHelpers(), itemRegistry, ingredientRegistry);
+
+		iterator = plugins.iterator();
 		while (iterator.hasNext()) {
 			IModPlugin plugin = iterator.next();
 			try {
@@ -177,15 +195,15 @@ public class ProxyCommonClient extends ProxyCommon {
 			}
 		}
 
-		RecipeRegistry recipeRegistry = modRegistry.createRecipeRegistry();
+		RecipeRegistry recipeRegistry = modRegistry.createRecipeRegistry(ingredientRegistry);
 
 		List<IAdvancedGuiHandler<?>> advancedGuiHandlers = modRegistry.getAdvancedGuiHandlers();
 
-		itemFilter = new ItemFilter(itemRegistry);
-		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter, advancedGuiHandlers);
+		itemFilter = new ItemFilter(ingredientRegistry);
+		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter, advancedGuiHandlers, ingredientRegistry);
 		RecipesGui recipesGui = new RecipesGui(recipeRegistry);
 
-		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, itemListOverlay, recipesGui);
+		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, itemListOverlay, recipesGui, ingredientRegistry);
 		Internal.setRuntime(jeiRuntime);
 
 		iterator = plugins.iterator();

@@ -4,12 +4,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.BlankRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
-import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
 
-public class ShapedRecipesWrapper extends VanillaRecipeWrapper implements IShapedCraftingRecipeWrapper {
+public class ShapedRecipesWrapper extends BlankRecipeWrapper implements IShapedCraftingRecipeWrapper {
 
 	private final ShapedRecipes recipe;
 
@@ -19,6 +20,17 @@ public class ShapedRecipesWrapper extends VanillaRecipeWrapper implements IShape
 			if (itemStack != null && itemStack.stackSize != 1) {
 				itemStack.stackSize = 1;
 			}
+		}
+	}
+
+	@Override
+	public void getIngredients(IIngredients ingredients) {
+		List<ItemStack> recipeItems = Arrays.asList(recipe.recipeItems);
+		ingredients.setInputs(ItemStack.class, recipeItems);
+
+		ItemStack recipeOutput = recipe.getRecipeOutput();
+		if (recipeOutput != null) {
+			ingredients.setOutput(ItemStack.class, recipeOutput);
 		}
 	}
 

@@ -11,10 +11,10 @@ import mezz.jei.api.gui.IDrawable;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
+import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -104,19 +104,15 @@ public class RecipeCategoryCraftingItemsArea implements IShowsRecipeFocuses {
 			GlStateManager.disableAlpha();
 			GlStateManager.enableDepth();
 
-			RenderHelper.enableGUIStandardItemLighting();
-			GuiIngredient<ItemStack> hovered = craftingItems.draw(minecraft, 0, 0, mouseX, mouseY);
-			RenderHelper.disableStandardItemLighting();
-
-			return hovered;
+			return craftingItems.draw(minecraft, 0, 0, mouseX, mouseY);
 		}
 		return null;
 	}
 
 	@Nullable
 	@Override
-	public Focus<?> getFocusUnderMouse(int mouseX, int mouseY) {
-		return craftingItems.getFocusUnderMouse(0, 0, mouseX, mouseY);
+	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
+		return craftingItems.getIngredientUnderMouse(0, 0, mouseX, mouseY);
 	}
 
 	@Override

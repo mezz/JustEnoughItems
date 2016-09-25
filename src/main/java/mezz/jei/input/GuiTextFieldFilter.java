@@ -1,12 +1,12 @@
 package mezz.jei.input;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.LinkedList;
 import java.util.List;
 
 import mezz.jei.ItemFilter;
 import mezz.jei.config.Config;
-import mezz.jei.util.ItemStackElement;
+import mezz.jei.gui.ingredients.IIngredientListElement;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraftforge.fml.client.config.HoverChecker;
@@ -33,7 +33,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 	}
 
 	public void update() {
-		List<ItemStackElement> itemList = itemFilter.getItemList();
+		List<IIngredientListElement> itemList = itemFilter.getIngredientList();
 		if (itemList.size() == 0) {
 			setTextColor(Color.red.getRGB());
 		} else {

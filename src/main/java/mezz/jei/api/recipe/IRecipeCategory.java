@@ -4,6 +4,7 @@ import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.Minecraft;
 
 /**
@@ -52,7 +53,18 @@ public interface IRecipeCategory<T extends IRecipeWrapper> {
 
 	/**
 	 * Set the {@link IRecipeLayout} properties from the {@link IRecipeWrapper}.
+	 * @deprecated since JEI 3.11.0. use {@link #setRecipe(IRecipeLayout, IRecipeWrapper, IIngredients)}
 	 */
+	@Deprecated
 	void setRecipe(IRecipeLayout recipeLayout, T recipeWrapper);
 
+	/**
+	 * Set the {@link IRecipeLayout} properties from the {@link IRecipeWrapper} and {@link IIngredients}.
+	 *
+	 * @param recipeLayout  the layout that needs its properties set.
+	 * @param recipeWrapper the recipeWrapper, for extra information.
+	 * @param ingredients   the ingredients, already set by the recipeWrapper
+	 * @since JEI 3.11.0
+	 */
+	void setRecipe(IRecipeLayout recipeLayout, T recipeWrapper, IIngredients ingredients);
 }

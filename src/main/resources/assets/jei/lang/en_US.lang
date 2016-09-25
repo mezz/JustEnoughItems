@@ -48,19 +48,6 @@ config.jei.interface.overlayEnabled.comment=Show the list of items next to open 
 config.jei.interface.recipeAnimationsEnabled=Recipe Animations
 config.jei.interface.recipeAnimationsEnabled.comment=Show recipe animations (furnace fire, progress bars, etc)
 
-config.jei.search=Search Options
-config.jei.search.comment=Options relating to the search bar.
-config.jei.search.atPrefixRequiredForModName=Require @ for Mod Name
-config.jei.search.atPrefixRequiredForModName.comment=Require "@" in front of a word to search by mod name.
-config.jei.search.prefixRequiredForTooltipSearch=Require # for Tooltip
-config.jei.search.prefixRequiredForTooltipSearch.comment=Require "#" in front of a word to search tooltips.
-config.jei.search.prefixRequiredForOreDictSearch=Require $ for Ore Dictionary
-config.jei.search.prefixRequiredForOreDictSearch.comment=Require "$" in front of a word to search ore dictionary names.
-config.jei.search.prefixRequiredForCreativeTabSearch=Require %% for Creative Tab Name
-config.jei.search.prefixRequiredForCreativeTabSearch.comment=Require "%" in front of a word to search creative tab names.
-config.jei.search.prefixRequiredForColorSearch=Require ^ for Colors
-config.jei.search.prefixRequiredForColorSearch.comment=Require "^" in front of a word to search item colors.
-
 config.jei.advanced=Advanced
 config.jei.advanced.comment=Advanced config options to change the way JEI functions.
 config.jei.advanced.itemBlacklist=Item Blacklist
@@ -73,9 +60,6 @@ config.jei.advanced.debugModeEnabled=Debug Mode
 config.jei.advanced.debugModeEnabled.comment=Only useful for JEI developers, adds thousands of test items and some debug recipes.
 config.jei.advanced.centerSearchBarEnabled=Center Search Bar
 config.jei.advanced.centerSearchBarEnabled.comment=Move the JEI search bar to the bottom center of the screen.
-
-config.jei.addons=Addons
-config.jei.addons.comment=Category for JEI addon config options.
 
 # Edit Mode
 gui.jei.editMode.description=JEI Item List Edit Mode:

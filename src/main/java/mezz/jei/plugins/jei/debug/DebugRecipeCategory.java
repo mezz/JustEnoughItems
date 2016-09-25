@@ -8,11 +8,15 @@ import mezz.jei.api.IItemListOverlay;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
+import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITooltipCallback;
+import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeCategory;
 import mezz.jei.config.Constants;
+import mezz.jei.plugins.jei.ingredients.DebugIngredient;
+import mezz.jei.plugins.jei.ingredients.DebugIngredientRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -58,12 +62,16 @@ public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 		if (runtime != null) {
 			IItemListOverlay itemListOverlay = runtime.getItemListOverlay();
 			minecraft.fontRendererObj.drawString(itemListOverlay.getFilterText(), 20, 52, 0);
-			minecraft.fontRendererObj.drawString(String.valueOf(itemListOverlay.getStackUnderMouse()), 50, 52, 0);
+			ItemStack stackUnderMouse = itemListOverlay.getStackUnderMouse();
+			if (stackUnderMouse != null) {
+				String jeiUid = Internal.getStackHelper().getUniqueIdentifierForStack(stackUnderMouse);
+				minecraft.fontRendererObj.drawString(jeiUid, 50, 52, 0);
+			}
 		}
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, DebugRecipe recipeWrapper) {
+	public void setRecipe(IRecipeLayout recipeLayout, DebugRecipe recipeWrapper, IIngredients ingredients) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		guiItemStacks.addTooltipCallback(new ITooltipCallback<ItemStack>() {
@@ -103,5 +111,24 @@ public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 		guiFluidStacks.set(0, fluidInputs.get(0));
 		guiFluidStacks.set(1, fluidInputs.get(1));
 		guiFluidStacks.set(3, fluidInputs.get(0));
+
+		IGuiIngredientGroup<DebugIngredient> debugIngredientsGroup = recipeLayout.getIngredientsGroup(DebugIngredient.class);
+		debugIngredientsGroup.addTooltipCallback(new ITooltipCallback<DebugIngredient>() {
+			@Override
+			public void onTooltip(int slotIndex, boolean input, DebugIngredient ingredient, List<String> tooltip) {
+				if (input) {
+					tooltip.add(slotIndex + " Input DebugIngredient");
+				} else {
+					tooltip.add(slotIndex + " Output DebugIngredient");
+				}
+			}
+		});
+
+		DebugIngredientRenderer ingredientRenderer = new DebugIngredientRenderer();
+		debugIngredientsGroup.init(0, true, ingredientRenderer, 40, 0, 16, 16, 0, 0);
+		debugIngredientsGroup.init(1, false, ingredientRenderer, 40, 16, 16, 16, 0, 0);
+		debugIngredientsGroup.init(2, false, ingredientRenderer, 40, 32, 16, 16, 0, 0);
+
+		debugIngredientsGroup.set(ingredients);
 	}
 }

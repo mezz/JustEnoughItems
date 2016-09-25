@@ -6,16 +6,16 @@ import java.util.List;
 
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.recipe.BlankRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
 import mezz.jei.config.Constants;
-import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.HoverChecker;
 
-public abstract class AbstractShapelessRecipeWrapper extends VanillaRecipeWrapper implements ICraftingRecipeWrapper {
+public abstract class AbstractShapelessRecipeWrapper extends BlankRecipeWrapper implements ICraftingRecipeWrapper {
 	private static final double shapelessIconScale = 0.5;
 	private final IDrawable shapelessIcon;
 	private final HoverChecker shapelessIconHoverChecker;

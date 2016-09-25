@@ -7,6 +7,7 @@ import mezz.jei.api.INbtRegistry;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.transfer.RecipeTransferHandlerHelper;
+import mezz.jei.util.ModIdUtil;
 import mezz.jei.util.StackHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -18,6 +19,7 @@ public class JeiHelpers implements IJeiHelpers {
 	private final NbtIgnoreList nbtIgnoreList;
 	private final SubtypeRegistry subtypeRegistry;
 	private final RecipeTransferHandlerHelper recipeTransferHandlerHelper;
+	private final ModIdUtil modIdUtil;
 
 	public JeiHelpers() {
 		this.guiHelper = new GuiHelper();
@@ -26,6 +28,7 @@ public class JeiHelpers implements IJeiHelpers {
 		this.nbtIgnoreList = new NbtIgnoreList();
 		this.subtypeRegistry = new SubtypeRegistry();
 		this.recipeTransferHandlerHelper = new RecipeTransferHandlerHelper();
+		this.modIdUtil = new ModIdUtil();
 	}
 
 	@Override
@@ -52,6 +55,10 @@ public class JeiHelpers implements IJeiHelpers {
 	@Override
 	public ISubtypeRegistry getSubtypeRegistry() {
 		return subtypeRegistry;
+	}
+
+	public ModIdUtil getModIdUtil() {
+		return modIdUtil;
 	}
 
 	@Override

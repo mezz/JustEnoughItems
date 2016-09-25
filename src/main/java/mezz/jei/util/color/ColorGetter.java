@@ -127,7 +127,7 @@ public class ColorGetter {
 		return getColors(textureAtlasSprite, renderColor, colorCount);
 	}
 
-	private static List<Color> getColors(TextureAtlasSprite textureAtlasSprite, int renderColor, int colorCount) {
+	public static List<Color> getColors(TextureAtlasSprite textureAtlasSprite, int renderColor, int colorCount) {
 		final BufferedImage bufferedImage = getBufferedImage(textureAtlasSprite);
 		if (bufferedImage == null) {
 			return Collections.emptyList();

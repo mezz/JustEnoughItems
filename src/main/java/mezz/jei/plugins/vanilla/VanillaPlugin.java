@@ -4,11 +4,12 @@ import javax.annotation.Nullable;
 
 import mezz.jei.api.BlankModPlugin;
 import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeCategory;
@@ -28,6 +29,12 @@ import mezz.jei.plugins.vanilla.furnace.FurnaceFuelCategory;
 import mezz.jei.plugins.vanilla.furnace.FurnaceSmeltingCategory;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipeHandler;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipeMaker;
+import mezz.jei.plugins.vanilla.ingredients.FluidStackHelper;
+import mezz.jei.plugins.vanilla.ingredients.FluidStackListFactory;
+import mezz.jei.plugins.vanilla.ingredients.FluidStackRenderer;
+import mezz.jei.plugins.vanilla.ingredients.ItemStackHelper;
+import mezz.jei.plugins.vanilla.ingredients.ItemStackListFactory;
+import mezz.jei.plugins.vanilla.ingredients.ItemStackRenderer;
 import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.client.gui.inventory.GuiCrafting;
 import net.minecraft.client.gui.inventory.GuiFurnace;
@@ -43,13 +50,23 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraftforge.common.ForgeModContainer;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
 
 @JEIPlugin
 public class VanillaPlugin extends BlankModPlugin {
+	public static IJeiHelpers jeiHelpers;
+	public static IIngredientRegistry ingredientRegistry;
+
+	@Override
+	public void registerIngredients(IModIngredientRegistration ingredientRegistration) {
+		ingredientRegistration.register(ItemStack.class, ItemStackListFactory.create(), new ItemStackHelper(), new ItemStackRenderer());
+		ingredientRegistration.register(FluidStack.class, FluidStackListFactory.create(), new FluidStackHelper(), new FluidStackRenderer());
+	}
+
 	@Override
 	public void register(IModRegistry registry) {
-		IItemRegistry itemRegistry = registry.getItemRegistry();
-		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
+		ingredientRegistry = registry.getIngredientRegistry();
+		jeiHelpers = registry.getJeiHelpers();
 
 		ISubtypeRegistry subtypeRegistry = jeiHelpers.getSubtypeRegistry();
 		subtypeRegistry.useNbtForSubtypes(
@@ -116,8 +133,8 @@ public class VanillaPlugin extends BlankModPlugin {
 
 		registry.addRecipes(CraftingManager.getInstance().getRecipeList());
 		registry.addRecipes(SmeltingRecipeMaker.getFurnaceRecipes(jeiHelpers));
-		registry.addRecipes(FuelRecipeMaker.getFuelRecipes(itemRegistry, jeiHelpers));
-		registry.addRecipes(BrewingRecipeMaker.getBrewingRecipes(itemRegistry));
+		registry.addRecipes(FuelRecipeMaker.getFuelRecipes(ingredientRegistry, jeiHelpers));
+		registry.addRecipes(BrewingRecipeMaker.getBrewingRecipes(ingredientRegistry));
 		registry.addRecipes(TippedArrowRecipeMaker.getTippedArrowRecipes());
 	}
 }

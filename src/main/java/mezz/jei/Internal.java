@@ -11,7 +11,7 @@ public class Internal {
 	@Nullable
 	private static JeiRuntime runtime;
 	@Nullable
-	private static ItemRegistry itemRegistry;
+	private static IngredientRegistry ingredientRegistry;
 	@Nullable
 	private static ColorNamer colorNamer;
 
@@ -44,17 +44,21 @@ public class Internal {
 		Internal.runtime = runtime;
 	}
 
-	@Nullable
-	public static ItemRegistry getItemRegistry() {
-		return itemRegistry;
+	public static IngredientRegistry getIngredientRegistry() {
+		if (ingredientRegistry == null) {
+			throw new IllegalStateException("Ingredient Registry has not been created yet.");
+		}
+		return ingredientRegistry;
 	}
 
-	public static void setItemRegistry(ItemRegistry itemRegistry) {
-		Internal.itemRegistry = itemRegistry;
+	public static void setIngredientRegistry(@Nullable IngredientRegistry ingredientRegistry) {
+		Internal.ingredientRegistry = ingredientRegistry;
 	}
 
-	@Nullable
 	public static ColorNamer getColorNamer() {
+		if (colorNamer == null) {
+			throw new IllegalStateException("Color Namer has not been created yet.");
+		}
 		return colorNamer;
 	}
 

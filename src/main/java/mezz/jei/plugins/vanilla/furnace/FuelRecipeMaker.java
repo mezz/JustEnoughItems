@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.IJeiHelpers;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
@@ -17,10 +17,10 @@ import net.minecraftforge.oredict.OreDictionary;
 
 public class FuelRecipeMaker {
 
-	public static List<FuelRecipe> getFuelRecipes(IItemRegistry itemRegistry, IJeiHelpers helpers) {
+	public static List<FuelRecipe> getFuelRecipes(IIngredientRegistry ingredientRegistry, IJeiHelpers helpers) {
 		IGuiHelper guiHelper = helpers.getGuiHelper();
 		IStackHelper stackHelper = helpers.getStackHelper();
-		List<ItemStack> fuelStacks = itemRegistry.getFuels();
+		List<ItemStack> fuelStacks = ingredientRegistry.getFuels();
 		Set<String> oreDictNames = new HashSet<String>();
 		List<FuelRecipe> fuelRecipes = new ArrayList<FuelRecipe>(fuelStacks.size());
 		for (ItemStack fuelStack : fuelStacks) {

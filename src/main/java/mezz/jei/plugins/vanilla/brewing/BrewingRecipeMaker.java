@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
-import mezz.jei.api.IItemRegistry;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.util.Java6Helper;
 import mezz.jei.util.Log;
@@ -28,10 +28,10 @@ import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
 public class BrewingRecipeMaker {
 	private static final Set<Class> unhandledRecipeClasses = new HashSet<Class>();
 
-	public static List<BrewingRecipeWrapper> getBrewingRecipes(IItemRegistry itemRegistry) {
+	public static List<BrewingRecipeWrapper> getBrewingRecipes(IIngredientRegistry ingredientRegistry) {
 		Set<BrewingRecipeWrapper> recipes = new HashSet<BrewingRecipeWrapper>();
 
-		addVanillaBrewingRecipes(itemRegistry, recipes);
+		addVanillaBrewingRecipes(ingredientRegistry, recipes);
 		addModdedBrewingRecipes(recipes);
 
 		List<BrewingRecipeWrapper> recipeList = new ArrayList<BrewingRecipeWrapper>(recipes);
@@ -45,8 +45,8 @@ public class BrewingRecipeMaker {
 		return recipeList;
 	}
 
-	private static void addVanillaBrewingRecipes(IItemRegistry itemRegistry, Collection<BrewingRecipeWrapper> recipes) {
-		ImmutableList<ItemStack> potionIngredients = itemRegistry.getPotionIngredients();
+	private static void addVanillaBrewingRecipes(IIngredientRegistry ingredientRegistry, Collection<BrewingRecipeWrapper> recipes) {
+		ImmutableList<ItemStack> potionIngredients = ingredientRegistry.getPotionIngredients();
 		List<ItemStack> knownPotions = new ArrayList<ItemStack>();
 		ItemStack waterBottle = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionTypes.WATER);
 		knownPotions.add(waterBottle);

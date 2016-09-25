@@ -49,6 +49,6 @@ public class ItemBlacklist implements IItemBlacklist {
 				return true;
 			}
 		}
-		return Config.isItemOnConfigBlacklist(itemStack);
+		return Config.isIngredientOnConfigBlacklist(itemStack);
 	}
 }

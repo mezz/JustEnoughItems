@@ -12,6 +12,7 @@ import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
@@ -24,6 +25,7 @@ import net.minecraft.item.ItemStack;
 public class ModRegistry implements IModRegistry {
 	private final IJeiHelpers jeiHelpers;
 	private final IItemRegistry itemRegistry;
+	private final IIngredientRegistry ingredientRegistry;
 	private final List<IRecipeCategory> recipeCategories = new ArrayList<IRecipeCategory>();
 	private final List<IRecipeHandler> recipeHandlers = new ArrayList<IRecipeHandler>();
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers = new ArrayList<IAdvancedGuiHandler<?>>();
@@ -32,9 +34,10 @@ public class ModRegistry implements IModRegistry {
 	private final Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas = HashMultimap.create();
 	private final Multimap<String, ItemStack> craftItemsForCategories = HashMultimap.create();
 
-	public ModRegistry(IJeiHelpers jeiHelpers, IItemRegistry itemRegistry) {
+	public ModRegistry(IJeiHelpers jeiHelpers, IItemRegistry itemRegistry, IIngredientRegistry ingredientRegistry) {
 		this.jeiHelpers = jeiHelpers;
 		this.itemRegistry = itemRegistry;
+		this.ingredientRegistry = ingredientRegistry;
 	}
 
 	@Override
@@ -45,6 +48,11 @@ public class ModRegistry implements IModRegistry {
 	@Override
 	public IItemRegistry getItemRegistry() {
 		return itemRegistry;
+	}
+
+	@Override
+	public IIngredientRegistry getIngredientRegistry() {
+		return ingredientRegistry;
 	}
 
 	@Override
@@ -172,8 +180,8 @@ public class ModRegistry implements IModRegistry {
 		return advancedGuiHandlers;
 	}
 
-	public RecipeRegistry createRecipeRegistry() {
+	public RecipeRegistry createRecipeRegistry(IIngredientRegistry ingredientRegistry) {
 		List<IRecipeTransferHandler> recipeTransferHandlers = recipeTransferRegistry.getRecipeTransferHandlers();
-		return new RecipeRegistry(recipeCategories, recipeHandlers, recipeTransferHandlers, recipes, recipeClickableAreas, craftItemsForCategories);
+		return new RecipeRegistry(recipeCategories, recipeHandlers, recipeTransferHandlers, recipes, recipeClickableAreas, craftItemsForCategories, ingredientRegistry);
 	}
 }

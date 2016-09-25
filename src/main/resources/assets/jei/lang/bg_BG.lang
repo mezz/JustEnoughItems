@@ -47,19 +47,6 @@ config.jei.interface.overlayEnabled.comment=Показва списъка с п�
 config.jei.interface.recipeAnimationsEnabled=Анимации на Рецепти
 config.jei.interface.recipeAnimationsEnabled.comment=Показва анимацията на рецептите (пламака на фурна, лента за напредъка, ит.н.)
 
-config.jei.search=Опций за Търсене
-config.jei.search.comment=Опций свързани с лентата за търсене.
-config.jei.search.atPrefixRequiredForModName=Изисква @ за Име на Модификацията
-config.jei.search.atPrefixRequiredForModName.comment=Изисква "@" пред дума за да търсиш с името на моификацията
-config.jei.search.prefixRequiredForTooltipSearch=Изисква # за Подсказки
-config.jei.search.prefixRequiredForTooltipSearch.comment=Изисква "#" пред дума за да търсиш подсказки.
-config.jei.search.prefixRequiredForOreDictSearch=Изисква $ за Ore Dictionary
-config.jei.search.prefixRequiredForOreDictSearch.comment=Изисква "$" пред дума за да търсиш ore dictionary имена.
-config.jei.search.prefixRequiredForCreativeTabSearch=Изисква %% за Creative Tab Name
-config.jei.search.prefixRequiredForCreativeTabSearch.comment=Изисква "%" пред дума за да търсиш creative tab names.
-config.jei.search.prefixRequiredForColorSearch=Изисква ^ за Цветове
-config.jei.search.prefixRequiredForColorSearch.comment=Изисква "^" пред дума за да търсиш цветове на предмет.
-
 config.jei.advanced=За напреднали
 config.jei.advanced.comment=Напреднали настройки за конфигурация как JEI функционира.
 config.jei.advanced.itemBlacklist=Черен списак на Предмети
@@ -70,9 +57,6 @@ config.jei.advanced.colorSearchEnabled=Включи Цветово Търсен�
 config.jei.advanced.colorSearchEnabled.comment=Търси предмета с цвят и покажи предмети с цвят върху родсказките в спасъка на предмети.
 config.jei.advanced.debugModeEnabled=Debug Mode
 config.jei.advanced.debugModeEnabled.comment=Полезно е само за JEI developers, добавя хиляди тестващи предмити и няколко Debug рецепти.
-
-config.jei.addons=Добавки
-config.jei.addons.comment=Категория за JEI добавки конфигурационни опций.
 
 # Edit Mode
 gui.jei.editMode.description=JEI Режим на Редактиращ Списък на Предмети:

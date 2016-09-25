@@ -4,12 +4,10 @@ import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.item.ItemStack;
 
 public class ColorNamer {
 	private final ImmutableMap<Color, String> colorNames;
@@ -18,12 +16,7 @@ public class ColorNamer {
 		this.colorNames = colorNames;
 	}
 
-	public Collection<String> getColorNames(ItemStack itemStack) {
-		List<Color> colors = ColorGetter.getColors(itemStack, 2);
-		return getColorNames(colors);
-	}
-
-	private Collection<String> getColorNames(List<Color> colors) {
+	public Collection<String> getColorNames(Iterable<Color> colors) {
 		final Set<String> allColorNames = new LinkedHashSet<String>();
 		for (Color color : colors) {
 			final String colorName = getClosestColorName(color);

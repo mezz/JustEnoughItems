@@ -2,6 +2,7 @@ package mezz.jei.api;
 
 import java.util.List;
 
+import mezz.jei.api.recipe.IFocus;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -13,11 +14,22 @@ import net.minecraftforge.fluids.FluidStack;
  */
 public interface IRecipesGui {
 	/**
+	 * Show recipes for an {@link IFocus}.
+	 * Opens the {@link IRecipesGui} if it is closed.
+	 *
+	 * @see IRecipeRegistry#createFocus(IFocus.Mode, Object)
+	 * @since JEI 3.11.0
+	 */
+	<V> void show(IFocus<V> focus);
+
+	/**
 	 * Show recipes for an {@link ItemStack}.
 	 * Opens the {@link IRecipesGui} if it is closed.
 	 *
 	 * @param focus the {@link ItemStack} result.
+	 * @deprecated Since JEI 3.11.0. Use {@link #show(IFocus)}
 	 */
+	@Deprecated
 	void showRecipes(ItemStack focus);
 
 	/**
@@ -25,7 +37,9 @@ public interface IRecipesGui {
 	 * Opens the {@link IRecipesGui} if it is closed.
 	 *
 	 * @param focus the {@link FluidStack} result.
+	 * @deprecated Since JEI 3.11.0. Use {@link #show(IFocus)}
 	 */
+	@Deprecated
 	void showRecipes(FluidStack focus);
 
 	/**
@@ -33,7 +47,9 @@ public interface IRecipesGui {
 	 * Opens the {@link IRecipesGui} if it is closed.
 	 *
 	 * @param focus the {@link ItemStack} ingredient.
+	 * @deprecated Since JEI 3.11.0. Use {@link #show(IFocus)}
 	 */
+	@Deprecated
 	void showUses(ItemStack focus);
 
 	/**
@@ -41,7 +57,9 @@ public interface IRecipesGui {
 	 * Opens the {@link IRecipesGui} if it is closed.
 	 *
 	 * @param focus the {@link FluidStack} ingredient.
+	 * @deprecated Since JEI 3.11.0. Use {@link #show(IFocus)}
 	 */
+	@Deprecated
 	void showUses(FluidStack focus);
 
 	/**

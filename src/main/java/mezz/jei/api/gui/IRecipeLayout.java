@@ -1,5 +1,7 @@
 package mezz.jei.api.gui;
 
+import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 
@@ -20,6 +22,24 @@ public interface IRecipeLayout {
 	 * Init and set them in your recipe category.
 	 */
 	IGuiFluidStackGroup getFluidStacks();
+
+	/**
+	 * Get all the ingredients of one class that are displayed on this recipe layout.
+	 * Init and set them in your recipe category.
+	 * <p>
+	 * This method is for handling custom item types, registered with {@link IModIngredientRegistration}.
+	 *
+	 * @see #getItemStacks()
+	 * @see #getFluidStacks()
+	 */
+	<T> IGuiIngredientGroup<T> getIngredientsGroup(Class<T> ingredientClass);
+
+	/**
+	 * The current search focus. Set by the player when they look up the recipe. The object being looked up is the focus.
+	 *
+	 * @since JEI 3.11.0
+	 */
+	IFocus<?> getFocus();
 
 	/**
 	 * Moves the recipe transfer button's position relative to the recipe layout.

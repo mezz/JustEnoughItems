@@ -48,9 +48,6 @@ public class JEIModConfigGui extends GuiConfig {
 		ConfigCategory categoryAdvanced = Config.getConfig().getCategory(Config.CATEGORY_ADVANCED);
 		configElements.addAll(new ConfigElement(categoryAdvanced).getChildElements());
 
-		ConfigCategory categorySearch = Config.getConfig().getCategory(Config.CATEGORY_SEARCH);
-		configElements.add(new ConfigElement(categorySearch));
-
 		return configElements;
 	}
 

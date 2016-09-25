@@ -1,19 +1,26 @@
 package mezz.jei.gui;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
+import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.gui.ingredients.GuiFluidStackGroup;
 import mezz.jei.gui.ingredients.GuiIngredient;
+import mezz.jei.gui.ingredients.GuiIngredientGroup;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
+import mezz.jei.input.IClickedIngredient;
+import mezz.jei.util.Ingredients;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -24,16 +31,33 @@ public class RecipeLayout implements IRecipeLayout {
 	private final IRecipeCategory recipeCategory;
 	private final GuiItemStackGroup guiItemStackGroup;
 	private final GuiFluidStackGroup guiFluidStackGroup;
+	private final Map<Class, GuiIngredientGroup> guiIngredientGroups;
 	private final RecipeTransferButton recipeTransferButton;
 	private final IRecipeWrapper recipeWrapper;
+	private final IFocus<?> focus;
 
 	private final int posX;
 	private final int posY;
 
-	public <T extends IRecipeWrapper> RecipeLayout(int index, int posX, int posY, IRecipeCategory<T> recipeCategory, T recipeWrapper, MasterFocus focus) {
+	public <T extends IRecipeWrapper> RecipeLayout(int index, int posX, int posY, IRecipeCategory<T> recipeCategory, T recipeWrapper, IFocus focus) {
 		this.recipeCategory = recipeCategory;
-		this.guiItemStackGroup = new GuiItemStackGroup(new Focus<ItemStack>(focus.getMode(), focus.getItemStack()));
-		this.guiFluidStackGroup = new GuiFluidStackGroup(new Focus<FluidStack>(focus.getMode(), focus.getFluidStack()));
+		this.focus = focus;
+
+		ItemStack itemStackFocus = null;
+		FluidStack fluidStackFocus = null;
+		Object focusValue = focus.getValue();
+		if (focusValue instanceof ItemStack) {
+			itemStackFocus = (ItemStack) focusValue;
+		} else if (focusValue instanceof FluidStack) {
+			fluidStackFocus = (FluidStack) focusValue;
+		}
+		this.guiItemStackGroup = new GuiItemStackGroup(new Focus<ItemStack>(focus.getMode(), itemStackFocus));
+		this.guiFluidStackGroup = new GuiFluidStackGroup(new Focus<FluidStack>(focus.getMode(), fluidStackFocus));
+
+		this.guiIngredientGroups = new HashMap<Class, GuiIngredientGroup>();
+		this.guiIngredientGroups.put(ItemStack.class, this.guiItemStackGroup);
+		this.guiIngredientGroups.put(FluidStack.class, this.guiFluidStackGroup);
+
 		int width = recipeCategory.getBackground().getWidth();
 		int height = recipeCategory.getBackground().getHeight();
 		this.recipeTransferButton = new RecipeTransferButton(recipeTransferButtonIndex + index, posX + width + 2, posY + height - RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, "+");
@@ -41,7 +65,14 @@ public class RecipeLayout implements IRecipeLayout {
 		this.posY = posY;
 
 		this.recipeWrapper = recipeWrapper;
-		recipeCategory.setRecipe(this, recipeWrapper);
+
+		try {
+			IIngredients ingredients = new Ingredients();
+			recipeWrapper.getIngredients(ingredients);
+			recipeCategory.setRecipe(this, recipeWrapper, ingredients);
+		} catch (LinkageError ignored) { // legacy
+			recipeCategory.setRecipe(this, recipeWrapper);
+		}
 	}
 
 	public void draw(Minecraft minecraft, int mouseX, int mouseY) {
@@ -71,21 +102,20 @@ public class RecipeLayout implements IRecipeLayout {
 		}
 		GlStateManager.popMatrix();
 
-		RenderHelper.enableGUIStandardItemLighting();
-		GuiIngredient hoveredItemStack = guiItemStackGroup.draw(minecraft, posX, posY, mouseX, mouseY);
-		RenderHelper.disableStandardItemLighting();
-		GuiIngredient hoveredFluidStack = guiFluidStackGroup.draw(minecraft, posX, posY, mouseX, mouseY);
+		GuiIngredient hoveredIngredient = null;
+		for (GuiIngredientGroup guiIngredientGroup : guiIngredientGroups.values()) {
+			GuiIngredient hovered = guiIngredientGroup.draw(minecraft, posX, posY, mouseX, mouseY);
+			if (hovered != null) {
+				hoveredIngredient = hovered;
+			}
+		}
 
 		recipeTransferButton.drawButton(minecraft, mouseX, mouseY);
 		GlStateManager.disableBlend();
 		GlStateManager.disableLighting();
 
-		if (hoveredItemStack != null) {
-			RenderHelper.enableGUIStandardItemLighting();
-			hoveredItemStack.drawHovered(minecraft, posX, posY, recipeMouseX, recipeMouseY);
-			RenderHelper.disableStandardItemLighting();
-		} else if (hoveredFluidStack != null) {
-			hoveredFluidStack.drawHovered(minecraft, posX, posY, recipeMouseX, recipeMouseY);
+		if (hoveredIngredient != null) {
+			hoveredIngredient.drawHovered(minecraft, posX, posY, recipeMouseX, recipeMouseY);
 		} else if (isMouseOver(mouseX, mouseY)) {
 			List<String> tooltipStrings = recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY);
 			if (tooltipStrings != null && !tooltipStrings.isEmpty()) {
@@ -104,12 +134,12 @@ public class RecipeLayout implements IRecipeLayout {
 	}
 
 	@Nullable
-	public Focus<?> getFocusUnderMouse(int mouseX, int mouseY) {
-		Focus<?> focus = guiItemStackGroup.getFocusUnderMouse(posX, posY, mouseX, mouseY);
-		if (focus == null) {
-			focus = guiFluidStackGroup.getFocusUnderMouse(posX, posY, mouseX, mouseY);
+	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
+		IClickedIngredient<?> clicked = guiItemStackGroup.getIngredientUnderMouse(posX, posY, mouseX, mouseY);
+		if (clicked == null) {
+			clicked = guiFluidStackGroup.getIngredientUnderMouse(posX, posY, mouseX, mouseY);
 		}
-		return focus;
+		return clicked;
 	}
 
 	public boolean handleClick(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
@@ -127,9 +157,32 @@ public class RecipeLayout implements IRecipeLayout {
 	}
 
 	@Override
+	public <T> IGuiIngredientGroup<T> getIngredientsGroup(Class<T> ingredientClass) {
+		//noinspection unchecked
+		GuiIngredientGroup<T> guiIngredientGroup = guiIngredientGroups.get(ingredientClass);
+		if (guiIngredientGroup == null) {
+			T value = null;
+			Object focusValue = this.focus.getValue();
+			if (ingredientClass.isInstance(focusValue)) {
+				//noinspection unchecked
+				value = (T) focusValue;
+			}
+			IFocus<T> focus = new Focus<T>(this.focus.getMode(), value);
+			guiIngredientGroup = new GuiIngredientGroup<T>(ingredientClass, focus);
+			guiIngredientGroups.put(ingredientClass, guiIngredientGroup);
+		}
+		return guiIngredientGroup;
+	}
+
+	@Override
 	public void setRecipeTransferButton(int posX, int posY) {
 		recipeTransferButton.xPosition = posX + this.posX;
 		recipeTransferButton.yPosition = posY + this.posY;
+	}
+
+	@Override
+	public IFocus<?> getFocus() {
+		return focus;
 	}
 
 	public RecipeTransferButton getRecipeTransferButton() {

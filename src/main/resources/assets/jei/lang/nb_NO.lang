@@ -44,19 +44,6 @@ config.jei.interface.overlayEnabled.comment=Vis listen av artikler ved siden av 
 config.jei.interface.recipeAnimationsEnabled=Oppskrifts Animasjoner
 config.jei.interface.recipeAnimationsEnabled.comment=Vis oppskrift animasjoner. (Brennende ovn, fremdriftslinjer, etc)
 
-config.jei.search=Søkevalg
-config.jei.search.comment=Valg relatert til søkelinjen.
-config.jei.search.atPrefixRequiredForModName=Krev @ for Mod Navn
-config.jei.search.atPrefixRequiredForModName.comment=Krev "@" foran et ord for å søke etter mod navn. Eksempel: "@minecraft" viser alle artikler fra Minecraft.
-config.jei.search.prefixRequiredForTooltipSearch=Krev # for Verktøytips
-config.jei.search.prefixRequiredForTooltipSearch.comment=Krev "#" foran et ord for å søke etter verktøytips. Eksempel: "#C418" viser artikler med C418 i verktøytipset.
-config.jei.search.prefixRequiredForOreDictSearch=Krev $ for Malm Ordbok (Ore Dictionary)
-config.jei.search.prefixRequiredForOreDictSearch.comment=Krev "$" foran et ord for å søke etter malm ordbok(ore dictionary) navn. Eksempel: "$oreGold" viser artikler som er registrert i malm ordboken med det angitte navnet.
-config.jei.search.prefixRequiredForCreativeTabSearch=Krev % for Kreativ Fane Navn
-config.jei.search.prefixRequiredForCreativeTabSearch.comment=Krev "%" foran et ord for å søke etter kreative fane navn. Eksempel: "%byggeblokker" viser artikler fra den angitte fanen.
-config.jei.search.prefixRequiredForColorSearch=Krev ^ for Farger
-config.jei.search.prefixRequiredForColorSearch.comment=Krev "^" foran et ord for å søke på artikkel med farger. Eksempel: "^blå" viser artikler som er blå.
-
 config.jei.advanced=Avansert
 config.jei.advanced.comment=Avanserte innstillinger for å endre måten JEI fungerer på.
 config.jei.advanced.itemBlacklist=Svartliste for Artikler
@@ -67,9 +54,6 @@ config.jei.advanced.colorSearchEnabled=Aktiver Fargesøk
 config.jei.advanced.colorSearchEnabled.comment=Søk etter artikler med fargenavn og vis navnet på artiklers farge i verktøytipset.
 config.jei.advanced.debugModeEnabled=Feilsøkings Modus
 config.jei.advanced.debugModeEnabled.comment=Nyttig for utviklerne av JEI. Legger til tusenvis av test artikler og noen feilsøkings oppskrifter.
-
-config.jei.addons=Tillegg
-config.jei.addons.comment=Kategori for JEI tilleggs innstillinger.
 
 # Edit Mode
 gui.jei.editMode.description=JEI Artikkel Liste Redigerings Modus:

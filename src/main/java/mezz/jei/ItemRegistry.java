@@ -6,43 +6,41 @@ import java.util.Locale;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.IItemRegistry;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.util.Log;
-import mezz.jei.util.ModList;
+import mezz.jei.util.ModIdUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+@Deprecated
 public class ItemRegistry implements IItemRegistry {
-	private final ImmutableList<ItemStack> itemList;
+	private final IIngredientRegistry ingredientRegistry;
 	private final ImmutableListMultimap<String, ItemStack> itemsByModId;
-	private final ImmutableList<ItemStack> potionIngredients;
-	private final ImmutableList<ItemStack> fuels;
-	private final ModList modList;
+	private final ModIdUtil modIdUtil;
 
-	public ItemRegistry(ImmutableList<ItemStack> itemList,
-						ImmutableListMultimap<String, ItemStack> itemsByModId,
-						ImmutableList<ItemStack> potionIngredients,
-						ImmutableList<ItemStack> fuels,
-						ModList modList) {
-		this.itemList = itemList;
+	public ItemRegistry(
+			IIngredientRegistry ingredientRegistry,
+			ImmutableListMultimap<String, ItemStack> itemsByModId,
+			ModIdUtil modIdUtil
+	) {
+		this.ingredientRegistry = ingredientRegistry;
 		this.itemsByModId = itemsByModId;
-		this.potionIngredients = potionIngredients;
-		this.fuels = fuels;
-		this.modList = modList;
+		this.modIdUtil = modIdUtil;
 	}
 
 	@Override
 	public ImmutableList<ItemStack> getItemList() {
-		return itemList;
+		return ingredientRegistry.getIngredients(ItemStack.class);
 	}
 
 	@Override
 	public ImmutableList<ItemStack> getFuels() {
-		return fuels;
+		return ingredientRegistry.getFuels();
 	}
 
 	@Override
 	public ImmutableList<ItemStack> getPotionIngredients() {
-		return potionIngredients;
+		return ingredientRegistry.getPotionIngredients();
 	}
 
 	@Override
@@ -51,7 +49,7 @@ public class ItemRegistry implements IItemRegistry {
 			Log.error("Null item", new NullPointerException());
 			return "";
 		}
-		return modList.getModNameForItem(item);
+		return modIdUtil.getModNameForItem(item);
 	}
 
 	@Override
@@ -60,7 +58,7 @@ public class ItemRegistry implements IItemRegistry {
 			Log.error("Null modId", new NullPointerException());
 			return "";
 		}
-		return modList.getModNameForModId(modId);
+		return modIdUtil.getModNameForModId(modId);
 	}
 
 	@Override

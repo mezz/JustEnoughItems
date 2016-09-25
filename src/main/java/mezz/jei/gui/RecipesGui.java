@@ -15,6 +15,7 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.ingredients.GuiIngredient;
+import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.InputHandler;
 import mezz.jei.transfer.RecipeTransferUtil;
@@ -26,7 +27,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
@@ -186,9 +186,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			hovered.draw(mc, mouseX, mouseY);
 		}
 		if (hoveredItemStack != null) {
-			RenderHelper.enableGUIStandardItemLighting();
 			hoveredItemStack.drawHovered(mc, 0, 0, mouseX, mouseY);
-			RenderHelper.disableStandardItemLighting();
 		}
 
 		if (titleHoverChecker.checkHover(mouseX, mouseY)) {
@@ -215,17 +213,17 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	@Nullable
 	@Override
-	public Focus<?> getFocusUnderMouse(int mouseX, int mouseY) {
-		Focus<?> focus = recipeCategoryCraftingItemsArea.getFocusUnderMouse(mouseX, mouseY);
-		if (focus != null) {
-			return focus;
+	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
+		IClickedIngredient<?> clicked = recipeCategoryCraftingItemsArea.getIngredientUnderMouse(mouseX, mouseY);
+		if (clicked != null) {
+			return clicked;
 		}
 
 		if (isMouseOver(mouseX, mouseY)) {
 			for (RecipeLayout recipeLayouts : this.recipeLayouts) {
-				focus = recipeLayouts.getFocusUnderMouse(mouseX, mouseY);
-				if (focus != null) {
-					return focus;
+				clicked = recipeLayouts.getIngredientUnderMouse(mouseX, mouseY);
+				if (clicked != null) {
+					return clicked;
 				}
 			}
 		}
@@ -310,71 +308,39 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	}
 
 	@Override
-	public void showRecipes(@Nullable ItemStack focus) {
+	public <V> void show(@Nullable IFocus<V> focus) {
 		if (focus == null) {
 			Log.error("Null focus", new NullPointerException());
 			return;
 		}
 
-		MasterFocus masterFocus = new MasterFocus(recipeRegistry, focus);
-		showRecipes(masterFocus);
-	}
-
-	@Override
-	public void showRecipes(@Nullable FluidStack focus) {
-		if (focus == null) {
-			Log.error("Null focus", new NullPointerException());
-			return;
-		}
-
-		MasterFocus masterFocus = new MasterFocus(recipeRegistry, focus);
-		showRecipes(masterFocus);
-	}
-
-	public void showRecipes(IFocus<?> focus) {
-		MasterFocus masterFocus = MasterFocus.create(recipeRegistry, focus);
-		showRecipes(masterFocus);
-	}
-
-	public void showRecipes(MasterFocus masterFocus) {
-		masterFocus.setMode(IFocus.Mode.OUTPUT);
-		if (logic.setFocus(masterFocus)) {
-			open();
-		}
-	}
-
-	@Override
-	public void showUses(@Nullable ItemStack focus) {
-		if (focus == null) {
-			Log.error("Null focus", new NullPointerException());
-			return;
-		}
-
-		MasterFocus masterFocus = new MasterFocus(recipeRegistry, focus);
-		showUses(masterFocus);
-	}
-
-	@Override
-	public void showUses(@Nullable FluidStack focus) {
-		if (focus == null) {
-			Log.error("Null focus", new NullPointerException());
-			return;
-		}
-
-		MasterFocus masterFocus = new MasterFocus(recipeRegistry, focus);
-		showUses(masterFocus);
-	}
-
-	public void showUses(IFocus<?> focus) {
-		MasterFocus masterFocus = MasterFocus.create(recipeRegistry, focus);
-		showUses(masterFocus);
-	}
-
-	public void showUses(MasterFocus focus) {
-		focus.setMode(IFocus.Mode.INPUT);
 		if (logic.setFocus(focus)) {
 			open();
 		}
+	}
+
+	@Override
+	@Deprecated
+	public void showRecipes(@Nullable ItemStack focus) {
+		show(new Focus<ItemStack>(IFocus.Mode.OUTPUT, focus));
+	}
+
+	@Override
+	@Deprecated
+	public void showRecipes(@Nullable FluidStack focus) {
+		show(new Focus<FluidStack>(IFocus.Mode.OUTPUT, focus));
+	}
+
+	@Override
+	@Deprecated
+	public void showUses(@Nullable ItemStack focus) {
+		show(new Focus<ItemStack>(IFocus.Mode.INPUT, focus));
+	}
+
+	@Override
+	@Deprecated
+	public void showUses(@Nullable FluidStack focus) {
+		show(new Focus<FluidStack>(IFocus.Mode.INPUT, focus));
 	}
 
 	@Override

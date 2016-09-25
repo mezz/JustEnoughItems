@@ -3,6 +3,8 @@ package mezz.jei.api.gui;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.IStackHelper;
 import net.minecraft.item.ItemStack;
 
 /**
@@ -32,7 +34,9 @@ public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {
 
 	/**
 	 * Takes an Object from IRecipeWrapper getInputs or getOutputs
+	 * @deprecated since JEI 3.11.0. Use {@link IStackHelper#toItemStackList(Object)}
 	 */
+	@Deprecated
 	void setFromRecipe(int slotIndex, Object ingredients);
 
 	@Override

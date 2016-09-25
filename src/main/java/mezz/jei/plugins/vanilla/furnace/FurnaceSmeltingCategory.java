@@ -4,6 +4,7 @@ import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -50,5 +51,15 @@ public class FurnaceSmeltingCategory extends FurnaceRecipeCategory<SmeltingRecip
 
 		guiItemStacks.setFromRecipe(inputSlot, recipeWrapper.getInputs());
 		guiItemStacks.setFromRecipe(outputSlot, recipeWrapper.getOutputs());
+	}
+
+	@Override
+	public void setRecipe(IRecipeLayout recipeLayout, SmeltingRecipe recipeWrapper, IIngredients ingredients) {
+		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
+
+		guiItemStacks.init(inputSlot, true, 0, 0);
+		guiItemStacks.init(outputSlot, false, 60, 18);
+
+		guiItemStacks.set(ingredients);
 	}
 }

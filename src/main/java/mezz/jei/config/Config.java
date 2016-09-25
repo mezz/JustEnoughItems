@@ -9,12 +9,13 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
+import mezz.jei.JeiRuntime;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.util.Log;
-import mezz.jei.util.StackHelper;
 import mezz.jei.util.Translator;
 import mezz.jei.util.color.ColorGetter;
 import mezz.jei.util.color.ColorNamer;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -24,7 +25,6 @@ public class Config {
 	private static final String configKeyPrefix = "config.jei";
 	private static File jeiConfigurationDir;
 
-	public static final String CATEGORY_SEARCH = "search";
 	public static final String CATEGORY_ADVANCED = "advanced";
 	public static final String CATEGORY_SEARCH_COLORS = "searchColors";
 
@@ -40,13 +40,6 @@ public class Config {
 	private static boolean hideMissingModelsEnabled = true;
 	private static boolean colorSearchEnabled = false;
 	private static boolean centerSearchBarEnabled = false;
-
-	// search
-	private static boolean prefixRequiredForModNameSearch = true;
-	private static boolean prefixRequiredForTooltipSearch = false;
-	private static boolean prefixRequiredForOreDictSearch = true;
-	private static boolean prefixRequiredForCreativeTabSearch = true;
-	private static boolean prefixRequiredForColorSearch = true;
 
 	// per-world
 	private static final boolean defaultOverlayEnabled = true;
@@ -119,26 +112,6 @@ public class Config {
 
 	public static boolean isCenterSearchBarEnabled() {
 		return centerSearchBarEnabled;
-	}
-
-	public static boolean isPrefixRequiredForModNameSearch() {
-		return prefixRequiredForModNameSearch;
-	}
-
-	public static boolean isPrefixRequiredForTooltipSearch() {
-		return prefixRequiredForTooltipSearch;
-	}
-
-	public static boolean isPrefixRequiredForOreDictSearch() {
-		return prefixRequiredForOreDictSearch;
-	}
-
-	public static boolean isPrefixRequiredForCreativeTabSearch() {
-		return prefixRequiredForCreativeTabSearch;
-	}
-
-	public static boolean isPrefixRequiredForColorSearch() {
-		return prefixRequiredForColorSearch;
 	}
 
 	public static boolean setFilterText(String filterText) {
@@ -260,7 +233,6 @@ public class Config {
 	private static boolean syncConfig() {
 		boolean needsReload = false;
 
-		config.addCategory(CATEGORY_SEARCH);
 		config.addCategory(CATEGORY_ADVANCED);
 
 		ConfigCategory modeCategory = config.getCategory("mode");
@@ -278,13 +250,9 @@ public class Config {
 			config.removeCategory(interfaceCategory);
 		}
 
-		prefixRequiredForModNameSearch = config.getBoolean(CATEGORY_SEARCH, "atPrefixRequiredForModName", prefixRequiredForModNameSearch);
-		prefixRequiredForTooltipSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForTooltipSearch", prefixRequiredForTooltipSearch);
-		prefixRequiredForOreDictSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForOreDictSearch", prefixRequiredForOreDictSearch);
-		prefixRequiredForCreativeTabSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForCreativeTabSearch", prefixRequiredForCreativeTabSearch);
-		prefixRequiredForColorSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForColorSearch", prefixRequiredForColorSearch);
-		if (config.getCategory(CATEGORY_SEARCH).hasChanged()) {
-			needsReload = true;
+		ConfigCategory searchCategory = config.getCategory("search");
+		if (searchCategory != null) {
+			config.removeCategory(searchCategory);
 		}
 
 		ConfigCategory categoryAdvanced = config.getCategory(CATEGORY_ADVANCED);
@@ -430,51 +398,59 @@ public class Config {
 		return changed;
 	}
 
-	public static void addItemToConfigBlacklist(ItemStack itemStack, ItemBlacklistType blacklistType) {
-		final String uid = getItemStackUid(itemStack, blacklistType);
+	public static void addIngredientToConfigBlacklist(Object itemStack, IngredientBlacklistType blacklistType) {
+		final String uid = getIngredientUid(itemStack, blacklistType);
 		if (itemBlacklist.add(uid)) {
 			updateBlacklist();
 		}
 	}
 
-	public static void removeItemFromConfigBlacklist(ItemStack itemStack, ItemBlacklistType blacklistType) {
-		final String uid = getItemStackUid(itemStack, blacklistType);
+	public static void removeIngredientFromConfigBlacklist(Object ingredient, IngredientBlacklistType blacklistType) {
+		final String uid = getIngredientUid(ingredient, blacklistType);
 		if (itemBlacklist.remove(uid)) {
 			updateBlacklist();
 		}
 	}
 
-	public static boolean isItemOnConfigBlacklist(ItemStack itemStack) {
-		for (ItemBlacklistType itemBlacklistType : ItemBlacklistType.VALUES) {
-			if (isItemOnConfigBlacklist(itemStack, itemBlacklistType)) {
+	public static boolean isIngredientOnConfigBlacklist(Object ingredient) {
+		for (IngredientBlacklistType ingredientBlacklistType : IngredientBlacklistType.VALUES) {
+			if (isIngredientOnConfigBlacklist(ingredient, ingredientBlacklistType)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public static boolean isItemOnConfigBlacklist(ItemStack itemStack, ItemBlacklistType blacklistType) {
-		final String uid = getItemStackUid(itemStack, blacklistType);
+	public static boolean isIngredientOnConfigBlacklist(Object ingredient, IngredientBlacklistType blacklistType) {
+		final String uid = getIngredientUid(ingredient, blacklistType);
 		return itemBlacklist.contains(uid);
 	}
 
-	private static String getItemStackUid(ItemStack itemStack, ItemBlacklistType blacklistType) {
-		StackHelper stackHelper = Internal.getStackHelper();
+	private static String getIngredientUid(Object ingredient, IngredientBlacklistType blacklistType) {
+		JeiRuntime runtime = Internal.getRuntime();
+		if (runtime == null) {
+			return "";
+		}
+		IIngredientRegistry ingredientRegistry = runtime.getIngredientRegistry();
+		IIngredientHelper ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		return getIngredientUid(ingredient, ingredientHelper, blacklistType);
+	}
+
+	private static <V> String getIngredientUid(V ingredient, IIngredientHelper<V> ingredientHelper, IngredientBlacklistType blacklistType) {
 		switch (blacklistType) {
 			case ITEM:
-				return stackHelper.getUniqueIdentifierForStack(itemStack, StackHelper.UidMode.NORMAL);
+				return ingredientHelper.getUniqueId(ingredient);
 			case WILDCARD:
-				return stackHelper.getUniqueIdentifierForStack(itemStack, StackHelper.UidMode.WILDCARD);
+				return ingredientHelper.getWildcardId(ingredient);
 			case MOD_ID:
-				return stackHelper.getModId(itemStack);
-
+				return ingredientHelper.getModId(ingredient);
 		}
 		return "";
 	}
 
-	public enum ItemBlacklistType {
+	public enum IngredientBlacklistType {
 		ITEM, WILDCARD, MOD_ID;
 
-		public static final ItemBlacklistType[] VALUES = values();
+		public static final IngredientBlacklistType[] VALUES = values();
 	}
 }

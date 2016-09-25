@@ -47,19 +47,6 @@ config.jei.interface.overlayEnabled.comment=Muestra la lista de objetos al abrir
 config.jei.interface.recipeAnimationsEnabled=Animaciones de los Crafteos
 config.jei.interface.recipeAnimationsEnabled.comment=Muestra las animaciones de los Crafteos
 
-config.jei.search=Opciones de Busqueda
-config.jei.search.comment=Opciones relacionadas con la Barra de Busqueda.
-config.jei.search.atPrefixRequiredForModName=Requiere @ para Nombre del mod
-config.jei.search.atPrefixRequiredForModName.comment=Requiere "@" en el inicio de una palabra para buscar en el Nombre del Mod.
-config.jei.search.prefixRequiredForTooltipSearch=Requiere # para Descripcion
-config.jei.search.prefixRequiredForTooltipSearch.comment=Requiere "#" en el inicio de una palabra para buscar descripciones.
-config.jei.search.prefixRequiredForOreDictSearch=Requiere $ Para Ore Dictionary
-config.jei.search.prefixRequiredForOreDictSearch.comment=Requiere "$" en el inicio de una palabra para buscar nombres en el ore dictionary.
-config.jei.search.prefixRequiredForCreativeTabSearch=Requiere %% para nombre en el Menu del Modo Creativo
-config.jei.search.prefixRequiredForCreativeTabSearch.comment=Requiere "%" en el inicio de una palabra para buscar nombres en el menu del modo creativo.
-config.jei.search.prefixRequiredForColorSearch=Requiere ^ para Colores
-config.jei.search.prefixRequiredForColorSearch.comment=Requiere "^" en el inicio de una palabra para buscar colores de los objetos.
-
 config.jei.advanced=Avanzado
 config.jei.advanced.comment=Opciones Avanzadas que cambian las funciones de JEI.
 config.jei.advanced.itemBlacklist=Modo Blacklist
@@ -70,9 +57,6 @@ config.jei.advanced.colorSearchEnabled=Habilitar Busqueda Con Color
 config.jei.advanced.colorSearchEnabled.comment=Activa la busqueda de objetos con color.
 config.jei.advanced.debugModeEnabled=Modo Debug
 config.jei.advanced.debugModeEnabled.comment=Solo util para modders, aniade miles de objetos de testeo y algunos crafteos de debug.
-
-config.jei.addons=Addons
-config.jei.addons.comment=Category for JEI addon config options.
 
 # Edit Mode
 gui.jei.editMode.description=Modo Editar Lista de Objetos de JEI:

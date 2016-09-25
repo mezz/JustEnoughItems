@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.IGuiHelper;
+import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.IStackHelper;
+import mezz.jei.plugins.vanilla.VanillaPlugin;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
@@ -21,6 +24,19 @@ public class ShapelessOreRecipeWrapper extends AbstractShapelessRecipeWrapper {
 					itemStack.stackSize = 1;
 				}
 			}
+		}
+	}
+
+	@Override
+	public void getIngredients(IIngredients ingredients) {
+		IStackHelper stackHelper = VanillaPlugin.jeiHelpers.getStackHelper();
+
+		List<List<ItemStack>> inputs = stackHelper.expandRecipeItemStackInputs(recipe.getInput());
+		ingredients.setInputLists(ItemStack.class, inputs);
+
+		ItemStack recipeOutput = recipe.getRecipeOutput();
+		if (recipeOutput != null) {
+			ingredients.setOutput(ItemStack.class, recipeOutput);
 		}
 	}
 

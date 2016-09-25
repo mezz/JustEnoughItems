@@ -7,6 +7,7 @@ import java.util.List;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
@@ -73,6 +74,12 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 		this.description = description;
 		this.itemStacks = itemStacks;
 		this.slotDrawable = Internal.getHelpers().getGuiHelper().getSlotDrawable();
+	}
+
+	@Override
+	public void getIngredients(IIngredients ingredients) {
+		ingredients.setInputLists(ItemStack.class, Collections.singletonList(itemStacks));
+		ingredients.setOutputs(ItemStack.class, itemStacks);
 	}
 
 	@Override

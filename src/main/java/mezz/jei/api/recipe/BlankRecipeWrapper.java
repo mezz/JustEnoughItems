@@ -12,21 +12,25 @@ import net.minecraftforge.fluids.FluidStack;
  */
 public abstract class BlankRecipeWrapper implements IRecipeWrapper {
 	@Override
+	@Deprecated
 	public List getInputs() {
 		return Collections.emptyList();
 	}
 
 	@Override
+	@Deprecated
 	public List getOutputs() {
 		return Collections.emptyList();
 	}
 
 	@Override
+	@Deprecated
 	public List<FluidStack> getFluidInputs() {
 		return Collections.emptyList();
 	}
 
 	@Override
+	@Deprecated
 	public List<FluidStack> getFluidOutputs() {
 		return Collections.emptyList();
 	}

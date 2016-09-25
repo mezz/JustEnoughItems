@@ -44,19 +44,6 @@ config.jei.interface.overlayEnabled.comment=Montre la liste d'items à côté de
 config.jei.interface.recipeAnimationsEnabled=Animations des recettes
 config.jei.interface.recipeAnimationsEnabled.comment=Affiche les animations des recettes (four, progressions, etc)
 
-config.jei.search=Search Options
-config.jei.search.comment=Options relatives à la barre de recherche.
-config.jei.search.atPrefixRequiredForModName=Préfixe @ pour ModID
-config.jei.search.atPrefixRequiredForModName.comment=Ajouter "@" au début d'un mot pour rechercher par nom de mod.
-config.jei.search.prefixRequiredForTooltipSearch=Préfixe # pour Tooltip
-config.jei.search.prefixRequiredForTooltipSearch.comment=Ajoutez "#" au début d'un mot pour rechercher par tooltips.
-config.jei.search.prefixRequiredForOreDictSearch=Préfixe $ pour Ore Dictionary
-config.jei.search.prefixRequiredForOreDictSearch.comment=Ajoutez "$" au début d'un mot pour rechercher par nom ore dictionary.
-config.jei.search.prefixRequiredForCreativeTabSearch=Préfixe %% pour Creative Tab Name
-config.jei.search.prefixRequiredForCreativeTabSearch.comment=Ajoutez "%" au début d'un mot pour rechercher par nom de menu créatif.
-config.jei.search.prefixRequiredForColorSearch=Préfixe ^ pour Couleurs
-config.jei.search.prefixRequiredForColorSearch.comment=Ajoutez "^" au début d'un mot pour rechercher par couleur d'item.
-
 config.jei.advanced=Avancé
 config.jei.advanced.comment=Configuration avancée pour changer les fonctions de JEI.
 config.jei.advanced.itemBlacklist=Blacklist d'items
@@ -67,9 +54,6 @@ config.jei.advanced.colorSearchEnabled=Activer la recherche par couleur
 config.jei.advanced.colorSearchEnabled.comment=Recherche d'items par couleur et affiche les items compatibles via leur tooltip.
 config.jei.advanced.debugModeEnabled=Mode Debug
 config.jei.advanced.debugModeEnabled.comment=Seulement utile aux développeurs, ajoute des centaines d'items de test et quelques recettes factices.
-
-config.jei.addons=Addons
-config.jei.addons.comment=catéorie pour les configurations des addons.
 
 # Edit Mode
 gui.jei.editMode.description=JEI Item List Edit Mode:

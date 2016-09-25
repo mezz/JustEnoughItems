@@ -76,8 +76,8 @@ public class InputHandler {
 			return true;
 		}
 
-		Focus<?> focus = getFocusUnderMouseForClick(mouseX, mouseY);
-		if (focus != null && handleMouseClickedFocus(mouseButton, focus)) {
+		IClickedIngredient<?> clicked = getFocusUnderMouseForClick(mouseX, mouseY);
+		if (clicked != null && handleMouseClickedFocus(mouseButton, clicked)) {
 			return true;
 		}
 
@@ -94,12 +94,12 @@ public class InputHandler {
 	}
 
 	@Nullable
-	private Focus<?> getFocusUnderMouseForClick(int mouseX, int mouseY) {
+	private IClickedIngredient<?> getFocusUnderMouseForClick(int mouseX, int mouseY) {
 		for (IShowsRecipeFocuses gui : showsRecipeFocuses) {
 			if (gui.canSetFocusWithMouse()) {
-				Focus<?> focus = gui.getFocusUnderMouse(mouseX, mouseY);
-				if (focus != null) {
-					return focus;
+				IClickedIngredient<?> clicked = gui.getIngredientUnderMouse(mouseX, mouseY);
+				if (clicked != null) {
+					return clicked;
 				}
 			}
 		}
@@ -107,25 +107,25 @@ public class InputHandler {
 	}
 
 	@Nullable
-	private IFocus<?> getFocusUnderMouseForKey(int mouseX, int mouseY) {
+	private IClickedIngredient<?> getIngredientUnderMouseForKey(int mouseX, int mouseY) {
 		for (IShowsRecipeFocuses gui : showsRecipeFocuses) {
-			IFocus<?> focus = gui.getFocusUnderMouse(mouseX, mouseY);
-			if (focus != null) {
-				return focus;
+			IClickedIngredient<?> clicked = gui.getIngredientUnderMouse(mouseX, mouseY);
+			if (clicked != null) {
+				return clicked;
 			}
 		}
 		return null;
 	}
 
-	private boolean handleMouseClickedFocus(int mouseButton, Focus<?> focus) {
+	private boolean handleMouseClickedFocus(int mouseButton, IClickedIngredient<?> clicked) {
 		if (Config.isEditModeEnabled()) {
-			if (handleClickEditStack(mouseButton, focus)) {
+			if (handleClickEditStack(mouseButton, clicked)) {
 				return true;
 			}
 		}
 
-		if (Config.isCheatItemsEnabled() && focus.allowsCheating() && !recipesGui.isOpen()) {
-			Object focusValue = focus.getValue();
+		if (Config.isCheatItemsEnabled() && clicked.allowsCheating() && !recipesGui.isOpen()) {
+			Object focusValue = clicked.getValue();
 			if (focusValue instanceof ItemStack) {
 				ItemStack itemStack = (ItemStack) focusValue;
 
@@ -140,34 +140,32 @@ public class InputHandler {
 		}
 
 		if (mouseButton == 0) {
-			recipesGui.showRecipes(focus);
+			IFocus focus = new Focus<Object>(IFocus.Mode.OUTPUT, clicked.getValue());
+			recipesGui.show(focus);
 			return true;
 		} else if (mouseButton == 1) {
-			recipesGui.showUses(focus);
+			IFocus focus = new Focus<Object>(IFocus.Mode.INPUT, clicked.getValue());
+			recipesGui.show(focus);
 			return true;
 		}
 
 		return false;
 	}
 
-	private boolean handleClickEditStack(int mouseButton, IFocus<?> focus) {
-		Object focusValue = focus.getValue();
-		if (!(focusValue instanceof ItemStack)) {
-			return false;
-		}
-		ItemStack itemStack = (ItemStack) focusValue;
+	private boolean handleClickEditStack(int mouseButton, IClickedIngredient<?> clicked) {
+		Object ingredient = clicked.getValue();
 
-		Config.ItemBlacklistType blacklistType = null;
+		Config.IngredientBlacklistType blacklistType = null;
 		if (GuiScreen.isCtrlKeyDown()) {
 			if (GuiScreen.isShiftKeyDown()) {
 				if (mouseButton == 0) {
-					blacklistType = Config.ItemBlacklistType.MOD_ID;
+					blacklistType = Config.IngredientBlacklistType.MOD_ID;
 				}
 			} else {
 				if (mouseButton == 0) {
-					blacklistType = Config.ItemBlacklistType.ITEM;
+					blacklistType = Config.IngredientBlacklistType.ITEM;
 				} else if (mouseButton == 1) {
-					blacklistType = Config.ItemBlacklistType.WILDCARD;
+					blacklistType = Config.IngredientBlacklistType.WILDCARD;
 				}
 			}
 		}
@@ -176,10 +174,10 @@ public class InputHandler {
 			return false;
 		}
 
-		if (Config.isItemOnConfigBlacklist(itemStack, blacklistType)) {
-			Config.removeItemFromConfigBlacklist(itemStack, blacklistType);
+		if (Config.isIngredientOnConfigBlacklist(ingredient, blacklistType)) {
+			Config.removeIngredientFromConfigBlacklist(ingredient, blacklistType);
 		} else {
-			Config.addItemToConfigBlacklist(itemStack, blacklistType);
+			Config.addIngredientToConfigBlacklist(ingredient, blacklistType);
 		}
 		return true;
 	}
@@ -222,16 +220,13 @@ public class InputHandler {
 		}
 
 		if (!isContainerTextFieldFocused()) {
-			if (KeyBindings.showRecipe.isActiveAndMatches(eventKey)) {
-				IFocus<?> focus = getFocusUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
-				if (focus != null) {
-					recipesGui.showRecipes(focus);
-					return true;
-				}
-			} else if (KeyBindings.showUses.isActiveAndMatches(eventKey)) {
-				IFocus<?> focus = getFocusUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
-				if (focus != null) {
-					recipesGui.showUses(focus);
+			final boolean showRecipe = KeyBindings.showRecipe.isActiveAndMatches(eventKey);
+			final boolean showUses = KeyBindings.showUses.isActiveAndMatches(eventKey);
+			if (showRecipe || showUses) {
+				IClickedIngredient<?> clicked = getIngredientUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
+				if (clicked != null) {
+					IFocus.Mode mode = showRecipe ? IFocus.Mode.OUTPUT : IFocus.Mode.INPUT;
+					recipesGui.show(new Focus<Object>(mode, clicked.getValue()));
 					return true;
 				}
 			}

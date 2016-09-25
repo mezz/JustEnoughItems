@@ -19,9 +19,21 @@ public interface IGuiIngredient<T> {
 	/**
 	 * The ingredient variation that is shown at this moment.
 	 * For ingredients that rotate through several values, this will change over time.
+	 *
+	 * @deprecated since JEI 3.11.0. Use {@link #getDisplayedIngredient()}
 	 */
 	@Nullable
+	@Deprecated
 	IFocus<T> getCurrentlyDisplayed();
+
+	/**
+	 * The ingredient variation that is shown at this moment.
+	 * For ingredients that rotate through several values, this will change over time.
+	 *
+	 * @since JEI 3.11.0
+	 */
+	@Nullable
+	T getDisplayedIngredient();
 
 	/**
 	 * All ingredient variations that can be shown.

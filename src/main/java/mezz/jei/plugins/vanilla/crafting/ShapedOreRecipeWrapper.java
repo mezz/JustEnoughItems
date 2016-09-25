@@ -4,13 +4,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.BlankRecipeWrapper;
+import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
-import mezz.jei.plugins.vanilla.VanillaRecipeWrapper;
+import mezz.jei.plugins.vanilla.VanillaPlugin;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
-public class ShapedOreRecipeWrapper extends VanillaRecipeWrapper implements IShapedCraftingRecipeWrapper {
+public class ShapedOreRecipeWrapper extends BlankRecipeWrapper implements IShapedCraftingRecipeWrapper {
 
 	private final ShapedOreRecipe recipe;
 	private final int width;
@@ -28,6 +31,19 @@ public class ShapedOreRecipeWrapper extends VanillaRecipeWrapper implements ISha
 		}
 		this.width = ObfuscationReflectionHelper.getPrivateValue(ShapedOreRecipe.class, this.recipe, "width");
 		this.height = ObfuscationReflectionHelper.getPrivateValue(ShapedOreRecipe.class, this.recipe, "height");
+	}
+
+	@Override
+	public void getIngredients(IIngredients ingredients) {
+		IStackHelper stackHelper = VanillaPlugin.jeiHelpers.getStackHelper();
+
+		List<List<ItemStack>> inputs = stackHelper.expandRecipeItemStackInputs(Arrays.asList(recipe.getInput()));
+		ingredients.setInputLists(ItemStack.class, inputs);
+
+		ItemStack recipeOutput = recipe.getRecipeOutput();
+		if (recipeOutput != null) {
+			ingredients.setOutput(ItemStack.class, recipeOutput);
+		}
 	}
 
 	@Override

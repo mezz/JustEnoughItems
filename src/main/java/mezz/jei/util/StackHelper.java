@@ -306,47 +306,53 @@ public class StackHelper implements IStackHelper {
 	}
 
 	@Override
+	public List<List<ItemStack>> expandRecipeItemStackInputs(@Nullable List inputs) {
+		if (inputs == null) {
+			return Collections.emptyList();
+		}
+
+		List<List<ItemStack>> expandedInputs = new ArrayList<List<ItemStack>>();
+		for (Object input : inputs) {
+			List<ItemStack> expandedInput = toItemStackList(input);
+			expandedInputs.add(expandedInput);
+		}
+		return expandedInputs;
+	}
+
+	@Override
 	public List<ItemStack> toItemStackList(@Nullable Object stacks) {
 		if (stacks == null) {
 			return Collections.emptyList();
 		}
 
-		UniqueItemStackListBuilder itemStackListBuilder = new UniqueItemStackListBuilder();
-		toItemStackList(itemStackListBuilder, stacks);
-		return itemStackListBuilder.build();
+		UniqueIngredientListBuilder<ItemStack> ingredientListBuilder = new UniqueIngredientListBuilder<ItemStack>(ItemStack.class);
+		toItemStackList(ingredientListBuilder, stacks);
+		return ingredientListBuilder.build();
 	}
 
-	private void toItemStackList(UniqueItemStackListBuilder itemStackListBuilder, @Nullable Object input) {
+	private void toItemStackList(UniqueIngredientListBuilder<ItemStack> ingredientListBuilder, @Nullable Object input) {
 		if (input instanceof ItemStack) {
 			ItemStack stack = (ItemStack) input;
-			itemStackListBuilder.add(stack);
+			if (stack.getMetadata() == OreDictionary.WILDCARD_VALUE) {
+				List<ItemStack> subtypes = getSubtypes(stack);
+				for (ItemStack subtype : subtypes) {
+					ingredientListBuilder.add(subtype);
+				}
+			} else {
+				ingredientListBuilder.add(stack);
+			}
 		} else if (input instanceof String) {
 			List<ItemStack> stacks = OreDictionary.getOres((String) input);
 			for (ItemStack stack : stacks) {
-				itemStackListBuilder.add(stack);
+				ingredientListBuilder.add(stack);
 			}
 		} else if (input instanceof Iterable) {
 			for (Object obj : (Iterable) input) {
-				toItemStackList(itemStackListBuilder, obj);
+				toItemStackList(ingredientListBuilder, obj);
 			}
 		} else if (input != null) {
 			Log.error("Unknown object found: {}", input);
 		}
-	}
-
-	public String getModId(ItemStack stack) {
-		Item item = stack.getItem();
-		if (item == null) {
-			throw new NullPointerException(nullItemInStack);
-		}
-
-		ResourceLocation itemName = item.getRegistryName();
-		if (itemName == null) {
-			String stackInfo = ErrorUtil.getItemStackInfo(stack);
-			throw new NullPointerException("item.getRegistryName() returned null for: " + stackInfo);
-		}
-
-		return itemName.getResourceDomain();
 	}
 
 	public String getUniqueIdentifierForStack(ItemStack stack) {
@@ -374,10 +380,12 @@ public class StackHelper implements IStackHelper {
 
 		StringBuilder itemKey = new StringBuilder(itemName.toString());
 
-		ISubtypeRegistry subtypeRegistry = Internal.getHelpers().getSubtypeRegistry();
-		String subtypeInfo = subtypeRegistry.getSubtypeInfo(stack);
-		if (subtypeInfo != null) {
-			itemKey.append(':').append(subtypeInfo);
+		if (mode != UidMode.WILDCARD) {
+			ISubtypeRegistry subtypeRegistry = Internal.getHelpers().getSubtypeRegistry();
+			String subtypeInfo = subtypeRegistry.getSubtypeInfo(stack);
+			if (subtypeInfo != null) {
+				itemKey.append(':').append(subtypeInfo);
+			}
 		}
 
 		int metadata = stack.getMetadata();

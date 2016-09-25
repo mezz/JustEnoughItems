@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -19,23 +20,35 @@ import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
 import mezz.jei.api.IRecipeRegistry;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.config.Config;
+import mezz.jei.gui.Focus;
 import mezz.jei.gui.RecipeClickableArea;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.IngredientUtil;
+import mezz.jei.util.Ingredients;
 import mezz.jei.util.Log;
 import mezz.jei.util.RecipeCategoryComparator;
 import mezz.jei.util.RecipeMap;
 import mezz.jei.util.StackHelper;
+import net.minecraft.block.Block;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 public class RecipeRegistry implements IRecipeRegistry {
+	private final IIngredientRegistry ingredientRegistry;
 	private final List<IRecipeHandler> recipeHandlers;
 	private final ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers;
 	private final ImmutableMultimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap;
@@ -53,16 +66,18 @@ public class RecipeRegistry implements IRecipeRegistry {
 			List<IRecipeTransferHandler> recipeTransferHandlers,
 			List<Object> recipes,
 			Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap,
-			Multimap<String, ItemStack> craftItemsForCategories
+			Multimap<String, ItemStack> craftItemsForCategories,
+			IIngredientRegistry ingredientRegistry
 	) {
+		this.ingredientRegistry = ingredientRegistry;
 		this.recipeCategoriesMap = buildRecipeCategoriesMap(recipeCategories);
 		this.recipeTransferHandlers = buildRecipeTransferHandlerTable(recipeTransferHandlers);
 		this.recipeHandlers = buildRecipeHandlersList(recipeHandlers);
 		this.recipeClickableAreasMap = ImmutableMultimap.copyOf(recipeClickableAreasMap);
 
 		RecipeCategoryComparator recipeCategoryComparator = new RecipeCategoryComparator(recipeCategories);
-		this.recipeInputMap = new RecipeMap(recipeCategoryComparator);
-		this.recipeOutputMap = new RecipeMap(recipeCategoryComparator);
+		this.recipeInputMap = new RecipeMap(recipeCategoryComparator, ingredientRegistry);
+		this.recipeOutputMap = new RecipeMap(recipeCategoryComparator, ingredientRegistry);
 
 		this.unhandledRecipeClasses = new HashSet<Class>();
 
@@ -138,6 +153,11 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
+	public <V> IFocus<V> createFocus(IFocus.Mode mode, @Nullable V ingredient) {
+		return new Focus<V>(mode, ingredient);
+	}
+
+	@Override
 	public void addRecipe(@Nullable Object recipe) {
 		if (recipe == null) {
 			Log.error("Null recipe", new NullPointerException());
@@ -202,8 +222,27 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	private <T> void addRecipeUnchecked(T recipe, IRecipeCategory recipeCategory, IRecipeHandler<T> recipeHandler) {
-		StackHelper stackHelper = Internal.getStackHelper();
 		IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
+
+		Ingredients ingredients = new Ingredients();
+		try {
+			recipeWrapper.getIngredients(ingredients);
+		} catch (LinkageError ignored) {
+			// older recipe wrappers do not support getIngredients
+		}
+
+		if (ingredients.isUsed()) {
+			recipeInputMap.addRecipe(recipe, recipeCategory, ingredients.getInputIngredients());
+			recipeOutputMap.addRecipe(recipe, recipeCategory, ingredients.getOutputIngredients());
+		} else {
+			legacy_addRecipeUnchecked(recipeWrapper, recipe, recipeCategory);
+		}
+
+		recipesForCategories.put(recipeCategory, recipe);
+	}
+
+	private <T> void legacy_addRecipeUnchecked(IRecipeWrapper recipeWrapper, T recipe, IRecipeCategory recipeCategory) {
+		StackHelper stackHelper = Internal.getStackHelper();
 
 		List inputs = recipeWrapper.getInputs();
 		List<FluidStack> fluidInputs = recipeWrapper.getFluidInputs();
@@ -212,7 +251,11 @@ public class RecipeRegistry implements IRecipeRegistry {
 			if (fluidInputs == null) {
 				fluidInputs = Collections.emptyList();
 			}
-			recipeInputMap.addRecipe(recipe, recipeCategory, inputStacks, fluidInputs);
+
+			Map<Class, List> inputIngredients = new HashMap<Class, List>();
+			inputIngredients.put(ItemStack.class, inputStacks);
+			inputIngredients.put(FluidStack.class, fluidInputs);
+			recipeInputMap.addRecipe(recipe, recipeCategory, inputIngredients);
 		}
 
 		List outputs = recipeWrapper.getOutputs();
@@ -222,10 +265,12 @@ public class RecipeRegistry implements IRecipeRegistry {
 			if (fluidOutputs == null) {
 				fluidOutputs = Collections.emptyList();
 			}
-			recipeOutputMap.addRecipe(recipe, recipeCategory, outputStacks, fluidOutputs);
-		}
 
-		recipesForCategories.put(recipeCategory, recipe);
+			Map<Class, List> outputIngredients = new HashMap<Class, List>();
+			outputIngredients.put(ItemStack.class, outputStacks);
+			outputIngredients.put(FluidStack.class, fluidOutputs);
+			recipeOutputMap.addRecipe(recipe, recipeCategory, outputIngredients);
+		}
 	}
 
 	@Override
@@ -294,105 +339,160 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return null;
 	}
 
-	@Override
-	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithInput(@Nullable ItemStack input) {
-		if (input == null) {
-			Log.error("Null ItemStack input", new NullPointerException());
-			return ImmutableList.of();
-		}
-		return recipeInputMap.getRecipeCategories(input);
-	}
-
-	@Override
-	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithInput(@Nullable FluidStack input) {
-		if (input == null) {
-			Log.error("Null Fluid input", new NullPointerException());
-			return ImmutableList.of();
-		}
-		return recipeInputMap.getRecipeCategories(input);
-	}
-
-	@Override
-	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithOutput(@Nullable ItemStack output) {
-		if (output == null) {
-			Log.error("Null ItemStack output", new NullPointerException());
-			return ImmutableList.of();
-		}
-		return recipeOutputMap.getRecipeCategories(output);
-	}
-
-	@Override
-	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithOutput(@Nullable FluidStack output) {
-		if (output == null) {
-			Log.error("Null Fluid output", new NullPointerException());
-			return ImmutableList.of();
-		}
-		return recipeOutputMap.getRecipeCategories(output);
-	}
-
-	@Override
-	public List<Object> getRecipesWithInput(@Nullable IRecipeCategory recipeCategory, @Nullable ItemStack input) {
-		if (recipeCategory == null) {
-			Log.error("Null recipeCategory", new NullPointerException());
-			return ImmutableList.of();
-		} else if (input == null) {
-			Log.error("Null ItemStack input", new NullPointerException());
-			return ImmutableList.of();
-		}
-
-		ImmutableList<Object> recipes = recipeInputMap.getRecipes(recipeCategory, input);
-
-		String recipeCategoryUid = recipeCategory.getUid();
-		for (String inputKey : Internal.getStackHelper().getUniqueIdentifiersWithWildcard(input)) {
-			if (categoriesForCraftItemKeys.get(inputKey).contains(recipeCategoryUid)) {
-				ImmutableSet<Object> specificRecipes = ImmutableSet.copyOf(recipes);
-				List<Object> recipesForCategory = recipesForCategories.get(recipeCategory);
-				List<Object> allRecipes = new ArrayList<Object>(recipes);
-				for (Object recipe : recipesForCategory) {
-					if (!specificRecipes.contains(recipe)) {
-						allRecipes.add(recipe);
-					}
+	/**
+	 * Special case for ItemBlocks containing fluid blocks.
+	 * Nothing crafts those, the player probably wants to look up fluids.
+	 */
+	@Nullable
+	private static FluidStack getFluidFromItemBlock(Object ingredient) {
+		if (ingredient instanceof ItemStack) {
+			ItemStack itemStack = (ItemStack) ingredient;
+			Item item = itemStack.getItem();
+			if (item instanceof ItemBlock) {
+				Block block = ((ItemBlock) item).getBlock();
+				Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
+				if (fluid != null) {
+					return new FluidStack(fluid, Fluid.BUCKET_VOLUME);
 				}
-				return allRecipes;
 			}
 		}
 
-		return recipes;
+		return null;
 	}
 
 	@Override
+	public <V> ImmutableList<IRecipeCategory> getRecipeCategories(@Nullable IFocus<V> focus) {
+		if (focus == null) {
+			Log.error("Null focus", new NullPointerException());
+			return ImmutableList.of();
+		}
+
+		if (focus.getMode() == IFocus.Mode.NONE) {
+			return getRecipeCategories();
+		}
+
+		V ingredient = focus.getValue();
+		if (ingredient == null) {
+			Log.error("Null ingredient", new NullPointerException());
+			return ImmutableList.of();
+		}
+
+		FluidStack fluidStack = getFluidFromItemBlock(ingredient);
+		if (fluidStack != null) {
+			return getRecipeCategories(createFocus(focus.getMode(), fluidStack));
+		}
+
+		switch (focus.getMode()) {
+			case INPUT:
+				return recipeInputMap.getRecipeCategories(ingredient);
+			case OUTPUT:
+				return recipeOutputMap.getRecipeCategories(ingredient);
+			default:
+				return getRecipeCategories();
+		}
+	}
+
+	@Override
+	public <V> List<Object> getRecipes(@Nullable IRecipeCategory recipeCategory, @Nullable IFocus<V> focus) {
+		if (recipeCategory == null) {
+			Log.error("Null recipeCategory", new NullPointerException());
+			return ImmutableList.of();
+		}
+
+		if (focus == null) {
+			Log.error("Null focus", new NullPointerException());
+			return ImmutableList.of();
+		}
+
+		if (focus.getMode() == IFocus.Mode.NONE) {
+			return getRecipes(recipeCategory);
+		}
+
+		V ingredient = focus.getValue();
+		if (ingredient == null) {
+			Log.error("Null ingredient", new NullPointerException());
+			return ImmutableList.of();
+		}
+
+		FluidStack fluidStack = getFluidFromItemBlock(ingredient);
+		if (fluidStack != null) {
+			return getRecipes(recipeCategory, createFocus(focus.getMode(), fluidStack));
+		}
+
+		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+
+		if (focus.getMode() == IFocus.Mode.INPUT) {
+			final ImmutableList<Object> recipes = recipeInputMap.getRecipes(recipeCategory, ingredient);
+
+			String recipeCategoryUid = recipeCategory.getUid();
+			for (String inputKey : IngredientUtil.getUniqueIdsWithWildcard(ingredientHelper, ingredient)) {
+				if (categoriesForCraftItemKeys.get(inputKey).contains(recipeCategoryUid)) {
+					ImmutableSet<Object> specificRecipes = ImmutableSet.copyOf(recipes);
+					List<Object> recipesForCategory = recipesForCategories.get(recipeCategory);
+					List<Object> allRecipes = new ArrayList<Object>(recipes);
+					for (Object recipe : recipesForCategory) {
+						if (!specificRecipes.contains(recipe)) {
+							allRecipes.add(recipe);
+						}
+					}
+					return allRecipes;
+				}
+			}
+
+			return recipes;
+		} else if (focus.getMode() == IFocus.Mode.OUTPUT) {
+			return recipeOutputMap.getRecipes(recipeCategory, ingredient);
+		} else {
+			return getRecipes(recipeCategory);
+		}
+	}
+
+	@Override
+	@Deprecated
+	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithInput(@Nullable ItemStack input) {
+		return getRecipeCategories(new Focus<ItemStack>(IFocus.Mode.INPUT, input));
+	}
+
+	@Override
+	@Deprecated
+	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithInput(@Nullable FluidStack input) {
+		return getRecipeCategories(new Focus<FluidStack>(IFocus.Mode.INPUT, input));
+	}
+
+	@Override
+	@Deprecated
+	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithOutput(@Nullable ItemStack output) {
+		return getRecipeCategories(new Focus<ItemStack>(IFocus.Mode.OUTPUT, output));
+	}
+
+	@Override
+	@Deprecated
+	public ImmutableList<IRecipeCategory> getRecipeCategoriesWithOutput(@Nullable FluidStack output) {
+		return getRecipeCategories(new Focus<FluidStack>(IFocus.Mode.OUTPUT, output));
+	}
+
+	@Override
+	@Deprecated
+	public List<Object> getRecipesWithInput(@Nullable IRecipeCategory recipeCategory, @Nullable ItemStack input) {
+		return getRecipes(recipeCategory, new Focus<ItemStack>(IFocus.Mode.INPUT, input));
+	}
+
+	@Override
+	@Deprecated
 	public List<Object> getRecipesWithInput(@Nullable IRecipeCategory recipeCategory, @Nullable FluidStack input) {
-		if (recipeCategory == null) {
-			Log.error("Null recipeCategory", new NullPointerException());
-			return ImmutableList.of();
-		} else if (input == null) {
-			Log.error("Null Fluid input", new NullPointerException());
-			return ImmutableList.of();
-		}
-		return recipeInputMap.getRecipes(recipeCategory, input);
+		return getRecipes(recipeCategory, new Focus<FluidStack>(IFocus.Mode.INPUT, input));
 	}
 
 	@Override
-	public ImmutableList<Object> getRecipesWithOutput(@Nullable IRecipeCategory recipeCategory, @Nullable ItemStack output) {
-		if (recipeCategory == null) {
-			Log.error("Null recipeCategory", new NullPointerException());
-			return ImmutableList.of();
-		} else if (output == null) {
-			Log.error("Null ItemStack output", new NullPointerException());
-			return ImmutableList.of();
-		}
-		return recipeOutputMap.getRecipes(recipeCategory, output);
+	@Deprecated
+	public List<Object> getRecipesWithOutput(@Nullable IRecipeCategory recipeCategory, @Nullable ItemStack output) {
+		return getRecipes(recipeCategory, new Focus<ItemStack>(IFocus.Mode.OUTPUT, output));
 	}
 
 	@Override
+	@Deprecated
 	public List<Object> getRecipesWithOutput(@Nullable IRecipeCategory recipeCategory, @Nullable FluidStack output) {
-		if (recipeCategory == null) {
-			return ImmutableList.of();
-		} else if (output == null) {
-			Log.error("Null Fluid output", new NullPointerException());
-			return ImmutableList.of();
-		}
-		return recipeOutputMap.getRecipes(recipeCategory, output);
+		return getRecipes(recipeCategory, new Focus<FluidStack>(IFocus.Mode.OUTPUT, output));
 	}
 
 	@Override
@@ -405,8 +505,25 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
+	@Deprecated
 	public ImmutableCollection<ItemStack> getCraftingItems(IRecipeCategory recipeCategory) {
 		return craftItemsForCategories.get(recipeCategory);
+	}
+
+	@Override
+	public Collection<ItemStack> getCraftingItems(IRecipeCategory recipeCategory, IFocus focus) {
+		Collection<ItemStack> craftingItems = craftItemsForCategories.get(recipeCategory);
+		Object ingredient = focus.getValue();
+		if (ingredient instanceof ItemStack && focus.getMode() == IFocus.Mode.INPUT) {
+			ItemStack itemStack = (ItemStack) ingredient;
+			IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+			IIngredientHelper<ItemStack> ingredientHelper = ingredientRegistry.getIngredientHelper(ItemStack.class);
+			ItemStack matchingStack = ingredientHelper.getMatch(craftingItems, itemStack);
+			if (matchingStack != null) {
+				return Collections.singletonList(matchingStack);
+			}
+		}
+		return craftingItems;
 	}
 
 	@Nullable

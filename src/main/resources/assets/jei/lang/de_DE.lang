@@ -35,11 +35,6 @@ config.jei.interface.comment=User-Interface betreffende Optionen
 config.jei.interface.recipeAnimationsEnabled=Aktiviere Rezeptanimationen
 config.jei.interface.recipeAnimationsEnabled.comment=Zeige Animationen für verschiedene Rezepte (Ofenfeuer, Fortschrittsbalken, usw.)
 
-config.jei.search=Suche
-config.jei.search.comment=Suchleisteneinstellungen
-config.jei.search.atPrefixRequiredForModName=Benutze @ für den Modnamen.
-config.jei.search.atPrefixRequiredForModName.comment=Benötigt "@ModName" anstelle von "ModName", um nach Mod zu filtern.
-
 config.jei.advanced=Erweitert
 config.jei.advanced.comment=Erweiterte Konfigurationsoptionen, die ändern, wie JEI funktioniert.
 config.jei.advanced.nbtKeyIgnoreList=NBT-Schlüssel-Ignorierungsliste
@@ -50,9 +45,6 @@ config.jei.advanced.hideMissingModelsEnabled=Verstecke fehlende Item-Modelle
 config.jei.advanced.hideMissingModelsEnabled.comment=Items in der Item-Liste mit fehlenden Modellen werden automatisch verborgen.
 config.jei.advanced.debugModeEnabled=Debug-Modus
 config.jei.advanced.debugModeEnabled.comment=Fügt zufällige Strings hinzu, um bei der JEI-Entwicklung zu helfen. Nur für Entwickler bestimmt.
-
-config.jei.addons=Addons
-config.jei.addons.comment=Kategorie für JEI Addon-Optionen.
 
 # Edit Mode
 gui.jei.editMode.description=JEI Item-Listeneditiermodus:

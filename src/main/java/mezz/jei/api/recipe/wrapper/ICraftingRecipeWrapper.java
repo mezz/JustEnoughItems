@@ -15,9 +15,11 @@ import net.minecraft.item.ItemStack;
 public interface ICraftingRecipeWrapper extends IRecipeWrapper {
 
 	@Override
+	@Deprecated
 	List getInputs();
 
 	@Override
+	@Deprecated
 	List<ItemStack> getOutputs();
 
 }

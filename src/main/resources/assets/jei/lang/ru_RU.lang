@@ -48,19 +48,6 @@ config.jei.interface.overlayEnabled.comment=Показывать список п
 config.jei.interface.recipeAnimationsEnabled=Анимации рецептов
 config.jei.interface.recipeAnimationsEnabled.comment=Показывать анимации рецептов (огонь в печи, индикаторы и т.д)
 
-config.jei.search=Поиск
-config.jei.search.comment=Настройки, отвечающие за поиск.
-config.jei.search.atPrefixRequiredForModName=Использовать @ для имени мода
-config.jei.search.atPrefixRequiredForModName.comment=Требовать "@ИмяМода" для поиска по имени модификации вместо просто "ИмяМода".
-config.jei.search.prefixRequiredForTooltipSearch=Использовать # для всплывающей подсказки
-config.jei.search.prefixRequiredForTooltipSearch.comment=Использовать "#" перед словом для поиска всплывающих подсказок.
-config.jei.search.prefixRequiredForOreDictSearch=Использовать $ для словаря руд
-config.jei.search.prefixRequiredForOreDictSearch.comment=Использовать "$" перед словом для поиска имён словаря руд.
-config.jei.search.prefixRequiredForCreativeTabSearch=Использовать % для имени творческой вкладки
-config.jei.search.prefixRequiredForCreativeTabSearch.comment=Использовать "%" перед словом для поиска имён творческих вкладок.
-config.jei.search.prefixRequiredForColorSearch=Использовать ^ для цветов
-config.jei.search.prefixRequiredForColorSearch.comment=Использовать "^" перед словом для поиска предмета по цвету.
-
 config.jei.advanced=Продвинутое
 config.jei.advanced.comment=Продвинутые настройки функций JEI.
 config.jei.advanced.itemBlacklist=Чёрный список для предметов
@@ -73,9 +60,6 @@ config.jei.advanced.debugModeEnabled=Режим отладки
 config.jei.advanced.debugModeEnabled.comment=Добавляет разные вещи, чтобы помочь в разработке JEI.
 config.jei.advanced.centerSearchBarEnabled=Строка поиска по центру
 config.jei.advanced.centerSearchBarEnabled.comment=Переместить строку поиска JEI в центр нижней части экрана.
-
-config.jei.addons=Дополнения
-config.jei.addons.comment=Категория для настроек дополнений JEI.
 
 # Edit Mode
 gui.jei.editMode.description=Режим редактирования списка предметов JEI:

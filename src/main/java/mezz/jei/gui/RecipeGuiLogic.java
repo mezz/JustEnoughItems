@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableList;
 import mezz.jei.RecipeRegistry;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.IRecipeRegistry;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
@@ -25,7 +26,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private static class State {
 		/** The focus of this GUI */
 		@Nonnull
-		public final MasterFocus focus;
+		public final IFocus focus;
 		/** List of Recipe Categories that involve the focus */
 		@Nonnull
 		public final ImmutableList<IRecipeCategory> recipeCategories;
@@ -33,7 +34,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		public int pageIndex;
 		public int recipesPerPage;
 
-		public State(MasterFocus focus, List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int pageIndex) {
+		public State(IFocus focus, List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int pageIndex) {
 			this.focus = focus;
 			this.recipeCategories = ImmutableList.copyOf(recipeCategories);
 			this.recipeCategoryIndex = recipeCategoryIndex;
@@ -65,7 +66,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public boolean setFocus(MasterFocus focus) {
+	public boolean setFocus(IFocus focus) {
 		return setFocus(focus, true);
 	}
 
@@ -86,12 +87,12 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 	}
 
-	private boolean setFocus(MasterFocus focus, boolean saveHistory) {
-		if (this.state != null && this.state.focus.equalsFocus(focus)) {
+	private <V> boolean setFocus(IFocus<V> focus, boolean saveHistory) {
+		if (this.state != null && Focus.areFocusesEqual(this.state.focus, focus)) {
 			return true;
 		}
 
-		final List<IRecipeCategory> recipeCategories = focus.getCategories();
+		final List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories(focus);
 		if (recipeCategories.isEmpty()) {
 			return false;
 		}
@@ -142,7 +143,8 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 		final List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories();
 		final int recipeCategoryIndex = recipeCategories.indexOf(recipeCategory);
-		final State state = new State(new MasterFocus(recipeRegistry), recipeCategories, recipeCategoryIndex, 0);
+		IFocus<Object> focus = recipeRegistry.createFocus(IFocus.Mode.NONE, null);
+		final State state = new State(focus, recipeCategories, recipeCategoryIndex, 0);
 		setState(state);
 
 		return true;
@@ -159,14 +161,15 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			history.push(this.state);
 		}
 
-		final State state = new State(new MasterFocus(recipeRegistry), recipeCategories, 0, 0);
+		IFocus<Object> focus = recipeRegistry.createFocus(IFocus.Mode.NONE, null);
+		final State state = new State(focus, recipeCategories, 0, 0);
 		setState(state);
 
 		return true;
 	}
 
 	@Override
-	public MasterFocus getFocus() {
+	public IFocus getFocus() {
 		if (state == null) {
 			return null;
 		}
@@ -202,9 +205,9 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			recipes = Collections.emptyList();
 			recipeCategoryCraftingItems = Collections.emptyList();
 		} else {
-			MasterFocus focus = state.focus;
-			recipes = focus.getRecipes(recipeCategory);
-			recipeCategoryCraftingItems = focus.getRecipeCategoryCraftingItems(recipeCategory);
+			IFocus<?> focus = state.focus;
+			recipes = recipeRegistry.getRecipes(recipeCategory, focus);
+			recipeCategoryCraftingItems = recipeRegistry.getCraftingItems(recipeCategory, focus);
 		}
 	}
 

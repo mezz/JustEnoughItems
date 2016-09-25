@@ -48,19 +48,6 @@ config.jei.interface.overlayEnabled.comment=在打开的GUI一侧显示物品列
 config.jei.interface.recipeAnimationsEnabled=合成界面动画
 config.jei.interface.recipeAnimationsEnabled.comment=显示部分合成表的动画效果，如熔炉火焰，进度条，等等。
 
-config.jei.search=搜索选项
-config.jei.search.comment=搜索的相关设定。
-config.jei.search.atPrefixRequiredForModName=按Mod名搜索时强制@前缀
-config.jei.search.atPrefixRequiredForModName.comment=当按模组名搜索物品时，要求使用"@"作为前缀。
-config.jei.search.prefixRequiredForTooltipSearch=按信息提示搜索时强制#前缀
-config.jei.search.prefixRequiredForTooltipSearch.comment=当按Tooltip(信息提示)搜索时，要求使用"#"作为前缀。
-config.jei.search.prefixRequiredForOreDictSearch=按矿物字典搜索时强制$前缀
-config.jei.search.prefixRequiredForOreDictSearch.comment=当按矿物字典搜索时，要求使用"$"作为前缀。
-config.jei.search.prefixRequiredForCreativeTabSearch=按创造标签页搜索时强制%%前缀
-config.jei.search.prefixRequiredForCreativeTabSearch.comment=当按创造模式物品栏的标签页搜索时，要求使用"%"作为前缀。
-config.jei.search.prefixRequiredForColorSearch=按颜色搜索时强制^前缀
-config.jei.search.prefixRequiredForColorSearch.comment=当按物品颜色搜索时，要求使用"^"作为前缀。
-
 config.jei.advanced=高级设定
 config.jei.advanced.comment=用于更改JEI功能的高级选项。
 config.jei.advanced.itemBlacklist=物品黑名单
@@ -73,9 +60,6 @@ config.jei.advanced.debugModeEnabled=调试模式
 config.jei.advanced.debugModeEnabled.comment=仅对JEI开发者有用，启用后会添加数千测试物品以及一些测试合成表。
 config.jei.advanced.centerSearchBarEnabled=搜索框居中
 config.jei.advanced.centerSearchBarEnabled.comment=启用后，搜索框会被移动至底部居中的位置。
-
-#config.jei.addons=Addons
-config.jei.addons.comment=为JEI的Addon们准备的分类。
 
 # Edit Mode
 gui.jei.editMode.description=JEI物品列表编辑模式：
