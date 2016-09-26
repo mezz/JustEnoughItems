@@ -19,6 +19,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
+import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 
 public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
@@ -84,6 +85,13 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 
 	@Override
 	public void set(int slotIndex, List<T> ingredients) {
+		// Sanitize API input
+		for (T ingredient : ingredients) {
+			if (!ingredientClass.isInstance(ingredient)) {
+				Log.error("Received wrong type of ingredient. Expected {}, got {}", ingredientClass, ingredient.getClass(), new IllegalArgumentException());
+				return;
+			}
+		}
 		guiIngredients.get(slotIndex).set(ingredients, focus);
 	}
 

@@ -107,7 +107,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	public void set(List<T> ingredients, IFocus<T> focus) {
 		this.displayIngredients.clear();
 		this.allIngredients.clear();
-		ingredientHelper.expandSubtypes(ingredients);
+		ingredients = this.ingredientHelper.expandSubtypes(ingredients);
 
 		T match = getMatch(ingredients, focus);
 		if (match != null) {
