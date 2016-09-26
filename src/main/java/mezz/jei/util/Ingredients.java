@@ -69,13 +69,21 @@ public class Ingredients implements IIngredients {
 	@Override
 	public <T> List<List<T>> getInputs(Class<T> ingredientClass) {
 		//noinspection unchecked
-		return (List<List<T>>) (Object) this.inputs.get(ingredientClass);
+		List<List<T>> inputs = (List<List<T>>) (Object) this.inputs.get(ingredientClass);
+		if (inputs == null) {
+			return Collections.emptyList();
+		}
+		return inputs;
 	}
 
 	@Override
 	public <T> List<T> getOutputs(Class<T> ingredientClass) {
 		//noinspection unchecked
-		return this.outputs.get(ingredientClass);
+		List<T> outputs = this.outputs.get(ingredientClass);
+		if (outputs == null) {
+			return Collections.emptyList();
+		}
+		return outputs;
 	}
 
 	public Map<Class, List> getInputIngredients() {
