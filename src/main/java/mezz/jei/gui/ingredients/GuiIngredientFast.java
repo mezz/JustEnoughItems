@@ -33,6 +33,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.fml.client.config.GuiUtils;
 
 public class GuiIngredientFast {
 	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
@@ -229,7 +230,7 @@ public class GuiIngredientFast {
 		GlStateManager.disableLighting();
 		GlStateManager.disableDepth();
 		GlStateManager.colorMask(true, true, true, false);
-		Gui.drawRect(area.x, area.y, area.x + area.width, area.y + area.height, 0x7FFFFFFF);
+		GuiUtils.drawGradientRect(0, area.x, area.y, area.x + area.width, area.y + area.height, 0x80FFFFFF, 0x80FFFFFF);
 		GlStateManager.colorMask(true, true, true, true);
 		GlStateManager.enableLighting();
 		GlStateManager.enableDepth();
