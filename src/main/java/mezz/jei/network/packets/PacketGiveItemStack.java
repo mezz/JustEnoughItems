@@ -3,8 +3,10 @@ package mezz.jei.network.packets;
 import java.io.IOException;
 import java.util.Map;
 
+import com.google.common.base.Throwables;
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
+import mezz.jei.util.Commands;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandManager;
 import net.minecraft.entity.item.EntityItem;
@@ -20,6 +22,8 @@ import net.minecraft.server.management.UserListOpsEntry;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.CommandEvent;
 
 public class PacketGiveItemStack extends PacketJEI {
 	private ItemStack itemStack;
@@ -47,23 +51,23 @@ public class PacketGiveItemStack extends PacketJEI {
 		if (player instanceof EntityPlayerMP) {
 			EntityPlayerMP sender = (EntityPlayerMP) player;
 
-			if (hasPermission(sender)) {
-				NBTTagCompound itemStackSerialized = buf.readNBTTagCompoundFromBuffer();
-				if (itemStackSerialized != null) {
-					ItemStack itemStack = ItemStack.loadItemStackFromNBT(itemStackSerialized);
-					if (itemStack != null) {
+			NBTTagCompound itemStackSerialized = buf.readNBTTagCompoundFromBuffer();
+			if (itemStackSerialized != null) {
+				ItemStack itemStack = ItemStack.loadItemStackFromNBT(itemStackSerialized);
+				if (itemStack != null) {
+					if (hasPermission(sender, itemStack)) {
 						executeGive(sender, itemStack);
+					} else {
+						TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.generic.permission");
+						textcomponenttranslation1.getStyle().setColor(TextFormatting.RED);
+						sender.addChatMessage(textcomponenttranslation1);
 					}
 				}
-			} else {
-				TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.generic.permission");
-				textcomponenttranslation1.getStyle().setColor(TextFormatting.RED);
-				sender.addChatMessage(textcomponenttranslation1);
 			}
 		}
 	}
 
-	private static boolean hasPermission(EntityPlayerMP sender) {
+	private static boolean hasPermission(EntityPlayerMP sender, ItemStack itemStack) {
 		if (sender.isCreative()) {
 			return true;
 		}
@@ -73,6 +77,15 @@ public class PacketGiveItemStack extends PacketJEI {
 		Map<String, ICommand> commands = commandManager.getCommands();
 		ICommand giveCommand = commands.get("give");
 		if (giveCommand != null && giveCommand.checkPermission(minecraftServer, sender)) {
+			String[] commandParameters = Commands.getGiveCommandParameters(sender, itemStack, itemStack.stackSize);
+			CommandEvent event = new CommandEvent(giveCommand, sender, commandParameters);
+			if (MinecraftForge.EVENT_BUS.post(event)) {
+				Throwable exception = event.getException();
+				if (exception != null) {
+					Throwables.propagateIfPossible(exception);
+				}
+				return false;
+			}
 			return true;
 		} else {
 			UserListOps oppedPlayers = minecraftServer.getPlayerList().getOppedPlayers();
