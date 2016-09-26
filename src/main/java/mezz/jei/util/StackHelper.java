@@ -301,6 +301,8 @@ public class StackHelper implements IStackHelper {
 				getAllSubtypes(subtypesList, (Iterable) obj);
 			} else if (obj != null) {
 				Log.error("Unknown object found: {}", obj);
+			} else {
+				subtypesList.add(null);
 			}
 		}
 	}
@@ -501,9 +503,9 @@ public class StackHelper implements IStackHelper {
 	}
 
 	private interface ItemStackMatchable<R> {
-		@Nonnull
+		@Nullable
 		ItemStack getStack();
-		@Nonnull
+		@Nullable
 		R getResult();
 	}
 
@@ -547,13 +549,13 @@ public class StackHelper implements IStackHelper {
 				public ItemStackMatchable<ItemStack> next() {
 					final ItemStack stack = delegate.next();
 					return new ItemStackMatchable<ItemStack>() {
-						@Nonnull
+						@Nullable
 						@Override
 						public ItemStack getStack() {
 							return stack;
 						}
 
-						@Nonnull
+						@Nullable
 						@Override
 						public ItemStack getResult() {
 							return stack;

@@ -85,6 +85,10 @@ public class RecipeMap {
 		ingredients = ingredientHelper.expandSubtypes(ingredients);
 
 		for (V ingredient : ingredients) {
+			if (ingredient == null) {
+				continue;
+			}
+
 			String key = ingredientHelper.getUniqueId(ingredient);
 			if (uniqueIds.contains(key)) {
 				continue;

@@ -87,7 +87,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	public void set(int slotIndex, List<T> ingredients) {
 		// Sanitize API input
 		for (T ingredient : ingredients) {
-			if (!ingredientClass.isInstance(ingredient)) {
+			if (!ingredientClass.isInstance(ingredient) && ingredient != null) {
 				Log.error("Received wrong type of ingredient. Expected {}, got {}", ingredientClass, ingredient.getClass(), new IllegalArgumentException());
 				return;
 			}

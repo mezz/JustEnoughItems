@@ -95,7 +95,10 @@ public class ErrorUtil {
 		return ingredientsInfo;
 	}
 
-	public static String getItemStackInfo(ItemStack itemStack) {
+	public static String getItemStackInfo(@Nullable ItemStack itemStack) {
+		if (itemStack == null) {
+			return "null";
+		}
 		Item item = itemStack.getItem();
 		if (item == null) {
 			return itemStack.stackSize + "x (null)";
