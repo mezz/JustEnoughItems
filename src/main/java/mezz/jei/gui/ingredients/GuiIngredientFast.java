@@ -20,6 +20,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.RenderItem;
@@ -217,14 +218,20 @@ public class GuiIngredientFast {
 		drawHighlight();
 	}
 
+	/**
+	 * Matches the highlight code in {@link GuiContainer#drawScreen(int, int, float)}
+	 */
 	public void drawHighlight() {
 		if (ingredient == null) {
 			return;
 		}
 
+		GlStateManager.disableLighting();
 		GlStateManager.disableDepth();
+		GlStateManager.colorMask(true, true, true, false);
 		Gui.drawRect(area.x, area.y, area.x + area.width, area.y + area.height, 0x7FFFFFFF);
-		GlStateManager.color(1f, 1f, 1f, 1f);
+		GlStateManager.colorMask(true, true, true, true);
+		GlStateManager.enableLighting();
 		GlStateManager.enableDepth();
 	}
 

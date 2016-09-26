@@ -346,9 +346,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		}
 
 		if (hovered != null) {
-			RenderHelper.enableGUIStandardItemLighting();
 			hovered.drawHovered(minecraft);
-			RenderHelper.disableStandardItemLighting();
 		}
 
 		GlStateManager.enableAlpha();
