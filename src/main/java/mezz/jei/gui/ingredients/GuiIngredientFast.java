@@ -232,7 +232,6 @@ public class GuiIngredientFast {
 		GlStateManager.colorMask(true, true, true, false);
 		GuiUtils.drawGradientRect(0, area.x, area.y, area.x + area.width, area.y + area.height, 0x80FFFFFF, 0x80FFFFFF);
 		GlStateManager.colorMask(true, true, true, true);
-		GlStateManager.enableLighting();
 		GlStateManager.enableDepth();
 	}
 
