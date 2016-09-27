@@ -38,6 +38,7 @@ public interface IGuiIngredient<T> {
 	/**
 	 * All ingredient variations that can be shown.
 	 * For ingredients that rotate through several values, this will have them all even if a focus is set.
+	 * This list can contain null values.
 	 */
 	List<T> getAllIngredients();
 

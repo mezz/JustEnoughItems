@@ -288,7 +288,21 @@ public class StackHelper implements IStackHelper {
 
 		List<ItemStack> allSubtypes = new ArrayList<ItemStack>();
 		getAllSubtypes(allSubtypes, stacks);
+
+		if (isAllNulls(allSubtypes)) {
+			return Collections.emptyList();
+		}
+
 		return allSubtypes;
+	}
+
+	private static boolean isAllNulls(Iterable<?> iterable) {
+		for (Object element : iterable) {
+			if (element != null) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private void getAllSubtypes(List<ItemStack> subtypesList, Iterable stacks) {
