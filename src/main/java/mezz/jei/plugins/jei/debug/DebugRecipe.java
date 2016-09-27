@@ -15,6 +15,8 @@ import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -42,6 +44,8 @@ public class DebugRecipe extends BlankRecipeWrapper {
 		FluidStack lava = new FluidStack(FluidRegistry.LAVA, 1000 + (int) (Math.random() * 1000));
 
 		ingredients.setInputs(FluidStack.class, Arrays.asList(water, lava));
+
+		ingredients.setInput(ItemStack.class, new ItemStack(Items.STICK));
 
 		ingredients.setInputLists(DebugIngredient.class, Collections.singletonList(
 				Arrays.asList(new DebugIngredient(0), new DebugIngredient(1))

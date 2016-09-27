@@ -19,6 +19,14 @@ import mezz.jei.api.recipe.IRecipeWrapper;
  */
 public interface IIngredients {
 	/**
+	 * Sets a single recipe input. For recipes with only one input slot.
+	 *
+	 * @param ingredientClass The class of ingredient: ItemStack.class, FluidStack.class, etc.
+	 * @param input           The list of ingredients representing each input slot.
+	 */
+	<T> void setInput(Class<T> ingredientClass, T input);
+
+	/**
 	 * Sets the recipe's inputs. Each list element represents one slot.
 	 *
 	 * @param ingredientClass The class of ingredient: ItemStack.class, FluidStack.class, etc.

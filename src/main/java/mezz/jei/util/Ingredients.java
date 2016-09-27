@@ -17,6 +17,11 @@ public class Ingredients implements IIngredients {
 	private boolean used = false; // check that the addon used this at all. legacy addons will not
 
 	@Override
+	public <T> void setInput(Class<T> ingredientClass, T input) {
+		setInputs(ingredientClass, Collections.singletonList(input));
+	}
+
+	@Override
 	public <T> void setInputLists(Class<T> ingredientClass, List<List<T>> inputs) {
 		this.used = true;
 
