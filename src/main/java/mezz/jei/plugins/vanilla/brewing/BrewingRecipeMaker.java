@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
+import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.util.Java6Helper;
@@ -27,8 +30,12 @@ import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
 
 public class BrewingRecipeMaker {
 	private static final Set<Class> unhandledRecipeClasses = new HashSet<Class>();
+	private static final Map<String, Integer> brewingSteps = new HashMap<String, Integer>();
 
 	public static List<BrewingRecipeWrapper> getBrewingRecipes(IIngredientRegistry ingredientRegistry) {
+		unhandledRecipeClasses.clear();
+		brewingSteps.clear();
+
 		Set<BrewingRecipeWrapper> recipes = new HashSet<BrewingRecipeWrapper>();
 
 		addVanillaBrewingRecipes(ingredientRegistry, recipes);
@@ -93,6 +100,8 @@ public class BrewingRecipeMaker {
 				if (!recipes.contains(recipe)) {
 					recipes.add(recipe);
 					newPotions.add(potionOutput);
+					String potionUid = Internal.getStackHelper().getUniqueIdentifierForStack(potionOutput);
+					brewingSteps.put(potionUid, brewingStep);
 				}
 			}
 		}
@@ -100,16 +109,58 @@ public class BrewingRecipeMaker {
 	}
 
 	private static void addModdedBrewingRecipes(Collection<BrewingRecipeWrapper> recipes) {
-		List<IBrewingRecipe> brewingRecipes = BrewingRecipeRegistry.getRecipes();
+		Collection<IBrewingRecipe> brewingRecipes = BrewingRecipeRegistry.getRecipes();
+		Collection<IBrewingRecipe> unknownSteps = addModdedBrewingRecipes(brewingRecipes, recipes);
+
+		while (unknownSteps.size() > 0) {
+			brewingRecipes = unknownSteps;
+			unknownSteps = addModdedBrewingRecipes(brewingRecipes, recipes);
+			if (unknownSteps.size() == brewingRecipes.size()) {
+				return;
+			}
+		}
+	}
+
+	private static Collection<IBrewingRecipe> addModdedBrewingRecipes(Collection<IBrewingRecipe> brewingRecipes, Collection<BrewingRecipeWrapper> recipes) {
+		Collection<IBrewingRecipe> unknownSteps = new ArrayList<IBrewingRecipe>();
+
 		for (IBrewingRecipe iBrewingRecipe : brewingRecipes) {
 			if (iBrewingRecipe instanceof BrewingRecipe) {
 				BrewingRecipe brewingRecipe = (BrewingRecipe) iBrewingRecipe;
-				BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(brewingRecipe.getIngredient(), brewingRecipe.getInput(), brewingRecipe.getOutput(), 0);
-				recipes.add(recipe);
+
+				ItemStack input = brewingRecipe.getInput();
+				ItemStack output = brewingRecipe.getOutput();
+				String potionInputUid = Internal.getStackHelper().getUniqueIdentifierForStack(input);
+				String potionOutputUid = Internal.getStackHelper().getUniqueIdentifierForStack(output);
+
+				Integer steps = brewingSteps.get(potionInputUid);
+				if (steps == null) {
+					unknownSteps.add(brewingRecipe);
+				} else {
+					int outputBrewingStep = steps + 1;
+					brewingSteps.put(potionOutputUid, outputBrewingStep);
+
+					BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(brewingRecipe.getIngredient(), input, output, outputBrewingStep);
+					recipes.add(recipe);
+				}
 			} else if (iBrewingRecipe instanceof BrewingOreRecipe) {
 				BrewingOreRecipe brewingRecipe = (BrewingOreRecipe) iBrewingRecipe;
-				BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(brewingRecipe.getIngredient(), brewingRecipe.getInput(), brewingRecipe.getOutput(), 0);
-				recipes.add(recipe);
+
+				ItemStack input = brewingRecipe.getInput();
+				ItemStack output = brewingRecipe.getOutput();
+				String potionInputUid = Internal.getStackHelper().getUniqueIdentifierForStack(input);
+				String potionOutputUid = Internal.getStackHelper().getUniqueIdentifierForStack(output);
+
+				Integer steps = brewingSteps.get(potionInputUid);
+				if (steps == null) {
+					unknownSteps.add(brewingRecipe);
+				} else {
+					int outputBrewingStep = steps + 1;
+					brewingSteps.put(potionOutputUid, outputBrewingStep);
+
+					BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(brewingRecipe.getIngredient(), input, output, outputBrewingStep);
+					recipes.add(recipe);
+				}
 			} else if (!(iBrewingRecipe instanceof VanillaBrewingRecipe)) {
 				Class recipeClass = iBrewingRecipe.getClass();
 				if (!unhandledRecipeClasses.contains(recipeClass)) {
@@ -120,5 +171,7 @@ public class BrewingRecipeMaker {
 				}
 			}
 		}
+
+		return unknownSteps;
 	}
 }
