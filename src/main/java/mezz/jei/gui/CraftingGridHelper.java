@@ -19,6 +19,30 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 	}
 
 	@Override
+	public void setInputStacks(IGuiItemStackGroup guiItemStacks, List<List<ItemStack>> input) {
+		int width, height;
+		if (input.size() > 4) {
+			width = height = 3;
+		} else if (input.size() > 1) {
+			width = height = 2;
+		} else {
+			width = height = 1;
+		}
+
+		setInputStacks(guiItemStacks, input, width, height);
+	}
+
+	@Override
+	public void setInputStacks(IGuiItemStackGroup guiItemStacks, List<List<ItemStack>> input, int width, int height) {
+		for (int i = 0; i < input.size(); i++) {
+			List<ItemStack> recipeItem = input.get(i);
+			int index = getCraftingIndex(i, width, height);
+
+			setInput(guiItemStacks, index, recipeItem);
+		}
+	}
+
+	@Override
 	public void setInput(IGuiItemStackGroup guiItemStacks, List input) {
 		int width, height;
 		if (input.size() > 4) {
