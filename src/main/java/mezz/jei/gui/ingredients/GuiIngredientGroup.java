@@ -67,13 +67,17 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		Collections.sort(slots);
 		for (Integer slot : slots) {
 			if (inputSlots.contains(slot)) {
-				List<T> input = inputs.get(inputIndex);
-				inputIndex++;
-				set(slot, input);
+				if (inputIndex < inputs.size()) {
+					List<T> input = inputs.get(inputIndex);
+					inputIndex++;
+					set(slot, input);
+				}
 			} else {
-				T output = outputs.get(outputIndex);
-				outputIndex++;
-				set(slot, output);
+				if (outputIndex < outputs.size()) {
+					T output = outputs.get(outputIndex);
+					outputIndex++;
+					set(slot, output);
+				}
 			}
 		}
 	}
