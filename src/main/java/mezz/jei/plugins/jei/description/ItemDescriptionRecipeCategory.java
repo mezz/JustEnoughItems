@@ -41,6 +41,6 @@ public class ItemDescriptionRecipeCategory extends BlankRecipeCategory<ItemDescr
 
 		int xPos = (recipeWidth - 18) / 2;
 		guiItemStacks.init(0, false, xPos, 0);
-		guiItemStacks.setFromRecipe(0, recipeWrapper.getOutputs());
+		guiItemStacks.set(ingredients);
 	}
 }

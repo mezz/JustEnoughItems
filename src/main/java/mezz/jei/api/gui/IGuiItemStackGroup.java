@@ -29,12 +29,16 @@ public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {
 
 	/**
 	 * Takes a list of ingredients from IRecipeWrapper getInputs or getOutputs
+	 * @deprecated since JEI 3.11.2.
+	 * Use {@link IStackHelper#toItemStackList(Object)} to convert to a List<ItemStack> if necessary
 	 */
+	@Deprecated
 	void setFromRecipe(int slotIndex, List ingredients);
 
 	/**
 	 * Takes an Object from IRecipeWrapper getInputs or getOutputs
-	 * @deprecated since JEI 3.11.0. Use {@link IStackHelper#toItemStackList(Object)}
+	 * @deprecated since JEI 3.11.0.
+	 * Use {@link IStackHelper#toItemStackList(Object)} to convert to a List<ItemStack> if necessary
 	 */
 	@Deprecated
 	void setFromRecipe(int slotIndex, Object ingredients);
