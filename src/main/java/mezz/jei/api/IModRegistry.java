@@ -6,6 +6,7 @@ import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
+import mezz.jei.api.recipe.IRecipeRegistryPlugin;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
@@ -101,4 +102,12 @@ public interface IModRegistry {
 	 * Get the registry for setting up recipe transfer.
 	 */
 	IRecipeTransferRegistry getRecipeTransferRegistry();
+
+	/**
+	 * Register your own Recipe Registry Plugin here.
+	 *
+	 * @see IRecipeRegistryPlugin
+	 * @since JEI 3.12.0
+	 */
+	void addRecipeRegistryPlugin(IRecipeRegistryPlugin recipeRegistryPlugin);
 }

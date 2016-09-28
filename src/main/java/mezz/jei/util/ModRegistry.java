@@ -15,6 +15,7 @@ import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
+import mezz.jei.api.recipe.IRecipeRegistryPlugin;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.gui.RecipeClickableArea;
@@ -33,6 +34,7 @@ public class ModRegistry implements IModRegistry {
 	private final RecipeTransferRegistry recipeTransferRegistry = new RecipeTransferRegistry();
 	private final Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas = HashMultimap.create();
 	private final Multimap<String, ItemStack> craftItemsForCategories = HashMultimap.create();
+	private final List<IRecipeRegistryPlugin> recipeRegistryPlugins = new ArrayList<IRecipeRegistryPlugin>();
 
 	public ModRegistry(IJeiHelpers jeiHelpers, IItemRegistry itemRegistry, IIngredientRegistry ingredientRegistry) {
 		this.jeiHelpers = jeiHelpers;
@@ -176,12 +178,23 @@ public class ModRegistry implements IModRegistry {
 		return recipeTransferRegistry;
 	}
 
+	@Override
+	public void addRecipeRegistryPlugin(@Nullable IRecipeRegistryPlugin recipeRegistryPlugin) {
+		if (recipeRegistryPlugin == null) {
+			NullPointerException e = new NullPointerException();
+			Log.error("Tried to add null recipeRegistryPlugin.", e);
+			return;
+		}
+		Log.info("Added recipe registry plugin: {}", recipeRegistryPlugin.getClass());
+		recipeRegistryPlugins.add(recipeRegistryPlugin);
+	}
+
 	public List<IAdvancedGuiHandler<?>> getAdvancedGuiHandlers() {
 		return advancedGuiHandlers;
 	}
 
 	public RecipeRegistry createRecipeRegistry(IIngredientRegistry ingredientRegistry) {
 		List<IRecipeTransferHandler> recipeTransferHandlers = recipeTransferRegistry.getRecipeTransferHandlers();
-		return new RecipeRegistry(recipeCategories, recipeHandlers, recipeTransferHandlers, recipes, recipeClickableAreas, craftItemsForCategories, ingredientRegistry);
+		return new RecipeRegistry(recipeCategories, recipeHandlers, recipeTransferHandlers, recipes, recipeClickableAreas, craftItemsForCategories, ingredientRegistry, recipeRegistryPlugins);
 	}
 }

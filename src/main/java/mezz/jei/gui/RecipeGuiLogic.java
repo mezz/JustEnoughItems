@@ -11,12 +11,9 @@ import java.util.Stack;
 import com.google.common.collect.ImmutableList;
 import mezz.jei.RecipeRegistry;
 import mezz.jei.api.IModRegistry;
-import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.util.Log;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Container;
@@ -52,7 +49,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final Stack<State> history = new Stack<State>();
 
 	/** List of recipes for the currently selected recipeClass */
-	private List<Object> recipes = Collections.emptyList();
+	private List<IRecipeWrapper> recipes = Collections.emptyList();
 
 	/**
 	 * List of items that can craft recipes from the current recipe category
@@ -206,7 +203,9 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			recipeCategoryCraftingItems = Collections.emptyList();
 		} else {
 			IFocus<?> focus = state.focus;
-			recipes = recipeRegistry.getRecipes(recipeCategory, focus);
+			//noinspection unchecked
+			this.recipes = recipeRegistry.getRecipeWrappers(recipeCategory, focus);
+
 			recipeCategoryCraftingItems = recipeRegistry.getCraftingItems(recipeCategory, focus);
 		}
 	}
@@ -235,8 +234,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 		int recipeWidgetIndex = 0;
 		for (int recipeIndex = state.pageIndex * state.recipesPerPage; recipeIndex < recipes.size() && recipeWidgets.size() < state.recipesPerPage; recipeIndex++) {
-			Object recipe = recipes.get(recipeIndex);
-			IRecipeWrapper recipeWrapper = getRecipeWrapper(recipeRegistry, recipe, recipe.getClass());
+			IRecipeWrapper recipeWrapper = recipes.get(recipeIndex);
 			if (recipeWrapper == null) {
 				continue;
 			}
@@ -248,17 +246,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 
 		return recipeWidgets;
-	}
-
-	@Nullable
-	private <T> IRecipeWrapper getRecipeWrapper(IRecipeRegistry recipeRegistry, T recipe, Class<? extends T> recipeClass) {
-		IRecipeHandler<T> recipeHandler = recipeRegistry.getRecipeHandler(recipeClass);
-		if (recipeHandler == null) {
-			Log.error("Couldn't find recipe handler for recipe: {}", recipe);
-			return null;
-		}
-
-		return recipeHandler.getRecipeWrapper(recipe);
 	}
 
 	@Override
@@ -295,7 +282,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 		int pageCount = pageCount(state.recipesPerPage);
 		state.pageIndex = (state.pageIndex + 1) % pageCount;
-		updateRecipes();
 	}
 
 	@Override
@@ -305,7 +291,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 		int pageCount = pageCount(state.recipesPerPage);
 		state.pageIndex = (pageCount + state.pageIndex - 1) % pageCount;
-		updateRecipes();
 	}
 
 	private int pageCount(int recipesPerPage) {
@@ -331,6 +316,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public boolean hasAllCategories() {
-		return state != null && state.recipeCategories.size() == recipeRegistry.getRecipeCategories().size();
+		return state != null && state.recipeCategories.size() == recipeRegistry.getRecipeCategoryCount();
 	}
 }

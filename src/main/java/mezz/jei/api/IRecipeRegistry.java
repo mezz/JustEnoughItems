@@ -7,6 +7,7 @@ import java.util.List;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -39,34 +40,25 @@ public interface IRecipeRegistry {
 	<V> IFocus<V> createFocus(IFocus.Mode mode, @Nullable V ingredient);
 
 	/**
-	 * Returns an unmodifiable list of Recipe Categories for the focus.
+	 * Returns a list of Recipe Categories for the focus.
 	 *
 	 * @since JEI 3.11.0
 	 */
 	<V> List<IRecipeCategory> getRecipeCategories(IFocus<V> focus);
 
 	/**
-	 * Returns an unmodifiable list of Recipes of recipeCategory that have the focus.
+	 * Returns a list of Recipe Wrappers in the recipeCategory that have the focus.
 	 *
-	 * @since JEI 3.11.0
+	 * @since JEI 3.12.0
 	 */
-	<V> List<Object> getRecipes(IRecipeCategory recipeCategory, IFocus<V> focus);
+	<T extends IRecipeWrapper, V> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, IFocus<V> focus);
 
 	/**
-	 * Returns an unmodifiable list of Recipes in recipeCategory
-	 */
-	List<Object> getRecipes(IRecipeCategory recipeCategory);
-
-	/**
-	 * Returns an unmodifiable collection of ItemStacks that can craft recipes from recipeCategory.
-	 * For instance, the crafting table ItemStack is returned here for Crafting recipe category.
-	 * These are registered with {@link IModRegistry#addRecipeCategoryCraftingItem(ItemStack, String...)}.
+	 * Returns a list of Recipe Wrappers in recipeCategory.
 	 *
-	 * @since JEI 3.3.0
-	 * @deprecated since JEI 3.11.0. Use {@link #getCraftingItems(IRecipeCategory, IFocus)}.
+	 * @since JEI 3.12.0
 	 */
-	@Deprecated
-	Collection<ItemStack> getCraftingItems(IRecipeCategory recipeCategory);
+	<T extends IRecipeWrapper> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory);
 
 	/**
 	 * Returns an unmodifiable collection of ItemStacks that can craft the recipes from recipeCategory.
@@ -87,6 +79,38 @@ public interface IRecipeRegistry {
 	 * (note that IRecipeHandler.isValid must be true when the recipe is added here for it to work)
 	 */
 	void addRecipe(Object recipe);
+
+
+	// DEPRECATED METHODS BELOW
+
+
+	/**
+	 * Returns an unmodifiable list of Recipes in recipeCategory that have the focus.
+	 *
+	 * @since JEI 3.11.0
+	 * @deprecated since JEI 3.12.0. Use {@link #getRecipeWrappers(IRecipeCategory, IFocus)}
+	 */
+	@Deprecated
+	<V> List<Object> getRecipes(IRecipeCategory recipeCategory, IFocus<V> focus);
+
+	/**
+	 * Returns an unmodifiable list of Recipes in recipeCategory
+	 *
+	 * @deprecated since JEI 3.12.0. Use {@link #getRecipeWrappers(IRecipeCategory)}
+	 */
+	@Deprecated
+	List<Object> getRecipes(IRecipeCategory recipeCategory);
+
+	/**
+	 * Returns an unmodifiable collection of ItemStacks that can craft recipes from recipeCategory.
+	 * For instance, the crafting table ItemStack is returned here for Crafting recipe category.
+	 * These are registered with {@link IModRegistry#addRecipeCategoryCraftingItem(ItemStack, String...)}.
+	 *
+	 * @since JEI 3.3.0
+	 * @deprecated since JEI 3.11.0. Use {@link #getCraftingItems(IRecipeCategory, IFocus)}.
+	 */
+	@Deprecated
+	Collection<ItemStack> getCraftingItems(IRecipeCategory recipeCategory);
 
 	/**
 	 * Returns an unmodifiable list of Recipe Categories that have the ItemStack as an input.
@@ -123,7 +147,7 @@ public interface IRecipeRegistry {
 	/**
 	 * Returns an unmodifiable list of Recipes of recipeCategory that have the ItemStack as an input.
 	 *
-	 * @deprecated since JEI 3.11.0. Use {@link #getRecipes(IRecipeCategory, IFocus)}
+	 * @deprecated since JEI 3.11.0. Use {@link #getRecipeWrappers(IRecipeCategory, IFocus)}
 	 */
 	@Deprecated
 	List<Object> getRecipesWithInput(IRecipeCategory recipeCategory, ItemStack input);
@@ -131,7 +155,7 @@ public interface IRecipeRegistry {
 	/**
 	 * Returns an unmodifiable list of Recipes of recipeCategory that have the Fluid as an input.
 	 *
-	 * @deprecated since JEI 3.11.0. Use {@link #getRecipes(IRecipeCategory, IFocus)}
+	 * @deprecated since JEI 3.11.0. Use {@link #getRecipeWrappers(IRecipeCategory, IFocus)}
 	 */
 	@Deprecated
 	List<Object> getRecipesWithInput(IRecipeCategory recipeCategory, FluidStack input);
@@ -139,7 +163,7 @@ public interface IRecipeRegistry {
 	/**
 	 * Returns an unmodifiable list of Recipes of recipeCategory that have the ItemStack as an output.
 	 *
-	 * @deprecated since JEI 3.11.0. Use {@link #getRecipes(IRecipeCategory, IFocus)}
+	 * @deprecated since JEI 3.11.0. Use {@link #getRecipeWrappers(IRecipeCategory, IFocus)}
 	 */
 	@Deprecated
 	List<Object> getRecipesWithOutput(IRecipeCategory recipeCategory, ItemStack output);
@@ -147,7 +171,7 @@ public interface IRecipeRegistry {
 	/**
 	 * Returns an unmodifiable list of Recipes of recipeCategory that have the Fluid as an output.
 	 *
-	 * @deprecated since JEI 3.11.0. Use {@link #getRecipes(IRecipeCategory, IFocus)}
+	 * @deprecated since JEI 3.11.0. Use {@link #getRecipeWrappers(IRecipeCategory, IFocus)}
 	 */
 	@Deprecated
 	List<Object> getRecipesWithOutput(IRecipeCategory recipeCategory, FluidStack output);
