@@ -31,6 +31,9 @@ public class ErrorUtil {
 		} catch (RuntimeException ignored) {
 			recipeInfoBuilder.append("\nFailed to create recipe wrapper");
 			return recipeInfoBuilder.toString();
+		} catch (LinkageError ignored) {
+			recipeInfoBuilder.append("\nFailed to create recipe wrapper");
+			return recipeInfoBuilder.toString();
 		}
 
 		recipeInfoBuilder.append("\nOutput ItemStacks: ");
