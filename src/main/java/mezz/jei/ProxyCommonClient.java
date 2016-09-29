@@ -147,6 +147,8 @@ public class ProxyCommonClient extends ProxyCommon {
 	}
 
 	private void startJEI() {
+		long jeiStartTime = System.currentTimeMillis();
+		Log.info("Beginning startup...");
 		SessionData.setJeiStarted();
 
 		Config.startJei();
@@ -181,11 +183,11 @@ public class ProxyCommonClient extends ProxyCommon {
 		while (iterator.hasNext()) {
 			IModPlugin plugin = iterator.next();
 			try {
-				long start_time = System.nanoTime();
-				Log.info("Registering plugin: {}", plugin.getClass().getName());
+				long start_time = System.currentTimeMillis();
+				Log.info("Registering plugin: {} ...", plugin.getClass().getName());
 				plugin.register(modRegistry);
-				long timeElapsedMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start_time);
-				Log.info("Registered  plugin: {} in {} milliseconds", plugin.getClass().getName(), timeElapsedMs);
+				long timeElapsedMs = System.currentTimeMillis() - start_time;
+				Log.info("Registered  plugin: {} in {} ms", plugin.getClass().getName(), timeElapsedMs);
 			} catch (RuntimeException e) {
 				Log.error("Failed to register mod plugin: {}", plugin.getClass(), e);
 				iterator.remove();
@@ -195,11 +197,19 @@ public class ProxyCommonClient extends ProxyCommon {
 			}
 		}
 
+		long start_time = System.currentTimeMillis();
+		Log.info("Building recipe registry...");
 		RecipeRegistry recipeRegistry = modRegistry.createRecipeRegistry(ingredientRegistry);
+		Log.info("Built    recipe registry in {} ms", System.currentTimeMillis() - start_time);
 
-		List<IAdvancedGuiHandler<?>> advancedGuiHandlers = modRegistry.getAdvancedGuiHandlers();
-
+		start_time = System.currentTimeMillis();
+		Log.info("Building item filter...");
 		itemFilter = new ItemFilter(ingredientRegistry);
+		Log.info("Built    item filter in {} ms", System.currentTimeMillis() - start_time);
+
+		start_time = System.currentTimeMillis();
+		Log.info("Building runtime...");
+		List<IAdvancedGuiHandler<?>> advancedGuiHandlers = modRegistry.getAdvancedGuiHandlers();
 		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter, advancedGuiHandlers, ingredientRegistry);
 		RecipesGui recipesGui = new RecipesGui(recipeRegistry);
 
@@ -221,6 +231,8 @@ public class ProxyCommonClient extends ProxyCommon {
 		}
 
 		Internal.getStackHelper().disableUidCache();
+		Log.info("Built    runtime in {} ms", System.currentTimeMillis() - start_time);
+		Log.info("Finished startup in {} ms", System.currentTimeMillis() - jeiStartTime);
 	}
 
 	@Override
