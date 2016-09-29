@@ -104,10 +104,14 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		set(Collections.singletonList(ingredient), focus);
 	}
 
-	public void set(List<T> ingredients, IFocus<T> focus) {
+	public void set(@Nullable List<T> ingredients, IFocus<T> focus) {
 		this.displayIngredients.clear();
 		this.allIngredients.clear();
-		ingredients = this.ingredientHelper.expandSubtypes(ingredients);
+		if (ingredients == null) {
+			ingredients = Collections.emptyList();
+		} else {
+			ingredients = this.ingredientHelper.expandSubtypes(ingredients);
+		}
 
 		T match = getMatch(ingredients, focus);
 		if (match != null) {

@@ -1,5 +1,6 @@
 package mezz.jei.api.gui;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -36,12 +37,12 @@ public interface IGuiIngredientGroup<T> {
 	 *
 	 * @since JEI 3.11.0
 	 */
-	void set(int slotIndex, List<T> ingredients);
+	void set(int slotIndex, @Nullable List<T> ingredients);
 
 	/**
 	 * Set the ingredient at slotIndex to a specific ingredient.
 	 */
-	void set(int slotIndex, T ingredient);
+	void set(int slotIndex, @Nullable T ingredient);
 
 	/**
 	 * Add a callback to alter the tooltip for these ingredients.

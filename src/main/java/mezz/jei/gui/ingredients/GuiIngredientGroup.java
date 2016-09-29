@@ -88,19 +88,21 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	}
 
 	@Override
-	public void set(int slotIndex, List<T> ingredients) {
+	public void set(int slotIndex, @Nullable List<T> ingredients) {
 		// Sanitize API input
-		for (T ingredient : ingredients) {
-			if (!ingredientClass.isInstance(ingredient) && ingredient != null) {
-				Log.error("Received wrong type of ingredient. Expected {}, got {}", ingredientClass, ingredient.getClass(), new IllegalArgumentException());
-				return;
+		if (ingredients != null) {
+			for (T ingredient : ingredients) {
+				if (!ingredientClass.isInstance(ingredient) && ingredient != null) {
+					Log.error("Received wrong type of ingredient. Expected {}, got {}", ingredientClass, ingredient.getClass(), new IllegalArgumentException());
+					return;
+				}
 			}
 		}
 		guiIngredients.get(slotIndex).set(ingredients, focus);
 	}
 
 	@Override
-	public void set(int slotIndex, T value) {
+	public void set(int slotIndex, @Nullable T value) {
 		set(slotIndex, Collections.singletonList(value));
 	}
 
