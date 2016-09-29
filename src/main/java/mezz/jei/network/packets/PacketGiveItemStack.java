@@ -6,7 +6,7 @@ import java.util.Map;
 import com.google.common.base.Throwables;
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
-import mezz.jei.util.Commands;
+import mezz.jei.util.CommandUtil;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandManager;
 import net.minecraft.entity.item.EntityItem;
@@ -17,8 +17,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.management.UserListOps;
-import net.minecraft.server.management.UserListOpsEntry;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
@@ -77,7 +75,7 @@ public class PacketGiveItemStack extends PacketJEI {
 		Map<String, ICommand> commands = commandManager.getCommands();
 		ICommand giveCommand = commands.get("give");
 		if (giveCommand != null && giveCommand.checkPermission(minecraftServer, sender)) {
-			String[] commandParameters = Commands.getGiveCommandParameters(sender, itemStack, itemStack.stackSize);
+			String[] commandParameters = CommandUtil.getGiveCommandParameters(sender, itemStack, itemStack.stackSize);
 			CommandEvent event = new CommandEvent(giveCommand, sender, commandParameters);
 			if (MinecraftForge.EVENT_BUS.post(event)) {
 				Throwable exception = event.getException();
@@ -88,9 +86,7 @@ public class PacketGiveItemStack extends PacketJEI {
 			}
 			return true;
 		} else {
-			UserListOps oppedPlayers = minecraftServer.getPlayerList().getOppedPlayers();
-			UserListOpsEntry userlistopsentry = oppedPlayers.getEntry(sender.getGameProfile());
-			return userlistopsentry != null && userlistopsentry.getPermissionLevel() >= minecraftServer.getOpPermissionLevel();
+			return sender.canCommandSenderUseCommand(minecraftServer.getOpPermissionLevel(), "give");
 		}
 	}
 
