@@ -127,10 +127,20 @@ public class RecipeRegistry implements IRecipeRegistry {
 				continue;
 			}
 
-			Class recipeClass = recipeHandler.getRecipeClass();
+			Class recipeClass;
+			try {
+				recipeClass = recipeHandler.getRecipeClass();
+			} catch (RuntimeException e) {
+				Log.error("Recipe handler crashed.", e);
+				continue;
+			} catch (LinkageError e) {
+				Log.error("Recipe handler crashed.", e);
+				continue;
+			}
 
 			if (recipeHandlerClasses.contains(recipeClass)) {
-				throw new IllegalArgumentException("A Recipe Handler has already been registered for this recipe class: " + recipeClass.getName());
+				Log.error("A Recipe Handler has already been registered for this recipe class: " + recipeClass.getName());
+				continue;
 			}
 
 			recipeHandlerClasses.add(recipeClass);
