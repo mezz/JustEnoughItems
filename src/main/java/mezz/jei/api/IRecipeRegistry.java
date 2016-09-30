@@ -70,7 +70,7 @@ public interface IRecipeRegistry {
 	 *
 	 * @since JEI 3.11.0
 	 */
-	Collection<ItemStack> getCraftingItems(IRecipeCategory recipeCategory, IFocus focus);
+	List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory, IFocus focus);
 
 	/**
 	 * Add a new recipe while the game is running.

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import mezz.jei.JeiHelpers;
@@ -35,7 +36,7 @@ public class ModRegistry implements IModRegistry {
 	private final List<Object> recipes = new ArrayList<Object>();
 	private final RecipeTransferRegistry recipeTransferRegistry;
 	private final Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas = HashMultimap.create();
-	private final Multimap<String, ItemStack> craftItemsForCategories = HashMultimap.create();
+	private final Multimap<String, ItemStack> craftItemsForCategories = ArrayListMultimap.create();
 	private final List<IRecipeRegistryPlugin> recipeRegistryPlugins = new ArrayList<IRecipeRegistryPlugin>();
 
 	public ModRegistry(JeiHelpers jeiHelpers, IItemRegistry itemRegistry, IIngredientRegistry ingredientRegistry) {

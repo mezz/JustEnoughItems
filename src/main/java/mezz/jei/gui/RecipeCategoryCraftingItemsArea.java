@@ -1,10 +1,10 @@
 package mezz.jei.gui;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import mezz.jei.Internal;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IRecipeRegistry;
@@ -48,7 +48,7 @@ public class RecipeCategoryCraftingItemsArea implements IShowsRecipeFocuses {
 		boxDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 40, 18, 25);
 	}
 
-	public void updateLayout(Collection<ItemStack> itemStacks, GuiProperties guiProperties) {
+	public void updateLayout(List<ItemStack> itemStacks, GuiProperties guiProperties) {
 		IFocus<ItemStack> focus = recipeRegistry.createFocus(IFocus.Mode.NONE, null);
 		craftingItems = new GuiItemStackGroup(focus);
 
@@ -69,17 +69,22 @@ public class RecipeCategoryCraftingItemsArea implements IShowsRecipeFocuses {
 			left = guiProperties.getGuiLeft() + (guiProperties.getGuiXSize() - totalWidth) / 2; // center it
 			top = guiProperties.getGuiTop() - boxDrawable.getHeight() + 3; // overlaps the recipe gui slightly
 
-			List<ItemStack> itemStacksCopy = new ArrayList<ItemStack>(itemStacks);
+			ListMultimap<Integer, ItemStack> itemStacksForSlots = ArrayListMultimap.create();
+			for (int i = 0; i < itemStacks.size(); i++) {
+				ItemStack itemStack = itemStacks.get(i);
+				if (i < ingredientCount) {
+					itemStacksForSlots.put(i, itemStack);
+				} else {
+					// start from the end and work our way back, do not override the first one
+					int index = ingredientCount - (i % ingredientCount);
+					itemStacksForSlots.put(index, itemStack);
+				}
+			}
+
 			for (int i = 0; i < ingredientCount; i++) {
 				craftingItems.init(i, true, left + 5 + (i * 20), top + 5);
-				if (i + 1 < ingredientCount) {
-					ItemStack itemStack = itemStacksCopy.remove(0);
-					craftingItems.set(i, itemStack);
-				} else {
-					// we're out of space. put all the rest of the items into the last box together so they cycle
-					craftingItems.set(i, itemStacksCopy);
-					break;
-				}
+				List<ItemStack> itemStacksForSlot = itemStacksForSlots.get(i);
+				craftingItems.set(i, itemStacksForSlot);
 			}
 		}
 	}

@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import mezz.jei.RecipeRegistry;
@@ -425,7 +424,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 		pageString = logic.getPageString();
 
-		Collection<ItemStack> recipeCategoryCraftingItems = logic.getRecipeCategoryCraftingItems();
+		List<ItemStack> recipeCategoryCraftingItems = logic.getRecipeCategoryCraftingItems();
 		recipeCategoryCraftingItemsArea.updateLayout(recipeCategoryCraftingItems, GuiProperties.create(this));
 	}
 

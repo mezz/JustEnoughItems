@@ -1,7 +1,6 @@
 package mezz.jei.gui;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.List;
 
 import mezz.jei.api.recipe.IFocus;
@@ -44,7 +43,7 @@ public interface IRecipeGuiLogic {
 	@Nullable
 	IRecipeCategory getRecipeCategory();
 
-	Collection<ItemStack> getRecipeCategoryCraftingItems();
+	List<ItemStack> getRecipeCategoryCraftingItems();
 
 	List<RecipeLayout> getRecipeWidgets(int posX, int posY, int spacingY);
 }

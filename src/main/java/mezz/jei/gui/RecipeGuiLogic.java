@@ -3,7 +3,6 @@ package mezz.jei.gui;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
@@ -56,7 +55,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	 *
 	 * @see IModRegistry#addRecipeCategoryCraftingItem(ItemStack, String...)
 	 */
-	private Collection<ItemStack> recipeCategoryCraftingItems = Collections.emptyList();
+	private List<ItemStack> recipeCategoryCraftingItems = Collections.emptyList();
 
 	public RecipeGuiLogic(RecipeRegistry recipeRegistry) {
 		this.recipeRegistry = recipeRegistry;
@@ -174,7 +173,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public Collection<ItemStack> getRecipeCategoryCraftingItems() {
+	public List<ItemStack> getRecipeCategoryCraftingItems() {
 		return recipeCategoryCraftingItems;
 	}
 

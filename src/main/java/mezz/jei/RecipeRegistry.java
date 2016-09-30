@@ -13,6 +13,7 @@ import java.util.Set;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -54,7 +55,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final List<IRecipeHandler> recipeHandlers;
 	private final ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers;
 	private final ImmutableMultimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap;
-	private final ImmutableMultimap<IRecipeCategory, ItemStack> craftItemsForCategories;
+	private final ImmutableListMultimap<IRecipeCategory, ItemStack> craftItemsForCategories;
 	private final ImmutableMultimap<String, String> categoriesForCraftItemKeys;
 	private final ImmutableMap<String, IRecipeCategory> recipeCategoriesMap;
 	private final ListMultimap<IRecipeCategory, Object> recipesForCategories = ArrayListMultimap.create();
@@ -88,7 +89,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 		addRecipes(recipes);
 
-		ImmutableMultimap.Builder<IRecipeCategory, ItemStack> craftItemsForCategoriesBuilder = ImmutableMultimap.builder();
+		ImmutableListMultimap.Builder<IRecipeCategory, ItemStack> craftItemsForCategoriesBuilder = ImmutableListMultimap.builder();
 		ImmutableMultimap.Builder<String, String> categoriesForCraftItemKeysBuilder = ImmutableMultimap.builder();
 
 		IIngredientHelper<ItemStack> ingredientHelper = ingredientRegistry.getIngredientHelper(ItemStack.class);
@@ -567,8 +568,8 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public Collection<ItemStack> getCraftingItems(IRecipeCategory recipeCategory, IFocus focus) {
-		Collection<ItemStack> craftingItems = craftItemsForCategories.get(recipeCategory);
+	public List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory, IFocus focus) {
+		List<ItemStack> craftingItems = craftItemsForCategories.get(recipeCategory);
 		Object ingredient = focus.getValue();
 		if (ingredient instanceof ItemStack && focus.getMode() == IFocus.Mode.INPUT) {
 			ItemStack itemStack = (ItemStack) ingredient;
