@@ -230,6 +230,10 @@ public class ProxyCommonClient extends ProxyCommon {
 		stackHelper.disableUidCache();
 		Log.info("Built    runtime in {} ms", System.currentTimeMillis() - start_time);
 
+		if (guiEventHandler != null) {
+			MinecraftForge.EVENT_BUS.unregister(guiEventHandler);
+			guiEventHandler = null;
+		}
 		guiEventHandler = new GuiEventHandler(jeiRuntime);
 		MinecraftForge.EVENT_BUS.register(guiEventHandler);
 		Log.info("Finished startup in {} ms", System.currentTimeMillis() - jeiStartTime);
@@ -239,10 +243,6 @@ public class ProxyCommonClient extends ProxyCommon {
 	public void restartJEI() {
 		// check that JEI has been started before. if not, do nothing
 		if (SessionData.isJeiStarted()) {
-			if (guiEventHandler != null) {
-				MinecraftForge.EVENT_BUS.unregister(guiEventHandler);
-				guiEventHandler = null;
-			}
 			startJEI();
 		}
 	}
