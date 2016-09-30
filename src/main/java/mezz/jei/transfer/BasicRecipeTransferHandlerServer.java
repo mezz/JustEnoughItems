@@ -8,9 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import mezz.jei.Internal;
 import mezz.jei.util.InventoryHelper;
-import mezz.jei.util.StackHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -22,7 +20,6 @@ public class BasicRecipeTransferHandlerServer {
 	 */
 	public static void setItems(EntityPlayer player, Map<Integer, Integer> slotIdMap, List<Integer> craftingSlots, List<Integer> inventorySlots, boolean maxTransfer) {
 		Container container = player.openContainer;
-		StackHelper stackHelper = Internal.getStackHelper();
 
 		// grab items from slots
 		Map<Integer, ItemStack> slotMap = new HashMap<Integer, ItemStack>(slotIdMap.size());
@@ -130,8 +127,6 @@ public class BasicRecipeTransferHandlerServer {
 
 	@Nullable
 	private static Slot getSlotWithStack(Container container, ItemStack stack, List<Integer> craftingSlots, List<Integer> inventorySlots) {
-		StackHelper stackHelper = Internal.getStackHelper();
-
 		Slot slot = InventoryHelper.getSlotWithStack(container, craftingSlots, stack);
 		if (slot == null) {
 			slot = InventoryHelper.getSlotWithStack(container, inventorySlots, stack);
