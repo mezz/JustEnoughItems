@@ -9,9 +9,7 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
-import mezz.jei.JeiRuntime;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import mezz.jei.util.color.ColorGetter;
@@ -398,45 +396,35 @@ public class Config {
 		return changed;
 	}
 
-	public static void addIngredientToConfigBlacklist(Object itemStack, IngredientBlacklistType blacklistType) {
-		final String uid = getIngredientUid(itemStack, blacklistType);
+	public static <V> void addIngredientToConfigBlacklist(V itemStack, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
+		final String uid = getIngredientUid(itemStack, blacklistType, ingredientHelper);
 		if (itemBlacklist.add(uid)) {
 			updateBlacklist();
 		}
 	}
 
-	public static void removeIngredientFromConfigBlacklist(Object ingredient, IngredientBlacklistType blacklistType) {
-		final String uid = getIngredientUid(ingredient, blacklistType);
+	public static <V> void removeIngredientFromConfigBlacklist(V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
+		final String uid = getIngredientUid(ingredient, blacklistType, ingredientHelper);
 		if (itemBlacklist.remove(uid)) {
 			updateBlacklist();
 		}
 	}
 
-	public static boolean isIngredientOnConfigBlacklist(Object ingredient) {
+	public static <V> boolean isIngredientOnConfigBlacklist(V ingredient, IIngredientHelper<V> ingredientHelper) {
 		for (IngredientBlacklistType ingredientBlacklistType : IngredientBlacklistType.VALUES) {
-			if (isIngredientOnConfigBlacklist(ingredient, ingredientBlacklistType)) {
+			if (isIngredientOnConfigBlacklist(ingredient, ingredientBlacklistType, ingredientHelper)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public static boolean isIngredientOnConfigBlacklist(Object ingredient, IngredientBlacklistType blacklistType) {
-		final String uid = getIngredientUid(ingredient, blacklistType);
+	public static <V> boolean isIngredientOnConfigBlacklist(V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
+		final String uid = getIngredientUid(ingredient, blacklistType, ingredientHelper);
 		return itemBlacklist.contains(uid);
 	}
 
-	private static String getIngredientUid(Object ingredient, IngredientBlacklistType blacklistType) {
-		JeiRuntime runtime = Internal.getRuntime();
-		if (runtime == null) {
-			return "";
-		}
-		IIngredientRegistry ingredientRegistry = runtime.getIngredientRegistry();
-		IIngredientHelper ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-		return getIngredientUid(ingredient, ingredientHelper, blacklistType);
-	}
-
-	private static <V> String getIngredientUid(V ingredient, IIngredientHelper<V> ingredientHelper, IngredientBlacklistType blacklistType) {
+	private static <V> String getIngredientUid(V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
 		switch (blacklistType) {
 			case ITEM:
 				return ingredientHelper.getUniqueId(ingredient);

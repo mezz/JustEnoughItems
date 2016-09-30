@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.List;
 
-import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.StackHelper;
@@ -14,15 +13,21 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 public class ItemStackHelper implements IIngredientHelper<ItemStack> {
+	private final StackHelper stackHelper;
+
+	public ItemStackHelper(StackHelper stackHelper) {
+		this.stackHelper = stackHelper;
+	}
+
 	@Override
 	public List<ItemStack> expandSubtypes(List<ItemStack> contained) {
-		return Internal.getStackHelper().getAllSubtypes(contained);
+		return stackHelper.getAllSubtypes(contained);
 	}
 
 	@Override
 	@Nullable
 	public ItemStack getMatch(Iterable<ItemStack> ingredients, ItemStack toMatch) {
-		return Internal.getStackHelper().containsStack(ingredients, toMatch);
+		return stackHelper.containsStack(ingredients, toMatch);
 	}
 
 	@Override
@@ -37,12 +42,12 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public String getUniqueId(ItemStack ingredient) {
-		return Internal.getStackHelper().getUniqueIdentifierForStack(ingredient);
+		return stackHelper.getUniqueIdentifierForStack(ingredient);
 	}
 
 	@Override
 	public String getWildcardId(ItemStack ingredient) {
-		return Internal.getStackHelper().getUniqueIdentifierForStack(ingredient, StackHelper.UidMode.WILDCARD);
+		return stackHelper.getUniqueIdentifierForStack(ingredient, StackHelper.UidMode.WILDCARD);
 	}
 
 	@Override

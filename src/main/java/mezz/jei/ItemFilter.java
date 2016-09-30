@@ -21,7 +21,7 @@ public class ItemFilter {
 	private final LoadingCache<String, ImmutableList<IIngredientListElement>> filteredItemMapsCache;
 	private final ImmutableList<IIngredientListElement> baseList;
 
-	public ItemFilter(IIngredientRegistry ingredientRegistry) {
+	public ItemFilter(IIngredientRegistry ingredientRegistry, JeiHelpers jeiHelpers) {
 		filteredItemMapsCache = CacheBuilder.newBuilder()
 				.maximumWeight(16)
 				.weigher(new OneWeigher())
@@ -29,11 +29,7 @@ public class ItemFilter {
 				.build(new ItemFilterCacheLoader());
 
 		// preload the base list
-		this.baseList = IngredientBaseListFactory.create(ingredientRegistry);
-	}
-
-	public void reset() {
-		this.filteredItemMapsCache.invalidateAll();
+		this.baseList = IngredientBaseListFactory.create(ingredientRegistry, jeiHelpers);
 	}
 
 	public ImmutableList<IIngredientListElement> getIngredientList() {

@@ -12,6 +12,7 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
 import mezz.jei.Internal;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.util.Java6Helper;
@@ -29,16 +30,28 @@ import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
 
 public class BrewingRecipeMaker {
-	private static final Set<Class> unhandledRecipeClasses = new HashSet<Class>();
-	private static final Map<String, Integer> brewingSteps = new HashMap<String, Integer>();
+	private final Set<Class> unhandledRecipeClasses = new HashSet<Class>();
+	private final Map<String, Integer> brewingSteps = new HashMap<String, Integer>();
+	private final IIngredientRegistry ingredientRegistry;
+	private final IIngredientHelper<ItemStack> itemStackHelper;
 
 	public static List<BrewingRecipeWrapper> getBrewingRecipes(IIngredientRegistry ingredientRegistry) {
+		BrewingRecipeMaker brewingRecipeMaker = new BrewingRecipeMaker(ingredientRegistry);
+		return brewingRecipeMaker.getBrewingRecipes();
+	}
+
+	private BrewingRecipeMaker(IIngredientRegistry ingredientRegistry) {
+		this.ingredientRegistry = ingredientRegistry;
+		this.itemStackHelper = ingredientRegistry.getIngredientHelper(ItemStack.class);
+	}
+
+	private List<BrewingRecipeWrapper> getBrewingRecipes() {
 		unhandledRecipeClasses.clear();
 		brewingSteps.clear();
 
 		Set<BrewingRecipeWrapper> recipes = new HashSet<BrewingRecipeWrapper>();
 
-		addVanillaBrewingRecipes(ingredientRegistry, recipes);
+		addVanillaBrewingRecipes(recipes);
 		addModdedBrewingRecipes(recipes);
 
 		List<BrewingRecipeWrapper> recipeList = new ArrayList<BrewingRecipeWrapper>(recipes);
@@ -52,7 +65,7 @@ public class BrewingRecipeMaker {
 		return recipeList;
 	}
 
-	private static void addVanillaBrewingRecipes(IIngredientRegistry ingredientRegistry, Collection<BrewingRecipeWrapper> recipes) {
+	private void addVanillaBrewingRecipes(Collection<BrewingRecipeWrapper> recipes) {
 		ImmutableList<ItemStack> potionIngredients = ingredientRegistry.getPotionIngredients();
 		List<ItemStack> knownPotions = new ArrayList<ItemStack>();
 		ItemStack waterBottle = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionTypes.WATER);
@@ -73,7 +86,7 @@ public class BrewingRecipeMaker {
 		} while (foundNewPotions);
 	}
 
-	private static List<ItemStack> getNewPotions(final int brewingStep, List<ItemStack> knownPotions, ImmutableList<ItemStack> potionIngredients, Collection<BrewingRecipeWrapper> recipes) {
+	private List<ItemStack> getNewPotions(final int brewingStep, List<ItemStack> knownPotions, ImmutableList<ItemStack> potionIngredients, Collection<BrewingRecipeWrapper> recipes) {
 		List<ItemStack> newPotions = new ArrayList<ItemStack>();
 		for (ItemStack potionInput : knownPotions) {
 			for (ItemStack potionIngredient : potionIngredients) {
@@ -100,7 +113,7 @@ public class BrewingRecipeMaker {
 				if (!recipes.contains(recipe)) {
 					recipes.add(recipe);
 					newPotions.add(potionOutput);
-					String potionUid = Internal.getStackHelper().getUniqueIdentifierForStack(potionOutput);
+					String potionUid = itemStackHelper.getUniqueId(potionOutput);
 					brewingSteps.put(potionUid, brewingStep);
 				}
 			}
@@ -108,7 +121,7 @@ public class BrewingRecipeMaker {
 		return newPotions;
 	}
 
-	private static void addModdedBrewingRecipes(Collection<BrewingRecipeWrapper> recipes) {
+	private void addModdedBrewingRecipes(Collection<BrewingRecipeWrapper> recipes) {
 		Collection<IBrewingRecipe> brewingRecipes = BrewingRecipeRegistry.getRecipes();
 		Collection<IBrewingRecipe> unknownSteps = addModdedBrewingRecipes(brewingRecipes, recipes);
 
@@ -121,7 +134,7 @@ public class BrewingRecipeMaker {
 		}
 	}
 
-	private static Collection<IBrewingRecipe> addModdedBrewingRecipes(Collection<IBrewingRecipe> brewingRecipes, Collection<BrewingRecipeWrapper> recipes) {
+	private Collection<IBrewingRecipe> addModdedBrewingRecipes(Collection<IBrewingRecipe> brewingRecipes, Collection<BrewingRecipeWrapper> recipes) {
 		Collection<IBrewingRecipe> unknownSteps = new ArrayList<IBrewingRecipe>();
 
 		for (IBrewingRecipe iBrewingRecipe : brewingRecipes) {

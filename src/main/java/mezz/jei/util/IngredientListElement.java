@@ -51,7 +51,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		this.ingredientHelper = ingredientHelper;
 
 		String modId = ingredientHelper.getModId(ingredient);
-		ModIdUtil modIdUtil = Internal.getHelpers().getModIdUtil();
+		ModIdUtil modIdUtil = Internal.getModIdUtil();
 		String modName = modIdUtil.getModNameForModId(modId).toLowerCase(Locale.ENGLISH);
 		modId = modName.toLowerCase(Locale.ENGLISH);
 

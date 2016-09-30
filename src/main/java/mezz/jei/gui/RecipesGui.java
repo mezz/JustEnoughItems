@@ -43,8 +43,6 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	private static final int buttonWidth = 13;
 	private static final int buttonHeight = 12;
 
-	private final RecipeRegistry recipeRegistry;
-
 	private int titleHeight;
 	private int headerHeight;
 
@@ -57,7 +55,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	private String pageString;
 	private String title;
 	private ResourceLocation backgroundTexture;
-	private final RecipeCategoryCraftingItemsArea recipeCategoryCraftingItemsArea = new RecipeCategoryCraftingItemsArea();
+	private final RecipeCategoryCraftingItemsArea recipeCategoryCraftingItemsArea;
 
 	private HoverChecker titleHoverChecker;
 
@@ -74,8 +72,8 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	private int guiTop;
 
 	public RecipesGui(RecipeRegistry recipeRegistry) {
-		this.recipeRegistry = recipeRegistry;
 		this.logic = new RecipeGuiLogic(recipeRegistry);
+		this.recipeCategoryCraftingItemsArea = new RecipeCategoryCraftingItemsArea(recipeRegistry);
 		this.mc = Minecraft.getMinecraft();
 	}
 

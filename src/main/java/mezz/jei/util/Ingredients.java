@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mezz.jei.IngredientRegistry;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredients;
 
 public class Ingredients implements IIngredients {
@@ -25,7 +25,7 @@ public class Ingredients implements IIngredients {
 	public <T> void setInputLists(Class<T> ingredientClass, List<List<T>> inputs) {
 		this.used = true;
 
-		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		List<List<T>> expandedInputs = new ArrayList<List<T>>();
 		for (List<T> input : inputs) {
@@ -41,7 +41,7 @@ public class Ingredients implements IIngredients {
 	public <T> void setInputs(Class<T> ingredientClass, List<T> input) {
 		this.used = true;
 
-		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		List<List<T>> expandedInputs = new ArrayList<List<T>>();
 		for (T input1 : input) {
@@ -56,7 +56,8 @@ public class Ingredients implements IIngredients {
 	@Override
 	public <T> void setOutput(Class<T> ingredientClass, T output) {
 		this.used = true;
-		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+
+		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		List<T> expandedOutputs = ingredientHelper.expandSubtypes(Collections.singletonList(output));
 		this.outputs.put(ingredientClass, expandedOutputs);
@@ -65,7 +66,8 @@ public class Ingredients implements IIngredients {
 	@Override
 	public <T> void setOutputs(Class<T> ingredientClass, List<T> outputs) {
 		this.used = true;
-		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+
+		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		List<T> expandedOutputs = ingredientHelper.expandSubtypes(outputs);
 		this.outputs.put(ingredientClass, expandedOutputs);

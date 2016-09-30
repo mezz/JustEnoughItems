@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack;
  *
  * Replaces {@link INbtIgnoreList}.
  *
- * Get the instance from {@link IJeiHelpers#getSubtypeRegistry()}.
+ * Get the instance by implementing {@link IModPlugin#registerItemSubtypes(ISubtypeRegistry)}.
  *
  * @since 3.6.4
  */

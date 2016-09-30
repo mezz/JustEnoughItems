@@ -2,6 +2,7 @@ package mezz.jei;
 
 import javax.annotation.Nullable;
 
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.RecipesGui;
@@ -18,17 +19,18 @@ import org.lwjgl.input.Mouse;
 
 public class GuiEventHandler {
 	private static final String showRecipesText = Translator.translateToLocal("jei.tooltip.show.recipes");
+	private final JeiRuntime runtime;
 	@Nullable
 	private InputHandler inputHandler;
 	@Nullable
 	private GuiContainer previousGui = null;
 
+	public GuiEventHandler(JeiRuntime runtime) {
+		this.runtime = runtime;
+	}
+
 	@SubscribeEvent
 	public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
-		JeiRuntime runtime = Internal.getRuntime();
-		if (runtime == null) {
-			return;
-		}
 		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
 
 		GuiScreen gui = event.getGui();
@@ -37,8 +39,9 @@ public class GuiEventHandler {
 			itemListOverlay.initGui(guiContainer);
 
 			RecipeRegistry recipeRegistry = runtime.getRecipeRegistry();
-			RecipesGui recipesGui = new RecipesGui(recipeRegistry);
-			inputHandler = new InputHandler(recipeRegistry, recipesGui, itemListOverlay);
+			IIngredientRegistry ingredientRegistry = runtime.getIngredientRegistry();
+			RecipesGui recipesGui = runtime.getRecipesGui();
+			inputHandler = new InputHandler(recipeRegistry, ingredientRegistry, recipesGui, itemListOverlay);
 		} else if (gui instanceof RecipesGui) {
 			if (inputHandler != null) {
 				inputHandler.onScreenResized();
@@ -50,10 +53,6 @@ public class GuiEventHandler {
 	
 	@SubscribeEvent
 	public void onGuiOpen(GuiOpenEvent event) {
-		JeiRuntime runtime = Internal.getRuntime();
-		if (runtime == null) {
-			return;
-		}
 		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
 
 		GuiScreen gui = event.getGui();
@@ -74,11 +73,6 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onDrawBackgroundEventPost(GuiScreenEvent.BackgroundDrawnEvent event) {
-		JeiRuntime runtime = Internal.getRuntime();
-		if (runtime == null) {
-			return;
-		}
-
 		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
 		if (itemListOverlay.isOpen()) {
 			GuiScreen gui = event.getGui();
@@ -89,11 +83,6 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onDrawScreenEventPost(GuiScreenEvent.DrawScreenEvent.Post event) {
-		JeiRuntime runtime = Internal.getRuntime();
-		if (runtime == null) {
-			return;
-		}
-
 		GuiScreen gui = event.getGui();
 		if (gui instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) gui;
@@ -111,11 +100,6 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onClientTick(TickEvent.ClientTickEvent event) {
-		JeiRuntime runtime = Internal.getRuntime();
-		if (runtime == null) {
-			return;
-		}
-
 		if (event.phase == TickEvent.Phase.END) {
 			return;
 		}

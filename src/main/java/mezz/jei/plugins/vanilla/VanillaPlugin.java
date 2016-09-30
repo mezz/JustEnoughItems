@@ -2,6 +2,7 @@ package mezz.jei.plugins.vanilla;
 
 import javax.annotation.Nullable;
 
+import mezz.jei.Internal;
 import mezz.jei.api.BlankModPlugin;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
@@ -35,6 +36,7 @@ import mezz.jei.plugins.vanilla.ingredients.FluidStackRenderer;
 import mezz.jei.plugins.vanilla.ingredients.ItemStackHelper;
 import mezz.jei.plugins.vanilla.ingredients.ItemStackListFactory;
 import mezz.jei.plugins.vanilla.ingredients.ItemStackRenderer;
+import mezz.jei.util.StackHelper;
 import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.client.gui.inventory.GuiCrafting;
 import net.minecraft.client.gui.inventory.GuiFurnace;
@@ -48,27 +50,14 @@ import net.minecraft.item.ItemBanner;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
-import net.minecraftforge.common.ForgeModContainer;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 @JEIPlugin
 public class VanillaPlugin extends BlankModPlugin {
 	public static IJeiHelpers jeiHelpers;
-	public static IIngredientRegistry ingredientRegistry;
 
 	@Override
-	public void registerIngredients(IModIngredientRegistration ingredientRegistration) {
-		ingredientRegistration.register(ItemStack.class, ItemStackListFactory.create(), new ItemStackHelper(), new ItemStackRenderer());
-		ingredientRegistration.register(FluidStack.class, FluidStackListFactory.create(), new FluidStackHelper(), new FluidStackRenderer());
-	}
-
-	@Override
-	public void register(IModRegistry registry) {
-		ingredientRegistry = registry.getIngredientRegistry();
-		jeiHelpers = registry.getJeiHelpers();
-
-		ISubtypeRegistry subtypeRegistry = jeiHelpers.getSubtypeRegistry();
+	public void registerItemSubtypes(ISubtypeRegistry subtypeRegistry) {
 		subtypeRegistry.useNbtForSubtypes(
 				Items.ENCHANTED_BOOK
 		);
@@ -92,10 +81,19 @@ public class VanillaPlugin extends BlankModPlugin {
 				return ItemMonsterPlacer.getEntityIdFromItem(itemStack);
 			}
 		});
+	}
 
-		if (FluidRegistry.isUniversalBucketEnabled()) {
-			subtypeRegistry.useNbtForSubtypes(ForgeModContainer.getInstance().universalBucket);
-		}
+	@Override
+	public void registerIngredients(IModIngredientRegistration ingredientRegistration) {
+		StackHelper stackHelper = Internal.getStackHelper();
+		ingredientRegistration.register(ItemStack.class, ItemStackListFactory.create(stackHelper), new ItemStackHelper(stackHelper), new ItemStackRenderer());
+		ingredientRegistration.register(FluidStack.class, FluidStackListFactory.create(), new FluidStackHelper(), new FluidStackRenderer());
+	}
+
+	@Override
+	public void register(IModRegistry registry) {
+		IIngredientRegistry ingredientRegistry = registry.getIngredientRegistry();
+		jeiHelpers = registry.getJeiHelpers();
 
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 		registry.addRecipeCategories(

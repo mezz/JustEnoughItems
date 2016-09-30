@@ -81,7 +81,8 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 
 	@Override
 	@Nullable
-	public Focus<T> getCurrentlyDisplayed() {
+	@Deprecated
+	public IFocus<T> getCurrentlyDisplayed() {
 		T ingredient = getDisplayedIngredient();
 		if (ingredient == null) {
 			return null;
@@ -178,7 +179,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 			GlStateManager.color(1f, 1f, 1f, 1f);
 
 			List<String> tooltip = ingredientRenderer.getTooltip(minecraft, value);
-			Internal.getHelpers().getModIdUtil().addModNameToIngredientTooltip(tooltip, value);
+			Internal.getModIdUtil().addModNameToIngredientTooltip(tooltip, value, ingredientHelper);
 
 			if (tooltipCallback != null) {
 				tooltipCallback.onTooltip(slotIndex, input, value, tooltip);

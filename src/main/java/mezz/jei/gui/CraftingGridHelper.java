@@ -3,17 +3,18 @@ package mezz.jei.gui;
 import java.util.Collection;
 import java.util.List;
 
-import mezz.jei.Internal;
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IGuiItemStackGroup;
+import mezz.jei.api.recipe.IStackHelper;
 import net.minecraft.item.ItemStack;
 
 public class CraftingGridHelper implements ICraftingGridHelper {
-
+	private final IStackHelper stackHelper;
 	private final int craftInputSlot1;
 	private final int craftOutputSlot;
 
-	public CraftingGridHelper(int craftInputSlot1, int craftOutputSlot) {
+	public CraftingGridHelper(IStackHelper stackHelper, int craftInputSlot1, int craftOutputSlot) {
+		this.stackHelper = stackHelper;
 		this.craftInputSlot1 = craftInputSlot1;
 		this.craftOutputSlot = craftOutputSlot;
 	}
@@ -43,6 +44,7 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 	}
 
 	@Override
+	@Deprecated
 	public void setInput(IGuiItemStackGroup guiItemStacks, List input) {
 		int width, height;
 		if (input.size() > 4) {
@@ -57,12 +59,13 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 	}
 
 	@Override
+	@Deprecated
 	public void setInput(IGuiItemStackGroup guiItemStacks, List input, int width, int height) {
 		for (int i = 0; i < input.size(); i++) {
 			Object recipeItem = input.get(i);
 			int index = getCraftingIndex(i, width, height);
 
-			List<ItemStack> itemStacks = Internal.getStackHelper().toItemStackList(recipeItem);
+			List<ItemStack> itemStacks = stackHelper.toItemStackList(recipeItem);
 			setInput(guiItemStacks, index, itemStacks);
 		}
 	}

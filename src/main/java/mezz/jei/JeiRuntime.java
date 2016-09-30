@@ -1,7 +1,6 @@
 package mezz.jei;
 
 import mezz.jei.api.IJeiRuntime;
-import mezz.jei.api.IRecipesGui;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.RecipesGui;
 
@@ -39,7 +38,7 @@ public class JeiRuntime implements IJeiRuntime {
 	}
 
 	@Override
-	public IRecipesGui getRecipesGui() {
+	public RecipesGui getRecipesGui() {
 		return recipesGui;
 	}
 

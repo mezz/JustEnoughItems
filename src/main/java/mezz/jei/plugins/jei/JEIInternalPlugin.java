@@ -35,6 +35,7 @@ import net.minecraft.item.ItemStack;
 public class JEIInternalPlugin extends BlankModPlugin {
 	public static IJeiHelpers jeiHelpers;
 	public static IIngredientRegistry ingredientRegistry;
+	public static IJeiRuntime jeiRuntime;
 
 	@Override
 	public void registerIngredients(IModIngredientRegistration ingredientRegistration) {
@@ -102,7 +103,7 @@ public class JEIInternalPlugin extends BlankModPlugin {
 
 	@Override
 	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
-		super.onRuntimeAvailable(jeiRuntime);
+		JEIInternalPlugin.jeiRuntime = jeiRuntime;
 
 		if (Config.isDebugModeEnabled()) {
 			jeiRuntime.getItemListOverlay().highlightStacks(Collections.singleton(new ItemStack(Items.STICK)));

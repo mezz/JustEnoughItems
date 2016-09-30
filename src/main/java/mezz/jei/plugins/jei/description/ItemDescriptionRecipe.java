@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import mezz.jei.Internal;
+import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
@@ -20,7 +20,7 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 	private final List<ItemStack> itemStacks;
 	private final IDrawable slotDrawable;
 
-	public static List<ItemDescriptionRecipe> create(List<ItemStack> itemStacks, String... descriptionKeys) {
+	public static List<ItemDescriptionRecipe> create(IGuiHelper guiHelper, List<ItemStack> itemStacks, String... descriptionKeys) {
 		List<ItemDescriptionRecipe> recipes = new ArrayList<ItemDescriptionRecipe>();
 
 		List<String> descriptionLines = translateDescriptionLines(descriptionKeys);
@@ -35,7 +35,7 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 			int startLine = i * maxLinesPerPage;
 			int endLine = Math.min((i + 1) * maxLinesPerPage, lineCount);
 			List<String> description = descriptionLines.subList(startLine, endLine);
-			ItemDescriptionRecipe recipe = new ItemDescriptionRecipe(itemStacks, description);
+			ItemDescriptionRecipe recipe = new ItemDescriptionRecipe(guiHelper, itemStacks, description);
 			recipes.add(recipe);
 		}
 
@@ -70,10 +70,10 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 		return descriptionLinesWrapped;
 	}
 
-	private ItemDescriptionRecipe(List<ItemStack> itemStacks, List<String> description) {
+	private ItemDescriptionRecipe(IGuiHelper guiHelper, List<ItemStack> itemStacks, List<String> description) {
 		this.description = description;
 		this.itemStacks = itemStacks;
-		this.slotDrawable = Internal.getHelpers().getGuiHelper().getSlotDrawable();
+		this.slotDrawable = guiHelper.getSlotDrawable();
 	}
 
 	@Override

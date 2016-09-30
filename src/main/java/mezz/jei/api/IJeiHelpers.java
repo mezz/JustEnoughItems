@@ -32,7 +32,9 @@ public interface IJeiHelpers {
 
 	/**
 	 * If your item has subtypes that depend on NBT or capabilities, use this to help JEI identify those subtypes correctly.
+	 * @deprecated since JEI 3.12.1. Implement {@link IModPlugin#registerItemSubtypes(ISubtypeRegistry)}
 	 */
+	@Deprecated
 	ISubtypeRegistry getSubtypeRegistry();
 
 	/**

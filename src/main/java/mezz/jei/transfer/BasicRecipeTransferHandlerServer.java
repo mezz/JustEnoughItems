@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import mezz.jei.Internal;
+import mezz.jei.util.InventoryHelper;
 import mezz.jei.util.StackHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -70,7 +71,7 @@ public class BasicRecipeTransferHandlerServer {
 
 		// put cleared items back into the player's inventory
 		for (ItemStack oldCraftingItem : clearedCraftingItems) {
-			stackHelper.addStack(container, inventorySlots, oldCraftingItem, true);
+			InventoryHelper.addStack(container, inventorySlots, oldCraftingItem, true);
 		}
 
 		container.detectAndSendChanges();
@@ -131,9 +132,9 @@ public class BasicRecipeTransferHandlerServer {
 	private static Slot getSlotWithStack(Container container, ItemStack stack, List<Integer> craftingSlots, List<Integer> inventorySlots) {
 		StackHelper stackHelper = Internal.getStackHelper();
 
-		Slot slot = stackHelper.getSlotWithStack(container, craftingSlots, stack);
+		Slot slot = InventoryHelper.getSlotWithStack(container, craftingSlots, stack);
 		if (slot == null) {
-			slot = stackHelper.getSlotWithStack(container, inventorySlots, stack);
+			slot = InventoryHelper.getSlotWithStack(container, inventorySlots, stack);
 		}
 
 		return slot;

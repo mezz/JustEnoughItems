@@ -1,10 +1,8 @@
 package mezz.jei;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
@@ -21,14 +19,13 @@ import mezz.jei.util.AnnotatedInstanceUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.ModIdUtil;
 import mezz.jei.util.ModRegistry;
+import mezz.jei.util.StackHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.crash.CrashReport;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
@@ -46,7 +43,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 @SuppressWarnings("unused")
 public class ProxyCommonClient extends ProxyCommon {
 	@Nullable
-	private ItemFilter itemFilter;
+	private GuiEventHandler guiEventHandler;
 	private List<IModPlugin> plugins;
 
 	private static void initVersionChecker() {
@@ -101,11 +98,6 @@ public class ProxyCommonClient extends ProxyCommon {
 	public void init(FMLInitializationEvent event) {
 		KeyBindings.init();
 		MinecraftForge.EVENT_BUS.register(this);
-
-		GuiEventHandler guiEventHandler = new GuiEventHandler();
-		MinecraftForge.EVENT_BUS.register(guiEventHandler);
-
-		fixVanillaItemHasSubtypes();
 	}
 
 	@Override
@@ -119,20 +111,6 @@ public class ProxyCommonClient extends ProxyCommon {
 				restartJEI();
 			}
 		});
-	}
-
-	/** fix vanilla items that don't mark themselves as having subtypes */
-	private static void fixVanillaItemHasSubtypes() {
-		List<Item> items = Arrays.asList(
-				Items.POTIONITEM,
-				Items.LINGERING_POTION,
-				Items.SPLASH_POTION,
-				Items.TIPPED_ARROW,
-				Items.ENCHANTED_BOOK
-		);
-		for (Item item : items) {
-			item.setHasSubtypes(true);
-		}
 	}
 
 	@SubscribeEvent
@@ -153,12 +131,28 @@ public class ProxyCommonClient extends ProxyCommon {
 
 		Config.startJei();
 
-		Internal.setHelpers(new JeiHelpers());
-		Internal.getStackHelper().enableUidCache();
+		SubtypeRegistry subtypeRegistry = new SubtypeRegistry();
+
+		Iterator<IModPlugin> iterator = plugins.iterator();
+		while (iterator.hasNext()) {
+			IModPlugin plugin = iterator.next();
+			try {
+				plugin.registerItemSubtypes(subtypeRegistry);
+			} catch (RuntimeException e) {
+				Log.error("Failed to register item subtypes for mod plugin: {}", plugin.getClass(), e);
+				iterator.remove();
+			} catch (LinkageError ignored) {
+				// legacy mod plugins do not have registerItemSubtypes
+			}
+		}
+
+		StackHelper stackHelper = new StackHelper(subtypeRegistry);
+		stackHelper.enableUidCache();
+		Internal.setStackHelper(stackHelper);
 
 		ModIngredientRegistration modIngredientRegistry = new ModIngredientRegistration();
 
-		Iterator<IModPlugin> iterator = plugins.iterator();
+		iterator = plugins.iterator();
 		while (iterator.hasNext()) {
 			IModPlugin plugin = iterator.next();
 			try {
@@ -174,10 +168,13 @@ public class ProxyCommonClient extends ProxyCommon {
 		IngredientRegistry ingredientRegistry = modIngredientRegistry.createIngredientRegistry();
 		Internal.setIngredientRegistry(ingredientRegistry);
 
-		ModIdUtil modIdUtil = Internal.getHelpers().getModIdUtil();
+		JeiHelpers jeiHelpers = new JeiHelpers(ingredientRegistry, stackHelper);
+		Internal.setHelpers(jeiHelpers);
+
+		ModIdUtil modIdUtil = Internal.getModIdUtil();
 		ItemRegistry itemRegistry = ItemRegistryFactory.createItemRegistry(ingredientRegistry, modIdUtil);
 
-		ModRegistry modRegistry = new ModRegistry(Internal.getHelpers(), itemRegistry, ingredientRegistry);
+		ModRegistry modRegistry = new ModRegistry(jeiHelpers, itemRegistry, ingredientRegistry);
 
 		iterator = plugins.iterator();
 		while (iterator.hasNext()) {
@@ -199,12 +196,12 @@ public class ProxyCommonClient extends ProxyCommon {
 
 		long start_time = System.currentTimeMillis();
 		Log.info("Building recipe registry...");
-		RecipeRegistry recipeRegistry = modRegistry.createRecipeRegistry(ingredientRegistry);
+		RecipeRegistry recipeRegistry = modRegistry.createRecipeRegistry(stackHelper, ingredientRegistry);
 		Log.info("Built    recipe registry in {} ms", System.currentTimeMillis() - start_time);
 
 		start_time = System.currentTimeMillis();
 		Log.info("Building item filter...");
-		itemFilter = new ItemFilter(ingredientRegistry);
+		ItemFilter itemFilter = new ItemFilter(ingredientRegistry, jeiHelpers);
 		Log.info("Built    item filter in {} ms", System.currentTimeMillis() - start_time);
 
 		start_time = System.currentTimeMillis();
@@ -230,8 +227,11 @@ public class ProxyCommonClient extends ProxyCommon {
 			}
 		}
 
-		Internal.getStackHelper().disableUidCache();
+		stackHelper.disableUidCache();
 		Log.info("Built    runtime in {} ms", System.currentTimeMillis() - start_time);
+
+		guiEventHandler = new GuiEventHandler(jeiRuntime);
+		MinecraftForge.EVENT_BUS.register(guiEventHandler);
 		Log.info("Finished startup in {} ms", System.currentTimeMillis() - jeiStartTime);
 	}
 
@@ -239,14 +239,11 @@ public class ProxyCommonClient extends ProxyCommon {
 	public void restartJEI() {
 		// check that JEI has been started before. if not, do nothing
 		if (SessionData.isJeiStarted()) {
+			if (guiEventHandler != null) {
+				MinecraftForge.EVENT_BUS.unregister(guiEventHandler);
+				guiEventHandler = null;
+			}
 			startJEI();
-		}
-	}
-
-	@Override
-	public void resetItemFilter() {
-		if (itemFilter != null) {
-			itemFilter.reset();
 		}
 	}
 

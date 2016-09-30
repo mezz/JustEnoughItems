@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import mezz.jei.IngredientRegistry;
-import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -50,15 +48,13 @@ public class ModIdUtil {
 		return modName;
 	}
 
-	public <T> String getModNameForIngredient(T ingredient) {
-		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+	public <T> String getModNameForIngredient(T ingredient, IIngredientHelper<T> ingredientHelper) {
 		String modId = ingredientHelper.getModId(ingredient);
 		return getModNameForModId(modId);
 	}
 
-	public <T> void addModNameToIngredientTooltip(List<String> tooltip, T ingredient) {
-		String modName = getModNameForIngredient(ingredient);
+	public <T> void addModNameToIngredientTooltip(List<String> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
+		String modName = getModNameForIngredient(ingredient, ingredientHelper);
 		if (!tooltip.isEmpty()) {
 			String lastTooltipLine = tooltip.get(tooltip.size() - 1);
 			lastTooltipLine = TextFormatting.getTextWithoutFormattingCodes(lastTooltipLine);

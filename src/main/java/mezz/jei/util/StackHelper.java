@@ -3,7 +3,6 @@ package mezz.jei.util;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -14,13 +13,10 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import mezz.jei.Internal;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.recipe.IStackHelper;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -30,11 +26,13 @@ import net.minecraftforge.oredict.OreDictionary;
 public class StackHelper implements IStackHelper {
 	public static final String nullItemInStack = "Found an itemStack with a null item. This is an error from another mod.";
 
+	private final ISubtypeRegistry subtypeRegistry;
 	/** Uids are cached during loading to improve startup performance. */
 	private final Map<UidMode, Map<ItemStack, String>> uidCache = new EnumMap<UidMode, Map<ItemStack, String>>(UidMode.class);
 	private boolean uidCacheEnabled = true;
 
-	public StackHelper() {
+	public StackHelper(ISubtypeRegistry subtypeRegistry) {
+		this.subtypeRegistry = subtypeRegistry;
 		for (UidMode mode : UidMode.values()) {
 			uidCache.put(mode, new HashMap<ItemStack, String>());
 		}
@@ -106,28 +104,6 @@ public class StackHelper implements IStackHelper {
 		}
 
 		return matchingItemResult;
-	}
-
-	/**
-	 * Get the slot which contains a specific itemStack.
-	 *
-	 * @param container   the container to search
-	 * @param slotNumbers the slots in the container to search
-	 * @param itemStack   the itemStack to find
-	 * @return the slot that contains the itemStack. returns null if no slot contains the itemStack.
-	 */
-	@Nullable
-	public Slot getSlotWithStack(Container container, Iterable<Integer> slotNumbers, ItemStack itemStack) {
-		for (Integer slotNumber : slotNumbers) {
-			if (slotNumber >= 0 && slotNumber < container.inventorySlots.size()) {
-				Slot slot = container.getSlot(slotNumber);
-				ItemStack slotStack = slot.getStack();
-				if (ItemStack.areItemsEqual(itemStack, slotStack) && ItemStack.areItemStackTagsEqual(itemStack, slotStack)) {
-					return slot;
-				}
-			}
-		}
-		return null;
 	}
 
 	public boolean containsSameStacks(Collection<ItemStack> stacks, Collection<ItemStack> contains) {
@@ -341,30 +317,30 @@ public class StackHelper implements IStackHelper {
 			return Collections.emptyList();
 		}
 
-		UniqueIngredientListBuilder<ItemStack> ingredientListBuilder = new UniqueIngredientListBuilder<ItemStack>(ItemStack.class);
-		toItemStackList(ingredientListBuilder, stacks);
-		return ingredientListBuilder.build();
+		UniqueItemStackListBuilder itemStackListBuilder = new UniqueItemStackListBuilder(this);
+		toItemStackList(itemStackListBuilder, stacks);
+		return itemStackListBuilder.build();
 	}
 
-	private void toItemStackList(UniqueIngredientListBuilder<ItemStack> ingredientListBuilder, @Nullable Object input) {
+	private void toItemStackList(UniqueItemStackListBuilder itemStackListBuilder, @Nullable Object input) {
 		if (input instanceof ItemStack) {
 			ItemStack stack = (ItemStack) input;
 			if (stack.getMetadata() == OreDictionary.WILDCARD_VALUE) {
 				List<ItemStack> subtypes = getSubtypes(stack);
 				for (ItemStack subtype : subtypes) {
-					ingredientListBuilder.add(subtype);
+					itemStackListBuilder.add(subtype);
 				}
 			} else {
-				ingredientListBuilder.add(stack);
+				itemStackListBuilder.add(stack);
 			}
 		} else if (input instanceof String) {
 			List<ItemStack> stacks = OreDictionary.getOres((String) input);
 			for (ItemStack stack : stacks) {
-				ingredientListBuilder.add(stack);
+				itemStackListBuilder.add(stack);
 			}
 		} else if (input instanceof Iterable) {
 			for (Object obj : (Iterable) input) {
-				toItemStackList(ingredientListBuilder, obj);
+				toItemStackList(itemStackListBuilder, obj);
 			}
 		} else if (input != null) {
 			Log.error("Unknown object found: {}", input);
@@ -397,34 +373,30 @@ public class StackHelper implements IStackHelper {
 		StringBuilder itemKey = new StringBuilder(itemName.toString());
 
 		if (mode != UidMode.WILDCARD) {
-			ISubtypeRegistry subtypeRegistry = Internal.getHelpers().getSubtypeRegistry();
 			String subtypeInfo = subtypeRegistry.getSubtypeInfo(stack);
 			if (subtypeInfo != null) {
 				itemKey.append(':').append(subtypeInfo);
-			}
-		}
+			} else {
+				int metadata = stack.getMetadata();
 
-		int metadata = stack.getMetadata();
-		if (mode == UidMode.WILDCARD || metadata == OreDictionary.WILDCARD_VALUE) {
-			return itemKey.toString();
-		}
+				if (mode == UidMode.FULL) {
+					itemKey.append(':').append(metadata);
 
-		if (mode == UidMode.FULL) {
-			itemKey.append(':').append(metadata);
-
-			NBTTagCompound serializedNbt = stack.serializeNBT();
-			NBTTagCompound nbtTagCompound = serializedNbt.getCompoundTag("tag").copy();
-			if (serializedNbt.hasKey("ForgeCaps")) {
-				NBTTagCompound forgeCaps = serializedNbt.getCompoundTag("ForgeCaps");
-				if (!forgeCaps.hasNoTags()) { // ForgeCaps should never be empty
-					nbtTagCompound.setTag("ForgeCaps", forgeCaps);
+					NBTTagCompound serializedNbt = stack.serializeNBT();
+					NBTTagCompound nbtTagCompound = serializedNbt.getCompoundTag("tag").copy();
+					if (serializedNbt.hasKey("ForgeCaps")) {
+						NBTTagCompound forgeCaps = serializedNbt.getCompoundTag("ForgeCaps");
+						if (!forgeCaps.hasNoTags()) { // ForgeCaps should never be empty
+							nbtTagCompound.setTag("ForgeCaps", forgeCaps);
+						}
+					}
+					if (!nbtTagCompound.hasNoTags()) {
+						itemKey.append(':').append(nbtTagCompound);
+					}
+				} else if (metadata != OreDictionary.WILDCARD_VALUE && stack.getHasSubtypes()) {
+					itemKey.append(':').append(metadata);
 				}
 			}
-			if (!nbtTagCompound.hasNoTags()) {
-				itemKey.append(':').append(nbtTagCompound);
-			}
-		} else if (stack.getHasSubtypes()) {
-			itemKey.append(':').append(metadata);
 		}
 
 		String result = itemKey.toString();
@@ -437,78 +409,6 @@ public class StackHelper implements IStackHelper {
 	public enum UidMode {
 		NORMAL, WILDCARD, FULL
 	}
-
-	public List<String> getUniqueIdentifiersWithWildcard(ItemStack itemStack) {
-		String uid = getUniqueIdentifierForStack(itemStack, UidMode.NORMAL);
-		String uidWild = getUniqueIdentifierForStack(itemStack, UidMode.WILDCARD);
-
-		if (uid.equals(uidWild)) {
-			return Collections.singletonList(uid);
-		} else {
-			return Arrays.asList(uid, uidWild);
-		}
-	}
-
-	public int addStack(Container container, Collection<Integer> slotIndexes, ItemStack stack, boolean doAdd) {
-		int added = 0;
-		// Add to existing stacks first
-		for (final Integer slotIndex : slotIndexes) {
-			if (slotIndex >= 0 && slotIndex < container.inventorySlots.size()) {
-				final Slot slot = container.getSlot(slotIndex);
-				final ItemStack inventoryStack = slot.getStack();
-				// Check that the slot's contents are stackable with this stack
-				if (inventoryStack != null &&
-						inventoryStack.getItem() != null &&
-						inventoryStack.isStackable() &&
-						inventoryStack.isItemEqual(stack) &&
-						ItemStack.areItemStackTagsEqual(inventoryStack, stack)) {
-
-					final int remain = stack.stackSize - added;
-					final int maxStackSize = Math.min(slot.getItemStackLimit(inventoryStack), inventoryStack.getMaxStackSize());
-					final int space = maxStackSize - inventoryStack.stackSize;
-					if (space > 0) {
-
-						// Enough space
-						if (space >= remain) {
-							if (doAdd) {
-								inventoryStack.stackSize += remain;
-							}
-							return stack.stackSize;
-						}
-
-						// Not enough space
-						if (doAdd) {
-							inventoryStack.stackSize = inventoryStack.getMaxStackSize();
-						}
-
-						added += space;
-					}
-				}
-			}
-		}
-
-		if (added >= stack.stackSize) {
-			return added;
-		}
-
-		for (final Integer slotIndex : slotIndexes) {
-			if (slotIndex >= 0 && slotIndex < container.inventorySlots.size()) {
-				final Slot slot = container.getSlot(slotIndex);
-				final ItemStack inventoryStack = slot.getStack();
-				if (inventoryStack == null) {
-					if (doAdd) {
-						ItemStack stackToAdd = stack.copy();
-						stackToAdd.stackSize = stack.stackSize - added;
-						slot.putStack(stackToAdd);
-					}
-					return stack.stackSize;
-				}
-			}
-		}
-
-		return added;
-	}
-
 	public static class MatchingItemsResult {
 		@Nonnull
 		public final Map<Integer, Integer> matchingItems = new HashMap<Integer, Integer>();

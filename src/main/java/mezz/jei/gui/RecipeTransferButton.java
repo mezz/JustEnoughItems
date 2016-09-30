@@ -13,6 +13,7 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 public class RecipeTransferButton extends GuiButtonExt {
 	private RecipeLayout recipeLayout;
+	@Nullable
 	private IRecipeTransferError recipeTransferError;
 
 	public RecipeTransferButton(int id, int xPos, int yPos, int width, int height, String displayString) {

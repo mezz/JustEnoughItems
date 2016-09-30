@@ -10,7 +10,6 @@ import java.util.Map;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multiset;
-import mezz.jei.api.IItemBlacklist;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -34,8 +33,8 @@ public class IngredientBaseListFactory {
 
 	}
 
-	public static ImmutableList<IIngredientListElement> create(IIngredientRegistry ingredientRegistry) {
-		IngredientChecker ingredientChecker = new IngredientChecker();
+	public static ImmutableList<IIngredientListElement> create(IIngredientRegistry ingredientRegistry, JeiHelpers jeiHelpers) {
+		IngredientChecker ingredientChecker = new IngredientChecker(jeiHelpers);
 
 		List<IIngredientListElement> ingredientListElements = new LinkedList<IIngredientListElement>();
 
@@ -49,7 +48,7 @@ public class IngredientBaseListFactory {
 				Item item = brokenItem.getElement();
 				IIngredientHelper<ItemStack> ingredientHelper = ingredientRegistry.getIngredientHelper(ItemStack.class);
 				String modId = ingredientHelper.getModId(new ItemStack(item));
-				String modName = Internal.getHelpers().getModIdUtil().getModNameForModId(modId);
+				String modName = Internal.getModIdUtil().getModNameForModId(modId);
 				Log.error("Couldn't get ItemModel for {} item {}. Suppressed {} similar errors.", modName, item, count);
 			}
 		}
@@ -123,7 +122,7 @@ public class IngredientBaseListFactory {
 		V ingredient = ingredientListElement.getIngredient();
 		IIngredientHelper<V> ingredientHelper = ingredientListElement.getIngredientHelper();
 		String modId = ingredientHelper.getModId(ingredient);
-		return Internal.getHelpers().getModIdUtil().getModNameForModId(modId);
+		return Internal.getModIdUtil().getModNameForModId(modId);
 	}
 
 	private static <V> String getWildcardUid(IIngredientListElement<V> ingredientListElement) {
@@ -133,13 +132,13 @@ public class IngredientBaseListFactory {
 	}
 
 	private static class IngredientChecker {
-		private final IItemBlacklist itemBlacklist;
+		private final ItemBlacklist itemBlacklist;
 		private final ItemModelMesher itemModelMesher;
 		private final IBakedModel missingModel;
 		private final Multiset<Item> brokenItems = HashMultiset.create();
 
-		public IngredientChecker() {
-			itemBlacklist = Internal.getHelpers().getItemBlacklist();
+		public IngredientChecker(JeiHelpers jeiHelpers) {
+			itemBlacklist = jeiHelpers.getItemBlacklist();
 			itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
 			missingModel = itemModelMesher.getModelManager().getMissingModel();
 		}
@@ -161,15 +160,15 @@ public class IngredientBaseListFactory {
 				try {
 					itemModel = renderItem.getItemModelWithOverrides(itemStack, null, null);
 				} catch (RuntimeException e) {
-					ModIdUtil modIdUtil = Internal.getHelpers().getModIdUtil();
-					String modName = modIdUtil.getModNameForIngredient(itemStack);
+					ModIdUtil modIdUtil = Internal.getModIdUtil();
+					String modName = modIdUtil.getModNameForIngredient(ingredient, ingredientHelper);
 					String stackInfo = ingredientHelper.getErrorInfo(ingredient);
 					Log.error("Couldn't get ItemModel for {} itemStack {}", modName, stackInfo, e);
 					brokenItems.add(item);
 					return true;
 				} catch (LinkageError e) {
-					ModIdUtil modIdUtil = Internal.getHelpers().getModIdUtil();
-					String modName = modIdUtil.getModNameForIngredient(itemStack);
+					ModIdUtil modIdUtil = Internal.getModIdUtil();
+					String modName = modIdUtil.getModNameForIngredient(ingredient, ingredientHelper);
 					String stackInfo = ingredientHelper.getErrorInfo(ingredient);
 					Log.error("Couldn't get ItemModel for {} itemStack {}", modName, stackInfo, e);
 					brokenItems.add(item);
@@ -198,24 +197,21 @@ public class IngredientBaseListFactory {
 		private <V> boolean isIngredientHiddenByBlacklist(V ingredient, IIngredientHelper<V> ingredientHelper) {
 			try {
 				if (ingredient instanceof ItemStack) {
-					// check if it is blacklisted through the API or Config
-					if (!itemBlacklist.isItemBlacklisted((ItemStack) ingredient)) {
-						return false;
-					} else if (Config.isEditModeEnabled()) {
-						// edit mode can only change the config blacklist, not things blacklisted through the API
-						return !Config.isIngredientOnConfigBlacklist(ingredient);
+					if (itemBlacklist.isItemBlacklistedByApi((ItemStack) ingredient)) {
+						return true;
 					}
-				} else {
-					if (!Config.isIngredientOnConfigBlacklist(ingredient) || Config.isEditModeEnabled()) {
-						return false;
-					}
+				}
+
+				if (!Config.isEditModeEnabled() && Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
+					return true;
 				}
 			} catch (RuntimeException e) {
 				String ingredientInfo = ingredientHelper.getErrorInfo(ingredient);
 				Log.error("Could not check blacklist for ingredient {}", ingredientInfo, e);
+				return true;
 			}
 
-			return true;
+			return false;
 		}
 	}
 }

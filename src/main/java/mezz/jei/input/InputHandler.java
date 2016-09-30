@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mezz.jei.RecipeRegistry;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
@@ -26,6 +28,7 @@ import org.lwjgl.input.Mouse;
 
 public class InputHandler {
 	private final RecipeRegistry recipeRegistry;
+	private final IIngredientRegistry ingredientRegistry;
 	private final RecipesGui recipesGui;
 	private final ItemListOverlay itemListOverlay;
 	private MouseHelper mouseHelper;
@@ -33,8 +36,9 @@ public class InputHandler {
 
 	private boolean clickHandled = false;
 
-	public InputHandler(RecipeRegistry recipeRegistry, RecipesGui recipesGui, ItemListOverlay itemListOverlay) {
+	public InputHandler(RecipeRegistry recipeRegistry, IIngredientRegistry ingredientRegistry, RecipesGui recipesGui, ItemListOverlay itemListOverlay) {
 		this.recipeRegistry = recipeRegistry;
+		this.ingredientRegistry = ingredientRegistry;
 		this.recipesGui = recipesGui;
 		this.itemListOverlay = itemListOverlay;
 
@@ -119,7 +123,7 @@ public class InputHandler {
 
 	private boolean handleMouseClickedFocus(int mouseButton, IClickedIngredient<?> clicked) {
 		if (Config.isEditModeEnabled()) {
-			if (handleClickEditStack(mouseButton, clicked)) {
+			if (handleClickEdit(mouseButton, clicked.getValue())) {
 				return true;
 			}
 		}
@@ -152,9 +156,7 @@ public class InputHandler {
 		return false;
 	}
 
-	private boolean handleClickEditStack(int mouseButton, IClickedIngredient<?> clicked) {
-		Object ingredient = clicked.getValue();
-
+	private <V> boolean handleClickEdit(int mouseButton, V ingredient) {
 		Config.IngredientBlacklistType blacklistType = null;
 		if (GuiScreen.isCtrlKeyDown()) {
 			if (GuiScreen.isShiftKeyDown()) {
@@ -174,10 +176,12 @@ public class InputHandler {
 			return false;
 		}
 
-		if (Config.isIngredientOnConfigBlacklist(ingredient, blacklistType)) {
-			Config.removeIngredientFromConfigBlacklist(ingredient, blacklistType);
+		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+
+		if (Config.isIngredientOnConfigBlacklist(ingredient, blacklistType, ingredientHelper)) {
+			Config.removeIngredientFromConfigBlacklist(ingredient, blacklistType, ingredientHelper);
 		} else {
-			Config.addIngredientToConfigBlacklist(ingredient, blacklistType);
+			Config.addIngredientToConfigBlacklist(ingredient, blacklistType, ingredientHelper);
 		}
 		return true;
 	}

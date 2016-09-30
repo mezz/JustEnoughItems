@@ -7,7 +7,9 @@ import java.util.List;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import mezz.jei.JeiHelpers;
 import mezz.jei.RecipeRegistry;
+import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModRegistry;
@@ -31,15 +33,16 @@ public class ModRegistry implements IModRegistry {
 	private final List<IRecipeHandler> recipeHandlers = new ArrayList<IRecipeHandler>();
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers = new ArrayList<IAdvancedGuiHandler<?>>();
 	private final List<Object> recipes = new ArrayList<Object>();
-	private final RecipeTransferRegistry recipeTransferRegistry = new RecipeTransferRegistry();
+	private final RecipeTransferRegistry recipeTransferRegistry;
 	private final Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas = HashMultimap.create();
 	private final Multimap<String, ItemStack> craftItemsForCategories = HashMultimap.create();
 	private final List<IRecipeRegistryPlugin> recipeRegistryPlugins = new ArrayList<IRecipeRegistryPlugin>();
 
-	public ModRegistry(IJeiHelpers jeiHelpers, IItemRegistry itemRegistry, IIngredientRegistry ingredientRegistry) {
+	public ModRegistry(JeiHelpers jeiHelpers, IItemRegistry itemRegistry, IIngredientRegistry ingredientRegistry) {
 		this.jeiHelpers = jeiHelpers;
 		this.itemRegistry = itemRegistry;
 		this.ingredientRegistry = ingredientRegistry;
+		this.recipeTransferRegistry = new RecipeTransferRegistry(jeiHelpers.getStackHelper(), jeiHelpers.recipeTransferHandlerHelper());
 	}
 
 	@Override
@@ -164,7 +167,8 @@ public class ModRegistry implements IModRegistry {
 			return;
 		}
 
-		List<ItemDescriptionRecipe> recipes = ItemDescriptionRecipe.create(itemStacks, descriptionKeys);
+		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+		List<ItemDescriptionRecipe> recipes = ItemDescriptionRecipe.create(guiHelper, itemStacks, descriptionKeys);
 		this.recipes.addAll(recipes);
 	}
 
@@ -193,8 +197,8 @@ public class ModRegistry implements IModRegistry {
 		return advancedGuiHandlers;
 	}
 
-	public RecipeRegistry createRecipeRegistry(IIngredientRegistry ingredientRegistry) {
+	public RecipeRegistry createRecipeRegistry(StackHelper stackHelper, IIngredientRegistry ingredientRegistry) {
 		List<IRecipeTransferHandler> recipeTransferHandlers = recipeTransferRegistry.getRecipeTransferHandlers();
-		return new RecipeRegistry(recipeCategories, recipeHandlers, recipeTransferHandlers, recipes, recipeClickableAreas, craftItemsForCategories, ingredientRegistry, recipeRegistryPlugins);
+		return new RecipeRegistry(stackHelper, recipeCategories, recipeHandlers, recipeTransferHandlers, recipes, recipeClickableAreas, craftItemsForCategories, ingredientRegistry, recipeRegistryPlugins);
 	}
 }

@@ -6,11 +6,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import mezz.jei.Internal;
 import mezz.jei.api.IItemListOverlay;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
+import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -84,7 +84,7 @@ public class DebugRecipe extends BlankRecipeWrapper {
 			GuiScreen screen = new GuiInventory(minecraft.thePlayer);
 			minecraft.displayGuiScreen(screen);
 
-			IJeiRuntime runtime = Internal.getRuntime();
+			IJeiRuntime runtime = JEIInternalPlugin.jeiRuntime;
 			if (runtime != null) {
 				IItemListOverlay itemListOverlay = runtime.getItemListOverlay();
 				String filterText = itemListOverlay.getFilterText();

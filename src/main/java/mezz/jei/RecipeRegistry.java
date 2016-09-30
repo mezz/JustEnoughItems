@@ -49,6 +49,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 public class RecipeRegistry implements IRecipeRegistry {
+	private final StackHelper stackHelper;
 	private final IIngredientRegistry ingredientRegistry;
 	private final List<IRecipeHandler> recipeHandlers;
 	private final ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers;
@@ -64,6 +65,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final List<IRecipeRegistryPlugin> plugins = new ArrayList<IRecipeRegistryPlugin>();
 
 	public RecipeRegistry(
+			StackHelper stackHelper,
 			List<IRecipeCategory> recipeCategories,
 			List<IRecipeHandler> recipeHandlers,
 			List<IRecipeTransferHandler> recipeTransferHandlers,
@@ -73,6 +75,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			IIngredientRegistry ingredientRegistry,
 			List<IRecipeRegistryPlugin> plugins
 	) {
+		this.stackHelper = stackHelper;
 		this.ingredientRegistry = ingredientRegistry;
 		this.recipeCategoriesMap = buildRecipeCategoriesMap(recipeCategories);
 		this.recipeTransferHandlers = buildRecipeTransferHandlerTable(recipeTransferHandlers);
@@ -85,10 +88,10 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 		addRecipes(recipes);
 
-		StackHelper stackHelper = Internal.getStackHelper();
-
 		ImmutableMultimap.Builder<IRecipeCategory, ItemStack> craftItemsForCategoriesBuilder = ImmutableMultimap.builder();
 		ImmutableMultimap.Builder<String, String> categoriesForCraftItemKeysBuilder = ImmutableMultimap.builder();
+
+		IIngredientHelper<ItemStack> ingredientHelper = ingredientRegistry.getIngredientHelper(ItemStack.class);
 		for (Map.Entry<String, Collection<ItemStack>> recipeCategoryEntry : craftItemsForCategories.asMap().entrySet()) {
 			String recipeCategoryUid = recipeCategoryEntry.getKey();
 			IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
@@ -97,7 +100,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 				craftItemsForCategoriesBuilder.putAll(recipeCategory, craftItems);
 				for (ItemStack craftItem : craftItems) {
 					recipeInputMap.addRecipeCategory(recipeCategory, craftItem);
-					String craftItemKey = stackHelper.getUniqueIdentifierForStack(craftItem);
+					String craftItemKey = ingredientHelper.getUniqueId(craftItem);
 					categoriesForCraftItemKeysBuilder.put(craftItemKey, recipeCategoryUid);
 				}
 			}
@@ -258,8 +261,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	private <T> void legacy_addRecipeUnchecked(IRecipeWrapper recipeWrapper, T recipe, IRecipeHandler<T> recipeHandler, IRecipeCategory recipeCategory) {
-		StackHelper stackHelper = Internal.getStackHelper();
-
 		List inputs = recipeWrapper.getInputs();
 		List<FluidStack> fluidInputs = recipeWrapper.getFluidInputs();
 		if (inputs != null || fluidInputs != null) {
@@ -571,7 +572,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		Object ingredient = focus.getValue();
 		if (ingredient instanceof ItemStack && focus.getMode() == IFocus.Mode.INPUT) {
 			ItemStack itemStack = (ItemStack) ingredient;
-			IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 			IIngredientHelper<ItemStack> ingredientHelper = ingredientRegistry.getIngredientHelper(ItemStack.class);
 			ItemStack matchingStack = ingredientHelper.getMatch(craftingItems, itemStack);
 			if (matchingStack != null) {

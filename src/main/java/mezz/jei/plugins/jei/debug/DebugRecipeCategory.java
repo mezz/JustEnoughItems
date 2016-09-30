@@ -2,7 +2,6 @@ package mezz.jei.plugins.jei.debug;
 
 import java.util.List;
 
-import mezz.jei.Internal;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IItemListOverlay;
 import mezz.jei.api.IJeiRuntime;
@@ -12,9 +11,11 @@ import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITooltipCallback;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeCategory;
 import mezz.jei.config.Constants;
+import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientRenderer;
 import net.minecraft.client.Minecraft;
@@ -58,15 +59,14 @@ public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 	@Override
 	public void drawExtras(Minecraft minecraft) {
 		tankBackground.draw(minecraft);
-		IJeiRuntime runtime = Internal.getRuntime();
-		if (runtime != null) {
-			IItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-			minecraft.fontRendererObj.drawString(itemListOverlay.getFilterText(), 20, 52, 0);
-			ItemStack stackUnderMouse = itemListOverlay.getStackUnderMouse();
-			if (stackUnderMouse != null) {
-				String jeiUid = Internal.getStackHelper().getUniqueIdentifierForStack(stackUnderMouse);
-				minecraft.fontRendererObj.drawString(jeiUid, 50, 52, 0);
-			}
+		IJeiRuntime runtime = JEIInternalPlugin.jeiRuntime;
+		IItemListOverlay itemListOverlay = runtime.getItemListOverlay();
+		minecraft.fontRendererObj.drawString(itemListOverlay.getFilterText(), 20, 52, 0);
+		ItemStack stackUnderMouse = itemListOverlay.getStackUnderMouse();
+		if (stackUnderMouse != null) {
+			IIngredientHelper<ItemStack> ingredientHelper = JEIInternalPlugin.ingredientRegistry.getIngredientHelper(stackUnderMouse);
+			String jeiUid = ingredientHelper.getUniqueId(stackUnderMouse);
+			minecraft.fontRendererObj.drawString(jeiUid, 50, 52, 0);
 		}
 	}
 

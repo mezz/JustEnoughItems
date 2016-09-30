@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.transfer.BasicRecipeTransferHandler;
@@ -13,6 +14,13 @@ import net.minecraft.inventory.Container;
 
 public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 	private final List<IRecipeTransferHandler> recipeTransferHandlers = new ArrayList<IRecipeTransferHandler>();
+	private final StackHelper stackHelper;
+	private final IRecipeTransferHandlerHelper handlerHelper;
+
+	public RecipeTransferRegistry(StackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper) {
+		this.stackHelper = stackHelper;
+		this.handlerHelper = handlerHelper;
+	}
 
 	@Override
 	public void addRecipeTransferHandler(@Nullable Class<? extends Container> containerClass, @Nullable String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
@@ -35,7 +43,7 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 			Log.error("Null recipeTransferInfo", new NullPointerException());
 			return;
 		}
-		IRecipeTransferHandler<C> recipeTransferHandler = new BasicRecipeTransferHandler<C>(recipeTransferInfo);
+		IRecipeTransferHandler<C> recipeTransferHandler = new BasicRecipeTransferHandler<C>(stackHelper, handlerHelper, recipeTransferInfo);
 		addRecipeTransferHandler(recipeTransferHandler);
 	}
 

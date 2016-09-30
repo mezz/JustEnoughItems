@@ -7,7 +7,9 @@ import java.util.List;
 
 import mezz.jei.Internal;
 import mezz.jei.api.IGuiHelper;
+import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
@@ -22,16 +24,21 @@ import net.minecraft.util.ResourceLocation;
  * The area drawn on top of the {@link RecipesGui} that shows which items can craft the current recipe category.
  */
 public class RecipeCategoryCraftingItemsArea implements IShowsRecipeFocuses {
+	private final IRecipeRegistry recipeRegistry;
 	private final IDrawable leftDrawable;
 	private final IDrawable spacerDrawable;
 	private final IDrawable rightDrawable;
 	private final IDrawable boxDrawable;
 
-	private GuiItemStackGroup craftingItems = new GuiItemStackGroup(new Focus<ItemStack>(null));
+	private GuiItemStackGroup craftingItems;
 	private int left = 0;
 	private int top = 0;
 
-	public RecipeCategoryCraftingItemsArea() {
+	public RecipeCategoryCraftingItemsArea(IRecipeRegistry recipeRegistry) {
+		this.recipeRegistry = recipeRegistry;
+		IFocus<ItemStack> focus = recipeRegistry.createFocus(IFocus.Mode.NONE, null);
+		craftingItems = new GuiItemStackGroup(focus);
+
 		ResourceLocation recipeBackgroundResource = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
 
 		IGuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
@@ -42,7 +49,8 @@ public class RecipeCategoryCraftingItemsArea implements IShowsRecipeFocuses {
 	}
 
 	public void updateLayout(Collection<ItemStack> itemStacks, GuiProperties guiProperties) {
-		craftingItems = new GuiItemStackGroup(new Focus<ItemStack>(null));
+		IFocus<ItemStack> focus = recipeRegistry.createFocus(IFocus.Mode.NONE, null);
+		craftingItems = new GuiItemStackGroup(focus);
 
 		if (!itemStacks.isEmpty()) {
 			int totalWidth = leftDrawable.getWidth() + boxDrawable.getWidth() + rightDrawable.getWidth();

@@ -12,6 +12,14 @@ import mezz.jei.api.ingredients.IModIngredientRegistration;
 public interface IModPlugin {
 
 	/**
+	 * If your item has subtypes that depend on NBT or capabilities, use this to help JEI identify those subtypes correctly.
+	 * Called when the player joins the world and any time JEI reloads (like for a config change).
+	 *
+	 * @since JEI 3.12.1
+	 */
+	void registerItemSubtypes(ISubtypeRegistry subtypeRegistry);
+
+	/**
 	 * Register special ingredients, beyond the basic ItemStack and FluidStack.
 	 * Called when the player joins the world and any time JEI reloads (like for a config change).
 	 *

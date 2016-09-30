@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.gui.IGuiItemStackGroup;
@@ -27,9 +26,13 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 public class BasicRecipeTransferHandler<C extends Container> implements IRecipeTransferHandler<C> {
+	private final StackHelper stackHelper;
+	private final IRecipeTransferHandlerHelper handlerHelper;
 	private final IRecipeTransferInfo<C> transferHelper;
 
-	public BasicRecipeTransferHandler(IRecipeTransferInfo<C> transferHelper) {
+	public BasicRecipeTransferHandler(StackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper, IRecipeTransferInfo<C> transferHelper) {
+		this.stackHelper = stackHelper;
+		this.handlerHelper = handlerHelper;
 		this.transferHelper = transferHelper;
 	}
 
@@ -46,9 +49,6 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 	@Nullable
 	@Override
 	public IRecipeTransferError transferRecipe(C container, IRecipeLayout recipeLayout, EntityPlayer player, boolean maxTransfer, boolean doTransfer) {
-		IRecipeTransferHandlerHelper handlerHelper = Internal.getHelpers().recipeTransferHandlerHelper();
-		StackHelper stackHelper = Internal.getStackHelper();
-
 		if (!SessionData.isJeiOnServer()) {
 			String tooltipMessage = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.no.server");
 			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);

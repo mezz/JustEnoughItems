@@ -10,6 +10,7 @@ import com.google.common.base.Joiner;
 import mezz.jei.IngredientRegistry;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
@@ -18,7 +19,6 @@ import mezz.jei.util.Translator;
 import mezz.jei.util.color.ColorNamer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -91,7 +91,7 @@ public class GuiIngredientFast {
 		bakedModel = bakedModel.getOverrides().handleItemState(bakedModel, itemStack, null, null);
 
 		if (Config.isEditModeEnabled()) {
-			renderEditMode();
+			renderEditMode(ingredient, area, padding);
 			GlStateManager.enableBlend();
 		}
 
@@ -152,7 +152,7 @@ public class GuiIngredientFast {
 	public void renderSlow() {
 		if (ingredient != null) {
 			if (Config.isEditModeEnabled()) {
-				renderEditMode();
+				renderEditMode(ingredient, area, padding);
 			}
 
 			renderSlow(ingredient, area, padding);
@@ -181,20 +181,19 @@ public class GuiIngredientFast {
 		renderItem.renderItemOverlayIntoGUI(font, itemStack, area.x + padding, area.y + padding, null);
 	}
 
-	private void renderEditMode() {
-		if (ingredient == null) {
-			return;
-		}
+	private static <V> void renderEditMode(V ingredient, Rectangle area, int padding) {
+		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+		IIngredientHelper ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 
-		if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.ITEM)) {
+		if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.ITEM, ingredientHelper)) {
 			GuiScreen.drawRect(area.x + padding, area.y + padding, area.x + 8 + padding, area.y + 16 + padding, blacklistItemColor);
 			GlStateManager.color(1f, 1f, 1f, 1f);
 		}
-		if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.WILDCARD)) {
+		if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.WILDCARD, ingredientHelper)) {
 			GuiScreen.drawRect(area.x + 8 + padding, area.y + padding, area.x + 16 + padding, area.y + 16 + padding, blacklistWildColor);
 			GlStateManager.color(1f, 1f, 1f, 1f);
 		}
-		if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.MOD_ID)) {
+		if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.MOD_ID, ingredientHelper)) {
 			GuiScreen.drawRect(area.x + padding, area.y + 8 + padding, area.x + 16 + padding, area.y + 16 + padding, blacklistModColor);
 			GlStateManager.color(1f, 1f, 1f, 1f);
 		}
@@ -244,9 +243,10 @@ public class GuiIngredientFast {
 	}
 
 	private static <V> void drawTooltip(Minecraft minecraft, V ingredient, int mouseX, int mouseY) {
-		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
-		List<String> tooltip = getTooltip(minecraft, ingredient, ingredientRenderer);
+		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		List<String> tooltip = getTooltip(minecraft, ingredient, ingredientRenderer, ingredientHelper);
 		FontRenderer fontRenderer = ingredientRenderer.getFontRenderer(minecraft, ingredient);
 
 		if (ingredient instanceof ItemStack) {
@@ -257,10 +257,9 @@ public class GuiIngredientFast {
 		}
 	}
 
-
-	private static <V> List<String> getTooltip(Minecraft minecraft, V ingredient, IIngredientRenderer<V> ingredientRenderer) {
+	private static <V> List<String> getTooltip(Minecraft minecraft, V ingredient, IIngredientRenderer<V> ingredientRenderer, IIngredientHelper<V> ingredientHelper) {
 		List<String> list = ingredientRenderer.getTooltip(minecraft, ingredient);
-		Internal.getHelpers().getModIdUtil().addModNameToIngredientTooltip(list, ingredient);
+		Internal.getModIdUtil().addModNameToIngredientTooltip(list, ingredient, ingredientHelper);
 
 		int maxWidth = Constants.MAX_TOOLTIP_WIDTH;
 		for (String tooltipLine : list) {
@@ -272,8 +271,7 @@ public class GuiIngredientFast {
 
 		if (Config.isColorSearchEnabled()) {
 			ColorNamer colorNamer = Internal.getColorNamer();
-			IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-			IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+
 			Iterable<Color> colors = ingredientHelper.getColors(ingredient);
 			Collection<String> colorNames = colorNamer.getColorNames(colors);
 			if (!colorNames.isEmpty()) {
@@ -286,7 +284,7 @@ public class GuiIngredientFast {
 		if (Config.isEditModeEnabled()) {
 			list.add("");
 			list.add(TextFormatting.ITALIC + Translator.translateToLocal("gui.jei.editMode.description"));
-			if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.ITEM)) {
+			if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.ITEM, ingredientHelper)) {
 				String description = TextFormatting.YELLOW + Translator.translateToLocal("gui.jei.editMode.description.show");
 				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, maxWidth));
 			} else {
@@ -294,7 +292,7 @@ public class GuiIngredientFast {
 				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, maxWidth));
 			}
 
-			if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.WILDCARD)) {
+			if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.WILDCARD, ingredientHelper)) {
 				String description = TextFormatting.RED + Translator.translateToLocal("gui.jei.editMode.description.show.wild");
 				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, maxWidth));
 			} else {
@@ -302,7 +300,7 @@ public class GuiIngredientFast {
 				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, maxWidth));
 			}
 
-			if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.MOD_ID)) {
+			if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.MOD_ID, ingredientHelper)) {
 				String description = TextFormatting.BLUE + Translator.translateToLocal("gui.jei.editMode.description.show.mod.id");
 				list.addAll(minecraft.fontRendererObj.listFormattedStringToWidth(description, maxWidth));
 			} else {

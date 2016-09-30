@@ -2,12 +2,18 @@ package mezz.jei;
 
 import javax.annotation.Nullable;
 
+import mezz.jei.util.ModIdUtil;
 import mezz.jei.util.StackHelper;
 import mezz.jei.util.color.ColorNamer;
 
 /** For JEI internal use only, these are normally accessed from the API. */
 public class Internal {
-	private static JeiHelpers helpers = new JeiHelpers();
+
+	private static final ModIdUtil modIdUtil = new ModIdUtil();
+	@Nullable
+	private static StackHelper stackHelper;
+	@Nullable
+	private static JeiHelpers helpers;
 	@Nullable
 	private static JeiRuntime runtime;
 	@Nullable
@@ -19,16 +25,30 @@ public class Internal {
 
 	}
 
+	public static StackHelper getStackHelper() {
+		if (stackHelper == null) {
+			throw new IllegalStateException("StackHelper has not been created yet.");
+		}
+		return stackHelper;
+	}
+
+	public static void setStackHelper(StackHelper stackHelper) {
+		Internal.stackHelper = stackHelper;
+	}
+
+	public static ModIdUtil getModIdUtil() {
+		return modIdUtil;
+	}
+
 	public static JeiHelpers getHelpers() {
+		if (helpers == null) {
+			throw new IllegalStateException("JeiHelpers has not been created yet.");
+		}
 		return helpers;
 	}
 
 	public static void setHelpers(JeiHelpers helpers) {
 		Internal.helpers = helpers;
-	}
-
-	public static StackHelper getStackHelper() {
-		return helpers.getStackHelper();
 	}
 
 	@Nullable
