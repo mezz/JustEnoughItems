@@ -212,16 +212,18 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	@Nullable
 	@Override
 	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
-		IClickedIngredient<?> clicked = recipeCategoryCraftingItemsArea.getIngredientUnderMouse(mouseX, mouseY);
-		if (clicked != null) {
-			return clicked;
-		}
+		if (isOpen()) {
+			IClickedIngredient<?> clicked = recipeCategoryCraftingItemsArea.getIngredientUnderMouse(mouseX, mouseY);
+			if (clicked != null) {
+				return clicked;
+			}
 
-		if (isMouseOver(mouseX, mouseY)) {
-			for (RecipeLayout recipeLayouts : this.recipeLayouts) {
-				clicked = recipeLayouts.getIngredientUnderMouse(mouseX, mouseY);
-				if (clicked != null) {
-					return clicked;
+			if (isMouseOver(mouseX, mouseY)) {
+				for (RecipeLayout recipeLayouts : this.recipeLayouts) {
+					clicked = recipeLayouts.getIngredientUnderMouse(mouseX, mouseY);
+					if (clicked != null) {
+						return clicked;
+					}
 				}
 			}
 		}
