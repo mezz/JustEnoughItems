@@ -2,9 +2,6 @@ package mezz.jei.gui;
 
 import javax.annotation.Nullable;
 
-import mezz.jei.Internal;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IFocus;
 
 public class Focus<V> implements IFocus<V> {
@@ -31,24 +28,5 @@ public class Focus<V> implements IFocus<V> {
 	@Override
 	public Mode getMode() {
 		return mode;
-	}
-
-	public static boolean areFocusesEqual(IFocus focus1, IFocus focus2) {
-		if (focus1.getMode() == focus2.getMode()) {
-			String uid1 = getUidForFocusValue(focus1);
-			String uid2 = getUidForFocusValue(focus2);
-			return uid1.equals(uid2);
-		}
-		return false;
-	}
-
-	private static <V> String getUidForFocusValue(IFocus<V> focus) {
-		V value = focus.getValue();
-		if (value != null) {
-			IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-			IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(value);
-			return ingredientHelper.getUniqueId(value);
-		}
-		return "null";
 	}
 }

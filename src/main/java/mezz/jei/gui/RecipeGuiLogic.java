@@ -84,10 +84,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	private <V> boolean setFocus(IFocus<V> focus, boolean saveHistory) {
-		if (this.state != null && Focus.areFocusesEqual(this.state.focus, focus)) {
-			return true;
-		}
-
 		final List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories(focus);
 		if (recipeCategories.isEmpty()) {
 			return false;
