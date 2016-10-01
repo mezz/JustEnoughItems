@@ -55,6 +55,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
+import org.lwjgl.input.Keyboard;
 
 public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, IMouseHandler, IKeyable, ICloseable {
 
@@ -491,11 +492,15 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 			backButton.playPressSound(minecraft.getSoundHandler());
 			return true;
 		} else if (configButton.mousePressed(minecraft, mouseX, mouseY)) {
-			close();
 			configButton.playPressSound(minecraft.getSoundHandler());
-			if (minecraft.currentScreen != null) {
-				GuiScreen configScreen = new JEIModConfigGui(minecraft.currentScreen);
-				minecraft.displayGuiScreen(configScreen);
+			if (Keyboard.getEventKeyState() && (Keyboard.getEventKey() == Keyboard.KEY_LCONTROL || Keyboard.getEventKey() == Keyboard.KEY_RCONTROL)) {
+				Config.toggleCheatItemsEnabled();
+			} else {
+				if (minecraft.currentScreen != null) {
+					close();
+					GuiScreen configScreen = new JEIModConfigGui(minecraft.currentScreen);
+					minecraft.displayGuiScreen(configScreen);
+				}
 			}
 			return true;
 		}
