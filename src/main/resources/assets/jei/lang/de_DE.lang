@@ -21,7 +21,7 @@ jei.tooltip.error.recipe.transfer.no.server=Auf dem Server muss JEI installiert 
 jei.chat.error.command.too.long=JEI muss auf dem Server installiert sein, damit dieser Befehl funktioniert, da er zu lang für Minecraft ist.
 
 # Key Bindings
-key.jei.toggleOverlay=Gegenstandsliste de-/aktivieren
+key.jei.toggleOverlay=Gegenstandsliste (de-)aktivieren
 key.jei.focusSearch=Suchfeld
 key.jei.showRecipe=Zeige Rezept
 key.jei.showUses=Zeige Nutzung
