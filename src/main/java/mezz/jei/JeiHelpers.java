@@ -20,12 +20,12 @@ public class JeiHelpers implements IJeiHelpers {
 	private final SubtypeRegistry subtypeRegistry;
 	private final RecipeTransferHandlerHelper recipeTransferHandlerHelper;
 
-	public JeiHelpers(IIngredientRegistry ingredientRegistry, StackHelper stackHelper) {
+	public JeiHelpers(IIngredientRegistry ingredientRegistry, StackHelper stackHelper, SubtypeRegistry subtypeRegistry) {
 		this.guiHelper = new GuiHelper(stackHelper);
 		this.stackHelper = stackHelper;
 		this.itemBlacklist = new ItemBlacklist(ingredientRegistry);
 		this.nbtIgnoreList = new NbtIgnoreList();
-		this.subtypeRegistry = new SubtypeRegistry();
+		this.subtypeRegistry = subtypeRegistry;
 		this.recipeTransferHandlerHelper = new RecipeTransferHandlerHelper();
 	}
 

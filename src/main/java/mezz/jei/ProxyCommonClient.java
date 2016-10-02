@@ -168,7 +168,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		IngredientRegistry ingredientRegistry = modIngredientRegistry.createIngredientRegistry();
 		Internal.setIngredientRegistry(ingredientRegistry);
 
-		JeiHelpers jeiHelpers = new JeiHelpers(ingredientRegistry, stackHelper);
+		JeiHelpers jeiHelpers = new JeiHelpers(ingredientRegistry, stackHelper, subtypeRegistry);
 		Internal.setHelpers(jeiHelpers);
 
 		ModIdUtil modIdUtil = Internal.getModIdUtil();
