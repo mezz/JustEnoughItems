@@ -1,5 +1,6 @@
 package mezz.jei.api.gui;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
@@ -44,10 +45,11 @@ public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {
 	void setFromRecipe(int slotIndex, Object ingredients);
 
 	@Override
+	@Deprecated
 	void set(int slotIndex, Collection<ItemStack> itemStacks);
 
 	@Override
-	void set(int slotIndex, ItemStack itemStack);
+	void set(int slotIndex, @Nullable ItemStack itemStack);
 
 	@Override
 	void addTooltipCallback(ITooltipCallback<ItemStack> tooltipCallback);

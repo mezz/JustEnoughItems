@@ -83,6 +83,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	}
 
 	@Override
+	@Deprecated
 	public void set(int slotIndex, Collection<T> values) {
 		set(slotIndex, new ArrayList<T>(values));
 	}
