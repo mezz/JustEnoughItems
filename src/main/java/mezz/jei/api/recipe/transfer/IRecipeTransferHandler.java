@@ -22,7 +22,11 @@ public interface IRecipeTransferHandler<C extends Container> {
 
 	/**
 	 * The type of recipe that this recipe transfer handler deals with.
+	 *
+	 * @deprecated since JEI 3.12.4.
+	 * Use the recipe-category-specific registration {@link IRecipeTransferRegistry#addRecipeTransferHandler(IRecipeTransferHandler, String)}
 	 */
+	@Deprecated
 	String getRecipeCategoryUid();
 
 	/**

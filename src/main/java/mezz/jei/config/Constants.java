@@ -22,6 +22,8 @@ public class Constants {
 
 	public static final String RECIPE_TRANSFER_TOOLTIP = Translator.translateToLocal("jei.tooltip.transfer");
 
+	public static final String UNIVERSAL_RECIPE_TRANSFER_UID = "universal recipe transfer handler";
+
 	private Constants() {
 
 	}

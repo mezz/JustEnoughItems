@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Multimap;
 import mezz.jei.JeiHelpers;
 import mezz.jei.RecipeRegistry;
@@ -199,7 +200,7 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	public RecipeRegistry createRecipeRegistry(StackHelper stackHelper, IIngredientRegistry ingredientRegistry) {
-		List<IRecipeTransferHandler> recipeTransferHandlers = recipeTransferRegistry.getRecipeTransferHandlers();
+		ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers = recipeTransferRegistry.getRecipeTransferHandlers();
 		return new RecipeRegistry(stackHelper, recipeCategories, recipeHandlers, recipeTransferHandlers, recipes, recipeClickableAreas, craftItemsForCategories, ingredientRegistry, recipeRegistryPlugins);
 	}
 }
