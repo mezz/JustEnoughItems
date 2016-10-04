@@ -5,14 +5,14 @@ jei.tooltip.show.all.recipes=Zeige alle Rezepte
 jei.tooltip.delete.item=Klicke zum Löschen
 jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
 jei.tooltip.liquid.amount=%,d mB
-jei.tooltip.transfer=Bewege Gegenstände
+jei.tooltip.transfer=Bewege Items
 jei.tooltip.recipe.ore.dict=Akzeptiert: %s
 jei.tooltip.item.colors=Farben: %s
 jei.tooltip.shapeless.recipe=Formloses Rezept
 jei.tooltip.cheat.mode=Cheat-Modus
 
 # Error Tooltips
-jei.tooltip.error.recipe.transfer.missing=Fehlende Gegenstände
+jei.tooltip.error.recipe.transfer.missing=Fehlende Items
 jei.tooltip.error.recipe.transfer.inventory.full=Inventar ist zu voll
 jei.tooltip.error.recipe.transfer.unknown=Unbekannter Fehler, siehe Logs
 jei.tooltip.error.recipe.transfer.no.server=Auf dem Server muss JEI installiert sein
@@ -21,12 +21,12 @@ jei.tooltip.error.recipe.transfer.no.server=Auf dem Server muss JEI installiert 
 jei.chat.error.command.too.long=JEI muss auf dem Server installiert sein, damit dieser Befehl funktioniert, da er zu lang für Minecraft ist.
 
 # Key Bindings
-key.jei.toggleOverlay=Gegenstandsliste (de-)aktivieren
+key.jei.toggleOverlay=Itemliste (de-)aktivieren
 key.jei.focusSearch=Suchfeld
 key.jei.showRecipe=Zeige Rezept
 key.jei.showUses=Zeige Verwendung
 key.jei.recipeBack=Zeige vorherige Rezeptseite
-key.jei.toggleCheatMode=Gegenstand-Cheating (de-)aktivieren
+key.jei.toggleCheatMode=Item-Cheating (de-)aktivieren
 
 # Config
 config.jei.default=Standard
@@ -36,15 +36,15 @@ config.jei.title=%MODNAME-Konfiguration
 
 config.jei.mode=Modus
 config.jei.mode.comment=Ändere den Modus, in dem sich JEI befindet
-config.jei.mode.cheatItemsEnabled=Aktiviere Gegenstand-Cheating
+config.jei.mode.cheatItemsEnabled=Aktiviere Item-Cheating
 config.jei.mode.cheatItemsEnabled.comment=Gibt den Gegenstand, statt das Rezept zu zeigen.
 config.jei.mode.editEnabled=Aktiviere Listeneditiermodus
-config.jei.mode.editEnabled.comment=Verstecke und zeige Gegenstände durch Klicken in der Gegenstandsliste.
+config.jei.mode.editEnabled.comment=Verstecke und zeige Gegenstände durch Klicken in der Itemliste.
 
 config.jei.interface=Interface
 config.jei.interface.comment=Das Benutzer-Interface betreffende Optionen
-config.jei.interface.overlayEnabled=Aktiviere Gegenstandsliste
-config.jei.interface.overlayEnabled.comment=Zeige die Gegenstandsliste neben einem geöffneten Benutzer-Interface.
+config.jei.interface.overlayEnabled=Aktiviere Itemliste
+config.jei.interface.overlayEnabled.comment=Zeige die Itemliste neben einem geöffneten Benutzer-Interface.
 config.jei.interface.recipeAnimationsEnabled=Aktiviere Rezept-Animationen
 config.jei.interface.recipeAnimationsEnabled.comment=Animiere Rezepte (Feuer im Ofen, Fortschrittsbalken, usw.)
 
@@ -53,9 +53,9 @@ config.jei.advanced.comment=Erweiterte Konfigurationsoptionen, die ändern, wie 
 config.jei.advanced.itemBlacklist=Aktiviere Blacklist
 config.jei.advanced.itemBlacklist.comment=Gegenstände, die nicht angezeigt werden sollen. Format: modId[:name[:meta]]. Der Listeneditiermodus entfernt und fügt automatisch neue Gegenstände zu dieser Liste hinzu.
 config.jei.advanced.hideMissingModelsEnabled=Verstecke fehlende Modelle
-config.jei.advanced.hideMissingModelsEnabled.comment=Gegenstände in der Liste mit fehlenden Modellen werden automatisch verborgen.
+config.jei.advanced.hideMissingModelsEnabled.comment=Gegenstände mit fehlenden Modellen werden automatisch in der Itemliste verborgen.
 config.jei.advanced.colorSearchEnabled=Aktiviere Farbsuche
-config.jei.advanced.colorSearchEnabled.comment=Suche nach Gegenständen mittels ihrer Farbe und zeige die suchbaren Gegenstandsfarben in Tooltips in der Gegenstandsliste.
+config.jei.advanced.colorSearchEnabled.comment=Suche nach Gegenständen mittels ihrer Farbe und zeige die suchbaren Farben in Tooltips in der Itemliste.
 config.jei.advanced.debugModeEnabled=Aktiviere Debug-Modus
 config.jei.advanced.debugModeEnabled.comment=Fügt tausende Testgegenstände und einige Debug-Rezepte hinzu. Nur für Entwickler bestimmt.
 config.jei.advanced.centerSearchBarEnabled=Zentriere Suchleiste
@@ -75,8 +75,8 @@ gui.jei.category.craftingTable=Craftingrezepte
 gui.jei.category.smelting=Schmelzrezepte
 gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=Kraftstoffrezepte
-gui.jei.category.fuel.smeltCount.single=Schmelzt 1 Gegenstand
-gui.jei.category.fuel.smeltCount=Schmelzt %s Gegenstände
+gui.jei.category.fuel.smeltCount.single=Schmelzt 1 Item
+gui.jei.category.fuel.smeltCount=Schmelzt %s Items
 gui.jei.category.fuel.burnTime=Brennzeit: %s
 gui.jei.category.brewing=Braurezepte
 gui.jei.category.brewing.steps=Schritte: %s
