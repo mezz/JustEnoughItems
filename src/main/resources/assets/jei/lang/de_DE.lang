@@ -24,9 +24,9 @@ jei.chat.error.command.too.long=JEI muss auf dem Server installiert sein, damit 
 key.jei.toggleOverlay=Gegenstandsliste (de-)aktivieren
 key.jei.focusSearch=Suchfeld
 key.jei.showRecipe=Zeige Rezept
-key.jei.showUses=Zeige Nutzung
+key.jei.showUses=Zeige Verwendung
 key.jei.recipeBack=Zeige vorherige Rezeptseite
-key.jei.toggleCheatMode=Gegenstand-Cheating de-/aktivieren
+key.jei.toggleCheatMode=Gegenstand-Cheating (de-)aktivieren
 
 # Config
 config.jei.default=Standard
