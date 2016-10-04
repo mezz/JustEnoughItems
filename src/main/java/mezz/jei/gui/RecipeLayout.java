@@ -19,6 +19,7 @@ import mezz.jei.gui.ingredients.GuiIngredientGroup;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.util.Ingredients;
+import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
@@ -67,11 +68,17 @@ public class RecipeLayout implements IRecipeLayout {
 		this.recipeWrapper = recipeWrapper;
 
 		try {
-			IIngredients ingredients = new Ingredients();
-			recipeWrapper.getIngredients(ingredients);
-			recipeCategory.setRecipe(this, recipeWrapper, ingredients);
-		} catch (LinkageError ignored) { // legacy
-			recipeCategory.setRecipe(this, recipeWrapper);
+			try {
+				IIngredients ingredients = new Ingredients();
+				recipeWrapper.getIngredients(ingredients);
+				recipeCategory.setRecipe(this, recipeWrapper, ingredients);
+			} catch (LinkageError ignored) { // legacy
+				recipeCategory.setRecipe(this, recipeWrapper);
+			}
+		} catch (RuntimeException e) {
+			Log.error("Error caught from Recipe Category: {}", recipeCategory.getClass().getCanonicalName(), e);
+		} catch (LinkageError e) {
+			Log.error("Error caught from Recipe Category: {}", recipeCategory.getClass().getCanonicalName(), e);
 		}
 	}
 
