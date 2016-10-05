@@ -149,15 +149,25 @@ public class ErrorUtil {
 		for (Object ingredient : list) {
 			List<String> ingredientInfo = new ArrayList<String>();
 
-			List<ItemStack> stacks = stackHelper.toItemStackList(ingredient);
-			String oreDict = stackHelper.getOreDictEquivalent(stacks);
-			if (oreDict != null) {
-				ingredientInfo.add("OreDict: " + oreDict);
+			List<ItemStack> stacks = null;
+			try {
+				stacks = stackHelper.toItemStackList(ingredient);
+			} catch (RuntimeException ignored) {
+				ingredientInfo.add("too broken to get info");
+			} catch (LinkageError ignored) {
+				ingredientInfo.add("too broken to get info");
 			}
+			
+			if (stacks != null) {
+				String oreDict = stackHelper.getOreDictEquivalent(stacks);
+				if (oreDict != null) {
+					ingredientInfo.add("OreDict: " + oreDict);
+				}
 
-			for (ItemStack stack : stacks) {
-				String itemStackInfo = getItemStackInfo(stack);
-				ingredientInfo.add(itemStackInfo);
+				for (ItemStack stack : stacks) {
+					String itemStackInfo = getItemStackInfo(stack);
+					ingredientInfo.add(itemStackInfo);
+				}
 			}
 
 			ingredientsInfo.add(ingredientInfo.toString() + "\n");
