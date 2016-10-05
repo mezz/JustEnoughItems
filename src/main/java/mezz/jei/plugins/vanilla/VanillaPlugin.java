@@ -36,6 +36,7 @@ import mezz.jei.plugins.vanilla.ingredients.FluidStackRenderer;
 import mezz.jei.plugins.vanilla.ingredients.ItemStackHelper;
 import mezz.jei.plugins.vanilla.ingredients.ItemStackListFactory;
 import mezz.jei.plugins.vanilla.ingredients.ItemStackRenderer;
+import mezz.jei.util.Log;
 import mezz.jei.util.StackHelper;
 import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.client.gui.inventory.GuiCrafting;
@@ -85,9 +86,13 @@ public class VanillaPlugin extends BlankModPlugin {
 
 	@Override
 	public void registerIngredients(IModIngredientRegistration ingredientRegistration) {
-		StackHelper stackHelper = Internal.getStackHelper();
-		ingredientRegistration.register(ItemStack.class, ItemStackListFactory.create(stackHelper), new ItemStackHelper(stackHelper), new ItemStackRenderer());
-		ingredientRegistration.register(FluidStack.class, FluidStackListFactory.create(), new FluidStackHelper(), new FluidStackRenderer());
+		try {
+			StackHelper stackHelper = Internal.getStackHelper();
+			ingredientRegistration.register(ItemStack.class, ItemStackListFactory.create(stackHelper), new ItemStackHelper(stackHelper), new ItemStackRenderer());
+			ingredientRegistration.register(FluidStack.class, FluidStackListFactory.create(), new FluidStackHelper(), new FluidStackRenderer());
+		} catch (LinkageError e) {
+			Log.error("Error registering ingredients.", e);
+		}
 	}
 
 	@Override
