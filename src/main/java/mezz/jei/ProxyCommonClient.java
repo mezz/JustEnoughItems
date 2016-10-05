@@ -213,22 +213,26 @@ public class ProxyCommonClient extends ProxyCommon {
 		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, itemListOverlay, recipesGui, ingredientRegistry);
 		Internal.setRuntime(jeiRuntime);
 
+		stackHelper.disableUidCache();
+		Log.info("Built    runtime in {} ms", System.currentTimeMillis() - start_time);
+
 		iterator = plugins.iterator();
 		while (iterator.hasNext()) {
 			IModPlugin plugin = iterator.next();
 			try {
+				start_time = System.currentTimeMillis();
+				Log.info("Sending runtime to plugin: {} ...", plugin.getClass().getName());
 				plugin.onRuntimeAvailable(jeiRuntime);
+				long timeElapsedMs = System.currentTimeMillis() - start_time;
+				Log.info("Sent    runtime to plugin: {} in {} ms", plugin.getClass().getName(), timeElapsedMs);
 			} catch (RuntimeException e) {
-				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
+				Log.error("Sending runtime to plugin failed: {}", plugin.getClass(), e);
 				iterator.remove();
 			} catch (LinkageError e) {
-				Log.error("Mod plugin failed: {}", plugin.getClass(), e);
+				Log.error("Sending runtime to plugin failed: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
 		}
-
-		stackHelper.disableUidCache();
-		Log.info("Built    runtime in {} ms", System.currentTimeMillis() - start_time);
 
 		if (guiEventHandler != null) {
 			MinecraftForge.EVENT_BUS.unregister(guiEventHandler);
