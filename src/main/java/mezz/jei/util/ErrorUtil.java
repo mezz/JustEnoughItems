@@ -3,8 +3,11 @@ package mezz.jei.util;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import mezz.jei.Internal;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.block.Block;
@@ -36,6 +39,70 @@ public class ErrorUtil {
 			return recipeInfoBuilder.toString();
 		}
 
+		Ingredients ingredients = new Ingredients();
+
+		try {
+			recipeWrapper.getIngredients(ingredients);
+		} catch (RuntimeException ignored) {
+			recipeInfoBuilder.append("\nFailed to get ingredients from recipe wrapper");
+			return recipeInfoBuilder.toString();
+		} catch (AbstractMethodError ignored) { // legacy
+			return legacy_getInfoFromBrokenRecipe(recipeInfoBuilder, recipeWrapper);
+		} catch (LinkageError ignored) {
+			recipeInfoBuilder.append("\nFailed to get ingredients from recipe wrapper");
+			return recipeInfoBuilder.toString();
+		}
+
+		recipeInfoBuilder.append("\nOutputs:");
+		Set<Class> outputClasses = ingredients.getOutputIngredients().keySet();
+		for (Class<?> outputClass : outputClasses) {
+			List<String> ingredientOutputInfo = getIngredientOutputInfo(outputClass, ingredients);
+			recipeInfoBuilder.append('\n').append(outputClass.getName()).append(": ").append(ingredientOutputInfo);
+		}
+
+		recipeInfoBuilder.append("\nInputs:");
+		Set<Class> inputClasses = ingredients.getInputIngredients().keySet();
+		for (Class<?> inputClass : inputClasses) {
+			List<String> ingredientInputInfo = getIngredientInputInfo(inputClass, ingredients);
+			recipeInfoBuilder.append('\n').append(inputClass.getName()).append(": ").append(ingredientInputInfo);
+		}
+
+		return recipeInfoBuilder.toString();
+	}
+
+	private static <T> List<String> getIngredientOutputInfo(Class<T> ingredientClass, IIngredients ingredients) {
+		IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredientClass);
+
+		List<T> outputs = ingredients.getOutputs(ingredientClass);
+		List<String> infos = new ArrayList<String>(outputs.size());
+
+		for (T output : outputs) {
+			String errorInfo = ingredientHelper.getErrorInfo(output);
+			infos.add(errorInfo);
+		}
+
+		return infos;
+	}
+
+	private static <T> List<String> getIngredientInputInfo(Class<T> ingredientClass, IIngredients ingredients) {
+		IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredientClass);
+
+		List<List<T>> inputs = ingredients.getInputs(ingredientClass);
+		List<String> allInfos = new ArrayList<String>(inputs.size());
+
+		for (List<T> inputList : inputs) {
+			List<String> infos = new ArrayList<String>(inputList.size());
+			for (T input : inputList) {
+				String errorInfo = ingredientHelper.getErrorInfo(input);
+				infos.add(errorInfo);
+			}
+			allInfos.add(infos.toString());
+		}
+
+		return allInfos;
+	}
+
+	private static String legacy_getInfoFromBrokenRecipe(StringBuilder recipeInfoBuilder, IRecipeWrapper recipeWrapper) {
 		recipeInfoBuilder.append("\nOutput ItemStacks: ");
 		try {
 			List outputs = recipeWrapper.getOutputs();
