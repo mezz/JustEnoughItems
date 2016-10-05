@@ -102,6 +102,9 @@ public class ItemStackListFactory {
 		} catch (RuntimeException e) {
 			String stackInfo = ErrorUtil.getItemStackInfo(stack);
 			Log.error("Couldn't get unique name for itemStack {}", stackInfo, e);
+		} catch (LinkageError e) {
+			String stackInfo = ErrorUtil.getItemStackInfo(stack);
+			Log.error("Couldn't get unique name for itemStack {}", stackInfo, e);
 		}
 
 		if (itemKey != null) {
