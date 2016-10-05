@@ -72,7 +72,7 @@ public class RecipeLayout implements IRecipeLayout {
 				IIngredients ingredients = new Ingredients();
 				recipeWrapper.getIngredients(ingredients);
 				recipeCategory.setRecipe(this, recipeWrapper, ingredients);
-			} catch (LinkageError ignored) { // legacy
+			} catch (AbstractMethodError ignored) { // legacy
 				recipeCategory.setRecipe(this, recipeWrapper);
 			}
 		} catch (RuntimeException e) {

@@ -239,7 +239,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		Ingredients ingredients = new Ingredients();
 		try {
 			recipeWrapper.getIngredients(ingredients);
-		} catch (LinkageError ignored) {
+		} catch (AbstractMethodError ignored) {
 			// older recipe wrappers do not support getIngredients
 		}
 

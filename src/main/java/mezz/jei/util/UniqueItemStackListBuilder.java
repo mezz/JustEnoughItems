@@ -17,10 +17,16 @@ public class UniqueItemStackListBuilder {
 	}
 
 	public void add(ItemStack itemStack) {
-		String uid = stackHelper.getUniqueIdentifierForStack(itemStack);
-		if (!ingredientUids.contains(uid)) {
-			ingredientUids.add(uid);
-			ingredients.add(itemStack);
+		try {
+			String uid = stackHelper.getUniqueIdentifierForStack(itemStack);
+			if (!ingredientUids.contains(uid)) {
+				ingredientUids.add(uid);
+				ingredients.add(itemStack);
+			}
+		} catch (RuntimeException e) {
+			Log.error("Failed to get unique identifier for stack.", e);
+		} catch (LinkageError e) {
+			Log.error("Failed to get unique identifier for stack.", e);
 		}
 	}
 

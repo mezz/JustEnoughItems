@@ -141,7 +141,7 @@ public class ProxyCommonClient extends ProxyCommon {
 			} catch (RuntimeException e) {
 				Log.error("Failed to register item subtypes for mod plugin: {}", plugin.getClass(), e);
 				iterator.remove();
-			} catch (LinkageError ignored) {
+			} catch (AbstractMethodError ignored) {
 				// legacy mod plugins do not have registerItemSubtypes
 			}
 		}
@@ -160,7 +160,7 @@ public class ProxyCommonClient extends ProxyCommon {
 			} catch (RuntimeException e) {
 				Log.error("Failed to register Ingredients for mod plugin: {}", plugin.getClass(), e);
 				iterator.remove();
-			} catch (LinkageError ignored) {
+			} catch (AbstractMethodError ignored) {
 				// legacy mod plugins do not have registerIngredients
 			}
 		}
