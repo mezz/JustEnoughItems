@@ -41,12 +41,28 @@ public class IngredientRegistry implements IIngredientRegistry {
 			String modId = itemStackHelper.getModId(itemStack).toLowerCase(Locale.ENGLISH);
 			itemsByModIdBuilder.put(modId, itemStack);
 
-			if (TileEntityFurnace.isItemFuel(itemStack)) {
-				fuelsBuilder.add(itemStack);
+			try {
+				if (TileEntityFurnace.isItemFuel(itemStack)) {
+					fuelsBuilder.add(itemStack);
+				}
+			} catch (RuntimeException e) {
+				String itemStackInfo = itemStackHelper.getErrorInfo(itemStack);
+				Log.error("Failed to check if item is fuel {}.", itemStackInfo, e);
+			} catch (LinkageError e) {
+				String itemStackInfo = itemStackHelper.getErrorInfo(itemStack);
+				Log.error("Failed to check if item is fuel {}.", itemStackInfo, e);
 			}
 
-			if (PotionHelper.isReagent(itemStack)) {
-				potionIngredientsBuilder.add(itemStack);
+			try {
+				if (PotionHelper.isReagent(itemStack)) {
+					potionIngredientsBuilder.add(itemStack);
+				}
+			} catch (RuntimeException e) {
+				String itemStackInfo = itemStackHelper.getErrorInfo(itemStack);
+				Log.error("Failed to check if item is a potion ingredient {}.", itemStackInfo, e);
+			} catch (LinkageError e) {
+				String itemStackInfo = itemStackHelper.getErrorInfo(itemStack);
+				Log.error("Failed to check if item is a potion ingredient {}.", itemStackInfo, e);
 			}
 		}
 
