@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 
+import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.config.Config;
@@ -131,108 +132,7 @@ public class ProxyCommonClient extends ProxyCommon {
 
 		Config.startJei();
 
-		SubtypeRegistry subtypeRegistry = new SubtypeRegistry();
-
-		Iterator<IModPlugin> iterator = plugins.iterator();
-		while (iterator.hasNext()) {
-			IModPlugin plugin = iterator.next();
-			try {
-				plugin.registerItemSubtypes(subtypeRegistry);
-			} catch (RuntimeException e) {
-				Log.error("Failed to register item subtypes for mod plugin: {}", plugin.getClass(), e);
-				iterator.remove();
-			} catch (AbstractMethodError ignored) {
-				// legacy mod plugins do not have registerItemSubtypes
-			}
-		}
-
-		StackHelper stackHelper = new StackHelper(subtypeRegistry);
-		stackHelper.enableUidCache();
-		Internal.setStackHelper(stackHelper);
-
-		ModIngredientRegistration modIngredientRegistry = new ModIngredientRegistration();
-
-		iterator = plugins.iterator();
-		while (iterator.hasNext()) {
-			IModPlugin plugin = iterator.next();
-			try {
-				plugin.registerIngredients(modIngredientRegistry);
-			} catch (RuntimeException e) {
-				Log.error("Failed to register Ingredients for mod plugin: {}", plugin.getClass(), e);
-				iterator.remove();
-			} catch (AbstractMethodError ignored) {
-				// legacy mod plugins do not have registerIngredients
-			}
-		}
-
-		IngredientRegistry ingredientRegistry = modIngredientRegistry.createIngredientRegistry();
-		Internal.setIngredientRegistry(ingredientRegistry);
-
-		JeiHelpers jeiHelpers = new JeiHelpers(ingredientRegistry, stackHelper, subtypeRegistry);
-		Internal.setHelpers(jeiHelpers);
-
-		ModIdUtil modIdUtil = Internal.getModIdUtil();
-		ItemRegistry itemRegistry = ItemRegistryFactory.createItemRegistry(ingredientRegistry, modIdUtil);
-
-		ModRegistry modRegistry = new ModRegistry(jeiHelpers, itemRegistry, ingredientRegistry);
-
-		iterator = plugins.iterator();
-		while (iterator.hasNext()) {
-			IModPlugin plugin = iterator.next();
-			try {
-				long start_time = System.currentTimeMillis();
-				Log.info("Registering plugin: {} ...", plugin.getClass().getName());
-				plugin.register(modRegistry);
-				long timeElapsedMs = System.currentTimeMillis() - start_time;
-				Log.info("Registered  plugin: {} in {} ms", plugin.getClass().getName(), timeElapsedMs);
-			} catch (RuntimeException e) {
-				Log.error("Failed to register mod plugin: {}", plugin.getClass(), e);
-				iterator.remove();
-			} catch (LinkageError e) {
-				Log.error("Failed to register mod plugin: {}", plugin.getClass(), e);
-				iterator.remove();
-			}
-		}
-
-		long start_time = System.currentTimeMillis();
-		Log.info("Building recipe registry...");
-		RecipeRegistry recipeRegistry = modRegistry.createRecipeRegistry(stackHelper, ingredientRegistry);
-		Log.info("Built    recipe registry in {} ms", System.currentTimeMillis() - start_time);
-
-		start_time = System.currentTimeMillis();
-		Log.info("Building item filter...");
-		ItemFilter itemFilter = new ItemFilter(ingredientRegistry, jeiHelpers);
-		Log.info("Built    item filter in {} ms", System.currentTimeMillis() - start_time);
-
-		start_time = System.currentTimeMillis();
-		Log.info("Building runtime...");
-		List<IAdvancedGuiHandler<?>> advancedGuiHandlers = modRegistry.getAdvancedGuiHandlers();
-		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter, advancedGuiHandlers, ingredientRegistry);
-		RecipesGui recipesGui = new RecipesGui(recipeRegistry);
-
-		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, itemListOverlay, recipesGui, ingredientRegistry);
-		Internal.setRuntime(jeiRuntime);
-
-		stackHelper.disableUidCache();
-		Log.info("Built    runtime in {} ms", System.currentTimeMillis() - start_time);
-
-		iterator = plugins.iterator();
-		while (iterator.hasNext()) {
-			IModPlugin plugin = iterator.next();
-			try {
-				start_time = System.currentTimeMillis();
-				Log.info("Sending runtime to plugin: {} ...", plugin.getClass().getName());
-				plugin.onRuntimeAvailable(jeiRuntime);
-				long timeElapsedMs = System.currentTimeMillis() - start_time;
-				Log.info("Sent    runtime to plugin: {} in {} ms", plugin.getClass().getName(), timeElapsedMs);
-			} catch (RuntimeException e) {
-				Log.error("Sending runtime to plugin failed: {}", plugin.getClass(), e);
-				iterator.remove();
-			} catch (LinkageError e) {
-				Log.error("Sending runtime to plugin failed: {}", plugin.getClass(), e);
-				iterator.remove();
-			}
-		}
+		JeiRuntime jeiRuntime = JeiStarter.startJEI(plugins);
 
 		if (guiEventHandler != null) {
 			MinecraftForge.EVENT_BUS.unregister(guiEventHandler);
@@ -240,6 +140,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		}
 		guiEventHandler = new GuiEventHandler(jeiRuntime);
 		MinecraftForge.EVENT_BUS.register(guiEventHandler);
+
 		Log.info("Finished startup in {} ms", System.currentTimeMillis() - jeiStartTime);
 	}
 

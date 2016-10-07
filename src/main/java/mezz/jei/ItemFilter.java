@@ -13,23 +13,28 @@ import com.google.common.collect.ImmutableList;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 
 public class ItemFilter {
 
 	/** A cache for fast searches while typing or using backspace. Maps filterText to filteredItemMaps */
-	private final LoadingCache<String, ImmutableList<IIngredientListElement>> filteredItemMapsCache;
-	private final ImmutableList<IIngredientListElement> baseList;
+	private final LoadingCache<String, ImmutableList<IIngredientListElement>> filteredItemMapsCache = CacheBuilder.newBuilder()
+			.maximumWeight(16)
+			.weigher(new OneWeigher())
+			.concurrencyLevel(1)
+			.build(new ItemFilterCacheLoader());
 
-	public ItemFilter(IIngredientRegistry ingredientRegistry, JeiHelpers jeiHelpers) {
-		filteredItemMapsCache = CacheBuilder.newBuilder()
-				.maximumWeight(16)
-				.weigher(new OneWeigher())
-				.concurrencyLevel(1)
-				.build(new ItemFilterCacheLoader());
+	private ImmutableList<IIngredientListElement> baseList;
 
-		// preload the base list
+	public void build(IIngredientRegistry ingredientRegistry, JeiHelpers jeiHelpers) {
+		Log.info("Building item filter...");
+		long start_time = System.currentTimeMillis();
+
 		this.baseList = IngredientBaseListFactory.create(ingredientRegistry, jeiHelpers);
+		this.filteredItemMapsCache.invalidateAll();
+
+		Log.info("Built    item filter in {} ms", System.currentTimeMillis() - start_time);
 	}
 
 	public ImmutableList<IIngredientListElement> getIngredientList() {
