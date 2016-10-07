@@ -55,12 +55,11 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		String modName = modIdUtil.getModNameForModId(modId).toLowerCase(Locale.ENGLISH);
 		modId = modName.toLowerCase(Locale.ENGLISH);
 
-		String displayName = ingredientHelper.getDisplayName(ingredient);
-		this.searchString = displayName.toLowerCase();
+		String displayName = ingredientHelper.getDisplayName(ingredient).toLowerCase();
 
 		this.modNameString = modId + ' ' + modName;
 
-		this.tooltipString = getTooltipString(ingredient, ingredientRenderer, modId, modName, this.searchString);
+		this.tooltipString = getTooltipString(ingredient, ingredientRenderer, modId, modName, displayName);
 
 		if (Config.isColorSearchEnabled()) {
 			Iterable<Color> colors = ingredientHelper.getColors(ingredient);
@@ -94,9 +93,33 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 			this.oreDictString = "";
 			this.creativeTabsString = "";
 		}
+
+		StringBuilder searchStringBuilder = new StringBuilder(displayName);
+
+		if (!Config.isPrefixRequiredForModNameSearch()) {
+			searchStringBuilder.append(' ').append(this.modNameString);
+		}
+
+		if (!Config.isPrefixRequiredForTooltipSearch()) {
+			searchStringBuilder.append(' ').append(this.tooltipString);
+		}
+
+		if (!Config.isPrefixRequiredForOreDictSearch()) {
+			searchStringBuilder.append(' ').append(this.oreDictString);
+		}
+
+		if (!Config.isPrefixRequiredForCreativeTabSearch()) {
+			searchStringBuilder.append(' ').append(this.creativeTabsString);
+		}
+
+		if (!Config.isPrefixRequiredForColorSearch()) {
+			searchStringBuilder.append(' ').append(this.colorString);
+		}
+
+		this.searchString = searchStringBuilder.toString();
 	}
 
-	private static <T> String getTooltipString(T ingredient, IIngredientRenderer<T> ingredientRenderer, String modId, String modName, String searchString) {
+	private static <T> String getTooltipString(T ingredient, IIngredientRenderer<T> ingredientRenderer, String modId, String modName, String displayName) {
 		List<String> tooltip;
 		try {
 			tooltip = ingredientRenderer.getTooltip(Minecraft.getMinecraft(), ingredient);
@@ -107,14 +130,15 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		}
 
 		String tooltipString = Joiner.on(' ').join(tooltip).toLowerCase();
-		tooltipString = TextFormatting.getTextWithoutFormattingCodes(tooltipString);
-		if (tooltipString != null) {
-			tooltipString = tooltipString.replace(modId, "");
-			tooltipString = tooltipString.replace(modName, "");
-			return tooltipString.replace(searchString, "");
-		}
+		tooltipString = removeChatFormatting(tooltipString);
+		tooltipString = tooltipString.replace(modId, "");
+		tooltipString = tooltipString.replace(modName, "");
+		return tooltipString.replace(displayName, "");
+	}
 
-		return "";
+	private static String removeChatFormatting(String string) {
+		String withoutFormattingCodes = TextFormatting.getTextWithoutFormattingCodes(string);
+		return (withoutFormattingCodes == null) ? string : withoutFormattingCodes;
 	}
 
 	@Override

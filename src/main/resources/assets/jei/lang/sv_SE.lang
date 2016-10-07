@@ -48,6 +48,19 @@ config.jei.interface.overlayEnabled.comment=Visar listan över föremål intill 
 config.jei.interface.recipeAnimationsEnabled=Receptanimationer
 config.jei.interface.recipeAnimationsEnabled.comment=Visa receptanimationer (ugnseld, förloppsmätare, etc.)
 
+config.jei.search=Sökalternativ
+config.jei.search.comment=Alternativ för sökfältet.
+config.jei.search.atPrefixRequiredForModName=Kräv @ för modnamn
+config.jei.search.atPrefixRequiredForModName.comment=Kräv "@" framför ett ord för att söka efter modnamn.
+config.jei.search.prefixRequiredForTooltipSearch=Kräv # för inforutor
+config.jei.search.prefixRequiredForTooltipSearch.comment=Kräv "#" framför ett ord för att söka efter inforutor.
+config.jei.search.prefixRequiredForOreDictSearch=Kräv $ för malmlistan
+config.jei.search.prefixRequiredForOreDictSearch.comment=Kräv "$" framför ett ord för att söka efter namn i malmlistan.
+config.jei.search.prefixRequiredForCreativeTabSearch=Kräv %% för fliknamn
+config.jei.search.prefixRequiredForCreativeTabSearch.comment=Kräv "%" framför ett ord för att söka efter fliknamn i kreativt läge.
+config.jei.search.prefixRequiredForColorSearch=Kräv ^ för färger
+config.jei.search.prefixRequiredForColorSearch.comment=Kräv "^" framför ett ord för att söka efter föremålsfärger.
+
 config.jei.advanced=Avancerat
 config.jei.advanced.comment=Avancerade konfigurationsalternativ för att ändra hur JEI fungerar.
 config.jei.advanced.itemBlacklist=Föremålssvartlista

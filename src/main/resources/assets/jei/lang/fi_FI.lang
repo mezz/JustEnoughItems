@@ -39,6 +39,11 @@ config.jei.interface.overlayEnabled.comment=Näytä tavaralista avointen käytt�
 config.jei.interface.recipeAnimationsEnabled=Reseptien animaatiot
 config.jei.interface.recipeAnimationsEnabled.comment=Näytä reseptien animaatiot (uunin tuli, edistymispalkki jne.)
 
+config.jei.search=Haku
+config.jei.search.comment=Hakuun liittyviä asetuksia.
+config.jei.search.atPrefixRequiredForModName=Käytä @-merkkiä modihakua varten
+config.jei.search.atPrefixRequiredForModName.comment=Vaadi "@ModinNimi" hakeaksesi modin nimellä pelkän "ModinNimi" sijaan.
+
 config.jei.advanced=Edistynyt
 config.jei.advanced.comment=Edistyneitä asetuksia jotka muokkaavat JEI:n toimintaa.
 config.jei.advanced.nbtKeyIgnoreList=NBT-avaimien sivuutuslista

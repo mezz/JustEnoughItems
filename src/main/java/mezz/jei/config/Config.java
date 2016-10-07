@@ -23,6 +23,7 @@ public class Config {
 	private static final String configKeyPrefix = "config.jei";
 	private static File jeiConfigurationDir;
 
+	public static final String CATEGORY_SEARCH = "search";
 	public static final String CATEGORY_ADVANCED = "advanced";
 	public static final String CATEGORY_SEARCH_COLORS = "searchColors";
 
@@ -38,6 +39,13 @@ public class Config {
 	private static boolean hideMissingModelsEnabled = true;
 	private static boolean colorSearchEnabled = false;
 	private static boolean centerSearchBarEnabled = false;
+
+	// search
+	private static boolean prefixRequiredForModNameSearch = true;
+	private static boolean prefixRequiredForTooltipSearch = false;
+	private static boolean prefixRequiredForOreDictSearch = true;
+	private static boolean prefixRequiredForCreativeTabSearch = true;
+	private static boolean prefixRequiredForColorSearch = true;
 
 	// per-world
 	private static final boolean defaultOverlayEnabled = true;
@@ -110,6 +118,26 @@ public class Config {
 
 	public static boolean isCenterSearchBarEnabled() {
 		return centerSearchBarEnabled;
+	}
+
+	public static boolean isPrefixRequiredForModNameSearch() {
+		return prefixRequiredForModNameSearch;
+	}
+
+	public static boolean isPrefixRequiredForTooltipSearch() {
+		return prefixRequiredForTooltipSearch;
+	}
+
+	public static boolean isPrefixRequiredForOreDictSearch() {
+		return prefixRequiredForOreDictSearch;
+	}
+
+	public static boolean isPrefixRequiredForCreativeTabSearch() {
+		return prefixRequiredForCreativeTabSearch;
+	}
+
+	public static boolean isPrefixRequiredForColorSearch() {
+		return prefixRequiredForColorSearch;
 	}
 
 	public static boolean setFilterText(String filterText) {
@@ -231,6 +259,7 @@ public class Config {
 	private static boolean syncConfig() {
 		boolean needsReload = false;
 
+		config.addCategory(CATEGORY_SEARCH);
 		config.addCategory(CATEGORY_ADVANCED);
 
 		ConfigCategory modeCategory = config.getCategory("mode");
@@ -248,9 +277,13 @@ public class Config {
 			config.removeCategory(interfaceCategory);
 		}
 
-		ConfigCategory searchCategory = config.getCategory("search");
-		if (searchCategory != null) {
-			config.removeCategory(searchCategory);
+		prefixRequiredForModNameSearch = config.getBoolean(CATEGORY_SEARCH, "atPrefixRequiredForModName", prefixRequiredForModNameSearch);
+		prefixRequiredForTooltipSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForTooltipSearch", prefixRequiredForTooltipSearch);
+		prefixRequiredForOreDictSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForOreDictSearch", prefixRequiredForOreDictSearch);
+		prefixRequiredForCreativeTabSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForCreativeTabSearch", prefixRequiredForCreativeTabSearch);
+		prefixRequiredForColorSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForColorSearch", prefixRequiredForColorSearch);
+		if (config.getCategory(CATEGORY_SEARCH).hasChanged()) {
+			needsReload = true;
 		}
 
 		ConfigCategory categoryAdvanced = config.getCategory(CATEGORY_ADVANCED);
