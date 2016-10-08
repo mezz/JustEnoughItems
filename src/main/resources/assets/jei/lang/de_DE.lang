@@ -44,7 +44,7 @@ config.jei.mode.editEnabled.comment=Verstecke und zeige Gegenstände durch Klick
 config.jei.interface=Interface
 config.jei.interface.comment=Das Benutzer-Interface betreffende Optionen
 config.jei.interface.overlayEnabled=Aktiviere Item-Liste
-config.jei.interface.overlayEnabled.comment=Zeige die Item-Liste neben einem geöffneten Benutzer-Interface.
+config.jei.interface.overlayEnabled.comment=Zeige die Liste der Gegenstände neben einem geöffneten Benutzer-Interface.
 config.jei.interface.recipeAnimationsEnabled=Aktiviere Rezept-Animationen
 config.jei.interface.recipeAnimationsEnabled.comment=Animiere Rezepte (Feuer im Ofen, Fortschrittsbalken, usw.)
 
