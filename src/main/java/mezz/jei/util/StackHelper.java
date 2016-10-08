@@ -27,7 +27,9 @@ public class StackHelper implements IStackHelper {
 	public static final String nullItemInStack = "Found an itemStack with a null item. This is an error from another mod.";
 
 	private final ISubtypeRegistry subtypeRegistry;
-	/** Uids are cached during loading to improve startup performance. */
+	/**
+	 * Uids are cached during loading to improve startup performance.
+	 */
 	private final Map<UidMode, Map<ItemStack, String>> uidCache = new EnumMap<UidMode, Map<ItemStack, String>>(UidMode.class);
 	private boolean uidCacheEnabled = true;
 
@@ -89,7 +91,7 @@ public class StackHelper implements IStackHelper {
 			if (requiredStacks.isEmpty()) {
 				continue;
 			}
-			
+
 			Integer matching = containsAnyStackIndexed(availableItemStacks, requiredStacks);
 			if (matching == null) {
 				matchingItemResult.missingItems.add(key);
@@ -110,7 +112,9 @@ public class StackHelper implements IStackHelper {
 		return containsSameStacks(new MatchingIterable(stacks), new MatchingIterable(contains));
 	}
 
-	/** Returns true if all stacks from "contains" are found in "stacks" and the opposite is true as well. */
+	/**
+	 * Returns true if all stacks from "contains" are found in "stacks" and the opposite is true as well.
+	 */
 	public <R> boolean containsSameStacks(Iterable<ItemStackMatchable<R>> stacks, Iterable<ItemStackMatchable<R>> contains) {
 		for (ItemStackMatchable stack : contains) {
 			if (containsStack(stacks, stack) == null) {
@@ -409,6 +413,7 @@ public class StackHelper implements IStackHelper {
 	public enum UidMode {
 		NORMAL, WILDCARD, FULL
 	}
+
 	public static class MatchingItemsResult {
 		@Nonnull
 		public final Map<Integer, Integer> matchingItems = new HashMap<Integer, Integer>();
@@ -419,6 +424,7 @@ public class StackHelper implements IStackHelper {
 	private interface ItemStackMatchable<R> {
 		@Nullable
 		ItemStack getStack();
+
 		@Nullable
 		R getResult();
 	}

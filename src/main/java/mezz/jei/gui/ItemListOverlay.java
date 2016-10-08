@@ -313,7 +313,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		}
 
 		GlStateManager.disableLighting();
-		
+
 		minecraft.fontRendererObj.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(), true);
 		searchField.drawTextBox();
 
@@ -366,7 +366,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		if (!isOpen()) {
 			return;
 		}
-		
+
 		boolean mouseOver = isMouseOver(mouseX, mouseY);
 		if (mouseOver && shouldShowDeleteItemTooltip(minecraft)) {
 			String deleteItem = Translator.translateToLocal("jei.tooltip.delete.item");

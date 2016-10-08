@@ -28,33 +28,33 @@ public class VanillaRecipeCategoryUid {
 
 	/**
 	 * The crafting recipe category.
-	 *
+	 * <p>
 	 * Automatically includes all {@link ShapedRecipes}, {@link ShapelessRecipes}, {@link ShapedOreRecipe}, and {@link ShapelessOreRecipe}.
-	 *
+	 * <p>
 	 * To add your recipe wrapper to this category, it must implement either {@link ICraftingRecipeWrapper} or {@link IShapedCraftingRecipeWrapper}.
 	 */
 	public static final String CRAFTING = "minecraft.crafting";
 
 	/**
 	 * The smelting recipe category.
-	 *
+	 * <p>
 	 * Automatically includes everything from {@link FurnaceRecipes#getSmeltingList()}.
 	 */
 	public static final String SMELTING = "minecraft.smelting";
 
 	/**
 	 * The fuel recipe category.
-	 *
+	 * <p>
 	 * Automatically includes everything that returns a value from {@link TileEntityFurnace#getItemBurnTime(ItemStack)}.
 	 */
 	public static final String FUEL = "minecraft.fuel";
 
 	/**
 	 * The brewing recipe category.
-	 *
+	 * <p>
 	 * Automatically tries to generate all potion variations from the basic ingredients, determined by {@link PotionHelper#isReagent(ItemStack)}.
 	 * You can get the list of known potion reagents from {@link IItemRegistry#getPotionIngredients()}.
-	 *
+	 * <p>
 	 * Also automatically adds modded potions from {@link BrewingRecipeRegistry#getRecipes()}.
 	 * JEI can only understand modded potion recipes that are {@link BrewingRecipe} or {@link BrewingOreRecipe}.
 	 */
@@ -62,7 +62,7 @@ public class VanillaRecipeCategoryUid {
 
 	/**
 	 * The JEI description recipe category.
-	 *
+	 * <p>
 	 * This is a built-in category, you can add new recipes with
 	 * {@link IModRegistry#addDescription(ItemStack, String...)} or {@link IModRegistry#addDescription(List, String...)}
 	 */

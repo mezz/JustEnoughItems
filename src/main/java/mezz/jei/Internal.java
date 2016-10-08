@@ -6,7 +6,9 @@ import mezz.jei.util.ModIdUtil;
 import mezz.jei.util.StackHelper;
 import mezz.jei.util.color.ColorNamer;
 
-/** For JEI internal use only, these are normally accessed from the API. */
+/**
+ * For JEI internal use only, these are normally accessed from the API.
+ */
 public class Internal {
 
 	private static final ModIdUtil modIdUtil = new ModIdUtil();

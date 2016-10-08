@@ -98,7 +98,8 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 	private static class AllNbt implements ISubtypeInterpreter {
 		public static final AllNbt INSTANCE = new AllNbt();
 
-		private AllNbt() { }
+		private AllNbt() {
+		}
 
 		@Nullable
 		@Override

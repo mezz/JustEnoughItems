@@ -8,13 +8,14 @@ import net.minecraft.client.Minecraft;
 /**
  * An animated {@link IDrawable}, useful for showing a gui animation like furnace flames or progress arrows.
  * Useful for drawing miscellaneous things in {@link IRecipeCategory#drawAnimations(Minecraft)} and {@link IRecipeWrapper#drawAnimations(Minecraft, int, int)}.
- *
+ * <p>
  * To create an instance, use {@link IGuiHelper#createAnimatedDrawable(IDrawableStatic, int, StartDirection, boolean)}.
  * Internally, these use an {@link ITickTimer} to simulate tick-driven animations.
  */
 public interface IDrawableAnimated extends IDrawable {
 	/**
 	 * The direction that the animation starts from.
+	 *
 	 * @see IGuiHelper#createAnimatedDrawable(IDrawableStatic, int, StartDirection, boolean)
 	 */
 	enum StartDirection {

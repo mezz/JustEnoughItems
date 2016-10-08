@@ -2,7 +2,6 @@ package mezz.jei.util;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
-
 import org.lwjgl.input.Mouse;
 
 public class MouseHelper {

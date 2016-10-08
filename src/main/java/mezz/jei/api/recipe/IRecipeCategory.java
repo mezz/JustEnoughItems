@@ -38,6 +38,7 @@ public interface IRecipeCategory<T extends IRecipeWrapper> {
 
 	/**
 	 * Draw any extra elements that might be necessary, icons or extra slots.
+	 *
 	 * @see IDrawable for a simple class for drawing things.
 	 * @see IGuiHelper for useful functions.
 	 */
@@ -46,6 +47,7 @@ public interface IRecipeCategory<T extends IRecipeWrapper> {
 	/**
 	 * Draw any animations like progress bars or flashy effects.
 	 * Essentially the same as {@link #drawExtras(Minecraft)} but these can be disabled in the config.
+	 *
 	 * @see IDrawableAnimated for a simple class for drawing animated things.
 	 * @see IGuiHelper for useful functions.
 	 */
@@ -53,6 +55,7 @@ public interface IRecipeCategory<T extends IRecipeWrapper> {
 
 	/**
 	 * Set the {@link IRecipeLayout} properties from the {@link IRecipeWrapper}.
+	 *
 	 * @deprecated since JEI 3.11.0. use {@link #setRecipe(IRecipeLayout, IRecipeWrapper, IIngredients)}
 	 */
 	@Deprecated

@@ -19,12 +19,14 @@ public interface IModRegistry {
 
 	/**
 	 * Get helpers and tools for implementing JEI plugins.
+	 *
 	 * @since JEI 2.27.0
 	 */
 	IJeiHelpers getJeiHelpers();
 
 	/**
 	 * Get useful functions relating to items.
+	 *
 	 * @since JEI 2.27.0
 	 * @deprecated since JEI 3.11.0. Use {@link #getIngredientRegistry()} instead.
 	 */
@@ -71,9 +73,8 @@ public interface IModRegistry {
 	 * Add an association between an item and what it can craft. (i.e. Furnace ItemStack -> Smelting and Fuel Recipes)
 	 * Allows players to see what item they need to craft in order to make recipes in that recipe category.
 	 *
-	 * @param craftingItem the item that can craft recipes (like a furnace or crafting table item)
+	 * @param craftingItem       the item that can craft recipes (like a furnace or crafting table item)
 	 * @param recipeCategoryUids the recipe categories handled by the item
-	 *
 	 * @since JEI 3.3.0
 	 */
 	void addRecipeCategoryCraftingItem(ItemStack craftingItem, String... recipeCategoryUids);

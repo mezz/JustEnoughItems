@@ -20,12 +20,11 @@ import net.minecraft.item.ItemStack;
 
 public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private static class State {
-		/** The focus of this GUI */
 		@Nonnull
 		public final IFocus focus;
-		/** List of Recipe Categories that involve the focus */
 		@Nonnull
 		public final ImmutableList<IRecipeCategory> recipeCategories;
+
 		public int recipeCategoryIndex;
 		public int pageIndex;
 		public int recipesPerPage;
@@ -40,14 +39,13 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	private final RecipeRegistry recipeRegistry;
 
-	/** The current state of this GUI */
 	@Nullable
 	private State state = null;
-
-	/** The previous states of this GUI */
 	private final Stack<State> history = new Stack<State>();
 
-	/** List of recipes for the currently selected recipeClass */
+	/**
+	 * List of recipes for the currently selected recipeClass
+	 */
 	private List<IRecipeWrapper> recipes = Collections.emptyList();
 
 	/**
@@ -186,7 +184,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			updateRecipes();
 		}
 	}
-	
+
 	private void updateRecipes() {
 		if (state == null) {
 			return;

@@ -21,7 +21,9 @@ public class JEIModConfigGui extends GuiConfig {
 		super(getParent(parent), getConfigElements(), Constants.MOD_ID, false, false, getTitle(parent));
 	}
 
-	/** Don't return to a RecipesGui, it will not be valid after configs are changed. */
+	/**
+	 * Don't return to a RecipesGui, it will not be valid after configs are changed.
+	 */
 	private static GuiScreen getParent(GuiScreen parent) {
 		if (parent instanceof RecipesGui) {
 			GuiScreen parentScreen = ((RecipesGui) parent).getParentScreen();

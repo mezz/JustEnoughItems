@@ -46,7 +46,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		compound.setString("curseFilenameParser", "jei_" + ForgeVersion.mcVersion + "-[].jar");
 		FMLInterModComms.sendRuntimeMessage(Constants.MOD_ID, "VersionChecker", "addCurseCheck", compound);
 	}
-	
+
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		Config.preInit(event);

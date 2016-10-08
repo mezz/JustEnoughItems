@@ -22,7 +22,7 @@ public interface IRecipeTransferRegistry {
 
 	/**
 	 * Advanced method for adding a recipe transfer handler.
-	 *
+	 * <p>
 	 * Use this when recipe slots or inventory slots are spread out in different number ranges.
 	 */
 	<C extends Container> void addRecipeTransferHandler(IRecipeTransferInfo<C> recipeTransferInfo);
@@ -30,7 +30,7 @@ public interface IRecipeTransferRegistry {
 	/**
 	 * Complete control over recipe transfer.
 	 * Use this when the container has a non-standard inventory or crafting area.
-	 * 
+	 *
 	 * @since JEI 3.12.4
 	 */
 	void addRecipeTransferHandler(IRecipeTransferHandler<?> recipeTransferHandler, String recipeCategoryUid);

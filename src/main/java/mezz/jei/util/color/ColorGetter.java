@@ -24,7 +24,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
 public class ColorGetter {
-	private static final String[] defaultColors = new String[] {
+	private static final String[] defaultColors = new String[]{
 			"White:EEEEEE",
 			"LightBlue:7492cc",
 			"Cyan:00EEEE",

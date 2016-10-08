@@ -23,7 +23,7 @@ public class DebugItem extends Item {
 		for (int i = 0; i < 10000; i++) {
 			String name = RANDOM_STRING_MAKER.nextString();
 			ItemStack itemStack = new ItemStack(itemIn);
-			itemStack.setItemDamage((int)(Math.random() * MAX_DAMAGE));
+			itemStack.setItemDamage((int) (Math.random() * MAX_DAMAGE));
 			NBTTagCompound nbt = new NBTTagCompound();
 			nbt.setString("name", name);
 			itemStack.setTagCompound(nbt);

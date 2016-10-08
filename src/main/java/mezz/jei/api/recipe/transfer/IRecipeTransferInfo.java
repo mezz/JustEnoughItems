@@ -7,7 +7,7 @@ import net.minecraft.inventory.Slot;
 
 /**
  * Gives JEI the information it needs to transfer recipes from a slotted inventory into the crafting area.
- *
+ * <p>
  * Most plugins with normal inventories can use the simpler {@link IRecipeTransferRegistry#addRecipeTransferHandler(Class, String, int, int, int, int)}.
  * Containers with slot ranges that contain gaps or other oddities can implement this interface directly.
  * Containers that need full control over the recipe transfer or do not use slots can implement {@link IRecipeTransferHandler}.

@@ -157,7 +157,7 @@ public class ErrorUtil {
 			} catch (LinkageError ignored) {
 				ingredientInfo.add("too broken to get info");
 			}
-			
+
 			if (stacks != null) {
 				String oreDict = stackHelper.getOreDictEquivalent(stacks);
 				if (oreDict != null) {

@@ -9,7 +9,7 @@ import mezz.jei.api.IRecipeRegistry;
  * Recipe Registry Plugins are used by the {@link IRecipeRegistry} to look up recipes.
  * JEI has its own internal plugin, which uses information from {@link IRecipeWrapper} to look up recipes.
  * Implementing your own Recipe Registry Plugin offers total control of lookups, but it must be fast.
- *
+ * <p>
  * Add your plugin with {@link IModRegistry#addRecipeRegistryPlugin(IRecipeRegistryPlugin)}
  *
  * @since JEI 3.12.0

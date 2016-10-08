@@ -50,7 +50,7 @@ public class GuiEventHandler {
 			inputHandler = null;
 		}
 	}
-	
+
 	@SubscribeEvent
 	public void onGuiOpen(GuiOpenEvent event) {
 		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();

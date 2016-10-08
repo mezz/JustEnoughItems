@@ -1,8 +1,8 @@
 package mezz.jei.util;
 
-import net.minecraft.util.text.translation.I18n;
-
 import java.util.IllegalFormatException;
+
+import net.minecraft.util.text.translation.I18n;
 
 public class Translator {
 	private Translator() {

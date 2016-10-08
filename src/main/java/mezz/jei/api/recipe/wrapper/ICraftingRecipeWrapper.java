@@ -9,7 +9,7 @@ import net.minecraft.item.ItemStack;
 /**
  * Implement this interface instead of just {@link IRecipeWrapper} to have your recipe wrapper work as part of the
  * {@link VanillaRecipeCategoryUid#CRAFTING} recipe category as a shapeless recipe.
- *
+ * <p>
  * For shaped recipes, use {@link IShapedCraftingRecipeWrapper}.
  */
 public interface ICraftingRecipeWrapper extends IRecipeWrapper {

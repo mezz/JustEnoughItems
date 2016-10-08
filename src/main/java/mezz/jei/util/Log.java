@@ -1,9 +1,8 @@
 package mezz.jei.util;
 
+import mezz.jei.config.Constants;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-
-import mezz.jei.config.Constants;
 
 public class Log {
 

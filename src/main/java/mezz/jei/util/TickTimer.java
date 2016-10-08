@@ -1,8 +1,7 @@
 package mezz.jei.util;
 
-import net.minecraft.client.Minecraft;
-
 import mezz.jei.api.gui.ITickTimer;
+import net.minecraft.client.Minecraft;
 
 public class TickTimer implements ITickTimer {
 	private final int ticksPerCycle;

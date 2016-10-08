@@ -3,15 +3,15 @@ package mezz.jei.util.color;
 /**
  * Java Color Thief
  * by Sven Woltmann, Fonpit AG
- *
+ * <p>
  * http://www.androidpit.com
  * http://www.androidpit.de
- *
+ * <p>
  * License
  * -------
  * Creative Commons Attribution 2.5 License:
  * http://creativecommons.org/licenses/by/2.5/
- *
+ * <p>
  * Thanks
  * ------
  * Lokesh Dhakar - for the original Color Thief JavaScript version
@@ -364,7 +364,7 @@ public class MMCQ {
 			vbox_dim1 = vbox.g1;
 			vbox_dim2 = vbox.g2;
 		} else
-        /* color == 'b' */ {
+		/* color == 'b' */ {
 			vbox_dim1 = vbox.b1;
 			vbox_dim2 = vbox.b2;
 		}
@@ -406,7 +406,7 @@ public class MMCQ {
 					vbox1.g2 = d2;
 					vbox2.g1 = d2 + 1;
 				} else
-                /* color == 'b' */ {
+				/* color == 'b' */ {
 					vbox1.b2 = d2;
 					vbox2.b1 = d2 + 1;
 				}

@@ -18,7 +18,9 @@ import net.minecraft.item.ItemStack;
 
 public class ItemFilter {
 
-	/** A cache for fast searches while typing or using backspace. Maps filterText to filteredItemMaps */
+	/**
+	 * A cache for fast searches while typing or using backspace. Maps filterText to filteredItemMaps
+	 */
 	private final LoadingCache<String, ImmutableList<IIngredientListElement>> filteredItemMapsCache = CacheBuilder.newBuilder()
 			.maximumWeight(16)
 			.weigher(new OneWeigher())

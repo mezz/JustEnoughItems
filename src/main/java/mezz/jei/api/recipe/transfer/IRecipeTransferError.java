@@ -7,7 +7,7 @@ import net.minecraft.inventory.Container;
 
 /**
  * A reason that a recipe transfer couldn't happen.
- *
+ * <p>
  * Recipe transfer errors can be created with {@link IRecipeTransferHandlerHelper} or you can implement your own.
  * These errors are returned from {@link IRecipeTransferHandler#transferRecipe(Container, IRecipeLayout, EntityPlayer, boolean, boolean)}.
  */

@@ -13,7 +13,7 @@ import net.minecraftforge.fluids.FluidStack;
 /**
  * A wrapper around a normal recipe with methods that allow JEI can make sense of it.
  * Plugins implement these to wrap each type of recipe they have.
- *
+ * <p>
  * Normal recipes are converted to wrapped recipes by {@link IRecipeHandler#getRecipeWrapper(Object)}.
  *
  * @see BlankRecipeWrapper
@@ -30,6 +30,7 @@ public interface IRecipeWrapper {
 	/**
 	 * Return a list of recipe inputs.
 	 * Each element can be an ItemStack, null, or a List of ItemStacks.
+	 *
 	 * @deprecated since JEI 3.11.0. Use {@link #getIngredients(IIngredients)}
 	 */
 	@Deprecated
@@ -38,6 +39,7 @@ public interface IRecipeWrapper {
 	/**
 	 * Return a list of recipe inputs.
 	 * Each element can be an ItemStack, null, or a List of ItemStacks.
+	 *
 	 * @deprecated since JEI 3.11.0. Use {@link #getIngredients(IIngredients)}
 	 */
 	@Deprecated
@@ -45,6 +47,7 @@ public interface IRecipeWrapper {
 
 	/**
 	 * Return a list of recipe fluid inputs.
+	 *
 	 * @deprecated since JEI 3.11.0. Use {@link #getIngredients(IIngredients)}
 	 */
 	@Deprecated
@@ -52,6 +55,7 @@ public interface IRecipeWrapper {
 
 	/**
 	 * Return a list of recipe fluid outputs.
+	 *
 	 * @deprecated since JEI 3.11.0. Use {@link #getIngredients(IIngredients)}
 	 */
 	@Deprecated
@@ -64,9 +68,9 @@ public interface IRecipeWrapper {
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
-	 * @since JEI 2.19.0
 	 * @see IDrawable for a simple class for drawing things.
 	 * @see IGuiHelper for useful functions.
+	 * @since JEI 2.19.0
 	 */
 	void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY);
 

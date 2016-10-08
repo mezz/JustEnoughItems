@@ -1,7 +1,6 @@
 package mezz.jei.plugins.vanilla.brewing;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 import mezz.jei.api.ISubtypeRegistry;

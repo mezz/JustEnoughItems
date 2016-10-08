@@ -22,7 +22,7 @@ public class RecipeTransferErrorSlots extends RecipeTransferErrorTooltip {
 	@Override
 	public void showError(Minecraft minecraft, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY) {
 		IGuiItemStackGroup itemStackGroup = recipeLayout.getItemStacks();
-		Map<Integer, ? extends IGuiIngredient<ItemStack>>  ingredients = itemStackGroup.getGuiIngredients();
+		Map<Integer, ? extends IGuiIngredient<ItemStack>> ingredients = itemStackGroup.getGuiIngredients();
 		for (Integer slotIndex : slots) {
 			IGuiIngredient<ItemStack> ingredient = ingredients.get(slotIndex);
 			ingredient.drawHighlight(minecraft, highlightColor, recipeX, recipeY);
