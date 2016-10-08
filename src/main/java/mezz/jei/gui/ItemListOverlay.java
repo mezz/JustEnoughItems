@@ -200,6 +200,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		return guiAreas;
 	}
 
+	@Nullable
 	private <T extends GuiContainer> List<Rectangle> getGuiAreas(GuiContainer guiContainer, IAdvancedGuiHandler<T> advancedGuiHandler) {
 		if (advancedGuiHandler.getGuiContainerClass().isAssignableFrom(guiContainer.getClass())) {
 			T guiT = advancedGuiHandler.getGuiContainerClass().cast(guiContainer);
