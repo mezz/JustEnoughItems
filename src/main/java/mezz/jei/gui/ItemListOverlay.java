@@ -47,7 +47,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatAllowedCharacters;
@@ -582,6 +581,10 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	public void open() {
 		open = true;
 		setKeyboardFocus(false);
+	}
+
+	public ItemFilter getItemFilter() {
+		return itemFilter;
 	}
 
 	@Override

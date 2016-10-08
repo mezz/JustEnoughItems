@@ -1,26 +1,20 @@
 package mezz.jei;
 
 import javax.annotation.Nullable;
-import java.util.Iterator;
 import java.util.List;
 
-import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.gui.IAdvancedGuiHandler;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.SessionData;
 import mezz.jei.gui.ItemListOverlay;
-import mezz.jei.gui.RecipesGui;
 import mezz.jei.network.packets.PacketJEI;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.util.AnnotatedInstanceUtil;
 import mezz.jei.util.Log;
-import mezz.jei.util.ModIdUtil;
-import mezz.jei.util.ModRegistry;
-import mezz.jei.util.StackHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.resources.IReloadableResourceManager;
@@ -38,7 +32,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 @SuppressWarnings("unused")
@@ -152,6 +145,19 @@ public class ProxyCommonClient extends ProxyCommon {
 		}
 	}
 
+	private static void reloadItemList() {
+		if (SessionData.isJeiStarted()) {
+			JeiRuntime runtime = Internal.getRuntime();
+			if (runtime != null) {
+				ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
+				ItemFilter itemFilter = itemListOverlay.getItemFilter();
+				IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+				JeiHelpers helpers = Internal.getHelpers();
+				itemFilter.build(ingredientRegistry, helpers);
+			}
+		}
+	}
+
 	@Override
 	public void sendPacketToServer(PacketJEI packet) {
 		NetHandlerPlayClient netHandler = FMLClientHandler.instance().getClient().getConnection();
@@ -160,15 +166,14 @@ public class ProxyCommonClient extends ProxyCommon {
 		}
 	}
 
-	// subscribe to event with low priority so that addon mods that use the config can do their stuff first
-	@SubscribeEvent(priority = EventPriority.LOW)
+	@SubscribeEvent
 	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
 		if (!Constants.MOD_ID.equals(eventArgs.getModID())) {
 			return;
 		}
 
-		if (SessionData.isJeiStarted() && Config.syncAllConfig()) {
-			restartJEI(); // reload everything, configs can change available recipes
+		if (Config.syncAllConfig()) {
+			reloadItemList();
 		}
 	}
 }
