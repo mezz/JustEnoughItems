@@ -1,0 +1,11 @@
+# Tooltips
+jei.tooltip.item.colors=Colours: %s
+
+# Config
+config.jei.search.prefixRequiredForColorSearch=Require ^ for Colours
+config.jei.search.prefixRequiredForColorSearch.comment=Require "^" in front of a word to search item colours.
+
+config.jei.advanced.colorSearchEnabled=Enable Colour Search
+config.jei.advanced.colorSearchEnabled.comment=Search items by colour and show the searchable item colours on tooltips in the item list.
+config.jei.advanced.centerSearchBarEnabled=Centre Search Bar
+config.jei.advanced.centerSearchBarEnabled.comment=Move the JEI search bar to the bottom centre of the screen.
