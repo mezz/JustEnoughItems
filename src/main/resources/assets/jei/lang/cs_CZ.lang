@@ -48,6 +48,19 @@ config.jei.interface.overlayEnabled.comment=Zobrazí list itemů vedle otevřen�
 config.jei.interface.recipeAnimationsEnabled=Animované Recepty
 config.jei.interface.recipeAnimationsEnabled.comment=Zobrazí animace u receptů (ohen v peci, progresova bary, atd.)
 
+config.jei.search=Nastavení Hledání
+config.jei.search.comment=Nastavení související s hledacím polem.
+config.jei.search.atPrefixRequiredForModName=Vyžaduje @ pro jméno módu
+config.jei.search.atPrefixRequiredForModName.comment=Vyžaduje "@" před slovem pro hledání v módu.
+config.jei.search.prefixRequiredForTooltipSearch=Vyžaduje # pro nástrojový tip
+config.jei.search.prefixRequiredForTooltipSearch.comment=Vyžaduje "#" před slovem pro hledání tipů.
+config.jei.search.prefixRequiredForOreDictSearch=Vyžaduje $ pro Slovín Rud
+config.jei.search.prefixRequiredForOreDictSearch.comment=Vyžaduje "$" před slovem pro hledání jedné z rud.
+config.jei.search.prefixRequiredForCreativeTabSearch=Vyžaduje %% pro jméno v Creative Tabulce
+config.jei.search.prefixRequiredForCreativeTabSearch.comment=Vyžaduje "%" před slovem pro hledání v creative tabulce.
+config.jei.search.prefixRequiredForColorSearch=Vyžaduje ^ pro barvy
+config.jei.search.prefixRequiredForColorSearch.comment=Vyžaduje "^" před slovem pro hledání barev itemů.
+
 config.jei.advanced=Pokročilé
 config.jei.advanced.comment=Pokročilé funkce pro JEI.
 config.jei.advanced.itemBlacklist=Černý list itemů
