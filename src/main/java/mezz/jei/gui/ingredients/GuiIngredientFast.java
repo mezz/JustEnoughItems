@@ -3,6 +3,7 @@ package mezz.jei.gui.ingredients;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.TooltipRenderer;
+import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import mezz.jei.util.color.ColorNamer;
 import net.minecraft.client.Minecraft;
@@ -258,7 +260,19 @@ public class GuiIngredientFast {
 	}
 
 	private static <V> List<String> getTooltip(Minecraft minecraft, V ingredient, IIngredientRenderer<V> ingredientRenderer, IIngredientHelper<V> ingredientHelper) {
-		List<String> list = ingredientRenderer.getTooltip(minecraft, ingredient);
+		List<String> list;
+		try {
+			list = ingredientRenderer.getTooltip(minecraft, ingredient);
+		} catch (RuntimeException e) {
+			Log.error("Tooltip crashed.", e);
+			list = new ArrayList<String>();
+			list.add(Translator.translateToLocal("jei.tooltip.error.crash"));
+		} catch (LinkageError e) {
+			Log.error("Tooltip crashed.", e);
+			list = new ArrayList<String>();
+			list.add(Translator.translateToLocal("jei.tooltip.error.crash"));
+		}
+
 		Internal.getModIdUtil().addModNameToIngredientTooltip(list, ingredient, ingredientHelper);
 
 		int maxWidth = Constants.MAX_TOOLTIP_WIDTH;

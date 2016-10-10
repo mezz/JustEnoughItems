@@ -16,6 +16,7 @@ jei.tooltip.error.recipe.transfer.missing=Missing Items
 jei.tooltip.error.recipe.transfer.inventory.full=Inventory is too full
 jei.tooltip.error.recipe.transfer.unknown=Unknown Error, see logs
 jei.tooltip.error.recipe.transfer.no.server=The server must have JEI installed
+jei.tooltip.error.crash=Tooltip error, see log
 
 # Error Messages
 jei.chat.error.command.too.long=JEI must be on the server to handle this Chat Command, it is too long for Minecraft to send.
