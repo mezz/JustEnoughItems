@@ -552,11 +552,11 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		return guiProperties.getScreenHeight() - (buttonSize + searchHeight + 2 + (4 * borderPadding));
 	}
 
-	private int getColumns(GuiProperties guiProperties) {
+	private static int getColumns(GuiProperties guiProperties) {
 		return getItemButtonXSpace(guiProperties) / itemStackWidth;
 	}
 
-	private int getRows(GuiProperties guiProperties) {
+	private static int getRows(GuiProperties guiProperties) {
 		return getItemButtonYSpace(guiProperties) / itemStackHeight;
 	}
 
