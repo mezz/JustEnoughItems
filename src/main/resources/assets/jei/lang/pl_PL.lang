@@ -9,7 +9,7 @@ jei.tooltip.transfer=Przenieś przedmioty
 jei.tooltip.recipe.ore.dict=Przyjmuje: %s
 jei.tooltip.item.colors=Kolory: %s
 jei.tooltip.shapeless.recipe=Bezkształtna receptura
-jei.tooltip.cheat.mode=Tryb kodów
+jei.tooltip.cheat.mode=Tryb oszustw
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Brakujące przedmioty
@@ -26,7 +26,7 @@ key.jei.focusSearch=Wybierz pole wyszukiwania
 key.jei.showRecipe=Pokaż recepturę
 key.jei.showUses=Pokaż zastosowanie
 key.jei.recipeBack=Pokaż poprzednią stronę
-key.jei.toggleCheatMode=Włącz tryb kodów przedmiotu
+key.jei.toggleCheatMode=Włącz tryb duplikacji przedmiotu
 
 # Config
 config.jei.default=Domyślny
@@ -36,7 +36,7 @@ config.jei.title=Konfiguracja %MODNAME
 
 config.jei.mode=Tryb
 config.jei.mode.comment=Zmień tryb operacji
-config.jei.mode.cheatItemsEnabled=Tryb kodów przedmiotu
+config.jei.mode.cheatItemsEnabled=Tryb duplikacji przedmiotu
 config.jei.mode.cheatItemsEnabled.comment=Daj przedmioty zamiast pokazywania receptury
 config.jei.mode.editEnabled=Tryb ukrywania przedmiotów
 config.jei.mode.editEnabled.comment=Pokaż lub ukryj przedmiot klikając na niego
