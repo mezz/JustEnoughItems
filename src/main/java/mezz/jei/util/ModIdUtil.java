@@ -55,10 +55,10 @@ public class ModIdUtil {
 
 	public <T> void addModNameToIngredientTooltip(List<String> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
 		String modName = getModNameForIngredient(ingredient, ingredientHelper);
-		if (!tooltip.isEmpty()) {
+		if (tooltip.size() > 1) {
 			String lastTooltipLine = tooltip.get(tooltip.size() - 1);
 			lastTooltipLine = TextFormatting.getTextWithoutFormattingCodes(lastTooltipLine);
-			if (lastTooltipLine != null && lastTooltipLine.equals(modName)) {
+			if (modName.equals(lastTooltipLine)) {
 				return;
 			}
 		}
