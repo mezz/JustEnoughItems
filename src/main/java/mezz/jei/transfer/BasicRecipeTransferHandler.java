@@ -129,12 +129,6 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 				Log.error("Recipes Transfer Helper {} references slot {} outside of the inventory's size {}", transferHelper.getClass(), slotNumber, container.inventorySlots.size());
 				return handlerHelper.createInternalError();
 			}
-			Slot slot = container.getSlot(slotNumber);
-			ItemStack stack = container.getSlot(entry.getValue()).getStack();
-			if (!slot.isItemValid(stack)) {
-				Log.error("The ItemStack {} is not valid for the slot number {}", stack, slotNumber);
-				return handlerHelper.createInternalError();
-			}
 		}
 
 		if (doTransfer) {

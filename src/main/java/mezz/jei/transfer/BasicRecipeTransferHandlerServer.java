@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -76,12 +75,21 @@ public class BasicRecipeTransferHandlerServer {
 
 			ItemStack stack = entry.getValue();
 			stack.stackSize *= removedSets;
-			slot.putStack(stack);
+			if (slot.isItemValid(stack)) {
+				slot.putStack(stack);
+			} else {
+				clearedCraftingItems.add(stack);
+			}
 		}
 
-		// put cleared items back into the player's inventory
+		// put cleared items back into the inventory
 		for (ItemStack oldCraftingItem : clearedCraftingItems) {
-			InventoryHelper.addStack(container, inventorySlots, oldCraftingItem, true);
+			int added = InventoryHelper.addStack(container, inventorySlots, oldCraftingItem, true);
+			if (added < oldCraftingItem.stackSize) {
+				if (!player.inventory.addItemStackToInventory(oldCraftingItem)) {
+					player.dropItem(oldCraftingItem, false);
+				}
+			}
 		}
 
 		container.detectAndSendChanges();
