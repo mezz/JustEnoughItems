@@ -1,39 +1,52 @@
 # Tooltips
-jei.tooltip.config=Konfiguration
+jei.tooltip.config=JEI-Konfiguration
+jei.tooltip.show.recipes=Zeige Rezepte
 jei.tooltip.show.all.recipes=Zeige alle Rezepte
 jei.tooltip.delete.item=Klicke zum Löschen
 jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
 jei.tooltip.liquid.amount=%,d mB
+jei.tooltip.transfer=Bewege Items
+jei.tooltip.recipe.ore.dict=Akzeptiert: %s
+jei.tooltip.item.colors=Farben: %s
+jei.tooltip.shapeless.recipe=Formloses Rezept
+jei.tooltip.cheat.mode=Cheat-Modus
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Fehlende Items
-jei.tooltip.error.recipe.transfer.inventory.full=Inventar ist voll
+jei.tooltip.error.recipe.transfer.inventory.full=Inventar ist zu voll
+jei.tooltip.error.recipe.transfer.unknown=Unbekannter Fehler, siehe Logs
+jei.tooltip.error.recipe.transfer.no.server=Auf dem Server muss JEI installiert sein
 
 # Error Messages
-jei.chat.error.command.too.long=JEI muss auf dem Server installiert sein. um mit diesem Befehl klarzukommen, da er zu lang für Minecraft ist.
+jei.chat.error.command.too.long=JEI muss auf dem Server installiert sein, damit dieser Befehl funktioniert, da er zu lang für Minecraft ist.
 
 # Key Bindings
-key.jei.toggleOverlay=Item-Listen-Overlay (de-)aktivieren
-key.jei.showRecipe=Zeige Item-Rezepte
-key.jei.showUses=Zeige Item-Nutzung
+key.jei.toggleOverlay=Item-Liste (de-)aktivieren
+key.jei.focusSearch=Suchfeld
+key.jei.showRecipe=Zeige Rezept
+key.jei.showUses=Zeige Verwendung
+key.jei.recipeBack=Zeige vorherige Rezeptseite
+key.jei.toggleCheatMode=Item-Cheating (de-)aktivieren
 
 # Config
 config.jei.default=Standard
 config.jei.valid=Zulässig
 
-config.jei.title=%MODNAME Konfiguration
+config.jei.title=%MODNAME-Konfiguration
 
 config.jei.mode=Modus
 config.jei.mode.comment=Ändere den Modus, in dem sich JEI befindet
 config.jei.mode.cheatItemsEnabled=Aktiviere Item-Cheating
-config.jei.mode.cheatItemsEnabled.comment=Gibt Items, statt die Rezepte zu zeigen.
-config.jei.mode.editEnabled=Aktiviere Item-Listeneditiermodus
-config.jei.mode.editEnabled.comment=Verstecke und zeige Items durch Klicken in der Item-Liste.
+config.jei.mode.cheatItemsEnabled.comment=Gibt den Gegenstand, statt das Rezept zu zeigen.
+config.jei.mode.editEnabled=Aktiviere Listeneditiermodus
+config.jei.mode.editEnabled.comment=Verstecke und zeige Gegenstände durch Klicken in der Item-Liste.
 
 config.jei.interface=Interface
-config.jei.interface.comment=User-Interface betreffende Optionen
-config.jei.interface.recipeAnimationsEnabled=Aktiviere Rezeptanimationen
-config.jei.interface.recipeAnimationsEnabled.comment=Zeige Animationen für verschiedene Rezepte (Ofenfeuer, Fortschrittsbalken, usw.)
+config.jei.interface.comment=Das Benutzer-Interface betreffende Optionen
+config.jei.interface.overlayEnabled=Aktiviere Item-Liste
+config.jei.interface.overlayEnabled.comment=Zeige die Liste der Gegenstände neben einem geöffneten Benutzer-Interface.
+config.jei.interface.recipeAnimationsEnabled=Aktiviere Rezept-Animationen
+config.jei.interface.recipeAnimationsEnabled.comment=Animiere Rezepte (Feuer im Ofen, Fortschrittsbalken, usw.)
 
 config.jei.search=Suche
 config.jei.search.comment=Suchleisteneinstellungen
@@ -42,28 +55,39 @@ config.jei.search.atPrefixRequiredForModName.comment=Benötigt "@ModName" anstel
 
 config.jei.advanced=Erweitert
 config.jei.advanced.comment=Erweiterte Konfigurationsoptionen, die ändern, wie JEI funktioniert.
-config.jei.advanced.nbtKeyIgnoreList=NBT-Schlüssel-Ignorierungsliste
-config.jei.advanced.nbtKeyIgnoreList.comment=Liste an NBT-Schlüsseln, die beim Rezepteauslesen ignoriert werden sollen.
-config.jei.advanced.itemBlacklist=Item-Blacklist
-config.jei.advanced.itemBlacklist.comment=Items, die nicht in der Item-Liste gezeigt werden sollen. Format: modId[:name[:meta]]. Der Listeneditiermodus entfernt und fügt automatisch neue Items zu diese Liste hinzu.
-config.jei.advanced.hideMissingModelsEnabled=Verstecke fehlende Item-Modelle
-config.jei.advanced.hideMissingModelsEnabled.comment=Items in der Item-Liste mit fehlenden Modellen werden automatisch verborgen.
-config.jei.advanced.debugModeEnabled=Debug-Modus
-config.jei.advanced.debugModeEnabled.comment=Fügt zufällige Strings hinzu, um bei der JEI-Entwicklung zu helfen. Nur für Entwickler bestimmt.
+config.jei.advanced.itemBlacklist=Aktiviere Blacklist
+config.jei.advanced.itemBlacklist.comment=Gegenstände, die nicht angezeigt werden sollen. Format: modId[:name[:meta]]. Der Listeneditiermodus entfernt und fügt automatisch neue Gegenstände zu dieser Liste hinzu.
+config.jei.advanced.hideMissingModelsEnabled=Verstecke fehlende Modelle
+config.jei.advanced.hideMissingModelsEnabled.comment=Gegenstände mit fehlenden Modellen werden automatisch in der Item-Liste verborgen.
+config.jei.advanced.colorSearchEnabled=Aktiviere Farbsuche
+config.jei.advanced.colorSearchEnabled.comment=Suche nach Gegenständen mittels ihrer Farbe und zeige die suchbaren Farben in Tooltips in der Item-Liste.
+config.jei.advanced.debugModeEnabled=Aktiviere Debug-Modus
+config.jei.advanced.debugModeEnabled.comment=Fügt tausende Test-Items und einige Debug-Rezepte hinzu. Nur für Entwickler bestimmt.
+config.jei.advanced.centerSearchBarEnabled=Zentriere Suchleiste
+config.jei.advanced.centerSearchBarEnabled.comment=Die JEI-Suchleiste wird unten in der Mitte des Bildschirms angezeigt.
 
 # Edit Mode
-gui.jei.editMode.description=JEI Item-Listeneditiermodus:
-gui.jei.editMode.description.hide=Strg-Klick zum Verbergen.
-gui.jei.editMode.description.show=Verborgen. Strg-Klick zum Zeigen.
-gui.jei.editMode.description.hide.wild=Strg-Rechtsklick, um mit einer Wildcard zu verstecken.
-gui.jei.editMode.description.show.wild=Verborgen durch Wildcard. Strg-Rechtsklick zum Zeigen.
+gui.jei.editMode.description=JEI-Listeneditiermodus:
+gui.jei.editMode.description.hide=Ausblenden mit STRG-Klick.
+gui.jei.editMode.description.show=Ausgeblendet. Einblenden mit STRG-Klick.
+gui.jei.editMode.description.hide.wild=Ausblenden per Wildcard mit STRG-Rechtsklick.
+gui.jei.editMode.description.show.wild=Ausgeblendet per Wildcard. Einblenden mit STRG-Rechtsklick.
+gui.jei.editMode.description.hide.mod.id=Ausblenden per ModId mit STRG-Shift-Klick.
+gui.jei.editMode.description.show.mod.id=Ausgeblendet per ModId. Einblenden mit STRG-Shift-Klick.
 
 # Recipe Categories
-gui.jei.category.craftingTable=Craftingrezepte
+gui.jei.category.craftingTable=Crafting-Rezepte
 gui.jei.category.smelting=Schmelzrezepte
-gui.jei.category.smelting.experience=%s XP.
+gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=Kraftstoffrezepte
+gui.jei.category.fuel.smeltCount.single=Schmilzt 1 Item
+gui.jei.category.fuel.smeltCount=Schmilzt %s Items
 gui.jei.category.fuel.burnTime=Brennzeit: %s
 gui.jei.category.brewing=Braurezepte
 gui.jei.category.brewing.steps=Schritte: %s
 gui.jei.category.itemDescription=Beschreibung
+
+# DEBUG (for debug mode, do not need translation)
+description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.
+description.jei.wooden.door.2=Clicking on a door changes its state from open to closed and visa versa.
+description.jei.wooden.door.3=Wooden Doors can be opened/closed via Redstone Circuits.
