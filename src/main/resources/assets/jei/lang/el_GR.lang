@@ -1,0 +1,102 @@
+﻿# Tooltips
+jei.tooltip.config=Ρυθμίσεις JEI
+jei.tooltip.show.recipes=Δείξε συνταγές
+jei.tooltip.show.all.recipes=Δείξε όλες τις συνταγές
+jei.tooltip.delete.item=Πάτα για Διαγραφή
+jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
+jei.tooltip.liquid.amount=%,d mB
+jei.tooltip.transfer=Μετακίνησε αντικείμενα
+jei.tooltip.recipe.ore.dict=Δέχεται: %s
+jei.tooltip.item.colors=Χρώματα: %s
+jei.tooltip.shapeless.recipe=Άμορφη Συνταγή
+jei.tooltip.cheat.mode=Λειτουργία Cheat
+
+# Error Tooltips
+jei.tooltip.error.recipe.transfer.missing=Ελλιπές Αντικείμενα
+jei.tooltip.error.recipe.transfer.inventory.full=Το inventory σου είναι υπερβολικά γεμάτο
+jei.tooltip.error.recipe.transfer.unknown=Άγνωστο πρόβλημα, δες την καταγραφή παιχνιδιού
+jei.tooltip.error.recipe.transfer.no.server=Ο σερβερ πρέπει να έχει εγκατεστημένο το JEI
+jei.tooltip.error.crash=Πρόβλημα Επεξήγησης, δες την καταγραφή παιχνιδιού
+
+# Error Messages
+jei.chat.error.command.too.long=Το JEI πρέπει να υπάρχει στον σερβερ για να χειριστεί αυτή η Εντολή Τσατ, είναι πολύ μεγάλο για να μπορεί να το στείλει το Minecraft.
+
+# Key Bindings
+key.jei.toggleOverlay=Ενάλλαξε την Επικάληψη του Καταλόγου Αντικειμένων
+key.jei.focusSearch=Διάλεξε Μπάρα Αναζήτησης
+key.jei.showRecipe=Δείξε Συνταγή Αντικειμένου
+key.jei.showUses=Δείξε Χρήσεις Αντικειμένου
+key.jei.recipeBack=Δείξε Προηγούμενη Σελίδα Συνταγών
+key.jei.toggleCheatMode=Ενάλλαξε Λειτουργία Cheat Αντικειμένων
+
+# Config
+config.jei.default=Αρχικό
+config.jei.valid=Έγκυρο
+
+config.jei.title=Ρυθμίσεις %MODNAME
+
+config.jei.mode=Λειτουργία
+config.jei.mode.comment=Άλλαξε την λειτουργία στην οποία το JEI λειτουργεί.
+config.jei.mode.cheatItemsEnabled=Λειτουργία Cheat Αντικειμένων
+config.jei.mode.cheatItemsEnabled.comment=Δώσε αντικείμενα αντί να δείχνει την συνταγή.
+config.jei.mode.editEnabled=Λειτουργία Εξαφάνισης Αντικειμένων
+config.jei.mode.editEnabled.comment=Εμφάνισε και εξαφάνισε αντικείμενα κάνοντας κλικ σε αυτά στην λίστα αντικειμένων.
+
+config.jei.interface=Διεπαφή
+config.jei.interface.comment=Ρυθμίσεις με σχέση την Διεπαφή του Χρήστη.
+config.jei.interface.overlayEnabled=Λίστα Αντικειμένων Ενεργοποιημένη
+config.jei.interface.overlayEnabled.comment=Δείξε την λίστα αντικειμένων δίπλα από αλλα GUIs.
+config.jei.interface.recipeAnimationsEnabled=Γραφικά Συνταγών
+config.jei.interface.recipeAnimationsEnabled.comment=Δείξε γραφικά συνταγών (φωτιά φούρνου, μπάρες προόδου, κ.α.)
+
+config.jei.search=Ρυθμίσεις Αναζήτησης
+config.jei.search.comment=Ρυθμίσεις με σχέση την Μπάρα Αναζήτησης.
+config.jei.search.atPrefixRequiredForModName=Απαίτηση @ για Όνομα Mod
+config.jei.search.atPrefixRequiredForModName.comment=Απαίτηση "@" μπροστά από μια λέξη για αναζήτηση από το όνομα του mod.
+config.jei.search.prefixRequiredForTooltipSearch=Απαίτηση # για Πληροφορίες Αντικειμένου
+config.jei.search.prefixRequiredForTooltipSearch.comment=Απαίτηση "#" μπροστά από μια λέξη για αναζήτηση από τις πληροφορίες των αντικειμένων.
+config.jei.search.prefixRequiredForOreDictSearch=Απαίτηση $ για Ore Dictionary
+config.jei.search.prefixRequiredForOreDictSearch.comment=Απαίτηση "$" μπροστά από μια λέξη για αναζήτηση από τα ore dictionary ονόματα.
+config.jei.search.prefixRequiredForCreativeTabSearch=Απαίτηση %% για όνομα Creative Tab
+config.jei.search.prefixRequiredForCreativeTabSearch.comment=Απαίτηση "%" μπροστά από μια λέξη για αναζήτηση από τα ονόματα των creative tab.
+config.jei.search.prefixRequiredForColorSearch=Απαίτηση ^ για Χρώματα
+config.jei.search.prefixRequiredForColorSearch.comment=Απαίτηση "^" μπροστά από μια λέξη για αναζήτηση από χρώματα αντικειμένων.
+
+config.jei.advanced=Προχωρημένα
+config.jei.advanced.comment=Προχωρημένες ρυθμίσεις για να αλλάξεις τον τρόπο που λειτουργεί το JEI.
+config.jei.advanced.itemBlacklist=Μαύρη Λίστα Αντικειμένων
+config.jei.advanced.itemBlacklist.comment=Λίστα αντικειμένων τα οποία δεν πρέπει να εμφανίζονται στην λίστα αντικειμένων. Μορφή: modId[:name[:meta]]. Η Λειτουργία Επεξεργασίας βάζει και διαγράφει αυτόματα αντικείμενα εδώ.
+config.jei.advanced.hideMissingModelsEnabled=Εξαφάνισε Αντικείμενα με Ελλιπές Μοντέλα
+config.jei.advanced.hideMissingModelsEnabled.comment=Αντικείμενα με ελλιπές μοντέλα δεν θα παρουσιάζονται στην λίστα αντικειμένων.
+config.jei.advanced.colorSearchEnabled=Ενεργοποίησε Αναζήτηση Χρωμάτων
+config.jei.advanced.colorSearchEnabled.comment=Αναζήτησε αντικείμενα από το χρώμα τους και δείξε πιθανά χρώματα για αναζήτηση στις πληροφορίες αντικειμένων στην λίστα αντικειμένων.
+config.jei.advanced.debugModeEnabled=Λειτουργία Debug
+config.jei.advanced.debugModeEnabled.comment=Μόνο χρήσιμο για προγραμματιστές του JEI, βάζει χιλιάδες δοκιμαστικά αντικείμενα και συνταγές.
+config.jei.advanced.centerSearchBarEnabled=Κέντραρε Μπάρα Αναζήτησης
+config.jei.advanced.centerSearchBarEnabled.comment=Μετακίνησε την JEI μπάρα αναζήτης στο κεντρικό κάτω μέρος της οθόνης.
+
+# Edit Mode
+gui.jei.editMode.description=JEI Λίστα Αντικειμένων Λειτουργία Επεξεργασίας:
+gui.jei.editMode.description.hide=Ctrl-κλικ για να εξαφανίσεις.
+gui.jei.editMode.description.show=Εξαφανισμένο. Ctrl-κλικ για εμφάνιση.
+gui.jei.editMode.description.hide.wild=Ctrl-δεξί-κλικ για εξαφάνιση από wildcard.
+gui.jei.editMode.description.show.wild=Εξαφανισμένο από Wildcard. Ctrl-δεξί-κλικ για εμφάνιση.
+gui.jei.editMode.description.hide.mod.id=Ctrl-Shift-κλικ για εξαφάνιση από ModId.
+gui.jei.editMode.description.show.mod.id=Εξαφανισμένο απο ModId. Ctrl-Shift-κλικ για εμφάνιση.
+
+# Recipe Categories
+gui.jei.category.craftingTable=Χειροτεχνία
+gui.jei.category.smelting=Ψήσιμο
+gui.jei.category.smelting.experience=%s XP
+gui.jei.category.fuel=Καύσιμο
+gui.jei.category.fuel.smeltCount.single=Ψήνει 1 αντικείμενο
+gui.jei.category.fuel.smeltCount=Ψήνει %s αντικείμενα
+gui.jei.category.fuel.burnTime=Ώρα Ψησίματος: %s
+gui.jei.category.brewing=Ζύμωση
+gui.jei.category.brewing.steps=Βήματα: %s
+gui.jei.category.itemDescription=Περιγραφή
+
+# DEBUG (for debug mode, do not need translation)
+description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.
+description.jei.wooden.door.2=Clicking on a door changes its state from open to closed and visa versa.
+description.jei.wooden.door.3=Wooden Doors can be opened/closed via Redstone Circuits.
