@@ -76,12 +76,12 @@ config.jei.advanced.centerSearchBarEnabled.comment=Переместить стр
 
 # Edit Mode
 gui.jei.editMode.description=Режим редактирования списка предметов JEI:
-gui.jei.editMode.description.hide=Ctrl+ЛКМ, чтобы спрятать.
-gui.jei.editMode.description.show=Спрятано. Ctrl+ЛКМ, чтобы показать.
-gui.jei.editMode.description.hide.wild=Ctrl+ПКМ, чтобы спрятать по Wildcard.
-gui.jei.editMode.description.show.wild=Спрятано по Wildcard. Ctrl+ПКМ, чтобы показать.
-gui.jei.editMode.description.hide.mod.id=Ctrl+Shift+ЛКМ, чтобы спрятать по ID-мода.
-gui.jei.editMode.description.show.mod.id=Спрятано по ID-мода. Ctrl+Shift+ЛКМ, чтобы показать.
+gui.jei.editMode.description.hide=%CTRL+ЛКМ, чтобы спрятать.
+gui.jei.editMode.description.show=Спрятано. %CTRL+ЛКМ, чтобы показать.
+gui.jei.editMode.description.hide.wild=%CTRL+ПКМ, чтобы спрятать по Wildcard.
+gui.jei.editMode.description.show.wild=Спрятано по Wildcard. %CTRL+ПКМ, чтобы показать.
+gui.jei.editMode.description.hide.mod.id=%CTRL+SHIFT+ЛКМ, чтобы спрятать по ID-мода.
+gui.jei.editMode.description.show.mod.id=Спрятано по ID-мода. %CTRL+SHIFT+ЛКМ, чтобы показать.
 
 # Recipe Categories
 gui.jei.category.craftingTable=Крафт

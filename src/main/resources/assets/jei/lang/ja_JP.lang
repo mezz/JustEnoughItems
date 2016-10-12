@@ -76,12 +76,12 @@ config.jei.advanced.centerSearchBarEnabled.comment=JEI検索バーを中央下�
 
 # Edit Mode
 gui.jei.editMode.description=JEIアイテムリストエディットモード:
-gui.jei.editMode.description.hide=Ctrl+左クリックで隠蔽。
-gui.jei.editMode.description.show=隠蔽済み。Ctrl+左クリックで解除。
-gui.jei.editMode.description.hide.wild=Ctrl+右クリックでワイルドカードによる隠蔽。
-gui.jei.editMode.description.show.wild=ワイルドカードにより隠蔽済み。Ctrl+右クリックで解除。
-gui.jei.editMode.description.hide.mod.id=Ctrl+Shift+左クリックでModIDによる隠蔽。
-gui.jei.editMode.description.show.mod.id=ModIDにより隠蔽済み。Ctrl+Shift+左クリックで解除。
+gui.jei.editMode.description.hide=%CTRL+左クリックで隠蔽。
+gui.jei.editMode.description.show=隠蔽済み。%CTRL+左クリックで解除。
+gui.jei.editMode.description.hide.wild=%CTRL+右クリックでワイルドカードによる隠蔽。
+gui.jei.editMode.description.show.wild=ワイルドカードにより隠蔽済み。%CTRL+右クリックで解除。
+gui.jei.editMode.description.hide.mod.id=%CTRL+SHIFT+左クリックでModIDによる隠蔽。
+gui.jei.editMode.description.show.mod.id=ModIDにより隠蔽済み。%CTRL+SHIFT+左クリックで解除。
 
 # Recipe Categories
 gui.jei.category.craftingTable=クラフト

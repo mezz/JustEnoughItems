@@ -76,12 +76,12 @@ config.jei.advanced.centerSearchBarEnabled.comment=Placera JEIs sökfält längs
 
 # Edit Mode
 gui.jei.editMode.description=Redigeringsläge för JEIs föremålslista:
-gui.jei.editMode.description.hide=Ctrl-klicka för att dölja.
-gui.jei.editMode.description.show=Dold. Ctrl-klicka för att visa.
-gui.jei.editMode.description.hide.wild=Ctrl-högerklicka för att dölja liknande föremål.
-gui.jei.editMode.description.show.wild=Dold efter liknande föremål. Ctrl-högerklicka för att visa.
-gui.jei.editMode.description.hide.mod.id=Ctrl-Shift-klicka för att dölja efter ModId.
-gui.jei.editMode.description.show.mod.id=Dold efter ModId. Ctrl-Shift-klicka för att visa.
+gui.jei.editMode.description.hide=%CTRL-klicka för att dölja.
+gui.jei.editMode.description.show=Dold. %CTRL-klicka för att visa.
+gui.jei.editMode.description.hide.wild=%CTRL-högerklicka för att dölja liknande föremål.
+gui.jei.editMode.description.show.wild=Dold efter liknande föremål. %CTRL-högerklicka för att visa.
+gui.jei.editMode.description.hide.mod.id=%CTRL-SHIFT-klicka för att dölja efter ModId.
+gui.jei.editMode.description.show.mod.id=Dold efter ModId. %CTRL-SHIFT-klicka för att visa.
 
 # Recipe Categories
 gui.jei.category.craftingTable=Tillverkning

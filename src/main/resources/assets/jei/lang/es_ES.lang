@@ -73,12 +73,12 @@ config.jei.advanced.debugModeEnabled.comment=Solo util para modders, aniade mile
 
 # Edit Mode
 gui.jei.editMode.description=Modo Editar Lista de Objetos de JEI:
-gui.jei.editMode.description.hide=Ctrl-click para esconder.
-gui.jei.editMode.description.show=Hidden. Ctrl-click para mostrar.
-gui.jei.editMode.description.hide.wild=Ctrl-click-derecho para escondelo con un caracter comodin.
-gui.jei.editMode.description.show.wild=Escondido por un Caracter comodin. Ctrl-click para mostrar.
-gui.jei.editMode.description.hide.mod.id=Ctrl-Shift-click para esconderlo con una ModId.
-gui.jei.editMode.description.show.mod.id=Econdido por una ModId. Ctrl-Shift-click para mostrar.
+gui.jei.editMode.description.hide=%CTRL-click para esconder.
+gui.jei.editMode.description.show=Hidden. %CTRL-click para mostrar.
+gui.jei.editMode.description.hide.wild=%CTRL-click-derecho para escondelo con un caracter comodin.
+gui.jei.editMode.description.show.wild=Escondido por un Caracter comodin. %CTRL-click para mostrar.
+gui.jei.editMode.description.hide.mod.id=%CTRL-SHIFT-click para esconderlo con una ModId.
+gui.jei.editMode.description.show.mod.id=Econdido por una ModId. %CTRL-SHIFT-click para mostrar.
 
 # Recipe Categories
 gui.jei.category.craftingTable=Mesa de Trabajo

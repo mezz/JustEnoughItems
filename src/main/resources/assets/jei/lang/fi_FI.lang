@@ -57,10 +57,10 @@ config.jei.advanced.debugModeEnabled.comment=Lisää muutamia asioita jotka autt
 
 # Edit Mode
 gui.jei.editMode.description=JEI:n tavaralistan muokkaustila:
-gui.jei.editMode.description.hide=Paina Ctrl pohjassa piilottaaksesi.
-gui.jei.editMode.description.show=Piilossa. Paina Ctrl pohjassa näyttääksesi.
-gui.jei.editMode.description.hide.wild=Paina hiiren oikeaa painiketta Ctrl pohjassa piilottaaksesi jokerimerkin perusteella.
-gui.jei.editMode.description.show.wild=Piilotettu jokerimerkin perusteella. Näytä painamalla hiiren oikeaa painiketta Ctrl pohjassa.
+gui.jei.editMode.description.hide=Paina %CTRL pohjassa piilottaaksesi.
+gui.jei.editMode.description.show=Piilossa. Paina %CTRL pohjassa näyttääksesi.
+gui.jei.editMode.description.hide.wild=Paina hiiren oikeaa painiketta %CTRL pohjassa piilottaaksesi jokerimerkin perusteella.
+gui.jei.editMode.description.show.wild=Piilotettu jokerimerkin perusteella. Näytä painamalla hiiren oikeaa painiketta %CTRL pohjassa.
 
 # Recipe Categories
 gui.jei.category.craftingTable=Työpöytä

@@ -76,12 +76,12 @@ config.jei.advanced.centerSearchBarEnabled.comment=Przenieś pole wyszukiwania n
 
 # Edit Mode
 gui.jei.editMode.description=Tryb edycji listy przedmiotów JEI:
-gui.jei.editMode.description.hide=Naciśnij CTRL i LPM(lewy), aby ukryć.
-gui.jei.editMode.description.show=Ukryte. Naciśnij CTRL i LPM(lewy), aby pokazać.
-gui.jei.editMode.description.hide.wild=Naciśnij CTRL i PPM(prawy), aby ukryć z wieloznacznością.
-gui.jei.editMode.description.show.wild=Ukryte wieloznacznością. Naciśnij CTRL i PPM(prawy), aby pokazać.
-gui.jei.editMode.description.hide.mod.id=Naciśnij CTRL, SHIFT i LPM(lewy), aby ukryte po modzie.
-gui.jei.editMode.description.show.mod.id=Ukryte po modzie. Naciśnij CTRL, SHIFT i LPM(lewy), aby pokazać.
+gui.jei.editMode.description.hide=Naciśnij %CTRL i LPM(lewy), aby ukryć.
+gui.jei.editMode.description.show=Ukryte. Naciśnij %CTRL i LPM(lewy), aby pokazać.
+gui.jei.editMode.description.hide.wild=Naciśnij %CTRL i PPM(prawy), aby ukryć z wieloznacznością.
+gui.jei.editMode.description.show.wild=Ukryte wieloznacznością. Naciśnij %CTRL i PPM(prawy), aby pokazać.
+gui.jei.editMode.description.hide.mod.id=Naciśnij %CTRL, SHIFT i LPM(lewy), aby ukryte po modzie.
+gui.jei.editMode.description.show.mod.id=Ukryte po modzie. Naciśnij %CTRL, SHIFT i LPM(lewy), aby pokazać.
 
 # Recipe Categories
 gui.jei.category.craftingTable=Tworzenie

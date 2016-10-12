@@ -70,12 +70,12 @@ config.jei.advanced.debugModeEnabled.comment=Seulement utile aux développeurs, 
 
 # Edit Mode
 gui.jei.editMode.description=JEI Item List Edit Mode:
-gui.jei.editMode.description.hide=Ctrl-click pour cacher.
-gui.jei.editMode.description.show=Cachcé. Ctrl-click pour ré-afficher.
-gui.jei.editMode.description.hide.wild=Ctrl-right-click pour cahcer par wildcard.
-gui.jei.editMode.description.show.wild=Cachcé par Wildcard. Ctrl-right-click pour ré-afficher.
-gui.jei.editMode.description.hide.mod.id=Ctrl-Shift-click pour cacher par modID.
-gui.jei.editMode.description.show.mod.id=Caché par ModId. Ctrl-Shift-click pour ré-afficher.
+gui.jei.editMode.description.hide=%CTRL-click pour cacher.
+gui.jei.editMode.description.show=Cachcé. %CTRL-click pour ré-afficher.
+gui.jei.editMode.description.hide.wild=%CTRL-right-click pour cahcer par wildcard.
+gui.jei.editMode.description.show.wild=Cachcé par Wildcard. %CTRL-right-click pour ré-afficher.
+gui.jei.editMode.description.hide.mod.id=%CTRL-SHIFT-click pour cacher par modID.
+gui.jei.editMode.description.show.mod.id=Caché par ModId. %CTRL-SHIFT-click pour ré-afficher.
 
 # Recipe Categories
 gui.jei.category.craftingTable=Table d'artisanat

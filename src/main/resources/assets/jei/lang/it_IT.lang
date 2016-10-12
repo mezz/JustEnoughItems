@@ -76,12 +76,12 @@ config.jei.advanced.centerSearchBarEnabled.comment=Sposta la barra di ricerca di
 
 # Edit Mode
 gui.jei.editMode.description=Modalita' di modifica della lista item di JEI:
-gui.jei.editMode.description.hide=Ctrl-click per nascondere.
-gui.jei.editMode.description.show=Nascosto. Ctrl-click per mostrare.
-gui.jei.editMode.description.hide.wild=Ctrl-click-destro per nascondere con carattere jolly.
-gui.jei.editMode.description.show.wild=Nascosto con carattere jolly. Ctrl-click-destro per mostrare.
-gui.jei.editMode.description.hide.mod.id=Ctrl-Shift-click per nascondere la mod.
-gui.jei.editMode.description.show.mod.id=Nascosto con la mod. Ctrl-Shift-click per mostrare.
+gui.jei.editMode.description.hide=%CTRL-click per nascondere.
+gui.jei.editMode.description.show=Nascosto. %CTRL-click per mostrare.
+gui.jei.editMode.description.hide.wild=%CTRL-click-destro per nascondere con carattere jolly.
+gui.jei.editMode.description.show.wild=Nascosto con carattere jolly. %CTRL-click-destro per mostrare.
+gui.jei.editMode.description.hide.mod.id=%CTRL-SHIFT-click per nascondere la mod.
+gui.jei.editMode.description.show.mod.id=Nascosto con la mod. %CTRL-SHIFT-click per mostrare.
 
 # Recipe Categories
 gui.jei.category.craftingTable=Tavola da lavoro
