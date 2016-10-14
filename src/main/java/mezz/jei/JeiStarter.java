@@ -8,6 +8,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.RecipesGui;
+import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.util.Log;
 import mezz.jei.util.ModIdUtil;
 import mezz.jei.util.ModRegistry;
@@ -84,9 +85,16 @@ public class JeiStarter {
 			try {
 				plugin.registerIngredients(modIngredientRegistry);
 			} catch (RuntimeException e) {
-				Log.error("Failed to register Ingredients for mod plugin: {}", plugin.getClass(), e);
-				iterator.remove();
+				if (VanillaPlugin.class.isInstance(plugin)) {
+					throw e;
+				} else {
+					Log.error("Failed to register Ingredients for mod plugin: {}", plugin.getClass(), e);
+					iterator.remove();
+				}
 			} catch (AbstractMethodError ignored) {
+				if (VanillaPlugin.class.isInstance(plugin)) {
+					throw ignored;
+				}
 				// legacy mod plugins do not have registerIngredients
 			}
 		}

@@ -86,13 +86,9 @@ public class VanillaPlugin extends BlankModPlugin {
 
 	@Override
 	public void registerIngredients(IModIngredientRegistration ingredientRegistration) {
-		try {
-			StackHelper stackHelper = Internal.getStackHelper();
-			ingredientRegistration.register(ItemStack.class, ItemStackListFactory.create(stackHelper), new ItemStackHelper(stackHelper), new ItemStackRenderer());
-			ingredientRegistration.register(FluidStack.class, FluidStackListFactory.create(), new FluidStackHelper(), new FluidStackRenderer());
-		} catch (LinkageError e) {
-			Log.error("Error registering ingredients.", e);
-		}
+		StackHelper stackHelper = Internal.getStackHelper();
+		ingredientRegistration.register(ItemStack.class, ItemStackListFactory.create(stackHelper), new ItemStackHelper(stackHelper), new ItemStackRenderer());
+		ingredientRegistration.register(FluidStack.class, FluidStackListFactory.create(), new FluidStackHelper(), new FluidStackRenderer());
 	}
 
 	@Override

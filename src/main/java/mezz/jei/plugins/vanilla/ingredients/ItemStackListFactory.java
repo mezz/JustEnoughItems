@@ -81,7 +81,16 @@ public class ItemStackListFactory {
 
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
 			List<ItemStack> subBlocks = new ArrayList<ItemStack>();
-			block.getSubBlocks(item, itemTab, subBlocks);
+			try {
+				block.getSubBlocks(item, itemTab, subBlocks);
+			} catch (RuntimeException e) {
+				String itemStackInfo = ErrorUtil.getItemStackInfo(new ItemStack(item));
+				Log.error("Failed to getSubBlocks {}", itemStackInfo, e);
+			} catch (LinkageError e) {
+				String itemStackInfo = ErrorUtil.getItemStackInfo(new ItemStack(item));
+				Log.error("Failed to getSubBlocks {}", itemStackInfo, e);
+			}
+
 			for (ItemStack subBlock : subBlocks) {
 				if (subBlock == null) {
 					Log.error("Found null subBlock of {}", block);
