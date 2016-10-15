@@ -57,7 +57,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 
 		String displayName = ingredientHelper.getDisplayName(ingredient).toLowerCase();
 
-		this.modNameString = modId + ' ' + modName;
+		this.modNameString = modId.replaceAll(" ", "") + ' ' + modName.replaceAll(" ", "");
 
 		this.tooltipString = getTooltipString(ingredient, ingredientRenderer, modId, modName, displayName);
 
