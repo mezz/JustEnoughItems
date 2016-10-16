@@ -137,8 +137,8 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 		final int buttonStartY = buttonSize + (2 * borderPadding) + (yItemButtonSpace - itemButtonsHeight) / 2;
 		createItemButtons(guiIngredientList, guiAreas, leftEdge, buttonStartY, columns, rows);
 
-		nextButton = new GuiButtonExt(0, rightEdge - buttonSize, borderPadding, buttonSize, buttonSize, nextLabel);
-		backButton = new GuiButtonExt(1, leftEdge, borderPadding, buttonSize, buttonSize, backLabel);
+		nextButton = new GuiButton(0, rightEdge - buttonSize, borderPadding, buttonSize, buttonSize, nextLabel);
+		backButton = new GuiButton(1, leftEdge, borderPadding, buttonSize, buttonSize, backLabel);
 
 		final int searchFieldX;
 		final int searchFieldY = guiProperties.getScreenHeight() - searchHeight - borderPadding - 2;
@@ -159,7 +159,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 
 		int configButtonX = searchFieldX + searchFieldWidth + 1;
 		int configButtonY = guiProperties.getScreenHeight() - buttonSize - borderPadding;
-		configButton = new GuiButtonExt(2, configButtonX, configButtonY, buttonSize, buttonSize, null);
+		configButton = new GuiButton(2, configButtonX, configButtonY, buttonSize, buttonSize, null);
 		ResourceLocation configButtonIconLocation = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
 		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
 		configButtonIcon = guiHelper.createDrawable(configButtonIconLocation, 0, 166, 16, 16);
