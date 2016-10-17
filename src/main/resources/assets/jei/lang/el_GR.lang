@@ -19,7 +19,7 @@ jei.tooltip.error.recipe.transfer.no.server=Ο σερβερ πρέπει να έ
 jei.tooltip.error.crash=Πρόβλημα Επεξήγησης, δες την καταγραφή παιχνιδιού
 
 # Error Messages
-jei.chat.error.command.too.long=Το JEI πρέπει να υπάρχει στον σερβερ για να χειριστεί αυτή η Εντολή Τσατ, είναι πολύ μεγάλο για να μπορεί να το στείλει το Minecraft.
+jei.chat.error.command.too.long=Το JEI πρέπει να υπάρχει στον σερβερ για να χειριστεί αυτή την εντολή τσατ, είναι πολύ μεγάλη για να μπορεί να την στείλει το Minecraft.
 
 # Key Bindings
 key.jei.toggleOverlay=Ενάλλαξε την Επικάληψη του Καταλόγου Αντικειμένων
