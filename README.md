@@ -66,3 +66,4 @@ Thankfully there are many working examples:
  * [RFTools](https://github.com/McJty/RFTools/tree/1.10/src/main/java/mcjty/rftools/jei)
  * [Simple Covers](https://github.com/bdew/covers/tree/mc1.10.2/src/net/bdew/covers/compat/jei) (Scala)
  * [TechReborn](https://github.com/TechReborn/TechReborn/tree/1.10.2/src/main/java/techreborn/compat/jei)
+ * [ArmorPlus](https://github.com/TheDragonTeam/ArmorPlus/tree/1.10.2/src/main/java/net/thedragonteam/armorplus/compat/jei)
