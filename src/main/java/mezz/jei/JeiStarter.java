@@ -31,7 +31,7 @@ public class JeiStarter {
 		Internal.setHelpers(jeiHelpers);
 
 		ModIdUtil modIdUtil = Internal.getModIdUtil();
-		ItemRegistry itemRegistry = ItemRegistryFactory.createItemRegistry(ingredientRegistry, modIdUtil);
+		ItemRegistry itemRegistry = new ItemRegistry(ingredientRegistry, modIdUtil);
 
 		ModRegistry modRegistry = new ModRegistry(jeiHelpers, itemRegistry, ingredientRegistry);
 

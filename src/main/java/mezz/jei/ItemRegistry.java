@@ -15,16 +15,13 @@ import net.minecraft.item.ItemStack;
 @Deprecated
 public class ItemRegistry implements IItemRegistry {
 	private final IIngredientRegistry ingredientRegistry;
-	private final ImmutableListMultimap<String, ItemStack> itemsByModId;
 	private final ModIdUtil modIdUtil;
 
 	public ItemRegistry(
 			IIngredientRegistry ingredientRegistry,
-			ImmutableListMultimap<String, ItemStack> itemsByModId,
 			ModIdUtil modIdUtil
 	) {
 		this.ingredientRegistry = ingredientRegistry;
-		this.itemsByModId = itemsByModId;
 		this.modIdUtil = modIdUtil;
 	}
 
@@ -63,11 +60,6 @@ public class ItemRegistry implements IItemRegistry {
 
 	@Override
 	public ImmutableList<ItemStack> getItemListForModId(@Nullable String modId) {
-		if (modId == null) {
-			Log.error("Null modId", new NullPointerException());
-			return ImmutableList.of();
-		}
-		String lowerCaseModId = modId.toLowerCase(Locale.ENGLISH);
-		return itemsByModId.get(lowerCaseModId);
+		return ImmutableList.of();
 	}
 }
