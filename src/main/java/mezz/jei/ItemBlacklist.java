@@ -27,6 +27,10 @@ public class ItemBlacklist implements IItemBlacklist {
 			Log.error("Null itemStack", new NullPointerException());
 			return;
 		}
+		if (itemStack.getItem() == null) {
+			Log.error("Null item in itemStack", new NullPointerException());
+			return;
+		}
 
 		String uid = ingredientHelper.getUniqueId(itemStack);
 		itemBlacklist.add(uid);
@@ -38,6 +42,11 @@ public class ItemBlacklist implements IItemBlacklist {
 			Log.error("Null itemStack", new NullPointerException());
 			return;
 		}
+		if (itemStack.getItem() == null) {
+			Log.error("Null item in itemStack", new NullPointerException());
+			return;
+		}
+
 		String uid = ingredientHelper.getUniqueId(itemStack);
 		itemBlacklist.remove(uid);
 	}
@@ -46,6 +55,10 @@ public class ItemBlacklist implements IItemBlacklist {
 	public boolean isItemBlacklisted(@Nullable ItemStack itemStack) {
 		if (itemStack == null) {
 			Log.error("Null itemStack", new NullPointerException());
+			return false;
+		}
+		if (itemStack.getItem() == null) {
+			Log.error("Null item in itemStack", new NullPointerException());
 			return false;
 		}
 
