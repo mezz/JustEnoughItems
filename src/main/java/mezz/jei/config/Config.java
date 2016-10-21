@@ -222,10 +222,6 @@ public class Config {
 
 		syncConfig();
 		syncItemBlacklistConfig();
-	}
-
-	public static void startJei() {
-		syncWorldConfig();
 		syncSearchColorsConfig();
 	}
 
@@ -336,7 +332,7 @@ public class Config {
 		return configChanged;
 	}
 
-	private static boolean syncWorldConfig() {
+	public static boolean syncWorldConfig() {
 		if (worldConfig == null) {
 			return false;
 		}

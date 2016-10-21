@@ -18,13 +18,16 @@ import mezz.jei.util.IngredientListElement;
 import mezz.jei.util.Java6Helper;
 import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.ProgressManager;
 
 public class IngredientBaseListFactory {
 	private IngredientBaseListFactory() {
 
 	}
 
-	public static ImmutableList<IIngredientListElement> create(IIngredientRegistry ingredientRegistry, JeiHelpers jeiHelpers) {
+	public static ImmutableList<IIngredientListElement> create() {
+		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+		JeiHelpers jeiHelpers = Internal.getHelpers();
 		IngredientChecker ingredientChecker = new IngredientChecker(jeiHelpers);
 
 		List<IIngredientListElement> ingredientListElements = new LinkedList<IIngredientListElement>();
@@ -41,7 +44,10 @@ public class IngredientBaseListFactory {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientClass);
 
-		for (V ingredient : ingredientRegistry.getIngredients(ingredientClass)) {
+		ImmutableList<V> ingredients = ingredientRegistry.getIngredients(ingredientClass);
+		ProgressManager.ProgressBar progressBar = ProgressManager.push("Adding " + ingredientClass.getSimpleName() + " ingredients.", ingredients.size());
+		for (V ingredient : ingredients) {
+			progressBar.step("");
 			if (ingredient != null) {
 				if (!ingredientChecker.isIngredientHidden(ingredient, ingredientHelper)) {
 					IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer);
@@ -51,6 +57,7 @@ public class IngredientBaseListFactory {
 				}
 			}
 		}
+		ProgressManager.pop(progressBar);
 
 		return baseList;
 	}

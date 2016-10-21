@@ -8,7 +8,7 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class SessionData {
 	private static boolean jeiOnServer = false;
-	private static boolean jeiStarted = false;
+	private static boolean joinedWorld = false;
 	private static String worldUid = null;
 
 	private SessionData() {
@@ -21,7 +21,7 @@ public class SessionData {
 
 	public static void onConnectedToServer(boolean jeiOnServer) {
 		SessionData.jeiOnServer = jeiOnServer;
-		SessionData.jeiStarted = false;
+		SessionData.joinedWorld = false;
 		SessionData.worldUid = null;
 	}
 
@@ -51,11 +51,11 @@ public class SessionData {
 		return worldUid;
 	}
 
-	public static boolean isJeiStarted() {
-		return jeiStarted;
+	public static boolean hasJoinedWorld() {
+		return joinedWorld;
 	}
 
-	public static void setJeiStarted() {
-		SessionData.jeiStarted = true;
+	public static void setJoinedWorld() {
+		SessionData.joinedWorld = true;
 	}
 }

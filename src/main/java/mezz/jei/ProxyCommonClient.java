@@ -1,10 +1,10 @@
 package mezz.jei;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
@@ -20,7 +20,6 @@ import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
-import net.minecraft.crash.CrashReport;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
@@ -36,9 +35,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 @SuppressWarnings("unused")
 public class ProxyCommonClient extends ProxyCommon {
+	private List<IModPlugin> plugins = new ArrayList<IModPlugin>();
 	@Nullable
-	private GuiEventHandler guiEventHandler;
-	private List<IModPlugin> plugins;
+	private JeiStarter starter;
 
 	private static void initVersionChecker() {
 		final NBTTagCompound compound = new NBTTagCompound();
@@ -102,59 +101,42 @@ public class ProxyCommonClient extends ProxyCommon {
 		reloadableResourceManager.registerReloadListener(new IResourceManagerReloadListener() {
 			@Override
 			public void onResourceManagerReload(IResourceManager resourceManager) {
-				restartJEI();
+				if (SessionData.hasJoinedWorld()) {
+					restartJEI();
+				}
 			}
 		});
+
+		long jeiStartTime = System.currentTimeMillis();
+		Log.info("Beginning postInit...");
+		this.starter = new JeiStarter(this.plugins);
+		Log.info("Finished postInit in {} ms", System.currentTimeMillis() - jeiStartTime);
+
+		this.starter.start(this.plugins);
 	}
 
 	@SubscribeEvent
 	public void onEntityJoinedWorld(EntityJoinWorldEvent event) {
-		if (event.getWorld().isRemote && !SessionData.isJeiStarted() && Minecraft.getMinecraft().thePlayer != null) {
-			try {
-				startJEI();
-			} catch (Throwable e) {
-				Minecraft.getMinecraft().displayCrashReport(new CrashReport("JEI failed to start:", e));
-			}
+		if (event.getWorld().isRemote && !SessionData.hasJoinedWorld() && Minecraft.getMinecraft().thePlayer != null) {
+			SessionData.setJoinedWorld();
+			Config.syncWorldConfig();
 		}
-	}
-
-	private void startJEI() {
-		long jeiStartTime = System.currentTimeMillis();
-		Log.info("Beginning startup...");
-		SessionData.setJeiStarted();
-
-		Config.startJei();
-
-		JeiRuntime jeiRuntime = JeiStarter.startJEI(plugins);
-
-		if (guiEventHandler != null) {
-			MinecraftForge.EVENT_BUS.unregister(guiEventHandler);
-			guiEventHandler = null;
-		}
-		guiEventHandler = new GuiEventHandler(jeiRuntime);
-		MinecraftForge.EVENT_BUS.register(guiEventHandler);
-
-		Log.info("Finished startup in {} ms", System.currentTimeMillis() - jeiStartTime);
 	}
 
 	@Override
 	public void restartJEI() {
 		// check that JEI has been started before. if not, do nothing
-		if (SessionData.isJeiStarted()) {
-			startJEI();
+		if (this.starter != null && this.starter.hasStarted()) {
+			this.starter.start(this.plugins);
 		}
 	}
 
 	private static void reloadItemList() {
-		if (SessionData.isJeiStarted()) {
-			JeiRuntime runtime = Internal.getRuntime();
-			if (runtime != null) {
-				ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-				ItemFilter itemFilter = itemListOverlay.getItemFilter();
-				IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-				JeiHelpers helpers = Internal.getHelpers();
-				itemFilter.build(ingredientRegistry, helpers);
-			}
+		JeiRuntime runtime = Internal.getRuntime();
+		if (runtime != null) {
+			ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
+			ItemFilter itemFilter = itemListOverlay.getItemFilter();
+			itemFilter.build();
 		}
 	}
 

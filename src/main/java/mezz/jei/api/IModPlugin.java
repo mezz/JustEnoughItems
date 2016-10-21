@@ -5,7 +5,6 @@ import mezz.jei.api.ingredients.IModIngredientRegistration;
 /**
  * The main class to implement to create a JEI plugin. Everything communicated between a mod and JEI is through this class.
  * IModPlugins must have the {@link JEIPlugin} annotation to get loaded by JEI.
- * This class must not import anything that could be missing at runtime (i.e. code from any other mod).
  *
  * @see BlankModPlugin
  */
@@ -13,7 +12,6 @@ public interface IModPlugin {
 
 	/**
 	 * If your item has subtypes that depend on NBT or capabilities, use this to help JEI identify those subtypes correctly.
-	 * Called when the player joins the world and any time JEI reloads (like for a config change).
 	 *
 	 * @since JEI 3.12.1
 	 */
@@ -21,7 +19,6 @@ public interface IModPlugin {
 
 	/**
 	 * Register special ingredients, beyond the basic ItemStack and FluidStack.
-	 * Called when the player joins the world and any time JEI reloads (like for a config change).
 	 *
 	 * @since JEI 3.11.0
 	 */
@@ -29,7 +26,6 @@ public interface IModPlugin {
 
 	/**
 	 * Register this mod plugin with the mod registry.
-	 * Called when the player joins the world and any time JEI reloads (like for a config change).
 	 */
 	void register(IModRegistry registry);
 

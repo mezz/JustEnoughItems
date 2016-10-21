@@ -49,6 +49,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.common.ProgressManager;
 
 public class RecipeRegistry implements IRecipeRegistry {
 	private final StackHelper stackHelper;
@@ -159,9 +160,12 @@ public class RecipeRegistry implements IRecipeRegistry {
 			return;
 		}
 
+		ProgressManager.ProgressBar progressBar = ProgressManager.push("Adding recipes", recipes.size());
 		for (Object recipe : recipes) {
+			progressBar.step("");
 			addRecipe(recipe);
 		}
+		ProgressManager.pop(progressBar);
 	}
 
 	@Override

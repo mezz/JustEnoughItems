@@ -29,11 +29,11 @@ public class ItemFilter {
 
 	private ImmutableList<IIngredientListElement> baseList;
 
-	public void build(IIngredientRegistry ingredientRegistry, JeiHelpers jeiHelpers) {
+	public void build() {
 		Log.info("Building item filter...");
 		long start_time = System.currentTimeMillis();
 
-		this.baseList = IngredientBaseListFactory.create(ingredientRegistry, jeiHelpers);
+		this.baseList = IngredientBaseListFactory.create();
 		this.filteredItemMapsCache.invalidateAll();
 
 		Log.info("Built    item filter in {} ms", System.currentTimeMillis() - start_time);
