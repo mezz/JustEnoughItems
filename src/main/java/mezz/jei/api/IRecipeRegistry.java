@@ -75,8 +75,8 @@ public interface IRecipeRegistry {
 	/**
 	 * Add a new recipe while the game is running.
 	 * This is only for things like gated recipes becoming available, like the ones in Thaumcraft.
-	 * Use your IRecipeHandler.isValid to determine which recipes are hidden, and when a recipe becomes valid you can add it here.
-	 * (note that IRecipeHandler.isValid must be true when the recipe is added here for it to work)
+	 * Use your {@link IRecipeHandler#isRecipeValid(Object)} to determine which recipes are hidden, and when a recipe becomes valid you can add it here.
+	 * (note that {@link IRecipeHandler#isRecipeValid(Object)} must be true when the recipe is added here for it to work)
 	 */
 	void addRecipe(Object recipe);
 
