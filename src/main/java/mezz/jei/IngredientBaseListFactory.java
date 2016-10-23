@@ -7,9 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Multiset;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -19,13 +17,6 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.util.IngredientListElement;
 import mezz.jei.util.Java6Helper;
 import mezz.jei.util.Log;
-import mezz.jei.util.ModIdUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemSkull;
 import net.minecraft.item.ItemStack;
 
 public class IngredientBaseListFactory {
@@ -40,17 +31,6 @@ public class IngredientBaseListFactory {
 
 		for (Class ingredientClass : ingredientRegistry.getRegisteredIngredientClasses()) {
 			addToBaseList(ingredientListElements, ingredientRegistry, ingredientChecker, ingredientClass);
-		}
-
-		for (Multiset.Entry<Item> brokenItem : ingredientChecker.getBrokenItems().entrySet()) {
-			int count = brokenItem.getCount();
-			if (count > 1) {
-				Item item = brokenItem.getElement();
-				IIngredientHelper<ItemStack> ingredientHelper = ingredientRegistry.getIngredientHelper(ItemStack.class);
-				String modId = ingredientHelper.getModId(new ItemStack(item));
-				String modName = Internal.getModIdUtil().getModNameForModId(modId);
-				Log.error("Couldn't get ItemModel for {} item {}. Suppressed {} similar errors.", modName, item, count);
-			}
 		}
 
 		sortIngredientListElements(ingredientListElements);
@@ -133,68 +113,12 @@ public class IngredientBaseListFactory {
 
 	private static class IngredientChecker {
 		private final ItemBlacklist itemBlacklist;
-		private final ItemModelMesher itemModelMesher;
-		private final IBakedModel missingModel;
-		private final Multiset<Item> brokenItems = HashMultiset.create();
 
 		public IngredientChecker(JeiHelpers jeiHelpers) {
 			itemBlacklist = jeiHelpers.getItemBlacklist();
-			itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
-			missingModel = itemModelMesher.getModelManager().getMissingModel();
 		}
 
 		public <V> boolean isIngredientHidden(V ingredient, IIngredientHelper<V> ingredientHelper) {
-			if (isIngredientHiddenByBlacklist(ingredient, ingredientHelper)) {
-				return true;
-			}
-
-			if (ingredient instanceof ItemStack) {
-				ItemStack itemStack = (ItemStack) ingredient;
-				Item item = itemStack.getItem();
-				if (brokenItems.contains(item)) {
-					return true;
-				}
-
-				final RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-				final IBakedModel itemModel;
-				try {
-					itemModel = renderItem.getItemModelWithOverrides(itemStack, null, null);
-				} catch (RuntimeException e) {
-					ModIdUtil modIdUtil = Internal.getModIdUtil();
-					String modName = modIdUtil.getModNameForIngredient(ingredient, ingredientHelper);
-					String stackInfo = ingredientHelper.getErrorInfo(ingredient);
-					Log.error("Couldn't get ItemModel for {} itemStack {}", modName, stackInfo, e);
-					brokenItems.add(item);
-					return true;
-				} catch (LinkageError e) {
-					ModIdUtil modIdUtil = Internal.getModIdUtil();
-					String modName = modIdUtil.getModNameForIngredient(ingredient, ingredientHelper);
-					String stackInfo = ingredientHelper.getErrorInfo(ingredient);
-					Log.error("Couldn't get ItemModel for {} itemStack {}", modName, stackInfo, e);
-					brokenItems.add(item);
-					return true;
-				}
-
-				if (Config.isHideMissingModelsEnabled()) {
-					if (itemModel == null || itemModel == missingModel) {
-						return true;
-					}
-				}
-
-				// Game freezes when loading player skulls, see https://bugs.mojang.com/browse/MC-65587
-				if (item instanceof ItemSkull && itemStack.getMetadata() == 3) {
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		public Multiset<Item> getBrokenItems() {
-			return brokenItems;
-		}
-
-		private <V> boolean isIngredientHiddenByBlacklist(V ingredient, IIngredientHelper<V> ingredientHelper) {
 			try {
 				if (ingredient instanceof ItemStack) {
 					if (itemBlacklist.isItemBlacklistedByApi((ItemStack) ingredient)) {

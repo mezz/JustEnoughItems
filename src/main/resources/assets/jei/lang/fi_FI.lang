@@ -50,8 +50,6 @@ config.jei.advanced.nbtKeyIgnoreList=NBT-avaimien sivuutuslista
 config.jei.advanced.nbtKeyIgnoreList.comment=Lista NBT-avaimista jotka pitäisi sivuuttaa reseptejä noutaessa.
 config.jei.advanced.itemBlacklist=Tavaroiden musta lista
 config.jei.advanced.itemBlacklist.comment=Lista tavaroista joita ei pitäisi näyttää JEI:n tavaralistassa. Muoto: modinId:nimi[:metadata]. Muokkaustila lisää tai poistaa merkintöjä tästä.
-config.jei.advanced.hideMissingModelsEnabled=Piilota puuttuvat tavaramallit
-config.jei.advanced.hideMissingModelsEnabled.comment=Tavarat joilta puuttuvat mallit poistetaan tavaralistasta.
 config.jei.advanced.debugModeEnabled=Debug-tila
 config.jei.advanced.debugModeEnabled.comment=Lisää muutamia asioita jotka auttavat JEI:n kehitystä.
 

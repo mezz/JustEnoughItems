@@ -21,7 +21,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class Config {
 	private static final String configKeyPrefix = "config.jei";
-	private static File jeiConfigurationDir;
 
 	public static final String CATEGORY_SEARCH = "search";
 	public static final String CATEGORY_ADVANCED = "advanced";
@@ -36,7 +35,6 @@ public class Config {
 	// advanced
 	private static boolean debugModeEnabled = false;
 	private static boolean debugItemEnabled = false;
-	private static boolean hideMissingModelsEnabled = true;
 	private static boolean colorSearchEnabled = false;
 	private static boolean centerSearchBarEnabled = false;
 
@@ -108,10 +106,6 @@ public class Config {
 		return cheatItemsEnabled && SessionData.isJeiOnServer();
 	}
 
-	public static boolean isHideMissingModelsEnabled() {
-		return hideMissingModelsEnabled;
-	}
-
 	public static boolean isColorSearchEnabled() {
 		return colorSearchEnabled;
 	}
@@ -177,7 +171,7 @@ public class Config {
 
 	public static void preInit(FMLPreInitializationEvent event) {
 
-		jeiConfigurationDir = new File(event.getModConfigurationDirectory(), Constants.MOD_ID);
+		File jeiConfigurationDir = new File(event.getModConfigurationDirectory(), Constants.MOD_ID);
 		if (!jeiConfigurationDir.exists()) {
 			try {
 				if (!jeiConfigurationDir.mkdir()) {
@@ -193,6 +187,8 @@ public class Config {
 		final File configFile = new File(jeiConfigurationDir, "jei.cfg");
 		final File itemBlacklistConfigFile = new File(jeiConfigurationDir, "itemBlacklist.cfg");
 		final File searchColorsConfigFile = new File(jeiConfigurationDir, "searchColors.cfg");
+		final File worldConfigFile = new File(jeiConfigurationDir, "worldSettings.cfg");
+		worldConfig = new Configuration(worldConfigFile, "0.1.0");
 
 		{
 			final File oldConfigFile = event.getSuggestedConfigurationFile();
@@ -229,8 +225,6 @@ public class Config {
 	}
 
 	public static void startJei() {
-		final File worldConfigFile = new File(jeiConfigurationDir, "worldSettings.cfg");
-		worldConfig = new Configuration(worldConfigFile, "0.1.0");
 		syncWorldConfig();
 		syncSearchColorsConfig();
 	}
@@ -290,11 +284,7 @@ public class Config {
 		categoryAdvanced.remove("nbtKeyIgnoreList");
 		categoryAdvanced.remove("deleteItemsInCheatModeEnabled");
 		categoryAdvanced.remove("hideLaggyModelsEnabled");
-
-		hideMissingModelsEnabled = config.getBoolean(CATEGORY_ADVANCED, "hideMissingModelsEnabled", hideMissingModelsEnabled);
-		if (categoryAdvanced.get("hideMissingModelsEnabled").hasChanged()) {
-			needsReload = true;
-		}
+		categoryAdvanced.remove("hideMissingModelsEnabled");
 
 		colorSearchEnabled = config.getBoolean(CATEGORY_ADVANCED, "colorSearchEnabled", colorSearchEnabled);
 		if (categoryAdvanced.get("colorSearchEnabled").hasChanged()) {
