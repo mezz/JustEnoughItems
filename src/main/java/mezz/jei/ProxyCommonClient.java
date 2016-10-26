@@ -29,6 +29,7 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -94,7 +95,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	}
 
 	@Override
-	public void postInit(FMLPostInitializationEvent event) {
+	public void loadComplete(FMLLoadCompleteEvent event) {
 		// Reload when resources change
 		Minecraft minecraft = Minecraft.getMinecraft();
 		IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) minecraft.getResourceManager();
@@ -108,11 +109,11 @@ public class ProxyCommonClient extends ProxyCommon {
 		});
 
 		long jeiStartTime = System.currentTimeMillis();
-		Log.info("Beginning postInit...");
+		Log.info("Starting JEI...");
 		this.starter = new JeiStarter(this.plugins);
-		Log.info("Finished postInit in {} ms", System.currentTimeMillis() - jeiStartTime);
 
 		this.starter.start(this.plugins);
+		Log.info("Finished Starting JEI in {} ms", System.currentTimeMillis() - jeiStartTime);
 	}
 
 	@SubscribeEvent
