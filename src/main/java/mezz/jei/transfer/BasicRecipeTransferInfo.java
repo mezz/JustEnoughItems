@@ -7,15 +7,15 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 
-public class BasicRecipeTransferInfo implements IRecipeTransferInfo {
-	private final Class<? extends Container> containerClass;
+public class BasicRecipeTransferInfo<C extends Container> implements IRecipeTransferInfo<C> {
+	private final Class<C> containerClass;
 	private final String recipeCategoryUid;
 	private final int recipeSlotStart;
 	private final int recipeSlotCount;
 	private final int inventorySlotStart;
 	private final int inventorySlotCount;
 
-	public BasicRecipeTransferInfo(Class<? extends Container> containerClass, String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
+	public BasicRecipeTransferInfo(Class<C> containerClass, String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
 		this.containerClass = containerClass;
 		this.recipeCategoryUid = recipeCategoryUid;
 		this.recipeSlotStart = recipeSlotStart;
@@ -25,7 +25,7 @@ public class BasicRecipeTransferInfo implements IRecipeTransferInfo {
 	}
 
 	@Override
-	public Class<? extends Container> getContainerClass() {
+	public Class<C> getContainerClass() {
 		return containerClass;
 	}
 
@@ -35,7 +35,7 @@ public class BasicRecipeTransferInfo implements IRecipeTransferInfo {
 	}
 
 	@Override
-	public List<Slot> getRecipeSlots(Container container) {
+	public List<Slot> getRecipeSlots(C container) {
 		List<Slot> slots = new ArrayList<Slot>();
 		for (int i = recipeSlotStart; i < recipeSlotStart + recipeSlotCount; i++) {
 			Slot slot = container.getSlot(i);
@@ -45,7 +45,7 @@ public class BasicRecipeTransferInfo implements IRecipeTransferInfo {
 	}
 
 	@Override
-	public List<Slot> getInventorySlots(Container container) {
+	public List<Slot> getInventorySlots(C container) {
 		List<Slot> slots = new ArrayList<Slot>();
 		for (int i = inventorySlotStart; i < inventorySlotStart + inventorySlotCount; i++) {
 			Slot slot = container.getSlot(i);

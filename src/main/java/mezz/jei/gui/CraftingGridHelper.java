@@ -76,12 +76,12 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 			if (height == 3) {
 				index = (i * 3) + 1;
 			} else if (height == 2) {
-				index = (i * 3) + 4;
+				index = (i * 3) + 1;
 			} else {
 				index = 4;
 			}
 		} else if (height == 1) {
-			index = i + 6;
+			index = i + 3;
 		} else if (width == 2) {
 			index = i;
 			if (i > 1) {
