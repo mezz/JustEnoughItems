@@ -18,24 +18,23 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.ProgressManager;
 
 public class JeiStarter {
-	private final ModRegistry modRegistry;
-	private final StackHelper stackHelper;
-	private final IngredientRegistry ingredientRegistry;
-
 	private boolean started;
 	@Nullable
 	private GuiEventHandler guiEventHandler;
 
-	public JeiStarter(List<IModPlugin> plugins) {
+	public void start(List<IModPlugin> plugins) {
+		long jeiStartTime = System.currentTimeMillis();
+
+		Log.info("Starting JEI...");
 		SubtypeRegistry subtypeRegistry = new SubtypeRegistry();
 
 		registerItemSubtypes(plugins, subtypeRegistry);
 
-		stackHelper = new StackHelper(subtypeRegistry);
+		StackHelper stackHelper = new StackHelper(subtypeRegistry);
 		stackHelper.enableUidCache();
 		Internal.setStackHelper(stackHelper);
 
-		ingredientRegistry = registerIngredients(plugins);
+		IngredientRegistry ingredientRegistry = registerIngredients(plugins);
 		Internal.setIngredientRegistry(ingredientRegistry);
 
 		JeiHelpers jeiHelpers = new JeiHelpers(ingredientRegistry, stackHelper, subtypeRegistry);
@@ -44,13 +43,9 @@ public class JeiStarter {
 		ModIdUtil modIdUtil = Internal.getModIdUtil();
 		ItemRegistry itemRegistry = new ItemRegistry(ingredientRegistry, modIdUtil);
 
-		modRegistry = new ModRegistry(jeiHelpers, itemRegistry, ingredientRegistry);
+		ModRegistry modRegistry = new ModRegistry(jeiHelpers, itemRegistry, ingredientRegistry);
 
 		registerPlugins(plugins, modRegistry);
-	}
-
-	public void start(List<IModPlugin> plugins) {
-		stackHelper.enableUidCache();
 
 		Log.info("Building recipe registry...");
 		long start_time = System.currentTimeMillis();
@@ -80,6 +75,7 @@ public class JeiStarter {
 		MinecraftForge.EVENT_BUS.register(guiEventHandler);
 
 		started = true;
+		Log.info("Finished Starting JEI in {} ms", System.currentTimeMillis() - jeiStartTime);
 	}
 
 	public boolean hasStarted() {

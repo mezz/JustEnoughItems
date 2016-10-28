@@ -37,8 +37,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 @SuppressWarnings("unused")
 public class ProxyCommonClient extends ProxyCommon {
 	private List<IModPlugin> plugins = new ArrayList<IModPlugin>();
-	@Nullable
-	private JeiStarter starter;
+	private final JeiStarter starter = new JeiStarter();
 
 	private static void initVersionChecker() {
 		final NBTTagCompound compound = new NBTTagCompound();
@@ -108,12 +107,7 @@ public class ProxyCommonClient extends ProxyCommon {
 			}
 		});
 
-		long jeiStartTime = System.currentTimeMillis();
-		Log.info("Starting JEI...");
-		this.starter = new JeiStarter(this.plugins);
-
-		this.starter.start(this.plugins);
-		Log.info("Finished Starting JEI in {} ms", System.currentTimeMillis() - jeiStartTime);
+		this.starter.start(plugins);
 	}
 
 	@SubscribeEvent
@@ -127,7 +121,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	@Override
 	public void restartJEI() {
 		// check that JEI has been started before. if not, do nothing
-		if (this.starter != null && this.starter.hasStarted()) {
+		if (this.starter.hasStarted()) {
 			this.starter.start(this.plugins);
 		}
 	}
