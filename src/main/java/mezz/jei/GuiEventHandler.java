@@ -34,18 +34,13 @@ public class GuiEventHandler {
 		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
 
 		GuiScreen gui = event.getGui();
-		if (gui instanceof GuiContainer) {
-			GuiContainer guiContainer = (GuiContainer) gui;
-			itemListOverlay.initGui(guiContainer);
+		if (gui instanceof GuiContainer || gui instanceof RecipesGui) {
+			itemListOverlay.initGui(gui);
 
 			RecipeRegistry recipeRegistry = runtime.getRecipeRegistry();
 			IIngredientRegistry ingredientRegistry = runtime.getIngredientRegistry();
 			RecipesGui recipesGui = runtime.getRecipesGui();
 			inputHandler = new InputHandler(recipeRegistry, ingredientRegistry, recipesGui, itemListOverlay);
-		} else if (gui instanceof RecipesGui) {
-			if (inputHandler != null) {
-				inputHandler.onScreenResized();
-			}
 		} else {
 			inputHandler = null;
 		}

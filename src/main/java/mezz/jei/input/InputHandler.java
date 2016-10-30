@@ -31,7 +31,7 @@ public class InputHandler {
 	private final IIngredientRegistry ingredientRegistry;
 	private final RecipesGui recipesGui;
 	private final ItemListOverlay itemListOverlay;
-	private MouseHelper mouseHelper;
+	private final MouseHelper mouseHelper;
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<IShowsRecipeFocuses>();
 
 	private boolean clickHandled = false;
@@ -47,10 +47,6 @@ public class InputHandler {
 		showsRecipeFocuses.add(recipesGui);
 		showsRecipeFocuses.add(itemListOverlay);
 		showsRecipeFocuses.add(new GuiContainerWrapper());
-	}
-
-	public void onScreenResized() {
-		this.mouseHelper = new MouseHelper();
 	}
 
 	public boolean handleMouseEvent(GuiScreen guiScreen, int mouseX, int mouseY) {
