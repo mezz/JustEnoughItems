@@ -52,7 +52,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
 import org.lwjgl.input.Keyboard;
 
@@ -159,7 +158,7 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 
 		int configButtonX = searchFieldX + searchFieldWidth + 1;
 		int configButtonY = guiProperties.getScreenHeight() - buttonSize - borderPadding;
-		configButton = new GuiButton(2, configButtonX, configButtonY, buttonSize, buttonSize, null);
+		configButton = new GuiButton(2, configButtonX, configButtonY, buttonSize, buttonSize, "");
 		ResourceLocation configButtonIconLocation = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
 		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
 		configButtonIcon = guiHelper.createDrawable(configButtonIconLocation, 0, 166, 16, 16);
@@ -179,9 +178,9 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	private List<IAdvancedGuiHandler<?>> getActiveAdvancedGuiHandlers(GuiScreen guiScreen) {
 		List<IAdvancedGuiHandler<?>> activeAdvancedGuiHandler = new ArrayList<IAdvancedGuiHandler<?>>();
 		if (guiScreen instanceof GuiContainer) {
-			GuiContainer guiContainer = (GuiContainer) guiScreen;
 			for (IAdvancedGuiHandler<?> advancedGuiHandler : advancedGuiHandlers) {
-				if (advancedGuiHandler.getGuiContainerClass().isAssignableFrom(guiContainer.getClass())) {
+				Class<?> guiContainerClass = advancedGuiHandler.getGuiContainerClass();
+				if (guiContainerClass.isInstance(guiScreen)) {
 					activeAdvancedGuiHandler.add(advancedGuiHandler);
 				}
 			}
@@ -201,9 +200,10 @@ public class ItemListOverlay implements IItemListOverlay, IShowsRecipeFocuses, I
 	}
 
 	@Nullable
-	private <T extends GuiContainer> List<Rectangle> getGuiAreas(GuiContainer guiContainer, IAdvancedGuiHandler<T> advancedGuiHandler) {
-		if (advancedGuiHandler.getGuiContainerClass().isAssignableFrom(guiContainer.getClass())) {
-			T guiT = advancedGuiHandler.getGuiContainerClass().cast(guiContainer);
+	private <T extends GuiContainer> List<Rectangle> getGuiAreas(GuiContainer gui, IAdvancedGuiHandler<T> advancedGuiHandler) {
+		Class<T> guiClass = advancedGuiHandler.getGuiContainerClass();
+		if (guiClass.isInstance(gui)) {
+			T guiT = guiClass.cast(gui);
 			return advancedGuiHandler.getGuiExtraAreas(guiT);
 		}
 		return null;
