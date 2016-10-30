@@ -20,7 +20,6 @@ import mezz.jei.config.Config;
 import mezz.jei.plugins.jei.debug.DebugRecipe;
 import mezz.jei.plugins.jei.debug.DebugRecipeCategory;
 import mezz.jei.plugins.jei.debug.DebugRecipeHandler;
-import mezz.jei.plugins.jei.debug.DebugRecipeRegistryPlugin;
 import mezz.jei.plugins.jei.description.ItemDescriptionRecipeCategory;
 import mezz.jei.plugins.jei.description.ItemDescriptionRecipeHandler;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
@@ -96,8 +95,6 @@ public class JEIInternalPlugin extends BlankModPlugin {
 					);
 				}
 			});
-
-			registry.addRecipeRegistryPlugin(new DebugRecipeRegistryPlugin());
 		}
 	}
 
