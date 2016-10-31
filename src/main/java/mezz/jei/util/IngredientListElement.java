@@ -120,15 +120,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	}
 
 	private static <T> String getTooltipString(T ingredient, IIngredientRenderer<T> ingredientRenderer, String modId, String modName, String displayName) {
-		List<String> tooltip;
-		try {
-			tooltip = ingredientRenderer.getTooltip(Minecraft.getMinecraft(), ingredient);
-		} catch (RuntimeException ignored) {
-			return "";
-		} catch (LinkageError ignored) {
-			return "";
-		}
-
+		List<String> tooltip = ingredientRenderer.getTooltip(Minecraft.getMinecraft(), ingredient);
 		String tooltipString = Joiner.on(' ').join(tooltip).toLowerCase();
 		tooltipString = removeChatFormatting(tooltipString);
 		tooltipString = tooltipString.replace(modId, "");

@@ -1,13 +1,18 @@
 package mezz.jei.plugins.vanilla.ingredients;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.FakeClientPlayer;
+import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
@@ -26,7 +31,24 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 
 	@Override
 	public List<String> getTooltip(Minecraft minecraft, ItemStack ingredient) {
-		List<String> list = ingredient.getTooltip(minecraft.thePlayer, minecraft.gameSettings.advancedItemTooltips);
+		EntityPlayer player = minecraft.thePlayer;
+		if (player == null) {
+			player = FakeClientPlayer.getInstance();
+		}
+
+		List<String> list;
+		try {
+			list = ingredient.getTooltip(player, minecraft.gameSettings.advancedItemTooltips);
+		} catch (RuntimeException e) {
+			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
+			Log.error("Failed to get tooltip: {}", itemStackInfo, e);
+			return Collections.emptyList();
+		} catch (LinkageError e) {
+			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
+			Log.error("Failed to get tooltip: {}", itemStackInfo, e);
+			return Collections.emptyList();
+		}
+
 		for (int k = 0; k < list.size(); ++k) {
 			if (k == 0) {
 				list.set(k, ingredient.getRarity().rarityColor + list.get(k));
