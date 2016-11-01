@@ -82,12 +82,15 @@ public class RecipeLayout implements IRecipeLayout {
 		}
 	}
 
-	public void draw(Minecraft minecraft, int mouseX, int mouseY) {
+	public void draw(Minecraft minecraft, final int mouseX, final int mouseY) {
 		IDrawable background = recipeCategory.getBackground();
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.disableLighting();
 		GlStateManager.enableAlpha();
+
+		final int recipeMouseX = mouseX - posX;
+		final int recipeMouseY = mouseY - posY;
 
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(posX, posY, 0.0F);
@@ -96,15 +99,6 @@ public class RecipeLayout implements IRecipeLayout {
 			recipeCategory.drawExtras(minecraft);
 			recipeCategory.drawAnimations(minecraft);
 			recipeWrapper.drawAnimations(minecraft, background.getWidth(), background.getHeight());
-		}
-		GlStateManager.popMatrix();
-
-		final int recipeMouseX = mouseX - posX;
-		final int recipeMouseY = mouseY - posY;
-
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(posX, posY, 0.0F);
-		{
 			recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight(), recipeMouseX, recipeMouseY);
 		}
 		GlStateManager.popMatrix();

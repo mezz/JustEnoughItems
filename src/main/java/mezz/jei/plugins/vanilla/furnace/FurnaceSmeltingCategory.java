@@ -30,7 +30,7 @@ public class FurnaceSmeltingCategory extends FurnaceRecipeCategory<SmeltingRecip
 	}
 
 	@Override
-	public void drawAnimations(Minecraft minecraft) {
+	public void drawExtras(Minecraft minecraft) {
 		flame.draw(minecraft, 2, 20);
 		arrow.draw(minecraft, 24, 18);
 	}

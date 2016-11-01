@@ -66,10 +66,6 @@ public class BrewingRecipeCategory extends BlankRecipeCategory<BrewingRecipeWrap
 	public void drawExtras(Minecraft minecraft) {
 		slotDrawable.draw(minecraft, outputSlotX, outputSlotY);
 		blazeHeat.draw(minecraft, 5, 29);
-	}
-
-	@Override
-	public void drawAnimations(Minecraft minecraft) {
 		bubbles.draw(minecraft, 8, 0);
 		arrow.draw(minecraft, 42, 1);
 	}

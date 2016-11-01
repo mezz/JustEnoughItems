@@ -50,7 +50,10 @@ public interface IRecipeCategory<T extends IRecipeWrapper> {
 	 *
 	 * @see IDrawableAnimated for a simple class for drawing animated things.
 	 * @see IGuiHelper for useful functions.
+	 * @deprecated since 3.13.1. Move animations into {@link #drawExtras(Minecraft)},
+	 * these are being combined because nobody uses the config option to disable animations.
 	 */
+	@Deprecated
 	void drawAnimations(Minecraft minecraft);
 
 	/**
