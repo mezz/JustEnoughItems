@@ -21,14 +21,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 /**
- * The area drawn on top of the {@link RecipesGui} that shows which items can craft the current recipe category.
+ * The area drawn on left side of the {@link RecipesGui} that shows which items can craft the current recipe category.
  */
 public class RecipeCategoryCraftingItemsArea implements IShowsRecipeFocuses {
 	private final IRecipeRegistry recipeRegistry;
-	private final IDrawable leftDrawable;
-	private final IDrawable spacerDrawable;
-	private final IDrawable rightDrawable;
-	private final IDrawable boxDrawable;
+	private final IDrawable topDrawable;
+	private final IDrawable middleDrawable;
+	private final IDrawable bottomDrawable;
 
 	private GuiItemStackGroup craftingItems;
 	private int left = 0;
@@ -42,10 +41,9 @@ public class RecipeCategoryCraftingItemsArea implements IShowsRecipeFocuses {
 		ResourceLocation recipeBackgroundResource = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
 
 		IGuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
-		leftDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 15, 5, 25);
-		spacerDrawable = guiHelper.createDrawable(recipeBackgroundResource, 204, 15, 2, 25);
-		rightDrawable = guiHelper.createDrawable(recipeBackgroundResource, 209, 15, 5, 25);
-		boxDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 40, 18, 25);
+		topDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 65, 25, 6);
+		middleDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 71, 25, 16);
+		bottomDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 87, 55, 6);
 	}
 
 	public void updateLayout(List<ItemStack> itemStacks, GuiProperties guiProperties) {
@@ -53,21 +51,21 @@ public class RecipeCategoryCraftingItemsArea implements IShowsRecipeFocuses {
 		craftingItems = new GuiItemStackGroup(focus);
 
 		if (!itemStacks.isEmpty()) {
-			int totalWidth = leftDrawable.getWidth() + boxDrawable.getWidth() + rightDrawable.getWidth();
+			int totalHeight = topDrawable.getHeight() + middleDrawable.getHeight() + bottomDrawable.getHeight();
 			int ingredientCount = 1;
 
-			final int extraBoxWidth = boxDrawable.getWidth() + spacerDrawable.getWidth();
+			final int extraBoxHeight = middleDrawable.getHeight();
 			for (int i = 1; i < itemStacks.size(); i++) {
-				if (totalWidth + extraBoxWidth <= (guiProperties.getGuiXSize() - 8)) {
-					totalWidth += extraBoxWidth;
+				if (totalHeight + extraBoxHeight <= (guiProperties.getGuiXSize() - 8)) {
+					totalHeight += extraBoxHeight;
 					ingredientCount++;
 				} else {
 					break;
 				}
 			}
 
-			left = guiProperties.getGuiLeft() + (guiProperties.getGuiXSize() - totalWidth) / 2; // center it
-			top = guiProperties.getGuiTop() - boxDrawable.getHeight() + 3; // overlaps the recipe gui slightly
+			top = guiProperties.getGuiTop() + (guiProperties.getGuiYSize() - totalHeight) / 2; // center it
+			left = guiProperties.getGuiLeft() + - middleDrawable.getWidth() + 3; // overlaps the recipe gui slightly
 
 			ListMultimap<Integer, ItemStack> itemStacksForSlots = ArrayListMultimap.create();
 			for (int i = 0; i < itemStacks.size(); i++) {
@@ -82,7 +80,7 @@ public class RecipeCategoryCraftingItemsArea implements IShowsRecipeFocuses {
 			}
 
 			for (int i = 0; i < ingredientCount; i++) {
-				craftingItems.init(i, true, left + 5 + (i * 20), top + 5);
+				craftingItems.init(i, true, left + 5, top + 5 + (i * middleDrawable.getHeight()));
 				List<ItemStack> itemStacksForSlot = itemStacksForSlots.get(i);
 				craftingItems.set(i, itemStacksForSlot);
 			}
@@ -98,21 +96,16 @@ public class RecipeCategoryCraftingItemsArea implements IShowsRecipeFocuses {
 			GlStateManager.disableDepth();
 			GlStateManager.enableAlpha();
 			{
-				int left = this.left;
-				leftDrawable.draw(minecraft, left, top);
-				left += leftDrawable.getWidth();
+				int top = this.top;
+				topDrawable.draw(minecraft, this.left, top);
+				top += topDrawable.getHeight();
 
-				boxDrawable.draw(minecraft, left, top);
-				left += boxDrawable.getWidth();
-
-				while (--ingredientCount > 0) {
-					spacerDrawable.draw(minecraft, left, top);
-					left += spacerDrawable.getWidth();
-					boxDrawable.draw(minecraft, left, top);
-					left += boxDrawable.getWidth();
+				while (ingredientCount-- > 0) {
+					middleDrawable.draw(minecraft, this.left, top);
+					top += middleDrawable.getHeight();
 				}
 
-				rightDrawable.draw(minecraft, left, top);
+				bottomDrawable.draw(minecraft, this.left, top);
 			}
 			GlStateManager.disableAlpha();
 			GlStateManager.enableDepth();
