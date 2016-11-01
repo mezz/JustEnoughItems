@@ -18,6 +18,7 @@ import mezz.jei.util.IngredientListElement;
 import mezz.jei.util.Java6Helper;
 import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.client.SplashProgress;
 import net.minecraftforge.fml.common.ProgressManager;
 
 public class IngredientBaseListFactory {
@@ -45,20 +46,31 @@ public class IngredientBaseListFactory {
 		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientClass);
 
 		ImmutableList<V> ingredients = ingredientRegistry.getIngredients(ingredientClass);
-		ProgressManager.ProgressBar progressBar = ProgressManager.push("Adding " + ingredientClass.getSimpleName() + " ingredients.", ingredients.size());
-		for (V ingredient : ingredients) {
-			progressBar.step("");
-			if (ingredient != null) {
-				if (!ingredientChecker.isIngredientHidden(ingredient, ingredientHelper)) {
-					IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer);
-					if (ingredientListElement != null) {
-						baseList.add(ingredientListElement);
+		final int ingredientCount = ingredients.size();
+		if (ingredientCount > 0) {
+			final int steps = Math.min(ingredientCount, 100);
+			ProgressManager.ProgressBar progressBar = ProgressManager.push("Adding " + ingredientClass.getSimpleName() + " ingredients.", steps);
+			SplashProgress.pause();
+			int count = 0;
+			for (V ingredient : ingredients) {
+				count++;
+				if ((count / (float) ingredientCount) > (progressBar.getStep() / (float) progressBar.getSteps())) {
+					SplashProgress.resume();
+					progressBar.step("");
+					SplashProgress.pause();
+				}
+				if (ingredient != null) {
+					if (!ingredientChecker.isIngredientHidden(ingredient, ingredientHelper)) {
+						IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer);
+						if (ingredientListElement != null) {
+							baseList.add(ingredientListElement);
+						}
 					}
 				}
 			}
+			SplashProgress.resume();
+			ProgressManager.pop(progressBar);
 		}
-		ProgressManager.pop(progressBar);
-
 		return baseList;
 	}
 

@@ -107,7 +107,11 @@ public class ProxyCommonClient extends ProxyCommon {
 			}
 		});
 
-		this.starter.start(plugins);
+		try {
+			this.starter.start(plugins);
+		} catch (Exception e) {
+			Log.error("Exception on load", e);
+		}
 	}
 
 	@SubscribeEvent
