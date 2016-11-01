@@ -34,7 +34,6 @@ public class Config {
 
 	// advanced
 	private static boolean debugModeEnabled = false;
-	private static boolean debugItemEnabled = false;
 	private static boolean colorSearchEnabled = false;
 	private static boolean centerSearchBarEnabled = false;
 
@@ -96,10 +95,6 @@ public class Config {
 
 	public static boolean isDebugModeEnabled() {
 		return debugModeEnabled;
-	}
-
-	public static boolean isDebugItemEnabled() {
-		return debugItemEnabled;
 	}
 
 	public static boolean isDeleteItemsInCheatModeActive() {
@@ -281,6 +276,7 @@ public class Config {
 		categoryAdvanced.remove("deleteItemsInCheatModeEnabled");
 		categoryAdvanced.remove("hideLaggyModelsEnabled");
 		categoryAdvanced.remove("hideMissingModelsEnabled");
+		categoryAdvanced.remove("debugItemEnabled");
 
 		colorSearchEnabled = config.getBoolean(CATEGORY_ADVANCED, "colorSearchEnabled", colorSearchEnabled);
 		if (categoryAdvanced.get("colorSearchEnabled").hasChanged()) {
@@ -293,13 +289,6 @@ public class Config {
 		{
 			Property property = config.get(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
 			property.setShowInGui(false);
-		}
-
-		debugItemEnabled = config.getBoolean(CATEGORY_ADVANCED, "debugItemEnabled", debugItemEnabled);
-		{
-			Property property = config.get(CATEGORY_ADVANCED, "debugItemEnabled", debugItemEnabled);
-			property.setShowInGui(false);
-			property.setRequiresMcRestart(true);
 		}
 
 		// migrate item blacklist to new file
