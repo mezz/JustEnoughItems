@@ -47,34 +47,37 @@ public class IngredientBaseListFactory {
 
 		ImmutableList<V> ingredients = ingredientRegistry.getIngredients(ingredientClass);
 		final int ingredientCount = ingredients.size();
-		if (ingredientCount > 0) {
-			final int steps = Math.min(ingredientCount, 100);
-			ProgressManager.ProgressBar progressBar = null;
-			if (showProgressBar) {
-				progressBar = ProgressManager.push("Adding " + ingredientClass.getSimpleName() + " ingredients.", steps);
-				SplashProgress.pause();
-			}
-			int count = 0;
-			for (V ingredient : ingredients) {
-				count++;
-				if (progressBar != null && (count / (float) ingredientCount) > (progressBar.getStep() / (float) progressBar.getSteps())) {
-					SplashProgress.resume();
-					progressBar.step("");
-					SplashProgress.pause();
-				}
-				if (ingredient != null) {
-					if (!ingredientChecker.isIngredientHidden(ingredient, ingredientHelper)) {
-						IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer);
-						if (ingredientListElement != null) {
-							baseList.add(ingredientListElement);
-						}
+		if (ingredientCount <= 0) {
+			return baseList;
+		}
+		final int steps = 100;
+		ProgressManager.ProgressBar bar = null;
+		if (showProgressBar) {
+			bar = ProgressManager.push("Adding " + ingredientClass.getSimpleName() + " ingredients.", steps);
+			SplashProgress.pause();
+		}
+		int count = 0;
+		for (V ingredient : ingredients) {
+			if (ingredient != null) {
+				if (!ingredientChecker.isIngredientHidden(ingredient, ingredientHelper)) {
+					IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer);
+					if (ingredientListElement != null) {
+						baseList.add(ingredientListElement);
 					}
 				}
 			}
-			if (progressBar != null) {
+			// invariant: progressBar.getStep() * ingredientCount >= count at the end of the cycle
+			// at the end: count = steps * ingredientCount, therefore bar.step() would be called exactly steps times
+			count += steps;
+			while (bar != null && (count > bar.getStep() * ingredientCount)) {
 				SplashProgress.resume();
-				ProgressManager.pop(progressBar);
+				bar.step("" + count / ingredientCount + "%");
+				SplashProgress.pause();
 			}
+		}
+		if (bar != null) {
+			SplashProgress.resume();
+			ProgressManager.pop(bar);
 		}
 		return baseList;
 	}
