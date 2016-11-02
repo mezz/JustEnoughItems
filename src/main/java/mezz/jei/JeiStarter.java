@@ -22,7 +22,7 @@ public class JeiStarter {
 	@Nullable
 	private GuiEventHandler guiEventHandler;
 
-	public void start(List<IModPlugin> plugins) {
+	public void start(List<IModPlugin> plugins, boolean showProgressBar) {
 		long jeiStartTime = System.currentTimeMillis();
 
 		Log.info("Starting JEI...");
@@ -64,7 +64,7 @@ public class JeiStarter {
 
 		stackHelper.disableUidCache();
 
-		itemFilter.build(true);
+		itemFilter.build(showProgressBar);
 
 		sendRuntime(plugins, jeiRuntime);
 

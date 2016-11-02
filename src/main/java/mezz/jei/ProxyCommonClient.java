@@ -108,7 +108,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		});
 
 		try {
-			this.starter.start(plugins);
+			this.starter.start(plugins, true);
 		} catch (Exception e) {
 			Log.error("Exception on load", e);
 		}
@@ -126,7 +126,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	public void restartJEI() {
 		// check that JEI has been started before. if not, do nothing
 		if (this.starter.hasStarted()) {
-			this.starter.start(this.plugins);
+			this.starter.start(this.plugins, false);
 		}
 	}
 
