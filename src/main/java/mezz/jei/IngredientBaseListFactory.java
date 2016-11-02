@@ -26,7 +26,7 @@ public class IngredientBaseListFactory {
 
 	}
 
-	public static ImmutableList<IIngredientListElement> create() {
+	public static ImmutableList<IIngredientListElement> create(boolean showProgressBar) {
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		JeiHelpers jeiHelpers = Internal.getHelpers();
 		IngredientChecker ingredientChecker = new IngredientChecker(jeiHelpers);
@@ -34,14 +34,14 @@ public class IngredientBaseListFactory {
 		List<IIngredientListElement> ingredientListElements = new LinkedList<IIngredientListElement>();
 
 		for (Class ingredientClass : ingredientRegistry.getRegisteredIngredientClasses()) {
-			addToBaseList(ingredientListElements, ingredientRegistry, ingredientChecker, ingredientClass);
+			addToBaseList(ingredientListElements, ingredientRegistry, ingredientChecker, ingredientClass, showProgressBar);
 		}
 
 		sortIngredientListElements(ingredientListElements);
 		return ImmutableList.copyOf(ingredientListElements);
 	}
 
-	private static <V> List<IIngredientListElement> addToBaseList(List<IIngredientListElement> baseList, IIngredientRegistry ingredientRegistry, IngredientChecker ingredientChecker, Class<V> ingredientClass) {
+	private static <V> List<IIngredientListElement> addToBaseList(List<IIngredientListElement> baseList, IIngredientRegistry ingredientRegistry, IngredientChecker ingredientChecker, Class<V> ingredientClass, final boolean showProgressBar) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientClass);
 
@@ -49,12 +49,15 @@ public class IngredientBaseListFactory {
 		final int ingredientCount = ingredients.size();
 		if (ingredientCount > 0) {
 			final int steps = Math.min(ingredientCount, 100);
-			ProgressManager.ProgressBar progressBar = ProgressManager.push("Adding " + ingredientClass.getSimpleName() + " ingredients.", steps);
-			SplashProgress.pause();
+			ProgressManager.ProgressBar progressBar = null;
+			if (showProgressBar) {
+				progressBar = ProgressManager.push("Adding " + ingredientClass.getSimpleName() + " ingredients.", steps);
+				SplashProgress.pause();
+			}
 			int count = 0;
 			for (V ingredient : ingredients) {
 				count++;
-				if ((count / (float) ingredientCount) > (progressBar.getStep() / (float) progressBar.getSteps())) {
+				if (progressBar != null && (count / (float) ingredientCount) > (progressBar.getStep() / (float) progressBar.getSteps())) {
 					SplashProgress.resume();
 					progressBar.step("");
 					SplashProgress.pause();
@@ -68,8 +71,10 @@ public class IngredientBaseListFactory {
 					}
 				}
 			}
-			SplashProgress.resume();
-			ProgressManager.pop(progressBar);
+			if (progressBar != null) {
+				SplashProgress.resume();
+				ProgressManager.pop(progressBar);
+			}
 		}
 		return baseList;
 	}

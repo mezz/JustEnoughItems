@@ -64,7 +64,7 @@ public class JeiStarter {
 
 		stackHelper.disableUidCache();
 
-		itemFilter.build();
+		itemFilter.build(true);
 
 		sendRuntime(plugins, jeiRuntime);
 

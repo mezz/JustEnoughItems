@@ -135,7 +135,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		if (runtime != null) {
 			ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
 			ItemFilter itemFilter = itemListOverlay.getItemFilter();
-			itemFilter.build();
+			itemFilter.build(false);
 		}
 	}
 
