@@ -8,6 +8,7 @@ import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.recipe.IStackHelper;
+import mezz.jei.config.Constants;
 import mezz.jei.util.Log;
 import mezz.jei.util.TickTimer;
 import net.minecraft.util.ResourceLocation;
@@ -15,11 +16,18 @@ import net.minecraft.util.ResourceLocation;
 public class GuiHelper implements IGuiHelper {
 	private final IStackHelper stackHelper;
 	private final IDrawableStatic slotDrawable;
+	private final IDrawableStatic tabSelected;
+	private final IDrawableStatic tabUnselected;
 
 	public GuiHelper(IStackHelper stackHelper) {
 		this.stackHelper = stackHelper;
+
 		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/furnace.png");
 		this.slotDrawable = createDrawable(location, 55, 16, 18, 18);
+
+		ResourceLocation recipeBackgroundResource = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
+		tabSelected = createDrawable(recipeBackgroundResource, 196, 15, 24, 24);
+		tabUnselected = createDrawable(recipeBackgroundResource, 220, 15, 24, 22);
 	}
 
 	@Override
@@ -91,5 +99,13 @@ public class GuiHelper implements IGuiHelper {
 	@Override
 	public ITickTimer createTickTimer(int ticksPerCycle, int maxValue, boolean countDown) {
 		return new TickTimer(ticksPerCycle, maxValue, countDown);
+	}
+
+	public IDrawableStatic getTabSelected() {
+		return tabSelected;
+	}
+
+	public IDrawableStatic getTabUnselected() {
+		return tabUnselected;
 	}
 }

@@ -2,6 +2,7 @@ package mezz.jei.gui;
 
 import javax.annotation.Nullable;
 
+import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 

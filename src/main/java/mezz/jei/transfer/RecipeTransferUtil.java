@@ -7,7 +7,7 @@ import mezz.jei.JeiRuntime;
 import mezz.jei.RecipeRegistry;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
-import mezz.jei.gui.RecipeLayout;
+import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.util.Log;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;

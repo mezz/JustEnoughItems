@@ -2,7 +2,7 @@ package mezz.jei;
 
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.gui.ItemListOverlay;
-import mezz.jei.gui.RecipesGui;
+import mezz.jei.gui.recipes.RecipesGui;
 
 public class JeiRuntime implements IJeiRuntime {
 

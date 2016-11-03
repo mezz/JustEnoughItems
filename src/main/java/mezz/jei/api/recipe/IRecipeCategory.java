@@ -1,11 +1,15 @@
 package mezz.jei.api.recipe;
 
+import javax.annotation.Nullable;
+
 import mezz.jei.api.IGuiHelper;
+import mezz.jei.api.IModRegistry;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
 
 /**
  * Defines a category of recipe, (i.e. Crafting Table Recipe, Furnace Recipe).
@@ -35,6 +39,16 @@ public interface IRecipeCategory<T extends IRecipeWrapper> {
 	 * Returns the drawable background for a single recipe in this category.
 	 */
 	IDrawable getBackground();
+
+	/**
+	 * Optional icon for the category tab.
+	 * If no icon is defined here, JEI will use first item registered with {@link IModRegistry#addRecipeCategoryCraftingItem(ItemStack, String...)}
+	 *
+	 * @return icon to draw on the category tab, max size is 16x16 pixels.
+	 * @since 3.13.1
+	 */
+	@Nullable
+	IDrawable getIcon();
 
 	/**
 	 * Draw any extra elements that might be necessary, icons or extra slots.

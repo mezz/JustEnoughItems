@@ -8,7 +8,7 @@ import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.gui.ItemListOverlay;
-import mezz.jei.gui.RecipesGui;
+import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.util.Log;
 import mezz.jei.util.ModIdUtil;

@@ -32,7 +32,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.Focus;
-import mezz.jei.gui.RecipeClickableArea;
+import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.IngredientUtil;
 import mezz.jei.util.Ingredients;

@@ -3,7 +3,7 @@ package mezz.jei.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import mezz.jei.gui.RecipesGui;
+import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;

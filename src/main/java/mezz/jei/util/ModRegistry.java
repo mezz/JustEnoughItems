@@ -22,7 +22,7 @@ import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeRegistryPlugin;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
-import mezz.jei.gui.RecipeClickableArea;
+import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.plugins.jei.description.ItemDescriptionRecipe;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;

@@ -13,6 +13,7 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
+import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
 import net.minecraft.client.Minecraft;
@@ -23,7 +24,7 @@ import net.minecraft.util.ResourceLocation;
 /**
  * The area drawn on left side of the {@link RecipesGui} that shows which items can craft the current recipe category.
  */
-public class RecipeCategoryCraftingItemsArea implements IShowsRecipeFocuses {
+public class RecipeCategoryCraftingItems implements IShowsRecipeFocuses {
 	private final IRecipeRegistry recipeRegistry;
 	private final IDrawable topDrawable;
 	private final IDrawable middleDrawable;
@@ -33,7 +34,7 @@ public class RecipeCategoryCraftingItemsArea implements IShowsRecipeFocuses {
 	private int left = 0;
 	private int top = 0;
 
-	public RecipeCategoryCraftingItemsArea(IRecipeRegistry recipeRegistry) {
+	public RecipeCategoryCraftingItems(IRecipeRegistry recipeRegistry) {
 		this.recipeRegistry = recipeRegistry;
 		IFocus<ItemStack> focus = recipeRegistry.createFocus(IFocus.Mode.NONE, null);
 		craftingItems = new GuiItemStackGroup(focus);
@@ -41,9 +42,9 @@ public class RecipeCategoryCraftingItemsArea implements IShowsRecipeFocuses {
 		ResourceLocation recipeBackgroundResource = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
 
 		IGuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
-		topDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 65, 25, 6);
-		middleDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 71, 25, 16);
-		bottomDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 87, 55, 6);
+		topDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 65, 26, 6);
+		middleDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 71, 26, 16);
+		bottomDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 87, 26, 6);
 	}
 
 	public void updateLayout(List<ItemStack> itemStacks, GuiProperties guiProperties) {
@@ -64,8 +65,8 @@ public class RecipeCategoryCraftingItemsArea implements IShowsRecipeFocuses {
 				}
 			}
 
-			top = guiProperties.getGuiTop() + (guiProperties.getGuiYSize() - totalHeight) / 2; // center it
-			left = guiProperties.getGuiLeft() + - middleDrawable.getWidth() + 3; // overlaps the recipe gui slightly
+			top = guiProperties.getGuiTop();
+			left = guiProperties.getGuiLeft() - topDrawable.getWidth() + 4; // overlaps the recipe gui slightly
 
 			ListMultimap<Integer, ItemStack> itemStacksForSlots = ArrayListMultimap.create();
 			for (int i = 0; i < itemStacks.size(); i++) {
