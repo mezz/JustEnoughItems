@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import mezz.jei.RecipeRegistry;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.IRecipesGui;
 import mezz.jei.api.gui.IDrawable;
@@ -78,7 +77,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	private boolean init = false;
 
-	public RecipesGui(RecipeRegistry recipeRegistry) {
+	public RecipesGui(IRecipeRegistry recipeRegistry) {
 		this.recipeRegistry = recipeRegistry;
 		this.logic = new RecipeGuiLogic(recipeRegistry, this);
 		this.recipeCategoryCraftingItems = new RecipeCategoryCraftingItems(recipeRegistry);

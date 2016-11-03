@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Stack;
 
 import com.google.common.collect.ImmutableList;
-import mezz.jei.RecipeRegistry;
+import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
@@ -39,7 +39,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Nonnull
-	private final RecipeRegistry recipeRegistry;
+	private final IRecipeRegistry recipeRegistry;
 	@Nonnull
 	private final IRecipeLogicStateListener stateListener;
 
@@ -54,7 +54,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	 */
 	private List<IRecipeWrapper> recipes = Collections.emptyList();
 
-	public RecipeGuiLogic(RecipeRegistry recipeRegistry, IRecipeLogicStateListener stateListener) {
+	public RecipeGuiLogic(IRecipeRegistry recipeRegistry, IRecipeLogicStateListener stateListener) {
 		this.recipeRegistry = recipeRegistry;
 		this.stateListener = stateListener;
 		IFocus focus = recipeRegistry.createFocus(IFocus.Mode.NONE, null);
@@ -293,6 +293,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public boolean hasAllCategories() {
-		return state.recipeCategories.size() == recipeRegistry.getRecipeCategoryCount();
+		return state.recipeCategories.size() == recipeRegistry.getRecipeCategories().size();
 	}
 }

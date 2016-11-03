@@ -290,11 +290,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public List<IRecipeCategory> getRecipeCategories() {
-		return getRecipeCategories(createFocus(IFocus.Mode.NONE, null));
-	}
-
-	public int getRecipeCategoryCount() {
-		return recipeCategoriesMap.size();
+		return new ArrayList<IRecipeCategory>(recipeCategoriesMap.values());
 	}
 
 	@Override

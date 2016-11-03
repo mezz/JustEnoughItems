@@ -13,6 +13,8 @@ import net.minecraft.inventory.Container;
  * Mods that use a regular slotted inventory can use {@link IRecipeTransferInfo} instead, which is much simpler.
  * <p>
  * Useful functions for implementing a recipe transfer handler can be found in {@link IRecipeTransferHandlerHelper}.
+ * <p>
+ * To register your recipe transfer handler, use {@link IRecipeTransferRegistry#addRecipeTransferHandler(IRecipeTransferHandler, String)}.
  */
 public interface IRecipeTransferHandler<C extends Container> {
 	/**

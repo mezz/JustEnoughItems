@@ -8,6 +8,9 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
+import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -71,6 +74,17 @@ public interface IRecipeRegistry {
 	 * @since JEI 3.11.0
 	 */
 	List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory, IFocus focus);
+
+	/**
+	 * Returns the recipe transfer handler for the given container and category, if one exists.
+	 *
+	 * @param container      The container to transfer items in.
+	 * @param recipeCategory The type of recipe that the recipe transfer handler acts on.
+	 * @see IRecipeTransferRegistry
+	 * @since JEI 3.13.2
+	 */
+	@Nullable
+	IRecipeTransferHandler getRecipeTransferHandler(Container container, IRecipeCategory recipeCategory);
 
 	/**
 	 * Add a new recipe while the game is running.
