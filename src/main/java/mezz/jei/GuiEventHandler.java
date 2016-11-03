@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.gui.ItemListOverlay;
+import mezz.jei.gui.ItemListOverlayInternal;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.InputHandler;
@@ -35,12 +36,12 @@ public class GuiEventHandler {
 
 		GuiScreen gui = event.getGui();
 		if (gui instanceof GuiContainer || gui instanceof RecipesGui) {
-			itemListOverlay.initGui(gui);
+			ItemListOverlayInternal itemListOverlayInternal = itemListOverlay.create(gui);
 
 			RecipeRegistry recipeRegistry = runtime.getRecipeRegistry();
 			IIngredientRegistry ingredientRegistry = runtime.getIngredientRegistry();
 			RecipesGui recipesGui = runtime.getRecipesGui();
-			inputHandler = new InputHandler(recipeRegistry, ingredientRegistry, recipesGui, itemListOverlay);
+			inputHandler = new InputHandler(recipeRegistry, ingredientRegistry, recipesGui, itemListOverlayInternal);
 		} else {
 			inputHandler = null;
 		}
@@ -69,10 +70,16 @@ public class GuiEventHandler {
 	@SubscribeEvent
 	public void onDrawBackgroundEventPost(GuiScreenEvent.BackgroundDrawnEvent event) {
 		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-		if (itemListOverlay.isOpen()) {
+		ItemListOverlayInternal itemListOverlayInternal = itemListOverlay.getInternal();
+		if (itemListOverlayInternal != null) {
 			GuiScreen gui = event.getGui();
-			itemListOverlay.updateGui(gui);
-			itemListOverlay.drawScreen(gui.mc, event.getMouseX(), event.getMouseY());
+			if (itemListOverlayInternal.hasScreenChanged(gui)) {
+				itemListOverlayInternal = itemListOverlay.create(gui);
+			}
+
+			if (itemListOverlayInternal != null) {
+				itemListOverlayInternal.drawScreen(gui.mc, event.getMouseX(), event.getMouseY());
+			}
 		}
 	}
 
@@ -88,8 +95,9 @@ public class GuiEventHandler {
 		}
 
 		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-		if (itemListOverlay.isOpen()) {
-			itemListOverlay.drawTooltips(gui.mc, event.getMouseX(), event.getMouseY());
+		ItemListOverlayInternal itemListOverlayInternal = itemListOverlay.getInternal();
+		if (itemListOverlayInternal != null) {
+			itemListOverlayInternal.drawTooltips(gui.mc, event.getMouseX(), event.getMouseY());
 		}
 	}
 
@@ -100,8 +108,9 @@ public class GuiEventHandler {
 		}
 
 		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-		if (itemListOverlay.isOpen()) {
-			itemListOverlay.handleTick();
+		ItemListOverlayInternal itemListOverlayInternal = itemListOverlay.getInternal();
+		if (itemListOverlayInternal != null) {
+			itemListOverlayInternal.handleTick();
 		}
 	}
 

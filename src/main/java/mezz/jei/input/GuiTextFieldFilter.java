@@ -18,16 +18,13 @@ public class GuiTextFieldFilter extends GuiTextField {
 
 	private final List<String> history = new LinkedList<String>();
 	private final HoverChecker hoverChecker;
-	private ItemFilter itemFilter;
+	private final ItemFilter itemFilter;
 	private boolean previousKeyboardRepeatEnabled;
 
-	public GuiTextFieldFilter(int componentId, FontRenderer fontRenderer, int x, int y, int width, int height) {
+	public GuiTextFieldFilter(int componentId, FontRenderer fontRenderer, int x, int y, int width, int height, ItemFilter itemFilter) {
 		super(componentId, fontRenderer, x, y, width, height);
 		setMaxStringLength(maxSearchLength);
 		this.hoverChecker = new HoverChecker(y, y + height, x, x + width, 0);
-	}
-
-	public void setItemFilter(ItemFilter itemFilter) {
 		this.itemFilter = itemFilter;
 		setText(Config.getFilterText());
 	}
