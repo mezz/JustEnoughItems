@@ -1,6 +1,5 @@
 package mezz.jei.gui.recipes;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
@@ -42,7 +41,6 @@ public interface IRecipeGuiLogic {
 
 	boolean setCategoryFocus(List<String> recipeCategoryUids);
 
-	@Nullable
 	IRecipeCategory getSelectedRecipeCategory();
 
 	ImmutableList<IRecipeCategory> getRecipeCategories();

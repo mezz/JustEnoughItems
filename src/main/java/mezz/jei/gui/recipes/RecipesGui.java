@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mezz.jei.RecipeRegistry;
+import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.IRecipesGui;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
-import mezz.jei.gui.Focus;
 import mezz.jei.gui.GuiProperties;
 import mezz.jei.gui.RecipeCategoryCraftingItems;
 import mezz.jei.gui.TooltipRenderer;
@@ -49,6 +49,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	private int titleHeight;
 	private int headerHeight;
 
+	private final IRecipeRegistry recipeRegistry;
 	/* Internal logic for the gui, handles finding recipes */
 	private final IRecipeGuiLogic logic;
 
@@ -78,6 +79,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	private boolean init = false;
 
 	public RecipesGui(RecipeRegistry recipeRegistry) {
+		this.recipeRegistry = recipeRegistry;
 		this.logic = new RecipeGuiLogic(recipeRegistry, this);
 		this.recipeCategoryCraftingItems = new RecipeCategoryCraftingItems(recipeRegistry);
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
@@ -152,7 +154,11 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
+		drawDefaultBackground();
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		mc.getTextureManager().bindTexture(backgroundTexture);
+		this.zLevel = 0;
+		drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
 
 		GlStateManager.disableBlend();
 
@@ -203,14 +209,6 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 				TooltipRenderer.drawHoveringText(mc, showAllRecipesString, mouseX, mouseY);
 			}
 		}
-	}
-
-	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-		drawDefaultBackground();
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.getTextureManager().bindTexture(backgroundTexture);
-		this.zLevel = 0;
-		drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
 	}
 
 	public boolean isMouseOver(int mouseX, int mouseY) {
@@ -331,26 +329,30 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	@Override
 	@Deprecated
-	public void showRecipes(@Nullable ItemStack focus) {
-		show(new Focus<ItemStack>(IFocus.Mode.OUTPUT, focus));
+	public void showRecipes(@Nullable ItemStack itemStack) {
+		IFocus<ItemStack> focus = recipeRegistry.createFocus(IFocus.Mode.OUTPUT, itemStack);
+		show(focus);
 	}
 
 	@Override
 	@Deprecated
-	public void showRecipes(@Nullable FluidStack focus) {
-		show(new Focus<FluidStack>(IFocus.Mode.OUTPUT, focus));
+	public void showRecipes(@Nullable FluidStack fluidStack) {
+		IFocus<FluidStack> focus = recipeRegistry.createFocus(IFocus.Mode.OUTPUT, fluidStack);
+		show(focus);
 	}
 
 	@Override
 	@Deprecated
-	public void showUses(@Nullable ItemStack focus) {
-		show(new Focus<ItemStack>(IFocus.Mode.INPUT, focus));
+	public void showUses(@Nullable ItemStack itemStack) {
+		IFocus<ItemStack> focus = recipeRegistry.createFocus(IFocus.Mode.INPUT, itemStack);
+		show(focus);
 	}
 
 	@Override
 	@Deprecated
-	public void showUses(@Nullable FluidStack focus) {
-		show(new Focus<FluidStack>(IFocus.Mode.INPUT, focus));
+	public void showUses(@Nullable FluidStack fluidStack) {
+		IFocus<FluidStack> focus = recipeRegistry.createFocus(IFocus.Mode.INPUT, fluidStack);
+		show(focus);
 	}
 
 	@Override
