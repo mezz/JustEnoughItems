@@ -73,11 +73,20 @@ public class GuiIngredientFastList {
 		if (ingredient instanceof ItemStack) {
 			ItemStack stack = (ItemStack) ingredient;
 			RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-			IBakedModel bakedModel = renderItem.getItemModelWithOverrides(stack, null, null);
+			IBakedModel bakedModel;
+			try {
+				bakedModel = renderItem.getItemModelWithOverrides(stack, null, null);
+			} catch (Throwable throwable) {
+				IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+				String stackInfo = ingredientHelper.getErrorInfo(ingredient);
+				Log.error("ItemStack crashed getting IBakedModel. " + stackInfo, throwable);
+				guiItemStack.clear();
+				return;
+			}
 			if (bakedModel == null) {
 				IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 				String stackInfo = ingredientHelper.getErrorInfo(ingredient);
-				Log.error("ItemStack returned null IBakedModel from RenderItem.getItemModelWithOverrides(stack, null, null). " + stackInfo, new NullPointerException());
+				Log.error("ItemStack returned null IBakedModel. " + stackInfo, new NullPointerException());
 				guiItemStack.clear();
 			} else {
 				if (bakedModel.isBuiltInRenderer()) {
