@@ -2,6 +2,8 @@ package mezz.jei.util;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.DimensionType;
@@ -47,6 +49,11 @@ public class FakeClientWorld extends World {
 	@Override
 	public BlockPos getSpawnPoint() {
 		return new BlockPos(0, 0, 0);
+	}
+
+	@Override
+	public IBlockState getBlockState(BlockPos pos) {
+		return Blocks.AIR.getDefaultState();
 	}
 
 	@Override
