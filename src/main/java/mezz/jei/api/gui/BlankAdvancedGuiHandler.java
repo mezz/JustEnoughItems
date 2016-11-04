@@ -6,16 +6,16 @@ import java.util.List;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 
-public abstract class BlankAdvancedGuiHandler implements IAdvancedGuiHandler {
+public abstract class BlankAdvancedGuiHandler<T extends GuiContainer> implements IAdvancedGuiHandler<T> {
 	@Nullable
 	@Override
-	public List<Rectangle> getGuiExtraAreas(GuiContainer guiContainer) {
+	public List<Rectangle> getGuiExtraAreas(T guiContainer) {
 		return null;
 	}
 
 	@Nullable
 	@Override
-	public Object getIngredientUnderMouse(int mouseX, int mouseY) {
+	public Object getIngredientUnderMouse(T guiContainer, int mouseX, int mouseY) {
 		return null;
 	}
 }

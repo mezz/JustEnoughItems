@@ -41,5 +41,5 @@ public interface IAdvancedGuiHandler<T extends GuiContainer> {
 	 * @since JEI 3.13.2
 	 */
 	@Nullable
-	Object getIngredientUnderMouse(int mouseX, int mouseY);
+	Object getIngredientUnderMouse(T guiContainer, int mouseX, int mouseY);
 }

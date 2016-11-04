@@ -101,7 +101,7 @@ public class JEIInternalPlugin extends BlankModPlugin {
 
 				@Nullable
 				@Override
-				public Object getIngredientUnderMouse(int mouseX, int mouseY) {
+				public Object getIngredientUnderMouse(GuiBrewingStand guiContainer, int mouseX, int mouseY) {
 					if (mouseX < 10 && mouseY < 10) {
 						return new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME);
 					}
