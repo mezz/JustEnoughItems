@@ -38,7 +38,11 @@ public class ItemListOverlay implements IItemListOverlay {
 			if (guiProperties != null) {
 				final int columns = ItemListOverlayInternal.getColumns(guiProperties);
 				if (columns >= 4) {
-					return internal = new ItemListOverlayInternal(this, ingredientRegistry, guiScreen, guiProperties);
+					if (internal != null) {
+						close();
+					}
+					internal = new ItemListOverlayInternal(this, ingredientRegistry, guiScreen, guiProperties);
+					return internal;
 				}
 			}
 		}

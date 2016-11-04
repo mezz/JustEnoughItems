@@ -37,11 +37,7 @@ public class GuiEventHandler {
 		GuiScreen gui = event.getGui();
 		if (gui instanceof GuiContainer || gui instanceof RecipesGui) {
 			ItemListOverlayInternal itemListOverlayInternal = itemListOverlay.create(gui);
-
-			RecipeRegistry recipeRegistry = runtime.getRecipeRegistry();
-			IIngredientRegistry ingredientRegistry = runtime.getIngredientRegistry();
-			RecipesGui recipesGui = runtime.getRecipesGui();
-			inputHandler = new InputHandler(recipeRegistry, ingredientRegistry, recipesGui, itemListOverlayInternal);
+			inputHandler = new InputHandler(runtime, itemListOverlayInternal);
 		} else {
 			inputHandler = null;
 		}
@@ -75,6 +71,7 @@ public class GuiEventHandler {
 			GuiScreen gui = event.getGui();
 			if (itemListOverlayInternal.hasScreenChanged(gui)) {
 				itemListOverlayInternal = itemListOverlay.create(gui);
+				inputHandler = new InputHandler(runtime, itemListOverlayInternal);
 			}
 
 			if (itemListOverlayInternal != null) {

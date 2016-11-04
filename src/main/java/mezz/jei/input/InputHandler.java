@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import mezz.jei.JeiRuntime;
 import mezz.jei.RecipeRegistry;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
@@ -37,10 +38,10 @@ public class InputHandler {
 
 	private boolean clickHandled = false;
 
-	public InputHandler(RecipeRegistry recipeRegistry, IIngredientRegistry ingredientRegistry, RecipesGui recipesGui, @Nullable ItemListOverlayInternal itemListOverlayInternal) {
-		this.recipeRegistry = recipeRegistry;
-		this.ingredientRegistry = ingredientRegistry;
-		this.recipesGui = recipesGui;
+	public InputHandler(JeiRuntime runtime, @Nullable ItemListOverlayInternal itemListOverlayInternal) {
+		this.recipeRegistry = runtime.getRecipeRegistry();
+		this.ingredientRegistry = runtime.getIngredientRegistry();
+		this.recipesGui = runtime.getRecipesGui();
 		this.itemListOverlayInternal = itemListOverlayInternal;
 
 		this.mouseHelper = new MouseHelper();
