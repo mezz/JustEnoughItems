@@ -32,8 +32,9 @@ import net.minecraft.item.ItemStack;
 
 @JEIPlugin
 public class JEIInternalPlugin extends BlankModPlugin {
-	public static IJeiHelpers jeiHelpers;
+	@Nullable
 	public static IIngredientRegistry ingredientRegistry;
+	@Nullable
 	public static IJeiRuntime jeiRuntime;
 
 	@Override
@@ -45,7 +46,7 @@ public class JEIInternalPlugin extends BlankModPlugin {
 
 	@Override
 	public void register(IModRegistry registry) {
-		jeiHelpers = registry.getJeiHelpers();
+		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
 		ingredientRegistry = registry.getIngredientRegistry();
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 

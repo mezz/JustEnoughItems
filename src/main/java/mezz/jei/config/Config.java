@@ -26,10 +26,13 @@ public class Config {
 	public static final String CATEGORY_ADVANCED = "advanced";
 	public static final String CATEGORY_SEARCH_COLORS = "searchColors";
 
+	@Nullable
 	private static LocalizedConfiguration config;
 	@Nullable
 	private static Configuration worldConfig;
+	@Nullable
 	private static LocalizedConfiguration itemBlacklistConfig;
+	@Nullable
 	private static LocalizedConfiguration searchColorsConfig;
 
 	// advanced
@@ -155,6 +158,7 @@ public class Config {
 		}
 	}
 
+	@Nullable
 	public static LocalizedConfiguration getConfig() {
 		return config;
 	}
@@ -242,6 +246,9 @@ public class Config {
 	}
 
 	private static boolean syncConfig() {
+		if (config == null) {
+			return false;
+		}
 		boolean needsReload = false;
 
 		config.addCategory(CATEGORY_SEARCH);
@@ -292,7 +299,7 @@ public class Config {
 		}
 
 		// migrate item blacklist to new file
-		if (config.hasKey(CATEGORY_ADVANCED, "itemBlacklist")) {
+		if (itemBlacklistConfig != null && config.hasKey(CATEGORY_ADVANCED, "itemBlacklist")) {
 			Property oldItemBlacklistProperty = config.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
 			String[] itemBlacklistArray = oldItemBlacklistProperty.getStringList();
 			Property newItemBlacklistProperty = itemBlacklistConfig.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
@@ -308,6 +315,9 @@ public class Config {
 	}
 
 	private static boolean syncItemBlacklistConfig() {
+		if (itemBlacklistConfig == null) {
+			return false;
+		}
 		itemBlacklistConfig.addCategory(CATEGORY_ADVANCED);
 
 		String[] itemBlacklistArray = itemBlacklistConfig.getStringList("itemBlacklist", CATEGORY_ADVANCED, defaultItemBlacklist);
@@ -360,6 +370,9 @@ public class Config {
 	}
 
 	private static boolean syncSearchColorsConfig() {
+		if (searchColorsConfig == null) {
+			return false;
+		}
 		searchColorsConfig.addCategory(CATEGORY_SEARCH_COLORS);
 
 		final String[] searchColorDefaults = ColorGetter.getColorDefaults();
@@ -392,6 +405,9 @@ public class Config {
 	}
 
 	private static boolean updateBlacklist() {
+		if (itemBlacklistConfig == null) {
+			return false;
+		}
 		Property property = itemBlacklistConfig.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
 
 		String[] currentBlacklist = itemBlacklist.toArray(new String[itemBlacklist.size()]);

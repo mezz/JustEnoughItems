@@ -3,19 +3,19 @@ package mezz.jei.plugins.vanilla.crafting;
 import java.util.Collections;
 import java.util.List;
 
-import mezz.jei.api.IGuiHelper;
+import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IStackHelper;
-import mezz.jei.plugins.vanilla.VanillaPlugin;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 public class ShapelessOreRecipeWrapper extends AbstractShapelessRecipeWrapper {
-
+	private final IJeiHelpers jeiHelpers;
 	private final ShapelessOreRecipe recipe;
 
-	public ShapelessOreRecipeWrapper(IGuiHelper guiHelper, ShapelessOreRecipe recipe) {
-		super(guiHelper);
+	public ShapelessOreRecipeWrapper(IJeiHelpers jeiHelpers, ShapelessOreRecipe recipe) {
+		super(jeiHelpers.getGuiHelper());
+		this.jeiHelpers = jeiHelpers;
 		this.recipe = recipe;
 		for (Object input : this.recipe.getInput()) {
 			if (input instanceof ItemStack) {
@@ -29,7 +29,7 @@ public class ShapelessOreRecipeWrapper extends AbstractShapelessRecipeWrapper {
 
 	@Override
 	public void getIngredients(IIngredients ingredients) {
-		IStackHelper stackHelper = VanillaPlugin.jeiHelpers.getStackHelper();
+		IStackHelper stackHelper = jeiHelpers.getStackHelper();
 
 		List<List<ItemStack>> inputs = stackHelper.expandRecipeItemStackInputs(recipe.getInput());
 		ingredients.setInputLists(ItemStack.class, inputs);

@@ -1,6 +1,6 @@
 package mezz.jei.util.color;
 
-/**
+/*
  * Java Color Thief
  * by Sven Woltmann, Fonpit AG
  * <p>

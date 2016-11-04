@@ -10,7 +10,9 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.FMLEventChannel;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid = Constants.MOD_ID,
@@ -21,13 +23,9 @@ import net.minecraftforge.fml.relauncher.Side;
 		dependencies = "required-after:Forge@[12.18.1.2053,);")
 public class JustEnoughItems {
 
+	@SuppressWarnings("NullableProblems")
 	@SidedProxy(clientSide = "mezz.jei.ProxyCommonClient", serverSide = "mezz.jei.ProxyCommon")
 	private static ProxyCommon proxy;
-	private static PacketHandler packetHandler;
-
-	public static PacketHandler getPacketHandler() {
-		return packetHandler;
-	}
 
 	public static ProxyCommon getProxy() {
 		return proxy;
@@ -45,7 +43,10 @@ public class JustEnoughItems {
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		packetHandler = new PacketHandler();
+		PacketHandler packetHandler = new PacketHandler();
+		FMLEventChannel channel = NetworkRegistry.INSTANCE.newEventDrivenChannel(PacketHandler.CHANNEL_ID);
+		channel.register(packetHandler);
+
 		proxy.preInit(event);
 	}
 

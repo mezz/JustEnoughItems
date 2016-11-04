@@ -6,13 +6,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import mezz.jei.Internal;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.IRecipesGui;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
+import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.GuiProperties;
 import mezz.jei.gui.RecipeCategoryCraftingItems;
 import mezz.jei.gui.TooltipRenderer;
@@ -55,18 +56,19 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	/* List of RecipeLayout to display */
 	private final List<RecipeLayout> recipeLayouts = new ArrayList<RecipeLayout>();
 
-	private String pageString;
-	private String title;
-	private ResourceLocation backgroundTexture;
+	private String pageString = "1/1";
+	private String title = "";
+	private ResourceLocation backgroundTexture = Internal.getHelpers().getGuiHelper().getRecipeBackgroundResource();
+
 	private final RecipeCategoryCraftingItems recipeCategoryCraftingItems;
 	private final RecipeGuiTabs recipeGuiTabs;
 
-	private HoverChecker titleHoverChecker;
+	private HoverChecker titleHoverChecker = new HoverChecker(0, 0, 0, 0, 0);
 
-	private GuiButton nextRecipeCategory;
-	private GuiButton previousRecipeCategory;
-	private GuiButton nextPage;
-	private GuiButton previousPage;
+	private final GuiButton nextRecipeCategory;
+	private final GuiButton previousRecipeCategory;
+	private final GuiButton nextPage;
+	private final GuiButton previousPage;
 
 	@Nullable
 	private GuiScreen parentScreen;
@@ -83,6 +85,12 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		this.recipeCategoryCraftingItems = new RecipeCategoryCraftingItems(recipeRegistry);
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
 		this.mc = Minecraft.getMinecraft();
+
+		nextRecipeCategory = new GuiButtonExt(2, 0, 0, buttonWidth, buttonHeight, ">");
+		previousRecipeCategory = new GuiButtonExt(3, 0, 0, buttonWidth, buttonHeight, "<");
+
+		nextPage = new GuiButtonExt(4, 0, 0, buttonWidth, buttonHeight, ">");
+		previousPage = new GuiButtonExt(5, 0, 0, buttonWidth, buttonHeight, "<");
 	}
 
 	public int getGuiLeft() {
@@ -112,13 +120,13 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 		this.xSize = 196;
 
-		ResourceLocation recipeBackgroundResource = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
+		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
 		if (this.height > 300) {
 			this.ySize = 256;
-			this.backgroundTexture = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_TALL_PATH);
+			this.backgroundTexture = guiHelper.getRecipeBackgroundTallResource();
 		} else {
 			this.ySize = 166;
-			this.backgroundTexture = recipeBackgroundResource;
+			this.backgroundTexture = guiHelper.getRecipeBackgroundResource();
 		}
 
 		this.guiLeft = (width - this.xSize) / 2;
@@ -131,12 +139,16 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		final int leftButtonX = guiLeft + borderPadding;
 
 		int recipeClassButtonTop = guiTop + titleHeight - buttonHeight + 1;
-		nextRecipeCategory = new GuiButtonExt(2, rightButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, ">");
-		previousRecipeCategory = new GuiButtonExt(3, leftButtonX, recipeClassButtonTop, buttonWidth, buttonHeight, "<");
+		nextRecipeCategory.xPosition = rightButtonX;
+		nextRecipeCategory.yPosition = recipeClassButtonTop;
+		previousRecipeCategory.xPosition = leftButtonX;
+		previousRecipeCategory.yPosition = recipeClassButtonTop;
 
 		int pageButtonTop = guiTop + titleHeight + 3;
-		nextPage = new GuiButtonExt(4, rightButtonX, pageButtonTop, buttonWidth, buttonHeight, ">");
-		previousPage = new GuiButtonExt(5, leftButtonX, pageButtonTop, buttonWidth, buttonHeight, "<");
+		nextPage.xPosition = rightButtonX;
+		nextPage.yPosition = pageButtonTop;
+		previousPage.xPosition = leftButtonX;
+		previousPage.yPosition = pageButtonTop;
 
 		addButtons();
 
@@ -399,10 +411,6 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			return;
 		}
 		IRecipeCategory recipeCategory = logic.getSelectedRecipeCategory();
-		if (recipeCategory == null) {
-			return;
-		}
-
 		IDrawable recipeBackground = recipeCategory.getBackground();
 
 		final int recipesPerPage = Math.max(1, (ySize - headerHeight) / (recipeBackground.getHeight() + innerPadding));
@@ -443,7 +451,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 		for (RecipeLayout recipeLayout : recipeLayouts) {
 			RecipeTransferButton button = recipeLayout.getRecipeTransferButton();
-			button.init(container, recipeLayout, player);
+			button.init(container, player);
 			buttonList.add(button);
 		}
 	}

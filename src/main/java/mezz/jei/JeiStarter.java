@@ -52,10 +52,11 @@ public class JeiStarter {
 		RecipeRegistry recipeRegistry = modRegistry.createRecipeRegistry(stackHelper, ingredientRegistry);
 		Log.info("Built    recipe registry in {} ms", System.currentTimeMillis() - start_time);
 
+		ItemFilter itemFilter = new ItemFilter();
+
 		Log.info("Building runtime...");
 		start_time = System.currentTimeMillis();
 		List<IAdvancedGuiHandler<?>> advancedGuiHandlers = modRegistry.getAdvancedGuiHandlers();
-		ItemFilter itemFilter = new ItemFilter();
 		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter, advancedGuiHandlers, ingredientRegistry);
 		RecipesGui recipesGui = new RecipesGui(recipeRegistry);
 		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, itemListOverlay, recipesGui, ingredientRegistry);
@@ -63,8 +64,6 @@ public class JeiStarter {
 		Log.info("Built    runtime in {} ms", System.currentTimeMillis() - start_time);
 
 		stackHelper.disableUidCache();
-
-		itemFilter.build(showProgressBar);
 
 		sendRuntime(plugins, jeiRuntime);
 

@@ -10,7 +10,7 @@ import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.SessionData;
 import mezz.jei.gui.ItemListOverlay;
-import mezz.jei.network.packets.PacketJEI;
+import mezz.jei.network.packets.PacketJei;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.util.AnnotatedInstanceUtil;
@@ -30,7 +30,6 @@ import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -135,12 +134,12 @@ public class ProxyCommonClient extends ProxyCommon {
 		if (runtime != null) {
 			ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
 			ItemFilter itemFilter = itemListOverlay.getItemFilter();
-			itemFilter.build(false);
+			itemFilter.rebuild();
 		}
 	}
 
 	@Override
-	public void sendPacketToServer(PacketJEI packet) {
+	public void sendPacketToServer(PacketJei packet) {
 		NetHandlerPlayClient netHandler = FMLClientHandler.instance().getClient().getConnection();
 		if (netHandler != null) {
 			netHandler.sendPacket(packet.getPacket());

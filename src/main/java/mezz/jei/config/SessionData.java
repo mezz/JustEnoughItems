@@ -1,5 +1,7 @@
 package mezz.jei.config;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.network.NetworkManager;
@@ -9,6 +11,7 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 public class SessionData {
 	private static boolean jeiOnServer = false;
 	private static boolean joinedWorld = false;
+	@Nullable
 	private static String worldUid = null;
 
 	private SessionData() {

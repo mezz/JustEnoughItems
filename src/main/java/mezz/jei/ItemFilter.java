@@ -10,10 +10,8 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.Weigher;
 import com.google.common.collect.ImmutableList;
-import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 
 public class ItemFilter {
@@ -29,14 +27,13 @@ public class ItemFilter {
 
 	private ImmutableList<IIngredientListElement> baseList;
 
-	public void build(boolean showProgressBar) {
-		Log.info("Building item filter...");
-		long start_time = System.currentTimeMillis();
+	public ItemFilter() {
+		this.baseList = IngredientBaseListFactory.create(true);
+	}
 
-		this.baseList = IngredientBaseListFactory.create(showProgressBar);
+	public void rebuild() {
+		this.baseList = IngredientBaseListFactory.create(false);
 		this.filteredItemMapsCache.invalidateAll();
-
-		Log.info("Built    item filter in {} ms", System.currentTimeMillis() - start_time);
 	}
 
 	public ImmutableList<IIngredientListElement> getIngredientList() {
@@ -59,6 +56,7 @@ public class ItemFilter {
 	 * {@link #getItemStacks()} is slow, so cache the previous value in case someone requests it often.
 	 */
 	private ImmutableList<ItemStack> itemStacksCached = ImmutableList.of();
+	@Nullable
 	private String filterCached;
 
 	public ImmutableList<ItemStack> getItemStacks() {
@@ -154,31 +152,13 @@ public class ItemFilter {
 
 		@Override
 		public boolean apply(@Nullable IIngredientListElement input) {
-			if (input == null) {
-				return false;
-			}
-
-			if (!stringContainsTokens(input.getModNameString(), modNameTokens)) {
-				return false;
-			}
-
-			if (!stringContainsTokens(input.getTooltipString(), tooltipTokens)) {
-				return false;
-			}
-
-			if (!stringContainsTokens(input.getOreDictString(), oreDictTokens)) {
-				return false;
-			}
-
-			if (!stringContainsTokens(input.getCreativeTabsString(), creativeTabTokens)) {
-				return false;
-			}
-
-			if (!stringContainsTokens(input.getColorString(), colorTokens)) {
-				return false;
-			}
-
-			return stringContainsTokens(input.getSearchString(), searchTokens);
+			return input != null &&
+					stringContainsTokens(input.getModNameString(), modNameTokens) &&
+					stringContainsTokens(input.getTooltipString(), tooltipTokens) &&
+					stringContainsTokens(input.getOreDictString(), oreDictTokens) &&
+					stringContainsTokens(input.getCreativeTabsString(), creativeTabTokens) &&
+					stringContainsTokens(input.getColorString(), colorTokens) &&
+					stringContainsTokens(input.getSearchString(), searchTokens);
 		}
 
 		private static boolean stringContainsTokens(String comparisonString, List<String> tokens) {

@@ -1,4 +1,5 @@
 @ParametersAreNonnullByDefault
+@FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 package mezz.jei.util;
 

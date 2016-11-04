@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.GlStateManager;
  */
 public class RecipeGuiTabs implements IMouseHandler {
 	private final IRecipeGuiLogic recipeGuiLogic;
+	private final List<RecipeGuiTab> tabs = new ArrayList<RecipeGuiTab>();
 
 	private int pageCount = 1;
 	private int pageNumber = 0;
@@ -24,8 +25,6 @@ public class RecipeGuiTabs implements IMouseHandler {
 	private int top;
 	private int width;
 	private int height;
-	private List<RecipeGuiTab> tabs = new ArrayList<RecipeGuiTab>();
-
 
 	public RecipeGuiTabs(IRecipeGuiLogic recipeGuiLogic) {
 		this.recipeGuiLogic = recipeGuiLogic;
@@ -167,9 +166,6 @@ public class RecipeGuiTabs implements IMouseHandler {
 
 	public void draw(Minecraft minecraft, int mouseX, int mouseY) {
 		IRecipeCategory selectedCategory = recipeGuiLogic.getSelectedRecipeCategory();
-		if (selectedCategory == null) {
-			return;
-		}
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 

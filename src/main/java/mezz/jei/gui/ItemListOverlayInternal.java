@@ -29,7 +29,7 @@ import mezz.jei.input.IKeyable;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
-import mezz.jei.network.packets.PacketJEI;
+import mezz.jei.network.packets.PacketJei;
 import mezz.jei.util.Java6Helper;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.StackHelper;
@@ -64,25 +64,25 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 
 	private final ItemListOverlay parent;
 
-	private GuiButton nextButton;
-	private GuiButton backButton;
-	private GuiButton configButton;
-	private IDrawable configButtonIcon;
-	private IDrawable configButtonCheatIcon;
-	private HoverChecker configButtonHoverChecker;
-	private GuiTextFieldFilter searchField;
+	private final GuiButton nextButton;
+	private final GuiButton backButton;
+	private final GuiButton configButton;
+	private final IDrawable configButtonIcon;
+	private final IDrawable configButtonCheatIcon;
+	private final HoverChecker configButtonHoverChecker;
+	private final GuiTextFieldFilter searchField;
 
 	private String pageNumDisplayString = "1/1";
 	private int pageNumDisplayX;
 	private int pageNumDisplayY;
 
-	private GuiIngredientFastList guiIngredientList;
+	private final GuiIngredientFastList guiIngredientList;
 	@Nullable
 	private GuiIngredientFast hovered = null;
 
 	// properties of the gui we're beside
-	private GuiProperties guiProperties;
-	private List<Rectangle> guiAreas;
+	private final GuiProperties guiProperties;
+	private final List<Rectangle> guiAreas;
 	private List<IAdvancedGuiHandler<?>> activeAdvancedGuiHandlers = Collections.emptyList();
 
 	public ItemListOverlayInternal(ItemListOverlay parent, IIngredientRegistry ingredientRegistry, GuiScreen guiScreen, GuiProperties guiProperties) {
@@ -413,7 +413,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 			ItemStack itemStack = player.inventory.getItemStack();
 			if (itemStack != null) {
 				player.inventory.setItemStack(null);
-				PacketJEI packet = new PacketDeletePlayerItem(itemStack);
+				PacketJei packet = new PacketDeletePlayerItem(itemStack);
 				JustEnoughItems.getProxy().sendPacketToServer(packet);
 				return true;
 			}

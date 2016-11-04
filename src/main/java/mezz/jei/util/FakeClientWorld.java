@@ -28,6 +28,7 @@ public class FakeClientWorld extends World {
 			return DimensionType.OVERWORLD;
 		}
 	};
+	@Nullable
 	private static FakeClientWorld INSTANCE;
 
 	public static FakeClientWorld getInstance() {

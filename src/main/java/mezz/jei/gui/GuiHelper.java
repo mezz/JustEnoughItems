@@ -19,13 +19,18 @@ public class GuiHelper implements IGuiHelper {
 	private final IDrawableStatic tabSelected;
 	private final IDrawableStatic tabUnselected;
 
+	private final ResourceLocation recipeBackgroundResource;
+	private final ResourceLocation recipeBackgroundTallResource;
+
 	public GuiHelper(IStackHelper stackHelper) {
 		this.stackHelper = stackHelper;
 
 		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/furnace.png");
 		this.slotDrawable = createDrawable(location, 55, 16, 18, 18);
 
-		ResourceLocation recipeBackgroundResource = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
+		recipeBackgroundResource = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
+		recipeBackgroundTallResource = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_TALL_PATH);
+
 		tabSelected = createDrawable(recipeBackgroundResource, 196, 15, 24, 24);
 		tabUnselected = createDrawable(recipeBackgroundResource, 220, 15, 24, 22);
 	}
@@ -107,5 +112,13 @@ public class GuiHelper implements IGuiHelper {
 
 	public IDrawableStatic getTabUnselected() {
 		return tabUnselected;
+	}
+
+	public ResourceLocation getRecipeBackgroundResource() {
+		return recipeBackgroundResource;
+	}
+
+	public ResourceLocation getRecipeBackgroundTallResource() {
+		return recipeBackgroundTallResource;
 	}
 }

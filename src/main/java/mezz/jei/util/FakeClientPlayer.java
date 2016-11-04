@@ -1,11 +1,13 @@
 package mezz.jei.util;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class FakeClientPlayer extends EntityPlayer {
+	@Nullable
 	public static FakeClientPlayer INSTANCE;
 
 	public static FakeClientPlayer getInstance() {

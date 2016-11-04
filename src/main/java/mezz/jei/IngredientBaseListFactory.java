@@ -27,6 +27,9 @@ public class IngredientBaseListFactory {
 	}
 
 	public static ImmutableList<IIngredientListElement> create(boolean showProgressBar) {
+		Log.info("Building item filter...");
+		long start_time = System.currentTimeMillis();
+
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		JeiHelpers jeiHelpers = Internal.getHelpers();
 		IngredientChecker ingredientChecker = new IngredientChecker(jeiHelpers);
@@ -38,17 +41,20 @@ public class IngredientBaseListFactory {
 		}
 
 		sortIngredientListElements(ingredientListElements);
-		return ImmutableList.copyOf(ingredientListElements);
+		ImmutableList<IIngredientListElement> immutableElements = ImmutableList.copyOf(ingredientListElements);
+
+		Log.info("Built    item filter in {} ms", System.currentTimeMillis() - start_time);
+		return immutableElements;
 	}
 
-	private static <V> List<IIngredientListElement> addToBaseList(List<IIngredientListElement> baseList, IIngredientRegistry ingredientRegistry, IngredientChecker ingredientChecker, Class<V> ingredientClass, final boolean showProgressBar) {
+	private static <V> void addToBaseList(List<IIngredientListElement> baseList, IIngredientRegistry ingredientRegistry, IngredientChecker ingredientChecker, Class<V> ingredientClass, final boolean showProgressBar) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientClass);
 
 		ImmutableList<V> ingredients = ingredientRegistry.getIngredients(ingredientClass);
 		final int ingredientCount = ingredients.size();
 		if (ingredientCount <= 0) {
-			return baseList;
+			return;
 		}
 		final int steps = 100;
 		ProgressManager.ProgressBar bar = null;
@@ -79,7 +85,6 @@ public class IngredientBaseListFactory {
 			SplashProgress.resume();
 			ProgressManager.pop(bar);
 		}
-		return baseList;
 	}
 
 	private static void sortIngredientListElements(List<IIngredientListElement> ingredientListElements) {

@@ -25,7 +25,7 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 	}
 
 	@Override
-	public void addRecipeTransferHandler(@Nullable Class<? extends Container> containerClass, @Nullable String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
+	public <C extends Container> void addRecipeTransferHandler(@Nullable Class<C> containerClass, @Nullable String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
 		if (containerClass == null) {
 			Log.error("Null containerClass", new NullPointerException());
 			return;
@@ -35,7 +35,7 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 			return;
 		}
 
-		IRecipeTransferInfo recipeTransferHelper = new BasicRecipeTransferInfo(containerClass, recipeCategoryUid, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
+		IRecipeTransferInfo<C> recipeTransferHelper = new BasicRecipeTransferInfo<C>(containerClass, recipeCategoryUid, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
 		addRecipeTransferHandler(recipeTransferHelper);
 	}
 

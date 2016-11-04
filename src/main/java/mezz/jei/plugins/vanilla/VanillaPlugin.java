@@ -57,8 +57,6 @@ import net.minecraftforge.fluids.FluidStack;
 
 @JEIPlugin
 public class VanillaPlugin extends BlankModPlugin {
-	public static IJeiHelpers jeiHelpers;
-
 	@Override
 	public void registerItemSubtypes(ISubtypeRegistry subtypeRegistry) {
 		subtypeRegistry.useNbtForSubtypes(
@@ -96,7 +94,7 @@ public class VanillaPlugin extends BlankModPlugin {
 	@Override
 	public void register(IModRegistry registry) {
 		IIngredientRegistry ingredientRegistry = registry.getIngredientRegistry();
-		jeiHelpers = registry.getJeiHelpers();
+		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
 
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 		registry.addRecipeCategories(
@@ -107,9 +105,9 @@ public class VanillaPlugin extends BlankModPlugin {
 		);
 
 		registry.addRecipeHandlers(
-				new ShapedOreRecipeHandler(),
+				new ShapedOreRecipeHandler(jeiHelpers),
 				new ShapedRecipesHandler(),
-				new ShapelessOreRecipeHandler(guiHelper),
+				new ShapelessOreRecipeHandler(jeiHelpers),
 				new ShapelessRecipesHandler(guiHelper),
 				new TippedArrowRecipeHandler(),
 				new FuelRecipeHandler(),

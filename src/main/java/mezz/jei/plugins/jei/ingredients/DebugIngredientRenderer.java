@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import net.minecraft.client.Minecraft;
@@ -24,11 +25,14 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 
 	@Override
 	public List<String> getTooltip(Minecraft minecraft, DebugIngredient ingredient) {
-		IIngredientHelper<DebugIngredient> ingredientHelper = JEIInternalPlugin.ingredientRegistry.getIngredientHelper(ingredient);
-		String displayName = ingredientHelper.getDisplayName(ingredient);
 		List<String> tooltip = new ArrayList<String>();
-		tooltip.add(displayName);
-		tooltip.add(TextFormatting.GRAY + "debug ingredient");
+		IIngredientRegistry ingredientRegistry = JEIInternalPlugin.ingredientRegistry;
+		if (ingredientRegistry != null) {
+			IIngredientHelper<DebugIngredient> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+			String displayName = ingredientHelper.getDisplayName(ingredient);
+			tooltip.add(displayName);
+			tooltip.add(TextFormatting.GRAY + "debug ingredient");
+		}
 		return tooltip;
 	}
 

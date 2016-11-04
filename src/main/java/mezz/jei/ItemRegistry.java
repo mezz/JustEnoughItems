@@ -1,10 +1,8 @@
 package mezz.jei;
 
 import javax.annotation.Nullable;
-import java.util.Locale;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.util.Log;

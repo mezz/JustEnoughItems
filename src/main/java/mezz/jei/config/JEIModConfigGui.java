@@ -47,18 +47,24 @@ public class JEIModConfigGui extends GuiConfig {
 			}
 		}
 
-		ConfigCategory categoryAdvanced = Config.getConfig().getCategory(Config.CATEGORY_ADVANCED);
-		configElements.addAll(new ConfigElement(categoryAdvanced).getChildElements());
+		LocalizedConfiguration config = Config.getConfig();
+		if (config != null) {
+			ConfigCategory categoryAdvanced = config.getCategory(Config.CATEGORY_ADVANCED);
+			configElements.addAll(new ConfigElement(categoryAdvanced).getChildElements());
 
-		ConfigCategory categorySearch = Config.getConfig().getCategory(Config.CATEGORY_SEARCH);
-		configElements.add(new ConfigElement(categorySearch));
+			ConfigCategory categorySearch = config.getCategory(Config.CATEGORY_SEARCH);
+			configElements.add(new ConfigElement(categorySearch));
+		}
 
 		return configElements;
 	}
 
 	private static String getTitle(GuiScreen parent) {
 		if (parent instanceof GuiModList) {
-			return GuiConfig.getAbridgedConfigPath(Config.getConfig().toString());
+			LocalizedConfiguration config = Config.getConfig();
+			if (config != null) {
+				return GuiConfig.getAbridgedConfigPath(config.toString());
+			}
 		}
 		return Translator.translateToLocal("config.jei.title").replace("%MODNAME", Constants.NAME);
 	}

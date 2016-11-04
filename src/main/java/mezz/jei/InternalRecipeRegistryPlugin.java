@@ -20,13 +20,13 @@ import mezz.jei.util.IngredientUtil;
 import mezz.jei.util.RecipeMap;
 
 public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
-	private RecipeRegistry recipeRegistry;
-	private ImmutableMultimap<String, String> categoriesForCraftItemKeys;
-	private IIngredientRegistry ingredientRegistry;
-	private ImmutableMap<String, IRecipeCategory> recipeCategoriesMap;
-	private RecipeMap recipeInputMap;
-	private RecipeMap recipeOutputMap;
-	private ListMultimap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories;
+	private final RecipeRegistry recipeRegistry;
+	private final ImmutableMultimap<String, String> categoriesForCraftItemKeys;
+	private final IIngredientRegistry ingredientRegistry;
+	private final ImmutableMap<String, IRecipeCategory> recipeCategoriesMap;
+	private final RecipeMap recipeInputMap;
+	private final RecipeMap recipeOutputMap;
+	private final ListMultimap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories;
 
 	public InternalRecipeRegistryPlugin(RecipeRegistry recipeRegistry, ImmutableMultimap<String, String> categoriesForCraftItemKeys, IIngredientRegistry ingredientRegistry, ImmutableMap<String, IRecipeCategory> recipeCategoriesMap, RecipeMap recipeInputMap, RecipeMap recipeOutputMap, ListMultimap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories) {
 		this.recipeRegistry = recipeRegistry;

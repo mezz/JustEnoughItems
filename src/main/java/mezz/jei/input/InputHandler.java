@@ -187,10 +187,8 @@ public class InputHandler {
 		char typedChar = Keyboard.getEventCharacter();
 		int eventKey = Keyboard.getEventKey();
 
-		if ((eventKey == 0 && typedChar >= 32) || Keyboard.getEventKeyState()) {
-			return handleKeyDown(typedChar, eventKey);
-		}
-		return false;
+		return ((eventKey == 0 && typedChar >= 32) || Keyboard.getEventKeyState()) &&
+				handleKeyDown(typedChar, eventKey);
 	}
 
 	private boolean handleKeyDown(char typedChar, int eventKey) {

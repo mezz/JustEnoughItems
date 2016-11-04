@@ -3,9 +3,9 @@ package mezz.jei.network;
 import javax.annotation.Nullable;
 import java.io.IOException;
 
+import mezz.jei.network.packets.IPacketJeiHandler;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
 import mezz.jei.network.packets.PacketGiveItemStack;
-import mezz.jei.network.packets.PacketJEI;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.util.Log;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,19 +14,10 @@ import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.FMLEventChannel;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 
 public class PacketHandler {
 	public static final String CHANNEL_ID = "JEI";
-	private final FMLEventChannel channel;
-
-	public PacketHandler() {
-		channel = NetworkRegistry.INSTANCE.newEventDrivenChannel(CHANNEL_ID);
-		channel.register(this);
-	}
 
 	@SubscribeEvent
 	public void onPacket(FMLNetworkEvent.ServerCustomPacketEvent event) {
@@ -36,19 +27,19 @@ public class PacketHandler {
 		try {
 			byte packetIdOrdinal = packetBuffer.readByte();
 			PacketIdServer packetId = PacketIdServer.VALUES[packetIdOrdinal];
-			PacketJEI packet;
+			IPacketJeiHandler packetHandler;
 
 			switch (packetId) {
 				case RECIPE_TRANSFER: {
-					packet = new PacketRecipeTransfer();
+					packetHandler = new PacketRecipeTransfer.Handler();
 					break;
 				}
 				case DELETE_ITEM: {
-					packet = new PacketDeletePlayerItem();
+					packetHandler = new PacketDeletePlayerItem.Handler();
 					break;
 				}
 				case GIVE_BIG: {
-					packet = new PacketGiveItemStack();
+					packetHandler = new PacketGiveItemStack.Handler();
 					break;
 				}
 				default: {
@@ -56,47 +47,19 @@ public class PacketHandler {
 				}
 			}
 
-			checkThreadAndEnqueue(packet, packetBuffer, player, player.getServer());
+			checkThreadAndEnqueue(packetHandler, packetBuffer, player, player.getServer());
 		} catch (RuntimeException ex) {
 			Log.error("Packet error", ex);
 		}
 	}
 
-	/*
-	@SubscribeEvent
-	public void onPacket(FMLNetworkEvent.ClientCustomPacketEvent event) {
-		PacketBuffer packetBuffer = new PacketBuffer(event.packet.payload());
-		Minecraft minecraft = Minecraft.getMinecraft();
-		EntityPlayer player = minecraft.thePlayer;
-		PacketJEI packet;
-
-		try {
-			byte packetIdOrdinal = packetBuffer.readByte();
-			PacketIdClient packetId = PacketIdClient.VALUES[packetIdOrdinal];
-			switch (packetId) {
-				default: {
-					return;
-				}
-			}
-
-			checkThreadAndEnqueue(packet, packetBuffer, player, minecraft);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-	*/
-
-	public void sendPacket(FMLProxyPacket packet, EntityPlayerMP player) {
-		channel.sendTo(packet, player);
-	}
-
-	private static void checkThreadAndEnqueue(final PacketJEI packet, final PacketBuffer packetBuffer, final EntityPlayer player, @Nullable IThreadListener threadListener) {
+	private static void checkThreadAndEnqueue(final IPacketJeiHandler packetHandler, final PacketBuffer packetBuffer, final EntityPlayer player, @Nullable IThreadListener threadListener) {
 		if (threadListener != null && !threadListener.isCallingFromMinecraftThread()) {
 			threadListener.addScheduledTask(new Runnable() {
 				@Override
 				public void run() {
 					try {
-						packet.readPacketData(packetBuffer, player);
+						packetHandler.readPacketData(packetBuffer, player);
 					} catch (IOException e) {
 						Log.error("Network Error", e);
 					}

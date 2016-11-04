@@ -22,7 +22,7 @@ public interface IRecipeTransferRegistry {
 	 * @param inventorySlotStart the first slot of the available inventory (usually player inventory)
 	 * @param inventorySlotCount the number of slots of the available inventory
 	 */
-	void addRecipeTransferHandler(Class<? extends Container> containerClass, String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount);
+	<C extends Container> void addRecipeTransferHandler(Class<C> containerClass, String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount);
 
 	/**
 	 * Advanced method for adding a recipe transfer handler.

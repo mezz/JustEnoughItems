@@ -8,12 +8,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 
-public class PacketDeletePlayerItem extends PacketJEI {
-	private ItemStack itemStack;
-
-	public PacketDeletePlayerItem() {
-
-	}
+public class PacketDeletePlayerItem extends PacketJei {
+	private final ItemStack itemStack;
 
 	public PacketDeletePlayerItem(ItemStack itemStack) {
 		this.itemStack = itemStack;
@@ -29,12 +25,14 @@ public class PacketDeletePlayerItem extends PacketJEI {
 		buf.writeItemStackToBuffer(itemStack);
 	}
 
-	@Override
-	public void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
-		itemStack = buf.readItemStackFromBuffer();
-		ItemStack playerItem = player.inventory.getItemStack();
-		if (ItemStack.areItemStacksEqual(itemStack, playerItem)) {
-			player.inventory.setItemStack(null);
+	public static class Handler implements IPacketJeiHandler {
+		@Override
+		public void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
+			ItemStack itemStack = buf.readItemStackFromBuffer();
+			ItemStack playerItem = player.inventory.getItemStack();
+			if (ItemStack.areItemStacksEqual(itemStack, playerItem)) {
+				player.inventory.setItemStack(null);
+			}
 		}
 	}
 }

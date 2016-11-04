@@ -12,6 +12,7 @@ import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITooltipCallback;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeCategory;
 import mezz.jei.config.Constants;
@@ -60,13 +61,18 @@ public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 	public void drawExtras(Minecraft minecraft) {
 		tankBackground.draw(minecraft);
 		IJeiRuntime runtime = JEIInternalPlugin.jeiRuntime;
-		IItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-		minecraft.fontRendererObj.drawString(itemListOverlay.getFilterText(), 20, 52, 0);
-		ItemStack stackUnderMouse = itemListOverlay.getStackUnderMouse();
-		if (stackUnderMouse != null) {
-			IIngredientHelper<ItemStack> ingredientHelper = JEIInternalPlugin.ingredientRegistry.getIngredientHelper(stackUnderMouse);
-			String jeiUid = ingredientHelper.getUniqueId(stackUnderMouse);
-			minecraft.fontRendererObj.drawString(jeiUid, 50, 52, 0);
+		if (runtime != null) {
+			IItemListOverlay itemListOverlay = runtime.getItemListOverlay();
+			minecraft.fontRendererObj.drawString(itemListOverlay.getFilterText(), 20, 52, 0);
+			ItemStack stackUnderMouse = itemListOverlay.getStackUnderMouse();
+			if (stackUnderMouse != null) {
+				IIngredientRegistry ingredientRegistry = JEIInternalPlugin.ingredientRegistry;
+				if (ingredientRegistry != null) {
+					IIngredientHelper<ItemStack> ingredientHelper = ingredientRegistry.getIngredientHelper(stackUnderMouse);
+					String jeiUid = ingredientHelper.getUniqueId(stackUnderMouse);
+					minecraft.fontRendererObj.drawString(jeiUid, 50, 52, 0);
+				}
+			}
 		}
 	}
 
