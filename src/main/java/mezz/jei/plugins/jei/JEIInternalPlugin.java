@@ -29,6 +29,9 @@ import mezz.jei.plugins.jei.ingredients.DebugIngredientRenderer;
 import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
 
 @JEIPlugin
 public class JEIInternalPlugin extends BlankModPlugin {
@@ -94,6 +97,15 @@ public class JEIInternalPlugin extends BlankModPlugin {
 					return Collections.singletonList(
 							new Rectangle(guiContainer.guiLeft + guiContainer.xSize, guiContainer.guiTop + 40, size, size)
 					);
+				}
+
+				@Nullable
+				@Override
+				public Object getIngredientUnderMouse(int mouseX, int mouseY) {
+					if (mouseX < 10 && mouseY < 10) {
+						return new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME);
+					}
+					return null;
 				}
 			});
 		}

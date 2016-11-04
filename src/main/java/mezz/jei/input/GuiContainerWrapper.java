@@ -1,7 +1,11 @@
 package mezz.jei.input;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
+import mezz.jei.Internal;
+import mezz.jei.JeiRuntime;
+import mezz.jei.api.gui.IAdvancedGuiHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -24,6 +28,23 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 				return new ClickedIngredient<ItemStack>(stack);
 			}
 		}
+
+		JeiRuntime runtime = Internal.getRuntime();
+		if (runtime != null) {
+			List<IAdvancedGuiHandler<?>> activeAdvancedGuiHandlers = runtime.getActiveAdvancedGuiHandlers(guiScreen);
+			for (IAdvancedGuiHandler advancedGuiHandler : activeAdvancedGuiHandlers) {
+				Object clicked;
+				try {
+					clicked = advancedGuiHandler.getIngredientUnderMouse(mouseX, mouseY);
+				} catch (AbstractMethodError ignored) { // legacy
+					continue;
+				}
+				if (clicked != null) {
+					return new ClickedIngredient<Object>(clicked);
+				}
+			}
+		}
+
 		return null;
 	}
 
