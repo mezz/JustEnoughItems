@@ -1,4 +1,4 @@
-package mezz.jei.gui;
+package mezz.jei.gui.recipes;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -11,9 +11,9 @@ import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.config.Constants;
+import mezz.jei.gui.GuiProperties;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
-import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
@@ -58,7 +58,7 @@ public class RecipeCategoryCraftingItems implements IShowsRecipeFocuses {
 
 			final int extraBoxHeight = middleDrawable.getHeight();
 			for (int i = 1; i < itemStacks.size(); i++) {
-				if (totalHeight + extraBoxHeight <= (guiProperties.getGuiXSize() - 8)) {
+				if (totalHeight + extraBoxHeight <= (guiProperties.getGuiYSize() - 8)) {
 					totalHeight += extraBoxHeight;
 					ingredientCount++;
 				} else {

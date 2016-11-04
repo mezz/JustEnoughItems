@@ -15,7 +15,6 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.GuiProperties;
-import mezz.jei.gui.RecipeCategoryCraftingItems;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.input.ClickedIngredient;
