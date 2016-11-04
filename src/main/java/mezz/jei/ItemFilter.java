@@ -27,8 +27,8 @@ public class ItemFilter {
 
 	private ImmutableList<IIngredientListElement> baseList;
 
-	public ItemFilter() {
-		this.baseList = IngredientBaseListFactory.create(true);
+	public ItemFilter(boolean showProgressBar) {
+		this.baseList = IngredientBaseListFactory.create(showProgressBar);
 	}
 
 	public void rebuild() {
