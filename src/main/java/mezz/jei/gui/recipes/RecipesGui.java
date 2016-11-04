@@ -18,6 +18,7 @@ import mezz.jei.gui.GuiProperties;
 import mezz.jei.gui.RecipeCategoryCraftingItems;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiIngredient;
+import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.InputHandler;
@@ -195,11 +196,11 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		previousPage.drawButton(mc, mouseX, mouseY);
 
 		RecipeLayout hovered = null;
-		for (RecipeLayout recipeWidget : recipeLayouts) {
-			if (recipeWidget.isMouseOver(mouseX, mouseY)) {
-				hovered = recipeWidget;
+		for (RecipeLayout recipeLayout : recipeLayouts) {
+			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
+				hovered = recipeLayout;
 			} else {
-				recipeWidget.draw(mc, mouseX, mouseY);
+				recipeLayout.draw(mc, mouseX, mouseY);
 			}
 		}
 
@@ -230,16 +231,18 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	@Override
 	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
 		if (isOpen()) {
-			IClickedIngredient<?> clicked = recipeCategoryCraftingItems.getIngredientUnderMouse(mouseX, mouseY);
-			if (clicked != null) {
-				return clicked;
+			{
+				IClickedIngredient<?> clicked = recipeCategoryCraftingItems.getIngredientUnderMouse(mouseX, mouseY);
+				if (clicked != null) {
+					return clicked;
+				}
 			}
 
 			if (isMouseOver(mouseX, mouseY)) {
 				for (RecipeLayout recipeLayouts : this.recipeLayouts) {
-					clicked = recipeLayouts.getIngredientUnderMouse(mouseX, mouseY);
+					Object clicked = recipeLayouts.getIngredientUnderMouse(mouseX, mouseY);
 					if (clicked != null) {
-						return clicked;
+						return new ClickedIngredient<Object>(clicked);
 					}
 				}
 			}
@@ -428,7 +431,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		int spacingY = recipeBackground.getHeight() + recipeSpacing;
 
 		recipeLayouts.clear();
-		recipeLayouts.addAll(logic.getRecipeWidgets(recipeXOffset, guiTop + headerHeight + recipeSpacing, spacingY));
+		recipeLayouts.addAll(logic.getRecipeLayouts(recipeXOffset, guiTop + headerHeight + recipeSpacing, spacingY));
 		addRecipeTransferButtons(recipeLayouts);
 
 		nextPage.enabled = previousPage.enabled = logic.hasMultiplePages();
@@ -451,8 +454,10 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 		for (RecipeLayout recipeLayout : recipeLayouts) {
 			RecipeTransferButton button = recipeLayout.getRecipeTransferButton();
-			button.init(container, player);
-			buttonList.add(button);
+			if (button != null) {
+				button.init(container, player);
+				buttonList.add(button);
+			}
 		}
 	}
 

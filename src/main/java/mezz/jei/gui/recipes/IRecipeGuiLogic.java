@@ -49,5 +49,5 @@ public interface IRecipeGuiLogic {
 
 	List<ItemStack> getRecipeCategoryCraftingItems(IRecipeCategory recipeCategory);
 
-	List<RecipeLayout> getRecipeWidgets(int posX, int posY, int spacingY);
+	List<RecipeLayout> getRecipeLayouts(int posX, int posY, int spacingY);
 }

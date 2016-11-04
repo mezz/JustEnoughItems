@@ -19,7 +19,7 @@ import net.minecraft.item.ItemStack;
 public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private static class State {
 		@Nonnull
-		public final IFocus focus;
+		public final IFocus<?> focus;
 		@Nonnull
 		public final ImmutableList<IRecipeCategory> recipeCategories;
 
@@ -27,7 +27,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		public int pageIndex;
 		public int recipesPerPage;
 
-		public State(IFocus focus, List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int pageIndex) {
+		public State(IFocus<?> focus, List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int pageIndex) {
 			if (recipeCategories.isEmpty()) {
 				throw new IllegalStateException("Recipe categories cannot be empty.");
 			}
@@ -202,25 +202,26 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public List<RecipeLayout> getRecipeWidgets(int posX, int posY, int spacingY) {
-		List<RecipeLayout> recipeWidgets = new ArrayList<RecipeLayout>();
+	public List<RecipeLayout> getRecipeLayouts(int posX, int posY, int spacingY) {
+		List<RecipeLayout> recipeLayouts = new ArrayList<RecipeLayout>();
 
 		IRecipeCategory recipeCategory = getSelectedRecipeCategory();
 
 		int recipeWidgetIndex = 0;
-		for (int recipeIndex = state.pageIndex * state.recipesPerPage; recipeIndex < recipes.size() && recipeWidgets.size() < state.recipesPerPage; recipeIndex++) {
+		for (int recipeIndex = state.pageIndex * state.recipesPerPage; recipeIndex < recipes.size() && recipeLayouts.size() < state.recipesPerPage; recipeIndex++) {
 			IRecipeWrapper recipeWrapper = recipes.get(recipeIndex);
 			if (recipeWrapper == null) {
 				continue;
 			}
 
-			RecipeLayout recipeWidget = new RecipeLayout(recipeWidgetIndex++, posX, posY, recipeCategory, recipeWrapper, state.focus);
-			recipeWidgets.add(recipeWidget);
+			RecipeLayout recipeLayout = new RecipeLayout(recipeWidgetIndex++, recipeCategory, recipeWrapper, state.focus);
+			recipeLayout.setPosition(posX, posY);
+			recipeLayouts.add(recipeLayout);
 
 			posY += spacingY;
 		}
 
-		return recipeWidgets;
+		return recipeLayouts;
 	}
 
 	@Override

@@ -8,7 +8,7 @@ import java.util.Map;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IGuiIngredientGroup;
-import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
@@ -19,7 +19,6 @@ import mezz.jei.gui.ingredients.GuiFluidStackGroup;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiIngredientGroup;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
-import mezz.jei.input.IClickedIngredient;
 import mezz.jei.util.Ingredients;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
@@ -27,7 +26,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
-public class RecipeLayout implements IRecipeLayout {
+public class RecipeLayout implements IRecipeLayoutDrawable {
 	private static final int RECIPE_BUTTON_SIZE = 12;
 	public static final int recipeTransferButtonIndex = 100;
 
@@ -35,14 +34,15 @@ public class RecipeLayout implements IRecipeLayout {
 	private final GuiItemStackGroup guiItemStackGroup;
 	private final GuiFluidStackGroup guiFluidStackGroup;
 	private final Map<Class, GuiIngredientGroup> guiIngredientGroups;
+	@Nullable
 	private final RecipeTransferButton recipeTransferButton;
 	private final IRecipeWrapper recipeWrapper;
 	private final IFocus<?> focus;
 
-	private final int posX;
-	private final int posY;
+	private int posX;
+	private int posY;
 
-	public <T extends IRecipeWrapper> RecipeLayout(int index, int posX, int posY, IRecipeCategory<T> recipeCategory, T recipeWrapper, IFocus focus) {
+	public <T extends IRecipeWrapper> RecipeLayout(int index, IRecipeCategory<T> recipeCategory, T recipeWrapper, IFocus focus) {
 		this.recipeCategory = recipeCategory;
 		this.focus = focus;
 
@@ -61,11 +61,11 @@ public class RecipeLayout implements IRecipeLayout {
 		this.guiIngredientGroups.put(ItemStack.class, this.guiItemStackGroup);
 		this.guiIngredientGroups.put(FluidStack.class, this.guiFluidStackGroup);
 
-		int width = recipeCategory.getBackground().getWidth();
-		int height = recipeCategory.getBackground().getHeight();
-		this.recipeTransferButton = new RecipeTransferButton(recipeTransferButtonIndex + index, posX + width + 2, posY + height - RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, "+", this);
-		this.posX = posX;
-		this.posY = posY;
+		if (index >= 0) {
+			this.recipeTransferButton = new RecipeTransferButton(recipeTransferButtonIndex + index, 0, 0, RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, "+", this);
+		} else {
+			this.recipeTransferButton = null;
+		}
 
 		this.recipeWrapper = recipeWrapper;
 
@@ -84,6 +84,20 @@ public class RecipeLayout implements IRecipeLayout {
 		}
 	}
 
+	@Override
+	public void setPosition(int posX, int posY) {
+		this.posX = posX;
+		this.posY = posY;
+
+		if (this.recipeTransferButton != null) {
+			int width = recipeCategory.getBackground().getWidth();
+			int height = recipeCategory.getBackground().getHeight();
+			this.recipeTransferButton.xPosition = posX + width + 2;
+			this.recipeTransferButton.yPosition = posY + height - RECIPE_BUTTON_SIZE;
+		}
+	}
+
+	@Override
 	public void draw(Minecraft minecraft, final int mouseX, final int mouseY) {
 		IDrawable background = recipeCategory.getBackground();
 
@@ -112,8 +126,9 @@ public class RecipeLayout implements IRecipeLayout {
 				hoveredIngredient = hovered;
 			}
 		}
-
-		recipeTransferButton.drawButton(minecraft, mouseX, mouseY);
+		if (recipeTransferButton != null) {
+			recipeTransferButton.drawButton(minecraft, mouseX, mouseY);
+		}
 		GlStateManager.disableBlend();
 		GlStateManager.disableLighting();
 
@@ -129,6 +144,7 @@ public class RecipeLayout implements IRecipeLayout {
 		GlStateManager.disableAlpha();
 	}
 
+	@Override
 	public boolean isMouseOver(int mouseX, int mouseY) {
 		final int recipeMouseX = mouseX - posX;
 		final int recipeMouseY = mouseY - posY;
@@ -136,13 +152,17 @@ public class RecipeLayout implements IRecipeLayout {
 		return recipeMouseX >= 0 && recipeMouseX < background.getWidth() && recipeMouseY >= 0 && recipeMouseY < background.getHeight();
 	}
 
+	@Override
 	@Nullable
-	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
-		IClickedIngredient<?> clicked = guiItemStackGroup.getIngredientUnderMouse(posX, posY, mouseX, mouseY);
-		if (clicked == null) {
-			clicked = guiFluidStackGroup.getIngredientUnderMouse(posX, posY, mouseX, mouseY);
+	public Object getIngredientUnderMouse(int mouseX, int mouseY) {
+		for (GuiIngredientGroup<?> guiIngredientGroup : guiIngredientGroups.values()) {
+			Object clicked = guiIngredientGroup.getIngredientUnderMouse(posX, posY, mouseX, mouseY);
+			if (clicked != null) {
+				return clicked;
+			}
 		}
-		return clicked;
+
+		return null;
 	}
 
 	public boolean handleClick(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
@@ -179,8 +199,10 @@ public class RecipeLayout implements IRecipeLayout {
 
 	@Override
 	public void setRecipeTransferButton(int posX, int posY) {
-		recipeTransferButton.xPosition = posX + this.posX;
-		recipeTransferButton.yPosition = posY + this.posY;
+		if (recipeTransferButton != null) {
+			recipeTransferButton.xPosition = posX + this.posX;
+			recipeTransferButton.yPosition = posY + this.posY;
+		}
 	}
 
 	@Override
@@ -188,6 +210,7 @@ public class RecipeLayout implements IRecipeLayout {
 		return focus;
 	}
 
+	@Nullable
 	public RecipeTransferButton getRecipeTransferButton() {
 		return recipeTransferButton;
 	}

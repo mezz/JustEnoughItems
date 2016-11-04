@@ -17,8 +17,6 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
-import mezz.jei.input.ClickedIngredient;
-import mezz.jei.input.IClickedIngredient;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 
@@ -118,12 +116,12 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	}
 
 	@Nullable
-	public IClickedIngredient<T> getIngredientUnderMouse(int xOffset, int yOffset, int mouseX, int mouseY) {
+	public T getIngredientUnderMouse(int xOffset, int yOffset, int mouseX, int mouseY) {
 		for (GuiIngredient<T> guiIngredient : guiIngredients.values()) {
 			if (guiIngredient != null && guiIngredient.isMouseOver(xOffset, yOffset, mouseX, mouseY)) {
 				T displayedIngredient = guiIngredient.getDisplayedIngredient();
 				if (displayedIngredient != null) {
-					return new ClickedIngredient<T>(displayedIngredient);
+					return displayedIngredient;
 				}
 			}
 		}

@@ -14,6 +14,7 @@ import mezz.jei.config.Constants;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
 import net.minecraft.client.Minecraft;
@@ -119,7 +120,11 @@ public class RecipeCategoryCraftingItems implements IShowsRecipeFocuses {
 	@Nullable
 	@Override
 	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
-		return craftingItems.getIngredientUnderMouse(0, 0, mouseX, mouseY);
+		ItemStack ingredientUnderMouse = craftingItems.getIngredientUnderMouse(0, 0, mouseX, mouseY);
+		if (ingredientUnderMouse != null) {
+			return new ClickedIngredient<Object>(ingredientUnderMouse);
+		}
+		return null;
 	}
 
 	@Override

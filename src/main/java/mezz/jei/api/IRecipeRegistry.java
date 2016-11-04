@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
@@ -85,6 +86,18 @@ public interface IRecipeRegistry {
 	 */
 	@Nullable
 	IRecipeTransferHandler getRecipeTransferHandler(Container container, IRecipeCategory recipeCategory);
+
+	/**
+	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.
+	 * Layouts created this way do not have recipe transfer buttons, they are not useful for this purpose.
+	 *
+	 * @param recipeCategory the recipe category that the recipe belongs to
+	 * @param recipeWrapper  the specific recipe wrapper to draw.
+	 * @param focus          the focus of the recipe layout.
+	 * @since JEI 3.13.2
+	 */
+	@Nullable
+	<T extends IRecipeWrapper> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipeWrapper, IFocus focus);
 
 	/**
 	 * Add a new recipe while the game is running.

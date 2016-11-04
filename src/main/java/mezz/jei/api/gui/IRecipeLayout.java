@@ -9,6 +9,7 @@ import mezz.jei.api.recipe.IRecipeWrapper;
  * Represents the layout of one recipe on-screen.
  * Plugins interpret a recipe wrapper to set the properties here.
  * It is passed to plugins in {@link IRecipeCategory#setRecipe(IRecipeLayout, IRecipeWrapper)}.
+ * @see IRecipeLayoutDrawable
  */
 public interface IRecipeLayout {
 	/**
