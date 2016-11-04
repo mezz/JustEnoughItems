@@ -2,7 +2,6 @@ package mezz.jei;
 
 import javax.annotation.Nullable;
 
-import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.ItemListOverlayInternal;

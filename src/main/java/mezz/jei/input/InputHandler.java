@@ -47,7 +47,9 @@ public class InputHandler {
 		this.mouseHelper = new MouseHelper();
 
 		showsRecipeFocuses.add(recipesGui);
-		showsRecipeFocuses.add(itemListOverlayInternal);
+		if (itemListOverlayInternal != null) {
+			showsRecipeFocuses.add(itemListOverlayInternal);
+		}
 		showsRecipeFocuses.add(new GuiContainerWrapper());
 	}
 
