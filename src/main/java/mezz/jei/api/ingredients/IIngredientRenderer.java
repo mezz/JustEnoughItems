@@ -29,7 +29,6 @@ public interface IIngredientRenderer<T> {
 
 	/**
 	 * Get the tooltip text for this ingredient. JEI renders the tooltip based on this.
-	 * This list must be modifiable.
 	 *
 	 * @param minecraft  The minecraft instance.
 	 * @param ingredient The ingredient to get the tooltip for.

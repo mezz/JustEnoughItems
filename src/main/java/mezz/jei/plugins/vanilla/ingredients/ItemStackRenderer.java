@@ -1,6 +1,7 @@
 package mezz.jei.plugins.vanilla.ingredients;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,11 +43,15 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 		} catch (RuntimeException e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
 			Log.error("Failed to get tooltip: {}", itemStackInfo, e);
-			return Collections.emptyList();
+			list = new ArrayList<String>();
+			list.add(TextFormatting.RED + "Error");
+			return list;
 		} catch (LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
 			Log.error("Failed to get tooltip: {}", itemStackInfo, e);
-			return Collections.emptyList();
+			list = new ArrayList<String>();
+			list.add(TextFormatting.RED + "Error");
+			return list;
 		}
 
 		for (int k = 0; k < list.size(); ++k) {

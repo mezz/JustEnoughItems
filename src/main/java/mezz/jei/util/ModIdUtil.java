@@ -1,5 +1,6 @@
 package mezz.jei.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -53,15 +54,17 @@ public class ModIdUtil {
 		return getModNameForModId(modId);
 	}
 
-	public <T> void addModNameToIngredientTooltip(List<String> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
+	public <T> List<String> addModNameToIngredientTooltip(List<String> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
 		String modName = getModNameForIngredient(ingredient, ingredientHelper);
 		if (tooltip.size() > 1) {
 			String lastTooltipLine = tooltip.get(tooltip.size() - 1);
 			lastTooltipLine = TextFormatting.getTextWithoutFormattingCodes(lastTooltipLine);
 			if (modName.equals(lastTooltipLine)) {
-				return;
+				return tooltip;
 			}
 		}
-		tooltip.add(TextFormatting.BLUE.toString() + TextFormatting.ITALIC.toString() + modName);
+		List<String> tooltipCopy = new ArrayList<String>(tooltip);
+		tooltipCopy.add(TextFormatting.BLUE.toString() + TextFormatting.ITALIC.toString() + modName);
+		return tooltipCopy;
 	}
 }

@@ -179,7 +179,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 			GlStateManager.color(1f, 1f, 1f, 1f);
 
 			List<String> tooltip = ingredientRenderer.getTooltip(minecraft, value);
-			Internal.getModIdUtil().addModNameToIngredientTooltip(tooltip, value, ingredientHelper);
+			tooltip = Internal.getModIdUtil().addModNameToIngredientTooltip(tooltip, value, ingredientHelper);
 
 			if (tooltipCallback != null) {
 				tooltipCallback.onTooltip(slotIndex, input, value, tooltip);

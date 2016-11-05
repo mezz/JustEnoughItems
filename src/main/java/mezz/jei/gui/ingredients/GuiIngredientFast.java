@@ -273,7 +273,7 @@ public class GuiIngredientFast {
 			list.add(Translator.translateToLocal("jei.tooltip.error.crash"));
 		}
 
-		Internal.getModIdUtil().addModNameToIngredientTooltip(list, ingredient, ingredientHelper);
+		list = Internal.getModIdUtil().addModNameToIngredientTooltip(list, ingredient, ingredientHelper);
 
 		int maxWidth = Constants.MAX_TOOLTIP_WIDTH;
 		for (String tooltipLine : list) {
