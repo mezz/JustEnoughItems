@@ -23,8 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionHelper;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
-import net.minecraftforge.common.brewing.BrewingOreRecipe;
-import net.minecraftforge.common.brewing.BrewingRecipe;
+import net.minecraftforge.common.brewing.AbstractBrewingRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
@@ -138,41 +137,26 @@ public class BrewingRecipeMaker {
 		Collection<IBrewingRecipe> unknownSteps = new ArrayList<IBrewingRecipe>();
 
 		for (IBrewingRecipe iBrewingRecipe : brewingRecipes) {
-			if (iBrewingRecipe instanceof BrewingRecipe) {
-				BrewingRecipe brewingRecipe = (BrewingRecipe) iBrewingRecipe;
+			if (iBrewingRecipe instanceof AbstractBrewingRecipe) {
+				AbstractBrewingRecipe brewingRecipe = (AbstractBrewingRecipe) iBrewingRecipe;
+				List<ItemStack> ingredientList = Internal.getStackHelper().toItemStackList(brewingRecipe.getIngredient());
 
-				ItemStack input = brewingRecipe.getInput();
-				ItemStack output = brewingRecipe.getOutput();
-				String potionInputUid = Internal.getStackHelper().getUniqueIdentifierForStack(input);
-				String potionOutputUid = Internal.getStackHelper().getUniqueIdentifierForStack(output);
+				if (!ingredientList.isEmpty()) {
+					ItemStack input = brewingRecipe.getInput();
+					ItemStack output = brewingRecipe.getOutput();
+					String potionInputUid = Internal.getStackHelper().getUniqueIdentifierForStack(input);
+					String potionOutputUid = Internal.getStackHelper().getUniqueIdentifierForStack(output);
 
-				Integer steps = brewingSteps.get(potionInputUid);
-				if (steps == null) {
-					unknownSteps.add(brewingRecipe);
-				} else {
-					int outputBrewingStep = steps + 1;
-					brewingSteps.put(potionOutputUid, outputBrewingStep);
+					Integer steps = brewingSteps.get(potionInputUid);
+					if (steps == null) {
+						unknownSteps.add(brewingRecipe);
+					} else {
+						int outputBrewingStep = steps + 1;
+						brewingSteps.put(potionOutputUid, outputBrewingStep);
 
-					BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(brewingRecipe.getIngredient(), input, output, outputBrewingStep);
-					recipes.add(recipe);
-				}
-			} else if (iBrewingRecipe instanceof BrewingOreRecipe) {
-				BrewingOreRecipe brewingRecipe = (BrewingOreRecipe) iBrewingRecipe;
-
-				ItemStack input = brewingRecipe.getInput();
-				ItemStack output = brewingRecipe.getOutput();
-				String potionInputUid = Internal.getStackHelper().getUniqueIdentifierForStack(input);
-				String potionOutputUid = Internal.getStackHelper().getUniqueIdentifierForStack(output);
-
-				Integer steps = brewingSteps.get(potionInputUid);
-				if (steps == null) {
-					unknownSteps.add(brewingRecipe);
-				} else {
-					int outputBrewingStep = steps + 1;
-					brewingSteps.put(potionOutputUid, outputBrewingStep);
-
-					BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(brewingRecipe.getIngredient(), input, output, outputBrewingStep);
-					recipes.add(recipe);
+						BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(ingredientList, input, output, outputBrewingStep);
+						recipes.add(recipe);
+					}
 				}
 			} else if (!(iBrewingRecipe instanceof VanillaBrewingRecipe)) {
 				Class recipeClass = iBrewingRecipe.getClass();
