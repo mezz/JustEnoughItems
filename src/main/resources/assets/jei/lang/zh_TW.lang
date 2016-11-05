@@ -16,6 +16,8 @@ jei.tooltip.error.recipe.transfer.missing=遺失物品
 jei.tooltip.error.recipe.transfer.inventory.full=物品欄已滿
 jei.tooltip.error.recipe.transfer.unknown=未知錯誤，請查閱日誌獲得詳細資訊
 jei.tooltip.error.recipe.transfer.no.server=服務器必須安裝JEI
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=合成配方不是2×2的
+jei.tooltip.error.crash=提示錯誤，請查看日誌
 
 # Error Messages 錯誤消息
 jei.chat.error.command.too.long=JEI必須安裝在服務器才能處理這個聊天命令，這對Minecraft來說太長了。
@@ -81,11 +83,18 @@ gui.jei.editMode.description.show.wild=相同ID物品以隱藏。按住%CTRL右�
 gui.jei.editMode.description.hide.mod.id=同時按下%CTRL和SHIFT時點擊以按模組ID隱藏。
 gui.jei.editMode.description.show.mod.id=已按模組ID隱藏。同時按下%CTRL和SHIFT時點擊以顯示。
 
+#PC/Linux Control Key
+key.jei.ctrl=CTRL
+#Mac Command Key
+key.jei.ctrl.mac=CMD
+
 # Recipe Categories 合成類別
 gui.jei.category.craftingTable=合成
 gui.jei.category.smelting=冶煉
 gui.jei.category.smelting.experience=%s經驗
 gui.jei.category.fuel=燃料
+gui.jei.category.fuel.smeltCount.single=燒煉1個物品
+gui.jei.category.fuel.smeltCount=燒煉%s個物品
 gui.jei.category.fuel.burnTime=燃燒時限：%s
 gui.jei.category.brewing=釀造
 gui.jei.category.brewing.steps=需要步數：%s
