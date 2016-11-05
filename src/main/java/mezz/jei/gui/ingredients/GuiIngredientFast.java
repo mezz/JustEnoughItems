@@ -266,11 +266,11 @@ public class GuiIngredientFast {
 		} catch (RuntimeException e) {
 			Log.error("Tooltip crashed.", e);
 			list = new ArrayList<String>();
-			list.add(Translator.translateToLocal("jei.tooltip.error.crash"));
+			list.add(TextFormatting.RED + Translator.translateToLocal("jei.tooltip.error.crash"));
 		} catch (LinkageError e) {
 			Log.error("Tooltip crashed.", e);
 			list = new ArrayList<String>();
-			list.add(Translator.translateToLocal("jei.tooltip.error.crash"));
+			list.add(TextFormatting.RED + Translator.translateToLocal("jei.tooltip.error.crash"));
 		}
 
 		list = Internal.getModIdUtil().addModNameToIngredientTooltip(list, ingredient, ingredientHelper);

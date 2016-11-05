@@ -9,6 +9,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.FakeClientPlayer;
 import mezz.jei.util.Log;
+import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -44,13 +45,13 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
 			Log.error("Failed to get tooltip: {}", itemStackInfo, e);
 			list = new ArrayList<String>();
-			list.add(TextFormatting.RED + "Error");
+			list.add(TextFormatting.RED + Translator.translateToLocal("jei.tooltip.error.crash"));
 			return list;
 		} catch (LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
 			Log.error("Failed to get tooltip: {}", itemStackInfo, e);
 			list = new ArrayList<String>();
-			list.add(TextFormatting.RED + "Error");
+			list.add(TextFormatting.RED + Translator.translateToLocal("jei.tooltip.error.crash"));
 			return list;
 		}
 
