@@ -14,6 +14,7 @@ import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import mezz.jei.util.color.ColorGetter;
 import mezz.jei.util.color.ColorNamer;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -82,6 +83,8 @@ public class Config {
 				worldConfig.save();
 			}
 		}
+
+		MinecraftForge.EVENT_BUS.post(new OverlayToggleEvent(overlayEnabled));
 	}
 
 	public static boolean isCheatItemsEnabled() {

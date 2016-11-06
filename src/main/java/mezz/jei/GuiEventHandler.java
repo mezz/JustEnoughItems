@@ -3,12 +3,14 @@ package mezz.jei;
 import javax.annotation.Nullable;
 
 import mezz.jei.config.Config;
+import mezz.jei.config.OverlayToggleEvent;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.ItemListOverlayInternal;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.InputHandler;
 import mezz.jei.util.Translator;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraftforge.client.event.GuiOpenEvent;
@@ -30,12 +32,21 @@ public class GuiEventHandler {
 	}
 
 	@SubscribeEvent
-	public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
-		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
+	public void onOverlayToggle(OverlayToggleEvent event) {
+		GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+		onNewScreen(currentScreen);
+	}
 
+	@SubscribeEvent
+	public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
 		GuiScreen gui = event.getGui();
-		if (gui instanceof GuiContainer || gui instanceof RecipesGui) {
-			ItemListOverlayInternal itemListOverlayInternal = itemListOverlay.create(gui);
+		onNewScreen(gui);
+	}
+
+	private void onNewScreen(@Nullable GuiScreen screen) {
+		if (screen instanceof GuiContainer || screen instanceof RecipesGui) {
+			ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
+			ItemListOverlayInternal itemListOverlayInternal = itemListOverlay.create(screen);
 			inputHandler = new InputHandler(runtime, itemListOverlayInternal);
 		} else {
 			inputHandler = null;

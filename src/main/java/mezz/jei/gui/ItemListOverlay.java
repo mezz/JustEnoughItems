@@ -33,21 +33,19 @@ public class ItemListOverlay implements IItemListOverlay {
 
 	@Nullable
 	public ItemListOverlayInternal create(GuiScreen guiScreen) {
+		close();
+
 		if (Config.isOverlayEnabled()) {
 			GuiProperties guiProperties = GuiProperties.create(guiScreen);
 			if (guiProperties != null) {
 				final int columns = ItemListOverlayInternal.getColumns(guiProperties);
 				if (columns >= 4) {
-					if (internal != null) {
-						close();
-					}
 					internal = new ItemListOverlayInternal(this, ingredientRegistry, guiScreen, guiProperties);
 					return internal;
 				}
 			}
 		}
 
-		close();
 		return null;
 	}
 
