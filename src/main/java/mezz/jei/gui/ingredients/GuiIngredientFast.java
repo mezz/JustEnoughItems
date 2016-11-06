@@ -89,11 +89,20 @@ public class GuiIngredientFast {
 
 		ItemStack itemStack = (ItemStack) ingredient;
 
+		try {
+			renderItemAndEffectIntoGUI(itemStack);
+		} catch (RuntimeException e) {
+			logRenderError(this, e);
+			clear();
+		}
+	}
+
+	private void renderItemAndEffectIntoGUI(ItemStack itemStack) {
 		IBakedModel bakedModel = itemModelMesher.getItemModel(itemStack);
 		bakedModel = bakedModel.getOverrides().handleItemState(bakedModel, itemStack, null, null);
 
 		if (Config.isEditModeEnabled()) {
-			renderEditMode(ingredient, area, padding);
+			renderEditMode(itemStack, area, padding);
 			GlStateManager.enableBlend();
 		}
 
@@ -157,7 +166,12 @@ public class GuiIngredientFast {
 				renderEditMode(ingredient, area, padding);
 			}
 
-			renderSlow(ingredient, area, padding);
+			try {
+				renderSlow(ingredient, area, padding);
+			} catch (RuntimeException e) {
+				logRenderError(this, e);
+				clear();
+			}
 		}
 	}
 
@@ -177,7 +191,15 @@ public class GuiIngredientFast {
 		}
 
 		ItemStack itemStack = (ItemStack) ingredient;
+		try {
+			renderOverlay(minecraft, itemStack);
+		} catch (RuntimeException e) {
+			logRenderError(this, e);
+			clear();
+		}
+	}
 
+	private void renderOverlay(Minecraft minecraft, ItemStack itemStack) {
 		FontRenderer font = getFontRenderer(minecraft, itemStack);
 		RenderItem renderItem = minecraft.getRenderItem();
 		renderItem.renderItemOverlayIntoGUI(font, itemStack, area.x + padding, area.y + padding, null);
@@ -333,5 +355,21 @@ public class GuiIngredientFast {
 		}
 
 		return list;
+	}
+
+	private static void logRenderError(GuiIngredientFast guiItemStack, Exception e) {
+		Object ingredient = guiItemStack.getIngredient();
+		logRenderError(ingredient, e);
+	}
+
+	private static <V> void logRenderError(@Nullable V ingredient, Exception e) {
+		if (ingredient == null) {
+			Log.error("Rendering ingredient crashed.", e);
+		} else {
+			IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+			IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+			String info = ingredientHelper.getErrorInfo(ingredient);
+			Log.error("Rendering ingredient crashed: {}", info, e);
+		}
 	}
 }
