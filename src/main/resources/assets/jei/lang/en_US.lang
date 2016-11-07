@@ -21,6 +21,8 @@ jei.tooltip.error.crash=Tooltip error, see log
 
 # Error Messages
 jei.chat.error.command.too.long=JEI must be on the server to handle this Chat Command, it is too long for Minecraft to send.
+jei.chat.error.no.cheat.permission.1=You do not have permission to use JEI's Cheat Mode.
+jei.chat.error.no.cheat.permission.2=Permission is given to players who can /give items or are in Creative Mode.
 
 # Key Bindings
 key.jei.toggleOverlay=Toggle Item List Overlay

@@ -4,15 +4,12 @@ import java.util.Map;
 
 import mezz.jei.config.Constants;
 import mezz.jei.config.SessionData;
-import mezz.jei.network.PacketHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.network.FMLEventChannel;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid = Constants.MOD_ID,
@@ -43,10 +40,6 @@ public class JustEnoughItems {
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		PacketHandler packetHandler = new PacketHandler();
-		FMLEventChannel channel = NetworkRegistry.INSTANCE.newEventDrivenChannel(PacketHandler.CHANNEL_ID);
-		channel.register(packetHandler);
-
 		proxy.preInit(event);
 	}
 

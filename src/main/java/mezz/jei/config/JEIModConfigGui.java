@@ -3,9 +3,12 @@ package mezz.jei.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import mezz.jei.JustEnoughItems;
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.network.packets.PacketRequestCheatPermission;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraftforge.common.config.ConfigCategory;
@@ -67,5 +70,14 @@ public class JEIModConfigGui extends GuiConfig {
 			}
 		}
 		return Translator.translateToLocal("config.jei.title").replace("%MODNAME", Constants.NAME);
+	}
+
+	@Override
+	protected void actionPerformed(GuiButton button) {
+		super.actionPerformed(button);
+
+		if (Config.isCheatItemsEnabled() && SessionData.isJeiOnServer()) {
+			JustEnoughItems.getProxy().sendPacketToServer(new PacketRequestCheatPermission());
+		}
 	}
 }

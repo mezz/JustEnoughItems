@@ -47,6 +47,7 @@ public class ProxyCommonClient extends ProxyCommon {
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
+		super.preInit(event);
 		Config.preInit(event);
 		initVersionChecker();
 
@@ -141,7 +142,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	@Override
 	public void sendPacketToServer(PacketJei packet) {
 		NetHandlerPlayClient netHandler = FMLClientHandler.instance().getClient().getConnection();
-		if (netHandler != null) {
+		if (netHandler != null && SessionData.isJeiOnServer()) {
 			netHandler.sendPacket(packet.getPacket());
 		}
 	}

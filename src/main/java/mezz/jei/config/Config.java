@@ -9,7 +9,9 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
+import mezz.jei.JustEnoughItems;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.network.packets.PacketRequestCheatPermission;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import mezz.jei.util.color.ColorGetter;
@@ -92,7 +94,19 @@ public class Config {
 	}
 
 	public static void toggleCheatItemsEnabled() {
-		cheatItemsEnabled = !cheatItemsEnabled;
+		setCheatItemsEnabled(!cheatItemsEnabled);
+	}
+
+	public static void setCheatItemsEnabled(boolean value) {
+		if (cheatItemsEnabled != value) {
+			cheatItemsEnabled = value;
+			if (worldConfig != null) {
+				worldConfig.save();
+			}
+			if (cheatItemsEnabled && SessionData.isJeiOnServer()) {
+				JustEnoughItems.getProxy().sendPacketToServer(new PacketRequestCheatPermission());
+			}
+		}
 	}
 
 	public static boolean isEditModeEnabled() {
