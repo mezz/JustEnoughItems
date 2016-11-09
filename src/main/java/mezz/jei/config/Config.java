@@ -21,6 +21,7 @@ import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 public class Config {
 	private static final String configKeyPrefix = "config.jei";
@@ -42,6 +43,7 @@ public class Config {
 	private static boolean debugModeEnabled = false;
 	private static boolean colorSearchEnabled = false;
 	private static boolean centerSearchBarEnabled = false;
+	private static String modNameFormat = "\u00A79\u00A7o%s";
 
 	// search
 	private static boolean prefixRequiredForModNameSearch = true;
@@ -127,6 +129,10 @@ public class Config {
 
 	public static boolean isCenterSearchBarEnabled() {
 		return centerSearchBarEnabled;
+	}
+
+	public static String getModNameFormat() {
+		return modNameFormat;
 	}
 
 	public static boolean isPrefixRequiredForModNameSearch() {
@@ -308,6 +314,9 @@ public class Config {
 		}
 
 		centerSearchBarEnabled = config.getBoolean(CATEGORY_ADVANCED, "centerSearchBarEnabled", centerSearchBarEnabled);
+		modNameFormat = StringEscapeUtils.unescapeJava(config.getString("modNameFormat", CATEGORY_ADVANCED, StringEscapeUtils.escapeJava(modNameFormat)));
+		if (!modNameFormat.contains("%s"))
+			modNameFormat = "\u00A79\u00A7o%s";
 
 		debugModeEnabled = config.getBoolean(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
 		{

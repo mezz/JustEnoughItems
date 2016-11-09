@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.config.Config;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -64,7 +65,7 @@ public class ModIdUtil {
 			}
 		}
 		List<String> tooltipCopy = new ArrayList<String>(tooltip);
-		tooltipCopy.add(TextFormatting.BLUE.toString() + TextFormatting.ITALIC.toString() + modName);
+		tooltipCopy.add(String.format(Config.getModNameFormat(), modName));
 		return tooltipCopy;
 	}
 }
