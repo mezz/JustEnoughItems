@@ -16,9 +16,13 @@ jei.tooltip.error.recipe.transfer.missing=Отсутствуют предмет�
 jei.tooltip.error.recipe.transfer.inventory.full=Инвентарь заполнен
 jei.tooltip.error.recipe.transfer.unknown=Неизвестная ошибка, смотрите логи
 jei.tooltip.error.recipe.transfer.no.server=На сервере должен быть установлен JEI
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=Рецепт не для 2x2
+jei.tooltip.error.crash=Ошибка подсказки, смотрите логи
 
 # Error Messages
 jei.chat.error.command.too.long=JEI необходимо установить на сервер, чтобы использовать эту команду, она слишком длинна для отправки.
+jei.chat.error.no.cheat.permission.1=У вас нет разрешения на использование режима жульничества в JEI.
+jei.chat.error.no.cheat.permission.2=Разрешение выдаётся игрокам, которые могут использовать комманду /give или находятся в творческом режиме.
 
 # Key Bindings
 key.jei.toggleOverlay=Переключить оверлей предметов
@@ -71,6 +75,8 @@ config.jei.advanced.debugModeEnabled=Режим отладки
 config.jei.advanced.debugModeEnabled.comment=Добавляет разные вещи, чтобы помочь в разработке JEI.
 config.jei.advanced.centerSearchBarEnabled=Строка поиска по центру
 config.jei.advanced.centerSearchBarEnabled.comment=Переместить строку поиска JEI в центр нижней части экрана.
+config.jei.advanced.modNameFormat=Формат названия мода
+config.jei.advanced.modNameFormat.comment=Название мода отображающееся в подсказке для меню JEI. Оставьте пустым, чтобы отключить.
 
 # Edit Mode
 gui.jei.editMode.description=Режим редактирования списка предметов JEI:
@@ -81,11 +87,18 @@ gui.jei.editMode.description.show.wild=Спрятано по Wildcard. %CTRL+П�
 gui.jei.editMode.description.hide.mod.id=%CTRL+SHIFT+ЛКМ, чтобы спрятать по ID-мода.
 gui.jei.editMode.description.show.mod.id=Спрятано по ID-мода. %CTRL+SHIFT+ЛКМ, чтобы показать.
 
+#PC/Linux Control Key
+key.jei.ctrl=CTRL
+#Mac Command Key
+key.jei.ctrl.mac=CMD
+
 # Recipe Categories
 gui.jei.category.craftingTable=Крафт
 gui.jei.category.smelting=Плавка
 gui.jei.category.smelting.experience=Опыт: %s
 gui.jei.category.fuel=Топливо
+gui.jei.category.fuel.smeltCount.single=Плавит 1 предмет
+gui.jei.category.fuel.smeltCount=Плавит %s предметов
 gui.jei.category.fuel.burnTime=Время горения: %s
 gui.jei.category.brewing=Варка
 gui.jei.category.brewing.steps=Шаги: %s
