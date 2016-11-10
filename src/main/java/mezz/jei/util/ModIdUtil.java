@@ -56,6 +56,11 @@ public class ModIdUtil {
 	}
 
 	public <T> List<String> addModNameToIngredientTooltip(List<String> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
+		String modNameFormat = Config.getModNameFormat();
+		if (modNameFormat.isEmpty()) {
+			return tooltip;
+		}
+
 		String modName = getModNameForIngredient(ingredient, ingredientHelper);
 		if (tooltip.size() > 1) {
 			String lastTooltipLine = tooltip.get(tooltip.size() - 1);
@@ -64,8 +69,9 @@ public class ModIdUtil {
 				return tooltip;
 			}
 		}
+
 		List<String> tooltipCopy = new ArrayList<String>(tooltip);
-		tooltipCopy.add(String.format(Config.getModNameFormat(), modName));
+		tooltipCopy.add(modNameFormat + modName);
 		return tooltipCopy;
 	}
 }

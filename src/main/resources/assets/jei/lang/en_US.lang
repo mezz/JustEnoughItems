@@ -76,7 +76,7 @@ config.jei.advanced.debugModeEnabled.comment=Only useful for JEI developers, add
 config.jei.advanced.centerSearchBarEnabled=Center Search Bar
 config.jei.advanced.centerSearchBarEnabled.comment=Move the JEI search bar to the bottom center of the screen.
 config.jei.advanced.modNameFormat=Mod Name Format
-config.jei.advanced.modNameFormat.comment=How the mod name should be formatted in the tooltip.
+config.jei.advanced.modNameFormat.comment=How the mod name should be formatted in the tooltip for JEI guis. Leave blank to disable.
 
 # Edit Mode
 gui.jei.editMode.description=JEI Item List Edit Mode:

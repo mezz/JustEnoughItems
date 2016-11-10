@@ -48,9 +48,8 @@ public class LocalizedConfiguration extends Configuration {
 		String comment = Translator.translateToLocal(commentKey);
 
 		Property prop = get(category, name, defaultValue);
-		prop.setValidValues(validValues);
 		prop.setLanguageKey(langKey);
-		prop.setComment(comment + " [" + defaultLocalized + ": " + defaultValue + "] [" + validLocalized + ": " + Arrays.toString(prop.getValidValues()) + ']');
+		prop.setComment(comment + " [" + defaultLocalized + ": " + defaultValue + "] [" + validLocalized + ": " + Arrays.toString(validValues) + ']');
 		return prop.getString();
 	}
 

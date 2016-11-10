@@ -4,7 +4,9 @@ import javax.annotation.Nullable;
 import java.awt.Color;
 import java.io.File;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableMap;
@@ -16,12 +18,12 @@ import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import mezz.jei.util.color.ColorGetter;
 import mezz.jei.util.color.ColorNamer;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import org.apache.commons.lang3.StringEscapeUtils;
 
 public class Config {
 	private static final String configKeyPrefix = "config.jei";
@@ -43,7 +45,8 @@ public class Config {
 	private static boolean debugModeEnabled = false;
 	private static boolean colorSearchEnabled = false;
 	private static boolean centerSearchBarEnabled = false;
-	private static String modNameFormat = "\u00A79\u00A7o%s";
+	private static final String defaultModNameFormatFriendly = "blue italic";
+	private static String modNameFormat = parseFriendlyModNameFormat(defaultModNameFormatFriendly);
 
 	// search
 	private static boolean prefixRequiredForModNameSearch = true;
@@ -314,9 +317,17 @@ public class Config {
 		}
 
 		centerSearchBarEnabled = config.getBoolean(CATEGORY_ADVANCED, "centerSearchBarEnabled", centerSearchBarEnabled);
-		modNameFormat = StringEscapeUtils.unescapeJava(config.getString("modNameFormat", CATEGORY_ADVANCED, StringEscapeUtils.escapeJava(modNameFormat)));
-		if (!modNameFormat.contains("%s"))
-			modNameFormat = "\u00A79\u00A7o%s";
+
+		EnumSet<TextFormatting> validFormatting = EnumSet.allOf(TextFormatting.class);
+		validFormatting.remove(TextFormatting.RESET);
+		String[] validValues = new String[validFormatting.size()];
+		int i = 0;
+		for (TextFormatting formatting : validFormatting) {
+			validValues[i] = formatting.getFriendlyName().toLowerCase(Locale.ENGLISH);
+			i++;
+		}
+		String modNameFormatFriendly = config.getString("modNameFormat", CATEGORY_ADVANCED, defaultModNameFormatFriendly, validValues);
+		modNameFormat = parseFriendlyModNameFormat(modNameFormatFriendly);
 
 		debugModeEnabled = config.getBoolean(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
 		{
@@ -338,6 +349,23 @@ public class Config {
 			config.save();
 		}
 		return needsReload;
+	}
+
+	private static String parseFriendlyModNameFormat(String formatWithEnumNames) {
+		String format = "";
+		if (formatWithEnumNames.isEmpty()) {
+			return format;
+		}
+		String[] strings = formatWithEnumNames.split(" ");
+		for (String string : strings) {
+			TextFormatting valueByName = TextFormatting.getValueByName(string);
+			if (valueByName != null) {
+				format += valueByName.toString();
+			} else {
+				Log.error("Invalid format: {}", string);
+			}
+		}
+		return format;
 	}
 
 	private static boolean syncItemBlacklistConfig() {
