@@ -31,20 +31,4 @@ public interface ICraftingGridHelper {
 	 */
 	void setOutput(IGuiItemStackGroup guiItemStacks, List<ItemStack> output);
 
-	/**
-	 * Place inputs ingredients onto the crafting grid in a consistent way.
-	 *
-	 * @deprecated since JEI 3.11.2. Use {@link #setInputStacks(IGuiItemStackGroup, List)}
-	 */
-	@Deprecated
-	void setInput(IGuiItemStackGroup guiItemStacks, List input);
-
-	/**
-	 * Place inputs ingredients onto the crafting grid in a consistent way.
-	 *
-	 * @deprecated since JEI 3.11.2. Use {@link #setInputStacks(IGuiItemStackGroup, List, int, int)}
-	 */
-	@Deprecated
-	void setInput(IGuiItemStackGroup guiItemStacks, List input, int width, int height);
-
 }

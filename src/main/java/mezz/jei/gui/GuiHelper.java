@@ -7,14 +7,12 @@ import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.gui.ITickTimer;
-import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Log;
 import mezz.jei.util.TickTimer;
 import net.minecraft.util.ResourceLocation;
 
 public class GuiHelper implements IGuiHelper {
-	private final IStackHelper stackHelper;
 	private final IDrawableStatic slotDrawable;
 	private final IDrawableStatic tabSelected;
 	private final IDrawableStatic tabUnselected;
@@ -22,9 +20,7 @@ public class GuiHelper implements IGuiHelper {
 	private final ResourceLocation recipeBackgroundResource;
 	private final ResourceLocation recipeBackgroundTallResource;
 
-	public GuiHelper(IStackHelper stackHelper) {
-		this.stackHelper = stackHelper;
-
+	public GuiHelper() {
 		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/furnace.png");
 		this.slotDrawable = createDrawable(location, 55, 16, 18, 18);
 
@@ -98,7 +94,7 @@ public class GuiHelper implements IGuiHelper {
 
 	@Override
 	public ICraftingGridHelper createCraftingGridHelper(int craftInputSlot1, int craftOutputSlot) {
-		return new CraftingGridHelper(stackHelper, craftInputSlot1, craftOutputSlot);
+		return new CraftingGridHelper(craftInputSlot1, craftOutputSlot);
 	}
 
 	@Override
