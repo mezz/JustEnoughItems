@@ -1,7 +1,6 @@
 package mezz.jei.api;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.List;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
@@ -13,7 +12,6 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
 
 /**
  * The IRecipeManager offers several functions for retrieving and handling recipes.
@@ -106,100 +104,4 @@ public interface IRecipeRegistry {
 	 * (note that {@link IRecipeHandler#isRecipeValid(Object)} must be true when the recipe is added here for it to work)
 	 */
 	void addRecipe(Object recipe);
-
-
-	// DEPRECATED METHODS BELOW
-
-
-	/**
-	 * Returns an unmodifiable list of Recipes in recipeCategory that have the focus.
-	 *
-	 * @since JEI 3.11.0
-	 * @deprecated since JEI 3.12.0. Use {@link #getRecipeWrappers(IRecipeCategory, IFocus)}
-	 */
-	@Deprecated
-	<V> List<Object> getRecipes(IRecipeCategory recipeCategory, IFocus<V> focus);
-
-	/**
-	 * Returns an unmodifiable list of Recipes in recipeCategory
-	 *
-	 * @deprecated since JEI 3.12.0. Use {@link #getRecipeWrappers(IRecipeCategory)}
-	 */
-	@Deprecated
-	List<Object> getRecipes(IRecipeCategory recipeCategory);
-
-	/**
-	 * Returns an unmodifiable collection of ItemStacks that can craft recipes from recipeCategory.
-	 * For instance, the crafting table ItemStack is returned here for Crafting recipe category.
-	 * These are registered with {@link IModRegistry#addRecipeCategoryCraftingItem(ItemStack, String...)}.
-	 *
-	 * @since JEI 3.3.0
-	 * @deprecated since JEI 3.11.0. Use {@link #getCraftingItems(IRecipeCategory, IFocus)}.
-	 */
-	@Deprecated
-	Collection<ItemStack> getCraftingItems(IRecipeCategory recipeCategory);
-
-	/**
-	 * Returns an unmodifiable list of Recipe Categories that have the ItemStack as an input.
-	 *
-	 * @deprecated since JEI 3.11.0. Use {@link #getRecipeCategories(IFocus)}
-	 */
-	@Deprecated
-	List<IRecipeCategory> getRecipeCategoriesWithInput(ItemStack input);
-
-	/**
-	 * Returns an unmodifiable list of Recipe Categories that have the Fluid as an input.
-	 *
-	 * @deprecated since JEI 3.11.0. Use {@link #getRecipeCategories(IFocus)}
-	 */
-	@Deprecated
-	List<IRecipeCategory> getRecipeCategoriesWithInput(FluidStack input);
-
-	/**
-	 * Returns an unmodifiable list of Recipe Categories that have the ItemStack as an output.
-	 *
-	 * @deprecated since JEI 3.11.0. Use {@link #getRecipeCategories(IFocus)}
-	 */
-	@Deprecated
-	List<IRecipeCategory> getRecipeCategoriesWithOutput(ItemStack output);
-
-	/**
-	 * Returns an unmodifiable list of Recipe Categories that have the Fluid as an output.
-	 *
-	 * @deprecated since JEI 3.11.0. Use {@link #getRecipeCategories(IFocus)}
-	 */
-	@Deprecated
-	List<IRecipeCategory> getRecipeCategoriesWithOutput(FluidStack output);
-
-	/**
-	 * Returns an unmodifiable list of Recipes of recipeCategory that have the ItemStack as an input.
-	 *
-	 * @deprecated since JEI 3.11.0. Use {@link #getRecipeWrappers(IRecipeCategory, IFocus)}
-	 */
-	@Deprecated
-	List<Object> getRecipesWithInput(IRecipeCategory recipeCategory, ItemStack input);
-
-	/**
-	 * Returns an unmodifiable list of Recipes of recipeCategory that have the Fluid as an input.
-	 *
-	 * @deprecated since JEI 3.11.0. Use {@link #getRecipeWrappers(IRecipeCategory, IFocus)}
-	 */
-	@Deprecated
-	List<Object> getRecipesWithInput(IRecipeCategory recipeCategory, FluidStack input);
-
-	/**
-	 * Returns an unmodifiable list of Recipes of recipeCategory that have the ItemStack as an output.
-	 *
-	 * @deprecated since JEI 3.11.0. Use {@link #getRecipeWrappers(IRecipeCategory, IFocus)}
-	 */
-	@Deprecated
-	List<Object> getRecipesWithOutput(IRecipeCategory recipeCategory, ItemStack output);
-
-	/**
-	 * Returns an unmodifiable list of Recipes of recipeCategory that have the Fluid as an output.
-	 *
-	 * @deprecated since JEI 3.11.0. Use {@link #getRecipeWrappers(IRecipeCategory, IFocus)}
-	 */
-	@Deprecated
-	List<Object> getRecipesWithOutput(IRecipeCategory recipeCategory, FluidStack output);
 }

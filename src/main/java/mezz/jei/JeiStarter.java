@@ -45,7 +45,7 @@ public class JeiStarter {
 
 		Log.info("Building recipe registry...");
 		long start_time = System.currentTimeMillis();
-		RecipeRegistry recipeRegistry = modRegistry.createRecipeRegistry(stackHelper, ingredientRegistry);
+		RecipeRegistry recipeRegistry = modRegistry.createRecipeRegistry(ingredientRegistry);
 		Log.info("Built    recipe registry in {} ms", System.currentTimeMillis() - start_time);
 
 		IngredientInformation.onStart(resourceReload);

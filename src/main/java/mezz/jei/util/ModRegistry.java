@@ -191,8 +191,8 @@ public class ModRegistry implements IModRegistry {
 		return advancedGuiHandlers;
 	}
 
-	public RecipeRegistry createRecipeRegistry(StackHelper stackHelper, IIngredientRegistry ingredientRegistry) {
+	public RecipeRegistry createRecipeRegistry(IIngredientRegistry ingredientRegistry) {
 		ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers = recipeTransferRegistry.getRecipeTransferHandlers();
-		return new RecipeRegistry(stackHelper, recipeCategories, recipeHandlers, recipeTransferHandlers, recipes, recipeClickableAreas, craftItemsForCategories, ingredientRegistry, recipeRegistryPlugins);
+		return new RecipeRegistry(recipeCategories, recipeHandlers, recipeTransferHandlers, recipes, recipeClickableAreas, craftItemsForCategories, ingredientRegistry, recipeRegistryPlugins);
 	}
 }
