@@ -34,7 +34,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
 import org.lwjgl.input.Mouse;
@@ -49,7 +48,6 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	private int titleHeight;
 	private int headerHeight;
 
-	private final IRecipeRegistry recipeRegistry;
 	/* Internal logic for the gui, handles finding recipes */
 	private final IRecipeGuiLogic logic;
 
@@ -80,7 +78,6 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	private boolean init = false;
 
 	public RecipesGui(IRecipeRegistry recipeRegistry) {
-		this.recipeRegistry = recipeRegistry;
 		this.logic = new RecipeGuiLogic(recipeRegistry, this);
 		this.recipeCategoryCraftingItems = new RecipeCategoryCraftingItems(recipeRegistry);
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
@@ -338,34 +335,6 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		if (logic.setFocus(focus)) {
 			open();
 		}
-	}
-
-	@Override
-	@Deprecated
-	public void showRecipes(@Nullable ItemStack itemStack) {
-		IFocus<ItemStack> focus = recipeRegistry.createFocus(IFocus.Mode.OUTPUT, itemStack);
-		show(focus);
-	}
-
-	@Override
-	@Deprecated
-	public void showRecipes(@Nullable FluidStack fluidStack) {
-		IFocus<FluidStack> focus = recipeRegistry.createFocus(IFocus.Mode.OUTPUT, fluidStack);
-		show(focus);
-	}
-
-	@Override
-	@Deprecated
-	public void showUses(@Nullable ItemStack itemStack) {
-		IFocus<ItemStack> focus = recipeRegistry.createFocus(IFocus.Mode.INPUT, itemStack);
-		show(focus);
-	}
-
-	@Override
-	@Deprecated
-	public void showUses(@Nullable FluidStack fluidStack) {
-		IFocus<FluidStack> focus = recipeRegistry.createFocus(IFocus.Mode.INPUT, fluidStack);
-		show(focus);
 	}
 
 	@Override
