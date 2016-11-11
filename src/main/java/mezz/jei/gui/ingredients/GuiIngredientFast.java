@@ -305,7 +305,7 @@ public class GuiIngredientFast {
 			}
 		}
 
-		if (Config.isColorSearchEnabled()) {
+		if (Config.getColorSearchMode() != Config.SearchMode.DISABLED) {
 			ColorNamer colorNamer = Internal.getColorNamer();
 
 			Iterable<Color> colors = ingredientHelper.getColors(ingredient);

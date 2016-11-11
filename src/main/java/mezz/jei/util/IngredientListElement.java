@@ -61,7 +61,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 
 		this.tooltipString = getTooltipString(ingredient, ingredientRenderer, modId, modName, displayName);
 
-		if (Config.isColorSearchEnabled()) {
+		if (Config.getColorSearchMode() != Config.SearchMode.DISABLED) {
 			Iterable<Color> colors = ingredientHelper.getColors(ingredient);
 			ColorNamer colorNamer = Internal.getColorNamer();
 			Collection<String> colorNames = colorNamer.getColorNames(colors);
@@ -96,23 +96,23 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 
 		StringBuilder searchStringBuilder = new StringBuilder(displayName);
 
-		if (!Config.isPrefixRequiredForModNameSearch()) {
+		if (Config.getModNameSearchMode() == Config.SearchMode.ENABLED) {
 			searchStringBuilder.append(' ').append(this.modNameString);
 		}
 
-		if (!Config.isPrefixRequiredForTooltipSearch()) {
+		if (Config.getTooltipSearchMode() == Config.SearchMode.ENABLED) {
 			searchStringBuilder.append(' ').append(this.tooltipString);
 		}
 
-		if (!Config.isPrefixRequiredForOreDictSearch()) {
+		if (Config.getOreDictSearchMode() == Config.SearchMode.ENABLED) {
 			searchStringBuilder.append(' ').append(this.oreDictString);
 		}
 
-		if (!Config.isPrefixRequiredForCreativeTabSearch()) {
+		if (Config.getCreativeTabSearchMode() == Config.SearchMode.ENABLED) {
 			searchStringBuilder.append(' ').append(this.creativeTabsString);
 		}
 
-		if (!Config.isPrefixRequiredForColorSearch()) {
+		if (Config.getColorSearchMode() == Config.SearchMode.ENABLED) {
 			searchStringBuilder.append(' ').append(this.colorString);
 		}
 

@@ -43,17 +43,22 @@ public class Config {
 
 	// advanced
 	private static boolean debugModeEnabled = false;
-	private static boolean colorSearchEnabled = false;
 	private static boolean centerSearchBarEnabled = false;
 	private static final String defaultModNameFormatFriendly = "blue italic";
 	private static String modNameFormat = parseFriendlyModNameFormat(defaultModNameFormatFriendly);
 
 	// search
-	private static boolean prefixRequiredForModNameSearch = true;
-	private static boolean prefixRequiredForTooltipSearch = false;
-	private static boolean prefixRequiredForOreDictSearch = true;
-	private static boolean prefixRequiredForCreativeTabSearch = true;
-	private static boolean prefixRequiredForColorSearch = true;
+	private static final SearchMode defaultModNameSearchMode = SearchMode.REQUIRE_PREFIX;
+	private static final SearchMode defaultTooltipSearchMode = SearchMode.ENABLED;
+	private static final SearchMode defaultOreDictSearchMode = SearchMode.REQUIRE_PREFIX;
+	private static final SearchMode defaultCreativeTabSearchMode = SearchMode.REQUIRE_PREFIX;
+	private static final SearchMode defaultColorSearchMode = SearchMode.DISABLED;
+
+	private static SearchMode modNameSearchMode = defaultModNameSearchMode;
+	private static SearchMode tooltipSearchMode = defaultTooltipSearchMode;
+	private static SearchMode oreDictSearchMode = defaultOreDictSearchMode;
+	private static SearchMode creativeTabSearchMode = defaultCreativeTabSearchMode;
+	private static SearchMode colorSearchMode = defaultColorSearchMode;
 
 	// per-world
 	private static final boolean defaultOverlayEnabled = true;
@@ -126,10 +131,6 @@ public class Config {
 		return cheatItemsEnabled && SessionData.isJeiOnServer();
 	}
 
-	public static boolean isColorSearchEnabled() {
-		return colorSearchEnabled;
-	}
-
 	public static boolean isCenterSearchBarEnabled() {
 		return centerSearchBarEnabled;
 	}
@@ -138,24 +139,28 @@ public class Config {
 		return modNameFormat;
 	}
 
-	public static boolean isPrefixRequiredForModNameSearch() {
-		return prefixRequiredForModNameSearch;
+	public static SearchMode getModNameSearchMode() {
+		return modNameSearchMode;
 	}
 
-	public static boolean isPrefixRequiredForTooltipSearch() {
-		return prefixRequiredForTooltipSearch;
+	public static SearchMode getTooltipSearchMode() {
+		return tooltipSearchMode;
 	}
 
-	public static boolean isPrefixRequiredForOreDictSearch() {
-		return prefixRequiredForOreDictSearch;
+	public static SearchMode getOreDictSearchMode() {
+		return oreDictSearchMode;
 	}
 
-	public static boolean isPrefixRequiredForCreativeTabSearch() {
-		return prefixRequiredForCreativeTabSearch;
+	public static SearchMode getCreativeTabSearchMode() {
+		return creativeTabSearchMode;
 	}
 
-	public static boolean isPrefixRequiredForColorSearch() {
-		return prefixRequiredForColorSearch;
+	public static SearchMode getColorSearchMode() {
+		return colorSearchMode;
+	}
+
+	public enum SearchMode {
+		ENABLED, REQUIRE_PREFIX, DISABLED
 	}
 
 	public static boolean setFilterText(String filterText) {
@@ -295,11 +300,19 @@ public class Config {
 			config.removeCategory(interfaceCategory);
 		}
 
-		prefixRequiredForModNameSearch = config.getBoolean(CATEGORY_SEARCH, "atPrefixRequiredForModName", prefixRequiredForModNameSearch);
-		prefixRequiredForTooltipSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForTooltipSearch", prefixRequiredForTooltipSearch);
-		prefixRequiredForOreDictSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForOreDictSearch", prefixRequiredForOreDictSearch);
-		prefixRequiredForCreativeTabSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForCreativeTabSearch", prefixRequiredForCreativeTabSearch);
-		prefixRequiredForColorSearch = config.getBoolean(CATEGORY_SEARCH, "prefixRequiredForColorSearch", prefixRequiredForColorSearch);
+		ConfigCategory searchCategory = config.getCategory(CATEGORY_SEARCH);
+		searchCategory.remove("atPrefixRequiredForModName");
+		searchCategory.remove("prefixRequiredForTooltipSearch");
+		searchCategory.remove("prefixRequiredForOreDictSearch");
+		searchCategory.remove("prefixRequiredForCreativeTabSearch");
+		searchCategory.remove("prefixRequiredForColorSearch");
+
+		SearchMode[] searchModes  = SearchMode.values();
+		modNameSearchMode = config.getEnum("modNameSearchMode", CATEGORY_SEARCH, defaultModNameSearchMode, searchModes);
+		tooltipSearchMode = config.getEnum("tooltipSearchMode", CATEGORY_SEARCH, defaultTooltipSearchMode, searchModes);
+		oreDictSearchMode = config.getEnum("oreDictSearchMode", CATEGORY_SEARCH, defaultOreDictSearchMode, searchModes);
+		creativeTabSearchMode = config.getEnum("creativeTabSearchMode", CATEGORY_SEARCH, defaultCreativeTabSearchMode, searchModes);
+		colorSearchMode = config.getEnum("colorSearchMode", CATEGORY_SEARCH, defaultColorSearchMode, searchModes);
 		if (config.getCategory(CATEGORY_SEARCH).hasChanged()) {
 			needsReload = true;
 		}
@@ -310,11 +323,7 @@ public class Config {
 		categoryAdvanced.remove("hideLaggyModelsEnabled");
 		categoryAdvanced.remove("hideMissingModelsEnabled");
 		categoryAdvanced.remove("debugItemEnabled");
-
-		colorSearchEnabled = config.getBoolean(CATEGORY_ADVANCED, "colorSearchEnabled", colorSearchEnabled);
-		if (categoryAdvanced.get("colorSearchEnabled").hasChanged()) {
-			needsReload = true;
-		}
+		categoryAdvanced.remove("colorSearchEnabled");
 
 		centerSearchBarEnabled = config.getBoolean(CATEGORY_ADVANCED, "centerSearchBarEnabled", centerSearchBarEnabled);
 

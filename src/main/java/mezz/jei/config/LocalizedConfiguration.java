@@ -2,6 +2,7 @@ package mezz.jei.config;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Locale;
 
 import mezz.jei.util.Translator;
 import net.minecraftforge.common.config.Configuration;
@@ -62,17 +63,17 @@ public class LocalizedConfiguration extends Configuration {
 		String[] validValues = new String[validEnumValues.length];
 		for (int i = 0; i < validEnumValues.length; i++) {
 			T enumValue = validEnumValues[i];
-			validValues[i] = enumValue.name();
+			validValues[i] = enumValue.name().toLowerCase(Locale.ENGLISH);
 		}
 
 		prop.setValidValues(validValues);
 		prop.setLanguageKey(langKey);
-		prop.setComment(comment + " [" + defaultLocalized + ": " + defaultValue + "] [" + validLocalized + ": " + Arrays.toString(prop.getValidValues()) + ']');
+		prop.setComment(comment + "\n[" + defaultLocalized + ": " + defaultValue.name().toLowerCase(Locale.ENGLISH) + "]\n[" + validLocalized + ": " + Arrays.toString(prop.getValidValues()) + ']');
 		String stringValue = prop.getString();
 
 		T enumValue = defaultValue;
 		for (int i = 0; i < validValues.length; i++) {
-			if (stringValue.equals(validValues[i])) {
+			if (stringValue.equalsIgnoreCase(validValues[i])) {
 				enumValue = validEnumValues[i];
 			}
 		}
