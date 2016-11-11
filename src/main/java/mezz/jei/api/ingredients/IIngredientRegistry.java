@@ -2,7 +2,6 @@ package mezz.jei.api.ingredients;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
-import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.IModRegistry;
 import net.minecraft.item.ItemStack;
 

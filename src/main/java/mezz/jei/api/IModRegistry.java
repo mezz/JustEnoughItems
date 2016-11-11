@@ -25,15 +25,6 @@ public interface IModRegistry {
 	IJeiHelpers getJeiHelpers();
 
 	/**
-	 * Get useful functions relating to items.
-	 *
-	 * @since JEI 2.27.0
-	 * @deprecated since JEI 3.11.0. Use {@link #getIngredientRegistry()} instead.
-	 */
-	@Deprecated
-	IItemRegistry getItemRegistry();
-
-	/**
 	 * Get useful functions relating to recipe ingredients.
 	 *
 	 * @since JEI 3.11.0

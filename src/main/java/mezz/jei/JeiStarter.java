@@ -11,7 +11,6 @@ import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.util.Log;
-import mezz.jei.util.ModIdUtil;
 import mezz.jei.util.ModRegistry;
 import mezz.jei.util.StackHelper;
 import net.minecraftforge.common.MinecraftForge;
@@ -40,10 +39,7 @@ public class JeiStarter {
 		JeiHelpers jeiHelpers = new JeiHelpers(ingredientRegistry, stackHelper, subtypeRegistry);
 		Internal.setHelpers(jeiHelpers);
 
-		ModIdUtil modIdUtil = Internal.getModIdUtil();
-		ItemRegistry itemRegistry = new ItemRegistry(ingredientRegistry, modIdUtil);
-
-		ModRegistry modRegistry = new ModRegistry(jeiHelpers, itemRegistry, ingredientRegistry);
+		ModRegistry modRegistry = new ModRegistry(jeiHelpers, ingredientRegistry);
 
 		registerPlugins(plugins, modRegistry);
 

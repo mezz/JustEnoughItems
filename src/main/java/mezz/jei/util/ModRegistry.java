@@ -12,7 +12,6 @@ import com.google.common.collect.Multimap;
 import mezz.jei.JeiHelpers;
 import mezz.jei.RecipeRegistry;
 import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
@@ -29,7 +28,6 @@ import net.minecraft.item.ItemStack;
 
 public class ModRegistry implements IModRegistry {
 	private final IJeiHelpers jeiHelpers;
-	private final IItemRegistry itemRegistry;
 	private final IIngredientRegistry ingredientRegistry;
 	private final List<IRecipeCategory> recipeCategories = new ArrayList<IRecipeCategory>();
 	private final List<IRecipeHandler> recipeHandlers = new ArrayList<IRecipeHandler>();
@@ -40,9 +38,8 @@ public class ModRegistry implements IModRegistry {
 	private final Multimap<String, ItemStack> craftItemsForCategories = ArrayListMultimap.create();
 	private final List<IRecipeRegistryPlugin> recipeRegistryPlugins = new ArrayList<IRecipeRegistryPlugin>();
 
-	public ModRegistry(JeiHelpers jeiHelpers, IItemRegistry itemRegistry, IIngredientRegistry ingredientRegistry) {
+	public ModRegistry(JeiHelpers jeiHelpers, IIngredientRegistry ingredientRegistry) {
 		this.jeiHelpers = jeiHelpers;
-		this.itemRegistry = itemRegistry;
 		this.ingredientRegistry = ingredientRegistry;
 		this.recipeTransferRegistry = new RecipeTransferRegistry(jeiHelpers.getStackHelper(), jeiHelpers.recipeTransferHandlerHelper());
 	}
@@ -50,11 +47,6 @@ public class ModRegistry implements IModRegistry {
 	@Override
 	public IJeiHelpers getJeiHelpers() {
 		return jeiHelpers;
-	}
-
-	@Override
-	public IItemRegistry getItemRegistry() {
-		return itemRegistry;
 	}
 
 	@Override

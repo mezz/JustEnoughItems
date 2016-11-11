@@ -2,7 +2,6 @@ package mezz.jei.api.recipe;
 
 import java.util.List;
 
-import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
