@@ -14,7 +14,6 @@ import net.minecraft.item.ItemStack;
 public interface IIngredientRegistry {
 	/**
 	 * Returns a list of all the ingredients known to JEI, of the specified class.
-	 * Calling this with ItemStack.class is equivalent to {@link IItemRegistry#getItemList()}.
 	 */
 	<V> ImmutableList<V> getIngredients(Class<V> ingredientClass);
 

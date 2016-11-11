@@ -3,6 +3,7 @@ package mezz.jei.api.recipe;
 import java.util.List;
 
 import mezz.jei.api.IModRegistry;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 import net.minecraft.item.ItemStack;
@@ -52,7 +53,7 @@ public class VanillaRecipeCategoryUid {
 	 * The brewing recipe category.
 	 * <p>
 	 * Automatically tries to generate all potion variations from the basic ingredients, determined by {@link PotionHelper#isReagent(ItemStack)}.
-	 * You can get the list of known potion reagents from {@link IItemRegistry#getPotionIngredients()}.
+	 * You can get the list of known potion reagents from {@link IIngredientRegistry#getPotionIngredients()}.
 	 * <p>
 	 * Also automatically adds modded potions from {@link BrewingRecipeRegistry#getRecipes()}.
 	 * JEI can only understand modded potion recipes that are {@link BrewingRecipe} or {@link BrewingOreRecipe}.
