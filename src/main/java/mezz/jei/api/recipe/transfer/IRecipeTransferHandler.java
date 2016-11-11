@@ -23,15 +23,6 @@ public interface IRecipeTransferHandler<C extends Container> {
 	Class<C> getContainerClass();
 
 	/**
-	 * The type of recipe that this recipe transfer handler deals with.
-	 *
-	 * @deprecated since JEI 3.12.4.
-	 * Use the recipe-category-specific registration {@link IRecipeTransferRegistry#addRecipeTransferHandler(IRecipeTransferHandler, String)}
-	 */
-	@Deprecated
-	String getRecipeCategoryUid();
-
-	/**
 	 * @param container    the container to act on
 	 * @param recipeLayout the layout of the recipe, with information about the ingredients
 	 * @param player       the player, to do the slot manipulation

@@ -1,7 +1,6 @@
 package mezz.jei;
 
 import mezz.jei.api.IJeiHelpers;
-import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.transfer.RecipeTransferHandlerHelper;
@@ -11,14 +10,12 @@ public class JeiHelpers implements IJeiHelpers {
 	private final GuiHelper guiHelper;
 	private final StackHelper stackHelper;
 	private final ItemBlacklist itemBlacklist;
-	private final SubtypeRegistry subtypeRegistry;
 	private final RecipeTransferHandlerHelper recipeTransferHandlerHelper;
 
-	public JeiHelpers(IIngredientRegistry ingredientRegistry, StackHelper stackHelper, SubtypeRegistry subtypeRegistry) {
+	public JeiHelpers(IIngredientRegistry ingredientRegistry, StackHelper stackHelper) {
 		this.guiHelper = new GuiHelper();
 		this.stackHelper = stackHelper;
 		this.itemBlacklist = new ItemBlacklist(ingredientRegistry);
-		this.subtypeRegistry = subtypeRegistry;
 		this.recipeTransferHandlerHelper = new RecipeTransferHandlerHelper();
 	}
 
@@ -35,12 +32,6 @@ public class JeiHelpers implements IJeiHelpers {
 	@Override
 	public ItemBlacklist getItemBlacklist() {
 		return itemBlacklist;
-	}
-
-	@Override
-	@Deprecated
-	public ISubtypeRegistry getSubtypeRegistry() {
-		return subtypeRegistry;
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.util.Collection;
 import java.util.List;
 
-import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import net.minecraft.client.Minecraft;
@@ -16,16 +15,6 @@ import net.minecraft.client.Minecraft;
  * Get these from {@link IGuiIngredientGroup#getGuiIngredients()}.
  */
 public interface IGuiIngredient<T> {
-	/**
-	 * The ingredient variation that is shown at this moment.
-	 * For ingredients that rotate through several values, this will change over time.
-	 *
-	 * @deprecated since JEI 3.11.0. Use {@link #getDisplayedIngredient()}
-	 */
-	@Nullable
-	@Deprecated
-	IFocus<T> getCurrentlyDisplayed();
-
 	/**
 	 * The ingredient variation that is shown at this moment.
 	 * For ingredients that rotate through several values, this will change over time.

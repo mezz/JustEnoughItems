@@ -50,18 +50,6 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 	}
 
 	@Override
-	@Deprecated
-	public void addRecipeTransferHandler(@Nullable IRecipeTransferHandler<?> recipeTransferHandler) {
-		if (recipeTransferHandler == null) {
-			Log.error("Null recipeTransferHandler", new NullPointerException());
-			return;
-		}
-		Class<?> containerClass = recipeTransferHandler.getContainerClass();
-		String recipeCategoryUid = recipeTransferHandler.getRecipeCategoryUid();
-		this.recipeTransferHandlers.put(containerClass, recipeCategoryUid, recipeTransferHandler);
-	}
-
-	@Override
 	public void addRecipeTransferHandler(@Nullable IRecipeTransferHandler<?> recipeTransferHandler, @Nullable String recipeCategoryUid) {
 		if (recipeTransferHandler == null) {
 			Log.error("Null recipeTransferHandler", new NullPointerException());

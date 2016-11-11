@@ -13,7 +13,6 @@ import mezz.jei.api.gui.ITooltipCallback;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.recipe.IFocus;
-import mezz.jei.gui.Focus;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.util.CycleTimer;
 import mezz.jei.util.Log;
@@ -77,17 +76,6 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 
 	public boolean isMouseOver(int xOffset, int yOffset, int mouseX, int mouseY) {
 		return enabled && (mouseX >= xOffset + xPosition) && (mouseY >= yOffset + yPosition) && (mouseX < xOffset + xPosition + width) && (mouseY < yOffset + yPosition + height);
-	}
-
-	@Override
-	@Nullable
-	@Deprecated
-	public IFocus<T> getCurrentlyDisplayed() {
-		T ingredient = getDisplayedIngredient();
-		if (ingredient == null) {
-			return null;
-		}
-		return new Focus<T>(ingredient);
 	}
 
 	@Nullable

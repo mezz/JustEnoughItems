@@ -46,13 +46,4 @@ public interface IRecipeTransferRegistry {
 	 * @since JEI 3.12.4
 	 */
 	void addUniversalRecipeTransferHandler(IRecipeTransferHandler<?> recipeTransferHandler);
-
-	/**
-	 * Complete control over recipe transfer.
-	 * Use this when the container has a non-standard inventory or crafting area.
-	 *
-	 * @deprecated since JEI 3.12.4. Use {@link #addRecipeTransferHandler(IRecipeTransferHandler, String)}
-	 */
-	@Deprecated
-	void addRecipeTransferHandler(IRecipeTransferHandler<?> recipeTransferHandler);
 }

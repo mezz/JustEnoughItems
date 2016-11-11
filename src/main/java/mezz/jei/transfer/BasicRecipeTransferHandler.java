@@ -41,11 +41,6 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 		return transferHelper.getContainerClass();
 	}
 
-	@Override
-	public String getRecipeCategoryUid() {
-		return transferHelper.getRecipeCategoryUid();
-	}
-
 	@Nullable
 	@Override
 	public IRecipeTransferError transferRecipe(C container, IRecipeLayout recipeLayout, EntityPlayer player, boolean maxTransfer, boolean doTransfer) {

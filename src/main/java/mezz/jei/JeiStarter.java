@@ -36,7 +36,7 @@ public class JeiStarter {
 		IngredientRegistry ingredientRegistry = registerIngredients(plugins);
 		Internal.setIngredientRegistry(ingredientRegistry);
 
-		JeiHelpers jeiHelpers = new JeiHelpers(ingredientRegistry, stackHelper, subtypeRegistry);
+		JeiHelpers jeiHelpers = new JeiHelpers(ingredientRegistry, stackHelper);
 		Internal.setHelpers(jeiHelpers);
 
 		ModRegistry modRegistry = new ModRegistry(jeiHelpers, ingredientRegistry);

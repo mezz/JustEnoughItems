@@ -47,11 +47,6 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Conta
 		return transferHelper.getContainerClass();
 	}
 
-	@Override
-	public String getRecipeCategoryUid() {
-		return transferHelper.getRecipeCategoryUid();
-	}
-
 	@Nullable
 	@Override
 	public IRecipeTransferError transferRecipe(ContainerPlayer container, IRecipeLayout recipeLayout, EntityPlayer player, boolean maxTransfer, boolean doTransfer) {
