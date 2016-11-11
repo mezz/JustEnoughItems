@@ -110,9 +110,17 @@ public class Config {
 	public static void setCheatItemsEnabled(boolean value) {
 		if (cheatItemsEnabled != value) {
 			cheatItemsEnabled = value;
+
 			if (worldConfig != null) {
-				worldConfig.save();
+				final String worldCategory = SessionData.getWorldUid();
+				Property property = worldConfig.get(worldCategory, "cheatItemsEnabled", cheatItemsEnabled);
+				property.set(cheatItemsEnabled);
+
+				if (worldConfig.hasChanged()) {
+					worldConfig.save();
+				}
 			}
+
 			if (cheatItemsEnabled && SessionData.isJeiOnServer()) {
 				JustEnoughItems.getProxy().sendPacketToServer(new PacketRequestCheatPermission());
 			}
