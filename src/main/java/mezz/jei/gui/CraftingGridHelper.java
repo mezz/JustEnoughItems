@@ -1,6 +1,5 @@
 package mezz.jei.gui;
 
-import java.util.Collection;
 import java.util.List;
 
 import mezz.jei.api.gui.ICraftingGridHelper;

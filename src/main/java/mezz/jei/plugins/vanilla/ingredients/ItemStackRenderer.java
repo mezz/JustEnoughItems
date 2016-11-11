@@ -2,7 +2,6 @@ package mezz.jei.plugins.vanilla.ingredients;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientRenderer;

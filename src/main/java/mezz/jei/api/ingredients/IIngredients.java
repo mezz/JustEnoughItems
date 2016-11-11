@@ -78,6 +78,7 @@ public interface IIngredients {
 	/**
 	 * Get all the outputs that have been set for the ingredientClass.
 	 * Each list element represents one slot.
+	 *
 	 * @since JEI 4.0.0
 	 */
 	<T> List<List<T>> getOutputs(Class<T> ingredientClass);

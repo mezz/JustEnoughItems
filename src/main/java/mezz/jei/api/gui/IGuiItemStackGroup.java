@@ -1,10 +1,7 @@
 package mezz.jei.api.gui;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.List;
 
-import mezz.jei.api.recipe.IStackHelper;
 import net.minecraft.item.ItemStack;
 
 /**

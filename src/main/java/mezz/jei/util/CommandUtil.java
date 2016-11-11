@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.base.Throwables;
-import mezz.jei.config.Config;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandManager;
 import net.minecraft.entity.item.EntityItem;

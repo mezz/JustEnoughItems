@@ -11,6 +11,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 /**
  * Allows plugins to change how JEI is displayed next to their mod's guis.
  * Register your implementation with {@link IModRegistry#addAdvancedGuiHandlers(IAdvancedGuiHandler[])}.
+ *
  * @see BlankAdvancedGuiHandler
  */
 public interface IAdvancedGuiHandler<T extends GuiContainer> {

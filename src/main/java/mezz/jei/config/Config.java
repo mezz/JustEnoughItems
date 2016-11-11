@@ -315,7 +315,7 @@ public class Config {
 		searchCategory.remove("prefixRequiredForCreativeTabSearch");
 		searchCategory.remove("prefixRequiredForColorSearch");
 
-		SearchMode[] searchModes  = SearchMode.values();
+		SearchMode[] searchModes = SearchMode.values();
 		modNameSearchMode = config.getEnum("modNameSearchMode", CATEGORY_SEARCH, defaultModNameSearchMode, searchModes);
 		tooltipSearchMode = config.getEnum("tooltipSearchMode", CATEGORY_SEARCH, defaultTooltipSearchMode, searchModes);
 		oreDictSearchMode = config.getEnum("oreDictSearchMode", CATEGORY_SEARCH, defaultOreDictSearchMode, searchModes);

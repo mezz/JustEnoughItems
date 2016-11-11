@@ -1,7 +1,6 @@
 package mezz.jei.api.gui;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 
 import net.minecraftforge.fluids.FluidStack;
 

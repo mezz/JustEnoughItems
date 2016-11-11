@@ -1,14 +1,12 @@
 package mezz.jei.api.gui;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
-import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 
