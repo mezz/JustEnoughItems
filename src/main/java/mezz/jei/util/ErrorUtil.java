@@ -72,25 +72,20 @@ public class ErrorUtil {
 
 	private static <T> List<String> getIngredientOutputInfo(Class<T> ingredientClass, IIngredients ingredients) {
 		IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredientClass);
-
-		List<T> outputs = ingredients.getOutputs(ingredientClass);
-		List<String> infos = new ArrayList<String>(outputs.size());
-
-		for (T output : outputs) {
-			String errorInfo = ingredientHelper.getErrorInfo(output);
-			infos.add(errorInfo);
-		}
-
-		return infos;
+		List<List<T>> outputs = ingredients.getOutputs(ingredientClass);
+		return getIngredientInfo(ingredientHelper, outputs);
 	}
 
 	private static <T> List<String> getIngredientInputInfo(Class<T> ingredientClass, IIngredients ingredients) {
 		IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredientClass);
-
 		List<List<T>> inputs = ingredients.getInputs(ingredientClass);
-		List<String> allInfos = new ArrayList<String>(inputs.size());
+		return getIngredientInfo(ingredientHelper, inputs);
+	}
 
-		for (List<T> inputList : inputs) {
+	private static <T> List<String> getIngredientInfo(IIngredientHelper<T> ingredientHelper, List<List<T>> ingredients) {
+		List<String> allInfos = new ArrayList<String>(ingredients.size());
+
+		for (List<T> inputList : ingredients) {
 			List<String> infos = new ArrayList<String>(inputList.size());
 			for (T input : inputList) {
 				String errorInfo = ingredientHelper.getErrorInfo(input);

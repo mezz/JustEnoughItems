@@ -13,7 +13,7 @@ import mezz.jei.api.ingredients.IIngredients;
 
 public class Ingredients implements IIngredients {
 	private final Map<Class, List<List>> inputs = new HashMap<Class, List<List>>();
-	private final Map<Class, List> outputs = new HashMap<Class, List>();
+	private final Map<Class, List<List>> outputs = new HashMap<Class, List<List>>();
 	private boolean used = false; // check that the addon used this at all. legacy addons will not
 
 	@Override
@@ -27,14 +27,13 @@ public class Ingredients implements IIngredients {
 
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
-		List<List<T>> expandedInputs = new ArrayList<List<T>>();
+		List<List> expandedInputs = new ArrayList<List>();
 		for (List<T> input : inputs) {
 			List<T> itemStacks = ingredientHelper.expandSubtypes(input);
 			expandedInputs.add(itemStacks);
 		}
 
-		//noinspection unchecked
-		this.inputs.put(ingredientClass, (List<List>) (Object) expandedInputs);
+		this.inputs.put(ingredientClass, expandedInputs);
 	}
 
 	@Override
@@ -43,24 +42,20 @@ public class Ingredients implements IIngredients {
 
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
-		List<List<T>> expandedInputs = new ArrayList<List<T>>();
+		List<List> expandedInputs = new ArrayList<List>();
 		for (T input1 : input) {
 			List<T> itemStacks = ingredientHelper.expandSubtypes(Collections.singletonList(input1));
 			expandedInputs.add(itemStacks);
 		}
 
-		//noinspection unchecked
-		this.inputs.put(ingredientClass, (List<List>) (Object) expandedInputs);
+		this.inputs.put(ingredientClass, expandedInputs);
 	}
 
 	@Override
 	public <T> void setOutput(Class<T> ingredientClass, T output) {
 		this.used = true;
 
-		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
-		List<T> expandedOutputs = ingredientHelper.expandSubtypes(Collections.singletonList(output));
-		this.outputs.put(ingredientClass, expandedOutputs);
+		setOutputs(ingredientClass, Collections.singletonList(output));
 	}
 
 	@Override
@@ -69,7 +64,27 @@ public class Ingredients implements IIngredients {
 
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
-		List<T> expandedOutputs = ingredientHelper.expandSubtypes(outputs);
+		List<List> expandedOutputs = new ArrayList<List>();
+		for (T output : outputs) {
+			List<T> expandedOutput = ingredientHelper.expandSubtypes(Collections.singletonList(output));
+			expandedOutputs.add(expandedOutput);
+		}
+
+		this.outputs.put(ingredientClass, expandedOutputs);
+	}
+
+	@Override
+	public <T> void setOutputLists(Class<T> ingredientClass, List<List<T>> outputs) {
+		this.used = true;
+
+		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
+		List<List> expandedOutputs = new ArrayList<List>();
+		for (List<T> output : outputs) {
+			List<T> itemStacks = ingredientHelper.expandSubtypes(output);
+			expandedOutputs.add(itemStacks);
+		}
+
 		this.outputs.put(ingredientClass, expandedOutputs);
 	}
 
@@ -84,9 +99,9 @@ public class Ingredients implements IIngredients {
 	}
 
 	@Override
-	public <T> List<T> getOutputs(Class<T> ingredientClass) {
+	public <T> List<List<T>> getOutputs(Class<T> ingredientClass) {
 		//noinspection unchecked
-		List<T> outputs = this.outputs.get(ingredientClass);
+		List<List<T>> outputs = (List<List<T>>) (Object) this.outputs.get(ingredientClass);
 		if (outputs == null) {
 			return Collections.emptyList();
 		}
@@ -106,7 +121,15 @@ public class Ingredients implements IIngredients {
 	}
 
 	public Map<Class, List> getOutputIngredients() {
-		return outputs;
+		Map<Class, List> outputIngredients = new HashMap<Class, List>();
+		for (Map.Entry<Class, List<List>> entry : outputs.entrySet()) {
+			List<Object> flatIngredients = new ArrayList<Object>();
+			for (List ingredients : entry.getValue()) {
+				flatIngredients.addAll(ingredients);
+			}
+			outputIngredients.put(entry.getKey(), flatIngredients);
+		}
+		return outputIngredients;
 	}
 
 	public boolean isUsed() {

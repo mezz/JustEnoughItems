@@ -57,7 +57,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	@Override
 	public void set(IIngredients ingredients) {
 		List<List<T>> inputs = ingredients.getInputs(ingredientClass);
-		List<T> outputs = ingredients.getOutputs(ingredientClass);
+		List<List<T>> outputs = ingredients.getOutputs(ingredientClass);
 		int inputIndex = 0;
 		int outputIndex = 0;
 
@@ -72,7 +72,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 				}
 			} else {
 				if (outputIndex < outputs.size()) {
-					T output = outputs.get(outputIndex);
+					List<T> output = outputs.get(outputIndex);
 					outputIndex++;
 					set(slot, output);
 				}

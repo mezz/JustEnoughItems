@@ -53,12 +53,21 @@ public interface IIngredients {
 
 	/**
 	 * Sets multiple recipe outputs. Each list element represents one slot.
-	 * Note that recipes can't have multiple outputs for one slot.
 	 *
 	 * @param ingredientClass The class of ingredient: ItemStack.class, FluidStack.class, etc.
 	 * @param outputs         The list of ingredients representing each output slot.
 	 */
 	<T> void setOutputs(Class<T> ingredientClass, List<T> outputs);
+
+	/**
+	 * Sets the recipe's outputs. Each output list represents one slot.
+	 * Accepts multiple ingredients per slot.
+	 *
+	 * @param ingredientClass The class of ingredient: ItemStack.class, FluidStack.class, etc.
+	 * @param outputs         The outer list represents the slot, the inner list is a rotating list of ingredients in that slot.
+	 * @since JEI 4.0.0
+	 */
+	<T> void setOutputLists(Class<T> ingredientClass, List<List<T>> outputs);
 
 	/**
 	 * Get all the inputs that have been set for the ingredientClass.
@@ -69,6 +78,7 @@ public interface IIngredients {
 	/**
 	 * Get all the outputs that have been set for the ingredientClass.
 	 * Each list element represents one slot.
+	 * @since JEI 4.0.0
 	 */
-	<T> List<T> getOutputs(Class<T> ingredientClass);
+	<T> List<List<T>> getOutputs(Class<T> ingredientClass);
 }
