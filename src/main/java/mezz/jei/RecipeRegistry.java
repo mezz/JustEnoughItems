@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -197,12 +196,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			return;
 		}
 
-		String recipeCategoryUid;
-		try {
-			recipeCategoryUid = recipeHandler.getRecipeCategoryUid(recipe);
-		} catch (AbstractMethodError ignored) { // legacy handlers don't have that method
-			recipeCategoryUid = recipeHandler.getRecipeCategoryUid();
-		}
+		String recipeCategoryUid = recipeHandler.getRecipeCategoryUid(recipe);
 
 		IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
 		if (recipeCategory == null) {
@@ -249,45 +243,11 @@ public class RecipeRegistry implements IRecipeRegistry {
 			// older recipe wrappers do not support getIngredients
 		}
 
-		if (ingredients.isUsed()) {
-			recipeInputMap.addRecipe(recipe, recipeCategory, recipeHandler, ingredients.getInputIngredients());
-			recipeOutputMap.addRecipe(recipe, recipeCategory, recipeHandler, ingredients.getOutputIngredients());
-		} else {
-			legacy_addRecipeUnchecked(recipeWrapper, recipe, recipeHandler, recipeCategory);
-		}
+		recipeInputMap.addRecipe(recipe, recipeCategory, recipeHandler, ingredients.getInputIngredients());
+		recipeOutputMap.addRecipe(recipe, recipeCategory, recipeHandler, ingredients.getOutputIngredients());
 
 		recipesForCategories.put(recipeCategory, recipe);
 		recipeWrappersForCategories.put(recipeCategory, recipeWrapper);
-	}
-
-	private <T> void legacy_addRecipeUnchecked(IRecipeWrapper recipeWrapper, T recipe, IRecipeHandler<T> recipeHandler, IRecipeCategory recipeCategory) {
-		List inputs = recipeWrapper.getInputs();
-		List<FluidStack> fluidInputs = recipeWrapper.getFluidInputs();
-		if (inputs != null || fluidInputs != null) {
-			List<ItemStack> inputStacks = stackHelper.toItemStackList(inputs);
-			if (fluidInputs == null) {
-				fluidInputs = Collections.emptyList();
-			}
-
-			Map<Class, List> inputIngredients = new HashMap<Class, List>();
-			inputIngredients.put(ItemStack.class, inputStacks);
-			inputIngredients.put(FluidStack.class, fluidInputs);
-			recipeInputMap.addRecipe(recipe, recipeCategory, recipeHandler, inputIngredients);
-		}
-
-		List outputs = recipeWrapper.getOutputs();
-		List<FluidStack> fluidOutputs = recipeWrapper.getFluidOutputs();
-		if (outputs != null || fluidOutputs != null) {
-			List<ItemStack> outputStacks = stackHelper.toItemStackList(outputs);
-			if (fluidOutputs == null) {
-				fluidOutputs = Collections.emptyList();
-			}
-
-			Map<Class, List> outputIngredients = new HashMap<Class, List>();
-			outputIngredients.put(ItemStack.class, outputStacks);
-			outputIngredients.put(FluidStack.class, fluidOutputs);
-			recipeOutputMap.addRecipe(recipe, recipeCategory, recipeHandler, outputIngredients);
-		}
 	}
 
 	@Override

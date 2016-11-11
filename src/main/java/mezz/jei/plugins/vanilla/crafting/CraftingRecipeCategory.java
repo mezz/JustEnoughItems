@@ -51,29 +51,6 @@ public class CraftingRecipeCategory extends BlankRecipeCategory<ICraftingRecipeW
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, ICraftingRecipeWrapper recipeWrapper) {
-		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-
-		guiItemStacks.init(craftOutputSlot, false, 94, 18);
-
-		for (int y = 0; y < 3; ++y) {
-			for (int x = 0; x < 3; ++x) {
-				int index = craftInputSlot1 + x + (y * 3);
-				guiItemStacks.init(index, true, x * 18, y * 18);
-			}
-		}
-
-		if (recipeWrapper instanceof IShapedCraftingRecipeWrapper) {
-			IShapedCraftingRecipeWrapper wrapper = (IShapedCraftingRecipeWrapper) recipeWrapper;
-			craftingGridHelper.setInput(guiItemStacks, wrapper.getInputs(), wrapper.getWidth(), wrapper.getHeight());
-			craftingGridHelper.setOutput(guiItemStacks, wrapper.getOutputs());
-		} else {
-			craftingGridHelper.setInput(guiItemStacks, recipeWrapper.getInputs());
-			craftingGridHelper.setOutput(guiItemStacks, recipeWrapper.getOutputs());
-		}
-	}
-
-	@Override
 	public void setRecipe(IRecipeLayout recipeLayout, ICraftingRecipeWrapper recipeWrapper, IIngredients ingredients) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 

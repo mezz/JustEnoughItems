@@ -57,7 +57,6 @@ public class DebugRecipe extends BlankRecipeWrapper {
 		));
 	}
 
-	@Override
 	public List<FluidStack> getFluidInputs() {
 		return Arrays.asList(
 				new FluidStack(FluidRegistry.WATER, 1000 + (int) (Math.random() * 1000)),

@@ -1,7 +1,6 @@
 package mezz.jei.plugins.vanilla.crafting;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredients;
@@ -32,16 +31,6 @@ public class TippedArrowRecipeWrapper extends BlankRecipeWrapper implements ISha
 	public void getIngredients(IIngredients ingredients) {
 		ingredients.setInputs(ItemStack.class, this.inputs);
 		ingredients.setOutput(ItemStack.class, this.output);
-	}
-
-	@Override
-	public List<ItemStack> getInputs() {
-		return inputs;
-	}
-
-	@Override
-	public List<ItemStack> getOutputs() {
-		return Collections.singletonList(this.output);
 	}
 
 	@Override

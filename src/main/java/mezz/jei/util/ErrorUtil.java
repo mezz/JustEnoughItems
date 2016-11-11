@@ -46,8 +46,6 @@ public class ErrorUtil {
 		} catch (RuntimeException ignored) {
 			recipeInfoBuilder.append("\nFailed to get ingredients from recipe wrapper");
 			return recipeInfoBuilder.toString();
-		} catch (AbstractMethodError ignored) { // legacy
-			return legacy_getInfoFromBrokenRecipe(recipeInfoBuilder, recipeWrapper);
 		} catch (LinkageError ignored) {
 			recipeInfoBuilder.append("\nFailed to get ingredients from recipe wrapper");
 			return recipeInfoBuilder.toString();
@@ -95,42 +93,6 @@ public class ErrorUtil {
 		}
 
 		return allInfos;
-	}
-
-	private static String legacy_getInfoFromBrokenRecipe(StringBuilder recipeInfoBuilder, IRecipeWrapper recipeWrapper) {
-		recipeInfoBuilder.append("\nOutput ItemStacks: ");
-		try {
-			List outputs = recipeWrapper.getOutputs();
-			List<String> itemStackIngredientsInfo = getItemStackIngredientsInfo(outputs);
-			recipeInfoBuilder.append(itemStackIngredientsInfo);
-		} catch (RuntimeException e) {
-			recipeInfoBuilder.append(e.getMessage());
-		}
-
-		recipeInfoBuilder.append("\nOutput Fluids: ");
-		try {
-			recipeInfoBuilder.append(recipeWrapper.getFluidOutputs());
-		} catch (RuntimeException e) {
-			recipeInfoBuilder.append(e.getMessage());
-		}
-
-		recipeInfoBuilder.append("\nInput ItemStacks: ");
-		try {
-			List inputs = recipeWrapper.getInputs();
-			List<String> itemStackIngredientsInfo = getItemStackIngredientsInfo(inputs);
-			recipeInfoBuilder.append(itemStackIngredientsInfo);
-		} catch (RuntimeException e) {
-			recipeInfoBuilder.append(e.getMessage());
-		}
-
-		recipeInfoBuilder.append("\nInput Fluids: ");
-		try {
-			recipeInfoBuilder.append(recipeWrapper.getFluidInputs());
-		} catch (RuntimeException e) {
-			recipeInfoBuilder.append(e.getMessage());
-		}
-
-		return recipeInfoBuilder.toString();
 	}
 
 	@Nullable

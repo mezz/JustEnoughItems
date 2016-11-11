@@ -10,11 +10,6 @@ public class DebugRecipeHandler implements IRecipeHandler<DebugRecipe> {
 	}
 
 	@Override
-	public String getRecipeCategoryUid() {
-		return "debug";
-	}
-
-	@Override
 	public String getRecipeCategoryUid(DebugRecipe recipe) {
 		return "debug";
 	}

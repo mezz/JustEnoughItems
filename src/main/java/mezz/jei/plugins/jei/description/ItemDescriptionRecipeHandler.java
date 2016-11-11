@@ -15,11 +15,6 @@ public class ItemDescriptionRecipeHandler implements IRecipeHandler<ItemDescript
 	}
 
 	@Override
-	public String getRecipeCategoryUid() {
-		return VanillaRecipeCategoryUid.DESCRIPTION;
-	}
-
-	@Override
 	public String getRecipeCategoryUid(ItemDescriptionRecipe recipe) {
 		return VanillaRecipeCategoryUid.DESCRIPTION;
 	}

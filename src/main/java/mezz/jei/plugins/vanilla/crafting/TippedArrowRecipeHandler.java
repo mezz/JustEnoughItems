@@ -11,11 +11,6 @@ public class TippedArrowRecipeHandler implements IRecipeHandler<TippedArrowRecip
 	}
 
 	@Override
-	public String getRecipeCategoryUid() {
-		return VanillaRecipeCategoryUid.CRAFTING;
-	}
-
-	@Override
 	public String getRecipeCategoryUid(TippedArrowRecipeWrapper recipe) {
 		return VanillaRecipeCategoryUid.CRAFTING;
 	}

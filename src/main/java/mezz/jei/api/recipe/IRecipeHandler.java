@@ -22,14 +22,6 @@ public interface IRecipeHandler<T> {
 	/**
 	 * Returns this recipe's unique category id.
 	 *
-	 * @deprecated since 3.5.0. Use {@link #getRecipeCategoryUid(Object)}
-	 */
-	@Deprecated
-	String getRecipeCategoryUid();
-
-	/**
-	 * Returns this recipe's unique category id.
-	 *
 	 * @see IRecipeCategory#getUid()
 	 * @see VanillaRecipeCategoryUid
 	 * @since 3.5.0

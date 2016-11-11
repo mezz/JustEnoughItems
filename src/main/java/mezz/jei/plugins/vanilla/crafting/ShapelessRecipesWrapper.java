@@ -1,8 +1,5 @@
 package mezz.jei.plugins.vanilla.crafting;
 
-import java.util.Collections;
-import java.util.List;
-
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.item.ItemStack;
@@ -36,12 +33,7 @@ public class ShapelessRecipesWrapper extends AbstractShapelessRecipeWrapper {
 	}
 
 	@Override
-	public List<ItemStack> getInputs() {
-		return recipe.recipeItems;
-	}
-
-	@Override
-	public List<ItemStack> getOutputs() {
-		return Collections.singletonList(recipe.getRecipeOutput());
+	protected boolean hasMultipleIngredients() {
+		return recipe.recipeItems.size() > 1;
 	}
 }

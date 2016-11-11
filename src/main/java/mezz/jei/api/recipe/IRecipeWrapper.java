@@ -5,10 +5,8 @@ import java.util.List;
 
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fluids.FluidStack;
 
 /**
  * A wrapper around a normal recipe with methods that allow JEI can make sense of it.
@@ -28,40 +26,6 @@ public interface IRecipeWrapper {
 	void getIngredients(IIngredients ingredients);
 
 	/**
-	 * Return a list of recipe inputs.
-	 * Each element can be an ItemStack, null, or a List of ItemStacks.
-	 *
-	 * @deprecated since JEI 3.11.0. Use {@link #getIngredients(IIngredients)}
-	 */
-	@Deprecated
-	List getInputs();
-
-	/**
-	 * Return a list of recipe inputs.
-	 * Each element can be an ItemStack, null, or a List of ItemStacks.
-	 *
-	 * @deprecated since JEI 3.11.0. Use {@link #getIngredients(IIngredients)}
-	 */
-	@Deprecated
-	List getOutputs();
-
-	/**
-	 * Return a list of recipe fluid inputs.
-	 *
-	 * @deprecated since JEI 3.11.0. Use {@link #getIngredients(IIngredients)}
-	 */
-	@Deprecated
-	List<FluidStack> getFluidInputs();
-
-	/**
-	 * Return a list of recipe fluid outputs.
-	 *
-	 * @deprecated since JEI 3.11.0. Use {@link #getIngredients(IIngredients)}
-	 */
-	@Deprecated
-	List<FluidStack> getFluidOutputs();
-
-	/**
 	 * Draw additional info about the recipe.
 	 * Use the mouse position for things like button highlights.
 	 * Tooltips are handled by {@link IRecipeWrapper#getTooltipStrings(int, int)}
@@ -73,17 +37,6 @@ public interface IRecipeWrapper {
 	 * @since JEI 2.19.0
 	 */
 	void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY);
-
-	/**
-	 * Draw animations involving the recipe. Can be disabled in the config.
-	 *
-	 * @see IDrawableAnimated for a simple class for drawing animated things.
-	 * @see IGuiHelper for useful functions.
-	 * @deprecated since 3.13.1. Move animations into {@link #drawInfo(Minecraft, int, int, int, int)},
-	 * these are being combined because nobody uses the config option to disable animations.
-	 */
-	@Deprecated
-	void drawAnimations(Minecraft minecraft, int recipeWidth, int recipeHeight);
 
 	/**
 	 * Get the tooltip for whatever's under the mouse.

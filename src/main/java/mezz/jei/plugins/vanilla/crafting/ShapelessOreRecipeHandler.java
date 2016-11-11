@@ -23,11 +23,6 @@ public class ShapelessOreRecipeHandler implements IRecipeHandler<ShapelessOreRec
 	}
 
 	@Override
-	public String getRecipeCategoryUid() {
-		return VanillaRecipeCategoryUid.CRAFTING;
-	}
-
-	@Override
 	public String getRecipeCategoryUid(ShapelessOreRecipe recipe) {
 		return VanillaRecipeCategoryUid.CRAFTING;
 	}

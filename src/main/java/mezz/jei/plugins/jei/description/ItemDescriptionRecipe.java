@@ -83,16 +83,6 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 	}
 
 	@Override
-	public List<ItemStack> getInputs() {
-		return itemStacks;
-	}
-
-	@Override
-	public List<ItemStack> getOutputs() {
-		return itemStacks;
-	}
-
-	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 		int xPos = (recipeWidth - slotDrawable.getWidth()) / 2;
 		int yPos = 0;

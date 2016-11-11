@@ -1,6 +1,5 @@
 package mezz.jei.plugins.vanilla.crafting;
 
-import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.IJeiHelpers;
@@ -41,12 +40,7 @@ public class ShapelessOreRecipeWrapper extends AbstractShapelessRecipeWrapper {
 	}
 
 	@Override
-	public List getInputs() {
-		return recipe.getInput();
-	}
-
-	@Override
-	public List<ItemStack> getOutputs() {
-		return Collections.singletonList(recipe.getRecipeOutput());
+	protected boolean hasMultipleIngredients() {
+		return recipe.getInput().size() > 1;
 	}
 }

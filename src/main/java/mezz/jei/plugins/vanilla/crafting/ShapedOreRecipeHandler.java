@@ -23,11 +23,6 @@ public class ShapedOreRecipeHandler implements IRecipeHandler<ShapedOreRecipe> {
 	}
 
 	@Override
-	public String getRecipeCategoryUid() {
-		return VanillaRecipeCategoryUid.CRAFTING;
-	}
-
-	@Override
 	public String getRecipeCategoryUid(ShapedOreRecipe recipe) {
 		return VanillaRecipeCategoryUid.CRAFTING;
 	}

@@ -14,7 +14,6 @@ import mezz.jei.api.ingredients.IIngredients;
 public class Ingredients implements IIngredients {
 	private final Map<Class, List<List>> inputs = new HashMap<Class, List<List>>();
 	private final Map<Class, List<List>> outputs = new HashMap<Class, List<List>>();
-	private boolean used = false; // check that the addon used this at all. legacy addons will not
 
 	@Override
 	public <T> void setInput(Class<T> ingredientClass, T input) {
@@ -23,8 +22,6 @@ public class Ingredients implements IIngredients {
 
 	@Override
 	public <T> void setInputLists(Class<T> ingredientClass, List<List<T>> inputs) {
-		this.used = true;
-
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		List<List> expandedInputs = new ArrayList<List>();
@@ -38,8 +35,6 @@ public class Ingredients implements IIngredients {
 
 	@Override
 	public <T> void setInputs(Class<T> ingredientClass, List<T> input) {
-		this.used = true;
-
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		List<List> expandedInputs = new ArrayList<List>();
@@ -53,15 +48,11 @@ public class Ingredients implements IIngredients {
 
 	@Override
 	public <T> void setOutput(Class<T> ingredientClass, T output) {
-		this.used = true;
-
 		setOutputs(ingredientClass, Collections.singletonList(output));
 	}
 
 	@Override
 	public <T> void setOutputs(Class<T> ingredientClass, List<T> outputs) {
-		this.used = true;
-
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		List<List> expandedOutputs = new ArrayList<List>();
@@ -75,8 +66,6 @@ public class Ingredients implements IIngredients {
 
 	@Override
 	public <T> void setOutputLists(Class<T> ingredientClass, List<List<T>> outputs) {
-		this.used = true;
-
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		List<List> expandedOutputs = new ArrayList<List>();
@@ -130,9 +119,5 @@ public class Ingredients implements IIngredients {
 			outputIngredients.put(entry.getKey(), flatIngredients);
 		}
 		return outputIngredients;
-	}
-
-	public boolean isUsed() {
-		return used;
 	}
 }

@@ -70,13 +70,9 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		this.recipeWrapper = recipeWrapper;
 
 		try {
-			try {
-				IIngredients ingredients = new Ingredients();
-				recipeWrapper.getIngredients(ingredients);
-				recipeCategory.setRecipe(this, recipeWrapper, ingredients);
-			} catch (AbstractMethodError ignored) { // legacy
-				recipeCategory.setRecipe(this, recipeWrapper);
-			}
+			IIngredients ingredients = new Ingredients();
+			recipeWrapper.getIngredients(ingredients);
+			recipeCategory.setRecipe(this, recipeWrapper, ingredients);
 		} catch (RuntimeException e) {
 			Log.error("Error caught from Recipe Category: {}", recipeCategory.getClass().getCanonicalName(), e);
 		} catch (LinkageError e) {
@@ -113,8 +109,6 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		{
 			background.draw(minecraft);
 			recipeCategory.drawExtras(minecraft);
-			recipeCategory.drawAnimations(minecraft);
-			recipeWrapper.drawAnimations(minecraft, background.getWidth(), background.getHeight());
 			recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight(), recipeMouseX, recipeMouseY);
 		}
 		GlStateManager.popMatrix();

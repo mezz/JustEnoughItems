@@ -55,7 +55,5 @@ public abstract class AbstractShapelessRecipeWrapper extends BlankRecipeWrapper 
 		return super.getTooltipStrings(mouseX, mouseY);
 	}
 
-	private boolean hasMultipleIngredients() {
-		return getInputs().size() > 1;
-	}
+	protected abstract boolean hasMultipleIngredients();
 }

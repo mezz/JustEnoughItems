@@ -3,7 +3,6 @@ package mezz.jei.api.recipe;
 import javax.annotation.Nullable;
 
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IRecipeLayout;
 import net.minecraft.client.Minecraft;
 
 /**
@@ -18,17 +17,6 @@ public abstract class BlankRecipeCategory<T extends IRecipeWrapper> implements I
 
 	@Override
 	public void drawExtras(Minecraft minecraft) {
-
-	}
-
-	@Override
-	public void drawAnimations(Minecraft minecraft) {
-
-	}
-
-	@Override
-	@Deprecated
-	public void setRecipe(IRecipeLayout recipeLayout, T recipeWrapper) {
 
 	}
 }

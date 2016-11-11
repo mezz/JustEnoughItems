@@ -13,11 +13,6 @@ public class FuelRecipeHandler implements IRecipeHandler<FuelRecipe> {
 	}
 
 	@Override
-	public String getRecipeCategoryUid() {
-		return VanillaRecipeCategoryUid.FUEL;
-	}
-
-	@Override
 	public String getRecipeCategoryUid(FuelRecipe recipe) {
 		return VanillaRecipeCategoryUid.FUEL;
 	}
@@ -32,10 +27,6 @@ public class FuelRecipeHandler implements IRecipeHandler<FuelRecipe> {
 		if (recipe.getInputs().isEmpty()) {
 			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
 			Log.error("Recipe has no inputs. {}", recipeInfo);
-		}
-		if (!recipe.getOutputs().isEmpty()) {
-			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
-			Log.error("Fuel Recipe should not have outputs. {}", recipeInfo);
 		}
 		return true;
 	}

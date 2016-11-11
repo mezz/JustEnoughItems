@@ -49,14 +49,13 @@ public class FuelRecipe extends BlankRecipeWrapper {
 	}
 
 	@Override
-	public List<List<ItemStack>> getInputs() {
-		return inputs;
-	}
-
-	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 		flame.draw(minecraft, 2, 0);
 		minecraft.fontRendererObj.drawString(smeltCountString, 24, 8, Color.gray.getRGB());
 		minecraft.fontRendererObj.drawString(burnTimeString, 24, 18, Color.gray.getRGB());
+	}
+
+	public List<List<ItemStack>> getInputs() {
+		return inputs;
 	}
 }

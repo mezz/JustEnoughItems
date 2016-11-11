@@ -53,14 +53,8 @@ public class BrewingRecipeWrapper extends BlankRecipeWrapper {
 		ingredients.setOutput(ItemStack.class, potionOutput);
 	}
 
-	@Override
 	public List getInputs() {
 		return inputs;
-	}
-
-	@Override
-	public List<ItemStack> getOutputs() {
-		return Collections.singletonList(potionOutput);
 	}
 
 	@Override

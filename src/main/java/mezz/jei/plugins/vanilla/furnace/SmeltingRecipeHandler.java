@@ -14,11 +14,6 @@ public class SmeltingRecipeHandler implements IRecipeHandler<SmeltingRecipe> {
 	}
 
 	@Override
-	public String getRecipeCategoryUid() {
-		return VanillaRecipeCategoryUid.SMELTING;
-	}
-
-	@Override
 	public String getRecipeCategoryUid(SmeltingRecipe recipe) {
 		return VanillaRecipeCategoryUid.SMELTING;
 	}

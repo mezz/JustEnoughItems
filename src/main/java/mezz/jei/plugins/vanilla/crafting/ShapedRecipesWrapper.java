@@ -1,7 +1,6 @@
 package mezz.jei.plugins.vanilla.crafting;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredients;
@@ -32,16 +31,6 @@ public class ShapedRecipesWrapper extends BlankRecipeWrapper implements IShapedC
 		if (recipeOutput != null) {
 			ingredients.setOutput(ItemStack.class, recipeOutput);
 		}
-	}
-
-	@Override
-	public List getInputs() {
-		return Arrays.asList(recipe.recipeItems);
-	}
-
-	@Override
-	public List<ItemStack> getOutputs() {
-		return Collections.singletonList(recipe.getRecipeOutput());
 	}
 
 	@Override
