@@ -21,8 +21,6 @@ import mezz.jei.api.recipe.IRecipeWrapper;
  * A RecipeMap efficiently links IRecipeWrappers, IRecipeCategory, and ItemStacks.
  */
 public class RecipeMap {
-	@Deprecated
-	private final Table<IRecipeCategory, String, List<Object>> recipeTable = HashBasedTable.create();
 	private final Table<IRecipeCategory, String, List<IRecipeWrapper>> recipeWrapperTable = HashBasedTable.create();
 	private final ArrayListMultimap<String, String> categoryUidMap = ArrayListMultimap.create();
 	private final Ordering<String> recipeCategoryOrdering;
@@ -72,22 +70,6 @@ public class RecipeMap {
 		return listBuilder.build();
 	}
 
-	@Deprecated
-	public <V> ImmutableList<Object> getRecipes(IRecipeCategory recipeCategory, V ingredient) {
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-
-		Map<String, List<Object>> recipesForType = recipeTable.row(recipeCategory);
-
-		ImmutableList.Builder<Object> listBuilder = ImmutableList.builder();
-		for (String key : IngredientUtil.getUniqueIdsWithWildcard(ingredientHelper, ingredient)) {
-			List<Object> recipes = recipesForType.get(key);
-			if (recipes != null) {
-				listBuilder.addAll(recipes);
-			}
-		}
-		return listBuilder.build();
-	}
-
 	public <T extends IRecipeWrapper, V, R> void addRecipe(R recipe, IRecipeCategory<T> recipeCategory, IRecipeHandler<R> recipeHandler, Map<Class, List> ingredientsByType) {
 		for (Map.Entry<Class, List> entry : ingredientsByType.entrySet()) {
 			if (entry != null) {
@@ -99,7 +81,6 @@ public class RecipeMap {
 	private <T extends IRecipeWrapper, V, R> void addRecipe(R recipe, IRecipeCategory<T> recipeCategory, IRecipeHandler<R> recipeHandler, Class<V> ingredientClass, List<V> ingredients) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 
-		Map<String, List<Object>> recipesForType = recipeTable.row(recipeCategory);
 		//noinspection unchecked
 		Map<String, List<T>> recipesWrappersForType = (Map<String, List<T>>) (Object) recipeWrapperTable.row(recipeCategory);
 
@@ -118,13 +99,6 @@ public class RecipeMap {
 			} else {
 				uniqueIds.add(key);
 			}
-
-			List<Object> recipes = recipesForType.get(key);
-			if (recipes == null) {
-				recipes = Lists.newArrayList();
-				recipesForType.put(key, recipes);
-			}
-			recipes.add(recipe);
 
 			List<T> recipeWrappers = recipesWrappersForType.get(key);
 			if (recipeWrappers == null) {

@@ -34,7 +34,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 		int iconX = x + 4;
 		int iconY = y + 4;
 
-		IDrawable icon = getCategoryIcon(category);
+		IDrawable icon = category.getIcon();
 		if (icon != null) {
 			iconX += (16 - icon.getWidth()) / 2;
 			iconY += (16 - icon.getHeight()) / 2;
@@ -57,15 +57,6 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 				fontRenderer.drawStringWithShadow(text, textCenterX - fontRenderer.getStringWidth(text) / 2f, textCenterY, color);
 				GlStateManager.color(1, 1, 1, 1);
 			}
-		}
-	}
-
-	@Nullable
-	private static IDrawable getCategoryIcon(IRecipeCategory recipeCategory) {
-		try {
-			return recipeCategory.getIcon();
-		} catch (AbstractMethodError ignored) { // old recipe categories do not implement this method
-			return null;
 		}
 	}
 

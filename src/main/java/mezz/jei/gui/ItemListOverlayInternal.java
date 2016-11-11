@@ -25,7 +25,6 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IClickedIngredient;
-import mezz.jei.input.IKeyable;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
@@ -49,7 +48,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.HoverChecker;
 import org.lwjgl.input.Keyboard;
 
-public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandler, IKeyable {
+public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandler {
 
 	private static final int borderPadding = 2;
 	private static final int searchHeight = 16;
@@ -478,17 +477,14 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 		return searchClicked;
 	}
 
-	@Override
 	public boolean hasKeyboardFocus() {
 		return searchField.isFocused();
 	}
 
-	@Override
 	public void setKeyboardFocus(boolean keyboardFocus) {
 		searchField.setFocused(keyboardFocus);
 	}
 
-	@Override
 	public boolean onKeyPressed(char typedChar, int keyCode) {
 		if (hasKeyboardFocus()) {
 			boolean changed = searchField.textboxKeyTyped(typedChar, keyCode);

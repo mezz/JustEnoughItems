@@ -90,8 +90,9 @@ public class JeiStarter {
 			} catch (RuntimeException e) {
 				Log.error("Failed to register item subtypes for mod plugin: {}", plugin.getClass(), e);
 				iterator.remove();
-			} catch (AbstractMethodError ignored) {
-				// legacy mod plugins do not have registerItemSubtypes
+			} catch (LinkageError e) {
+				Log.error("Failed to register item subtypes for mod plugin: {}", plugin.getClass(), e);
+				iterator.remove();
 			}
 		}
 		ProgressManager.pop(progressBar);
@@ -114,11 +115,13 @@ public class JeiStarter {
 					Log.error("Failed to register Ingredients for mod plugin: {}", plugin.getClass(), e);
 					iterator.remove();
 				}
-			} catch (AbstractMethodError ignored) {
+			} catch (LinkageError e) {
 				if (VanillaPlugin.class.isInstance(plugin)) {
-					throw ignored;
+					throw e;
+				} else {
+					Log.error("Failed to register Ingredients for mod plugin: {}", plugin.getClass(), e);
+					iterator.remove();
 				}
-				// legacy mod plugins do not have registerIngredients
 			}
 		}
 		ProgressManager.pop(progressBar);

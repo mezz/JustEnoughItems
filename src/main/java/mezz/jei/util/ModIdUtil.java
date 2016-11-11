@@ -29,17 +29,6 @@ public class ModIdUtil {
 		}
 	}
 
-	@Deprecated
-	public String getModNameForItem(Item item) {
-		ResourceLocation itemResourceLocation = item.getRegistryName();
-		if (itemResourceLocation == null) {
-			String stackInfo = ErrorUtil.getItemStackInfo(new ItemStack(item));
-			throw new NullPointerException("item.getRegistryName() returned null for: " + stackInfo);
-		}
-		String modId = itemResourceLocation.getResourceDomain();
-		return getModNameForModId(modId);
-	}
-
 	public String getModNameForModId(String modId) {
 		String lowercaseModId = modId.toLowerCase(Locale.ENGLISH);
 		String modName = modNamesForIds.get(lowercaseModId);

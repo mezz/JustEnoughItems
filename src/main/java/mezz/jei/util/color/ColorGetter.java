@@ -91,13 +91,13 @@ public class ColorGetter {
 			if (block == null) {
 				return Collections.emptyList();
 			}
-			return getColors(itemStack, block, colorCount);
+			return getBlockColors(itemStack, block, colorCount);
 		} else {
-			return getColors(itemStack, item, colorCount);
+			return getItemColors(itemStack, colorCount);
 		}
 	}
 
-	private static List<Color> getColors(ItemStack itemStack, Item item, int colorCount) {
+	private static List<Color> getItemColors(ItemStack itemStack, int colorCount) {
 		final ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
 		final int renderColor = itemColors.getColorFromItemstack(itemStack, 0);
 		final TextureAtlasSprite textureAtlasSprite = getTextureAtlasSprite(itemStack);
@@ -107,7 +107,7 @@ public class ColorGetter {
 		return getColors(textureAtlasSprite, renderColor, colorCount);
 	}
 
-	private static List<Color> getColors(ItemStack itemStack, Block block, int colorCount) {
+	private static List<Color> getBlockColors(ItemStack itemStack, Block block, int colorCount) {
 		final int meta = itemStack.getMetadata();
 		IBlockState blockState;
 		try {

@@ -95,43 +95,6 @@ public class ErrorUtil {
 		return allInfos;
 	}
 
-	@Nullable
-	public static List<String> getItemStackIngredientsInfo(@Nullable List list) {
-		if (list == null) {
-			return null;
-		}
-		StackHelper stackHelper = Internal.getStackHelper();
-
-		List<String> ingredientsInfo = new ArrayList<String>();
-		for (Object ingredient : list) {
-			List<String> ingredientInfo = new ArrayList<String>();
-
-			List<ItemStack> stacks = null;
-			try {
-				stacks = stackHelper.toItemStackList(ingredient);
-			} catch (RuntimeException ignored) {
-				ingredientInfo.add("too broken to get info");
-			} catch (LinkageError ignored) {
-				ingredientInfo.add("too broken to get info");
-			}
-
-			if (stacks != null) {
-				String oreDict = stackHelper.getOreDictEquivalent(stacks);
-				if (oreDict != null) {
-					ingredientInfo.add("OreDict: " + oreDict);
-				}
-
-				for (ItemStack stack : stacks) {
-					String itemStackInfo = getItemStackInfo(stack);
-					ingredientInfo.add(itemStackInfo);
-				}
-			}
-
-			ingredientsInfo.add(ingredientInfo.toString() + "\n");
-		}
-		return ingredientsInfo;
-	}
-
 	public static String getItemStackInfo(@Nullable ItemStack itemStack) {
 		if (itemStack == null) {
 			return "null";

@@ -231,11 +231,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
 
 		Ingredients ingredients = new Ingredients();
-		try {
-			recipeWrapper.getIngredients(ingredients);
-		} catch (AbstractMethodError ignored) {
-			// older recipe wrappers do not support getIngredients
-		}
+		recipeWrapper.getIngredients(ingredients);
 
 		recipeInputMap.addRecipe(recipe, recipeCategory, recipeHandler, ingredients.getInputIngredients());
 		recipeOutputMap.addRecipe(recipe, recipeCategory, recipeHandler, ingredients.getOutputIngredients());

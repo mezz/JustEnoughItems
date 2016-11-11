@@ -31,8 +31,6 @@ public interface IRecipeGuiLogic {
 
 	<V> boolean setFocus(IFocus<V> focus);
 
-	IFocus getFocus();
-
 	boolean back();
 
 	void clearHistory();

@@ -209,10 +209,6 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		return recipeTransferButton;
 	}
 
-	public IRecipeWrapper getRecipeWrapper() {
-		return recipeWrapper;
-	}
-
 	public IRecipeCategory getRecipeCategory() {
 		return recipeCategory;
 	}
