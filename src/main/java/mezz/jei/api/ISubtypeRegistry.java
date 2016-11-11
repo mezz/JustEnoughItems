@@ -14,8 +14,6 @@ import net.minecraft.item.ItemStack;
  * Note: JEI has built-in support for differentiating items that implement {@link net.minecraftforge.fluids.capability.CapabilityFluidHandler},
  * adding a subtype interpreter here will override that functionality.
  * <p>
- * Replaces {@link INbtIgnoreList}.
- * <p>
  * Get the instance by implementing {@link IModPlugin#registerItemSubtypes(ISubtypeRegistry)}.
  *
  * @since 3.6.4
