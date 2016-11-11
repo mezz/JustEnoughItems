@@ -22,7 +22,7 @@ public class JeiStarter {
 	@Nullable
 	private GuiEventHandler guiEventHandler;
 
-	public void start(List<IModPlugin> plugins, boolean showProgressBar) {
+	public void start(List<IModPlugin> plugins, boolean showProgressBar, boolean resourceReload) {
 		long jeiStartTime = System.currentTimeMillis();
 
 		Log.info("Starting JEI...");
@@ -51,6 +51,8 @@ public class JeiStarter {
 		long start_time = System.currentTimeMillis();
 		RecipeRegistry recipeRegistry = modRegistry.createRecipeRegistry(stackHelper, ingredientRegistry);
 		Log.info("Built    recipe registry in {} ms", System.currentTimeMillis() - start_time);
+
+		IngredientInformation.onStart(resourceReload);
 
 		ItemFilter itemFilter = new ItemFilter(showProgressBar);
 

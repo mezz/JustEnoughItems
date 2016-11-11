@@ -102,13 +102,13 @@ public class ProxyCommonClient extends ProxyCommon {
 			@Override
 			public void onResourceManagerReload(IResourceManager resourceManager) {
 				if (SessionData.hasJoinedWorld()) {
-					restartJEI();
+					restartJEI(true);
 				}
 			}
 		});
 
 		try {
-			this.starter.start(plugins, true);
+			this.starter.start(plugins, true, false);
 		} catch (Exception e) {
 			Log.error("Exception on load", e);
 		}
@@ -124,9 +124,13 @@ public class ProxyCommonClient extends ProxyCommon {
 
 	@Override
 	public void restartJEI() {
+		restartJEI(false);
+	}
+
+	private void restartJEI(boolean resourceReload) {
 		// check that JEI has been started before. if not, do nothing
 		if (this.starter.hasStarted()) {
-			this.starter.start(this.plugins, false);
+			this.starter.start(this.plugins, false, resourceReload);
 		}
 	}
 

@@ -1,24 +1,18 @@
 package mezz.jei.util;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
-import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 
-import com.google.common.base.Joiner;
+import mezz.jei.IngredientInformation;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.util.color.ColorNamer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class IngredientListElement<V> implements IIngredientListElement<V> {
@@ -59,13 +53,10 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 
 		this.modNameString = modId.replaceAll(" ", "") + ' ' + modName.replaceAll(" ", "");
 
-		this.tooltipString = getTooltipString(ingredient, ingredientRenderer, modId, modName, displayName);
+		this.tooltipString = IngredientInformation.getTooltipString(ingredient, ingredientRenderer, modId, modName, displayName);
 
 		if (Config.getColorSearchMode() != Config.SearchMode.DISABLED) {
-			Iterable<Color> colors = ingredientHelper.getColors(ingredient);
-			ColorNamer colorNamer = Internal.getColorNamer();
-			Collection<String> colorNames = colorNamer.getColorNames(colors);
-			this.colorString = Joiner.on(' ').join(colorNames).toLowerCase();
+			this.colorString = IngredientInformation.getColorString(ingredient, ingredientHelper);
 		} else {
 			this.colorString = "";
 		}
@@ -117,20 +108,6 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		}
 
 		this.searchString = searchStringBuilder.toString();
-	}
-
-	private static <T> String getTooltipString(T ingredient, IIngredientRenderer<T> ingredientRenderer, String modId, String modName, String displayName) {
-		List<String> tooltip = ingredientRenderer.getTooltip(Minecraft.getMinecraft(), ingredient);
-		String tooltipString = Joiner.on(' ').join(tooltip).toLowerCase();
-		tooltipString = removeChatFormatting(tooltipString);
-		tooltipString = tooltipString.replace(modId, "");
-		tooltipString = tooltipString.replace(modName, "");
-		return tooltipString.replace(displayName, "");
-	}
-
-	private static String removeChatFormatting(String string) {
-		String withoutFormattingCodes = TextFormatting.getTextWithoutFormattingCodes(string);
-		return (withoutFormattingCodes == null) ? string : withoutFormattingCodes;
 	}
 
 	@Override
