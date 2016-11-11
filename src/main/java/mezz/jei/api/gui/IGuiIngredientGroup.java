@@ -77,20 +77,4 @@ public interface IGuiIngredientGroup<T> {
 			  int xPosition, int yPosition,
 			  int width, int height,
 			  int xPadding, int yPadding);
-
-	/**
-	 * The current search focus. Set by the player when they look up the recipe. The object being looked up is the focus.
-	 *
-	 * @deprecated since JEI 3.11.0. Use {@link IRecipeLayout#getFocus()}
-	 */
-	@Deprecated
-	IFocus<T> getFocus();
-
-	/**
-	 * Set the ingredient at slotIndex to a rotating collection of ingredients.
-	 *
-	 * @deprecated since JEI 3.11.0. Use {@link #set(int, List)}
-	 */
-	@Deprecated
-	void set(int slotIndex, Collection<T> ingredients);
 }

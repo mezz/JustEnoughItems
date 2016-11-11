@@ -2,7 +2,6 @@ package mezz.jei.gui.ingredients;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,11 +49,6 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	}
 
 	@Override
-	public IFocus<T> getFocus() {
-		return focus;
-	}
-
-	@Override
 	public void set(IIngredients ingredients) {
 		List<List<T>> inputs = ingredients.getInputs(ingredientClass);
 		List<List<T>> outputs = ingredients.getOutputs(ingredientClass);
@@ -78,12 +72,6 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 				}
 			}
 		}
-	}
-
-	@Override
-	@Deprecated
-	public void set(int slotIndex, Collection<T> values) {
-		set(slotIndex, new ArrayList<T>(values));
 	}
 
 	@Override

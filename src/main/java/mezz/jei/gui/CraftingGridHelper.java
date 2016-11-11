@@ -73,7 +73,7 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		guiItemStacks.set(craftOutputSlot, output);
 	}
 
-	private void setInput(IGuiItemStackGroup guiItemStacks, int inputIndex, Collection<ItemStack> input) {
+	private void setInput(IGuiItemStackGroup guiItemStacks, int inputIndex, List<ItemStack> input) {
 		guiItemStacks.set(craftInputSlot1 + inputIndex, input);
 	}
 

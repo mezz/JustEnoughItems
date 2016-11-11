@@ -1,8 +1,5 @@
 package mezz.jei.gui.ingredients;
 
-import java.util.List;
-
-import mezz.jei.Internal;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.plugins.vanilla.ingredients.ItemStackRenderer;
@@ -23,16 +20,6 @@ public class GuiItemStackGroup extends GuiIngredientGroup<ItemStack> implements 
 
 	public static int getHeight(int padding) {
 		return baseHeight + (2 * padding);
-	}
-
-	@Override
-	public void setFromRecipe(int slotIndex, List ingredients) {
-		set(slotIndex, Internal.getStackHelper().toItemStackList(ingredients));
-	}
-
-	@Override
-	public void setFromRecipe(int slotIndex, Object ingredients) {
-		set(slotIndex, Internal.getStackHelper().toItemStackList(ingredients));
 	}
 
 	@Override
