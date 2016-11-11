@@ -63,7 +63,7 @@ public class Commands {
 	}
 
 	private static void sendChatMessage(EntityPlayerSP sender, String chatMessage) {
-		if (chatMessage.length() <= 100) {
+		if (chatMessage.length() <= 256) {
 			sender.sendChatMessage(chatMessage);
 		} else {
 			ITextComponent errorMessage = new TextComponentTranslation("jei.chat.error.command.too.long");
