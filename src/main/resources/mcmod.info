@@ -1,6 +1,6 @@
 [
 {
-  "modid": "JEI",
+  "modid": "jei",
   "name": "Just Enough Items",
   "description": "Simple recipe and item helper.",
   "version": "${version}",

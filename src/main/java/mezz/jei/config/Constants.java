@@ -8,7 +8,7 @@ public class Constants {
 	public static final String minecraftModName = "Minecraft";
 
 	// Mod info
-	public static final String MOD_ID = "JEI";
+	public static final String MOD_ID = "jei";
 	public static final String NAME = "Just Enough Items";
 	public static final String VERSION = "@VERSION@";
 

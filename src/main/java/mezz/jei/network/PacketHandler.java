@@ -3,6 +3,7 @@ package mezz.jei.network;
 import javax.annotation.Nullable;
 import java.io.IOException;
 
+import mezz.jei.config.Constants;
 import mezz.jei.network.packets.IPacketJeiHandler;
 import mezz.jei.network.packets.PacketCheatPermission;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
@@ -22,7 +23,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PacketHandler {
-	public static final String CHANNEL_ID = "JEI";
+	public static final String CHANNEL_ID = Constants.MOD_ID;
 
 	@SubscribeEvent
 	public void onPacket(FMLNetworkEvent.ServerCustomPacketEvent event) {

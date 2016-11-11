@@ -1,4 +1,4 @@
-@API(apiVersion = "4.10.1", owner = "JEI", provides = "JustEnoughItemsAPI")
+@API(apiVersion = "4.10.1", owner = "jei", provides = "JustEnoughItemsAPI")
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 package mezz.jei.api;
