@@ -34,6 +34,10 @@ public class ProxyCommon {
 
 	}
 
+	public void reloadItemList() {
+
+	}
+
 	public void sendPacketToServer(PacketJei packet) {
 		Log.error("Tried to send packet to the server from the server: {}", packet);
 	}

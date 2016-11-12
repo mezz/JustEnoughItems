@@ -65,4 +65,11 @@ public class IngredientInformation {
 			colorCache.clear();
 		}
 	}
+
+	public static void clearCachedIngredients(List<Object> ingredients) {
+		for (Object ingredient : ingredients) {
+			tooltipCache.remove(ingredient);
+			colorCache.remove(ingredient);
+		}
+	}
 }

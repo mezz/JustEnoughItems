@@ -2,6 +2,7 @@ package mezz.jei.api;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.item.ItemStack;
@@ -44,4 +45,10 @@ public interface IItemListOverlay {
 	 * Tells JEI which stacks to highlight
 	 */
 	void highlightStacks(Collection<ItemStack> stacks);
+
+	/**
+	 * Refresh all cached data (tooltips, colors, etc) about a list of ingredients.
+	 * @since JEI 3.13.3
+	 */
+	void refreshIngredients(List<Object> ingredients);
 }
