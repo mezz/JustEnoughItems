@@ -431,7 +431,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return recipeTransferHandlers.get(containerClass, Constants.UNIVERSAL_RECIPE_TRANSFER_UID);
 	}
 
-	@Nullable
 	@Override
 	public <T extends IRecipeWrapper> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipeWrapper, IFocus focus) {
 		return new RecipeLayout(-1, recipeCategory, recipeWrapper, focus);

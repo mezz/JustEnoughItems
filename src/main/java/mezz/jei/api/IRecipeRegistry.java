@@ -94,7 +94,6 @@ public interface IRecipeRegistry {
 	 * @param focus          the focus of the recipe layout.
 	 * @since JEI 3.13.2
 	 */
-	@Nullable
 	<T extends IRecipeWrapper> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipeWrapper, IFocus focus);
 
 	/**
