@@ -79,7 +79,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	public RecipesGui(IRecipeRegistry recipeRegistry) {
 		this.logic = new RecipeGuiLogic(recipeRegistry, this);
-		this.recipeCategoryCraftingItems = new RecipeCategoryCraftingItems(recipeRegistry);
+		this.recipeCategoryCraftingItems = new RecipeCategoryCraftingItems();
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
 		this.mc = Minecraft.getMinecraft();
 

@@ -1,5 +1,7 @@
 package mezz.jei.api.gui;
 
+import javax.annotation.Nullable;
+
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IFocus;
@@ -42,6 +44,7 @@ public interface IRecipeLayout {
 	 *
 	 * @since JEI 3.11.0
 	 */
+	@Nullable
 	IFocus<?> getFocus();
 
 	/**

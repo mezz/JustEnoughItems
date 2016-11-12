@@ -89,7 +89,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		return allIngredients;
 	}
 
-	public void set(@Nullable List<T> ingredients, IFocus<T> focus) {
+	public void set(@Nullable List<T> ingredients, @Nullable IFocus<T> focus) {
 		this.displayIngredients.clear();
 		this.allIngredients.clear();
 		if (ingredients == null) {
@@ -110,11 +110,11 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	}
 
 	@Nullable
-	private T getMatch(Collection<T> ingredients, IFocus<T> focus) {
-		if ((isInput() && focus.getMode() == IFocus.Mode.INPUT) ||
-				(!isInput() && focus.getMode() == IFocus.Mode.OUTPUT)) {
-			T focusValue = focus.getValue();
-			if (focusValue != null) {
+	private T getMatch(Collection<T> ingredients, @Nullable IFocus<T> focus) {
+		if (focus != null) {
+			if ((isInput() && focus.getMode() == IFocus.Mode.INPUT) ||
+					(!isInput() && focus.getMode() == IFocus.Mode.OUTPUT)) {
+				T focusValue = focus.getValue();
 				return ingredientHelper.getMatch(ingredients, focusValue);
 			}
 		}

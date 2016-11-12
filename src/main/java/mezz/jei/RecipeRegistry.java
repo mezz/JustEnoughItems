@@ -164,7 +164,13 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public <V> IFocus<V> createFocus(IFocus.Mode mode, @Nullable V ingredient) {
+	public <V> IFocus<V> createFocus(@Nullable IFocus.Mode mode, @Nullable V ingredient) {
+		if (mode == null) {
+			throw new NullPointerException("Null mode");
+		}
+		if (ingredient == null) {
+			throw new NullPointerException("Null ingredient");
+		}
 		return new Focus<V>(mode, ingredient);
 	}
 
@@ -310,10 +316,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 	 */
 	@Nullable
 	private static FluidStack getFluidFromItemBlock(IFocus<?> focus) {
-		if (focus.getMode() == IFocus.Mode.NONE) {
-			return null;
-		}
-
 		Object ingredient = focus.getValue();
 		if (ingredient instanceof ItemStack) {
 			ItemStack itemStack = (ItemStack) ingredient;
@@ -389,19 +391,22 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public <T extends IRecipeWrapper> List<T> getRecipeWrappers(@Nullable IRecipeCategory<T> recipeCategory) {
-		return getRecipeWrappers(recipeCategory, createFocus(IFocus.Mode.NONE, null));
+		return getRecipeWrappers(recipeCategory, null);
 	}
 
 	@Override
-	public List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory, IFocus focus) {
+	public List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory, @Nullable IFocus focus) {
 		List<ItemStack> craftingItems = craftItemsForCategories.get(recipeCategory);
-		Object ingredient = focus.getValue();
-		if (ingredient instanceof ItemStack && focus.getMode() == IFocus.Mode.INPUT) {
-			ItemStack itemStack = (ItemStack) ingredient;
-			IIngredientHelper<ItemStack> ingredientHelper = ingredientRegistry.getIngredientHelper(ItemStack.class);
-			ItemStack matchingStack = ingredientHelper.getMatch(craftingItems, itemStack);
-			if (matchingStack != null) {
-				return Collections.singletonList(matchingStack);
+
+		if (focus != null && focus.getMode() == IFocus.Mode.INPUT) {
+			Object ingredient = focus.getValue();
+			if (ingredient instanceof ItemStack) {
+				ItemStack itemStack = (ItemStack) ingredient;
+				IIngredientHelper<ItemStack> ingredientHelper = ingredientRegistry.getIngredientHelper(ItemStack.class);
+				ItemStack matchingStack = ingredientHelper.getMatch(craftingItems, itemStack);
+				if (matchingStack != null) {
+					return Collections.singletonList(matchingStack);
+				}
 			}
 		}
 		return craftingItems;

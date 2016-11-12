@@ -40,14 +40,7 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 
 	@Override
 	public <V> List<String> getRecipeCategoryUids(IFocus<V> focus) {
-		if (focus.getMode() == IFocus.Mode.NONE) {
-			return getRecipeCategories();
-		}
-
 		V ingredient = focus.getValue();
-		if (ingredient == null) {
-			return getRecipeCategories();
-		}
 
 		switch (focus.getMode()) {
 			case INPUT:
@@ -72,14 +65,7 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 
 	@Override
 	public <T extends IRecipeWrapper, V> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
-		if (focus.getMode() == IFocus.Mode.NONE) {
-			return getRecipeWrappers(recipeCategory);
-		}
-
 		V ingredient = focus.getValue();
-		if (ingredient == null) {
-			return getRecipeWrappers(recipeCategory);
-		}
 
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 

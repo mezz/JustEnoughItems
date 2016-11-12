@@ -39,7 +39,7 @@ public interface IRecipeRegistry {
 	/**
 	 * Returns a new focus.
 	 */
-	<V> IFocus<V> createFocus(IFocus.Mode mode, @Nullable V ingredient);
+	<V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient);
 
 	/**
 	 * Returns a list of Recipe Categories for the focus.
@@ -53,7 +53,7 @@ public interface IRecipeRegistry {
 	 *
 	 * @since JEI 3.12.0
 	 */
-	<T extends IRecipeWrapper, V> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, IFocus<V> focus);
+	<T extends IRecipeWrapper, V> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, @Nullable IFocus<V> focus);
 
 	/**
 	 * Returns a list of Recipe Wrappers in recipeCategory.
@@ -72,7 +72,7 @@ public interface IRecipeRegistry {
 	 *
 	 * @since JEI 3.11.0
 	 */
-	List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory, IFocus focus);
+	List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory, @Nullable IFocus focus);
 
 	/**
 	 * Returns the recipe transfer handler for the given container and category, if one exists.

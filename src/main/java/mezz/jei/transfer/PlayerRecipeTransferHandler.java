@@ -20,7 +20,6 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.config.SessionData;
-import mezz.jei.gui.Focus;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.util.Log;
@@ -93,7 +92,7 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Conta
 				guiIngredients.add(guiIngredient);
 			}
 		}
-		IGuiItemStackGroup playerInvItemStackGroup = new GuiItemStackGroup(new Focus<ItemStack>(null));
+		IGuiItemStackGroup playerInvItemStackGroup = new GuiItemStackGroup(null);
 		int[] playerGridIndexes = {0, 1, 3, 4};
 		for (int i = 0; i < 4; i++) {
 			IGuiIngredient<ItemStack> ingredient = guiIngredients.get(playerGridIndexes[i]);

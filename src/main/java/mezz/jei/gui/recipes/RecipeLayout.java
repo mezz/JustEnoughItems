@@ -13,7 +13,6 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.gui.Focus;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiFluidStackGroup;
 import mezz.jei.gui.ingredients.GuiIngredient;
@@ -37,25 +36,30 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	@Nullable
 	private final RecipeTransferButton recipeTransferButton;
 	private final IRecipeWrapper recipeWrapper;
+	@Nullable
 	private final IFocus<?> focus;
 
 	private int posX;
 	private int posY;
 
-	public <T extends IRecipeWrapper> RecipeLayout(int index, IRecipeCategory<T> recipeCategory, T recipeWrapper, IFocus focus) {
+	public <T extends IRecipeWrapper> RecipeLayout(int index, IRecipeCategory<T> recipeCategory, T recipeWrapper, @Nullable IFocus focus) {
 		this.recipeCategory = recipeCategory;
 		this.focus = focus;
 
-		ItemStack itemStackFocus = null;
-		FluidStack fluidStackFocus = null;
-		Object focusValue = focus.getValue();
-		if (focusValue instanceof ItemStack) {
-			itemStackFocus = (ItemStack) focusValue;
-		} else if (focusValue instanceof FluidStack) {
-			fluidStackFocus = (FluidStack) focusValue;
+		IFocus<ItemStack> itemStackFocus = null;
+		IFocus<FluidStack> fluidStackFocus = null;
+		if (focus != null) {
+			Object focusValue = focus.getValue();
+			if (focusValue instanceof ItemStack) {
+				//noinspection unchecked
+				itemStackFocus = (IFocus<ItemStack>) focus;
+			} else if (focusValue instanceof FluidStack) {
+				//noinspection unchecked
+				fluidStackFocus = (IFocus<FluidStack>) focus;
+			}
 		}
-		this.guiItemStackGroup = new GuiItemStackGroup(new Focus<ItemStack>(focus.getMode(), itemStackFocus));
-		this.guiFluidStackGroup = new GuiFluidStackGroup(new Focus<FluidStack>(focus.getMode(), fluidStackFocus));
+		this.guiItemStackGroup = new GuiItemStackGroup(itemStackFocus);
+		this.guiFluidStackGroup = new GuiFluidStackGroup(fluidStackFocus);
 
 		this.guiIngredientGroups = new HashMap<Class, GuiIngredientGroup>();
 		this.guiIngredientGroups.put(ItemStack.class, this.guiItemStackGroup);
@@ -178,13 +182,14 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		//noinspection unchecked
 		GuiIngredientGroup<T> guiIngredientGroup = guiIngredientGroups.get(ingredientClass);
 		if (guiIngredientGroup == null) {
-			T value = null;
-			Object focusValue = this.focus.getValue();
-			if (ingredientClass.isInstance(focusValue)) {
-				//noinspection unchecked
-				value = (T) focusValue;
+			IFocus<T> focus = null;
+			if (this.focus != null) {
+				Object focusValue = this.focus.getValue();
+				if (ingredientClass.isInstance(focusValue)) {
+					//noinspection unchecked
+					focus = (IFocus<T>) this.focus;
+				}
 			}
-			IFocus<T> focus = new Focus<T>(this.focus.getMode(), value);
 			guiIngredientGroup = new GuiIngredientGroup<T>(ingredientClass, focus);
 			guiIngredientGroups.put(ingredientClass, guiIngredientGroup);
 		}
@@ -200,6 +205,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	}
 
 	@Override
+	@Nullable
 	public IFocus<?> getFocus() {
 		return focus;
 	}

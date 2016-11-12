@@ -1,6 +1,7 @@
 package mezz.jei.gui.recipes;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,16 +19,15 @@ import net.minecraft.item.ItemStack;
 
 public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private static class State {
-		@Nonnull
+		@Nullable
 		public final IFocus<?> focus;
-		@Nonnull
 		public final ImmutableList<IRecipeCategory> recipeCategories;
 
 		public int recipeCategoryIndex;
 		public int pageIndex;
 		public int recipesPerPage;
 
-		public State(IFocus<?> focus, List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int pageIndex) {
+		public State(@Nullable IFocus<?> focus, List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int pageIndex) {
 			if (recipeCategories.isEmpty()) {
 				throw new IllegalStateException("Recipe categories cannot be empty.");
 			}
@@ -57,9 +57,8 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	public RecipeGuiLogic(IRecipeRegistry recipeRegistry, IRecipeLogicStateListener stateListener) {
 		this.recipeRegistry = recipeRegistry;
 		this.stateListener = stateListener;
-		IFocus focus = recipeRegistry.createFocus(IFocus.Mode.NONE, null);
 		List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories();
-		this.state = new State(focus, recipeCategories, 0, 0);
+		this.state = new State(null, recipeCategories, 0, 0);
 	}
 
 	@Override
@@ -131,8 +130,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 		final List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories();
 		final int recipeCategoryIndex = recipeCategories.indexOf(recipeCategory);
-		IFocus<Object> focus = recipeRegistry.createFocus(IFocus.Mode.NONE, null);
-		final State state = new State(focus, recipeCategories, recipeCategoryIndex, 0);
+		final State state = new State(null, recipeCategories, recipeCategoryIndex, 0);
 		setState(state);
 
 		return true;
@@ -149,8 +147,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			history.push(this.state);
 		}
 
-		IFocus<Object> focus = recipeRegistry.createFocus(IFocus.Mode.NONE, null);
-		final State state = new State(focus, recipeCategories, 0, 0);
+		final State state = new State(null, recipeCategories, 0, 0);
 		setState(state);
 
 		return true;
