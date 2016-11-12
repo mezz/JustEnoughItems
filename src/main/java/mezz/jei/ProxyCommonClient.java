@@ -138,8 +138,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		JeiRuntime runtime = Internal.getRuntime();
 		if (runtime != null) {
 			ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-			ItemFilter itemFilter = itemListOverlay.getItemFilter();
-			itemFilter.rebuild();
+			itemListOverlay.rebuildItemFilter();
 		}
 	}
 

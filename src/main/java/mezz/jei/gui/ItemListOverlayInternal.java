@@ -232,7 +232,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 		return false;
 	}
 
-	private void updateLayout() {
+	public void updateLayout() {
 		ImmutableList<IIngredientListElement> ingredientList = parent.getItemFilter().getIngredientList();
 		guiIngredientList.set(firstItemIndex, ingredientList);
 
@@ -556,9 +556,13 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 	}
 
 	public void setFilterText(String filterText) {
-		firstItemIndex = 0;
 		searchField.setText(filterText);
+		setToFirstPage();
 		updateLayout();
+	}
+
+	public static void setToFirstPage() {
+		firstItemIndex = 0;
 	}
 
 	public ImmutableList<ItemStack> getVisibleStacks() {
