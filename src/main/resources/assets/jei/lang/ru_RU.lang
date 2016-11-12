@@ -54,16 +54,16 @@ config.jei.interface.recipeAnimationsEnabled.comment=Показывать ани
 
 config.jei.search=Поиск
 config.jei.search.comment=Настройки, отвечающие за поиск.
-config.jei.search.atPrefixRequiredForModName=Использовать @ для имени мода
-config.jei.search.atPrefixRequiredForModName.comment=Требовать "@ИмяМода" для поиска по имени модификации вместо просто "ИмяМода".
-config.jei.search.prefixRequiredForTooltipSearch=Использовать # для всплывающей подсказки
-config.jei.search.prefixRequiredForTooltipSearch.comment=Использовать "#" перед словом для поиска всплывающих подсказок.
-config.jei.search.prefixRequiredForOreDictSearch=Использовать $ для словаря руд
-config.jei.search.prefixRequiredForOreDictSearch.comment=Использовать "$" перед словом для поиска имён словаря руд.
-config.jei.search.prefixRequiredForCreativeTabSearch=Использовать % для имени творческой вкладки
-config.jei.search.prefixRequiredForCreativeTabSearch.comment=Использовать "%" перед словом для поиска имён творческих вкладок.
-config.jei.search.prefixRequiredForColorSearch=Использовать ^ для цветов
-config.jei.search.prefixRequiredForColorSearch.comment=Использовать "^" перед словом для поиска предмета по цвету.
+config.jei.search.modNameSearchMode=@ИмяМода
+config.jei.search.modNameSearchMode.comment=Режим поиска по имени мода (префикс: @)
+config.jei.search.tooltipSearchMode=#ВсплывающаяПодсказка
+config.jei.search.tooltipSearchMode.comment=Режим поиска по всплывающей подсказке (префикс: #)
+config.jei.search.oreDictSearchMode=$СловарьРуд
+config.jei.search.oreDictSearchMode.comment=Режим поиска по имени в словаре руд (префикс: $)
+config.jei.search.creativeTabSearchMode=%ТворческаяВкладка
+config.jei.search.creativeTabSearchMode.comment=Режим поиска по имени творческой вкладки (префикс: %)
+config.jei.search.colorSearchMode=^Цвет
+config.jei.search.colorSearchMode.comment=Режим поиска по цвету предмета (префикс: ^)
 
 config.jei.advanced=Продвинутое
 config.jei.advanced.comment=Продвинутые настройки функций JEI.
