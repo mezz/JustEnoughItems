@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
-import mezz.jei.IngredientInformation;
 import mezz.jei.ItemFilter;
-import mezz.jei.JustEnoughItems;
 import mezz.jei.api.IItemListOverlay;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
@@ -101,12 +99,6 @@ public class ItemListOverlay implements IItemListOverlay {
 	public void highlightStacks(Collection<ItemStack> stacks) {
 		highlightedStacks.clear();
 		highlightedStacks.addAll(stacks);
-	}
-
-	@Override
-	public void refreshIngredients(List<Object> ingredients) {
-		IngredientInformation.clearCachedIngredients(ingredients);
-		JustEnoughItems.getProxy().reloadItemList();
 	}
 
 	public Set<ItemStack> getHighlightedStacks() {

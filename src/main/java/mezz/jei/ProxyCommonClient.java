@@ -134,8 +134,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		}
 	}
 
-	@Override
-	public void reloadItemList() {
+	private static void reloadItemList() {
 		JeiRuntime runtime = Internal.getRuntime();
 		if (runtime != null) {
 			ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
