@@ -74,7 +74,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 				saveHistory();
 			}
 		}
-		return handled && Config.setFilterText(getText());
+		return handled;
 	}
 
 	public boolean isMouseOver(int mouseX, int mouseY) {

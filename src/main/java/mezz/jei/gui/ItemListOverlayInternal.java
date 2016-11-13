@@ -491,12 +491,15 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 	@Override
 	public boolean onKeyPressed(char typedChar, int keyCode) {
 		if (hasKeyboardFocus()) {
-			boolean changed = searchField.textboxKeyTyped(typedChar, keyCode);
-			if (changed) {
-				firstItemIndex = 0;
-				updateLayout();
+			boolean handled = searchField.textboxKeyTyped(typedChar, keyCode);
+			if (handled) {
+				boolean changed = Config.setFilterText(searchField.getText());
+				if (changed) {
+					firstItemIndex = 0;
+					updateLayout();
+				}
 			}
-			return changed || ChatAllowedCharacters.isAllowedCharacter(typedChar);
+			return handled;
 		}
 		return false;
 	}
