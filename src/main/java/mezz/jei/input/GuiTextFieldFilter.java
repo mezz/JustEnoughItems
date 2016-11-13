@@ -15,8 +15,8 @@ import org.lwjgl.input.Keyboard;
 public class GuiTextFieldFilter extends GuiTextField {
 	private static final int MAX_HISTORY = 100;
 	private static final int maxSearchLength = 128;
+	private static final List<String> history = new LinkedList<String>();
 
-	private final List<String> history = new LinkedList<String>();
 	private final HoverChecker hoverChecker;
 	private final ItemFilter itemFilter;
 	private boolean previousKeyboardRepeatEnabled;
@@ -74,7 +74,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 				saveHistory();
 			}
 		}
-		return handled && Config.setFilterText(getText());
+		return handled;
 	}
 
 	public boolean isMouseOver(int mouseX, int mouseY) {
@@ -104,9 +104,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 				Keyboard.enableRepeatEvents(previousKeyboardRepeatEnabled);
 			}
 
-			if (!keyboardFocus) {
-				saveHistory();
-			}
+			saveHistory();
 		}
 	}
 

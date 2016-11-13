@@ -77,6 +77,15 @@ public class ItemListOverlay implements IItemListOverlay {
 		}
 	}
 
+	public void rebuildItemFilter() {
+		ItemFilter itemFilter = getItemFilter();
+		itemFilter.rebuild();
+		ItemListOverlayInternal.setToFirstPage();
+		if (internal != null) {
+			internal.updateLayout();
+		}
+	}
+
 	@Override
 	public String getFilterText() {
 		return Config.getFilterText();
