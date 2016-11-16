@@ -16,9 +16,13 @@ jei.tooltip.error.recipe.transfer.missing=アイテムがインベントリ内�
 jei.tooltip.error.recipe.transfer.inventory.full=インベントリが満杯です
 jei.tooltip.error.recipe.transfer.unknown=不明なエラー、ログを確認してください
 jei.tooltip.error.recipe.transfer.no.server=サーバーにJEIが導入されている必要があります
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=レシピが2x2ではありません。
+jei.tooltip.error.crash=ツールチップのエラーです。ログを参照してください。
 
 # Error Messages
 jei.chat.error.command.too.long=このコマンドを実行するにはJEIがサーバーに導入されている必要があります、バニラでは長すぎるため送ることができません。
+jei.chat.error.no.cheat.permission.1=JEIチートモードを使う権限を有していません。
+jei.chat.error.no.cheat.permission.2=権限はgiveコマンドが使用できるか、クリエイティブモードにあるプレイヤーに与えられます。
 
 # Key Bindings
 key.jei.toggleOverlay=アイテムリストの表示/非表示
@@ -71,6 +75,8 @@ config.jei.advanced.debugModeEnabled=デバッグモード
 config.jei.advanced.debugModeEnabled.comment=JEIの開発者にとってのみ有用です。大量のテスト用アイテムといくつかのデバッグ用レシピを追加します。
 config.jei.advanced.centerSearchBarEnabled=検索バーの中央配置
 config.jei.advanced.centerSearchBarEnabled.comment=JEI検索バーを中央下に移動します。
+config.jei.advanced.modNameFormat=Mod名の書式
+config.jei.advanced.modNameFormat.comment=JEIのGUIやツールチップにおいてどのようにMod名を表示するか指定します。空欄で無効。
 
 # Edit Mode
 gui.jei.editMode.description=JEIアイテムリストエディットモード:
