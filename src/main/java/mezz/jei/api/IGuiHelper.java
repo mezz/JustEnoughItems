@@ -12,7 +12,15 @@ import net.minecraft.util.ResourceLocation;
  */
 public interface IGuiHelper {
 
+	/**
+	 * Create a drawable from part of a standard 256x256 gui texture.
+	 */
 	IDrawableStatic createDrawable(ResourceLocation resourceLocation, int u, int v, int width, int height);
+
+	/**
+	 * Create a drawable from part of an arbitrary sized texture.
+	 */
+	IDrawableStatic createDrawable(ResourceLocation resourceLocation, int u, int v, int width, int height, int textureWidth, int textureHeight);
 
 	IDrawableStatic createDrawable(ResourceLocation resourceLocation, int u, int v, int width, int height, int paddingTop, int paddingBottom, int paddingLeft, int paddingRight);
 

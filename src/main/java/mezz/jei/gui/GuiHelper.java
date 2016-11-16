@@ -37,7 +37,16 @@ public class GuiHelper implements IGuiHelper {
 			Log.error("Null resourceLocation, returning blank drawable", new NullPointerException());
 			return createBlankDrawable(width, height);
 		}
-		return new DrawableResource(resourceLocation, u, v, width, height);
+		return new DrawableResource(resourceLocation, u, v, width, height, 0, 0, 0, 0, 256, 256);
+	}
+
+	@Override
+	public IDrawableStatic createDrawable(@Nullable ResourceLocation resourceLocation, int u, int v, int width, int height, int textureWidth, int textureHeight) {
+		if (resourceLocation == null) {
+			Log.error("Null resourceLocation, returning blank drawable", new NullPointerException());
+			return createBlankDrawable(width, height);
+		}
+		return new DrawableResource(resourceLocation, u, v, width, height, 0, 0, 0, 0, textureWidth, textureHeight);
 	}
 
 	@Override
@@ -46,7 +55,7 @@ public class GuiHelper implements IGuiHelper {
 			Log.error("Null resourceLocation, returning blank drawable", new NullPointerException());
 			return createBlankDrawable(width, height);
 		}
-		return new DrawableResource(resourceLocation, u, v, width, height, paddingTop, paddingBottom, paddingLeft, paddingRight);
+		return new DrawableResource(resourceLocation, u, v, width, height, paddingTop, paddingBottom, paddingLeft, paddingRight, 256, 256);
 	}
 
 	@Override

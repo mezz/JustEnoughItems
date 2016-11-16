@@ -2,12 +2,15 @@ package mezz.jei.gui;
 
 import mezz.jei.api.gui.IDrawableStatic;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.config.GuiUtils;
 
 public class DrawableResource implements IDrawableStatic {
 
 	private final ResourceLocation resourceLocation;
+	private final int textureWidth;
+	private final int textureHeight;
+
 	private final int u;
 	private final int v;
 	private final int width;
@@ -17,12 +20,10 @@ public class DrawableResource implements IDrawableStatic {
 	private final int paddingLeft;
 	private final int paddingRight;
 
-	public DrawableResource(ResourceLocation resourceLocation, int u, int v, int width, int height) {
-		this(resourceLocation, u, v, width, height, 0, 0, 0, 0);
-	}
-
-	public DrawableResource(ResourceLocation resourceLocation, int u, int v, int width, int height, int paddingTop, int paddingBottom, int paddingLeft, int paddingRight) {
+	public DrawableResource(ResourceLocation resourceLocation, int u, int v, int width, int height, int paddingTop, int paddingBottom, int paddingLeft, int paddingRight, int textureWidth, int textureHeight) {
 		this.resourceLocation = resourceLocation;
+		this.textureWidth = textureWidth;
+		this.textureHeight = textureHeight;
 
 		this.u = u;
 		this.v = v;
@@ -65,6 +66,6 @@ public class DrawableResource implements IDrawableStatic {
 		int v = this.v + maskTop;
 		int width = this.width - maskRight - maskLeft;
 		int height = this.height - maskBottom - maskTop;
-		GuiUtils.drawTexturedModalRect(x, y, u, v, width, height, 0);
+		Gui.drawModalRectWithCustomSizedTexture(x, y, u, v, width, height, textureWidth, textureHeight);
 	}
 }
