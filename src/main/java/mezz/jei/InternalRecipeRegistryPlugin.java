@@ -89,14 +89,13 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 			}
 
 			return recipes;
-		} else if (focus.getMode() == IFocus.Mode.OUTPUT) {
-			return recipeOutputMap.getRecipeWrappers(recipeCategory, ingredient);
 		} else {
-			return getRecipeWrappers(recipeCategory);
+			return recipeOutputMap.getRecipeWrappers(recipeCategory, ingredient);
 		}
 	}
 
-	private <T extends IRecipeWrapper> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory) {
+	@Override
+	public <T extends IRecipeWrapper> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory) {
 		//noinspection unchecked
 		List<T> recipeWrappers = (List<T>) recipeWrappersForCategories.get(recipeCategory);
 		return Collections.unmodifiableList(recipeWrappers);

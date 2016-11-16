@@ -26,4 +26,10 @@ public interface IRecipeRegistryPlugin {
 	 * This is used internally by JEI to implement {@link IRecipeRegistry#getRecipeWrappers(IRecipeCategory, IFocus)}.
 	 */
 	<T extends IRecipeWrapper, V> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, IFocus<V> focus);
+
+	/**
+	 * Returns a list of all Recipe Wrappers in the recipeCategory.
+	 * This is used internally by JEI to implement {@link IRecipeRegistry#getRecipeWrappers(IRecipeCategory)}.
+	 */
+	<T extends IRecipeWrapper> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory);
 }

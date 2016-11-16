@@ -53,7 +53,7 @@ public interface IRecipeRegistry {
 	 *
 	 * @since JEI 3.12.0
 	 */
-	<T extends IRecipeWrapper, V> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, @Nullable IFocus<V> focus);
+	<T extends IRecipeWrapper, V> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, IFocus<V> focus);
 
 	/**
 	 * Returns a list of Recipe Wrappers in recipeCategory.

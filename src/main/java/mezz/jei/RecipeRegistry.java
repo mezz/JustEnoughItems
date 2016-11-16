@@ -391,7 +391,23 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public <T extends IRecipeWrapper> List<T> getRecipeWrappers(@Nullable IRecipeCategory<T> recipeCategory) {
-		return getRecipeWrappers(recipeCategory, null);
+		if (recipeCategory == null) {
+			Log.error("Null recipeCategory", new NullPointerException());
+			return ImmutableList.of();
+		}
+
+		List<T> allRecipeWrappers = new ArrayList<T>();
+		for (IRecipeRegistryPlugin plugin : this.plugins) {
+			long start_time = System.currentTimeMillis();
+			List<T> recipeWrappers = plugin.getRecipeWrappers(recipeCategory);
+			long timeElapsed = System.currentTimeMillis() - start_time;
+			if (timeElapsed > 10) {
+				Log.warning("Recipe Wrapper lookup is slow: {} ms. {}", timeElapsed, plugin.getClass());
+			}
+			allRecipeWrappers.addAll(recipeWrappers);
+		}
+
+		return allRecipeWrappers;
 	}
 
 	@Override
