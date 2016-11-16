@@ -127,10 +127,21 @@ public class ProxyCommonClient extends ProxyCommon {
 		restartJEI(false);
 	}
 
-	private void restartJEI(boolean resourceReload) {
-		// check that JEI has been started before. if not, do nothing
-		if (this.starter.hasStarted()) {
-			this.starter.start(this.plugins, false, resourceReload);
+	private void restartJEI(final boolean resourceReload) {
+		Minecraft minecraft = Minecraft.getMinecraft();
+		if (minecraft.isCallingFromMinecraftThread()) {
+			// check that JEI has been started before. if not, do nothing
+			if (this.starter.hasStarted()) {
+				this.starter.start(this.plugins, false, resourceReload);
+			}
+		} else {
+			Log.error("A mod is trying to restart JEI from the wrong thread!", new RuntimeException());
+			minecraft.addScheduledTask(new Runnable() {
+				@Override
+				public void run() {
+					restartJEI(resourceReload);
+				}
+			});
 		}
 	}
 
