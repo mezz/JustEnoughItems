@@ -178,8 +178,13 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private void updateRecipes() {
 		final IRecipeCategory recipeCategory = getSelectedRecipeCategory();
 		IFocus<?> focus = state.focus;
-		//noinspection unchecked
-		this.recipes = recipeRegistry.getRecipeWrappers(recipeCategory, focus);
+		if (focus != null) {
+			//noinspection unchecked
+			this.recipes = recipeRegistry.getRecipeWrappers(recipeCategory, focus);
+		} else {
+			//noinspection unchecked
+			this.recipes = recipeRegistry.getRecipeWrappers(recipeCategory);
+		}
 	}
 
 	@Override
