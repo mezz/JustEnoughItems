@@ -38,8 +38,8 @@ public class PacketGiveItemStack extends PacketJei {
 
 				NBTTagCompound itemStackSerialized = buf.readNBTTagCompoundFromBuffer();
 				if (itemStackSerialized != null) {
-					ItemStack itemStack = ItemStack.loadItemStackFromNBT(itemStackSerialized);
-					if (itemStack != null) {
+					ItemStack itemStack = new ItemStack(itemStackSerialized);
+					if (!itemStack.func_190926_b()) {
 						if (CommandUtil.hasPermission(sender, itemStack)) {
 							CommandUtil.executeGive(sender, itemStack);
 						} else {

@@ -52,12 +52,12 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 			return null;
 		}
 
-		Item item = itemStack.getItem();
-		if (item == null) {
-			Log.error("Null item", new NullPointerException());
+		if (itemStack.func_190926_b()) {
+			Log.error("Invalid ItemStack", new IllegalArgumentException());
 			return null;
 		}
 
+		Item item = itemStack.getItem();
 		ISubtypeInterpreter nbtInterpreter = interpreters.get(item);
 		if (nbtInterpreter != null) {
 			return nbtInterpreter.getSubtypeInfo(itemStack);

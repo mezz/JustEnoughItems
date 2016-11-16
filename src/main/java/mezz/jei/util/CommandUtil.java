@@ -65,7 +65,7 @@ public class CommandUtil {
 		Map<String, ICommand> commands = commandManager.getCommands();
 		ICommand giveCommand = commands.get("give");
 		if (giveCommand != null && giveCommand.checkPermission(minecraftServer, sender)) {
-			String[] commandParameters = getGiveCommandParameters(sender, itemStack, itemStack.stackSize);
+			String[] commandParameters = getGiveCommandParameters(sender, itemStack, itemStack.func_190916_E());
 			CommandEvent event = new CommandEvent(giveCommand, sender, commandParameters);
 			if (MinecraftForge.EVENT_BUS.post(event)) {
 				Throwable exception = event.getException();
@@ -84,11 +84,11 @@ public class CommandUtil {
 		boolean addedToInventory = entityplayer.inventory.addItemStackToInventory(itemStack);
 
 		if (addedToInventory) {
-			entityplayer.worldObj.playSound(null, entityplayer.posX, entityplayer.posY, entityplayer.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((entityplayer.getRNG().nextFloat() - entityplayer.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+			entityplayer.world.playSound(null, entityplayer.posX, entityplayer.posY, entityplayer.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((entityplayer.getRNG().nextFloat() - entityplayer.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			entityplayer.inventoryContainer.detectAndSendChanges();
 		}
 
-		if (!addedToInventory || itemStack.stackSize > 0) {
+		if (!addedToInventory || itemStack.func_190916_E() > 0) {
 			EntityItem entityitem = entityplayer.dropItem(itemStack, false);
 			if (entityitem != null) {
 				entityitem.setNoPickupDelay();

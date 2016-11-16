@@ -100,10 +100,6 @@ public class ErrorUtil {
 			return "null";
 		}
 		Item item = itemStack.getItem();
-		if (item == null) {
-			return itemStack.stackSize + "x (null)";
-		}
-
 		final String itemName;
 		ResourceLocation registryName = item.getRegistryName();
 		if (registryName != null) {

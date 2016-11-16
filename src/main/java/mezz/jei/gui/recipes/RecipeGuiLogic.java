@@ -105,7 +105,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	private int getRecipeCategoryIndex(List<IRecipeCategory> recipeCategories) {
-		final Container container = Minecraft.getMinecraft().thePlayer.openContainer;
+		final Container container = Minecraft.getMinecraft().player.openContainer;
 		if (container == null) {
 			return 0;
 		}

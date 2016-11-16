@@ -23,10 +23,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionHelper;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.brewing.AbstractBrewingRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class BrewingRecipeMaker {
 	private final Set<Class> unhandledRecipeClasses = new HashSet<Class>();
@@ -90,7 +92,7 @@ public class BrewingRecipeMaker {
 		for (ItemStack potionInput : knownPotions) {
 			for (ItemStack potionIngredient : potionIngredients) {
 				ItemStack potionOutput = PotionHelper.doReaction(potionIngredient, potionInput.copy());
-				if (potionOutput == null) {
+				if (potionOutput.equals(potionInput)) {
 					continue;
 				}
 
@@ -101,9 +103,9 @@ public class BrewingRecipeMaker {
 					}
 
 					PotionType potionInputType = PotionUtils.getPotionFromItem(potionInput);
-					int inputId = PotionType.getID(potionInputType);
-					int outputId = PotionType.getID(potionOutputType);
-					if (inputId == outputId) {
+					ResourceLocation inputId = ForgeRegistries.POTION_TYPES.getKey(potionInputType);
+					ResourceLocation outputId = ForgeRegistries.POTION_TYPES.getKey(potionOutputType);
+					if (inputId.equals(outputId)) {
 						continue;
 					}
 				}

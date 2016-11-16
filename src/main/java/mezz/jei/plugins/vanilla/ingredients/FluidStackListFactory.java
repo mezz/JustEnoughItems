@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.block.Block;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -21,7 +22,7 @@ public class FluidStackListFactory {
 		Map<String, Fluid> registeredFluids = FluidRegistry.getRegisteredFluids();
 		for (Fluid fluid : registeredFluids.values()) {
 			Block fluidBlock = fluid.getBlock();
-			if (Item.getItemFromBlock(fluidBlock) == null) {
+			if (Item.getItemFromBlock(fluidBlock) == Items.field_190931_a) {
 				FluidStack fluidStack = new FluidStack(fluid, Fluid.BUCKET_VOLUME);
 				fluidStacks.add(fluidStack);
 			}

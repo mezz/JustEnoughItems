@@ -21,12 +21,11 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class StackHelper implements IStackHelper {
-	public static final String nullItemInStack = "Found an itemStack with a null item. This is an error from another mod.";
-
 	private final ISubtypeRegistry subtypeRegistry;
 	/**
 	 * Uids are cached during loading to improve startup performance.
@@ -98,8 +97,8 @@ public class StackHelper implements IStackHelper {
 				matchingItemResult.missingItems.add(key);
 			} else {
 				ItemStack matchingStack = availableItemStacks.get(matching);
-				matchingStack.stackSize--;
-				if (matchingStack.stackSize == 0) {
+				matchingStack.func_190918_g(1);
+				if (matchingStack.func_190916_E() == 0) {
 					availableItemStacks.remove(matching);
 				}
 				matchingItemResult.matchingItems.put(recipeSlotNumber, matching);
@@ -210,13 +209,10 @@ public class StackHelper implements IStackHelper {
 	@Override
 	public List<ItemStack> getSubtypes(@Nullable ItemStack itemStack) {
 		if (itemStack == null) {
-			Log.error("Null itemStack", new NullPointerException());
-			return Collections.emptyList();
+			throw new NullPointerException("Null itemStack");
 		}
 
-		Item item = itemStack.getItem();
-		if (item == null) {
-			Log.error("Null item in itemStack", new NullPointerException());
+		if (itemStack.func_190926_b()) {
 			return Collections.emptyList();
 		}
 
@@ -224,14 +220,14 @@ public class StackHelper implements IStackHelper {
 			return Collections.singletonList(itemStack);
 		}
 
-		return getSubtypes(item, itemStack.stackSize);
+		return getSubtypes(itemStack.getItem(), itemStack.func_190916_E());
 	}
 
 	public List<ItemStack> getSubtypes(final Item item, final int stackSize) {
 		List<ItemStack> itemStacks = new ArrayList<ItemStack>();
 
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
-			List<ItemStack> subItems = new ArrayList<ItemStack>();
+			NonNullList<ItemStack> subItems = NonNullList.func_191196_a();
 			try {
 				item.getSubItems(item, itemTab, subItems);
 			} catch (RuntimeException e) {
@@ -243,12 +239,12 @@ public class StackHelper implements IStackHelper {
 			for (ItemStack subItem : subItems) {
 				if (subItem == null) {
 					Log.warning("Found a null subItem of {}", item);
-				} else if (subItem.getItem() == null) {
-					Log.warning("Found a subItem of {} with a null item", item);
+				} else if (subItem.func_190926_b()) {
+					Log.warning("Found a subItem of {} with an invalid item", item);
 				} else {
-					if (subItem.stackSize != stackSize) {
+					if (subItem.func_190916_E() != stackSize) {
 						ItemStack subItemCopy = subItem.copy();
-						subItemCopy.stackSize = stackSize;
+						subItemCopy.func_190920_e(stackSize);
 						itemStacks.add(subItemCopy);
 					} else {
 						itemStacks.add(subItem);
@@ -365,8 +361,8 @@ public class StackHelper implements IStackHelper {
 		}
 
 		Item item = stack.getItem();
-		if (item == null) {
-			throw new NullPointerException(nullItemInStack);
+		if (stack.func_190926_b()) {
+			throw new IllegalArgumentException("Invalid Itemstack");
 		}
 
 		ResourceLocation itemName = item.getRegistryName();

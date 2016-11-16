@@ -33,7 +33,7 @@ public class JEIModConfigGui extends GuiConfig {
 			if (parentScreen != null) {
 				return parentScreen;
 			} else {
-				return new GuiInventory(parent.mc.thePlayer);
+				return new GuiInventory(parent.mc.player);
 			}
 		}
 		return parent;
@@ -42,7 +42,7 @@ public class JEIModConfigGui extends GuiConfig {
 	private static List<IConfigElement> getConfigElements() {
 		List<IConfigElement> configElements = new ArrayList<IConfigElement>();
 
-		if (Minecraft.getMinecraft().theWorld != null) {
+		if (Minecraft.getMinecraft().world != null) {
 			Configuration worldConfig = Config.getWorldConfig();
 			if (worldConfig != null) {
 				ConfigCategory categoryWorldConfig = worldConfig.getCategory(SessionData.getWorldUid());

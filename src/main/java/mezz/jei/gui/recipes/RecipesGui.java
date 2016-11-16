@@ -319,7 +319,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 				mc.displayGuiScreen(parentScreen);
 				parentScreen = null;
 			} else {
-				mc.thePlayer.closeScreen();
+				mc.player.closeScreen();
 			}
 			logic.clearHistory();
 		}
@@ -371,7 +371,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			RecipeLayout recipeLayout = recipeLayouts.get(recipeIndex);
 			boolean maxTransfer = GuiScreen.isShiftKeyDown();
 			Container container = getParentContainer();
-			if (container != null && RecipeTransferUtil.transferRecipe(container, recipeLayout, mc.thePlayer, maxTransfer)) {
+			if (container != null && RecipeTransferUtil.transferRecipe(container, recipeLayout, mc.player, maxTransfer)) {
 				close();
 			}
 		}
@@ -417,7 +417,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		buttonList.clear();
 		addButtons();
 
-		EntityPlayer player = mc.thePlayer;
+		EntityPlayer player = mc.player;
 		Container container = getParentContainer();
 
 		for (RecipeLayout recipeLayout : recipeLayouts) {

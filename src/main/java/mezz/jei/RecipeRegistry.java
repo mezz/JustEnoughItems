@@ -38,7 +38,6 @@ import mezz.jei.util.Ingredients;
 import mezz.jei.util.Log;
 import mezz.jei.util.RecipeCategoryComparator;
 import mezz.jei.util.RecipeMap;
-import mezz.jei.util.StackHelper;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
@@ -212,24 +211,10 @@ public class RecipeRegistry implements IRecipeRegistry {
 			addRecipeUnchecked(recipe, recipeCategory, recipeHandler);
 		} catch (RuntimeException e) {
 			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, recipeHandler);
-
-			// suppress the null item in stack exception, that information is redundant here.
-			String errorMessage = e.getMessage();
-			if (StackHelper.nullItemInStack.equals(errorMessage)) {
-				Log.error("Found a broken recipe: {}\n", recipeInfo);
-			} else {
-				Log.error("Found a broken recipe: {}\n", recipeInfo, e);
-			}
+			Log.error("Found a broken recipe: {}\n", recipeInfo, e);
 		} catch (LinkageError e) {
 			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, recipeHandler);
-
-			// suppress the null item in stack exception, that information is redundant here.
-			String errorMessage = e.getMessage();
-			if (StackHelper.nullItemInStack.equals(errorMessage)) {
-				Log.error("Found a broken recipe: {}\n", recipeInfo);
-			} else {
-				Log.error("Found a broken recipe: {}\n", recipeInfo, e);
-			}
+			Log.error("Found a broken recipe: {}\n", recipeInfo, e);
 		}
 	}
 

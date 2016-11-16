@@ -31,7 +31,7 @@ public class PacketDeletePlayerItem extends PacketJei {
 			ItemStack itemStack = buf.readItemStackFromBuffer();
 			ItemStack playerItem = player.inventory.getItemStack();
 			if (ItemStack.areItemStacksEqual(itemStack, playerItem)) {
-				player.inventory.setItemStack(null);
+				player.inventory.setItemStack(ItemStack.field_190927_a);
 			}
 		}
 	}

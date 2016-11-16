@@ -326,8 +326,8 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 
 	private boolean shouldShowDeleteItemTooltip(Minecraft minecraft) {
 		if (Config.isDeleteItemsInCheatModeActive()) {
-			EntityPlayer player = minecraft.thePlayer;
-			if (player.inventory.getItemStack() != null) {
+			EntityPlayer player = minecraft.player;
+			if (!player.inventory.getItemStack().func_190926_b()) {
 				return true;
 			}
 		}
@@ -408,10 +408,10 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 
 		if (Config.isDeleteItemsInCheatModeActive()) {
 			Minecraft minecraft = Minecraft.getMinecraft();
-			EntityPlayerSP player = minecraft.thePlayer;
+			EntityPlayerSP player = minecraft.player;
 			ItemStack itemStack = player.inventory.getItemStack();
-			if (itemStack != null) {
-				player.inventory.setItemStack(null);
+			if (!itemStack.func_190926_b()) {
+				player.inventory.setItemStack(ItemStack.field_190927_a);
 				PacketJei packet = new PacketDeletePlayerItem(itemStack);
 				JustEnoughItems.getProxy().sendPacketToServer(packet);
 				return true;

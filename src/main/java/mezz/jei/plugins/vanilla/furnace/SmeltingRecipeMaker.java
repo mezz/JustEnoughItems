@@ -18,9 +18,9 @@ public class SmeltingRecipeMaker {
 
 		List<SmeltingRecipe> recipes = new ArrayList<SmeltingRecipe>();
 
-		for (Map.Entry<ItemStack, ItemStack> itemStackItemStackEntry : smeltingMap.entrySet()) {
-			ItemStack input = itemStackItemStackEntry.getKey();
-			ItemStack output = itemStackItemStackEntry.getValue();
+		for (Map.Entry<ItemStack, ItemStack> entry : smeltingMap.entrySet()) {
+			ItemStack input = entry.getKey();
+			ItemStack output = entry.getValue();
 
 			List<ItemStack> inputs = stackHelper.getSubtypes(input);
 			SmeltingRecipe recipe = new SmeltingRecipe(inputs, output);

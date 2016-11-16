@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class BrewingRecipeWrapper extends BlankRecipeWrapper {
 	private final List<ItemStack> ingredients;
@@ -42,8 +43,8 @@ public class BrewingRecipeWrapper extends BlankRecipeWrapper {
 
 		PotionType typeIn = PotionUtils.getPotionFromItem(potionInput);
 		PotionType typeOut = PotionUtils.getPotionFromItem(potionOutput);
-		this.hashCode = Objects.hashCode(potionInput.getItem(), PotionType.getID(typeIn),
-				potionOutput.getItem(), PotionType.getID(typeOut),
+		this.hashCode = Objects.hashCode(potionInput.getItem(), ForgeRegistries.POTION_TYPES.getKey(typeIn),
+				potionOutput.getItem(), ForgeRegistries.POTION_TYPES.getKey(typeOut),
 				firstIngredient.getItem(), firstIngredient.getMetadata());
 	}
 
@@ -99,7 +100,7 @@ public class BrewingRecipeWrapper extends BlankRecipeWrapper {
 		}
 		PotionType type1 = PotionUtils.getPotionFromItem(potion1);
 		PotionType type2 = PotionUtils.getPotionFromItem(potion2);
-		return PotionType.getID(type1) == PotionType.getID(type2);
+		return ForgeRegistries.POTION_TYPES.getKey(type1).equals(ForgeRegistries.POTION_TYPES.getKey(type2));
 	}
 
 	public int getBrewingSteps() {

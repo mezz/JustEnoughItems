@@ -52,11 +52,11 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public String getModId(ItemStack ingredient) {
-		Item item = ingredient.getItem();
-		if (item == null) {
-			throw new NullPointerException("Null item in ItemStack");
+		if (ingredient.func_190926_b()) {
+			throw new IllegalArgumentException("Invalid ItemStack");
 		}
 
+		Item item = ingredient.getItem();
 		ResourceLocation itemName = item.getRegistryName();
 		if (itemName == null) {
 			String stackInfo = getErrorInfo(ingredient);

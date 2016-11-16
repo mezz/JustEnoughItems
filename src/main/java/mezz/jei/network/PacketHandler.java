@@ -68,7 +68,7 @@ public class PacketHandler {
 	public void onPacket(FMLNetworkEvent.ClientCustomPacketEvent event) {
 		PacketBuffer packetBuffer = new PacketBuffer(event.getPacket().payload());
 		Minecraft minecraft = Minecraft.getMinecraft();
-		EntityPlayer player = minecraft.thePlayer;
+		EntityPlayer player = minecraft.player;
 		IPacketJeiHandler packetHandler;
 
 		try {

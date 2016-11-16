@@ -24,7 +24,7 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 		Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
 		if (slotUnderMouse != null) {
 			ItemStack stack = slotUnderMouse.getStack();
-			if (stack != null) {
+			if (!stack.func_190926_b()) {
 				return new ClickedIngredient<ItemStack>(stack);
 			}
 		}

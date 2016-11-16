@@ -17,6 +17,9 @@ public class UniqueItemStackListBuilder {
 	}
 
 	public void add(ItemStack itemStack) {
+		if (itemStack.func_190926_b()) {
+			return;
+		}
 		try {
 			String uid = stackHelper.getUniqueIdentifierForStack(itemStack);
 			if (!ingredientUids.contains(uid)) {

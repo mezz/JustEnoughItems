@@ -16,8 +16,8 @@ public class ShapedRecipesWrapper extends BlankRecipeWrapper implements IShapedC
 	public ShapedRecipesWrapper(ShapedRecipes recipe) {
 		this.recipe = recipe;
 		for (ItemStack itemStack : this.recipe.recipeItems) {
-			if (itemStack != null && itemStack.stackSize != 1) {
-				itemStack.stackSize = 1;
+			if (itemStack != null && itemStack.func_190916_E() != 1) {
+				itemStack.func_190920_e(1);
 			}
 		}
 	}

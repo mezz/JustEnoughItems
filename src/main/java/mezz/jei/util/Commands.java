@@ -5,6 +5,7 @@ import mezz.jei.config.SessionData;
 import mezz.jei.network.packets.PacketGiveItemStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -30,7 +31,7 @@ public class Commands {
 	public static void giveStack(ItemStack itemStack, int amount) {
 		if (SessionData.isJeiOnServer()) {
 			ItemStack sendStack = itemStack.copy();
-			sendStack.stackSize = amount;
+			sendStack.func_190920_e(amount);
 			PacketGiveItemStack packet = new PacketGiveItemStack(sendStack);
 			JustEnoughItems.getProxy().sendPacketToServer(packet);
 		} else {
@@ -42,13 +43,13 @@ public class Commands {
 	 * Fallback for when JEI is not on the server, tries to use the /give command.
 	 */
 	private static void giveStackVanilla(ItemStack itemStack, int amount) {
-		Item item = itemStack.getItem();
-		if (item == null) {
+		if (itemStack.func_190926_b()) {
 			String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
-			Log.error("Null item in itemStack: " + stackInfo, new NullPointerException());
+			Log.error("Invalid itemStack: " + stackInfo, new IllegalArgumentException());
 			return;
 		}
 
+		Item item = itemStack.getItem();
 		ResourceLocation itemResourceLocation = item.getRegistryName();
 		if (itemResourceLocation == null) {
 			String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
@@ -56,7 +57,7 @@ public class Commands {
 			return;
 		}
 
-		EntityPlayerSP sender = Minecraft.getMinecraft().thePlayer;
+		EntityPlayerSP sender = Minecraft.getMinecraft().player;
 		String[] commandParameters = CommandUtil.getGiveCommandParameters(sender, itemStack, amount);
 		String fullCommand = "/give " + StringUtils.join(commandParameters, " ");
 		sendChatMessage(sender, fullCommand);
@@ -68,11 +69,11 @@ public class Commands {
 		} else {
 			ITextComponent errorMessage = new TextComponentTranslation("jei.chat.error.command.too.long");
 			errorMessage.getStyle().setColor(TextFormatting.RED);
-			sender.addChatComponentMessage(errorMessage);
+			sender.addChatComponentMessage(errorMessage, false);
 
 			ITextComponent chatMessageComponent = new TextComponentString(chatMessage);
 			chatMessageComponent.getStyle().setColor(TextFormatting.RED);
-			sender.addChatComponentMessage(chatMessageComponent);
+			sender.addChatComponentMessage(chatMessageComponent, false);
 		}
 	}
 }

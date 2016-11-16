@@ -79,6 +79,11 @@ public class FakeClientWorld extends World {
 			public String makeString() {
 				return "";
 			}
+
+			@Override
+			public boolean func_191062_e(int p_191062_1_, int p_191062_2_) {
+				return false;
+			}
 		};
 	}
 

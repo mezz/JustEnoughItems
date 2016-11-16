@@ -11,8 +11,10 @@ import mezz.jei.util.Log;
 import mezz.jei.util.StackHelper;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class ItemStackListFactory {
@@ -26,7 +28,7 @@ public class ItemStackListFactory {
 		final Set<String> itemNameSet = new HashSet<String>();
 
 		for (CreativeTabs creativeTab : CreativeTabs.CREATIVE_TAB_ARRAY) {
-			List<ItemStack> creativeTabItemStacks = new ArrayList<ItemStack>();
+			NonNullList<ItemStack> creativeTabItemStacks = NonNullList.func_191196_a();
 			try {
 				creativeTab.displayAllRelevantItems(creativeTabItemStacks);
 			} catch (RuntimeException e) {
@@ -37,8 +39,8 @@ public class ItemStackListFactory {
 			for (ItemStack itemStack : creativeTabItemStacks) {
 				if (itemStack == null) {
 					Log.error("Found a null itemStack in creative tab: {}", creativeTab);
-				} else if (itemStack.getItem() == null) {
-					Log.error("Found a null item in an itemStack from creative tab: {}", creativeTab);
+				} else if (itemStack.func_190926_b()) {
+					Log.error("Found an invalid item in an itemStack from creative tab: {}", creativeTab);
 				} else {
 					addItemStack(stackHelper, itemStack, itemList, itemNameSet);
 				}
@@ -75,12 +77,12 @@ public class ItemStackListFactory {
 		}
 
 		Item item = Item.getItemFromBlock(block);
-		if (item == null) {
+		if (item == Items.field_190931_a) {
 			return;
 		}
 
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
-			List<ItemStack> subBlocks = new ArrayList<ItemStack>();
+			NonNullList<ItemStack> subBlocks = NonNullList.func_191196_a();
 			try {
 				block.getSubBlocks(item, itemTab, subBlocks);
 			} catch (RuntimeException e) {
@@ -94,8 +96,8 @@ public class ItemStackListFactory {
 			for (ItemStack subBlock : subBlocks) {
 				if (subBlock == null) {
 					Log.error("Found null subBlock of {}", block);
-				} else if (subBlock.getItem() == null) {
-					Log.error("Found subBlock of {} with null item", block);
+				} else if (subBlock.func_190926_b()) {
+					Log.error("Found subBlock of {} with invalid item", block);
 				} else {
 					addItemStack(stackHelper, subBlock, itemList, itemNameSet);
 				}

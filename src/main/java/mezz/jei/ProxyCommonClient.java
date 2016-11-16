@@ -116,7 +116,7 @@ public class ProxyCommonClient extends ProxyCommon {
 
 	@SubscribeEvent
 	public void onEntityJoinedWorld(EntityJoinWorldEvent event) {
-		if (event.getWorld().isRemote && !SessionData.hasJoinedWorld() && Minecraft.getMinecraft().thePlayer != null) {
+		if (event.getWorld().isRemote && !SessionData.hasJoinedWorld() && Minecraft.getMinecraft().player != null) {
 			SessionData.setJoinedWorld();
 			Config.syncWorldConfig();
 		}

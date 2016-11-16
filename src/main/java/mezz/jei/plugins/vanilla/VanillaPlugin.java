@@ -53,6 +53,7 @@ import net.minecraft.item.ItemBanner;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
 @JEIPlugin
@@ -79,7 +80,8 @@ public class VanillaPlugin extends BlankModPlugin {
 			@Nullable
 			@Override
 			public String getSubtypeInfo(ItemStack itemStack) {
-				return ItemMonsterPlacer.getEntityIdFromItem(itemStack);
+				ResourceLocation resourceLocation = ItemMonsterPlacer.func_190908_h(itemStack);
+				return resourceLocation == null ? null : resourceLocation.toString();
 			}
 		});
 	}

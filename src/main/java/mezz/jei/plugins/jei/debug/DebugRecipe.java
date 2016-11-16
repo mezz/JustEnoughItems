@@ -80,7 +80,7 @@ public class DebugRecipe extends BlankRecipeWrapper {
 	@Override
 	public boolean handleClick(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
 		if (mouseButton == 0 && button.mousePressed(minecraft, mouseX, mouseY)) {
-			GuiScreen screen = new GuiInventory(minecraft.thePlayer);
+			GuiScreen screen = new GuiInventory(minecraft.player);
 			minecraft.displayGuiScreen(screen);
 
 			IJeiRuntime runtime = JEIInternalPlugin.jeiRuntime;

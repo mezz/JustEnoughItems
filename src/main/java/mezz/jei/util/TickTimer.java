@@ -19,7 +19,7 @@ public class TickTimer implements ITickTimer {
 
 	@Override
 	public int getValue() {
-		long worldTime = Minecraft.getMinecraft().theWorld.getTotalWorldTime();
+		long worldTime = Minecraft.getMinecraft().world.getTotalWorldTime();
 		long ticksPassed = worldTime - lastUpdateWorldTime;
 		lastUpdateWorldTime = worldTime;
 		tickCount += ticksPassed;

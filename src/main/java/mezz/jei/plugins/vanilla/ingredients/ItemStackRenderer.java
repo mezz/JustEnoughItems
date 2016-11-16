@@ -32,7 +32,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 
 	@Override
 	public List<String> getTooltip(Minecraft minecraft, ItemStack ingredient) {
-		EntityPlayer player = minecraft.thePlayer;
+		EntityPlayer player = minecraft.player;
 		if (player == null) {
 			player = FakeClientPlayer.getInstance();
 		}

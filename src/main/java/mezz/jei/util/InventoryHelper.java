@@ -16,28 +16,27 @@ public class InventoryHelper {
 				final Slot slot = container.getSlot(slotIndex);
 				final ItemStack inventoryStack = slot.getStack();
 				// Check that the slot's contents are stackable with this stack
-				if (inventoryStack != null &&
-						inventoryStack.getItem() != null &&
+				if (!inventoryStack.func_190926_b() &&
 						inventoryStack.isStackable() &&
 						inventoryStack.isItemEqual(stack) &&
 						ItemStack.areItemStackTagsEqual(inventoryStack, stack)) {
 
-					final int remain = stack.stackSize - added;
+					final int remain = stack.func_190916_E() - added;
 					final int maxStackSize = Math.min(slot.getItemStackLimit(inventoryStack), inventoryStack.getMaxStackSize());
-					final int space = maxStackSize - inventoryStack.stackSize;
+					final int space = maxStackSize - inventoryStack.func_190916_E();
 					if (space > 0) {
 
 						// Enough space
 						if (space >= remain) {
 							if (doAdd) {
-								inventoryStack.stackSize += remain;
+								inventoryStack.func_190917_f(remain);
 							}
-							return stack.stackSize;
+							return stack.func_190916_E();
 						}
 
 						// Not enough space
 						if (doAdd) {
-							inventoryStack.stackSize = inventoryStack.getMaxStackSize();
+							inventoryStack.func_190920_e(inventoryStack.getMaxStackSize());
 						}
 
 						added += space;
@@ -46,7 +45,7 @@ public class InventoryHelper {
 			}
 		}
 
-		if (added >= stack.stackSize) {
+		if (added >= stack.func_190916_E()) {
 			return added;
 		}
 
@@ -54,13 +53,13 @@ public class InventoryHelper {
 			if (slotIndex >= 0 && slotIndex < container.inventorySlots.size()) {
 				final Slot slot = container.getSlot(slotIndex);
 				final ItemStack inventoryStack = slot.getStack();
-				if (inventoryStack == null) {
+				if (!inventoryStack.func_190926_b()) {
 					if (doAdd) {
 						ItemStack stackToAdd = stack.copy();
-						stackToAdd.stackSize = stack.stackSize - added;
+						stackToAdd.func_190920_e(stack.func_190916_E() - added);
 						slot.putStack(stackToAdd);
 					}
-					return stack.stackSize;
+					return stack.func_190916_E();
 				}
 			}
 		}

@@ -15,8 +15,8 @@ public class ShapelessRecipesWrapper extends AbstractShapelessRecipeWrapper {
 		for (Object input : this.recipe.recipeItems) {
 			if (input instanceof ItemStack) {
 				ItemStack itemStack = (ItemStack) input;
-				if (itemStack.stackSize != 1) {
-					itemStack.stackSize = 1;
+				if (itemStack.func_190916_E() != 1) {
+					itemStack.func_190920_e(1);
 				}
 			}
 		}

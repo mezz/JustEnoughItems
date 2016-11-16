@@ -106,9 +106,8 @@ public class ModRegistry implements IModRegistry {
 			return;
 		}
 
-		if (craftingItem.getItem() == null) {
-			NullPointerException e = new NullPointerException();
-			Log.error("Tried to add a RecipeCategoryCraftingItem with null item in the craftingItem.", e);
+		if (craftingItem.func_190926_b()) {
+			Log.error("Tried to add a RecipeCategoryCraftingItem with invalid craftingItem.", new IllegalArgumentException());
 			return;
 		}
 
