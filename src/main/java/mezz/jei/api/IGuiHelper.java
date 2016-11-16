@@ -19,6 +19,7 @@ public interface IGuiHelper {
 
 	/**
 	 * Create a drawable from part of an arbitrary sized texture.
+	 * @since JEI 4.0.1
 	 */
 	IDrawableStatic createDrawable(ResourceLocation resourceLocation, int u, int v, int width, int height, int textureWidth, int textureHeight);
 
