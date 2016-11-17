@@ -132,6 +132,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		if (minecraft.isCallingFromMinecraftThread()) {
 			// check that JEI has been started before. if not, do nothing
 			if (this.starter.hasStarted()) {
+				Log.info("Restarting JEI.", new RuntimeException());
 				this.starter.start(this.plugins, false, resourceReload);
 			}
 		} else {
