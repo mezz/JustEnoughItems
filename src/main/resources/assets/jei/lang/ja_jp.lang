@@ -16,9 +16,13 @@ jei.tooltip.error.recipe.transfer.missing=アイテムがインベントリ内�
 jei.tooltip.error.recipe.transfer.inventory.full=インベントリが満杯です
 jei.tooltip.error.recipe.transfer.unknown=不明なエラー、ログを確認してください
 jei.tooltip.error.recipe.transfer.no.server=サーバーにJEIが導入されている必要があります
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=レシピが2x2ではありません。
+jei.tooltip.error.crash=ツールチップのエラーです。ログを参照してください。
 
 # Error Messages
 jei.chat.error.command.too.long=このコマンドを実行するにはJEIがサーバーに導入されている必要があります、バニラでは長すぎるため送ることができません。
+jei.chat.error.no.cheat.permission.1=JEIチートモードを使う権限を有していません。
+jei.chat.error.no.cheat.permission.2=権限はgiveコマンドが使用できるか、クリエイティブモードにあるプレイヤーに与えられます。
 
 # Key Bindings
 key.jei.toggleOverlay=アイテムリストの表示/非表示
@@ -49,17 +53,17 @@ config.jei.interface.recipeAnimationsEnabled=レシピのアニメーション
 config.jei.interface.recipeAnimationsEnabled.comment=レシピをアニメーションします (かまどの火、 プログレスバー、 等々)
 
 config.jei.search=検索の設定
-config.jei.search.comment=検索バーに関係する設定。
-config.jei.search.atPrefixRequiredForModName=Mod名フィルタに@を要する
-config.jei.search.atPrefixRequiredForModName.comment=Mod名の検索で単語の前に"@"を必要とします。
-config.jei.search.prefixRequiredForTooltipSearch=ツールチップフィルタに#を要する
-config.jei.search.prefixRequiredForTooltipSearch.comment=ツールチップの検索で単語の前に"#"を必要とします。
-config.jei.search.prefixRequiredForOreDictSearch=鉱石辞書フィルタに$を要する
-config.jei.search.prefixRequiredForOreDictSearch.comment=鉱石辞書名の検索で単語の前に"$"を必要とします。
-config.jei.search.prefixRequiredForCreativeTabSearch=クリエイティブタブフィルタに%%を要する
-config.jei.search.prefixRequiredForCreativeTabSearch.comment=クリエイティブタブ名の検索で単語の前に"%"を必要とします。
-config.jei.search.prefixRequiredForColorSearch=色フィルタに^を要する
-config.jei.search.prefixRequiredForColorSearch.comment=アイテムの色の検索で単語の前に"^"を必要とします。
+config.jei.search.comment=検索バーに関する設定。
+config.jei.search.modNameSearchMode=@Mod名
+config.jei.search.modNameSearchMode.comment=Mod名検索 (prefix: @)
+config.jei.search.tooltipSearchMode=#ツールチップ
+config.jei.search.tooltipSearchMode.comment=ツールチップ検索 (prefix: #)
+config.jei.search.oreDictSearchMode=$鉱石辞書
+config.jei.search.oreDictSearchMode.comment=鉱石辞書名検索 (prefix: $)
+config.jei.search.creativeTabSearchMode=%%クリエイティブタブ
+config.jei.search.creativeTabSearchMode.comment=クリエイティブタブ名検索 (prefix: %)
+config.jei.search.colorSearchMode=^色
+config.jei.search.colorSearchMode.comment=アイテム色検索 (prefix: ^)
 
 config.jei.advanced=高度な設定
 config.jei.advanced.comment=JEIの機能を変更する高度な設定。
@@ -71,6 +75,8 @@ config.jei.advanced.debugModeEnabled=デバッグモード
 config.jei.advanced.debugModeEnabled.comment=JEIの開発者にとってのみ有用です。大量のテスト用アイテムといくつかのデバッグ用レシピを追加します。
 config.jei.advanced.centerSearchBarEnabled=検索バーの中央配置
 config.jei.advanced.centerSearchBarEnabled.comment=JEI検索バーを中央下に移動します。
+config.jei.advanced.modNameFormat=Mod名の書式
+config.jei.advanced.modNameFormat.comment=JEIのGUIやツールチップにおいてどのようにMod名を表示するか指定します。空欄で無効。
 
 # Edit Mode
 gui.jei.editMode.description=JEIアイテムリストエディットモード:
