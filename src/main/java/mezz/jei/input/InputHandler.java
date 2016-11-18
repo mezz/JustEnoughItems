@@ -17,12 +17,11 @@ import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.util.Commands;
 import mezz.jei.util.MouseHelper;
+import mezz.jei.util.ReflectionUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiRepair;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -243,14 +242,10 @@ public class InputHandler {
 
 	private boolean isContainerTextFieldFocused() {
 		GuiScreen gui = Minecraft.getMinecraft().currentScreen;
-		GuiTextField textField = null;
-
-		if (gui instanceof GuiContainerCreative) {
-			textField = ((GuiContainerCreative) gui).searchField;
-		} else if (gui instanceof GuiRepair) {
-			textField = ((GuiRepair) gui).nameField;
+		if (gui == null) {
+			return false;
 		}
-
+		GuiTextField textField = ReflectionUtil.getFieldWithClass(gui, GuiTextField.class);
 		return textField != null && textField.getVisible() && textField.isEnabled && textField.isFocused();
 	}
 
