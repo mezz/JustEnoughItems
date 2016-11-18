@@ -17,7 +17,7 @@ public class UniqueItemStackListBuilder {
 	}
 
 	public void add(ItemStack itemStack) {
-		if (itemStack.func_190926_b()) {
+		if (itemStack.isEmpty()) {
 			return;
 		}
 		try {

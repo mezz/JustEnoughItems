@@ -71,7 +71,7 @@ public class FakeClientWorld extends World {
 			}
 
 			@Override
-			public boolean unloadQueuedChunks() {
+			public boolean tick() {
 				return false;
 			}
 
@@ -81,7 +81,7 @@ public class FakeClientWorld extends World {
 			}
 
 			@Override
-			public boolean func_191062_e(int p_191062_1_, int p_191062_2_) {
+			public boolean isChunkGeneratedAt(int p_191062_1_, int p_191062_2_) {
 				return false;
 			}
 		};

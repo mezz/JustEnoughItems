@@ -52,7 +52,7 @@ public class CommandUtil {
 	public static void writeChatMessage(EntityPlayer player, String translationKey, TextFormatting color) {
 		TextComponentTranslation component = new TextComponentTranslation(translationKey);
 		component.getStyle().setColor(color);
-		player.addChatMessage(component);
+		player.sendMessage(component);
 	}
 
 	public static boolean hasPermission(EntityPlayerMP sender, ItemStack itemStack) {
@@ -65,7 +65,7 @@ public class CommandUtil {
 		Map<String, ICommand> commands = commandManager.getCommands();
 		ICommand giveCommand = commands.get("give");
 		if (giveCommand != null && giveCommand.checkPermission(minecraftServer, sender)) {
-			String[] commandParameters = getGiveCommandParameters(sender, itemStack, itemStack.func_190916_E());
+			String[] commandParameters = getGiveCommandParameters(sender, itemStack, itemStack.getCount());
 			CommandEvent event = new CommandEvent(giveCommand, sender, commandParameters);
 			if (MinecraftForge.EVENT_BUS.post(event)) {
 				Throwable exception = event.getException();
@@ -76,7 +76,7 @@ public class CommandUtil {
 			}
 			return true;
 		} else {
-			return sender.canCommandSenderUseCommand(minecraftServer.getOpPermissionLevel(), "give");
+			return sender.canUseCommand(minecraftServer.getOpPermissionLevel(), "give");
 		}
 	}
 
@@ -88,7 +88,7 @@ public class CommandUtil {
 			entityplayer.inventoryContainer.detectAndSendChanges();
 		}
 
-		if (!addedToInventory || itemStack.func_190916_E() > 0) {
+		if (!addedToInventory || itemStack.getCount() > 0) {
 			EntityItem entityitem = entityplayer.dropItem(itemStack, false);
 			if (entityitem != null) {
 				entityitem.setNoPickupDelay();

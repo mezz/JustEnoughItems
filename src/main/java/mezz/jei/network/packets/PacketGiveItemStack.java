@@ -27,7 +27,7 @@ public class PacketGiveItemStack extends PacketJei {
 	@Override
 	public void writePacketData(PacketBuffer buf) {
 		NBTTagCompound nbt = itemStack.serializeNBT();
-		buf.writeNBTTagCompoundToBuffer(nbt);
+		buf.writeCompoundTag(nbt);
 	}
 
 	public static class Handler implements IPacketJeiHandler {
@@ -36,10 +36,10 @@ public class PacketGiveItemStack extends PacketJei {
 			if (player instanceof EntityPlayerMP) {
 				EntityPlayerMP sender = (EntityPlayerMP) player;
 
-				NBTTagCompound itemStackSerialized = buf.readNBTTagCompoundFromBuffer();
+				NBTTagCompound itemStackSerialized = buf.readCompoundTag();
 				if (itemStackSerialized != null) {
 					ItemStack itemStack = new ItemStack(itemStackSerialized);
-					if (!itemStack.func_190926_b()) {
+					if (!itemStack.isEmpty()) {
 						if (CommandUtil.hasPermission(sender, itemStack)) {
 							CommandUtil.executeGive(sender, itemStack);
 						} else {

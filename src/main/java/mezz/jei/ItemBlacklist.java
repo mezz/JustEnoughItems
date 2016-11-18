@@ -27,8 +27,8 @@ public class ItemBlacklist implements IItemBlacklist {
 			Log.error("Null itemStack", new NullPointerException());
 			return;
 		}
-		if (itemStack.func_190926_b()) {
-			Log.error("Invalid itemStack", new IllegalArgumentException());
+		if (itemStack.isEmpty()) {
+			Log.error("Empty itemStack", new IllegalArgumentException());
 			return;
 		}
 
@@ -42,8 +42,8 @@ public class ItemBlacklist implements IItemBlacklist {
 			Log.error("Null itemStack", new NullPointerException());
 			return;
 		}
-		if (itemStack.func_190926_b()) {
-			Log.error("Invalid itemStack", new IllegalArgumentException());
+		if (itemStack.isEmpty()) {
+			Log.error("Empty itemStack", new IllegalArgumentException());
 			return;
 		}
 
@@ -57,8 +57,8 @@ public class ItemBlacklist implements IItemBlacklist {
 			Log.error("Null itemStack", new NullPointerException());
 			return false;
 		}
-		if (itemStack.func_190926_b()) {
-			Log.error("Invalid itemStack", new IllegalArgumentException());
+		if (itemStack.isEmpty()) {
+			Log.error("Empty itemStack", new IllegalArgumentException());
 			return false;
 		}
 

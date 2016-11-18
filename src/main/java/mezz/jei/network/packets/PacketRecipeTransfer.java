@@ -32,20 +32,20 @@ public class PacketRecipeTransfer extends PacketJei {
 
 	@Override
 	public void writePacketData(PacketBuffer buf) {
-		buf.writeVarIntToBuffer(recipeMap.size());
+		buf.writeVarInt(recipeMap.size());
 		for (Map.Entry<Integer, Integer> recipeMapEntry : recipeMap.entrySet()) {
-			buf.writeVarIntToBuffer(recipeMapEntry.getKey());
-			buf.writeVarIntToBuffer(recipeMapEntry.getValue());
+			buf.writeVarInt(recipeMapEntry.getKey());
+			buf.writeVarInt(recipeMapEntry.getValue());
 		}
 
-		buf.writeVarIntToBuffer(craftingSlots.size());
+		buf.writeVarInt(craftingSlots.size());
 		for (Integer craftingSlot : craftingSlots) {
-			buf.writeVarIntToBuffer(craftingSlot);
+			buf.writeVarInt(craftingSlot);
 		}
 
-		buf.writeVarIntToBuffer(inventorySlots.size());
+		buf.writeVarInt(inventorySlots.size());
 		for (Integer inventorySlot : inventorySlots) {
-			buf.writeVarIntToBuffer(inventorySlot);
+			buf.writeVarInt(inventorySlot);
 		}
 
 		buf.writeBoolean(maxTransfer);
@@ -54,25 +54,25 @@ public class PacketRecipeTransfer extends PacketJei {
 	public static class Handler implements IPacketJeiHandler {
 		@Override
 		public void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
-			int recipeMapSize = buf.readVarIntFromBuffer();
+			int recipeMapSize = buf.readVarInt();
 			Map<Integer, Integer> recipeMap = new HashMap<Integer, Integer>(recipeMapSize);
 			for (int i = 0; i < recipeMapSize; i++) {
-				int slotIndex = buf.readVarIntFromBuffer();
-				int recipeItem = buf.readVarIntFromBuffer();
+				int slotIndex = buf.readVarInt();
+				int recipeItem = buf.readVarInt();
 				recipeMap.put(slotIndex, recipeItem);
 			}
 
-			int craftingSlotsSize = buf.readVarIntFromBuffer();
+			int craftingSlotsSize = buf.readVarInt();
 			List<Integer> craftingSlots = new ArrayList<Integer>(craftingSlotsSize);
 			for (int i = 0; i < craftingSlotsSize; i++) {
-				int slotIndex = buf.readVarIntFromBuffer();
+				int slotIndex = buf.readVarInt();
 				craftingSlots.add(slotIndex);
 			}
 
-			int inventorySlotsSize = buf.readVarIntFromBuffer();
+			int inventorySlotsSize = buf.readVarInt();
 			List<Integer> inventorySlots = new ArrayList<Integer>(inventorySlotsSize);
 			for (int i = 0; i < inventorySlotsSize; i++) {
-				int slotIndex = buf.readVarIntFromBuffer();
+				int slotIndex = buf.readVarInt();
 				inventorySlots.add(slotIndex);
 			}
 			boolean maxTransfer = buf.readBoolean();

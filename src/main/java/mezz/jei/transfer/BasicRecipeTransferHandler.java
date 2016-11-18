@@ -78,7 +78,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 
 		for (Slot slot : craftingSlots.values()) {
 			final ItemStack stack = slot.getStack();
-			if (!stack.func_190926_b()) {
+			if (!stack.isEmpty()) {
 				if (!slot.canTakeStack(player)) {
 					Log.error("Recipe Transfer helper {} does not work for container {}. Player can't move item out of Crafting Slot number {}", transferHelper.getClass(), container.getClass(), slot.slotNumber);
 					return handlerHelper.createInternalError();
@@ -90,7 +90,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 
 		for (Slot slot : inventorySlots.values()) {
 			final ItemStack stack = slot.getStack();
-			if (!stack.func_190926_b()) {
+			if (!stack.isEmpty()) {
 				availableItemStacks.put(slot.slotNumber, stack.copy());
 			} else {
 				emptySlotCount++;

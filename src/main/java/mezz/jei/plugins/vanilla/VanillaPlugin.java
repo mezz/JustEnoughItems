@@ -80,7 +80,7 @@ public class VanillaPlugin extends BlankModPlugin {
 			@Nullable
 			@Override
 			public String getSubtypeInfo(ItemStack itemStack) {
-				ResourceLocation resourceLocation = ItemMonsterPlacer.func_190908_h(itemStack);
+				ResourceLocation resourceLocation = ItemMonsterPlacer.getNamedIdFrom(itemStack);
 				return resourceLocation == null ? null : resourceLocation.toString();
 			}
 		});

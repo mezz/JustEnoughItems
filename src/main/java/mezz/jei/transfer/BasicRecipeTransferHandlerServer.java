@@ -25,11 +25,11 @@ public class BasicRecipeTransferHandlerServer {
 		for (Map.Entry<Integer, Integer> entry : slotIdMap.entrySet()) {
 			Slot slot = container.getSlot(entry.getValue());
 			final ItemStack slotStack = slot.getStack();
-			if (slotStack.func_190926_b()) {
+			if (slotStack.isEmpty()) {
 				return;
 			}
 			ItemStack stack = slotStack.copy();
-			stack.func_190920_e(1);
+			stack.setCount(1);
 			slotMap.put(entry.getKey(), stack);
 		}
 
@@ -74,7 +74,7 @@ public class BasicRecipeTransferHandlerServer {
 			Slot slot = container.getSlot(slotNumber);
 
 			ItemStack stack = entry.getValue();
-			stack.func_190920_e(stack.func_190916_E() * removedSets);
+			stack.setCount(stack.getCount() * removedSets);
 			if (slot.isItemValid(stack)) {
 				slot.putStack(stack);
 			} else {
@@ -85,7 +85,7 @@ public class BasicRecipeTransferHandlerServer {
 		// put cleared items back into the inventory
 		for (ItemStack oldCraftingItem : clearedCraftingItems) {
 			int added = InventoryHelper.addStack(container, inventorySlots, oldCraftingItem, true);
-			if (added < oldCraftingItem.func_190916_E()) {
+			if (added < oldCraftingItem.getCount()) {
 				if (!player.inventory.addItemStackToInventory(oldCraftingItem)) {
 					player.dropItem(oldCraftingItem, false);
 				}
@@ -108,9 +108,9 @@ public class BasicRecipeTransferHandlerServer {
 
 		for (ItemStack matchingStack : required) {
 			final ItemStack requiredStack = matchingStack.copy();
-			while (requiredStack.func_190916_E() > 0) {
+			while (requiredStack.getCount() > 0) {
 				final Slot slot = getSlotWithStack(container, requiredStack, craftingSlots, inventorySlots);
-				if (slot == null || slot.getStack().func_190926_b()) {
+				if (slot == null || slot.getStack().isEmpty()) {
 					// abort! put removed items back where they came from
 					for (Map.Entry<Slot, ItemStack> slotEntry : originalSlotContents.entrySet()) {
 						ItemStack stack = slotEntry.getValue();
@@ -123,8 +123,8 @@ public class BasicRecipeTransferHandlerServer {
 					originalSlotContents.put(slot, slot.getStack().copy());
 				}
 
-				ItemStack removed = slot.decrStackSize(requiredStack.func_190916_E());
-				requiredStack.func_190918_g(removed.func_190916_E());
+				ItemStack removed = slot.decrStackSize(requiredStack.getCount());
+				requiredStack.shrink(removed.getCount());
 			}
 		}
 

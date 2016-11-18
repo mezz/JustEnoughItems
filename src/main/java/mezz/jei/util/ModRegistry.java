@@ -106,8 +106,8 @@ public class ModRegistry implements IModRegistry {
 			return;
 		}
 
-		if (craftingItem.func_190926_b()) {
-			Log.error("Tried to add a RecipeCategoryCraftingItem with invalid craftingItem.", new IllegalArgumentException());
+		if (craftingItem.isEmpty()) {
+			Log.error("Tried to add a RecipeCategoryCraftingItem with empty craftingItem.", new IllegalArgumentException());
 			return;
 		}
 

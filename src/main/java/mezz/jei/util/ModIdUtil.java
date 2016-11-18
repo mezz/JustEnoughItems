@@ -8,9 +8,6 @@ import java.util.Map;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.Config;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;

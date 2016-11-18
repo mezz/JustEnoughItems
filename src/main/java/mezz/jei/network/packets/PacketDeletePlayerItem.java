@@ -22,16 +22,16 @@ public class PacketDeletePlayerItem extends PacketJei {
 
 	@Override
 	public void writePacketData(PacketBuffer buf) {
-		buf.writeItemStackToBuffer(itemStack);
+		buf.writeItemStack(itemStack);
 	}
 
 	public static class Handler implements IPacketJeiHandler {
 		@Override
 		public void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
-			ItemStack itemStack = buf.readItemStackFromBuffer();
+			ItemStack itemStack = buf.readItemStack();
 			ItemStack playerItem = player.inventory.getItemStack();
 			if (ItemStack.areItemStacksEqual(itemStack, playerItem)) {
-				player.inventory.setItemStack(ItemStack.field_190927_a);
+				player.inventory.setItemStack(ItemStack.EMPTY);
 			}
 		}
 	}

@@ -5,7 +5,6 @@ import mezz.jei.config.SessionData;
 import mezz.jei.network.packets.PacketGiveItemStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -31,7 +30,7 @@ public class Commands {
 	public static void giveStack(ItemStack itemStack, int amount) {
 		if (SessionData.isJeiOnServer()) {
 			ItemStack sendStack = itemStack.copy();
-			sendStack.func_190920_e(amount);
+			sendStack.setCount(amount);
 			PacketGiveItemStack packet = new PacketGiveItemStack(sendStack);
 			JustEnoughItems.getProxy().sendPacketToServer(packet);
 		} else {
@@ -43,9 +42,9 @@ public class Commands {
 	 * Fallback for when JEI is not on the server, tries to use the /give command.
 	 */
 	private static void giveStackVanilla(ItemStack itemStack, int amount) {
-		if (itemStack.func_190926_b()) {
+		if (itemStack.isEmpty()) {
 			String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
-			Log.error("Invalid itemStack: " + stackInfo, new IllegalArgumentException());
+			Log.error("Empty itemStack: " + stackInfo, new IllegalArgumentException());
 			return;
 		}
 
@@ -69,11 +68,11 @@ public class Commands {
 		} else {
 			ITextComponent errorMessage = new TextComponentTranslation("jei.chat.error.command.too.long");
 			errorMessage.getStyle().setColor(TextFormatting.RED);
-			sender.addChatComponentMessage(errorMessage, false);
+			sender.sendStatusMessage(errorMessage, false);
 
 			ITextComponent chatMessageComponent = new TextComponentString(chatMessage);
 			chatMessageComponent.getStyle().setColor(TextFormatting.RED);
-			sender.addChatComponentMessage(chatMessageComponent, false);
+			sender.sendStatusMessage(chatMessageComponent, false);
 		}
 	}
 }

@@ -42,7 +42,6 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.HoverChecker;
@@ -327,7 +326,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 	private boolean shouldShowDeleteItemTooltip(Minecraft minecraft) {
 		if (Config.isDeleteItemsInCheatModeActive()) {
 			EntityPlayer player = minecraft.player;
-			if (!player.inventory.getItemStack().func_190926_b()) {
+			if (!player.inventory.getItemStack().isEmpty()) {
 				return true;
 			}
 		}
@@ -410,8 +409,8 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 			Minecraft minecraft = Minecraft.getMinecraft();
 			EntityPlayerSP player = minecraft.player;
 			ItemStack itemStack = player.inventory.getItemStack();
-			if (!itemStack.func_190926_b()) {
-				player.inventory.setItemStack(ItemStack.field_190927_a);
+			if (!itemStack.isEmpty()) {
+				player.inventory.setItemStack(ItemStack.EMPTY);
 				PacketJei packet = new PacketDeletePlayerItem(itemStack);
 				JustEnoughItems.getProxy().sendPacketToServer(packet);
 				return true;

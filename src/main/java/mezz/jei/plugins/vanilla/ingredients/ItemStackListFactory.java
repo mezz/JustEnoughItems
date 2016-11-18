@@ -28,7 +28,7 @@ public class ItemStackListFactory {
 		final Set<String> itemNameSet = new HashSet<String>();
 
 		for (CreativeTabs creativeTab : CreativeTabs.CREATIVE_TAB_ARRAY) {
-			NonNullList<ItemStack> creativeTabItemStacks = NonNullList.func_191196_a();
+			NonNullList<ItemStack> creativeTabItemStacks = NonNullList.create();
 			try {
 				creativeTab.displayAllRelevantItems(creativeTabItemStacks);
 			} catch (RuntimeException e) {
@@ -39,8 +39,8 @@ public class ItemStackListFactory {
 			for (ItemStack itemStack : creativeTabItemStacks) {
 				if (itemStack == null) {
 					Log.error("Found a null itemStack in creative tab: {}", creativeTab);
-				} else if (itemStack.func_190926_b()) {
-					Log.error("Found an invalid item in an itemStack from creative tab: {}", creativeTab);
+				} else if (itemStack.isEmpty()) {
+					Log.error("Found an empty itemStack from creative tab: {}", creativeTab);
 				} else {
 					addItemStack(stackHelper, itemStack, itemList, itemNameSet);
 				}
@@ -77,12 +77,12 @@ public class ItemStackListFactory {
 		}
 
 		Item item = Item.getItemFromBlock(block);
-		if (item == Items.field_190931_a) {
+		if (item == Items.AIR) {
 			return;
 		}
 
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
-			NonNullList<ItemStack> subBlocks = NonNullList.func_191196_a();
+			NonNullList<ItemStack> subBlocks = NonNullList.create();
 			try {
 				block.getSubBlocks(item, itemTab, subBlocks);
 			} catch (RuntimeException e) {
@@ -96,8 +96,8 @@ public class ItemStackListFactory {
 			for (ItemStack subBlock : subBlocks) {
 				if (subBlock == null) {
 					Log.error("Found null subBlock of {}", block);
-				} else if (subBlock.func_190926_b()) {
-					Log.error("Found subBlock of {} with invalid item", block);
+				} else if (subBlock.isEmpty()) {
+					Log.error("Found empty subBlock of {}", block);
 				} else {
 					addItemStack(stackHelper, subBlock, itemList, itemNameSet);
 				}

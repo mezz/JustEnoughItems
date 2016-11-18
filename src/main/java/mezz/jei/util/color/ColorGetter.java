@@ -83,7 +83,7 @@ public class ColorGetter {
 
 	private static List<Color> _getColors(ItemStack itemStack, int colorCount) {
 		final Item item = itemStack.getItem();
-		if (itemStack.func_190926_b()) {
+		if (itemStack.isEmpty()) {
 			return Collections.emptyList();
 		} else if (item instanceof ItemBlock) {
 			final ItemBlock itemBlock = (ItemBlock) item;

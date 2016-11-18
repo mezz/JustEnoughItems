@@ -52,8 +52,8 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 			return null;
 		}
 
-		if (itemStack.func_190926_b()) {
-			Log.error("Invalid ItemStack", new IllegalArgumentException());
+		if (itemStack.isEmpty()) {
+			Log.error("Empty ItemStack", new IllegalArgumentException());
 			return null;
 		}
 
@@ -65,18 +65,20 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 
 		if (itemStack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
 			IFluidHandler capability = itemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
-			IFluidTankProperties[] tankPropertiesList = capability.getTankProperties();
-			StringBuilder info = new StringBuilder();
-			for (IFluidTankProperties tankProperties : tankPropertiesList) {
-				String contentsName = getContentsName(tankProperties);
-				if (contentsName != null) {
-					info.append(contentsName).append(";");
-				} else {
-					info.append("empty").append(";");
+			if (capability != null) {
+				IFluidTankProperties[] tankPropertiesList = capability.getTankProperties();
+				StringBuilder info = new StringBuilder();
+				for (IFluidTankProperties tankProperties : tankPropertiesList) {
+					String contentsName = getContentsName(tankProperties);
+					if (contentsName != null) {
+						info.append(contentsName).append(";");
+					} else {
+						info.append("empty").append(";");
+					}
 				}
-			}
-			if (info.length() > 0) {
-				return info.toString();
+				if (info.length() > 0) {
+					return info.toString();
+				}
 			}
 		}
 

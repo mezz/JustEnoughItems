@@ -52,8 +52,8 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public String getModId(ItemStack ingredient) {
-		if (ingredient.func_190926_b()) {
-			throw new IllegalArgumentException("Invalid ItemStack");
+		if (ingredient.isEmpty()) {
+			throw new IllegalArgumentException("Empty ItemStack");
 		}
 
 		Item item = ingredient.getItem();

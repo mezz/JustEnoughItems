@@ -97,8 +97,8 @@ public class StackHelper implements IStackHelper {
 				matchingItemResult.missingItems.add(key);
 			} else {
 				ItemStack matchingStack = availableItemStacks.get(matching);
-				matchingStack.func_190918_g(1);
-				if (matchingStack.func_190916_E() == 0) {
+				matchingStack.shrink(1);
+				if (matchingStack.getCount() == 0) {
 					availableItemStacks.remove(matching);
 				}
 				matchingItemResult.matchingItems.put(recipeSlotNumber, matching);
@@ -212,7 +212,7 @@ public class StackHelper implements IStackHelper {
 			throw new NullPointerException("Null itemStack");
 		}
 
-		if (itemStack.func_190926_b()) {
+		if (itemStack.isEmpty()) {
 			return Collections.emptyList();
 		}
 
@@ -220,14 +220,14 @@ public class StackHelper implements IStackHelper {
 			return Collections.singletonList(itemStack);
 		}
 
-		return getSubtypes(itemStack.getItem(), itemStack.func_190916_E());
+		return getSubtypes(itemStack.getItem(), itemStack.getCount());
 	}
 
 	public List<ItemStack> getSubtypes(final Item item, final int stackSize) {
 		List<ItemStack> itemStacks = new ArrayList<ItemStack>();
 
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
-			NonNullList<ItemStack> subItems = NonNullList.func_191196_a();
+			NonNullList<ItemStack> subItems = NonNullList.create();
 			try {
 				item.getSubItems(item, itemTab, subItems);
 			} catch (RuntimeException e) {
@@ -239,12 +239,12 @@ public class StackHelper implements IStackHelper {
 			for (ItemStack subItem : subItems) {
 				if (subItem == null) {
 					Log.warning("Found a null subItem of {}", item);
-				} else if (subItem.func_190926_b()) {
-					Log.warning("Found a subItem of {} with an invalid item", item);
+				} else if (subItem.isEmpty()) {
+					Log.warning("Found an empty subItem of {}", item);
 				} else {
-					if (subItem.func_190916_E() != stackSize) {
+					if (subItem.getCount() != stackSize) {
 						ItemStack subItemCopy = subItem.copy();
-						subItemCopy.func_190920_e(stackSize);
+						subItemCopy.setCount(stackSize);
 						itemStacks.add(subItemCopy);
 					} else {
 						itemStacks.add(subItem);
@@ -361,8 +361,8 @@ public class StackHelper implements IStackHelper {
 		}
 
 		Item item = stack.getItem();
-		if (stack.func_190926_b()) {
-			throw new IllegalArgumentException("Invalid Itemstack");
+		if (stack.isEmpty()) {
+			throw new IllegalArgumentException("Empty Itemstack");
 		}
 
 		ResourceLocation itemName = item.getRegistryName();

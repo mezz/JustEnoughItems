@@ -16,27 +16,27 @@ public class InventoryHelper {
 				final Slot slot = container.getSlot(slotIndex);
 				final ItemStack inventoryStack = slot.getStack();
 				// Check that the slot's contents are stackable with this stack
-				if (!inventoryStack.func_190926_b() &&
+				if (!inventoryStack.isEmpty() &&
 						inventoryStack.isStackable() &&
 						inventoryStack.isItemEqual(stack) &&
 						ItemStack.areItemStackTagsEqual(inventoryStack, stack)) {
 
-					final int remain = stack.func_190916_E() - added;
+					final int remain = stack.getCount() - added;
 					final int maxStackSize = Math.min(slot.getItemStackLimit(inventoryStack), inventoryStack.getMaxStackSize());
-					final int space = maxStackSize - inventoryStack.func_190916_E();
+					final int space = maxStackSize - inventoryStack.getCount();
 					if (space > 0) {
 
 						// Enough space
 						if (space >= remain) {
 							if (doAdd) {
-								inventoryStack.func_190917_f(remain);
+								inventoryStack.grow(remain);
 							}
-							return stack.func_190916_E();
+							return stack.getCount();
 						}
 
 						// Not enough space
 						if (doAdd) {
-							inventoryStack.func_190920_e(inventoryStack.getMaxStackSize());
+							inventoryStack.setCount(inventoryStack.getMaxStackSize());
 						}
 
 						added += space;
@@ -45,7 +45,7 @@ public class InventoryHelper {
 			}
 		}
 
-		if (added >= stack.func_190916_E()) {
+		if (added >= stack.getCount()) {
 			return added;
 		}
 
@@ -53,13 +53,13 @@ public class InventoryHelper {
 			if (slotIndex >= 0 && slotIndex < container.inventorySlots.size()) {
 				final Slot slot = container.getSlot(slotIndex);
 				final ItemStack inventoryStack = slot.getStack();
-				if (!inventoryStack.func_190926_b()) {
+				if (!inventoryStack.isEmpty()) {
 					if (doAdd) {
 						ItemStack stackToAdd = stack.copy();
-						stackToAdd.func_190920_e(stack.func_190916_E() - added);
+						stackToAdd.setCount(stack.getCount() - added);
 						slot.putStack(stackToAdd);
 					}
-					return stack.func_190916_E();
+					return stack.getCount();
 				}
 			}
 		}

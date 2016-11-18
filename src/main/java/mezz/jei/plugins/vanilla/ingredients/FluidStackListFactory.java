@@ -22,7 +22,7 @@ public class FluidStackListFactory {
 		Map<String, Fluid> registeredFluids = FluidRegistry.getRegisteredFluids();
 		for (Fluid fluid : registeredFluids.values()) {
 			Block fluidBlock = fluid.getBlock();
-			if (Item.getItemFromBlock(fluidBlock) == Items.field_190931_a) {
+			if (Item.getItemFromBlock(fluidBlock) == Items.AIR) {
 				FluidStack fluidStack = new FluidStack(fluid, Fluid.BUCKET_VOLUME);
 				fluidStacks.add(fluidStack);
 			}

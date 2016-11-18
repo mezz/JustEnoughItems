@@ -24,8 +24,8 @@ public class ShapedOreRecipeWrapper extends BlankRecipeWrapper implements IShape
 		for (Object input : this.recipe.getInput()) {
 			if (input instanceof ItemStack) {
 				ItemStack itemStack = (ItemStack) input;
-				if (itemStack.func_190916_E() != 1) {
-					itemStack.func_190920_e(1);
+				if (itemStack.getCount() != 1) {
+					itemStack.setCount(1);
 				}
 			}
 		}
