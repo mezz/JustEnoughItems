@@ -56,7 +56,8 @@ import net.minecraftforge.fml.common.ProgressManager;
 public class RecipeRegistry implements IRecipeRegistry {
 	private final StackHelper stackHelper;
 	private final IIngredientRegistry ingredientRegistry;
-	private final List<IRecipeHandler> recipeHandlers;
+	private final ImmutableList<IRecipeHandler> recipeHandlers;
+	private final ImmutableList<IRecipeCategory> recipeCategories;
 	private final ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers;
 	private final ImmutableMultimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap;
 	private final ImmutableListMultimap<IRecipeCategory, ItemStack> craftItemsForCategories;
@@ -117,6 +118,15 @@ public class RecipeRegistry implements IRecipeRegistry {
 		IRecipeRegistryPlugin internalRecipeRegistryPlugin = new InternalRecipeRegistryPlugin(this, categoriesForCraftItemKeys, ingredientRegistry, recipeCategoriesMap, recipeInputMap, recipeOutputMap, recipeWrappersForCategories);
 		this.plugins.add(internalRecipeRegistryPlugin);
 		this.plugins.addAll(plugins);
+
+		ImmutableList.Builder<IRecipeCategory> recipeCategoryBuilder = ImmutableList.builder();
+		for (IRecipeCategory recipeCategory : recipeCategories) {
+			List recipeWrappers = getRecipeWrappers(recipeCategory);
+			if (!recipeWrappers.isEmpty()) {
+				recipeCategoryBuilder.add(recipeCategory);
+			}
+		}
+		this.recipeCategories = recipeCategoryBuilder.build();
 	}
 
 	private static ImmutableMap<String, IRecipeCategory> buildRecipeCategoriesMap(List<IRecipeCategory> recipeCategories) {
@@ -292,7 +302,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public List<IRecipeCategory> getRecipeCategories() {
-		return new ArrayList<IRecipeCategory>(recipeCategoriesMap.values());
+		return this.recipeCategories;
 	}
 
 	@Override
