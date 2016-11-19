@@ -21,6 +21,8 @@ jei.tooltip.error.crash=提示錯誤，請查看日誌
 
 # Error Messages 錯誤消息
 jei.chat.error.command.too.long=JEI必須安裝在服務器才能處理這個聊天命令，這對Minecraft來說太長了。
+jei.chat.error.no.cheat.permission.1=你沒有使用JEI作弊模式的許可權。
+jei.chat.error.no.cheat.permission.2=可以使用/give命令或處在創造模式下的玩家擁有此許可權。
 
 # Key Bindings 按鍵綁定
 key.jei.toggleOverlay=切換物品清單疊層
@@ -73,6 +75,8 @@ config.jei.advanced.debugModeEnabled=調試模式
 config.jei.advanced.debugModeEnabled.comment=僅對JEI開發者有用，啟用後會添加數千測試物品及一些測試合成錶。
 config.jei.advanced.centerSearchBarEnabled=搜索框居中
 config.jei.advanced.centerSearchBarEnabled.comment=啟用後，搜索框會被移動至底部居中的位置。
+config.jei.advanced.modNameFormat=模組名稱格式
+config.jei.advanced.modNameFormat.comment=在為JEI介面的提示中該如何安排模組名稱格式。留空以禁用。
 
 # Edit Mode 編輯模式
 gui.jei.editMode.description=JEI物品清單編輯模式：
@@ -83,7 +87,7 @@ gui.jei.editMode.description.show.wild=相同ID物品以隱藏。按住%CTRL右�
 gui.jei.editMode.description.hide.mod.id=同時按下%CTRL和SHIFT時點擊以按模組ID隱藏。
 gui.jei.editMode.description.show.mod.id=已按模組ID隱藏。同時按下%CTRL和SHIFT時點擊以顯示。
 
-#PC/Linux Control Key
+#PC/Linux Control Key 控制鍵
 key.jei.ctrl=CTRL
 #Mac Command Key
 key.jei.ctrl.mac=CMD
@@ -100,7 +104,7 @@ gui.jei.category.brewing=釀造
 gui.jei.category.brewing.steps=需要步數：%s
 gui.jei.category.itemDescription=描述
 
-# DEBUG 調試 (調試模式，無需翻譯)
+# DEBUG 調試 （調試模式，無需翻譯）
 description.jei.wooden.door.1=木門允許你封锁怪物進入你的建築。\n正在測試。
 description.jei.wooden.door.2=點擊一扇門來把它的狀態從開放改變到關閉，或反之。
 description.jei.wooden.door.3=木制的門可以通過紅石電路打開/關閉。
