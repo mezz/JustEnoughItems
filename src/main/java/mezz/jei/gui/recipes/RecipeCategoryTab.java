@@ -7,8 +7,11 @@ import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.plugins.vanilla.ingredients.ItemStackRenderer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 
 public class RecipeCategoryTab extends RecipeGuiTab {
@@ -24,6 +27,8 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	@Override
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
 		logic.setRecipeCategory(category);
+		SoundHandler soundHandler = Minecraft.getMinecraft().getSoundHandler();
+		soundHandler.playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 		return true;
 	}
 
