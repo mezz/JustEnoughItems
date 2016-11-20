@@ -220,7 +220,15 @@ public class RecipeRegistry implements IRecipeRegistry {
 			return;
 		}
 
-		if (!recipeHandler.isRecipeValid(recipe)) {
+		try {
+			if (!recipeHandler.isRecipeValid(recipe)) {
+				return;
+			}
+		} catch (RuntimeException e) {
+			Log.error("Recipe check crashed", e);
+			return;
+		} catch (LinkageError e) {
+			Log.error("Recipe check crashed", e);
 			return;
 		}
 
