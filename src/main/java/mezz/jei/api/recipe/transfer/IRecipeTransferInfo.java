@@ -24,6 +24,12 @@ public interface IRecipeTransferInfo<C extends Container> {
 	String getRecipeCategoryUid();
 
 	/**
+	 * Return true if this recipe transfer info can handle the given container instance.
+	 * @since JEI 4.0.2
+	 */
+	boolean canHandle(C container);
+
+	/**
 	 * Return a list of slots for the recipe area.
 	 */
 	List<Slot> getRecipeSlots(C container);

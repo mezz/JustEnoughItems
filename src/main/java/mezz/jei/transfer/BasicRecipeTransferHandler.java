@@ -49,6 +49,10 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
 		}
 
+		if (!transferHelper.canHandle(container)) {
+			return handlerHelper.createInternalError();
+		}
+
 		Map<Integer, Slot> inventorySlots = new HashMap<Integer, Slot>();
 		for (Slot slot : transferHelper.getInventorySlots(container)) {
 			inventorySlots.put(slot.slotNumber, slot);
