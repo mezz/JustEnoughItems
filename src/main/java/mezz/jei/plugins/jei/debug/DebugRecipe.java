@@ -1,6 +1,5 @@
 package mezz.jei.plugins.jei.debug;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -64,7 +63,6 @@ public class DebugRecipe extends BlankRecipeWrapper {
 		);
 	}
 
-	@Nullable
 	@Override
 	public List<String> getTooltipStrings(int mouseX, int mouseY) {
 		List<String> tooltipStrings = new ArrayList<String>();

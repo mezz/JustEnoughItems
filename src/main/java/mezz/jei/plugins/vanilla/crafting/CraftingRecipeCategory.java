@@ -73,6 +73,7 @@ public class CraftingRecipeCategory extends BlankRecipeCategory<ICraftingRecipeW
 		} else {
 			craftingGridHelper.setInputStacks(guiItemStacks, inputs);
 			craftingGridHelper.setOutput(guiItemStacks, outputs.get(0));
+			recipeLayout.setShapeless();
 		}
 	}
 

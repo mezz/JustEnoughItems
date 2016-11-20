@@ -13,6 +13,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.gui.ShapelessIcon;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiFluidStackGroup;
 import mezz.jei.gui.ingredients.GuiIngredient;
@@ -38,6 +39,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	private final IRecipeWrapper recipeWrapper;
 	@Nullable
 	private final IFocus<?> focus;
+	@Nullable
+	private ShapelessIcon shapelessIcon;
 
 	private int posX;
 	private int posY;
@@ -114,6 +117,9 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			background.draw(minecraft);
 			recipeCategory.drawExtras(minecraft);
 			recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight(), recipeMouseX, recipeMouseY);
+			if (shapelessIcon != null) {
+				shapelessIcon.draw(minecraft, background.getWidth());
+			}
 		}
 		GlStateManager.popMatrix();
 
@@ -134,6 +140,9 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			hoveredIngredient.drawHovered(minecraft, posX, posY, recipeMouseX, recipeMouseY);
 		} else if (isMouseOver(mouseX, mouseY)) {
 			List<String> tooltipStrings = recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY);
+			if ((tooltipStrings == null || tooltipStrings.isEmpty()) && shapelessIcon != null) {
+				tooltipStrings = shapelessIcon.getTooltipStrings(recipeMouseX, recipeMouseY);
+			}
 			if (tooltipStrings != null && !tooltipStrings.isEmpty()) {
 				TooltipRenderer.drawHoveringText(minecraft, tooltipStrings, mouseX, mouseY);
 			}
@@ -202,6 +211,11 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			recipeTransferButton.xPosition = posX + this.posX;
 			recipeTransferButton.yPosition = posY + this.posY;
 		}
+	}
+
+	@Override
+	public void setShapeless() {
+		this.shapelessIcon = new ShapelessIcon();
 	}
 
 	@Override

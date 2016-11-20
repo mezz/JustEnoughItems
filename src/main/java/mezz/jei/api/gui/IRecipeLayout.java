@@ -53,4 +53,10 @@ public interface IRecipeLayout {
 	 * If it doesn't fit there, you can use this to move it when you init the recipe layout.
 	 */
 	void setRecipeTransferButton(int posX, int posY);
+
+	/**
+	 * Adds a shapeless icon to the top right of the recipe, that shows a tooltip saying "shapeless" when hovered over.
+	 * @since JEI 4.0.2
+	 */
+	void setShapeless();
 }

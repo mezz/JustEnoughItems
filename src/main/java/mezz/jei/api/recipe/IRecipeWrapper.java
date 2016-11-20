@@ -1,6 +1,5 @@
 package mezz.jei.api.recipe;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 import mezz.jei.api.IGuiHelper;
@@ -44,9 +43,8 @@ public interface IRecipeWrapper {
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
-	 * @return tooltip strings. If there is no tooltip at this position, return null or an empty list.
+	 * @return tooltip strings. If there is no tooltip at this position, return an empty list.
 	 */
-	@Nullable
 	List<String> getTooltipStrings(int mouseX, int mouseY);
 
 	/**

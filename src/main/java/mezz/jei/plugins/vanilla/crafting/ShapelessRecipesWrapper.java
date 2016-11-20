@@ -1,16 +1,16 @@
 package mezz.jei.plugins.vanilla.crafting;
 
-import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.BlankRecipeWrapper;
+import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 
-public class ShapelessRecipesWrapper extends AbstractShapelessRecipeWrapper {
+public class ShapelessRecipesWrapper extends BlankRecipeWrapper implements ICraftingRecipeWrapper {
 
 	private final ShapelessRecipes recipe;
 
-	public ShapelessRecipesWrapper(IGuiHelper guiHelper, ShapelessRecipes recipe) {
-		super(guiHelper);
+	public ShapelessRecipesWrapper(ShapelessRecipes recipe) {
 		this.recipe = recipe;
 		for (Object input : this.recipe.recipeItems) {
 			if (input instanceof ItemStack) {
@@ -30,10 +30,5 @@ public class ShapelessRecipesWrapper extends AbstractShapelessRecipeWrapper {
 		if (recipeOutput != null) {
 			ingredients.setOutput(ItemStack.class, recipeOutput);
 		}
-	}
-
-	@Override
-	protected boolean hasMultipleIngredients() {
-		return recipe.recipeItems.size() > 1;
 	}
 }

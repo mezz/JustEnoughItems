@@ -110,7 +110,7 @@ public class VanillaPlugin extends BlankModPlugin {
 				new ShapedOreRecipeHandler(jeiHelpers),
 				new ShapedRecipesHandler(),
 				new ShapelessOreRecipeHandler(jeiHelpers),
-				new ShapelessRecipesHandler(guiHelper),
+				new ShapelessRecipesHandler(),
 				new TippedArrowRecipeHandler(),
 				new FuelRecipeHandler(),
 				new SmeltingRecipeHandler(),

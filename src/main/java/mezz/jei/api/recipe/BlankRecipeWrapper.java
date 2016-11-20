@@ -1,6 +1,6 @@
 package mezz.jei.api.recipe;
 
-import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -14,10 +14,9 @@ public abstract class BlankRecipeWrapper implements IRecipeWrapper {
 
 	}
 
-	@Nullable
 	@Override
 	public List<String> getTooltipStrings(int mouseX, int mouseY) {
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Override

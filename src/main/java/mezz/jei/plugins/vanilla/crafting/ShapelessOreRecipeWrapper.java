@@ -4,16 +4,17 @@ import java.util.List;
 
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.BlankRecipeWrapper;
 import mezz.jei.api.recipe.IStackHelper;
+import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
-public class ShapelessOreRecipeWrapper extends AbstractShapelessRecipeWrapper {
+public class ShapelessOreRecipeWrapper extends BlankRecipeWrapper implements ICraftingRecipeWrapper {
 	private final IJeiHelpers jeiHelpers;
 	private final ShapelessOreRecipe recipe;
 
 	public ShapelessOreRecipeWrapper(IJeiHelpers jeiHelpers, ShapelessOreRecipe recipe) {
-		super(jeiHelpers.getGuiHelper());
 		this.jeiHelpers = jeiHelpers;
 		this.recipe = recipe;
 		for (Object input : this.recipe.getInput()) {
@@ -37,10 +38,5 @@ public class ShapelessOreRecipeWrapper extends AbstractShapelessRecipeWrapper {
 		if (recipeOutput != null) {
 			ingredients.setOutput(ItemStack.class, recipeOutput);
 		}
-	}
-
-	@Override
-	protected boolean hasMultipleIngredients() {
-		return recipe.getInput().size() > 1;
 	}
 }
