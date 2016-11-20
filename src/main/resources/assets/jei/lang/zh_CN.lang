@@ -76,7 +76,7 @@ config.jei.advanced.debugModeEnabled.comment=仅对JEI开发者有用，启用�
 config.jei.advanced.centerSearchBarEnabled=搜索框居中
 config.jei.advanced.centerSearchBarEnabled.comment=启用后，搜索框会被移动至底部居中的位置。
 config.jei.advanced.modNameFormat=模组名称格式
-config.jei.advanced.modNameFormat.comment=在为JEI界面的提示中该如何安排模组名称格式。留空以禁用。
+config.jei.advanced.modNameFormat.comment=定义JEI界面的信息提示中的Mod名称格式。留空以禁用。
 
 # Edit Mode
 gui.jei.editMode.description=JEI物品列表编辑模式：
