@@ -68,13 +68,12 @@ public class CraftingRecipeCategory extends BlankRecipeCategory<ICraftingRecipeW
 
 		if (recipeWrapper instanceof IShapedCraftingRecipeWrapper) {
 			IShapedCraftingRecipeWrapper wrapper = (IShapedCraftingRecipeWrapper) recipeWrapper;
-			craftingGridHelper.setInputStacks(guiItemStacks, inputs, wrapper.getWidth(), wrapper.getHeight());
-			craftingGridHelper.setOutput(guiItemStacks, outputs.get(0));
+			craftingGridHelper.setInputs(guiItemStacks, inputs, wrapper.getWidth(), wrapper.getHeight());
 		} else {
-			craftingGridHelper.setInputStacks(guiItemStacks, inputs);
-			craftingGridHelper.setOutput(guiItemStacks, outputs.get(0));
+			craftingGridHelper.setInputs(guiItemStacks, inputs);
 			recipeLayout.setShapeless();
 		}
+		guiItemStacks.set(craftOutputSlot, outputs.get(0));
 	}
 
 }

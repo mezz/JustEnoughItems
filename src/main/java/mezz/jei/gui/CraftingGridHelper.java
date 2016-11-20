@@ -3,7 +3,9 @@ package mezz.jei.gui;
 import java.util.List;
 
 import mezz.jei.api.gui.ICraftingGridHelper;
+import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
+import mezz.jei.api.gui.IRecipeLayout;
 import net.minecraft.item.ItemStack;
 
 public class CraftingGridHelper implements ICraftingGridHelper {
@@ -13,6 +15,44 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 	public CraftingGridHelper(int craftInputSlot1, int craftOutputSlot) {
 		this.craftInputSlot1 = craftInputSlot1;
 		this.craftOutputSlot = craftOutputSlot;
+	}
+
+	@Override
+	public <T> void setInputs(IGuiIngredientGroup<T> ingredientGroup, List<List<T>> inputs) {
+		int width, height;
+		if (inputs.size() > 4) {
+			width = height = 3;
+		} else if (inputs.size() > 1) {
+			width = height = 2;
+		} else {
+			width = height = 1;
+		}
+
+		setInputs(ingredientGroup, inputs, width, height);
+	}
+
+	@Override
+	public <T> void setInputs(IGuiIngredientGroup<T> ingredientGroup, List<List<T>> inputs, int width, int height) {
+		for (int i = 0; i < inputs.size(); i++) {
+			List<T> recipeItem = inputs.get(i);
+			int index = getCraftingIndex(i, width, height);
+
+			setInput(ingredientGroup, index, recipeItem);
+		}
+	}
+
+	private <T> void setInput(IRecipeLayout recipeLayout, int inputIndex, List<T> input) {
+		if (!input.isEmpty()) {
+			T firstInput = input.get(0);
+			//noinspection unchecked
+			Class<T> ingredientClass = (Class<T>) firstInput.getClass();
+			IGuiIngredientGroup<T> ingredientsGroup = recipeLayout.getIngredientsGroup(ingredientClass);
+			setInput(ingredientsGroup, inputIndex, input);
+		}
+	}
+
+	private <T> void setInput(IGuiIngredientGroup<T> guiIngredients, int inputIndex, List<T> input) {
+		guiIngredients.set(craftInputSlot1 + inputIndex, input);
 	}
 
 	@Override
@@ -70,10 +110,6 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 	@Override
 	public void setOutput(IGuiItemStackGroup guiItemStacks, List<ItemStack> output) {
 		guiItemStacks.set(craftOutputSlot, output);
-	}
-
-	private void setInput(IGuiItemStackGroup guiItemStacks, int inputIndex, List<ItemStack> input) {
-		guiItemStacks.set(craftInputSlot1 + inputIndex, input);
 	}
 
 }
