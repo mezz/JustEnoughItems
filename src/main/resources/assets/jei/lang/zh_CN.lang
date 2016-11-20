@@ -21,6 +21,8 @@ jei.tooltip.error.crash=提示错误，请查看日志
 
 # Error Messages
 jei.chat.error.command.too.long=JEI必须安装于服务器上，方能处理本指令，这条指令对Minecraft来说太长了。
+jei.chat.error.no.cheat.permission.1=你没有使用JEI作弊模式的权限。
+jei.chat.error.no.cheat.permission.2=可以使用/give或处在创造模式下的玩家拥有此权限。
 
 # Key Bindings
 key.jei.toggleOverlay=切换物品列表叠层
@@ -73,6 +75,8 @@ config.jei.advanced.debugModeEnabled=调试模式
 config.jei.advanced.debugModeEnabled.comment=仅对JEI开发者有用，启用后会添加数千测试物品以及一些测试合成表。
 config.jei.advanced.centerSearchBarEnabled=搜索框居中
 config.jei.advanced.centerSearchBarEnabled.comment=启用后，搜索框会被移动至底部居中的位置。
+config.jei.advanced.modNameFormat=模组名称格式
+config.jei.advanced.modNameFormat.comment=定义JEI界面的信息提示中的Mod名称格式。留空以禁用。
 
 # Edit Mode
 gui.jei.editMode.description=JEI物品列表编辑模式：
@@ -88,7 +92,7 @@ key.jei.ctrl=CTRL
 #Mac Command Key
 key.jei.ctrl.mac=CMD
 
-# Recipes
+# Recipe Categories
 gui.jei.category.craftingTable=工作台合成
 gui.jei.category.smelting=烧炼
 gui.jei.category.smelting.experience=%s点经验
@@ -100,7 +104,7 @@ gui.jei.category.brewing=酿造配方
 gui.jei.category.brewing.steps=步数：%s
 gui.jei.category.itemDescription=描述
 
-# DEBUG
+# DEBUG （调试模式，无需翻译）
 description.jei.wooden.door.1=木门允许你阻止怪物进入你的建筑。\n正在测试。
 description.jei.wooden.door.2=点击一扇门把它的状态从开改变至关，或反之。
 description.jei.wooden.door.3=木制的门可以通过红石电路开关。
