@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableList;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
@@ -67,7 +66,7 @@ public class BrewingRecipeMaker {
 	}
 
 	private void addVanillaBrewingRecipes(Collection<BrewingRecipeWrapper> recipes) {
-		ImmutableList<ItemStack> potionIngredients = ingredientRegistry.getPotionIngredients();
+		List<ItemStack> potionIngredients = ingredientRegistry.getPotionIngredients();
 		List<ItemStack> knownPotions = new ArrayList<ItemStack>();
 		ItemStack waterBottle = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionTypes.WATER);
 		knownPotions.add(waterBottle);
@@ -87,7 +86,7 @@ public class BrewingRecipeMaker {
 		} while (foundNewPotions);
 	}
 
-	private List<ItemStack> getNewPotions(final int brewingStep, List<ItemStack> knownPotions, ImmutableList<ItemStack> potionIngredients, Collection<BrewingRecipeWrapper> recipes) {
+	private List<ItemStack> getNewPotions(final int brewingStep, List<ItemStack> knownPotions, List<ItemStack> potionIngredients, Collection<BrewingRecipeWrapper> recipes) {
 		List<ItemStack> newPotions = new ArrayList<ItemStack>();
 		for (ItemStack potionInput : knownPotions) {
 			for (ItemStack potionIngredient : potionIngredients) {

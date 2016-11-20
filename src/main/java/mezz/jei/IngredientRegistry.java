@@ -1,29 +1,33 @@
 package mezz.jei;
 
 import javax.annotation.Nullable;
-import java.util.Locale;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
-import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.gui.ItemListOverlay;
+import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionHelper;
 import net.minecraft.tileentity.TileEntityFurnace;
 
 public class IngredientRegistry implements IIngredientRegistry {
-	private final ImmutableMap<Class, ImmutableList> ingredientsMap;
+	private final Map<Class, List> ingredientsMap;
 	private final ImmutableMap<Class, IIngredientHelper> ingredientHelperMap;
 	private final ImmutableMap<Class, IIngredientRenderer> ingredientRendererMap;
-	private final ImmutableList<ItemStack> fuels;
-	private final ImmutableList<ItemStack> potionIngredients;
+	private final List<ItemStack> fuels = new ArrayList<ItemStack>();
+	private final List<ItemStack> potionIngredients = new ArrayList<ItemStack>();
 
 	public IngredientRegistry(
-			ImmutableMap<Class, ImmutableList> ingredientsMap,
+			Map<Class, List> ingredientsMap,
 			ImmutableMap<Class, IIngredientHelper> ingredientHelperMap,
 			ImmutableMap<Class, IIngredientRenderer> ingredientRendererMap
 	) {
@@ -31,69 +35,67 @@ public class IngredientRegistry implements IIngredientRegistry {
 		this.ingredientHelperMap = ingredientHelperMap;
 		this.ingredientRendererMap = ingredientRendererMap;
 
-		IIngredientHelper<ItemStack> itemStackHelper = getIngredientHelper(ItemStack.class);
-
-		ImmutableList.Builder<ItemStack> fuelsBuilder = ImmutableList.builder();
-		ImmutableList.Builder<ItemStack> potionIngredientsBuilder = ImmutableList.builder();
-		ImmutableListMultimap.Builder<String, ItemStack> itemsByModIdBuilder = ImmutableListMultimap.builder();
-
 		for (ItemStack itemStack : getIngredients(ItemStack.class)) {
-			String modId = itemStackHelper.getModId(itemStack).toLowerCase(Locale.ENGLISH);
-			itemsByModIdBuilder.put(modId, itemStack);
+			getStackProperties(itemStack);
+		}
+	}
 
-			try {
-				if (TileEntityFurnace.isItemFuel(itemStack)) {
-					fuelsBuilder.add(itemStack);
-				}
-			} catch (RuntimeException e) {
-				String itemStackInfo = itemStackHelper.getErrorInfo(itemStack);
-				Log.error("Failed to check if item is fuel {}.", itemStackInfo, e);
-			} catch (LinkageError e) {
-				String itemStackInfo = itemStackHelper.getErrorInfo(itemStack);
-				Log.error("Failed to check if item is fuel {}.", itemStackInfo, e);
+	private void getStackProperties(ItemStack itemStack) {
+		try {
+			if (TileEntityFurnace.isItemFuel(itemStack)) {
+				fuels.add(itemStack);
 			}
-
-			try {
-				if (PotionHelper.isReagent(itemStack)) {
-					potionIngredientsBuilder.add(itemStack);
-				}
-			} catch (RuntimeException e) {
-				String itemStackInfo = itemStackHelper.getErrorInfo(itemStack);
-				Log.error("Failed to check if item is a potion ingredient {}.", itemStackInfo, e);
-			} catch (LinkageError e) {
-				String itemStackInfo = itemStackHelper.getErrorInfo(itemStack);
-				Log.error("Failed to check if item is a potion ingredient {}.", itemStackInfo, e);
-			}
+		} catch (RuntimeException e) {
+			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
+			Log.error("Failed to check if item is fuel {}.", itemStackInfo, e);
+		} catch (LinkageError e) {
+			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
+			Log.error("Failed to check if item is fuel {}.", itemStackInfo, e);
 		}
 
-		this.fuels = fuelsBuilder.build();
-		this.potionIngredients = potionIngredientsBuilder.build();
+		try {
+			if (PotionHelper.isReagent(itemStack)) {
+				potionIngredients.add(itemStack);
+			}
+		} catch (RuntimeException e) {
+			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
+			Log.error("Failed to check if item is a potion ingredient {}.", itemStackInfo, e);
+		} catch (LinkageError e) {
+			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
+			Log.error("Failed to check if item is a potion ingredient {}.", itemStackInfo, e);
+		}
 	}
 
 	@Override
-	public <V> ImmutableList<V> getIngredients(@Nullable Class<V> ingredientClass) {
+	public <V> List<V> getIngredients(@Nullable Class<V> ingredientClass) {
 		if (ingredientClass == null) {
 			Log.error("Null ingredientClass", new NullPointerException());
 			return ImmutableList.of();
 		}
 
 		//noinspection unchecked
-		ImmutableList<V> ingredients = ingredientsMap.get(ingredientClass);
+		List<V> ingredients = ingredientsMap.get(ingredientClass);
 		if (ingredients == null) {
 			return ImmutableList.of();
 		} else {
-			return ingredients;
+			return Collections.unmodifiableList(ingredients);
 		}
 	}
 
 	@Override
-	public <V> IIngredientHelper<V> getIngredientHelper(V ingredient) {
+	public <V> IIngredientHelper<V> getIngredientHelper(@Nullable V ingredient) {
+		if (ingredient == null) {
+			throw new NullPointerException("Null ingredient");
+		}
 		//noinspection unchecked
 		return (IIngredientHelper<V>) getIngredientHelper(ingredient.getClass());
 	}
 
 	@Override
-	public <V> IIngredientHelper<V> getIngredientHelper(Class<V> ingredientClass) {
+	public <V> IIngredientHelper<V> getIngredientHelper(@Nullable Class<V> ingredientClass) {
+		if (ingredientClass == null) {
+			throw new NullPointerException("Null ingredientClass");
+		}
 		//noinspection unchecked
 		IIngredientHelper<V> ingredientHelper = ingredientHelperMap.get(ingredientClass);
 		if (ingredientHelper == null) {
@@ -103,14 +105,20 @@ public class IngredientRegistry implements IIngredientRegistry {
 	}
 
 	@Override
-	public <V> IIngredientRenderer<V> getIngredientRenderer(V ingredient) {
+	public <V> IIngredientRenderer<V> getIngredientRenderer(@Nullable V ingredient) {
+		if (ingredient == null) {
+			throw new NullPointerException("Null ingredient");
+		}
 		//noinspection unchecked
 		Class<V> ingredientClass = (Class<V>) ingredient.getClass();
 		return getIngredientRenderer(ingredientClass);
 	}
 
 	@Override
-	public <V> IIngredientRenderer<V> getIngredientRenderer(Class<V> ingredientClass) {
+	public <V> IIngredientRenderer<V> getIngredientRenderer(@Nullable Class<V> ingredientClass) {
+		if (ingredientClass == null) {
+			throw new NullPointerException("Null ingredientClass");
+		}
 		//noinspection unchecked
 		IIngredientRenderer<V> ingredientRenderer = ingredientRendererMap.get(ingredientClass);
 		if (ingredientRenderer == null) {
@@ -120,17 +128,47 @@ public class IngredientRegistry implements IIngredientRegistry {
 	}
 
 	@Override
-	public ImmutableCollection<Class> getRegisteredIngredientClasses() {
-		return ingredientsMap.keySet();
+	public Collection<Class> getRegisteredIngredientClasses() {
+		return Collections.unmodifiableCollection(ingredientsMap.keySet());
 	}
 
 	@Override
-	public ImmutableList<ItemStack> getFuels() {
-		return fuels;
+	public List<ItemStack> getFuels() {
+		return Collections.unmodifiableList(fuels);
 	}
 
 	@Override
-	public ImmutableList<ItemStack> getPotionIngredients() {
-		return potionIngredients;
+	public List<ItemStack> getPotionIngredients() {
+		return Collections.unmodifiableList(potionIngredients);
+	}
+
+	@Override
+	public <V> void addIngredientsAtRuntime(@Nullable Class<V> ingredientClass, @Nullable List<V> ingredients) {
+		if (ingredientClass == null) {
+			Log.error("Null ingredientClass", new NullPointerException());
+			return;
+		}
+		if (ingredients == null) {
+			Log.error("Null ingredients", new NullPointerException());
+			return;
+		}
+		if (ingredients.isEmpty()) {
+			Log.error("Empty ingredients", new IllegalArgumentException());
+			return;
+		}
+
+		//noinspection unchecked
+		List<V> list = ingredientsMap.get(ingredientClass);
+		if (list == null) {
+			list = new ArrayList<V>();
+			ingredientsMap.put(ingredientClass, list);
+		}
+		list.addAll(ingredients);
+
+		JeiRuntime runtime = Internal.getRuntime();
+		if (runtime != null) {
+			ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
+			itemListOverlay.rebuildItemFilter();
+		}
 	}
 }

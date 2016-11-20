@@ -51,7 +51,7 @@ public class IngredientBaseListFactory {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientClass);
 
-		ImmutableList<V> ingredients = ingredientRegistry.getIngredients(ingredientClass);
+		List<V> ingredients = ingredientRegistry.getIngredients(ingredientClass);
 		final int ingredientCount = ingredients.size();
 		if (ingredientCount <= 0) {
 			return;
