@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,8 +20,8 @@ public class IngredientInformation {
 	@Nullable
 	private static Language previousLanguage;
 
-	private static Map<Object, String> tooltipCache = new HashMap<Object, String>();
-	private static Map<Object, String> colorCache = new HashMap<Object, String>();
+	private static Map<Object, String> tooltipCache = new IdentityHashMap<Object, String>();
+	private static Map<Object, String> colorCache = new IdentityHashMap<Object, String>();
 
 	public static <T> String getTooltipString(T ingredient, IIngredientRenderer<T> ingredientRenderer, String modId, String modName, String displayName) {
 		String tooltipString = tooltipCache.get(ingredient);

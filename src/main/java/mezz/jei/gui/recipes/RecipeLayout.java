@@ -2,6 +2,7 @@ package mezz.jei.gui.recipes;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +65,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		this.guiItemStackGroup = new GuiItemStackGroup(itemStackFocus);
 		this.guiFluidStackGroup = new GuiFluidStackGroup(fluidStackFocus);
 
-		this.guiIngredientGroups = new HashMap<Class, GuiIngredientGroup>();
+		this.guiIngredientGroups = new IdentityHashMap<Class, GuiIngredientGroup>();
 		this.guiIngredientGroups.put(ItemStack.class, this.guiItemStackGroup);
 		this.guiIngredientGroups.put(FluidStack.class, this.guiFluidStackGroup);
 

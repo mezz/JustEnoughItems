@@ -15,9 +15,9 @@ import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.util.Log;
 
 public class ModIngredientRegistration implements IModIngredientRegistration {
-	private final Map<Class, Collection> allIngredientsMap = new HashMap<Class, Collection>();
-	private final Map<Class, IIngredientHelper> ingredientHelperMap = new HashMap<Class, IIngredientHelper>();
-	private final Map<Class, IIngredientRenderer> ingredientRendererMap = new HashMap<Class, IIngredientRenderer>();
+	private final Map<Class, Collection> allIngredientsMap = new IdentityHashMap<Class, Collection>();
+	private final Map<Class, IIngredientHelper> ingredientHelperMap = new IdentityHashMap<Class, IIngredientHelper>();
+	private final Map<Class, IIngredientRenderer> ingredientRendererMap = new IdentityHashMap<Class, IIngredientRenderer>();
 
 	@Override
 	public <V> void register(

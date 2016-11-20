@@ -3,6 +3,7 @@ package mezz.jei.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,8 +13,8 @@ import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredients;
 
 public class Ingredients implements IIngredients {
-	private final Map<Class, List<List>> inputs = new HashMap<Class, List<List>>();
-	private final Map<Class, List<List>> outputs = new HashMap<Class, List<List>>();
+	private final Map<Class, List<List>> inputs = new IdentityHashMap<Class, List<List>>();
+	private final Map<Class, List<List>> outputs = new IdentityHashMap<Class, List<List>>();
 
 	@Override
 	public <T> void setInput(Class<T> ingredientClass, T input) {
@@ -98,7 +99,7 @@ public class Ingredients implements IIngredients {
 	}
 
 	public Map<Class, List> getInputIngredients() {
-		Map<Class, List> inputIngredients = new HashMap<Class, List>();
+		Map<Class, List> inputIngredients = new IdentityHashMap<Class, List>();
 		for (Map.Entry<Class, List<List>> entry : inputs.entrySet()) {
 			List<Object> flatIngredients = new ArrayList<Object>();
 			for (List ingredients : entry.getValue()) {
@@ -110,7 +111,7 @@ public class Ingredients implements IIngredients {
 	}
 
 	public Map<Class, List> getOutputIngredients() {
-		Map<Class, List> outputIngredients = new HashMap<Class, List>();
+		Map<Class, List> outputIngredients = new IdentityHashMap<Class, List>();
 		for (Map.Entry<Class, List<List>> entry : outputs.entrySet()) {
 			List<Object> flatIngredients = new ArrayList<Object>();
 			for (List ingredients : entry.getValue()) {

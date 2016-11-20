@@ -2,6 +2,7 @@ package mezz.jei;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 import mezz.jei.api.ISubtypeRegistry;
@@ -16,7 +17,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 public class SubtypeRegistry implements ISubtypeRegistry {
-	private final Map<Item, ISubtypeInterpreter> interpreters = new HashMap<Item, ISubtypeInterpreter>();
+	private final Map<Item, ISubtypeInterpreter> interpreters = new IdentityHashMap<Item, ISubtypeInterpreter>();
 
 	@Override
 	public void useNbtForSubtypes(Item... items) {
