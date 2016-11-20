@@ -26,10 +26,7 @@ public class GuiItemStackGroup extends GuiIngredientGroup<ItemStack> implements 
 
 	@Override
 	public void init(int slotIndex, boolean input, int xPosition, int yPosition) {
-		init(slotIndex, input, xPosition, yPosition, 1);
+		init(slotIndex, input, renderer, xPosition, yPosition, getWidth(1), getHeight(1), 1, 1);
 	}
 
-	public void init(int index, boolean input, int xPosition, int yPosition, int padding) {
-		init(index, input, renderer, xPosition, yPosition, getWidth(padding), getHeight(padding), padding, padding);
-	}
 }

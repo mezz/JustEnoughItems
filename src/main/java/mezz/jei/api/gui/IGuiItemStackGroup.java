@@ -22,6 +22,7 @@ public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {
 	 * @param xPosition x position of the slot relative to the recipe background
 	 * @param yPosition y position of the slot relative to the recipe background
 	 */
+	@Override
 	void init(int slotIndex, boolean input, int xPosition, int yPosition);
 
 	@Override

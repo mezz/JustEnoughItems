@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import mezz.jei.IngredientRegistry;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.ITooltipCallback;
@@ -24,6 +25,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	private final Map<Integer, GuiIngredient<T>> guiIngredients = new HashMap<Integer, GuiIngredient<T>>();
 	private final Set<Integer> inputSlots = new HashSet<Integer>();
 	private final IIngredientHelper<T> ingredientHelper;
+	private final IIngredientRenderer<T> ingredientRenderer;
 	private final Class<T> ingredientClass;
 	/**
 	 * If focus is set and any of the guiIngredients contains focus
@@ -37,7 +39,14 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	public GuiIngredientGroup(Class<T> ingredientClass, @Nullable IFocus<T> focus) {
 		this.ingredientClass = ingredientClass;
 		this.focus = focus;
-		this.ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredientClass);
+		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+		this.ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
+		this.ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientClass);
+	}
+
+	@Override
+	public void init(int slotIndex, boolean input, int xPosition, int yPosition) {
+		init(slotIndex, input, ingredientRenderer, xPosition, yPosition, 16, 16, 0, 0);
 	}
 
 	@Override

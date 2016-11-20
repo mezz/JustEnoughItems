@@ -1,9 +1,11 @@
 package mezz.jei.api.gui;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
@@ -54,9 +56,29 @@ public interface IGuiIngredientGroup<T> {
 	Map<Integer, ? extends IGuiIngredient<T>> getGuiIngredients();
 
 	/**
+	 * Initialize a guiIngredient for the given slot.
+	 * This can handle mod ingredients registered with {@link IModIngredientRegistration}.
+	 * <p>
+	 * Uses the default {@link IIngredientRenderer} registered for the ingredient list in {@link IModIngredientRegistration#register(Class, Collection, IIngredientHelper, IIngredientRenderer)}
+	 * Uses the same 16x16 size as the ingredient list.
+	 * <p>
+	 * For more advanced control over rendering, use {@link #init(int, boolean, IIngredientRenderer, int, int, int, int, int, int)}
+	 *
+	 * @param slotIndex the slot index of this ingredient
+	 * @param input     whether this slot is an input
+	 * @param xPosition x position relative to the recipe background
+	 * @param yPosition y position relative to the recipe background
+	 * @see IGuiItemStackGroup#init(int, boolean, int, int)
+	 * @see IGuiFluidStackGroup#init(int, boolean, int, int, int, int, int, boolean, IDrawable)
+	 * @since JEI 4.0.2
+	 */
+	void init(int slotIndex, boolean input, int xPosition, int yPosition);
+
+	/**
 	 * Initialize a custom guiIngredient for the given slot.
-	 * For ItemStacks and FluidStacks, use the much simpler methods in {@link IGuiItemStackGroup} and {@link IGuiFluidStackGroup}.
-	 * This is for handling mod ingredients registered with {@link IModIngredientRegistration}.
+	 * For default behavior, use the much simpler method {@link #init(int, boolean, int, int)}.
+	 * For FluidStack, see {@link IGuiFluidStackGroup#init(int, boolean, int, int, int, int, int, boolean, IDrawable)}
+	 * This can handle mod ingredients registered with {@link IModIngredientRegistration}.
 	 *
 	 * @param slotIndex          the slot index of this ingredient
 	 * @param input              whether this slot is an input

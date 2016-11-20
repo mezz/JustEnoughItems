@@ -18,7 +18,6 @@ import mezz.jei.api.recipe.BlankRecipeCategory;
 import mezz.jei.config.Constants;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
-import mezz.jei.plugins.jei.ingredients.DebugIngredientRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -130,10 +129,9 @@ public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 			}
 		});
 
-		DebugIngredientRenderer ingredientRenderer = new DebugIngredientRenderer();
-		debugIngredientsGroup.init(0, true, ingredientRenderer, 40, 0, 16, 16, 0, 0);
-		debugIngredientsGroup.init(1, false, ingredientRenderer, 40, 16, 16, 16, 0, 0);
-		debugIngredientsGroup.init(2, false, ingredientRenderer, 40, 32, 16, 16, 0, 0);
+		debugIngredientsGroup.init(0, true, 40, 0);
+		debugIngredientsGroup.init(1, false, 40, 16);
+		debugIngredientsGroup.init(2, false, 40, 32);
 
 		debugIngredientsGroup.set(ingredients);
 	}
