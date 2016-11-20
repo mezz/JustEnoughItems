@@ -5,6 +5,7 @@ import java.io.IOException;
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 
@@ -22,15 +23,17 @@ public class PacketDeletePlayerItem extends PacketJei {
 
 	@Override
 	public void writePacketData(PacketBuffer buf) {
-		buf.writeItemStack(itemStack);
+		int itemId = Item.getIdFromItem(itemStack.getItem());
+		buf.writeShort(itemId);
 	}
 
 	public static class Handler implements IPacketJeiHandler {
 		@Override
 		public void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
-			ItemStack itemStack = buf.readItemStack();
+			int itemId = buf.readShort();
+			Item item = Item.getItemById(itemId);
 			ItemStack playerItem = player.inventory.getItemStack();
-			if (ItemStack.areItemStacksEqual(itemStack, playerItem)) {
+			if (!playerItem.isEmpty() && playerItem.getItem() == item) {
 				player.inventory.setItemStack(ItemStack.EMPTY);
 			}
 		}
