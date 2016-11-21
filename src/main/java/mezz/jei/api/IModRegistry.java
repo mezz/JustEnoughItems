@@ -1,5 +1,6 @@
 package mezz.jei.api;
 
+import java.util.Collection;
 import java.util.List;
 
 import mezz.jei.api.gui.IAdvancedGuiHandler;
@@ -46,7 +47,7 @@ public interface IModRegistry {
 	 * These can be regular recipes, they will get wrapped by the provided recipe handlers.
 	 * Recipes that are already registered with minecraft's recipe managers don't need to be added here.
 	 */
-	void addRecipes(List recipes);
+	void addRecipes(Collection recipes);
 
 	/**
 	 * Add a clickable area on a gui to jump to specific categories of recipes in JEI.
