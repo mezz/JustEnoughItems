@@ -2,6 +2,7 @@ package mezz.jei.util;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -69,7 +70,7 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
-	public void addRecipes(@Nullable List recipes) {
+	public void addRecipes(@Nullable Collection recipes) {
 		if (recipes != null) {
 			this.recipes.addAll(recipes);
 		}
