@@ -246,7 +246,7 @@ public class InputHandler {
 			return false;
 		}
 		GuiTextField textField = ReflectionUtil.getFieldWithClass(gui, GuiTextField.class);
-		return textField != null && textField.getVisible() && textField.isEnabled && textField.isFocused();
+		return textField != null && textField.getVisible() && textField.isFocused();
 	}
 
 	public static boolean isInventoryToggleKey(int keyCode) {
