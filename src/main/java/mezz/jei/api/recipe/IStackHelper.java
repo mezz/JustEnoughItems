@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import mezz.jei.api.IJeiHelpers;
+import mezz.jei.api.ISubtypeRegistry;
 import net.minecraft.item.ItemStack;
 
 /**
@@ -32,4 +33,17 @@ public interface IStackHelper {
 	 * Expands wildcard ItemStacks into their subtypes.
 	 */
 	List<List<ItemStack>> expandRecipeItemStackInputs(@Nullable List inputs);
+
+	/**
+	 * Returns an ItemStack from 'stacks' that matches any of the ItemStacks in 'contains'.
+	 * Returns null if there is no match.
+	 * @since JEI 3.13.4
+	 */
+	@Nullable
+	ItemStack containsAnyStack(Iterable<ItemStack> stacks, Iterable<ItemStack> contains);
+
+	/**
+	 * Similar to ItemStack.areItemStacksEqual but ignores NBT on items without subtypes, and uses the {@link ISubtypeRegistry}
+	 */
+	boolean isEquivalent(@Nullable ItemStack lhs, @Nullable ItemStack rhs);
 }

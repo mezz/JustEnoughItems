@@ -133,20 +133,29 @@ public class StackHelper implements IStackHelper {
 	}
 
 	@Nullable
-	public Integer containsAnyStackIndexed(@Nullable Map<Integer, ItemStack> stacks, @Nullable Iterable<ItemStack> contains) {
+	public Integer containsAnyStackIndexed(Map<Integer, ItemStack> stacks, Iterable<ItemStack> contains) {
 		MatchingIndexed matchingStacks = new MatchingIndexed(stacks);
 		MatchingIterable matchingContains = new MatchingIterable(contains);
 		return containsStackMatchable(matchingStacks, matchingContains);
 	}
 
 	@Nullable
-	public ItemStack containsStack(@Nullable Iterable<ItemStack> stacks, @Nullable ItemStack contains) {
-		List<ItemStack> containsList = contains == null ? null : Collections.singletonList(contains);
+	public ItemStack containsStack(Iterable<ItemStack> stacks, ItemStack contains) {
+		List<ItemStack> containsList = Collections.singletonList(contains);
 		return containsAnyStack(stacks, containsList);
 	}
 
+	@Override
 	@Nullable
 	public ItemStack containsAnyStack(@Nullable Iterable<ItemStack> stacks, @Nullable Iterable<ItemStack> contains) {
+		if (stacks == null) {
+			Log.error("Null stacks", new NullPointerException());
+			return null;
+		}
+		if (contains == null) {
+			Log.error("Null contains", new NullPointerException());
+			return null;
+		}
 		MatchingIterable matchingStacks = new MatchingIterable(stacks);
 		MatchingIterable matchingContains = new MatchingIterable(contains);
 		return containsStackMatchable(matchingStacks, matchingContains);
@@ -179,6 +188,7 @@ public class StackHelper implements IStackHelper {
 	/**
 	 * Similar to ItemStack.areItemStacksEqual but ignores NBT on items without subtypes, and uses the {@link ISubtypeRegistry}
 	 */
+	@Override
 	public boolean isEquivalent(@Nullable ItemStack lhs, @Nullable ItemStack rhs) {
 		if (lhs == rhs) {
 			return true;
@@ -453,12 +463,8 @@ public class StackHelper implements IStackHelper {
 		@Nonnull
 		private final Iterable<ItemStack> list;
 
-		public MatchingIterable(@Nullable Iterable<ItemStack> list) {
-			if (list == null) {
-				this.list = Collections.emptyList();
-			} else {
-				this.list = list;
-			}
+		public MatchingIterable(Iterable<ItemStack> list) {
+			this.list = list;
 		}
 
 		@Nonnull
