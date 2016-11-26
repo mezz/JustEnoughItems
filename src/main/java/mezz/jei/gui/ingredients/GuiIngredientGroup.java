@@ -17,6 +17,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.gui.Focus;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 
@@ -30,13 +31,23 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	 * If focus is set and any of the guiIngredients contains focus
 	 * they will only display focus instead of rotating through all their values.
 	 */
-	private IFocus<T> focus;
+	private IFocus<T> inputFocus;
+	private IFocus<T> outputFocus;
 	@Nullable
 	private ITooltipCallback<T> tooltipCallback;
 
 	public GuiIngredientGroup(Class<T> ingredientClass, IFocus<T> focus) {
 		this.ingredientClass = ingredientClass;
-		this.focus = focus;
+		if (focus.getMode() == IFocus.Mode.INPUT) {
+			this.inputFocus = focus;
+			this.outputFocus = new Focus<T>(null);
+		} else if (focus.getMode() == IFocus.Mode.OUTPUT) {
+			this.inputFocus = new Focus<T>(null);
+			this.outputFocus = focus;
+		} else {
+			this.inputFocus = new Focus<T>(null);
+			this.outputFocus = new Focus<T>(null);
+		}
 		this.ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredientClass);
 	}
 
@@ -51,7 +62,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 
 	@Override
 	public IFocus<T> getFocus() {
-		return focus;
+		return inputFocus.getMode() != IFocus.Mode.NONE ? inputFocus : outputFocus;
 	}
 
 	@Override
@@ -97,7 +108,12 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 				}
 			}
 		}
-		guiIngredients.get(slotIndex).set(ingredients, focus);
+		GuiIngredient<T> guiIngredient = guiIngredients.get(slotIndex);
+		if (guiIngredient.isInput()) {
+			guiIngredient.set(ingredients, inputFocus);
+		} else {
+			guiIngredient.set(ingredients, outputFocus);
+		}
 	}
 
 	@Override
@@ -148,6 +164,11 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 			Log.error("Null focus", new NullPointerException());
 			return;
 		}
-		this.focus = focus;
+
+		if (focus.getMode() == IFocus.Mode.INPUT) {
+			this.inputFocus = focus;
+		} else if (focus.getMode() == IFocus.Mode.OUTPUT) {
+			this.outputFocus = focus;
+		}
 	}
 }
