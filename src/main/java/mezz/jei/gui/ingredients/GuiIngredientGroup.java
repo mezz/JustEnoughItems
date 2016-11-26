@@ -30,7 +30,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	 * If focus is set and any of the guiIngredients contains focus
 	 * they will only display focus instead of rotating through all their values.
 	 */
-	private final IFocus<T> focus;
+	private IFocus<T> focus;
 	@Nullable
 	private ITooltipCallback<T> tooltipCallback;
 
@@ -140,5 +140,14 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 			}
 		}
 		return hovered;
+	}
+
+	@Override
+	public void setOverrideDisplayFocus(@Nullable IFocus<T> focus) {
+		if (focus == null) {
+			Log.error("Null focus", new NullPointerException());
+			return;
+		}
+		this.focus = focus;
 	}
 }

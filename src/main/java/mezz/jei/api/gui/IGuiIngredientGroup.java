@@ -93,4 +93,14 @@ public interface IGuiIngredientGroup<T> {
 	 */
 	@Deprecated
 	void set(int slotIndex, Collection<T> ingredients);
+
+	/*
+	 * Force this ingredient group to display a different focus.
+	 * This must be set before any ingredients are set.
+	 *
+	 * Useful for recipes that display things in a custom way depending on what the overall recipe focus is.
+	 *
+	 * @since JEI 3.13.6
+	 */
+	void setOverrideDisplayFocus(IFocus<T> focus);
 }
