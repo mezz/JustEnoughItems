@@ -63,11 +63,11 @@ public class VanillaPlugin extends BlankModPlugin {
 				Items.ENCHANTED_BOOK
 		);
 
-		subtypeRegistry.registerNbtInterpreter(Items.TIPPED_ARROW, PotionSubtypeInterpreter.INSTANCE);
-		subtypeRegistry.registerNbtInterpreter(Items.POTIONITEM, PotionSubtypeInterpreter.INSTANCE);
-		subtypeRegistry.registerNbtInterpreter(Items.SPLASH_POTION, PotionSubtypeInterpreter.INSTANCE);
-		subtypeRegistry.registerNbtInterpreter(Items.LINGERING_POTION, PotionSubtypeInterpreter.INSTANCE);
-		subtypeRegistry.registerNbtInterpreter(Items.BANNER, new ISubtypeRegistry.ISubtypeInterpreter() {
+		subtypeRegistry.registerSubtypeInterpreter(Items.TIPPED_ARROW, PotionSubtypeInterpreter.INSTANCE);
+		subtypeRegistry.registerSubtypeInterpreter(Items.POTIONITEM, PotionSubtypeInterpreter.INSTANCE);
+		subtypeRegistry.registerSubtypeInterpreter(Items.SPLASH_POTION, PotionSubtypeInterpreter.INSTANCE);
+		subtypeRegistry.registerSubtypeInterpreter(Items.LINGERING_POTION, PotionSubtypeInterpreter.INSTANCE);
+		subtypeRegistry.registerSubtypeInterpreter(Items.BANNER, new ISubtypeRegistry.ISubtypeInterpreter() {
 			@Nullable
 			@Override
 			public String getSubtypeInfo(ItemStack itemStack) {
@@ -75,7 +75,7 @@ public class VanillaPlugin extends BlankModPlugin {
 				return baseColor.toString();
 			}
 		});
-		subtypeRegistry.registerNbtInterpreter(Items.SPAWN_EGG, new ISubtypeRegistry.ISubtypeInterpreter() {
+		subtypeRegistry.registerSubtypeInterpreter(Items.SPAWN_EGG, new ISubtypeRegistry.ISubtypeInterpreter() {
 			@Nullable
 			@Override
 			public String getSubtypeInfo(ItemStack itemStack) {

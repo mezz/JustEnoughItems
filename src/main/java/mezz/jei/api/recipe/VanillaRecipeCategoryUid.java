@@ -5,6 +5,7 @@ import java.util.List;
 import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
+import mezz.jei.api.recipe.wrapper.ICustomCraftingRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
@@ -31,7 +32,10 @@ public class VanillaRecipeCategoryUid {
 	 * <p>
 	 * Automatically includes all {@link ShapedRecipes}, {@link ShapelessRecipes}, {@link ShapedOreRecipe}, and {@link ShapelessOreRecipe}.
 	 * <p>
-	 * To add your recipe wrapper to this category, it must implement either {@link ICraftingRecipeWrapper} or {@link IShapedCraftingRecipeWrapper}.
+	 * To add your recipe wrapper to this category, it must implement one of the following:
+	 * {@link ICraftingRecipeWrapper}
+	 * {@link IShapedCraftingRecipeWrapper},
+	 * {@link ICustomCraftingRecipeWrapper}
 	 */
 	public static final String CRAFTING = "minecraft.crafting";
 

@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
  * {@link VanillaRecipeCategoryUid#CRAFTING} recipe category as a shapeless recipe.
  * <p>
  * For shaped recipes, use {@link IShapedCraftingRecipeWrapper}.
+ * To override the category's behavior and set the recipe layout yourself, use {@link ICustomCraftingRecipeWrapper}.
  */
 public interface ICraftingRecipeWrapper extends IRecipeWrapper {
 
