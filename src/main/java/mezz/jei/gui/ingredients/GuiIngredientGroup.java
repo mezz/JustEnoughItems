@@ -32,13 +32,25 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	 * they will only display focus instead of rotating through all their values.
 	 */
 	@Nullable
-	private IFocus<T> focus;
+	private IFocus<T> inputFocus;
+	@Nullable
+	private IFocus<T> outputFocus;
+
 	@Nullable
 	private ITooltipCallback<T> tooltipCallback;
 
 	public GuiIngredientGroup(Class<T> ingredientClass, @Nullable IFocus<T> focus) {
 		this.ingredientClass = ingredientClass;
-		this.focus = focus;
+		if (focus == null) {
+			this.inputFocus = null;
+			this.outputFocus = null;
+		}  else if (focus.getMode() == IFocus.Mode.INPUT) {
+			this.inputFocus = focus;
+			this.outputFocus = null;
+		} else if (focus.getMode() == IFocus.Mode.OUTPUT) {
+			this.inputFocus = null;
+			this.outputFocus = focus;
+		}
 		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		this.ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		this.ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientClass);
@@ -95,7 +107,12 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 				}
 			}
 		}
-		guiIngredients.get(slotIndex).set(ingredients, focus);
+		GuiIngredient<T> guiIngredient = guiIngredients.get(slotIndex);
+		if (guiIngredient.isInput()) {
+			guiIngredient.set(ingredients, inputFocus);
+		} else {
+			guiIngredient.set(ingredients, outputFocus);
+		}
 	}
 
 	@Override
@@ -142,6 +159,13 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 
 	@Override
 	public void setOverrideDisplayFocus(@Nullable IFocus<T> focus) {
-		this.focus = focus;
+		if (focus == null) {
+			this.inputFocus = null;
+			this.outputFocus = null;
+		} else if (focus.getMode() == IFocus.Mode.INPUT) {
+			this.inputFocus = focus;
+		} else if (focus.getMode() == IFocus.Mode.OUTPUT) {
+			this.outputFocus = focus;
+		}
 	}
 }
