@@ -32,7 +32,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	 * they will only display focus instead of rotating through all their values.
 	 */
 	@Nullable
-	private final IFocus<T> focus;
+	private IFocus<T> focus;
 	@Nullable
 	private ITooltipCallback<T> tooltipCallback;
 
@@ -138,5 +138,10 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 			}
 		}
 		return hovered;
+	}
+
+	@Override
+	public void setOverrideDisplayFocus(@Nullable IFocus<T> focus) {
+		this.focus = focus;
 	}
 }

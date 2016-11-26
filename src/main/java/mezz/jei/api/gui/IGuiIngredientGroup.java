@@ -9,6 +9,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 
@@ -97,4 +98,14 @@ public interface IGuiIngredientGroup<T> {
 			  int xPosition, int yPosition,
 			  int width, int height,
 			  int xPadding, int yPadding);
+
+	/*
+	 * Force this ingredient group to display a different focus.
+	 * This must be set before any ingredients are set.
+	 *
+	 * Useful for recipes that display things in a custom way depending on what the overall recipe focus is.
+	 *
+	 * @since JEI 3.13.6
+	 */
+	void setOverrideDisplayFocus(@Nullable IFocus<T> focus);
 }
