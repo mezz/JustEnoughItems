@@ -22,12 +22,17 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 	@Override
 	public void useNbtForSubtypes(Item... items) {
 		for (Item item : items) {
-			registerNbtInterpreter(item, AllNbt.INSTANCE);
+			registerSubtypeInterpreter(item, AllNbt.INSTANCE);
 		}
 	}
 
 	@Override
 	public void registerNbtInterpreter(@Nullable Item item, @Nullable ISubtypeInterpreter interpreter) {
+		registerSubtypeInterpreter(item, interpreter);
+	}
+
+	@Override
+	public void registerSubtypeInterpreter(@Nullable Item item, @Nullable ISubtypeInterpreter interpreter) {
 		if (item == null) {
 			Log.error("Null item", new NullPointerException());
 			return;

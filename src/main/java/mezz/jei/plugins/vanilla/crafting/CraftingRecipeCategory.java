@@ -11,6 +11,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeCategory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
+import mezz.jei.api.recipe.wrapper.ICustomCraftingRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 import mezz.jei.util.Translator;
 import net.minecraft.item.ItemStack;
@@ -61,6 +62,12 @@ public class CraftingRecipeCategory extends BlankRecipeCategory<ICraftingRecipeW
 				int index = craftInputSlot1 + x + (y * 3);
 				guiItemStacks.init(index, true, x * 18, y * 18);
 			}
+		}
+
+		if (recipeWrapper instanceof ICustomCraftingRecipeWrapper) {
+			ICustomCraftingRecipeWrapper customWrapper = (ICustomCraftingRecipeWrapper) recipeWrapper;
+			customWrapper.setRecipe(recipeLayout, ingredients);
+			return;
 		}
 
 		List<List<ItemStack>> inputs = ingredients.getInputs(ItemStack.class);
