@@ -44,6 +44,7 @@ public interface IStackHelper {
 
 	/**
 	 * Similar to ItemStack.areItemStacksEqual but ignores NBT on items without subtypes, and uses the {@link ISubtypeRegistry}
+	 * @since JEI 3.13.4
 	 */
 	boolean isEquivalent(@Nullable ItemStack lhs, @Nullable ItemStack rhs);
 }
