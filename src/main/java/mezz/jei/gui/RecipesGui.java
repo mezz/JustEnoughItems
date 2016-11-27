@@ -398,5 +398,9 @@ public class RecipesGui extends GuiScreen implements IShowsRecipeFocuses, IMouse
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		FMLClientHandler.instance().getClient().getTextureManager().bindTexture(texturePath);
 	}
+	
+	public IRecipeGuiLogic getRecipeGuiLogic() {
+		return logic;
+	}
 
 }

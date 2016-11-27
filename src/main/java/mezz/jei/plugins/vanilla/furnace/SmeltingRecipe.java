@@ -42,6 +42,11 @@ public class SmeltingRecipe extends VanillaRecipeWrapper {
 	public List<ItemStack> getOutputs() {
 		return outputs;
 	}
+	
+	@Nullable
+	public String getExperienceString() {
+		return experienceString;
+	}
 
 	@Override
 	public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {

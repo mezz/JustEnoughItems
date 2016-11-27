@@ -248,6 +248,17 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		state.pageIndex = 0;
 		updateRecipes();
 	}
+	
+	@Override
+	public void setRecipeCategory(int recipeCategoryIndex) {
+		if (state == null) {
+			return;
+		}
+		int recipesTypesCount = recipeCategories.size();
+		state.recipeCategoryIndex = recipeCategoryIndex % recipesTypesCount;
+		state.pageIndex = 0;
+		updateRecipes();
+	}
 
 	@Override
 	public void nextPage() {
@@ -266,6 +277,16 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 		int pageCount = pageCount(recipesPerPage);
 		state.pageIndex = (pageCount + state.pageIndex - 1) % pageCount;
+		updateRecipes();
+	}
+	
+	@Override
+	public void setPage(int pageIndex) {
+		if(state == null) {
+			return;
+		}
+		int pageCount = pageCount(recipesPerPage);
+		state.pageIndex = pageIndex % pageCount;
 		updateRecipes();
 	}
 
