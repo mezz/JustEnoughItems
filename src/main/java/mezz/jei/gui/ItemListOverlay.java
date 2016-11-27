@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
 
+import mezz.jei.util.ReflectionUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -87,8 +88,12 @@ public class ItemListOverlay implements IShowsRecipeFocuses, IMouseHandler, IKey
 	}
 
 	public void initGui(@Nonnull GuiContainer guiContainer) {
-		this.guiLeft = guiContainer.guiLeft;
-		this.guiXSize = guiContainer.xSize;
+		try {
+			this.guiLeft = ReflectionUtil.getInt(GuiContainer.class.getName(), "guiLeft", guiContainer);
+			this.guiXSize = ReflectionUtil.getInt(GuiContainer.class.getName(), "xSize", guiContainer);
+		} catch (ClassNotFoundException|NoSuchFieldException e) {
+			e.printStackTrace();
+		}
 		this.screenWidth = guiContainer.width;
 		this.screenHeight = guiContainer.height;
 

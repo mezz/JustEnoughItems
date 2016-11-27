@@ -3,6 +3,7 @@ package mezz.jei;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import mezz.jei.util.ReflectionUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -19,6 +20,8 @@ import org.lwjgl.input.Mouse;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.RecipesGui;
 import mezz.jei.input.InputHandler;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class GuiEventHandler {
 
@@ -108,7 +111,11 @@ public class GuiEventHandler {
 			Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
 			if (slotUnderMouse != null && slotUnderMouse.getHasStack()) {
 				ItemStack itemStack = slotUnderMouse.getStack();
-				guiContainer.renderToolTip(itemStack, event.mouseX, event.mouseY);
+				try {
+					ReflectionUtil.invokeMethod(GuiScreen.class.getName(), "renderToolTip", guiContainer, new Class[]{ItemStack.class, int.class, int.class}, itemStack, event.mouseX, event.mouseY);
+				} catch (ClassNotFoundException|NoSuchMethodException|InvocationTargetException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

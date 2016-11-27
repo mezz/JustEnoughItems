@@ -2,6 +2,7 @@ package mezz.jei;
 
 import javax.annotation.Nonnull;
 
+import mezz.jei.util.ReflectionUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 
@@ -15,7 +16,7 @@ import mezz.jei.util.Log;
 public class ProxyCommon {
 
 	public void preInit(@Nonnull FMLPreInitializationEvent event) {
-
+		ReflectionUtil.init();
 	}
 
 	public void init(@Nonnull FMLInitializationEvent event) {
