@@ -15,8 +15,6 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 public class ShapedOreRecipeWrapper extends BlankRecipeWrapper implements IShapedCraftingRecipeWrapper {
 	private final IJeiHelpers jeiHelpers;
 	private final ShapedOreRecipe recipe;
-	private final int width;
-	private final int height;
 
 	public ShapedOreRecipeWrapper(IJeiHelpers jeiHelpers, ShapedOreRecipe recipe) {
 		this.jeiHelpers = jeiHelpers;
@@ -29,8 +27,6 @@ public class ShapedOreRecipeWrapper extends BlankRecipeWrapper implements IShape
 				}
 			}
 		}
-		this.width = ObfuscationReflectionHelper.getPrivateValue(ShapedOreRecipe.class, this.recipe, "width");
-		this.height = ObfuscationReflectionHelper.getPrivateValue(ShapedOreRecipe.class, this.recipe, "height");
 	}
 
 	@Override
@@ -48,12 +44,12 @@ public class ShapedOreRecipeWrapper extends BlankRecipeWrapper implements IShape
 
 	@Override
 	public int getWidth() {
-		return width;
+		return recipe.getWidth();
 	}
 
 	@Override
 	public int getHeight() {
-		return height;
+		return recipe.getHeight();
 	}
 
 }

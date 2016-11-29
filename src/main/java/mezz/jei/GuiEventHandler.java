@@ -96,7 +96,7 @@ public class GuiEventHandler {
 		if (gui instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) gui;
 			RecipeRegistry recipeRegistry = runtime.getRecipeRegistry();
-			if (recipeRegistry.getRecipeClickableArea(guiContainer, event.getMouseX() - guiContainer.guiLeft, event.getMouseY() - guiContainer.guiTop) != null) {
+			if (recipeRegistry.getRecipeClickableArea(guiContainer, event.getMouseX() - guiContainer.getGuiLeft(), event.getMouseY() - guiContainer.getGuiTop()) != null) {
 				TooltipRenderer.drawHoveringText(guiContainer.mc, showRecipesText, event.getMouseX(), event.getMouseY());
 			}
 		}

@@ -95,7 +95,7 @@ public class JEIInternalPlugin extends BlankModPlugin {
 					int widthMovement = (int) ((System.currentTimeMillis() / 100) % 100);
 					int size = 25 + widthMovement;
 					return Collections.singletonList(
-							new Rectangle(guiContainer.guiLeft + guiContainer.xSize, guiContainer.guiTop + 40, size, size)
+							new Rectangle(guiContainer.getGuiLeft() + guiContainer.getXSize(), guiContainer.getGuiTop() + 40, size, size)
 					);
 				}
 

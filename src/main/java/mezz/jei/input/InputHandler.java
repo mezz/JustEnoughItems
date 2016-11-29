@@ -86,7 +86,7 @@ public class InputHandler {
 
 		if (guiScreen instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) guiScreen;
-			RecipeClickableArea clickableArea = recipeRegistry.getRecipeClickableArea(guiContainer, mouseX - guiContainer.guiLeft, mouseY - guiContainer.guiTop);
+			RecipeClickableArea clickableArea = recipeRegistry.getRecipeClickableArea(guiContainer, mouseX - guiContainer.getGuiLeft(), mouseY - guiContainer.getGuiTop());
 			if (clickableArea != null) {
 				List<String> recipeCategoryUids = clickableArea.getRecipeCategoryUids();
 				recipesGui.showCategories(recipeCategoryUids);

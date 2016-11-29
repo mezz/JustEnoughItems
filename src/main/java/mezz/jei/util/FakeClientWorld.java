@@ -42,7 +42,7 @@ public class FakeClientWorld extends World {
 
 	private FakeClientWorld() {
 		super(saveHandler, worldInfo, worldProvider, new Profiler(), true);
-		this.provider.registerWorld(this);
+		this.provider.setWorld(this);
 		this.mapStorage = new SaveDataMemoryStorage();
 	}
 

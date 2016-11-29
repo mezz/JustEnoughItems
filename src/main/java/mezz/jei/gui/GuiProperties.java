@@ -29,10 +29,10 @@ public class GuiProperties {
 	public static GuiProperties create(GuiContainer guiContainer) {
 		return new GuiProperties(
 				guiContainer.getClass(),
-				guiContainer.guiLeft,
-				guiContainer.guiTop,
-				guiContainer.xSize,
-				guiContainer.ySize,
+				guiContainer.getGuiLeft(),
+				guiContainer.getGuiTop(),
+				guiContainer.getXSize(),
+				guiContainer.getYSize(),
 				guiContainer.width,
 				guiContainer.height
 		);
