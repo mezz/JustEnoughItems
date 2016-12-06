@@ -123,7 +123,16 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onGuiKeyboardEvent(GuiScreenEvent.KeyboardInputEvent.Pre event) {
-		if (inputHandler != null) {
+		if (inputHandler != null && inputHandler.hasKeyboardFocus()) {
+			if (inputHandler.handleKeyEvent()) {
+				event.setCanceled(true);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onGuiKeyboardEvent(GuiScreenEvent.KeyboardInputEvent.Post event) {
+		if (inputHandler != null && !inputHandler.hasKeyboardFocus()) {
 			if (inputHandler.handleKeyEvent()) {
 				event.setCanceled(true);
 			}

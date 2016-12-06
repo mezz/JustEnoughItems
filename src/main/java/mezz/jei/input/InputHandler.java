@@ -185,6 +185,10 @@ public class InputHandler {
 		return true;
 	}
 
+	public boolean hasKeyboardFocus() {
+		return itemListOverlayInternal != null && itemListOverlayInternal.hasKeyboardFocus();
+	}
+
 	public boolean handleKeyEvent() {
 		char typedChar = Keyboard.getEventCharacter();
 		int eventKey = Keyboard.getEventKey();
