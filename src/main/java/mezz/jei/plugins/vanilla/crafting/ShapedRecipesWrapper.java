@@ -6,6 +6,8 @@ import java.util.List;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
+import mezz.jei.util.BrokenCraftingRecipeException;
+import mezz.jei.util.ErrorUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
 
@@ -25,11 +27,13 @@ public class ShapedRecipesWrapper extends BlankRecipeWrapper implements IShapedC
 	@Override
 	public void getIngredients(IIngredients ingredients) {
 		List<ItemStack> recipeItems = Arrays.asList(recipe.recipeItems);
-		ingredients.setInputs(ItemStack.class, recipeItems);
-
 		ItemStack recipeOutput = recipe.getRecipeOutput();
-		if (recipeOutput != null) {
+		try {
+			ingredients.setInputs(ItemStack.class, recipeItems);
 			ingredients.setOutput(ItemStack.class, recipeOutput);
+		} catch (RuntimeException e) {
+			String info = ErrorUtil.getInfoFromBrokenCraftingRecipe(recipe, recipeItems, recipeOutput);
+			throw new BrokenCraftingRecipeException(info, e);
 		}
 	}
 

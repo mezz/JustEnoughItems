@@ -8,8 +8,9 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
 import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
+import mezz.jei.util.BrokenCraftingRecipeException;
+import mezz.jei.util.ErrorUtil;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class ShapedOreRecipeWrapper extends BlankRecipeWrapper implements IShapedCraftingRecipeWrapper {
@@ -32,13 +33,15 @@ public class ShapedOreRecipeWrapper extends BlankRecipeWrapper implements IShape
 	@Override
 	public void getIngredients(IIngredients ingredients) {
 		IStackHelper stackHelper = jeiHelpers.getStackHelper();
-
-		List<List<ItemStack>> inputs = stackHelper.expandRecipeItemStackInputs(Arrays.asList(recipe.getInput()));
-		ingredients.setInputLists(ItemStack.class, inputs);
-
 		ItemStack recipeOutput = recipe.getRecipeOutput();
-		if (recipeOutput != null) {
+
+		try {
+			List<List<ItemStack>> inputs = stackHelper.expandRecipeItemStackInputs(Arrays.asList(recipe.getInput()));
+			ingredients.setInputLists(ItemStack.class, inputs);
 			ingredients.setOutput(ItemStack.class, recipeOutput);
+		} catch (RuntimeException e) {
+			String info = ErrorUtil.getInfoFromBrokenCraftingRecipe(recipe, Arrays.asList(recipe.getInput()), recipeOutput);
+			throw new BrokenCraftingRecipeException(info, e);
 		}
 	}
 

@@ -33,6 +33,7 @@ import mezz.jei.config.Constants;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.gui.recipes.RecipeLayout;
+import mezz.jei.util.BrokenCraftingRecipeException;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Ingredients;
 import mezz.jei.util.Log;
@@ -227,6 +228,8 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 		try {
 			addRecipeUnchecked(recipe, recipeCategory, recipeHandler);
+		} catch (BrokenCraftingRecipeException e) {
+			Log.error("Found a broken crafting recipe.", e);
 		} catch (RuntimeException e) {
 			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, recipeHandler);
 			Log.error("Found a broken recipe: {}\n", recipeInfo, e);
