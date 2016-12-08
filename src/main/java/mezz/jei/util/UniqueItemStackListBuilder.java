@@ -24,9 +24,13 @@ public class UniqueItemStackListBuilder {
 				ingredients.add(itemStack);
 			}
 		} catch (RuntimeException e) {
-			Log.error("Failed to get unique identifier for stack.", e);
+			String info = ErrorUtil.getItemStackInfo(itemStack);
+			Log.error("Failed to get unique identifier for stack {}", info);
+			ingredients.add(itemStack);
 		} catch (LinkageError e) {
-			Log.error("Failed to get unique identifier for stack.", e);
+			String info = ErrorUtil.getItemStackInfo(itemStack);
+			Log.error("Failed to get unique identifier for stack {}", info);
+			ingredients.add(itemStack);
 		}
 	}
 

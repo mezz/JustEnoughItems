@@ -226,8 +226,7 @@ public class StackHelper implements IStackHelper {
 
 		Item item = itemStack.getItem();
 		if (item == null) {
-			Log.error("Null item in itemStack", new NullPointerException());
-			return Collections.emptyList();
+			throw new NullPointerException("Null item in itemStack");
 		}
 
 		if (itemStack.getItemDamage() != OreDictionary.WILDCARD_VALUE) {
@@ -318,9 +317,13 @@ public class StackHelper implements IStackHelper {
 			return Collections.emptyList();
 		}
 
+		return expandRecipeItemStackInputs(inputs, true);
+	}
+
+	public List<List<ItemStack>> expandRecipeItemStackInputs(List inputs, boolean expandSubtypes) {
 		List<List<ItemStack>> expandedInputs = new ArrayList<List<ItemStack>>();
 		for (Object input : inputs) {
-			List<ItemStack> expandedInput = toItemStackList(input);
+			List<ItemStack> expandedInput = toItemStackList(input, expandSubtypes);
 			expandedInputs.add(expandedInput);
 		}
 		return expandedInputs;
@@ -332,15 +335,19 @@ public class StackHelper implements IStackHelper {
 			return Collections.emptyList();
 		}
 
+		return toItemStackList(stacks, true);
+	}
+
+	public List<ItemStack> toItemStackList(Object stacks, boolean expandSubtypes) {
 		UniqueItemStackListBuilder itemStackListBuilder = new UniqueItemStackListBuilder(this);
-		toItemStackList(itemStackListBuilder, stacks);
+		toItemStackList(itemStackListBuilder, stacks, expandSubtypes);
 		return itemStackListBuilder.build();
 	}
 
-	private void toItemStackList(UniqueItemStackListBuilder itemStackListBuilder, @Nullable Object input) {
+	private void toItemStackList(UniqueItemStackListBuilder itemStackListBuilder, @Nullable Object input, boolean expandSubtypes) {
 		if (input instanceof ItemStack) {
 			ItemStack stack = (ItemStack) input;
-			if (stack.getMetadata() == OreDictionary.WILDCARD_VALUE) {
+			if (expandSubtypes && stack.getMetadata() == OreDictionary.WILDCARD_VALUE) {
 				List<ItemStack> subtypes = getSubtypes(stack);
 				for (ItemStack subtype : subtypes) {
 					itemStackListBuilder.add(subtype);
@@ -350,12 +357,10 @@ public class StackHelper implements IStackHelper {
 			}
 		} else if (input instanceof String) {
 			List<ItemStack> stacks = OreDictionary.getOres((String) input);
-			for (ItemStack stack : stacks) {
-				itemStackListBuilder.add(stack);
-			}
+			toItemStackList(itemStackListBuilder, stacks, expandSubtypes);
 		} else if (input instanceof Iterable) {
 			for (Object obj : (Iterable) input) {
-				toItemStackList(itemStackListBuilder, obj);
+				toItemStackList(itemStackListBuilder, obj, expandSubtypes);
 			}
 		} else if (input != null) {
 			Log.error("Unknown object found: {}", input);

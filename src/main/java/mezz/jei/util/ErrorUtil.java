@@ -2,6 +2,7 @@ package mezz.jei.util;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -71,26 +72,46 @@ public class ErrorUtil {
 	}
 
 	private static <T> List<String> getIngredientOutputInfo(Class<T> ingredientClass, IIngredients ingredients) {
-		IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredientClass);
-
 		List<T> outputs = ingredients.getOutputs(ingredientClass);
-		List<String> infos = new ArrayList<String>(outputs.size());
-
+		List<List<T>> outputLists = new ArrayList<List<T>>();
 		for (T output : outputs) {
-			String errorInfo = ingredientHelper.getErrorInfo(output);
-			infos.add(errorInfo);
+			outputLists.add(Collections.singletonList(output));
 		}
-
-		return infos;
+		return getIngredientInfo(ingredientClass, outputLists);
 	}
 
 	private static <T> List<String> getIngredientInputInfo(Class<T> ingredientClass, IIngredients ingredients) {
-		IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredientClass);
-
 		List<List<T>> inputs = ingredients.getInputs(ingredientClass);
-		List<String> allInfos = new ArrayList<String>(inputs.size());
+		return getIngredientInfo(ingredientClass, inputs);
+	}
 
-		for (List<T> inputList : inputs) {
+	public static <T> String getInfoFromBrokenCraftingRecipe(T recipe, List inputs, @Nullable ItemStack output) {
+		StringBuilder recipeInfoBuilder = new StringBuilder();
+		try {
+			recipeInfoBuilder.append(recipe);
+		} catch (RuntimeException e) {
+			Log.error("Failed recipe.toString", e);
+			recipeInfoBuilder.append(recipe.getClass());
+		}
+
+		recipeInfoBuilder.append("\nOutputs:");
+		List<List<ItemStack>> outputs = Collections.singletonList(Collections.singletonList(output));
+		List<String> ingredientOutputInfo = getIngredientInfo(ItemStack.class, outputs);
+		recipeInfoBuilder.append('\n').append(ItemStack.class.getName()).append(": ").append(ingredientOutputInfo);
+
+		recipeInfoBuilder.append("\nInputs:");
+		List<List<ItemStack>> inputLists = Internal.getStackHelper().expandRecipeItemStackInputs(inputs, false);
+		List<String> ingredientInputInfo = getIngredientInfo(ItemStack.class, inputLists);
+		recipeInfoBuilder.append('\n').append(ItemStack.class.getName()).append(": ").append(ingredientInputInfo);
+
+		return recipeInfoBuilder.toString();
+	}
+
+	public static <T> List<String> getIngredientInfo(Class<T> ingredientClass, List<List<T>> ingredients) {
+		IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredientClass);
+		List<String> allInfos = new ArrayList<String>(ingredients.size());
+
+		for (List<T> inputList : ingredients) {
 			List<String> infos = new ArrayList<String>(inputList.size());
 			for (T input : inputList) {
 				String errorInfo = ingredientHelper.getErrorInfo(input);
