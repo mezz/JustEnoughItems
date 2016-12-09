@@ -210,8 +210,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 				continue;
 			}
 
-			RecipeLayout recipeLayout = new RecipeLayout(recipeWidgetIndex++, recipeCategory, recipeWrapper, state.focus);
-			recipeLayout.setPosition(posX, posY);
+			RecipeLayout recipeLayout = new RecipeLayout(recipeWidgetIndex++, recipeCategory, recipeWrapper, state.focus, posX, posY);
 			recipeLayouts.add(recipeLayout);
 
 			posY += spacingY;

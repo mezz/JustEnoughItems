@@ -1,7 +1,6 @@
 package mezz.jei.gui.recipes;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +45,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	private int posX;
 	private int posY;
 
-	public <T extends IRecipeWrapper> RecipeLayout(int index, IRecipeCategory<T> recipeCategory, T recipeWrapper, @Nullable IFocus focus) {
+	public <T extends IRecipeWrapper> RecipeLayout(int index, IRecipeCategory<T> recipeCategory, T recipeWrapper, @Nullable IFocus focus, int posX, int posY) {
 		this.recipeCategory = recipeCategory;
 		this.focus = focus;
 
@@ -74,6 +73,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		} else {
 			this.recipeTransferButton = null;
 		}
+
+		setPosition(posX, posY);
 
 		this.recipeWrapper = recipeWrapper;
 
