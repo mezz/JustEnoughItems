@@ -620,6 +620,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Nullable
 	@Override
 	public <T extends IRecipeWrapper> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipeWrapper, IFocus focus) {
-		return new RecipeLayout(-1, recipeCategory, recipeWrapper, focus);
+		return new RecipeLayout(-1, recipeCategory, recipeWrapper, focus, 0, 0);
 	}
 }

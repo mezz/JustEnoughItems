@@ -42,7 +42,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	private int posX;
 	private int posY;
 
-	public <T extends IRecipeWrapper> RecipeLayout(int index, IRecipeCategory<T> recipeCategory, T recipeWrapper, IFocus focus) {
+	public <T extends IRecipeWrapper> RecipeLayout(int index, IRecipeCategory<T> recipeCategory, T recipeWrapper, IFocus focus, int posX, int posY) {
 		this.recipeCategory = recipeCategory;
 		this.focus = focus;
 
@@ -66,6 +66,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		} else {
 			this.recipeTransferButton = null;
 		}
+
+		setPosition(posX, posY);
 
 		this.recipeWrapper = recipeWrapper;
 
