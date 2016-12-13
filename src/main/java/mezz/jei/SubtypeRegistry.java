@@ -70,6 +70,9 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 					}
 				}
 				if (info.length() > 0) {
+					if (itemStack.getHasSubtypes()) {
+						info.append("m=").append(itemStack.getMetadata());
+					}
 					return info.toString();
 				}
 			}
