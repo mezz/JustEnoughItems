@@ -18,15 +18,13 @@ import mezz.jei.util.IngredientListElement;
 import mezz.jei.util.Java6Helper;
 import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.client.SplashProgress;
-import net.minecraftforge.fml.common.ProgressManager;
 
 public class IngredientBaseListFactory {
 	private IngredientBaseListFactory() {
 
 	}
 
-	public static ImmutableList<IIngredientListElement> create(boolean showProgressBar) {
+	public static ImmutableList<IIngredientListElement> create() {
 		Log.info("Building item filter...");
 		long start_time = System.currentTimeMillis();
 
@@ -37,7 +35,7 @@ public class IngredientBaseListFactory {
 		List<IIngredientListElement> ingredientListElements = new LinkedList<IIngredientListElement>();
 
 		for (Class ingredientClass : ingredientRegistry.getRegisteredIngredientClasses()) {
-			addToBaseList(ingredientListElements, ingredientRegistry, ingredientChecker, ingredientClass, showProgressBar);
+			addToBaseList(ingredientListElements, ingredientRegistry, ingredientChecker, ingredientClass);
 		}
 
 		sortIngredientListElements(ingredientListElements);
@@ -47,22 +45,11 @@ public class IngredientBaseListFactory {
 		return immutableElements;
 	}
 
-	private static <V> void addToBaseList(List<IIngredientListElement> baseList, IIngredientRegistry ingredientRegistry, IngredientChecker ingredientChecker, Class<V> ingredientClass, final boolean showProgressBar) {
+	private static <V> void addToBaseList(List<IIngredientListElement> baseList, IIngredientRegistry ingredientRegistry, IngredientChecker ingredientChecker, Class<V> ingredientClass) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientClass);
 
 		ImmutableList<V> ingredients = ingredientRegistry.getIngredients(ingredientClass);
-		final int ingredientCount = ingredients.size();
-		if (ingredientCount <= 0) {
-			return;
-		}
-		final int steps = 100;
-		ProgressManager.ProgressBar bar = null;
-		if (showProgressBar) {
-			bar = ProgressManager.push("Adding " + ingredientClass.getSimpleName() + " ingredients.", steps);
-			SplashProgress.pause();
-		}
-		int count = 0;
 		for (V ingredient : ingredients) {
 			if (ingredient != null) {
 				if (!ingredientChecker.isIngredientHidden(ingredient, ingredientHelper)) {
@@ -72,18 +59,6 @@ public class IngredientBaseListFactory {
 					}
 				}
 			}
-			// invariant: progressBar.getStep() * ingredientCount >= count at the end of the cycle
-			// at the end: count = steps * ingredientCount, therefore bar.step() would be called exactly steps times
-			count += steps;
-			while (bar != null && (count > bar.getStep() * ingredientCount)) {
-				SplashProgress.resume();
-				bar.step("" + count / ingredientCount + "%");
-				SplashProgress.pause();
-			}
-		}
-		if (bar != null) {
-			SplashProgress.resume();
-			ProgressManager.pop(bar);
 		}
 	}
 

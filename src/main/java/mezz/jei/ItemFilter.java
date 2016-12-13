@@ -27,12 +27,12 @@ public class ItemFilter {
 
 	private ImmutableList<IIngredientListElement> baseList;
 
-	public ItemFilter(boolean showProgressBar) {
-		this.baseList = IngredientBaseListFactory.create(showProgressBar);
+	public ItemFilter() {
+		this.baseList = IngredientBaseListFactory.create();
 	}
 
 	public void rebuild() {
-		this.baseList = IngredientBaseListFactory.create(false);
+		this.baseList = IngredientBaseListFactory.create();
 		this.filteredItemMapsCache.invalidateAll();
 	}
 

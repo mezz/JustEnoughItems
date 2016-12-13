@@ -22,7 +22,7 @@ public class JeiStarter {
 	@Nullable
 	private GuiEventHandler guiEventHandler;
 
-	public void start(List<IModPlugin> plugins, boolean showProgressBar, boolean resourceReload) {
+	public void start(List<IModPlugin> plugins, boolean resourceReload) {
 		long jeiStartTime = System.currentTimeMillis();
 
 		Log.info("Starting JEI...");
@@ -54,7 +54,7 @@ public class JeiStarter {
 
 		IngredientInformation.onStart(resourceReload);
 
-		ItemFilter itemFilter = new ItemFilter(showProgressBar);
+		ItemFilter itemFilter = new ItemFilter();
 
 		Log.info("Building runtime...");
 		start_time = System.currentTimeMillis();
