@@ -64,12 +64,10 @@ public class IngredientBaseListFactory {
 		}
 		int count = 0;
 		for (V ingredient : ingredients) {
-			if (ingredient != null) {
-				if (!ingredientChecker.isIngredientHidden(ingredient, ingredientHelper)) {
-					IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer);
-					if (ingredientListElement != null) {
-						baseList.add(ingredientListElement);
-					}
+			if (ingredient != null && !ingredientChecker.isIngredientHidden(ingredient, ingredientHelper)) {
+				IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer);
+				if (ingredientListElement != null) {
+					baseList.add(ingredientListElement);
 				}
 			}
 			// invariant: progressBar.getStep() * ingredientCount >= count at the end of the cycle
@@ -152,10 +150,8 @@ public class IngredientBaseListFactory {
 
 		public <V> boolean isIngredientHidden(V ingredient, IIngredientHelper<V> ingredientHelper) {
 			try {
-				if (ingredient instanceof ItemStack) {
-					if (itemBlacklist.isItemBlacklistedByApi((ItemStack) ingredient)) {
-						return true;
-					}
+				if (ingredient instanceof ItemStack && itemBlacklist.isItemBlacklistedByApi((ItemStack) ingredient)) {
+					return true;
 				}
 
 				if (!Config.isEditModeEnabled() && Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {

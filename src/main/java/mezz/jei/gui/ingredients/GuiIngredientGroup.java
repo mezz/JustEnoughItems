@@ -1,6 +1,7 @@
 package mezz.jei.gui.ingredients;
 
 import javax.annotation.Nullable;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -63,7 +64,8 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 
 	@Override
 	public void init(int slotIndex, boolean input, IIngredientRenderer<T> ingredientRenderer, int xPosition, int yPosition, int width, int height, int xPadding, int yPadding) {
-		GuiIngredient<T> guiIngredient = new GuiIngredient<T>(slotIndex, input, ingredientRenderer, ingredientHelper, xPosition, yPosition, width, height, xPadding, yPadding, itemCycleOffset);
+		Rectangle rect = new Rectangle(xPosition, yPosition, width, height);
+		GuiIngredient<T> guiIngredient = new GuiIngredient<T>(slotIndex, input, ingredientRenderer, ingredientHelper, rect, xPadding, yPadding, itemCycleOffset);
 		guiIngredients.put(slotIndex, guiIngredient);
 		if (input) {
 			inputSlots.add(slotIndex);

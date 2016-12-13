@@ -1,6 +1,5 @@
 package mezz.jei.util;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,6 +13,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.google.common.base.Preconditions;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.recipe.IStackHelper;
@@ -147,14 +147,9 @@ public class StackHelper implements IStackHelper {
 	@Override
 	@Nullable
 	public ItemStack containsAnyStack(@Nullable Iterable<ItemStack> stacks, @Nullable Iterable<ItemStack> contains) {
-		if (stacks == null) {
-			Log.error("Null stacks", new NullPointerException());
-			return null;
-		}
-		if (contains == null) {
-			Log.error("Null contains", new NullPointerException());
-			return null;
-		}
+		Preconditions.checkNotNull(stacks, "stacks cannot be null");
+		Preconditions.checkNotNull(contains, "contains cannot be null");
+
 		MatchingIterable matchingStacks = new MatchingIterable(stacks);
 		MatchingIterable matchingContains = new MatchingIterable(contains);
 		return containsStackMatchable(matchingStacks, matchingContains);
@@ -219,7 +214,7 @@ public class StackHelper implements IStackHelper {
 	@Override
 	public List<ItemStack> getSubtypes(@Nullable ItemStack itemStack) {
 		if (itemStack == null) {
-			throw new NullPointerException("Null itemStack");
+			return Collections.emptyList();
 		}
 
 		if (itemStack.isEmpty()) {
@@ -269,7 +264,6 @@ public class StackHelper implements IStackHelper {
 	@Override
 	public List<ItemStack> getAllSubtypes(@Nullable Iterable stacks) {
 		if (stacks == null) {
-			Log.error("Null stacks", new NullPointerException());
 			return Collections.emptyList();
 		}
 
@@ -384,7 +378,7 @@ public class StackHelper implements IStackHelper {
 		ResourceLocation itemName = item.getRegistryName();
 		if (itemName == null) {
 			String stackInfo = ErrorUtil.getItemStackInfo(stack);
-			throw new NullPointerException("Item has no registry name: " + stackInfo);
+			throw new IllegalStateException("Item has no registry name: " + stackInfo);
 		}
 
 		StringBuilder itemKey = new StringBuilder(itemName.toString());
@@ -428,9 +422,7 @@ public class StackHelper implements IStackHelper {
 	}
 
 	public static class MatchingItemsResult {
-		@Nonnull
 		public final Map<Integer, Integer> matchingItems = new HashMap<Integer, Integer>();
-		@Nonnull
 		public final List<Integer> missingItems = new ArrayList<Integer>();
 	}
 
@@ -443,7 +435,6 @@ public class StackHelper implements IStackHelper {
 	}
 
 	private static abstract class DelegateIterator<T, R> implements Iterator<R> {
-		@Nonnull
 		protected final Iterator<T> delegate;
 
 		public DelegateIterator(Iterator<T> delegate) {
@@ -462,14 +453,12 @@ public class StackHelper implements IStackHelper {
 	}
 
 	private static class MatchingIterable implements Iterable<ItemStackMatchable<ItemStack>> {
-		@Nonnull
 		private final Iterable<ItemStack> list;
 
 		public MatchingIterable(Iterable<ItemStack> list) {
 			this.list = list;
 		}
 
-		@Nonnull
 		@Override
 		public Iterator<ItemStackMatchable<ItemStack>> iterator() {
 			Iterator<ItemStack> stacks = list.iterator();
@@ -496,7 +485,6 @@ public class StackHelper implements IStackHelper {
 	}
 
 	private static class MatchingIndexed implements Iterable<ItemStackMatchable<Integer>> {
-		@Nonnull
 		private final Map<Integer, ItemStack> map;
 
 		public MatchingIndexed(@Nullable Map<Integer, ItemStack> map) {
@@ -507,7 +495,6 @@ public class StackHelper implements IStackHelper {
 			}
 		}
 
-		@Nonnull
 		@Override
 		public Iterator<ItemStackMatchable<Integer>> iterator() {
 			return new DelegateIterator<Map.Entry<Integer, ItemStack>, ItemStackMatchable<Integer>>(map.entrySet().iterator()) {
@@ -515,13 +502,11 @@ public class StackHelper implements IStackHelper {
 				public ItemStackMatchable<Integer> next() {
 					final Map.Entry<Integer, ItemStack> entry = delegate.next();
 					return new ItemStackMatchable<Integer>() {
-						@Nonnull
 						@Override
 						public ItemStack getStack() {
 							return entry.getValue();
 						}
 
-						@Nonnull
 						@Override
 						public Integer getResult() {
 							return entry.getKey();

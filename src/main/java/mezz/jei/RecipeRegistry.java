@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
@@ -175,21 +176,15 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public <V> IFocus<V> createFocus(@Nullable IFocus.Mode mode, @Nullable V ingredient) {
-		if (mode == null) {
-			throw new NullPointerException("Null mode");
-		}
-		if (ingredient == null) {
-			throw new NullPointerException("Null ingredient");
-		}
+		Preconditions.checkNotNull(mode, "mode cannot be null");
+		Preconditions.checkNotNull(ingredient, "ingredient cannot be null");
+
 		return new Focus<V>(mode, ingredient);
 	}
 
 	@Override
 	public void addRecipe(@Nullable Object recipe) {
-		if (recipe == null) {
-			Log.error("Null recipe", new NullPointerException());
-			return;
-		}
+		Preconditions.checkNotNull(recipe, "recipe cannot be null");
 
 		addRecipe(recipe, recipe.getClass());
 	}
@@ -259,10 +254,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public ImmutableList<IRecipeCategory> getRecipeCategories(@Nullable List<String> recipeCategoryUids) {
-		if (recipeCategoryUids == null) {
-			Log.error("Null recipeCategoryUids", new NullPointerException());
-			return ImmutableList.of();
-		}
+		Preconditions.checkNotNull(recipeCategoryUids, "recipeCategoryUids cannot be null");
 
 		Set<String> uniqueUids = new HashSet<String>();
 		ImmutableList.Builder<IRecipeCategory> builder = ImmutableList.builder();
@@ -281,10 +273,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Nullable
 	@Override
 	public <T> IRecipeHandler<T> getRecipeHandler(@Nullable Class<? extends T> recipeClass) {
-		if (recipeClass == null) {
-			Log.error("Null recipeClass", new NullPointerException());
-			return null;
-		}
+		Preconditions.checkNotNull(recipeClass, "recipeClass cannot be null");
 
 		// first try to find the exact handler for this recipeClass
 		for (IRecipeHandler<?> recipeHandler : recipeHandlers) {
@@ -340,10 +329,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public <V> List<IRecipeCategory> getRecipeCategories(@Nullable IFocus<V> focus) {
-		if (focus == null) {
-			Log.error("Null focus", new NullPointerException());
-			return ImmutableList.of();
-		}
+		Preconditions.checkNotNull(focus, "focus cannot be null");
 
 		FluidStack fluidStack = getFluidFromItemBlock(focus);
 		if (fluidStack != null) {
@@ -366,15 +352,8 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public <T extends IRecipeWrapper, V> List<T> getRecipeWrappers(@Nullable IRecipeCategory<T> recipeCategory, @Nullable IFocus<V> focus) {
-		if (recipeCategory == null) {
-			Log.error("Null recipeCategory", new NullPointerException());
-			return ImmutableList.of();
-		}
-
-		if (focus == null) {
-			Log.error("Null focus", new NullPointerException());
-			return ImmutableList.of();
-		}
+		Preconditions.checkNotNull(recipeCategory, "recipeCategory cannot be null");
+		Preconditions.checkNotNull(focus, "focus cannot be null");
 
 		FluidStack fluidStack = getFluidFromItemBlock(focus);
 		if (fluidStack != null) {
@@ -397,10 +376,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public <T extends IRecipeWrapper> List<T> getRecipeWrappers(@Nullable IRecipeCategory<T> recipeCategory) {
-		if (recipeCategory == null) {
-			Log.error("Null recipeCategory", new NullPointerException());
-			return ImmutableList.of();
-		}
+		Preconditions.checkNotNull(recipeCategory, "recipeCategory cannot be null");
 
 		List<T> allRecipeWrappers = new ArrayList<T>();
 		for (IRecipeRegistryPlugin plugin : this.plugins) {
@@ -436,13 +412,8 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Nullable
 	public IRecipeTransferHandler getRecipeTransferHandler(@Nullable Container container, @Nullable IRecipeCategory recipeCategory) {
-		if (container == null) {
-			Log.error("Null container", new NullPointerException());
-			return null;
-		} else if (recipeCategory == null) {
-			Log.error("Null recipeCategory", new NullPointerException());
-			return null;
-		}
+		Preconditions.checkNotNull(container, "container cannot be null");
+		Preconditions.checkNotNull(recipeCategory, "recipeCategory cannot be null");
 
 		Class<? extends Container> containerClass = container.getClass();
 		IRecipeTransferHandler recipeTransferHandler = recipeTransferHandlers.get(containerClass, recipeCategory.getUid());

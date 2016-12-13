@@ -1,6 +1,5 @@
 package mezz.jei.plugins.jei;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.Arrays;
@@ -83,7 +82,6 @@ public class JEIInternalPlugin extends BlankModPlugin {
 			));
 
 			registry.addAdvancedGuiHandlers(new IAdvancedGuiHandler<GuiBrewingStand>() {
-				@Nonnull
 				@Override
 				public Class<GuiBrewingStand> getGuiContainerClass() {
 					return GuiBrewingStand.class;

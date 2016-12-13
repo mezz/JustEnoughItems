@@ -53,6 +53,8 @@ public class DrawableAnimated implements IDrawableAnimated {
 			case RIGHT:
 				maskLeft = animationValue;
 				break;
+			default:
+				throw new IllegalStateException("Unknown startDirection " + startDirection);
 		}
 
 		drawable.draw(minecraft, xOffset, yOffset, maskTop, maskBottom, maskLeft, maskRight);

@@ -1,5 +1,6 @@
 package mezz.jei.util;
 
+import com.google.common.base.Preconditions;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.config.SessionData;
 import mezz.jei.network.packets.PacketGiveItemStack;
@@ -50,11 +51,7 @@ public class Commands {
 
 		Item item = itemStack.getItem();
 		ResourceLocation itemResourceLocation = item.getRegistryName();
-		if (itemResourceLocation == null) {
-			String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
-			Log.error("item.getRegistryName() returned null for: " + stackInfo, new NullPointerException());
-			return;
-		}
+		Preconditions.checkNotNull(itemResourceLocation);
 
 		EntityPlayerSP sender = Minecraft.getMinecraft().player;
 		String[] commandParameters = CommandUtil.getGiveCommandParameters(sender, itemStack, amount);

@@ -1,6 +1,5 @@
 package mezz.jei.gui.recipes;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,35 +17,11 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 
 public class RecipeGuiLogic implements IRecipeGuiLogic {
-	private static class State {
-		@Nullable
-		public final IFocus<?> focus;
-		public final ImmutableList<IRecipeCategory> recipeCategories;
-
-		public int recipeCategoryIndex;
-		public int pageIndex;
-		public int recipesPerPage;
-
-		public State(@Nullable IFocus<?> focus, List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int pageIndex) {
-			if (recipeCategories.isEmpty()) {
-				throw new IllegalStateException("Recipe categories cannot be empty.");
-			}
-			this.focus = focus;
-			this.recipeCategories = ImmutableList.copyOf(recipeCategories);
-			this.recipeCategoryIndex = recipeCategoryIndex;
-			this.pageIndex = pageIndex;
-		}
-	}
-
-	@Nonnull
 	private final IRecipeRegistry recipeRegistry;
-	@Nonnull
 	private final IRecipeLogicStateListener stateListener;
 
 	private boolean initialState = true;
-	@Nonnull
 	private State state;
-	@Nonnull
 	private final Stack<State> history = new Stack<State>();
 
 	/**
@@ -198,22 +173,23 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public List<RecipeLayout> getRecipeLayouts(int posX, int posY, int spacingY) {
+	public List<RecipeLayout> getRecipeLayouts(final int posX, final int posY, final int spacingY) {
 		List<RecipeLayout> recipeLayouts = new ArrayList<RecipeLayout>();
 
 		IRecipeCategory recipeCategory = getSelectedRecipeCategory();
 
 		int recipeWidgetIndex = 0;
+		int recipePosY = posY;
 		for (int recipeIndex = state.pageIndex * state.recipesPerPage; recipeIndex < recipes.size() && recipeLayouts.size() < state.recipesPerPage; recipeIndex++) {
 			IRecipeWrapper recipeWrapper = recipes.get(recipeIndex);
 			if (recipeWrapper == null) {
 				continue;
 			}
 
-			RecipeLayout recipeLayout = new RecipeLayout(recipeWidgetIndex++, recipeCategory, recipeWrapper, state.focus, posX, posY);
+			RecipeLayout recipeLayout = new RecipeLayout(recipeWidgetIndex++, recipeCategory, recipeWrapper, state.focus, posX, recipePosY);
 			recipeLayouts.add(recipeLayout);
 
-			posY += spacingY;
+			recipePosY += spacingY;
 		}
 
 		return recipeLayouts;
@@ -290,5 +266,25 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	@Override
 	public boolean hasAllCategories() {
 		return state.recipeCategories.size() == recipeRegistry.getRecipeCategories().size();
+	}
+
+	private static class State {
+		@Nullable
+		public final IFocus<?> focus;
+		public final ImmutableList<IRecipeCategory> recipeCategories;
+
+		public int recipeCategoryIndex;
+		public int pageIndex;
+		public int recipesPerPage;
+
+		public State(@Nullable IFocus<?> focus, List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int pageIndex) {
+			if (recipeCategories.isEmpty()) {
+				throw new IllegalStateException("Recipe categories cannot be empty.");
+			}
+			this.focus = focus;
+			this.recipeCategories = ImmutableList.copyOf(recipeCategories);
+			this.recipeCategoryIndex = recipeCategoryIndex;
+			this.pageIndex = pageIndex;
+		}
 	}
 }

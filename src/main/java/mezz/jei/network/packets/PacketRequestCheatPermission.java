@@ -21,7 +21,7 @@ public class PacketRequestCheatPermission extends PacketJei {
 
 	@Override
 	public void writePacketData(PacketBuffer buf) {
-
+		// the packet itself is the only data needed
 	}
 
 	public static class Handler implements IPacketJeiHandler {

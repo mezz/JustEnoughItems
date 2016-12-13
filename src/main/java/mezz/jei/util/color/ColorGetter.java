@@ -73,7 +73,7 @@ public class ColorGetter {
 
 	public static List<Color> getColors(ItemStack itemStack, int colorCount) {
 		try {
-			return _getColors(itemStack, colorCount);
+			return unsafeGetColors(itemStack, colorCount);
 		} catch (RuntimeException ignored) {
 			return Collections.emptyList();
 		} catch (LinkageError ignored) {
@@ -81,7 +81,7 @@ public class ColorGetter {
 		}
 	}
 
-	private static List<Color> _getColors(ItemStack itemStack, int colorCount) {
+	private static List<Color> unsafeGetColors(ItemStack itemStack, int colorCount) {
 		final Item item = itemStack.getItem();
 		if (itemStack.isEmpty()) {
 			return Collections.emptyList();

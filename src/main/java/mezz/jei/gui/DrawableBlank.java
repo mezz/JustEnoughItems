@@ -25,16 +25,16 @@ public class DrawableBlank implements IDrawableStatic, IDrawableAnimated {
 
 	@Override
 	public void draw(Minecraft minecraft, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
-
+		// draws nothing
 	}
 
 	@Override
 	public void draw(Minecraft minecraft) {
-
+		// draws nothing
 	}
 
 	@Override
 	public void draw(Minecraft minecraft, int xOffset, int yOffset) {
-
+		// draws nothing
 	}
 }

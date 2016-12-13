@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -68,10 +69,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	@Override
 	public <V> List<V> getIngredients(@Nullable Class<V> ingredientClass) {
-		if (ingredientClass == null) {
-			Log.error("Null ingredientClass", new NullPointerException());
-			return ImmutableList.of();
-		}
+		Preconditions.checkNotNull(ingredientClass, "ingredientClass cannot be null");
 
 		//noinspection unchecked
 		List<V> ingredients = ingredientsMap.get(ingredientClass);
@@ -84,18 +82,16 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	@Override
 	public <V> IIngredientHelper<V> getIngredientHelper(@Nullable V ingredient) {
-		if (ingredient == null) {
-			throw new NullPointerException("Null ingredient");
-		}
+		Preconditions.checkNotNull(ingredient, "ingredient cannot be null");
+
 		//noinspection unchecked
 		return (IIngredientHelper<V>) getIngredientHelper(ingredient.getClass());
 	}
 
 	@Override
 	public <V> IIngredientHelper<V> getIngredientHelper(@Nullable Class<V> ingredientClass) {
-		if (ingredientClass == null) {
-			throw new NullPointerException("Null ingredientClass");
-		}
+		Preconditions.checkNotNull(ingredientClass, "ingredientClass cannot be null");
+
 		//noinspection unchecked
 		IIngredientHelper<V> ingredientHelper = ingredientHelperMap.get(ingredientClass);
 		if (ingredientHelper == null) {
@@ -106,9 +102,8 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	@Override
 	public <V> IIngredientRenderer<V> getIngredientRenderer(@Nullable V ingredient) {
-		if (ingredient == null) {
-			throw new NullPointerException("Null ingredient");
-		}
+		Preconditions.checkNotNull(ingredient, "ingredient cannot be null");
+
 		//noinspection unchecked
 		Class<V> ingredientClass = (Class<V>) ingredient.getClass();
 		return getIngredientRenderer(ingredientClass);
@@ -116,9 +111,8 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	@Override
 	public <V> IIngredientRenderer<V> getIngredientRenderer(@Nullable Class<V> ingredientClass) {
-		if (ingredientClass == null) {
-			throw new NullPointerException("Null ingredientClass");
-		}
+		Preconditions.checkNotNull(ingredientClass, "ingredientClass cannot be null");
+
 		//noinspection unchecked
 		IIngredientRenderer<V> ingredientRenderer = ingredientRendererMap.get(ingredientClass);
 		if (ingredientRenderer == null) {
@@ -144,18 +138,9 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	@Override
 	public <V> void addIngredientsAtRuntime(@Nullable Class<V> ingredientClass, @Nullable List<V> ingredients) {
-		if (ingredientClass == null) {
-			Log.error("Null ingredientClass", new NullPointerException());
-			return;
-		}
-		if (ingredients == null) {
-			Log.error("Null ingredients", new NullPointerException());
-			return;
-		}
-		if (ingredients.isEmpty()) {
-			Log.error("Empty ingredients", new IllegalArgumentException());
-			return;
-		}
+		Preconditions.checkNotNull(ingredientClass, "ingredientClass cannot be null");
+		Preconditions.checkNotNull(ingredients, "ingredients cannot be null");
+		Preconditions.checkArgument(!ingredients.isEmpty(), "ingredients cannot be empty");
 
 		//noinspection unchecked
 		List<V> list = ingredientsMap.get(ingredientClass);

@@ -9,21 +9,21 @@ import mezz.jei.api.ingredients.IModIngredientRegistration;
 public abstract class BlankModPlugin implements IModPlugin {
 	@Override
 	public void registerItemSubtypes(ISubtypeRegistry subtypeRegistry) {
-
+		// override to register item subtypes
 	}
 
 	@Override
 	public void registerIngredients(IModIngredientRegistration ingredientRegistry) {
-
+		// override to register ingredients
 	}
 
 	@Override
 	public void register(IModRegistry registry) {
-
+		// override to register recipes
 	}
 
 	@Override
 	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
-
+		// override to use the JEI runtime
 	}
 }

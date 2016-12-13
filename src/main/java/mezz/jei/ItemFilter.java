@@ -27,6 +27,13 @@ public class ItemFilter {
 
 	private ImmutableList<IIngredientListElement> baseList;
 
+	/**
+	 * {@link #getItemStacks()} is slow, so cache the previous value in case someone requests it often.
+	 */
+	private ImmutableList<ItemStack> itemStacksCached = ImmutableList.of();
+	@Nullable
+	private String filterCached;
+
 	public ItemFilter(boolean showProgressBar) {
 		this.baseList = IngredientBaseListFactory.create(showProgressBar);
 	}
@@ -51,13 +58,6 @@ public class ItemFilter {
 			return ingredientList.build();
 		}
 	}
-
-	/**
-	 * {@link #getItemStacks()} is slow, so cache the previous value in case someone requests it often.
-	 */
-	private ImmutableList<ItemStack> itemStacksCached = ImmutableList.of();
-	@Nullable
-	private String filterCached;
 
 	public ImmutableList<ItemStack> getItemStacks() {
 		if (!Config.getFilterText().equals(filterCached)) {

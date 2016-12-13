@@ -121,10 +121,9 @@ public class InputHandler {
 	}
 
 	private boolean handleMouseClickedFocus(int mouseButton, IClickedIngredient<?> clicked) {
-		if (Config.isEditModeEnabled()) {
-			if (handleClickEdit(mouseButton, clicked.getValue())) {
-				return true;
-			}
+		if (Config.isEditModeEnabled() &&
+				handleClickEdit(mouseButton, clicked.getValue())) {
+			return true;
 		}
 
 		if (Config.isCheatItemsEnabled() && clicked.allowsCheating() && !recipesGui.isOpen()) {

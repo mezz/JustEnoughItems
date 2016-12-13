@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.List;
 
+import com.google.common.base.Preconditions;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.StackHelper;
@@ -32,12 +33,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public String getDisplayName(ItemStack ingredient) {
-		String displayName = ingredient.getDisplayName();
-		if (displayName == null) {
-			String ingredientInfo = getErrorInfo(ingredient);
-			throw new NullPointerException("No display name for itemStack. " + ingredientInfo);
-		}
-		return displayName;
+		return Preconditions.checkNotNull(ingredient.getDisplayName(), "No display name for ItemStack.");
 	}
 
 	@Override
@@ -52,15 +48,13 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public String getModId(ItemStack ingredient) {
-		if (ingredient.isEmpty()) {
-			throw new IllegalArgumentException("Empty ItemStack");
-		}
+		Preconditions.checkArgument(!ingredient.isEmpty(), "itemStack ingredient cannot be empty");
 
 		Item item = ingredient.getItem();
 		ResourceLocation itemName = item.getRegistryName();
 		if (itemName == null) {
 			String stackInfo = getErrorInfo(ingredient);
-			throw new NullPointerException("item.getRegistryName() returned null for: " + stackInfo);
+			throw new IllegalStateException("item.getRegistryName() returned null for: " + stackInfo);
 		}
 
 		return itemName.getResourceDomain();

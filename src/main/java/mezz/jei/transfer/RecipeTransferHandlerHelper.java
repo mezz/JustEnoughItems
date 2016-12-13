@@ -2,12 +2,10 @@ package mezz.jei.transfer;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.Collections;
 
+import com.google.common.base.Preconditions;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
-import mezz.jei.util.Log;
-import mezz.jei.util.Translator;
 
 public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper {
 	@Override
@@ -17,25 +15,16 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 
 	@Override
 	public IRecipeTransferError createUserErrorWithTooltip(@Nullable String tooltipMessage) {
-		if (tooltipMessage == null) {
-			Log.error("Null tooltipMessage", new NullPointerException());
-			tooltipMessage = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.unknown");
-		}
+		Preconditions.checkNotNull(tooltipMessage, "tooltipMessage cannot be null");
+
 		return new RecipeTransferErrorTooltip(tooltipMessage);
 	}
 
 	@Override
 	public IRecipeTransferError createUserErrorForSlots(@Nullable String tooltipMessage, @Nullable Collection<Integer> missingItemSlots) {
-		if (tooltipMessage == null) {
-			Log.error("Null tooltipMessage", new NullPointerException());
-			tooltipMessage = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.unknown");
-		}
-		if (missingItemSlots == null) {
-			Log.error("Null missingItemSlots", new NullPointerException());
-			missingItemSlots = Collections.emptyList();
-		} else if (missingItemSlots.isEmpty()) {
-			Log.error("Empty missingItemSlots", new IllegalArgumentException());
-		}
+		Preconditions.checkNotNull(tooltipMessage, "tooltipMessage cannot be null");
+		Preconditions.checkNotNull(missingItemSlots, "missingItemSlots cannot be null");
+		Preconditions.checkArgument(!missingItemSlots.isEmpty(), "middingItemSlots cannot be empty");
 
 		return new RecipeTransferErrorSlots(tooltipMessage, missingItemSlots);
 	}

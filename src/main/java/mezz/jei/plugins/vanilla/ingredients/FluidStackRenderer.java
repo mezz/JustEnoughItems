@@ -95,15 +95,19 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 			scaledAmount = height;
 		}
 
-		minecraft.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-		setGLColorFromInt(fluidColor);
+		drawTiledSprite(minecraft, xPosition, yPosition, width, height, fluidColor, scaledAmount, fluidStillSprite);
+	}
 
-		final int xTileCount = width / TEX_WIDTH;
-		final int xRemainder = width - (xTileCount * TEX_WIDTH);
+	private void drawTiledSprite(Minecraft minecraft, final int xPosition, final int yPosition, final int tiledWidth, final int tiledHeight, int color, int scaledAmount, TextureAtlasSprite sprite) {
+		minecraft.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		setGLColorFromInt(color);
+
+		final int xTileCount = tiledWidth / TEX_WIDTH;
+		final int xRemainder = tiledWidth - (xTileCount * TEX_WIDTH);
 		final int yTileCount = scaledAmount / TEX_HEIGHT;
 		final int yRemainder = scaledAmount - (yTileCount * TEX_HEIGHT);
 
-		final int yStart = yPosition + height;
+		final int yStart = yPosition + tiledHeight;
 
 		for (int xTile = 0; xTile <= xTileCount; xTile++) {
 			for (int yTile = 0; yTile <= yTileCount; yTile++) {
@@ -115,7 +119,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 					int maskTop = TEX_HEIGHT - height;
 					int maskRight = TEX_WIDTH - width;
 
-					drawFluidTexture(x, y, fluidStillSprite, maskTop, maskRight, 100);
+					drawTextureWithMasking(x, y, sprite, maskTop, maskRight, 100);
 				}
 			}
 		}
@@ -142,7 +146,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		GlStateManager.color(red, green, blue, 1.0F);
 	}
 
-	private static void drawFluidTexture(double xCoord, double yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, double zLevel) {
+	private static void drawTextureWithMasking(double xCoord, double yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, double zLevel) {
 		double uMin = (double) textureSprite.getMinU();
 		double uMax = (double) textureSprite.getMaxU();
 		double vMin = (double) textureSprite.getMinV();

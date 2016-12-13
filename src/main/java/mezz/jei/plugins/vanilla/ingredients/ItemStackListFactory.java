@@ -59,7 +59,7 @@ public class ItemStackListFactory {
 	}
 
 	private static void addItemAndSubItems(StackHelper stackHelper, @Nullable Item item, List<ItemStack> itemList, Set<String> itemNameSet) {
-		if (item == null) {
+		if (item == null || item == Items.AIR) {
 			return;
 		}
 

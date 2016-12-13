@@ -60,18 +60,19 @@ public class RecipeGuiTabs implements IMouseHandler {
 		}
 	}
 
-	private static int getPageCount(int categoryCount, final int categoriesPerPage) {
+	private static int getPageCount(final int categoryCount, final int categoriesPerPage) {
 		int pageCount = 0;
-		while (categoryCount > 0) {
+		int categoryIndex = categoryCount;
+		while (categoryIndex > 0) {
 			int availableCategories = categoriesPerPage;
 			if (pageCount > 0) {
 				availableCategories--; // back button
 			}
 
-			if (categoryCount > availableCategories) {
+			if (categoryIndex > availableCategories) {
 				availableCategories--; // next button
 			}
-			categoryCount -= availableCategories;
+			categoryIndex -= availableCategories;
 			pageCount++;
 		}
 

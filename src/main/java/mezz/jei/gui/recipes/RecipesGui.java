@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.base.Preconditions;
 import mezz.jei.Internal;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.IRecipesGui;
@@ -22,7 +23,6 @@ import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.InputHandler;
 import mezz.jei.transfer.RecipeTransferUtil;
-import mezz.jei.util.Log;
 import mezz.jei.util.StringUtil;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -211,11 +211,9 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			hoveredItemStack.drawHovered(mc, 0, 0, mouseX, mouseY);
 		}
 
-		if (titleHoverChecker.checkHover(mouseX, mouseY)) {
-			if (!logic.hasAllCategories()) {
-				String showAllRecipesString = Translator.translateToLocal("jei.tooltip.show.all.recipes");
-				TooltipRenderer.drawHoveringText(mc, showAllRecipesString, mouseX, mouseY);
-			}
+		if (titleHoverChecker.checkHover(mouseX, mouseY) && !logic.hasAllCategories()) {
+			String showAllRecipesString = Translator.translateToLocal("jei.tooltip.show.all.recipes");
+			TooltipRenderer.drawHoveringText(mc, showAllRecipesString, mouseX, mouseY);
 		}
 	}
 
@@ -327,10 +325,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	@Override
 	public <V> void show(@Nullable IFocus<V> focus) {
-		if (focus == null) {
-			Log.error("Null focus", new NullPointerException());
-			return;
-		}
+		Preconditions.checkNotNull(focus, "focus cannot be null");
 
 		if (logic.setFocus(focus)) {
 			open();
@@ -339,14 +334,9 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	@Override
 	public void showCategories(@Nullable List<String> recipeCategoryUids) {
-		if (recipeCategoryUids == null) {
-			Log.error("Null recipeCategoryUids", new NullPointerException());
-			return;
-		}
-		if (recipeCategoryUids.isEmpty()) {
-			Log.error("Empty recipeCategoryUids", new IllegalArgumentException());
-			return;
-		}
+		Preconditions.checkNotNull(recipeCategoryUids, "recipeCategoryUids cannot be null");
+		Preconditions.checkArgument(!recipeCategoryUids.isEmpty(), "recipeCategoryUids cannot be empty");
+
 		if (logic.setCategoryFocus(recipeCategoryUids)) {
 			open();
 		}

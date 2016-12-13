@@ -23,10 +23,6 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
  * List of built-in recipe category UIDs, so that plugins with their own recipe handlers can use them.
  */
 public class VanillaRecipeCategoryUid {
-	private VanillaRecipeCategoryUid() {
-
-	}
-
 	/**
 	 * The crafting recipe category.
 	 * <p>
@@ -71,4 +67,8 @@ public class VanillaRecipeCategoryUid {
 	 * {@link IModRegistry#addDescription(ItemStack, String...)} or {@link IModRegistry#addDescription(List, String...)}
 	 */
 	public static final String DESCRIPTION = "jei.description";
+
+	private VanillaRecipeCategoryUid() {
+
+	}
 }

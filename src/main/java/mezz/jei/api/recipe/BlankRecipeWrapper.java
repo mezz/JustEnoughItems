@@ -11,7 +11,7 @@ import net.minecraft.client.Minecraft;
 public abstract class BlankRecipeWrapper implements IRecipeWrapper {
 	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-
+		// override to draw extra info about the recipe
 	}
 
 	@Override

@@ -2,17 +2,16 @@ package mezz.jei;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
-import mezz.jei.util.Log;
 
 public class ModIngredientRegistration implements IModIngredientRegistration {
 	private final Map<Class, Collection> allIngredientsMap = new IdentityHashMap<Class, Collection>();
@@ -26,29 +25,10 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 			@Nullable IIngredientHelper<V> ingredientHelper,
 			@Nullable IIngredientRenderer<V> ingredientRenderer
 	) {
-		if (ingredientClass == null) {
-			NullPointerException e = new NullPointerException();
-			Log.error("Null ingredientClass", e);
-			return;
-		}
-
-		if (allIngredients == null) {
-			NullPointerException e = new NullPointerException();
-			Log.error("Null allIngredients", e);
-			return;
-		}
-
-		if (ingredientHelper == null) {
-			NullPointerException e = new NullPointerException();
-			Log.error("Null ingredientHelper", e);
-			return;
-		}
-
-		if (ingredientRenderer == null) {
-			NullPointerException e = new NullPointerException();
-			Log.error("Null ingredientRendererFactory", e);
-			return;
-		}
+		Preconditions.checkNotNull(ingredientClass, "ingredientClass cannot be null");
+		Preconditions.checkNotNull(allIngredients, "allIngredients cannot be null");
+		Preconditions.checkNotNull(ingredientHelper, "ingredientHelper cannot be null");
+		Preconditions.checkNotNull(ingredientRenderer, "ingredientRenderer cannot be null");
 
 		allIngredientsMap.put(ingredientClass, allIngredients);
 		ingredientHelperMap.put(ingredientClass, ingredientHelper);

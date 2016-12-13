@@ -6,13 +6,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import mezz.jei.ItemFilter;
 import mezz.jei.api.IItemListOverlay;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
-import mezz.jei.util.Log;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 
@@ -65,10 +65,7 @@ public class ItemListOverlay implements IItemListOverlay {
 
 	@Override
 	public void setFilterText(@Nullable String filterText) {
-		if (filterText == null) {
-			Log.error("null filterText", new NullPointerException());
-			return;
-		}
+		Preconditions.checkNotNull(filterText, "filterText cannot be null");
 
 		Config.setFilterText(filterText);
 

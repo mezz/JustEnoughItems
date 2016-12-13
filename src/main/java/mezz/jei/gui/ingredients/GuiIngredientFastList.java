@@ -51,11 +51,12 @@ public class GuiIngredientFastList {
 		return renderAll;
 	}
 
-	public void set(int i, List<IIngredientListElement> itemList) {
+	public void set(final int startIndex, List<IIngredientListElement> itemList) {
 		renderItems2d.clear();
 		renderItems3d.clear();
 		renderOther.clear();
 
+		int i = startIndex;
 		for (GuiIngredientFast guiItemStack : renderAll) {
 			if (i >= itemList.size()) {
 				guiItemStack.clear();

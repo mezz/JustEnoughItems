@@ -41,11 +41,9 @@ public class ShapedOreRecipeHandler implements IRecipeHandler<ShapedOreRecipe> {
 		}
 		int inputCount = 0;
 		for (Object input : recipe.getInput()) {
-			if (input instanceof List) {
-				if (((List) input).isEmpty()) {
-					// missing items for an oreDict name. This is normal behavior, but the recipe is invalid.
-					return false;
-				}
+			if (input instanceof List && ((List) input).isEmpty()) {
+				// missing items for an oreDict name. This is normal behavior, but the recipe is invalid.
+				return false;
 			}
 			if (input != null) {
 				inputCount++;

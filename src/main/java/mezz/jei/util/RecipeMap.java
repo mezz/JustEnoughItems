@@ -86,9 +86,9 @@ public class RecipeMap {
 
 		Set<String> uniqueIds = new HashSet<String>();
 
-		ingredients = ingredientHelper.expandSubtypes(ingredients);
+		List<V> expandedIngredients = ingredientHelper.expandSubtypes(ingredients);
 
-		for (V ingredient : ingredients) {
+		for (V ingredient : expandedIngredients) {
 			if (ingredient == null) {
 				continue;
 			}

@@ -1,10 +1,10 @@
 package mezz.jei;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
+import com.google.common.base.Preconditions;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.util.Log;
 import net.minecraft.item.Item;
@@ -33,14 +33,8 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 
 	@Override
 	public void registerSubtypeInterpreter(@Nullable Item item, @Nullable ISubtypeInterpreter interpreter) {
-		if (item == null) {
-			Log.error("Null item", new NullPointerException());
-			return;
-		}
-		if (interpreter == null) {
-			Log.error("Null interpreter", new NullPointerException());
-			return;
-		}
+		Preconditions.checkNotNull(item, "item cannot be null");
+		Preconditions.checkNotNull(interpreter, "interpreter cannot be null");
 
 		if (interpreters.containsKey(item)) {
 			Log.error("An interpreter is already registered for this item: {}", item, new IllegalArgumentException());
@@ -53,15 +47,8 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 	@Nullable
 	@Override
 	public String getSubtypeInfo(@Nullable ItemStack itemStack) {
-		if (itemStack == null) {
-			Log.error("Null itemStack", new NullPointerException());
-			return null;
-		}
-
-		if (itemStack.isEmpty()) {
-			Log.error("Empty ItemStack", new IllegalArgumentException());
-			return null;
-		}
+		Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
+		Preconditions.checkArgument(!itemStack.isEmpty(), "itemStack cannot be empty");
 
 		Item item = itemStack.getItem();
 		ISubtypeInterpreter nbtInterpreter = interpreters.get(item);

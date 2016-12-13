@@ -352,15 +352,6 @@ public class Config {
 			property.setShowInGui(false);
 		}
 
-		// migrate item blacklist to new file
-		if (itemBlacklistConfig != null && config.hasKey(CATEGORY_ADVANCED, "itemBlacklist")) {
-			Property oldItemBlacklistProperty = config.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
-			String[] itemBlacklistArray = oldItemBlacklistProperty.getStringList();
-			Property newItemBlacklistProperty = itemBlacklistConfig.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
-			newItemBlacklistProperty.set(itemBlacklistArray);
-			categoryAdvanced.remove("itemBlacklist");
-		}
-
 		final boolean configChanged = config.hasChanged();
 		if (configChanged) {
 			config.save();
@@ -527,8 +518,9 @@ public class Config {
 				return ingredientHelper.getWildcardId(ingredient);
 			case MOD_ID:
 				return ingredientHelper.getModId(ingredient);
+			default:
+				throw new IllegalStateException("Unknown blacklist type: " + blacklistType);
 		}
-		return "";
 	}
 
 	public enum IngredientBlacklistType {

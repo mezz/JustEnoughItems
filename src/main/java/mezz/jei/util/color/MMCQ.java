@@ -18,7 +18,6 @@ package mezz.jei.util.color;
  * available at http://lokeshdhakar.com/projects/color-thief/
  */
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,7 +76,6 @@ public class MMCQ {
 			this.histo = histo;
 		}
 
-		@Nonnull
 		@Override
 		public String toString() {
 			return "r1: " + r1 + " / r2: " + r2 + " / g1: " + g1 + " / g2: "
@@ -112,7 +110,6 @@ public class MMCQ {
 			return _count;
 		}
 
-		@Nonnull
 		@Override
 		public VBox clone() {
 			return new VBox(r1, r2, g1, g2, b1, b2, histo);
@@ -176,7 +173,6 @@ public class MMCQ {
 			vboxes.add(box);
 		}
 
-		@Nonnull
 		public int[][] palette() {
 			int numVBoxes = vboxes.size();
 			int[][] palette = new int[numVBoxes][];
