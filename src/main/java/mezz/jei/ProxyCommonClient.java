@@ -108,7 +108,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		});
 
 		try {
-			this.starter.start(plugins, true, false);
+			this.starter.start(plugins, false);
 		} catch (Exception e) {
 			Log.error("Exception on load", e);
 		}
@@ -133,7 +133,7 @@ public class ProxyCommonClient extends ProxyCommon {
 			// check that JEI has been started before. if not, do nothing
 			if (this.starter.hasStarted()) {
 				Log.info("Restarting JEI.", new RuntimeException());
-				this.starter.start(this.plugins, false, resourceReload);
+				this.starter.start(this.plugins, resourceReload);
 			}
 		} else {
 			Log.error("A mod is trying to restart JEI from the wrong thread!", new RuntimeException());
