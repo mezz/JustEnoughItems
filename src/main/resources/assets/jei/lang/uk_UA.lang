@@ -30,7 +30,7 @@ key.jei.focusSearch=Обрати рядок пошуку
 key.jei.showRecipe=Показувати рецепти предметів
 key.jei.showUses=Показувати використання предметів
 key.jei.recipeBack=Показувати минулу сторінку рецептів
-key.jei.toggleCheatMode=Пеемкнути режим шахрайства
+key.jei.toggleCheatMode=Перемкнути режим шахрайства
 
 # Config
 config.jei.default=По замовчуванню
@@ -50,7 +50,7 @@ config.jei.interface.comment=Наліштування, які відповіда
 config.jei.interface.overlayEnabled=Доступність списка предметів
 config.jei.interface.overlayEnabled.comment=Показувати список предметів при відкриванні интерфейсу.
 config.jei.interface.recipeAnimationsEnabled=Анимації рецептів
-config.jei.interface.recipeAnimationsEnabled.comment=Показувати анимації рецептів (вогонь в печі, індикатори і тд.)
+config.jei.interface.recipeAnimationsEnabled.comment=Показувати анімації рецептів (вогонь в печі, індикатори і тд.)
 
 config.jei.search=Пошук
 config.jei.search.comment=Налаштування, які відповідають за пошук.
