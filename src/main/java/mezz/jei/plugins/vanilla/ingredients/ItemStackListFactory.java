@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import mezz.jei.api.ISubtypeRegistry;
+import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.StackHelper;
@@ -15,6 +17,11 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class ItemStackListFactory {
@@ -109,6 +116,7 @@ public class ItemStackListFactory {
 		String itemKey = null;
 
 		try {
+			addFallbackSubtypeInterpreter(stack);
 			itemKey = stackHelper.getUniqueIdentifierForStack(stack, StackHelper.UidMode.FULL);
 		} catch (RuntimeException e) {
 			String stackInfo = ErrorUtil.getItemStackInfo(stack);
@@ -124,6 +132,62 @@ public class ItemStackListFactory {
 			}
 			itemNameSet.add(itemKey);
 			itemList.add(stack);
+		}
+	}
+
+	private static void addFallbackSubtypeInterpreter(ItemStack itemStack) {
+		ISubtypeRegistry subtypeRegistry = VanillaPlugin.subtypeRegistry;
+		if (subtypeRegistry != null && !subtypeRegistry.hasSubtypeInterpreter(itemStack)) {
+			if (itemStack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
+				subtypeRegistry.registerSubtypeInterpreter(itemStack.getItem(), FluidSubtypeInterpreter.INSTANCE);
+			}
+		}
+	}
+
+	private static class FluidSubtypeInterpreter implements ISubtypeRegistry.ISubtypeInterpreter {
+		public static final FluidSubtypeInterpreter INSTANCE = new FluidSubtypeInterpreter();
+
+		private FluidSubtypeInterpreter() {
+
+		}
+
+		@Nullable
+		@Override
+		public String getSubtypeInfo(ItemStack itemStack) {
+			if (itemStack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
+				IFluidHandler capability = itemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+				if (capability != null) {
+					IFluidTankProperties[] tankPropertiesList = capability.getTankProperties();
+					StringBuilder info = new StringBuilder();
+					for (IFluidTankProperties tankProperties : tankPropertiesList) {
+						String contentsName = getContentsName(tankProperties);
+						if (contentsName != null) {
+							info.append(contentsName).append(";");
+						} else {
+							info.append("empty").append(";");
+						}
+					}
+					if (info.length() > 0) {
+						if (itemStack.getHasSubtypes()) {
+							info.append("m=").append(itemStack.getMetadata());
+						}
+						return info.toString();
+					}
+				}
+			}
+			return null;
+		}
+
+		@Nullable
+		private static String getContentsName(IFluidTankProperties fluidTankProperties) {
+			FluidStack contents = fluidTankProperties.getContents();
+			if (contents != null) {
+				Fluid fluid = contents.getFluid();
+				if (fluid != null) {
+					return fluid.getName();
+				}
+			}
+			return null;
 		}
 	}
 }

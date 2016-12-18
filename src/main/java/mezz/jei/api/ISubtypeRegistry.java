@@ -51,6 +51,13 @@ public interface ISubtypeRegistry {
 	@Nullable
 	String getSubtypeInfo(ItemStack itemStack);
 
+	/**
+	 * Returns whether an {@link ISubtypeInterpreter} has been registered for this item.
+	 *
+	 * @since JEI 4.1.1
+	 */
+	boolean hasSubtypeInterpreter(ItemStack itemStack);
+
 	interface ISubtypeInterpreter {
 		/**
 		 * Get the data from an itemStack that is relevant to telling subtypes apart.

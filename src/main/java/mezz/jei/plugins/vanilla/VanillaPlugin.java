@@ -58,8 +58,12 @@ import net.minecraftforge.fluids.FluidStack;
 
 @JEIPlugin
 public class VanillaPlugin extends BlankModPlugin {
+	@Nullable
+	public static ISubtypeRegistry subtypeRegistry;
+
 	@Override
 	public void registerItemSubtypes(ISubtypeRegistry subtypeRegistry) {
+		VanillaPlugin.subtypeRegistry = subtypeRegistry;
 		subtypeRegistry.useNbtForSubtypes(
 				Items.ENCHANTED_BOOK
 		);
