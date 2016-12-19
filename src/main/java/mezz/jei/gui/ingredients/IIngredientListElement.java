@@ -7,9 +7,11 @@ public interface IIngredientListElement<V> {
 
 	IIngredientHelper<V> getIngredientHelper();
 
-	String getSearchString();
+	String getDisplayName();
 
-	String getModNameString();
+	String getModName();
+
+	String getModId();
 
 	String getTooltipString();
 

@@ -51,17 +51,17 @@ public class GuiIngredientFastList {
 		return renderAll;
 	}
 
-	public void set(final int startIndex, List<IIngredientListElement> itemList) {
+	public void set(final int startIndex, List<Object> ingredientList) {
 		renderItems2d.clear();
 		renderItems3d.clear();
 		renderOther.clear();
 
 		int i = startIndex;
 		for (GuiIngredientFast guiItemStack : renderAll) {
-			if (i >= itemList.size()) {
+			if (i >= ingredientList.size()) {
 				guiItemStack.clear();
 			} else {
-				Object ingredient = itemList.get(i).getIngredient();
+				Object ingredient = ingredientList.get(i);
 				set(guiItemStack, ingredient);
 			}
 			i++;

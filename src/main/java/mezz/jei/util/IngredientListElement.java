@@ -18,8 +18,9 @@ import net.minecraftforge.oredict.OreDictionary;
 public class IngredientListElement<V> implements IIngredientListElement<V> {
 	private final V ingredient;
 	private final IIngredientHelper<V> ingredientHelper;
-	private final String searchString;
-	private final String modNameString;
+	private final String displayName;
+	private final String modName;
+	private final String modId;
 	private final String tooltipString;
 	private final String oreDictString;
 	private final String creativeTabsString;
@@ -44,15 +45,13 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		this.ingredient = ingredient;
 		this.ingredientHelper = ingredientHelper;
 
-		String modId = ingredientHelper.getModId(ingredient);
+		this.modId = ingredientHelper.getModId(ingredient);
 		ModIdUtil modIdUtil = Internal.getModIdUtil();
-		String modName = modIdUtil.getModNameForModId(modId).toLowerCase(Locale.ENGLISH);
+		this.modName = modIdUtil.getModNameForModId(modId).toLowerCase(Locale.ENGLISH);
 
-		String displayName = ingredientHelper.getDisplayName(ingredient).toLowerCase();
+		this.displayName = ingredientHelper.getDisplayName(ingredient).toLowerCase();
 
-		this.modNameString = modId.replaceAll(" ", "") + ' ' + modName.replaceAll(" ", "");
-
-		this.tooltipString = IngredientInformation.getTooltipString(ingredient, ingredientRenderer, modId, modName, displayName);
+		this.tooltipString = IngredientInformation.getTooltipString(ingredient, ingredientRenderer, modId, modName, this.displayName);
 
 		if (Config.getColorSearchMode() != Config.SearchMode.DISABLED) {
 			this.colorString = IngredientInformation.getColorString(ingredient, ingredientHelper);
@@ -83,30 +82,6 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 			this.oreDictString = "";
 			this.creativeTabsString = "";
 		}
-
-		StringBuilder searchStringBuilder = new StringBuilder(displayName);
-
-		if (Config.getModNameSearchMode() == Config.SearchMode.ENABLED) {
-			searchStringBuilder.append(' ').append(this.modNameString);
-		}
-
-		if (Config.getTooltipSearchMode() == Config.SearchMode.ENABLED) {
-			searchStringBuilder.append(' ').append(this.tooltipString);
-		}
-
-		if (Config.getOreDictSearchMode() == Config.SearchMode.ENABLED) {
-			searchStringBuilder.append(' ').append(this.oreDictString);
-		}
-
-		if (Config.getCreativeTabSearchMode() == Config.SearchMode.ENABLED) {
-			searchStringBuilder.append(' ').append(this.creativeTabsString);
-		}
-
-		if (Config.getColorSearchMode() == Config.SearchMode.ENABLED) {
-			searchStringBuilder.append(' ').append(this.colorString);
-		}
-
-		this.searchString = searchStringBuilder.toString();
 	}
 
 	@Override
@@ -119,14 +94,18 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		return ingredientHelper;
 	}
 
-	@Override
-	public final String getSearchString() {
-		return searchString;
+	public final String getDisplayName() {
+		return displayName;
 	}
 
 	@Override
-	public final String getModNameString() {
-		return modNameString;
+	public final String getModName() {
+		return modName;
+	}
+
+	@Override
+	public String getModId() {
+		return modId;
 	}
 
 	@Override

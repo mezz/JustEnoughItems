@@ -231,7 +231,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 	}
 
 	public void updateLayout() {
-		ImmutableList<IIngredientListElement> ingredientList = parent.getItemFilter().getIngredientList();
+		ImmutableList<Object> ingredientList = parent.getItemFilter().getIngredientList();
 		guiIngredientList.set(firstItemIndex, ingredientList);
 
 		FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;

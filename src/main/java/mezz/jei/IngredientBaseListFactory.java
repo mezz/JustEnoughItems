@@ -18,8 +18,6 @@ import mezz.jei.util.IngredientListElement;
 import mezz.jei.util.Java6Helper;
 import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.client.SplashProgress;
-import net.minecraftforge.fml.common.ProgressManager;
 
 public class IngredientBaseListFactory {
 	private IngredientBaseListFactory() {
