@@ -4,12 +4,13 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
@@ -29,6 +30,7 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeRegistryPlugin;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
@@ -64,6 +66,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final ImmutableListMultimap<IRecipeCategory, ItemStack> craftItemsForCategories;
 	private final ImmutableMultimap<String, String> categoriesForCraftItemKeys;
 	private final ImmutableMap<String, IRecipeCategory> recipeCategoriesMap;
+	private final Map<Object, IRecipeWrapper> wrapperMap = new IdentityHashMap<Object, IRecipeWrapper>(); // used when removing recipes
 	private final ListMultimap<IRecipeCategory, Object> recipesForCategories = ArrayListMultimap.create();
 	private final ListMultimap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories = ArrayListMultimap.create();
 	private final RecipeMap recipeInputMap;
@@ -238,7 +241,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		} catch (BrokenCraftingRecipeException e) {
 			Log.error("Found a broken crafting recipe.", e);
 		} catch (RuntimeException e) {
-			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, recipeHandler);
+			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, recipeHandler);
 
 			// suppress the null item in stack exception, that information is redundant here.
 			String errorMessage = e.getMessage();
@@ -248,7 +251,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 				Log.error("Found a broken recipe: {}\n", recipeInfo, e);
 			}
 		} catch (LinkageError e) {
-			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, recipeHandler);
+			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, recipeHandler);
 
 			// suppress the null item in stack exception, that information is redundant here.
 			String errorMessage = e.getMessage();
@@ -262,7 +265,18 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	private <T> void addRecipeUnchecked(T recipe, IRecipeCategory recipeCategory, IRecipeHandler<T> recipeHandler) {
 		IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
+		wrapperMap.put(recipe, recipeWrapper);
 
+		Ingredients ingredients = getIngredients(recipeWrapper);
+
+		recipeInputMap.addRecipe(recipe, recipeWrapper, recipeCategory, ingredients.getInputIngredients());
+		recipeOutputMap.addRecipe(recipe, recipeWrapper, recipeCategory, ingredients.getOutputIngredients());
+
+		recipesForCategories.put(recipeCategory, recipe);
+		recipeWrappersForCategories.put(recipeCategory, recipeWrapper);
+	}
+
+	public Ingredients getIngredients(IRecipeWrapper recipeWrapper) {
 		Ingredients ingredients = new Ingredients();
 		try {
 			recipeWrapper.getIngredients(ingredients);
@@ -270,44 +284,107 @@ public class RecipeRegistry implements IRecipeRegistry {
 			// older recipe wrappers do not support getIngredients
 		}
 
-		if (ingredients.isUsed()) {
-			recipeInputMap.addRecipe(recipe, recipeCategory, recipeHandler, ingredients.getInputIngredients());
-			recipeOutputMap.addRecipe(recipe, recipeCategory, recipeHandler, ingredients.getOutputIngredients());
-		} else {
-			legacy_addRecipeUnchecked(recipeWrapper, recipe, recipeHandler, recipeCategory);
+		if (!ingredients.isUsed()) {
+			legacy_setIngredients(ingredients, stackHelper, recipeWrapper);
 		}
 
-		recipesForCategories.put(recipeCategory, recipe);
-		recipeWrappersForCategories.put(recipeCategory, recipeWrapper);
+		return ingredients;
 	}
 
-	private <T> void legacy_addRecipeUnchecked(IRecipeWrapper recipeWrapper, T recipe, IRecipeHandler<T> recipeHandler, IRecipeCategory recipeCategory) {
+	@SuppressWarnings({"ConstantConditions", "deprecation"})
+	private static void legacy_setIngredients(Ingredients ingredients, IStackHelper stackHelper, IRecipeWrapper recipeWrapper) {
 		List inputs = recipeWrapper.getInputs();
-		List<FluidStack> fluidInputs = recipeWrapper.getFluidInputs();
-		if (inputs != null || fluidInputs != null) {
+		if (inputs != null) {
 			List<ItemStack> inputStacks = stackHelper.toItemStackList(inputs);
-			if (fluidInputs == null) {
-				fluidInputs = Collections.emptyList();
-			}
+			ingredients.setInputs(ItemStack.class, inputStacks);
+		}
 
-			Map<Class, List> inputIngredients = new HashMap<Class, List>();
-			inputIngredients.put(ItemStack.class, inputStacks);
-			inputIngredients.put(FluidStack.class, fluidInputs);
-			recipeInputMap.addRecipe(recipe, recipeCategory, recipeHandler, inputIngredients);
+		List<FluidStack> fluidInputs = recipeWrapper.getFluidInputs();
+		if (fluidInputs != null) {
+			ingredients.setInputs(FluidStack.class, fluidInputs);
 		}
 
 		List outputs = recipeWrapper.getOutputs();
-		List<FluidStack> fluidOutputs = recipeWrapper.getFluidOutputs();
-		if (outputs != null || fluidOutputs != null) {
+		if (outputs != null) {
 			List<ItemStack> outputStacks = stackHelper.toItemStackList(outputs);
-			if (fluidOutputs == null) {
-				fluidOutputs = Collections.emptyList();
-			}
+			ingredients.setOutputs(ItemStack.class, outputStacks);
+		}
 
-			Map<Class, List> outputIngredients = new HashMap<Class, List>();
-			outputIngredients.put(ItemStack.class, outputStacks);
-			outputIngredients.put(FluidStack.class, fluidOutputs);
-			recipeOutputMap.addRecipe(recipe, recipeCategory, recipeHandler, outputIngredients);
+		List<FluidStack> fluidOutputs = recipeWrapper.getFluidOutputs();
+		if (fluidOutputs != null) {
+			ingredients.setOutputs(FluidStack.class, fluidOutputs);
+		}
+	}
+
+	@Override
+	public void removeRecipe(Object recipe) {
+		Preconditions.checkNotNull(recipe, "Null recipe");
+
+		removeRecipe(recipe, recipe.getClass());
+	}
+
+	private <T> void removeRecipe(T recipe, Class<? extends T> recipeClass) {
+		IRecipeHandler<T> recipeHandler = getRecipeHandler(recipeClass);
+		if (recipeHandler == null) {
+			if (!unhandledRecipeClasses.contains(recipeClass)) {
+				unhandledRecipeClasses.add(recipeClass);
+				if (Config.isDebugModeEnabled()) {
+					Log.debug("Can't handle recipe: {}", recipeClass);
+				}
+			}
+			return;
+		}
+
+		String recipeCategoryUid;
+		try {
+			recipeCategoryUid = recipeHandler.getRecipeCategoryUid(recipe);
+		} catch (AbstractMethodError ignored) { // legacy handlers don't have that method
+			recipeCategoryUid = recipeHandler.getRecipeCategoryUid();
+		}
+
+		IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
+		if (recipeCategory == null) {
+			Log.error("No recipe category registered for recipeCategoryUid: {}", recipeCategoryUid);
+			return;
+		}
+
+		try {
+			removeRecipeUnchecked(recipe, recipeCategory);
+		} catch (BrokenCraftingRecipeException e) {
+			Log.error("Found a broken crafting recipe.", e);
+		} catch (RuntimeException e) {
+			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, recipeHandler);
+
+			// suppress the null item in stack exception, that information is redundant here.
+			String errorMessage = e.getMessage();
+			if (StackHelper.nullItemInStack.equals(errorMessage)) {
+				Log.error("Found a broken recipe: {}\n", recipeInfo);
+			} else {
+				Log.error("Found a broken recipe: {}\n", recipeInfo, e);
+			}
+		} catch (LinkageError e) {
+			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, recipeHandler);
+
+			// suppress the null item in stack exception, that information is redundant here.
+			String errorMessage = e.getMessage();
+			if (StackHelper.nullItemInStack.equals(errorMessage)) {
+				Log.error("Found a broken recipe: {}\n", recipeInfo);
+			} else {
+				Log.error("Found a broken recipe: {}\n", recipeInfo, e);
+			}
+		}
+	}
+
+	private <T> void removeRecipeUnchecked(T recipe, IRecipeCategory recipeCategory) {
+		IRecipeWrapper recipeWrapper = wrapperMap.remove(recipe);
+		if (recipeWrapper != null) {
+			Ingredients ingredients = getIngredients(recipeWrapper);
+
+			recipeInputMap.removeRecipe(recipe, recipeWrapper, recipeCategory, ingredients.getInputIngredients());
+			recipeOutputMap.removeRecipe(recipe, recipeWrapper, recipeCategory, ingredients.getOutputIngredients());
+
+			recipesForCategories.remove(recipeCategory, recipe);
+			recipeWrappersForCategories.remove(recipeCategory, recipeWrapper);
 		}
 	}
 

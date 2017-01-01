@@ -107,6 +107,12 @@ public interface IRecipeRegistry {
 	 */
 	void addRecipe(Object recipe);
 
+	/**
+	 * Remove a recipe while the game is running.
+	 *
+	 * @since JEI 3.14.1
+	 */
+	void removeRecipe(Object recipe);
 
 	// DEPRECATED METHODS BELOW
 

@@ -30,11 +30,11 @@ public class FuelRecipeHandler implements IRecipeHandler<FuelRecipe> {
 	@Override
 	public boolean isRecipeValid(FuelRecipe recipe) {
 		if (recipe.getInputs().isEmpty()) {
-			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, this);
 			Log.error("Recipe has no inputs. {}", recipeInfo);
 		}
 		if (!recipe.getOutputs().isEmpty()) {
-			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, this);
 			Log.error("Fuel Recipe should not have outputs. {}", recipeInfo);
 		}
 		return true;

@@ -31,11 +31,11 @@ public class SmeltingRecipeHandler implements IRecipeHandler<SmeltingRecipe> {
 	@Override
 	public boolean isRecipeValid(SmeltingRecipe recipe) {
 		if (recipe.getInputs().isEmpty()) {
-			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, this);
 			Log.error("Recipe has no inputs. {}", recipeInfo);
 		}
 		if (recipe.getOutputs().isEmpty()) {
-			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, this);
 			Log.error("Recipe has no outputs. {}", recipeInfo);
 		}
 		return true;
