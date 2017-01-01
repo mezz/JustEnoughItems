@@ -1,27 +1,21 @@
 package mezz.jei;
 
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import mezz.jei.api.IItemBlacklist;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRegistry;
-import mezz.jei.config.Config;
-import mezz.jei.util.IngredientUtil;
 import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 
+@Deprecated
 public class ItemBlacklist implements IItemBlacklist {
-	private final IIngredientHelper<ItemStack> ingredientHelper;
-	private final Set<String> itemBlacklist = new HashSet<String>();
+	private final IngredientBlacklist ingredientBlacklist;
 
-	public ItemBlacklist(IIngredientRegistry ingredientRegistry) {
-		this.ingredientHelper = ingredientRegistry.getIngredientHelper(ItemStack.class);
+	public ItemBlacklist(IngredientBlacklist ingredientBlacklist) {
+		this.ingredientBlacklist = ingredientBlacklist;
 	}
 
 	@Override
+	@Deprecated
 	public void addItemToBlacklist(@Nullable ItemStack itemStack) {
 		if (itemStack == null) {
 			Log.error("Null itemStack", new NullPointerException());
@@ -32,11 +26,11 @@ public class ItemBlacklist implements IItemBlacklist {
 			return;
 		}
 
-		String uid = ingredientHelper.getUniqueId(itemStack);
-		itemBlacklist.add(uid);
+		ingredientBlacklist.addIngredientToBlacklist(itemStack);
 	}
 
 	@Override
+	@Deprecated
 	public void removeItemFromBlacklist(@Nullable ItemStack itemStack) {
 		if (itemStack == null) {
 			Log.error("Null itemStack", new NullPointerException());
@@ -47,11 +41,11 @@ public class ItemBlacklist implements IItemBlacklist {
 			return;
 		}
 
-		String uid = ingredientHelper.getUniqueId(itemStack);
-		itemBlacklist.remove(uid);
+		ingredientBlacklist.removeIngredientFromBlacklist(itemStack);
 	}
 
 	@Override
+	@Deprecated
 	public boolean isItemBlacklisted(@Nullable ItemStack itemStack) {
 		if (itemStack == null) {
 			Log.error("Null itemStack", new NullPointerException());
@@ -62,17 +56,11 @@ public class ItemBlacklist implements IItemBlacklist {
 			return false;
 		}
 
-		return isItemBlacklistedByApi(itemStack) ||
-				Config.isIngredientOnConfigBlacklist(itemStack, ingredientHelper);
+		return ingredientBlacklist.isIngredientBlacklisted(itemStack);
 	}
-
+	
+	@Deprecated
 	public boolean isItemBlacklistedByApi(ItemStack itemStack) {
-		List<String> uids = IngredientUtil.getUniqueIdsWithWildcard(ingredientHelper, itemStack);
-		for (String uid : uids) {
-			if (itemBlacklist.contains(uid)) {
-				return true;
-			}
-		}
-		return false;
+		return ingredientBlacklist.isIngredientBlacklistedByApi(itemStack);
 	}
 }

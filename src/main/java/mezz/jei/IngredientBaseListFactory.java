@@ -144,18 +144,16 @@ public class IngredientBaseListFactory {
 	}
 
 	private static class IngredientChecker {
-		private final ItemBlacklist itemBlacklist;
+		private final IngredientBlacklist ingredientBlacklist;
 
 		public IngredientChecker(JeiHelpers jeiHelpers) {
-			itemBlacklist = jeiHelpers.getItemBlacklist();
+            ingredientBlacklist = jeiHelpers.getIngredientBlacklist();
 		}
 
 		public <V> boolean isIngredientHidden(V ingredient, IIngredientHelper<V> ingredientHelper) {
 			try {
-				if (ingredient instanceof ItemStack) {
-					if (itemBlacklist.isItemBlacklistedByApi((ItemStack) ingredient)) {
-						return true;
-					}
+				if(ingredientBlacklist.isIngredientBlacklistedByApi(ingredient)) {
+				    return true;
 				}
 
 				if (!Config.isEditModeEnabled() && Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
