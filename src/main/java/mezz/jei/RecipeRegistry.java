@@ -35,6 +35,7 @@ import mezz.jei.config.Constants;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.gui.recipes.RecipeLayout;
+import mezz.jei.plugins.vanilla.furnace.SmeltingRecipe;
 import mezz.jei.util.BrokenCraftingRecipeException;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Ingredients;
@@ -313,6 +314,16 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 			checkIfEmptyRecipeCategories.add(recipeCategory);
 		}
+	}
+
+	@Override
+	public void addSmeltingRecipe(List<ItemStack> inputs, ItemStack output) {
+		Preconditions.checkNotNull(inputs, "null inputs");
+		Preconditions.checkArgument(!inputs.isEmpty(), "empty inputs");
+		Preconditions.checkNotNull(output, "null output");
+
+		SmeltingRecipe smeltingRecipe = new SmeltingRecipe(inputs, output);
+		addRecipe(smeltingRecipe);
 	}
 
 	@Override
