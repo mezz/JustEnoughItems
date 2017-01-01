@@ -101,9 +101,12 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Conta
 		IGuiItemStackGroup playerInvItemStackGroup = new GuiItemStackGroup(new Focus<ItemStack>(null));
 		int[] playerGridIndexes = {0, 1, 3, 4};
 		for (int i = 0; i < 4; i++) {
-			IGuiIngredient<ItemStack> ingredient = guiIngredients.get(playerGridIndexes[i]);
-			playerInvItemStackGroup.init(i, true, 0, 0);
-			playerInvItemStackGroup.set(i, ingredient.getAllIngredients());
+			int index = playerGridIndexes[i];
+			if (index < guiIngredients.size()) {
+				IGuiIngredient<ItemStack> ingredient = guiIngredients.get(index);
+				playerInvItemStackGroup.init(i, true, 0, 0);
+				playerInvItemStackGroup.set(i, ingredient.getAllIngredients());
+			}
 		}
 
 		Map<Integer, ItemStack> availableItemStacks = new HashMap<Integer, ItemStack>();
