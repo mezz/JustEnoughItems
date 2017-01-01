@@ -124,6 +124,7 @@ public class ProxyCommonClient extends ProxyCommon {
 
 	@Override
 	public void restartJEI() {
+		Log.warning("Restarting JEI. Warning: This feature will be removed soon, please see the JavaDocs for more information.", new RuntimeException());
 		restartJEI(false);
 	}
 
@@ -132,7 +133,6 @@ public class ProxyCommonClient extends ProxyCommon {
 		if (minecraft.isCallingFromMinecraftThread()) {
 			// check that JEI has been started before. if not, do nothing
 			if (this.starter.hasStarted()) {
-				Log.info("Restarting JEI.", new RuntimeException());
 				this.starter.start(this.plugins, false, resourceReload);
 			}
 		} else {
