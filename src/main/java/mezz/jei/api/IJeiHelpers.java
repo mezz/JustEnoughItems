@@ -1,5 +1,6 @@
 package mezz.jei.api;
 
+import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 
@@ -20,8 +21,17 @@ public interface IJeiHelpers {
 
 	/**
 	 * Used to stop JEI from displaying a specific item in the item list.
+	 *
+	 * @deprecated since JEI 3.14.0. Use {@link #getIngredientBlacklist()}.
 	 */
+	@Deprecated
 	IItemBlacklist getItemBlacklist();
+
+	/*
+	 * Used to stop JEI from displaying a specific ingredient in the ingredient list
+	 * @since JEI 3.14.0
+	 */
+	IIngredientBlacklist getIngredientBlacklist();
 
 	/**
 	 * Used to tell JEI to ignore NBT tags when comparing items for recipes.
