@@ -19,7 +19,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
 public class ErrorUtil {
-	public static <T> String getInfoFromBrokenRecipe(T recipe, IRecipeHandler<T> recipeHandler) {
+	public static <T> String getInfoFromRecipe(T recipe, IRecipeHandler<T> recipeHandler) {
 		StringBuilder recipeInfoBuilder = new StringBuilder();
 		try {
 			recipeInfoBuilder.append(recipe);

@@ -102,7 +102,11 @@ public class ProxyCommonClient extends ProxyCommon {
 			@Override
 			public void onResourceManagerReload(IResourceManager resourceManager) {
 				if (SessionData.hasJoinedWorld()) {
-					restartJEI(true);
+					// check that JEI has been started before. if not, do nothing
+					if (ProxyCommonClient.this.starter.hasStarted()) {
+						Log.info("Restarting JEI.");
+						ProxyCommonClient.this.starter.start(ProxyCommonClient.this.plugins, true);
+					}
 				}
 			}
 		});
@@ -119,30 +123,6 @@ public class ProxyCommonClient extends ProxyCommon {
 		if (event.getWorld().isRemote && !SessionData.hasJoinedWorld() && Minecraft.getMinecraft().player != null) {
 			SessionData.setJoinedWorld();
 			Config.syncWorldConfig();
-		}
-	}
-
-	@Override
-	public void restartJEI() {
-		restartJEI(false);
-	}
-
-	private void restartJEI(final boolean resourceReload) {
-		Minecraft minecraft = Minecraft.getMinecraft();
-		if (minecraft.isCallingFromMinecraftThread()) {
-			// check that JEI has been started before. if not, do nothing
-			if (this.starter.hasStarted()) {
-				Log.info("Restarting JEI.", new RuntimeException());
-				this.starter.start(this.plugins, resourceReload);
-			}
-		} else {
-			Log.error("A mod is trying to restart JEI from the wrong thread!", new RuntimeException());
-			minecraft.addScheduledTask(new Runnable() {
-				@Override
-				public void run() {
-					restartJEI(resourceReload);
-				}
-			});
 		}
 	}
 

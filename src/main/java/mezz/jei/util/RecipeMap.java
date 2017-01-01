@@ -14,11 +14,10 @@ import com.google.common.collect.Table;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 
 /**
- * A RecipeMap efficiently links IRecipeWrappers, IRecipeCategory, and ItemStacks.
+ * A RecipeMap efficiently links IRecipeWrappers, IRecipeCategory, and Ingredients.
  */
 public class RecipeMap {
 	private final Table<IRecipeCategory, String, List<IRecipeWrapper>> recipeWrapperTable = HashBasedTable.create();
@@ -70,15 +69,15 @@ public class RecipeMap {
 		return listBuilder.build();
 	}
 
-	public <T extends IRecipeWrapper, V, R> void addRecipe(R recipe, IRecipeCategory<T> recipeCategory, IRecipeHandler<R> recipeHandler, Map<Class, List> ingredientsByType) {
+	public <T extends IRecipeWrapper> void addRecipe(T recipeWrapper, IRecipeCategory<T> recipeCategory, Map<Class, List> ingredientsByType) {
 		for (Map.Entry<Class, List> entry : ingredientsByType.entrySet()) {
 			if (entry != null) {
-				addRecipe(recipe, recipeCategory, recipeHandler, entry.getKey(), entry.getValue());
+				addRecipe(recipeWrapper, recipeCategory, entry.getKey(), entry.getValue());
 			}
 		}
 	}
 
-	private <T extends IRecipeWrapper, V, R> void addRecipe(R recipe, IRecipeCategory<T> recipeCategory, IRecipeHandler<R> recipeHandler, Class<V> ingredientClass, List<V> ingredients) {
+	private <T extends IRecipeWrapper, V> void addRecipe(T recipeWrapper, IRecipeCategory<T> recipeCategory, Class<V> ingredientClass, List<V> ingredients) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 
 		//noinspection unchecked
@@ -105,11 +104,45 @@ public class RecipeMap {
 				recipeWrappers = Lists.newArrayList();
 				recipesWrappersForType.put(key, recipeWrappers);
 			}
-			//noinspection unchecked
-			T recipeWrapper = (T) recipeHandler.getRecipeWrapper(recipe);
+
 			recipeWrappers.add(recipeWrapper);
 
 			addRecipeCategory(recipeCategory, ingredient);
+		}
+	}
+
+	public <T extends IRecipeWrapper> void removeRecipe(T recipeWrapper, IRecipeCategory<T> recipeCategory, Map<Class, List> ingredientsByType) {
+		for (Map.Entry<Class, List> entry : ingredientsByType.entrySet()) {
+			if (entry != null) {
+				removeRecipe(recipeWrapper, recipeCategory, entry.getKey(), entry.getValue());
+			}
+		}
+	}
+
+	private <T extends IRecipeWrapper, V> void removeRecipe(T recipeWrapper, IRecipeCategory<T> recipeCategory, Class<V> ingredientClass, List<V> ingredients) {
+		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
+
+		//noinspection unchecked
+		Map<String, List<T>> recipesWrappersForType = (Map<String, List<T>>) (Object) recipeWrapperTable.row(recipeCategory);
+
+		ingredients = ingredientHelper.expandSubtypes(ingredients);
+
+		for (V ingredient : ingredients) {
+			if (ingredient == null) {
+				continue;
+			}
+
+			List<String> uniqueIdsWithWildcard = IngredientUtil.getUniqueIdsWithWildcard(ingredientHelper, ingredient);
+			for (String key : uniqueIdsWithWildcard) {
+				List<T> recipeWrappers = recipesWrappersForType.get(key);
+				if (recipeWrappers != null) {
+					recipeWrappers.remove(recipeWrapper);
+					if (recipeWrappers.isEmpty()) {
+						categoryUidMap.remove(key, recipeCategory.getUid());
+						recipesWrappersForType.remove(key);
+					}
+				}
+			}
 		}
 	}
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,6 +60,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final ImmutableMultimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap;
 	private final ImmutableListMultimap<IRecipeCategory, ItemStack> craftItemsForCategories;
 	private final ImmutableMap<String, IRecipeCategory> recipeCategoriesMap;
+	private final Map<Object, IRecipeWrapper> wrapperMap = new IdentityHashMap<Object, IRecipeWrapper>(); // used when removing recipes
 	private final ListMultimap<IRecipeCategory, Object> recipesForCategories = ArrayListMultimap.create();
 	private final ListMultimap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories = ArrayListMultimap.create();
 	private final RecipeMap recipeInputMap;
@@ -226,25 +228,84 @@ public class RecipeRegistry implements IRecipeRegistry {
 		} catch (BrokenCraftingRecipeException e) {
 			Log.error("Found a broken crafting recipe.", e);
 		} catch (RuntimeException e) {
-			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, recipeHandler);
+			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, recipeHandler);
 			Log.error("Found a broken recipe: {}\n", recipeInfo, e);
 		} catch (LinkageError e) {
-			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, recipeHandler);
+			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, recipeHandler);
 			Log.error("Found a broken recipe: {}\n", recipeInfo, e);
 		}
 	}
 
 	private <T> void addRecipeUnchecked(T recipe, IRecipeCategory recipeCategory, IRecipeHandler<T> recipeHandler) {
 		IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
+		wrapperMap.put(recipe, recipeWrapper);
 
-		Ingredients ingredients = new Ingredients();
-		recipeWrapper.getIngredients(ingredients);
+		Ingredients ingredients = getIngredients(recipeWrapper);
 
-		recipeInputMap.addRecipe(recipe, recipeCategory, recipeHandler, ingredients.getInputIngredients());
-		recipeOutputMap.addRecipe(recipe, recipeCategory, recipeHandler, ingredients.getOutputIngredients());
+		recipeInputMap.addRecipe(recipeWrapper, recipeCategory, ingredients.getInputIngredients());
+		recipeOutputMap.addRecipe(recipeWrapper, recipeCategory, ingredients.getOutputIngredients());
 
 		recipesForCategories.put(recipeCategory, recipe);
 		recipeWrappersForCategories.put(recipeCategory, recipeWrapper);
+	}
+
+	public Ingredients getIngredients(IRecipeWrapper recipeWrapper) {
+		Ingredients ingredients = new Ingredients();
+		recipeWrapper.getIngredients(ingredients);
+		return ingredients;
+	}
+
+	@Override
+	public void removeRecipe(Object recipe) {
+		Preconditions.checkNotNull(recipe, "Null recipe");
+
+		removeRecipe(recipe, recipe.getClass());
+	}
+
+	private <T> void removeRecipe(T recipe, Class<? extends T> recipeClass) {
+		IRecipeHandler<T> recipeHandler = getRecipeHandler(recipeClass);
+		if (recipeHandler == null) {
+			if (!unhandledRecipeClasses.contains(recipeClass)) {
+				unhandledRecipeClasses.add(recipeClass);
+				if (Config.isDebugModeEnabled()) {
+					Log.debug("Can't handle recipe: {}", recipeClass);
+				}
+			}
+			return;
+		}
+
+		String recipeCategoryUid = recipeHandler.getRecipeCategoryUid(recipe);
+
+		IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
+		if (recipeCategory == null) {
+			Log.error("No recipe category registered for recipeCategoryUid: {}", recipeCategoryUid);
+			return;
+		}
+
+		try {
+			removeRecipeUnchecked(recipe, recipeCategory);
+		} catch (BrokenCraftingRecipeException e) {
+			Log.error("Found a broken crafting recipe.", e);
+		} catch (RuntimeException e) {
+			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, recipeHandler);
+			Log.error("Found a broken recipe: {}\n", recipeInfo, e);
+		} catch (LinkageError e) {
+			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, recipeHandler);
+			Log.error("Found a broken recipe: {}\n", recipeInfo, e);
+		}
+	}
+
+	private <T> void removeRecipeUnchecked(T recipe, IRecipeCategory recipeCategory) {
+		IRecipeWrapper recipeWrapper = wrapperMap.remove(recipe);
+		if (recipeWrapper != null) {
+			Ingredients ingredients = getIngredients(recipeWrapper);
+
+			recipeInputMap.removeRecipe(recipeWrapper, recipeCategory, ingredients.getInputIngredients());
+			recipeOutputMap.removeRecipe(recipeWrapper, recipeCategory, ingredients.getOutputIngredients());
+
+			recipesForCategories.remove(recipeCategory, recipe);
+			recipeWrappersForCategories.remove(recipeCategory, recipeWrapper);
+		}
 	}
 
 	@Override

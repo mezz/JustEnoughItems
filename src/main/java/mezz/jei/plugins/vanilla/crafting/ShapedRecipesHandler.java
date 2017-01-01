@@ -28,7 +28,7 @@ public class ShapedRecipesHandler implements IRecipeHandler<ShapedRecipes> {
 	@Override
 	public boolean isRecipeValid(ShapedRecipes recipe) {
 		if (recipe.getRecipeOutput() == null) {
-			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, this);
 			Log.error("Recipe has no outputs. {}", recipeInfo);
 			return false;
 		}
@@ -39,12 +39,12 @@ public class ShapedRecipesHandler implements IRecipeHandler<ShapedRecipes> {
 			}
 		}
 		if (inputCount > 9) {
-			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, this);
 			Log.error("Recipe has too many inputs. {}", recipeInfo);
 			return false;
 		}
 		if (inputCount == 0) {
-			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, this);
 			Log.error("Recipe has no inputs. {}", recipeInfo);
 			return false;
 		}

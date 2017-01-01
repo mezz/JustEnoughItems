@@ -28,7 +28,7 @@ public class ItemDescriptionRecipeHandler implements IRecipeHandler<ItemDescript
 	public boolean isRecipeValid(ItemDescriptionRecipe recipe) {
 		List<String> description = recipe.getDescription();
 		if (description.isEmpty()) {
-			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, this);
 			Log.error("Recipe has no description text. {}", recipeInfo);
 		}
 		return true;

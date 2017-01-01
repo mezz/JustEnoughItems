@@ -41,6 +41,10 @@ public interface IJeiHelpers {
 	/**
 	 * Reload JEI at runtime.
 	 * Used by mods that add and remove items or recipes like MineTweaker's /mt reload.
+	 *
+	 * @deprecated since JEI 4.2.2. This has been deactivated because it takes too long and causes server disconnects.
+	 * If you need to change recipes, use {@link IRecipeRegistry#addRecipe(Object)} and {@link IRecipeRegistry#removeRecipe(Object)}
 	 */
+	@Deprecated
 	void reload();
 }

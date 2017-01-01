@@ -4,7 +4,9 @@ import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.transfer.RecipeTransferHandlerHelper;
+import mezz.jei.util.Log;
 import mezz.jei.util.StackHelper;
+import net.minecraft.client.Minecraft;
 
 public class JeiHelpers implements IJeiHelpers {
 	private final GuiHelper guiHelper;
@@ -49,6 +51,6 @@ public class JeiHelpers implements IJeiHelpers {
 
 	@Override
 	public void reload() {
-		JustEnoughItems.getProxy().restartJEI();
+		Log.error("A mod tried to reload JEI, this is no longer supported. See the javadocs for more information", new RuntimeException());
 	}
 }

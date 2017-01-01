@@ -24,7 +24,7 @@ public class BrewingRecipeHandler implements IRecipeHandler<BrewingRecipeWrapper
 	@Override
 	public boolean isRecipeValid(BrewingRecipeWrapper recipe) {
 		if (recipe.getInputs().size() != 4) {
-			String recipeInfo = ErrorUtil.getInfoFromBrokenRecipe(recipe, this);
+			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, this);
 			Log.error("Recipe has the wrong number of inputs (needs 4). {}", recipeInfo);
 			return false;
 		}

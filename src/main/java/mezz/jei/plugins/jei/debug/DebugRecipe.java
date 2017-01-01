@@ -7,15 +7,21 @@ import java.util.List;
 
 import mezz.jei.api.IItemListOverlay;
 import mezz.jei.api.IJeiRuntime;
+import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -78,16 +84,33 @@ public class DebugRecipe extends BlankRecipeWrapper {
 	@Override
 	public boolean handleClick(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
 		if (mouseButton == 0 && button.mousePressed(minecraft, mouseX, mouseY)) {
-			GuiScreen screen = new GuiInventory(minecraft.player);
-			minecraft.displayGuiScreen(screen);
+			if (GuiScreen.isCtrlKeyDown()) {
+				IJeiRuntime jeiRuntime = JEIInternalPlugin.jeiRuntime;
+				if (jeiRuntime != null) {
+					List<IRecipe> recipeList = CraftingManager.getInstance().getRecipeList();
+					if (!recipeList.isEmpty()) {
+						IRecipe randomRecipe = recipeList.get(minecraft.world.rand.nextInt(recipeList.size()));
+						IRecipeRegistry recipeRegistry = jeiRuntime.getRecipeRegistry();
+						IRecipeHandler<IRecipe> recipeHandler = recipeRegistry.getRecipeHandler(randomRecipe.getClass());
+						if (recipeHandler != null) {
+							String recipeInfo = ErrorUtil.getInfoFromRecipe(randomRecipe, recipeHandler);
+							Log.warning("Removing random recipe: {}", recipeInfo);
+							recipeRegistry.removeRecipe(randomRecipe);
+						}
+					}
+				}
+			} else {
+				GuiScreen screen = new GuiInventory(minecraft.player);
+				minecraft.displayGuiScreen(screen);
 
-			IJeiRuntime runtime = JEIInternalPlugin.jeiRuntime;
-			if (runtime != null) {
-				IItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-				String filterText = itemListOverlay.getFilterText();
-				itemListOverlay.setFilterText(filterText + " test");
+				IJeiRuntime runtime = JEIInternalPlugin.jeiRuntime;
+				if (runtime != null) {
+					IItemListOverlay itemListOverlay = runtime.getItemListOverlay();
+					String filterText = itemListOverlay.getFilterText();
+					itemListOverlay.setFilterText(filterText + " test");
+				}
+				return true;
 			}
-			return true;
 		}
 		return false;
 	}

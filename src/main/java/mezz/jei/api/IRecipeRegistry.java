@@ -103,4 +103,11 @@ public interface IRecipeRegistry {
 	 * (note that {@link IRecipeHandler#isRecipeValid(Object)} must be true when the recipe is added here for it to work)
 	 */
 	void addRecipe(Object recipe);
+
+	/**
+	 * Remove a recipe while the game is running.
+	 *
+	 * @since JEI 4.2.2
+	 */
+	void removeRecipe(Object recipe);
 }
