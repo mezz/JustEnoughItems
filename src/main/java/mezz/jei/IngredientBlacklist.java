@@ -4,11 +4,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.base.Preconditions;
+
 import mezz.jei.api.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.util.IngredientUtil;
-import mezz.jei.util.Log;
 
 public class IngredientBlacklist implements IIngredientBlacklist {
     private final IIngredientRegistry ingredientRegistry;
@@ -20,10 +21,7 @@ public class IngredientBlacklist implements IIngredientBlacklist {
     
     @Override
     public <V> void addIngredientToBlacklist(V ingredient) {
-        if (ingredient == null) {
-            Log.error("Null ingredient", new NullPointerException());
-            return;
-        }
+        Preconditions.checkNotNull(ingredient, "itemStack cannot be null");
         
         String uniqueName = ingredientRegistry.getIngredientHelper(ingredient).getUniqueId(ingredient);
         ingredientBlacklist.add(uniqueName);
@@ -31,10 +29,7 @@ public class IngredientBlacklist implements IIngredientBlacklist {
 
     @Override
     public <V> void removeIngredientFromBlacklist(V ingredient) {
-        if (ingredient == null) {
-            Log.error("Null ingredient", new NullPointerException());
-            return;
-        }
+        Preconditions.checkNotNull(ingredient, "itemStack cannot be null");
         
         String uniqueName = ingredientRegistry.getIngredientHelper(ingredient).getUniqueId(ingredient);
         ingredientBlacklist.remove(uniqueName);
@@ -42,10 +37,7 @@ public class IngredientBlacklist implements IIngredientBlacklist {
 
     @Override
     public <V> boolean isIngredientBlacklisted(V ingredient) {
-        if (ingredient == null) {
-            Log.error("Null ingredient", new NullPointerException());
-            return true;
-        }
+        Preconditions.checkNotNull(ingredient, "itemStack cannot be null");
         
         return isIngredientBlacklistedByApi(ingredient) || Config.isIngredientOnConfigBlacklist(ingredient, ingredientRegistry.getIngredientHelper(ingredient));
     }
