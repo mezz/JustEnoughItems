@@ -41,7 +41,7 @@ public class IngredientBaseListFactory {
 		sortIngredientListElements(ingredientListElements);
 		ImmutableList<IIngredientListElement> immutableElements = ImmutableList.copyOf(ingredientListElements);
 
-		Log.info("Built    item filter in {} ms", System.currentTimeMillis() - start_time);
+		Log.info("Built	item filter in {} ms", System.currentTimeMillis() - start_time);
 		return immutableElements;
 	}
 
@@ -117,15 +117,15 @@ public class IngredientBaseListFactory {
 	}
 
 	private static class IngredientChecker {
-		private final ItemBlacklist itemBlacklist;
+		private final IngredientBlacklist ingredientBlacklist;
 
 		public IngredientChecker(JeiHelpers jeiHelpers) {
-			itemBlacklist = jeiHelpers.getItemBlacklist();
+			ingredientBlacklist = jeiHelpers.getIngredientBlacklist();
 		}
 
 		public <V> boolean isIngredientHidden(V ingredient, IIngredientHelper<V> ingredientHelper) {
 			try {
-				if (ingredient instanceof ItemStack && itemBlacklist.isItemBlacklistedByApi((ItemStack) ingredient)) {
+				if (ingredientBlacklist.isIngredientBlacklistedByApi(ingredient)) {
 					return true;
 				}
 

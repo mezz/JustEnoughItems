@@ -5,11 +5,11 @@ import javax.annotation.Nullable;
 import mezz.jei.Internal;
 import mezz.jei.api.BlankModPlugin;
 import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.IItemBlacklist;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
@@ -144,8 +144,8 @@ public class VanillaPlugin extends BlankModPlugin {
 		registry.addRecipes(BrewingRecipeMaker.getBrewingRecipes(ingredientRegistry));
 		registry.addRecipes(TippedArrowRecipeMaker.getTippedArrowRecipes());
 
-		IItemBlacklist itemBlacklist = registry.getJeiHelpers().getItemBlacklist();
+		IIngredientBlacklist ingredientBlacklist = registry.getJeiHelpers().getIngredientBlacklist();
 		// Game freezes when loading player skulls, see https://bugs.mojang.com/browse/MC-65587
-		itemBlacklist.addItemToBlacklist(new ItemStack(Items.SKULL, 1, 3));
+		ingredientBlacklist.addIngredientToBlacklist(new ItemStack(Items.SKULL, 1, 3));
 	}
 }
