@@ -1,5 +1,6 @@
 package mezz.jei.api;
 
+import mezz.jei.api.ingredients.IIngredientBlacklist;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -18,7 +19,7 @@ public interface IItemBlacklist {
 	 * 
 	 * @deprecated Use {@link IIngredientBlacklist#addIngredientToBlacklist(Object)}.
 	 */
-    @Deprecated
+	@Deprecated
 	void addItemToBlacklist(ItemStack itemStack);
 
 	/**
@@ -28,7 +29,7 @@ public interface IItemBlacklist {
 	 * 
 	 * @deprecated Use {@link IIngredientBlacklist#removeIngredientFromBlacklist(Object)}.
 	 */
-    @Deprecated
+	@Deprecated
 	void removeItemFromBlacklist(ItemStack itemStack);
 
 	/**
@@ -36,6 +37,6 @@ public interface IItemBlacklist {
 	 * 
 	 * @deprecated Use {@link IIngredientBlacklist#isIngredientBlacklisted(Object)}.
 	 */
-    @Deprecated
+	@Deprecated
 	boolean isItemBlacklisted(ItemStack itemStack);
 }

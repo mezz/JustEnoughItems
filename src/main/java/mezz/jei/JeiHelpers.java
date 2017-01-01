@@ -39,7 +39,7 @@ public class JeiHelpers implements IJeiHelpers {
 	
 	@Override
 	public IngredientBlacklist getIngredientBlacklist() {
-	    return ingredientBlacklist;
+		return ingredientBlacklist;
 	}
 
 	@Override
