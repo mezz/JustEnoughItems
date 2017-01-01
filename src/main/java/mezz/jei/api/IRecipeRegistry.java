@@ -13,6 +13,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraftforge.fluids.FluidStack;
 
 /**
@@ -106,6 +107,14 @@ public interface IRecipeRegistry {
 	 * (note that {@link IRecipeHandler#isRecipeValid(Object)} must be true when the recipe is added here for it to work)
 	 */
 	void addRecipe(Object recipe);
+
+	/**
+	 * Add a new smelting recipe while the game is running.
+	 * By default, all smelting recipes from {@link FurnaceRecipes#smeltingList} are already added by JEI.
+	 *
+	 * @since JEI 3.14.2
+	 */
+	void addSmeltingRecipe(List<ItemStack> inputs, ItemStack output);
 
 	/**
 	 * Remove a recipe while the game is running.
