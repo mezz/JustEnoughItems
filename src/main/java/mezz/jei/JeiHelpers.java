@@ -9,13 +9,15 @@ import mezz.jei.util.StackHelper;
 public class JeiHelpers implements IJeiHelpers {
 	private final GuiHelper guiHelper;
 	private final StackHelper stackHelper;
+	private final IngredientBlacklist ingredientBlacklist;
 	private final ItemBlacklist itemBlacklist;
 	private final RecipeTransferHandlerHelper recipeTransferHandlerHelper;
 
 	public JeiHelpers(IIngredientRegistry ingredientRegistry, StackHelper stackHelper) {
 		this.guiHelper = new GuiHelper();
 		this.stackHelper = stackHelper;
-		this.itemBlacklist = new ItemBlacklist(ingredientRegistry);
+		this.ingredientBlacklist = new IngredientBlacklist(ingredientRegistry);
+		this.itemBlacklist = new ItemBlacklist(ingredientBlacklist);
 		this.recipeTransferHandlerHelper = new RecipeTransferHandlerHelper();
 	}
 
@@ -30,8 +32,14 @@ public class JeiHelpers implements IJeiHelpers {
 	}
 
 	@Override
+	@Deprecated
 	public ItemBlacklist getItemBlacklist() {
 		return itemBlacklist;
+	}
+	
+	@Override
+	public IngredientBlacklist getIngredientBlacklist() {
+	    return ingredientBlacklist;
 	}
 
 	@Override

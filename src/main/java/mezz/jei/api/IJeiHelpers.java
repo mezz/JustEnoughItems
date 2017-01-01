@@ -20,8 +20,16 @@ public interface IJeiHelpers {
 
 	/**
 	 * Used to stop JEI from displaying a specific item in the item list.
+	 * 
+	 * @deprecated Use {@link #getIngredientBlacklist()}.
 	 */
+	@Deprecated
 	IItemBlacklist getItemBlacklist();
+	
+	/*
+	 * Used to stop JEI from displaying a specific ingredient in the ingredient list
+	 */
+	IIngredientBlacklist getIngredientBlacklist();
 
 	/**
 	 * Helps with the implementation of Recipe Transfer Handlers
