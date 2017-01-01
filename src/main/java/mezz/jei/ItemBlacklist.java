@@ -2,6 +2,8 @@ package mezz.jei;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import mezz.jei.api.IItemBlacklist;
 import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
@@ -17,14 +19,8 @@ public class ItemBlacklist implements IItemBlacklist {
 	@Override
 	@Deprecated
 	public void addItemToBlacklist(@Nullable ItemStack itemStack) {
-		if (itemStack == null) {
-			Log.error("Null itemStack", new NullPointerException());
-			return;
-		}
-		if (itemStack.getItem() == null) {
-			Log.error("Null item in itemStack", new NullPointerException());
-			return;
-		}
+		Preconditions.checkNotNull(itemStack, "Null itemStack");
+		Preconditions.checkNotNull(itemStack.getItem(), "Null item in itemStack");
 
 		ingredientBlacklist.addIngredientToBlacklist(itemStack);
 	}
@@ -32,14 +28,8 @@ public class ItemBlacklist implements IItemBlacklist {
 	@Override
 	@Deprecated
 	public void removeItemFromBlacklist(@Nullable ItemStack itemStack) {
-		if (itemStack == null) {
-			Log.error("Null itemStack", new NullPointerException());
-			return;
-		}
-		if (itemStack.getItem() == null) {
-			Log.error("Null item in itemStack", new NullPointerException());
-			return;
-		}
+		Preconditions.checkNotNull(itemStack, "Null itemStack");
+		Preconditions.checkNotNull(itemStack.getItem(), "Null item in itemStack");
 
 		ingredientBlacklist.removeIngredientFromBlacklist(itemStack);
 	}

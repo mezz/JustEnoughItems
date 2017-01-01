@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
 public class JeiHelpers implements IJeiHelpers {
 	private final GuiHelper guiHelper;
 	private final StackHelper stackHelper;
-    private final IngredientBlacklist ingredientBlacklist;
+	private final IngredientBlacklist ingredientBlacklist;
 	private final ItemBlacklist itemBlacklist;
 	private final NbtIgnoreList nbtIgnoreList;
 	private final SubtypeRegistry subtypeRegistry;
@@ -24,7 +24,7 @@ public class JeiHelpers implements IJeiHelpers {
 	public JeiHelpers(IIngredientRegistry ingredientRegistry, StackHelper stackHelper, SubtypeRegistry subtypeRegistry) {
 		this.guiHelper = new GuiHelper(stackHelper);
 		this.stackHelper = stackHelper;
-        this.ingredientBlacklist = new IngredientBlacklist(ingredientRegistry);
+		this.ingredientBlacklist = new IngredientBlacklist(ingredientRegistry);
 		this.itemBlacklist = new ItemBlacklist(ingredientBlacklist);
 		this.nbtIgnoreList = new NbtIgnoreList();
 		this.subtypeRegistry = subtypeRegistry;
@@ -49,7 +49,7 @@ public class JeiHelpers implements IJeiHelpers {
 	
 	@Override
 	public IngredientBlacklist getIngredientBlacklist() {
-	    return ingredientBlacklist;
+		return ingredientBlacklist;
 	}
 
 	@Override
