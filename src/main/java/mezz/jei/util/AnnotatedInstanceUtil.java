@@ -33,6 +33,8 @@ public class AnnotatedInstanceUtil {
 				Log.error("Failed to load: {}", asmData.getClassName(), e);
 			} catch (InstantiationException e) {
 				Log.error("Failed to load: {}", asmData.getClassName(), e);
+			} catch (ExceptionInInitializerError e) {
+				Log.error("Failed to load: {}", asmData.getClassName(), e);
 			}
 		}
 		return instances;
