@@ -38,7 +38,7 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Conta
 	public PlayerRecipeTransferHandler(IRecipeTransferHandlerHelper handlerHelper) {
 		this.stackHelper = Internal.getStackHelper();
 		this.handlerHelper = handlerHelper;
-		this.transferHelper = new BasicRecipeTransferInfo<ContainerPlayer>(ContainerPlayer.class, VanillaRecipeCategoryUid.CRAFTING, 1, 4, 5, 36);
+		this.transferHelper = new BasicRecipeTransferInfo<ContainerPlayer>(ContainerPlayer.class, VanillaRecipeCategoryUid.CRAFTING, 1, 4, 9, 36);
 	}
 
 	@Override
