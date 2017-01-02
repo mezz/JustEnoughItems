@@ -69,6 +69,7 @@ public class GuiEventHandler {
 		} else if (!(gui instanceof RecipesGui)) {
 			if (itemListOverlay.isOpen()) {
 				itemListOverlay.close();
+				inputHandler = null;
 			}
 		}
 	}
