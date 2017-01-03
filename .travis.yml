@@ -1,5 +1,5 @@
 language: java
-jdk: openjdk6
+jdk: oraclejdk8
 sudo: false
 
 before_install: chmod +x gradlew
