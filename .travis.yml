@@ -1,16 +1,24 @@
+sudo: required
+dist: trusty
+
 language: java
 jdk: oraclejdk8
-sudo: false
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+  - rm -f  $HOME/.gradle/caches/minecraft/deobfedDeps/providedDummy.jar
+  - rm -f  $HOME/.gradle/caches/minecraft/deobfedDeps/compileDummy.jar
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
 
 before_install: chmod +x gradlew
 install:
   - ./gradlew setupCIWorkspace -S
 script:
   - ./gradlew build
-
-cache:
-  directories:
-  - ~/.gradle
 
 notifications:
   email: false
