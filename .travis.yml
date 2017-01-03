@@ -4,7 +4,7 @@ sudo: false
 
 before_install: chmod +x gradlew
 install:
-  - ""
+  - ./gradlew setupCIWorkspace -S
 script:
   - ./gradlew build
 
