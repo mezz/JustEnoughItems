@@ -1,0 +1,16 @@
+language: java
+jdk: oraclejdk6
+sudo: false
+
+before_install: chmod +x gradlew
+install:
+  - ""
+script:
+  - ./gradlew build
+
+cache:
+  directories:
+  - ~/.gradle
+
+notifications:
+  email: false
