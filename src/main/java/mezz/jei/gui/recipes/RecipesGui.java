@@ -27,15 +27,23 @@ import mezz.jei.util.StringUtil;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
+
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFocuses, IRecipeLogicStateListener {
@@ -308,7 +316,38 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		if (!isOpen()) {
 			parentScreen = mc.currentScreen;
 		}
-		mc.displayGuiScreen(this);
+		if (parentScreen instanceof GuiContainer) {
+			Minecraft mc = Minecraft.getMinecraft();
+			GuiOpenEvent event = new GuiOpenEvent(this);
+			if (!MinecraftForge.EVENT_BUS.post(event)) {
+				GuiScreen gui = event.getGui();
+				// Only close if an event listener has rejected us
+				if (gui != this && gui != parentScreen) {
+					parentScreen.onGuiClosed();
+				}
+				if (gui instanceof GuiMainMenu || gui instanceof GuiMultiplayer) {
+					mc.gameSettings.showDebugInfo = false;
+					mc.ingameGUI.getChatGUI().clearChatMessages(true);
+				}
+				mc.currentScreen = gui;
+				if (gui == null) {
+					mc.getSoundHandler().resumeSounds();
+					mc.setIngameFocus();
+				} else {
+					mc.setIngameNotInFocus();
+					KeyBinding.unPressAllKeys();
+					while (Mouse.next());
+					while (Keyboard.next());
+					ScaledResolution reso = new ScaledResolution(mc);
+					int width = reso.getScaledWidth();
+					int height = reso.getScaledHeight();
+					gui.setWorldAndResolution(mc, width, height);
+					mc.skipRenderWorld = false;
+				}
+			}
+		} else {
+			mc.displayGuiScreen(this);	
+		}
 	}
 
 	public void close() {
