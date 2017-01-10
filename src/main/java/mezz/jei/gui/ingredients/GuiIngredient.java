@@ -140,6 +140,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		int x = rect.x + xOffset + xPadding;
 		int y = rect.y + yOffset + yPadding;
 		GlStateManager.disableLighting();
+		GlStateManager.disableDepth();
 		drawRect(x, y, x + rect.width - xPadding * 2, y + rect.height - yPadding * 2, color.getRGB());
 		GlStateManager.color(1f, 1f, 1f, 1f);
 	}
