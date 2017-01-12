@@ -7,7 +7,7 @@ import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
  * Implement this interface instead of just {@link IRecipeWrapper} to have your recipe wrapper work as part of the
  * {@link VanillaRecipeCategoryUid#CRAFTING} recipe category as a shaped recipe.
  * <p>
- * For shapeless recipes, use {@link ICraftingRecipeWrapper}.
+ * For shapeless recipes, just use {@link IRecipeWrapper}.
  */
 public interface IShapedCraftingRecipeWrapper extends ICraftingRecipeWrapper {
 
