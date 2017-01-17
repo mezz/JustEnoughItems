@@ -202,19 +202,9 @@ public class StackHelper implements IStackHelper {
 			return false;
 		}
 
-		if (lhs.getMetadata() != OreDictionary.WILDCARD_VALUE) {
-			if (lhs.getMetadata() != rhs.getMetadata()) {
-				return false;
-			}
-		}
-
-		if (lhs.getHasSubtypes()) {
-			String keyLhs = getUniqueIdentifierForStack(lhs, UidMode.NORMAL);
-			String keyRhs = getUniqueIdentifierForStack(rhs, UidMode.NORMAL);
-			return Java6Helper.equals(keyLhs, keyRhs);
-		} else {
-			return true;
-		}
+		String keyLhs = getUniqueIdentifierForStack(lhs, UidMode.NORMAL);
+		String keyRhs = getUniqueIdentifierForStack(rhs, UidMode.NORMAL);
+		return keyLhs.equals(keyRhs);
 	}
 
 	@Override
