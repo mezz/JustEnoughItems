@@ -11,6 +11,7 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
 import mezz.jei.Internal;
+import mezz.jei.JeiRuntime;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.gui.IDrawable;
@@ -22,6 +23,7 @@ import mezz.jei.gui.ingredients.GuiIngredientFast;
 import mezz.jei.gui.ingredients.GuiIngredientFastList;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IClickedIngredient;
@@ -405,7 +407,8 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 			return false;
 		}
 
-		if (Config.isDeleteItemsInCheatModeActive()) {
+		JeiRuntime runtime = Internal.getRuntime();
+		if (Config.isDeleteItemsInCheatModeActive() && (runtime == null || !runtime.getRecipesGui().isOpen())) {
 			Minecraft minecraft = Minecraft.getMinecraft();
 			EntityPlayerSP player = minecraft.player;
 			ItemStack itemStack = player.inventory.getItemStack();
@@ -459,7 +462,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 				if (minecraft.currentScreen != null) {
 					parent.close();
 					GuiScreen configScreen = new JEIModConfigGui(minecraft.currentScreen);
-					minecraft.displayGuiScreen(configScreen);
+					RecipesGui.displayGuiScreenWithoutClose(configScreen);
 				}
 			}
 			return true;
