@@ -14,14 +14,6 @@ public class ShapelessRecipesWrapper extends BlankRecipeWrapper implements ICraf
 
 	public ShapelessRecipesWrapper(ShapelessRecipes recipe) {
 		this.recipe = recipe;
-		for (Object input : this.recipe.recipeItems) {
-			if (input instanceof ItemStack) {
-				ItemStack itemStack = (ItemStack) input;
-				if (itemStack.getCount() != 1) {
-					itemStack.setCount(1);
-				}
-			}
-		}
 	}
 
 	@Override

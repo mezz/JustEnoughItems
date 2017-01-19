@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.Side;
 		version = Constants.VERSION,
 		guiFactory = "mezz.jei.config.JEIModGuiFactory",
 		acceptedMinecraftVersions = "[1.11]",
-		dependencies = "required-after:forge@[13.19.0.2180,);")
+		dependencies = "required-after:forge@[13.20.0.2222,);")
 public class JustEnoughItems {
 
 	@SuppressWarnings("NullableProblems")

@@ -20,14 +20,6 @@ public class ShapedOreRecipeWrapper extends BlankRecipeWrapper implements IShape
 	public ShapedOreRecipeWrapper(IJeiHelpers jeiHelpers, ShapedOreRecipe recipe) {
 		this.jeiHelpers = jeiHelpers;
 		this.recipe = recipe;
-		for (Object input : this.recipe.getInput()) {
-			if (input instanceof ItemStack) {
-				ItemStack itemStack = (ItemStack) input;
-				if (itemStack.getCount() != 1) {
-					itemStack.setCount(1);
-				}
-			}
-		}
 	}
 
 	@Override
