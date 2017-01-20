@@ -53,7 +53,7 @@ public class InventoryHelper {
 			if (slotIndex >= 0 && slotIndex < container.inventorySlots.size()) {
 				final Slot slot = container.getSlot(slotIndex);
 				final ItemStack inventoryStack = slot.getStack();
-				if (!inventoryStack.isEmpty()) {
+				if (inventoryStack.isEmpty()) {
 					if (doAdd) {
 						ItemStack stackToAdd = stack.copy();
 						stackToAdd.setCount(stack.getCount() - added);
