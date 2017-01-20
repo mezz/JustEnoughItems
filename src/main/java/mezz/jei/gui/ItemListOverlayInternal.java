@@ -329,7 +329,8 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 		if (Config.isDeleteItemsInCheatModeActive()) {
 			EntityPlayer player = minecraft.player;
 			if (!player.inventory.getItemStack().isEmpty()) {
-				return true;
+				JeiRuntime runtime = Internal.getRuntime();
+				return runtime == null || !runtime.getRecipesGui().isOpen();
 			}
 		}
 		return false;
