@@ -6,7 +6,6 @@ import java.util.List;
 
 import mezz.jei.ItemFilter;
 import mezz.jei.config.Config;
-import mezz.jei.gui.ingredients.IIngredientListElement;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraftforge.fml.client.config.HoverChecker;

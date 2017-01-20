@@ -22,7 +22,6 @@ import mezz.jei.config.JEIModConfigGui;
 import mezz.jei.gui.ingredients.GuiIngredientFast;
 import mezz.jei.gui.ingredients.GuiIngredientFastList;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
-import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.GuiTextFieldFilter;

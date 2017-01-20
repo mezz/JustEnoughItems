@@ -3,7 +3,6 @@ package mezz.jei;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;

@@ -6,7 +6,6 @@ import mezz.jei.gui.GuiHelper;
 import mezz.jei.transfer.RecipeTransferHandlerHelper;
 import mezz.jei.util.Log;
 import mezz.jei.util.StackHelper;
-import net.minecraft.client.Minecraft;
 
 public class JeiHelpers implements IJeiHelpers {
 	private final GuiHelper guiHelper;

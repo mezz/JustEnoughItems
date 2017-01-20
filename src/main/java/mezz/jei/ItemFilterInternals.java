@@ -12,7 +12,6 @@ import com.google.common.collect.ImmutableList;
 import gnu.trove.set.TIntSet;
 import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.util.Log;
 
 public class ItemFilterInternals {
 
