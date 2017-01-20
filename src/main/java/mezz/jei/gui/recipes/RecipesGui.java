@@ -27,15 +27,24 @@ import mezz.jei.util.StringUtil;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiGameOver;
+import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
+
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFocuses, IRecipeLogicStateListener {
@@ -308,7 +317,11 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		if (!isOpen()) {
 			parentScreen = mc.currentScreen;
 		}
-		mc.displayGuiScreen(this);
+		if (parentScreen instanceof GuiContainer) {
+			displayGuiScreenWithoutClose(this);
+		} else {
+			mc.displayGuiScreen(this);	
+		}
 	}
 
 	public void close() {
@@ -435,5 +448,50 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	@Override
 	public void onStateChange() {
 		updateLayout();
+	}
+
+	/**
+	 * Displays the provided GuiScreen without invoking {@link GuiScreen#onGuiClosed()}.
+	 * <p>
+	 * The behavior of this method is derived from {@link Minecraft#displayGuiScreen(GuiScreen)}.
+	 *
+	 * @param guiScreen the GuiScreen to display.
+	 */
+	public static void displayGuiScreenWithoutClose(@Nullable GuiScreen guiScreen) {
+		Minecraft mc = Minecraft.getMinecraft();
+		if (guiScreen == null && mc.world == null) {
+			guiScreen = new GuiMainMenu();
+		} else if (guiScreen == null && mc.player.getHealth() <= 0) {
+			guiScreen = new GuiGameOver(null);
+		}
+		GuiScreen prev = mc.currentScreen;
+		GuiOpenEvent event = new GuiOpenEvent(guiScreen);
+		if (MinecraftForge.EVENT_BUS.post(event)) {
+			return;
+		}
+		GuiScreen gui = event.getGui();
+		// Only close if an event listener has rejected us
+		if (prev != null && gui != prev && gui != guiScreen) {
+			prev.onGuiClosed();
+		}
+		if (gui instanceof GuiMainMenu || gui instanceof GuiMultiplayer) {
+			mc.gameSettings.showDebugInfo = false;
+			mc.ingameGUI.getChatGUI().clearChatMessages(true);
+		}
+		mc.currentScreen = gui;
+		if (gui == null) {
+			mc.getSoundHandler().resumeSounds();
+			mc.setIngameFocus();
+		} else {
+			mc.setIngameNotInFocus();
+			KeyBinding.unPressAllKeys();
+			while (Mouse.next());
+			while (Keyboard.next());
+			ScaledResolution reso = new ScaledResolution(mc);
+			int width = reso.getScaledWidth();
+			int height = reso.getScaledHeight();
+			gui.setWorldAndResolution(mc, width, height);
+			mc.skipRenderWorld = false;
+		}
 	}
 }
