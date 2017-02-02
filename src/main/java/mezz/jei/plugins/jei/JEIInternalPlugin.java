@@ -43,7 +43,7 @@ public class JEIInternalPlugin extends BlankModPlugin {
 	@Override
 	public void registerIngredients(IModIngredientRegistration ingredientRegistration) {
 		if (Config.isDebugModeEnabled()) {
-			ingredientRegistration.register(DebugIngredient.class, DebugIngredientListFactory.create(), new DebugIngredientHelper(), new DebugIngredientRenderer());
+			ingredientRegistration.register(DebugIngredient.class, Collections.<DebugIngredient>emptyList(), new DebugIngredientHelper(), new DebugIngredientRenderer());
 		}
 	}
 
@@ -117,6 +117,9 @@ public class JEIInternalPlugin extends BlankModPlugin {
 
 		if (Config.isDebugModeEnabled()) {
 			jeiRuntime.getItemListOverlay().highlightStacks(Collections.singleton(new ItemStack(Items.STICK)));
+			if (ingredientRegistry != null) {
+				ingredientRegistry.addIngredientsAtRuntime(DebugIngredient.class, DebugIngredientListFactory.create());
+			}
 		}
 	}
 }

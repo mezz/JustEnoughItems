@@ -6,6 +6,8 @@ import mezz.jei.api.IItemRegistry;
 import mezz.jei.api.IModRegistry;
 import net.minecraft.item.ItemStack;
 
+import java.util.List;
+
 /**
  * The IIngredientRegistry is provided by JEI and has some useful functions related to recipe ingredients.
  * Get the instance from {@link IModRegistry#getIngredientRegistry()}.
@@ -54,4 +56,13 @@ public interface IIngredientRegistry {
 	 * Returns a list of all the ItemStacks that return true to isPotionIngredient.
 	 */
 	ImmutableList<ItemStack> getPotionIngredients();
+
+	/**
+	 * Add new ingredients to JEI at runtime.
+	 * Used by mods that have items created while the game is running, or use the server to define items.
+	 * Using this method will reload the ingredient list, do not call it unless necessary.
+	 *
+	 * @since JEI 3.14.4
+	 */
+	<V> void addIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients);
 }
