@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.abahgat.suffixtree.GeneralizedSuffixTree;
@@ -14,6 +15,9 @@ import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 
 public class ItemFilterInternals {
+	private static final Pattern spacePattern = Pattern.compile("\\s");
+	private static final Pattern quotePattern = Pattern.compile("\"");
+	private static final Pattern filterSplitPattern = Pattern.compile("(\".*?(?:\"|$)|\\S+)");
 
 	private ImmutableList<Object> baseList;
 	private GeneralizedSuffixTree searchTree;
@@ -48,25 +52,23 @@ public class ItemFilterInternals {
 	}
 
 	private void buildSuffixTrees(List<IIngredientListElement> ingredientList) {
-		Pattern spaces = Pattern.compile(" ");
-
 		for (int i = 0; i < ingredientList.size(); i++) {
 			IIngredientListElement element = ingredientList.get(i);
-			putSplit(searchTree, element.getDisplayName(), i);
+			searchTree.put(element.getDisplayName(), i);
 
 			Config.SearchMode modNameSearchMode = Config.getModNameSearchMode();
 			if (modNameSearchMode != Config.SearchMode.DISABLED) {
 				String modNameString = element.getModName();
 				String modIdString = element.getModId();
-				putSplit(modNameTree, modNameString, i);
-				putSplit(modNameTree, modIdString, i);
-				putSplit(modNameTree, spaces.matcher(modNameString).replaceAll(""), i);
-				putSplit(modNameTree, spaces.matcher(modIdString).replaceAll(""), i);
+				modNameTree.put(modNameString, i);
+				modNameTree.put(modIdString, i);
+				modNameTree.put(spacePattern.matcher(modNameString).replaceAll(""), i);
+				modNameTree.put(spacePattern.matcher(modIdString).replaceAll(""), i);
 				if (modNameSearchMode == Config.SearchMode.ENABLED) {
-					putSplit(searchTree, modNameString, i);
-					putSplit(searchTree, modIdString, i);
-					putSplit(searchTree, spaces.matcher(modNameString).replaceAll(""), i);
-					putSplit(searchTree, spaces.matcher(modIdString).replaceAll(""), i);
+					searchTree.put(modNameString, i);
+					searchTree.put(modIdString, i);
+					searchTree.put(spacePattern.matcher(modNameString).replaceAll(""), i);
+					searchTree.put(spacePattern.matcher(modIdString).replaceAll(""), i);
 				}
 			}
 
@@ -74,46 +76,37 @@ public class ItemFilterInternals {
 			if (tooltipSearchMode != Config.SearchMode.DISABLED) {
 				String tooltipString = element.getTooltipString();
 
-				putSplit(tooltipTree, tooltipString, i);
+				tooltipTree.put(tooltipString, i);
 				if (tooltipSearchMode == Config.SearchMode.ENABLED) {
-					putSplit(searchTree, tooltipString, i);
+					searchTree.put(tooltipString, i);
 				}
 			}
 
 			Config.SearchMode oreDictSearchMode = Config.getOreDictSearchMode();
 			if (oreDictSearchMode != Config.SearchMode.DISABLED) {
 				String oreDictString = element.getOreDictString();
-				putSplit(oreDictTree, oreDictString, i);
+				oreDictTree.put(oreDictString, i);
 				if (oreDictSearchMode == Config.SearchMode.ENABLED) {
-					putSplit(searchTree, oreDictString, i);
+					searchTree.put(oreDictString, i);
 				}
 			}
 
 			Config.SearchMode creativeTabSearchMode = Config.getCreativeTabSearchMode();
 			if (creativeTabSearchMode != Config.SearchMode.DISABLED) {
 				String creativeTabsString = element.getCreativeTabsString();
-				putSplit(creativeTabTree, creativeTabsString, i);
+				creativeTabTree.put(creativeTabsString, i);
 				if (creativeTabSearchMode == Config.SearchMode.ENABLED) {
-					putSplit(searchTree, creativeTabsString, i);
+					searchTree.put(creativeTabsString, i);
 				}
 			}
 
 			Config.SearchMode colorSearchMode = Config.getColorSearchMode();
 			if (colorSearchMode != Config.SearchMode.DISABLED) {
 				String colorString = element.getColorString();
-				putSplit(colorTree, colorString, i);
+				colorTree.put(colorString, i);
 				if (colorSearchMode == Config.SearchMode.ENABLED) {
-					putSplit(searchTree, colorString, i);
+					searchTree.put(colorString, i);
 				}
-			}
-		}
-	}
-
-	private static void putSplit(GeneralizedSuffixTree tree, String key, int index) {
-		String[] strings = key.split(" ");
-		for (String string : strings) {
-			if (!string.isEmpty()) {
-				tree.put(string, index);
 			}
 		}
 	}
@@ -143,10 +136,13 @@ public class ItemFilterInternals {
 	}
 
 	private ImmutableList<Object> getElements(String filterText) {
-		String[] tokens = filterText.split(" ");
-		TIntSet matches = null;
+		Matcher filterMatcher = filterSplitPattern.matcher(filterText);
 
-		for (String token : tokens) {
+		TIntSet matches = null;
+		while (filterMatcher.find()) {
+			String token = filterMatcher.group(1);
+			token = quotePattern.matcher(token).replaceAll("");
+
 			if (!token.isEmpty()) {
 				char firstChar = token.charAt(0);
 				GeneralizedSuffixTree tree = this.prefixedSearchTrees.get(firstChar);
