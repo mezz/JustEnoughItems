@@ -3,10 +3,12 @@ package mezz.jei;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
@@ -54,17 +56,16 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 	}
 
 	public IngredientRegistry createIngredientRegistry() {
-		ImmutableMap.Builder<Class, ImmutableList> ingredientsMapBuilder = ImmutableMap.builder();
+		Map<Class, List> ingredientsMap = new IdentityHashMap<Class, List>();
 		for (Class ingredientClass : allIngredientsMap.keySet()) {
 			Collection ingredients = allIngredientsMap.get(ingredientClass);
-			ImmutableList immutableIngredients = ImmutableList.copyOf(ingredients);
-			ingredientsMapBuilder.put(ingredientClass, immutableIngredients);
+			ingredientsMap.put(ingredientClass, Lists.newArrayList(ingredients));
 		}
 
 		return new IngredientRegistry(
-				ingredientsMapBuilder.build(),
-				ImmutableMap.copyOf(ingredientHelperMap),
-				ImmutableMap.copyOf(ingredientRendererMap)
+			ingredientsMap,
+			ImmutableMap.copyOf(ingredientHelperMap),
+			ImmutableMap.copyOf(ingredientRendererMap)
 		);
 	}
 }

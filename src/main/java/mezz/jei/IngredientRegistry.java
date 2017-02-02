@@ -1,29 +1,34 @@
 package mezz.jei;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionHelper;
 import net.minecraft.tileentity.TileEntityFurnace;
 
 public class IngredientRegistry implements IIngredientRegistry {
-	private final ImmutableMap<Class, ImmutableList> ingredientsMap;
+	private final Map<Class, List> ingredientsMap;
 	private final ImmutableMap<Class, IIngredientHelper> ingredientHelperMap;
 	private final ImmutableMap<Class, IIngredientRenderer> ingredientRendererMap;
 	private final ImmutableList<ItemStack> fuels;
 	private final ImmutableList<ItemStack> potionIngredients;
 
 	public IngredientRegistry(
-			ImmutableMap<Class, ImmutableList> ingredientsMap,
+			Map<Class, List> ingredientsMap,
 			ImmutableMap<Class, IIngredientHelper> ingredientHelperMap,
 			ImmutableMap<Class, IIngredientRenderer> ingredientRendererMap
 	) {
@@ -78,11 +83,11 @@ public class IngredientRegistry implements IIngredientRegistry {
 		}
 
 		//noinspection unchecked
-		ImmutableList<V> ingredients = ingredientsMap.get(ingredientClass);
+		List<V> ingredients = ingredientsMap.get(ingredientClass);
 		if (ingredients == null) {
 			return ImmutableList.of();
 		} else {
-			return ingredients;
+			return ImmutableList.copyOf(ingredients);
 		}
 	}
 
@@ -121,16 +126,46 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	@Override
 	public ImmutableCollection<Class> getRegisteredIngredientClasses() {
-		return ingredientsMap.keySet();
+		return ImmutableSet.copyOf(ingredientsMap.keySet());
 	}
 
 	@Override
 	public ImmutableList<ItemStack> getFuels() {
-		return fuels;
+		return ImmutableList.copyOf(fuels);
 	}
 
 	@Override
 	public ImmutableList<ItemStack> getPotionIngredients() {
-		return potionIngredients;
+		return ImmutableList.copyOf(potionIngredients);
+	}
+
+	@Override
+	public <V> void addIngredientsAtRuntime(@Nullable Class<V> ingredientClass, @Nullable List<V> ingredients) {
+		if (ingredientClass == null) {
+			Log.error("Null ingredientClass", new NullPointerException());
+			return;
+		}
+		if (ingredients == null) {
+			Log.error("Null ingredients", new NullPointerException());
+			return;
+		}
+		if (ingredients.isEmpty()) {
+			Log.error("Empty ingredients", new IllegalArgumentException());
+			return;
+		}
+
+		//noinspection unchecked
+		List<V> list = ingredientsMap.get(ingredientClass);
+		if (list == null) {
+			list = new ArrayList<V>();
+			ingredientsMap.put(ingredientClass, list);
+		}
+		list.addAll(ingredients);
+
+		JeiRuntime runtime = Internal.getRuntime();
+		if (runtime != null) {
+			ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
+			itemListOverlay.rebuildItemFilter();
+		}
 	}
 }
