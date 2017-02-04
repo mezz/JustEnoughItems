@@ -13,6 +13,7 @@ public class SessionData {
 	private static boolean joinedWorld = false;
 	@Nullable
 	private static String worldUid = null;
+	private static int firstItemIndex = 0;
 
 	private SessionData() {
 
@@ -60,5 +61,13 @@ public class SessionData {
 
 	public static void setJoinedWorld() {
 		SessionData.joinedWorld = true;
+	}
+
+	public static int getFirstItemIndex() {
+		return firstItemIndex;
+	}
+
+	public static void setFirstItemIndex(int firstItemIndex) {
+		SessionData.firstItemIndex = firstItemIndex;
 	}
 }

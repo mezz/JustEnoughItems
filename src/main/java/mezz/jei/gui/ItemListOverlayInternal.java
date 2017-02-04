@@ -8,12 +8,12 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
 import mezz.jei.Internal;
-import mezz.jei.ItemFilter;
 import mezz.jei.JeiRuntime;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
+import mezz.jei.config.SessionData;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IMouseHandler;
@@ -60,7 +60,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 	private final ItemListOverlay parent;
 
 	private final PageNavigation pageNavigation;
-	private final ItemListDisplay itemListDisplay;
+	private final IngredientGridAll ingredientGridAll;
 	private final ConfigButton configButton;
 	private final GuiTextFieldFilter searchField;
 
@@ -88,10 +88,10 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 		int width = guiProperties.getScreenWidth() - x - borderPadding;
 
 		Rectangle itemListDisplayArea = new Rectangle(x, itemListY, width, itemListSpace);
-		this.itemListDisplay = new ItemListDisplay(ingredientRegistry, itemListDisplayArea, guiAreas);
+		this.ingredientGridAll = new IngredientGridAll(ingredientRegistry, itemListDisplayArea, guiAreas, parent.getItemFilter());
 
 		// updated area
-		itemListDisplayArea = this.itemListDisplay.getArea();
+		itemListDisplayArea = this.ingredientGridAll.getArea();
 		x = itemListDisplayArea.x;
 		width = itemListDisplayArea.width;
 
@@ -143,30 +143,31 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 	}
 
 	public void updateLayout() {
-		ItemFilter itemFilter = parent.getItemFilter();
-		itemListDisplay.updateLayout(itemFilter);
+		ingredientGridAll.updateLayout();
 
-		int pageNum = itemListDisplay.getPageNum();
-		int pageCount = itemListDisplay.getPageCount(itemFilter);
+		int pageNum = ingredientGridAll.getPageNum();
+		int pageCount = ingredientGridAll.getPageCount();
 		pageNavigation.updateLayout(pageNum, pageCount);
 
 		searchField.update();
 	}
 
 	@Override
-	public void nextPage() {
-		ItemFilter itemFilter = parent.getItemFilter();
-		if (itemListDisplay.nextPage(itemFilter)) {
+	public boolean nextPage() {
+		if (ingredientGridAll.nextPage()) {
 			updateLayout();
+			return true;
 		}
+		return false;
 	}
 
 	@Override
-	public void previousPage() {
-		ItemFilter itemFilter = parent.getItemFilter();
-		if (itemListDisplay.previousPage(itemFilter)) {
+	public boolean previousPage() {
+		if (ingredientGridAll.previousPage()) {
 			updateLayout();
+			return true;
 		}
+		return false;
 	}
 
 	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY) {
@@ -176,11 +177,11 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 		searchField.drawTextBox();
 		configButton.draw(minecraft, mouseX, mouseY);
 		Set<ItemStack> highlightedStacks = parent.getHighlightedStacks();
-		itemListDisplay.draw(minecraft, mouseX, mouseY, highlightedStacks);
+		ingredientGridAll.draw(minecraft, mouseX, mouseY, highlightedStacks);
 	}
 
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
-		itemListDisplay.drawTooltips(minecraft, mouseX, mouseY);
+		ingredientGridAll.drawTooltips(minecraft, mouseX, mouseY);
 		configButton.drawTooltips(minecraft, mouseX, mouseY);
 	}
 
@@ -206,7 +207,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 	@Override
 	@Nullable
 	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
-		IClickedIngredient<?> clicked = itemListDisplay.getIngredientUnderMouse(mouseX, mouseY);
+		IClickedIngredient<?> clicked = ingredientGridAll.getIngredientUnderMouse(mouseX, mouseY);
 		if (clicked != null) {
 			setKeyboardFocus(false);
 		}
@@ -215,7 +216,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 
 	@Override
 	public boolean canSetFocusWithMouse() {
-		return itemListDisplay.canSetFocusWithMouse();
+		return ingredientGridAll.canSetFocusWithMouse();
 	}
 
 	@Override
@@ -295,7 +296,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 			if (handled) {
 				boolean changed = Config.setFilterText(searchField.getText());
 				if (changed) {
-					setToFirstPage();
+					SessionData.setFirstItemIndex(0);
 					updateLayout();
 				}
 			}
@@ -311,21 +312,17 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 
 	@Nullable
 	public ItemStack getStackUnderMouse() {
-		return itemListDisplay.getStackUnderMouse();
+		return ingredientGridAll.getStackUnderMouse();
 	}
 
 	public void setFilterText(String filterText) {
 		searchField.setText(filterText);
-		setToFirstPage();
+		SessionData.setFirstItemIndex(0);
 		updateLayout();
 	}
 
-	public static void setToFirstPage() {
-		ItemListDisplay.setToFirstPage();
-	}
-
 	public ImmutableList<ItemStack> getVisibleStacks() {
-		return itemListDisplay.getVisibleStacks();
+		return ingredientGridAll.getVisibleStacks();
 	}
 
 }

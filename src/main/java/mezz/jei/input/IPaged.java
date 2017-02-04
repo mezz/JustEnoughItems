@@ -1,7 +1,7 @@
 package mezz.jei.input;
 
 public interface IPaged {
-	void nextPage();
+	boolean nextPage();
 
-	void previousPage();
+	boolean previousPage();
 }

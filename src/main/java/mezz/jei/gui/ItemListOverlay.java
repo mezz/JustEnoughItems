@@ -13,6 +13,7 @@ import mezz.jei.api.IItemListOverlay;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
+import mezz.jei.config.SessionData;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 
@@ -76,7 +77,7 @@ public class ItemListOverlay implements IItemListOverlay {
 	public void rebuildItemFilter() {
 		ItemFilter itemFilter = getItemFilter();
 		itemFilter.rebuild();
-		ItemListOverlayInternal.setToFirstPage();
+		SessionData.setFirstItemIndex(0);
 		if (internal != null) {
 			internal.updateLayout();
 		}
