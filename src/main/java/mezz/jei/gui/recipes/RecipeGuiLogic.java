@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IFocus;
@@ -278,9 +279,9 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		public int recipesPerPage;
 
 		public State(@Nullable IFocus<?> focus, List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int pageIndex) {
-			if (recipeCategories.isEmpty()) {
-				throw new IllegalStateException("Recipe categories cannot be empty.");
-			}
+			Preconditions.checkArgument(!recipeCategories.isEmpty(), "Recipe categories cannot be empty.");
+			Preconditions.checkArgument(recipeCategoryIndex >= 0, "Recipe category index cannot be negative.");
+			Preconditions.checkArgument(pageIndex >= 0, "Page index cannot be negative.");
 			this.focus = focus;
 			this.recipeCategories = ImmutableList.copyOf(recipeCategories);
 			this.recipeCategoryIndex = recipeCategoryIndex;
