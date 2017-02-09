@@ -62,6 +62,8 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final IIngredientRegistry ingredientRegistry;
 	private final ImmutableList<IRecipeHandler> recipeHandlers;
 	private final ImmutableList<IRecipeCategory> recipeCategories;
+	private final Set<IRecipeCategory> emptyRecipeCategories;
+	private final Set<IRecipeCategory> checkIfEmptyRecipeCategories;
 	private final ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers;
 	private final ImmutableMultimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap;
 	private final ImmutableListMultimap<IRecipeCategory, ItemStack> craftItemsForCategories;
@@ -124,14 +126,15 @@ public class RecipeRegistry implements IRecipeRegistry {
 		this.plugins.add(internalRecipeRegistryPlugin);
 		this.plugins.addAll(plugins);
 
-		ImmutableList.Builder<IRecipeCategory> recipeCategoryBuilder = ImmutableList.builder();
+		this.emptyRecipeCategories = new HashSet<IRecipeCategory>();
+		this.checkIfEmptyRecipeCategories = new HashSet<IRecipeCategory>();
 		for (IRecipeCategory recipeCategory : recipeCategories) {
 			List recipeWrappers = getRecipeWrappers(recipeCategory);
-			if (!recipeWrappers.isEmpty()) {
-				recipeCategoryBuilder.add(recipeCategory);
+			if (recipeWrappers.isEmpty()) {
+				this.emptyRecipeCategories.add(recipeCategory);
 			}
 		}
-		this.recipeCategories = recipeCategoryBuilder.build();
+		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
 	}
 
 	private static ImmutableMap<String, IRecipeCategory> buildRecipeCategoriesMap(List<IRecipeCategory> recipeCategories) {
@@ -275,6 +278,10 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 		recipesForCategories.put(recipeCategory, recipe);
 		recipeWrappersForCategories.put(recipeCategory, recipeWrapper);
+
+		if (emptyRecipeCategories.contains(recipeCategory)) {
+			emptyRecipeCategories.remove(recipeCategory);
+		}
 	}
 
 	public Ingredients getIngredients(IRecipeWrapper recipeWrapper) {
@@ -386,6 +393,8 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 			recipesForCategories.remove(recipeCategory, recipe);
 			recipeWrappersForCategories.remove(recipeCategory, recipeWrapper);
+
+			checkIfEmptyRecipeCategories.add(recipeCategory);
 		}
 	}
 
@@ -401,7 +410,16 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public List<IRecipeCategory> getRecipeCategories() {
-		return this.recipeCategories;
+		for (IRecipeCategory recipeCategory : this.checkIfEmptyRecipeCategories) {
+			if (getRecipeWrappers(recipeCategory).isEmpty()) {
+				this.emptyRecipeCategories.add(recipeCategory);
+			}
+		}
+		this.checkIfEmptyRecipeCategories.clear();
+
+		List<IRecipeCategory> recipeCategories = new ArrayList<IRecipeCategory>(this.recipeCategories);
+		recipeCategories.removeAll(this.emptyRecipeCategories);
+		return recipeCategories;
 	}
 
 	@Override
