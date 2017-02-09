@@ -62,8 +62,8 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final IIngredientRegistry ingredientRegistry;
 	private final ImmutableList<IRecipeHandler> recipeHandlers;
 	private final ImmutableList<IRecipeCategory> recipeCategories;
-	private final Set<IRecipeCategory> emptyRecipeCategories;
-	private final Set<IRecipeCategory> checkIfEmptyRecipeCategories;
+	private final Set<IRecipeCategory> emptyRecipeCategories = new HashSet<IRecipeCategory>();
+	private final Set<IRecipeCategory> checkIfEmptyRecipeCategories = new HashSet<IRecipeCategory>();
 	private final ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers;
 	private final ImmutableMultimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap;
 	private final ImmutableListMultimap<IRecipeCategory, ItemStack> craftItemsForCategories;
@@ -126,8 +126,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		this.plugins.add(internalRecipeRegistryPlugin);
 		this.plugins.addAll(plugins);
 
-		this.emptyRecipeCategories = new HashSet<IRecipeCategory>();
-		this.checkIfEmptyRecipeCategories = new HashSet<IRecipeCategory>();
 		for (IRecipeCategory recipeCategory : recipeCategories) {
 			List recipeWrappers = getRecipeWrappers(recipeCategory);
 			if (recipeWrappers.isEmpty()) {
