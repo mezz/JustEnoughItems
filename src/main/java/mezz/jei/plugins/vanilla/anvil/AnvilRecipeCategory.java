@@ -12,8 +12,8 @@ import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
-public class AnvilRecipeCategory extends BlankRecipeCategory<AnvilRecipeWrapper>
-{
+public class AnvilRecipeCategory extends BlankRecipeCategory<AnvilRecipeWrapper> {
+
     @Nonnull
     private final IDrawable background;
 

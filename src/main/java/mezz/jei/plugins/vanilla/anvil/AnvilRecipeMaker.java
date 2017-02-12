@@ -6,22 +6,20 @@ import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class AnvilRecipeMaker
-{
-    public static List<AnvilRecipeWrapper> getVanillaAnvilRecipes()
-    {
+public class AnvilRecipeMaker {
+
+    public static List<AnvilRecipeWrapper> getVanillaAnvilRecipes() {
+
         List<AnvilRecipeWrapper> recipes = Lists.newArrayList();
         addBookEnchantmentRecipes(recipes);
         addRepairRecipes(recipes);
         return recipes;
     }
 
-    public static void addBookEnchantmentRecipes(List<AnvilRecipeWrapper> recipes)
-    {
+    public static void addBookEnchantmentRecipes(List<AnvilRecipeWrapper> recipes) {
         // TODO
 
         ItemStack original = new ItemStack(Items.DIAMOND_SWORD);
@@ -33,8 +31,7 @@ public class AnvilRecipeMaker
         recipes.add(new AnvilRecipeWrapper(original, book, withEnchant, 5));
     }
 
-    public static void addRepairRecipes(List<AnvilRecipeWrapper> recipes)
-    {
+    public static void addRepairRecipes(List<AnvilRecipeWrapper> recipes) {
         // TODO
     }
 }
