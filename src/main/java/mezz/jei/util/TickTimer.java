@@ -23,11 +23,11 @@ public class TickTimer implements ITickTimer {
 		long ticksPassed = worldTime - lastUpdateWorldTime;
 		lastUpdateWorldTime = worldTime;
 		tickCount += ticksPassed;
-		if (tickCount > ticksPerCycle) {
+		if (tickCount >= ticksPerCycle) {
 			tickCount = 0;
 		}
 
-		int value = MathUtil.divideCeil(tickCount * maxValue, ticksPerCycle);
+		int value = Math.round(tickCount * maxValue / (float) ticksPerCycle);
 		if (countDown) {
 			return maxValue - value;
 		} else {
