@@ -4,6 +4,8 @@ import java.util.List;
 
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.IGuiIngredientGroup;
+import mezz.jei.api.gui.ITooltipCallback;
 import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.Minecraft;
 
@@ -40,6 +42,9 @@ public interface IRecipeWrapper {
 	/**
 	 * Get the tooltip for whatever's under the mouse.
 	 * ItemStack and fluid tooltips are already handled by JEI, this is for anything else.
+	 *
+	 * To add to ingredient tooltips, see {@link IGuiIngredientGroup#addTooltipCallback(ITooltipCallback)}
+	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltipStrings(int, int)}
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.
 	 * @param mouseY the Y position of the mouse, relative to the recipe.

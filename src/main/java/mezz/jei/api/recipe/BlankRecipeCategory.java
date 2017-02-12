@@ -2,6 +2,9 @@ package mezz.jei.api.recipe;
 
 import javax.annotation.Nullable;
 
+import java.util.Collections;
+import java.util.List;
+
 import mezz.jei.api.gui.IDrawable;
 import net.minecraft.client.Minecraft;
 
@@ -18,5 +21,10 @@ public abstract class BlankRecipeCategory<T extends IRecipeWrapper> implements I
 	@Override
 	public void drawExtras(Minecraft minecraft) {
 
+	}
+
+	@Override
+	public List<String> getTooltipStrings(int mouseX, int mouseY) {
+		return Collections.emptyList();
 	}
 }
