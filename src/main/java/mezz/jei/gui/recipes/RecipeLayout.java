@@ -149,7 +149,10 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			} catch (AbstractMethodError ignored) {
 				// legacy recipe categories do not have this method
 			}
-			tooltipStrings.addAll(recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY));
+			List<String> wrapperTooltips = recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY);
+			if (wrapperTooltips != null) {
+				tooltipStrings.addAll(wrapperTooltips);
+			}
 			if (tooltipStrings.isEmpty() && shapelessIcon != null) {
 				tooltipStrings = shapelessIcon.getTooltipStrings(recipeMouseX, recipeMouseY);
 			}
