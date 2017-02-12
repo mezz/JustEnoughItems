@@ -59,6 +59,11 @@ public class VanillaRecipeCategoryUid {
 	public static final String BREWING = "minecraft.brewing";
 
 	/**
+	 * The anvil recipe category.
+	 */
+	public static final String ANVIL = "minecraft.anvil";
+
+	/**
 	 * The JEI description recipe category.
 	 * <p>
 	 * This is a built-in category, you can add new recipes with
