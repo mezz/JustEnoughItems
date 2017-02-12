@@ -2,6 +2,7 @@ package mezz.jei.gui.recipes;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -137,8 +138,18 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		if (hoveredIngredient != null) {
 			hoveredIngredient.drawHovered(minecraft, posX, posY, recipeMouseX, recipeMouseY);
 		} else if (isMouseOver(mouseX, mouseY)) {
-			List<String> tooltipStrings = recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY);
-			if (tooltipStrings != null && !tooltipStrings.isEmpty()) {
+			List<String> tooltipStrings = new ArrayList<String>();
+			try {
+				//noinspection unchecked
+				tooltipStrings.addAll(recipeCategory.getTooltipStrings(recipeMouseX, recipeMouseY));
+			} catch (AbstractMethodError ignored) {
+				// legacy recipe categories do not have this method
+			}
+			List<String> wrapperTooltip = recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY);
+			if (wrapperTooltip != null) {
+				tooltipStrings.addAll(wrapperTooltip);
+			}
+			if (!tooltipStrings.isEmpty()) {
 				TooltipRenderer.drawHoveringText(minecraft, tooltipStrings, mouseX, mouseY);
 			}
 		}

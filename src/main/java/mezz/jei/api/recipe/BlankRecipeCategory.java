@@ -2,6 +2,9 @@ package mezz.jei.api.recipe;
 
 import javax.annotation.Nullable;
 
+import java.util.Collections;
+import java.util.List;
+
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IRecipeLayout;
 import net.minecraft.client.Minecraft;
@@ -30,5 +33,10 @@ public abstract class BlankRecipeCategory<T extends IRecipeWrapper> implements I
 	@Deprecated
 	public void setRecipe(IRecipeLayout recipeLayout, T recipeWrapper) {
 
+	}
+
+	@Override
+	public List<String> getTooltipStrings(int mouseX, int mouseY) {
+		return Collections.emptyList();
 	}
 }

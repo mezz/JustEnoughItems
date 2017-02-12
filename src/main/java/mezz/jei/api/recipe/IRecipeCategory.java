@@ -2,11 +2,15 @@ package mezz.jei.api.recipe;
 
 import javax.annotation.Nullable;
 
+import java.util.List;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;
+import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.ITooltipCallback;
 import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
@@ -87,4 +91,18 @@ public interface IRecipeCategory<T extends IRecipeWrapper> {
 	 * @since JEI 3.11.0
 	 */
 	void setRecipe(IRecipeLayout recipeLayout, T recipeWrapper, IIngredients ingredients);
+
+	/**
+	 * Get the tooltip for whatever's under the mouse.
+	 * ItemStack and fluid tooltips are already handled by JEI, this is for anything else.
+	 *
+	 * To add to ingredient tooltips, see {@link IGuiIngredientGroup#addTooltipCallback(ITooltipCallback)}
+	 * To add tooltips for a recipe wrapper, see {@link IRecipeWrapper#getTooltipStrings(int, int)}
+	 *
+	 * @param mouseX the X position of the mouse, relative to the recipe.
+	 * @param mouseY the Y position of the mouse, relative to the recipe.
+	 * @return tooltip strings. If there is no tooltip at this position, return an empty list.
+	 * @since JEI 4.2.5, backported to JEI 3.14.6
+	 */
+	List<String> getTooltipStrings(int mouseX, int mouseY);
 }

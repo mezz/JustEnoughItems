@@ -1,5 +1,6 @@
 package mezz.jei.plugins.jei.debug;
 
+import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.IGuiHelper;
@@ -136,5 +137,10 @@ public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 		debugIngredientsGroup.init(2, false, ingredientRenderer, 40, 32, 16, 16, 0, 0);
 
 		debugIngredientsGroup.set(ingredients);
+	}
+
+	@Override
+	public List<String> getTooltipStrings(int mouseX, int mouseY) {
+		return Collections.singletonList("Debug Recipe Category Tooltip");
 	}
 }
