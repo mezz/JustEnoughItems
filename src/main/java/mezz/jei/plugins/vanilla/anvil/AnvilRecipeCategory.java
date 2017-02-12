@@ -10,11 +10,8 @@ import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nonnull;
-
 public class AnvilRecipeCategory extends BlankRecipeCategory<AnvilRecipeWrapper> {
 
-    @Nonnull
     private final IDrawable background;
 
     public AnvilRecipeCategory(IGuiHelper guiHelper) {
@@ -23,22 +20,22 @@ public class AnvilRecipeCategory extends BlankRecipeCategory<AnvilRecipeWrapper>
     }
 
     @Override
-    public @Nonnull String getUid() {
+    public String getUid() {
         return VanillaRecipeCategoryUid.ANVIL;
     }
 
     @Override
-    public @Nonnull String getTitle() {
+    public String getTitle() {
         return Blocks.ANVIL.getLocalizedName();
     }
 
     @Override
-    public @Nonnull IDrawable getBackground() {
+    public IDrawable getBackground() {
         return background;
     }
 
     @Override
-    public void setRecipe(@Nonnull IRecipeLayout recipeLayout, @Nonnull AnvilRecipeWrapper recipeWrapper, @Nonnull IIngredients ingredients) {
+    public void setRecipe(IRecipeLayout recipeLayout, AnvilRecipeWrapper recipeWrapper, IIngredients ingredients) {
         IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
         guiItemStacks.init(0, true, 10, 6);

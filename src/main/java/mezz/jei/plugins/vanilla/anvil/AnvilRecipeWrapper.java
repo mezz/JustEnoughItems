@@ -7,7 +7,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 
 public class AnvilRecipeWrapper extends BlankRecipeWrapper {
@@ -28,7 +27,7 @@ public class AnvilRecipeWrapper extends BlankRecipeWrapper {
     }
 
     @Override
-    public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
+    public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 
         if (cost >= 0) {
             // GuiRepair'text special shadow
@@ -63,7 +62,7 @@ public class AnvilRecipeWrapper extends BlankRecipeWrapper {
     }
 
     @Override
-    public void getIngredients(@Nonnull IIngredients ingredients) {
+    public void getIngredients(IIngredients ingredients) {
         ingredients.setInputs(ItemStack.class, Arrays.asList(leftInput, rightInput));
         ingredients.setOutput(ItemStack.class, output);
     }
