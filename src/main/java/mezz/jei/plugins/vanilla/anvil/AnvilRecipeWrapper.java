@@ -8,10 +8,10 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class AnvilRecipeWrapper extends BlankRecipeWrapper {
-    private final ItemStack leftInput;
-    private final ItemStack rightInput;
+    private final List<ItemStack> inputs;
     private final ItemStack output;
     private final int cost;
 
@@ -20,8 +20,7 @@ public class AnvilRecipeWrapper extends BlankRecipeWrapper {
     }
 
     public AnvilRecipeWrapper(ItemStack leftInput, ItemStack rightInput, ItemStack output, int experienceCost) {
-        this.leftInput = leftInput;
-        this.rightInput = rightInput;
+        this.inputs = Arrays.asList(leftInput, rightInput);
         this.output = output;
         this.cost = experienceCost;
     }
@@ -30,16 +29,13 @@ public class AnvilRecipeWrapper extends BlankRecipeWrapper {
     public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 
         if (cost >= 0) {
-            // GuiRepair'text special shadow
-            int mainColor = 0xFF80FF20;
             String text = I18n.format("container.repair.cost", cost);
 
-            if (cost >= 40) {
+            int mainColor = 0xFF80FF20;
+            if ((cost >= 40 || cost > minecraft.player.experienceLevel)
+                    && !minecraft.player.capabilities.isCreativeMode) {
+                // Show red if the player doesn't have enough levels
                 mainColor = 0xFFFF6060;
-            }
-            else if (cost > minecraft.player.experienceLevel && !minecraft.player.capabilities.isCreativeMode) {
-                mainColor = 0xFFFF6060;
-                //mainColor = 0xFFFFFF40;
             }
 
             int shadowColor = 0xFF000000 | (mainColor & 0xFCFCFC) >> 2;
@@ -63,7 +59,7 @@ public class AnvilRecipeWrapper extends BlankRecipeWrapper {
 
     @Override
     public void getIngredients(IIngredients ingredients) {
-        ingredients.setInputs(ItemStack.class, Arrays.asList(leftInput, rightInput));
+        ingredients.setInputs(ItemStack.class, inputs);
         ingredients.setOutput(ItemStack.class, output);
     }
 }
