@@ -153,7 +153,8 @@ public class VanillaPlugin extends BlankModPlugin {
 		registry.addRecipes(FuelRecipeMaker.getFuelRecipes(ingredientRegistry, jeiHelpers));
 		registry.addRecipes(BrewingRecipeMaker.getBrewingRecipes(ingredientRegistry));
 		registry.addRecipes(TippedArrowRecipeMaker.getTippedArrowRecipes());
-		registry.addRecipes(AnvilRecipeMaker.getVanillaAnvilRecipes());
+
+		AnvilRecipeMaker.registerVanillaAnvilRecipes(registry);
 
 		IIngredientBlacklist ingredientBlacklist = registry.getJeiHelpers().getIngredientBlacklist();
 		// Game freezes when loading player skulls, see https://bugs.mojang.com/browse/MC-65587

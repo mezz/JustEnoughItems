@@ -25,6 +25,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.plugins.jei.description.ItemDescriptionRecipe;
+import mezz.jei.plugins.vanilla.anvil.AnvilRecipeWrapper;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 
@@ -135,6 +136,22 @@ public class ModRegistry implements IModRegistry {
 		Preconditions.checkArgument(descriptionKeys.length > 0, "descriptionKeys cannot be empty");
 
 		addDescription(Collections.singletonList(itemStack), descriptionKeys);
+	}
+
+	@Override
+	public void addAnvilRecipe(ItemStack leftInput, ItemStack rightInput, ItemStack output, int levelsCost) {
+		Preconditions.checkNotNull(leftInput, "Tried to add an anvil recipe with a null leftInput");
+		Preconditions.checkNotNull(rightInput, "Tried to add an anvil recipe with a null rightInput");
+		Preconditions.checkNotNull(output, "Tried to add an anvil recipe with a null output");
+		this.recipes.add(new AnvilRecipeWrapper(leftInput, rightInput, output, levelsCost));
+	}
+
+	@Override
+	public void addAnvilRecipe(ItemStack leftInput, ItemStack rightInput, ItemStack output) {
+		Preconditions.checkNotNull(leftInput, "Tried to add an anvil recipe with a null leftInput");
+		Preconditions.checkNotNull(rightInput, "Tried to add an anvil recipe with a null rightInput");
+		Preconditions.checkNotNull(output, "Tried to add an anvil recipe with a null output");
+		this.recipes.add(new AnvilRecipeWrapper(leftInput, rightInput, output));
 	}
 
 	@Override
