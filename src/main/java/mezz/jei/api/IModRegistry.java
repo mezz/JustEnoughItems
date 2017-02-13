@@ -96,9 +96,8 @@ public interface IModRegistry {
 	 * @param leftInput The itemStack placed on the left slot.
 	 * @param rightInput The itemStack placed on the right slot.
 	 * @param output The resulting itemStack.
-	 * @param levelsCost Optional.
-	 *                   The cost, in experience levels, that will be required in order to pick up the item.
-	 *                   If not used
+	 * @param levelsCost The cost, in experience levels, that will be required in order to pick up the item.
+	 *                   Optional: If not specified, the cost text will not display on the recipe.
 	 */
 	void addAnvilRecipe(ItemStack leftInput, ItemStack rightInput, ItemStack output, int levelsCost);
 	void addAnvilRecipe(ItemStack leftInput, ItemStack rightInput, ItemStack output);

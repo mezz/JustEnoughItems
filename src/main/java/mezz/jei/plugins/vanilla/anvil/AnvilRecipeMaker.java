@@ -1,35 +1,55 @@
 package mezz.jei.plugins.vanilla.anvil;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import javafx.util.Pair;
 import mezz.jei.api.IModRegistry;
+import mezz.jei.util.Log;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class AnvilRecipeMaker {
 
 	public static void registerVanillaAnvilRecipes(IModRegistry registry) {
-		registerBookEnchantmentRecipes(registry);
+		Stopwatch sw = Stopwatch.createStarted();
 		registerRepairRecipes(registry);
+		sw.stop();
+		Log.info("Registered vanilla repair recipes in %s ms", sw.elapsed(TimeUnit.MILLISECONDS));
+		sw.reset();
+		sw.start();
+		registerBookEnchantmentRecipes(registry);
+		sw.stop();
+		Log.info("Registered enchantment recipes in %s ms", sw.elapsed(TimeUnit.MILLISECONDS));
 	}
 
 	private static void registerBookEnchantmentRecipes(IModRegistry registry) {
-		// TODO
-
-		ItemStack original = new ItemStack(Items.DIAMOND_SWORD);
+		List<ItemStack> ingredients = registry.getIngredientRegistry().getIngredients(ItemStack.class);
+		List<Enchantment> enchantments = ForgeRegistries.ENCHANTMENTS.getValues();
 		ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
-		ItemStack withEnchant = new ItemStack(Items.DIAMOND_SWORD);
-		EnchantmentHelper.setEnchantments(Collections.singletonMap(Enchantments.SHARPNESS, 5), withEnchant);
-		EnchantmentHelper.setEnchantments(Collections.singletonMap(Enchantments.SHARPNESS, 5), book);
-
-		registry.addAnvilRecipe(original, book, withEnchant, 5);
+		for (ItemStack ingredient : ingredients) {
+			for (Enchantment enchantment : enchantments) {
+				if (enchantment.canApply(ingredient)) {
+					for (int level = 1; level <= enchantment.getMaxLevel(); level++) {
+						ItemStack withEnchant = ingredient.copy();
+						ItemStack bookEnchant = book.copy();
+						Map<Enchantment, Integer> enchMap = Collections.singletonMap(enchantment, level);
+						EnchantmentHelper.setEnchantments(enchMap, withEnchant);
+						EnchantmentHelper.setEnchantments(enchMap, bookEnchant);
+						registry.addAnvilRecipe(ingredient, bookEnchant, withEnchant);
+					}
+				}
+			}
+		}
 	}
 
 	private static <T1, T2> Pair<T1, T2> pairOf(T1 left, T2 right) { return new Pair<T1, T2>(left, right); }
