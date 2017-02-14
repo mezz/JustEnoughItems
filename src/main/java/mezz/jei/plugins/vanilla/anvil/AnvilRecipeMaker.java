@@ -24,12 +24,12 @@ public class AnvilRecipeMaker {
 		Stopwatch sw = Stopwatch.createStarted();
 		registerRepairRecipes(registry);
 		sw.stop();
-		Log.info("Registered vanilla repair recipes in %s ms", sw.elapsed(TimeUnit.MILLISECONDS));
+		Log.info("Registered vanilla repair recipes in {} ms", sw.elapsed(TimeUnit.MILLISECONDS));
 		sw.reset();
 		sw.start();
 		registerBookEnchantmentRecipes(registry);
 		sw.stop();
-		Log.info("Registered enchantment recipes in %s ms", sw.elapsed(TimeUnit.MILLISECONDS));
+		Log.info("Registered enchantment recipes in {} ms", sw.elapsed(TimeUnit.MILLISECONDS));
 	}
 
 	private static void registerBookEnchantmentRecipes(IModRegistry registry) {
@@ -39,14 +39,18 @@ public class AnvilRecipeMaker {
 		for (ItemStack ingredient : ingredients) {
 			for (Enchantment enchantment : enchantments) {
 				if (enchantment.canApply(ingredient)) {
+					List<ItemStack> perLevelBooks = Lists.newArrayList();
+					List<ItemStack> perLevelOutputs = Lists.newArrayList();
 					for (int level = 1; level <= enchantment.getMaxLevel(); level++) {
 						ItemStack withEnchant = ingredient.copy();
 						ItemStack bookEnchant = book.copy();
 						Map<Enchantment, Integer> enchMap = Collections.singletonMap(enchantment, level);
 						EnchantmentHelper.setEnchantments(enchMap, withEnchant);
 						EnchantmentHelper.setEnchantments(enchMap, bookEnchant);
-						registry.addAnvilRecipe(ingredient, bookEnchant, withEnchant);
+						perLevelBooks.add(bookEnchant);
+						perLevelOutputs.add(withEnchant);
 					}
+					registry.addAnvilRecipe(ingredient, perLevelBooks, perLevelOutputs);
 				}
 			}
 		}
@@ -111,13 +115,13 @@ public class AnvilRecipeMaker {
 				);
 		for (Pair<ItemStack,ItemStack> entry : items) {
 			ItemStack damaged1 = entry.getLeft().copy();
-			damaged1.setItemDamage(damaged1.getMaxDamage() * 3 / 4);
+			damaged1.setItemDamage(damaged1.getMaxDamage());
 			ItemStack damaged2 = entry.getLeft().copy();
-			damaged2.setItemDamage(damaged2.getMaxDamage() / 2);
+			damaged2.setItemDamage(damaged2.getMaxDamage() * 3 / 4);
 			ItemStack damaged3 = entry.getLeft().copy();
-			damaged3.setItemDamage(damaged2.getMaxDamage() / 4);
-			registry.addAnvilRecipe(damaged2, entry.getRight(), damaged3);
-			registry.addAnvilRecipe(damaged1, damaged2, damaged3);
+			damaged3.setItemDamage(damaged3.getMaxDamage() * 2 / 4);
+			registry.addAnvilRecipe(damaged1, entry.getRight(), damaged2);
+			registry.addAnvilRecipe(damaged2, damaged2, damaged3);
 		}
 	}
 }

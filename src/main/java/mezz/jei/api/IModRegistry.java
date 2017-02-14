@@ -101,6 +101,8 @@ public interface IModRegistry {
 	 */
 	void addAnvilRecipe(ItemStack leftInput, ItemStack rightInput, ItemStack output, int levelsCost);
 	void addAnvilRecipe(ItemStack leftInput, ItemStack rightInput, ItemStack output);
+	void addAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInput, List<ItemStack> output, int levelsCost);
+	void addAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInput, List<ItemStack> output);
 
 	/**
 	 * Get the registry for setting up recipe transfer.

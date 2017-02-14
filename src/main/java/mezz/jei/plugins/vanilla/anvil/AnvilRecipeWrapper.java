@@ -8,11 +8,12 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class AnvilRecipeWrapper extends BlankRecipeWrapper {
-	private final List<ItemStack> inputs;
-	private final ItemStack output;
+	private final List<List<ItemStack>> inputs;
+	private final List<List<ItemStack>> output;
 	private final int cost;
 
 	public AnvilRecipeWrapper(ItemStack leftInput, ItemStack rightInput, ItemStack output) {
@@ -20,8 +21,17 @@ public class AnvilRecipeWrapper extends BlankRecipeWrapper {
 	}
 
 	public AnvilRecipeWrapper(ItemStack leftInput, ItemStack rightInput, ItemStack output, int levelsCost) {
-		this.inputs = Arrays.asList(leftInput, rightInput);
-		this.output = output;
+		this(leftInput, Collections.singletonList(rightInput), Collections.singletonList(output), levelsCost);
+	}
+
+	public AnvilRecipeWrapper(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
+		this(leftInput, rightInputs, outputs, -1);
+	}
+
+	@SuppressWarnings("unchecked")
+	public AnvilRecipeWrapper(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs, int levelsCost) {
+		this.inputs = Arrays.asList(Collections.singletonList(leftInput), rightInputs);
+		this.output = Collections.singletonList(outputs);
 		this.cost = levelsCost;
 	}
 
@@ -61,7 +71,7 @@ public class AnvilRecipeWrapper extends BlankRecipeWrapper {
 
 	@Override
 	public void getIngredients(IIngredients ingredients) {
-		ingredients.setInputs(ItemStack.class, inputs);
-		ingredients.setOutput(ItemStack.class, output);
+		ingredients.setInputLists(ItemStack.class, inputs);
+		ingredients.setOutputLists(ItemStack.class, output);
 	}
 }
