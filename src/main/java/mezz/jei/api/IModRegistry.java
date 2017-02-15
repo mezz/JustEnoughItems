@@ -94,15 +94,12 @@ public interface IModRegistry {
 	/**
 	 * Adds an anvil recipe for the given inputs and output.
 	 * @param leftInput The itemStack placed on the left slot.
-	 * @param rightInput The itemStack placed on the right slot.
-	 * @param output The resulting itemStack.
+	 * @param rightInputs The itemStack(s) placed on the right slot.
+	 * @param outputs The resulting itemStack(s).
 	 * @param levelsCost The cost, in experience levels, that will be required in order to pick up the item.
 	 *                   Optional: If not specified, the cost text will not display on the recipe.
 	 */
-	void addAnvilRecipe(ItemStack leftInput, ItemStack rightInput, ItemStack output, int levelsCost);
-	void addAnvilRecipe(ItemStack leftInput, ItemStack rightInput, ItemStack output);
-	void addAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInput, List<ItemStack> output, int levelsCost);
-	void addAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInput, List<ItemStack> output);
+	void addAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs, int levelsCost);
 
 	/**
 	 * Get the registry for setting up recipe transfer.

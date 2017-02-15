@@ -61,11 +61,7 @@ public class VanillaRecipeCategoryUid {
 	/**
 	 * The anvil recipe category.
 	 * <p>
-	 * This is a built-in category, you can add new recipes with
-	 * {@link IModRegistry#addAnvilRecipe(ItemStack, ItemStack, ItemStack, int)}},
-	 * {@link IModRegistry#addAnvilRecipe(ItemStack, ItemStack, ItemStack)}},
-	 * {@link IModRegistry#addAnvilRecipe(ItemStack, List, List, int)}}, or
-	 * {@link IModRegistry#addAnvilRecipe(ItemStack, List, List)}}
+	 * This is a built-in category, you can add new recipes with {@link IModRegistry#addAnvilRecipe(ItemStack, List, List, int)}}
 	 */
 	public static final String ANVIL = "minecraft.anvil";
 

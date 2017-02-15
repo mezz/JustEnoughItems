@@ -16,19 +16,6 @@ public class AnvilRecipeWrapper extends BlankRecipeWrapper {
 	private final List<List<ItemStack>> output;
 	private final int cost;
 
-	public AnvilRecipeWrapper(ItemStack leftInput, ItemStack rightInput, ItemStack output) {
-		this(leftInput, rightInput, output, -1);
-	}
-
-	public AnvilRecipeWrapper(ItemStack leftInput, ItemStack rightInput, ItemStack output, int levelsCost) {
-		this(leftInput, Collections.singletonList(rightInput), Collections.singletonList(output), levelsCost);
-	}
-
-	public AnvilRecipeWrapper(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
-		this(leftInput, rightInputs, outputs, -1);
-	}
-
-	@SuppressWarnings("unchecked")
 	public AnvilRecipeWrapper(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs, int levelsCost) {
 		this.inputs = Arrays.asList(Collections.singletonList(leftInput), rightInputs);
 		this.output = Collections.singletonList(outputs);
