@@ -1,5 +1,6 @@
 package mezz.jei.plugins.vanilla.anvil;
 
+import com.google.common.collect.Lists;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
 import net.minecraft.client.Minecraft;
@@ -7,7 +8,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,7 +17,10 @@ public class AnvilRecipeWrapper extends BlankRecipeWrapper {
 	private final int cost;
 
 	public AnvilRecipeWrapper(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs, int levelsCost) {
-		this.inputs = Arrays.asList(Collections.singletonList(leftInput), rightInputs);
+		this.inputs = Lists.newArrayList();
+		this.inputs.add(Collections.singletonList(leftInput));
+		this.inputs.add(rightInputs);
+
 		this.output = Collections.singletonList(outputs);
 		this.cost = levelsCost;
 	}
