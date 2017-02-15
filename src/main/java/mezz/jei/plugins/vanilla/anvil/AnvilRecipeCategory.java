@@ -43,5 +43,7 @@ public class AnvilRecipeCategory extends BlankRecipeCategory<AnvilRecipeWrapper>
 		guiItemStacks.init(2, false, 117, 6);
 
 		guiItemStacks.set(ingredients);
+
+		recipeWrapper.setCurrentIngredients(guiItemStacks.getGuiIngredients());
 	}
 }

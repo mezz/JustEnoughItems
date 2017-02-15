@@ -1,6 +1,7 @@
 package mezz.jei.plugins.vanilla.anvil;
 
 import com.google.common.collect.Lists;
+import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
 import net.minecraft.client.Minecraft;
@@ -8,30 +9,51 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class AnvilRecipeWrapper extends BlankRecipeWrapper {
 	private final List<List<ItemStack>> inputs;
 	private final List<List<ItemStack>> output;
-	private final int cost;
+	private @Nullable Map<Integer, ? extends IGuiIngredient<ItemStack>> currentIngredients = null;
+	private @Nullable ItemStack lastLeftStack;
+	private @Nullable ItemStack lastRightStack;
+	private int lastCost;
 
-	public AnvilRecipeWrapper(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs, int levelsCost) {
+	public AnvilRecipeWrapper(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
 		this.inputs = Lists.newArrayList();
 		this.inputs.add(Collections.singletonList(leftInput));
 		this.inputs.add(rightInputs);
 
 		this.output = Collections.singletonList(outputs);
-		this.cost = levelsCost;
 	}
 
 	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-		if (cost >= 0) {
-			String text = I18n.format("container.repair.cost", cost);
+		if (currentIngredients == null)
+			return;
+
+		ItemStack newLeftStack = currentIngredients.get(0).getDisplayedIngredient();
+		ItemStack newRightStack = currentIngredients.get(1).getDisplayedIngredient();
+
+		if (newLeftStack == null || newRightStack == null)
+			return;
+
+		if (lastLeftStack == null || lastRightStack == null
+				|| !ItemStack.areItemStacksEqual(lastLeftStack, newLeftStack)
+				|| !ItemStack.areItemStacksEqual(lastRightStack, newRightStack)) {
+			lastLeftStack = newLeftStack;
+			lastRightStack = newRightStack;
+			lastCost = AnvilRecipeMaker.findLevelsCost(lastLeftStack, lastRightStack);
+		}
+
+		if (lastCost >= 0) {
+			String text = I18n.format("container.repair.cost", lastCost);
 
 			int mainColor = 0xFF80FF20;
-			if ((cost >= 40 || cost > minecraft.player.experienceLevel)
+			if ((lastCost >= 40 || lastCost > minecraft.player.experienceLevel)
 					&& !minecraft.player.capabilities.isCreativeMode) {
 				// Show red if the player doesn't have enough levels
 				mainColor = 0xFFFF6060;
@@ -63,5 +85,9 @@ public class AnvilRecipeWrapper extends BlankRecipeWrapper {
 	public void getIngredients(IIngredients ingredients) {
 		ingredients.setInputLists(ItemStack.class, inputs);
 		ingredients.setOutputLists(ItemStack.class, output);
+	}
+
+	public void setCurrentIngredients(@Nullable Map<Integer, ? extends IGuiIngredient<ItemStack>> currentIngredients) {
+		this.currentIngredients = currentIngredients;
 	}
 }

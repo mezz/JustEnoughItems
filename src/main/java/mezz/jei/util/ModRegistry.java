@@ -139,11 +139,11 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
-	public void addAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs, int levelsCost) {
+	public void addAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
 		Preconditions.checkNotNull(leftInput, "Tried to add an anvil recipe with a null leftInput");
 		Preconditions.checkNotNull(rightInputs, "Tried to add an anvil recipe with a null rightInputs list");
 		Preconditions.checkNotNull(outputs, "Tried to add an anvil recipe with a null outputs list");
-		this.recipes.add(new AnvilRecipeWrapper(leftInput, rightInputs, outputs, levelsCost));
+		this.recipes.add(new AnvilRecipeWrapper(leftInput, rightInputs, outputs));
 	}
 
 	@Override

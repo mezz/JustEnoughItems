@@ -4,11 +4,15 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import mezz.jei.api.IModRegistry;
+import mezz.jei.util.FakeClientPlayer;
+import mezz.jei.util.FakeClientWorld;
 import mezz.jei.util.Log;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.ContainerRepair;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.OreDictionary;
@@ -50,7 +54,7 @@ public class AnvilRecipeMaker {
 						perLevelBooks.add(bookEnchant);
 						perLevelOutputs.add(withEnchant);
 					}
-					registry.addAnvilRecipe(ingredient, perLevelBooks, perLevelOutputs, 0);
+					registry.addAnvilRecipe(ingredient, perLevelBooks, perLevelOutputs);
 				}
 			}
 		}
@@ -145,12 +149,22 @@ public class AnvilRecipeMaker {
 
 				// Repair with material
 				registry.addAnvilRecipe(damaged1, Collections.singletonList(repairMaterial),
-						Collections.singletonList(damaged2), 0);
+						Collections.singletonList(damaged2));
 
 				// Repair with another of the same
 				registry.addAnvilRecipe(damaged2, Collections.singletonList(damaged2),
-						Collections.singletonList(damaged3), 0);
+						Collections.singletonList(damaged3));
 			}
 		}
+	}
+
+	public static int findLevelsCost(ItemStack leftStack, ItemStack rightStack)
+	{
+		FakeClientPlayer fakePlayer = FakeClientPlayer.getInstance();
+		InventoryPlayer fakeInventory = new InventoryPlayer(fakePlayer);
+		ContainerRepair repair = new ContainerRepair(fakeInventory, FakeClientWorld.getInstance(), fakePlayer);
+		repair.inventorySlots.get(0).putStack(leftStack);
+		repair.inventorySlots.get(1).putStack(rightStack);
+		return repair.maximumCost;
 	}
 }
