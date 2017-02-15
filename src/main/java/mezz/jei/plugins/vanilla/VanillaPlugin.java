@@ -14,6 +14,9 @@ import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
+import mezz.jei.plugins.vanilla.anvil.AnvilRecipeCategory;
+import mezz.jei.plugins.vanilla.anvil.AnvilRecipeHandler;
+import mezz.jei.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeCategory;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeHandler;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeMaker;
@@ -39,6 +42,7 @@ import mezz.jei.plugins.vanilla.ingredients.ItemStackListFactory;
 import mezz.jei.plugins.vanilla.ingredients.ItemStackRenderer;
 import mezz.jei.transfer.PlayerRecipeTransferHandler;
 import mezz.jei.util.StackHelper;
+import net.minecraft.client.gui.GuiRepair;
 import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.client.gui.inventory.GuiCrafting;
 import net.minecraft.client.gui.inventory.GuiFurnace;
@@ -47,6 +51,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerBrewingStand;
 import net.minecraft.inventory.ContainerFurnace;
+import net.minecraft.inventory.ContainerRepair;
 import net.minecraft.inventory.ContainerWorkbench;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemBanner;
@@ -107,7 +112,8 @@ public class VanillaPlugin extends BlankModPlugin {
 				new CraftingRecipeCategory(guiHelper),
 				new FurnaceFuelCategory(guiHelper),
 				new FurnaceSmeltingCategory(guiHelper),
-				new BrewingRecipeCategory(guiHelper)
+				new BrewingRecipeCategory(guiHelper),
+				new AnvilRecipeCategory(guiHelper)
 		);
 
 		registry.addRecipeHandlers(
@@ -118,13 +124,15 @@ public class VanillaPlugin extends BlankModPlugin {
 				new TippedArrowRecipeHandler(),
 				new FuelRecipeHandler(),
 				new SmeltingRecipeHandler(),
-				new BrewingRecipeHandler()
+				new BrewingRecipeHandler(),
+				new AnvilRecipeHandler()
 		);
 
 		registry.addRecipeClickArea(GuiCrafting.class, 88, 32, 28, 23, VanillaRecipeCategoryUid.CRAFTING);
 		registry.addRecipeClickArea(GuiInventory.class, 137, 29, 10, 13, VanillaRecipeCategoryUid.CRAFTING);
 		registry.addRecipeClickArea(GuiBrewingStand.class, 97, 16, 14, 30, VanillaRecipeCategoryUid.BREWING);
 		registry.addRecipeClickArea(GuiFurnace.class, 78, 32, 28, 23, VanillaRecipeCategoryUid.SMELTING, VanillaRecipeCategoryUid.FUEL);
+		registry.addRecipeClickArea(GuiRepair.class, 102, 48, 22, 15, VanillaRecipeCategoryUid.ANVIL);
 
 		IRecipeTransferRegistry recipeTransferRegistry = registry.getRecipeTransferRegistry();
 
@@ -133,16 +141,20 @@ public class VanillaPlugin extends BlankModPlugin {
 		recipeTransferRegistry.addRecipeTransferHandler(ContainerFurnace.class, VanillaRecipeCategoryUid.SMELTING, 0, 1, 3, 36);
 		recipeTransferRegistry.addRecipeTransferHandler(ContainerFurnace.class, VanillaRecipeCategoryUid.FUEL, 1, 1, 3, 36);
 		recipeTransferRegistry.addRecipeTransferHandler(ContainerBrewingStand.class, VanillaRecipeCategoryUid.BREWING, 0, 4, 5, 36);
+		recipeTransferRegistry.addRecipeTransferHandler(ContainerRepair.class, VanillaRecipeCategoryUid.ANVIL, 0, 2, 3, 36);
 
 		registry.addRecipeCategoryCraftingItem(new ItemStack(Blocks.CRAFTING_TABLE), VanillaRecipeCategoryUid.CRAFTING);
 		registry.addRecipeCategoryCraftingItem(new ItemStack(Blocks.FURNACE), VanillaRecipeCategoryUid.SMELTING, VanillaRecipeCategoryUid.FUEL);
 		registry.addRecipeCategoryCraftingItem(new ItemStack(Items.BREWING_STAND), VanillaRecipeCategoryUid.BREWING);
+		registry.addRecipeCategoryCraftingItem(new ItemStack(Blocks.ANVIL), VanillaRecipeCategoryUid.ANVIL);
 
 		registry.addRecipes(CraftingManager.getInstance().getRecipeList());
 		registry.addRecipes(SmeltingRecipeMaker.getFurnaceRecipes(jeiHelpers));
 		registry.addRecipes(FuelRecipeMaker.getFuelRecipes(ingredientRegistry, jeiHelpers));
 		registry.addRecipes(BrewingRecipeMaker.getBrewingRecipes(ingredientRegistry));
 		registry.addRecipes(TippedArrowRecipeMaker.getTippedArrowRecipes());
+
+		AnvilRecipeMaker.registerVanillaAnvilRecipes(registry);
 
 		IIngredientBlacklist ingredientBlacklist = registry.getJeiHelpers().getIngredientBlacklist();
 		// Game freezes when loading player skulls, see https://bugs.mojang.com/browse/MC-65587

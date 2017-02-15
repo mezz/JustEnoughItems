@@ -59,6 +59,14 @@ public class VanillaRecipeCategoryUid {
 	public static final String BREWING = "minecraft.brewing";
 
 	/**
+	 * The anvil recipe category.
+	 * <p>
+	 * This is a built-in category, you can add new recipes with {@link IModRegistry#addAnvilRecipe(ItemStack, List, List)}}
+	 * @since JEI 4.2.6
+	 */
+	public static final String ANVIL = "minecraft.anvil";
+
+	/**
 	 * The JEI description recipe category.
 	 * <p>
 	 * This is a built-in category, you can add new recipes with

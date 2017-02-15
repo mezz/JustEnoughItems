@@ -92,6 +92,15 @@ public interface IModRegistry {
 	void addDescription(List<ItemStack> itemStacks, String... descriptionKeys);
 
 	/**
+	 * Adds an anvil recipe for the given inputs and output.
+	 * @param leftInput The itemStack placed on the left slot.
+	 * @param rightInputs The itemStack(s) placed on the right slot.
+	 * @param outputs The resulting itemStack(s).
+	 * @since JEI 4.2.6
+	 */
+	void addAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs);
+
+	/**
 	 * Get the registry for setting up recipe transfer.
 	 */
 	IRecipeTransferRegistry getRecipeTransferRegistry();
