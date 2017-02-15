@@ -96,6 +96,7 @@ public interface IModRegistry {
 	 * @param leftInput The itemStack placed on the left slot.
 	 * @param rightInputs The itemStack(s) placed on the right slot.
 	 * @param outputs The resulting itemStack(s).
+	 * @since JEI 4.2.6
 	 */
 	void addAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs);
 
