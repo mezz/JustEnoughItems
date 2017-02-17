@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableTable;
@@ -72,7 +73,11 @@ public class ModRegistry implements IModRegistry {
 	@Override
 	public void addRecipeHandlers(@Nullable IRecipeHandler... recipeHandlers) {
 		if (recipeHandlers != null) {
-			Collections.addAll(this.recipeHandlers, recipeHandlers);
+			for (IRecipeHandler recipeHandler : recipeHandlers) {
+				Preconditions.checkNotNull(recipeHandler.getRecipeClass());
+				Preconditions.checkArgument(!recipeHandler.getRecipeClass().equals(Object.class), "Recipe handlers must handle a specific class, not Object.class");
+				this.recipeHandlers.add(recipeHandler);
+			}
 		}
 	}
 
