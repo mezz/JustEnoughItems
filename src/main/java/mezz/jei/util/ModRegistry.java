@@ -70,7 +70,11 @@ public class ModRegistry implements IModRegistry {
 		Preconditions.checkNotNull(recipeHandlers, "recipeHandlers cannot be null");
 		Preconditions.checkArgument(recipeHandlers.length > 0, "recipeHandlers cannot be empty");
 
-		Collections.addAll(this.recipeHandlers, recipeHandlers);
+		for (IRecipeHandler recipeHandler : recipeHandlers) {
+			Preconditions.checkNotNull(recipeHandler.getRecipeClass());
+			Preconditions.checkArgument(!recipeHandler.getRecipeClass().equals(Object.class), "Recipe handlers must handle a specific class, not Object.class");
+			this.recipeHandlers.add(recipeHandler);
+		}
 	}
 
 	@Override
