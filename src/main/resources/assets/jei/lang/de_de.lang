@@ -16,7 +16,7 @@ jei.tooltip.error.recipe.transfer.missing=Fehlende Items
 jei.tooltip.error.recipe.transfer.inventory.full=Inventar ist zu voll
 jei.tooltip.error.recipe.transfer.unknown=Unbekannter Fehler, siehe Logs
 jei.tooltip.error.recipe.transfer.no.server=Auf dem Server muss JEI installiert sein
-jei.tooltip.error.recipe.transfer.too.large.player.inventory=Rezeptist zu groß für 2x2!
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=Rezept ist zu groß für 2x2!
 jei.tooltip.error.crash=Tooltip-Error, siehe Log
 
 # Error Messages
