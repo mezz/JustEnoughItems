@@ -1,5 +1,10 @@
 package mezz.jei.plugins.vanilla.anvil;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -16,11 +21,6 @@ import net.minecraft.inventory.ContainerRepair;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.OreDictionary;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class AnvilRecipeMaker {
 
@@ -61,7 +61,7 @@ public class AnvilRecipeMaker {
 	}
 
 	private static void registerRepairRecipes(IModRegistry registry) {
-		Map<ItemStack,List<ItemStack>> items = Maps.newHashMap();
+		Map<ItemStack, List<ItemStack>> items = Maps.newHashMap();
 
 		ItemStack repairWood = new ItemStack(Blocks.PLANKS, 1, OreDictionary.WILDCARD_VALUE);
 		items.put(repairWood, Lists.newArrayList(
@@ -134,7 +134,7 @@ public class AnvilRecipeMaker {
 				new ItemStack(Items.DIAMOND_BOOTS)
 		));
 
-		for (Map.Entry<ItemStack,List<ItemStack>> entry : items.entrySet()) {
+		for (Map.Entry<ItemStack, List<ItemStack>> entry : items.entrySet()) {
 
 			ItemStack repairMaterial = entry.getKey();
 
@@ -158,8 +158,7 @@ public class AnvilRecipeMaker {
 		}
 	}
 
-	public static int findLevelsCost(ItemStack leftStack, ItemStack rightStack)
-	{
+	public static int findLevelsCost(ItemStack leftStack, ItemStack rightStack) {
 		FakeClientPlayer fakePlayer = FakeClientPlayer.getInstance();
 		InventoryPlayer fakeInventory = new InventoryPlayer(fakePlayer);
 		ContainerRepair repair = new ContainerRepair(fakeInventory, FakeClientWorld.getInstance(), fakePlayer);

@@ -1,5 +1,10 @@
 package mezz.jei.plugins.vanilla.anvil;
 
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import com.google.common.collect.Lists;
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.ingredients.IIngredients;
@@ -9,17 +14,15 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 public class AnvilRecipeWrapper extends BlankRecipeWrapper {
 	private final List<List<ItemStack>> inputs;
 	private final List<List<ItemStack>> output;
-	private @Nullable Map<Integer, ? extends IGuiIngredient<ItemStack>> currentIngredients = null;
-	private @Nullable ItemStack lastLeftStack;
-	private @Nullable ItemStack lastRightStack;
+	@Nullable
+	private Map<Integer, ? extends IGuiIngredient<ItemStack>> currentIngredients = null;
+	@Nullable
+	private ItemStack lastLeftStack;
+	@Nullable
+	private ItemStack lastRightStack;
 	private int lastCost;
 
 	public AnvilRecipeWrapper(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
@@ -32,14 +35,16 @@ public class AnvilRecipeWrapper extends BlankRecipeWrapper {
 
 	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-		if (currentIngredients == null)
+		if (currentIngredients == null) {
 			return;
+		}
 
 		ItemStack newLeftStack = currentIngredients.get(0).getDisplayedIngredient();
 		ItemStack newRightStack = currentIngredients.get(1).getDisplayedIngredient();
 
-		if (newLeftStack == null || newRightStack == null)
+		if (newLeftStack == null || newRightStack == null) {
 			return;
+		}
 
 		if (lastLeftStack == null || lastRightStack == null
 				|| !ItemStack.areItemStacksEqual(lastLeftStack, newLeftStack)
