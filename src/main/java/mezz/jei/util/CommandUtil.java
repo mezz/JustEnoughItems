@@ -1,12 +1,17 @@
 package mezz.jei.util;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.base.Throwables;
+import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandGive;
+import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandManager;
+import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -61,9 +66,7 @@ public class CommandUtil {
 		}
 
 		MinecraftServer minecraftServer = sender.mcServer;
-		ICommandManager commandManager = minecraftServer.getCommandManager();
-		Map<String, ICommand> commands = commandManager.getCommands();
-		ICommand giveCommand = commands.get("give");
+		ICommand giveCommand = getGiveCommand(sender);
 		if (giveCommand != null && giveCommand.checkPermission(minecraftServer, sender)) {
 			String[] commandParameters = getGiveCommandParameters(sender, itemStack, itemStack.getCount());
 			CommandEvent event = new CommandEvent(giveCommand, sender, commandParameters);
@@ -80,20 +83,43 @@ public class CommandUtil {
 		}
 	}
 
-	public static void executeGive(EntityPlayer entityplayer, ItemStack itemStack) {
-		boolean addedToInventory = entityplayer.inventory.addItemStackToInventory(itemStack);
+	/**
+	 * Gives a player an item. Similar to vanilla but without the "fake" itemStack popping into the player's face.
+	 * (no {@link EntityItem#makeFakeItem()}
+	 * @see CommandGive#execute(MinecraftServer, ICommandSender, String[])
+	 */
+	public static void executeGive(EntityPlayerMP sender, ItemStack itemStack) {
+		int count = itemStack.getCount();
+		boolean addedToInventory = sender.inventory.addItemStackToInventory(itemStack);
 
 		if (addedToInventory) {
-			entityplayer.world.playSound(null, entityplayer.posX, entityplayer.posY, entityplayer.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((entityplayer.getRNG().nextFloat() - entityplayer.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
-			entityplayer.inventoryContainer.detectAndSendChanges();
+			sender.world.playSound(null, sender.posX, sender.posY, sender.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((sender.getRNG().nextFloat() - sender.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+			sender.inventoryContainer.detectAndSendChanges();
 		}
 
-		if (!addedToInventory || itemStack.getCount() > 0) {
-			EntityItem entityitem = entityplayer.dropItem(itemStack, false);
+		if (addedToInventory && itemStack.isEmpty()) {
+			sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, count);
+		} else {
+			sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, count - itemStack.getCount());
+			EntityItem entityitem = sender.dropItem(itemStack, false);
 			if (entityitem != null) {
 				entityitem.setNoPickupDelay();
-				entityitem.setOwner(entityplayer.getName());
+				entityitem.setOwner(sender.getName());
 			}
 		}
+
+		ICommand giveCommand = getGiveCommand(sender);
+		if (giveCommand != null) {
+			itemStack.setCount(1);
+			CommandBase.notifyCommandListener(sender, giveCommand, "commands.give.success", itemStack.getTextComponent(), count, sender.getName());
+		}
+	}
+
+	@Nullable
+	private static ICommand getGiveCommand(EntityPlayerMP sender) {
+		MinecraftServer minecraftServer = sender.mcServer;
+		ICommandManager commandManager = minecraftServer.getCommandManager();
+		Map<String, ICommand> commands = commandManager.getCommands();
+		return commands.get("give");
 	}
 }
