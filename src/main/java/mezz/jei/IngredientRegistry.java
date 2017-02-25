@@ -1,6 +1,5 @@
 package mezz.jei;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -68,7 +67,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 	}
 
 	@Override
-	public <V> List<V> getIngredients(@Nullable Class<V> ingredientClass) {
+	public <V> List<V> getIngredients(Class<V> ingredientClass) {
 		Preconditions.checkNotNull(ingredientClass, "ingredientClass cannot be null");
 
 		//noinspection unchecked
@@ -81,7 +80,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 	}
 
 	@Override
-	public <V> IIngredientHelper<V> getIngredientHelper(@Nullable V ingredient) {
+	public <V> IIngredientHelper<V> getIngredientHelper(V ingredient) {
 		Preconditions.checkNotNull(ingredient, "ingredient cannot be null");
 
 		//noinspection unchecked
@@ -89,7 +88,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 	}
 
 	@Override
-	public <V> IIngredientHelper<V> getIngredientHelper(@Nullable Class<V> ingredientClass) {
+	public <V> IIngredientHelper<V> getIngredientHelper(Class<V> ingredientClass) {
 		Preconditions.checkNotNull(ingredientClass, "ingredientClass cannot be null");
 
 		//noinspection unchecked
@@ -101,7 +100,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 	}
 
 	@Override
-	public <V> IIngredientRenderer<V> getIngredientRenderer(@Nullable V ingredient) {
+	public <V> IIngredientRenderer<V> getIngredientRenderer(V ingredient) {
 		Preconditions.checkNotNull(ingredient, "ingredient cannot be null");
 
 		//noinspection unchecked
@@ -110,7 +109,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 	}
 
 	@Override
-	public <V> IIngredientRenderer<V> getIngredientRenderer(@Nullable Class<V> ingredientClass) {
+	public <V> IIngredientRenderer<V> getIngredientRenderer(Class<V> ingredientClass) {
 		Preconditions.checkNotNull(ingredientClass, "ingredientClass cannot be null");
 
 		//noinspection unchecked
@@ -137,7 +136,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 	}
 
 	@Override
-	public <V> void addIngredientsAtRuntime(@Nullable Class<V> ingredientClass, @Nullable List<V> ingredients) {
+	public <V> void addIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients) {
 		Preconditions.checkNotNull(ingredientClass, "ingredientClass cannot be null");
 		Preconditions.checkNotNull(ingredients, "ingredients cannot be null");
 		Preconditions.checkArgument(!ingredients.isEmpty(), "ingredients cannot be empty");

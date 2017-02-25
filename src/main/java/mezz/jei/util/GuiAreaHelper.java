@@ -44,23 +44,19 @@ public class GuiAreaHelper {
 		return null;
 	}
 
-	public static boolean intersects(@Nullable List<Rectangle> areas, Rectangle comparisonArea) {
-		if (areas != null) {
-			for (Rectangle area : areas) {
-				if (area.intersects(comparisonArea)) {
-					return true;
-				}
+	public static boolean intersects(List<Rectangle> areas, Rectangle comparisonArea) {
+		for (Rectangle area : areas) {
+			if (area.intersects(comparisonArea)) {
+				return true;
 			}
 		}
 		return false;
 	}
 
-	public static boolean isMouseOverGuiArea(@Nullable List<Rectangle> guiAreas, int mouseX, int mouseY) {
-		if (guiAreas != null) {
-			for (Rectangle guiArea : guiAreas) {
-				if (guiArea.contains(mouseX, mouseY)) {
-					return true;
-				}
+	public static boolean isMouseOverGuiArea(List<Rectangle> guiAreas, int mouseX, int mouseY) {
+		for (Rectangle guiArea : guiAreas) {
+			if (guiArea.contains(mouseX, mouseY)) {
+				return true;
 			}
 		}
 		return false;

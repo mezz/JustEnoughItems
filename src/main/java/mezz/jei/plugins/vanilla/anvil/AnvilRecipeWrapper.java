@@ -92,7 +92,7 @@ public class AnvilRecipeWrapper extends BlankRecipeWrapper {
 		ingredients.setOutputLists(ItemStack.class, output);
 	}
 
-	public void setCurrentIngredients(@Nullable Map<Integer, ? extends IGuiIngredient<ItemStack>> currentIngredients) {
+	public void setCurrentIngredients(Map<Integer, ? extends IGuiIngredient<ItemStack>> currentIngredients) {
 		this.currentIngredients = currentIngredients;
 	}
 }

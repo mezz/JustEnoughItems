@@ -1,10 +1,11 @@
 package mezz.jei.util;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
@@ -33,6 +34,7 @@ public class ModRegistry implements IModRegistry {
 	private final IJeiHelpers jeiHelpers;
 	private final IIngredientRegistry ingredientRegistry;
 	private final List<IRecipeCategory> recipeCategories = new ArrayList<IRecipeCategory>();
+	private final Set<String> recipeCategoryUids = new HashSet<String>();
 	private final List<IRecipeHandler> recipeHandlers = new ArrayList<IRecipeHandler>();
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers = new ArrayList<IAdvancedGuiHandler<?>>();
 	private final List<Object> recipes = new ArrayList<Object>();
@@ -58,15 +60,23 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
-	public void addRecipeCategories(@Nullable IRecipeCategory... recipeCategories) {
+	public void addRecipeCategories(IRecipeCategory... recipeCategories) {
 		Preconditions.checkNotNull(recipeCategories, "recipeCategories cannot be null");
 		Preconditions.checkArgument(recipeCategories.length > 0, "recipeCategories cannot be empty");
+
+		for (IRecipeCategory recipeCategory : recipeCategories) {
+			String uid = recipeCategory.getUid();
+			Preconditions.checkNotNull(uid, "Recipe category UID cannot be null %s", recipeCategory);
+			if (!recipeCategoryUids.add(uid)) {
+				throw new IllegalArgumentException("A RecipeCategory with UID \"" + uid + "\" has already been registered.");
+			}
+		}
 
 		Collections.addAll(this.recipeCategories, recipeCategories);
 	}
 
 	@Override
-	public void addRecipeHandlers(@Nullable IRecipeHandler... recipeHandlers) {
+	public void addRecipeHandlers(IRecipeHandler... recipeHandlers) {
 		Preconditions.checkNotNull(recipeHandlers, "recipeHandlers cannot be null");
 		Preconditions.checkArgument(recipeHandlers.length > 0, "recipeHandlers cannot be empty");
 
@@ -78,7 +88,7 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
-	public void addRecipes(@Nullable Collection recipes) {
+	public void addRecipes(Collection recipes) {
 		Preconditions.checkNotNull(recipes, "recipes cannot be null");
 		Preconditions.checkArgument(!recipes.isEmpty(), "recipes cannot be empty");
 
@@ -86,7 +96,7 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
-	public void addRecipeClickArea(@Nullable Class<? extends GuiContainer> guiClass, int xPos, int yPos, int width, int height, @Nullable String... recipeCategoryUids) {
+	public void addRecipeClickArea(Class<? extends GuiContainer> guiClass, int xPos, int yPos, int width, int height, String... recipeCategoryUids) {
 		Preconditions.checkNotNull(guiClass, "Tried to add a RecipeClickArea with null guiClass.");
 		Preconditions.checkNotNull(recipeCategoryUids, "Tried to add a RecipeClickArea with null recipeCategoryUids.");
 		Preconditions.checkArgument(recipeCategoryUids.length > 0, "Tried to add a RecipeClickArea with empty list of recipeCategoryUids.");
@@ -96,7 +106,7 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
-	public void addRecipeCategoryCraftingItem(@Nullable ItemStack craftingItem, @Nullable String... recipeCategoryUids) {
+	public void addRecipeCategoryCraftingItem(ItemStack craftingItem, String... recipeCategoryUids) {
 		Preconditions.checkNotNull(craftingItem, "Tried to add a RecipeCategoryCraftingItem with null craftingItem.");
 		Preconditions.checkArgument(!craftingItem.isEmpty(), "Tried to add a RecipeCategoryCraftingItem with empty craftingItem.");
 		Preconditions.checkNotNull(recipeCategoryUids, "Tried to add a RecipeCategoryCraftingItem with null recipeCategoryUids.");
@@ -109,7 +119,7 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
-	public void addAdvancedGuiHandlers(@Nullable IAdvancedGuiHandler<?>... advancedGuiHandlers) {
+	public void addAdvancedGuiHandlers(IAdvancedGuiHandler<?>... advancedGuiHandlers) {
 		Preconditions.checkNotNull(advancedGuiHandlers, "advancedGuiHandlers cannot be null");
 		Preconditions.checkArgument(advancedGuiHandlers.length > 0, "advancedGuiHandlers cannot be empty");
 
@@ -117,7 +127,7 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
-	public void addDescription(@Nullable List<ItemStack> itemStacks, @Nullable String... descriptionKeys) {
+	public void addDescription(List<ItemStack> itemStacks, String... descriptionKeys) {
 		Preconditions.checkNotNull(itemStacks, "Tried to add description with null itemStacks.");
 		Preconditions.checkArgument(!itemStacks.isEmpty(), "Tried to add description with empty list of itemStacks.");
 		Preconditions.checkNotNull(descriptionKeys, "Tried to add a null descriptionKey for itemStacks %s.", itemStacks);
@@ -133,7 +143,7 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
-	public void addDescription(@Nullable ItemStack itemStack, @Nullable String... descriptionKeys) {
+	public void addDescription(ItemStack itemStack, String... descriptionKeys) {
 		Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
 		Preconditions.checkArgument(!itemStack.isEmpty(), "itemStack cannot be empty");
 		Preconditions.checkNotNull(descriptionKeys, "descriptionKeys cannot be null");
@@ -156,7 +166,7 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
-	public void addRecipeRegistryPlugin(@Nullable IRecipeRegistryPlugin recipeRegistryPlugin) {
+	public void addRecipeRegistryPlugin(IRecipeRegistryPlugin recipeRegistryPlugin) {
 		Preconditions.checkNotNull(recipeRegistryPlugin, "recipeRegistryPlugin cannot be null");
 
 		Log.info("Added recipe registry plugin: {}", recipeRegistryPlugin.getClass());

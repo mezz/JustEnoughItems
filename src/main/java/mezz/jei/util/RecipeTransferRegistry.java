@@ -1,7 +1,5 @@
 package mezz.jei.util;
 
-import javax.annotation.Nullable;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableTable;
@@ -26,7 +24,7 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 	}
 
 	@Override
-	public <C extends Container> void addRecipeTransferHandler(@Nullable Class<C> containerClass, @Nullable String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
+	public <C extends Container> void addRecipeTransferHandler(Class<C> containerClass, String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
 		Preconditions.checkNotNull(containerClass, "containerClass cannot be null");
 		Preconditions.checkNotNull(recipeCategoryUid, "recipeCategoryUid cannot be null");
 
@@ -35,7 +33,7 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 	}
 
 	@Override
-	public <C extends Container> void addRecipeTransferHandler(@Nullable IRecipeTransferInfo<C> recipeTransferInfo) {
+	public <C extends Container> void addRecipeTransferHandler(IRecipeTransferInfo<C> recipeTransferInfo) {
 		Preconditions.checkNotNull(recipeTransferInfo, "recipeTransferInfo cannot be null");
 
 		IRecipeTransferHandler<C> recipeTransferHandler = new BasicRecipeTransferHandler<C>(stackHelper, handlerHelper, recipeTransferInfo);
@@ -43,7 +41,7 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 	}
 
 	@Override
-	public void addRecipeTransferHandler(@Nullable IRecipeTransferHandler<?> recipeTransferHandler, @Nullable String recipeCategoryUid) {
+	public void addRecipeTransferHandler(IRecipeTransferHandler<?> recipeTransferHandler, String recipeCategoryUid) {
 		Preconditions.checkNotNull(recipeTransferHandler, "recipeTransferHandler cannot be null");
 		Preconditions.checkNotNull(recipeCategoryUid, "recipeCategoryUid cannot be null");
 
@@ -52,7 +50,7 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 	}
 
 	@Override
-	public void addUniversalRecipeTransferHandler(@Nullable IRecipeTransferHandler<?> recipeTransferHandler) {
+	public void addUniversalRecipeTransferHandler(IRecipeTransferHandler<?> recipeTransferHandler) {
 		Preconditions.checkNotNull(recipeTransferHandler, "recipeTransferHandler cannot be null");
 
 		Class<?> containerClass = recipeTransferHandler.getContainerClass();

@@ -146,7 +146,7 @@ public class StackHelper implements IStackHelper {
 
 	@Override
 	@Nullable
-	public ItemStack containsAnyStack(@Nullable Iterable<ItemStack> stacks, @Nullable Iterable<ItemStack> contains) {
+	public ItemStack containsAnyStack(Iterable<ItemStack> stacks, Iterable<ItemStack> contains) {
 		Preconditions.checkNotNull(stacks, "stacks cannot be null");
 		Preconditions.checkNotNull(contains, "contains cannot be null");
 
@@ -477,12 +477,8 @@ public class StackHelper implements IStackHelper {
 	private static class MatchingIndexed implements Iterable<ItemStackMatchable<Integer>> {
 		private final Map<Integer, ItemStack> map;
 
-		public MatchingIndexed(@Nullable Map<Integer, ItemStack> map) {
-			if (map == null) {
-				this.map = Collections.emptyMap();
-			} else {
-				this.map = map;
-			}
+		public MatchingIndexed(Map<Integer, ItemStack> map) {
+			this.map = map;
 		}
 
 		@Override

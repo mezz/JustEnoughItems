@@ -31,7 +31,6 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses {
 	private static final int itemStackWidth = GuiItemStackGroup.getWidth(itemStackPadding);
 	private static final int itemStackHeight = GuiItemStackGroup.getHeight(itemStackPadding);
 
-	@Nullable
 	private final List<Rectangle> guiAreas;
 	private final Rectangle area;
 	protected final GuiIngredientFastList guiIngredientList;
@@ -39,7 +38,7 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses {
 	@Nullable
 	private GuiIngredientFast hovered;
 
-	public IngredientGrid(IIngredientRegistry ingredientRegistry, Rectangle area, @Nullable List<Rectangle> guiAreas) {
+	public IngredientGrid(IIngredientRegistry ingredientRegistry, Rectangle area, List<Rectangle> guiAreas) {
 		final int columns = area.width / itemStackWidth;
 		final int rows = area.height / itemStackHeight;
 

@@ -64,7 +64,7 @@ public class ItemListOverlay implements IItemListOverlay {
 	}
 
 	@Override
-	public void setFilterText(@Nullable String filterText) {
+	public void setFilterText(String filterText) {
 		Preconditions.checkNotNull(filterText, "filterText cannot be null");
 
 		Config.setFilterText(filterText);

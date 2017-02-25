@@ -165,11 +165,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return listBuilder.build();
 	}
 
-	private void addRecipes(@Nullable List<Object> recipes) {
-		if (recipes == null) {
-			return;
-		}
-
+	private void addRecipes(List<Object> recipes) {
 		ProgressManager.ProgressBar progressBar = ProgressManager.push("Adding recipes", recipes.size());
 		for (Object recipe : recipes) {
 			progressBar.step("");
@@ -179,7 +175,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public <V> IFocus<V> createFocus(@Nullable IFocus.Mode mode, @Nullable V ingredient) {
+	public <V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient) {
 		Preconditions.checkNotNull(mode, "mode cannot be null");
 		Preconditions.checkNotNull(ingredient, "ingredient cannot be null");
 
@@ -187,7 +183,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public void addRecipe(@Nullable Object recipe) {
+	public void addRecipe(Object recipe) {
 		Preconditions.checkNotNull(recipe, "recipe cannot be null");
 
 		addRecipe(recipe, recipe.getClass());
@@ -341,7 +337,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public ImmutableList<IRecipeCategory> getRecipeCategories(@Nullable List<String> recipeCategoryUids) {
+	public ImmutableList<IRecipeCategory> getRecipeCategories(List<String> recipeCategoryUids) {
 		Preconditions.checkNotNull(recipeCategoryUids, "recipeCategoryUids cannot be null");
 
 		Set<String> uniqueUids = new HashSet<String>();
@@ -360,7 +356,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Nullable
 	@Override
-	public <T> IRecipeHandler<T> getRecipeHandler(@Nullable Class<? extends T> recipeClass) {
+	public <T> IRecipeHandler<T> getRecipeHandler(Class<? extends T> recipeClass) {
 		Preconditions.checkNotNull(recipeClass, "recipeClass cannot be null");
 
 		// first try to find the exact handler for this recipeClass
@@ -416,7 +412,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public <V> List<IRecipeCategory> getRecipeCategories(@Nullable IFocus<V> focus) {
+	public <V> List<IRecipeCategory> getRecipeCategories(IFocus<V> focus) {
 		Preconditions.checkNotNull(focus, "focus cannot be null");
 
 		FluidStack fluidStack = getFluidFromItemBlock(focus);
@@ -439,7 +435,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public <T extends IRecipeWrapper, V> List<T> getRecipeWrappers(@Nullable IRecipeCategory<T> recipeCategory, @Nullable IFocus<V> focus) {
+	public <T extends IRecipeWrapper, V> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
 		Preconditions.checkNotNull(recipeCategory, "recipeCategory cannot be null");
 		Preconditions.checkNotNull(focus, "focus cannot be null");
 
@@ -463,7 +459,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public <T extends IRecipeWrapper> List<T> getRecipeWrappers(@Nullable IRecipeCategory<T> recipeCategory) {
+	public <T extends IRecipeWrapper> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory) {
 		Preconditions.checkNotNull(recipeCategory, "recipeCategory cannot be null");
 
 		List<T> allRecipeWrappers = new ArrayList<T>();
@@ -505,7 +501,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Nullable
-	public IRecipeTransferHandler getRecipeTransferHandler(@Nullable Container container, @Nullable IRecipeCategory recipeCategory) {
+	public IRecipeTransferHandler getRecipeTransferHandler(Container container, IRecipeCategory recipeCategory) {
 		Preconditions.checkNotNull(container, "container cannot be null");
 		Preconditions.checkNotNull(recipeCategory, "recipeCategory cannot be null");
 

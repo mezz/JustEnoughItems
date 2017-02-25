@@ -43,7 +43,6 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -337,7 +336,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	}
 
 	@Override
-	public <V> void show(@Nullable IFocus<V> focus) {
+	public <V> void show(IFocus<V> focus) {
 		Preconditions.checkNotNull(focus, "focus cannot be null");
 
 		if (logic.setFocus(focus)) {
@@ -346,7 +345,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	}
 
 	@Override
-	public void showCategories(@Nullable List<String> recipeCategoryUids) {
+	public void showCategories(List<String> recipeCategoryUids) {
 		Preconditions.checkNotNull(recipeCategoryUids, "recipeCategoryUids cannot be null");
 		Preconditions.checkArgument(!recipeCategoryUids.isEmpty(), "recipeCategoryUids cannot be empty");
 

@@ -13,7 +13,6 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
-import net.minecraftforge.fluids.FluidStack;
 
 /**
  * The IRecipeManager offers several functions for retrieving and handling recipes.

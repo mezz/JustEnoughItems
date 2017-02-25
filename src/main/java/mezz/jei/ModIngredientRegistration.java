@@ -1,6 +1,5 @@
 package mezz.jei;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -19,12 +18,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 	private final Map<Class, IIngredientRenderer> ingredientRendererMap = new IdentityHashMap<Class, IIngredientRenderer>();
 
 	@Override
-	public <V> void register(
-			@Nullable Class<V> ingredientClass,
-			@Nullable Collection<V> allIngredients,
-			@Nullable IIngredientHelper<V> ingredientHelper,
-			@Nullable IIngredientRenderer<V> ingredientRenderer
-	) {
+	public <V> void register(Class<V> ingredientClass, Collection<V> allIngredients, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer) {
 		Preconditions.checkNotNull(ingredientClass, "ingredientClass cannot be null");
 		Preconditions.checkNotNull(allIngredients, "allIngredients cannot be null");
 		Preconditions.checkNotNull(ingredientHelper, "ingredientHelper cannot be null");

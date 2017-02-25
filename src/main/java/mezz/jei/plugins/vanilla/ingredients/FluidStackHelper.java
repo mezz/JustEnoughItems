@@ -68,8 +68,10 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		ResourceLocation fluidStill = fluid.getStill();
 		if (fluidStill != null) {
 			TextureAtlasSprite fluidStillSprite = textureMapBlocks.getTextureExtry(fluidStill.toString());
-			int renderColor = ingredient.getFluid().getColor(ingredient);
-			return ColorGetter.getColors(fluidStillSprite, renderColor, 1);
+			if (fluidStillSprite != null) {
+				int renderColor = ingredient.getFluid().getColor(ingredient);
+				return ColorGetter.getColors(fluidStillSprite, renderColor, 1);
+			}
 		}
 		return Collections.emptyList();
 	}

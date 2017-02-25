@@ -1,7 +1,5 @@
 package mezz.jei.gui;
 
-import javax.annotation.Nullable;
-
 import com.google.common.base.Preconditions;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.ICraftingGridHelper;
@@ -35,28 +33,28 @@ public class GuiHelper implements IGuiHelper {
 	}
 
 	@Override
-	public IDrawableStatic createDrawable(@Nullable ResourceLocation resourceLocation, int u, int v, int width, int height) {
+	public IDrawableStatic createDrawable(ResourceLocation resourceLocation, int u, int v, int width, int height) {
 		Preconditions.checkNotNull(resourceLocation, "resourceLocation cannot be null");
 
 		return new DrawableResource(resourceLocation, u, v, width, height, 0, 0, 0, 0, 256, 256);
 	}
 
 	@Override
-	public IDrawableStatic createDrawable(@Nullable ResourceLocation resourceLocation, int u, int v, int width, int height, int textureWidth, int textureHeight) {
+	public IDrawableStatic createDrawable(ResourceLocation resourceLocation, int u, int v, int width, int height, int textureWidth, int textureHeight) {
 		Preconditions.checkNotNull(resourceLocation, "resourceLocation cannot be null");
 
 		return new DrawableResource(resourceLocation, u, v, width, height, 0, 0, 0, 0, textureWidth, textureHeight);
 	}
 
 	@Override
-	public IDrawableStatic createDrawable(@Nullable ResourceLocation resourceLocation, int u, int v, int width, int height, int paddingTop, int paddingBottom, int paddingLeft, int paddingRight) {
+	public IDrawableStatic createDrawable(ResourceLocation resourceLocation, int u, int v, int width, int height, int paddingTop, int paddingBottom, int paddingLeft, int paddingRight) {
 		Preconditions.checkNotNull(resourceLocation, "resourceLocation cannot be null");
 
 		return new DrawableResource(resourceLocation, u, v, width, height, paddingTop, paddingBottom, paddingLeft, paddingRight, 256, 256);
 	}
 
 	@Override
-	public IDrawableAnimated createAnimatedDrawable(@Nullable IDrawableStatic drawable, int ticksPerCycle, @Nullable IDrawableAnimated.StartDirection startDirection, boolean inverted) {
+	public IDrawableAnimated createAnimatedDrawable(IDrawableStatic drawable, int ticksPerCycle, IDrawableAnimated.StartDirection startDirection, boolean inverted) {
 		Preconditions.checkNotNull(drawable, "drawable cannot be null");
 		Preconditions.checkNotNull(startDirection, "startDirection cannot be null");
 

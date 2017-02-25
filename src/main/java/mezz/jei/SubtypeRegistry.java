@@ -22,12 +22,12 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 	}
 
 	@Override
-	public void registerNbtInterpreter(@Nullable Item item, @Nullable ISubtypeInterpreter interpreter) {
+	public void registerNbtInterpreter(Item item, ISubtypeInterpreter interpreter) {
 		registerSubtypeInterpreter(item, interpreter);
 	}
 
 	@Override
-	public void registerSubtypeInterpreter(@Nullable Item item, @Nullable ISubtypeInterpreter interpreter) {
+	public void registerSubtypeInterpreter(Item item, ISubtypeInterpreter interpreter) {
 		Preconditions.checkNotNull(item, "item cannot be null");
 		Preconditions.checkNotNull(interpreter, "interpreter cannot be null");
 
@@ -41,7 +41,7 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 
 	@Nullable
 	@Override
-	public String getSubtypeInfo(@Nullable ItemStack itemStack) {
+	public String getSubtypeInfo(ItemStack itemStack) {
 		Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
 		Preconditions.checkArgument(!itemStack.isEmpty(), "itemStack cannot be empty");
 

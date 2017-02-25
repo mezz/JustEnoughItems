@@ -71,7 +71,7 @@ public class Internal {
 		return ingredientRegistry;
 	}
 
-	public static void setIngredientRegistry(@Nullable IngredientRegistry ingredientRegistry) {
+	public static void setIngredientRegistry(IngredientRegistry ingredientRegistry) {
 		Internal.ingredientRegistry = ingredientRegistry;
 	}
 

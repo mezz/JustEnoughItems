@@ -1,6 +1,5 @@
 package mezz.jei.gui;
 
-import javax.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.List;
 
@@ -19,7 +18,7 @@ import net.minecraft.item.ItemStack;
 public class IngredientGridAll extends IngredientGrid implements IPaged {
 	private final ItemFilter itemFilter;
 
-	public IngredientGridAll(IIngredientRegistry ingredientRegistry, Rectangle area, @Nullable List<Rectangle> guiAreas, ItemFilter itemFilter) {
+	public IngredientGridAll(IIngredientRegistry ingredientRegistry, Rectangle area, List<Rectangle> guiAreas, ItemFilter itemFilter) {
 		super(ingredientRegistry, area, guiAreas);
 		this.itemFilter = itemFilter;
 	}

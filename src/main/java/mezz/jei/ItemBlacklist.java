@@ -1,7 +1,5 @@
 package mezz.jei;
 
-import javax.annotation.Nullable;
-
 import com.google.common.base.Preconditions;
 import mezz.jei.api.IItemBlacklist;
 import net.minecraft.item.ItemStack;
@@ -16,7 +14,7 @@ public class ItemBlacklist implements IItemBlacklist {
 
 	@Override
 	@Deprecated
-	public void addItemToBlacklist(@Nullable ItemStack itemStack) {
+	public void addItemToBlacklist(ItemStack itemStack) {
 		Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
 		Preconditions.checkArgument(!itemStack.isEmpty(), "itemStack cannot be empty");
 
@@ -25,7 +23,7 @@ public class ItemBlacklist implements IItemBlacklist {
 
 	@Override
 	@Deprecated
-	public void removeItemFromBlacklist(@Nullable ItemStack itemStack) {
+	public void removeItemFromBlacklist(ItemStack itemStack) {
 		Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
 		Preconditions.checkArgument(!itemStack.isEmpty(), "itemStack cannot be empty");
 
@@ -34,7 +32,7 @@ public class ItemBlacklist implements IItemBlacklist {
 
 	@Override
 	@Deprecated
-	public boolean isItemBlacklisted(@Nullable ItemStack itemStack) {
+	public boolean isItemBlacklisted(ItemStack itemStack) {
 		Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
 		Preconditions.checkArgument(!itemStack.isEmpty(), "itemStack cannot be empty");
 
