@@ -33,7 +33,7 @@ public class RecipeCategoryCraftingItems implements IShowsRecipeFocuses {
 	private int top = 0;
 
 	public RecipeCategoryCraftingItems() {
-		craftingItems = new GuiItemStackGroup(null);
+		craftingItems = new GuiItemStackGroup(null, 0);
 
 		ResourceLocation recipeBackgroundResource = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
 
@@ -44,7 +44,7 @@ public class RecipeCategoryCraftingItems implements IShowsRecipeFocuses {
 	}
 
 	public void updateLayout(List<ItemStack> itemStacks, GuiProperties guiProperties) {
-		craftingItems = new GuiItemStackGroup(null);
+		craftingItems = new GuiItemStackGroup(null, 0);
 
 		if (!itemStacks.isEmpty()) {
 			int totalHeight = topDrawable.getHeight() + middleDrawable.getHeight() + bottomDrawable.getHeight();

@@ -31,6 +31,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	private static final int RECIPE_BUTTON_SIZE = 12;
 	public static final int recipeTransferButtonIndex = 100;
 
+	private final int ingredientCycleOffset = (int) (Math.random() * 10000);
 	private final IRecipeCategory recipeCategory;
 	private final GuiItemStackGroup guiItemStackGroup;
 	private final GuiFluidStackGroup guiFluidStackGroup;
@@ -62,8 +63,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 				fluidStackFocus = (IFocus<FluidStack>) focus;
 			}
 		}
-		this.guiItemStackGroup = new GuiItemStackGroup(itemStackFocus);
-		this.guiFluidStackGroup = new GuiFluidStackGroup(fluidStackFocus);
+		this.guiItemStackGroup = new GuiItemStackGroup(itemStackFocus, ingredientCycleOffset);
+		this.guiFluidStackGroup = new GuiFluidStackGroup(fluidStackFocus, ingredientCycleOffset);
 
 		this.guiIngredientGroups = new IdentityHashMap<Class, GuiIngredientGroup>();
 		this.guiIngredientGroups.put(ItemStack.class, this.guiItemStackGroup);
@@ -212,7 +213,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 					focus = (IFocus<T>) this.focus;
 				}
 			}
-			guiIngredientGroup = new GuiIngredientGroup<T>(ingredientClass, focus);
+			guiIngredientGroup = new GuiIngredientGroup<T>(ingredientClass, focus, ingredientCycleOffset);
 			guiIngredientGroups.put(ingredientClass, guiIngredientGroup);
 		}
 		return guiIngredientGroup;

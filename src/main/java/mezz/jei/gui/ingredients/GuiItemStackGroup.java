@@ -12,8 +12,8 @@ public class GuiItemStackGroup extends GuiIngredientGroup<ItemStack> implements 
 	private static final int baseHeight = 16;
 	private static final ItemStackRenderer renderer = new ItemStackRenderer();
 
-	public GuiItemStackGroup(@Nullable IFocus<ItemStack> focus) {
-		super(ItemStack.class, focus);
+	public GuiItemStackGroup(@Nullable IFocus<ItemStack> focus, int cycleOffset) {
+		super(ItemStack.class, focus, cycleOffset);
 	}
 
 	public static int getWidth(int padding) {

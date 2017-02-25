@@ -9,8 +9,8 @@ import mezz.jei.plugins.vanilla.ingredients.FluidStackRenderer;
 import net.minecraftforge.fluids.FluidStack;
 
 public class GuiFluidStackGroup extends GuiIngredientGroup<FluidStack> implements IGuiFluidStackGroup {
-	public GuiFluidStackGroup(@Nullable IFocus<FluidStack> focus) {
-		super(FluidStack.class, focus);
+	public GuiFluidStackGroup(@Nullable IFocus<FluidStack> focus, int cycleOffset) {
+		super(FluidStack.class, focus, cycleOffset);
 	}
 
 	@Override

@@ -22,12 +22,12 @@ import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 
 public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
-	private final int itemCycleOffset = (int) (Math.random() * 1000);
 	private final Map<Integer, GuiIngredient<T>> guiIngredients = new HashMap<Integer, GuiIngredient<T>>();
 	private final Set<Integer> inputSlots = new HashSet<Integer>();
 	private final IIngredientHelper<T> ingredientHelper;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final Class<T> ingredientClass;
+	private final int cycleOffset;
 	/**
 	 * If focus is set and any of the guiIngredients contains focus
 	 * they will only display focus instead of rotating through all their values.
@@ -40,7 +40,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	@Nullable
 	private ITooltipCallback<T> tooltipCallback;
 
-	public GuiIngredientGroup(Class<T> ingredientClass, @Nullable IFocus<T> focus) {
+	public GuiIngredientGroup(Class<T> ingredientClass, @Nullable IFocus<T> focus, int cycleOffset) {
 		this.ingredientClass = ingredientClass;
 		if (focus == null) {
 			this.inputFocus = null;
@@ -55,6 +55,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		this.ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		this.ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientClass);
+		this.cycleOffset = cycleOffset;
 	}
 
 	@Override
@@ -65,7 +66,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	@Override
 	public void init(int slotIndex, boolean input, IIngredientRenderer<T> ingredientRenderer, int xPosition, int yPosition, int width, int height, int xPadding, int yPadding) {
 		Rectangle rect = new Rectangle(xPosition, yPosition, width, height);
-		GuiIngredient<T> guiIngredient = new GuiIngredient<T>(slotIndex, input, ingredientRenderer, ingredientHelper, rect, xPadding, yPadding, itemCycleOffset);
+		GuiIngredient<T> guiIngredient = new GuiIngredient<T>(slotIndex, input, ingredientRenderer, ingredientHelper, rect, xPadding, yPadding, cycleOffset);
 		guiIngredients.put(slotIndex, guiIngredient);
 		if (input) {
 			inputSlots.add(slotIndex);
