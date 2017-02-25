@@ -31,6 +31,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	private static final int RECIPE_BUTTON_SIZE = 12;
 	public static final int recipeTransferButtonIndex = 100;
 
+	private final int ingredientCycleOffset = (int) (Math.random() * 10000);
 	private final IRecipeCategory recipeCategory;
 	private final GuiItemStackGroup guiItemStackGroup;
 	private final GuiFluidStackGroup guiFluidStackGroup;
@@ -55,8 +56,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		} else if (focusValue instanceof FluidStack) {
 			fluidStackFocus = (FluidStack) focusValue;
 		}
-		this.guiItemStackGroup = new GuiItemStackGroup(new Focus<ItemStack>(focus.getMode(), itemStackFocus));
-		this.guiFluidStackGroup = new GuiFluidStackGroup(new Focus<FluidStack>(focus.getMode(), fluidStackFocus));
+		this.guiItemStackGroup = new GuiItemStackGroup(new Focus<ItemStack>(focus.getMode(), itemStackFocus), ingredientCycleOffset);
+		this.guiFluidStackGroup = new GuiFluidStackGroup(new Focus<FluidStack>(focus.getMode(), fluidStackFocus), ingredientCycleOffset);
 
 		this.guiIngredientGroups = new HashMap<Class, GuiIngredientGroup>();
 		this.guiIngredientGroups.put(ItemStack.class, this.guiItemStackGroup);
@@ -204,7 +205,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 				value = (T) focusValue;
 			}
 			IFocus<T> focus = new Focus<T>(this.focus.getMode(), value);
-			guiIngredientGroup = new GuiIngredientGroup<T>(ingredientClass, focus);
+			guiIngredientGroup = new GuiIngredientGroup<T>(ingredientClass, focus, ingredientCycleOffset);
 			guiIngredientGroups.put(ingredientClass, guiIngredientGroup);
 		}
 		return guiIngredientGroup;

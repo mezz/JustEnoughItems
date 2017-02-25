@@ -98,7 +98,7 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Conta
 				guiIngredients.add(guiIngredient);
 			}
 		}
-		IGuiItemStackGroup playerInvItemStackGroup = new GuiItemStackGroup(new Focus<ItemStack>(null));
+		IGuiItemStackGroup playerInvItemStackGroup = new GuiItemStackGroup(new Focus<ItemStack>(null), 0);
 		int[] playerGridIndexes = {0, 1, 3, 4};
 		for (int i = 0; i < 4; i++) {
 			int index = playerGridIndexes[i];

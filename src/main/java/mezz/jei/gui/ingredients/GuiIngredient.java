@@ -57,7 +57,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 			int xPosition, int yPosition,
 			int width, int height,
 			int xPadding, int yPadding,
-			int itemCycleOffset
+			int cycleOffset
 	) {
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredientHelper = ingredientHelper;
@@ -72,7 +72,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		this.xPadding = xPadding;
 		this.yPadding = yPadding;
 
-		this.cycleTimer = new CycleTimer(itemCycleOffset);
+		this.cycleTimer = new CycleTimer(cycleOffset);
 	}
 
 	public boolean isMouseOver(int xOffset, int yOffset, int mouseX, int mouseY) {

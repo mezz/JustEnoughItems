@@ -22,11 +22,11 @@ import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 
 public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
-	private final int itemCycleOffset = (int) (Math.random() * 1000);
 	private final Map<Integer, GuiIngredient<T>> guiIngredients = new HashMap<Integer, GuiIngredient<T>>();
 	private final Set<Integer> inputSlots = new HashSet<Integer>();
 	private final IIngredientHelper<T> ingredientHelper;
 	private final Class<T> ingredientClass;
+	private final int cycleOffset;
 	/**
 	 * If focus is set and any of the guiIngredients contains focus
 	 * they will only display focus instead of rotating through all their values.
@@ -36,7 +36,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	@Nullable
 	private ITooltipCallback<T> tooltipCallback;
 
-	public GuiIngredientGroup(Class<T> ingredientClass, IFocus<T> focus) {
+	public GuiIngredientGroup(Class<T> ingredientClass, IFocus<T> focus, int cycleOffset) {
 		this.ingredientClass = ingredientClass;
 		if (focus.getMode() == IFocus.Mode.INPUT) {
 			this.inputFocus = focus;
@@ -49,11 +49,12 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 			this.outputFocus = new Focus<T>(null);
 		}
 		this.ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredientClass);
+		this.cycleOffset = cycleOffset;
 	}
 
 	@Override
 	public void init(int slotIndex, boolean input, IIngredientRenderer<T> ingredientRenderer, int xPosition, int yPosition, int width, int height, int xPadding, int yPadding) {
-		GuiIngredient<T> guiIngredient = new GuiIngredient<T>(slotIndex, input, ingredientRenderer, ingredientHelper, xPosition, yPosition, width, height, xPadding, yPadding, itemCycleOffset);
+		GuiIngredient<T> guiIngredient = new GuiIngredient<T>(slotIndex, input, ingredientRenderer, ingredientHelper, xPosition, yPosition, width, height, xPadding, yPadding, cycleOffset);
 		guiIngredients.put(slotIndex, guiIngredient);
 		if (input) {
 			inputSlots.add(slotIndex);
