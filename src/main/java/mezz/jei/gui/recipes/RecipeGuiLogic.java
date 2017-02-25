@@ -165,13 +165,14 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	@Override
 	public List<ItemStack> getRecipeCategoryCraftingItems() {
 		IRecipeCategory category = getSelectedRecipeCategory();
-		IFocus focus = getFocus();
-		return recipeRegistry.getCraftingItems(category, focus);
+		IFocus focusNone = recipeRegistry.createFocus(IFocus.Mode.NONE, null);
+		return recipeRegistry.getCraftingItems(category, focusNone);
 	}
 
 	@Override
 	public List<ItemStack> getRecipeCategoryCraftingItems(IRecipeCategory recipeCategory) {
-		return recipeRegistry.getCraftingItems(recipeCategory, getFocus());
+		IFocus focusNone = recipeRegistry.createFocus(IFocus.Mode.NONE, null);
+		return recipeRegistry.getCraftingItems(recipeCategory, focusNone);
 	}
 
 	@Override
