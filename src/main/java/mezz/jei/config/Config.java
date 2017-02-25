@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
@@ -40,36 +41,11 @@ public class Config {
 	private static LocalizedConfiguration itemBlacklistConfig;
 	@Nullable
 	private static LocalizedConfiguration searchColorsConfig;
+	@Nullable
+	private static File jeiConfigurationDir;
 
-	// advanced
-	private static boolean debugModeEnabled = false;
-	private static boolean centerSearchBarEnabled = false;
-	private static final String defaultModNameFormatFriendly = "blue italic";
-	private static String modNameFormat = parseFriendlyModNameFormat(defaultModNameFormatFriendly);
-
-	// search
-	private static final SearchMode defaultModNameSearchMode = SearchMode.REQUIRE_PREFIX;
-	private static final SearchMode defaultTooltipSearchMode = SearchMode.ENABLED;
-	private static final SearchMode defaultOreDictSearchMode = SearchMode.REQUIRE_PREFIX;
-	private static final SearchMode defaultCreativeTabSearchMode = SearchMode.REQUIRE_PREFIX;
-	private static final SearchMode defaultColorSearchMode = SearchMode.DISABLED;
-
-	private static SearchMode modNameSearchMode = defaultModNameSearchMode;
-	private static SearchMode tooltipSearchMode = defaultTooltipSearchMode;
-	private static SearchMode oreDictSearchMode = defaultOreDictSearchMode;
-	private static SearchMode creativeTabSearchMode = defaultCreativeTabSearchMode;
-	private static SearchMode colorSearchMode = defaultColorSearchMode;
-
-	// per-world
-	private static final boolean defaultOverlayEnabled = true;
-	private static final boolean defaultCheatItemsEnabled = false;
-	private static final boolean defaultEditModeEnabled = false;
-	private static final String defaultFilterText = "";
-
-	private static boolean overlayEnabled = defaultOverlayEnabled;
-	private static boolean cheatItemsEnabled = defaultCheatItemsEnabled;
-	private static boolean editModeEnabled = defaultEditModeEnabled;
-	private static String filterText = defaultFilterText;
+	private static final ConfigValues defaultValues = new ConfigValues();
+	private static final ConfigValues values = new ConfigValues();
 
 	// item blacklist
 	private static final Set<String> itemBlacklist = new HashSet<String>();
@@ -80,91 +56,91 @@ public class Config {
 	}
 
 	public static boolean isOverlayEnabled() {
-		return overlayEnabled;
+		return values.overlayEnabled;
 	}
 
 	public static void toggleOverlayEnabled() {
-		overlayEnabled = !overlayEnabled;
+		values.overlayEnabled = !values.overlayEnabled;
 
 		if (worldConfig != null) {
 			final String worldCategory = SessionData.getWorldUid();
-			Property property = worldConfig.get(worldCategory, "overlayEnabled", overlayEnabled);
-			property.set(overlayEnabled);
+			Property property = worldConfig.get(worldCategory, "overlayEnabled", defaultValues.overlayEnabled);
+			property.set(values.overlayEnabled);
 
 			if (worldConfig.hasChanged()) {
 				worldConfig.save();
 			}
 		}
 
-		MinecraftForge.EVENT_BUS.post(new OverlayToggleEvent(overlayEnabled));
+		MinecraftForge.EVENT_BUS.post(new OverlayToggleEvent(values.overlayEnabled));
 	}
 
 	public static boolean isCheatItemsEnabled() {
-		return cheatItemsEnabled;
+		return values.cheatItemsEnabled;
 	}
 
 	public static void toggleCheatItemsEnabled() {
-		setCheatItemsEnabled(!cheatItemsEnabled);
+		setCheatItemsEnabled(!values.cheatItemsEnabled);
 	}
 
 	public static void setCheatItemsEnabled(boolean value) {
-		if (cheatItemsEnabled != value) {
-			cheatItemsEnabled = value;
+		if (values.cheatItemsEnabled != value) {
+			values.cheatItemsEnabled = value;
 
 			if (worldConfig != null) {
 				final String worldCategory = SessionData.getWorldUid();
-				Property property = worldConfig.get(worldCategory, "cheatItemsEnabled", cheatItemsEnabled);
-				property.set(cheatItemsEnabled);
+				Property property = worldConfig.get(worldCategory, "cheatItemsEnabled", defaultValues.cheatItemsEnabled);
+				property.set(values.cheatItemsEnabled);
 
 				if (worldConfig.hasChanged()) {
 					worldConfig.save();
 				}
 			}
 
-			if (cheatItemsEnabled && SessionData.isJeiOnServer()) {
+			if (values.cheatItemsEnabled && SessionData.isJeiOnServer()) {
 				JustEnoughItems.getProxy().sendPacketToServer(new PacketRequestCheatPermission());
 			}
 		}
 	}
 
 	public static boolean isEditModeEnabled() {
-		return editModeEnabled;
+		return values.editModeEnabled;
 	}
 
 	public static boolean isDebugModeEnabled() {
-		return debugModeEnabled;
+		return values.debugModeEnabled;
 	}
 
 	public static boolean isDeleteItemsInCheatModeActive() {
-		return cheatItemsEnabled && SessionData.isJeiOnServer();
+		return values.cheatItemsEnabled && SessionData.isJeiOnServer();
 	}
 
 	public static boolean isCenterSearchBarEnabled() {
-		return centerSearchBarEnabled;
+		return values.centerSearchBarEnabled;
 	}
 
 	public static String getModNameFormat() {
-		return modNameFormat;
+		return values.modNameFormat;
 	}
 
 	public static SearchMode getModNameSearchMode() {
-		return modNameSearchMode;
+		return values.modNameSearchMode;
 	}
 
 	public static SearchMode getTooltipSearchMode() {
-		return tooltipSearchMode;
+		return values.tooltipSearchMode;
 	}
 
 	public static SearchMode getOreDictSearchMode() {
-		return oreDictSearchMode;
+		return values.oreDictSearchMode;
 	}
 
 	public static SearchMode getCreativeTabSearchMode() {
-		return creativeTabSearchMode;
+		return values.creativeTabSearchMode;
 	}
 
 	public static SearchMode getColorSearchMode() {
-		return colorSearchMode;
+		return values.colorSearchMode;
 	}
 
 	public enum SearchMode {
@@ -173,23 +149,23 @@ public class Config {
 
 	public static boolean setFilterText(String filterText) {
 		String lowercaseFilterText = filterText.toLowerCase();
-		if (Config.filterText.equals(lowercaseFilterText)) {
+		if (values.filterText.equals(lowercaseFilterText)) {
 			return false;
 		}
 
-		Config.filterText = lowercaseFilterText;
+		values.filterText = lowercaseFilterText;
 		return true;
 	}
 
 	public static String getFilterText() {
-		return filterText;
+		return values.filterText;
 	}
 
 	public static void saveFilterText() {
 		if (worldConfig != null) {
 			final String worldCategory = SessionData.getWorldUid();
-			Property property = worldConfig.get(worldCategory, "filterText", defaultFilterText);
-			property.set(Config.filterText);
+			Property property = worldConfig.get(worldCategory, "filterText", defaultValues.filterText);
+			property.set(values.filterText);
 
 			if (worldConfig.hasChanged()) {
 				worldConfig.save();
@@ -207,9 +183,14 @@ public class Config {
 		return worldConfig;
 	}
 
+	public static File getJeiConfigurationDir() {
+		Preconditions.checkState(jeiConfigurationDir != null);
+		return jeiConfigurationDir;
+	}
+
 	public static void preInit(FMLPreInitializationEvent event) {
 
-		File jeiConfigurationDir = new File(event.getModConfigurationDirectory(), Constants.MOD_ID);
+		jeiConfigurationDir = new File(event.getModConfigurationDirectory(), Constants.MOD_ID);
 		if (!jeiConfigurationDir.exists()) {
 			try {
 				if (!jeiConfigurationDir.mkdir()) {
@@ -316,11 +297,11 @@ public class Config {
 		searchCategory.remove("prefixRequiredForColorSearch");
 
 		SearchMode[] searchModes = SearchMode.values();
-		modNameSearchMode = config.getEnum("modNameSearchMode", CATEGORY_SEARCH, defaultModNameSearchMode, searchModes);
-		tooltipSearchMode = config.getEnum("tooltipSearchMode", CATEGORY_SEARCH, defaultTooltipSearchMode, searchModes);
-		oreDictSearchMode = config.getEnum("oreDictSearchMode", CATEGORY_SEARCH, defaultOreDictSearchMode, searchModes);
-		creativeTabSearchMode = config.getEnum("creativeTabSearchMode", CATEGORY_SEARCH, defaultCreativeTabSearchMode, searchModes);
-		colorSearchMode = config.getEnum("colorSearchMode", CATEGORY_SEARCH, defaultColorSearchMode, searchModes);
+		values.modNameSearchMode = config.getEnum("modNameSearchMode", CATEGORY_SEARCH, defaultValues.modNameSearchMode, searchModes);
+		values.tooltipSearchMode = config.getEnum("tooltipSearchMode", CATEGORY_SEARCH, defaultValues.tooltipSearchMode, searchModes);
+		values.oreDictSearchMode = config.getEnum("oreDictSearchMode", CATEGORY_SEARCH, defaultValues.oreDictSearchMode, searchModes);
+		values.creativeTabSearchMode = config.getEnum("creativeTabSearchMode", CATEGORY_SEARCH, defaultValues.creativeTabSearchMode, searchModes);
+		values.colorSearchMode = config.getEnum("colorSearchMode", CATEGORY_SEARCH, defaultValues.colorSearchMode, searchModes);
 		if (config.getCategory(CATEGORY_SEARCH).hasChanged()) {
 			needsReload = true;
 		}
@@ -333,7 +314,7 @@ public class Config {
 		categoryAdvanced.remove("debugItemEnabled");
 		categoryAdvanced.remove("colorSearchEnabled");
 
-		centerSearchBarEnabled = config.getBoolean(CATEGORY_ADVANCED, "centerSearchBarEnabled", centerSearchBarEnabled);
+		values.centerSearchBarEnabled = config.getBoolean(CATEGORY_ADVANCED, "centerSearchBarEnabled", defaultValues.centerSearchBarEnabled);
 
 		EnumSet<TextFormatting> validFormatting = EnumSet.allOf(TextFormatting.class);
 		validFormatting.remove(TextFormatting.RESET);
@@ -343,13 +324,13 @@ public class Config {
 			validValues[i] = formatting.getFriendlyName().toLowerCase(Locale.ENGLISH);
 			i++;
 		}
-		String modNameFormatFriendly = config.getString("modNameFormat", CATEGORY_ADVANCED, defaultModNameFormatFriendly, validValues);
-		modNameFormat = parseFriendlyModNameFormat(modNameFormatFriendly);
+		String modNameFormatFriendly = config.getString("modNameFormat", CATEGORY_ADVANCED, defaultValues.modNameFormatFriendly, validValues);
+		values.modNameFormat = parseFriendlyModNameFormat(modNameFormatFriendly);
 
-		debugModeEnabled = config.getBoolean(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
 		{
-			Property property = config.get(CATEGORY_ADVANCED, "debugModeEnabled", debugModeEnabled);
+			Property property = config.get(CATEGORY_ADVANCED, "debugModeEnabled", defaultValues.debugModeEnabled);
 			property.setShowInGui(false);
+			values.debugModeEnabled = property.getBoolean();
 		}
 
 		final boolean configChanged = config.hasChanged();
@@ -359,7 +340,7 @@ public class Config {
 		return needsReload;
 	}
 
-	private static String parseFriendlyModNameFormat(String formatWithEnumNames) {
+	public static String parseFriendlyModNameFormat(String formatWithEnumNames) {
 		String format = "";
 		if (formatWithEnumNames.isEmpty()) {
 			return format;
@@ -401,28 +382,28 @@ public class Config {
 		boolean needsReload = false;
 		final String worldCategory = SessionData.getWorldUid();
 
-		Property property = worldConfig.get(worldCategory, "overlayEnabled", defaultOverlayEnabled);
+		Property property = worldConfig.get(worldCategory, "overlayEnabled", defaultValues.overlayEnabled);
 		property.setLanguageKey("config.jei.interface.overlayEnabled");
 		property.setComment(Translator.translateToLocal("config.jei.interface.overlayEnabled.comment"));
 		property.setShowInGui(false);
-		overlayEnabled = property.getBoolean();
+		values.overlayEnabled = property.getBoolean();
 
-		property = worldConfig.get(worldCategory, "cheatItemsEnabled", defaultCheatItemsEnabled);
+		property = worldConfig.get(worldCategory, "cheatItemsEnabled", defaultValues.cheatItemsEnabled);
 		property.setLanguageKey("config.jei.mode.cheatItemsEnabled");
 		property.setComment(Translator.translateToLocal("config.jei.mode.cheatItemsEnabled.comment"));
-		cheatItemsEnabled = property.getBoolean();
+		values.cheatItemsEnabled = property.getBoolean();
 
-		property = worldConfig.get(worldCategory, "editEnabled", defaultEditModeEnabled);
+		property = worldConfig.get(worldCategory, "editEnabled", defaultValues.editModeEnabled);
 		property.setLanguageKey("config.jei.mode.editEnabled");
 		property.setComment(Translator.translateToLocal("config.jei.mode.editEnabled.comment"));
-		editModeEnabled = property.getBoolean();
+		values.editModeEnabled = property.getBoolean();
 		if (property.hasChanged()) {
 			needsReload = true;
 		}
 
-		property = worldConfig.get(worldCategory, "filterText", defaultFilterText);
+		property = worldConfig.get(worldCategory, "filterText", defaultValues.filterText);
 		property.setShowInGui(false);
-		filterText = property.getString();
+		values.filterText = property.getString();
 
 		final boolean configChanged = worldConfig.hasChanged();
 		if (configChanged) {

@@ -24,6 +24,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
@@ -150,6 +151,20 @@ public class ProxyCommonClient extends ProxyCommon {
 
 		if (Config.syncAllConfig()) {
 			reloadItemList();
+		}
+	}
+
+	@SubscribeEvent
+	public void onWorldSave(WorldEvent.Save event) {
+		try {
+			Config.saveFilterText();
+		} catch (RuntimeException e) {
+			Log.error("Failed to save filter text.", e);
+		}
+		try {
+			Internal.getIngredientLookupMemory().saveToFile();
+		} catch (RuntimeException e) {
+			Log.error("Failed to save ingredient lookup memory.", e);
 		}
 	}
 }

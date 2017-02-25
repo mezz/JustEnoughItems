@@ -70,6 +70,8 @@ public class GuiEventHandler {
 			if (itemListOverlay.isOpen()) {
 				itemListOverlay.close();
 				inputHandler = null;
+				Config.saveFilterText();
+				Internal.getIngredientLookupMemory().saveToFile();
 			}
 		}
 	}

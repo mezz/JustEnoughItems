@@ -2,6 +2,8 @@ package mezz.jei;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
+import mezz.jei.gui.recipes.IngredientLookupMemory;
 import mezz.jei.util.ModIdUtil;
 import mezz.jei.util.StackHelper;
 import mezz.jei.util.color.ColorNamer;
@@ -22,15 +24,15 @@ public class Internal {
 	private static IngredientRegistry ingredientRegistry;
 	@Nullable
 	private static ColorNamer colorNamer;
+	@Nullable
+	private static IngredientLookupMemory ingredientLookupMemory;
 
 	private Internal() {
 
 	}
 
 	public static StackHelper getStackHelper() {
-		if (stackHelper == null) {
-			throw new IllegalStateException("StackHelper has not been created yet.");
-		}
+		Preconditions.checkState(stackHelper != null, "StackHelper has not been created yet.");
 		return stackHelper;
 	}
 
@@ -43,9 +45,7 @@ public class Internal {
 	}
 
 	public static JeiHelpers getHelpers() {
-		if (helpers == null) {
-			throw new IllegalStateException("JeiHelpers has not been created yet.");
-		}
+		Preconditions.checkState(helpers != null, "JeiHelpers has not been created yet.");
 		return helpers;
 	}
 
@@ -67,9 +67,7 @@ public class Internal {
 	}
 
 	public static IngredientRegistry getIngredientRegistry() {
-		if (ingredientRegistry == null) {
-			throw new IllegalStateException("Ingredient Registry has not been created yet.");
-		}
+		Preconditions.checkState(ingredientRegistry != null, "Ingredient Registry has not been created yet.");
 		return ingredientRegistry;
 	}
 
@@ -78,13 +76,20 @@ public class Internal {
 	}
 
 	public static ColorNamer getColorNamer() {
-		if (colorNamer == null) {
-			throw new IllegalStateException("Color Namer has not been created yet.");
-		}
+		Preconditions.checkState(colorNamer != null, "Color Namer has not been created yet.");
 		return colorNamer;
 	}
 
 	public static void setColorNamer(ColorNamer colorNamer) {
 		Internal.colorNamer = colorNamer;
+	}
+
+	public static IngredientLookupMemory getIngredientLookupMemory() {
+		Preconditions.checkState(ingredientLookupMemory != null, "Ingredient Lookup Memory has not been created yet.");
+		return ingredientLookupMemory;
+	}
+
+	public static void setIngredientLookupMemory(IngredientLookupMemory ingredientLookupMemory) {
+		Internal.ingredientLookupMemory = ingredientLookupMemory;
 	}
 }

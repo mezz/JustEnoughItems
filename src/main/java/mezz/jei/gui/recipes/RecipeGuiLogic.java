@@ -1,20 +1,17 @@
 package mezz.jei.gui.recipes;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import mezz.jei.Internal;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.util.MathUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 
 public class RecipeGuiLogic implements IRecipeGuiLogic {
@@ -22,8 +19,8 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IRecipeLogicStateListener stateListener;
 
 	private boolean initialState = true;
-	private State state;
-	private final Stack<State> history = new Stack<State>();
+	private IngredientLookupState state;
+	private final Stack<IngredientLookupState> history = new Stack<IngredientLookupState>();
 
 	/**
 	 * List of recipes for the currently selected recipeClass
@@ -34,7 +31,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		this.recipeRegistry = recipeRegistry;
 		this.stateListener = stateListener;
 		List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories();
-		this.state = new State(null, recipeCategories, 0, 0);
+		this.state = new IngredientLookupState(null, recipeCategories, 0, 0);
 	}
 
 	@Override
@@ -44,13 +41,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			return false;
 		}
 
-		final int recipeCategoryIndex = getRecipeCategoryIndex(recipeCategories);
-
 		if (!initialState) {
 			history.push(this.state);
 		}
 
-		final State state = new State(focus, recipeCategories, recipeCategoryIndex, 0);
+		final IngredientLookupState state = Internal.getIngredientLookupMemory().getState(focus, recipeCategories);
 		setState(state);
 
 		return true;
@@ -61,7 +56,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		if (history.empty()) {
 			return false;
 		}
-		final State state = history.pop();
+		final IngredientLookupState state = history.pop();
 		setState(state);
 		return true;
 	}
@@ -73,27 +68,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 	}
 
-	private void setState(State state) {
+	private void setState(IngredientLookupState state) {
 		this.state = state;
 		this.initialState = false;
 		updateRecipes();
 		stateListener.onStateChange();
-	}
-
-	private int getRecipeCategoryIndex(List<IRecipeCategory> recipeCategories) {
-		final Container container = Minecraft.getMinecraft().player.openContainer;
-		if (container == null) {
-			return 0;
-		}
-
-		for (int i = 0; i < recipeCategories.size(); i++) {
-			IRecipeCategory recipeCategory = recipeCategories.get(i);
-			if (recipeRegistry.getRecipeTransferHandler(container, recipeCategory) != null) {
-				return i;
-			}
-		}
-
-		return 0;
 	}
 
 	@Override
@@ -106,7 +85,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 		final List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories();
 		final int recipeCategoryIndex = recipeCategories.indexOf(recipeCategory);
-		final State state = new State(null, recipeCategories, recipeCategoryIndex, 0);
+		final IngredientLookupState state = new IngredientLookupState(null, recipeCategories, recipeCategoryIndex, 0);
 		setState(state);
 
 		return true;
@@ -123,7 +102,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			history.push(this.state);
 		}
 
-		final State state = new State(null, recipeCategories, 0, 0);
+		final IngredientLookupState state = new IngredientLookupState(null, recipeCategories, 0, 0);
 		setState(state);
 
 		return true;
@@ -137,23 +116,20 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public List<ItemStack> getRecipeCategoryCraftingItems(IRecipeCategory recipeCategory) {
-		return recipeRegistry.getCraftingItems(recipeCategory, state.focus);
+		return recipeRegistry.getCraftingItems(recipeCategory, state.getFocus());
 	}
 
 	@Override
 	public void setRecipesPerPage(int recipesPerPage) {
-		if (state.recipesPerPage != recipesPerPage) {
-			int recipeIndex = state.pageIndex * state.recipesPerPage;
-			state.pageIndex = recipeIndex / recipesPerPage;
-
-			state.recipesPerPage = recipesPerPage;
+		if (state.getRecipesPerPage() != recipesPerPage) {
+			state.setRecipesPerPage(recipesPerPage);
 			updateRecipes();
 		}
 	}
 
 	private void updateRecipes() {
 		final IRecipeCategory recipeCategory = getSelectedRecipeCategory();
-		IFocus<?> focus = state.focus;
+		IFocus<?> focus = state.getFocus();
 		if (focus != null) {
 			//noinspection unchecked
 			this.recipes = recipeRegistry.getRecipeWrappers(recipeCategory, focus);
@@ -165,12 +141,12 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public IRecipeCategory getSelectedRecipeCategory() {
-		return state.recipeCategories.get(state.recipeCategoryIndex);
+		return state.getRecipeCategories().get(state.getRecipeCategoryIndex());
 	}
 
 	@Override
 	public ImmutableList<IRecipeCategory> getRecipeCategories() {
-		return state.recipeCategories;
+		return state.getRecipeCategories();
 	}
 
 	@Override
@@ -181,13 +157,14 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 		int recipeWidgetIndex = 0;
 		int recipePosY = posY;
-		for (int recipeIndex = state.pageIndex * state.recipesPerPage; recipeIndex < recipes.size() && recipeLayouts.size() < state.recipesPerPage; recipeIndex++) {
+		final int firstRecipeIndex = state.getRecipeIndex() - (state.getRecipeIndex() % state.getRecipesPerPage());
+		for (int recipeIndex = firstRecipeIndex; recipeIndex < recipes.size() && recipeLayouts.size() < state.getRecipesPerPage(); recipeIndex++) {
 			IRecipeWrapper recipeWrapper = recipes.get(recipeIndex);
 			if (recipeWrapper == null) {
 				continue;
 			}
 
-			RecipeLayout recipeLayout = new RecipeLayout(recipeWidgetIndex++, recipeCategory, recipeWrapper, state.focus, posX, recipePosY);
+			RecipeLayout recipeLayout = new RecipeLayout(recipeWidgetIndex++, recipeCategory, recipeWrapper, state.getFocus(), posX, recipePosY);
 			recipeLayouts.add(recipeLayout);
 
 			recipePosY += spacingY;
@@ -198,51 +175,56 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public void nextRecipeCategory() {
-		final int recipesTypesCount = state.recipeCategories.size();
-		state.recipeCategoryIndex = (state.recipeCategoryIndex + 1) % recipesTypesCount;
-		state.pageIndex = 0;
+		final int recipesTypesCount = state.getRecipeCategories().size();
+		state.setRecipeCategoryIndex((state.getRecipeCategoryIndex() + 1) % recipesTypesCount);
+		state.setRecipeIndex(0);
 		updateRecipes();
 		stateListener.onStateChange();
 	}
 
 	@Override
 	public void setRecipeCategory(IRecipeCategory category) {
-		int index = state.recipeCategories.indexOf(category);
+		int index = state.getRecipeCategories().indexOf(category);
 		if (index < 0) {
 			return;
 		}
 
-		state.recipeCategoryIndex = index;
-		state.pageIndex = 0;
+		state.setRecipeCategoryIndex(index);
+		state.setRecipeIndex(0);
 		updateRecipes();
 		stateListener.onStateChange();
 	}
 
 	@Override
 	public boolean hasMultiplePages() {
-		return recipes.size() > state.recipesPerPage;
+		return recipes.size() > state.getRecipesPerPage();
 	}
 
 	@Override
 	public void previousRecipeCategory() {
-		final int recipesTypesCount = state.recipeCategories.size();
-		state.recipeCategoryIndex = (recipesTypesCount + state.recipeCategoryIndex - 1) % recipesTypesCount;
-		state.pageIndex = 0;
+		final int recipesTypesCount = state.getRecipeCategories().size();
+		state.setRecipeCategoryIndex((recipesTypesCount + state.getRecipeCategoryIndex() - 1) % recipesTypesCount);
+		state.setRecipeIndex(0);
 		updateRecipes();
 		stateListener.onStateChange();
 	}
 
 	@Override
 	public void nextPage() {
-		int pageCount = pageCount(state.recipesPerPage);
-		state.pageIndex = (state.pageIndex + 1) % pageCount;
+		state.setRecipeIndex(state.getRecipeIndex() + state.getRecipesPerPage());
+		if (state.getRecipeIndex() >= recipes.size()) {
+			state.setRecipeIndex(0);
+		}
 		stateListener.onStateChange();
 	}
 
 	@Override
 	public void previousPage() {
-		int pageCount = pageCount(state.recipesPerPage);
-		state.pageIndex = (pageCount + state.pageIndex - 1) % pageCount;
+		state.setRecipeIndex(state.getRecipeIndex() - state.getRecipesPerPage());
+		if (state.getRecipeIndex() < 0) {
+			final int pageCount = pageCount(state.getRecipesPerPage());
+			state.setRecipeIndex((pageCount - 1) * state.getRecipesPerPage());
+		}
 		stateListener.onStateChange();
 	}
 
@@ -256,36 +238,18 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public String getPageString() {
-		return (state.pageIndex + 1) + "/" + pageCount(state.recipesPerPage);
+		int pageIndex = MathUtil.divideCeil(state.getRecipeIndex() + 1, state.getRecipesPerPage());
+		return pageIndex + "/" + pageCount(state.getRecipesPerPage());
 	}
 
 	@Override
 	public boolean hasMultipleCategories() {
-		return state.recipeCategories.size() > 1;
+		return state.getRecipeCategories().size() > 1;
 	}
 
 	@Override
 	public boolean hasAllCategories() {
-		return state.recipeCategories.size() == recipeRegistry.getRecipeCategories().size();
+		return state.getRecipeCategories().size() == recipeRegistry.getRecipeCategories().size();
 	}
 
-	private static class State {
-		@Nullable
-		public final IFocus<?> focus;
-		public final ImmutableList<IRecipeCategory> recipeCategories;
-
-		public int recipeCategoryIndex;
-		public int pageIndex;
-		public int recipesPerPage;
-
-		public State(@Nullable IFocus<?> focus, List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int pageIndex) {
-			Preconditions.checkArgument(!recipeCategories.isEmpty(), "Recipe categories cannot be empty.");
-			Preconditions.checkArgument(recipeCategoryIndex >= 0, "Recipe category index cannot be negative.");
-			Preconditions.checkArgument(pageIndex >= 0, "Page index cannot be negative.");
-			this.focus = focus;
-			this.recipeCategories = ImmutableList.copyOf(recipeCategories);
-			this.recipeCategoryIndex = recipeCategoryIndex;
-			this.pageIndex = pageIndex;
-		}
-	}
 }

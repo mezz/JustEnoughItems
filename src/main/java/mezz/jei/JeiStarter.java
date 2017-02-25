@@ -8,6 +8,7 @@ import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.gui.ItemListOverlay;
+import mezz.jei.gui.recipes.IngredientLookupMemory;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.util.Log;
@@ -47,6 +48,8 @@ public class JeiStarter {
 		long start_time = System.currentTimeMillis();
 		RecipeRegistry recipeRegistry = modRegistry.createRecipeRegistry(ingredientRegistry);
 		Log.info("Built    recipe registry in {} ms", System.currentTimeMillis() - start_time);
+
+		Internal.setIngredientLookupMemory(new IngredientLookupMemory(recipeRegistry, ingredientRegistry));
 
 		IngredientInformation.onStart(resourceReload);
 

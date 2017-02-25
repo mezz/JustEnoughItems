@@ -307,7 +307,6 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 
 	public void close() {
 		setKeyboardFocus(false);
-		Config.saveFilterText();
 	}
 
 	@Nullable
