@@ -73,8 +73,19 @@ public interface IRecipeRegistry {
 	 * and the focus is included in the craftingItems, it is the only one returned.
 	 *
 	 * @since JEI 3.11.0
+	 * @deprecated since JEI 4.2.8. Use {@link #getCraftingItems(IRecipeCategory)}
 	 */
+	@Deprecated
 	List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory, @Nullable IFocus focus);
+
+	/**
+	 * Returns an unmodifiable collection of ItemStacks that can craft the recipes from recipeCategory.
+	 * For instance, the crafting table ItemStack is returned here for Crafting recipe category.
+	 * These are registered with {@link IModRegistry#addRecipeCategoryCraftingItem(ItemStack, String...)}.
+	 *
+	 * @since JEI 4.2.8
+	 */
+	List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory);
 
 	/**
 	 * Returns the recipe transfer handler for the given container and category, if one exists.

@@ -498,6 +498,12 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return craftingItems;
 	}
 
+	@Override
+	public List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory) {
+		Preconditions.checkNotNull(recipeCategory, "recipeCategory cannot be null");
+		return craftItemsForCategories.get(recipeCategory);
+	}
+
 	@Nullable
 	public IRecipeTransferHandler getRecipeTransferHandler(@Nullable Container container, @Nullable IRecipeCategory recipeCategory) {
 		Preconditions.checkNotNull(container, "container cannot be null");
