@@ -160,10 +160,9 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 
 	@Override
 	public boolean isMouseOver(int mouseX, int mouseY) {
-		final int recipeMouseX = mouseX - posX;
 		final int recipeMouseY = mouseY - posY;
 		final IDrawable background = recipeCategory.getBackground();
-		return recipeMouseX >= 0 && recipeMouseX < background.getWidth() && recipeMouseY >= 0 && recipeMouseY < background.getHeight();
+		return recipeMouseY >= 0 && recipeMouseY < background.getHeight();
 	}
 
 	@Override
