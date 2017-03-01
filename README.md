@@ -9,3 +9,5 @@ This means:
  * not a coremod, no dependencies other than Forge
 
 ### [JEI Developer Wiki](https://github.com/mezz/JustEnoughItems/wiki)
+
+IRC: [#JEI on esper.net](http://webchat.esper.net/?nick=JEIGithub...&channels=JEI&prompt=1)
