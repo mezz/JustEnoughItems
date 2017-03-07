@@ -6,6 +6,8 @@ import java.util.Map;
 
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.recipe.IStackHelper;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 
@@ -21,10 +23,13 @@ public class SmeltingRecipeMaker {
 		for (Map.Entry<ItemStack, ItemStack> itemStackItemStackEntry : smeltingMap.entrySet()) {
 			ItemStack input = itemStackItemStackEntry.getKey();
 			ItemStack output = itemStackItemStackEntry.getValue();
-
-			List<ItemStack> inputs = stackHelper.getSubtypes(input);
-			SmeltingRecipe recipe = new SmeltingRecipe(inputs, output);
-			recipes.add(recipe);
+			if (input == null || output == null) {
+				Log.error("Found invalid smelting recipe: ({} -> {})", ErrorUtil.getItemStackInfo(input), ErrorUtil.getItemStackInfo(output));
+			} else {
+				List<ItemStack> inputs = stackHelper.getSubtypes(input);
+				SmeltingRecipe recipe = new SmeltingRecipe(inputs, output);
+				recipes.add(recipe);
+			}
 		}
 
 		return recipes;
