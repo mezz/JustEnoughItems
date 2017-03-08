@@ -1,23 +1,26 @@
 package mezz.jei.gui.recipes;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.Table;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import mezz.jei.api.IRecipeRegistry;
+import mezz.jei.RecipeRegistry;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IFocus;
@@ -27,6 +30,8 @@ import mezz.jei.util.FileUtil;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 
 /**
@@ -35,11 +40,11 @@ import net.minecraft.inventory.Container;
 public class IngredientLookupMemory {
 	private final Table<IFocus.Mode, String, IngredientLookupState> mostRecentLookups = HashBasedTable.create();
 	private final Table<IFocus.Mode, String, RecipeLookupFromFile> mostRecentLookupsFromFile = HashBasedTable.create();
-	private final IRecipeRegistry recipeRegistry;
+	private final RecipeRegistry recipeRegistry;
 	private final IIngredientRegistry ingredientRegistry;
 	private boolean needsSaving;
 
-	public IngredientLookupMemory(IRecipeRegistry recipeRegistry, IIngredientRegistry ingredientRegistry) {
+	public IngredientLookupMemory(RecipeRegistry recipeRegistry, IIngredientRegistry ingredientRegistry) {
 		this.recipeRegistry = recipeRegistry;
 		this.ingredientRegistry = ingredientRegistry;
 		readFromFile();
@@ -67,13 +72,15 @@ public class IngredientLookupMemory {
 
 		if (state == null) {
 			state = new IngredientLookupState(focus, recipeCategories, 0, 0);
-			final int categoryIndexForOpenContainer = getRecipeCategoryIndexForOpenContainer(recipeCategories);
-			if (categoryIndexForOpenContainer >= 0) {
-				state.setRecipeCategoryIndex(categoryIndexForOpenContainer);
-			}
 		}
 
-		if (this.mostRecentLookups.put(focusMode, uniqueId, state) != null) {
+		final Set<Integer> indexesForOpenContainer = getRecipeCategoryIndexesForOpenContainer(state.getRecipeCategories());
+		if (!indexesForOpenContainer.isEmpty() && !indexesForOpenContainer.contains(state.getRecipeCategoryIndex())) {
+			Integer index = Collections.min(indexesForOpenContainer);
+			state.setRecipeCategoryIndex(index);
+		}
+
+		if (this.mostRecentLookups.put(focusMode, uniqueId, state) != state) {
 			markDirty();
 		}
 		if (this.mostRecentLookupsFromFile.remove(focusMode, uniqueId) != null) {
@@ -83,29 +90,42 @@ public class IngredientLookupMemory {
 		return state;
 	}
 
-	private int getRecipeCategoryIndexForOpenContainer(List<IRecipeCategory> recipeCategories) {
-		final Container container = getOpenContainer();
-		if (container != null) {
-			for (int i = 0; i < recipeCategories.size(); i++) {
-				IRecipeCategory recipeCategory = recipeCategories.get(i);
-				if (this.recipeRegistry.getRecipeTransferHandler(container, recipeCategory) != null) {
-					return i;
+	private Set<Integer> getRecipeCategoryIndexesForOpenContainer(List<IRecipeCategory> recipeCategories) {
+		final Set<Integer> indexes = new HashSet<Integer>();
+		final Minecraft minecraft = Minecraft.getMinecraft();
+		final EntityPlayerSP player = minecraft.player;
+		if (player != null) {
+			final Container container = player.openContainer;
+			if (container != null) {
+				for (int i = 0; i < recipeCategories.size(); i++) {
+					IRecipeCategory recipeCategory = recipeCategories.get(i);
+					if (this.recipeRegistry.getRecipeTransferHandler(container, recipeCategory) != null) {
+						indexes.add(i);
+					}
+				}
+			}
+			GuiScreen screen = minecraft.currentScreen;
+			if (screen instanceof RecipesGui) {
+				RecipesGui recipesGui = (RecipesGui) screen;
+				screen = recipesGui.getParentScreen();
+			}
+			if (screen instanceof GuiContainer) {
+				final GuiContainer guiContainer = (GuiContainer) screen;
+				final ImmutableCollection<RecipeClickableArea> clickableAreas = this.recipeRegistry.getAllRecipeClickableAreas(guiContainer);
+				final Set<String> recipeCategoryUids = new HashSet<String>();
+				for (RecipeClickableArea clickableArea : clickableAreas) {
+					recipeCategoryUids.addAll(clickableArea.getRecipeCategoryUids());
+				}
+				for (int i = 0; i < recipeCategories.size(); i++) {
+					IRecipeCategory recipeCategory = recipeCategories.get(i);
+					if (recipeCategoryUids.contains(recipeCategory.getUid())) {
+						indexes.add(i);
+					}
 				}
 			}
 		}
-		return -1;
-	}
 
-	@Nullable
-	private static Container getOpenContainer() {
-		final Minecraft minecraft = Minecraft.getMinecraft();
-		if (minecraft != null) {
-			final EntityPlayerSP player = minecraft.player;
-			if (player != null) {
-				return player.openContainer;
-			}
-		}
-		return null;
+		return indexes;
 	}
 
 	private int getRecipeCategoryIndex(List<IRecipeCategory> recipeCategories, String recipeCategoryUid) {

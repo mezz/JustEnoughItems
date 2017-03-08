@@ -389,6 +389,10 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return null;
 	}
 
+	public ImmutableCollection<RecipeClickableArea> getAllRecipeClickableAreas(GuiContainer gui) {
+		return recipeClickableAreasMap.get(gui.getClass());
+	}
+
 	/**
 	 * Special case for ItemBlocks containing fluid blocks.
 	 * Nothing crafts those, the player probably wants to look up fluids.
