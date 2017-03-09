@@ -15,6 +15,9 @@ public class GuiHelper implements IGuiHelper {
 	private final IDrawableStatic tabSelected;
 	private final IDrawableStatic tabUnselected;
 	private final IDrawableStatic shapelessIcon;
+	private final IDrawableStatic arrowPrevious;
+	private final IDrawableStatic arrowNext;
+	private final IDrawableStatic plusSign;
 
 	private final ResourceLocation recipeBackgroundResource;
 	private final ResourceLocation recipeBackgroundTallResource;
@@ -30,6 +33,10 @@ public class GuiHelper implements IGuiHelper {
 		tabUnselected = createDrawable(recipeBackgroundResource, 220, 15, 24, 22);
 
 		shapelessIcon = createDrawable(recipeBackgroundResource, 196, 0, 19, 15);
+
+		arrowPrevious = createDrawable(recipeBackgroundResource, 196, 55, 5, 8, 0, -1, 0, 0);
+		arrowNext = createDrawable(recipeBackgroundResource, 204, 55, 5, 8, 0, -1, 0, -1);
+		plusSign = createDrawable(recipeBackgroundResource, 212, 55, 6, 6, 0, -1, 0, -1);
 	}
 
 	@Override
@@ -119,5 +126,17 @@ public class GuiHelper implements IGuiHelper {
 
 	public ResourceLocation getRecipeBackgroundTallResource() {
 		return recipeBackgroundTallResource;
+	}
+
+	public IDrawableStatic getArrowPrevious() {
+		return arrowPrevious;
+	}
+
+	public IDrawableStatic getArrowNext() {
+		return arrowNext;
+	}
+
+	public IDrawableStatic getPlusSign() {
+		return plusSign;
 	}
 }

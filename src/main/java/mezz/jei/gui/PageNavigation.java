@@ -3,15 +3,13 @@ package mezz.jei.gui;
 import java.awt.Color;
 import java.awt.Rectangle;
 
+import mezz.jei.Internal;
 import mezz.jei.input.IPaged;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 
 public class PageNavigation {
-	private static final String nextLabel = ">";
-	private static final String backLabel = "<";
-
 	private final IPaged paged;
 	private final GuiButton nextButton;
 	private final GuiButton backButton;
@@ -24,8 +22,9 @@ public class PageNavigation {
 	public PageNavigation(IPaged paged, boolean hideOnSinglePage, Rectangle area) {
 		this.paged = paged;
 		int buttonSize = area.height;
-		this.nextButton = new GuiButton(0, area.x + area.width - buttonSize, area.y, buttonSize, buttonSize, nextLabel);
-		this.backButton = new GuiButton(1, area.x, area.y, buttonSize, buttonSize, backLabel);
+		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
+		this.nextButton = new GuiIconButton(0, area.x + area.width - buttonSize, area.y, buttonSize, buttonSize, guiHelper.getArrowNext());
+		this.backButton = new GuiIconButton(1, area.x, area.y, buttonSize, buttonSize, guiHelper.getArrowPrevious());
 		this.hideOnSinglePage = hideOnSinglePage;
 		this.area = area;
 	}

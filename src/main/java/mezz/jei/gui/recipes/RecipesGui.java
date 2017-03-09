@@ -11,10 +11,12 @@ import mezz.jei.Internal;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.IRecipesGui;
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiHelper;
+import mezz.jei.gui.GuiIconButtonExt;
 import mezz.jei.gui.GuiProperties;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiIngredient;
@@ -41,7 +43,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -49,11 +50,9 @@ import org.lwjgl.input.Mouse;
 public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFocuses, IRecipeLogicStateListener {
 	private static final int borderPadding = 6;
 	private static final int innerPadding = 5;
-	private static final int textPadding = 5;
 	private static final int buttonWidth = 13;
-	private static final int buttonHeight = 12;
+	private static final int buttonHeight = 13;
 
-	private int titleHeight;
 	private int headerHeight;
 
 	/* Internal logic for the gui, handles finding recipes */
@@ -91,11 +90,15 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
 		this.mc = Minecraft.getMinecraft();
 
-		nextRecipeCategory = new GuiButtonExt(2, 0, 0, buttonWidth, buttonHeight, ">");
-		previousRecipeCategory = new GuiButtonExt(3, 0, 0, buttonWidth, buttonHeight, "<");
+		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
+		IDrawableStatic arrowNext = guiHelper.getArrowNext();
+		IDrawableStatic arrowPrevious = guiHelper.getArrowPrevious();
 
-		nextPage = new GuiButtonExt(4, 0, 0, buttonWidth, buttonHeight, ">");
-		previousPage = new GuiButtonExt(5, 0, 0, buttonWidth, buttonHeight, "<");
+		nextRecipeCategory = new GuiIconButtonExt(2, 0, 0, buttonWidth, buttonHeight, arrowNext);
+		previousRecipeCategory = new GuiIconButtonExt(3, 0, 0, buttonWidth, buttonHeight, arrowPrevious);
+
+		nextPage = new GuiIconButtonExt(4, 0, 0, buttonWidth, buttonHeight, arrowNext);
+		previousPage = new GuiIconButtonExt(5, 0, 0, buttonWidth, buttonHeight, arrowPrevious);
 	}
 
 	public int getGuiLeft() {
@@ -137,23 +140,23 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		this.guiLeft = (width - this.xSize) / 2;
 		this.guiTop = (height - this.ySize) / 2 + 8;
 
-		this.titleHeight = fontRendererObj.FONT_HEIGHT + borderPadding;
-		this.headerHeight = titleHeight + fontRendererObj.FONT_HEIGHT + textPadding;
-
 		final int rightButtonX = guiLeft + xSize - borderPadding - buttonWidth;
 		final int leftButtonX = guiLeft + borderPadding;
 
-		int recipeClassButtonTop = guiTop + titleHeight - buttonHeight + 1;
+		int titleHeight = fontRendererObj.FONT_HEIGHT + borderPadding;
+		int recipeClassButtonTop = guiTop + titleHeight - buttonHeight + 2;
 		nextRecipeCategory.xPosition = rightButtonX;
 		nextRecipeCategory.yPosition = recipeClassButtonTop;
 		previousRecipeCategory.xPosition = leftButtonX;
 		previousRecipeCategory.yPosition = recipeClassButtonTop;
 
-		int pageButtonTop = guiTop + titleHeight + 3;
+		int pageButtonTop = recipeClassButtonTop + buttonHeight + 2;
 		nextPage.xPosition = rightButtonX;
 		nextPage.yPosition = pageButtonTop;
 		previousPage.xPosition = leftButtonX;
 		previousPage.yPosition = pageButtonTop;
+
+		this.headerHeight = (pageButtonTop + buttonHeight) - guiTop;
 
 		addButtons();
 
@@ -179,20 +182,21 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		GlStateManager.disableBlend();
 
 		drawRect(guiLeft + borderPadding + buttonWidth,
-				guiTop + borderPadding - 2,
+				nextRecipeCategory.yPosition,
 				guiLeft + xSize - borderPadding - buttonWidth,
-				guiTop + borderPadding + 10,
+				nextRecipeCategory.yPosition + buttonHeight,
 				0x30000000);
 		drawRect(guiLeft + borderPadding + buttonWidth,
-				guiTop + titleHeight + textPadding - 2,
+				nextPage.yPosition,
 				guiLeft + xSize - borderPadding - buttonWidth,
-				guiTop + titleHeight + textPadding + 10,
+				nextPage.yPosition + buttonHeight,
 				0x30000000);
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-		StringUtil.drawCenteredString(fontRendererObj, title, xSize, guiLeft, guiTop + borderPadding, Color.WHITE.getRGB(), true);
-		StringUtil.drawCenteredString(fontRendererObj, pageString, xSize, guiLeft, guiTop + titleHeight + textPadding, Color.WHITE.getRGB(), true);
+		int textPadding = (buttonHeight - fontRendererObj.FONT_HEIGHT) / 2;
+		StringUtil.drawCenteredString(fontRendererObj, title, xSize, guiLeft, nextRecipeCategory.yPosition + textPadding, Color.WHITE.getRGB(), true);
+		StringUtil.drawCenteredString(fontRendererObj, pageString, xSize, guiLeft, nextPage.yPosition + textPadding, Color.WHITE.getRGB(), true);
 
 		nextRecipeCategory.drawButton(mc, mouseX, mouseY);
 		previousRecipeCategory.drawButton(mc, mouseX, mouseY);

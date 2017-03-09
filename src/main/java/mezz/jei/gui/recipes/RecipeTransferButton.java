@@ -2,23 +2,24 @@ package mezz.jei.gui.recipes;
 
 import javax.annotation.Nullable;
 
+import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.config.Constants;
+import mezz.jei.gui.GuiIconButtonExt;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.transfer.RecipeTransferErrorInternal;
 import mezz.jei.transfer.RecipeTransferUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraftforge.fml.client.config.GuiButtonExt;
 
-public class RecipeTransferButton extends GuiButtonExt {
+public class RecipeTransferButton extends GuiIconButtonExt {
 	private final RecipeLayout recipeLayout;
 	@Nullable
 	private IRecipeTransferError recipeTransferError;
 
-	public RecipeTransferButton(int id, int xPos, int yPos, int width, int height, String displayString, RecipeLayout recipeLayout) {
-		super(id, xPos, yPos, width, height, displayString);
+	public RecipeTransferButton(int id, int xPos, int yPos, int width, int height, IDrawable icon, RecipeLayout recipeLayout) {
+		super(id, xPos, yPos, width, height, icon);
 		this.recipeLayout = recipeLayout;
 	}
 

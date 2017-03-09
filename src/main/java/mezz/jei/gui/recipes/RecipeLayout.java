@@ -6,6 +6,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IGuiIngredientGroup;
@@ -28,7 +29,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 public class RecipeLayout implements IRecipeLayoutDrawable {
-	private static final int RECIPE_BUTTON_SIZE = 12;
+	private static final int RECIPE_BUTTON_SIZE = 13;
 	public static final int recipeTransferButtonIndex = 100;
 
 	private final int ingredientCycleOffset = (int) (Math.random() * 10000);
@@ -71,7 +72,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		this.guiIngredientGroups.put(FluidStack.class, this.guiFluidStackGroup);
 
 		if (index >= 0) {
-			this.recipeTransferButton = new RecipeTransferButton(recipeTransferButtonIndex + index, 0, 0, RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, "+", this);
+			IDrawable plusIcon = Internal.getHelpers().getGuiHelper().getPlusSign();
+			this.recipeTransferButton = new RecipeTransferButton(recipeTransferButtonIndex + index, 0, 0, RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, plusIcon, this);
 		} else {
 			this.recipeTransferButton = null;
 		}
