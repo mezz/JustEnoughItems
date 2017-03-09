@@ -68,6 +68,20 @@ public class IngredientGridAll extends IngredientGrid implements IPaged {
 		return true;
 	}
 
+	@Override
+	public boolean hasNext() {
+		// true if there is more than one page because this wraps around
+		int itemsPerPage = guiIngredientList.size();
+		return itemsPerPage > 0 && itemFilter.size() > itemsPerPage;
+	}
+
+	@Override
+	public boolean hasPrevious() {
+		// true if there is more than one page because this wraps around
+		int itemsPerPage = guiIngredientList.size();
+		return itemsPerPage > 0 && itemFilter.size() > itemsPerPage;
+	}
+
 	public ImmutableList<ItemStack> getVisibleStacks() {
 		ImmutableList.Builder<ItemStack> visibleStacks = ImmutableList.builder();
 		for (GuiIngredientFast guiItemStack : guiIngredientList.getAllGuiIngredients()) {

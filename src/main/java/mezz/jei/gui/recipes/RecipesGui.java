@@ -412,7 +412,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		List<ItemStack> recipeCategoryCraftingItems = logic.getRecipeCategoryCraftingItems();
 		GuiProperties guiProperties = GuiProperties.create(this);
 		this.recipeCategoryCraftingItems.updateLayout(recipeCategoryCraftingItems, guiProperties);
-		recipeGuiTabs.updateLayout(guiProperties);
+		recipeGuiTabs.initLayout(guiProperties);
 	}
 
 	private void addRecipeTransferButtons(List<RecipeLayout> recipeLayouts) {

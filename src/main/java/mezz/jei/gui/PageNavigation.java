@@ -15,20 +15,33 @@ public class PageNavigation {
 	private final IPaged paged;
 	private final GuiButton nextButton;
 	private final GuiButton backButton;
+	private final boolean hideOnSinglePage;
 	private String pageNumDisplayString = "1/1";
 	private int pageNumDisplayX;
 	private int pageNumDisplayY;
 	private Rectangle area;
 
-	public PageNavigation(IPaged paged, Rectangle area) {
+	public PageNavigation(IPaged paged, boolean hideOnSinglePage, Rectangle area) {
 		this.paged = paged;
 		int buttonSize = area.height;
 		this.nextButton = new GuiButton(0, area.x + area.width - buttonSize, area.y, buttonSize, buttonSize, nextLabel);
 		this.backButton = new GuiButton(1, area.x, area.y, buttonSize, buttonSize, backLabel);
+		this.hideOnSinglePage = hideOnSinglePage;
 		this.area = area;
 	}
 
-	public void updateLayout(int pageNum, int pageCount) {
+	public void setArea(Rectangle area) {
+		this.area = area;
+		int buttonSize = area.height;
+		this.nextButton.xPosition = area.x + area.width - buttonSize;
+		this.nextButton.yPosition = area.y;
+		this.nextButton.width = this.nextButton.height = buttonSize;
+		this.backButton.xPosition = area.x;
+		this.backButton.yPosition = area.y;
+		this.backButton.width = this.backButton.height = buttonSize;
+	}
+
+	public void updatePageState(int pageNum, int pageCount) {
 		FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
 		pageNumDisplayString = (pageNum + 1) + "/" + pageCount;
 		int pageDisplayWidth = fontRendererObj.getStringWidth(pageNumDisplayString);
@@ -37,10 +50,14 @@ public class PageNavigation {
 	}
 
 	public void draw(Minecraft minecraft, int mouseX, int mouseY) {
-		minecraft.fontRendererObj.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(), true);
+		nextButton.enabled = this.paged.hasNext();
+		backButton.enabled = this.paged.hasPrevious();
 
-		nextButton.drawButton(minecraft, mouseX, mouseY);
-		backButton.drawButton(minecraft, mouseX, mouseY);
+		if (!hideOnSinglePage || nextButton.enabled || backButton.enabled) {
+			minecraft.fontRendererObj.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(), true);
+			nextButton.drawButton(minecraft, mouseX, mouseY);
+			backButton.drawButton(minecraft, mouseX, mouseY);
+		}
 	}
 
 	public boolean isMouseOver(int mouseX, int mouseY) {

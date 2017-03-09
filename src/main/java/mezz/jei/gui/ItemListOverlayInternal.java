@@ -96,7 +96,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 		width = itemListDisplayArea.width;
 
 		final Rectangle pageNavigationArea = new Rectangle(x, borderPadding, width, buttonSize);
-		this.pageNavigation = new PageNavigation(this, pageNavigationArea);
+		this.pageNavigation = new PageNavigation(this, false, pageNavigationArea);
 
 		final int searchFieldX;
 		final int searchFieldY = guiProperties.getScreenHeight() - searchHeight - borderPadding - 2;
@@ -147,7 +147,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 
 		int pageNum = ingredientGridAll.getPageNum();
 		int pageCount = ingredientGridAll.getPageCount();
-		pageNavigation.updateLayout(pageNum, pageCount);
+		pageNavigation.updatePageState(pageNum, pageCount);
 
 		searchField.update();
 	}
@@ -168,6 +168,16 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public boolean hasNext() {
+		return ingredientGridAll.hasNext();
+	}
+
+	@Override
+	public boolean hasPrevious() {
+		return ingredientGridAll.hasPrevious();
 	}
 
 	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY) {
