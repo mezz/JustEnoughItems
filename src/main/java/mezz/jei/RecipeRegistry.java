@@ -176,9 +176,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public <V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient) {
-		Preconditions.checkNotNull(mode, "mode cannot be null");
-		Preconditions.checkNotNull(ingredient, "ingredient cannot be null");
-
 		return new Focus<V>(mode, ingredient);
 	}
 
