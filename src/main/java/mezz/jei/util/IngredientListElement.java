@@ -94,6 +94,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		return ingredientHelper;
 	}
 
+	@Override
 	public final String getDisplayName() {
 		return displayName;
 	}

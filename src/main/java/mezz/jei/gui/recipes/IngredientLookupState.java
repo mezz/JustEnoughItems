@@ -9,6 +9,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.gui.Focus;
+import mezz.jei.util.ErrorUtil;
 
 public class IngredientLookupState {
 	@Nullable
@@ -20,11 +21,11 @@ public class IngredientLookupState {
 	private int recipesPerPage;
 
 	public IngredientLookupState(@Nullable IFocus<?> focus, List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int recipeIndex) {
-		Preconditions.checkArgument(!recipeCategories.isEmpty(), "Recipe categories cannot be empty.");
+		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 		Preconditions.checkArgument(recipeCategoryIndex >= 0, "Recipe category index cannot be negative.");
 		Preconditions.checkArgument(recipeIndex >= 0, "Recipe index cannot be negative.");
 		if (focus != null) {
-			Focus.validate(focus);
+			focus = Focus.check(focus);
 		}
 		this.focus = focus;
 		this.recipeCategories = ImmutableList.copyOf(recipeCategories);

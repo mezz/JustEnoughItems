@@ -37,7 +37,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public <V> boolean setFocus(IFocus<V> focus) {
-		Focus.validate(focus);
+		focus = Focus.check(focus);
 		final List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories(focus);
 		if (recipeCategories.isEmpty()) {
 			return false;

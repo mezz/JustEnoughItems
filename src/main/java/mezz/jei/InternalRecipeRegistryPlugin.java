@@ -41,7 +41,7 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 
 	@Override
 	public <V> List<String> getRecipeCategoryUids(IFocus<V> focus) {
-		Focus.validate(focus);
+		focus = Focus.check(focus);
 		V ingredient = focus.getValue();
 
 		switch (focus.getMode()) {
@@ -67,7 +67,7 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 
 	@Override
 	public <T extends IRecipeWrapper, V> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
-		Focus.validate(focus);
+		focus = Focus.check(focus);
 		V ingredient = focus.getValue();
 
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);

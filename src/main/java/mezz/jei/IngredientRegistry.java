@@ -138,8 +138,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 	@Override
 	public <V> void addIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients) {
 		Preconditions.checkNotNull(ingredientClass, "ingredientClass cannot be null");
-		Preconditions.checkNotNull(ingredients, "ingredients cannot be null");
-		Preconditions.checkArgument(!ingredients.isEmpty(), "ingredients cannot be empty");
+		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 
 		//noinspection unchecked
 		List<V> list = ingredientsMap.get(ingredientClass);

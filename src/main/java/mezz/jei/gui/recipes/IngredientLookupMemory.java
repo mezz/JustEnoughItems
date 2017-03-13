@@ -15,7 +15,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.Table;
@@ -28,6 +27,7 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.Config;
 import mezz.jei.gui.Focus;
+import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.FileUtil;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
@@ -53,10 +53,8 @@ public class IngredientLookupMemory {
 	}
 
 	public <T> IngredientLookupState getState(IFocus<T> focus, List<IRecipeCategory> recipeCategories) {
-		Preconditions.checkNotNull(focus, "focus cannot be null");
-		Preconditions.checkNotNull(recipeCategories, "recipe categories cannot be null");
-		Preconditions.checkArgument(!recipeCategories.isEmpty(), "recipe categories cannot be empty");
-		Focus.validate(focus);
+		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
+		focus = Focus.check(focus);
 
 		final IFocus.Mode focusMode = focus.getMode();
 		final T value = focus.getValue();

@@ -1,7 +1,7 @@
 package mezz.jei;
 
-import com.google.common.base.Preconditions;
 import mezz.jei.api.IItemBlacklist;
+import mezz.jei.util.ErrorUtil;
 import net.minecraft.item.ItemStack;
 
 @Deprecated
@@ -15,27 +15,21 @@ public class ItemBlacklist implements IItemBlacklist {
 	@Override
 	@Deprecated
 	public void addItemToBlacklist(ItemStack itemStack) {
-		Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
-		Preconditions.checkArgument(!itemStack.isEmpty(), "itemStack cannot be empty");
-
+		ErrorUtil.checkNotEmpty(itemStack);
 		ingredientBlacklist.addIngredientToBlacklist(itemStack);
 	}
 
 	@Override
 	@Deprecated
 	public void removeItemFromBlacklist(ItemStack itemStack) {
-		Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
-		Preconditions.checkArgument(!itemStack.isEmpty(), "itemStack cannot be empty");
-
+		ErrorUtil.checkNotEmpty(itemStack);
 		ingredientBlacklist.removeIngredientFromBlacklist(itemStack);
 	}
 
 	@Override
 	@Deprecated
 	public boolean isItemBlacklisted(ItemStack itemStack) {
-		Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
-		Preconditions.checkArgument(!itemStack.isEmpty(), "itemStack cannot be empty");
-
+		ErrorUtil.checkNotEmpty(itemStack);
 		return ingredientBlacklist.isIngredientBlacklisted(itemStack);
 	}
 

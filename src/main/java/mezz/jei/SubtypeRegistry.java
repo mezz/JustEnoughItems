@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.ISubtypeRegistry;
+import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -42,8 +43,7 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 	@Nullable
 	@Override
 	public String getSubtypeInfo(ItemStack itemStack) {
-		Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
-		Preconditions.checkArgument(!itemStack.isEmpty(), "itemStack cannot be empty");
+		ErrorUtil.checkNotEmpty(itemStack);
 
 		Item item = itemStack.getItem();
 		ISubtypeInterpreter subtypeInterpreter = interpreters.get(item);
@@ -56,8 +56,7 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 
 	@Override
 	public boolean hasSubtypeInterpreter(ItemStack itemStack) {
-		Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
-		Preconditions.checkArgument(!itemStack.isEmpty(), "itemStack cannot be empty");
+		ErrorUtil.checkNotEmpty(itemStack);
 
 		Item item = itemStack.getItem();
 		return interpreters.containsKey(item);

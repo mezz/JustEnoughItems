@@ -5,6 +5,7 @@ import java.util.Collection;
 import com.google.common.base.Preconditions;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
+import mezz.jei.util.ErrorUtil;
 
 public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper {
 	@Override
@@ -22,8 +23,7 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 	@Override
 	public IRecipeTransferError createUserErrorForSlots(String tooltipMessage, Collection<Integer> missingItemSlots) {
 		Preconditions.checkNotNull(tooltipMessage, "tooltipMessage cannot be null");
-		Preconditions.checkNotNull(missingItemSlots, "missingItemSlots cannot be null");
-		Preconditions.checkArgument(!missingItemSlots.isEmpty(), "middingItemSlots cannot be empty");
+		ErrorUtil.checkNotEmpty(missingItemSlots, "missingItemSlots");
 
 		return new RecipeTransferErrorSlots(tooltipMessage, missingItemSlots);
 	}

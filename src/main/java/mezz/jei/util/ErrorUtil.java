@@ -2,10 +2,12 @@ package mezz.jei.util;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.base.Preconditions;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredients;
@@ -149,5 +151,23 @@ public class ErrorUtil {
 			return itemStack + " " + itemName + " nbt:" + nbt;
 		}
 		return itemStack + " " + itemName;
+	}
+
+	public static void checkNotEmpty(ItemStack itemStack) {
+		Preconditions.checkNotNull(itemStack, "ItemStack must not be null.");
+		if (itemStack.isEmpty()) {
+			String info = getItemStackInfo(itemStack);
+			throw new IllegalArgumentException("ItemStack value must not be empty. " + info);
+		}
+	}
+
+	public static <T> void checkNotEmpty(T[] values, String name) {
+		Preconditions.checkNotNull(values, "%s must not be null.", name);
+		Preconditions.checkArgument(values.length > 0, "%s must not be empty.", name);
+	}
+
+	public static void checkNotEmpty(Collection values, String name) {
+		Preconditions.checkNotNull(values, "%s must not be null.", name);
+		Preconditions.checkArgument(!values.isEmpty(), "%s must not be empty.", name);
 	}
 }

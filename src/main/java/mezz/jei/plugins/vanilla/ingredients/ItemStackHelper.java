@@ -38,19 +38,19 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public String getUniqueId(ItemStack ingredient) {
-		Preconditions.checkArgument(!ingredient.isEmpty(), "itemStack ingredient cannot be empty");
+		ErrorUtil.checkNotEmpty(ingredient);
 		return stackHelper.getUniqueIdentifierForStack(ingredient);
 	}
 
 	@Override
 	public String getWildcardId(ItemStack ingredient) {
-		Preconditions.checkArgument(!ingredient.isEmpty(), "itemStack ingredient cannot be empty");
+		ErrorUtil.checkNotEmpty(ingredient);
 		return stackHelper.getUniqueIdentifierForStack(ingredient, StackHelper.UidMode.WILDCARD);
 	}
 
 	@Override
 	public String getModId(ItemStack ingredient) {
-		Preconditions.checkArgument(!ingredient.isEmpty(), "itemStack ingredient cannot be empty");
+		ErrorUtil.checkNotEmpty(ingredient);
 
 		Item item = ingredient.getItem();
 		ResourceLocation itemName = item.getRegistryName();
@@ -70,6 +70,11 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	public ItemStack cheatIngredient(ItemStack ingredient, boolean fullStack) {
 		return ingredient;
+	}
+
+	@Override
+	public ItemStack copyIngredient(ItemStack ingredient) {
+		return ingredient.copy();
 	}
 
 	@Override

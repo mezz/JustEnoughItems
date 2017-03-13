@@ -61,6 +61,11 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 	}
 
 	@Override
+	public DebugIngredient copyIngredient(DebugIngredient ingredient) {
+		return ingredient.copy();
+	}
+
+	@Override
 	public String getErrorInfo(DebugIngredient ingredient) {
 		return getDisplayName(ingredient);
 	}

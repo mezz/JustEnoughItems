@@ -353,6 +353,7 @@ public class StackHelper implements IStackHelper {
 	}
 
 	public String getUniqueIdentifierForStack(ItemStack stack, UidMode mode) {
+		ErrorUtil.checkNotEmpty(stack);
 		if (uidCacheEnabled) {
 			String result = uidCache.get(mode).get(stack);
 			if (result != null) {
@@ -361,10 +362,6 @@ public class StackHelper implements IStackHelper {
 		}
 
 		Item item = stack.getItem();
-		if (stack.isEmpty()) {
-			throw new IllegalArgumentException("Empty Itemstack");
-		}
-
 		ResourceLocation itemName = item.getRegistryName();
 		if (itemName == null) {
 			String stackInfo = ErrorUtil.getItemStackInfo(stack);

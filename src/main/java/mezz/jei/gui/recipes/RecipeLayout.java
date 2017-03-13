@@ -54,7 +54,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		Preconditions.checkNotNull(recipeCategory);
 		Preconditions.checkNotNull(recipeWrapper);
 		if (focus != null) {
-			Focus.validate(focus);
+			focus = Focus.check(focus);
 		}
 		this.recipeCategory = recipeCategory;
 		this.focus = focus;

@@ -10,4 +10,8 @@ public class DebugIngredient {
 	public int getNumber() {
 		return number;
 	}
+
+	public DebugIngredient copy() {
+		return new DebugIngredient(number);
+	}
 }

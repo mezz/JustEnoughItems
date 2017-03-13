@@ -311,8 +311,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public void addSmeltingRecipe(List<ItemStack> inputs, ItemStack output) {
-		Preconditions.checkNotNull(inputs, "null inputs");
-		Preconditions.checkArgument(!inputs.isEmpty(), "empty inputs");
+		ErrorUtil.checkNotEmpty(inputs, "inputs");
 		Preconditions.checkNotNull(output, "null output");
 
 		SmeltingRecipe smeltingRecipe = new SmeltingRecipe(inputs, output);
@@ -414,8 +413,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public <V> List<IRecipeCategory> getRecipeCategories(IFocus<V> focus) {
-		Preconditions.checkNotNull(focus, "focus cannot be null");
-		Focus.validate(focus);
+		focus = Focus.check(focus);
 
 		FluidStack fluidStack = getFluidFromItemBlock(focus);
 		if (fluidStack != null) {
@@ -439,8 +437,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Override
 	public <T extends IRecipeWrapper, V> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
 		Preconditions.checkNotNull(recipeCategory, "recipeCategory cannot be null");
-		Preconditions.checkNotNull(focus, "focus cannot be null");
-		Focus.validate(focus);
+		focus = Focus.check(focus);
 
 		FluidStack fluidStack = getFluidFromItemBlock(focus);
 		if (fluidStack != null) {
@@ -482,7 +479,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Override
 	public List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory, @Nullable IFocus focus) {
 		if (focus != null) {
-			Focus.validate(focus);
+			focus = Focus.check(focus);
 		}
 		List<ItemStack> craftingItems = craftItemsForCategories.get(recipeCategory);
 
@@ -506,6 +503,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return craftItemsForCategories.get(recipeCategory);
 	}
 
+	@Override
 	@Nullable
 	public IRecipeTransferHandler getRecipeTransferHandler(Container container, IRecipeCategory recipeCategory) {
 		Preconditions.checkNotNull(container, "container cannot be null");
@@ -522,7 +520,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public <T extends IRecipeWrapper> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipeWrapper, IFocus focus) {
-		Focus.validate(focus);
+		focus = Focus.check(focus);
 		return new RecipeLayout(-1, recipeCategory, recipeWrapper, focus, 0, 0);
 	}
 }

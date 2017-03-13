@@ -101,6 +101,11 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	}
 
 	@Override
+	public FluidStack copyIngredient(FluidStack ingredient) {
+		return ingredient.copy();
+	}
+
+	@Override
 	public String getErrorInfo(FluidStack ingredient) {
 		Objects.ToStringHelper toStringHelper = Objects.toStringHelper(FluidStack.class);
 

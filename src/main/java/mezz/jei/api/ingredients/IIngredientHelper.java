@@ -75,6 +75,16 @@ public interface IIngredientHelper<V> {
 	ItemStack cheatIngredient(V ingredient, boolean fullStack);
 
 	/**
+	 * Makes a copy of the given ingredient.
+	 * Used by JEI to protect against mutation of ingredients.
+	 *
+	 * @param ingredient the ingredient to copy
+	 * @return a copy of the ingredient
+	 * @since JEI 4.2.10
+	 */
+	V copyIngredient(V ingredient);
+
+	/**
 	 * Get information for error messages involving this ingredient.
 	 * Be extremely careful not to crash here, get as much useful info as possible.
 	 */

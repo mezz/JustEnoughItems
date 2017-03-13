@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.base.Preconditions;
 import mezz.jei.Internal;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.IRecipesGui;
@@ -26,6 +25,7 @@ import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.InputHandler;
 import mezz.jei.transfer.RecipeTransferUtil;
+import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.StringUtil;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -342,8 +342,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	@Override
 	public <V> void show(IFocus<V> focus) {
-		Preconditions.checkNotNull(focus, "focus cannot be null");
-		Focus.validate(focus);
+		focus = Focus.check(focus);
 
 		if (logic.setFocus(focus)) {
 			open();
@@ -352,8 +351,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	@Override
 	public void showCategories(List<String> recipeCategoryUids) {
-		Preconditions.checkNotNull(recipeCategoryUids, "recipeCategoryUids cannot be null");
-		Preconditions.checkArgument(!recipeCategoryUids.isEmpty(), "recipeCategoryUids cannot be empty");
+		ErrorUtil.checkNotEmpty(recipeCategoryUids, "recipeCategoryUids");
 
 		if (logic.setCategoryFocus(recipeCategoryUids)) {
 			open();

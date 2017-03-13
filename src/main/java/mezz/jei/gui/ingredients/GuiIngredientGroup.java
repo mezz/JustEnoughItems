@@ -49,7 +49,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 			this.inputFocus = null;
 			this.outputFocus = null;
 		} else {
-			Focus.validate(focus);
+			focus = Focus.check(focus);
 			if (focus.getMode() == IFocus.Mode.INPUT) {
 				this.inputFocus = focus;
 				this.outputFocus = null;
@@ -172,7 +172,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 			this.inputFocus = null;
 			this.outputFocus = null;
 		} else {
-			Focus.validate(focus);
+			focus = Focus.check(focus);
 			if (focus.getMode() == IFocus.Mode.INPUT) {
 				this.inputFocus = focus;
 			} else if (focus.getMode() == IFocus.Mode.OUTPUT) {

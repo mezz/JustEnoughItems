@@ -61,8 +61,7 @@ public class ModRegistry implements IModRegistry {
 
 	@Override
 	public void addRecipeCategories(IRecipeCategory... recipeCategories) {
-		Preconditions.checkNotNull(recipeCategories, "recipeCategories cannot be null");
-		Preconditions.checkArgument(recipeCategories.length > 0, "recipeCategories cannot be empty");
+		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 
 		for (IRecipeCategory recipeCategory : recipeCategories) {
 			String uid = recipeCategory.getUid();
@@ -77,8 +76,7 @@ public class ModRegistry implements IModRegistry {
 
 	@Override
 	public void addRecipeHandlers(IRecipeHandler... recipeHandlers) {
-		Preconditions.checkNotNull(recipeHandlers, "recipeHandlers cannot be null");
-		Preconditions.checkArgument(recipeHandlers.length > 0, "recipeHandlers cannot be empty");
+		ErrorUtil.checkNotEmpty(recipeHandlers, "recipeHandlers");
 
 		for (IRecipeHandler recipeHandler : recipeHandlers) {
 			Preconditions.checkNotNull(recipeHandler.getRecipeClass());
@@ -89,28 +87,24 @@ public class ModRegistry implements IModRegistry {
 
 	@Override
 	public void addRecipes(Collection recipes) {
-		Preconditions.checkNotNull(recipes, "recipes cannot be null");
-		Preconditions.checkArgument(!recipes.isEmpty(), "recipes cannot be empty");
+		ErrorUtil.checkNotEmpty(recipes, "recipes");
 
 		this.recipes.addAll(recipes);
 	}
 
 	@Override
-	public void addRecipeClickArea(Class<? extends GuiContainer> guiClass, int xPos, int yPos, int width, int height, String... recipeCategoryUids) {
-		Preconditions.checkNotNull(guiClass, "Tried to add a RecipeClickArea with null guiClass.");
-		Preconditions.checkNotNull(recipeCategoryUids, "Tried to add a RecipeClickArea with null recipeCategoryUids.");
-		Preconditions.checkArgument(recipeCategoryUids.length > 0, "Tried to add a RecipeClickArea with empty list of recipeCategoryUids.");
+	public void addRecipeClickArea(Class<? extends GuiContainer> guiContainerClass, int xPos, int yPos, int width, int height, String... recipeCategoryUids) {
+		Preconditions.checkNotNull(guiContainerClass, "Tried to add a RecipeClickArea with null guiContainerClass.");
+		ErrorUtil.checkNotEmpty(recipeCategoryUids, "recipeCategoryUids");
 
 		RecipeClickableArea recipeClickableArea = new RecipeClickableArea(yPos, yPos + height, xPos, xPos + width, recipeCategoryUids);
-		this.recipeClickableAreas.put(guiClass, recipeClickableArea);
+		this.recipeClickableAreas.put(guiContainerClass, recipeClickableArea);
 	}
 
 	@Override
 	public void addRecipeCategoryCraftingItem(ItemStack craftingItem, String... recipeCategoryUids) {
-		Preconditions.checkNotNull(craftingItem, "Tried to add a RecipeCategoryCraftingItem with null craftingItem.");
-		Preconditions.checkArgument(!craftingItem.isEmpty(), "Tried to add a RecipeCategoryCraftingItem with empty craftingItem.");
-		Preconditions.checkNotNull(recipeCategoryUids, "Tried to add a RecipeCategoryCraftingItem with null recipeCategoryUids.");
-		Preconditions.checkArgument(recipeCategoryUids.length > 0, "Tried to add a RecipeCategoryCraftingItem with an empty list of recipeCategoryUids.");
+		ErrorUtil.checkNotEmpty(craftingItem);
+		ErrorUtil.checkNotEmpty(recipeCategoryUids, "recipeCategoryUids");
 
 		for (String recipeCategoryUid : recipeCategoryUids) {
 			Preconditions.checkNotNull(recipeCategoryUid, "Tried to add a RecipeCategoryCraftingItem with null recipeCategoryUid.");
@@ -120,21 +114,18 @@ public class ModRegistry implements IModRegistry {
 
 	@Override
 	public void addAdvancedGuiHandlers(IAdvancedGuiHandler<?>... advancedGuiHandlers) {
-		Preconditions.checkNotNull(advancedGuiHandlers, "advancedGuiHandlers cannot be null");
-		Preconditions.checkArgument(advancedGuiHandlers.length > 0, "advancedGuiHandlers cannot be empty");
+		ErrorUtil.checkNotEmpty(advancedGuiHandlers, "advancedGuiHandlers");
 
 		Collections.addAll(this.advancedGuiHandlers, advancedGuiHandlers);
 	}
 
 	@Override
 	public void addDescription(List<ItemStack> itemStacks, String... descriptionKeys) {
-		Preconditions.checkNotNull(itemStacks, "Tried to add description with null itemStacks.");
-		Preconditions.checkArgument(!itemStacks.isEmpty(), "Tried to add description with empty list of itemStacks.");
-		Preconditions.checkNotNull(descriptionKeys, "Tried to add a null descriptionKey for itemStacks %s.", itemStacks);
-		Preconditions.checkArgument(descriptionKeys.length > 0, "Tried to add an empty list of descriptionKeys for itemStacks %s.", itemStacks);
+		ErrorUtil.checkNotEmpty(itemStacks, "itemStacks");
+		ErrorUtil.checkNotEmpty(descriptionKeys, "descriptionKeys");
 
 		for (ItemStack itemStack : itemStacks) {
-			Preconditions.checkArgument(!itemStack.isEmpty(), "itemStack cannot be empty");
+			ErrorUtil.checkNotEmpty(itemStack);
 		}
 
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
@@ -144,10 +135,8 @@ public class ModRegistry implements IModRegistry {
 
 	@Override
 	public void addDescription(ItemStack itemStack, String... descriptionKeys) {
-		Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
-		Preconditions.checkArgument(!itemStack.isEmpty(), "itemStack cannot be empty");
-		Preconditions.checkNotNull(descriptionKeys, "descriptionKeys cannot be null");
-		Preconditions.checkArgument(descriptionKeys.length > 0, "descriptionKeys cannot be empty");
+		ErrorUtil.checkNotEmpty(itemStack);
+		ErrorUtil.checkNotEmpty(descriptionKeys, "descriptionKeys");
 
 		addDescription(Collections.singletonList(itemStack), descriptionKeys);
 	}
