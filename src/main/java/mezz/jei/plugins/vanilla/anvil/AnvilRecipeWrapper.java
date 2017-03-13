@@ -54,8 +54,9 @@ public class AnvilRecipeWrapper extends BlankRecipeWrapper {
 			lastCost = AnvilRecipeMaker.findLevelsCost(lastLeftStack, lastRightStack);
 		}
 
-		if (lastCost >= 0) {
-			String text = I18n.format("container.repair.cost", lastCost);
+		if (lastCost != 0) {
+			String costText = lastCost < 0 ? "err" : Integer.toString(lastCost);
+			String text = I18n.format("container.repair.cost", costText);
 
 			int mainColor = 0xFF80FF20;
 			if ((lastCost >= 40 || lastCost > minecraft.player.experienceLevel)

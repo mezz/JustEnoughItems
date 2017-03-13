@@ -9,6 +9,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import mezz.jei.api.IModRegistry;
+import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.FakeClientPlayer;
 import mezz.jei.util.FakeClientWorld;
 import mezz.jei.util.Log;
@@ -161,9 +162,16 @@ public class AnvilRecipeMaker {
 	public static int findLevelsCost(ItemStack leftStack, ItemStack rightStack) {
 		FakeClientPlayer fakePlayer = FakeClientPlayer.getInstance();
 		InventoryPlayer fakeInventory = new InventoryPlayer(fakePlayer);
-		ContainerRepair repair = new ContainerRepair(fakeInventory, FakeClientWorld.getInstance(), fakePlayer);
-		repair.inventorySlots.get(0).putStack(leftStack);
-		repair.inventorySlots.get(1).putStack(rightStack);
-		return repair.maximumCost;
+		try {
+			ContainerRepair repair = new ContainerRepair(fakeInventory, FakeClientWorld.getInstance(), fakePlayer);
+			repair.inventorySlots.get(0).putStack(leftStack);
+			repair.inventorySlots.get(1).putStack(rightStack);
+			return repair.maximumCost;
+		} catch (RuntimeException e) {
+			String left = ErrorUtil.getItemStackInfo(leftStack);
+			String right = ErrorUtil.getItemStackInfo(rightStack);
+			Log.error("Could not get anvil level cost for: ({} and {}).", left, right, e);
+			return -1;
+		}
 	}
 }
