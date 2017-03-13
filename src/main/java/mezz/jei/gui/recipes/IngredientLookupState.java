@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableList;
 import mezz.jei.Internal;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.gui.Focus;
 
 public class IngredientLookupState {
 	@Nullable
@@ -22,6 +23,9 @@ public class IngredientLookupState {
 		Preconditions.checkArgument(!recipeCategories.isEmpty(), "Recipe categories cannot be empty.");
 		Preconditions.checkArgument(recipeCategoryIndex >= 0, "Recipe category index cannot be negative.");
 		Preconditions.checkArgument(recipeIndex >= 0, "Recipe index cannot be negative.");
+		if (focus != null) {
+			Focus.validate(focus);
+		}
 		this.focus = focus;
 		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
 		this.setRecipeCategoryIndex(recipeCategoryIndex);

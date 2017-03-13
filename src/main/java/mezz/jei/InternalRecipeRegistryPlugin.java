@@ -16,6 +16,7 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeRegistryPlugin;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.gui.Focus;
 import mezz.jei.util.IngredientUtil;
 import mezz.jei.util.RecipeMap;
 
@@ -40,6 +41,7 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 
 	@Override
 	public <V> List<String> getRecipeCategoryUids(IFocus<V> focus) {
+		Focus.validate(focus);
 		V ingredient = focus.getValue();
 
 		switch (focus.getMode()) {
@@ -65,6 +67,7 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 
 	@Override
 	public <T extends IRecipeWrapper, V> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
+		Focus.validate(focus);
 		V ingredient = focus.getValue();
 
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);

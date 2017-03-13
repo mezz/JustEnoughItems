@@ -6,6 +6,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Preconditions;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
@@ -15,6 +16,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.gui.Focus;
 import mezz.jei.gui.ShapelessIcon;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiFluidStackGroup;
@@ -49,6 +51,11 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	private int posY;
 
 	public <T extends IRecipeWrapper> RecipeLayout(int index, IRecipeCategory<T> recipeCategory, T recipeWrapper, @Nullable IFocus focus, int posX, int posY) {
+		Preconditions.checkNotNull(recipeCategory);
+		Preconditions.checkNotNull(recipeWrapper);
+		if (focus != null) {
+			Focus.validate(focus);
+		}
 		this.recipeCategory = recipeCategory;
 		this.focus = focus;
 

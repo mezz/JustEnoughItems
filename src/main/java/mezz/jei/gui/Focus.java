@@ -9,14 +9,9 @@ public class Focus<V> implements IFocus<V> {
 	private final V value;
 
 	public Focus(Mode mode, V value) {
-		Preconditions.checkNotNull(mode, "mode must not be null");
-		Preconditions.checkNotNull(value, "value must not be null");
-		if (value instanceof ItemStack) {
-			ItemStack itemStack = (ItemStack) value;
-			Preconditions.checkArgument(!itemStack.isEmpty(), "ItemStack value must not be empty");
-		}
 		this.mode = mode;
 		this.value = value;
+		validate(this);
 	}
 
 	@Override
@@ -27,5 +22,15 @@ public class Focus<V> implements IFocus<V> {
 	@Override
 	public Mode getMode() {
 		return mode;
+	}
+
+	public static void validate(IFocus<?> focus) {
+		Preconditions.checkNotNull(focus.getMode(), "mode must not be null");
+		Object value = focus.getValue();
+		Preconditions.checkNotNull(value, "value must not be null");
+		if (value instanceof ItemStack) {
+			ItemStack itemStack = (ItemStack) value;
+			Preconditions.checkArgument(!itemStack.isEmpty(), "ItemStack value must not be empty");
+		}
 	}
 }

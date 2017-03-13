@@ -38,11 +38,13 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public String getUniqueId(ItemStack ingredient) {
+		Preconditions.checkArgument(!ingredient.isEmpty(), "itemStack ingredient cannot be empty");
 		return stackHelper.getUniqueIdentifierForStack(ingredient);
 	}
 
 	@Override
 	public String getWildcardId(ItemStack ingredient) {
+		Preconditions.checkArgument(!ingredient.isEmpty(), "itemStack ingredient cannot be empty");
 		return stackHelper.getUniqueIdentifierForStack(ingredient, StackHelper.UidMode.WILDCARD);
 	}
 

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Preconditions;
 import mezz.jei.IngredientRegistry;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IGuiIngredientGroup;
@@ -18,6 +19,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.gui.Focus;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 
@@ -41,16 +43,20 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	private ITooltipCallback<T> tooltipCallback;
 
 	public GuiIngredientGroup(Class<T> ingredientClass, @Nullable IFocus<T> focus, int cycleOffset) {
+		Preconditions.checkNotNull(ingredientClass);
 		this.ingredientClass = ingredientClass;
 		if (focus == null) {
 			this.inputFocus = null;
 			this.outputFocus = null;
-		}  else if (focus.getMode() == IFocus.Mode.INPUT) {
-			this.inputFocus = focus;
-			this.outputFocus = null;
-		} else if (focus.getMode() == IFocus.Mode.OUTPUT) {
-			this.inputFocus = null;
-			this.outputFocus = focus;
+		} else {
+			Focus.validate(focus);
+			if (focus.getMode() == IFocus.Mode.INPUT) {
+				this.inputFocus = focus;
+				this.outputFocus = null;
+			} else if (focus.getMode() == IFocus.Mode.OUTPUT) {
+				this.inputFocus = null;
+				this.outputFocus = focus;
+			}
 		}
 		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		this.ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
@@ -165,10 +171,13 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		if (focus == null) {
 			this.inputFocus = null;
 			this.outputFocus = null;
-		} else if (focus.getMode() == IFocus.Mode.INPUT) {
-			this.inputFocus = focus;
-		} else if (focus.getMode() == IFocus.Mode.OUTPUT) {
-			this.outputFocus = focus;
+		} else {
+			Focus.validate(focus);
+			if (focus.getMode() == IFocus.Mode.INPUT) {
+				this.inputFocus = focus;
+			} else if (focus.getMode() == IFocus.Mode.OUTPUT) {
+				this.outputFocus = focus;
+			}
 		}
 	}
 }

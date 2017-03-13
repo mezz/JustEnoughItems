@@ -11,6 +11,7 @@ import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.gui.Focus;
 import mezz.jei.util.MathUtil;
 import net.minecraft.item.ItemStack;
 
@@ -36,6 +37,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public <V> boolean setFocus(IFocus<V> focus) {
+		Focus.validate(focus);
 		final List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories(focus);
 		if (recipeCategories.isEmpty()) {
 			return false;

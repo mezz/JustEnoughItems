@@ -415,6 +415,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Override
 	public <V> List<IRecipeCategory> getRecipeCategories(IFocus<V> focus) {
 		Preconditions.checkNotNull(focus, "focus cannot be null");
+		Focus.validate(focus);
 
 		FluidStack fluidStack = getFluidFromItemBlock(focus);
 		if (fluidStack != null) {
@@ -439,6 +440,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	public <T extends IRecipeWrapper, V> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
 		Preconditions.checkNotNull(recipeCategory, "recipeCategory cannot be null");
 		Preconditions.checkNotNull(focus, "focus cannot be null");
+		Focus.validate(focus);
 
 		FluidStack fluidStack = getFluidFromItemBlock(focus);
 		if (fluidStack != null) {
@@ -479,6 +481,9 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory, @Nullable IFocus focus) {
+		if (focus != null) {
+			Focus.validate(focus);
+		}
 		List<ItemStack> craftingItems = craftItemsForCategories.get(recipeCategory);
 
 		if (focus != null && focus.getMode() == IFocus.Mode.INPUT) {
@@ -517,6 +522,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public <T extends IRecipeWrapper> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipeWrapper, IFocus focus) {
+		Focus.validate(focus);
 		return new RecipeLayout(-1, recipeCategory, recipeWrapper, focus, 0, 0);
 	}
 }

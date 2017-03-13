@@ -15,6 +15,7 @@ import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.KeyBindings;
+import mezz.jei.gui.Focus;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.GuiIconButtonExt;
 import mezz.jei.gui.GuiProperties;
@@ -342,6 +343,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	@Override
 	public <V> void show(IFocus<V> focus) {
 		Preconditions.checkNotNull(focus, "focus cannot be null");
+		Focus.validate(focus);
 
 		if (logic.setFocus(focus)) {
 			open();
