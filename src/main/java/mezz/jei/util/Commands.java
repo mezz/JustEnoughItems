@@ -17,12 +17,9 @@ import org.apache.commons.lang3.StringUtils;
 
 public class Commands {
 
-	public static void giveFullStack(ItemStack itemstack) {
-		giveStack(itemstack, itemstack.getMaxStackSize());
-	}
-
-	public static void giveOneFromStack(ItemStack itemstack) {
-		giveStack(itemstack, 1);
+	public static void giveStack(ItemStack itemstack, boolean fullStack) {
+		int amount = fullStack ? itemstack.getMaxStackSize() : 1;
+		giveStack(itemstack, amount);
 	}
 
 	/**

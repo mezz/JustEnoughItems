@@ -11,10 +11,15 @@ import mezz.jei.util.color.ColorGetter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.ForgeModContainer;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.UniversalBucket;
 
 public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	@Override
@@ -74,6 +79,25 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 			}
 		}
 		return Collections.emptyList();
+	}
+
+	@Override
+	public ItemStack cheatIngredient(FluidStack ingredient, boolean fullStack) {
+		Fluid fluid = ingredient.getFluid();
+		if (fluid == FluidRegistry.WATER) {
+			return new ItemStack(Items.WATER_BUCKET);
+		} else if (fluid == FluidRegistry.LAVA) {
+			return new ItemStack(Items.LAVA_BUCKET);
+		} else if (fluid.getName().equals("milk")) {
+			return new ItemStack(Items.MILK_BUCKET);
+		} else if (FluidRegistry.isUniversalBucketEnabled()) {
+			ItemStack filledBucket = UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket, fluid);
+			FluidStack fluidContained = FluidUtil.getFluidContained(filledBucket);
+			if (fluidContained != null && fluidContained.isFluidEqual(ingredient)) {
+				return filledBucket;
+			}
+		}
+		return ItemStack.EMPTY;
 	}
 
 	@Override

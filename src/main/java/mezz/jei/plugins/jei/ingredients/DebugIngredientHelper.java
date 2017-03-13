@@ -7,6 +7,10 @@ import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.Constants;
+import mezz.jei.util.CommandUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
 
 public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient> {
 	@Override
@@ -48,6 +52,12 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 	@Override
 	public Iterable<Color> getColors(DebugIngredient ingredient) {
 		return Collections.emptyList();
+	}
+
+	@Override
+	public ItemStack cheatIngredient(DebugIngredient ingredient, boolean fullStack) {
+		CommandUtil.writeChatMessage(Minecraft.getMinecraft().player, "Debug ingredients cannot be cheated", TextFormatting.RED);
+		return ItemStack.EMPTY;
 	}
 
 	@Override

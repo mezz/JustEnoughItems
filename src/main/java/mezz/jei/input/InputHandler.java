@@ -120,24 +120,27 @@ public class InputHandler {
 		return null;
 	}
 
-	private boolean handleMouseClickedFocus(int mouseButton, IClickedIngredient<?> clicked) {
+	private <V> boolean handleMouseClickedFocus(int mouseButton, IClickedIngredient<V> clicked) {
 		if (Config.isEditModeEnabled() &&
 				handleClickEdit(mouseButton, clicked.getValue())) {
 			return true;
 		}
 
 		if (Config.isCheatItemsEnabled() && clicked.allowsCheating() && !recipesGui.isOpen()) {
-			Object focusValue = clicked.getValue();
-			if (focusValue instanceof ItemStack) {
-				ItemStack itemStack = (ItemStack) focusValue;
-
-				if (mouseButton == 0) {
-					Commands.giveFullStack(itemStack);
-					return true;
-				} else if (mouseButton == 1) {
-					Commands.giveOneFromStack(itemStack);
-					return true;
+			final boolean fullStack = (mouseButton == 0);
+			if (fullStack || mouseButton == 1) {
+				V focusValue = clicked.getValue();
+				IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(focusValue);
+				ItemStack itemStack = ItemStack.EMPTY;
+				try {
+					itemStack = ingredientHelper.cheatIngredient(focusValue, fullStack);
+				} catch (AbstractMethodError ignored) {
+					// older ingredientHelpers do not have this method
 				}
+				if (!itemStack.isEmpty()) {
+					Commands.giveStack(itemStack, fullStack);
+				}
+				return true;
 			}
 		}
 

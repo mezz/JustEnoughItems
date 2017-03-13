@@ -66,6 +66,11 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
+	public ItemStack cheatIngredient(ItemStack ingredient, boolean fullStack) {
+		return ingredient;
+	}
+
+	@Override
 	public String getErrorInfo(ItemStack ingredient) {
 		return ErrorUtil.getItemStackInfo(ingredient);
 	}
