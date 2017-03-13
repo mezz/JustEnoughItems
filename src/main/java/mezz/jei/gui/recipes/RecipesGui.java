@@ -17,7 +17,7 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.GuiHelper;
-import mezz.jei.gui.GuiIconButtonExt;
+import mezz.jei.gui.GuiIconButtonSmall;
 import mezz.jei.gui.GuiProperties;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiIngredient;
@@ -95,11 +95,11 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		IDrawableStatic arrowNext = guiHelper.getArrowNext();
 		IDrawableStatic arrowPrevious = guiHelper.getArrowPrevious();
 
-		nextRecipeCategory = new GuiIconButtonExt(2, 0, 0, buttonWidth, buttonHeight, arrowNext);
-		previousRecipeCategory = new GuiIconButtonExt(3, 0, 0, buttonWidth, buttonHeight, arrowPrevious);
+		nextRecipeCategory = new GuiIconButtonSmall(2, 0, 0, buttonWidth, buttonHeight, arrowNext);
+		previousRecipeCategory = new GuiIconButtonSmall(3, 0, 0, buttonWidth, buttonHeight, arrowPrevious);
 
-		nextPage = new GuiIconButtonExt(4, 0, 0, buttonWidth, buttonHeight, arrowNext);
-		previousPage = new GuiIconButtonExt(5, 0, 0, buttonWidth, buttonHeight, arrowPrevious);
+		nextPage = new GuiIconButtonSmall(4, 0, 0, buttonWidth, buttonHeight, arrowNext);
+		previousPage = new GuiIconButtonSmall(5, 0, 0, buttonWidth, buttonHeight, arrowPrevious);
 	}
 
 	public int getGuiLeft() {

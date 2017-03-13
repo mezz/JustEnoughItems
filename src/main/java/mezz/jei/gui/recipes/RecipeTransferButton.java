@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.config.Constants;
-import mezz.jei.gui.GuiIconButtonExt;
+import mezz.jei.gui.GuiIconButtonSmall;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.transfer.RecipeTransferErrorInternal;
 import mezz.jei.transfer.RecipeTransferUtil;
@@ -13,7 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 
-public class RecipeTransferButton extends GuiIconButtonExt {
+public class RecipeTransferButton extends GuiIconButtonSmall {
 	private final RecipeLayout recipeLayout;
 	@Nullable
 	private IRecipeTransferError recipeTransferError;

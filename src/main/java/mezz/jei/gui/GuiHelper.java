@@ -34,9 +34,9 @@ public class GuiHelper implements IGuiHelper {
 
 		shapelessIcon = createDrawable(recipeBackgroundResource, 196, 0, 19, 15);
 
-		arrowPrevious = createDrawable(recipeBackgroundResource, 196, 55, 5, 8, 0, -1, 0, 0);
-		arrowNext = createDrawable(recipeBackgroundResource, 204, 55, 5, 8, 0, -1, 0, -1);
-		plusSign = createDrawable(recipeBackgroundResource, 212, 55, 6, 6, 0, -1, 0, -1);
+		arrowPrevious = createDrawable(recipeBackgroundResource, 196, 55, 5, 8, 1, 0, 0, 0);
+		arrowNext = createDrawable(recipeBackgroundResource, 204, 55, 5, 8, 1, 0, 1, 0);
+		plusSign = createDrawable(recipeBackgroundResource, 212, 55, 6, 6, 1, 0, 1, 0);
 	}
 
 	@Override
