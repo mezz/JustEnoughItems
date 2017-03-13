@@ -341,20 +341,20 @@ public class Config {
 	}
 
 	public static String parseFriendlyModNameFormat(String formatWithEnumNames) {
-		String format = "";
 		if (formatWithEnumNames.isEmpty()) {
-			return format;
+			return "";
 		}
+		StringBuilder format = new StringBuilder();
 		String[] strings = formatWithEnumNames.split(" ");
 		for (String string : strings) {
 			TextFormatting valueByName = TextFormatting.getValueByName(string);
 			if (valueByName != null) {
-				format += valueByName.toString();
+				format.append(valueByName.toString());
 			} else {
 				Log.error("Invalid format: {}", string);
 			}
 		}
-		return format;
+		return format.toString();
 	}
 
 	private static boolean syncItemBlacklistConfig() {
