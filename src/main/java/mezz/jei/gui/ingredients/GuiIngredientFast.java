@@ -49,6 +49,7 @@ public class GuiIngredientFast {
 
 	@Nullable
 	private Object ingredient;
+	private boolean blocked = false;
 
 	public GuiIngredientFast(int xPosition, int yPosition, int padding) {
 		this.padding = padding;
@@ -76,6 +77,20 @@ public class GuiIngredientFast {
 
 	public boolean isMouseOver(int mouseX, int mouseY) {
 		return (ingredient != null) && area.contains(mouseX, mouseY);
+	}
+
+	/**
+	 * Set true if this ingredient is blocked by an extra gui area from a mod.
+	 */
+	public void setBlocked(boolean blocked) {
+		this.blocked = blocked;
+	}
+
+	/**
+	 * true if this ingredient is blocked by an extra gui area from a mod.
+	 */
+	public boolean isBlocked() {
+		return blocked;
 	}
 
 	public void renderItemAndEffectIntoGUI() {

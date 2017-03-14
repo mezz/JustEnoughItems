@@ -17,19 +17,17 @@ public class PageNavigation {
 	private String pageNumDisplayString = "1/1";
 	private int pageNumDisplayX;
 	private int pageNumDisplayY;
-	private Rectangle area;
+	private Rectangle area = new Rectangle();
 
-	public PageNavigation(IPaged paged, boolean hideOnSinglePage, Rectangle area) {
+	public PageNavigation(IPaged paged, boolean hideOnSinglePage) {
 		this.paged = paged;
-		int buttonSize = area.height;
 		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
-		this.nextButton = new GuiIconButton(0, area.x + area.width - buttonSize, area.y, buttonSize, buttonSize, guiHelper.getArrowNext());
-		this.backButton = new GuiIconButton(1, area.x, area.y, buttonSize, buttonSize, guiHelper.getArrowPrevious());
+		this.nextButton = new GuiIconButton(0, guiHelper.getArrowNext());
+		this.backButton = new GuiIconButton(1, guiHelper.getArrowPrevious());
 		this.hideOnSinglePage = hideOnSinglePage;
-		this.area = area;
 	}
 
-	public void setArea(Rectangle area) {
+	public void updateBounds(Rectangle area) {
 		this.area = area;
 		int buttonSize = area.height;
 		this.nextButton.xPosition = area.x + area.width - buttonSize;
@@ -63,7 +61,8 @@ public class PageNavigation {
 		return area.contains(mouseX, mouseY);
 	}
 
-	public boolean handleMouseClickedButtons(Minecraft minecraft, int mouseX, int mouseY) {
+	public boolean handleMouseClickedButtons(int mouseX, int mouseY) {
+		Minecraft minecraft = Minecraft.getMinecraft();
 		if (nextButton.mousePressed(minecraft, mouseX, mouseY)) {
 			paged.nextPage();
 			nextButton.playPressSound(minecraft.getSoundHandler());

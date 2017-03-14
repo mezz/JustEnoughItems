@@ -10,6 +10,10 @@ import net.minecraft.client.gui.GuiButton;
 public class GuiIconButton extends GuiButton {
 	private final IDrawable icon;
 
+	public GuiIconButton(int buttonId, IDrawable icon) {
+		this(buttonId, 0, 0, 0, 0, icon);
+	}
+
 	public GuiIconButton(int buttonId, int x, int y, int widthIn, int heightIn, IDrawable icon) {
 		super(buttonId, x, y, widthIn, heightIn, "");
 		this.icon = icon;

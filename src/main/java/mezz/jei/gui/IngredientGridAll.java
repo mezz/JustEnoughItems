@@ -1,31 +1,29 @@
 package mezz.jei.gui;
 
-import java.awt.Rectangle;
-import java.util.List;
-
 import com.google.common.collect.ImmutableList;
 import mezz.jei.ItemFilter;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.SessionData;
 import mezz.jei.gui.ingredients.GuiIngredientFast;
-import mezz.jei.input.IPaged;
 import mezz.jei.util.MathUtil;
 import net.minecraft.item.ItemStack;
 
 /**
  * Displays all known recipe ingredients.
  */
-public class IngredientGridAll extends IngredientGrid implements IPaged {
+public class IngredientGridAll extends IngredientGrid {
 	private final ItemFilter itemFilter;
 
-	public IngredientGridAll(IIngredientRegistry ingredientRegistry, Rectangle area, List<Rectangle> guiAreas, ItemFilter itemFilter) {
-		super(ingredientRegistry, area, guiAreas);
+	public IngredientGridAll(IIngredientRegistry ingredientRegistry, ItemFilter itemFilter) {
+		super(ingredientRegistry);
 		this.itemFilter = itemFilter;
 	}
 
+	@Override
 	public void updateLayout() {
+		super.updateLayout();
 		ImmutableList<Object> ingredientList = itemFilter.getIngredientList();
-		guiIngredientList.set(SessionData.getFirstItemIndex(), ingredientList);
+		this.guiIngredientList.set(SessionData.getFirstItemIndex(), ingredientList);
 	}
 
 	@Override
@@ -82,6 +80,7 @@ public class IngredientGridAll extends IngredientGrid implements IPaged {
 		return itemsPerPage > 0 && itemFilter.size() > itemsPerPage;
 	}
 
+	@Override
 	public ImmutableList<ItemStack> getVisibleStacks() {
 		ImmutableList.Builder<ItemStack> visibleStacks = ImmutableList.builder();
 		for (GuiIngredientFast guiItemStack : guiIngredientList.getAllGuiIngredients()) {
@@ -94,6 +93,7 @@ public class IngredientGridAll extends IngredientGrid implements IPaged {
 		return visibleStacks.build();
 	}
 
+	@Override
 	public int getPageCount() {
 		final int itemCount = itemFilter.size();
 		final int stacksPerPage = guiIngredientList.size();
@@ -105,6 +105,7 @@ public class IngredientGridAll extends IngredientGrid implements IPaged {
 		return pageCount;
 	}
 
+	@Override
 	public int getPageNum() {
 		final int stacksPerPage = guiIngredientList.size();
 		if (stacksPerPage == 0) {

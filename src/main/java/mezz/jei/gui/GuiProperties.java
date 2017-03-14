@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
 public class GuiProperties {
-	private final Class guiClass;
+	private final Class<? extends GuiScreen> guiClass;
 	private final int guiLeft;
 	private final int guiTop;
 	private final int guiXSize;
@@ -16,7 +16,7 @@ public class GuiProperties {
 	private final int screenHeight;
 
 	@Nullable
-	public static GuiProperties create(GuiScreen guiScreen) {
+	public static GuiProperties create(@Nullable GuiScreen guiScreen) {
 		if (guiScreen instanceof RecipesGui) {
 			return create((RecipesGui) guiScreen);
 		} else if (guiScreen instanceof GuiContainer) {
@@ -50,7 +50,7 @@ public class GuiProperties {
 		);
 	}
 
-	private GuiProperties(Class guiClass, int guiLeft, int guiTop, int guiXSize, int guiYSize, int screenWidth, int screenHeight) {
+	private GuiProperties(Class<? extends GuiScreen> guiClass, int guiLeft, int guiTop, int guiXSize, int guiYSize, int screenWidth, int screenHeight) {
 		this.guiClass = guiClass;
 		this.guiLeft = guiLeft;
 		this.guiTop = guiTop;
@@ -60,7 +60,7 @@ public class GuiProperties {
 		this.screenHeight = screenHeight;
 	}
 
-	public Class getGuiClass() {
+	public Class<? extends GuiScreen> getGuiClass() {
 		return guiClass;
 	}
 

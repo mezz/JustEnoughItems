@@ -28,12 +28,15 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 				return new ClickedIngredient<ItemStack>(stack);
 			}
 		}
+		return getAdvancedGuiHandlerIngredientUnderMouse(guiContainer, mouseX, mouseY);
+	}
 
+	@Nullable
+	private <T extends GuiContainer> IClickedIngredient<?> getAdvancedGuiHandlerIngredientUnderMouse(T guiContainer, int mouseX, int mouseY) {
 		JeiRuntime runtime = Internal.getRuntime();
 		if (runtime != null) {
-			List<IAdvancedGuiHandler<?>> activeAdvancedGuiHandlers = runtime.getActiveAdvancedGuiHandlers(guiScreen);
-			for (IAdvancedGuiHandler advancedGuiHandler : activeAdvancedGuiHandlers) {
-				//noinspection unchecked
+			List<IAdvancedGuiHandler<T>> activeAdvancedGuiHandlers = runtime.getActiveAdvancedGuiHandlers(guiContainer);
+			for (IAdvancedGuiHandler<T> advancedGuiHandler : activeAdvancedGuiHandlers) {
 				Object clicked = advancedGuiHandler.getIngredientUnderMouse(guiContainer, mouseX, mouseY);
 				if (clicked != null) {
 					return new ClickedIngredient<Object>(clicked);

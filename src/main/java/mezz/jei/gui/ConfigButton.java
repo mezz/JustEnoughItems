@@ -1,5 +1,6 @@
 package mezz.jei.gui;
 
+import java.awt.Rectangle;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,14 +26,21 @@ public class ConfigButton {
 	private final IDrawable configButtonCheatIcon;
 	private final HoverChecker configButtonHoverChecker;
 
-	public ConfigButton(ItemListOverlay parent, int xPos, int yPos, int size) {
+	public ConfigButton(ItemListOverlay parent) {
 		this.parent = parent;
-		this.configButton = new GuiButton(2, xPos, yPos, size, size, "");
+		this.configButton = new GuiButton(2, 0, 0, 0, 0, "");
 		ResourceLocation configButtonIconLocation = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
 		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
 		this.configButtonIcon = guiHelper.createDrawable(configButtonIconLocation, 0, 166, 16, 16);
 		this.configButtonCheatIcon = guiHelper.createDrawable(configButtonIconLocation, 16, 166, 16, 16);
 		this.configButtonHoverChecker = new HoverChecker(this.configButton, 0);
+	}
+
+	public void updateBounds(Rectangle area) {
+		this.configButton.width = area.width;
+		this.configButton.height = area.height;
+		this.configButton.xPosition = area.x;
+		this.configButton.yPosition = area.y;
 	}
 
 	public void draw(Minecraft minecraft, int mouseX, int mouseY) {
@@ -68,8 +76,8 @@ public class ConfigButton {
 				Config.toggleCheatItemsEnabled();
 			} else {
 				if (minecraft.currentScreen != null) {
-					parent.close();
 					GuiScreen configScreen = new JEIModConfigGui(minecraft.currentScreen);
+					parent.updateScreen(configScreen);
 					RecipesGui.displayGuiScreenWithoutClose(configScreen);
 				}
 			}

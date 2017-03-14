@@ -5,9 +5,7 @@ import javax.annotation.Nullable;
 import mezz.jei.config.Config;
 import mezz.jei.config.OverlayToggleEvent;
 import mezz.jei.gui.ItemListOverlay;
-import mezz.jei.gui.ItemListOverlayInternal;
 import mezz.jei.gui.TooltipRenderer;
-import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.InputHandler;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -24,8 +22,6 @@ public class GuiEventHandler {
 	private final JeiRuntime runtime;
 	@Nullable
 	private InputHandler inputHandler;
-	@Nullable
-	private GuiContainer previousGui = null;
 
 	public GuiEventHandler(JeiRuntime runtime) {
 		this.runtime = runtime;
@@ -44,52 +40,35 @@ public class GuiEventHandler {
 	}
 
 	private void onNewScreen(@Nullable GuiScreen screen) {
-		if (screen instanceof GuiContainer || screen instanceof RecipesGui) {
-			ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-			ItemListOverlayInternal itemListOverlayInternal = itemListOverlay.create(screen);
-			inputHandler = new InputHandler(runtime, itemListOverlayInternal);
-		} else {
-			inputHandler = null;
+		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
+		itemListOverlay.updateScreen(screen);
+		if (itemListOverlay.isEnabled() && inputHandler == null) {
+			inputHandler = new InputHandler(runtime, itemListOverlay);
 		}
 	}
 
 	@SubscribeEvent
 	public void onGuiOpen(GuiOpenEvent event) {
 		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
+		final boolean wasEnabled = itemListOverlay.isEnabled();
 
 		GuiScreen gui = event.getGui();
-		if (gui instanceof GuiContainer) {
-			GuiContainer guiContainer = (GuiContainer) gui;
-			if (previousGui != guiContainer) {
-				previousGui = guiContainer;
-				if (itemListOverlay.isOpen()) {
-					itemListOverlay.close();
-				}
-			}
-		} else if (!(gui instanceof RecipesGui)) {
-			if (itemListOverlay.isOpen()) {
-				itemListOverlay.close();
-				inputHandler = null;
-				Config.saveFilterText();
-				Internal.getIngredientLookupMemory().saveToFile();
-			}
+		itemListOverlay.updateScreen(gui);
+
+		if (wasEnabled && !itemListOverlay.isEnabled()) {
+			Config.saveFilterText();
+			Internal.getIngredientLookupMemory().saveToFile();
 		}
 	}
 
 	@SubscribeEvent
 	public void onDrawBackgroundEventPost(GuiScreenEvent.BackgroundDrawnEvent event) {
 		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-		ItemListOverlayInternal itemListOverlayInternal = itemListOverlay.getInternal();
-		if (itemListOverlayInternal != null) {
-			GuiScreen gui = event.getGui();
-			if (itemListOverlayInternal.hasScreenChanged(gui)) {
-				itemListOverlayInternal = itemListOverlay.create(gui);
-				inputHandler = new InputHandler(runtime, itemListOverlayInternal);
-			}
+		GuiScreen gui = event.getGui();
+		itemListOverlay.updateScreen(gui);
 
-			if (itemListOverlayInternal != null) {
-				itemListOverlayInternal.drawScreen(gui.mc, event.getMouseX(), event.getMouseY());
-			}
+		if (itemListOverlay.isEnabled()) {
+			itemListOverlay.drawScreen(gui.mc, event.getMouseX(), event.getMouseY());
 		}
 	}
 
@@ -105,9 +84,9 @@ public class GuiEventHandler {
 		}
 
 		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-		ItemListOverlayInternal itemListOverlayInternal = itemListOverlay.getInternal();
-		if (itemListOverlayInternal != null) {
-			itemListOverlayInternal.drawTooltips(gui.mc, event.getMouseX(), event.getMouseY());
+		itemListOverlay.updateScreen(gui);
+		if (itemListOverlay.isEnabled()) {
+			itemListOverlay.drawTooltips(gui.mc, event.getMouseX(), event.getMouseY());
 		}
 	}
 
@@ -118,9 +97,8 @@ public class GuiEventHandler {
 		}
 
 		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-		ItemListOverlayInternal itemListOverlayInternal = itemListOverlay.getInternal();
-		if (itemListOverlayInternal != null) {
-			itemListOverlayInternal.handleTick();
+		if (itemListOverlay.isEnabled()) {
+			itemListOverlay.handleTick();
 		}
 	}
 

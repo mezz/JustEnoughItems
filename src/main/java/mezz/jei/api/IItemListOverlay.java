@@ -32,6 +32,7 @@ public interface IItemListOverlay {
 
 	/**
 	 * @return true if the text box is focused by the player.
+	 * @since JEI 4.2.11
 	 */
 	boolean hasKeyboardFocus();
 

@@ -27,6 +27,8 @@ public class GuiIngredientFastList {
 
 	private final IIngredientRegistry ingredientRegistry;
 
+	private int blocked = 0;
+
 	public GuiIngredientFastList(IIngredientRegistry ingredientRegistry) {
 		this.ingredientRegistry = ingredientRegistry;
 	}
@@ -37,10 +39,11 @@ public class GuiIngredientFastList {
 		renderItems2d.clear();
 		renderItems3d.clear();
 		renderOther.clear();
+		blocked = 0;
 	}
 
 	public int size() {
-		return renderAll.size();
+		return renderAll.size() - blocked;
 	}
 
 	public void add(GuiIngredientFast guiItemStack) {
@@ -55,16 +58,22 @@ public class GuiIngredientFastList {
 		renderItems2d.clear();
 		renderItems3d.clear();
 		renderOther.clear();
+		blocked = 0;
 
 		int i = startIndex;
 		for (GuiIngredientFast guiItemStack : renderAll) {
-			if (i >= ingredientList.size()) {
+			if (guiItemStack.isBlocked()) {
 				guiItemStack.clear();
+				blocked++;
 			} else {
-				Object ingredient = ingredientList.get(i);
-				set(guiItemStack, ingredient);
+				if (i >= ingredientList.size()) {
+					guiItemStack.clear();
+				} else {
+					Object ingredient = ingredientList.get(i);
+					set(guiItemStack, ingredient);
+				}
+				i++;
 			}
-			i++;
 		}
 	}
 

@@ -7,7 +7,6 @@ import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.recipes.RecipesGui;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
 public class JeiRuntime implements IJeiRuntime {
@@ -27,12 +26,7 @@ public class JeiRuntime implements IJeiRuntime {
 	}
 
 	public void close() {
-		if (itemListOverlay.isOpen()) {
-			itemListOverlay.close();
-		}
-		if (recipesGui.isOpen()) {
-			recipesGui.close();
-		}
+		this.recipesGui.close();
 	}
 
 	@Override
@@ -54,16 +48,16 @@ public class JeiRuntime implements IJeiRuntime {
 		return ingredientRegistry;
 	}
 
-	public List<IAdvancedGuiHandler<?>> getActiveAdvancedGuiHandlers(GuiScreen guiScreen) {
-		List<IAdvancedGuiHandler<?>> activeAdvancedGuiHandler = new ArrayList<IAdvancedGuiHandler<?>>();
-		if (guiScreen instanceof GuiContainer) {
-			for (IAdvancedGuiHandler<?> advancedGuiHandler : advancedGuiHandlers) {
-				Class<?> guiContainerClass = advancedGuiHandler.getGuiContainerClass();
-				if (guiContainerClass.isInstance(guiScreen)) {
-					activeAdvancedGuiHandler.add(advancedGuiHandler);
-				}
+	public <T extends GuiContainer> List<IAdvancedGuiHandler<T>> getActiveAdvancedGuiHandlers(T guiContainer) {
+		List<IAdvancedGuiHandler<T>> activeAdvancedGuiHandler = new ArrayList<IAdvancedGuiHandler<T>>();
+		for (IAdvancedGuiHandler<?> advancedGuiHandler : advancedGuiHandlers) {
+			Class<?> guiContainerClass = advancedGuiHandler.getGuiContainerClass();
+			if (guiContainerClass.isInstance(guiContainer)) {
+				//noinspection unchecked
+				activeAdvancedGuiHandler.add((IAdvancedGuiHandler<T>) advancedGuiHandler);
 			}
 		}
 		return activeAdvancedGuiHandler;
 	}
+
 }

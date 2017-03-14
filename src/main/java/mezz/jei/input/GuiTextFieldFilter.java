@@ -1,12 +1,13 @@
 package mezz.jei.input;
 
 import java.awt.Color;
+import java.awt.Rectangle;
 import java.util.LinkedList;
 import java.util.List;
 
 import mezz.jei.ItemFilter;
 import mezz.jei.config.Config;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraftforge.fml.client.config.HoverChecker;
 import org.lwjgl.input.Keyboard;
@@ -20,12 +21,20 @@ public class GuiTextFieldFilter extends GuiTextField {
 	private final ItemFilter itemFilter;
 	private boolean previousKeyboardRepeatEnabled;
 
-	public GuiTextFieldFilter(int componentId, FontRenderer fontRenderer, int x, int y, int width, int height, ItemFilter itemFilter) {
-		super(componentId, fontRenderer, x, y, width, height);
+	public GuiTextFieldFilter(int componentId, ItemFilter itemFilter) {
+		super(componentId, Minecraft.getMinecraft().fontRendererObj, 0, 0, 0, 0);
 		setMaxStringLength(maxSearchLength);
-		this.hoverChecker = new HoverChecker(y, y + height, x, x + width, 0);
+		this.hoverChecker = new HoverChecker(0, 0, 0, 0, 0);
 		this.itemFilter = itemFilter;
 		setText(Config.getFilterText());
+	}
+
+	public void updateBounds(Rectangle area) {
+		this.xPosition = area.x;
+		this.yPosition = area.y;
+		this.width = area.width;
+		this.height = area.height;
+		this.hoverChecker.updateBounds(area.y, area.y + area.height, area.x, area.x + area.width);
 	}
 
 	public void update() {

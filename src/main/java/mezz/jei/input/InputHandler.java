@@ -12,7 +12,7 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
-import mezz.jei.gui.ItemListOverlayInternal;
+import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.util.Commands;
@@ -30,26 +30,23 @@ public class InputHandler {
 	private final RecipeRegistry recipeRegistry;
 	private final IIngredientRegistry ingredientRegistry;
 	private final RecipesGui recipesGui;
-	@Nullable
-	private final ItemListOverlayInternal itemListOverlayInternal;
+	private final ItemListOverlay itemListOverlay;
 	private final MouseHelper mouseHelper;
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<IShowsRecipeFocuses>();
 
 	private boolean clickHandled = false;
 
-	public InputHandler(JeiRuntime runtime, @Nullable ItemListOverlayInternal itemListOverlayInternal) {
+	public InputHandler(JeiRuntime runtime, ItemListOverlay itemListOverlay) {
 		this.recipeRegistry = runtime.getRecipeRegistry();
 		this.ingredientRegistry = runtime.getIngredientRegistry();
 		this.recipesGui = runtime.getRecipesGui();
-		this.itemListOverlayInternal = itemListOverlayInternal;
+		this.itemListOverlay = itemListOverlay;
 
 		this.mouseHelper = new MouseHelper();
 
-		showsRecipeFocuses.add(recipesGui);
-		if (itemListOverlayInternal != null) {
-			showsRecipeFocuses.add(itemListOverlayInternal);
-		}
-		showsRecipeFocuses.add(new GuiContainerWrapper());
+		this.showsRecipeFocuses.add(recipesGui);
+		this.showsRecipeFocuses.add(itemListOverlay);
+		this.showsRecipeFocuses.add(new GuiContainerWrapper());
 	}
 
 	public boolean handleMouseEvent(GuiScreen guiScreen, int mouseX, int mouseY) {
@@ -71,11 +68,11 @@ public class InputHandler {
 	}
 
 	private boolean handleMouseScroll(int dWheel, int mouseX, int mouseY) {
-		return itemListOverlayInternal != null && itemListOverlayInternal.handleMouseScrolled(mouseX, mouseY, dWheel);
+		return itemListOverlay.isEnabled() && itemListOverlay.handleMouseScrolled(mouseX, mouseY, dWheel);
 	}
 
 	private boolean handleMouseClick(GuiScreen guiScreen, int mouseButton, int mouseX, int mouseY) {
-		if (itemListOverlayInternal != null && itemListOverlayInternal.handleMouseClicked(mouseX, mouseY, mouseButton)) {
+		if (itemListOverlay.isEnabled() && itemListOverlay.handleMouseClicked(mouseX, mouseY, mouseButton)) {
 			return true;
 		}
 
@@ -188,7 +185,7 @@ public class InputHandler {
 	}
 
 	public boolean hasKeyboardFocus() {
-		return itemListOverlayInternal != null && itemListOverlayInternal.hasKeyboardFocus();
+		return itemListOverlay.isEnabled() && itemListOverlay.hasKeyboardFocus();
 	}
 
 	public boolean handleKeyEvent() {
@@ -200,11 +197,11 @@ public class InputHandler {
 	}
 
 	private boolean handleKeyDown(char typedChar, int eventKey) {
-		if (itemListOverlayInternal != null && itemListOverlayInternal.hasKeyboardFocus()) {
+		if (itemListOverlay.isEnabled() && itemListOverlay.hasKeyboardFocus()) {
 			if (isInventoryCloseKey(eventKey) || isEnterKey(eventKey)) {
-				itemListOverlayInternal.setKeyboardFocus(false);
+				itemListOverlay.setKeyboardFocus(false);
 				return true;
-			} else if (itemListOverlayInternal.onKeyPressed(typedChar, eventKey)) {
+			} else if (itemListOverlay.onKeyPressed(typedChar, eventKey)) {
 				return true;
 			}
 		}
@@ -214,14 +211,14 @@ public class InputHandler {
 			return false;
 		}
 
-		if (itemListOverlayInternal != null) {
+		if (itemListOverlay.isEnabled()) {
 			if (KeyBindings.toggleCheatMode.isActiveAndMatches(eventKey)) {
 				Config.toggleCheatItemsEnabled();
 				return true;
 			}
 
 			if (KeyBindings.focusSearch.isActiveAndMatches(eventKey)) {
-				itemListOverlayInternal.setKeyboardFocus(true);
+				itemListOverlay.setKeyboardFocus(true);
 				return true;
 			}
 		}
@@ -238,7 +235,7 @@ public class InputHandler {
 				}
 			}
 
-			if (itemListOverlayInternal != null && itemListOverlayInternal.onKeyPressed(typedChar, eventKey)) {
+			if (itemListOverlay.isEnabled() && itemListOverlay.onKeyPressed(typedChar, eventKey)) {
 				return true;
 			}
 		}

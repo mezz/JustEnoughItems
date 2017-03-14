@@ -30,7 +30,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 
 	public RecipeGuiTabs(IRecipeGuiLogic recipeGuiLogic) {
 		this.recipeGuiLogic = recipeGuiLogic;
-		this.pageNavigation = new PageNavigation(this, true, new Rectangle());
+		this.pageNavigation = new PageNavigation(this, true);
 	}
 
 	public void initLayout(GuiProperties guiProperties) {
@@ -62,7 +62,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 			Rectangle navigationArea = new Rectangle(area);
 			navigationArea.height = 20;
 			navigationArea.translate(0, -(2 + navigationArea.height));
-			pageNavigation.setArea(navigationArea);
+			pageNavigation.updateBounds(navigationArea);
 
 			updateLayout();
 		}
@@ -137,7 +137,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 				}
 			}
 			if (pageNavigation.isMouseOver(mouseX, mouseY)) {
-				return pageNavigation.handleMouseClickedButtons(Minecraft.getMinecraft(), mouseX, mouseY);
+				return pageNavigation.handleMouseClickedButtons(mouseX, mouseY);
 			}
 		}
 		return false;
