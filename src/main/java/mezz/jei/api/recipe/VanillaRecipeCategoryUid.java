@@ -21,7 +21,7 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 /**
  * List of built-in recipe category UIDs, so that plugins with their own recipe handlers can use them.
  */
-public class VanillaRecipeCategoryUid {
+public final class VanillaRecipeCategoryUid {
 	/**
 	 * The crafting recipe category.
 	 * <p>

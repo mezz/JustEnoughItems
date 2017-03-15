@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.plugins.vanilla.util.FakeClientPlayer;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.FakeClientPlayer;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;

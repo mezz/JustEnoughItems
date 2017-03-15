@@ -4,9 +4,8 @@ import java.util.IllegalFormatException;
 
 import net.minecraft.util.text.translation.I18n;
 
-public class Translator {
+public final class Translator {
 	private Translator() {
-
 	}
 
 	public static String translateToLocal(String key) {

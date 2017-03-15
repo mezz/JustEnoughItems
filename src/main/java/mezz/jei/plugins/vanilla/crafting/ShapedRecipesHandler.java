@@ -25,6 +25,7 @@ public class ShapedRecipesHandler implements IRecipeHandler<ShapedRecipes> {
 		return new ShapedRecipesWrapper(recipe);
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	@Override
 	public boolean isRecipeValid(ShapedRecipes recipe) {
 		if (recipe.getRecipeOutput() == null) {

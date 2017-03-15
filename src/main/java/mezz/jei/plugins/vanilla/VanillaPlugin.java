@@ -2,6 +2,7 @@ package mezz.jei.plugins.vanilla;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
 import mezz.jei.Internal;
 import mezz.jei.api.BlankModPlugin;
 import mezz.jei.api.IGuiHelper;
@@ -40,8 +41,8 @@ import mezz.jei.plugins.vanilla.ingredients.FluidStackRenderer;
 import mezz.jei.plugins.vanilla.ingredients.ItemStackHelper;
 import mezz.jei.plugins.vanilla.ingredients.ItemStackListFactory;
 import mezz.jei.plugins.vanilla.ingredients.ItemStackRenderer;
+import mezz.jei.startup.StackHelper;
 import mezz.jei.transfer.PlayerRecipeTransferHandler;
-import mezz.jei.util.StackHelper;
 import net.minecraft.client.gui.GuiRepair;
 import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.client.gui.inventory.GuiCrafting;
@@ -64,11 +65,11 @@ import net.minecraftforge.fluids.FluidStack;
 @JEIPlugin
 public class VanillaPlugin extends BlankModPlugin {
 	@Nullable
-	public static ISubtypeRegistry subtypeRegistry;
+	private ISubtypeRegistry subtypeRegistry;
 
 	@Override
 	public void registerItemSubtypes(ISubtypeRegistry subtypeRegistry) {
-		VanillaPlugin.subtypeRegistry = subtypeRegistry;
+		this.subtypeRegistry = subtypeRegistry;
 		subtypeRegistry.useNbtForSubtypes(
 				Items.ENCHANTED_BOOK
 		);
@@ -78,7 +79,6 @@ public class VanillaPlugin extends BlankModPlugin {
 		subtypeRegistry.registerSubtypeInterpreter(Items.SPLASH_POTION, PotionSubtypeInterpreter.INSTANCE);
 		subtypeRegistry.registerSubtypeInterpreter(Items.LINGERING_POTION, PotionSubtypeInterpreter.INSTANCE);
 		subtypeRegistry.registerSubtypeInterpreter(Items.BANNER, new ISubtypeRegistry.ISubtypeInterpreter() {
-			@Nullable
 			@Override
 			public String getSubtypeInfo(ItemStack itemStack) {
 				EnumDyeColor baseColor = ItemBanner.getBaseColor(itemStack);
@@ -97,8 +97,11 @@ public class VanillaPlugin extends BlankModPlugin {
 
 	@Override
 	public void registerIngredients(IModIngredientRegistration ingredientRegistration) {
+		Preconditions.checkState(this.subtypeRegistry != null);
 		StackHelper stackHelper = Internal.getStackHelper();
-		ingredientRegistration.register(ItemStack.class, ItemStackListFactory.create(stackHelper), new ItemStackHelper(stackHelper), new ItemStackRenderer());
+		ItemStackListFactory itemStackListFactory = new ItemStackListFactory(this.subtypeRegistry);
+
+		ingredientRegistration.register(ItemStack.class, itemStackListFactory.create(stackHelper), new ItemStackHelper(stackHelper), new ItemStackRenderer());
 		ingredientRegistration.register(FluidStack.class, FluidStackListFactory.create(), new FluidStackHelper(), new FluidStackRenderer());
 	}
 

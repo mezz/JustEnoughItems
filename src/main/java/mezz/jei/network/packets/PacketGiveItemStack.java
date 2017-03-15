@@ -5,7 +5,7 @@ import java.io.IOException;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
-import mezz.jei.util.CommandUtil;
+import mezz.jei.util.CommandUtilServer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -40,8 +40,8 @@ public class PacketGiveItemStack extends PacketJei {
 				if (itemStackSerialized != null) {
 					ItemStack itemStack = new ItemStack(itemStackSerialized);
 					if (!itemStack.isEmpty()) {
-						if (CommandUtil.hasPermission(sender, itemStack)) {
-							CommandUtil.executeGive(sender, itemStack);
+						if (CommandUtilServer.hasPermission(sender, itemStack)) {
+							CommandUtilServer.executeGive(sender, itemStack);
 						} else {
 							JustEnoughItems.getProxy().sendPacketToClient(new PacketCheatPermission(false), sender);
 						}

@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
-import mezz.jei.IngredientRegistry;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.ITooltipCallback;
@@ -20,6 +19,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.gui.Focus;
+import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 

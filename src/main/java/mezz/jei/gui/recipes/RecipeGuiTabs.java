@@ -6,9 +6,9 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.gui.GuiProperties;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.TooltipRenderer;
+import mezz.jei.gui.overlay.GuiProperties;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IPaged;
 import mezz.jei.util.MathUtil;
@@ -22,11 +22,11 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 	private final IRecipeGuiLogic recipeGuiLogic;
 	private final List<RecipeGuiTab> tabs = new ArrayList<RecipeGuiTab>();
 	private final PageNavigation pageNavigation;
+	private final Rectangle area = new Rectangle();
 
 	private int pageCount = 1;
 	private int pageNumber = 0;
 	private int categoriesPerPage = 1;
-	private Rectangle area = new Rectangle();
 
 	public RecipeGuiTabs(IRecipeGuiLogic recipeGuiLogic) {
 		this.recipeGuiLogic = recipeGuiLogic;

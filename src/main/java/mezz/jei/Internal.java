@@ -3,17 +3,20 @@ package mezz.jei;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
-import mezz.jei.gui.recipes.IngredientLookupMemory;
-import mezz.jei.util.ModIdUtil;
-import mezz.jei.util.StackHelper;
-import mezz.jei.util.color.ColorNamer;
+import mezz.jei.color.ColorNamer;
+import mezz.jei.gui.ingredients.IngredientLookupMemory;
+import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.runtime.JeiHelpers;
+import mezz.jei.runtime.JeiRuntime;
+import mezz.jei.startup.ModIdHelper;
+import mezz.jei.startup.StackHelper;
 
 /**
  * For JEI internal use only, these are normally accessed from the API.
  */
-public class Internal {
+public final class Internal {
 
-	private static final ModIdUtil modIdUtil = new ModIdUtil();
+	private static final ModIdHelper MOD_ID_HELPER = new ModIdHelper();
 	@Nullable
 	private static StackHelper stackHelper;
 	@Nullable
@@ -40,8 +43,8 @@ public class Internal {
 		Internal.stackHelper = stackHelper;
 	}
 
-	public static ModIdUtil getModIdUtil() {
-		return modIdUtil;
+	public static ModIdHelper getModIdHelper() {
+		return MOD_ID_HELPER;
 	}
 
 	public static JeiHelpers getHelpers() {

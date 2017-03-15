@@ -4,8 +4,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import mezz.jei.Internal;
-import mezz.jei.JeiRuntime;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
+import mezz.jei.runtime.JeiRuntime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;

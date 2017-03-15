@@ -1,6 +1,6 @@
 package mezz.jei.util;
 
-public class MathUtil {
+public final class MathUtil {
 	private MathUtil() {
 
 	}

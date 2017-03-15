@@ -14,7 +14,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
-import mezz.jei.util.Java6Helper;
+import mezz.jei.util.Java6Util;
 import mezz.jei.util.Log;
 import net.minecraft.init.Items;
 import net.minecraft.init.PotionTypes;
@@ -64,7 +64,7 @@ public class BrewingRecipeMaker {
 		Collections.sort(recipeList, new Comparator<BrewingRecipeWrapper>() {
 			@Override
 			public int compare(BrewingRecipeWrapper o1, BrewingRecipeWrapper o2) {
-				return Java6Helper.compare(o1.getBrewingSteps(), o2.getBrewingSteps());
+				return Java6Util.compare(o1.getBrewingSteps(), o2.getBrewingSteps());
 			}
 		});
 
@@ -110,7 +110,7 @@ public class BrewingRecipeMaker {
 					PotionType potionInputType = PotionUtils.getPotionFromItem(potionInput);
 					ResourceLocation inputId = ForgeRegistries.POTION_TYPES.getKey(potionInputType);
 					ResourceLocation outputId = ForgeRegistries.POTION_TYPES.getKey(potionOutputType);
-					if (inputId.equals(outputId)) {
+					if (Java6Util.equals(inputId, outputId)) {
 						continue;
 					}
 				}

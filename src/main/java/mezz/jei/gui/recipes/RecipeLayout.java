@@ -17,13 +17,12 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.gui.Focus;
-import mezz.jei.gui.ShapelessIcon;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiFluidStackGroup;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiIngredientGroup;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
-import mezz.jei.util.Ingredients;
+import mezz.jei.ingredients.Ingredients;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -160,6 +159,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 				// legacy recipe categories do not have this method
 			}
 			List<String> wrapperTooltips = recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY);
+			//noinspection ConstantConditions
 			if (wrapperTooltips != null) {
 				tooltipStrings.addAll(wrapperTooltips);
 			}

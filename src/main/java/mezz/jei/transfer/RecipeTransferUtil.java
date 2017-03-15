@@ -3,16 +3,19 @@ package mezz.jei.transfer;
 import javax.annotation.Nullable;
 
 import mezz.jei.Internal;
-import mezz.jei.JeiRuntime;
-import mezz.jei.RecipeRegistry;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.gui.recipes.RecipeLayout;
+import mezz.jei.recipes.RecipeRegistry;
+import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.Log;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 
-public class RecipeTransferUtil {
+public final class RecipeTransferUtil {
+	private RecipeTransferUtil() {
+	}
+
 	@Nullable
 	public static IRecipeTransferError getTransferRecipeError(Container container, RecipeLayout recipeLayout, EntityPlayer player) {
 		return transferRecipe(container, recipeLayout, player, false, false);

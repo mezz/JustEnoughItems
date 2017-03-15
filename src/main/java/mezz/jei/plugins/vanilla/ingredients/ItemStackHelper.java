@@ -6,9 +6,9 @@ import java.util.List;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.color.ColorGetter;
+import mezz.jei.startup.StackHelper;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.StackHelper;
-import mezz.jei.util.color.ColorGetter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;

@@ -15,7 +15,6 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.gui.TooltipRenderer;
-import mezz.jei.util.CycleTimer;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -158,7 +157,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 			GlStateManager.color(1f, 1f, 1f, 1f);
 
 			List<String> tooltip = ingredientRenderer.getTooltip(minecraft, value);
-			tooltip = Internal.getModIdUtil().addModNameToIngredientTooltip(tooltip, value, ingredientHelper);
+			tooltip = Internal.getModIdHelper().addModNameToIngredientTooltip(tooltip, value, ingredientHelper);
 
 			if (tooltipCallback != null) {
 				tooltipCallback.onTooltip(slotIndex, input, value, tooltip);

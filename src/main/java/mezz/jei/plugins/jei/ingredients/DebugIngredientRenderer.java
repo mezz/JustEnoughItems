@@ -6,14 +6,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.plugins.jei.JEIInternalPlugin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.text.TextFormatting;
 
 public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredient> {
+	private final IIngredientHelper<DebugIngredient> ingredientHelper;
+
+	public DebugIngredientRenderer(IIngredientHelper<DebugIngredient> ingredientHelper) {
+		this.ingredientHelper = ingredientHelper;
+	}
+
 	@Override
 	public void render(Minecraft minecraft, int xPosition, int yPosition, @Nullable DebugIngredient ingredient) {
 		if (ingredient != null) {
@@ -26,13 +30,9 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 	@Override
 	public List<String> getTooltip(Minecraft minecraft, DebugIngredient ingredient) {
 		List<String> tooltip = new ArrayList<String>();
-		IIngredientRegistry ingredientRegistry = JEIInternalPlugin.ingredientRegistry;
-		if (ingredientRegistry != null) {
-			IIngredientHelper<DebugIngredient> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-			String displayName = ingredientHelper.getDisplayName(ingredient);
-			tooltip.add(displayName);
-			tooltip.add(TextFormatting.GRAY + "debug ingredient");
-		}
+		String displayName = ingredientHelper.getDisplayName(ingredient);
+		tooltip.add(displayName);
+		tooltip.add(TextFormatting.GRAY + "debug ingredient");
 		return tooltip;
 	}
 

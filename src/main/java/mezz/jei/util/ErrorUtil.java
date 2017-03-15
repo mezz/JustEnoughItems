@@ -13,6 +13,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.ingredients.Ingredients;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -20,7 +21,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
-public class ErrorUtil {
+public final class ErrorUtil {
+	private ErrorUtil() {
+	}
+
 	public static <T> String getInfoFromRecipe(T recipe, IRecipeHandler<T> recipeHandler) {
 		StringBuilder recipeInfoBuilder = new StringBuilder();
 		try {
@@ -131,6 +135,7 @@ public class ErrorUtil {
 		} else if (item instanceof ItemBlock) {
 			final String blockName;
 			Block block = ((ItemBlock) item).getBlock();
+			//noinspection ConstantConditions
 			if (block == null) {
 				blockName = "null";
 			} else {

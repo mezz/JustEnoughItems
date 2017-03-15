@@ -15,7 +15,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class FuelRecipeMaker {
+public final class FuelRecipeMaker {
+
+	private FuelRecipeMaker() {
+	}
 
 	public static List<FuelRecipe> getFuelRecipes(IIngredientRegistry ingredientRegistry, IJeiHelpers helpers) {
 		IGuiHelper guiHelper = helpers.getGuiHelper();

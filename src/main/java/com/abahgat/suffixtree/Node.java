@@ -161,9 +161,7 @@ class Node {
 			ret.add(num);
 		}
 		for (Edge e : edges.getValues()) {
-			for (int num : e.getDest().computeAndCacheCountRecursive()) {
-				ret.add(num);
-			}
+			ret.addAll(e.getDest().computeAndCacheCountRecursive());
 		}
 
 		resultCount = ret.size();

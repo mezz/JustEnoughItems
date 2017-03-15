@@ -14,11 +14,11 @@ import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.color.ColorGetter;
+import mezz.jei.color.ColorNamer;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
-import mezz.jei.util.color.ColorGetter;
-import mezz.jei.util.color.ColorNamer;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigCategory;
@@ -26,7 +26,7 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-public class Config {
+public final class Config {
 	private static final String configKeyPrefix = "config.jei";
 
 	public static final String CATEGORY_SEARCH = "search";

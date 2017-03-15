@@ -32,6 +32,7 @@ public class ShapedOreRecipeHandler implements IRecipeHandler<ShapedOreRecipe> {
 		return new ShapedOreRecipeWrapper(jeiHelpers, recipe);
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	@Override
 	public boolean isRecipeValid(ShapedOreRecipe recipe) {
 		if (recipe.getRecipeOutput() == null) {

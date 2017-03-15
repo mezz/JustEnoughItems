@@ -26,20 +26,22 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
 public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
-	public static final int recipeWidth = 160;
-	public static final int recipeHeight = 60;
+	public static final int RECIPE_WIDTH = 160;
+	public static final int RECIPE_HEIGHT = 60;
+	private final IIngredientRegistry ingredientRegistry;
 	private final IDrawable background;
 	private final String localizedName;
 	private final IDrawable tankBackground;
 	private final IDrawable tankOverlay;
 
-	public DebugRecipeCategory(IGuiHelper guiHelper) {
-		background = guiHelper.createBlankDrawable(recipeWidth, recipeHeight);
-		localizedName = "debug";
+	public DebugRecipeCategory(IGuiHelper guiHelper, IIngredientRegistry ingredientRegistry) {
+		this.ingredientRegistry = ingredientRegistry;
+		this.background = guiHelper.createBlankDrawable(RECIPE_WIDTH, RECIPE_HEIGHT);
+		this.localizedName = "debug";
 
 		ResourceLocation backgroundTexture = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
-		tankBackground = guiHelper.createDrawable(backgroundTexture, 176, 0, 20, 55);
-		tankOverlay = guiHelper.createDrawable(backgroundTexture, 176, 55, 12, 47);
+		this.tankBackground = guiHelper.createDrawable(backgroundTexture, 176, 0, 20, 55);
+		this.tankOverlay = guiHelper.createDrawable(backgroundTexture, 176, 55, 12, 47);
 	}
 
 	@Override
@@ -66,12 +68,9 @@ public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 			minecraft.fontRendererObj.drawString(itemListOverlay.getFilterText(), 20, 52, 0);
 			ItemStack stackUnderMouse = itemListOverlay.getStackUnderMouse();
 			if (stackUnderMouse != null) {
-				IIngredientRegistry ingredientRegistry = JEIInternalPlugin.ingredientRegistry;
-				if (ingredientRegistry != null) {
-					IIngredientHelper<ItemStack> ingredientHelper = ingredientRegistry.getIngredientHelper(stackUnderMouse);
-					String jeiUid = ingredientHelper.getUniqueId(stackUnderMouse);
-					minecraft.fontRendererObj.drawString(jeiUid, 50, 52, 0);
-				}
+				IIngredientHelper<ItemStack> ingredientHelper = this.ingredientRegistry.getIngredientHelper(stackUnderMouse);
+				String jeiUid = ingredientHelper.getUniqueId(stackUnderMouse);
+				minecraft.fontRendererObj.drawString(jeiUid, 50, 52, 0);
 			}
 		}
 	}

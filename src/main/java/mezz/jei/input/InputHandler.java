@@ -4,19 +4,18 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import mezz.jei.JeiRuntime;
-import mezz.jei.RecipeRegistry;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
-import mezz.jei.gui.ItemListOverlay;
+import mezz.jei.gui.overlay.ItemListOverlay;
 import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.util.Commands;
-import mezz.jei.util.MouseHelper;
+import mezz.jei.recipes.RecipeRegistry;
+import mezz.jei.runtime.JeiRuntime;
+import mezz.jei.util.CommandUtil;
 import mezz.jei.util.ReflectionUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -135,7 +134,7 @@ public class InputHandler {
 					// older ingredientHelpers do not have this method
 				}
 				if (!itemStack.isEmpty()) {
-					Commands.giveStack(itemStack, fullStack);
+					CommandUtil.giveStack(itemStack, fullStack);
 				}
 				return true;
 			}

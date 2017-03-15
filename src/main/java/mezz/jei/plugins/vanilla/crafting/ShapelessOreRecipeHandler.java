@@ -32,6 +32,7 @@ public class ShapelessOreRecipeHandler implements IRecipeHandler<ShapelessOreRec
 		return new ShapelessOreRecipeWrapper(jeiHelpers, recipe);
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	@Override
 	public boolean isRecipeValid(ShapelessOreRecipe recipe) {
 		if (recipe.getRecipeOutput() == null) {

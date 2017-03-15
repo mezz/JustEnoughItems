@@ -16,19 +16,19 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.GuiHelper;
-import mezz.jei.gui.GuiIconButtonSmall;
-import mezz.jei.gui.GuiProperties;
 import mezz.jei.gui.TooltipRenderer;
+import mezz.jei.gui.elements.GuiIconButtonSmall;
 import mezz.jei.gui.ingredients.GuiIngredient;
+import mezz.jei.gui.overlay.GuiProperties;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.InputHandler;
 import mezz.jei.transfer.RecipeTransferUtil;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.StringUtil;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiMainMenu;
@@ -100,6 +100,10 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 		nextPage = new GuiIconButtonSmall(4, 0, 0, buttonWidth, buttonHeight, arrowNext);
 		previousPage = new GuiIconButtonSmall(5, 0, 0, buttonWidth, buttonHeight, arrowPrevious);
+	}
+
+	private static void drawCenteredString(FontRenderer fontRenderer, String string, int guiWidth, int xOffset, int yPos, int color, boolean shadow) {
+		fontRenderer.drawString(string, (guiWidth - fontRenderer.getStringWidth(string)) / 2 + xOffset, yPos, color, shadow);
 	}
 
 	public int getGuiLeft() {
@@ -196,8 +200,8 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
 		int textPadding = (buttonHeight - fontRendererObj.FONT_HEIGHT) / 2;
-		StringUtil.drawCenteredString(fontRendererObj, title, xSize, guiLeft, nextRecipeCategory.yPosition + textPadding, Color.WHITE.getRGB(), true);
-		StringUtil.drawCenteredString(fontRendererObj, pageString, xSize, guiLeft, nextPage.yPosition + textPadding, Color.WHITE.getRGB(), true);
+		drawCenteredString(fontRendererObj, title, xSize, guiLeft, nextRecipeCategory.yPosition + textPadding, Color.WHITE.getRGB(), true);
+		drawCenteredString(fontRendererObj, pageString, xSize, guiLeft, nextPage.yPosition + textPadding, Color.WHITE.getRGB(), true);
 
 		nextRecipeCategory.drawButton(mc, mouseX, mouseY);
 		previousRecipeCategory.drawButton(mc, mouseX, mouseY);

@@ -5,8 +5,8 @@ import java.awt.Rectangle;
 import java.util.LinkedList;
 import java.util.List;
 
-import mezz.jei.ItemFilter;
 import mezz.jei.config.Config;
+import mezz.jei.ingredients.IngredientFilter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraftforge.fml.client.config.HoverChecker;
@@ -18,15 +18,14 @@ public class GuiTextFieldFilter extends GuiTextField {
 	private static final List<String> history = new LinkedList<String>();
 
 	private final HoverChecker hoverChecker;
-	private final ItemFilter itemFilter;
+	private final IngredientFilter ingredientFilter;
 	private boolean previousKeyboardRepeatEnabled;
 
-	public GuiTextFieldFilter(int componentId, ItemFilter itemFilter) {
+	public GuiTextFieldFilter(int componentId, IngredientFilter ingredientFilter) {
 		super(componentId, Minecraft.getMinecraft().fontRendererObj, 0, 0, 0, 0);
 		setMaxStringLength(maxSearchLength);
 		this.hoverChecker = new HoverChecker(0, 0, 0, 0, 0);
-		this.itemFilter = itemFilter;
-		setText(Config.getFilterText());
+		this.ingredientFilter = ingredientFilter;
 	}
 
 	public void updateBounds(Rectangle area) {
@@ -38,7 +37,8 @@ public class GuiTextFieldFilter extends GuiTextField {
 	}
 
 	public void update() {
-		List<Object> ingredientList = itemFilter.getIngredientList();
+		setText(Config.getFilterText());
+		List<Object> ingredientList = ingredientFilter.getIngredientList();
 		if (ingredientList.size() == 0) {
 			setTextColor(Color.red.getRGB());
 		} else {

@@ -11,7 +11,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
-public class FluidStackListFactory {
+public final class FluidStackListFactory {
 	private FluidStackListFactory() {
 
 	}

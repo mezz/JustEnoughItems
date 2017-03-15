@@ -7,7 +7,10 @@ import java.io.IOException;
  * Utility to help read and write files in a crash-safe way using a temp file and a backup.
  * If the game crashes while saving, the data saved by this utility should automatically recover.
  */
-public class FileUtil {
+public final class FileUtil {
+	private FileUtil() {
+	}
+
 	public interface FileOperation {
 		void handle(File file) throws IOException;
 	}

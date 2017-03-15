@@ -9,7 +9,10 @@ import mezz.jei.api.recipe.IStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 
-public class SmeltingRecipeMaker {
+public final class SmeltingRecipeMaker {
+
+	private SmeltingRecipeMaker() {
+	}
 
 	public static List<SmeltingRecipe> getFurnaceRecipes(IJeiHelpers helpers) {
 		IStackHelper stackHelper = helpers.getStackHelper();

@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.google.common.base.Objects;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.util.color.ColorGetter;
+import mezz.jei.color.ColorGetter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;

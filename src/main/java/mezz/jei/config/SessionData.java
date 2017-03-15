@@ -8,7 +8,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
-public class SessionData {
+public final class SessionData {
 	private static boolean jeiOnServer = false;
 	private static boolean joinedWorld = false;
 	@Nullable

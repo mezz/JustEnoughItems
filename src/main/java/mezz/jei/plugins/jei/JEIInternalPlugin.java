@@ -35,21 +35,23 @@ import net.minecraftforge.fluids.FluidStack;
 @JEIPlugin
 public class JEIInternalPlugin extends BlankModPlugin {
 	@Nullable
-	public static IIngredientRegistry ingredientRegistry;
+	private static IIngredientRegistry ingredientRegistry;
 	@Nullable
 	public static IJeiRuntime jeiRuntime;
 
 	@Override
 	public void registerIngredients(IModIngredientRegistration ingredientRegistration) {
 		if (Config.isDebugModeEnabled()) {
-			ingredientRegistration.register(DebugIngredient.class, Collections.<DebugIngredient>emptyList(), new DebugIngredientHelper(), new DebugIngredientRenderer());
+			DebugIngredientHelper ingredientHelper = new DebugIngredientHelper();
+			DebugIngredientRenderer ingredientRenderer = new DebugIngredientRenderer(ingredientHelper);
+			ingredientRegistration.register(DebugIngredient.class, Collections.<DebugIngredient>emptyList(), ingredientHelper, ingredientRenderer);
 		}
 	}
 
 	@Override
 	public void register(IModRegistry registry) {
 		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
-		ingredientRegistry = registry.getIngredientRegistry();
+		IIngredientRegistry ingredientRegistry = registry.getIngredientRegistry();
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 
 		registry.addRecipeCategories(
@@ -74,7 +76,7 @@ public class JEIInternalPlugin extends BlankModPlugin {
 					"description.jei.wooden.door.3"
 			);
 
-			registry.addRecipeCategories(new DebugRecipeCategory(guiHelper));
+			registry.addRecipeCategories(new DebugRecipeCategory(guiHelper, ingredientRegistry));
 			registry.addRecipeHandlers(new DebugRecipeHandler());
 			registry.addRecipes(Arrays.asList(
 					new DebugRecipe(),
@@ -87,7 +89,6 @@ public class JEIInternalPlugin extends BlankModPlugin {
 					return GuiBrewingStand.class;
 				}
 
-				@Nullable
 				@Override
 				public List<Rectangle> getGuiExtraAreas(GuiBrewingStand guiContainer) {
 					int widthMovement = (int) ((System.currentTimeMillis() / 100) % 100);

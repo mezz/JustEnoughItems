@@ -7,10 +7,9 @@ import java.util.List;
 import java.util.Set;
 
 import mezz.jei.api.ISubtypeRegistry;
-import mezz.jei.plugins.vanilla.VanillaPlugin;
+import mezz.jei.startup.StackHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
-import mezz.jei.util.StackHelper;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
@@ -24,13 +23,14 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
-public class ItemStackListFactory {
+public final class ItemStackListFactory {
+	private final ISubtypeRegistry subtypeRegistry;
 
-	private ItemStackListFactory() {
-
+	public ItemStackListFactory(ISubtypeRegistry subtypeRegistry) {
+		this.subtypeRegistry = subtypeRegistry;
 	}
 
-	public static List<ItemStack> create(StackHelper stackHelper) {
+	public List<ItemStack> create(StackHelper stackHelper) {
 		final List<ItemStack> itemList = new ArrayList<ItemStack>();
 		final Set<String> itemNameSet = new HashSet<String>();
 
@@ -65,7 +65,7 @@ public class ItemStackListFactory {
 		return itemList;
 	}
 
-	private static void addItemAndSubItems(StackHelper stackHelper, @Nullable Item item, List<ItemStack> itemList, Set<String> itemNameSet) {
+	private void addItemAndSubItems(StackHelper stackHelper, @Nullable Item item, List<ItemStack> itemList, Set<String> itemNameSet) {
 		if (item == null || item == Items.AIR) {
 			return;
 		}
@@ -78,7 +78,7 @@ public class ItemStackListFactory {
 		}
 	}
 
-	private static void addBlockAndSubBlocks(StackHelper stackHelper, @Nullable Block block, List<ItemStack> itemList, Set<String> itemNameSet) {
+	private void addBlockAndSubBlocks(StackHelper stackHelper, @Nullable Block block, List<ItemStack> itemList, Set<String> itemNameSet) {
 		if (block == null) {
 			return;
 		}
@@ -112,7 +112,7 @@ public class ItemStackListFactory {
 		}
 	}
 
-	private static void addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<String> itemNameSet) {
+	private void addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<String> itemNameSet) {
 		String itemKey = null;
 
 		try {
@@ -135,11 +135,10 @@ public class ItemStackListFactory {
 		}
 	}
 
-	private static void addFallbackSubtypeInterpreter(ItemStack itemStack) {
-		ISubtypeRegistry subtypeRegistry = VanillaPlugin.subtypeRegistry;
-		if (subtypeRegistry != null && !subtypeRegistry.hasSubtypeInterpreter(itemStack)) {
+	private void addFallbackSubtypeInterpreter(ItemStack itemStack) {
+		if (!this.subtypeRegistry.hasSubtypeInterpreter(itemStack)) {
 			if (itemStack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
-				subtypeRegistry.registerSubtypeInterpreter(itemStack.getItem(), FluidSubtypeInterpreter.INSTANCE);
+				this.subtypeRegistry.registerSubtypeInterpreter(itemStack.getItem(), FluidSubtypeInterpreter.INSTANCE);
 			}
 		}
 	}

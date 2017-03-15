@@ -6,7 +6,7 @@ import java.util.List;
 import net.minecraft.potion.PotionType;
 import net.minecraft.util.ResourceLocation;
 
-public class TippedArrowRecipeMaker {
+public final class TippedArrowRecipeMaker {
 
 	public static List<TippedArrowRecipeWrapper> getTippedArrowRecipes() {
 		List<TippedArrowRecipeWrapper> recipes = new ArrayList<TippedArrowRecipeWrapper>();

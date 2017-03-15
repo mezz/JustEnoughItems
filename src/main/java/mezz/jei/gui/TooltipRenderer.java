@@ -9,7 +9,10 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
-public class TooltipRenderer {
+public final class TooltipRenderer {
+	private TooltipRenderer() {
+	}
+
 	public static void drawHoveringText(Minecraft minecraft, String textLine, int x, int y) {
 		drawHoveringText(minecraft, Collections.singletonList(textLine), x, y, minecraft.fontRendererObj);
 	}

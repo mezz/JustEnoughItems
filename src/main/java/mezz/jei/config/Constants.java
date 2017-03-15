@@ -4,7 +4,7 @@ import java.util.Locale;
 
 import mezz.jei.util.Translator;
 
-public class Constants {
+public final class Constants {
 	public static final String minecraftModName = "Minecraft";
 
 	// Mod info

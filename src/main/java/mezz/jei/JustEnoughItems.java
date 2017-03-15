@@ -4,6 +4,7 @@ import java.util.Map;
 
 import mezz.jei.config.Constants;
 import mezz.jei.config.SessionData;
+import mezz.jei.startup.ProxyCommon;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -21,7 +22,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public class JustEnoughItems {
 
 	@SuppressWarnings("NullableProblems")
-	@SidedProxy(clientSide = "mezz.jei.ProxyCommonClient", serverSide = "mezz.jei.ProxyCommon")
+	@SidedProxy(clientSide = "mezz.jei.startup.ProxyCommonClient", serverSide = "mezz.jei.startup.ProxyCommon")
 	private static ProxyCommon proxy;
 
 	public static ProxyCommon getProxy() {

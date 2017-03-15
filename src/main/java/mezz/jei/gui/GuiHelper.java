@@ -7,7 +7,9 @@ import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.config.Constants;
-import mezz.jei.util.TickTimer;
+import mezz.jei.gui.elements.DrawableAnimated;
+import mezz.jei.gui.elements.DrawableBlank;
+import mezz.jei.gui.elements.DrawableResource;
 import net.minecraft.util.ResourceLocation;
 
 public class GuiHelper implements IGuiHelper {

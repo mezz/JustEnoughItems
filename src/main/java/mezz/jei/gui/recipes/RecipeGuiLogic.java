@@ -12,6 +12,7 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.gui.Focus;
+import mezz.jei.gui.ingredients.IngredientLookupState;
 import mezz.jei.util.MathUtil;
 import net.minecraft.item.ItemStack;
 

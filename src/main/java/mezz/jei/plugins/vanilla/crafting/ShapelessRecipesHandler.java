@@ -24,6 +24,7 @@ public class ShapelessRecipesHandler implements IRecipeHandler<ShapelessRecipes>
 		return new ShapelessRecipesWrapper(recipe);
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	@Override
 	public boolean isRecipeValid(ShapelessRecipes recipe) {
 		if (recipe.getRecipeOutput() == null) {
