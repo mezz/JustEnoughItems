@@ -109,23 +109,29 @@ jar {
 	manifest {
 		attributes 'FMLAT': 'jei_at.cfg'
 	}
+	from sourceSets.main.output
+	from sourceSets.api.output
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-	from javadoc.destinationDir
 	classifier = 'javadoc'
+	from javadoc.destinationDir
 }
 
 task sourcesJar(type: Jar) {
-	from sourceSets.main.allJava
 	classifier = 'sources'
+	from sourceSets.main.allJava
+	from sourceSets.api.allJava
 }
 
 task apiJar(type: Jar) {
-	from sourceSets.main.allSource
-	from sourceSets.main.output
-	include 'mezz/jei/api/**/*'
 	classifier = 'api'
+	from sourceSets.api.output
+
+	// TODO: when FG bug is fixed, remove allJava from the api jar.
+	// https://github.com/MinecraftForge/ForgeGradle/issues/369
+	// Gradle should be able to pull them from the -sources jar.
+	from sourceSets.api.allJava
 }
 
 artifacts {

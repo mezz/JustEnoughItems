@@ -266,6 +266,7 @@ public class ItemListOverlay implements IItemListOverlay, IPaged, IMouseHandler,
 		return false;
 	}
 
+	@Override
 	public boolean hasKeyboardFocus() {
 		return this.searchField.isFocused();
 	}
