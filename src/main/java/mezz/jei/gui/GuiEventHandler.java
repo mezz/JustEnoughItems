@@ -104,6 +104,9 @@ public class GuiEventHandler {
 		}
 	}
 
+	/**
+	 * When we have keyboard focus, use Pre
+	 */
 	@SubscribeEvent
 	public void onGuiKeyboardEvent(GuiScreenEvent.KeyboardInputEvent.Pre event) {
 		if (inputHandler != null && inputHandler.hasKeyboardFocus()) {
@@ -113,6 +116,9 @@ public class GuiEventHandler {
 		}
 	}
 
+	/**
+	 * Without focus, use Post
+	 */
 	@SubscribeEvent
 	public void onGuiKeyboardEvent(GuiScreenEvent.KeyboardInputEvent.Post event) {
 		if (inputHandler != null && !inputHandler.hasKeyboardFocus()) {

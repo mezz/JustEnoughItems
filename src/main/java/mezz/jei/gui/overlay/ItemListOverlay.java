@@ -217,7 +217,7 @@ public class ItemListOverlay implements IItemListOverlay, IPaged, IMouseHandler,
 
 	@Override
 	public boolean canSetFocusWithMouse() {
-		return this.contents.canSetFocusWithMouse();
+		return this.isEnabled() && this.contents.canSetFocusWithMouse();
 	}
 
 	@Override
