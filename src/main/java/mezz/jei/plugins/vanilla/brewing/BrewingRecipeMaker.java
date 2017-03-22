@@ -30,6 +30,9 @@ import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class BrewingRecipeMaker {
+	private static final ItemStack POTION = new ItemStack(Items.POTIONITEM);
+	private static final ItemStack WATER_BOTTLE = PotionUtils.addPotionToItemStack(POTION.copy(), PotionTypes.WATER);
+
 	private final Set<Class> unhandledRecipeClasses = new HashSet<Class>();
 	private final Map<String, Integer> brewingSteps = new HashMap<String, Integer>();
 	private final IIngredientRegistry ingredientRegistry;
@@ -48,6 +51,9 @@ public class BrewingRecipeMaker {
 	private List<BrewingRecipeWrapper> getBrewingRecipes() {
 		unhandledRecipeClasses.clear();
 		brewingSteps.clear();
+
+		String waterBottleUid = Internal.getStackHelper().getUniqueIdentifierForStack(WATER_BOTTLE);
+		brewingSteps.put(waterBottleUid, 0);
 
 		Set<BrewingRecipeWrapper> recipes = new HashSet<BrewingRecipeWrapper>();
 
@@ -68,8 +74,8 @@ public class BrewingRecipeMaker {
 	private void addVanillaBrewingRecipes(Collection<BrewingRecipeWrapper> recipes) {
 		List<ItemStack> potionIngredients = ingredientRegistry.getPotionIngredients();
 		List<ItemStack> knownPotions = new ArrayList<ItemStack>();
-		ItemStack waterBottle = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionTypes.WATER);
-		knownPotions.add(waterBottle);
+
+		knownPotions.add(WATER_BOTTLE);
 
 		int brewingStep = 1;
 		boolean foundNewPotions;
@@ -144,6 +150,10 @@ public class BrewingRecipeMaker {
 
 				if (!ingredientList.isEmpty()) {
 					ItemStack input = brewingRecipe.getInput();
+					// AbstractBrewingRecipe.isInput treats any uncraftable potion here as a water bottle in the brewing stand
+					if (ItemStack.areItemStacksEqual(input, POTION)) {
+						input = WATER_BOTTLE;
+					}
 					ItemStack output = brewingRecipe.getOutput();
 					String potionInputUid = Internal.getStackHelper().getUniqueIdentifierForStack(input);
 					String potionOutputUid = Internal.getStackHelper().getUniqueIdentifierForStack(output);
