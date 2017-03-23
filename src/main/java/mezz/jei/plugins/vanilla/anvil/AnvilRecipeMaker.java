@@ -19,11 +19,16 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerRepair;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class AnvilRecipeMaker {
+public final class AnvilRecipeMaker {
+	private static final ItemStack ENCHANTED_BOOK = new ItemStack(Items.ENCHANTED_BOOK);
+
+	private AnvilRecipeMaker() {
+	}
 
 	public static void registerVanillaAnvilRecipes(IModRegistry registry) {
 		Stopwatch sw = Stopwatch.createStarted();
@@ -40,24 +45,36 @@ public class AnvilRecipeMaker {
 	private static void registerBookEnchantmentRecipes(IModRegistry registry) {
 		List<ItemStack> ingredients = registry.getIngredientRegistry().getIngredients(ItemStack.class);
 		List<Enchantment> enchantments = ForgeRegistries.ENCHANTMENTS.getValues();
-		ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
 		for (ItemStack ingredient : ingredients) {
-			for (Enchantment enchantment : enchantments) {
-				if (enchantment.canApply(ingredient)) {
-					List<ItemStack> perLevelBooks = Lists.newArrayList();
-					List<ItemStack> perLevelOutputs = Lists.newArrayList();
-					for (int level = 1; level <= enchantment.getMaxLevel(); level++) {
-						ItemStack withEnchant = ingredient.copy();
-						ItemStack bookEnchant = book.copy();
-						Map<Enchantment, Integer> enchMap = Collections.singletonMap(enchantment, level);
-						EnchantmentHelper.setEnchantments(enchMap, withEnchant);
-						EnchantmentHelper.setEnchantments(enchMap, bookEnchant);
-						perLevelBooks.add(bookEnchant);
-						perLevelOutputs.add(withEnchant);
+			if (ingredient.isItemEnchantable()) {
+				for (Enchantment enchantment : enchantments) {
+					if (enchantment.canApply(ingredient)) {
+						registerBookEnchantmentRecipes(registry, enchantment, ingredient);
 					}
-					registry.addAnvilRecipe(ingredient, perLevelBooks, perLevelOutputs);
 				}
 			}
+		}
+	}
+
+	private static void registerBookEnchantmentRecipes(IModRegistry registry, Enchantment enchantment, ItemStack ingredient) {
+		Item item = ingredient.getItem();
+		List<ItemStack> perLevelBooks = Lists.newArrayList();
+		List<ItemStack> perLevelOutputs = Lists.newArrayList();
+		for (int level = 1; level <= enchantment.getMaxLevel(); level++) {
+			Map<Enchantment, Integer> enchMap = Collections.singletonMap(enchantment, level);
+
+			ItemStack bookEnchant = ENCHANTED_BOOK.copy();
+			EnchantmentHelper.setEnchantments(enchMap, bookEnchant);
+			if (item.isBookEnchantable(ingredient, bookEnchant)) {
+				perLevelBooks.add(bookEnchant);
+
+				ItemStack withEnchant = ingredient.copy();
+				EnchantmentHelper.setEnchantments(enchMap, withEnchant);
+				perLevelOutputs.add(withEnchant);
+			}
+		}
+		if (!perLevelBooks.isEmpty() && !perLevelOutputs.isEmpty()) {
+			registry.addAnvilRecipe(ingredient, perLevelBooks, perLevelOutputs);
 		}
 	}
 
