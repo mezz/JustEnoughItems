@@ -89,6 +89,11 @@ public class ItemListOverlay implements IItemListOverlay {
 	}
 
 	@Override
+	public boolean hasKeyboardFocus() {
+		return internal != null && internal.hasKeyboardFocus();
+	}
+
+	@Override
 	public ImmutableList<ItemStack> getVisibleStacks() {
 		if (internal == null) {
 			return ImmutableList.of();
