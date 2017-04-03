@@ -27,14 +27,6 @@ public class SmeltingRecipe extends BlankRecipeWrapper {
 		ingredients.setOutput(ItemStack.class, output);
 	}
 
-	public List<List<ItemStack>> getInputs() {
-		return inputs;
-	}
-
-	public List<ItemStack> getOutputs() {
-		return Collections.singletonList(output);
-	}
-
 	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 		FurnaceRecipes furnaceRecipes = FurnaceRecipes.instance();

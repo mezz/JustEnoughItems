@@ -9,7 +9,6 @@ import java.util.Set;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Multimap;
 import mezz.jei.api.IGuiHelper;
@@ -20,6 +19,9 @@ import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeRegistryPlugin;
+import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeWrapperFactory;
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.gui.recipes.RecipeClickableArea;
@@ -38,11 +40,15 @@ public class ModRegistry implements IModRegistry {
 	private final IIngredientRegistry ingredientRegistry;
 	private final List<IRecipeCategory> recipeCategories = new ArrayList<IRecipeCategory>();
 	private final Set<String> recipeCategoryUids = new HashSet<String>();
-	private final List<IRecipeHandler> recipeHandlers = new ArrayList<IRecipeHandler>();
+	@Deprecated
+	private final List<IRecipeHandler> unsortedRecipeHandlers = new ArrayList<IRecipeHandler>();
+	private final Multimap<String, IRecipeHandler> recipeHandlers = ArrayListMultimap.create();
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers = new ArrayList<IAdvancedGuiHandler<?>>();
-	private final List<Object> recipes = new ArrayList<Object>();
+	@Deprecated
+	private final List<Object> unsortedRecipes = new ArrayList<Object>();
+	private final Multimap<String, Object> recipes = ArrayListMultimap.create();
 	private final RecipeTransferRegistry recipeTransferRegistry;
-	private final Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas = HashMultimap.create();
+	private final Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas = ArrayListMultimap.create();
 	private final Multimap<String, ItemStack> craftItemsForCategories = ArrayListMultimap.create();
 	private final List<IRecipeRegistryPlugin> recipeRegistryPlugins = new ArrayList<IRecipeRegistryPlugin>();
 
@@ -78,21 +84,68 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
+	@Deprecated
 	public void addRecipeHandlers(IRecipeHandler... recipeHandlers) {
 		ErrorUtil.checkNotEmpty(recipeHandlers, "recipeHandlers");
 
 		for (IRecipeHandler recipeHandler : recipeHandlers) {
 			Preconditions.checkNotNull(recipeHandler.getRecipeClass());
 			Preconditions.checkArgument(!recipeHandler.getRecipeClass().equals(Object.class), "Recipe handlers must handle a specific class, not Object.class");
-			this.recipeHandlers.add(recipeHandler);
+			this.unsortedRecipeHandlers.add(recipeHandler);
 		}
 	}
 
 	@Override
+	@Deprecated
 	public void addRecipes(Collection recipes) {
 		ErrorUtil.checkNotEmpty(recipes, "recipes");
 
-		this.recipes.addAll(recipes);
+		this.unsortedRecipes.addAll(recipes);
+	}
+
+	@Override
+	public void addRecipes(Collection<?> recipes, String recipeCategoryUid) {
+		ErrorUtil.checkNotEmpty(recipes, "recipes");
+		Preconditions.checkNotNull(recipeCategoryUid, "recipeCategoryUid must not be null");
+		//TODO : add this without breaking description recipes
+//		Preconditions.checkArgument(this.recipeCategoryUids.contains(recipeCategoryUid), "No recipe category has been registered for recipeCategoryUid %s", recipeCategoryUid);
+
+		for (Object recipe : recipes) {
+			Preconditions.checkNotNull(recipe, "recipe must not be null");
+			this.recipes.put(recipeCategoryUid, recipe);
+		}
+	}
+
+	@Override
+	public <T> void handleRecipes(final Class<T> recipeClass, final IRecipeWrapperFactory<T> recipeWrapperFactory, final String recipeCategoryUid) {
+		Preconditions.checkNotNull(recipeClass, "recipeClass cannot be null");
+		Preconditions.checkArgument(!recipeClass.equals(Object.class), "Recipe handlers must handle a specific class, not Object.class");
+		Preconditions.checkNotNull(recipeWrapperFactory, "recipeWrapperFactory cannot be null");
+		Preconditions.checkNotNull(recipeCategoryUid, "recipeCategoryUid cannot be null");
+
+		IRecipeHandler<T> recipeHandler = new IRecipeHandler<T>() {
+			@Override
+			public Class<T> getRecipeClass() {
+				return recipeClass;
+			}
+
+			@Override
+			public String getRecipeCategoryUid(T recipe) {
+				return recipeCategoryUid;
+			}
+
+			@Override
+			public IRecipeWrapper getRecipeWrapper(T recipe) {
+				return recipeWrapperFactory.getRecipeWrapper(recipe);
+			}
+
+			@Override
+			public boolean isRecipeValid(T recipe) {
+				return true;
+			}
+		};
+
+		this.recipeHandlers.put(recipeCategoryUid, recipeHandler);
 	}
 
 	@Override
@@ -133,7 +186,7 @@ public class ModRegistry implements IModRegistry {
 
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 		List<ItemDescriptionRecipe> recipes = ItemDescriptionRecipe.create(guiHelper, itemStacks, descriptionKeys);
-		this.recipes.addAll(recipes);
+		addRecipes(recipes, VanillaRecipeCategoryUid.DESCRIPTION);
 	}
 
 	@Override
@@ -151,7 +204,8 @@ public class ModRegistry implements IModRegistry {
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 		Preconditions.checkArgument(rightInputs.size() == outputs.size(), "Input and output sizes must match.");
 
-		this.recipes.add(new AnvilRecipeWrapper(leftInput, rightInputs, outputs));
+		AnvilRecipeWrapper anvilRecipeWrapper = new AnvilRecipeWrapper(leftInput, rightInputs, outputs);
+		addRecipes(Collections.singletonList(anvilRecipeWrapper), VanillaRecipeCategoryUid.ANVIL);
 	}
 
 	@Override
@@ -173,6 +227,6 @@ public class ModRegistry implements IModRegistry {
 
 	public RecipeRegistry createRecipeRegistry(IIngredientRegistry ingredientRegistry) {
 		ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers = recipeTransferRegistry.getRecipeTransferHandlers();
-		return new RecipeRegistry(recipeCategories, recipeHandlers, recipeTransferHandlers, recipes, recipeClickableAreas, craftItemsForCategories, ingredientRegistry, recipeRegistryPlugins);
+		return new RecipeRegistry(recipeCategories, unsortedRecipeHandlers, recipeHandlers, recipeTransferHandlers, unsortedRecipes, recipes, recipeClickableAreas, craftItemsForCategories, ingredientRegistry, recipeRegistryPlugins);
 	}
 }

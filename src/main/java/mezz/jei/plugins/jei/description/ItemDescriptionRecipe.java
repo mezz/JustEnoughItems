@@ -9,6 +9,8 @@ import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -27,6 +29,11 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 		descriptionLines = expandNewlines(descriptionLines);
 		descriptionLines = wrapDescriptionLines(descriptionLines);
 		final int lineCount = descriptionLines.size();
+		if (lineCount == 0) {
+			List<String> ingredientInfo = ErrorUtil.getIngredientInfo(ItemStack.class, Collections.singletonList(itemStacks));
+			Log.error("Recipe has no description text. {}", ingredientInfo);
+			return recipes;
+		}
 
 		Minecraft minecraft = Minecraft.getMinecraft();
 		final int maxLinesPerPage = (ItemDescriptionRecipeCategory.recipeHeight - 20) / (minecraft.fontRendererObj.FONT_HEIGHT + lineSpacing);

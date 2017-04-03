@@ -13,27 +13,25 @@ import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeWrapperFactory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeCategory;
-import mezz.jei.plugins.vanilla.anvil.AnvilRecipeHandler;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeCategory;
-import mezz.jei.plugins.vanilla.brewing.BrewingRecipeHandler;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeMaker;
 import mezz.jei.plugins.vanilla.brewing.PotionSubtypeInterpreter;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
-import mezz.jei.plugins.vanilla.crafting.ShapedOreRecipeHandler;
-import mezz.jei.plugins.vanilla.crafting.ShapedRecipesHandler;
-import mezz.jei.plugins.vanilla.crafting.ShapelessOreRecipeHandler;
-import mezz.jei.plugins.vanilla.crafting.ShapelessRecipesHandler;
-import mezz.jei.plugins.vanilla.crafting.TippedArrowRecipeHandler;
+import mezz.jei.plugins.vanilla.crafting.CraftingRecipeChecker;
+import mezz.jei.plugins.vanilla.crafting.ShapedOreRecipeWrapper;
+import mezz.jei.plugins.vanilla.crafting.ShapedRecipesWrapper;
+import mezz.jei.plugins.vanilla.crafting.ShapelessOreRecipeWrapper;
+import mezz.jei.plugins.vanilla.crafting.ShapelessRecipesWrapper;
 import mezz.jei.plugins.vanilla.crafting.TippedArrowRecipeMaker;
-import mezz.jei.plugins.vanilla.furnace.FuelRecipeHandler;
 import mezz.jei.plugins.vanilla.furnace.FuelRecipeMaker;
 import mezz.jei.plugins.vanilla.furnace.FurnaceFuelCategory;
 import mezz.jei.plugins.vanilla.furnace.FurnaceSmeltingCategory;
-import mezz.jei.plugins.vanilla.furnace.SmeltingRecipeHandler;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipeMaker;
 import mezz.jei.plugins.vanilla.ingredients.FluidStackHelper;
 import mezz.jei.plugins.vanilla.ingredients.FluidStackListFactory;
@@ -58,9 +56,12 @@ import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemBanner;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 @JEIPlugin
 public class VanillaPlugin extends BlankModPlugin {
@@ -107,10 +108,10 @@ public class VanillaPlugin extends BlankModPlugin {
 
 	@Override
 	public void register(IModRegistry registry) {
-		IIngredientRegistry ingredientRegistry = registry.getIngredientRegistry();
-		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
+		final IIngredientRegistry ingredientRegistry = registry.getIngredientRegistry();
+		final IJeiHelpers jeiHelpers = registry.getJeiHelpers();
+		final IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 
-		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 		registry.addRecipeCategories(
 				new CraftingRecipeCategory(guiHelper),
 				new FurnaceFuelCategory(guiHelper),
@@ -119,17 +120,42 @@ public class VanillaPlugin extends BlankModPlugin {
 				new AnvilRecipeCategory(guiHelper)
 		);
 
-		registry.addRecipeHandlers(
-				new ShapedOreRecipeHandler(jeiHelpers),
-				new ShapedRecipesHandler(),
-				new ShapelessOreRecipeHandler(jeiHelpers),
-				new ShapelessRecipesHandler(),
-				new TippedArrowRecipeHandler(),
-				new FuelRecipeHandler(),
-				new SmeltingRecipeHandler(),
-				new BrewingRecipeHandler(),
-				new AnvilRecipeHandler()
-		);
+		registry.addRecipes(CraftingRecipeChecker.getValidRecipes(jeiHelpers), VanillaRecipeCategoryUid.CRAFTING);
+		registry.addRecipes(SmeltingRecipeMaker.getFurnaceRecipes(jeiHelpers), VanillaRecipeCategoryUid.SMELTING);
+		registry.addRecipes(FuelRecipeMaker.getFuelRecipes(ingredientRegistry, jeiHelpers), VanillaRecipeCategoryUid.FUEL);
+		registry.addRecipes(BrewingRecipeMaker.getBrewingRecipes(ingredientRegistry), VanillaRecipeCategoryUid.BREWING);
+		registry.addRecipes(TippedArrowRecipeMaker.getTippedArrowRecipes(), VanillaRecipeCategoryUid.CRAFTING);
+		AnvilRecipeMaker.registerVanillaAnvilRecipes(registry);
+
+		// TODO Java 8, these can be one line each using lambdas.
+
+		registry.handleRecipes(ShapedOreRecipe.class, new IRecipeWrapperFactory<ShapedOreRecipe>() {
+			@Override
+			public IRecipeWrapper getRecipeWrapper(ShapedOreRecipe recipe) {
+				return new ShapedOreRecipeWrapper(jeiHelpers, recipe);
+			}
+		}, VanillaRecipeCategoryUid.CRAFTING);
+
+		registry.handleRecipes(ShapedRecipes.class, new IRecipeWrapperFactory<ShapedRecipes>() {
+			@Override
+			public IRecipeWrapper getRecipeWrapper(ShapedRecipes recipe) {
+				return new ShapedRecipesWrapper(recipe);
+			}
+		}, VanillaRecipeCategoryUid.CRAFTING);
+
+		registry.handleRecipes(ShapelessOreRecipe.class, new IRecipeWrapperFactory<ShapelessOreRecipe>() {
+			@Override
+			public IRecipeWrapper getRecipeWrapper(ShapelessOreRecipe recipe) {
+				return new ShapelessOreRecipeWrapper(jeiHelpers, recipe);
+			}
+		}, VanillaRecipeCategoryUid.CRAFTING);
+
+		registry.handleRecipes(ShapelessRecipes.class, new IRecipeWrapperFactory<ShapelessRecipes>() {
+			@Override
+			public IRecipeWrapper getRecipeWrapper(ShapelessRecipes recipe) {
+				return new ShapelessRecipesWrapper(recipe);
+			}
+		}, VanillaRecipeCategoryUid.CRAFTING);
 
 		registry.addRecipeClickArea(GuiCrafting.class, 88, 32, 28, 23, VanillaRecipeCategoryUid.CRAFTING);
 		registry.addRecipeClickArea(GuiInventory.class, 137, 29, 10, 13, VanillaRecipeCategoryUid.CRAFTING);
@@ -150,14 +176,6 @@ public class VanillaPlugin extends BlankModPlugin {
 		registry.addRecipeCategoryCraftingItem(new ItemStack(Blocks.FURNACE), VanillaRecipeCategoryUid.SMELTING, VanillaRecipeCategoryUid.FUEL);
 		registry.addRecipeCategoryCraftingItem(new ItemStack(Items.BREWING_STAND), VanillaRecipeCategoryUid.BREWING);
 		registry.addRecipeCategoryCraftingItem(new ItemStack(Blocks.ANVIL), VanillaRecipeCategoryUid.ANVIL);
-
-		registry.addRecipes(CraftingManager.getInstance().getRecipeList());
-		registry.addRecipes(SmeltingRecipeMaker.getFurnaceRecipes(jeiHelpers));
-		registry.addRecipes(FuelRecipeMaker.getFuelRecipes(ingredientRegistry, jeiHelpers));
-		registry.addRecipes(BrewingRecipeMaker.getBrewingRecipes(ingredientRegistry));
-		registry.addRecipes(TippedArrowRecipeMaker.getTippedArrowRecipes());
-
-		AnvilRecipeMaker.registerVanillaAnvilRecipes(registry);
 
 		IIngredientBlacklist ingredientBlacklist = registry.getJeiHelpers().getIngredientBlacklist();
 		// Game freezes when loading player skulls, see https://bugs.mojang.com/browse/MC-65587

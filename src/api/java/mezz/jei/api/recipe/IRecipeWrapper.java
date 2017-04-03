@@ -12,8 +12,6 @@ import net.minecraft.client.Minecraft;
 /**
  * A wrapper around a normal recipe with methods that allow JEI can make sense of it.
  * Plugins implement these to wrap each type of recipe they have.
- * <p>
- * Normal recipes are converted to wrapped recipes by {@link IRecipeHandler#getRecipeWrapper(Object)}.
  *
  * @see BlankRecipeWrapper
  */

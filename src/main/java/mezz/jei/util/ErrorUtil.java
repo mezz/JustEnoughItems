@@ -11,7 +11,6 @@ import com.google.common.base.Preconditions;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.ingredients.Ingredients;
 import net.minecraft.block.Block;
@@ -25,25 +24,13 @@ public final class ErrorUtil {
 	private ErrorUtil() {
 	}
 
-	public static <T> String getInfoFromRecipe(T recipe, IRecipeHandler<T> recipeHandler) {
+	public static <T> String getInfoFromRecipe(T recipe, IRecipeWrapper recipeWrapper) {
 		StringBuilder recipeInfoBuilder = new StringBuilder();
 		try {
 			recipeInfoBuilder.append(recipe);
 		} catch (RuntimeException e) {
 			Log.error("Failed recipe.toString", e);
 			recipeInfoBuilder.append(recipe.getClass());
-		}
-
-		IRecipeWrapper recipeWrapper;
-
-		try {
-			recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
-		} catch (RuntimeException ignored) {
-			recipeInfoBuilder.append("\nFailed to create recipe wrapper");
-			return recipeInfoBuilder.toString();
-		} catch (LinkageError ignored) {
-			recipeInfoBuilder.append("\nFailed to create recipe wrapper");
-			return recipeInfoBuilder.toString();
 		}
 
 		Ingredients ingredients = new Ingredients();

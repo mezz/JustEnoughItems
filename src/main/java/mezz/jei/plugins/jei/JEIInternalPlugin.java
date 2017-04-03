@@ -18,9 +18,7 @@ import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.config.Config;
 import mezz.jei.plugins.jei.debug.DebugRecipe;
 import mezz.jei.plugins.jei.debug.DebugRecipeCategory;
-import mezz.jei.plugins.jei.debug.DebugRecipeHandler;
 import mezz.jei.plugins.jei.description.ItemDescriptionRecipeCategory;
-import mezz.jei.plugins.jei.description.ItemDescriptionRecipeHandler;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientHelper;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientListFactory;
@@ -51,15 +49,11 @@ public class JEIInternalPlugin extends BlankModPlugin {
 	@Override
 	public void register(IModRegistry registry) {
 		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
-		IIngredientRegistry ingredientRegistry = registry.getIngredientRegistry();
+		ingredientRegistry = registry.getIngredientRegistry();
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 
 		registry.addRecipeCategories(
 				new ItemDescriptionRecipeCategory(guiHelper)
-		);
-
-		registry.addRecipeHandlers(
-				new ItemDescriptionRecipeHandler()
 		);
 
 		if (Config.isDebugModeEnabled()) {
@@ -77,11 +71,10 @@ public class JEIInternalPlugin extends BlankModPlugin {
 			);
 
 			registry.addRecipeCategories(new DebugRecipeCategory(guiHelper, ingredientRegistry));
-			registry.addRecipeHandlers(new DebugRecipeHandler());
 			registry.addRecipes(Arrays.asList(
 					new DebugRecipe(),
 					new DebugRecipe()
-			));
+			), "debug");
 
 			registry.addAdvancedGuiHandlers(new IAdvancedGuiHandler<GuiBrewingStand>() {
 				@Override

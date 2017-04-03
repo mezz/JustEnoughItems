@@ -8,6 +8,7 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import net.minecraft.inventory.Container;
@@ -22,8 +23,11 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 public interface IRecipeRegistry {
 
 	/**
-	 * Returns the IRecipeHandler associated with the recipeClass or null if there is none
+	 * Returns the IRecipeHandler associated with the recipeClass or null if there is none.
+	 *
+	 * @deprecated since JEI 4.3.0
 	 */
+	@Deprecated
 	@Nullable
 	<T> IRecipeHandler<T> getRecipeHandler(Class<? extends T> recipeClass);
 
@@ -110,11 +114,10 @@ public interface IRecipeRegistry {
 
 	/**
 	 * Add a new recipe while the game is running.
-	 * This is only for things like gated recipes becoming available, like the ones in Thaumcraft.
-	 * Use your {@link IRecipeHandler#isRecipeValid(Object)} to determine which recipes are hidden, and when a recipe becomes valid you can add it here.
-	 * (note that {@link IRecipeHandler#isRecipeValid(Object)} must be true when the recipe is added here for it to work)
+	 *
+	 * @since JEI 4.3.0
 	 */
-	void addRecipe(Object recipe);
+	void addRecipe(IRecipeWrapper recipe, String recipeCategoryUid);
 
 	/**
 	 * Add a new smelting recipe while the game is running.
@@ -127,7 +130,39 @@ public interface IRecipeRegistry {
 	/**
 	 * Remove a recipe while the game is running.
 	 *
-	 * @since JEI 4.2.2
+	 * @since JEI 4.3.0
 	 */
+	void removeRecipe(IRecipeWrapper recipe, String recipeCategoryUid);
+
+	/**
+	 * Returns the {@link IRecipeWrapper} for this recipe.
+	 *
+	 * @param recipe            the recipe to get a wrapper for.
+	 * @param recipeCategoryUid the unique ID for the recipe category this recipe is a part of.
+	 *                          See {@link VanillaRecipeCategoryUid} for vanilla recipe category UIDs.
+	 * @return the {@link IRecipeWrapper} for this recipe. returns null if the recipe cannot be handled by JEI or its addons.
+	 * @since JEI 4.3.0
+	 */
+	@Nullable
+	IRecipeWrapper getRecipeWrapper(Object recipe, String recipeCategoryUid);
+
+	/**
+	 * Add a new recipe while the game is running.
+	 * This is only for things like gated recipes becoming available, like the ones in Thaumcraft.
+	 * Use your {@link IRecipeHandler#isRecipeValid(Object)} to determine which recipes are hidden, and when a recipe becomes valid you can add it here.
+	 * (note that {@link IRecipeHandler#isRecipeValid(Object)} must be true when the recipe is added here for it to work)
+	 *
+	 * @deprecated since JEI 4.3.0. Use {@link #addRecipe(IRecipeWrapper, String)}
+	 */
+	@Deprecated
+	void addRecipe(Object recipe);
+
+	/**
+	 * Remove a recipe while the game is running.
+	 *
+	 * @since JEI 4.2.2
+	 * @deprecated since JEI 4.3.0. Use {@link #removeRecipe(Object, String)}
+	 */
+	@Deprecated
 	void removeRecipe(Object recipe);
 }

@@ -10,10 +10,8 @@ import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
-import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
-import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -91,12 +89,8 @@ public class DebugRecipe extends BlankRecipeWrapper {
 					if (!recipeList.isEmpty()) {
 						IRecipe randomRecipe = recipeList.get(minecraft.world.rand.nextInt(recipeList.size()));
 						IRecipeRegistry recipeRegistry = jeiRuntime.getRecipeRegistry();
-						IRecipeHandler<IRecipe> recipeHandler = recipeRegistry.getRecipeHandler(randomRecipe.getClass());
-						if (recipeHandler != null) {
-							String recipeInfo = ErrorUtil.getInfoFromRecipe(randomRecipe, recipeHandler);
-							Log.warning("Removing random recipe: {}", recipeInfo);
-							recipeRegistry.removeRecipe(randomRecipe);
-						}
+						Log.warning("Removing random recipe: {}", randomRecipe);
+						recipeRegistry.removeRecipe(randomRecipe);
 					}
 				}
 			} else {

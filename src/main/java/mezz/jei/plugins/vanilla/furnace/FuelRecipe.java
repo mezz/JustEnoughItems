@@ -54,8 +54,4 @@ public class FuelRecipe extends BlankRecipeWrapper {
 		minecraft.fontRendererObj.drawString(smeltCountString, 24, 8, Color.gray.getRGB());
 		minecraft.fontRendererObj.drawString(burnTimeString, 24, 18, Color.gray.getRGB());
 	}
-
-	public List<List<ItemStack>> getInputs() {
-		return inputs;
-	}
 }
