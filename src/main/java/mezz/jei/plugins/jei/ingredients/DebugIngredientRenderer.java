@@ -9,6 +9,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.text.TextFormatting;
 
 public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredient> {
@@ -24,6 +25,7 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 			FontRenderer font = getFontRenderer(minecraft, ingredient);
 			font.drawString("JEI", xPosition, yPosition, Color.RED.getRGB());
 			font.drawString("#" + ingredient.getNumber(), xPosition, yPosition + 8, Color.RED.getRGB());
+			GlStateManager.color(1, 1, 1, 1);
 		}
 	}
 

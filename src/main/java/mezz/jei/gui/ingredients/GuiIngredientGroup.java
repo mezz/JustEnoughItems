@@ -12,6 +12,7 @@ import java.util.Set;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.Internal;
+import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.ITooltipCallback;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -127,6 +128,12 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	@Override
 	public void set(int slotIndex, @Nullable T value) {
 		set(slotIndex, Collections.singletonList(value));
+	}
+
+	@Override
+	public void setBackground(int slotIndex, IDrawable background) {
+		GuiIngredient<T> guiIngredient = guiIngredients.get(slotIndex);
+		guiIngredient.setBackground(background);
 	}
 
 	@Override

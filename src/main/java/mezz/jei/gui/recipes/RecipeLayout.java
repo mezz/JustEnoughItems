@@ -129,6 +129,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			background.draw(minecraft);
 			recipeCategory.drawExtras(minecraft);
 			recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight(), recipeMouseX, recipeMouseY);
+			// drawExtras and drawInfo often render text which messes with the color, this clears it
+			GlStateManager.color(1, 1, 1, 1);
 			if (shapelessIcon != null) {
 				shapelessIcon.draw(minecraft, background.getWidth());
 			}

@@ -40,8 +40,8 @@ public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 		this.localizedName = "debug";
 
 		ResourceLocation backgroundTexture = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
-		this.tankBackground = guiHelper.createDrawable(backgroundTexture, 176, 0, 20, 55);
-		this.tankOverlay = guiHelper.createDrawable(backgroundTexture, 176, 55, 12, 47);
+		this.tankBackground = guiHelper.createDrawable(backgroundTexture, 220, 196, 18, 60, -1, -1, -1, -1);
+		this.tankOverlay = guiHelper.createDrawable(backgroundTexture, 238, 196, 18, 60, -1, -1, -1, -1);
 	}
 
 	@Override
@@ -61,7 +61,6 @@ public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 
 	@Override
 	public void drawExtras(Minecraft minecraft) {
-		tankBackground.draw(minecraft);
 		IJeiRuntime runtime = JEIInternalPlugin.jeiRuntime;
 		if (runtime != null) {
 			IItemListOverlay itemListOverlay = runtime.getItemListOverlay();
@@ -107,15 +106,14 @@ public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 			}
 		});
 
-		guiFluidStacks.init(0, true, 4, 4, 12, 47, 2000, true, tankOverlay);
-		guiFluidStacks.init(1, true, 24, 0, 12, 47, 16000, true, null);
-		guiFluidStacks.init(2, false, 50, 0, 24, 24, 2000, true, tankOverlay);
-		guiFluidStacks.init(3, false, 90, 0, 12, 47, 100, false, tankOverlay);
+		guiFluidStacks.init(0, false, 90, 0, 16, 58, 16000, false, tankOverlay);
+		guiFluidStacks.init(1, true, 24, 0, 12, 47, 2000, true, null);
+
+		guiFluidStacks.setBackground(0, tankBackground);
 
 		List<FluidStack> fluidInputs = recipeWrapper.getFluidInputs();
 		guiFluidStacks.set(0, fluidInputs.get(0));
 		guiFluidStacks.set(1, fluidInputs.get(1));
-		guiFluidStacks.set(3, fluidInputs.get(0));
 
 		IGuiIngredientGroup<DebugIngredient> debugIngredientsGroup = recipeLayout.getIngredientsGroup(DebugIngredient.class);
 		debugIngredientsGroup.addTooltipCallback(new ITooltipCallback<DebugIngredient>() {

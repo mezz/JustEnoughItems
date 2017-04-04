@@ -21,9 +21,6 @@ public class BrewingRecipeCategory extends BlankRecipeCategory<BrewingRecipeWrap
 	private static final int brewIngredientSlot = 3;
 	private static final int outputSlot = 4; // for display only
 
-	private static final int outputSlotX = 80;
-	private static final int outputSlotY = 1;
-
 	private final IDrawable background;
 	private final IDrawable slotDrawable;
 	private final String localizedName;
@@ -64,7 +61,6 @@ public class BrewingRecipeCategory extends BlankRecipeCategory<BrewingRecipeWrap
 
 	@Override
 	public void drawExtras(Minecraft minecraft) {
-		slotDrawable.draw(minecraft, outputSlotX, outputSlotY);
 		blazeHeat.draw(minecraft, 5, 29);
 		bubbles.draw(minecraft, 8, 0);
 		arrow.draw(minecraft, 42, 1);
@@ -78,7 +74,9 @@ public class BrewingRecipeCategory extends BlankRecipeCategory<BrewingRecipeWrap
 		itemStacks.init(brewPotionSlot2, true, 23, 42);
 		itemStacks.init(brewPotionSlot3, true, 46, 35);
 		itemStacks.init(brewIngredientSlot, true, 23, 1);
-		itemStacks.init(outputSlot, false, outputSlotX, outputSlotY);
+		itemStacks.init(outputSlot, false, 80, 1);
+
+		itemStacks.setBackground(outputSlot, slotDrawable);
 
 		itemStacks.set(ingredients);
 	}

@@ -18,12 +18,14 @@ public class ItemDescriptionRecipeCategory extends BlankRecipeCategory<ItemDescr
 	public static final int recipeHeight = 125;
 	private final IDrawable background;
 	private final IDrawable icon;
+	private final IDrawable slotBackground;
 	private final String localizedName;
 
 	public ItemDescriptionRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.createBlankDrawable(recipeWidth, recipeHeight);
 		ResourceLocation recipeBackgroundResource = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
 		icon = guiHelper.createDrawable(recipeBackgroundResource, 196, 39, 16, 16);
+		slotBackground = guiHelper.getSlotDrawable();
 		localizedName = Translator.translateToLocal("gui.jei.category.itemDescription");
 	}
 
@@ -54,6 +56,7 @@ public class ItemDescriptionRecipeCategory extends BlankRecipeCategory<ItemDescr
 
 		int xPos = (recipeWidth - 18) / 2;
 		guiItemStacks.init(0, true, xPos, 0);
+		guiItemStacks.setBackground(0, slotBackground);
 		guiItemStacks.set(ingredients);
 	}
 }

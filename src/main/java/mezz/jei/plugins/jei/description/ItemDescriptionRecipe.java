@@ -91,11 +91,8 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 
 	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-		int xPos = (recipeWidth - slotDrawable.getWidth()) / 2;
-		int yPos = 0;
-		slotDrawable.draw(minecraft, xPos, yPos);
-		xPos = 0;
-		yPos += slotDrawable.getHeight() + 4;
+		int xPos = 0;
+		int yPos = slotDrawable.getHeight() + 4;
 
 		for (String descriptionLine : description) {
 			minecraft.fontRendererObj.drawString(descriptionLine, xPos, yPos, Color.black.getRGB());

@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.Internal;
+import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.gui.ITooltipCallback;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -42,6 +43,8 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	private final IIngredientHelper<T> ingredientHelper;
 	@Nullable
 	private ITooltipCallback<T> tooltipCallback;
+	@Nullable
+	private IDrawable background;
 
 	private boolean enabled;
 
@@ -105,6 +108,10 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		enabled = !this.displayIngredients.isEmpty();
 	}
 
+	public void setBackground(IDrawable background) {
+		this.background = background;
+	}
+
 	@Nullable
 	private T getMatch(Collection<T> ingredients, @Nullable IFocus<T> focus) {
 		if (focus != null && isMode(focus.getMode())) {
@@ -120,6 +127,10 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 
 	public void draw(Minecraft minecraft, int xOffset, int yOffset) {
 		cycleTimer.onDraw();
+
+		if (background != null) {
+			background.draw(minecraft, xOffset + rect.x, yOffset + rect.y);
+		}
 
 		T value = getDisplayedIngredient();
 		ingredientRenderer.render(minecraft, xOffset + rect.x + xPadding, yOffset + rect.y + yPadding, value);

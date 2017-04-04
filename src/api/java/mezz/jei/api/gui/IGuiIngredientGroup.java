@@ -46,6 +46,14 @@ public interface IGuiIngredientGroup<T> {
 	void set(int slotIndex, @Nullable T ingredient);
 
 	/**
+	 * Set a background image to draw behind the ingredient.
+	 * Some examples are slot background or tank background.
+	 *
+	 * @since JEI 4.3.1
+	 */
+	void setBackground(int slotIndex, IDrawable background);
+
+	/**
 	 * Add a callback to alter the tooltip for these ingredients.
 	 */
 	void addTooltipCallback(ITooltipCallback<T> tooltipCallback);

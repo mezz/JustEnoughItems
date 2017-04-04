@@ -36,7 +36,6 @@ public class ShapelessIcon {
 
 		GlStateManager.pushMatrix();
 		GlStateManager.scale(0.5, 0.5, 1.0);
-		GlStateManager.color(1f, 1f, 1f, 1f);
 		icon.draw(minecraft, shapelessIconX * 2, 0);
 		GlStateManager.popMatrix();
 	}
