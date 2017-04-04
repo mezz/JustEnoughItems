@@ -30,7 +30,6 @@ public class InputHandler {
 	private final IIngredientRegistry ingredientRegistry;
 	private final RecipesGui recipesGui;
 	private final ItemListOverlay itemListOverlay;
-	private final MouseHelper mouseHelper;
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<IShowsRecipeFocuses>();
 
 	private boolean clickHandled = false;
@@ -40,8 +39,6 @@ public class InputHandler {
 		this.ingredientRegistry = runtime.getIngredientRegistry();
 		this.recipesGui = runtime.getRecipesGui();
 		this.itemListOverlay = itemListOverlay;
-
-		this.mouseHelper = new MouseHelper();
 
 		this.showsRecipeFocuses.add(recipesGui);
 		this.showsRecipeFocuses.add(itemListOverlay);
@@ -226,7 +223,7 @@ public class InputHandler {
 			final boolean showRecipe = KeyBindings.showRecipe.isActiveAndMatches(eventKey);
 			final boolean showUses = KeyBindings.showUses.isActiveAndMatches(eventKey);
 			if (showRecipe || showUses) {
-				IClickedIngredient<?> clicked = getIngredientUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
+				IClickedIngredient<?> clicked = getIngredientUnderMouseForKey(MouseHelper.getX(), MouseHelper.getY());
 				if (clicked != null) {
 					IFocus.Mode mode = showRecipe ? IFocus.Mode.OUTPUT : IFocus.Mode.INPUT;
 					recipesGui.show(new Focus<Object>(mode, clicked.getValue()));

@@ -1,29 +1,54 @@
 package mezz.jei.input;
 
+import mezz.jei.config.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Mouse;
 
-public class MouseHelper {
+@Mod.EventBusSubscriber(modid = Constants.MOD_ID)
+public final class MouseHelper {
+	private static class DisplayInfo {
+		private final ScaledResolution scaledresolution;
+		private final int displayWidth;
+		private final int displayHeight;
 
-	private final ScaledResolution scaledresolution;
-	private final int displayWidth;
-	private final int displayHeight;
+		public DisplayInfo() {
+			Minecraft minecraft = Minecraft.getMinecraft();
+			displayWidth = minecraft.displayWidth;
+			displayHeight = minecraft.displayHeight;
+			scaledresolution = new ScaledResolution(minecraft);
+		}
 
-	public MouseHelper() {
-		Minecraft minecraft = Minecraft.getMinecraft();
-		displayWidth = minecraft.displayWidth;
-		displayHeight = minecraft.displayHeight;
-		scaledresolution = new ScaledResolution(minecraft);
+		public int getX() {
+			int i = scaledresolution.getScaledWidth();
+			return Mouse.getX() * i / displayWidth;
+		}
+
+		public int getY() {
+			int j = scaledresolution.getScaledHeight();
+			return j - Mouse.getY() * j / displayHeight - 1;
+		}
 	}
 
-	public int getX() {
-		int i = scaledresolution.getScaledWidth();
-		return Mouse.getX() * i / displayWidth;
+	private static DisplayInfo INFO = new DisplayInfo();
+
+	private MouseHelper() {
+
 	}
 
-	public int getY() {
-		int j = scaledresolution.getScaledHeight();
-		return j - Mouse.getY() * j / displayHeight - 1;
+	public static int getX() {
+		return INFO.getX();
+	}
+
+	public static int getY() {
+		return INFO.getY();
+	}
+
+	@SubscribeEvent
+	public static void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
+		INFO = new DisplayInfo();
 	}
 }

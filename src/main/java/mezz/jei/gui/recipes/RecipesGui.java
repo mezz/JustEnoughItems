@@ -464,6 +464,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	 *
 	 * @param guiScreen the GuiScreen to display.
 	 */
+	//TODO: remove in 1.12 because gui closing no longer drops items by default
 	public static void displayGuiScreenWithoutClose(@Nullable GuiScreen guiScreen) {
 		Minecraft mc = Minecraft.getMinecraft();
 		if (guiScreen == null && mc.world == null) {
