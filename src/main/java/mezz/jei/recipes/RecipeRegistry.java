@@ -362,7 +362,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	private <T> void removeRecipeUnchecked(T recipe, IRecipeCategory recipeCategory) {
-		IRecipeWrapper recipeWrapper = wrapperMap.remove(recipe);
+		IRecipeWrapper recipeWrapper = getRecipeWrapper(recipe, recipeCategory.getUid());
 		if (recipeWrapper != null) {
 			Ingredients ingredients = getIngredients(recipeWrapper);
 
@@ -431,6 +431,9 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Nullable
 	private <T> IRecipeWrapper getRecipeWrapper(T recipe, Class<? extends T> recipeClass, String recipeCategoryUid) {
+		if (wrapperMap.containsKey(recipe)) {
+			return wrapperMap.get(recipe);
+		}
 		IRecipeHandler<T> recipeHandler = getRecipeHandler(recipeClass, recipeCategoryUid);
 		if (recipeHandler != null) {
 			try {
@@ -446,7 +449,9 @@ public class RecipeRegistry implements IRecipeRegistry {
 			}
 
 			try {
-				return recipeHandler.getRecipeWrapper(recipe);
+				IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
+				wrapperMap.put(recipe, recipeWrapper);
+				return recipeWrapper;
 			} catch (RuntimeException e) {
 				logBrokenRecipeHandler(recipe, recipeHandler);
 				return null;
