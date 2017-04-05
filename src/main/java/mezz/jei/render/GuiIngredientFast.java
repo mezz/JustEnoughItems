@@ -30,8 +30,12 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.ForgeHooksClient;
@@ -102,13 +106,12 @@ public class GuiIngredientFast {
 			return;
 		}
 
-		ItemStack itemStack = (ItemStack) ingredient;
+		final ItemStack itemStack = (ItemStack) ingredient;
 
 		try {
 			renderItemAndEffectIntoGUI(itemStack);
 		} catch (RuntimeException e) {
-			logRenderError(this, e);
-			clear();
+			throw createRenderIngredientException(e, itemStack);
 		}
 	}
 
@@ -184,8 +187,7 @@ public class GuiIngredientFast {
 			try {
 				renderSlow(ingredient, area, padding);
 			} catch (RuntimeException e) {
-				logRenderError(this, e);
-				clear();
+				throw createRenderIngredientException(e, ingredient);
 			}
 		}
 	}
@@ -209,8 +211,7 @@ public class GuiIngredientFast {
 		try {
 			renderOverlay(minecraft, itemStack);
 		} catch (RuntimeException e) {
-			logRenderError(this, e);
-			clear();
+			throw createRenderIngredientException(e, itemStack);
 		}
 	}
 
@@ -382,19 +383,22 @@ public class GuiIngredientFast {
 		}
 	}
 
-	private static void logRenderError(GuiIngredientFast guiItemStack, Exception e) {
-		Object ingredient = guiItemStack.getIngredient();
-		logRenderError(ingredient, e);
-	}
-
-	private static <V> void logRenderError(@Nullable V ingredient, Exception e) {
-		if (ingredient == null) {
-			Log.error("Rendering ingredient crashed.", e);
-		} else {
-			IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-			IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-			String info = ingredientHelper.getErrorInfo(ingredient);
-			Log.error("Rendering ingredient crashed: {}", info, e);
-		}
+	private static <T> ReportedException createRenderIngredientException(Throwable throwable, final T ingredient) {
+		final IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredient);
+		CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering ingredient");
+		CrashReportCategory crashreportcategory = crashreport.makeCategory("Ingredient being rendered");
+		crashreportcategory.setDetail("Ingredient Mod", new ICrashReportDetail<String>() {
+			@Override
+			public String call() throws Exception {
+				return Internal.getModIdHelper().getModNameForIngredient(ingredient, ingredientHelper);
+			}
+		});
+		crashreportcategory.setDetail("Ingredient Info", new ICrashReportDetail<String>() {
+			@Override
+			public String call() throws Exception {
+				return ingredientHelper.getErrorInfo(ingredient);
+			}
+		});
+		throw new ReportedException(crashreport);
 	}
 }
