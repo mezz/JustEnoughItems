@@ -1,6 +1,7 @@
 package mezz.jei.gui.recipes;
 
 import javax.annotation.Nullable;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -178,10 +179,10 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 
 	@Override
 	public boolean isMouseOver(int mouseX, int mouseY) {
-		final int recipeMouseX = mouseX - posX;
-		final int recipeMouseY = mouseY - posY;
 		final IDrawable background = recipeCategory.getBackground();
-		return recipeMouseX >= 0 && recipeMouseX < background.getWidth() && recipeMouseY >= 0 && recipeMouseY < background.getHeight();
+		final Rectangle backgroundRect = new Rectangle(posX, posY, background.getWidth(), background.getHeight());
+		return backgroundRect.contains(mouseX, mouseY) ||
+				(recipeTransferButton != null && recipeTransferButton.isMouseOver());
 	}
 
 	@Override
