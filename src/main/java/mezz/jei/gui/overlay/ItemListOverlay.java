@@ -284,14 +284,15 @@ public class ItemListOverlay implements IItemListOverlay, IPaged, IMouseHandler,
 				SessionData.setFirstItemIndex(0);
 				updateLayout();
 			}
+			return true;
 		} else if (KeyBindings.nextPage.isActiveAndMatches(keyCode)) {
 			nextPage();
+			return true;
 		} else if (KeyBindings.previousPage.isActiveAndMatches(keyCode)) {
 			previousPage();
-		} else {
-			return false;
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	@Override
