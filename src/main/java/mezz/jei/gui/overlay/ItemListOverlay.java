@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableList;
 import mezz.jei.api.IItemListOverlay;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
+import mezz.jei.config.KeyBindings;
 import mezz.jei.config.SessionData;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.ingredients.IngredientFilter;
@@ -276,18 +277,21 @@ public class ItemListOverlay implements IItemListOverlay, IPaged, IMouseHandler,
 	}
 
 	public boolean onKeyPressed(char typedChar, int keyCode) {
-		if (hasKeyboardFocus()) {
-			boolean handled = searchField.textboxKeyTyped(typedChar, keyCode);
-			if (handled) {
-				boolean changed = Config.setFilterText(searchField.getText());
-				if (changed) {
-					SessionData.setFirstItemIndex(0);
-					updateLayout();
-				}
+		if (hasKeyboardFocus() &&
+			searchField.textboxKeyTyped(typedChar, keyCode)) {
+			boolean changed = Config.setFilterText(searchField.getText());
+			if (changed) {
+				SessionData.setFirstItemIndex(0);
+				updateLayout();
 			}
-			return handled;
+		} else if (KeyBindings.nextPage.isActiveAndMatches(keyCode)) {
+			nextPage();
+		} else if (KeyBindings.previousPage.isActiveAndMatches(keyCode)) {
+			previousPage();
+		} else {
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 	@Override

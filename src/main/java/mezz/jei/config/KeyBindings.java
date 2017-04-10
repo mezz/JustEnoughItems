@@ -15,6 +15,8 @@ public final class KeyBindings {
 	public static final KeyBinding showUses = new KeyBinding("key.jei.showUses", KeyConflictContext.GUI, Keyboard.KEY_U, categoryName);
 	public static final KeyBinding recipeBack = new KeyBinding("key.jei.recipeBack", KeyConflictContext.GUI, Keyboard.KEY_BACK, categoryName);
 	public static final KeyBinding toggleCheatMode = new KeyBinding("key.jei.toggleCheatMode", KeyConflictContext.GUI, Keyboard.KEY_NONE, categoryName);
+	public static final KeyBinding previousPage = new KeyBinding("key.jei.previousPage", KeyConflictContext.GUI, Keyboard.KEY_PRIOR, categoryName);
+	public static final KeyBinding nextPage = new KeyBinding("key.jei.nextPage", KeyConflictContext.GUI, Keyboard.KEY_NEXT, categoryName);
 
 	private KeyBindings() {
 	}
@@ -26,5 +28,7 @@ public final class KeyBindings {
 		ClientRegistry.registerKeyBinding(showUses);
 		ClientRegistry.registerKeyBinding(recipeBack);
 		ClientRegistry.registerKeyBinding(toggleCheatMode);
+		ClientRegistry.registerKeyBinding(previousPage);
+		ClientRegistry.registerKeyBinding(nextPage);
 	}
 }

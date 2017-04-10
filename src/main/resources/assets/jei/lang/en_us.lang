@@ -29,8 +29,10 @@ key.jei.toggleOverlay=Toggle Item List Overlay
 key.jei.focusSearch=Select Search Bar
 key.jei.showRecipe=Show Item Recipe
 key.jei.showUses=Show Item Uses
-key.jei.recipeBack=Show Previous Recipe Page
+key.jei.recipeBack=Show Previously Viewed Recipe
 key.jei.toggleCheatMode=Toggle Item Cheating Mode
+key.jei.previousPage=Show Next Page
+key.jei.nextPage=Show Previous Page
 
 # Config
 config.jei.default=Default
