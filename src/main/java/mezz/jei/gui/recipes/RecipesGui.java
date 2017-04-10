@@ -24,6 +24,7 @@ import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.InputHandler;
+import mezz.jei.input.MouseHelper;
 import mezz.jei.transfer.RecipeTransferUtil;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Translator;
@@ -312,8 +313,18 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
 		if (InputHandler.isInventoryCloseKey(keyCode) || InputHandler.isInventoryToggleKey(keyCode)) {
 			close();
+			keyHandled = true;
 		} else if (KeyBindings.recipeBack.isActiveAndMatches(keyCode)) {
 			back();
+			keyHandled = true;
+		} else if (!Internal.getRuntime().getItemListOverlay().isMouseOver(MouseHelper.getX(), MouseHelper.getY())) {
+			if (KeyBindings.nextPage.isActiveAndMatches(keyCode)) {
+				logic.nextPage();
+				keyHandled = true;
+			} else if (KeyBindings.previousPage.isActiveAndMatches(keyCode)) {
+				logic.previousPage();
+				keyHandled = true;
+			}
 		}
 	}
 
