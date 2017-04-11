@@ -55,6 +55,11 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 	}
 
 	@Override
+	public String getResourceId(DebugIngredient ingredient) {
+		return "JEI:debug_" + ingredient.getNumber();
+	}
+
+	@Override
 	public ItemStack cheatIngredient(DebugIngredient ingredient, boolean fullStack) {
 		CommandUtilServer.writeChatMessage(Minecraft.getMinecraft().player, "Debug ingredients cannot be cheated", TextFormatting.RED);
 		return ItemStack.EMPTY;

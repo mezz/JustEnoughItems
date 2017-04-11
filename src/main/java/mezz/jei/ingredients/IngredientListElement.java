@@ -26,6 +26,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	private final String oreDictString;
 	private final String creativeTabsString;
 	private final String colorString;
+	private final String resourceId;
 
 	@Nullable
 	public static <V> IngredientListElement<V> create(V ingredient, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer) {
@@ -59,6 +60,8 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		} else {
 			this.colorString = "";
 		}
+
+		this.resourceId = ingredientHelper.getResourceId(ingredient);
 
 		if (ingredient instanceof ItemStack) {
 			ItemStack itemStack = (ItemStack) ingredient;
@@ -128,5 +131,10 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	@Override
 	public String getColorString() {
 		return colorString;
+	}
+
+	@Override
+	public String getResourceId() {
+		return resourceId;
 	}
 }

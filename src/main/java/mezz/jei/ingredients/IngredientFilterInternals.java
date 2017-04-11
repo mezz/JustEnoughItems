@@ -26,6 +26,7 @@ public class IngredientFilterInternals {
 	private final GeneralizedSuffixTree oreDictTree;
 	private final GeneralizedSuffixTree creativeTabTree;
 	private final GeneralizedSuffixTree colorTree;
+	private final GeneralizedSuffixTree resourceIdTree;
 	private final Map<Character, GeneralizedSuffixTree> prefixedSearchTrees = new HashMap<Character, GeneralizedSuffixTree>();
 
 	@Nullable
@@ -47,6 +48,7 @@ public class IngredientFilterInternals {
 		this.prefixedSearchTrees.put('$', this.oreDictTree = new GeneralizedSuffixTree());
 		this.prefixedSearchTrees.put('%', this.creativeTabTree = new GeneralizedSuffixTree());
 		this.prefixedSearchTrees.put('^', this.colorTree = new GeneralizedSuffixTree());
+		this.prefixedSearchTrees.put('&', this.resourceIdTree = new GeneralizedSuffixTree());
 
 		buildSuffixTrees(ingredientList);
 	}
@@ -106,6 +108,15 @@ public class IngredientFilterInternals {
 				colorTree.put(colorString, i);
 				if (colorSearchMode == Config.SearchMode.ENABLED) {
 					searchTree.put(colorString, i);
+				}
+			}
+
+			Config.SearchMode idSearchMode = Config.getResourceIdSearchMode();
+			if (idSearchMode != Config.SearchMode.DISABLED) {
+				String resourceIdString = element.getResourceId();
+				resourceIdTree.put(resourceIdString, i);
+				if (idSearchMode == Config.SearchMode.ENABLED) {
+					searchTree.put(resourceIdString, i);
 				}
 			}
 		}

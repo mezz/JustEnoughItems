@@ -66,6 +66,8 @@ config.jei.search.creativeTabSearchMode=%%CreativeTab
 config.jei.search.creativeTabSearchMode.comment=Search mode for Creative Tab Names (prefix: %)
 config.jei.search.colorSearchMode=^Color
 config.jei.search.colorSearchMode.comment=Search mode for Item Colors (prefix: ^)
+config.jei.search.resourceIdSearchMode=&ResourceId
+config.jei.search.resourceIdSearchMode.comment=Search mode for resources ids (prefix: &)
 
 config.jei.advanced=Advanced
 config.jei.advanced.comment=Advanced config options to change the way JEI functions.

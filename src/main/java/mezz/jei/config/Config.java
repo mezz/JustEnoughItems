@@ -143,6 +143,10 @@ public final class Config {
 		return values.colorSearchMode;
 	}
 
+	public static SearchMode getResourceIdSearchMode() {
+		return values.resourceIdSearchMode;
+	}
+
 	public enum SearchMode {
 		ENABLED, REQUIRE_PREFIX, DISABLED
 	}
@@ -302,6 +306,7 @@ public final class Config {
 		values.oreDictSearchMode = config.getEnum("oreDictSearchMode", CATEGORY_SEARCH, defaultValues.oreDictSearchMode, searchModes);
 		values.creativeTabSearchMode = config.getEnum("creativeTabSearchMode", CATEGORY_SEARCH, defaultValues.creativeTabSearchMode, searchModes);
 		values.colorSearchMode = config.getEnum("colorSearchMode", CATEGORY_SEARCH, defaultValues.colorSearchMode, searchModes);
+		values.resourceIdSearchMode = config.getEnum("resourceIdSearchMode", CATEGORY_SEARCH, defaultValues.resourceIdSearchMode, searchModes);
 		if (config.getCategory(CATEGORY_SEARCH).hasChanged()) {
 			needsReload = true;
 		}
