@@ -13,6 +13,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.StringUtils;
 
 public final class CommandUtil {
@@ -29,8 +30,7 @@ public final class CommandUtil {
 	 */
 	public static void giveStack(ItemStack itemStack, int amount) {
 		if (SessionData.isJeiOnServer()) {
-			ItemStack sendStack = itemStack.copy();
-			sendStack.setCount(amount);
+			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
 			PacketGiveItemStack packet = new PacketGiveItemStack(sendStack);
 			JustEnoughItems.getProxy().sendPacketToServer(packet);
 		} else {
@@ -39,7 +39,8 @@ public final class CommandUtil {
 	}
 
 	/**
-	 * Fallback for when JEI is not on the server, tries to use the /give command.
+	 * Fallback for when JEI is not on the server, tries to use the /give command
+	 * Uses the Creative Inventory Action Packet when in creative, which doesn't require the player to be op.
 	 */
 	private static void giveStackVanilla(ItemStack itemStack, int amount) {
 		if (itemStack.isEmpty()) {
@@ -53,9 +54,15 @@ public final class CommandUtil {
 		Preconditions.checkNotNull(itemResourceLocation);
 
 		EntityPlayerSP sender = Minecraft.getMinecraft().player;
-		String[] commandParameters = CommandUtilServer.getGiveCommandParameters(sender, itemStack, amount);
-		String fullCommand = "/give " + StringUtils.join(commandParameters, " ");
-		sendChatMessage(sender, fullCommand);
+		if (sender.isCreative()) {
+			int slot = sender.inventory.getBestHotbarSlot() + 36;
+			ItemStack toSendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
+			Minecraft.getMinecraft().playerController.sendSlotPacket(toSendStack, slot);
+		} else {
+			String[] commandParameters = CommandUtilServer.getGiveCommandParameters(sender, itemStack, amount);
+			String fullCommand = "/give " + StringUtils.join(commandParameters, " ");
+			sendChatMessage(sender, fullCommand);
+		}
 	}
 
 	private static void sendChatMessage(EntityPlayerSP sender, String chatMessage) {
