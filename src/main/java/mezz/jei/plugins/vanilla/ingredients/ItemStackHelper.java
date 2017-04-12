@@ -78,7 +78,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			throw new IllegalStateException("item.getRegistryName() returned null for: " + stackInfo);
 		}
 
-		return itemName.toString();
+		return itemName.getResourcePath();
 	}
 
 	@Override

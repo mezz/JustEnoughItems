@@ -56,7 +56,7 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 
 	@Override
 	public String getResourceId(DebugIngredient ingredient) {
-		return "JEI:debug_" + ingredient.getNumber();
+		return "debug_" + ingredient.getNumber();
 	}
 
 	@Override

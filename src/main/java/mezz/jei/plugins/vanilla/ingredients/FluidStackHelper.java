@@ -88,7 +88,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 			return "";
 		}
 		ResourceLocation fluidResourceName = new ResourceLocation(defaultFluidName);
-		return fluidResourceName.toString();
+		return fluidResourceName.getResourcePath();
 	}
 
 	@Override
