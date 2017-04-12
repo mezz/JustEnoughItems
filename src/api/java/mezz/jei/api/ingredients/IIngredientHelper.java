@@ -59,6 +59,14 @@ public interface IIngredientHelper<V> {
 	 */
 	Iterable<Color> getColors(V ingredient);
 
+
+	/**
+	 * Return the resource id of the given ingredient.
+	 *
+	 * @since JEI 4.3.2
+	 */
+	String getResourceId(V ingredient);
+
 	/**
 	 * An action for when a player is in cheat mode and clicks an ingredient in the list.
 	 * <p>

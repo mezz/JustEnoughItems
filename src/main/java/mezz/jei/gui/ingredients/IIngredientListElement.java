@@ -20,4 +20,6 @@ public interface IIngredientListElement<V> {
 	String getCreativeTabsString();
 
 	String getColorString();
+
+	String getResourceId();
 }

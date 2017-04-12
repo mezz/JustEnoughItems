@@ -68,6 +68,20 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
+	public String getResourceId(ItemStack ingredient) {
+		ErrorUtil.checkNotEmpty(ingredient);
+
+		Item item = ingredient.getItem();
+		ResourceLocation itemName = item.getRegistryName();
+		if (itemName == null) {
+			String stackInfo = getErrorInfo(ingredient);
+			throw new IllegalStateException("item.getRegistryName() returned null for: " + stackInfo);
+		}
+
+		return itemName.getResourcePath();
+	}
+
+	@Override
 	public ItemStack cheatIngredient(ItemStack ingredient, boolean fullStack) {
 		return ingredient;
 	}

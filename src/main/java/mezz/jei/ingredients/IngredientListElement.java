@@ -26,6 +26,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	private final String oreDictString;
 	private final String creativeTabsString;
 	private final String colorString;
+	private final String resourceId;
 
 	@Nullable
 	public static <V> IngredientListElement<V> create(V ingredient, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer) {
@@ -59,6 +60,16 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		} else {
 			this.colorString = "";
 		}
+
+		String resourceIdTry;
+		try {
+			resourceIdTry = ingredientHelper.getResourceId(ingredient);
+		} catch (AbstractMethodError ignored) {
+			// Since older IIngredientHelpers won't have the new getResourceId, we'll be using getUniqueId
+			resourceIdTry = ingredientHelper.getUniqueId(ingredient);
+		}
+
+		this.resourceId = resourceIdTry;
 
 		if (ingredient instanceof ItemStack) {
 			ItemStack itemStack = (ItemStack) ingredient;
@@ -128,5 +139,10 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	@Override
 	public String getColorString() {
 		return colorString;
+	}
+
+	@Override
+	public String getResourceId() {
+		return resourceId;
 	}
 }

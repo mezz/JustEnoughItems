@@ -82,6 +82,16 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	}
 
 	@Override
+	public String getResourceId(FluidStack ingredient) {
+		String defaultFluidName = FluidRegistry.getDefaultFluidName(ingredient.getFluid());
+		if (defaultFluidName == null) {
+			return "";
+		}
+		ResourceLocation fluidResourceName = new ResourceLocation(defaultFluidName);
+		return fluidResourceName.getResourcePath();
+	}
+
+	@Override
 	public ItemStack cheatIngredient(FluidStack ingredient, boolean fullStack) {
 		Fluid fluid = ingredient.getFluid();
 		if (fluid == FluidRegistry.WATER) {

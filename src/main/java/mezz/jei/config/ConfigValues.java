@@ -13,6 +13,7 @@ public class ConfigValues {
 	public Config.SearchMode oreDictSearchMode = Config.SearchMode.REQUIRE_PREFIX;
 	public Config.SearchMode creativeTabSearchMode = Config.SearchMode.REQUIRE_PREFIX;
 	public Config.SearchMode colorSearchMode = Config.SearchMode.DISABLED;
+	public Config.SearchMode resourceIdSearchMode = Config.SearchMode.DISABLED;
 
 	// per-world
 	public boolean overlayEnabled = true;
