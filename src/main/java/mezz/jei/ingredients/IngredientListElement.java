@@ -61,7 +61,15 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 			this.colorString = "";
 		}
 
-		this.resourceId = ingredientHelper.getResourceId(ingredient);
+		String resourceIdTry;
+		try {
+			resourceIdTry = ingredientHelper.getResourceId(ingredient);
+		} catch (AbstractMethodError ignored) {
+			// Since older IIngredientHelpers won't have the new getResourceId, we'll be using getUniqueId
+			resourceIdTry = ingredientHelper.getUniqueId(ingredient);
+		}
+
+		this.resourceId = resourceIdTry;
 
 		if (ingredient instanceof ItemStack) {
 			ItemStack itemStack = (ItemStack) ingredient;
