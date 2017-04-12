@@ -55,8 +55,17 @@ public final class CommandUtil {
 
 		EntityPlayerSP sender = Minecraft.getMinecraft().player;
 		if (sender.isCreative()) {
-			int slot = sender.inventory.getBestHotbarSlot() + 36;
 			ItemStack toSendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
+			int slot = sender.inventory.getSlotFor(toSendStack);
+			ItemStack currentStackInSlot = slot == -1 ? ItemStack.EMPTY : sender.inventory.getStackInSlot(slot);
+			// Check if the current stack is full or not, if so get the first free slot
+			if (slot == -1 || currentStackInSlot.getMaxStackSize() > currentStackInSlot.getCount()) {
+				slot = sender.inventory.getFirstEmptyStack();
+				if (slot == -1) {
+					// if there is no free slot, use the best hotbar slot
+					slot = sender.inventory.getBestHotbarSlot() + 36;
+				}
+			}
 			Minecraft.getMinecraft().playerController.sendSlotPacket(toSendStack, slot);
 		} else {
 			String[] commandParameters = CommandUtilServer.getGiveCommandParameters(sender, itemStack, amount);
