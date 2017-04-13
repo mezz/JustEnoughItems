@@ -13,6 +13,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.StringUtils;
 
 public final class CommandUtil {
@@ -29,8 +30,7 @@ public final class CommandUtil {
 	 */
 	public static void giveStack(ItemStack itemStack, int amount) {
 		if (SessionData.isJeiOnServer()) {
-			ItemStack sendStack = itemStack.copy();
-			sendStack.setCount(amount);
+			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
 			PacketGiveItemStack packet = new PacketGiveItemStack(sendStack);
 			JustEnoughItems.getProxy().sendPacketToServer(packet);
 		} else {
@@ -39,7 +39,8 @@ public final class CommandUtil {
 	}
 
 	/**
-	 * Fallback for when JEI is not on the server, tries to use the /give command.
+	 * Fallback for when JEI is not on the server, tries to use the /give command
+	 * Uses the Creative Inventory Action Packet when in creative, which doesn't require the player to be op.
 	 */
 	private static void giveStackVanilla(ItemStack itemStack, int amount) {
 		if (itemStack.isEmpty()) {
@@ -53,9 +54,13 @@ public final class CommandUtil {
 		Preconditions.checkNotNull(itemResourceLocation);
 
 		EntityPlayerSP sender = Minecraft.getMinecraft().player;
-		String[] commandParameters = CommandUtilServer.getGiveCommandParameters(sender, itemStack, amount);
-		String fullCommand = "/give " + StringUtils.join(commandParameters, " ");
-		sendChatMessage(sender, fullCommand);
+		if (sender.isCreative()) {
+			sendCreativeInventoryActions(sender, itemStack, amount);
+		} else {
+			String[] commandParameters = CommandUtilServer.getGiveCommandParameters(sender, itemStack, amount);
+			String fullCommand = "/give " + StringUtils.join(commandParameters, " ");
+			sendChatMessage(sender, fullCommand);
+		}
 	}
 
 	private static void sendChatMessage(EntityPlayerSP sender, String chatMessage) {
@@ -70,5 +75,35 @@ public final class CommandUtil {
 			chatMessageComponent.getStyle().setColor(TextFormatting.RED);
 			sender.sendStatusMessage(chatMessageComponent, false);
 		}
+	}
+
+	private static void sendCreativeInventoryActions(EntityPlayerSP sender, ItemStack stack, int amount) {
+		int i = 0; // starting in the inventory, not armour or crafting slots
+		while (i < sender.inventory.mainInventory.size() && amount > 0) {
+			ItemStack currentStack = sender.inventory.mainInventory.get(i);
+			if (currentStack.isEmpty()) {
+				ItemStack sendAllRemaining = ItemHandlerHelper.copyStackWithSize(stack, amount);
+				sendSlotPacket(sendAllRemaining, i);
+				amount = 0;
+			} else if (currentStack.isItemEqual(stack) && currentStack.getMaxStackSize() > currentStack.getCount()) {
+				int canAdd = Math.min(currentStack.getMaxStackSize() - currentStack.getCount(), amount);
+				ItemStack fillRemainingSpace = ItemHandlerHelper.copyStackWithSize(stack, canAdd + currentStack.getCount());
+				sendSlotPacket(fillRemainingSpace, i);
+				amount -= canAdd;
+			}
+			i++;
+		}
+		if (amount > 0) {
+			ItemStack toDrop = ItemHandlerHelper.copyStackWithSize(stack, amount);
+			sendSlotPacket(toDrop, -1);
+		}
+	}
+
+	private static void sendSlotPacket(ItemStack stack, int mainInventorySlot) {
+		if (mainInventorySlot < 9 && mainInventorySlot != -1) {
+			// slot ID for the message is different from the slot id used in the mainInventory
+			mainInventorySlot += 36;
+		}
+		Minecraft.getMinecraft().playerController.sendSlotPacket(stack, mainInventorySlot);
 	}
 }
