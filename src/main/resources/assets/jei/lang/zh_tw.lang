@@ -1,7 +1,7 @@
-# Tooltips 提示
+# Tooltips
 jei.tooltip.config=JEI配寘
-jei.tooltip.show.recipes=顯示合成錶
-jei.tooltip.show.all.recipes=顯示所有合成錶
+jei.tooltip.show.recipes=顯示合成配方
+jei.tooltip.show.all.recipes=顯示所有合成配方
 jei.tooltip.delete.item=點擊删除
 jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
 jei.tooltip.liquid.amount=%,d mB
@@ -11,32 +11,34 @@ jei.tooltip.item.colors=顏色：%s
 jei.tooltip.shapeless.recipe=無序合成
 jei.tooltip.cheat.mode=作弊模式
 
-# Error Tooltips 錯誤提示
+# Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=遺失物品
 jei.tooltip.error.recipe.transfer.inventory.full=物品欄已滿
 jei.tooltip.error.recipe.transfer.unknown=未知錯誤，請查閱日誌獲得詳細資訊
-jei.tooltip.error.recipe.transfer.no.server=服務器必須安裝JEI
+jei.tooltip.error.recipe.transfer.no.server=伺服器必須安裝JEI
 jei.tooltip.error.recipe.transfer.too.large.player.inventory=合成配方不是2×2的
 jei.tooltip.error.crash=提示錯誤，請查看日誌
 
-# Error Messages 錯誤消息
-jei.chat.error.command.too.long=JEI必須安裝在服務器才能處理這個聊天命令，這對Minecraft來說太長了。
+# Error Messages
+jei.chat.error.command.too.long=JEI必須安裝在伺服器才能處理這個聊天指令，這對Minecraft來說太長了。
 jei.chat.error.no.cheat.permission.1=你沒有使用JEI作弊模式的許可權。
 jei.chat.error.no.cheat.permission.2=可以使用/give命令或處在創造模式下的玩家擁有此許可權。
 
-# Key Bindings 按鍵綁定
+# Key Bindings
 key.jei.toggleOverlay=切換物品清單疊層
-key.jei.focusSearch=高亮搜索框
-key.jei.showRecipe=顯示物品合成錶
+key.jei.focusSearch=選擇搜索框
+key.jei.showRecipe=顯示物品配方
 key.jei.showUses=顯示物品用途
-key.jei.recipeBack=顯示上一頁
+key.jei.recipeBack=顯示上次查看的配方
 key.jei.toggleCheatMode=開關作弊模式
+key.jei.previousPage=顯示下一頁
+key.jei.nextPage=顯示上一頁
 
-# Config 配寘
-config.jei.default=默認
+# Config
+config.jei.default=預設
 config.jei.valid=有效
 
-config.jei.title=%MODNAME - 配寘
+config.jei.title=%MODNAME 設定
 
 config.jei.mode=模式
 config.jei.mode.comment=切換JEI工作模式。
@@ -52,21 +54,23 @@ config.jei.interface.overlayEnabled.comment=在打開的GUI一側顯示物品清
 config.jei.interface.recipeAnimationsEnabled=合成介面動畫
 config.jei.interface.recipeAnimationsEnabled.comment=顯示部分合成的動畫效果，如熔爐火焰、進度條等。
 
-config.jei.search=搜索選項
-config.jei.search.comment=關於搜索的設定。
-config.jei.search.atPrefixRequiredForModName=需要@來按模組名搜索
-config.jei.search.atPrefixRequiredForModName.comment=當按模組名搜索物品時，要求使用“@”作為首碼。
-config.jei.search.prefixRequiredForTooltipSearch=需要#來按物品提示搜索
-config.jei.search.prefixRequiredForTooltipSearch.comment=當按物品提示搜索時，要求使用“#”作為首碼。
-config.jei.search.prefixRequiredForOreDictSearch=需要$來按礦物詞典搜索
-config.jei.search.prefixRequiredForOreDictSearch.comment=當按礦物詞典搜索時，要求使用“$”作為首碼。
-config.jei.search.prefixRequiredForCreativeTabSearch=需要%%來按創造模式標籤頁搜索
-config.jei.search.prefixRequiredForCreativeTabSearch.comment=當按創造模式物品欄的標籤頁搜索時，要求使用“%”作為首碼。
-config.jei.search.prefixRequiredForColorSearch=需要^來按顏色搜索
-config.jei.search.prefixRequiredForColorSearch.comment=當按物品顏色搜索時，要求使用“^”作為首碼。
+config.jei.search=搜尋選項
+config.jei.search.comment=搜尋框的顯示設定。
+config.jei.search.modNameSearchMode=@ModName
+config.jei.search.modNameSearchMode.comment=依模組名稱搜尋(前綴：@)
+config.jei.search.tooltipSearchMode=#Tooltip
+config.jei.search.tooltipSearchMode.comment=依物品提示搜尋(前綴：#)
+config.jei.search.oreDictSearchMode=$OreDictionary
+config.jei.search.oreDictSearchMode.comment=依礦物辭典搜尋(前綴：$)
+config.jei.search.creativeTabSearchMode=%%CreativeTab
+config.jei.search.creativeTabSearchMode.comment=依創造模式標籤搜尋(前綴：%)
+config.jei.search.colorSearchMode=^Color
+config.jei.search.colorSearchMode.comment=依物品顏色搜尋(前綴：^)
+config.jei.search.resourceIdSearchMode=&ResourceId
+config.jei.search.resourceIdSearchMode.comment=依 resources ids 搜尋(前綴：&)
 
-config.jei.advanced=高級設定
-config.jei.advanced.comment=用於更改JEI功能的高級選項。
+config.jei.advanced=進階設定
+config.jei.advanced.comment=用於更改JEI功能的進階選項。
 config.jei.advanced.itemBlacklist=物品黑名單
 config.jei.advanced.itemBlacklist.comment=黑名單中物品將不會顯示於JEI物品清單。添加格式：modId[:name[:meta]]。使用編輯模式可自動添加或删除這裡的條目。
 config.jei.advanced.colorSearchEnabled=啟用顏色搜索
@@ -78,7 +82,7 @@ config.jei.advanced.centerSearchBarEnabled.comment=啟用後，搜索框會被�
 config.jei.advanced.modNameFormat=模組名稱格式
 config.jei.advanced.modNameFormat.comment=定義JEI介面的資訊提示中的Mod名稱格式。留空以禁用。
 
-# Edit Mode 編輯模式
+# Edit Mode
 gui.jei.editMode.description=JEI物品清單編輯模式：
 gui.jei.editMode.description.hide=按住%CTRL點擊以隱藏。
 gui.jei.editMode.description.show=已隱藏。按住%CTRL點擊以顯示。
@@ -87,7 +91,7 @@ gui.jei.editMode.description.show.wild=相同ID物品以隱藏。按住%CTRL右�
 gui.jei.editMode.description.hide.mod.id=同時按下%CTRL和SHIFT時點擊以按模組ID隱藏。
 gui.jei.editMode.description.show.mod.id=已按模組ID隱藏。同時按下%CTRL和SHIFT時點擊以顯示。
 
-#PC/Linux Control Key 控制鍵
+#PC/Linux Control Key
 key.jei.ctrl=CTRL
 #Mac Command Key
 key.jei.ctrl.mac=CMD
@@ -101,10 +105,10 @@ gui.jei.category.fuel.smeltCount.single=燒煉1個物品
 gui.jei.category.fuel.smeltCount=燒煉%s個物品
 gui.jei.category.fuel.burnTime=燃燒時限：%s
 gui.jei.category.brewing=釀造
-gui.jei.category.brewing.steps=需要步數：%s
+gui.jei.category.brewing.steps=需要步驟：%s
 gui.jei.category.itemDescription=描述
 
-# DEBUG 調試 （調試模式，無需翻譯）
-description.jei.wooden.door.1=木門允許你封锁怪物進入你的建築。\n正在測試。
-description.jei.wooden.door.2=點擊一扇門來把它的狀態從開放改變到關閉，或反之。
-description.jei.wooden.door.3=木制的門可以通過紅石電路打開/關閉。
+# DEBUG (for debug mode, do not need translation)
+description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.
+description.jei.wooden.door.2=Clicking on a door changes its state from open to closed and visa versa.
+description.jei.wooden.door.3=Wooden Doors can be opened/closed via Redstone Circuits.
