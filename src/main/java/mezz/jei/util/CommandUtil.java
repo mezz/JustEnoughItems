@@ -54,13 +54,20 @@ public final class CommandUtil {
 		Preconditions.checkNotNull(itemResourceLocation);
 
 		EntityPlayerSP sender = Minecraft.getMinecraft().player;
-		if (sender.isCreative()) {
+		if (sender.canUseCommand(2, "give")) {
+			sendGiveAction(sender, itemStack, amount);
+		} else if (sender.isCreative()) {
 			sendCreativeInventoryActions(sender, itemStack, amount);
 		} else {
-			String[] commandParameters = CommandUtilServer.getGiveCommandParameters(sender, itemStack, amount);
-			String fullCommand = "/give " + StringUtils.join(commandParameters, " ");
-			sendChatMessage(sender, fullCommand);
+			// try this in case the vanilla server has permissions set so regular players can use /give
+			sendGiveAction(sender, itemStack, amount);
 		}
+	}
+
+	private static void sendGiveAction(EntityPlayerSP sender, ItemStack itemStack, int amount) {
+		String[] commandParameters = CommandUtilServer.getGiveCommandParameters(sender, itemStack, amount);
+		String fullCommand = "/give " + StringUtils.join(commandParameters, " ");
+		sendChatMessage(sender, fullCommand);
 	}
 
 	private static void sendChatMessage(EntityPlayerSP sender, String chatMessage) {
