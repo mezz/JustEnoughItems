@@ -55,18 +55,7 @@ public final class CommandUtil {
 
 		EntityPlayerSP sender = Minecraft.getMinecraft().player;
 		if (sender.isCreative()) {
-			ItemStack toSendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
-			int slot = sender.inventory.getSlotFor(toSendStack);
-			ItemStack currentStackInSlot = slot == -1 ? ItemStack.EMPTY : sender.inventory.getStackInSlot(slot);
-			// Check if the current stack is full or not, if so get the first free slot
-			if (slot == -1 || currentStackInSlot.getMaxStackSize() > currentStackInSlot.getCount()) {
-				slot = sender.inventory.getFirstEmptyStack();
-				if (slot == -1) {
-					// if there is no free slot, use the best hotbar slot
-					slot = sender.inventory.getBestHotbarSlot() + 36;
-				}
-			}
-			Minecraft.getMinecraft().playerController.sendSlotPacket(toSendStack, slot);
+			sendCreativeInventoryActions(sender, itemStack, amount);
 		} else {
 			String[] commandParameters = CommandUtilServer.getGiveCommandParameters(sender, itemStack, amount);
 			String fullCommand = "/give " + StringUtils.join(commandParameters, " ");
@@ -86,5 +75,35 @@ public final class CommandUtil {
 			chatMessageComponent.getStyle().setColor(TextFormatting.RED);
 			sender.sendStatusMessage(chatMessageComponent, false);
 		}
+	}
+
+	private static void sendCreativeInventoryActions(EntityPlayerSP sender, ItemStack stack, int amount) {
+		int i = 0; // starting in the inventory, not armour or crafting slots
+		while (i < sender.inventory.mainInventory.size() && amount > 0) {
+			ItemStack currentStack = sender.inventory.mainInventory.get(i);
+			if (currentStack.isEmpty()) {
+				ItemStack sendAllRemaining = ItemHandlerHelper.copyStackWithSize(stack, amount);
+				sendSlotPacket(sendAllRemaining, i);
+				amount = 0;
+			} else if (currentStack.isItemEqual(stack) && currentStack.getMaxStackSize() > currentStack.getCount()) {
+				int canAdd = Math.min(currentStack.getMaxStackSize() - currentStack.getCount(), amount);
+				ItemStack fillRemainingSpace = ItemHandlerHelper.copyStackWithSize(stack, canAdd + currentStack.getCount());
+				sendSlotPacket(fillRemainingSpace, i);
+				amount -= canAdd;
+			}
+			i++;
+		}
+		if (amount > 0) {
+			ItemStack toDrop = ItemHandlerHelper.copyStackWithSize(stack, amount);
+			sendSlotPacket(toDrop, -1);
+		}
+	}
+
+	private static void sendSlotPacket(ItemStack stack, int mainInventorySlot) {
+		if (mainInventorySlot < 9 && mainInventorySlot != -1) {
+			// slot ID for the message is different from the slot id used in the mainInventory
+			mainInventorySlot += 36;
+		}
+		Minecraft.getMinecraft().playerController.sendSlotPacket(stack, mainInventorySlot);
 	}
 }
