@@ -34,6 +34,7 @@ import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
 @SuppressWarnings("unused")
 public class ProxyCommonClient extends ProxyCommon {
@@ -166,6 +167,13 @@ public class ProxyCommonClient extends ProxyCommon {
 			Internal.getIngredientLookupMemory().saveToFile();
 		} catch (RuntimeException e) {
 			Log.error("Failed to save ingredient lookup memory.", e);
+		}
+	}
+
+	@SubscribeEvent
+	public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
+		if (!event.isLocal() && !event.getConnectionType().equals("MODDED")) {
+			SessionData.onConnectedToServer(false);
 		}
 	}
 }
