@@ -29,12 +29,14 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeRegistryPlugin;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.ingredients.Ingredients;
+import mezz.jei.plugins.vanilla.anvil.AnvilRecipeWrapper;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipe;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
@@ -376,12 +378,35 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
+	@Deprecated
 	public void addSmeltingRecipe(List<ItemStack> inputs, ItemStack output) {
 		ErrorUtil.checkNotEmpty(inputs, "inputs");
 		Preconditions.checkNotNull(output, "null output");
 
 		SmeltingRecipe smeltingRecipe = new SmeltingRecipe(inputs, output);
 		addRecipe(smeltingRecipe);
+	}
+
+	@Override
+	public IRecipeWrapper createSmeltingRecipe(List<ItemStack> inputs, ItemStack output) {
+		ErrorUtil.checkNotEmpty(inputs, "inputs");
+		Preconditions.checkNotNull(output, "null output");
+
+		SmeltingRecipe smeltingRecipe = new SmeltingRecipe(inputs, output);
+		addRecipe(smeltingRecipe);
+		return smeltingRecipe;
+	}
+
+	@Override
+	public IRecipeWrapper createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
+		ErrorUtil.checkNotEmpty(leftInput);
+		ErrorUtil.checkNotEmpty(rightInputs, "rightInputs");
+		ErrorUtil.checkNotEmpty(outputs, "outputs");
+		Preconditions.checkArgument(rightInputs.size() == outputs.size(), "Input and output sizes must match.");
+
+		AnvilRecipeWrapper anvilRecipeWrapper = new AnvilRecipeWrapper(leftInput, rightInputs, outputs);
+		addRecipe(Collections.singletonList(anvilRecipeWrapper), VanillaRecipeCategoryUid.ANVIL);
+		return anvilRecipeWrapper;
 	}
 
 	@Override
