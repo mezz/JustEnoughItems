@@ -70,7 +70,7 @@ public class IngredientLookupMemory {
 				final int categoryIndex = getRecipeCategoryIndex(recipeCategories, stateFromFile.categoryUid);
 				if (categoryIndex >= 0) {
 					IRecipeCategory recipeCategory = recipeCategories.get(categoryIndex);
-					if (stateFromFile.recipeIndex < this.recipeRegistry.getRecipeWrappers(recipeCategory).size()) {
+					if (stateFromFile.recipeIndex < this.recipeRegistry.getRecipeWrappers(recipeCategory, focus).size()) {
 						state = new IngredientLookupState(focus, recipeCategories, categoryIndex, stateFromFile.recipeIndex);
 					}
 				}
