@@ -44,7 +44,7 @@ public class GuiEventHandler {
 	private void onNewScreen(@Nullable GuiScreen screen) {
 		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
 		itemListOverlay.updateScreen(screen);
-		if (itemListOverlay.isEnabled() && inputHandler == null) {
+		if (inputHandler == null) {
 			inputHandler = new InputHandler(runtime, itemListOverlay);
 		}
 	}
