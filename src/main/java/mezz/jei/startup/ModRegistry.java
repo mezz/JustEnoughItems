@@ -98,14 +98,14 @@ public class ModRegistry implements IModRegistry {
 	@Override
 	@Deprecated
 	public void addRecipes(Collection recipes) {
-		ErrorUtil.checkNotEmpty(recipes, "recipes");
+		ErrorUtil.checkNotNull(recipes, "recipes");
 
 		this.unsortedRecipes.addAll(recipes);
 	}
 
 	@Override
 	public void addRecipes(Collection<?> recipes, String recipeCategoryUid) {
-		ErrorUtil.checkNotEmpty(recipes, "recipes");
+		ErrorUtil.checkNotNull(recipes, "recipes");
 		Preconditions.checkNotNull(recipeCategoryUid, "recipeCategoryUid must not be null");
 		//TODO : add this without breaking description recipes
 //		Preconditions.checkArgument(this.recipeCategoryUids.contains(recipeCategoryUid), "No recipe category has been registered for recipeCategoryUid %s", recipeCategoryUid);

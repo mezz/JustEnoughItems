@@ -162,4 +162,8 @@ public final class ErrorUtil {
 		Preconditions.checkNotNull(values, "%s must not be null.", name);
 		Preconditions.checkArgument(!values.isEmpty(), "%s must not be empty.", name);
 	}
+
+	public static void checkNotNull(Collection values, String name) {
+		Preconditions.checkNotNull(values, "%s must not be null.", name);
+	}
 }
