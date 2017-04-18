@@ -390,7 +390,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Override
 	public IRecipeWrapper createSmeltingRecipe(List<ItemStack> inputs, ItemStack output) {
 		ErrorUtil.checkNotEmpty(inputs, "inputs");
-		Preconditions.checkNotNull(output);
+		ErrorUtil.checkNotEmpty(output);
 
 		return new SmeltingRecipe(inputs, output);
 	}
