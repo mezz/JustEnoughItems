@@ -130,7 +130,8 @@ public interface IRecipeRegistry {
 	void addSmeltingRecipe(List<ItemStack> inputs, ItemStack output);
 
 	/**
-	 * Add a new smelting recipe while the game is running.
+	 * Create a new smelting recipe.
+	 * Use {@link #addRecipe(IRecipeWrapper, String)} to add the recipe while the game is running.
 	 * By default, all smelting recipes from {@link FurnaceRecipes#smeltingList} are already added by JEI.
 	 *
 	 * @param inputs the list of possible inputs to rotate through
@@ -140,7 +141,8 @@ public interface IRecipeRegistry {
 	IRecipeWrapper createSmeltingRecipe(List<ItemStack> inputs, ItemStack output);
 
 	/**
-	 * Add a new anvil recipe while the game is running.
+	 * Create a new anvil recipe.
+	 * Use {@link #addRecipe(IRecipeWrapper, String)} to add the recipe while the game is running.
 	 *
 	 * @param leftInput   the left input
 	 * @param rightInputs the list of possible right inputs to rotate through

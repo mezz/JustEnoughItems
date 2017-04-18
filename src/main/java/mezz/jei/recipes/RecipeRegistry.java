@@ -390,11 +390,9 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Override
 	public IRecipeWrapper createSmeltingRecipe(List<ItemStack> inputs, ItemStack output) {
 		ErrorUtil.checkNotEmpty(inputs, "inputs");
-		Preconditions.checkNotNull(output, "null output");
+		Preconditions.checkNotNull(output);
 
-		SmeltingRecipe smeltingRecipe = new SmeltingRecipe(inputs, output);
-		addRecipe(smeltingRecipe);
-		return smeltingRecipe;
+		return new SmeltingRecipe(inputs, output);
 	}
 
 	@Override
@@ -404,9 +402,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 		Preconditions.checkArgument(rightInputs.size() == outputs.size(), "Input and output sizes must match.");
 
-		AnvilRecipeWrapper anvilRecipeWrapper = new AnvilRecipeWrapper(leftInput, rightInputs, outputs);
-		addRecipe(Collections.singletonList(anvilRecipeWrapper), VanillaRecipeCategoryUid.ANVIL);
-		return anvilRecipeWrapper;
+		return new AnvilRecipeWrapper(leftInput, rightInputs, outputs);
 	}
 
 	@Override
