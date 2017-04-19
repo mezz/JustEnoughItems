@@ -35,6 +35,7 @@ import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.ingredients.Ingredients;
+import mezz.jei.plugins.vanilla.anvil.AnvilRecipeWrapper;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipe;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
@@ -376,12 +377,31 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
+	@Deprecated
 	public void addSmeltingRecipe(List<ItemStack> inputs, ItemStack output) {
 		ErrorUtil.checkNotEmpty(inputs, "inputs");
 		Preconditions.checkNotNull(output, "null output");
 
 		SmeltingRecipe smeltingRecipe = new SmeltingRecipe(inputs, output);
 		addRecipe(smeltingRecipe);
+	}
+
+	@Override
+	public IRecipeWrapper createSmeltingRecipe(List<ItemStack> inputs, ItemStack output) {
+		ErrorUtil.checkNotEmpty(inputs, "inputs");
+		ErrorUtil.checkNotEmpty(output);
+
+		return new SmeltingRecipe(inputs, output);
+	}
+
+	@Override
+	public IRecipeWrapper createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
+		ErrorUtil.checkNotEmpty(leftInput);
+		ErrorUtil.checkNotEmpty(rightInputs, "rightInputs");
+		ErrorUtil.checkNotEmpty(outputs, "outputs");
+		Preconditions.checkArgument(rightInputs.size() == outputs.size(), "Input and output sizes must match.");
+
+		return new AnvilRecipeWrapper(leftInput, rightInputs, outputs);
 	}
 
 	@Override

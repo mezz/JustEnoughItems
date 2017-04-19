@@ -124,8 +124,34 @@ public interface IRecipeRegistry {
 	 * By default, all smelting recipes from {@link FurnaceRecipes#smeltingList} are already added by JEI.
 	 *
 	 * @since JEI 4.2.7
+	 * @deprecated since JEI 4.3.3. Use {@link #createSmeltingRecipe(List, ItemStack)}
 	 */
+	@Deprecated
 	void addSmeltingRecipe(List<ItemStack> inputs, ItemStack output);
+
+	/**
+	 * Create a new smelting recipe.
+	 * Use {@link #addRecipe(IRecipeWrapper, String)} to add the recipe while the game is running.
+	 * By default, all smelting recipes from {@link FurnaceRecipes#smeltingList} are already added by JEI.
+	 *
+	 * @param inputs the list of possible inputs to rotate through
+	 * @param output the output
+	 * @since JEI 4.3.3
+	 */
+	IRecipeWrapper createSmeltingRecipe(List<ItemStack> inputs, ItemStack output);
+
+	/**
+	 * Create a new anvil recipe.
+	 * Use {@link #addRecipe(IRecipeWrapper, String)} to add the recipe while the game is running.
+	 *
+	 * @param leftInput   the left input
+	 * @param rightInputs the list of possible right inputs to rotate through
+	 * @param outputs     the list of possible outputs to rotate through
+	 *
+	 * @return the {@link IRecipeWrapper} for this recipe.
+	 * @since JEI 4.3.3
+	 */
+	IRecipeWrapper createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs);
 
 	/**
 	 * Remove a recipe while the game is running.
@@ -161,7 +187,7 @@ public interface IRecipeRegistry {
 	 * Remove a recipe while the game is running.
 	 *
 	 * @since JEI 4.2.2
-	 * @deprecated since JEI 4.3.0. Use {@link #removeRecipe(Object, String)}
+	 * @deprecated since JEI 4.3.0. Use {@link #removeRecipe(IRecipeWrapper, String)}
 	 */
 	@Deprecated
 	void removeRecipe(Object recipe);
