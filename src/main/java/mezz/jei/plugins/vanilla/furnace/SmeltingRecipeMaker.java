@@ -23,7 +23,8 @@ public class SmeltingRecipeMaker {
 		for (Map.Entry<ItemStack, ItemStack> itemStackItemStackEntry : smeltingMap.entrySet()) {
 			ItemStack input = itemStackItemStackEntry.getKey();
 			ItemStack output = itemStackItemStackEntry.getValue();
-			if (input == null || output == null) {
+			//noinspection ConstantConditions
+			if (input == null || output == null || input.getItem() == null || output.getItem() == null) {
 				Log.error("Found invalid smelting recipe: ({} -> {})", ErrorUtil.getItemStackInfo(input), ErrorUtil.getItemStackInfo(output));
 			} else {
 				List<ItemStack> inputs = stackHelper.getSubtypes(input);

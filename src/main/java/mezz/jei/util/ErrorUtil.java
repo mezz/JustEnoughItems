@@ -201,6 +201,7 @@ public class ErrorUtil {
 			return "null";
 		}
 		Item item = itemStack.getItem();
+		//noinspection ConstantConditions
 		if (item == null) {
 			return itemStack.stackSize + "x (null)";
 		}
@@ -212,6 +213,7 @@ public class ErrorUtil {
 		} else if (item instanceof ItemBlock) {
 			final String blockName;
 			Block block = ((ItemBlock) item).getBlock();
+			//noinspection ConstantConditions
 			if (block == null) {
 				blockName = "null";
 			} else {
