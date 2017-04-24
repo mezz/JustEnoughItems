@@ -149,6 +149,11 @@ public final class ErrorUtil {
 			return "null";
 		}
 		Item item = itemStack.getItem();
+		//noinspection ConstantConditions
+		if (item == null) {
+			return itemStack.getCount() + "x (null)";
+		}
+
 		final String itemName;
 		ResourceLocation registryName = item.getRegistryName();
 		if (registryName != null) {
