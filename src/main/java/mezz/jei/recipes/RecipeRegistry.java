@@ -313,7 +313,11 @@ public class RecipeRegistry implements IRecipeRegistry {
 	public void removeRecipe(Object recipe) {
 		Preconditions.checkNotNull(recipe, "Null recipe");
 
-		removeRecipe(recipe, recipe.getClass(), null);
+		List<IRecipeHandler<Object>> recipeHandlers1 = getRecipeHandlers(recipe.getClass());
+		for (IRecipeHandler<Object> recipeHandler : recipeHandlers1) {
+			String recipeCategoryUid = recipeHandler.getRecipeCategoryUid(recipe);
+			removeRecipe(recipe, recipeCategoryUid);
+		}
 	}
 
 	@Override
@@ -321,26 +325,10 @@ public class RecipeRegistry implements IRecipeRegistry {
 		Preconditions.checkNotNull(recipe, "Null recipe");
 		Preconditions.checkNotNull(recipeCategoryUid, "Null recipeCategoryUid");
 
-		removeRecipe(recipe, recipe.getClass(), recipeCategoryUid);
+		removeRecipe((Object) recipe, recipeCategoryUid);
 	}
 
-	private <T> void removeRecipe(T recipe, Class<? extends T> recipeClass, @Nullable String recipeCategoryUid) {
-		if (recipeCategoryUid == null) {
-			List<IRecipeHandler<T>> recipeHandlers = getRecipeHandlers(recipeClass);
-			for (IRecipeHandler<T> recipeHandler : recipeHandlers) {
-				removeRecipe(recipe, recipeHandler);
-			}
-		} else {
-			IRecipeHandler<T> recipeHandler = getRecipeHandler(recipeClass, recipeCategoryUid);
-			if (recipeHandler != null) {
-				removeRecipe(recipe, recipeHandler);
-			}
-		}
-	}
-
-	private <T> void removeRecipe(T recipe, IRecipeHandler<T> recipeHandler) {
-		String recipeCategoryUid = recipeHandler.getRecipeCategoryUid(recipe);
-
+	private <T> void removeRecipe(T recipe, String recipeCategoryUid) {
 		IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
 		if (recipeCategory == null) {
 			Log.error("No recipe category registered for recipeCategoryUid: {}", recipeCategoryUid);
@@ -351,14 +339,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 			removeRecipeUnchecked(recipe, recipeCategory);
 		} catch (BrokenCraftingRecipeException e) {
 			Log.error("Found a broken crafting recipe.", e);
-		} catch (RuntimeException e) {
-			IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
-			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, recipeWrapper);
-			Log.error("Found a broken recipe: {}\n", recipeInfo, e);
-		} catch (LinkageError e) {
-			IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
-			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, recipeWrapper);
-			Log.error("Found a broken recipe: {}\n", recipeInfo, e);
 		}
 	}
 
