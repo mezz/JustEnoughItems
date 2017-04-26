@@ -149,7 +149,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		final int rightButtonX = guiLeft + xSize - borderPadding - buttonWidth;
 		final int leftButtonX = guiLeft + borderPadding;
 
-		int titleHeight = fontRendererObj.FONT_HEIGHT + borderPadding;
+		int titleHeight = fontRenderer.FONT_HEIGHT + borderPadding;
 		int recipeClassButtonTop = guiTop + titleHeight - buttonHeight + 2;
 		nextRecipeCategory.xPosition = rightButtonX;
 		nextRecipeCategory.yPosition = recipeClassButtonTop;
@@ -200,9 +200,9 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-		int textPadding = (buttonHeight - fontRendererObj.FONT_HEIGHT) / 2;
-		drawCenteredString(fontRendererObj, title, xSize, guiLeft, nextRecipeCategory.yPosition + textPadding, Color.WHITE.getRGB(), true);
-		drawCenteredString(fontRendererObj, pageString, xSize, guiLeft, nextPage.yPosition + textPadding, Color.WHITE.getRGB(), true);
+		int textPadding = (buttonHeight - fontRenderer.FONT_HEIGHT) / 2;
+		drawCenteredString(fontRenderer, title, xSize, guiLeft, nextRecipeCategory.yPosition + textPadding, Color.WHITE.getRGB(), true);
+		drawCenteredString(fontRenderer, pageString, xSize, guiLeft, nextPage.yPosition + textPadding, Color.WHITE.getRGB(), true);
 
 		nextRecipeCategory.drawButton(mc, mouseX, mouseY);
 		previousRecipeCategory.drawButton(mc, mouseX, mouseY);
@@ -412,10 +412,10 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		logic.setRecipesPerPage(recipesPerPage);
 
 		title = recipeCategory.getTitle();
-		final int titleWidth = fontRendererObj.getStringWidth(title);
+		final int titleWidth = fontRenderer.getStringWidth(title);
 		final int titleX = guiLeft + (xSize - titleWidth) / 2;
 		final int titleY = guiTop + borderPadding;
-		titleHoverChecker = new HoverChecker(titleY, titleY + fontRendererObj.FONT_HEIGHT, titleX, titleX + titleWidth, 0);
+		titleHoverChecker = new HoverChecker(titleY, titleY + fontRenderer.FONT_HEIGHT, titleX, titleX + titleWidth, 0);
 
 		int spacingY = recipeBackground.getHeight() + recipeSpacing;
 

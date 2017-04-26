@@ -64,7 +64,7 @@ public class BrewingRecipeWrapper extends BlankRecipeWrapper {
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 		if (brewingSteps > 0) {
 			String steps = Translator.translateToLocalFormatted("gui.jei.category.brewing.steps", brewingSteps);
-			minecraft.fontRendererObj.drawString(steps, 70, 28, Color.gray.getRGB());
+			minecraft.fontRenderer.drawString(steps, 70, 28, Color.gray.getRGB());
 		}
 	}
 

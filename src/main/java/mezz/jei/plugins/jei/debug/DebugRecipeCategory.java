@@ -64,12 +64,12 @@ public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 		IJeiRuntime runtime = JEIInternalPlugin.jeiRuntime;
 		if (runtime != null) {
 			IItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-			minecraft.fontRendererObj.drawString(itemListOverlay.getFilterText(), 20, 52, 0);
+			minecraft.fontRenderer.drawString(itemListOverlay.getFilterText(), 20, 52, 0);
 			ItemStack stackUnderMouse = itemListOverlay.getStackUnderMouse();
 			if (stackUnderMouse != null) {
 				IIngredientHelper<ItemStack> ingredientHelper = this.ingredientRegistry.getIngredientHelper(stackUnderMouse);
 				String jeiUid = ingredientHelper.getUniqueId(stackUnderMouse);
-				minecraft.fontRendererObj.drawString(jeiUid, 50, 52, 0);
+				minecraft.fontRenderer.drawString(jeiUid, 50, 52, 0);
 			}
 		}
 	}

@@ -22,7 +22,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 	private boolean previousKeyboardRepeatEnabled;
 
 	public GuiTextFieldFilter(int componentId, IngredientFilter ingredientFilter) {
-		super(componentId, Minecraft.getMinecraft().fontRendererObj, 0, 0, 0, 0);
+		super(componentId, Minecraft.getMinecraft().fontRenderer, 0, 0, 0, 0);
 		setMaxStringLength(maxSearchLength);
 		this.hoverChecker = new HoverChecker(0, 0, 0, 0, 0);
 		this.ingredientFilter = ingredientFilter;

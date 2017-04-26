@@ -71,20 +71,20 @@ public class AnvilRecipeWrapper extends BlankRecipeWrapper {
 
 	private void drawRepairCost(Minecraft minecraft, String text, int mainColor, int recipeWidth) {
 		int shadowColor = 0xFF000000 | (mainColor & 0xFCFCFC) >> 2;
-		int width = minecraft.fontRendererObj.getStringWidth(text);
+		int width = minecraft.fontRenderer.getStringWidth(text);
 		int x = recipeWidth - 2 - width;
 		int y = 27;
 
-		if (minecraft.fontRendererObj.getUnicodeFlag()) {
+		if (minecraft.fontRenderer.getUnicodeFlag()) {
 			Gui.drawRect(x - 2, y - 2, x + width + 2, y + 10, 0xFF000000);
 			Gui.drawRect(x - 1, y - 1, x + width + 1, y + 9, 0xFF3B3B3B);
 		} else {
-			minecraft.fontRendererObj.drawString(text, x + 1, y, shadowColor);
-			minecraft.fontRendererObj.drawString(text, x, y + 1, shadowColor);
-			minecraft.fontRendererObj.drawString(text, x + 1, y + 1, shadowColor);
+			minecraft.fontRenderer.drawString(text, x + 1, y, shadowColor);
+			minecraft.fontRenderer.drawString(text, x, y + 1, shadowColor);
+			minecraft.fontRenderer.drawString(text, x + 1, y + 1, shadowColor);
 		}
 
-		minecraft.fontRendererObj.drawString(text, x, y, mainColor);
+		minecraft.fontRenderer.drawString(text, x, y, mainColor);
 	}
 
 	@Override

@@ -14,11 +14,11 @@ public final class TooltipRenderer {
 	}
 
 	public static void drawHoveringText(Minecraft minecraft, String textLine, int x, int y) {
-		drawHoveringText(minecraft, Collections.singletonList(textLine), x, y, minecraft.fontRendererObj);
+		drawHoveringText(minecraft, Collections.singletonList(textLine), x, y, minecraft.fontRenderer);
 	}
 
 	public static void drawHoveringText(Minecraft minecraft, List<String> textLines, int x, int y) {
-		drawHoveringText(minecraft, textLines, x, y, minecraft.fontRendererObj);
+		drawHoveringText(minecraft, textLines, x, y, minecraft.fontRenderer);
 	}
 
 	public static void drawHoveringText(Minecraft minecraft, List<String> textLines, int x, int y, FontRenderer font) {

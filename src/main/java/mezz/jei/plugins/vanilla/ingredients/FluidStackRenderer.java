@@ -188,6 +188,6 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 
 	@Override
 	public FontRenderer getFontRenderer(Minecraft minecraft, FluidStack fluidStack) {
-		return minecraft.fontRendererObj;
+		return minecraft.fontRenderer;
 	}
 }

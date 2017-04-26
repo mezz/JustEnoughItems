@@ -69,7 +69,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	public FontRenderer getFontRenderer(Minecraft minecraft, ItemStack ingredient) {
 		FontRenderer fontRenderer = ingredient.getItem().getFontRenderer(ingredient);
 		if (fontRenderer == null) {
-			fontRenderer = minecraft.fontRendererObj;
+			fontRenderer = minecraft.fontRenderer;
 		}
 		return fontRenderer;
 	}

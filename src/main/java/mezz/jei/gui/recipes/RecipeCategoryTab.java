@@ -55,7 +55,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 				GlStateManager.disableDepth();
 			} else {
 				String text = category.getTitle().substring(0, 2);
-				FontRenderer fontRenderer = minecraft.fontRendererObj;
+				FontRenderer fontRenderer = minecraft.fontRenderer;
 				float textCenterX = x + (TAB_WIDTH / 2f);
 				float textCenterY = y + (TAB_HEIGHT / 2f) - 3;
 				int color = isMouseOver(mouseX, mouseY) ? 16777120 : 14737632;

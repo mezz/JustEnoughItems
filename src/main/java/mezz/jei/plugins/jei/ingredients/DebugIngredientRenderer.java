@@ -40,6 +40,6 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 
 	@Override
 	public FontRenderer getFontRenderer(Minecraft minecraft, DebugIngredient ingredient) {
-		return minecraft.fontRendererObj;
+		return minecraft.fontRenderer;
 	}
 }

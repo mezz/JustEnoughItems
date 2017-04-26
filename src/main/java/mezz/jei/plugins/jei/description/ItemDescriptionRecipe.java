@@ -36,7 +36,7 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 		}
 
 		Minecraft minecraft = Minecraft.getMinecraft();
-		final int maxLinesPerPage = (ItemDescriptionRecipeCategory.recipeHeight - 20) / (minecraft.fontRendererObj.FONT_HEIGHT + lineSpacing);
+		final int maxLinesPerPage = (ItemDescriptionRecipeCategory.recipeHeight - 20) / (minecraft.fontRenderer.FONT_HEIGHT + lineSpacing);
 		final int pageCount = MathUtil.divideCeil(lineCount, maxLinesPerPage);
 		for (int i = 0; i < pageCount; i++) {
 			int startLine = i * maxLinesPerPage;
@@ -71,7 +71,7 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 		Minecraft minecraft = Minecraft.getMinecraft();
 		List<String> descriptionLinesWrapped = new ArrayList<String>();
 		for (String descriptionLine : descriptionLines) {
-			List<String> textLines = minecraft.fontRendererObj.listFormattedStringToWidth(descriptionLine, ItemDescriptionRecipeCategory.recipeWidth);
+			List<String> textLines = minecraft.fontRenderer.listFormattedStringToWidth(descriptionLine, ItemDescriptionRecipeCategory.recipeWidth);
 			descriptionLinesWrapped.addAll(textLines);
 		}
 		return descriptionLinesWrapped;
@@ -95,8 +95,8 @@ public class ItemDescriptionRecipe extends BlankRecipeWrapper {
 		int yPos = slotDrawable.getHeight() + 4;
 
 		for (String descriptionLine : description) {
-			minecraft.fontRendererObj.drawString(descriptionLine, xPos, yPos, Color.black.getRGB());
-			yPos += minecraft.fontRendererObj.FONT_HEIGHT + lineSpacing;
+			minecraft.fontRenderer.drawString(descriptionLine, xPos, yPos, Color.black.getRGB());
+			yPos += minecraft.fontRenderer.FONT_HEIGHT + lineSpacing;
 		}
 	}
 

@@ -40,11 +40,11 @@ public class PageNavigation {
 	}
 
 	public void updatePageState(int pageNum, int pageCount) {
-		FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
+		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
 		pageNumDisplayString = (pageNum + 1) + "/" + pageCount;
-		int pageDisplayWidth = fontRendererObj.getStringWidth(pageNumDisplayString);
+		int pageDisplayWidth = fontRenderer.getStringWidth(pageNumDisplayString);
 		pageNumDisplayX = ((backButton.xPosition + backButton.width) + nextButton.xPosition) / 2 - (pageDisplayWidth / 2);
-		pageNumDisplayY = backButton.yPosition + Math.round((backButton.height - fontRendererObj.FONT_HEIGHT) / 2.0f);
+		pageNumDisplayY = backButton.yPosition + Math.round((backButton.height - fontRenderer.FONT_HEIGHT) / 2.0f);
 	}
 
 	public void draw(Minecraft minecraft, int mouseX, int mouseY) {
@@ -52,7 +52,7 @@ public class PageNavigation {
 		backButton.enabled = this.paged.hasPrevious();
 
 		if (!hideOnSinglePage || nextButton.enabled || backButton.enabled) {
-			minecraft.fontRendererObj.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(), true);
+			minecraft.fontRenderer.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(), true);
 			nextButton.drawButton(minecraft, mouseX, mouseY);
 			backButton.drawButton(minecraft, mouseX, mouseY);
 		}
