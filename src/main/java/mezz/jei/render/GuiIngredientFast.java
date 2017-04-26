@@ -112,6 +112,8 @@ public class GuiIngredientFast {
 			renderItemAndEffectIntoGUI(itemStack);
 		} catch (RuntimeException e) {
 			throw createRenderIngredientException(e, itemStack);
+		} catch (LinkageError e) {
+			throw createRenderIngredientException(e, itemStack);
 		}
 	}
 
@@ -188,6 +190,8 @@ public class GuiIngredientFast {
 				renderSlow(ingredient, area, padding);
 			} catch (RuntimeException e) {
 				throw createRenderIngredientException(e, ingredient);
+			} catch (LinkageError e) {
+				throw createRenderIngredientException(e, ingredient);
 			}
 		}
 	}
@@ -211,6 +215,8 @@ public class GuiIngredientFast {
 		try {
 			renderOverlay(minecraft, itemStack);
 		} catch (RuntimeException e) {
+			throw createRenderIngredientException(e, itemStack);
+		} catch (LinkageError e) {
 			throw createRenderIngredientException(e, itemStack);
 		}
 	}
