@@ -123,15 +123,16 @@ public class IngredientFilterInternals {
 	}
 
 	public ImmutableList<Object> getIngredientList() {
-		if (!Config.getFilterText().equals(filterCached)) {
-			ingredientListCached = getIngredientListUncached();
-			filterCached = Config.getFilterText();
+		String filterText = Config.getFilterText().toLowerCase();
+		if (!filterText.equals(filterCached)) {
+			ingredientListCached = getIngredientListUncached(filterText);
+			filterCached = filterText;
 		}
 		return ingredientListCached;
 	}
 
-	private ImmutableList<Object> getIngredientListUncached() {
-		String[] filters = Config.getFilterText().split("\\|");
+	private ImmutableList<Object> getIngredientListUncached(String filterText) {
+		String[] filters = filterText.split("\\|");
 
 		if (filters.length == 1) {
 			String filter = filters[0];

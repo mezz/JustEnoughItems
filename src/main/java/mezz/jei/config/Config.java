@@ -152,13 +152,12 @@ public final class Config {
 	}
 
 	public static boolean setFilterText(String filterText) {
-		String lowercaseFilterText = filterText.toLowerCase();
-		if (values.filterText.equals(lowercaseFilterText)) {
+		if (values.filterText.equals(filterText)) {
 			return false;
+		} else {
+			values.filterText = filterText;
+			return true;
 		}
-
-		values.filterText = lowercaseFilterText;
-		return true;
 	}
 
 	public static String getFilterText() {
