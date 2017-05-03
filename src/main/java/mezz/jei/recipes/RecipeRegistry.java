@@ -36,8 +36,10 @@ import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeWrapper;
+import mezz.jei.plugins.vanilla.brewing.BrewingRecipeWrapper;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipe;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.ItemStackUtil;
 import mezz.jei.util.Log;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -45,6 +47,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -382,6 +385,16 @@ public class RecipeRegistry implements IRecipeRegistry {
 		Preconditions.checkArgument(rightInputs.size() == outputs.size(), "Input and output sizes must match.");
 
 		return new AnvilRecipeWrapper(leftInput, rightInputs, outputs);
+	}
+
+	@Override
+	public IRecipeWrapper createBrewingRecipe(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput) {
+		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
+		ErrorUtil.checkNotEmpty(potionInput, "potionInput");
+		ErrorUtil.checkNotEmpty(potionOutput, "potionOutput");
+
+		NonNullList<ItemStack> validatedIngredients = ItemStackUtil.toNonNullList(ingredients);
+		return new BrewingRecipeWrapper(validatedIngredients, potionInput, potionOutput);
 	}
 
 	@Override

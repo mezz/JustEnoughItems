@@ -14,26 +14,25 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class BrewingRecipeWrapper extends BlankRecipeWrapper {
-	private final List<ItemStack> ingredients;
+	private static final BrewingRecipeUtil UTIL = new BrewingRecipeUtil();
+
+	private final NonNullList<ItemStack> ingredients;
 	private final ItemStack potionInput;
 	private final ItemStack potionOutput;
 	private final List<List<ItemStack>> inputs;
-	private final int brewingSteps;
 	private final int hashCode;
 
-	public BrewingRecipeWrapper(ItemStack ingredient, ItemStack potionInput, ItemStack potionOutput, int brewingSteps) {
-		this(Collections.singletonList(ingredient), potionInput, potionOutput, brewingSteps);
-	}
-
-	public BrewingRecipeWrapper(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput, int brewingSteps) {
+	public BrewingRecipeWrapper(NonNullList<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput) {
 		this.ingredients = ingredients;
 		this.potionInput = potionInput;
 		this.potionOutput = potionOutput;
-		this.brewingSteps = brewingSteps;
+
+		UTIL.addRecipe(potionInput, potionOutput);
 
 		this.inputs = new ArrayList<List<ItemStack>>();
 		this.inputs.add(Collections.singletonList(potionInput));
@@ -62,7 +61,8 @@ public class BrewingRecipeWrapper extends BlankRecipeWrapper {
 
 	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-		if (brewingSteps > 0) {
+		int brewingSteps = getBrewingSteps();
+		if (brewingSteps < Integer.MAX_VALUE) {
 			String steps = Translator.translateToLocalFormatted("gui.jei.category.brewing.steps", brewingSteps);
 			minecraft.fontRenderer.drawString(steps, 70, 28, Color.gray.getRGB());
 		}
@@ -108,7 +108,7 @@ public class BrewingRecipeWrapper extends BlankRecipeWrapper {
 	}
 
 	public int getBrewingSteps() {
-		return brewingSteps;
+		return UTIL.getBrewingSteps(potionOutput);
 	}
 
 	@Override

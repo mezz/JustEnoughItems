@@ -313,15 +313,15 @@ public class StackHelper implements IStackHelper {
 	}
 
 	@Override
-	public List<ItemStack> toItemStackList(@Nullable Object stacks) {
+	public NonNullList<ItemStack> toItemStackList(@Nullable Object stacks) {
 		if (stacks == null) {
-			return Collections.emptyList();
+			return NonNullList.create();
 		}
 
 		return toItemStackList(stacks, true);
 	}
 
-	public List<ItemStack> toItemStackList(Object stacks, boolean expandSubtypes) {
+	public NonNullList<ItemStack> toItemStackList(Object stacks, boolean expandSubtypes) {
 		UniqueItemStackListBuilder itemStackListBuilder = new UniqueItemStackListBuilder(this);
 		toItemStackList(itemStackListBuilder, stacks, expandSubtypes);
 		return itemStackListBuilder.build();

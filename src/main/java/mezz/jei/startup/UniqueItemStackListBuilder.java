@@ -1,16 +1,15 @@
 package mezz.jei.startup;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 
 public class UniqueItemStackListBuilder {
 	private final StackHelper stackHelper;
-	private final List<ItemStack> ingredients = new ArrayList<ItemStack>();
+	private final NonNullList<ItemStack> ingredients = NonNullList.create();
 	private final Set<String> ingredientUids = new HashSet<String>();
 
 	public UniqueItemStackListBuilder(StackHelper stackHelper) {
@@ -34,7 +33,7 @@ public class UniqueItemStackListBuilder {
 		}
 	}
 
-	public List<ItemStack> build() {
+	public NonNullList<ItemStack> build() {
 		return ingredients;
 	}
 }

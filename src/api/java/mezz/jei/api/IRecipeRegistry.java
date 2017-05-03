@@ -154,6 +154,20 @@ public interface IRecipeRegistry {
 	IRecipeWrapper createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs);
 
 	/**
+	 * Create a new brewing recipe.
+	 * Use {@link #addRecipe(IRecipeWrapper, String)} to add the recipe while the game is running.
+	 * By default, all brewing recipes are already added by JEI, this is for mods that add recipes after the game has loaded.
+	 *
+	 * @param ingredients  the ingredients added to a potion to create a new one.
+	 *                     Normally one ingredient, but a list will display several in rotation.
+	 * @param potionInput  the input potion for the brewing recipe.
+	 * @param potionOutput the output potion for the brewing recipe.
+	 * @return the {@link IRecipeWrapper} for this recipe.
+	 * @since JEI 4.3.4
+	 */
+	IRecipeWrapper createBrewingRecipe(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput);
+
+	/**
 	 * Remove a recipe while the game is running.
 	 *
 	 * @since JEI 4.3.0

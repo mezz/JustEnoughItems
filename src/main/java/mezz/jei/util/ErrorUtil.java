@@ -153,6 +153,14 @@ public final class ErrorUtil {
 		}
 	}
 
+	public static void checkNotEmpty(ItemStack itemStack, String name) {
+		Preconditions.checkNotNull(itemStack, "%s must not be null.", name);
+		if (itemStack.isEmpty()) {
+			String info = getItemStackInfo(itemStack);
+			throw new IllegalArgumentException("ItemStack " + name + " must not be empty. " + info);
+		}
+	}
+
 	public static <T> void checkNotEmpty(T[] values, String name) {
 		Preconditions.checkNotNull(values, "%s must not be null.", name);
 		Preconditions.checkArgument(values.length > 0, "%s must not be empty.", name);
