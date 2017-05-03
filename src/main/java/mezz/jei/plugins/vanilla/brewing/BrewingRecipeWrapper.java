@@ -14,20 +14,19 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class BrewingRecipeWrapper extends BlankRecipeWrapper {
 	private static final BrewingRecipeUtil UTIL = new BrewingRecipeUtil();
 
-	private final NonNullList<ItemStack> ingredients;
+	private final List<ItemStack> ingredients;
 	private final ItemStack potionInput;
 	private final ItemStack potionOutput;
 	private final List<List<ItemStack>> inputs;
 	private final int hashCode;
 
-	public BrewingRecipeWrapper(NonNullList<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput) {
+	public BrewingRecipeWrapper(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput) {
 		this.ingredients = ingredients;
 		this.potionInput = potionInput;
 		this.potionOutput = potionOutput;

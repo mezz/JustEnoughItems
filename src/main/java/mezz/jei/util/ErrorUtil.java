@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.Preconditions;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredients;
@@ -18,6 +17,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
 public final class ErrorUtil {
@@ -94,7 +94,7 @@ public final class ErrorUtil {
 		return recipeInfoBuilder.toString();
 	}
 
-	public static <T> List<String> getIngredientInfo(Class<T> ingredientClass, List<List<T>> ingredients) {
+	public static <T> List<String> getIngredientInfo(Class<T> ingredientClass, List<? extends List<T>> ingredients) {
 		IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredientClass);
 		List<String> allInfos = new ArrayList<String>(ingredients.size());
 
@@ -145,33 +145,58 @@ public final class ErrorUtil {
 		return itemStack + " " + itemName;
 	}
 
-	public static void checkNotEmpty(ItemStack itemStack) {
-		Preconditions.checkNotNull(itemStack, "ItemStack must not be null.");
-		if (itemStack.isEmpty()) {
+	public static void checkNotEmpty(@Nullable String string, String name) {
+		if (string == null) {
+			throw new NullPointerException(name + " must not be null.");
+		} else if (string.isEmpty()) {
+			throw new IllegalArgumentException(name + " must not be empty.");
+		}
+	}
+
+	public static void checkNotEmpty(@Nullable ItemStack itemStack) {
+		if (itemStack == null) {
+			throw new NullPointerException("ItemStack must not be null.");
+		} else if (itemStack.isEmpty()) {
 			String info = getItemStackInfo(itemStack);
 			throw new IllegalArgumentException("ItemStack value must not be empty. " + info);
 		}
 	}
 
-	public static void checkNotEmpty(ItemStack itemStack, String name) {
-		Preconditions.checkNotNull(itemStack, "%s must not be null.", name);
-		if (itemStack.isEmpty()) {
+	public static void checkNotEmpty(@Nullable ItemStack itemStack, String name) {
+		if (itemStack == null) {
+			throw new NullPointerException(name + " must not be null.");
+		} else if (itemStack.isEmpty()) {
 			String info = getItemStackInfo(itemStack);
 			throw new IllegalArgumentException("ItemStack " + name + " must not be empty. " + info);
 		}
 	}
 
-	public static <T> void checkNotEmpty(T[] values, String name) {
-		Preconditions.checkNotNull(values, "%s must not be null.", name);
-		Preconditions.checkArgument(values.length > 0, "%s must not be empty.", name);
+	public static <T> void checkNotEmpty(@Nullable T[] values, String name) {
+		if (values == null) {
+			throw new NullPointerException(name + " must not be null.");
+		} else if (values.length <= 0) {
+			throw new IllegalArgumentException(name + " must not be empty.");
+		}
 	}
 
-	public static void checkNotEmpty(Collection values, String name) {
-		Preconditions.checkNotNull(values, "%s must not be null.", name);
-		Preconditions.checkArgument(!values.isEmpty(), "%s must not be empty.", name);
+	public static void checkNotEmpty(@Nullable Collection values, String name) {
+		if (values == null) {
+			throw new NullPointerException(name + " must not be null.");
+		} else if (values.isEmpty()) {
+			throw new IllegalArgumentException(name + " must not be empty.");
+		} else if (!(values instanceof NonNullList)) {
+			for (Object value : values) {
+				if (value == null) {
+					throw new NullPointerException(name + " must not contain null values.");
+				}
+			}
+		}
 	}
 
-	public static void checkNotNull(Collection values, String name) {
-		Preconditions.checkNotNull(values, "%s must not be null.", name);
+	public static <T> T checkNotNull(@Nullable T object, String name) {
+		if (object == null) {
+			throw new NullPointerException(name + " must not be null.");
+		}
+		return object;
 	}
 }

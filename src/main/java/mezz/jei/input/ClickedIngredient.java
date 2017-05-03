@@ -1,6 +1,5 @@
 package mezz.jei.input;
 
-import com.google.common.base.Preconditions;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.item.ItemStack;
 
@@ -9,7 +8,7 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	private boolean allowsCheating;
 
 	public ClickedIngredient(V value) {
-		Preconditions.checkNotNull(value, "value must not be null");
+		ErrorUtil.checkNotNull(value, "value");
 		if (value instanceof ItemStack) {
 			ItemStack itemStack = (ItemStack) value;
 			ErrorUtil.checkNotEmpty(itemStack);

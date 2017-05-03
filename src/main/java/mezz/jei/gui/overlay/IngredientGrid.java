@@ -34,6 +34,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 
 /**
  * An ingredient grid displays a rectangular area of clickable recipe ingredients.
@@ -142,7 +143,7 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 
 		JeiRuntime runtime = Internal.getRuntime();
 		if (runtime != null) {
-			Set<ItemStack> highlightedStacks = runtime.getItemListOverlay().getHighlightedStacks();
+			NonNullList<ItemStack> highlightedStacks = runtime.getItemListOverlay().getHighlightedStacks();
 			if (!highlightedStacks.isEmpty()) {
 				StackHelper helper = Internal.getHelpers().getStackHelper();
 				for (GuiIngredientFast guiItemStack : guiIngredientList.getAllGuiIngredients()) {

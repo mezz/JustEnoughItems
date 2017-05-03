@@ -5,13 +5,13 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.util.ErrorUtil;
 
 public class ModIngredientRegistration implements IModIngredientRegistration {
 	private final Map<Class, Collection> allIngredientsMap = new IdentityHashMap<Class, Collection>();
@@ -20,10 +20,10 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 
 	@Override
 	public <V> void register(Class<V> ingredientClass, Collection<V> allIngredients, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer) {
-		Preconditions.checkNotNull(ingredientClass, "ingredientClass cannot be null");
-		Preconditions.checkNotNull(allIngredients, "allIngredients cannot be null");
-		Preconditions.checkNotNull(ingredientHelper, "ingredientHelper cannot be null");
-		Preconditions.checkNotNull(ingredientRenderer, "ingredientRenderer cannot be null");
+		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
+		ErrorUtil.checkNotNull(allIngredients, "allIngredients");
+		ErrorUtil.checkNotNull(ingredientHelper, "ingredientHelper");
+		ErrorUtil.checkNotNull(ingredientRenderer, "ingredientRenderer");
 
 		allIngredientsMap.put(ingredientClass, allIngredients);
 		ingredientHelperMap.put(ingredientClass, ingredientHelper);

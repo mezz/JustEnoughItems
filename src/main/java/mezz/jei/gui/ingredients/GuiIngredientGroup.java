@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Preconditions;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiIngredientGroup;
@@ -21,6 +20,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.gui.Focus;
 import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 
@@ -44,7 +44,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	private ITooltipCallback<T> tooltipCallback;
 
 	public GuiIngredientGroup(Class<T> ingredientClass, @Nullable IFocus<T> focus, int cycleOffset) {
-		Preconditions.checkNotNull(ingredientClass);
+		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 		this.ingredientClass = ingredientClass;
 		if (focus == null) {
 			this.inputFocus = null;

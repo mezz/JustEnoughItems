@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import com.google.common.base.Preconditions;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.recipe.IStackHelper;
@@ -149,8 +148,8 @@ public class StackHelper implements IStackHelper {
 	@Override
 	@Nullable
 	public ItemStack containsAnyStack(Iterable<ItemStack> stacks, Iterable<ItemStack> contains) {
-		Preconditions.checkNotNull(stacks, "stacks cannot be null");
-		Preconditions.checkNotNull(contains, "contains cannot be null");
+		ErrorUtil.checkNotNull(stacks, "stacks");
+		ErrorUtil.checkNotNull(contains, "contains");
 
 		MatchingIterable matchingStacks = new MatchingIterable(stacks);
 		MatchingIterable matchingContains = new MatchingIterable(contains);

@@ -39,7 +39,6 @@ import mezz.jei.plugins.vanilla.anvil.AnvilRecipeWrapper;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeWrapper;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipe;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.ItemStackUtil;
 import mezz.jei.util.Log;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -47,7 +46,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -209,15 +207,15 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public void addRecipe(Object recipe) {
-		Preconditions.checkNotNull(recipe, "recipe cannot be null");
+		ErrorUtil.checkNotNull(recipe, "recipe");
 
 		addRecipe(recipe, recipe.getClass(), null);
 	}
 
 	@Override
 	public void addRecipe(IRecipeWrapper recipe, String recipeCategoryUid) {
-		Preconditions.checkNotNull(recipe, "recipe cannot be null");
-		Preconditions.checkNotNull(recipeCategoryUid, "recipeCategoryUid cannot be null");
+		ErrorUtil.checkNotNull(recipe, "recipe");
+		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 
 		IRecipeCategory recipeCategory = getRecipeCategory(recipeCategoryUid);
 		if (recipeCategory == null) {
@@ -229,8 +227,8 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	private void addRecipe(Object recipe, String recipeCategoryUid) {
-		Preconditions.checkNotNull(recipe, "recipe cannot be null");
-		Preconditions.checkNotNull(recipeCategoryUid, "recipeCategoryUid cannot be null");
+		ErrorUtil.checkNotNull(recipe, "recipe");
+		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 
 		addRecipe(recipe, recipe.getClass(), recipeCategoryUid);
 	}
@@ -314,7 +312,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Deprecated
 	@Override
 	public void removeRecipe(Object recipe) {
-		Preconditions.checkNotNull(recipe, "Null recipe");
+		ErrorUtil.checkNotNull(recipe, "recipe");
 
 		List<IRecipeHandler<Object>> recipeHandlers1 = getRecipeHandlers(recipe.getClass());
 		for (IRecipeHandler<Object> recipeHandler : recipeHandlers1) {
@@ -325,8 +323,8 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public void removeRecipe(IRecipeWrapper recipe, String recipeCategoryUid) {
-		Preconditions.checkNotNull(recipe, "Null recipe");
-		Preconditions.checkNotNull(recipeCategoryUid, "Null recipeCategoryUid");
+		ErrorUtil.checkNotNull(recipe, "recipe");
+		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 
 		removeRecipe((Object) recipe, recipeCategoryUid);
 	}
@@ -363,7 +361,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Deprecated
 	public void addSmeltingRecipe(List<ItemStack> inputs, ItemStack output) {
 		ErrorUtil.checkNotEmpty(inputs, "inputs");
-		Preconditions.checkNotNull(output, "null output");
+		ErrorUtil.checkNotEmpty(output, "output");
 
 		SmeltingRecipe smeltingRecipe = new SmeltingRecipe(inputs, output);
 		addRecipe(smeltingRecipe);
@@ -372,14 +370,14 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Override
 	public IRecipeWrapper createSmeltingRecipe(List<ItemStack> inputs, ItemStack output) {
 		ErrorUtil.checkNotEmpty(inputs, "inputs");
-		ErrorUtil.checkNotEmpty(output);
+		ErrorUtil.checkNotEmpty(output, "output");
 
 		return new SmeltingRecipe(inputs, output);
 	}
 
 	@Override
 	public IRecipeWrapper createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
-		ErrorUtil.checkNotEmpty(leftInput);
+		ErrorUtil.checkNotEmpty(leftInput, "leftInput");
 		ErrorUtil.checkNotEmpty(rightInputs, "rightInputs");
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 		Preconditions.checkArgument(rightInputs.size() == outputs.size(), "Input and output sizes must match.");
@@ -393,8 +391,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		ErrorUtil.checkNotEmpty(potionInput, "potionInput");
 		ErrorUtil.checkNotEmpty(potionOutput, "potionOutput");
 
-		NonNullList<ItemStack> validatedIngredients = ItemStackUtil.toNonNullList(ingredients);
-		return new BrewingRecipeWrapper(validatedIngredients, potionInput, potionOutput);
+		return new BrewingRecipeWrapper(ingredients, potionInput, potionOutput);
 	}
 
 	@Override
@@ -413,7 +410,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public ImmutableList<IRecipeCategory> getRecipeCategories(List<String> recipeCategoryUids) {
-		Preconditions.checkNotNull(recipeCategoryUids, "recipeCategoryUids cannot be null");
+		ErrorUtil.checkNotNull(recipeCategoryUids, "recipeCategoryUids");
 
 		Set<String> uniqueUids = new HashSet<String>();
 		ImmutableList.Builder<IRecipeCategory> builder = ImmutableList.builder();
@@ -439,6 +436,8 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Nullable
 	@Override
 	public IRecipeWrapper getRecipeWrapper(Object recipe, String recipeCategoryUid) {
+		ErrorUtil.checkNotNull(recipe, "recipe");
+		ErrorUtil.checkNotEmpty(recipeCategoryUid, "recipeCategoryUid");
 		return getRecipeWrapper(recipe, recipe.getClass(), recipeCategoryUid);
 	}
 
@@ -481,7 +480,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Nullable
 	private <T> IRecipeHandler<T> getRecipeHandler(Class<? extends T> recipeClass, @Nullable String recipeCategoryUid) {
-		Preconditions.checkNotNull(recipeClass, "recipeClass cannot be null");
+		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
 
 		ImmutableCollection<IRecipeHandler> recipeHandlers;
 
@@ -524,7 +523,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Deprecated
 	private <T> List<IRecipeHandler<T>> getRecipeHandlers(Class<? extends T> recipeClass) {
-		Preconditions.checkNotNull(recipeClass, "recipeClass cannot be null");
+		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
 
 		List<IRecipeHandler<T>> recipeHandlers = new ArrayList<IRecipeHandler<T>>();
 
@@ -623,7 +622,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public <T extends IRecipeWrapper, V> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
-		Preconditions.checkNotNull(recipeCategory, "recipeCategory cannot be null");
+		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		focus = Focus.check(focus);
 
 		FluidStack fluidStack = getFluidFromItemBlock(focus);
@@ -647,7 +646,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public <T extends IRecipeWrapper> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory) {
-		Preconditions.checkNotNull(recipeCategory, "recipeCategory cannot be null");
+		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 
 		List<T> allRecipeWrappers = new ArrayList<T>();
 		for (IRecipeRegistryPlugin plugin : this.plugins) {
@@ -686,15 +685,15 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory) {
-		Preconditions.checkNotNull(recipeCategory, "recipeCategory cannot be null");
+		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		return craftItemsForCategories.get(recipeCategory);
 	}
 
 	@Override
 	@Nullable
 	public IRecipeTransferHandler getRecipeTransferHandler(Container container, IRecipeCategory recipeCategory) {
-		Preconditions.checkNotNull(container, "container cannot be null");
-		Preconditions.checkNotNull(recipeCategory, "recipeCategory cannot be null");
+		ErrorUtil.checkNotNull(container, "container");
+		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 
 		Class<? extends Container> containerClass = container.getClass();
 		IRecipeTransferHandler recipeTransferHandler = recipeTransferHandlers.get(containerClass, recipeCategory.getUid());

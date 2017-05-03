@@ -3,10 +3,7 @@ package mezz.jei.gui.overlay;
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.IItemListOverlay;
 import mezz.jei.api.ingredients.IIngredientRegistry;
@@ -20,10 +17,12 @@ import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IPaged;
 import mezz.jei.input.IShowsRecipeFocuses;
+import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 
 public class ItemListOverlay implements IItemListOverlay, IPaged, IMouseHandler, IShowsRecipeFocuses {
 	private static final int BORDER_PADDING = 2;
@@ -44,7 +43,7 @@ public class ItemListOverlay implements IItemListOverlay, IPaged, IMouseHandler,
 	}
 
 	private final IngredientFilter ingredientFilter;
-	private final Set<ItemStack> highlightedStacks = new HashSet<ItemStack>();
+	private final NonNullList<ItemStack> highlightedStacks = NonNullList.create();
 	private final ConfigButton configButton;
 	private final PageNavigation navigation;
 	private final IngredientGrid contents;
@@ -86,7 +85,7 @@ public class ItemListOverlay implements IItemListOverlay, IPaged, IMouseHandler,
 		highlightedStacks.addAll(stacks);
 	}
 
-	public Set<ItemStack> getHighlightedStacks() {
+	public NonNullList<ItemStack> getHighlightedStacks() {
 		return highlightedStacks;
 	}
 
@@ -303,7 +302,7 @@ public class ItemListOverlay implements IItemListOverlay, IPaged, IMouseHandler,
 
 	@Override
 	public void setFilterText(String filterText) {
-		Preconditions.checkNotNull(filterText, "filterText cannot be null");
+		ErrorUtil.checkNotNull(filterText, "filterText");
 		if (Config.setFilterText(filterText)) {
 			this.searchField.setText(filterText);
 			SessionData.setFirstItemIndex(0);

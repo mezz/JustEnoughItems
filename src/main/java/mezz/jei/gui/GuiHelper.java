@@ -1,6 +1,5 @@
 package mezz.jei.gui;
 
-import com.google.common.base.Preconditions;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IDrawableAnimated;
@@ -10,6 +9,7 @@ import mezz.jei.config.Constants;
 import mezz.jei.gui.elements.DrawableAnimated;
 import mezz.jei.gui.elements.DrawableBlank;
 import mezz.jei.gui.elements.DrawableResource;
+import mezz.jei.util.ErrorUtil;
 import net.minecraft.util.ResourceLocation;
 
 public class GuiHelper implements IGuiHelper {
@@ -43,29 +43,29 @@ public class GuiHelper implements IGuiHelper {
 
 	@Override
 	public IDrawableStatic createDrawable(ResourceLocation resourceLocation, int u, int v, int width, int height) {
-		Preconditions.checkNotNull(resourceLocation, "resourceLocation cannot be null");
+		ErrorUtil.checkNotNull(resourceLocation, "resourceLocation");
 
 		return new DrawableResource(resourceLocation, u, v, width, height, 0, 0, 0, 0, 256, 256);
 	}
 
 	@Override
 	public IDrawableStatic createDrawable(ResourceLocation resourceLocation, int u, int v, int width, int height, int textureWidth, int textureHeight) {
-		Preconditions.checkNotNull(resourceLocation, "resourceLocation cannot be null");
+		ErrorUtil.checkNotNull(resourceLocation, "resourceLocation");
 
 		return new DrawableResource(resourceLocation, u, v, width, height, 0, 0, 0, 0, textureWidth, textureHeight);
 	}
 
 	@Override
 	public IDrawableStatic createDrawable(ResourceLocation resourceLocation, int u, int v, int width, int height, int paddingTop, int paddingBottom, int paddingLeft, int paddingRight) {
-		Preconditions.checkNotNull(resourceLocation, "resourceLocation cannot be null");
+		ErrorUtil.checkNotNull(resourceLocation, "resourceLocation");
 
 		return new DrawableResource(resourceLocation, u, v, width, height, paddingTop, paddingBottom, paddingLeft, paddingRight, 256, 256);
 	}
 
 	@Override
 	public IDrawableAnimated createAnimatedDrawable(IDrawableStatic drawable, int ticksPerCycle, IDrawableAnimated.StartDirection startDirection, boolean inverted) {
-		Preconditions.checkNotNull(drawable, "drawable cannot be null");
-		Preconditions.checkNotNull(startDirection, "startDirection cannot be null");
+		ErrorUtil.checkNotNull(drawable, "drawable");
+		ErrorUtil.checkNotNull(startDirection, "startDirection");
 
 		IDrawableAnimated.StartDirection animationStartDirection = startDirection;
 		if (inverted) {

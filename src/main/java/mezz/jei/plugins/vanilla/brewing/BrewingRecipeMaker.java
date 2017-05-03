@@ -11,7 +11,6 @@ import java.util.Set;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
-import mezz.jei.util.ItemStackUtil;
 import mezz.jei.util.Java6Util;
 import mezz.jei.util.Log;
 import net.minecraft.init.PotionTypes;
@@ -97,7 +96,7 @@ public class BrewingRecipeMaker {
 					}
 				}
 
-				BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(ItemStackUtil.singletonList(potionIngredient), potionInput.copy(), potionOutput);
+				BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(Collections.singletonList(potionIngredient), potionInput.copy(), potionOutput);
 				if (!recipes.contains(recipe)) {
 					recipes.add(recipe);
 					newPotions.add(potionOutput);

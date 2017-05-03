@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
@@ -70,7 +69,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	@Override
 	public <V> List<V> getIngredients(Class<V> ingredientClass) {
-		Preconditions.checkNotNull(ingredientClass, "ingredientClass cannot be null");
+		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 
 		//noinspection unchecked
 		List<V> ingredients = ingredientsMap.get(ingredientClass);
@@ -83,7 +82,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	@Override
 	public <V> IIngredientHelper<V> getIngredientHelper(V ingredient) {
-		Preconditions.checkNotNull(ingredient, "ingredient cannot be null");
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
 		//noinspection unchecked
 		return (IIngredientHelper<V>) getIngredientHelper(ingredient.getClass());
@@ -91,7 +90,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	@Override
 	public <V> IIngredientHelper<V> getIngredientHelper(Class<V> ingredientClass) {
-		Preconditions.checkNotNull(ingredientClass, "ingredientClass cannot be null");
+		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 
 		//noinspection unchecked
 		IIngredientHelper<V> ingredientHelper = ingredientHelperMap.get(ingredientClass);
@@ -103,7 +102,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	@Override
 	public <V> IIngredientRenderer<V> getIngredientRenderer(V ingredient) {
-		Preconditions.checkNotNull(ingredient, "ingredient cannot be null");
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
 		//noinspection unchecked
 		Class<V> ingredientClass = (Class<V>) ingredient.getClass();
@@ -112,7 +111,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	@Override
 	public <V> IIngredientRenderer<V> getIngredientRenderer(Class<V> ingredientClass) {
-		Preconditions.checkNotNull(ingredientClass, "ingredientClass cannot be null");
+		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 
 		//noinspection unchecked
 		IIngredientRenderer<V> ingredientRenderer = ingredientRendererMap.get(ingredientClass);
@@ -139,7 +138,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	@Override
 	public <V> void addIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients) {
-		Preconditions.checkNotNull(ingredientClass, "ingredientClass cannot be null");
+		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 
 		//noinspection unchecked

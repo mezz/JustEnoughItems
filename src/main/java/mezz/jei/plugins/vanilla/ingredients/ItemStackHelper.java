@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.List;
 
-import com.google.common.base.Preconditions;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.startup.StackHelper;
@@ -33,7 +32,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public String getDisplayName(ItemStack ingredient) {
-		return Preconditions.checkNotNull(ingredient.getDisplayName(), "No display name for ItemStack.");
+		return ErrorUtil.checkNotNull(ingredient.getDisplayName(), "itemStack.getDisplayName()");
 	}
 
 	@Override

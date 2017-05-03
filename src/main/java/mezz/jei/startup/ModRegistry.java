@@ -106,22 +106,22 @@ public class ModRegistry implements IModRegistry {
 	@Override
 	public void addRecipes(Collection<?> recipes, String recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipes, "recipes");
-		Preconditions.checkNotNull(recipeCategoryUid, "recipeCategoryUid must not be null");
+		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		//TODO : add this without breaking description recipes
 //		Preconditions.checkArgument(this.recipeCategoryUids.contains(recipeCategoryUid), "No recipe category has been registered for recipeCategoryUid %s", recipeCategoryUid);
 
 		for (Object recipe : recipes) {
-			Preconditions.checkNotNull(recipe, "recipe must not be null");
+			ErrorUtil.checkNotNull(recipe, "recipe");
 			this.recipes.put(recipeCategoryUid, recipe);
 		}
 	}
 
 	@Override
 	public <T> void handleRecipes(final Class<T> recipeClass, final IRecipeWrapperFactory<T> recipeWrapperFactory, final String recipeCategoryUid) {
-		Preconditions.checkNotNull(recipeClass, "recipeClass cannot be null");
+		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
 		Preconditions.checkArgument(!recipeClass.equals(Object.class), "Recipe handlers must handle a specific class, not Object.class");
-		Preconditions.checkNotNull(recipeWrapperFactory, "recipeWrapperFactory cannot be null");
-		Preconditions.checkNotNull(recipeCategoryUid, "recipeCategoryUid cannot be null");
+		ErrorUtil.checkNotNull(recipeWrapperFactory, "recipeWrapperFactory");
+		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 
 		IRecipeHandler<T> recipeHandler = new IRecipeHandler<T>() {
 			@Override
@@ -150,7 +150,7 @@ public class ModRegistry implements IModRegistry {
 
 	@Override
 	public void addRecipeClickArea(Class<? extends GuiContainer> guiContainerClass, int xPos, int yPos, int width, int height, String... recipeCategoryUids) {
-		Preconditions.checkNotNull(guiContainerClass, "Tried to add a RecipeClickArea with null guiContainerClass.");
+		ErrorUtil.checkNotNull(guiContainerClass, "guiContainerClass");
 		ErrorUtil.checkNotEmpty(recipeCategoryUids, "recipeCategoryUids");
 
 		RecipeClickableArea recipeClickableArea = new RecipeClickableArea(yPos, yPos + height, xPos, xPos + width, recipeCategoryUids);
@@ -163,7 +163,7 @@ public class ModRegistry implements IModRegistry {
 		ErrorUtil.checkNotEmpty(recipeCategoryUids, "recipeCategoryUids");
 
 		for (String recipeCategoryUid : recipeCategoryUids) {
-			Preconditions.checkNotNull(recipeCategoryUid, "Tried to add a RecipeCategoryCraftingItem with null recipeCategoryUid.");
+			ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 			this.craftItemsForCategories.put(recipeCategoryUid, craftingItem);
 		}
 	}
@@ -177,12 +177,8 @@ public class ModRegistry implements IModRegistry {
 
 	@Override
 	public void addDescription(List<ItemStack> itemStacks, String... descriptionKeys) {
-		ErrorUtil.checkNotEmpty(itemStacks, "itemStacks");
 		ErrorUtil.checkNotEmpty(descriptionKeys, "descriptionKeys");
-
-		for (ItemStack itemStack : itemStacks) {
-			ErrorUtil.checkNotEmpty(itemStack);
-		}
+		ErrorUtil.checkNotEmpty(itemStacks, "itemStacks");
 
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 		List<ItemDescriptionRecipe> recipes = ItemDescriptionRecipe.create(guiHelper, itemStacks, descriptionKeys);
@@ -215,7 +211,7 @@ public class ModRegistry implements IModRegistry {
 
 	@Override
 	public void addRecipeRegistryPlugin(IRecipeRegistryPlugin recipeRegistryPlugin) {
-		Preconditions.checkNotNull(recipeRegistryPlugin, "recipeRegistryPlugin cannot be null");
+		ErrorUtil.checkNotNull(recipeRegistryPlugin, "recipeRegistryPlugin");
 
 		Log.info("Added recipe registry plugin: {}", recipeRegistryPlugin.getClass());
 		recipeRegistryPlugins.add(recipeRegistryPlugin);

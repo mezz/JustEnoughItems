@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import com.google.common.base.Preconditions;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
@@ -29,8 +28,8 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 
 	@Override
 	public void registerSubtypeInterpreter(Item item, ISubtypeInterpreter interpreter) {
-		Preconditions.checkNotNull(item, "item cannot be null");
-		Preconditions.checkNotNull(interpreter, "interpreter cannot be null");
+		ErrorUtil.checkNotNull(item, "item ");
+		ErrorUtil.checkNotNull(interpreter, "interpreter");
 
 		if (interpreters.containsKey(item)) {
 			Log.error("An interpreter is already registered for this item: {}", item, new IllegalArgumentException());

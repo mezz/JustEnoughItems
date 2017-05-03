@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.Preconditions;
 import mezz.jei.api.IItemBlacklist;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -23,7 +22,7 @@ public class IngredientBlacklist implements IIngredientBlacklist, IItemBlacklist
 
 	@Override
 	public <V> void addIngredientToBlacklist(V ingredient) {
-		Preconditions.checkNotNull(ingredient, "Null ingredient");
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 		String uniqueName = ingredientHelper.getUniqueId(ingredient);
@@ -32,7 +31,7 @@ public class IngredientBlacklist implements IIngredientBlacklist, IItemBlacklist
 
 	@Override
 	public <V> void removeIngredientFromBlacklist(V ingredient) {
-		Preconditions.checkNotNull(ingredient, "Null ingredient");
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 		String uniqueName = ingredientHelper.getUniqueId(ingredient);
@@ -41,7 +40,7 @@ public class IngredientBlacklist implements IIngredientBlacklist, IItemBlacklist
 
 	@Override
 	public <V> boolean isIngredientBlacklisted(V ingredient) {
-		Preconditions.checkNotNull(ingredient, "Null ingredient");
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
 		if (isIngredientBlacklistedByApi(ingredient)) {
 			return true;

@@ -1,6 +1,5 @@
 package mezz.jei.gui;
 
-import com.google.common.base.Preconditions;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
@@ -38,7 +37,7 @@ public class Focus<V> implements IFocus<V> {
 	 * Make sure any IFocus coming in through API calls is validated and turned into JEI's Focus.
 	 */
 	public static <V> Focus<V> check(IFocus<V> focus) {
-		Preconditions.checkNotNull(focus, "focus must not be null");
+		ErrorUtil.checkNotNull(focus, "focus");
 		if (focus instanceof Focus) {
 			checkInternal(focus);
 			return (Focus<V>) focus;
@@ -47,9 +46,9 @@ public class Focus<V> implements IFocus<V> {
 	}
 
 	private static void checkInternal(IFocus<?> focus) {
-		Preconditions.checkNotNull(focus.getMode(), "mode must not be null");
+		ErrorUtil.checkNotNull(focus.getMode(), "focus mode");
 		Object value = focus.getValue();
-		Preconditions.checkNotNull(value, "value must not be null");
+		ErrorUtil.checkNotNull(value, "focus value");
 		if (value instanceof ItemStack) {
 			ItemStack itemStack = (ItemStack) value;
 			ErrorUtil.checkNotEmpty(itemStack);

@@ -1,6 +1,5 @@
 package mezz.jei.recipes;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
@@ -12,6 +11,7 @@ import mezz.jei.config.Constants;
 import mezz.jei.startup.StackHelper;
 import mezz.jei.transfer.BasicRecipeTransferHandler;
 import mezz.jei.transfer.BasicRecipeTransferInfo;
+import mezz.jei.util.ErrorUtil;
 import net.minecraft.inventory.Container;
 
 public class RecipeTransferRegistry implements IRecipeTransferRegistry {
@@ -26,8 +26,8 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 
 	@Override
 	public <C extends Container> void addRecipeTransferHandler(Class<C> containerClass, String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
-		Preconditions.checkNotNull(containerClass, "containerClass cannot be null");
-		Preconditions.checkNotNull(recipeCategoryUid, "recipeCategoryUid cannot be null");
+		ErrorUtil.checkNotNull(containerClass, "containerClass");
+		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 
 		IRecipeTransferInfo<C> recipeTransferHelper = new BasicRecipeTransferInfo<C>(containerClass, recipeCategoryUid, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
 		addRecipeTransferHandler(recipeTransferHelper);
@@ -35,7 +35,7 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 
 	@Override
 	public <C extends Container> void addRecipeTransferHandler(IRecipeTransferInfo<C> recipeTransferInfo) {
-		Preconditions.checkNotNull(recipeTransferInfo, "recipeTransferInfo cannot be null");
+		ErrorUtil.checkNotNull(recipeTransferInfo, "recipeTransferInfo");
 
 		IRecipeTransferHandler<C> recipeTransferHandler = new BasicRecipeTransferHandler<C>(stackHelper, handlerHelper, recipeTransferInfo);
 		addRecipeTransferHandler(recipeTransferHandler, recipeTransferInfo.getRecipeCategoryUid());
@@ -43,8 +43,8 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 
 	@Override
 	public void addRecipeTransferHandler(IRecipeTransferHandler<?> recipeTransferHandler, String recipeCategoryUid) {
-		Preconditions.checkNotNull(recipeTransferHandler, "recipeTransferHandler cannot be null");
-		Preconditions.checkNotNull(recipeCategoryUid, "recipeCategoryUid cannot be null");
+		ErrorUtil.checkNotNull(recipeTransferHandler, "recipeTransferHandler");
+		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 
 		Class<?> containerClass = recipeTransferHandler.getContainerClass();
 		this.recipeTransferHandlers.put(containerClass, recipeCategoryUid, recipeTransferHandler);
@@ -52,7 +52,7 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 
 	@Override
 	public void addUniversalRecipeTransferHandler(IRecipeTransferHandler<?> recipeTransferHandler) {
-		Preconditions.checkNotNull(recipeTransferHandler, "recipeTransferHandler cannot be null");
+		ErrorUtil.checkNotNull(recipeTransferHandler, "recipeTransferHandler");
 
 		Class<?> containerClass = recipeTransferHandler.getContainerClass();
 		this.recipeTransferHandlers.put(containerClass, Constants.UNIVERSAL_RECIPE_TRANSFER_UID, recipeTransferHandler);
