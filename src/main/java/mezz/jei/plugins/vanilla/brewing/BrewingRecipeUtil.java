@@ -2,7 +2,9 @@ package mezz.jei.plugins.vanilla.brewing;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -32,7 +34,7 @@ public class BrewingRecipeUtil {
 
 	public int getBrewingSteps(ItemStack outputPotion) {
 		String potionInputUid = Internal.getStackHelper().getUniqueIdentifierForStack(outputPotion);
-		return getBrewingSteps(potionInputUid);
+		return getBrewingSteps(potionInputUid, new HashSet<String>());
 	}
 
 	private void clearCache() {
@@ -43,15 +45,18 @@ public class BrewingRecipeUtil {
 		}
 	}
 
-	private int getBrewingSteps(String potionOutputUid) {
+	private int getBrewingSteps(String potionOutputUid, Set<String> previousSteps) {
 		Integer brewingSteps = brewingStepCache.get(potionOutputUid);
 		if (brewingSteps == null) {
+			previousSteps.add(potionOutputUid);
 			Collection<String> prevPotions = potionMap.get(potionOutputUid);
 			if (!prevPotions.isEmpty()) {
 				int minPrevSteps = Integer.MAX_VALUE;
 				for (String prevPotion : prevPotions) {
-					int prevSteps = getBrewingSteps(prevPotion);
-					minPrevSteps = Math.min(minPrevSteps, prevSteps);
+					if (!previousSteps.contains(prevPotion)) {
+						int prevSteps = getBrewingSteps(prevPotion, previousSteps);
+						minPrevSteps = Math.min(minPrevSteps, prevSteps);
+					}
 				}
 				if (minPrevSteps < Integer.MAX_VALUE) {
 					brewingSteps = minPrevSteps + 1;
