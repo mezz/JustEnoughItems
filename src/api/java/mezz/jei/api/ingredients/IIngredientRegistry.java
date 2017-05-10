@@ -62,4 +62,13 @@ public interface IIngredientRegistry {
 	 * @since JEI 4.0.2
 	 */
 	<V> void addIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients);
+
+	/**
+	 * Remove ingredients from JEI at runtime.
+	 * Used by mods that have items created while the game is running, or use the server to define items.
+	 * Using this method will reload the ingredient list, do not call it unless necessary.
+	 *
+	 * @since JEI 4.3.5
+	 */
+	<V> void removeIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients);
 }

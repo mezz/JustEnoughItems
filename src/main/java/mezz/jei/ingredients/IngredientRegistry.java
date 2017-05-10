@@ -155,4 +155,22 @@ public class IngredientRegistry implements IIngredientRegistry {
 			itemListOverlay.rebuildItemFilter();
 		}
 	}
+
+	@Override
+	public <V> void removeIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients) {
+		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
+		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
+
+		//noinspection unchecked
+		List<V> list = ingredientsMap.get(ingredientClass);
+		if (list != null) {
+			list.removeAll(ingredients);
+		}
+
+		JeiRuntime runtime = Internal.getRuntime();
+		if (runtime != null) {
+			ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
+			itemListOverlay.rebuildItemFilter();
+		}
+	}
 }
