@@ -6,6 +6,7 @@ import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.config.Config;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
@@ -90,6 +91,7 @@ public class GuiIngredientFastList {
 				IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 				String stackInfo = ingredientHelper.getErrorInfo(ingredient);
 				Log.error("ItemStack crashed getting IBakedModel. " + stackInfo, throwable);
+				Config.addIngredientToConfigBlacklist(ingredient, Config.IngredientBlacklistType.WILDCARD, ingredientHelper);
 				guiItemStack.clear();
 				return;
 			}
@@ -98,6 +100,7 @@ public class GuiIngredientFastList {
 				IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 				String stackInfo = ingredientHelper.getErrorInfo(ingredient);
 				Log.error("ItemStack returned null IBakedModel. " + stackInfo, new NullPointerException());
+				Config.addIngredientToConfigBlacklist(ingredient, Config.IngredientBlacklistType.WILDCARD, ingredientHelper);
 				guiItemStack.clear();
 			} else {
 				if (bakedModel.isBuiltInRenderer()) {

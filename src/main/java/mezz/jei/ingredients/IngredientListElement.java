@@ -36,8 +36,10 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 			try {
 				String ingredientInfo = ingredientHelper.getErrorInfo(ingredient);
 				Log.warning("Found a broken ingredient {}", ingredientInfo, e);
+				Config.addIngredientToConfigBlacklist(ingredient, Config.IngredientBlacklistType.WILDCARD, ingredientHelper);
 			} catch (RuntimeException e2) {
 				Log.warning("Found a broken ingredient.", e2);
+				Config.addIngredientToConfigBlacklist(ingredient, Config.IngredientBlacklistType.WILDCARD, ingredientHelper);
 			}
 			return null;
 		}
