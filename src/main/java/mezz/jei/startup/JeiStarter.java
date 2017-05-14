@@ -9,9 +9,11 @@ import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.gui.GuiEventHandler;
+import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.ingredients.IngredientLookupMemory;
 import mezz.jei.gui.overlay.ItemListOverlay;
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.ingredients.IngredientBaseListFactory;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientInformation;
 import mezz.jei.ingredients.IngredientRegistry;
@@ -56,11 +58,22 @@ public class JeiStarter {
 		RecipeRegistry recipeRegistry = modRegistry.createRecipeRegistry(ingredientRegistry);
 		Log.info("Built    recipe registry in {} ms", System.currentTimeMillis() - start_time);
 
+		Log.info("Loading ingredient lookup history...");
+		start_time = System.currentTimeMillis();
 		Internal.setIngredientLookupMemory(new IngredientLookupMemory(recipeRegistry, ingredientRegistry));
+		Log.info("Loaded  ingredient lookup history in {} ms", System.currentTimeMillis() - start_time);
 
 		IngredientInformation.onStart(resourceReload);
 
-		IngredientFilter ingredientFilter = new IngredientFilter();
+		Log.info("Building ingredient list...");
+		start_time = System.currentTimeMillis();
+		List<IIngredientListElement> ingredientList = IngredientBaseListFactory.create();
+		Log.info("Built    ingredient list in {} ms", System.currentTimeMillis() - start_time);
+
+		Log.info("Building ingredient filter...");
+		start_time = System.currentTimeMillis();
+		IngredientFilter ingredientFilter = new IngredientFilter(ingredientList);
+		Log.info("Built    ingredient filter in {} ms", System.currentTimeMillis() - start_time);
 
 		Log.info("Building runtime...");
 		start_time = System.currentTimeMillis();

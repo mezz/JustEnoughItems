@@ -1,18 +1,21 @@
 package mezz.jei.ingredients;
 
+import java.util.List;
+
 import com.google.common.collect.ImmutableList;
+import mezz.jei.gui.ingredients.IIngredientListElement;
 import net.minecraft.item.ItemStack;
 
 public class IngredientFilter {
 
 	private IngredientFilterInternals internals;
 
-	public IngredientFilter() {
-		this.internals = new IngredientFilterInternals();
+	public IngredientFilter(List<IIngredientListElement> ingredientList) {
+		this.internals = new IngredientFilterInternals(ingredientList);
 	}
 
-	public void rebuild() {
-		this.internals = new IngredientFilterInternals();
+	public void rebuild(List<IIngredientListElement> ingredientList) {
+		this.internals = new IngredientFilterInternals(ingredientList);
 	}
 
 	public ImmutableList<Object> getIngredientList() {

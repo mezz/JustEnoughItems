@@ -25,9 +25,6 @@ public final class IngredientBaseListFactory {
 	}
 
 	public static ImmutableList<IIngredientListElement> create() {
-		Log.info("Building item filter...");
-		long start_time = System.currentTimeMillis();
-
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		JeiHelpers jeiHelpers = Internal.getHelpers();
 		IngredientChecker ingredientChecker = new IngredientChecker(jeiHelpers);
@@ -39,10 +36,7 @@ public final class IngredientBaseListFactory {
 		}
 
 		sortIngredientListElements(ingredientListElements);
-		ImmutableList<IIngredientListElement> immutableElements = ImmutableList.copyOf(ingredientListElements);
-
-		Log.info("Built	item filter in {} ms", System.currentTimeMillis() - start_time);
-		return immutableElements;
+		return ImmutableList.copyOf(ingredientListElements);
 	}
 
 	private static <V> void addToBaseList(List<IIngredientListElement> baseList, IIngredientRegistry ingredientRegistry, IngredientChecker ingredientChecker, Class<V> ingredientClass) {

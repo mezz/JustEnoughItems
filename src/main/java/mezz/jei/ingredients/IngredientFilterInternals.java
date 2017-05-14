@@ -33,8 +33,7 @@ public class IngredientFilterInternals {
 	private String filterCached;
 	private ImmutableList<Object> ingredientListCached = ImmutableList.of();
 
-	public IngredientFilterInternals() {
-		List<IIngredientListElement> ingredientList = IngredientBaseListFactory.create();
+	public IngredientFilterInternals(List<IIngredientListElement> ingredientList) {
 		ImmutableList.Builder<Object> baseListBuilder = ImmutableList.builder();
 		for (IIngredientListElement element : ingredientList) {
 			baseListBuilder.add(element.getIngredient());

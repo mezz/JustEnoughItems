@@ -3,6 +3,7 @@ package mezz.jei.gui.overlay;
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.Collection;
+import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.IItemListOverlay;
@@ -11,6 +12,8 @@ import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.SessionData;
 import mezz.jei.gui.PageNavigation;
+import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.ingredients.IngredientBaseListFactory;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IClickedIngredient;
@@ -64,7 +67,8 @@ public class ItemListOverlay implements IItemListOverlay, IPaged, IMouseHandler,
 	}
 
 	public void rebuildItemFilter() {
-		this.ingredientFilter.rebuild();
+		List<IIngredientListElement> ingredientList = IngredientBaseListFactory.create();
+		this.ingredientFilter.rebuild(ingredientList);
 		SessionData.setFirstItemIndex(0);
 		updateLayout();
 	}
