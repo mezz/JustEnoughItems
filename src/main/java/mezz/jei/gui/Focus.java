@@ -4,6 +4,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.LegacyUtil;
 import net.minecraft.item.ItemStack;
 
 public class Focus<V> implements IFocus<V> {
@@ -13,13 +14,7 @@ public class Focus<V> implements IFocus<V> {
 	public Focus(Mode mode, V value) {
 		this.mode = mode;
 		IIngredientHelper<V> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(value);
-		V valueCopy;
-		try {
-			valueCopy = ingredientHelper.copyIngredient(value);
-		} catch (AbstractMethodError ignored) { // older ingredient helpers do not have this method
-			valueCopy = value;
-		}
-		this.value = valueCopy;
+		this.value = LegacyUtil.getIngredientCopy(value, ingredientHelper);
 		checkInternal(this);
 	}
 

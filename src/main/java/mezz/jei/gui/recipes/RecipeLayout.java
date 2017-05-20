@@ -2,7 +2,6 @@ package mezz.jei.gui.recipes;
 
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
-import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +23,7 @@ import mezz.jei.gui.ingredients.GuiIngredientGroup;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.LegacyUtil;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -154,13 +154,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		if (hoveredIngredient != null) {
 			hoveredIngredient.drawHovered(minecraft, posX, posY, recipeMouseX, recipeMouseY);
 		} else if (isMouseOver(mouseX, mouseY)) {
-			List<String> tooltipStrings = new ArrayList<String>();
-			try {
-				//noinspection unchecked
-				tooltipStrings.addAll(recipeCategory.getTooltipStrings(recipeMouseX, recipeMouseY));
-			} catch (AbstractMethodError ignored) {
-				// legacy recipe categories do not have this method
-			}
+			List<String> tooltipStrings = LegacyUtil.getTooltipStrings(recipeCategory, recipeMouseX, recipeMouseY);
 			List<String> wrapperTooltips = recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY);
 			//noinspection ConstantConditions
 			if (wrapperTooltips != null) {

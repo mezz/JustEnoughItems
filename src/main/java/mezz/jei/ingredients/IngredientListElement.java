@@ -14,6 +14,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.ModIdHelper;
+import mezz.jei.util.LegacyUtil;
 import mezz.jei.util.Log;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
@@ -66,15 +67,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 			this.colorStrings = Collections.emptyList();
 		}
 
-		String resourceIdTry;
-		try {
-			resourceIdTry = ingredientHelper.getResourceId(ingredient);
-		} catch (AbstractMethodError ignored) {
-			// Since older IIngredientHelpers won't have the new getResourceId, we'll be using getUniqueId
-			resourceIdTry = ingredientHelper.getUniqueId(ingredient);
-		}
-
-		this.resourceId = resourceIdTry;
+		this.resourceId = LegacyUtil.getResourceId(ingredient, ingredientHelper);
 
 		this.tooltipStrings = IngredientInformation.getTooltipStrings(ingredient, ingredientRenderer, ImmutableSet.of(modId, modName, displayName, resourceId));
 
