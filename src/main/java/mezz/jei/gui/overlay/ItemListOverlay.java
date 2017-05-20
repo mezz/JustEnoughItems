@@ -290,7 +290,7 @@ public class ItemListOverlay implements IItemListOverlay, IPaged, IMouseHandler,
 
 	public boolean onKeyPressed(char typedChar, int keyCode) {
 		if (hasKeyboardFocus() &&
-			searchField.textboxKeyTyped(typedChar, keyCode)) {
+				searchField.textboxKeyTyped(typedChar, keyCode)) {
 			boolean changed = Config.setFilterText(searchField.getText());
 			if (changed) {
 				SessionData.setFirstItemIndex(0);

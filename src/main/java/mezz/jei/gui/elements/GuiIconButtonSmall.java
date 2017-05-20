@@ -21,10 +21,8 @@ public class GuiIconButtonSmall extends GuiButton {
 	}
 
 	@Override
-	public void drawButton(Minecraft mc, int mouseX, int mouseY)
-	{
-		if (this.visible)
-		{
+	public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+		if (this.visible) {
 			this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 			int k = this.getHoverState(this.hovered);
 			GuiUtils.drawContinuousTexturedBox(BUTTON_RESOURCE, this.xPosition, this.yPosition, 0, 182 + k * 20, this.width, this.height, 95, 20, 2, 2, 2, 2, this.zLevel);
@@ -40,10 +38,10 @@ public class GuiIconButtonSmall extends GuiButton {
 				color |= -16777216;
 			}
 
-			float red = (float)(color >> 16 & 255) / 255.0F;
-			float blue = (float)(color >> 8 & 255) / 255.0F;
-			float green = (float)(color & 255) / 255.0F;
-			float alpha = (float)(color >> 24 & 255) / 255.0F;
+			float red = (float) (color >> 16 & 255) / 255.0F;
+			float blue = (float) (color >> 8 & 255) / 255.0F;
+			float green = (float) (color & 255) / 255.0F;
+			float alpha = (float) (color >> 24 & 255) / 255.0F;
 			GlStateManager.color(red, blue, green, alpha);
 
 			int xOffset = xPosition + (height - this.icon.getWidth()) / 2;

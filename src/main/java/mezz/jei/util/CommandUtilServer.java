@@ -89,6 +89,7 @@ public final class CommandUtilServer {
 	/**
 	 * Gives a player an item. Similar to vanilla but without the "fake" itemStack popping into the player's face.
 	 * (no {@link EntityItem#makeFakeItem()}
+	 *
 	 * @see CommandGive#execute(MinecraftServer, ICommandSender, String[])
 	 */
 	public static void executeGive(EntityPlayerMP sender, ItemStack itemStack) {

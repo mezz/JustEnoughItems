@@ -45,8 +45,8 @@ public final class ReflectionUtil {
 
 		try {
 			Field[] fields = objectClass.getDeclaredFields();
-			for (Field field : fields){
-				if (fieldClass.isAssignableFrom(field.getType())){
+			for (Field field : fields) {
+				if (fieldClass.isAssignableFrom(field.getType())) {
 					if (!field.isAccessible()) {
 						field.setAccessible(true);
 					}

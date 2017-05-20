@@ -22,8 +22,8 @@ public interface ICustomCraftingRecipeWrapper extends ICraftingRecipeWrapper {
 	 *
 	 * Set the {@link IRecipeLayout} properties from this {@link IRecipeWrapper} and {@link IIngredients}.
 	 *
-	 * @param recipeLayout  the layout that needs its properties set.
-	 * @param ingredients   the ingredients, already set by the recipeWrapper
+	 * @param recipeLayout the layout that needs its properties set.
+	 * @param ingredients  the ingredients, already set by the recipeWrapper
 	 * @since JEI 3.13.5
 	 */
 	void setRecipe(IRecipeLayout recipeLayout, IIngredients ingredients);

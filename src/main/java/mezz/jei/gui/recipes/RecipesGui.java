@@ -339,7 +339,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		if (parentScreen instanceof GuiContainer) {
 			displayGuiScreenWithoutClose(this);
 		} else {
-			mc.displayGuiScreen(this);	
+			mc.displayGuiScreen(this);
 		}
 	}
 
@@ -504,8 +504,8 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		} else {
 			mc.setIngameNotInFocus();
 			KeyBinding.unPressAllKeys();
-			while (Mouse.next());
-			while (Keyboard.next());
+			while (Mouse.next()) ;
+			while (Keyboard.next()) ;
 			ScaledResolution reso = new ScaledResolution(mc);
 			int width = reso.getScaledWidth();
 			int height = reso.getScaledHeight();

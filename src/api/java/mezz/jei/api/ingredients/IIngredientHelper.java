@@ -76,7 +76,7 @@ public interface IIngredientHelper<V> {
 	 * return an empty ItemStack and handle the action manually.
 	 *
 	 * @param ingredient The ingredient to cheat in. Do not edit this ingredient.
-	 * @param fullStack Only used for manual handling, true if a full stack should be cheated in instead of a single ingredient.
+	 * @param fullStack  Only used for manual handling, true if a full stack should be cheated in instead of a single ingredient.
 	 * @return an ItemStack for JEI to give the player, or an empty stack if this method handles it manually.
 	 * @since JEI 4.2.9
 	 */

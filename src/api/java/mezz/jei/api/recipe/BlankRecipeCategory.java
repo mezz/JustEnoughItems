@@ -1,7 +1,6 @@
 package mezz.jei.api.recipe;
 
 import javax.annotation.Nullable;
-
 import java.util.Collections;
 import java.util.List;
 
