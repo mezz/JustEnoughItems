@@ -33,8 +33,23 @@ public interface IIngredientRenderer<T> {
 	 * @param minecraft  The minecraft instance.
 	 * @param ingredient The ingredient to get the tooltip for.
 	 * @return The tooltip text for the ingredient.
+	 *
+	 * @deprecated since JEI 4.3.6, use {@link #getTooltip(Minecraft, T, boolean)}
 	 */
+	@Deprecated
 	List<String> getTooltip(Minecraft minecraft, T ingredient);
+
+	/**
+	 * Get the tooltip text for this ingredient. JEI renders the tooltip based on this.
+	 *
+	 * @param minecraft  The minecraft instance.
+	 * @param ingredient The ingredient to get the tooltip for.
+	 * @param advanced   Whether to show advanced information on item tooltips, toggled by F3+H
+	 * @return The tooltip text for the ingredient.
+	 *
+	 * @since JEI 4.3.6
+	 */
+	List<String> getTooltip(Minecraft minecraft, T ingredient, boolean advanced);
 
 	/**
 	 * Get the tooltip font renderer for this ingredient. JEI renders the tooltip based on this.

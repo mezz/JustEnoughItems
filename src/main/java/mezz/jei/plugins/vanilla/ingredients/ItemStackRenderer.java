@@ -31,7 +31,13 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	}
 
 	@Override
+	@Deprecated
 	public List<String> getTooltip(Minecraft minecraft, ItemStack ingredient) {
+		return getTooltip(minecraft, ingredient, minecraft.gameSettings.advancedItemTooltips);
+	}
+
+	@Override
+	public List<String> getTooltip(Minecraft minecraft, ItemStack ingredient, boolean advanced) {
 		EntityPlayer player = minecraft.player;
 		if (player == null) {
 			player = FakeClientPlayer.getInstance();
@@ -39,7 +45,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 
 		List<String> list;
 		try {
-			list = ingredient.getTooltip(player, minecraft.gameSettings.advancedItemTooltips);
+			list = ingredient.getTooltip(player, advanced);
 		} catch (RuntimeException e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
 			Log.error("Failed to get tooltip: {}", itemStackInfo, e);

@@ -147,6 +147,10 @@ public final class Config {
 		return values.resourceIdSearchMode;
 	}
 
+	public static boolean getSearchAdvancedTooltips() {
+		return values.searchAdvancedTooltips;
+	}
+
 	public enum SearchMode {
 		ENABLED, REQUIRE_PREFIX, DISABLED
 	}
@@ -211,34 +215,7 @@ public final class Config {
 		final File searchColorsConfigFile = new File(jeiConfigurationDir, "searchColors.cfg");
 		final File worldConfigFile = new File(jeiConfigurationDir, "worldSettings.cfg");
 		worldConfig = new Configuration(worldConfigFile, "0.1.0");
-
-		{
-			final File oldConfigFile = event.getSuggestedConfigurationFile();
-			if (oldConfigFile.exists()) {
-				try {
-					if (!oldConfigFile.renameTo(configFile)) {
-						Log.error("Could not move old config file {}", oldConfigFile);
-					}
-				} catch (SecurityException e) {
-					Log.error("Could not move old config file {}", oldConfigFile, e);
-				}
-			}
-		}
-
-		{
-			final File oldItemBlacklistConfigFile = new File(event.getModConfigurationDirectory(), Constants.MOD_ID + "-itemBlacklist.cfg");
-			if (oldItemBlacklistConfigFile.exists()) {
-				try {
-					if (!oldItemBlacklistConfigFile.renameTo(itemBlacklistConfigFile)) {
-						Log.error("Could not move old config file {}", oldItemBlacklistConfigFile);
-					}
-				} catch (SecurityException e) {
-					Log.error("Could not move old config file {}", oldItemBlacklistConfigFile, e);
-				}
-			}
-		}
-
-		config = new LocalizedConfiguration(configKeyPrefix, configFile, "0.2.0");
+		config = new LocalizedConfiguration(configKeyPrefix, configFile, "0.3.0");
 		itemBlacklistConfig = new LocalizedConfiguration(configKeyPrefix, itemBlacklistConfigFile, "0.1.0");
 		searchColorsConfig = new LocalizedConfiguration(configKeyPrefix, searchColorsConfigFile, "0.1.0");
 
@@ -300,6 +277,13 @@ public final class Config {
 		searchCategory.remove("prefixRequiredForColorSearch");
 
 		SearchMode[] searchModes = SearchMode.values();
+
+		// set new defaults moving from config version 0.2.0 to 0.3.0
+		if (config.getLoadedConfigVersion().equals("0.2.0")) {
+			config.setEnum("creativeTabSearchMode", CATEGORY_SEARCH, defaultValues.creativeTabSearchMode, searchModes);
+			config.setEnum("oreDictSearchMode", CATEGORY_SEARCH, defaultValues.oreDictSearchMode, searchModes);
+		}
+
 		values.modNameSearchMode = config.getEnum("modNameSearchMode", CATEGORY_SEARCH, defaultValues.modNameSearchMode, searchModes);
 		values.tooltipSearchMode = config.getEnum("tooltipSearchMode", CATEGORY_SEARCH, defaultValues.tooltipSearchMode, searchModes);
 		values.oreDictSearchMode = config.getEnum("oreDictSearchMode", CATEGORY_SEARCH, defaultValues.oreDictSearchMode, searchModes);
@@ -309,6 +293,8 @@ public final class Config {
 		if (config.getCategory(CATEGORY_SEARCH).hasChanged()) {
 			needsReload = true;
 		}
+
+		values.searchAdvancedTooltips = config.getBoolean("searchAdvancedTooltips", CATEGORY_SEARCH, defaultValues.searchAdvancedTooltips);
 
 		ConfigCategory categoryAdvanced = config.getCategory(CATEGORY_ADVANCED);
 		categoryAdvanced.remove("nbtKeyIgnoreList");

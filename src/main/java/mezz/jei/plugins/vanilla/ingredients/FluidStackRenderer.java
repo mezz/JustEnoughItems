@@ -165,7 +165,13 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	}
 
 	@Override
+	@Deprecated
 	public List<String> getTooltip(Minecraft minecraft, FluidStack fluidStack) {
+		return getTooltip(minecraft, fluidStack, minecraft.gameSettings.advancedItemTooltips);
+	}
+
+	@Override
+	public List<String> getTooltip(Minecraft minecraft, FluidStack fluidStack, boolean advanced) {
 		List<String> tooltip = new ArrayList<String>();
 		Fluid fluidType = fluidStack.getFluid();
 		if (fluidType == null) {

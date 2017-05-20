@@ -21,6 +21,7 @@ import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IPaged;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
@@ -67,8 +68,16 @@ public class ItemListOverlay implements IItemListOverlay, IPaged, IMouseHandler,
 	}
 
 	public void rebuildItemFilter() {
+		Log.info("Rebuilding ingredient list...");
+		long start_time = System.currentTimeMillis();
 		List<IIngredientListElement> ingredientList = IngredientBaseListFactory.create();
+		Log.info("Rebuilt    ingredient list in {} ms", System.currentTimeMillis() - start_time);
+
+		Log.info("Rebuilding ingredient filter...");
+		start_time = System.currentTimeMillis();
 		this.ingredientFilter.rebuild(ingredientList);
+		Log.info("Rebuilt    ingredient filter in {} ms", System.currentTimeMillis() - start_time);
+
 		SessionData.setFirstItemIndex(0);
 		updateLayout();
 	}

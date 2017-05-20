@@ -16,12 +16,16 @@ public class ColorNamer {
 		this.colorNames = colorNames;
 	}
 
-	public Collection<String> getColorNames(Iterable<Color> colors) {
+	public Collection<String> getColorNames(Iterable<Color> colors, boolean lowercase) {
 		final Set<String> allColorNames = new LinkedHashSet<String>();
 		for (Color color : colors) {
 			final String colorName = getClosestColorName(color);
 			if (colorName != null) {
-				allColorNames.add(colorName);
+				if (lowercase) {
+					allColorNames.add(colorName.toLowerCase());
+				} else {
+					allColorNames.add(colorName);
+				}
 			}
 		}
 		return allColorNames;

@@ -2,14 +2,17 @@ package mezz.jei.ingredients;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.abahgat.suffixtree.GeneralizedSuffixTree;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import gnu.trove.set.TIntSet;
 import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
@@ -42,71 +45,84 @@ public class IngredientFilterInternals {
 
 		this.searchTree = new GeneralizedSuffixTree();
 
-		this.prefixedSearchTrees.put('@', this.modNameTree = new GeneralizedSuffixTree());
-		this.prefixedSearchTrees.put('#', this.tooltipTree = new GeneralizedSuffixTree());
-		this.prefixedSearchTrees.put('$', this.oreDictTree = new GeneralizedSuffixTree());
-		this.prefixedSearchTrees.put('%', this.creativeTabTree = new GeneralizedSuffixTree());
-		this.prefixedSearchTrees.put('^', this.colorTree = new GeneralizedSuffixTree());
-		this.prefixedSearchTrees.put('&', this.resourceIdTree = new GeneralizedSuffixTree());
+		this.modNameTree = createPrefixedSearchTree('@');
+		this.tooltipTree = createPrefixedSearchTree('#');
+		this.oreDictTree = createPrefixedSearchTree('$');
+		this.creativeTabTree = createPrefixedSearchTree('%');
+		this.colorTree = createPrefixedSearchTree('^');
+		this.resourceIdTree = createPrefixedSearchTree('&');
 
 		buildSuffixTrees(ingredientList);
 	}
 
+	private GeneralizedSuffixTree createPrefixedSearchTree(Character prefix) {
+		GeneralizedSuffixTree tree = new GeneralizedSuffixTree();
+		this.prefixedSearchTrees.put(prefix, tree);
+		return tree;
+	}
+
 	private void buildSuffixTrees(List<IIngredientListElement> ingredientList) {
 		for (int i = 0; i < ingredientList.size(); i++) {
-			IIngredientListElement element = ingredientList.get(i);
+			IIngredientListElement<?> element = ingredientList.get(i);
 			searchTree.put(element.getDisplayName(), i);
 
 			Config.SearchMode modNameSearchMode = Config.getModNameSearchMode();
 			if (modNameSearchMode != Config.SearchMode.DISABLED) {
 				String modNameString = element.getModName();
 				String modIdString = element.getModId();
-				modNameTree.put(modNameString, i);
-				modNameTree.put(modIdString, i);
-				modNameTree.put(SPACE_PATTERN.matcher(modNameString).replaceAll(""), i);
-				modNameTree.put(SPACE_PATTERN.matcher(modIdString).replaceAll(""), i);
-				if (modNameSearchMode == Config.SearchMode.ENABLED) {
-					searchTree.put(modNameString, i);
-					searchTree.put(modIdString, i);
-					searchTree.put(SPACE_PATTERN.matcher(modNameString).replaceAll(""), i);
-					searchTree.put(SPACE_PATTERN.matcher(modIdString).replaceAll(""), i);
+				String modNameNoSpaces = SPACE_PATTERN.matcher(modNameString).replaceAll("");
+				String modIdNoSpaces = SPACE_PATTERN.matcher(modIdString).replaceAll("");
+
+				Set<String> modNames = ImmutableSet.of(modNameString, modIdString, modNameNoSpaces, modIdNoSpaces);
+				for (String modName : modNames) {
+					modNameTree.put(modName, i);
+					if (modNameSearchMode == Config.SearchMode.ENABLED) {
+						searchTree.put(modName, i);
+					}
 				}
 			}
 
 			Config.SearchMode tooltipSearchMode = Config.getTooltipSearchMode();
 			if (tooltipSearchMode != Config.SearchMode.DISABLED) {
-				String tooltipString = element.getTooltipString();
-
-				tooltipTree.put(tooltipString, i);
-				if (tooltipSearchMode == Config.SearchMode.ENABLED) {
-					searchTree.put(tooltipString, i);
+				List<String> tooltipStrings = element.getTooltipStrings();
+				for (String tooltipString : tooltipStrings) {
+					tooltipTree.put(tooltipString, i);
+					if (tooltipSearchMode == Config.SearchMode.ENABLED) {
+						searchTree.put(tooltipString, i);
+					}
 				}
 			}
 
 			Config.SearchMode oreDictSearchMode = Config.getOreDictSearchMode();
 			if (oreDictSearchMode != Config.SearchMode.DISABLED) {
-				String oreDictString = element.getOreDictString();
-				oreDictTree.put(oreDictString, i);
-				if (oreDictSearchMode == Config.SearchMode.ENABLED) {
-					searchTree.put(oreDictString, i);
+				Collection<String> oreDictStrings = element.getOreDictStrings();
+				for (String oreDictString : oreDictStrings) {
+					oreDictTree.put(oreDictString, i);
+					if (oreDictSearchMode == Config.SearchMode.ENABLED) {
+						searchTree.put(oreDictString, i);
+					}
 				}
 			}
 
 			Config.SearchMode creativeTabSearchMode = Config.getCreativeTabSearchMode();
 			if (creativeTabSearchMode != Config.SearchMode.DISABLED) {
-				String creativeTabsString = element.getCreativeTabsString();
-				creativeTabTree.put(creativeTabsString, i);
-				if (creativeTabSearchMode == Config.SearchMode.ENABLED) {
-					searchTree.put(creativeTabsString, i);
+				Collection<String> creativeTabsStrings = element.getCreativeTabsStrings();
+				for (String creativeTabsString : creativeTabsStrings) {
+					creativeTabTree.put(creativeTabsString, i);
+					if (creativeTabSearchMode == Config.SearchMode.ENABLED) {
+						searchTree.put(creativeTabsString, i);
+					}
 				}
 			}
 
 			Config.SearchMode colorSearchMode = Config.getColorSearchMode();
 			if (colorSearchMode != Config.SearchMode.DISABLED) {
-				String colorString = element.getColorString();
-				colorTree.put(colorString, i);
-				if (colorSearchMode == Config.SearchMode.ENABLED) {
-					searchTree.put(colorString, i);
+				Collection<String> colorStrings = element.getColorStrings();
+				for (String colorString : colorStrings) {
+					colorTree.put(colorString, i);
+					if (colorSearchMode == Config.SearchMode.ENABLED) {
+						searchTree.put(colorString, i);
+					}
 				}
 			}
 

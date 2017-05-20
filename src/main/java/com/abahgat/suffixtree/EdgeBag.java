@@ -17,9 +17,6 @@ package com.abahgat.suffixtree;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * A specialized implementation of Map that uses native char types and sorted
@@ -31,15 +28,14 @@ import java.util.Set;
  * - add nullable/nonnull annotations
  * - formatting
  */
-class EdgeBag implements Map<Character, Edge> {
+class EdgeBag {
 	@Nullable
 	private char[] chars;
 	private Edge[] values = new Edge[0];
 	private static final int BSEARCH_THRESHOLD = 6;
 
-	@Override
 	@Nullable
-	public Edge put(Character c, Edge e) {
+	public Edge put(char c, Edge e) {
 		if (chars == null) {
 			chars = new char[0];
 		}
@@ -67,12 +63,6 @@ class EdgeBag implements Map<Character, Edge> {
 		return previous;
 	}
 
-	@Override
-	@Nullable
-	public Edge get(Object maybeCharacter) {
-		return get(((Character) maybeCharacter).charValue());  // throws if cast fails.
-	}
-
 	@Nullable
 	public Edge get(char c) {
 		int idx = search(c);
@@ -96,11 +86,6 @@ class EdgeBag implements Map<Character, Edge> {
 			}
 		}
 		return -1;
-	}
-
-	@Override
-	public Collection<Edge> values() {
-		return Arrays.asList(values);
 	}
 
 	public Edge[] getValues() {
@@ -128,48 +113,11 @@ class EdgeBag implements Map<Character, Edge> {
 		}
 	}
 
-	@Override
 	public boolean isEmpty() {
 		return chars == null || chars.length == 0;
 	}
 
-	@Override
 	public int size() {
 		return chars == null ? 0 : chars.length;
-	}
-
-	@Override
-	public Set<Map.Entry<Character, Edge>> entrySet() {
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
-	public Set<Character> keySet() {
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
-	public void clear() {
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
-	public void putAll(Map<? extends Character, ? extends Edge> m) {
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
-	public Edge remove(Object key) {
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
-	public boolean containsKey(Object key) {
-		throw new UnsupportedOperationException("Not implemented");
-	}
-
-	@Override
-	public boolean containsValue(Object key) {
-		throw new UnsupportedOperationException("Not implemented");
 	}
 }

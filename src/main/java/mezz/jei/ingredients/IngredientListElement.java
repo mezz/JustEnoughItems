@@ -1,8 +1,13 @@
 package mezz.jei.ingredients;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
+import com.google.common.collect.ImmutableSet;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -22,10 +27,10 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	private final String displayName;
 	private final String modName;
 	private final String modId;
-	private final String tooltipString;
-	private final String oreDictString;
-	private final String creativeTabsString;
-	private final String colorString;
+	private final List<String> tooltipStrings;
+	private final Collection<String> oreDictStrings;
+	private final Collection<String> creativeTabsStrings;
+	private final Collection<String> colorStrings;
 	private final String resourceId;
 
 	@Nullable
@@ -53,14 +58,12 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		ModIdHelper modIdHelper = Internal.getModIdHelper();
 		this.modName = modIdHelper.getModNameForModId(modId).toLowerCase(Locale.ENGLISH);
 
-		this.displayName = ingredientHelper.getDisplayName(ingredient).toLowerCase();
-
-		this.tooltipString = IngredientInformation.getTooltipString(ingredient, ingredientRenderer, modId, modName, this.displayName);
+		this.displayName = IngredientInformation.getDisplayName(ingredient, ingredientHelper);
 
 		if (Config.getColorSearchMode() != Config.SearchMode.DISABLED) {
-			this.colorString = IngredientInformation.getColorString(ingredient, ingredientHelper);
+			this.colorStrings = IngredientInformation.getColorStrings(ingredient, ingredientHelper);
 		} else {
-			this.colorString = "";
+			this.colorStrings = Collections.emptyList();
 		}
 
 		String resourceIdTry;
@@ -73,28 +76,28 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 
 		this.resourceId = resourceIdTry;
 
+		this.tooltipStrings = IngredientInformation.getTooltipStrings(ingredient, ingredientRenderer, ImmutableSet.of(modId, modName, displayName, resourceId));
+
 		if (ingredient instanceof ItemStack) {
 			ItemStack itemStack = (ItemStack) ingredient;
 			Item item = itemStack.getItem();
 
-			StringBuilder oreDictStringBuilder = new StringBuilder();
+			this.oreDictStrings = new ArrayList<String>();
 			for (int oreId : OreDictionary.getOreIDs(itemStack)) {
 				String oreName = OreDictionary.getOreName(oreId).toLowerCase(Locale.ENGLISH);
-				oreDictStringBuilder.append(oreName).append(' ');
+				this.oreDictStrings.add(oreName);
 			}
-			this.oreDictString = oreDictStringBuilder.toString();
 
-			StringBuilder creativeTabStringBuilder = new StringBuilder();
+			this.creativeTabsStrings = new ArrayList<String>();
 			for (CreativeTabs creativeTab : item.getCreativeTabs()) {
 				if (creativeTab != null) {
 					String creativeTabName = I18n.format(creativeTab.getTranslatedTabLabel()).toLowerCase();
-					creativeTabStringBuilder.append(creativeTabName).append(' ');
+					this.creativeTabsStrings.add(creativeTabName);
 				}
 			}
-			this.creativeTabsString = creativeTabStringBuilder.toString();
 		} else {
-			this.oreDictString = "";
-			this.creativeTabsString = "";
+			this.oreDictStrings = Collections.emptyList();
+			this.creativeTabsStrings = Collections.emptyList();
 		}
 	}
 
@@ -124,23 +127,23 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	}
 
 	@Override
-	public final String getTooltipString() {
-		return tooltipString;
+	public final List<String> getTooltipStrings() {
+		return tooltipStrings;
 	}
 
 	@Override
-	public String getOreDictString() {
-		return oreDictString;
+	public Collection<String> getOreDictStrings() {
+		return oreDictStrings;
 	}
 
 	@Override
-	public String getCreativeTabsString() {
-		return creativeTabsString;
+	public Collection<String> getCreativeTabsStrings() {
+		return creativeTabsStrings;
 	}
 
 	@Override
-	public String getColorString() {
-		return colorString;
+	public Collection<String> getColorStrings() {
+		return colorStrings;
 	}
 
 	@Override

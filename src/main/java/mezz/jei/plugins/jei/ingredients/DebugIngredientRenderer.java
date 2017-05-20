@@ -30,7 +30,13 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 	}
 
 	@Override
+	@Deprecated
 	public List<String> getTooltip(Minecraft minecraft, DebugIngredient ingredient) {
+		return getTooltip(minecraft, ingredient, minecraft.gameSettings.advancedItemTooltips);
+	}
+
+	@Override
+	public List<String> getTooltip(Minecraft minecraft, DebugIngredient ingredient, boolean advanced) {
 		List<String> tooltip = new ArrayList<String>();
 		String displayName = ingredientHelper.getDisplayName(ingredient);
 		tooltip.add(displayName);

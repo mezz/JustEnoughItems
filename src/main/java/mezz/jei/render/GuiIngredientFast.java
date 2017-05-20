@@ -17,6 +17,7 @@ import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.util.LegacyUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -328,7 +329,7 @@ public class GuiIngredientFast {
 
 	private static <V> List<String> getIngredientTooltipSafe(Minecraft minecraft, V ingredient, IIngredientRenderer<V> ingredientRenderer) {
 		try {
-			return ingredientRenderer.getTooltip(minecraft, ingredient);
+			return LegacyUtil.getTooltip(ingredientRenderer, minecraft, ingredient, minecraft.gameSettings.advancedItemTooltips);
 		} catch (RuntimeException e) {
 			Log.error("Tooltip crashed.", e);
 		} catch (LinkageError e) {
@@ -344,7 +345,7 @@ public class GuiIngredientFast {
 		ColorNamer colorNamer = Internal.getColorNamer();
 
 		Iterable<Color> colors = ingredientHelper.getColors(ingredient);
-		Collection<String> colorNames = colorNamer.getColorNames(colors);
+		Collection<String> colorNames = colorNamer.getColorNames(colors, false);
 		if (!colorNames.isEmpty()) {
 			String colorNamesString = Joiner.on(", ").join(colorNames);
 			String colorNamesLocalizedString = TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.item.colors", colorNamesString);

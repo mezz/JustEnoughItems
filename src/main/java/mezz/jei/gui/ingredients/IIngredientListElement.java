@@ -1,5 +1,8 @@
 package mezz.jei.gui.ingredients;
 
+import java.util.Collection;
+import java.util.List;
+
 import mezz.jei.api.ingredients.IIngredientHelper;
 
 public interface IIngredientListElement<V> {
@@ -13,13 +16,13 @@ public interface IIngredientListElement<V> {
 
 	String getModId();
 
-	String getTooltipString();
+	List<String> getTooltipStrings();
 
-	String getOreDictString();
+	Collection<String> getOreDictStrings();
 
-	String getCreativeTabsString();
+	Collection<String> getCreativeTabsStrings();
 
-	String getColorString();
+	Collection<String> getColorStrings();
 
 	String getResourceId();
 }
