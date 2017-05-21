@@ -1,6 +1,7 @@
 package mezz.jei.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -34,7 +35,7 @@ public final class LegacyUtil {
 		try {
 			return recipeCategory.getTooltipStrings(recipeMouseX, recipeMouseY);
 		} catch (AbstractMethodError ignored) {
-			return new ArrayList<String>();
+			return Collections.emptyList();
 		}
 	}
 
