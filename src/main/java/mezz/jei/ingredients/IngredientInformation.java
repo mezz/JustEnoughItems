@@ -2,6 +2,7 @@ package mezz.jei.ingredients;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -46,17 +47,17 @@ public final class IngredientInformation {
 
 	private static <T> List<String> getTooltipStringsUncached(T ingredient, IIngredientRenderer<T> ingredientRenderer, Set<String> excludeWords) {
 		List<String> tooltip = LegacyUtil.getTooltip(ingredientRenderer, Minecraft.getMinecraft(), ingredient, Config.getSearchAdvancedTooltips());
-		for (Iterator<String> iterator = tooltip.iterator(); iterator.hasNext(); ) {
-			String line = iterator.next();
+		List<String> cleanTooltip = new ArrayList<String>(tooltip.size());
+		for (String line : tooltip) {
 			line = removeChatFormatting(line).toLowerCase();
 			for (String excludeWord : excludeWords) {
 				line = line.replace(excludeWord, "");
 			}
-			if (StringUtils.isNullOrEmpty(line)) {
-				iterator.remove();
+			if (!StringUtils.isNullOrEmpty(line)) {
+				cleanTooltip.add(line);
 			}
 		}
-		return tooltip;
+		return cleanTooltip;
 	}
 
 	private static String removeChatFormatting(String string) {
