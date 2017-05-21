@@ -1,7 +1,7 @@
 @ParametersAreNonnullByDefault
 @FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package com.abahgat.suffixtree;
+package mezz.jei.suffixtree;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 

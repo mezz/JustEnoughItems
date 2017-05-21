@@ -10,12 +10,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.abahgat.suffixtree.GeneralizedSuffixTree;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import gnu.trove.set.TIntSet;
 import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.suffixtree.GeneralizedSuffixTree;
 
 public class IngredientFilterInternals {
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");

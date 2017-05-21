@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.abahgat.suffixtree;
+package mezz.jei.suffixtree;
 
 import javax.annotation.Nullable;
 
@@ -162,13 +162,8 @@ public class GeneralizedSuffixTree {
 		String text = "";
 		// iterate over the string, one char at a time
 		for (int i = 0; i < key.length(); i++) {
-			// line 6
-			text += key.charAt(i);
-
-			// line 7: update the tree with the new transitions due to this new char
-			Pair<Node, String> active = update(s, text, key.substring(i), index);
-			// line 8: make sure the active pair is canonical
-			active = canonize(active.getFirst(), active.getSecond());
+			// line 6, line 7: update the tree with the new transitions due to this new char
+			Pair<Node, String> active = update(s, text, key.charAt(i), key.substring(i), index);
 
 			s = active.getFirst();
 			text = active.getSecond();
@@ -310,16 +305,15 @@ public class GeneralizedSuffixTree {
 	 * @param rest       the rest of the string
 	 * @param value      the value to add to the index
 	 */
-	private Pair<Node, String> update(final Node inputNode, final String stringPart, final String rest, final int value) {
+	private Pair<Node, String> update(final Node inputNode, final String stringPart, final char newChar, final String rest, final int value) {
 		Node s = inputNode;
-		String tempstr = stringPart;
-		char newChar = stringPart.charAt(stringPart.length() - 1);
+		String tempstr = stringPart + newChar;
 
 		// line 1
 		Node oldroot = root;
 
 		// line 1b
-		Pair<Boolean, Node> ret = testAndSplit(s, tempstr.substring(0, tempstr.length() - 1), newChar, rest, value);
+		Pair<Boolean, Node> ret = testAndSplit(s, stringPart, newChar, rest, value);
 
 		Node r = ret.getSecond();
 		boolean endpoint = ret.getFirst();
@@ -377,13 +371,9 @@ public class GeneralizedSuffixTree {
 		if (oldroot != root) {
 			oldroot.setSuffix(r);
 		}
-		oldroot = root;
 
-		return new Pair<Node, String>(s, tempstr);
-	}
-
-	Node getRoot() {
-		return root;
+		// make sure the active pair is canonical
+		return canonize(s, tempstr);
 	}
 
 	private String safeCutLastChar(String seq) {
@@ -391,10 +381,6 @@ public class GeneralizedSuffixTree {
 			return "";
 		}
 		return seq.substring(0, seq.length() - 1);
-	}
-
-	public int computeCount() {
-		return root.computeAndCacheCount();
 	}
 
 	/**
@@ -416,6 +402,11 @@ public class GeneralizedSuffixTree {
 
 		public B getSecond() {
 			return second;
+		}
+
+		@Override
+		public String toString() {
+			return "Pair (" + first + ", " + second + ")";
 		}
 	}
 }

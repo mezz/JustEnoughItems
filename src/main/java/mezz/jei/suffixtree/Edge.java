@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.abahgat.suffixtree;
+package mezz.jei.suffixtree;
 
 /**
  * Represents an Edge in the Suffix Tree.
@@ -24,7 +24,7 @@ package com.abahgat.suffixtree;
  */
 class Edge {
 	private String label;
-	private Node dest;
+	private final Node dest;
 
 	public String getLabel() {
 		return label;
@@ -38,13 +38,13 @@ class Edge {
 		return dest;
 	}
 
-	public void setDest(Node dest) {
-		this.dest = dest;
-	}
-
 	public Edge(String label, Node dest) {
 		this.label = label;
 		this.dest = dest;
 	}
 
+	@Override
+	public String toString() {
+		return "Edge: " + label;
+	}
 }
