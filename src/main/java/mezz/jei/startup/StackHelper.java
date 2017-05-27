@@ -371,13 +371,12 @@ public class StackHelper implements IStackHelper {
 
 		StringBuilder itemKey = new StringBuilder(itemName.toString());
 
-		if (mode != UidMode.WILDCARD) {
+		int metadata = stack.getMetadata();
+		if (mode != UidMode.WILDCARD && metadata != OreDictionary.WILDCARD_VALUE) {
 			String subtypeInfo = subtypeRegistry.getSubtypeInfo(stack);
 			if (subtypeInfo != null) {
 				itemKey.append(':').append(subtypeInfo);
 			} else {
-				int metadata = stack.getMetadata();
-
 				if (mode == UidMode.FULL) {
 					itemKey.append(':').append(metadata);
 
@@ -392,7 +391,7 @@ public class StackHelper implements IStackHelper {
 					if (!nbtTagCompound.hasNoTags()) {
 						itemKey.append(':').append(nbtTagCompound);
 					}
-				} else if (metadata != OreDictionary.WILDCARD_VALUE && stack.getHasSubtypes()) {
+				} else if (stack.getHasSubtypes()) {
 					itemKey.append(':').append(metadata);
 				}
 			}
