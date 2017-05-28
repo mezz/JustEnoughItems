@@ -279,7 +279,7 @@ public final class Config {
 		SearchMode[] searchModes = SearchMode.values();
 
 		// set new defaults moving from config version 0.2.0 to 0.3.0
-		if (config.getLoadedConfigVersion().equals("0.2.0")) {
+		if ("0.2.0".equals(config.getLoadedConfigVersion())) {
 			config.setEnum("creativeTabSearchMode", CATEGORY_SEARCH, defaultValues.creativeTabSearchMode, searchModes);
 			config.setEnum("oreDictSearchMode", CATEGORY_SEARCH, defaultValues.oreDictSearchMode, searchModes);
 		}
