@@ -213,6 +213,7 @@ public class IngredientFilter {
 	public void modesChanged() {
 		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.valueCollection());
 		onTick(10000);
+		this.filterCached = null;
 	}
 
 	public void onTick(final int timeoutMs) {
@@ -323,7 +324,7 @@ public class IngredientFilter {
 		}
 		final char firstChar = token.charAt(0);
 		final PrefixedSearchTree prefixedSearchTree = this.prefixedSearchTrees.get(firstChar);
-		if (prefixedSearchTree != null) {
+		if (prefixedSearchTree != null && prefixedSearchTree.getMode() != Config.SearchMode.DISABLED) {
 			token = token.substring(1);
 			if (token.isEmpty()) {
 				return null;
