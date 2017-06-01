@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import mezz.jei.config.Config;
+import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientFilter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
@@ -38,7 +39,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 
 	public void update() {
 		setText(Config.getFilterText());
-		List<Object> ingredientList = ingredientFilter.getIngredientList();
+		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList();
 		if (ingredientList.size() == 0) {
 			setTextColor(Color.red.getRGB());
 		} else {

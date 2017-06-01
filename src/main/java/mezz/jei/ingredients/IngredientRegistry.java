@@ -12,8 +12,8 @@ import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.gui.overlay.ItemListOverlay;
-import mezz.jei.runtime.JeiRuntime;
+import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
@@ -78,6 +78,11 @@ public class IngredientRegistry implements IIngredientRegistry {
 		} else {
 			return Collections.unmodifiableList(ingredients);
 		}
+	}
+
+	public boolean isKnownIngredientType(Object ingredient) {
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		return ingredientHelperMap.get(ingredient.getClass()) != null;
 	}
 
 	@Override
@@ -149,11 +154,8 @@ public class IngredientRegistry implements IIngredientRegistry {
 		}
 		list.addAll(ingredients);
 
-		JeiRuntime runtime = Internal.getRuntime();
-		if (runtime != null) {
-			ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-			itemListOverlay.rebuildItemFilter();
-		}
+		List<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, ForgeModIdHelper.getInstance());
+		Internal.getIngredientFilter().addIngredients(ingredientListElements);
 	}
 
 	@Override
@@ -167,10 +169,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 			list.removeAll(ingredients);
 		}
 
-		JeiRuntime runtime = Internal.getRuntime();
-		if (runtime != null) {
-			ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-			itemListOverlay.rebuildItemFilter();
-		}
+		List<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, ForgeModIdHelper.getInstance());
+		Internal.getIngredientFilter().removeIngredients(ingredientListElements);
 	}
 }

@@ -3,17 +3,19 @@ package mezz.jei.ingredients;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.google.common.collect.ImmutableSet;
-import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.startup.ModIdHelper;
+import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.LegacyUtil;
 import mezz.jei.util.Log;
 import net.minecraft.client.resources.I18n;
@@ -23,21 +25,34 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class IngredientListElement<V> implements IIngredientListElement<V> {
+	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");
+	private static final Map<String, Integer> WILDCARD_ADDED_ORDER = new HashMap<String, Integer>();
+	private static int ADDED_INDEX = 0;
+
 	private final V ingredient;
+	private final int orderIndex;
 	private final IIngredientHelper<V> ingredientHelper;
-	private final String displayName;
+	private final IIngredientRenderer<V> ingredientRenderer;
+	private final String displayNameLowercase;
 	private final String modName;
 	private final String modId;
-	private final List<String> tooltipStrings;
-	private final Collection<String> oreDictStrings;
-	private final Collection<String> creativeTabsStrings;
-	private final Collection<String> colorStrings;
 	private final String resourceId;
+	private boolean hidden = false;
 
 	@Nullable
-	public static <V> IngredientListElement<V> create(V ingredient, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer) {
+	public static <V> IngredientListElement<V> create(V ingredient, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer, IModIdHelper modIdHelper) {
 		try {
-			return new IngredientListElement<V>(ingredient, ingredientHelper, ingredientRenderer);
+			final int orderIndex;
+			String uid = ingredientHelper.getWildcardId(ingredient);
+			if (WILDCARD_ADDED_ORDER.containsKey(uid)) {
+				orderIndex = WILDCARD_ADDED_ORDER.get(uid);
+			} else {
+				WILDCARD_ADDED_ORDER.put(uid, ADDED_INDEX);
+				orderIndex = ADDED_INDEX;
+				ADDED_INDEX++;
+			}
+
+			return new IngredientListElement<V>(ingredient, orderIndex, ingredientHelper, ingredientRenderer, modIdHelper);
 		} catch (RuntimeException e) {
 			try {
 				String ingredientInfo = ingredientHelper.getErrorInfo(ingredient);
@@ -51,47 +66,16 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		}
 	}
 
-	protected IngredientListElement(V ingredient, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer) {
+	protected IngredientListElement(V ingredient, int orderIndex, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer, IModIdHelper modIdHelper) {
 		this.ingredient = ingredient;
+		this.orderIndex = orderIndex;
 		this.ingredientHelper = ingredientHelper;
+		this.ingredientRenderer = ingredientRenderer;
 
 		this.modId = ingredientHelper.getModId(ingredient);
-		ModIdHelper modIdHelper = Internal.getModIdHelper();
-		this.modName = modIdHelper.getModNameForModId(modId).toLowerCase(Locale.ENGLISH);
-
-		this.displayName = IngredientInformation.getDisplayName(ingredient, ingredientHelper);
-
-		if (Config.getColorSearchMode() != Config.SearchMode.DISABLED) {
-			this.colorStrings = IngredientInformation.getColorStrings(ingredient, ingredientHelper);
-		} else {
-			this.colorStrings = Collections.emptyList();
-		}
-
+		this.modName = modIdHelper.getModNameForModId(modId);
+		this.displayNameLowercase = IngredientInformation.getDisplayNameLowercase(ingredient, ingredientHelper);
 		this.resourceId = LegacyUtil.getResourceId(ingredient, ingredientHelper);
-
-		this.tooltipStrings = IngredientInformation.getTooltipStrings(ingredient, ingredientRenderer, ImmutableSet.of(modId, modName, displayName, resourceId));
-
-		if (ingredient instanceof ItemStack) {
-			ItemStack itemStack = (ItemStack) ingredient;
-			Item item = itemStack.getItem();
-
-			this.oreDictStrings = new ArrayList<String>();
-			for (int oreId : OreDictionary.getOreIDs(itemStack)) {
-				String oreName = OreDictionary.getOreName(oreId).toLowerCase(Locale.ENGLISH);
-				this.oreDictStrings.add(oreName);
-			}
-
-			this.creativeTabsStrings = new ArrayList<String>();
-			for (CreativeTabs creativeTab : item.getCreativeTabs()) {
-				if (creativeTab != null) {
-					String creativeTabName = I18n.format(creativeTab.getTranslatedTabLabel()).toLowerCase();
-					this.creativeTabsStrings.add(creativeTabName);
-				}
-			}
-		} else {
-			this.oreDictStrings = Collections.emptyList();
-			this.creativeTabsStrings = Collections.emptyList();
-		}
 	}
 
 	@Override
@@ -100,47 +84,94 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	}
 
 	@Override
+	public int getOrderIndex() {
+		return orderIndex;
+	}
+
+	@Override
 	public IIngredientHelper<V> getIngredientHelper() {
 		return ingredientHelper;
 	}
 
 	@Override
-	public final String getDisplayName() {
-		return displayName;
+	public IIngredientRenderer<V> getIngredientRenderer() {
+		return ingredientRenderer;
 	}
 
 	@Override
-	public final String getModName() {
+	public final String getDisplayNameLowercase() {
+		return displayNameLowercase;
+	}
+
+	@Override
+	public String getModName() {
 		return modName;
 	}
 
 	@Override
-	public String getModId() {
-		return modId;
+	public Set<String> getModNameStrings() {
+		String modName = this.modName.toLowerCase(Locale.ENGLISH);
+		String modNameNoSpaces = SPACE_PATTERN.matcher(modName).replaceAll("");
+		String modIdNoSpaces = SPACE_PATTERN.matcher(modId).replaceAll("");
+		return ImmutableSet.of(modName, modId, modNameNoSpaces, modIdNoSpaces);
 	}
 
 	@Override
 	public final List<String> getTooltipStrings() {
-		return tooltipStrings;
+		String modNameLowercase = this.modName.toLowerCase(Locale.ENGLISH);
+		return IngredientInformation.getTooltipStrings(ingredient, ingredientRenderer, ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceId));
 	}
 
 	@Override
 	public Collection<String> getOreDictStrings() {
+		Collection<String> oreDictStrings = new ArrayList<String>();
+
+		if (ingredient instanceof ItemStack) {
+			ItemStack itemStack = (ItemStack) ingredient;
+			for (int oreId : OreDictionary.getOreIDs(itemStack)) {
+				String oreName = OreDictionary.getOreName(oreId).toLowerCase(Locale.ENGLISH);
+				oreDictStrings.add(oreName);
+			}
+		}
+
 		return oreDictStrings;
 	}
 
 	@Override
 	public Collection<String> getCreativeTabsStrings() {
+		Collection<String> creativeTabsStrings = new ArrayList<String>();
+
+		if (ingredient instanceof ItemStack) {
+			ItemStack itemStack = (ItemStack) ingredient;
+			Item item = itemStack.getItem();
+			for (CreativeTabs creativeTab : item.getCreativeTabs()) {
+				if (creativeTab != null) {
+					String creativeTabName = I18n.format(creativeTab.getTranslatedTabLabel()).toLowerCase();
+					creativeTabsStrings.add(creativeTabName);
+				}
+			}
+		}
+
 		return creativeTabsStrings;
 	}
 
 	@Override
 	public Collection<String> getColorStrings() {
-		return colorStrings;
+		return IngredientInformation.getColorStrings(ingredient, ingredientHelper);
 	}
 
 	@Override
 	public String getResourceId() {
 		return resourceId;
+	}
+
+	@Override
+	public boolean isHidden() {
+		return hidden;
+	}
+
+	@Override
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
 	}
 }

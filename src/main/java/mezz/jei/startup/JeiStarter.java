@@ -1,6 +1,5 @@
 package mezz.jei.startup;
 
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,9 +12,9 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.ingredients.IngredientLookupMemory;
 import mezz.jei.gui.overlay.ItemListOverlay;
 import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.ingredients.IngredientBaseListFactory;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientInformation;
+import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.recipes.RecipeRegistry;
@@ -23,15 +22,12 @@ import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.runtime.SubtypeRegistry;
 import mezz.jei.util.Log;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.ProgressManager;
 
 public class JeiStarter {
 	private boolean started;
-	@Nullable
-	private GuiEventHandler guiEventHandler;
 
-	public void start(List<IModPlugin> plugins, boolean resourceReload) {
+	public void start(List<IModPlugin> plugins, final boolean resourceReload) {
 		long jeiStartTime = System.currentTimeMillis();
 
 		Log.info("Starting JEI...");
@@ -67,12 +63,14 @@ public class JeiStarter {
 
 		Log.info("Building ingredient list...");
 		start_time = System.currentTimeMillis();
-		List<IIngredientListElement> ingredientList = IngredientBaseListFactory.create();
+		List<IIngredientListElement> ingredientList = IngredientListElementFactory.createBaseList(ingredientRegistry, ForgeModIdHelper.getInstance());
 		Log.info("Built    ingredient list in {} ms", System.currentTimeMillis() - start_time);
 
 		Log.info("Building ingredient filter...");
 		start_time = System.currentTimeMillis();
-		IngredientFilter ingredientFilter = new IngredientFilter(ingredientList);
+		IngredientFilter ingredientFilter = new IngredientFilter(jeiHelpers);
+		ingredientFilter.addIngredients(ingredientList);
+		Internal.setIngredientFilter(ingredientFilter);
 		Log.info("Built    ingredient filter in {} ms", System.currentTimeMillis() - start_time);
 
 		Log.info("Building runtime...");
@@ -88,11 +86,8 @@ public class JeiStarter {
 
 		sendRuntime(plugins, jeiRuntime);
 
-		if (guiEventHandler != null) {
-			MinecraftForge.EVENT_BUS.unregister(guiEventHandler);
-		}
-		guiEventHandler = new GuiEventHandler(jeiRuntime);
-		MinecraftForge.EVENT_BUS.register(guiEventHandler);
+		GuiEventHandler guiEventHandler = new GuiEventHandler(jeiRuntime);
+		Internal.setGuiEventHandler(guiEventHandler);
 
 		started = true;
 		Log.info("Finished Starting JEI in {} ms", System.currentTimeMillis() - jeiStartTime);

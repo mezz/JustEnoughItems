@@ -11,6 +11,7 @@ import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.SessionData;
 import mezz.jei.gui.overlay.ItemListOverlay;
+import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.network.packets.PacketJei;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
@@ -34,7 +35,9 @@ import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 @SuppressWarnings("unused")
 public class ProxyCommonClient extends ProxyCommon {
@@ -126,6 +129,14 @@ public class ProxyCommonClient extends ProxyCommon {
 		if (event.getWorld().isRemote && !SessionData.hasJoinedWorld() && Minecraft.getMinecraft().player != null) {
 			SessionData.setJoinedWorld();
 			Config.syncWorldConfig();
+		}
+	}
+
+	@SubscribeEvent
+	public void onClientTick(TickEvent.ClientTickEvent event) {
+		if (event.side == Side.CLIENT && SessionData.hasJoinedWorld() && Minecraft.getMinecraft().player != null) {
+			IngredientFilter ingredientFilter = Internal.getIngredientFilter();
+			ingredientFilter.onTick(20);
 		}
 	}
 
