@@ -23,9 +23,9 @@ import org.junit.Test;
 public class IngredientFilterTest {
 	private static final int EXTRA_INGREDIENT_COUNT = 5;
 	@Nullable
-	IModIdHelper modIdHelper;
+	private IModIdHelper modIdHelper;
 	@Nullable
-	IngredientRegistry ingredientRegistry;
+	private IngredientRegistry ingredientRegistry;
 	@Nullable
 	private IngredientFilter ingredientFilter;
 
