@@ -53,6 +53,7 @@ public class IngredientFilterTest {
 
 	@Test
 	public void testSetup() {
+		Assert.assertTrue(false);
 		Assert.assertNotNull(ingredientFilter);
 
 		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList();
