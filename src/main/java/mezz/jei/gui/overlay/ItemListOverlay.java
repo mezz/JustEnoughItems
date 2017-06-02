@@ -3,7 +3,6 @@ package mezz.jei.gui.overlay;
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.Collection;
-import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.IItemListOverlay;
@@ -12,8 +11,6 @@ import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.SessionData;
 import mezz.jei.gui.PageNavigation;
-import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.ingredients.IngredientBaseListFactory;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IClickedIngredient;
@@ -68,16 +65,10 @@ public class ItemListOverlay implements IItemListOverlay, IPaged, IMouseHandler,
 	}
 
 	public void rebuildItemFilter() {
-		Log.info("Rebuilding ingredient list...");
+		Log.info("Updating ingredient filter...");
 		long start_time = System.currentTimeMillis();
-		List<IIngredientListElement> ingredientList = IngredientBaseListFactory.create();
-		Log.info("Rebuilt    ingredient list in {} ms", System.currentTimeMillis() - start_time);
-
-		Log.info("Rebuilding ingredient filter...");
-		start_time = System.currentTimeMillis();
-		this.ingredientFilter.rebuild(ingredientList);
-		Log.info("Rebuilt    ingredient filter in {} ms", System.currentTimeMillis() - start_time);
-
+		this.ingredientFilter.modesChanged();
+		Log.info("Updated  ingredient filter in {} ms", System.currentTimeMillis() - start_time);
 		SessionData.setFirstItemIndex(0);
 		updateLayout();
 	}

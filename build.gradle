@@ -17,6 +17,7 @@ plugins {
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply from: 'buildtools/ColoredOutput.gradle'
 
 version = version_major + '.' + version_minor + '.' + version_patch
 group = "mezz.jei" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -42,7 +43,7 @@ repositories {
 }
 
 dependencies {
-	
+	testCompile 'junit:junit:4.12'
 }
 
 processResources {

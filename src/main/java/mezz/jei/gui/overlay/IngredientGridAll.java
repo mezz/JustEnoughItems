@@ -1,8 +1,11 @@
 package mezz.jei.gui.overlay;
 
+import java.util.List;
+
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.SessionData;
+import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.render.GuiIngredientFast;
 import mezz.jei.util.MathUtil;
@@ -22,7 +25,7 @@ public class IngredientGridAll extends IngredientGrid {
 	@Override
 	public void updateLayout() {
 		super.updateLayout();
-		ImmutableList<Object> ingredientList = ingredientFilter.getIngredientList();
+		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList();
 		this.guiIngredientList.set(SessionData.getFirstItemIndex(), ingredientList);
 	}
 
@@ -84,10 +87,13 @@ public class IngredientGridAll extends IngredientGrid {
 	public ImmutableList<ItemStack> getVisibleStacks() {
 		ImmutableList.Builder<ItemStack> visibleStacks = ImmutableList.builder();
 		for (GuiIngredientFast guiItemStack : guiIngredientList.getAllGuiIngredients()) {
-			Object ingredient = guiItemStack.getIngredient();
-			if (ingredient instanceof ItemStack) {
-				ItemStack itemStack = (ItemStack) ingredient;
-				visibleStacks.add(itemStack);
+			IIngredientListElement element = guiItemStack.getElement();
+			if (element != null) {
+				Object ingredient = element.getIngredient();
+				if (ingredient instanceof ItemStack) {
+					ItemStack itemStack = (ItemStack) ingredient;
+					visibleStacks.add(itemStack);
+				}
 			}
 		}
 		return visibleStacks.build();

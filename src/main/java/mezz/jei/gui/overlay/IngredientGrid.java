@@ -16,6 +16,7 @@ import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
+import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IPaged;
@@ -141,27 +142,38 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 			hovered = guiIngredientList.render(minecraft, mouseOver, mouseX, mouseY);
 		}
 
-		JeiRuntime runtime = Internal.getRuntime();
-		if (runtime != null) {
-			NonNullList<ItemStack> highlightedStacks = runtime.getItemListOverlay().getHighlightedStacks();
-			if (!highlightedStacks.isEmpty()) {
-				StackHelper helper = Internal.getHelpers().getStackHelper();
-				for (GuiIngredientFast guiItemStack : guiIngredientList.getAllGuiIngredients()) {
-					Object ingredient = guiItemStack.getIngredient();
-					if (ingredient instanceof ItemStack) {
-						if (helper.containsStack(highlightedStacks, (ItemStack) ingredient) != null) {
-							guiItemStack.drawHighlight();
-						}
-					}
-				}
-			}
-		}
+		drawHighlightedStacks();
 
 		if (hovered != null) {
 			hovered.drawHovered(minecraft);
 		}
 
 		GlStateManager.enableAlpha();
+	}
+
+	private void drawHighlightedStacks() {
+		JeiRuntime runtime = Internal.getRuntime();
+		if (runtime == null) {
+			return;
+		}
+
+		NonNullList<ItemStack> highlightedStacks = runtime.getItemListOverlay().getHighlightedStacks();
+		if (highlightedStacks.isEmpty()) {
+			return;
+		}
+
+		StackHelper helper = Internal.getHelpers().getStackHelper();
+		for (GuiIngredientFast guiItemStack : guiIngredientList.getAllGuiIngredients()) {
+			IIngredientListElement element = guiItemStack.getElement();
+			if (element != null) {
+				Object ingredient = element.getIngredient();
+				if (ingredient instanceof ItemStack) {
+					if (helper.containsStack(highlightedStacks, (ItemStack) ingredient) != null) {
+						guiItemStack.drawHighlight();
+					}
+				}
+			}
+		}
 	}
 
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
@@ -215,9 +227,12 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 	@Nullable
 	public ItemStack getStackUnderMouse() {
 		if (hovered != null) {
-			Object ingredient = hovered.getIngredient();
-			if (ingredient instanceof ItemStack) {
-				return (ItemStack) ingredient;
+			IIngredientListElement element = hovered.getElement();
+			if (element != null) {
+				Object ingredient = element.getIngredient();
+				if (ingredient instanceof ItemStack) {
+					return (ItemStack) ingredient;
+				}
 			}
 		}
 		return null;

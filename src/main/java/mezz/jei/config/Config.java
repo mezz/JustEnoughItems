@@ -369,7 +369,6 @@ public final class Config {
 			return false;
 		}
 
-		boolean needsReload = false;
 		final String worldCategory = SessionData.getWorldUid();
 
 		Property property = worldConfig.get(worldCategory, "overlayEnabled", defaultValues.overlayEnabled);
@@ -388,7 +387,7 @@ public final class Config {
 		property.setComment(Translator.translateToLocal("config.jei.mode.editEnabled.comment"));
 		values.editModeEnabled = property.getBoolean();
 		if (property.hasChanged()) {
-			needsReload = true;
+			MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.editModeEnabled));
 		}
 
 		property = worldConfig.get(worldCategory, "filterText", defaultValues.filterText);
@@ -399,7 +398,7 @@ public final class Config {
 		if (configChanged) {
 			worldConfig.save();
 		}
-		return needsReload;
+		return false;
 	}
 
 	private static boolean syncSearchColorsConfig() {

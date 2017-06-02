@@ -59,7 +59,6 @@ public interface IIngredientHelper<V> {
 	 */
 	Iterable<Color> getColors(V ingredient);
 
-
 	/**
 	 * Return the resource id of the given ingredient.
 	 *

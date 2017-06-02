@@ -97,13 +97,13 @@ public class RecipeRegistry implements IRecipeRegistry {
 		ImmutableListMultimap.Builder<IRecipeCategory, ItemStack> craftItemsForCategoriesBuilder = ImmutableListMultimap.builder();
 		ImmutableMultimap.Builder<String, String> categoriesForCraftItemKeysBuilder = ImmutableMultimap.builder();
 
-		IIngredientHelper<ItemStack> ingredientHelper = ingredientRegistry.getIngredientHelper(ItemStack.class);
 		for (Map.Entry<String, Collection<ItemStack>> recipeCategoryEntry : craftItemsForCategories.asMap().entrySet()) {
 			String recipeCategoryUid = recipeCategoryEntry.getKey();
 			IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
 			if (recipeCategory != null) {
 				Collection<ItemStack> craftItems = recipeCategoryEntry.getValue();
 				craftItemsForCategoriesBuilder.putAll(recipeCategory, craftItems);
+				IIngredientHelper<ItemStack> ingredientHelper = ingredientRegistry.getIngredientHelper(ItemStack.class);
 				for (ItemStack craftItem : craftItems) {
 					recipeInputMap.addRecipeCategory(recipeCategory, craftItem);
 					String craftItemKey = ingredientHelper.getUniqueId(craftItem);

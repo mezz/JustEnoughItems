@@ -10,13 +10,13 @@ import java.util.List;
 import com.google.common.base.Joiner;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.TooltipRenderer;
-import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.util.LegacyUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
@@ -53,7 +53,7 @@ public class GuiIngredientFast {
 	private final ItemModelMesher itemModelMesher;
 
 	@Nullable
-	private Object ingredient;
+	private IIngredientListElement element;
 	private boolean blocked = false;
 
 	public GuiIngredientFast(int xPosition, int yPosition, int padding) {
@@ -67,21 +67,21 @@ public class GuiIngredientFast {
 		return area;
 	}
 
-	public void setIngredient(Object ingredient) {
-		this.ingredient = ingredient;
+	public void setElement(IIngredientListElement element) {
+		this.element = element;
 	}
 
 	@Nullable
-	public Object getIngredient() {
-		return ingredient;
+	public IIngredientListElement getElement() {
+		return element;
 	}
 
 	public void clear() {
-		this.ingredient = null;
+		this.element = null;
 	}
 
 	public boolean isMouseOver(int mouseX, int mouseY) {
-		return (ingredient != null) && area.contains(mouseX, mouseY);
+		return (element != null) && area.contains(mouseX, mouseY);
 	}
 
 	/**
@@ -99,31 +99,32 @@ public class GuiIngredientFast {
 	}
 
 	public void renderItemAndEffectIntoGUI() {
-		if (ingredient == null) {
+		if (element == null) {
 			return;
 		}
 
+		Object ingredient = element.getIngredient();
 		if (!(ingredient instanceof ItemStack)) {
 			return;
 		}
 
-		final ItemStack itemStack = (ItemStack) ingredient;
-
 		try {
-			renderItemAndEffectIntoGUI(itemStack);
+			//noinspection unchecked
+			renderItemAndEffectIntoGUI((IIngredientListElement<ItemStack>) element);
 		} catch (RuntimeException e) {
-			throw createRenderIngredientException(e, itemStack);
+			throw createRenderIngredientException(e, element);
 		} catch (LinkageError e) {
-			throw createRenderIngredientException(e, itemStack);
+			throw createRenderIngredientException(e, element);
 		}
 	}
 
-	private void renderItemAndEffectIntoGUI(ItemStack itemStack) {
+	private void renderItemAndEffectIntoGUI(IIngredientListElement<ItemStack> element) {
+		ItemStack itemStack = element.getIngredient();
 		IBakedModel bakedModel = itemModelMesher.getItemModel(itemStack);
 		bakedModel = bakedModel.getOverrides().handleItemState(bakedModel, itemStack, null, null);
 
 		if (Config.isEditModeEnabled()) {
-			renderEditMode(itemStack, area, padding);
+			renderEditMode(element, area, padding);
 			GlStateManager.enableBlend();
 		}
 
@@ -182,32 +183,33 @@ public class GuiIngredientFast {
 	}
 
 	public void renderSlow() {
-		if (ingredient != null) {
+		if (element != null) {
 			if (Config.isEditModeEnabled()) {
-				renderEditMode(ingredient, area, padding);
+				renderEditMode(element, area, padding);
 			}
 
 			try {
-				renderSlow(ingredient, area, padding);
+				renderSlow(element, area, padding);
 			} catch (RuntimeException e) {
-				throw createRenderIngredientException(e, ingredient);
+				throw createRenderIngredientException(e, element);
 			} catch (LinkageError e) {
-				throw createRenderIngredientException(e, ingredient);
+				throw createRenderIngredientException(e, element);
 			}
 		}
 	}
 
-	private static <T> void renderSlow(T ingredient, Rectangle area, int padding) {
-		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientRenderer<T> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
+	private static <T> void renderSlow(IIngredientListElement<T> element, Rectangle area, int padding) {
+		IIngredientRenderer<T> ingredientRenderer = element.getIngredientRenderer();
+		T ingredient = element.getIngredient();
 		ingredientRenderer.render(Minecraft.getMinecraft(), area.x + padding, area.y + padding, ingredient);
 	}
 
 	public void renderOverlay(Minecraft minecraft) {
-		if (ingredient == null) {
+		if (element == null) {
 			return;
 		}
 
+		Object ingredient = element.getIngredient();
 		if (!(ingredient instanceof ItemStack)) {
 			return;
 		}
@@ -216,9 +218,9 @@ public class GuiIngredientFast {
 		try {
 			renderOverlay(minecraft, itemStack);
 		} catch (RuntimeException e) {
-			throw createRenderIngredientException(e, itemStack);
+			throw createRenderIngredientException(e, element);
 		} catch (LinkageError e) {
-			throw createRenderIngredientException(e, itemStack);
+			throw createRenderIngredientException(e, element);
 		}
 	}
 
@@ -228,9 +230,9 @@ public class GuiIngredientFast {
 		renderItem.renderItemOverlayIntoGUI(font, itemStack, area.x + padding, area.y + padding, null);
 	}
 
-	private static <V> void renderEditMode(V ingredient, Rectangle area, int padding) {
-		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientHelper ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+	private static <V> void renderEditMode(IIngredientListElement<V> element, Rectangle area, int padding) {
+		V ingredient = element.getIngredient();
+		IIngredientHelper ingredientHelper = element.getIngredientHelper();
 
 		if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.ITEM, ingredientHelper)) {
 			GuiScreen.drawRect(area.x + padding, area.y + padding, area.x + 8 + padding, area.y + 16 + padding, blacklistItemColor);
@@ -256,7 +258,7 @@ public class GuiIngredientFast {
 	}
 
 	public void drawHovered(Minecraft minecraft) {
-		if (ingredient == null) {
+		if (element == null) {
 			return;
 		}
 
@@ -269,7 +271,7 @@ public class GuiIngredientFast {
 	 * Matches the highlight code in {@link GuiContainer#drawScreen(int, int, float)}
 	 */
 	public void drawHighlight() {
-		if (ingredient == null) {
+		if (element == null) {
 			return;
 		}
 
@@ -282,18 +284,17 @@ public class GuiIngredientFast {
 	}
 
 	public void drawTooltip(Minecraft minecraft, int mouseX, int mouseY) {
-		if (ingredient == null) {
+		if (element == null) {
 			return;
 		}
 
-		drawTooltip(minecraft, ingredient, mouseX, mouseY);
+		drawTooltip(minecraft, element, mouseX, mouseY);
 	}
 
-	private static <V> void drawTooltip(Minecraft minecraft, V ingredient, int mouseX, int mouseY) {
-		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-		List<String> tooltip = getTooltip(minecraft, ingredient, ingredientRenderer, ingredientHelper);
+	private static <V> void drawTooltip(Minecraft minecraft, IIngredientListElement<V> element, int mouseX, int mouseY) {
+		V ingredient = element.getIngredient();
+		IIngredientRenderer<V> ingredientRenderer = element.getIngredientRenderer();
+		List<String> tooltip = getTooltip(minecraft, element);
 		FontRenderer fontRenderer = ingredientRenderer.getFontRenderer(minecraft, ingredient);
 
 		if (ingredient instanceof ItemStack) {
@@ -304,9 +305,11 @@ public class GuiIngredientFast {
 		}
 	}
 
-	private static <V> List<String> getTooltip(Minecraft minecraft, V ingredient, IIngredientRenderer<V> ingredientRenderer, IIngredientHelper<V> ingredientHelper) {
-		List<String> tooltip = getIngredientTooltipSafe(minecraft, ingredient, ingredientRenderer);
-		tooltip = Internal.getModIdHelper().addModNameToIngredientTooltip(tooltip, ingredient, ingredientHelper);
+	private static <V> List<String> getTooltip(Minecraft minecraft, IIngredientListElement<V> element) {
+		List<String> tooltip = getIngredientTooltipSafe(minecraft, element);
+		V ingredient = element.getIngredient();
+		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
+		tooltip = ForgeModIdHelper.getInstance().addModNameToIngredientTooltip(tooltip, ingredient, ingredientHelper);
 
 		int maxWidth = Constants.MAX_TOOLTIP_WIDTH;
 		for (String tooltipLine : tooltip) {
@@ -317,17 +320,19 @@ public class GuiIngredientFast {
 		}
 
 		if (Config.getColorSearchMode() != Config.SearchMode.DISABLED) {
-			addColorSearchInfoToTooltip(minecraft, ingredient, ingredientHelper, tooltip, maxWidth);
+			addColorSearchInfoToTooltip(minecraft, element, tooltip, maxWidth);
 		}
 
 		if (Config.isEditModeEnabled()) {
-			addEditModeInfoToTooltip(minecraft, ingredient, ingredientHelper, tooltip, maxWidth);
+			addEditModeInfoToTooltip(minecraft, element, tooltip, maxWidth);
 		}
 
 		return tooltip;
 	}
 
-	private static <V> List<String> getIngredientTooltipSafe(Minecraft minecraft, V ingredient, IIngredientRenderer<V> ingredientRenderer) {
+	private static <V> List<String> getIngredientTooltipSafe(Minecraft minecraft, IIngredientListElement<V> element) {
+		IIngredientRenderer<V> ingredientRenderer = element.getIngredientRenderer();
+		V ingredient = element.getIngredient();
 		try {
 			return LegacyUtil.getTooltip(ingredientRenderer, minecraft, ingredient, minecraft.gameSettings.advancedItemTooltips);
 		} catch (RuntimeException e) {
@@ -341,9 +346,11 @@ public class GuiIngredientFast {
 		return tooltip;
 	}
 
-	private static <V> void addColorSearchInfoToTooltip(Minecraft minecraft, V ingredient, IIngredientHelper<V> ingredientHelper, List<String> tooltip, int maxWidth) {
+	private static <V> void addColorSearchInfoToTooltip(Minecraft minecraft, IIngredientListElement<V> element, List<String> tooltip, int maxWidth) {
 		ColorNamer colorNamer = Internal.getColorNamer();
 
+		V ingredient = element.getIngredient();
+		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
 		Iterable<Color> colors = ingredientHelper.getColors(ingredient);
 		Collection<String> colorNames = colorNamer.getColorNames(colors, false);
 		if (!colorNames.isEmpty()) {
@@ -353,7 +360,10 @@ public class GuiIngredientFast {
 		}
 	}
 
-	private static <V> void addEditModeInfoToTooltip(Minecraft minecraft, V ingredient, IIngredientHelper<V> ingredientHelper, List<String> tooltip, int maxWidth) {
+	private static <V> void addEditModeInfoToTooltip(Minecraft minecraft, IIngredientListElement<V> element, List<String> tooltip, int maxWidth) {
+		V ingredient = element.getIngredient();
+		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
+
 		tooltip.add("");
 		tooltip.add(TextFormatting.ITALIC + Translator.translateToLocal("gui.jei.editMode.description"));
 
@@ -390,14 +400,15 @@ public class GuiIngredientFast {
 		}
 	}
 
-	private static <T> ReportedException createRenderIngredientException(Throwable throwable, final T ingredient) {
+	private static <T> ReportedException createRenderIngredientException(Throwable throwable, final IIngredientListElement<T> element) {
+		final T ingredient = element.getIngredient();
 		final IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredient);
 		CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering ingredient");
 		CrashReportCategory crashreportcategory = crashreport.makeCategory("Ingredient being rendered");
 		crashreportcategory.setDetail("Ingredient Mod", new ICrashReportDetail<String>() {
 			@Override
 			public String call() throws Exception {
-				return Internal.getModIdHelper().getModNameForIngredient(ingredient, ingredientHelper);
+				return ForgeModIdHelper.getInstance().getModNameForIngredient(ingredient, ingredientHelper);
 			}
 		});
 		crashreportcategory.setDetail("Ingredient Info", new ICrashReportDetail<String>() {

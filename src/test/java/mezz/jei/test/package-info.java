@@ -1,7 +1,7 @@
 @ParametersAreNonnullByDefault
 @FieldsAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package mezz.jei.plugins.vanilla.util;
+package mezz.jei.test;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 

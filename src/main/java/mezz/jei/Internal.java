@@ -4,19 +4,19 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.color.ColorNamer;
+import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.gui.ingredients.IngredientLookupMemory;
+import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
-import mezz.jei.startup.ModIdHelper;
 import mezz.jei.startup.StackHelper;
+import net.minecraftforge.common.MinecraftForge;
 
 /**
  * For JEI internal use only, these are normally accessed from the API.
  */
 public final class Internal {
-
-	private static final ModIdHelper MOD_ID_HELPER = new ModIdHelper();
 	@Nullable
 	private static StackHelper stackHelper;
 	@Nullable
@@ -29,6 +29,10 @@ public final class Internal {
 	private static ColorNamer colorNamer;
 	@Nullable
 	private static IngredientLookupMemory ingredientLookupMemory;
+	@Nullable
+	private static IngredientFilter ingredientFilter;
+	@Nullable
+	private static GuiEventHandler guiEventHandler;
 
 	private Internal() {
 
@@ -41,10 +45,6 @@ public final class Internal {
 
 	public static void setStackHelper(StackHelper stackHelper) {
 		Internal.stackHelper = stackHelper;
-	}
-
-	public static ModIdHelper getModIdHelper() {
-		return MOD_ID_HELPER;
 	}
 
 	public static JeiHelpers getHelpers() {
@@ -94,5 +94,27 @@ public final class Internal {
 
 	public static void setIngredientLookupMemory(IngredientLookupMemory ingredientLookupMemory) {
 		Internal.ingredientLookupMemory = ingredientLookupMemory;
+	}
+
+	public static IngredientFilter getIngredientFilter() {
+		Preconditions.checkState(ingredientFilter != null, "Ingredient Filter has not been created yet.");
+		return ingredientFilter;
+	}
+
+	public static void setIngredientFilter(IngredientFilter ingredientFilter) {
+		if (Internal.ingredientFilter != null) {
+			MinecraftForge.EVENT_BUS.unregister(Internal.ingredientFilter);
+		}
+		Internal.ingredientFilter = ingredientFilter;
+		MinecraftForge.EVENT_BUS.register(ingredientFilter);
+	}
+
+	public static void setGuiEventHandler(GuiEventHandler guiEventHandler) {
+		if (Internal.guiEventHandler != null) {
+			MinecraftForge.EVENT_BUS.unregister(Internal.guiEventHandler);
+		}
+
+		Internal.guiEventHandler = guiEventHandler;
+		MinecraftForge.EVENT_BUS.register(guiEventHandler);
 	}
 }

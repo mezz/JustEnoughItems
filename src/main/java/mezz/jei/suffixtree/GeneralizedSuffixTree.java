@@ -59,12 +59,9 @@ import gnu.trove.set.hash.TIntHashSet;
  * - add nullable/nonnull annotations
  * - formatting
  */
-public class GeneralizedSuffixTree {
+public class GeneralizedSuffixTree implements ISearchTree {
 
-	/**
-	 * The index of the last item that was added to the GST
-	 */
-	private int last = 0;
+	private int highestIndex = -1;
 	/**
 	 * The root of the suffix tree
 	 */
@@ -83,6 +80,7 @@ public class GeneralizedSuffixTree {
 	 * @param word the key to search for
 	 * @return the collection of indexes associated with the input <tt>word</tt>
 	 */
+	@Override
 	public TIntSet search(String word) {
 		Node tmpNode = searchNode(word);
 		if (tmpNode == null) {
@@ -143,13 +141,12 @@ public class GeneralizedSuffixTree {
 	 *
 	 * @param key   the string key that will be added to the index
 	 * @param index the value that will be added to the index
-	 * @throws IllegalStateException if an invalid index is passed as input
 	 */
 	public void put(String key, int index) throws IllegalStateException {
-		if (index < last) {
-			throw new IllegalStateException("The input index must not be less than any of the previously inserted ones. Got " + index + ", expected at least " + last);
+		if (index < highestIndex) {
+			throw new IllegalStateException("The input index must not be less than any of the previously inserted ones. Got " + index + ", expected at least " + highestIndex);
 		} else {
-			last = index;
+			highestIndex = index;
 		}
 
 		// reset activeLeaf
@@ -157,8 +154,7 @@ public class GeneralizedSuffixTree {
 
 		Node s = root;
 
-		// proceed with tree construction (closely related to procedure in
-		// Ukkonen's paper)
+		// proceed with tree construction (closely related to procedure in Ukkonen's paper)
 		String text = "";
 		// iterate over the string, one char at a time
 		for (int i = 0; i < key.length(); i++) {
@@ -376,11 +372,15 @@ public class GeneralizedSuffixTree {
 		return canonize(s, tempstr);
 	}
 
-	private String safeCutLastChar(String seq) {
+	private static String safeCutLastChar(String seq) {
 		if (seq.length() == 0) {
 			return "";
 		}
 		return seq.substring(0, seq.length() - 1);
+	}
+
+	public int getHighestIndex() {
+		return highestIndex;
 	}
 
 	/**

@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +30,7 @@ public final class IngredientInformation {
 	private IngredientInformation() {
 	}
 
-	public static <T> String getDisplayName(T ingredient, IIngredientHelper<T> ingredientHelper) {
+	public static <T> String getDisplayNameLowercase(T ingredient, IIngredientHelper<T> ingredientHelper) {
 		String displayName = ingredientHelper.getDisplayName(ingredient);
 		return removeChatFormatting(displayName).toLowerCase();
 	}

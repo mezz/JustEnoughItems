@@ -9,12 +9,12 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import mezz.jei.api.IModRegistry;
-import mezz.jei.plugins.vanilla.util.FakeClientPlayer;
-import mezz.jei.plugins.vanilla.util.FakeClientWorld;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
+import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -177,10 +177,10 @@ public final class AnvilRecipeMaker {
 	}
 
 	public static int findLevelsCost(ItemStack leftStack, ItemStack rightStack) {
-		FakeClientPlayer fakePlayer = FakeClientPlayer.getInstance();
-		InventoryPlayer fakeInventory = new InventoryPlayer(fakePlayer);
+		EntityPlayer player = Minecraft.getMinecraft().player;
+		InventoryPlayer fakeInventory = new InventoryPlayer(player);
 		try {
-			ContainerRepair repair = new ContainerRepair(fakeInventory, FakeClientWorld.getInstance(), fakePlayer);
+			ContainerRepair repair = new ContainerRepair(fakeInventory, player.world, player);
 			repair.inventorySlots.get(0).putStack(leftStack);
 			repair.inventorySlots.get(1).putStack(rightStack);
 			return repair.maximumCost;

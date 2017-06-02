@@ -7,6 +7,7 @@ import java.util.List;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
+import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
@@ -55,7 +56,7 @@ public class GuiIngredientFastList {
 		return renderAll;
 	}
 
-	public void set(final int startIndex, List<Object> ingredientList) {
+	public void set(final int startIndex, List<IIngredientListElement> ingredientList) {
 		renderItems2d.clear();
 		renderItems3d.clear();
 		renderOther.clear();
@@ -70,17 +71,18 @@ public class GuiIngredientFastList {
 				if (i >= ingredientList.size()) {
 					guiItemStack.clear();
 				} else {
-					Object ingredient = ingredientList.get(i);
-					set(guiItemStack, ingredient);
+					IIngredientListElement element = ingredientList.get(i);
+					set(guiItemStack, element);
 				}
 				i++;
 			}
 		}
 	}
 
-	private <V> void set(GuiIngredientFast guiItemStack, V ingredient) {
-		guiItemStack.setIngredient(ingredient);
+	private <V> void set(GuiIngredientFast guiItemStack, IIngredientListElement<V> element) {
+		guiItemStack.setElement(element);
 
+		V ingredient = element.getIngredient();
 		if (ingredient instanceof ItemStack) {
 			ItemStack stack = (ItemStack) ingredient;
 			RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
@@ -120,9 +122,9 @@ public class GuiIngredientFastList {
 	public ClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
 		GuiIngredientFast hovered = getHovered(mouseX, mouseY);
 		if (hovered != null) {
-			Object ingredient = hovered.getIngredient();
-			if (ingredient != null) {
-				return new ClickedIngredient<Object>(ingredient);
+			IIngredientListElement element = hovered.getElement();
+			if (element != null) {
+				return new ClickedIngredient<Object>(element.getIngredient());
 			}
 		}
 		return null;

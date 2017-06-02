@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.plugins.vanilla.util.FakeClientPlayer;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
@@ -39,10 +38,6 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	@Override
 	public List<String> getTooltip(Minecraft minecraft, ItemStack ingredient, boolean advanced) {
 		EntityPlayer player = minecraft.player;
-		if (player == null) {
-			player = FakeClientPlayer.getInstance();
-		}
-
 		List<String> list;
 		try {
 			list = ingredient.getTooltip(player, advanced);

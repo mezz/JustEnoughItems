@@ -18,7 +18,7 @@ before_install: chmod +x gradlew
 install:
   - ./gradlew setupCIWorkspace -S
 script:
-  - ./gradlew build
+  - ./gradlew build test
 
 notifications:
   email: false
