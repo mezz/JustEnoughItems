@@ -51,7 +51,23 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	private int posX;
 	private int posY;
 
-	public <T extends IRecipeWrapper> RecipeLayout(int index, IRecipeCategory<T> recipeCategory, T recipeWrapper, @Nullable IFocus focus, int posX, int posY) {
+	@Nullable
+	public static <T extends IRecipeWrapper> RecipeLayout create(int index, IRecipeCategory<T> recipeCategory, T recipeWrapper, @Nullable IFocus focus, int posX, int posY) {
+		RecipeLayout recipeLayout = new RecipeLayout(index, recipeCategory, recipeWrapper, focus, posX, posY);
+		try {
+			IIngredients ingredients = new Ingredients();
+			recipeWrapper.getIngredients(ingredients);
+			recipeCategory.setRecipe(recipeLayout, recipeWrapper, ingredients);
+			return recipeLayout;
+		} catch (RuntimeException e) {
+			Log.error("Error caught from Recipe Category: {}", recipeCategory.getClass().getCanonicalName(), e);
+		} catch (LinkageError e) {
+			Log.error("Error caught from Recipe Category: {}", recipeCategory.getClass().getCanonicalName(), e);
+		}
+		return null;
+	}
+
+	private  <T extends IRecipeWrapper> RecipeLayout(int index, IRecipeCategory<T> recipeCategory, T recipeWrapper, @Nullable IFocus focus, int posX, int posY) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		ErrorUtil.checkNotNull(recipeWrapper, "recipeWrapper");
 		if (focus != null) {
@@ -89,16 +105,6 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		setPosition(posX, posY);
 
 		this.recipeWrapper = recipeWrapper;
-
-		try {
-			IIngredients ingredients = new Ingredients();
-			recipeWrapper.getIngredients(ingredients);
-			recipeCategory.setRecipe(this, recipeWrapper, ingredients);
-		} catch (RuntimeException e) {
-			Log.error("Error caught from Recipe Category: {}", recipeCategory.getClass().getCanonicalName(), e);
-		} catch (LinkageError e) {
-			Log.error("Error caught from Recipe Category: {}", recipeCategory.getClass().getCanonicalName(), e);
-		}
 	}
 
 	@Override

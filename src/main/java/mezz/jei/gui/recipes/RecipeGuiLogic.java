@@ -163,14 +163,15 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		final int firstRecipeIndex = state.getRecipeIndex() - (state.getRecipeIndex() % state.getRecipesPerPage());
 		for (int recipeIndex = firstRecipeIndex; recipeIndex < recipes.size() && recipeLayouts.size() < state.getRecipesPerPage(); recipeIndex++) {
 			IRecipeWrapper recipeWrapper = recipes.get(recipeIndex);
-			if (recipeWrapper == null) {
-				continue;
+			RecipeLayout recipeLayout = RecipeLayout.create(recipeWidgetIndex++, recipeCategory, recipeWrapper, state.getFocus(), posX, recipePosY);
+			if (recipeLayout == null) {
+				recipes.remove(recipeIndex);
+				recipeRegistry.removeRecipe(recipeWrapper, recipeCategory.getUid());
+				recipeIndex--;
+			} else {
+				recipeLayouts.add(recipeLayout);
+				recipePosY += spacingY;
 			}
-
-			RecipeLayout recipeLayout = new RecipeLayout(recipeWidgetIndex++, recipeCategory, recipeWrapper, state.getFocus(), posX, recipePosY);
-			recipeLayouts.add(recipeLayout);
-
-			recipePosY += spacingY;
 		}
 
 		return recipeLayouts;

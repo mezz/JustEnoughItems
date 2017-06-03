@@ -704,9 +704,12 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return recipeTransferHandlers.get(containerClass, Constants.UNIVERSAL_RECIPE_TRANSFER_UID);
 	}
 
+	// TODO next breaking version, make this nullable
 	@Override
 	public <T extends IRecipeWrapper> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipeWrapper, IFocus focus) {
 		focus = Focus.check(focus);
-		return new RecipeLayout(-1, recipeCategory, recipeWrapper, focus, 0, 0);
+		RecipeLayout recipeLayout = RecipeLayout.create(-1, recipeCategory, recipeWrapper, focus, 0, 0);
+		Preconditions.checkNotNull(recipeLayout, "Recipe layout crashed during creation, see log.");
+		return recipeLayout;
 	}
 }
