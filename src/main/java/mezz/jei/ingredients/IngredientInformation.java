@@ -15,6 +15,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.config.Config;
 import mezz.jei.util.LegacyUtil;
+import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.Language;
 import net.minecraft.util.StringUtils;
@@ -30,9 +31,9 @@ public final class IngredientInformation {
 	private IngredientInformation() {
 	}
 
-	public static <T> String getDisplayNameLowercase(T ingredient, IIngredientHelper<T> ingredientHelper) {
+	public static <T> String getDisplayName(T ingredient, IIngredientHelper<T> ingredientHelper) {
 		String displayName = ingredientHelper.getDisplayName(ingredient);
-		return removeChatFormatting(displayName).toLowerCase();
+		return removeChatFormatting(displayName);
 	}
 
 	public static <T> List<String> getTooltipStrings(T ingredient, IIngredientRenderer<T> ingredientRenderer, Set<String> toRemove) {
@@ -48,7 +49,8 @@ public final class IngredientInformation {
 		List<String> tooltip = LegacyUtil.getTooltip(ingredientRenderer, Minecraft.getMinecraft(), ingredient, Config.getSearchAdvancedTooltips());
 		List<String> cleanTooltip = new ArrayList<String>(tooltip.size());
 		for (String line : tooltip) {
-			line = removeChatFormatting(line).toLowerCase();
+			line = removeChatFormatting(line);
+			line = Translator.toLowercaseWithLocale(line);
 			for (String excludeWord : excludeWords) {
 				line = line.replace(excludeWord, "");
 			}

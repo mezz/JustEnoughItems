@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableMap;
+import mezz.jei.util.Translator;
 
 public class ColorNamer {
 	private final ImmutableMap<Color, String> colorNames;
@@ -22,7 +23,7 @@ public class ColorNamer {
 			final String colorName = getClosestColorName(color);
 			if (colorName != null) {
 				if (lowercase) {
-					allColorNames.add(colorName.toLowerCase());
+					allColorNames.add(Translator.toLowercaseWithLocale(colorName));
 				} else {
 					allColorNames.add(colorName);
 				}

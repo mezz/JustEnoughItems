@@ -18,6 +18,7 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.LegacyUtil;
 import mezz.jei.util.Log;
+import mezz.jei.util.Translator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -33,7 +34,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	private final int orderIndex;
 	private final IIngredientHelper<V> ingredientHelper;
 	private final IIngredientRenderer<V> ingredientRenderer;
-	private final String displayNameLowercase;
+	private final String displayName;
 	private final String modName;
 	private final String modId;
 	private final String resourceId;
@@ -74,7 +75,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 
 		this.modId = ingredientHelper.getModId(ingredient);
 		this.modName = modIdHelper.getModNameForModId(modId);
-		this.displayNameLowercase = IngredientInformation.getDisplayNameLowercase(ingredient, ingredientHelper);
+		this.displayName = IngredientInformation.getDisplayName(ingredient, ingredientHelper);
 		this.resourceId = LegacyUtil.getResourceId(ingredient, ingredientHelper);
 	}
 
@@ -99,8 +100,8 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	}
 
 	@Override
-	public final String getDisplayNameLowercase() {
-		return displayNameLowercase;
+	public final String getDisplayName() {
+		return displayName;
 	}
 
 	@Override
@@ -110,15 +111,16 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 
 	@Override
 	public Set<String> getModNameStrings() {
-		String modName = this.modName.toLowerCase(Locale.ENGLISH);
-		String modNameNoSpaces = SPACE_PATTERN.matcher(modName).replaceAll("");
+		String modNameLowercase = this.modName.toLowerCase(Locale.ENGLISH);
+		String modNameNoSpaces = SPACE_PATTERN.matcher(modNameLowercase).replaceAll("");
 		String modIdNoSpaces = SPACE_PATTERN.matcher(modId).replaceAll("");
-		return ImmutableSet.of(modName, modId, modNameNoSpaces, modIdNoSpaces);
+		return ImmutableSet.of(modNameLowercase, modId, modNameNoSpaces, modIdNoSpaces);
 	}
 
 	@Override
 	public final List<String> getTooltipStrings() {
 		String modNameLowercase = this.modName.toLowerCase(Locale.ENGLISH);
+		String displayNameLowercase = Translator.toLowercaseWithLocale(this.displayName);
 		return IngredientInformation.getTooltipStrings(ingredient, ingredientRenderer, ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceId));
 	}
 
@@ -129,8 +131,8 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		if (ingredient instanceof ItemStack) {
 			ItemStack itemStack = (ItemStack) ingredient;
 			for (int oreId : OreDictionary.getOreIDs(itemStack)) {
-				String oreName = OreDictionary.getOreName(oreId).toLowerCase(Locale.ENGLISH);
-				oreDictStrings.add(oreName);
+				String oreNameLowercase = OreDictionary.getOreName(oreId).toLowerCase(Locale.ENGLISH);
+				oreDictStrings.add(oreNameLowercase);
 			}
 		}
 
@@ -146,8 +148,9 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 			Item item = itemStack.getItem();
 			for (CreativeTabs creativeTab : item.getCreativeTabs()) {
 				if (creativeTab != null) {
-					String creativeTabName = I18n.format(creativeTab.getTranslatedTabLabel()).toLowerCase();
-					creativeTabsStrings.add(creativeTabName);
+					String creativeTabName = I18n.format(creativeTab.getTranslatedTabLabel());
+					String creativeTabNameLowercase = Translator.toLowercaseWithLocale(creativeTabName);
+					creativeTabsStrings.add(creativeTabNameLowercase);
 				}
 			}
 		}

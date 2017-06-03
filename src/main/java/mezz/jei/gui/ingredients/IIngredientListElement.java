@@ -16,7 +16,7 @@ public interface IIngredientListElement<V> {
 
 	IIngredientRenderer<V> getIngredientRenderer();
 
-	String getDisplayNameLowercase();
+	String getDisplayName();
 
 	String getModName();
 

@@ -22,6 +22,7 @@ import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.suffixtree.CombinedSearchTrees;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 import mezz.jei.suffixtree.ISearchTree;
+import mezz.jei.util.Translator;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -165,7 +166,7 @@ public class IngredientFilter {
 
 		final int index = elementList.size();
 		elementList.add(element);
-		searchTree.put(element.getDisplayNameLowercase(), index);
+		searchTree.put(Translator.toLowercaseWithLocale(element.getDisplayName()), index);
 
 		for (PrefixedSearchTree prefixedSearchTree : this.earlyLoadSearchTrees) {
 			Config.SearchMode searchMode = prefixedSearchTree.getMode();
@@ -192,7 +193,7 @@ public class IngredientFilter {
 		//noinspection unchecked
 		final Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
 
-		final TIntSet matchingIndexes = searchTree.search(element.getDisplayNameLowercase());
+		final TIntSet matchingIndexes = searchTree.search(Translator.toLowercaseWithLocale(element.getDisplayName()));
 		final TIntIterator iterator = matchingIndexes.iterator();
 		while (iterator.hasNext()) {
 			int index = iterator.next();
@@ -245,7 +246,7 @@ public class IngredientFilter {
 	}
 
 	public List<IIngredientListElement> getIngredientList() {
-		String filterText = Config.getFilterText().toLowerCase();
+		String filterText = Translator.toLowercaseWithLocale(Config.getFilterText());
 		if (!filterText.equals(filterCached)) {
 			List<IIngredientListElement> ingredientList = getIngredientListUncached(filterText);
 			Collections.sort(ingredientList, IngredientListElementComparator.INSTANCE);
