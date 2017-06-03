@@ -24,6 +24,7 @@ import mezz.jei.suffixtree.GeneralizedSuffixTree;
 import mezz.jei.suffixtree.ISearchTree;
 import mezz.jei.util.Translator;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class IngredientFilter {
@@ -144,10 +145,13 @@ public class IngredientFilter {
 	}
 
 	public void addIngredients(Collection<IIngredientListElement> ingredients) {
+		ProgressManager.ProgressBar progressBar = ProgressManager.push("Indexing ingredients", ingredients.size());
 		for (IIngredientListElement<?> element : ingredients) {
+			progressBar.step(element.getDisplayName());
 			addIngredient(element);
 		}
 		filterCached = null;
+		ProgressManager.pop(progressBar);
 	}
 
 	private <V> void addIngredient(@Nullable IIngredientListElement<V> element) {
