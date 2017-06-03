@@ -38,7 +38,12 @@ public class SmeltingRecipe extends BlankRecipeWrapper {
 	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 		FurnaceRecipes furnaceRecipes = FurnaceRecipes.instance();
-		float experience = furnaceRecipes.getSmeltingExperience(output);
+		float experience;
+		try {
+			experience = furnaceRecipes.getSmeltingExperience(output);
+		} catch (RuntimeException ignored) {
+			experience = 0;
+		}
 		if (experience > 0) {
 			String experienceString = Translator.translateToLocalFormatted("gui.jei.category.smelting.experience", experience);
 			FontRenderer fontRendererObj = minecraft.fontRendererObj;
