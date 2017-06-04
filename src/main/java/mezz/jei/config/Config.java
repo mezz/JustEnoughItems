@@ -321,7 +321,12 @@ public final class Config {
 		String modNameFormatFriendly = config.getString("modNameFormat", CATEGORY_ADVANCED, defaultValues.modNameFormatFriendly, validValues);
 		values.modNameFormat = parseFriendlyModNameFormat(modNameFormatFriendly);
 
-		values.maxSubtypes = config.getInt("maxSubtypes", CATEGORY_ADVANCED, defaultValues.maxSubtypes, 10, 10000);
+		{
+			String comment = Translator.translateToLocal("config.jei.advanced.maxSubtypes.comment");
+			Property property = config.get(CATEGORY_ADVANCED, "maxSubtypes", defaultValues.maxSubtypes, comment, 10, 10000);
+			property.setShowInGui(false);
+			values.maxSubtypes = property.getInt();
+		}
 
 		{
 			Property property = config.get(CATEGORY_ADVANCED, "debugModeEnabled", defaultValues.debugModeEnabled);
