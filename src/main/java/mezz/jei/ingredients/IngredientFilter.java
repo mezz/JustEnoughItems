@@ -217,11 +217,11 @@ public class IngredientFilter {
 
 	public void modesChanged() {
 		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.valueCollection());
-		onTick(10000);
+		onClientTick(10000);
 		this.filterCached = null;
 	}
 
-	public void onTick(final int timeoutMs) {
+	public void onClientTick(final int timeoutMs) {
 		final long startTime = System.currentTimeMillis();
 		for (PrefixedSearchTree prefixedTree : this.prefixedSearchTrees.valueCollection()) {
 			Config.SearchMode mode = prefixedTree.getMode();
@@ -232,8 +232,12 @@ public class IngredientFilter {
 					IIngredientListElement element = elementList.get(i);
 					if (element != null) {
 						Collection<String> strings = stringsGetter.getStrings(element);
-						for (String string : strings) {
-							tree.put(string, i);
+						if (strings.isEmpty()) {
+							tree.put("", i);
+						} else {
+							for (String string : strings) {
+								tree.put(string, i);
+							}
 						}
 					}
 					if (System.currentTimeMillis() - startTime >= timeoutMs) {

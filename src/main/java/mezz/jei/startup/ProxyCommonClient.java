@@ -12,6 +12,7 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.config.SessionData;
 import mezz.jei.gui.overlay.ItemListOverlay;
 import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.ingredients.IngredientInformation;
 import mezz.jei.network.packets.PacketJei;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
@@ -111,14 +112,15 @@ public class ProxyCommonClient extends ProxyCommon {
 					// check that JEI has been started before. if not, do nothing
 					if (ProxyCommonClient.this.starter.hasStarted()) {
 						Log.info("Restarting JEI.");
-						ProxyCommonClient.this.starter.start(ProxyCommonClient.this.plugins, true);
+						ProxyCommonClient.this.starter.start(ProxyCommonClient.this.plugins);
 					}
 				}
+				IngredientInformation.onResourceReload();
 			}
 		});
 
 		try {
-			this.starter.start(plugins, false);
+			this.starter.start(plugins);
 		} catch (Exception e) {
 			Log.error("Exception on load", e);
 		}
@@ -136,7 +138,8 @@ public class ProxyCommonClient extends ProxyCommon {
 	public void onClientTick(TickEvent.ClientTickEvent event) {
 		if (event.side == Side.CLIENT && SessionData.hasJoinedWorld() && Minecraft.getMinecraft().player != null) {
 			IngredientFilter ingredientFilter = Internal.getIngredientFilter();
-			ingredientFilter.onTick(20);
+			ingredientFilter.onClientTick(20);
+			IngredientInformation.onClientTick();
 		}
 	}
 

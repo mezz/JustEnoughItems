@@ -13,7 +13,6 @@ import mezz.jei.gui.ingredients.IngredientLookupMemory;
 import mezz.jei.gui.overlay.ItemListOverlay;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientFilter;
-import mezz.jei.ingredients.IngredientInformation;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
@@ -27,7 +26,7 @@ import net.minecraftforge.fml.common.ProgressManager;
 public class JeiStarter {
 	private boolean started;
 
-	public void start(List<IModPlugin> plugins, final boolean resourceReload) {
+	public void start(List<IModPlugin> plugins) {
 		long jeiStartTime = System.currentTimeMillis();
 
 		Log.info("Starting JEI...");
@@ -58,8 +57,6 @@ public class JeiStarter {
 		start_time = System.currentTimeMillis();
 		Internal.setIngredientLookupMemory(new IngredientLookupMemory(recipeRegistry, ingredientRegistry));
 		Log.info("Loaded  ingredient lookup history in {} ms", System.currentTimeMillis() - start_time);
-
-		IngredientInformation.onStart(resourceReload);
 
 		Log.info("Building ingredient list...");
 		start_time = System.currentTimeMillis();

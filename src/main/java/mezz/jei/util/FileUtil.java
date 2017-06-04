@@ -1,7 +1,12 @@
 package mezz.jei.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Utility to help read and write files in a crash-safe way using a temp file and a backup.
@@ -13,6 +18,14 @@ public final class FileUtil {
 
 	public interface FileOperation {
 		void handle(File file) throws IOException;
+	}
+
+	public interface ZipInputFileOperation {
+		void handle(ZipInputStream zipInputStream) throws IOException;
+	}
+
+	public interface ZipOutputFileOperation {
+		void handle(ZipOutputStream zipOutputStream) throws IOException;
 	}
 
 	public static boolean writeFileSafely(final File file, final FileOperation fileOperation) {
@@ -75,6 +88,45 @@ public final class FileUtil {
 				fileOperation.handle(file);
 			} catch (IOException e) {
 				Log.error("Failed to read file {}.", file, e);
+			}
+		}
+	}
+
+	public static void readZipFileSafely(final File file, final String zipEntryName, final ZipInputFileOperation fileOperation) {
+		FileUtil.readFileSafely(file, new FileOperation() {
+			@Override
+			public void handle(File file) throws IOException {
+				final ZipInputStream zipInput = new ZipInputStream(new FileInputStream(file));
+				if (FileUtil.getZipEntry(zipInput, zipEntryName)) {
+					fileOperation.handle(zipInput);
+					zipInput.close();
+				}
+			}
+		});
+	}
+
+	public static boolean writeZipFileSafely(final File file, final String zipEntryName, final ZipOutputFileOperation fileOperation) {
+		return FileUtil.writeFileSafely(file, new FileUtil.FileOperation() {
+			@Override
+			public void handle(File file) throws IOException {
+				ZipOutputStream zipOutput = new ZipOutputStream(new FileOutputStream(file));
+				zipOutput.putNextEntry(new ZipEntry(zipEntryName));
+				fileOperation.handle(zipOutput);
+				zipOutput.closeEntry();
+				zipOutput.close();
+			}
+		});
+	}
+
+	public static boolean getZipEntry(ZipInputStream zipInputStream, String zipEntryName) throws IOException {
+		while (true) {
+			ZipEntry zipEntry = zipInputStream.getNextEntry();
+			if (zipEntry != null) {
+				if (zipEntry.getName().equals(zipEntryName)) {
+					return true;
+				}
+			} else {
+				return false;
 			}
 		}
 	}

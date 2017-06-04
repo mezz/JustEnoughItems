@@ -1,8 +1,6 @@
 package mezz.jei.gui.ingredients;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -11,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -46,7 +43,10 @@ public class IngredientLookupMemory {
 	private final Table<IFocus.Mode, String, RecipeLookupFromFile> mostRecentLookupsFromFile = HashBasedTable.create();
 	private final RecipeRegistry recipeRegistry;
 	private final IIngredientRegistry ingredientRegistry;
-	private boolean needsSaving;
+
+	private final Object saveLock = new Object();
+	private boolean needsSaving = false;
+	private boolean saving = false;
 
 	public IngredientLookupMemory(RecipeRegistry recipeRegistry, IIngredientRegistry ingredientRegistry) {
 		this.recipeRegistry = recipeRegistry;
@@ -147,25 +147,20 @@ public class IngredientLookupMemory {
 
 	private void readFromFile() {
 		final File file = new File(Config.getJeiConfigurationDir(), "lookupHistory.zip");
-		FileUtil.readFileSafely(file, new FileUtil.FileOperation() {
+		FileUtil.readZipFileSafely(file, "lookupHistory.json", new FileUtil.ZipInputFileOperation() {
 			@Override
-			public void handle(File file) throws IOException {
-				final ZipInputStream zipInput = new ZipInputStream(new FileInputStream(file));
-				if (getZipEntry(zipInput, "lookupHistory.json")) {
-					final JsonReader jsonReader = new JsonReader(new InputStreamReader(zipInput));
-					jsonReader.beginObject();
+			public void handle(ZipInputStream zipInputStream) throws IOException {
+				final JsonReader jsonReader = new JsonReader(new InputStreamReader(zipInputStream));
+				jsonReader.beginObject();
 
-					while (jsonReader.hasNext()) {
-						final String name = jsonReader.nextName();
-						if (name.equals("lookupStates")) {
-							readLookupStatesObject(jsonReader);
-						}
+				while (jsonReader.hasNext()) {
+					final String name = jsonReader.nextName();
+					if (name.equals("lookupStates")) {
+						readLookupStatesObject(jsonReader);
 					}
-
-					jsonReader.endObject();
-
-					zipInput.close();
 				}
+
+				jsonReader.endObject();
 			}
 		});
 	}
@@ -191,54 +186,62 @@ public class IngredientLookupMemory {
 		jsonReader.endObject();
 	}
 
-	private static boolean getZipEntry(ZipInputStream zipInputStream, String zipEntryName) throws IOException {
-		while (true) {
-			ZipEntry zipEntry = zipInputStream.getNextEntry();
-			if (zipEntry != null) {
-				if (zipEntry.getName().equals(zipEntryName)) {
-					return true;
-				}
-			} else {
-				return false;
-			}
-		}
-	}
-
 	public void markDirty() {
 		this.needsSaving = true;
 	}
 
 	public void saveToFile() {
-		if (this.needsSaving) {
-			final File file = new File(Config.getJeiConfigurationDir(), "lookupHistory.zip");
-			final boolean write = FileUtil.writeFileSafely(file, new FileUtil.FileOperation() {
-				@Override
-				public void handle(File file) throws IOException {
-					ZipOutputStream zipOutput = new ZipOutputStream(new FileOutputStream(file));
-					zipOutput.putNextEntry(new ZipEntry("lookupHistory.json"));
-
-					JsonWriter jsonWriter = new JsonWriter(new OutputStreamWriter(zipOutput));
-
-					jsonWriter.beginObject();
-					{
-						writeLookupStatesObject(jsonWriter);
-					}
-					jsonWriter.endObject();
-
-					jsonWriter.flush();
-					zipOutput.closeEntry();
-					zipOutput.close();
-				}
-			});
-
-			if (write) {
-				Log.debug("Saved IngredientLookupMemory to {}.", file.getAbsoluteFile());
+		synchronized (this.saveLock) {
+			if (this.needsSaving && !this.saving) {
+				this.saving = true;
 				this.needsSaving = false;
+				saveToFileAsync();
 			}
 		}
 	}
 
-	private void writeLookupStatesObject(JsonWriter jsonWriter) throws IOException {
+	private void saveToFileAsync() {
+		final Table<IFocus.Mode, String, IngredientLookupState> mostRecentLookups = HashBasedTable.create(this.mostRecentLookups);
+		final Table<IFocus.Mode, String, RecipeLookupFromFile> mostRecentLookupsFromFile = HashBasedTable.create(this.mostRecentLookupsFromFile);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				saveToFileSync(mostRecentLookups, mostRecentLookupsFromFile);
+				synchronized (saveLock) {
+					saving = false;
+				}
+			}
+		}).start();
+	}
+
+	private static void saveToFileSync(
+			final Table<IFocus.Mode, String, IngredientLookupState> mostRecentLookups,
+			final Table<IFocus.Mode, String, RecipeLookupFromFile> mostRecentLookupsFromFile) {
+		final File file = new File(Config.getJeiConfigurationDir(), "lookupHistory.zip");
+
+		final boolean write = FileUtil.writeZipFileSafely(file, "lookupHistory.json", new FileUtil.ZipOutputFileOperation() {
+			@Override
+			public void handle(ZipOutputStream zipOutputStream) throws IOException {
+				JsonWriter jsonWriter = new JsonWriter(new OutputStreamWriter(zipOutputStream));
+				jsonWriter.beginObject();
+				{
+					writeLookupStatesObject(jsonWriter, mostRecentLookups, mostRecentLookupsFromFile);
+				}
+				jsonWriter.endObject();
+				jsonWriter.flush();
+			}
+		});
+
+		if (write) {
+			Log.debug("Saved IngredientLookupMemory to {}.", file.getAbsoluteFile());
+		}
+	}
+
+	private static void writeLookupStatesObject(
+			JsonWriter jsonWriter,
+			Table<IFocus.Mode, String, IngredientLookupState> mostRecentLookups,
+			Table<IFocus.Mode, String, RecipeLookupFromFile> mostRecentLookupsFromFile
+	) throws IOException {
 		jsonWriter.name("lookupStates")
 				.beginObject();
 
@@ -247,7 +250,7 @@ public class IngredientLookupMemory {
 			jsonWriter.name(focusMode.toString())
 					.beginArray();
 
-			for (Map.Entry<String, IngredientLookupState> lookups : this.mostRecentLookups.row(focusMode).entrySet()) {
+			for (Map.Entry<String, IngredientLookupState> lookups : mostRecentLookups.row(focusMode).entrySet()) {
 				String ingredientString = lookups.getKey();
 				IngredientLookupState state = lookups.getValue();
 				int recipeCategoryIndex = state.getRecipeCategoryIndex();
@@ -260,7 +263,7 @@ public class IngredientLookupMemory {
 						.endArray();
 			}
 
-			for (Map.Entry<String, IngredientLookupMemory.RecipeLookupFromFile> lookups : this.mostRecentLookupsFromFile.row(focusMode).entrySet()) {
+			for (Map.Entry<String, IngredientLookupMemory.RecipeLookupFromFile> lookups : mostRecentLookupsFromFile.row(focusMode).entrySet()) {
 				String ingredientString = lookups.getKey();
 				IngredientLookupMemory.RecipeLookupFromFile state = lookups.getValue();
 

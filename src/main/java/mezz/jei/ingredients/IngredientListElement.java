@@ -121,7 +121,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	public final List<String> getTooltipStrings() {
 		String modNameLowercase = this.modName.toLowerCase(Locale.ENGLISH);
 		String displayNameLowercase = Translator.toLowercaseWithLocale(this.displayName);
-		return IngredientInformation.getTooltipStrings(ingredient, ingredientRenderer, ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceId));
+		return IngredientInformation.getTooltipStrings(ingredient, ingredientHelper, ingredientRenderer, ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceId));
 	}
 
 	@Override
