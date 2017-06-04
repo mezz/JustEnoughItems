@@ -81,6 +81,8 @@ config.jei.advanced.centerSearchBarEnabled=Center Search Bar
 config.jei.advanced.centerSearchBarEnabled.comment=Move the JEI search bar to the bottom center of the screen.
 config.jei.advanced.modNameFormat=Mod Name Format
 config.jei.advanced.modNameFormat.comment=How the mod name should be formatted in the tooltip for JEI guis. Leave blank to disable.
+config.jei.advanced.maxSubtypes=Max Item Subtypes
+config.jei.advanced.maxSubtypes.comment=Items with more than this many subtypes will not be displayed in JEI.
 
 # Edit Mode
 gui.jei.editMode.description=JEI Item List Edit Mode:

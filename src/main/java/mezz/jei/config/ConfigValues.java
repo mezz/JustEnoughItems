@@ -6,6 +6,7 @@ public class ConfigValues {
 	public boolean centerSearchBarEnabled = false;
 	public final String modNameFormatFriendly = "blue italic";
 	public String modNameFormat = Config.parseFriendlyModNameFormat(modNameFormatFriendly);
+	public int maxSubtypes = 100;
 
 	// search
 	public Config.SearchMode modNameSearchMode = Config.SearchMode.REQUIRE_PREFIX;

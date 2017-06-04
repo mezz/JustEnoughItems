@@ -6,7 +6,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import mezz.jei.api.ISubtypeRegistry;
+import mezz.jei.config.Config;
 import mezz.jei.startup.StackHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
@@ -25,6 +28,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public final class ItemStackListFactory {
 	private final ISubtypeRegistry subtypeRegistry;
+	private final Multiset<Item> subtypeCount = HashMultiset.create();
 
 	public ItemStackListFactory(ISubtypeRegistry subtypeRegistry) {
 		this.subtypeRegistry = subtypeRegistry;
@@ -44,9 +48,10 @@ public final class ItemStackListFactory {
 				Log.error("Creative tab crashed while getting items. Some items from this tab will be missing from the item list. {}", creativeTab, e);
 			}
 			for (ItemStack itemStack : creativeTabItemStacks) {
-				if (itemStack == null) {
-					Log.error("Found a null itemStack in creative tab: {}", creativeTab);
-				} else if (itemStack.isEmpty()) {
+				subtypeCount.add(itemStack.getItem());
+			}
+			for (ItemStack itemStack : creativeTabItemStacks) {
+				if (itemStack.isEmpty()) {
 					Log.error("Found an empty itemStack from creative tab: {}", creativeTab);
 				} else {
 					addItemStack(stackHelper, itemStack, itemList, itemNameSet);
@@ -70,11 +75,10 @@ public final class ItemStackListFactory {
 			return;
 		}
 
-		List<ItemStack> items = stackHelper.getSubtypes(item, 1);
+		NonNullList<ItemStack> items = stackHelper.getSubtypes(item, 1);
+		subtypeCount.setCount(item, items.size());
 		for (ItemStack stack : items) {
-			if (stack != null) {
-				addItemStack(stackHelper, stack, itemList, itemNameSet);
-			}
+			addItemStack(stackHelper, stack, itemList, itemNameSet);
 		}
 	}
 
@@ -113,6 +117,11 @@ public final class ItemStackListFactory {
 	}
 
 	private void addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<String> itemNameSet) {
+		Item item = stack.getItem();
+		if (subtypeCount.count(item) >= Config.getMaxSubtypes()) {
+			return;
+		}
+
 		String itemKey = null;
 
 		try {

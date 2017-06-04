@@ -219,8 +219,8 @@ public class StackHelper implements IStackHelper {
 		return getSubtypes(itemStack.getItem(), itemStack.getCount());
 	}
 
-	public List<ItemStack> getSubtypes(final Item item, final int stackSize) {
-		List<ItemStack> itemStacks = new ArrayList<ItemStack>();
+	public NonNullList<ItemStack> getSubtypes(final Item item, final int stackSize) {
+		NonNullList<ItemStack> itemStacks = NonNullList.create();
 
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
 			NonNullList<ItemStack> subItems = NonNullList.create();
@@ -233,9 +233,7 @@ public class StackHelper implements IStackHelper {
 			}
 
 			for (ItemStack subItem : subItems) {
-				if (subItem == null) {
-					Log.warning("Found a null subItem of {}", item);
-				} else if (subItem.isEmpty()) {
+				if (subItem.isEmpty()) {
 					Log.warning("Found an empty subItem of {}", item);
 				} else {
 					if (subItem.getCount() != stackSize) {

@@ -123,6 +123,10 @@ public final class Config {
 		return values.modNameFormat;
 	}
 
+	public static int getMaxSubtypes() {
+		return values.maxSubtypes;
+	}
+
 	public static SearchMode getModNameSearchMode() {
 		return values.modNameSearchMode;
 	}
@@ -316,6 +320,8 @@ public final class Config {
 		}
 		String modNameFormatFriendly = config.getString("modNameFormat", CATEGORY_ADVANCED, defaultValues.modNameFormatFriendly, validValues);
 		values.modNameFormat = parseFriendlyModNameFormat(modNameFormatFriendly);
+
+		values.maxSubtypes = config.getInt("maxSubtypes", CATEGORY_ADVANCED, defaultValues.maxSubtypes, 10, 10000);
 
 		{
 			Property property = config.get(CATEGORY_ADVANCED, "debugModeEnabled", defaultValues.debugModeEnabled);
