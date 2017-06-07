@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableList;
 import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
@@ -142,7 +141,7 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 			hovered = guiIngredientList.render(minecraft, mouseOver, mouseX, mouseY);
 		}
 
-		drawHighlightedStacks();
+		drawHighlightedIngredients();
 
 		if (hovered != null) {
 			hovered.drawHovered(minecraft);
@@ -151,7 +150,7 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 		GlStateManager.enableAlpha();
 	}
 
-	private void drawHighlightedStacks() {
+	private void drawHighlightedIngredients() {
 		JeiRuntime runtime = Internal.getRuntime();
 		if (runtime == null) {
 			return;
@@ -225,14 +224,11 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 	}
 
 	@Nullable
-	public ItemStack getStackUnderMouse() {
+	public IIngredientListElement getElementUnderMouse() {
 		if (hovered != null) {
 			IIngredientListElement element = hovered.getElement();
 			if (element != null) {
-				Object ingredient = element.getIngredient();
-				if (ingredient instanceof ItemStack) {
-					return (ItemStack) ingredient;
-				}
+				return element;
 			}
 		}
 		return null;
@@ -269,5 +265,5 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 
 	public abstract int getPageNum();
 
-	public abstract ImmutableList<ItemStack> getVisibleStacks();
+	public abstract List<IIngredientListElement> getVisibleElements();
 }

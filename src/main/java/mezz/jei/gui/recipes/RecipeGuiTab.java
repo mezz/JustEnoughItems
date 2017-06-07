@@ -1,6 +1,6 @@
 package mezz.jei.gui.recipes;
 
-import javax.annotation.Nullable;
+import java.util.List;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
@@ -43,6 +43,5 @@ public abstract class RecipeGuiTab implements IMouseHandler {
 		tab.draw(minecraft, x, y);
 	}
 
-	@Nullable
-	public abstract String getTooltip();
+	public abstract List<String> getTooltip();
 }

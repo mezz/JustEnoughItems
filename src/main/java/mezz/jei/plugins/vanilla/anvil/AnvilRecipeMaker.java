@@ -6,9 +6,13 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Stopwatch;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import mezz.jei.api.IModRegistry;
+import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.IVanillaRecipeFactory;
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
@@ -73,8 +77,10 @@ public final class AnvilRecipeMaker {
 				perLevelOutputs.add(withEnchant);
 			}
 		}
+		IVanillaRecipeFactory vanillaRecipeFactory = registry.getJeiHelpers().getVanillaRecipeFactory();
 		if (!perLevelBooks.isEmpty() && !perLevelOutputs.isEmpty()) {
-			registry.addAnvilRecipe(ingredient, perLevelBooks, perLevelOutputs);
+			IRecipeWrapper anvilRecipe = vanillaRecipeFactory.createAnvilRecipe(ingredient, perLevelBooks, perLevelOutputs);
+			registry.addRecipes(Collections.singletonList(anvilRecipe), VanillaRecipeCategoryUid.ANVIL);
 		}
 	}
 
@@ -152,6 +158,8 @@ public final class AnvilRecipeMaker {
 				new ItemStack(Items.DIAMOND_BOOTS)
 		));
 
+		IVanillaRecipeFactory vanillaRecipeFactory = registry.getJeiHelpers().getVanillaRecipeFactory();
+
 		for (Map.Entry<ItemStack, List<ItemStack>> entry : items.entrySet()) {
 
 			ItemStack repairMaterial = entry.getKey();
@@ -165,13 +173,9 @@ public final class AnvilRecipeMaker {
 				ItemStack damaged3 = ingredient.copy();
 				damaged3.setItemDamage(damaged3.getMaxDamage() * 2 / 4);
 
-				// Repair with material
-				registry.addAnvilRecipe(damaged1, Collections.singletonList(repairMaterial),
-						Collections.singletonList(damaged2));
-
-				// Repair with another of the same
-				registry.addAnvilRecipe(damaged2, Collections.singletonList(damaged2),
-						Collections.singletonList(damaged3));
+				IRecipeWrapper repairWithMaterial = vanillaRecipeFactory.createAnvilRecipe(damaged1, Collections.singletonList(repairMaterial), Collections.singletonList(damaged2));
+				IRecipeWrapper repairWithSame = vanillaRecipeFactory.createAnvilRecipe(damaged2, Collections.singletonList(damaged2), Collections.singletonList(damaged3));
+				registry.addRecipes(ImmutableList.of(repairWithMaterial, repairWithSame), VanillaRecipeCategoryUid.ANVIL);
 			}
 		}
 	}

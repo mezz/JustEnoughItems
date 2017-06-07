@@ -13,6 +13,7 @@ import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.IRecipeWrapperFactory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
@@ -107,11 +108,9 @@ public class VanillaPlugin extends BlankModPlugin {
 	}
 
 	@Override
-	public void register(IModRegistry registry) {
-		final IIngredientRegistry ingredientRegistry = registry.getIngredientRegistry();
+	public void registerCategories(IRecipeCategoryRegistration registry) {
 		final IJeiHelpers jeiHelpers = registry.getJeiHelpers();
 		final IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
-
 		registry.addRecipeCategories(
 				new CraftingRecipeCategory(guiHelper),
 				new FurnaceFuelCategory(guiHelper),
@@ -119,6 +118,12 @@ public class VanillaPlugin extends BlankModPlugin {
 				new BrewingRecipeCategory(guiHelper),
 				new AnvilRecipeCategory(guiHelper)
 		);
+	}
+
+	@Override
+	public void register(IModRegistry registry) {
+		final IIngredientRegistry ingredientRegistry = registry.getIngredientRegistry();
+		final IJeiHelpers jeiHelpers = registry.getJeiHelpers();
 
 		registry.addRecipes(CraftingRecipeChecker.getValidRecipes(jeiHelpers), VanillaRecipeCategoryUid.CRAFTING);
 		registry.addRecipes(SmeltingRecipeMaker.getFurnaceRecipes(jeiHelpers), VanillaRecipeCategoryUid.SMELTING);
@@ -172,10 +177,10 @@ public class VanillaPlugin extends BlankModPlugin {
 		recipeTransferRegistry.addRecipeTransferHandler(ContainerBrewingStand.class, VanillaRecipeCategoryUid.BREWING, 0, 4, 5, 36);
 		recipeTransferRegistry.addRecipeTransferHandler(ContainerRepair.class, VanillaRecipeCategoryUid.ANVIL, 0, 2, 3, 36);
 
-		registry.addRecipeCategoryCraftingItem(new ItemStack(Blocks.CRAFTING_TABLE), VanillaRecipeCategoryUid.CRAFTING);
-		registry.addRecipeCategoryCraftingItem(new ItemStack(Blocks.FURNACE), VanillaRecipeCategoryUid.SMELTING, VanillaRecipeCategoryUid.FUEL);
-		registry.addRecipeCategoryCraftingItem(new ItemStack(Items.BREWING_STAND), VanillaRecipeCategoryUid.BREWING);
-		registry.addRecipeCategoryCraftingItem(new ItemStack(Blocks.ANVIL), VanillaRecipeCategoryUid.ANVIL);
+		registry.addRecipeCatalyst(new ItemStack(Blocks.CRAFTING_TABLE), VanillaRecipeCategoryUid.CRAFTING);
+		registry.addRecipeCatalyst(new ItemStack(Blocks.FURNACE), VanillaRecipeCategoryUid.SMELTING, VanillaRecipeCategoryUid.FUEL);
+		registry.addRecipeCatalyst(new ItemStack(Items.BREWING_STAND), VanillaRecipeCategoryUid.BREWING);
+		registry.addRecipeCatalyst(new ItemStack(Blocks.ANVIL), VanillaRecipeCategoryUid.ANVIL);
 
 		IIngredientBlacklist ingredientBlacklist = registry.getJeiHelpers().getIngredientBlacklist();
 		// Game freezes when loading player skulls, see https://bugs.mojang.com/browse/MC-65587

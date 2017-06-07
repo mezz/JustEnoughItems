@@ -21,16 +21,16 @@ import mezz.jei.ingredients.IngredientUtil;
 
 public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 	private final RecipeRegistry recipeRegistry;
-	private final ImmutableMultimap<String, String> categoriesForCraftItemKeys;
+	private final ImmutableMultimap<String, String> categoriesForRecipeCatalystKeys;
 	private final IIngredientRegistry ingredientRegistry;
 	private final ImmutableMap<String, IRecipeCategory> recipeCategoriesMap;
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
 	private final ListMultimap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories;
 
-	public InternalRecipeRegistryPlugin(RecipeRegistry recipeRegistry, ImmutableMultimap<String, String> categoriesForCraftItemKeys, IIngredientRegistry ingredientRegistry, ImmutableMap<String, IRecipeCategory> recipeCategoriesMap, RecipeMap recipeInputMap, RecipeMap recipeOutputMap, ListMultimap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories) {
+	public InternalRecipeRegistryPlugin(RecipeRegistry recipeRegistry, ImmutableMultimap<String, String> categoriesForRecipeCatalystKeys, IIngredientRegistry ingredientRegistry, ImmutableMap<String, IRecipeCategory> recipeCategoriesMap, RecipeMap recipeInputMap, RecipeMap recipeOutputMap, ListMultimap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories) {
 		this.recipeRegistry = recipeRegistry;
-		this.categoriesForCraftItemKeys = categoriesForCraftItemKeys;
+		this.categoriesForRecipeCatalystKeys = categoriesForRecipeCatalystKeys;
 		this.ingredientRegistry = ingredientRegistry;
 		this.recipeCategoriesMap = recipeCategoriesMap;
 		this.recipeInputMap = recipeInputMap;
@@ -76,7 +76,7 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 
 			String recipeCategoryUid = recipeCategory.getUid();
 			for (String inputKey : IngredientUtil.getUniqueIdsWithWildcard(ingredientHelper, ingredient)) {
-				if (categoriesForCraftItemKeys.get(inputKey).contains(recipeCategoryUid)) {
+				if (categoriesForRecipeCatalystKeys.get(inputKey).contains(recipeCategoryUid)) {
 					ImmutableSet<T> specificRecipes = ImmutableSet.copyOf(recipes);
 					//noinspection unchecked
 					List<T> recipesForCategory = (List<T>) recipeWrappersForCategories.get(recipeCategory);

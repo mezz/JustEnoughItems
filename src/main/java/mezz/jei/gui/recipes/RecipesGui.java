@@ -41,7 +41,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -67,7 +66,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	private String title = "";
 	private ResourceLocation backgroundTexture = Internal.getHelpers().getGuiHelper().getRecipeBackgroundResource();
 
-	private final RecipeCategoryCraftingItems recipeCategoryCraftingItems;
+	private final RecipeCatalysts recipeCatalysts;
 	private final RecipeGuiTabs recipeGuiTabs;
 
 	private HoverChecker titleHoverChecker = new HoverChecker(0, 0, 0, 0, 0);
@@ -88,7 +87,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	public RecipesGui(IRecipeRegistry recipeRegistry) {
 		this.logic = new RecipeGuiLogic(recipeRegistry, this);
-		this.recipeCategoryCraftingItems = new RecipeCategoryCraftingItems();
+		this.recipeCatalysts = new RecipeCatalysts();
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
 		this.mc = Minecraft.getMinecraft();
 
@@ -218,7 +217,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			}
 		}
 
-		GuiIngredient hoveredItemStack = recipeCategoryCraftingItems.draw(mc, mouseX, mouseY);
+		GuiIngredient hoveredItemStack = recipeCatalysts.draw(mc, mouseX, mouseY);
 
 		recipeGuiTabs.draw(mc, mouseX, mouseY);
 
@@ -244,7 +243,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
 		if (isOpen()) {
 			{
-				IClickedIngredient<?> clicked = recipeCategoryCraftingItems.getIngredientUnderMouse(mouseX, mouseY);
+				IClickedIngredient<?> clicked = recipeCatalysts.getIngredientUnderMouse(mouseX, mouseY);
 				if (clicked != null) {
 					return clicked;
 				}
@@ -428,9 +427,9 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 		pageString = logic.getPageString();
 
-		List<ItemStack> recipeCategoryCraftingItems = logic.getRecipeCategoryCraftingItems();
+		List<Object> recipeCatalysts = logic.getRecipeCatalysts();
 		GuiProperties guiProperties = GuiProperties.create(this);
-		this.recipeCategoryCraftingItems.updateLayout(recipeCategoryCraftingItems, guiProperties);
+		this.recipeCatalysts.updateLayout(recipeCatalysts, guiProperties);
 		recipeGuiTabs.initLayout(guiProperties);
 	}
 

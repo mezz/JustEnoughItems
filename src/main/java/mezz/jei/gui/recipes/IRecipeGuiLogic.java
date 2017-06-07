@@ -5,7 +5,6 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
-import net.minecraft.item.ItemStack;
 
 public interface IRecipeGuiLogic {
 
@@ -43,9 +42,9 @@ public interface IRecipeGuiLogic {
 
 	ImmutableList<IRecipeCategory> getRecipeCategories();
 
-	List<ItemStack> getRecipeCategoryCraftingItems();
+	List<Object> getRecipeCatalysts();
 
-	List<ItemStack> getRecipeCategoryCraftingItems(IRecipeCategory recipeCategory);
+	List<Object> getRecipeCatalysts(IRecipeCategory recipeCategory);
 
 	List<RecipeLayout> getRecipeLayouts(int posX, int posY, int spacingY);
 }

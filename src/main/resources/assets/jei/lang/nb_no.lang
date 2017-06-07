@@ -83,7 +83,7 @@ gui.jei.category.fuel=Drivstoff
 gui.jei.category.fuel.burnTime=Varighet som Drivstoff: %s
 gui.jei.category.brewing=Brygging
 gui.jei.category.brewing.steps=Steg: %s
-gui.jei.category.itemDescription=Beskrivelse
+gui.jei.category.itemInformation=Beskrivelse
 
 # DEBUG (for debug mode, do not need translation)
 description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.

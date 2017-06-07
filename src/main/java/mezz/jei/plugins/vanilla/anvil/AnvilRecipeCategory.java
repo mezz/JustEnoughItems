@@ -7,6 +7,7 @@ import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeCategory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
+import mezz.jei.config.Constants;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 
@@ -27,6 +28,11 @@ public class AnvilRecipeCategory extends BlankRecipeCategory<AnvilRecipeWrapper>
 	@Override
 	public String getTitle() {
 		return Blocks.ANVIL.getLocalizedName();
+	}
+
+	@Override
+	public String getModName() {
+		return Constants.minecraftModName;
 	}
 
 	@Override

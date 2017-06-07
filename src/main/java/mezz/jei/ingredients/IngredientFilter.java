@@ -14,6 +14,7 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.map.TCharObjectMap;
 import gnu.trove.map.hash.TCharObjectHashMap;
 import gnu.trove.set.TIntSet;
+import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.Config;
 import mezz.jei.config.EditModeToggleEvent;
@@ -23,11 +24,10 @@ import mezz.jei.suffixtree.CombinedSearchTrees;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 import mezz.jei.suffixtree.ISearchTree;
 import mezz.jei.util.Translator;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class IngredientFilter {
+public class IngredientFilter implements IIngredientFilter {
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(\".*?(?:\"|$)|\\S+)");
 
@@ -264,6 +264,27 @@ public class IngredientFilter {
 		return ingredientListCached;
 	}
 
+	@Override
+	public ImmutableList<Object> getFilteredIngredients() {
+		List<IIngredientListElement> elements = getIngredientList();
+		ImmutableList.Builder<Object> builder = ImmutableList.builder();
+		for (IIngredientListElement element : elements) {
+			Object ingredient = element.getIngredient();
+			builder.add(ingredient);
+		}
+		return builder.build();
+	}
+
+	@Override
+	public String getFilterText() {
+		return Config.getFilterText();
+	}
+
+	@Override
+	public void setFilterText(String filterText) {
+
+	}
+
 	private List<IIngredientListElement> getIngredientListUncached(String filterText) {
 		String[] filters = filterText.split("\\|");
 
@@ -357,17 +378,6 @@ public class IngredientFilter {
 			set1.retainAll(set2);
 			return set1;
 		}
-	}
-
-	public ImmutableList<ItemStack> getItemStacks() {
-		ImmutableList.Builder<ItemStack> filteredStacks = ImmutableList.builder();
-		for (IIngredientListElement element : getIngredientList()) {
-			Object ingredient = element.getIngredient();
-			if (ingredient instanceof ItemStack) {
-				filteredStacks.add((ItemStack) ingredient);
-			}
-		}
-		return filteredStacks.build();
 	}
 
 	public int size() {

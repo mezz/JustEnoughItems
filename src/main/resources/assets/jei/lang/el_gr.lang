@@ -92,7 +92,7 @@ gui.jei.category.fuel.smeltCount=Ψήνει %s αντικείμενα
 gui.jei.category.fuel.burnTime=Ώρα Ψησίματος: %s
 gui.jei.category.brewing=Ζύμωση
 gui.jei.category.brewing.steps=Βήματα: %s
-gui.jei.category.itemDescription=Περιγραφή
+gui.jei.category.itemInformation=Περιγραφή
 
 # DEBUG (for debug mode, do not need translation)
 description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.

@@ -3,10 +3,12 @@ package mezz.jei.runtime;
 import java.util.ArrayList;
 import java.util.List;
 
+import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
-import mezz.jei.gui.overlay.ItemListOverlay;
+import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.recipes.RecipeRegistry;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -14,17 +16,26 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 public class JeiRuntime implements IJeiRuntime {
 
 	private final RecipeRegistry recipeRegistry;
-	private final ItemListOverlay itemListOverlay;
+	private final IngredientListOverlay ingredientListOverlay;
 	private final RecipesGui recipesGui;
 	private final IngredientRegistry ingredientRegistry;
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers;
+	private final IngredientFilter ingredientFilter;
 
-	public JeiRuntime(RecipeRegistry recipeRegistry, ItemListOverlay itemListOverlay, RecipesGui recipesGui, IngredientRegistry ingredientRegistry, List<IAdvancedGuiHandler<?>> advancedGuiHandlers) {
+	public JeiRuntime(
+			RecipeRegistry recipeRegistry,
+			IngredientListOverlay ingredientListOverlay,
+			RecipesGui recipesGui,
+			IngredientRegistry ingredientRegistry,
+			List<IAdvancedGuiHandler<?>> advancedGuiHandlers,
+			IngredientFilter ingredientFilter
+	) {
 		this.recipeRegistry = recipeRegistry;
-		this.itemListOverlay = itemListOverlay;
+		this.ingredientListOverlay = ingredientListOverlay;
 		this.recipesGui = recipesGui;
 		this.ingredientRegistry = ingredientRegistry;
 		this.advancedGuiHandlers = advancedGuiHandlers;
+		this.ingredientFilter = ingredientFilter;
 	}
 
 	public void close() {
@@ -37,8 +48,18 @@ public class JeiRuntime implements IJeiRuntime {
 	}
 
 	@Override
-	public ItemListOverlay getItemListOverlay() {
-		return itemListOverlay;
+	public IngredientListOverlay getItemListOverlay() {
+		return ingredientListOverlay;
+	}
+
+	@Override
+	public IIngredientFilter getIngredientFilter() {
+		return ingredientFilter;
+	}
+
+	@Override
+	public IngredientListOverlay getIngredientListOverlay() {
+		return ingredientListOverlay;
 	}
 
 	@Override

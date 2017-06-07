@@ -102,4 +102,4 @@ gui.jei.category.fuel.smeltCount=Smälter %s föremål
 gui.jei.category.fuel.burnTime=Brinntid: %s
 gui.jei.category.brewing=Bryggning
 gui.jei.category.brewing.steps=Steg: %s
-gui.jei.category.itemDescription=Beskrivning
+gui.jei.category.itemInformation=Beskrivning

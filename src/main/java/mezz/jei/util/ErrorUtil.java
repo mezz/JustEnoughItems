@@ -204,5 +204,8 @@ public final class ErrorUtil {
 		if (!Internal.getIngredientRegistry().isKnownIngredientType(object)) {
 			throw new IllegalArgumentException(object.getClass() + " is not a known ingredient type.");
 		}
+		if (object instanceof ItemStack) {
+			checkNotEmpty((ItemStack) object);
+		}
 	}
 }

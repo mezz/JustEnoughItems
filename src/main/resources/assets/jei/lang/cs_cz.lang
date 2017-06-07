@@ -89,7 +89,7 @@ gui.jei.category.fuel=Palivo
 gui.jei.category.fuel.burnTime=Čas hoření: %s
 gui.jei.category.brewing=Lektvaření
 gui.jei.category.brewing.steps=Krok: %s
-gui.jei.category.itemDescription=Popis
+gui.jei.category.itemInformation=Popis
 
 # DEBUG (for debug mode, do not need translation)
 description.jei.wooden.door.1=Dřevěné dveře ti umožní blokovat příšery před vstupem do budovy.\nTestovací věty.

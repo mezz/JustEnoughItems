@@ -10,7 +10,7 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
-import mezz.jei.gui.overlay.ItemListOverlay;
+import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.recipes.RecipeRegistry;
@@ -30,19 +30,19 @@ public class InputHandler {
 	private final RecipeRegistry recipeRegistry;
 	private final IIngredientRegistry ingredientRegistry;
 	private final RecipesGui recipesGui;
-	private final ItemListOverlay itemListOverlay;
+	private final IngredientListOverlay ingredientListOverlay;
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<IShowsRecipeFocuses>();
 
 	private boolean clickHandled = false;
 
-	public InputHandler(JeiRuntime runtime, ItemListOverlay itemListOverlay) {
+	public InputHandler(JeiRuntime runtime, IngredientListOverlay ingredientListOverlay) {
 		this.recipeRegistry = runtime.getRecipeRegistry();
 		this.ingredientRegistry = runtime.getIngredientRegistry();
 		this.recipesGui = runtime.getRecipesGui();
-		this.itemListOverlay = itemListOverlay;
+		this.ingredientListOverlay = ingredientListOverlay;
 
 		this.showsRecipeFocuses.add(recipesGui);
-		this.showsRecipeFocuses.add(itemListOverlay);
+		this.showsRecipeFocuses.add(ingredientListOverlay);
 		this.showsRecipeFocuses.add(new GuiContainerWrapper());
 	}
 
@@ -65,11 +65,11 @@ public class InputHandler {
 	}
 
 	private boolean handleMouseScroll(int dWheel, int mouseX, int mouseY) {
-		return itemListOverlay.isEnabled() && itemListOverlay.handleMouseScrolled(mouseX, mouseY, dWheel);
+		return ingredientListOverlay.isEnabled() && ingredientListOverlay.handleMouseScrolled(mouseX, mouseY, dWheel);
 	}
 
 	private boolean handleMouseClick(GuiScreen guiScreen, int mouseButton, int mouseX, int mouseY) {
-		if (itemListOverlay.isEnabled() && itemListOverlay.handleMouseClicked(mouseX, mouseY, mouseButton)) {
+		if (ingredientListOverlay.isEnabled() && ingredientListOverlay.handleMouseClicked(mouseX, mouseY, mouseButton)) {
 			return true;
 		}
 
@@ -177,7 +177,7 @@ public class InputHandler {
 	}
 
 	public boolean hasKeyboardFocus() {
-		return itemListOverlay.isEnabled() && itemListOverlay.hasKeyboardFocus();
+		return ingredientListOverlay.isEnabled() && ingredientListOverlay.hasKeyboardFocus();
 	}
 
 	public boolean handleKeyEvent() {
@@ -189,11 +189,11 @@ public class InputHandler {
 	}
 
 	private boolean handleKeyDown(char typedChar, int eventKey) {
-		if (itemListOverlay.isEnabled() && itemListOverlay.hasKeyboardFocus()) {
+		if (ingredientListOverlay.isEnabled() && ingredientListOverlay.hasKeyboardFocus()) {
 			if (isInventoryCloseKey(eventKey) || isEnterKey(eventKey)) {
-				itemListOverlay.setKeyboardFocus(false);
+				ingredientListOverlay.setKeyboardFocus(false);
 				return true;
-			} else if (itemListOverlay.onKeyPressed(typedChar, eventKey)) {
+			} else if (ingredientListOverlay.onKeyPressed(typedChar, eventKey)) {
 				return true;
 			}
 		}
@@ -203,14 +203,14 @@ public class InputHandler {
 			return false;
 		}
 
-		if (itemListOverlay.isEnabled()) {
+		if (ingredientListOverlay.isEnabled()) {
 			if (KeyBindings.toggleCheatMode.isActiveAndMatches(eventKey)) {
 				Config.toggleCheatItemsEnabled();
 				return true;
 			}
 
 			if (KeyBindings.focusSearch.isActiveAndMatches(eventKey)) {
-				itemListOverlay.setKeyboardFocus(true);
+				ingredientListOverlay.setKeyboardFocus(true);
 				return true;
 			}
 		}
@@ -227,7 +227,7 @@ public class InputHandler {
 				}
 			}
 
-			if (itemListOverlay.isEnabled() && itemListOverlay.onKeyPressed(typedChar, eventKey)) {
+			if (ingredientListOverlay.isEnabled() && ingredientListOverlay.onKeyPressed(typedChar, eventKey)) {
 				return true;
 			}
 		}

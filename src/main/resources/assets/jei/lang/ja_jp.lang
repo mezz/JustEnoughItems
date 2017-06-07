@@ -97,7 +97,7 @@ gui.jei.category.fuel.smeltCount.single=1回精錬可能
 gui.jei.category.fuel.smeltCount=%s回精錬可能
 gui.jei.category.brewing=醸造
 gui.jei.category.brewing.steps=第%s段階
-gui.jei.category.itemDescription=説明
+gui.jei.category.itemInformation=説明
 
 # DEBUG (for debug mode, do not need translation)
 # description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.

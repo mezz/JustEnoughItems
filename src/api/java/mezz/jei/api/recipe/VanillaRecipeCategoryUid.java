@@ -61,17 +61,29 @@ public final class VanillaRecipeCategoryUid {
 	/**
 	 * The anvil recipe category.
 	 * <p>
-	 * This is a built-in category, you can add new recipes with {@link IModRegistry#addAnvilRecipe(ItemStack, List, List)}}
+	 * This is a built-in category, you can create new recipes with {@link IVanillaRecipeFactory#createAnvilRecipe(ItemStack, List, List)}
 	 * @since JEI 4.2.6
 	 */
 	public static final String ANVIL = "minecraft.anvil";
 
 	/**
-	 * The JEI description recipe category.
+	 * The JEI info recipe category shows extra information about ingredients.
 	 * <p>
 	 * This is a built-in category, you can add new recipes with
-	 * {@link IModRegistry#addDescription(ItemStack, String...)} or {@link IModRegistry#addDescription(List, String...)}
+	 * {@link IModRegistry#addIngredientInfo(Object, Class, String...)}   or {@link IModRegistry#addIngredientInfo(List, Class, String...)}
+	 * @since JEI 4.5.0
 	 */
+	public static final String INFORMATION = "jei.information";
+
+	/**
+	 * The JEI description recipe category shows extra information about ingredients.
+	 * <p>
+	 * This is a built-in category, you can add new recipes with
+	 * {@link IModRegistry#addIngredientInfo(Object, Class, String...)}   or {@link IModRegistry#addIngredientInfo(List, Class, String...)}
+	 *
+	 * @deprecated since JEI 4.5.0. Use {@link #INFORMATION}
+	 */
+	@Deprecated
 	public static final String DESCRIPTION = "jei.description";
 
 	private VanillaRecipeCategoryUid() {

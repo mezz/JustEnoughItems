@@ -86,7 +86,7 @@ gui.jei.category.fuel=Гориво
 gui.jei.category.fuel.burnTime=Време на Горене: %s
 gui.jei.category.brewing=Варене
 gui.jei.category.brewing.steps=Стъпки: %s
-gui.jei.category.itemDescription=Описание
+gui.jei.category.itemInformation=Описание
 
 # DEBUG (for debug mode, do not need translation)
 description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.

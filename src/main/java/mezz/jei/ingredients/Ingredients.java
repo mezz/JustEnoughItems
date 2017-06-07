@@ -16,12 +16,12 @@ public class Ingredients implements IIngredients {
 	private final Map<Class, List<List>> outputs = new IdentityHashMap<Class, List<List>>();
 
 	@Override
-	public <T> void setInput(Class<T> ingredientClass, T input) {
+	public <T> void setInput(Class<? extends T> ingredientClass, T input) {
 		setInputs(ingredientClass, Collections.singletonList(input));
 	}
 
 	@Override
-	public <T> void setInputLists(Class<T> ingredientClass, List<List<T>> inputs) {
+	public <T> void setInputLists(Class<? extends T> ingredientClass, List<List<T>> inputs) {
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		List<List> expandedInputs = new ArrayList<List>();
@@ -34,7 +34,7 @@ public class Ingredients implements IIngredients {
 	}
 
 	@Override
-	public <T> void setInputs(Class<T> ingredientClass, List<T> input) {
+	public <T> void setInputs(Class<? extends T> ingredientClass, List<T> input) {
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		List<List> expandedInputs = new ArrayList<List>();
@@ -47,12 +47,12 @@ public class Ingredients implements IIngredients {
 	}
 
 	@Override
-	public <T> void setOutput(Class<T> ingredientClass, T output) {
+	public <T> void setOutput(Class<? extends T> ingredientClass, T output) {
 		setOutputs(ingredientClass, Collections.singletonList(output));
 	}
 
 	@Override
-	public <T> void setOutputs(Class<T> ingredientClass, List<T> outputs) {
+	public <T> void setOutputs(Class<? extends T> ingredientClass, List<T> outputs) {
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		List<List> expandedOutputs = new ArrayList<List>();
@@ -65,7 +65,7 @@ public class Ingredients implements IIngredients {
 	}
 
 	@Override
-	public <T> void setOutputLists(Class<T> ingredientClass, List<List<T>> outputs) {
+	public <T> void setOutputLists(Class<? extends T> ingredientClass, List<List<T>> outputs) {
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		List<List> expandedOutputs = new ArrayList<List>();
@@ -78,7 +78,7 @@ public class Ingredients implements IIngredients {
 	}
 
 	@Override
-	public <T> List<List<T>> getInputs(Class<T> ingredientClass) {
+	public <T> List<List<T>> getInputs(Class<? extends T> ingredientClass) {
 		//noinspection unchecked
 		List<List<T>> inputs = (List<List<T>>) (Object) this.inputs.get(ingredientClass);
 		if (inputs == null) {
@@ -88,7 +88,7 @@ public class Ingredients implements IIngredients {
 	}
 
 	@Override
-	public <T> List<List<T>> getOutputs(Class<T> ingredientClass) {
+	public <T> List<List<T>> getOutputs(Class<? extends T> ingredientClass) {
 		//noinspection unchecked
 		List<List<T>> outputs = (List<List<T>>) (Object) this.outputs.get(ingredientClass);
 		if (outputs == null) {

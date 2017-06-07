@@ -13,6 +13,7 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.wrapper.ICustomCraftingRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
+import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -44,6 +45,11 @@ public class CraftingRecipeCategory extends BlankRecipeCategory<IRecipeWrapper> 
 	@Override
 	public String getTitle() {
 		return localizedName;
+	}
+
+	@Override
+	public String getModName() {
+		return Constants.minecraftModName;
 	}
 
 	@Override

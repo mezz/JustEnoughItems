@@ -1,18 +1,21 @@
 package mezz.jei.gui.recipes;
 
-import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
+import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.plugins.vanilla.ingredients.ItemStackRenderer;
+import mezz.jei.config.Config;
+import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.util.LegacyUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.item.ItemStack;
 
 public class RecipeCategoryTab extends RecipeGuiTab {
 	private final IRecipeGuiLogic logic;
@@ -45,14 +48,10 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 			iconY += (16 - icon.getHeight()) / 2;
 			icon.draw(minecraft, iconX, iconY);
 		} else {
-			List<ItemStack> craftingItems = logic.getRecipeCategoryCraftingItems(category);
-			if (!craftingItems.isEmpty()) {
-				ItemStackRenderer renderer = new ItemStackRenderer();
-				ItemStack ingredient = craftingItems.get(0);
-				GlStateManager.enableDepth();
-				renderer.render(minecraft, iconX, iconY, ingredient);
-				GlStateManager.enableAlpha();
-				GlStateManager.disableDepth();
+			List<Object> recipeCatalysts = logic.getRecipeCatalysts(category);
+			if (!recipeCatalysts.isEmpty()) {
+				Object ingredient = recipeCatalysts.get(0);
+				renderIngredient(minecraft, iconX, iconY, ingredient);
 			} else {
 				String text = category.getTitle().substring(0, 2);
 				FontRenderer fontRenderer = minecraft.fontRenderer;
@@ -65,14 +64,33 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 		}
 	}
 
+	private static <T> void renderIngredient(Minecraft minecraft, int iconX, int iconY, T ingredient) {
+		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+		IIngredientRenderer<T> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
+		GlStateManager.enableDepth();
+		ingredientRenderer.render(minecraft, iconX, iconY, ingredient);
+		GlStateManager.enableAlpha();
+		GlStateManager.disableDepth();
+	}
+
 	@Override
 	public boolean isSelected(IRecipeCategory selectedCategory) {
 		return category.getUid().equals(selectedCategory.getUid());
 	}
 
-	@Nullable
 	@Override
-	public String getTooltip() {
-		return category.getTitle();
+	public List<String> getTooltip() {
+		List<String> tooltip = new ArrayList<String>();
+		String title = category.getTitle();
+		//noinspection ConstantConditions
+		if (title != null) {
+			tooltip.add(title);
+		}
+
+		String modName = LegacyUtil.getModName(category);
+		if (modName != null) {
+			tooltip.add(Config.getModNameFormat() + modName);
+		}
+		return tooltip;
 	}
 }

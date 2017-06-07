@@ -5,11 +5,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import mezz.jei.api.IItemListOverlay;
+import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 import mezz.jei.util.Log;
@@ -90,7 +92,10 @@ public class DebugRecipe extends BlankRecipeWrapper {
 						IRecipe randomRecipe = recipeList.get(minecraft.world.rand.nextInt(recipeList.size()));
 						IRecipeRegistry recipeRegistry = jeiRuntime.getRecipeRegistry();
 						Log.warning("Removing random recipe: {}", randomRecipe);
-						recipeRegistry.removeRecipe(randomRecipe);
+						IRecipeWrapper recipeWrapper = recipeRegistry.getRecipeWrapper(randomRecipe, VanillaRecipeCategoryUid.CRAFTING);
+						if (recipeWrapper != null) {
+							recipeRegistry.removeRecipe(recipeWrapper, VanillaRecipeCategoryUid.CRAFTING);
+						}
 					}
 				}
 			} else {
@@ -99,9 +104,9 @@ public class DebugRecipe extends BlankRecipeWrapper {
 
 				IJeiRuntime runtime = JEIInternalPlugin.jeiRuntime;
 				if (runtime != null) {
-					IItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-					String filterText = itemListOverlay.getFilterText();
-					itemListOverlay.setFilterText(filterText + " test");
+					IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
+					String filterText = ingredientFilter.getFilterText();
+					ingredientFilter.setFilterText(filterText + " test");
 				}
 				return true;
 			}

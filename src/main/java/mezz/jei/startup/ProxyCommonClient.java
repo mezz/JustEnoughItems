@@ -10,7 +10,7 @@ import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.SessionData;
-import mezz.jei.gui.overlay.ItemListOverlay;
+import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientInformation;
 import mezz.jei.network.packets.PacketJei;
@@ -146,8 +146,8 @@ public class ProxyCommonClient extends ProxyCommon {
 	private static void reloadItemList() {
 		JeiRuntime runtime = Internal.getRuntime();
 		if (runtime != null) {
-			ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-			itemListOverlay.rebuildItemFilter();
+			IngredientListOverlay ingredientListOverlay = runtime.getItemListOverlay();
+			ingredientListOverlay.rebuildItemFilter();
 		}
 	}
 

@@ -6,6 +6,7 @@ import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
+import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
@@ -35,6 +36,11 @@ public class FurnaceSmeltingCategory extends FurnaceRecipeCategory<SmeltingRecip
 	@Override
 	public String getTitle() {
 		return localizedName;
+	}
+
+	@Override
+	public String getModName() {
+		return Constants.minecraftModName;
 	}
 
 	@Override

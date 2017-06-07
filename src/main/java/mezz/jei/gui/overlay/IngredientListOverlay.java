@@ -3,14 +3,17 @@ package mezz.jei.gui.overlay;
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.Collection;
+import java.util.List;
 
 import com.google.common.collect.ImmutableList;
+import mezz.jei.api.IIngredientListOverlay;
 import mezz.jei.api.IItemListOverlay;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.SessionData;
 import mezz.jei.gui.PageNavigation;
+import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IClickedIngredient;
@@ -25,7 +28,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
-public class ItemListOverlay implements IItemListOverlay, IPaged, IMouseHandler, IShowsRecipeFocuses {
+public class IngredientListOverlay implements IItemListOverlay, IIngredientListOverlay, IPaged, IMouseHandler, IShowsRecipeFocuses {
 	private static final int BORDER_PADDING = 2;
 	private static final int BUTTON_SIZE = 20;
 	private static final int NAVIGATION_HEIGHT = 20;
@@ -54,7 +57,7 @@ public class ItemListOverlay implements IItemListOverlay, IPaged, IMouseHandler,
 	@Nullable
 	private GuiProperties guiProperties;
 
-	public ItemListOverlay(IngredientFilter ingredientFilter, IIngredientRegistry ingredientRegistry) {
+	public IngredientListOverlay(IngredientFilter ingredientFilter, IIngredientRegistry ingredientRegistry) {
 		this.ingredientFilter = ingredientFilter;
 
 		this.contents = new IngredientGridAll(ingredientRegistry, ingredientFilter);
@@ -80,7 +83,15 @@ public class ItemListOverlay implements IItemListOverlay, IPaged, IMouseHandler,
 
 	@Override
 	public ImmutableList<ItemStack> getFilteredStacks() {
-		return ingredientFilter.getItemStacks();
+		List<IIngredientListElement> elements = ingredientFilter.getIngredientList();
+		ImmutableList.Builder<ItemStack> builder = ImmutableList.builder();
+		for (IIngredientListElement element : elements) {
+			Object ingredient = element.getIngredient();
+			if (ingredient instanceof ItemStack) {
+				builder.add((ItemStack) ingredient);
+			}
+		}
+		return builder.build();
 	}
 
 	@Override
@@ -301,7 +312,21 @@ public class ItemListOverlay implements IItemListOverlay, IPaged, IMouseHandler,
 	@Override
 	@Nullable
 	public ItemStack getStackUnderMouse() {
-		return this.contents.getStackUnderMouse();
+		Object ingredient = getIngredientUnderMouse();
+		if (ingredient instanceof ItemStack) {
+			return (ItemStack) ingredient;
+		}
+		return null;
+	}
+
+	@Nullable
+	@Override
+	public Object getIngredientUnderMouse() {
+		IIngredientListElement elementUnderMouse = this.contents.getElementUnderMouse();
+		if (elementUnderMouse != null) {
+			return elementUnderMouse.getIngredient();
+		}
+		return null;
 	}
 
 	@Override
@@ -316,7 +341,27 @@ public class ItemListOverlay implements IItemListOverlay, IPaged, IMouseHandler,
 
 	@Override
 	public ImmutableList<ItemStack> getVisibleStacks() {
-		return this.contents.getVisibleStacks();
+		ImmutableList.Builder<ItemStack> visibleStacks = ImmutableList.builder();
+		List<IIngredientListElement> visibleElements = this.contents.getVisibleElements();
+		for (IIngredientListElement element : visibleElements) {
+			Object ingredient = element.getIngredient();
+			if (ingredient instanceof ItemStack) {
+				visibleStacks.add((ItemStack) ingredient);
+			}
+		}
+
+		return visibleStacks.build();
 	}
 
+	@Override
+	public ImmutableList<Object> getVisibleIngredients() {
+		ImmutableList.Builder<Object> visibleIngredients = ImmutableList.builder();
+		List<IIngredientListElement> visibleElements = this.contents.getVisibleElements();
+		for (IIngredientListElement element : visibleElements) {
+			Object ingredient = element.getIngredient();
+			visibleIngredients.add(ingredient);
+		}
+
+		return visibleIngredients.build();
+	}
 }

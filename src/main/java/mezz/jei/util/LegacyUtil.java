@@ -1,5 +1,6 @@
 package mezz.jei.util;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
@@ -51,6 +52,15 @@ public final class LegacyUtil {
 			return ingredientHelper.cheatIngredient(focusValue, fullStack);
 		} catch (AbstractMethodError ignored) {
 			return ItemStack.EMPTY;
+		}
+	}
+
+	@Nullable
+	public static String getModName(IRecipeCategory recipeCategory) {
+		try {
+			return recipeCategory.getModName();
+		} catch (AbstractMethodError ignored) {
+			return null;
 		}
 	}
 }

@@ -10,7 +10,7 @@ import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.ingredients.IngredientLookupMemory;
-import mezz.jei.gui.overlay.ItemListOverlay;
+import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientListElementFactory;
@@ -46,6 +46,7 @@ public class JeiStarter {
 
 		ModRegistry modRegistry = new ModRegistry(jeiHelpers, ingredientRegistry);
 
+		registerCategories(plugins, modRegistry);
 		registerPlugins(plugins, modRegistry);
 
 		Log.info("Building recipe registry...");
@@ -73,9 +74,9 @@ public class JeiStarter {
 		Log.info("Building runtime...");
 		start_time = System.currentTimeMillis();
 		List<IAdvancedGuiHandler<?>> advancedGuiHandlers = modRegistry.getAdvancedGuiHandlers();
-		ItemListOverlay itemListOverlay = new ItemListOverlay(ingredientFilter, ingredientRegistry);
+		IngredientListOverlay ingredientListOverlay = new IngredientListOverlay(ingredientFilter, ingredientRegistry);
 		RecipesGui recipesGui = new RecipesGui(recipeRegistry);
-		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, itemListOverlay, recipesGui, ingredientRegistry, advancedGuiHandlers);
+		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, ingredientListOverlay, recipesGui, ingredientRegistry, advancedGuiHandlers, ingredientFilter);
 		Internal.setRuntime(jeiRuntime);
 		Log.info("Built    runtime in {} ms", System.currentTimeMillis() - start_time);
 
@@ -142,6 +143,31 @@ public class JeiStarter {
 		ProgressManager.pop(progressBar);
 
 		return modIngredientRegistry.createIngredientRegistry();
+	}
+
+	private static void registerCategories(List<IModPlugin> plugins, ModRegistry modRegistry) {
+		ProgressManager.ProgressBar progressBar = ProgressManager.push("Registering categories", plugins.size());
+		Iterator<IModPlugin> iterator = plugins.iterator();
+		while (iterator.hasNext()) {
+			IModPlugin plugin = iterator.next();
+			try {
+				progressBar.step(plugin.getClass().getName());
+				long start_time = System.currentTimeMillis();
+				Log.info("Registering categories: {} ...", plugin.getClass().getName());
+				plugin.registerCategories(modRegistry);
+				long timeElapsedMs = System.currentTimeMillis() - start_time;
+				Log.info("Registered  categories: {} in {} ms", plugin.getClass().getName(), timeElapsedMs);
+			} catch (AbstractMethodError ignored) {
+				// legacy plugins do not implement registerCategories
+			} catch (RuntimeException e) {
+				Log.error("Failed to register mod categories: {}", plugin.getClass(), e);
+				iterator.remove();
+			} catch (LinkageError e) {
+				Log.error("Failed to register mod categories: {}", plugin.getClass(), e);
+				iterator.remove();
+			}
+		}
+		ProgressManager.pop(progressBar);
 	}
 
 	private static void registerPlugins(List<IModPlugin> plugins, ModRegistry modRegistry) {

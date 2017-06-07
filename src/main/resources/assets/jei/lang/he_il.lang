@@ -97,7 +97,7 @@ gui.jei.category.fuel.smeltCount=התח %s חפצים
 gui.jei.category.fuel.burnTime=זמן בערה: %s
 gui.jei.category.brewing=מבשל
 gui.jei.category.brewing.steps=צעדים: %s
-gui.jei.category.itemDescription=תיאור
+gui.jei.category.itemInformation=תיאור
 
 # DEBUG (for debug mode, do not need translation)
 description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.

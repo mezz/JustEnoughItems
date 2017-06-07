@@ -100,4 +100,4 @@ gui.jei.category.fuel=Polttoaine
 gui.jei.category.fuel.burnTime=Paloaika: %s
 gui.jei.category.brewing=Haudutus
 gui.jei.category.brewing.steps=Vaiheita: %s
-gui.jei.category.itemDescription=Kuvaus
+gui.jei.category.itemInformation=Kuvaus

@@ -2,8 +2,10 @@ package mezz.jei.runtime;
 
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.ingredients.IngredientBlacklist;
+import mezz.jei.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.startup.StackHelper;
 import mezz.jei.transfer.RecipeTransferHandlerHelper;
 import mezz.jei.util.Log;
@@ -13,6 +15,7 @@ public class JeiHelpers implements IJeiHelpers {
 	private final StackHelper stackHelper;
 	private final IngredientBlacklist ingredientBlacklist;
 	private final RecipeTransferHandlerHelper recipeTransferHandlerHelper;
+	private final IVanillaRecipeFactory vanillaRecipeFactory = new VanillaRecipeFactory();
 
 	public JeiHelpers(IIngredientRegistry ingredientRegistry, StackHelper stackHelper) {
 		this.guiHelper = new GuiHelper();
@@ -45,6 +48,11 @@ public class JeiHelpers implements IJeiHelpers {
 	@Override
 	public RecipeTransferHandlerHelper recipeTransferHandlerHelper() {
 		return recipeTransferHandlerHelper;
+	}
+
+	@Override
+	public IVanillaRecipeFactory getVanillaRecipeFactory() {
+		return vanillaRecipeFactory;
 	}
 
 	@Override

@@ -1,15 +1,14 @@
 package mezz.jei.gui.overlay;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.ImmutableList;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.SessionData;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.render.GuiIngredientFast;
 import mezz.jei.util.MathUtil;
-import net.minecraft.item.ItemStack;
 
 /**
  * Displays all known recipe ingredients.
@@ -84,19 +83,15 @@ public class IngredientGridAll extends IngredientGrid {
 	}
 
 	@Override
-	public ImmutableList<ItemStack> getVisibleStacks() {
-		ImmutableList.Builder<ItemStack> visibleStacks = ImmutableList.builder();
+	public List<IIngredientListElement> getVisibleElements() {
+		List<IIngredientListElement> visibleElements = new ArrayList<IIngredientListElement>();
 		for (GuiIngredientFast guiItemStack : guiIngredientList.getAllGuiIngredients()) {
 			IIngredientListElement element = guiItemStack.getElement();
 			if (element != null) {
-				Object ingredient = element.getIngredient();
-				if (ingredient instanceof ItemStack) {
-					ItemStack itemStack = (ItemStack) ingredient;
-					visibleStacks.add(itemStack);
-				}
+				visibleElements.add(element);
 			}
 		}
-		return visibleStacks.build();
+		return visibleElements;
 	}
 
 	@Override

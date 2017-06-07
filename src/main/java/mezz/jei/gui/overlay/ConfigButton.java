@@ -22,13 +22,13 @@ import net.minecraftforge.fml.client.config.HoverChecker;
 import org.lwjgl.input.Keyboard;
 
 public class ConfigButton {
-	private final ItemListOverlay parent;
+	private final IngredientListOverlay parent;
 	private final GuiButton configButton;
 	private final IDrawable configButtonIcon;
 	private final IDrawable configButtonCheatIcon;
 	private final HoverChecker configButtonHoverChecker;
 
-	public ConfigButton(ItemListOverlay parent) {
+	public ConfigButton(IngredientListOverlay parent) {
 		this.parent = parent;
 		this.configButton = new GuiButton(2, 0, 0, 0, 0, "");
 		ResourceLocation configButtonIconLocation = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);

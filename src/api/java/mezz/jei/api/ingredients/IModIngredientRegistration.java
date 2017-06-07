@@ -2,9 +2,13 @@ package mezz.jei.api.ingredients;
 
 import java.util.Collection;
 
+import mezz.jei.api.IModPlugin;
+
 /**
  * Allows registration of new types of ingredients, beyond the basic ItemStack and FluidStack.
  * After every mod has registered its ingredients, the {@link IIngredientRegistry} is created from this information.
+ *
+ * This is given to your {@link IModPlugin#registerIngredients(IModIngredientRegistration)}.
  *
  * @since JEI 3.11.0
  */

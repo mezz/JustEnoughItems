@@ -94,7 +94,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 	}
 
 	@Override
-	public <V> IIngredientHelper<V> getIngredientHelper(Class<V> ingredientClass) {
+	public <V> IIngredientHelper<V> getIngredientHelper(Class<? extends V> ingredientClass) {
 		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 
 		//noinspection unchecked
@@ -115,7 +115,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 	}
 
 	@Override
-	public <V> IIngredientRenderer<V> getIngredientRenderer(Class<V> ingredientClass) {
+	public <V> IIngredientRenderer<V> getIngredientRenderer(Class<? extends V> ingredientClass) {
 		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 
 		//noinspection unchecked

@@ -41,6 +41,11 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory<FuelRecipe> {
 		return localizedName;
 	}
 
+	@Override
+	public String getModName() {
+		return Constants.minecraftModName;
+	}
+
 	@Nullable
 	@Override
 	public IDrawable getIcon() {

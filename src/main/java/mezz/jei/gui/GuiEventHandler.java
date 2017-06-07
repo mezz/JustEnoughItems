@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import mezz.jei.Internal;
 import mezz.jei.config.Config;
 import mezz.jei.config.OverlayToggleEvent;
-import mezz.jei.gui.overlay.ItemListOverlay;
+import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.input.InputHandler;
 import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.runtime.JeiRuntime;
@@ -42,22 +42,22 @@ public class GuiEventHandler {
 	}
 
 	private void onNewScreen(@Nullable GuiScreen screen) {
-		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-		itemListOverlay.updateScreen(screen);
+		IngredientListOverlay ingredientListOverlay = runtime.getItemListOverlay();
+		ingredientListOverlay.updateScreen(screen);
 		if (inputHandler == null) {
-			inputHandler = new InputHandler(runtime, itemListOverlay);
+			inputHandler = new InputHandler(runtime, ingredientListOverlay);
 		}
 	}
 
 	@SubscribeEvent
 	public void onGuiOpen(GuiOpenEvent event) {
-		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-		final boolean wasEnabled = itemListOverlay.isEnabled();
+		IngredientListOverlay ingredientListOverlay = runtime.getItemListOverlay();
+		final boolean wasEnabled = ingredientListOverlay.isEnabled();
 
 		GuiScreen gui = event.getGui();
-		itemListOverlay.updateScreen(gui);
+		ingredientListOverlay.updateScreen(gui);
 
-		if (wasEnabled && !itemListOverlay.isEnabled()) {
+		if (wasEnabled && !ingredientListOverlay.isEnabled()) {
 			Config.saveFilterText();
 			Internal.getIngredientLookupMemory().saveToFile();
 		}
@@ -65,12 +65,12 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onDrawBackgroundEventPost(GuiScreenEvent.BackgroundDrawnEvent event) {
-		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
+		IngredientListOverlay ingredientListOverlay = runtime.getItemListOverlay();
 		GuiScreen gui = event.getGui();
-		itemListOverlay.updateScreen(gui);
+		ingredientListOverlay.updateScreen(gui);
 
-		if (itemListOverlay.isEnabled()) {
-			itemListOverlay.drawScreen(gui.mc, event.getMouseX(), event.getMouseY());
+		if (ingredientListOverlay.isEnabled()) {
+			ingredientListOverlay.drawScreen(gui.mc, event.getMouseX(), event.getMouseY());
 		}
 	}
 
@@ -85,10 +85,10 @@ public class GuiEventHandler {
 			}
 		}
 
-		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-		itemListOverlay.updateScreen(gui);
-		if (itemListOverlay.isEnabled()) {
-			itemListOverlay.drawTooltips(gui.mc, event.getMouseX(), event.getMouseY());
+		IngredientListOverlay ingredientListOverlay = runtime.getItemListOverlay();
+		ingredientListOverlay.updateScreen(gui);
+		if (ingredientListOverlay.isEnabled()) {
+			ingredientListOverlay.drawTooltips(gui.mc, event.getMouseX(), event.getMouseY());
 		}
 	}
 
@@ -98,9 +98,9 @@ public class GuiEventHandler {
 			return;
 		}
 
-		ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-		if (itemListOverlay.isEnabled()) {
-			itemListOverlay.handleTick();
+		IngredientListOverlay ingredientListOverlay = runtime.getItemListOverlay();
+		if (ingredientListOverlay.isEnabled()) {
+			ingredientListOverlay.handleTick();
 		}
 	}
 

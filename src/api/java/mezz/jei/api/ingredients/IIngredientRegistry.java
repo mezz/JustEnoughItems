@@ -26,7 +26,7 @@ public interface IIngredientRegistry {
 	/**
 	 * Returns the appropriate ingredient helper for this ingredient class
 	 */
-	<V> IIngredientHelper<V> getIngredientHelper(Class<V> ingredientClass);
+	<V> IIngredientHelper<V> getIngredientHelper(Class<? extends V> ingredientClass);
 
 	/**
 	 * Returns the ingredient renderer for this ingredient.
@@ -36,7 +36,7 @@ public interface IIngredientRegistry {
 	/**
 	 * Returns the ingredient renderer for this ingredient class.
 	 */
-	<V> IIngredientRenderer<V> getIngredientRenderer(Class<V> ingredientClass);
+	<V> IIngredientRenderer<V> getIngredientRenderer(Class<? extends V> ingredientClass);
 
 	/**
 	 * Returns an unmodifiable collection of all registered ingredient classes.
@@ -57,7 +57,6 @@ public interface IIngredientRegistry {
 	/**
 	 * Add new ingredients to JEI at runtime.
 	 * Used by mods that have items created while the game is running, or use the server to define items.
-	 * Using this method will reload the ingredient list, do not call it unless necessary.
 	 *
 	 * @since JEI 4.0.2
 	 */
@@ -66,7 +65,6 @@ public interface IIngredientRegistry {
 	/**
 	 * Remove ingredients from JEI at runtime.
 	 * Used by mods that have items created while the game is running, or use the server to define items.
-	 * Using this method will reload the ingredient list, do not call it unless necessary.
 	 *
 	 * @since JEI 4.3.5
 	 */

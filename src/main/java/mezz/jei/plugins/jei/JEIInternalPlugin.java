@@ -15,10 +15,11 @@ import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.config.Config;
 import mezz.jei.plugins.jei.debug.DebugRecipe;
 import mezz.jei.plugins.jei.debug.DebugRecipeCategory;
-import mezz.jei.plugins.jei.description.ItemDescriptionRecipeCategory;
+import mezz.jei.plugins.jei.info.IngredientInfoRecipeCategory;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientHelper;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientListFactory;
@@ -33,7 +34,7 @@ import net.minecraftforge.fluids.FluidStack;
 @JEIPlugin
 public class JEIInternalPlugin extends BlankModPlugin {
 	@Nullable
-	private static IIngredientRegistry ingredientRegistry;
+	public static IIngredientRegistry ingredientRegistry;
 	@Nullable
 	public static IJeiRuntime jeiRuntime;
 
@@ -47,17 +48,27 @@ public class JEIInternalPlugin extends BlankModPlugin {
 	}
 
 	@Override
-	public void register(IModRegistry registry) {
+	public void registerCategories(IRecipeCategoryRegistration registry) {
 		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
-		ingredientRegistry = registry.getIngredientRegistry();
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 
 		registry.addRecipeCategories(
-				new ItemDescriptionRecipeCategory(guiHelper)
+				new IngredientInfoRecipeCategory(guiHelper)
 		);
 
 		if (Config.isDebugModeEnabled()) {
-			registry.addDescription(Arrays.asList(
+			registry.addRecipeCategories(
+					new DebugRecipeCategory(guiHelper)
+			);
+		}
+	}
+
+	@Override
+	public void register(IModRegistry registry) {
+		ingredientRegistry = registry.getIngredientRegistry();
+
+		if (Config.isDebugModeEnabled()) {
+			registry.addIngredientInfo(Arrays.asList(
 					new ItemStack(Items.OAK_DOOR),
 					new ItemStack(Items.SPRUCE_DOOR),
 					new ItemStack(Items.BIRCH_DOOR),
@@ -65,16 +76,20 @@ public class JEIInternalPlugin extends BlankModPlugin {
 					new ItemStack(Items.ACACIA_DOOR),
 					new ItemStack(Items.DARK_OAK_DOOR)
 					),
+					ItemStack.class,
 					"description.jei.wooden.door.1", // actually 2 lines
 					"description.jei.wooden.door.2",
 					"description.jei.wooden.door.3"
 			);
 
-			registry.addRecipeCategories(new DebugRecipeCategory(guiHelper, ingredientRegistry));
 			registry.addRecipes(Arrays.asList(
 					new DebugRecipe(),
 					new DebugRecipe()
 			), "debug");
+
+			registry.addRecipeCatalyst(new DebugIngredient(7), "debug");
+			registry.addRecipeCatalyst(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), "debug");
+			registry.addRecipeCatalyst(new ItemStack(Items.STICK), "debug");
 
 			registry.addAdvancedGuiHandlers(new IAdvancedGuiHandler<GuiBrewingStand>() {
 				@Override
@@ -108,7 +123,6 @@ public class JEIInternalPlugin extends BlankModPlugin {
 		JEIInternalPlugin.jeiRuntime = jeiRuntime;
 
 		if (Config.isDebugModeEnabled()) {
-			jeiRuntime.getItemListOverlay().highlightStacks(Collections.singleton(new ItemStack(Items.STICK)));
 			if (ingredientRegistry != null) {
 				ingredientRegistry.addIngredientsAtRuntime(DebugIngredient.class, DebugIngredientListFactory.create());
 			}

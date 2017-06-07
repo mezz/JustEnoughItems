@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
+import mezz.jei.Internal;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -35,8 +36,6 @@ import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.ingredients.Ingredients;
-import mezz.jei.plugins.vanilla.anvil.AnvilRecipeWrapper;
-import mezz.jei.plugins.vanilla.brewing.BrewingRecipeWrapper;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipe;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
@@ -61,7 +60,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final Set<IRecipeCategory> checkIfEmptyRecipeCategories = new HashSet<IRecipeCategory>();
 	private final ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers;
 	private final ImmutableMultimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap;
-	private final ImmutableListMultimap<IRecipeCategory, ItemStack> craftItemsForCategories;
+	private final ImmutableListMultimap<IRecipeCategory, Object> recipeCatalysts;
 	private final ImmutableMap<String, IRecipeCategory> recipeCategoriesMap;
 	private final Map<Object, IRecipeWrapper> wrapperMap = new IdentityHashMap<Object, IRecipeWrapper>(); // used when removing recipes
 	private final ListMultimap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories = ArrayListMultimap.create();
@@ -77,7 +76,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			List<Object> unsortedRecipes,
 			Multimap<String, Object> recipes,
 			Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap,
-			Multimap<String, ItemStack> craftItemsForCategories,
+			Multimap<String, Object> recipeCatalysts,
 			IIngredientRegistry ingredientRegistry,
 			List<IRecipeRegistryPlugin> plugins
 	) {
@@ -94,28 +93,27 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 		addRecipes(unsortedRecipes, recipes);
 
-		ImmutableListMultimap.Builder<IRecipeCategory, ItemStack> craftItemsForCategoriesBuilder = ImmutableListMultimap.builder();
-		ImmutableMultimap.Builder<String, String> categoriesForCraftItemKeysBuilder = ImmutableMultimap.builder();
+		ImmutableListMultimap.Builder<IRecipeCategory, Object> recipeCatalystsBuilder = ImmutableListMultimap.builder();
+		ImmutableMultimap.Builder<String, String> categoriesForRecipeCatalystKeysBuilder = ImmutableMultimap.builder();
 
-		for (Map.Entry<String, Collection<ItemStack>> recipeCategoryEntry : craftItemsForCategories.asMap().entrySet()) {
-			String recipeCategoryUid = recipeCategoryEntry.getKey();
+		for (Map.Entry<String, Collection<Object>> recipeCatalystEntry : recipeCatalysts.asMap().entrySet()) {
+			String recipeCategoryUid = recipeCatalystEntry.getKey();
 			IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
 			if (recipeCategory != null) {
-				Collection<ItemStack> craftItems = recipeCategoryEntry.getValue();
-				craftItemsForCategoriesBuilder.putAll(recipeCategory, craftItems);
-				IIngredientHelper<ItemStack> ingredientHelper = ingredientRegistry.getIngredientHelper(ItemStack.class);
-				for (ItemStack craftItem : craftItems) {
-					recipeInputMap.addRecipeCategory(recipeCategory, craftItem);
-					String craftItemKey = ingredientHelper.getUniqueId(craftItem);
-					categoriesForCraftItemKeysBuilder.put(craftItemKey, recipeCategoryUid);
+				Collection<Object> catalystIngredients = recipeCatalystEntry.getValue();
+				recipeCatalystsBuilder.putAll(recipeCategory, catalystIngredients);
+				for (Object catalystIngredient : catalystIngredients) {
+					recipeInputMap.addRecipeCategory(recipeCategory, catalystIngredient);
+					String catalystIngredientKey = getUniqueId(catalystIngredient);
+					categoriesForRecipeCatalystKeysBuilder.put(catalystIngredientKey, recipeCategoryUid);
 				}
 			}
 		}
 
-		this.craftItemsForCategories = craftItemsForCategoriesBuilder.build();
-		ImmutableMultimap<String, String> categoriesForCraftItemKeys = categoriesForCraftItemKeysBuilder.build();
+		this.recipeCatalysts = recipeCatalystsBuilder.build();
+		ImmutableMultimap<String, String> categoriesForRecipeCatalystKeys = categoriesForRecipeCatalystKeysBuilder.build();
 
-		IRecipeRegistryPlugin internalRecipeRegistryPlugin = new InternalRecipeRegistryPlugin(this, categoriesForCraftItemKeys, ingredientRegistry, recipeCategoriesMap, recipeInputMap, recipeOutputMap, recipeWrappersForCategories);
+		IRecipeRegistryPlugin internalRecipeRegistryPlugin = new InternalRecipeRegistryPlugin(this, categoriesForRecipeCatalystKeys, ingredientRegistry, recipeCategoriesMap, recipeInputMap, recipeOutputMap, recipeWrappersForCategories);
 		this.plugins.add(internalRecipeRegistryPlugin);
 		this.plugins.addAll(plugins);
 
@@ -126,6 +124,11 @@ public class RecipeRegistry implements IRecipeRegistry {
 			}
 		}
 		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
+	}
+
+	private <T> String getUniqueId(T ingredient) {
+		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		return ingredientHelper.getUniqueId(ingredient);
 	}
 
 	private static ImmutableMap<String, IRecipeCategory> buildRecipeCategoriesMap(List<IRecipeCategory> recipeCategories) {
@@ -368,30 +371,21 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
+	@Deprecated
 	public IRecipeWrapper createSmeltingRecipe(List<ItemStack> inputs, ItemStack output) {
-		ErrorUtil.checkNotEmpty(inputs, "inputs");
-		ErrorUtil.checkNotEmpty(output, "output");
-
-		return new SmeltingRecipe(inputs, output);
+		return Internal.getHelpers().getVanillaRecipeFactory().createSmeltingRecipe(inputs, output);
 	}
 
 	@Override
+	@Deprecated
 	public IRecipeWrapper createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
-		ErrorUtil.checkNotEmpty(leftInput, "leftInput");
-		ErrorUtil.checkNotEmpty(rightInputs, "rightInputs");
-		ErrorUtil.checkNotEmpty(outputs, "outputs");
-		Preconditions.checkArgument(rightInputs.size() == outputs.size(), "Input and output sizes must match.");
-
-		return new AnvilRecipeWrapper(leftInput, rightInputs, outputs);
+		return Internal.getHelpers().getVanillaRecipeFactory().createAnvilRecipe(leftInput, rightInputs, outputs);
 	}
 
 	@Override
+	@Deprecated
 	public IRecipeWrapper createBrewingRecipe(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput) {
-		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
-		ErrorUtil.checkNotEmpty(potionInput, "potionInput");
-		ErrorUtil.checkNotEmpty(potionOutput, "potionOutput");
-
-		return new BrewingRecipeWrapper(ingredients, potionInput, potionOutput);
+		return Internal.getHelpers().getVanillaRecipeFactory().createBrewingRecipe(ingredients, potionInput, potionOutput);
 	}
 
 	@Override
@@ -667,7 +661,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		if (focus != null) {
 			focus = Focus.check(focus);
 		}
-		List<ItemStack> craftingItems = craftItemsForCategories.get(recipeCategory);
+		List<ItemStack> craftingItems = getCraftingItems(recipeCategory);
 
 		if (focus != null && focus.getMode() == IFocus.Mode.INPUT) {
 			Object ingredient = focus.getValue();
@@ -686,7 +680,20 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Override
 	public List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		return craftItemsForCategories.get(recipeCategory);
+		List<Object> objects = getRecipeCatalysts(recipeCategory);
+		List<ItemStack> itemStacks = new ArrayList<ItemStack>();
+		for (Object object : objects) {
+			if (object instanceof ItemStack) {
+				itemStacks.add((ItemStack) object);
+			}
+		}
+		return Collections.unmodifiableList(itemStacks);
+	}
+
+	@Override
+	public List<Object> getRecipeCatalysts(IRecipeCategory recipeCategory) {
+		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
+		return recipeCatalysts.get(recipeCategory);
 	}
 
 	@Override

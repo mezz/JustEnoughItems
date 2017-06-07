@@ -4,7 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.IItemListOverlay;
+import mezz.jei.api.IIngredientFilter;
+import mezz.jei.api.IIngredientListOverlay;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
@@ -28,14 +29,12 @@ import net.minecraftforge.fluids.FluidStack;
 public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 	public static final int RECIPE_WIDTH = 160;
 	public static final int RECIPE_HEIGHT = 60;
-	private final IIngredientRegistry ingredientRegistry;
 	private final IDrawable background;
 	private final String localizedName;
 	private final IDrawable tankBackground;
 	private final IDrawable tankOverlay;
 
-	public DebugRecipeCategory(IGuiHelper guiHelper, IIngredientRegistry ingredientRegistry) {
-		this.ingredientRegistry = ingredientRegistry;
+	public DebugRecipeCategory(IGuiHelper guiHelper) {
 		this.background = guiHelper.createBlankDrawable(RECIPE_WIDTH, RECIPE_HEIGHT);
 		this.localizedName = "debug";
 
@@ -55,6 +54,11 @@ public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
+	public String getModName() {
+		return Constants.NAME;
+	}
+
+	@Override
 	public IDrawable getBackground() {
 		return background;
 	}
@@ -63,14 +67,23 @@ public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 	public void drawExtras(Minecraft minecraft) {
 		IJeiRuntime runtime = JEIInternalPlugin.jeiRuntime;
 		if (runtime != null) {
-			IItemListOverlay itemListOverlay = runtime.getItemListOverlay();
-			minecraft.fontRenderer.drawString(itemListOverlay.getFilterText(), 20, 52, 0);
-			ItemStack stackUnderMouse = itemListOverlay.getStackUnderMouse();
-			if (stackUnderMouse != null) {
-				IIngredientHelper<ItemStack> ingredientHelper = this.ingredientRegistry.getIngredientHelper(stackUnderMouse);
-				String jeiUid = ingredientHelper.getUniqueId(stackUnderMouse);
-				minecraft.fontRenderer.drawString(jeiUid, 50, 52, 0);
+			IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
+			minecraft.fontRenderer.drawString(ingredientFilter.getFilterText(), 20, 52, 0);
+
+			IIngredientListOverlay ingredientListOverlay = runtime.getIngredientListOverlay();
+			Object ingredientUnderMouse = ingredientListOverlay.getIngredientUnderMouse();
+			if (ingredientUnderMouse != null) {
+				drawIngredientName(minecraft, ingredientUnderMouse);
 			}
+		}
+	}
+
+	private <T> void drawIngredientName(Minecraft minecraft, T ingredient) {
+		IIngredientRegistry ingredientRegistry = JEIInternalPlugin.ingredientRegistry;
+		if (ingredientRegistry != null) {
+			IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+			String jeiUid = ingredientHelper.getUniqueId(ingredient);
+			minecraft.fontRenderer.drawString(jeiUid, 50, 52, 0);
 		}
 	}
 

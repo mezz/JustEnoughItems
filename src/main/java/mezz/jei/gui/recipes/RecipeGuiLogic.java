@@ -14,7 +14,6 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.ingredients.IngredientLookupState;
 import mezz.jei.util.MathUtil;
-import net.minecraft.item.ItemStack;
 
 public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IRecipeRegistry recipeRegistry;
@@ -112,14 +111,14 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public List<ItemStack> getRecipeCategoryCraftingItems() {
+	public List<Object> getRecipeCatalysts() {
 		IRecipeCategory category = getSelectedRecipeCategory();
-		return getRecipeCategoryCraftingItems(category);
+		return getRecipeCatalysts(category);
 	}
 
 	@Override
-	public List<ItemStack> getRecipeCategoryCraftingItems(IRecipeCategory recipeCategory) {
-		return recipeRegistry.getCraftingItems(recipeCategory);
+	public List<Object> getRecipeCatalysts(IRecipeCategory recipeCategory) {
+		return recipeRegistry.getRecipeCatalysts(recipeCategory);
 	}
 
 	@Override

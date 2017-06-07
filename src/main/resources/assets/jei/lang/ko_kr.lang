@@ -97,7 +97,7 @@ gui.jei.category.fuel.smeltCount=%s개 아이템을 굽습니다.
 gui.jei.category.fuel.burnTime=타는 시간: %s
 gui.jei.category.brewing=양조기
 gui.jei.category.brewing.steps=단계: %s개
-gui.jei.category.itemDescription=설명
+gui.jei.category.itemInformation=설명
 
 # DEBUG (for debug mode, do not need translation)
 description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.

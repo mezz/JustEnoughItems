@@ -17,6 +17,7 @@ import mezz.jei.api.IModRegistry;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeRegistryPlugin;
 import mezz.jei.api.recipe.IRecipeWrapper;
@@ -25,7 +26,7 @@ import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.gui.recipes.RecipeClickableArea;
-import mezz.jei.plugins.jei.description.ItemDescriptionRecipe;
+import mezz.jei.plugins.jei.info.IngredientInfoRecipe;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeWrapper;
 import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.recipes.RecipeTransferRegistry;
@@ -35,7 +36,7 @@ import mezz.jei.util.Log;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 
-public class ModRegistry implements IModRegistry {
+public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	private final IJeiHelpers jeiHelpers;
 	private final IIngredientRegistry ingredientRegistry;
 	private final List<IRecipeCategory> recipeCategories = new ArrayList<IRecipeCategory>();
@@ -49,7 +50,7 @@ public class ModRegistry implements IModRegistry {
 	private final Multimap<String, Object> recipes = ArrayListMultimap.create();
 	private final RecipeTransferRegistry recipeTransferRegistry;
 	private final Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas = ArrayListMultimap.create();
-	private final Multimap<String, ItemStack> craftItemsForCategories = ArrayListMultimap.create();
+	private final Multimap<String, Object> recipeCatalysts = ArrayListMultimap.create();
 	private final List<IRecipeRegistryPlugin> recipeRegistryPlugins = new ArrayList<IRecipeRegistryPlugin>();
 
 	public ModRegistry(JeiHelpers jeiHelpers, IIngredientRegistry ingredientRegistry) {
@@ -107,7 +108,7 @@ public class ModRegistry implements IModRegistry {
 	public void addRecipes(Collection<?> recipes, String recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipes, "recipes");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-		//TODO : add this without breaking description recipes
+		//TODO : add this without breaking info recipes
 //		Preconditions.checkArgument(this.recipeCategoryUids.contains(recipeCategoryUid), "No recipe category has been registered for recipeCategoryUid %s", recipeCategoryUid);
 
 		for (Object recipe : recipes) {
@@ -158,14 +159,20 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
-	public void addRecipeCategoryCraftingItem(ItemStack craftingItem, String... recipeCategoryUids) {
-		ErrorUtil.checkNotEmpty(craftingItem);
+	public void addRecipeCatalyst(Object catalystIngredient, String... recipeCategoryUids) {
+		ErrorUtil.checkIsKnownIngredientType(catalystIngredient);
 		ErrorUtil.checkNotEmpty(recipeCategoryUids, "recipeCategoryUids");
 
 		for (String recipeCategoryUid : recipeCategoryUids) {
 			ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-			this.craftItemsForCategories.put(recipeCategoryUid, craftingItem);
+			this.recipeCatalysts.put(recipeCategoryUid, catalystIngredient);
 		}
+	}
+
+	@Override
+	@Deprecated
+	public void addRecipeCategoryCraftingItem(ItemStack craftingItem, String... recipeCategoryUids) {
+		addRecipeCatalyst(craftingItem, recipeCategoryUids);
 	}
 
 	@Override
@@ -176,21 +183,36 @@ public class ModRegistry implements IModRegistry {
 	}
 
 	@Override
+	@Deprecated
 	public void addDescription(List<ItemStack> itemStacks, String... descriptionKeys) {
-		ErrorUtil.checkNotEmpty(descriptionKeys, "descriptionKeys");
-		ErrorUtil.checkNotEmpty(itemStacks, "itemStacks");
-
-		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
-		List<ItemDescriptionRecipe> recipes = ItemDescriptionRecipe.create(guiHelper, itemStacks, descriptionKeys);
-		addRecipes(recipes, VanillaRecipeCategoryUid.DESCRIPTION);
+		addIngredientInfo(itemStacks, ItemStack.class, descriptionKeys);
 	}
 
 	@Override
+	@Deprecated
 	public void addDescription(ItemStack itemStack, String... descriptionKeys) {
-		ErrorUtil.checkNotEmpty(itemStack);
+		addIngredientInfo(itemStack, ItemStack.class, descriptionKeys);
+	}
+
+	@Override
+	public <T> void addIngredientInfo(T ingredient, Class<? extends T> ingredientClass, String... descriptionKeys) {
+		ErrorUtil.checkIsKnownIngredientType(ingredient);
 		ErrorUtil.checkNotEmpty(descriptionKeys, "descriptionKeys");
 
-		addDescription(Collections.singletonList(itemStack), descriptionKeys);
+		addIngredientInfo(Collections.singletonList(ingredient), ingredientClass, descriptionKeys);
+	}
+
+	@Override
+	public <T> void addIngredientInfo(List<T> ingredients, Class<? extends T> ingredientClass, String... descriptionKeys) {
+		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
+		for (Object ingredient : ingredients) {
+			ErrorUtil.checkIsKnownIngredientType(ingredient);
+		}
+		ErrorUtil.checkNotEmpty(descriptionKeys, "descriptionKeys");
+
+		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+		List<IngredientInfoRecipe<T>> recipes = IngredientInfoRecipe.create(guiHelper, ingredients, ingredientClass, descriptionKeys);
+		addRecipes(recipes, VanillaRecipeCategoryUid.INFORMATION);
 	}
 
 	@Override
@@ -223,6 +245,6 @@ public class ModRegistry implements IModRegistry {
 
 	public RecipeRegistry createRecipeRegistry(IIngredientRegistry ingredientRegistry) {
 		ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers = recipeTransferRegistry.getRecipeTransferHandlers();
-		return new RecipeRegistry(recipeCategories, unsortedRecipeHandlers, recipeHandlers, recipeTransferHandlers, unsortedRecipes, recipes, recipeClickableAreas, craftItemsForCategories, ingredientRegistry, recipeRegistryPlugins);
+		return new RecipeRegistry(recipeCategories, unsortedRecipeHandlers, recipeHandlers, recipeTransferHandlers, unsortedRecipes, recipes, recipeClickableAreas, recipeCatalysts, ingredientRegistry, recipeRegistryPlugins);
 	}
 }

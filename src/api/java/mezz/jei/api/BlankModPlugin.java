@@ -1,6 +1,7 @@
 package mezz.jei.api;
 
 import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 
 /**
  * An {@link IModPlugin} that does nothing, inherit from this to avoid implementing methods you don't need.
@@ -10,6 +11,11 @@ public abstract class BlankModPlugin implements IModPlugin {
 	@Override
 	public void registerItemSubtypes(ISubtypeRegistry subtypeRegistry) {
 		// override to register item subtypes
+	}
+
+	@Override
+	public void registerCategories(IRecipeCategoryRegistration registry) {
+		// override to register recipe categories
 	}
 
 	@Override
