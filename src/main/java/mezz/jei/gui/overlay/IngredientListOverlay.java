@@ -333,10 +333,14 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	public void setFilterText(String filterText) {
 		ErrorUtil.checkNotNull(filterText, "filterText");
 		if (Config.setFilterText(filterText)) {
-			this.searchField.setText(filterText);
-			SessionData.setFirstItemIndex(0);
-			updateLayout();
+			onSetFilterText(filterText);
 		}
+	}
+
+	public void onSetFilterText(String filterText) {
+		this.searchField.setText(filterText);
+		SessionData.setFirstItemIndex(0);
+		updateLayout();
 	}
 
 	@Override

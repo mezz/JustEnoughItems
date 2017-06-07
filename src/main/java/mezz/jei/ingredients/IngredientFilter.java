@@ -14,15 +14,19 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.map.TCharObjectMap;
 import gnu.trove.map.hash.TCharObjectHashMap;
 import gnu.trove.set.TIntSet;
+import mezz.jei.Internal;
 import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.Config;
 import mezz.jei.config.EditModeToggleEvent;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.runtime.JeiHelpers;
+import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.suffixtree.CombinedSearchTrees;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 import mezz.jei.suffixtree.ISearchTree;
+import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Translator;
 import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -282,7 +286,14 @@ public class IngredientFilter implements IIngredientFilter {
 
 	@Override
 	public void setFilterText(String filterText) {
-
+		ErrorUtil.checkNotNull(filterText, "filterText");
+		if (Config.setFilterText(filterText)) {
+			JeiRuntime runtime = Internal.getRuntime();
+			if (runtime != null) {
+				IngredientListOverlay ingredientListOverlay = runtime.getIngredientListOverlay();
+				ingredientListOverlay.onSetFilterText(filterText);
+			}
+		}
 	}
 
 	private List<IIngredientListElement> getIngredientListUncached(String filterText) {
