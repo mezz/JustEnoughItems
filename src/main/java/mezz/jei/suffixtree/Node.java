@@ -42,7 +42,7 @@ class Node {
 	 * The payload array used to store the data (indexes) associated with this node.
 	 * In this case, it is used to store all property indexes.
 	 */
-	private IntList data;
+	private final IntList data;
 
 	/**
 	 * The set of edges starting from this node

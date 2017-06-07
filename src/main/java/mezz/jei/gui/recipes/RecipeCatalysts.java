@@ -30,7 +30,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 	private final IDrawable middleDrawable;
 	private final IDrawable bottomDrawable;
 
-	private List<GuiIngredient<Object>> ingredients;
+	private final List<GuiIngredient<Object>> ingredients;
 	private int left = 0;
 	private int top = 0;
 

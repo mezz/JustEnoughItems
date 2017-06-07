@@ -5,7 +5,6 @@ import java.util.Locale;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.translation.I18n;
-import net.minecraftforge.client.MinecraftForgeClient;
 
 public final class Translator {
 	private Translator() {
