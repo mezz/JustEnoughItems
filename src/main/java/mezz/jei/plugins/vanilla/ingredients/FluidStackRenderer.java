@@ -9,12 +9,13 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.Fluid;
@@ -155,23 +156,17 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		vMax = vMax - (maskTop / 16.0 * (vMax - vMin));
 
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getBuffer();
-		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-		vertexBuffer.pos(xCoord, yCoord + 16, zLevel).tex(uMin, vMax).endVertex();
-		vertexBuffer.pos(xCoord + 16 - maskRight, yCoord + 16, zLevel).tex(uMax, vMax).endVertex();
-		vertexBuffer.pos(xCoord + 16 - maskRight, yCoord + maskTop, zLevel).tex(uMax, vMin).endVertex();
-		vertexBuffer.pos(xCoord, yCoord + maskTop, zLevel).tex(uMin, vMin).endVertex();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+		bufferBuilder.pos(xCoord, yCoord + 16, zLevel).tex(uMin, vMax).endVertex();
+		bufferBuilder.pos(xCoord + 16 - maskRight, yCoord + 16, zLevel).tex(uMax, vMax).endVertex();
+		bufferBuilder.pos(xCoord + 16 - maskRight, yCoord + maskTop, zLevel).tex(uMax, vMin).endVertex();
+		bufferBuilder.pos(xCoord, yCoord + maskTop, zLevel).tex(uMin, vMin).endVertex();
 		tessellator.draw();
 	}
 
 	@Override
-	@Deprecated
-	public List<String> getTooltip(Minecraft minecraft, FluidStack fluidStack) {
-		return getTooltip(minecraft, fluidStack, minecraft.gameSettings.advancedItemTooltips);
-	}
-
-	@Override
-	public List<String> getTooltip(Minecraft minecraft, FluidStack fluidStack, boolean advanced) {
+	public List<String> getTooltip(Minecraft minecraft, FluidStack fluidStack, ITooltipFlag tooltipFlag) {
 		List<String> tooltip = new ArrayList<String>();
 		Fluid fluidType = fluidStack.getFluid();
 		if (fluidType == null) {
@@ -190,10 +185,5 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		}
 
 		return tooltip;
-	}
-
-	@Override
-	public FontRenderer getFontRenderer(Minecraft minecraft, FluidStack fluidStack) {
-		return minecraft.fontRenderer;
 	}
 }

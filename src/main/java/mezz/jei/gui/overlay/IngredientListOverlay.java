@@ -162,17 +162,17 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 		this.searchField.update();
 	}
 
-	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
 		if (this.contents.updateGuiAreas()) {
 			updateLayout();
 		}
 
 		GlStateManager.disableLighting();
 
-		this.navigation.draw(minecraft, mouseX, mouseY);
+		this.navigation.draw(minecraft, mouseX, mouseY, partialTicks);
 		this.searchField.drawTextBox();
 		this.contents.draw(minecraft, mouseX, mouseY);
-		this.configButton.draw(minecraft, mouseX, mouseY);
+		this.configButton.draw(minecraft, mouseX, mouseY, partialTicks);
 	}
 
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {

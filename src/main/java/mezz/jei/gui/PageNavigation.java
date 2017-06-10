@@ -47,14 +47,14 @@ public class PageNavigation {
 		pageNumDisplayY = backButton.yPosition + Math.round((backButton.height - fontRenderer.FONT_HEIGHT) / 2.0f);
 	}
 
-	public void draw(Minecraft minecraft, int mouseX, int mouseY) {
+	public void draw(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
 		nextButton.enabled = this.paged.hasNext();
 		backButton.enabled = this.paged.hasPrevious();
 
 		if (!hideOnSinglePage || nextButton.enabled || backButton.enabled) {
 			minecraft.fontRenderer.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(), true);
-			nextButton.drawButton(minecraft, mouseX, mouseY);
-			backButton.drawButton(minecraft, mouseX, mouseY);
+			nextButton.func_191745_a(minecraft, mouseX, mouseY, partialTicks);
+			backButton.func_191745_a(minecraft, mouseX, mouseY, partialTicks);
 		}
 	}
 

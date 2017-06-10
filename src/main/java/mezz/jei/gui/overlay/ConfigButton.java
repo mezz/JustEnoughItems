@@ -45,8 +45,8 @@ public class ConfigButton {
 		this.configButton.yPosition = area.y;
 	}
 
-	public void draw(Minecraft minecraft, int mouseX, int mouseY) {
-		this.configButton.drawButton(minecraft, mouseX, mouseY);
+	public void draw(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
+		this.configButton.func_191745_a(minecraft, mouseX, mouseY, partialTicks);
 
 		IDrawable icon = Config.isCheatItemsEnabled() ? this.configButtonCheatIcon : this.configButtonIcon;
 		icon.draw(minecraft, this.configButton.xPosition + 2, this.configButton.yPosition + 2);

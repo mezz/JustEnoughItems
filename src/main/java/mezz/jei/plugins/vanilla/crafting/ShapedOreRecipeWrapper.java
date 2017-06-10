@@ -28,11 +28,11 @@ public class ShapedOreRecipeWrapper extends BlankRecipeWrapper implements IShape
 		ItemStack recipeOutput = recipe.getRecipeOutput();
 
 		try {
-			List<List<ItemStack>> inputs = stackHelper.expandRecipeItemStackInputs(Arrays.asList(recipe.getInput()));
+			List<List<ItemStack>> inputs = stackHelper.expandRecipeItemStackInputs(recipe.func_192400_c());
 			ingredients.setInputLists(ItemStack.class, inputs);
 			ingredients.setOutput(ItemStack.class, recipeOutput);
 		} catch (RuntimeException e) {
-			String info = ErrorUtil.getInfoFromBrokenCraftingRecipe(recipe, Arrays.asList(recipe.getInput()), recipeOutput);
+			String info = ErrorUtil.getInfoFromBrokenCraftingRecipe(recipe, recipe.func_192400_c(), recipeOutput);
 			throw new BrokenCraftingRecipeException(info, e);
 		}
 	}

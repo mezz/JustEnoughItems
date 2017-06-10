@@ -95,7 +95,7 @@ public final class ItemStackListFactory {
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
 			NonNullList<ItemStack> subBlocks = NonNullList.create();
 			try {
-				block.getSubBlocks(item, itemTab, subBlocks);
+				block.getSubBlocks(itemTab, subBlocks);
 			} catch (RuntimeException e) {
 				String itemStackInfo = ErrorUtil.getItemStackInfo(new ItemStack(item));
 				Log.error("Failed to getSubBlocks {}", itemStackInfo, e);

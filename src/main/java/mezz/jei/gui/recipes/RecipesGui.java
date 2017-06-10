@@ -203,10 +203,10 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		drawCenteredString(fontRenderer, title, xSize, guiLeft, nextRecipeCategory.yPosition + textPadding, Color.WHITE.getRGB(), true);
 		drawCenteredString(fontRenderer, pageString, xSize, guiLeft, nextPage.yPosition + textPadding, Color.WHITE.getRGB(), true);
 
-		nextRecipeCategory.drawButton(mc, mouseX, mouseY);
-		previousRecipeCategory.drawButton(mc, mouseX, mouseY);
-		nextPage.drawButton(mc, mouseX, mouseY);
-		previousPage.drawButton(mc, mouseX, mouseY);
+		nextRecipeCategory.func_191745_a(mc, mouseX, mouseY, partialTicks);
+		previousRecipeCategory.func_191745_a(mc, mouseX, mouseY, partialTicks);
+		nextPage.func_191745_a(mc, mouseX, mouseY, partialTicks);
+		previousPage.func_191745_a(mc, mouseX, mouseY, partialTicks);
 
 		RecipeLayout hovered = null;
 		for (RecipeLayout recipeLayout : recipeLayouts) {

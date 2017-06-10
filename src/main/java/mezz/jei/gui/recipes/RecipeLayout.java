@@ -153,7 +153,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			}
 		}
 		if (recipeTransferButton != null) {
-			recipeTransferButton.drawButton(minecraft, mouseX, mouseY);
+			float partialTicks = minecraft.getRenderPartialTicks();
+			recipeTransferButton.func_191745_a(minecraft, mouseX, mouseY, partialTicks);
 		}
 		GlStateManager.disableBlend();
 		GlStateManager.disableLighting();

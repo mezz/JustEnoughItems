@@ -1,5 +1,8 @@
 package mezz.jei.plugins.vanilla.crafting;
 
+import java.util.List;
+
+import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
@@ -21,7 +24,8 @@ public class ShapelessRecipesWrapper extends BlankRecipeWrapper implements ICraf
 		ItemStack recipeOutput = recipe.getRecipeOutput();
 
 		try {
-			ingredients.setInputs(ItemStack.class, recipe.recipeItems);
+			List<List<ItemStack>> inputLists = Internal.getStackHelper().expandRecipeItemStackInputs(recipe.recipeItems, false);
+			ingredients.setInputLists(ItemStack.class, inputLists);
 			ingredients.setOutput(ItemStack.class, recipeOutput);
 		} catch (RuntimeException e) {
 			String info = ErrorUtil.getInfoFromBrokenCraftingRecipe(recipe, recipe.recipeItems, recipeOutput);

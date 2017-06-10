@@ -2,6 +2,7 @@ package mezz.jei.startup;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -21,6 +22,7 @@ import mezz.jei.util.Log;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
@@ -225,7 +227,7 @@ public class StackHelper implements IStackHelper {
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
 			NonNullList<ItemStack> subItems = NonNullList.create();
 			try {
-				item.getSubItems(item, itemTab, subItems);
+				item.getSubItems(itemTab, subItems);
 			} catch (RuntimeException e) {
 				Log.warning("Caught a crash while getting sub-items of {}", item, e);
 			} catch (LinkageError e) {
@@ -335,8 +337,8 @@ public class StackHelper implements IStackHelper {
 			} else {
 				itemStackListBuilder.add(stack);
 			}
-		} else if (input instanceof String) {
-			List<ItemStack> stacks = OreDictionary.getOres((String) input);
+		} else if (input instanceof Ingredient) {
+			List<ItemStack> stacks = Arrays.asList(((Ingredient) input).func_193365_a());
 			toItemStackList(itemStackListBuilder, stacks, expandSubtypes);
 		} else if (input instanceof Iterable) {
 			for (Object obj : (Iterable) input) {

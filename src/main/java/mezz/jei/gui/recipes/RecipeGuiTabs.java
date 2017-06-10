@@ -111,7 +111,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 		GlStateManager.disableAlpha();
 		GlStateManager.enableDepth();
 
-		pageNavigation.draw(minecraft, mouseX, mouseY);
+		pageNavigation.draw(minecraft, mouseX, mouseY, minecraft.getRenderPartialTicks());
 
 		if (hovered != null) {
 			List<String> tooltip = hovered.getTooltip();

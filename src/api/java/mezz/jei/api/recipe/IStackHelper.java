@@ -29,7 +29,7 @@ public interface IStackHelper {
 	List<ItemStack> toItemStackList(@Nullable Object stacks);
 
 	/**
-	 * Expands ItemStacks, OreDict Strings, and Iterables into a list of lists of ItemStacks.
+	 * Expands ItemStacks, Ingredients, and Iterables into a list of lists of ItemStacks.
 	 * Expands wildcard ItemStacks into their subtypes.
 	 */
 	List<List<ItemStack>> expandRecipeItemStackInputs(@Nullable List inputs);

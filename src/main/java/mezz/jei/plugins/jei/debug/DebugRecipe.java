@@ -40,7 +40,7 @@ public class DebugRecipe extends BlankRecipeWrapper {
 
 	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-		button.drawButton(minecraft, mouseX, mouseY);
+		button.func_191745_a(minecraft, mouseX, mouseY, minecraft.getRenderPartialTicks());
 	}
 
 	@Override
@@ -84,32 +84,16 @@ public class DebugRecipe extends BlankRecipeWrapper {
 	@Override
 	public boolean handleClick(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
 		if (mouseButton == 0 && button.mousePressed(minecraft, mouseX, mouseY)) {
-			if (GuiScreen.isCtrlKeyDown()) {
-				IJeiRuntime jeiRuntime = JEIInternalPlugin.jeiRuntime;
-				if (jeiRuntime != null) {
-					List<IRecipe> recipeList = CraftingManager.getInstance().getRecipeList();
-					if (!recipeList.isEmpty()) {
-						IRecipe randomRecipe = recipeList.get(minecraft.world.rand.nextInt(recipeList.size()));
-						IRecipeRegistry recipeRegistry = jeiRuntime.getRecipeRegistry();
-						Log.warning("Removing random recipe: {}", randomRecipe);
-						IRecipeWrapper recipeWrapper = recipeRegistry.getRecipeWrapper(randomRecipe, VanillaRecipeCategoryUid.CRAFTING);
-						if (recipeWrapper != null) {
-							recipeRegistry.removeRecipe(recipeWrapper, VanillaRecipeCategoryUid.CRAFTING);
-						}
-					}
-				}
-			} else {
-				GuiScreen screen = new GuiInventory(minecraft.player);
-				minecraft.displayGuiScreen(screen);
+			GuiScreen screen = new GuiInventory(minecraft.player);
+			minecraft.displayGuiScreen(screen);
 
-				IJeiRuntime runtime = JEIInternalPlugin.jeiRuntime;
-				if (runtime != null) {
-					IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
-					String filterText = ingredientFilter.getFilterText();
-					ingredientFilter.setFilterText(filterText + " test");
-				}
-				return true;
+			IJeiRuntime runtime = JEIInternalPlugin.jeiRuntime;
+			if (runtime != null) {
+				IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
+				String filterText = ingredientFilter.getFilterText();
+				ingredientFilter.setFilterText(filterText + " test");
 			}
+			return true;
 		}
 		return false;
 	}

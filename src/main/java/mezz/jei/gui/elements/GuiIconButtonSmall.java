@@ -21,7 +21,7 @@ public class GuiIconButtonSmall extends GuiButton {
 	}
 
 	@Override
-	public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+	public void func_191745_a(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
 		if (this.visible) {
 			this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 			int k = this.getHoverState(this.hovered);

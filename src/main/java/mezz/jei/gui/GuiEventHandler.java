@@ -70,7 +70,7 @@ public class GuiEventHandler {
 		ingredientListOverlay.updateScreen(gui);
 
 		if (ingredientListOverlay.isEnabled()) {
-			ingredientListOverlay.drawScreen(gui.mc, event.getMouseX(), event.getMouseY());
+			ingredientListOverlay.drawScreen(gui.mc, event.getMouseX(), event.getMouseY(), gui.mc.getRenderPartialTicks());
 		}
 	}
 

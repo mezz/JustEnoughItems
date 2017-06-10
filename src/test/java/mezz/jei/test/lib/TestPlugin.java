@@ -13,7 +13,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 
 @JEIPlugin
@@ -37,19 +37,8 @@ public class TestPlugin extends BlankModPlugin {
 		}
 
 		@Override
-		@Deprecated
-		public List<String> getTooltip(Minecraft minecraft, TestIngredient ingredient) {
-			return getTooltip(minecraft, ingredient, minecraft.gameSettings.advancedItemTooltips);
-		}
-
-		@Override
-		public List<String> getTooltip(Minecraft minecraft, TestIngredient ingredient, boolean advanced) {
+		public List<String> getTooltip(Minecraft minecraft, TestIngredient ingredient, ITooltipFlag tooltipFlag) {
 			return Collections.singletonList("Test Ingredient Tooltip " + ingredient);
-		}
-
-		@Override
-		public FontRenderer getFontRenderer(Minecraft minecraft, TestIngredient ingredient) {
-			return minecraft.fontRenderer;
 		}
 	}
 

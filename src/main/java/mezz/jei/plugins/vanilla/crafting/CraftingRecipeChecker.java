@@ -2,6 +2,7 @@ package mezz.jei.plugins.vanilla.crafting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import mezz.jei.api.IJeiHelpers;
@@ -29,7 +30,7 @@ public final class CraftingRecipeChecker {
 
 			@Override
 			protected int getInputCount(ShapedOreRecipe recipe) {
-				return getInputCount(recipe.getInput());
+				return getInputCount(recipe.func_192400_c());
 			}
 		};
 
@@ -53,7 +54,7 @@ public final class CraftingRecipeChecker {
 
 			@Override
 			protected int getInputCount(ShapelessOreRecipe recipe) {
-				return getInputCount(recipe.getInput());
+				return getInputCount(recipe.func_192400_c());
 			}
 		};
 
@@ -69,9 +70,10 @@ public final class CraftingRecipeChecker {
 			}
 		};
 
-		List<IRecipe> recipes = CraftingManager.getInstance().getRecipeList();
-		List<IRecipe> validRecipes = new ArrayList<IRecipe>(recipes.size());
-		for (IRecipe recipe : recipes) {
+		Iterator<IRecipe> recipeIterator = CraftingManager.field_193380_a.iterator();
+		List<IRecipe> validRecipes = new ArrayList<IRecipe>();
+		while (recipeIterator.hasNext()) {
+			IRecipe recipe = recipeIterator.next();
 			if (recipe instanceof ShapedOreRecipe) {
 				if (shapedOreRecipeValidator.isRecipeValid((ShapedOreRecipe) recipe)) {
 					validRecipes.add(recipe);

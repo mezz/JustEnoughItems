@@ -28,8 +28,8 @@ if (System.getenv().BUILD_NUMBER != null) {//adds the build number to the end of
 }
 
 // java version
-sourceCompatibility = JavaVersion.VERSION_1_6
-targetCompatibility = JavaVersion.VERSION_1_6
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 minecraft {
 	version = mcversion + "-" + forgeversion

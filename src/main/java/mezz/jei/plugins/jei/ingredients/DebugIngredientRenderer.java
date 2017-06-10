@@ -10,6 +10,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.util.text.TextFormatting;
 
 public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredient> {
@@ -30,22 +31,11 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 	}
 
 	@Override
-	@Deprecated
-	public List<String> getTooltip(Minecraft minecraft, DebugIngredient ingredient) {
-		return getTooltip(minecraft, ingredient, minecraft.gameSettings.advancedItemTooltips);
-	}
-
-	@Override
-	public List<String> getTooltip(Minecraft minecraft, DebugIngredient ingredient, boolean advanced) {
+	public List<String> getTooltip(Minecraft minecraft, DebugIngredient ingredient, ITooltipFlag tooltipFlag) {
 		List<String> tooltip = new ArrayList<String>();
 		String displayName = ingredientHelper.getDisplayName(ingredient);
 		tooltip.add(displayName);
 		tooltip.add(TextFormatting.GRAY + "debug ingredient");
 		return tooltip;
-	}
-
-	@Override
-	public FontRenderer getFontRenderer(Minecraft minecraft, DebugIngredient ingredient) {
-		return minecraft.fontRenderer;
 	}
 }
