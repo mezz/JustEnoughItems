@@ -1,17 +1,18 @@
 package mezz.jei.plugins.vanilla.crafting;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeWrapperFactory;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -22,53 +23,21 @@ public final class CraftingRecipeChecker {
 	}
 
 	public static List<IRecipe> getValidRecipes(final IJeiHelpers jeiHelpers) {
-		CraftingRecipeValidator<ShapedOreRecipe> shapedOreRecipeValidator = new CraftingRecipeValidator<ShapedOreRecipe>() {
-			@Override
-			protected IRecipeWrapper getRecipeWrapper(ShapedOreRecipe recipe) {
-				return new ShapedOreRecipeWrapper(jeiHelpers, recipe);
-			}
+		CraftingRecipeValidator<ShapedOreRecipe> shapedOreRecipeValidator = new CraftingRecipeValidator<>(
+				recipe -> new ShapedOreRecipeWrapper(jeiHelpers, recipe),
+				ShapedOreRecipe::func_192400_c);
 
-			@Override
-			protected int getInputCount(ShapedOreRecipe recipe) {
-				return getInputCount(recipe.func_192400_c());
-			}
-		};
+		CraftingRecipeValidator<ShapedRecipes> shapedRecipesValidator = new CraftingRecipeValidator<>(
+				ShapedRecipesWrapper::new,
+				recipe -> recipe.recipeItems);
 
-		CraftingRecipeValidator<ShapedRecipes> shapedRecipesValidator = new CraftingRecipeValidator<ShapedRecipes>() {
-			@Override
-			protected IRecipeWrapper getRecipeWrapper(ShapedRecipes recipe) {
-				return new ShapedRecipesWrapper(recipe);
-			}
+		CraftingRecipeValidator<ShapelessOreRecipe> shapelessOreRecipeValidator = new CraftingRecipeValidator<>(
+				recipe -> new ShapelessOreRecipeWrapper(jeiHelpers, recipe),
+				ShapelessOreRecipe::func_192400_c);
 
-			@Override
-			protected int getInputCount(ShapedRecipes recipe) {
-				return getInputCount(recipe.recipeItems);
-			}
-		};
-
-		CraftingRecipeValidator<ShapelessOreRecipe> shapelessOreRecipeValidator = new CraftingRecipeValidator<ShapelessOreRecipe>() {
-			@Override
-			protected IRecipeWrapper getRecipeWrapper(ShapelessOreRecipe recipe) {
-				return new ShapelessOreRecipeWrapper(jeiHelpers, recipe);
-			}
-
-			@Override
-			protected int getInputCount(ShapelessOreRecipe recipe) {
-				return getInputCount(recipe.func_192400_c());
-			}
-		};
-
-		CraftingRecipeValidator<ShapelessRecipes> shapelessRecipesValidator = new CraftingRecipeValidator<ShapelessRecipes>() {
-			@Override
-			protected IRecipeWrapper getRecipeWrapper(ShapelessRecipes recipe) {
-				return new ShapelessRecipesWrapper(recipe);
-			}
-
-			@Override
-			protected int getInputCount(ShapelessRecipes recipe) {
-				return getInputCount(recipe.recipeItems);
-			}
-		};
+		CraftingRecipeValidator<ShapelessRecipes> shapelessRecipesValidator = new CraftingRecipeValidator<>(
+				ShapelessRecipesWrapper::new,
+				recipe -> recipe.recipeItems);
 
 		Iterator<IRecipe> recipeIterator = CraftingManager.field_193380_a.iterator();
 		List<IRecipe> validRecipes = new ArrayList<>();
@@ -97,8 +66,15 @@ public final class CraftingRecipeChecker {
 		return validRecipes;
 	}
 
-	private static abstract class CraftingRecipeValidator<T extends IRecipe> {
+	private static final class CraftingRecipeValidator<T extends IRecipe> {
 		private static final int INVALID_COUNT = -1;
+		private final IRecipeWrapperFactory<T> recipeWrapperFactory;
+		private final IIngredientGetter<T> ingredientGetter;
+
+		public CraftingRecipeValidator(IRecipeWrapperFactory<T> recipeWrapperFactory, IIngredientGetter<T> ingredientGetter) {
+			this.recipeWrapperFactory = recipeWrapperFactory;
+			this.ingredientGetter = ingredientGetter;
+		}
 
 		public boolean isRecipeValid(T recipe) {
 			ItemStack recipeOutput = recipe.getRecipeOutput();
@@ -108,7 +84,8 @@ public final class CraftingRecipeChecker {
 				Log.get().error("Recipe has no output. {}", recipeInfo);
 				return false;
 			}
-			int inputCount = getInputCount(recipe);
+			List<Ingredient> ingredients = ingredientGetter.getIngredients(recipe);
+			int inputCount = getInputCount(ingredients);
 			if (inputCount == INVALID_COUNT) {
 				return false;
 			} else if (inputCount > 9) {
@@ -124,38 +101,27 @@ public final class CraftingRecipeChecker {
 		}
 
 		private String getInfo(T recipe) {
-			IRecipeWrapper recipeWrapper = getRecipeWrapper(recipe);
+			IRecipeWrapper recipeWrapper = recipeWrapperFactory.getRecipeWrapper(recipe);
 			return ErrorUtil.getInfoFromRecipe(recipe, recipeWrapper);
 		}
 
-		protected abstract IRecipeWrapper getRecipeWrapper(T recipe);
-
-		protected abstract int getInputCount(T recipe);
-
-		protected static int getInputCount(Object[] objectList) {
-			return getInputCount(Arrays.asList(objectList));
-		}
-
-		protected static int getInputCount(List<?> objectList) {
+		protected static int getInputCount(List<Ingredient> ingredientList) {
 			int inputCount = 0;
-			for (Object input : objectList) {
-				if (input instanceof List) {
-					if (((List) input).isEmpty()) {
-						// missing items for an oreDict name. This is normal behavior, but the recipe is invalid.
-						return INVALID_COUNT;
-					} else {
-						inputCount++;
-					}
-				} else if (input instanceof ItemStack) {
-					ItemStack itemStack = (ItemStack) input;
-					if (!itemStack.isEmpty()) {
-						inputCount++;
-					}
-				} else if (input != null) {
+			for (Ingredient ingredient : ingredientList) {
+				ItemStack[] input = ingredient.func_193365_a();
+				//noinspection ConstantConditions
+				if (input == null) {
+					return INVALID_COUNT;
+				} else if (input.length >= 0) {
 					inputCount++;
 				}
 			}
 			return inputCount;
+		}
+
+		@FunctionalInterface
+		interface IIngredientGetter<T extends IRecipe> {
+			List<Ingredient> getIngredients(T recipe);
 		}
 	}
 }
