@@ -6,7 +6,6 @@ import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IRecipeCategory;
-import net.minecraft.item.ItemStack;
 
 public final class LegacyUtil {
 	private LegacyUtil() {

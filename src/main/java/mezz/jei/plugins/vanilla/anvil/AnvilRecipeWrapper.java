@@ -8,7 +8,6 @@ import java.util.Map;
 import com.google.common.collect.Lists;
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.BlankRecipeWrapper;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;

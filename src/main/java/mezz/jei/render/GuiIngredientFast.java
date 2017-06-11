@@ -17,7 +17,6 @@ import mezz.jei.config.Constants;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.ForgeModIdHelper;
-import mezz.jei.util.LegacyUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;

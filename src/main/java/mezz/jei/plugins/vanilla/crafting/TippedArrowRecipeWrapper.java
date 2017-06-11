@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.BlankRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
