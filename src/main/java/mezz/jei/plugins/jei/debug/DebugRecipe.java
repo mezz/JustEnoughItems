@@ -8,7 +8,7 @@ import java.util.List;
 import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.BlankRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 import net.minecraft.client.Minecraft;
@@ -22,7 +22,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
 
-public class DebugRecipe extends BlankRecipeWrapper {
+public class DebugRecipe implements IRecipeWrapper {
 	private final GuiButtonExt button;
 	private final HoverChecker buttonHoverChecker;
 

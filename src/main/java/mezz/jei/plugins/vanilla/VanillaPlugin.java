@@ -7,6 +7,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.BlankModPlugin;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
+import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.JEIPlugin;
@@ -63,7 +64,7 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 @JEIPlugin
-public class VanillaPlugin extends BlankModPlugin {
+public class VanillaPlugin implements IModPlugin {
 	@Nullable
 	private ISubtypeRegistry subtypeRegistry;
 

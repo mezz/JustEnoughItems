@@ -1,5 +1,6 @@
 package mezz.jei.api.recipe;
 
+import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.IGuiHelper;
@@ -12,8 +13,6 @@ import net.minecraft.client.Minecraft;
 /**
  * A wrapper around a normal recipe with methods that allow JEI can make sense of it.
  * Plugins implement these to wrap each type of recipe they have.
- *
- * @see BlankRecipeWrapper
  */
 public interface IRecipeWrapper {
 
@@ -35,7 +34,9 @@ public interface IRecipeWrapper {
 	 * @see IGuiHelper for useful functions.
 	 * @since JEI 2.19.0
 	 */
-	void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY);
+	default void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
+
+	}
 
 	/**
 	 * Get the tooltip for whatever's under the mouse.
@@ -48,7 +49,9 @@ public interface IRecipeWrapper {
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
 	 * @return tooltip strings. If there is no tooltip at this position, return an empty list.
 	 */
-	List<String> getTooltipStrings(int mouseX, int mouseY);
+	default List<String> getTooltipStrings(int mouseX, int mouseY) {
+		return Collections.emptyList();
+	}
 
 	/**
 	 * Called when a player clicks the recipe.
@@ -60,5 +63,7 @@ public interface IRecipeWrapper {
 	 * @return true if the click was handled, false otherwise
 	 * @since JEI 2.19.0
 	 */
-	boolean handleClick(Minecraft minecraft, int mouseX, int mouseY, int mouseButton);
+	default boolean handleClick(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
+		return false;
+	}
 }

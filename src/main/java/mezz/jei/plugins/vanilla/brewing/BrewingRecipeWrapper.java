@@ -8,6 +8,7 @@ import java.util.List;
 import com.google.common.base.Objects;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
@@ -16,7 +17,7 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
-public class BrewingRecipeWrapper extends BlankRecipeWrapper {
+public class BrewingRecipeWrapper implements IRecipeWrapper {
 	private static final BrewingRecipeUtil UTIL = new BrewingRecipeUtil();
 
 	private final List<ItemStack> ingredients;

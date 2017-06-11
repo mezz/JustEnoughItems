@@ -1,10 +1,16 @@
 package mezz.jei.api.ingredients;
 
+import java.util.List;
+
 import mezz.jei.api.IJeiHelpers;
 import net.minecraftforge.oredict.OreDictionary;
 
 /**
  * The Ingredient Blacklist allows mods to hide ingredients from JEI's ingredient list.
+ *
+ * Ingredients can only be blacklisted during the loading phase.
+ * To get rid of ingredients at runtime, use {@link IIngredientRegistry#removeIngredientsAtRuntime(Class, List)}
+ *
  * Get the instance from {@link IJeiHelpers#getIngredientBlacklist()}.
  *
  * @since JEI 4.2.1

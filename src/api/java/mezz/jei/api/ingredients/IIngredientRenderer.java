@@ -39,6 +39,7 @@ public interface IIngredientRenderer<T> {
 	 * @since JEI 4.6.0
 	 */
 	default List<String> getTooltip(Minecraft minecraft, T ingredient, ITooltipFlag tooltipFlag) {
+		// you should override this method. this default method is to keep old JEI plugins from crashing.
 		return getTooltip(minecraft, ingredient, tooltipFlag == ITooltipFlag.TooltipFlags.ADVANCED);
 	}
 

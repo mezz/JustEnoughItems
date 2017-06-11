@@ -1,6 +1,7 @@
 package mezz.jei.api.recipe;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.IGuiHelper;
@@ -16,8 +17,6 @@ import net.minecraft.client.Minecraft;
  * Defines a category of recipe, (i.e. Crafting Table Recipe, Furnace Recipe).
  * Handles setting up the GUI for its recipe category in {@link #setRecipe(IRecipeLayout, IRecipeWrapper, IIngredients)}.
  * Also draws elements that are common to all recipes in the category like the background.
- *
- * @see BlankRecipeCategory
  */
 public interface IRecipeCategory<T extends IRecipeWrapper> {
 
@@ -59,7 +58,9 @@ public interface IRecipeCategory<T extends IRecipeWrapper> {
 	 * @since 3.13.1
 	 */
 	@Nullable
-	IDrawable getIcon();
+	default IDrawable getIcon() {
+		return null;
+	}
 
 	/**
 	 * Draw any extra elements that might be necessary, icons or extra slots.
@@ -67,7 +68,9 @@ public interface IRecipeCategory<T extends IRecipeWrapper> {
 	 * @see IDrawable for a simple class for drawing things.
 	 * @see IGuiHelper for useful functions.
 	 */
-	void drawExtras(Minecraft minecraft);
+	default void drawExtras(Minecraft minecraft) {
+
+	}
 
 	/**
 	 * Set the {@link IRecipeLayout} properties from the {@link IRecipeWrapper} and {@link IIngredients}.
@@ -91,5 +94,7 @@ public interface IRecipeCategory<T extends IRecipeWrapper> {
 	 * @return tooltip strings. If there is no tooltip at this position, return an empty list.
 	 * @since JEI 4.2.5
 	 */
-	List<String> getTooltipStrings(int mouseX, int mouseY);
+	default List<String> getTooltipStrings(int mouseX, int mouseY) {
+		return Collections.emptyList();
+	}
 }

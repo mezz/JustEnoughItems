@@ -16,7 +16,6 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.CommandUtil;
-import mezz.jei.util.LegacyUtil;
 import mezz.jei.util.ReflectionUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -125,7 +124,8 @@ public class InputHandler {
 			if (fullStack || mouseButton == 1) {
 				V focusValue = clicked.getValue();
 				IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(focusValue);
-				ItemStack itemStack = LegacyUtil.cheatIngredient(focusValue, ingredientHelper, fullStack);
+
+				ItemStack itemStack = ingredientHelper.cheatIngredient(focusValue, fullStack);
 				if (!itemStack.isEmpty()) {
 					CommandUtil.giveStack(itemStack, fullStack);
 				}

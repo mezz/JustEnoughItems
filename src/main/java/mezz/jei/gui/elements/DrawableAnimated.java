@@ -27,11 +27,6 @@ public class DrawableAnimated implements IDrawableAnimated {
 	}
 
 	@Override
-	public void draw(Minecraft minecraft) {
-		draw(minecraft, 0, 0);
-	}
-
-	@Override
 	public void draw(Minecraft minecraft, int xOffset, int yOffset) {
 		int maskLeft = 0;
 		int maskRight = 0;

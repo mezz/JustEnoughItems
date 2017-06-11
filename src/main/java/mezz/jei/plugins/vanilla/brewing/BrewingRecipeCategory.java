@@ -8,13 +8,14 @@ import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeCategory;
+import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
-public class BrewingRecipeCategory extends BlankRecipeCategory<BrewingRecipeWrapper> {
+public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipeWrapper> {
 
 	private static final int brewPotionSlot1 = 0;
 	private static final int brewPotionSlot2 = 1;

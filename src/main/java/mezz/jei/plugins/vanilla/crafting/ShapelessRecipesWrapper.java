@@ -11,7 +11,7 @@ import mezz.jei.util.ErrorUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 
-public class ShapelessRecipesWrapper extends BlankRecipeWrapper implements ICraftingRecipeWrapper {
+public class ShapelessRecipesWrapper implements ICraftingRecipeWrapper {
 
 	private final ShapelessRecipes recipe;
 

@@ -16,6 +16,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeCategory;
+import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.Constants;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
@@ -25,7 +26,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
-public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
+public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	public static final int RECIPE_WIDTH = 160;
 	public static final int RECIPE_HEIGHT = 60;
 	private final IDrawable background;

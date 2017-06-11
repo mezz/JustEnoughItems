@@ -10,6 +10,7 @@ import mezz.jei.api.BlankModPlugin;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IJeiRuntime;
+import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
@@ -32,7 +33,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 @JEIPlugin
-public class JEIInternalPlugin extends BlankModPlugin {
+public class JEIInternalPlugin implements IModPlugin {
 	@Nullable
 	public static IIngredientRegistry ingredientRegistry;
 	@Nullable

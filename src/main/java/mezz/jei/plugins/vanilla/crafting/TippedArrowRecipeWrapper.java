@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 
-public class TippedArrowRecipeWrapper extends BlankRecipeWrapper implements IShapedCraftingRecipeWrapper {
+public class TippedArrowRecipeWrapper implements IShapedCraftingRecipeWrapper {
 	private final List<ItemStack> inputs;
 	private final ItemStack output;
 

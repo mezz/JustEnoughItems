@@ -12,7 +12,7 @@ import mezz.jei.util.ErrorUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
-public class ShapelessOreRecipeWrapper extends BlankRecipeWrapper implements ICraftingRecipeWrapper {
+public class ShapelessOreRecipeWrapper implements ICraftingRecipeWrapper {
 	private final IJeiHelpers jeiHelpers;
 	private final ShapelessOreRecipe recipe;
 

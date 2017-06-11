@@ -6,13 +6,14 @@ import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 
-public class SmeltingRecipe extends BlankRecipeWrapper {
+public class SmeltingRecipe implements IRecipeWrapper {
 	private final List<List<ItemStack>> inputs;
 	private final ItemStack output;
 

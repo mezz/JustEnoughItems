@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.BlankModPlugin;
+import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -17,7 +18,7 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 
 @JEIPlugin
-public class TestPlugin extends BlankModPlugin {
+public class TestPlugin implements IModPlugin {
 	public static final int BASE_INGREDIENT_COUNT = 2;
 
 	@Override

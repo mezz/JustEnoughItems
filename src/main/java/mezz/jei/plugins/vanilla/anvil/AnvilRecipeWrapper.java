@@ -9,12 +9,13 @@ import com.google.common.collect.Lists;
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 
-public class AnvilRecipeWrapper extends BlankRecipeWrapper {
+public class AnvilRecipeWrapper implements IRecipeWrapper {
 	private final List<List<ItemStack>> inputs;
 	private final List<List<ItemStack>> output;
 	@Nullable

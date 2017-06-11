@@ -12,12 +12,13 @@ import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-public class FuelRecipe extends BlankRecipeWrapper {
+public class FuelRecipe implements IRecipeWrapper {
 	private final List<List<ItemStack>> inputs;
 	private final String smeltCountString;
 	private final String burnTimeString;

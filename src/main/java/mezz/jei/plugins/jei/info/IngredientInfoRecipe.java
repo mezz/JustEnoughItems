@@ -8,12 +8,12 @@ import java.util.List;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.BlankRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 
-public class IngredientInfoRecipe<T> extends BlankRecipeWrapper {
+public class IngredientInfoRecipe<T> implements IRecipeWrapper {
 	private static final int lineSpacing = 2;
 	private final List<String> description;
 	private final List<T> ingredients;

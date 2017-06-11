@@ -36,14 +36,6 @@ public final class LegacyUtil {
 		}
 	}
 
-	public static <T> ItemStack cheatIngredient(T focusValue, IIngredientHelper<T> ingredientHelper, boolean fullStack) {
-		try {
-			return ingredientHelper.cheatIngredient(focusValue, fullStack);
-		} catch (AbstractMethodError ignored) {
-			return ItemStack.EMPTY;
-		}
-	}
-
 	@Nullable
 	public static String getModName(IRecipeCategory recipeCategory) {
 		try {

@@ -79,7 +79,9 @@ public interface IIngredientHelper<V> {
 	 * @return an ItemStack for JEI to give the player, or an empty stack if this method handles it manually.
 	 * @since JEI 4.2.9
 	 */
-	ItemStack cheatIngredient(V ingredient, boolean fullStack);
+	default ItemStack cheatIngredient(V ingredient, boolean fullStack) {
+		return ItemStack.EMPTY;
+	}
 
 	/**
 	 * Makes a copy of the given ingredient.

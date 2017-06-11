@@ -8,12 +8,13 @@ import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeCategory;
+import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
 import net.minecraft.util.ResourceLocation;
 
-public class IngredientInfoRecipeCategory extends BlankRecipeCategory<IngredientInfoRecipe> {
+public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientInfoRecipe> {
 	public static final int recipeWidth = 160;
 	public static final int recipeHeight = 125;
 	private final IDrawable background;
