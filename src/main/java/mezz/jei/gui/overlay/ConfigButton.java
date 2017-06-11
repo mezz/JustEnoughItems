@@ -11,7 +11,6 @@ import mezz.jei.config.Constants;
 import mezz.jei.config.JEIModConfigGui;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.TooltipRenderer;
-import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -80,7 +79,7 @@ public class ConfigButton {
 				if (minecraft.currentScreen != null) {
 					GuiScreen configScreen = new JEIModConfigGui(minecraft.currentScreen);
 					parent.updateScreen(configScreen);
-					RecipesGui.displayGuiScreenWithoutClose(configScreen);
+					minecraft.displayGuiScreen(configScreen);
 				}
 			}
 			return true;
