@@ -23,21 +23,10 @@ public final class CraftingRecipeChecker {
 	}
 
 	public static List<IRecipe> getValidRecipes(final IJeiHelpers jeiHelpers) {
-		CraftingRecipeValidator<ShapedOreRecipe> shapedOreRecipeValidator = new CraftingRecipeValidator<>(
-				recipe -> new ShapedOreRecipeWrapper(jeiHelpers, recipe),
-				ShapedOreRecipe::func_192400_c);
-
-		CraftingRecipeValidator<ShapedRecipes> shapedRecipesValidator = new CraftingRecipeValidator<>(
-				ShapedRecipesWrapper::new,
-				recipe -> recipe.recipeItems);
-
-		CraftingRecipeValidator<ShapelessOreRecipe> shapelessOreRecipeValidator = new CraftingRecipeValidator<>(
-				recipe -> new ShapelessOreRecipeWrapper(jeiHelpers, recipe),
-				ShapelessOreRecipe::func_192400_c);
-
-		CraftingRecipeValidator<ShapelessRecipes> shapelessRecipesValidator = new CraftingRecipeValidator<>(
-				ShapelessRecipesWrapper::new,
-				recipe -> recipe.recipeItems);
+		CraftingRecipeValidator<ShapedOreRecipe> shapedOreRecipeValidator = new CraftingRecipeValidator<>(recipe -> new ShapedOreRecipeWrapper(jeiHelpers, recipe));
+		CraftingRecipeValidator<ShapedRecipes> shapedRecipesValidator = new CraftingRecipeValidator<>(recipe -> new ShapedRecipesWrapper(jeiHelpers, recipe));
+		CraftingRecipeValidator<ShapelessOreRecipe> shapelessOreRecipeValidator = new CraftingRecipeValidator<>(recipe -> new ShapelessRecipeWrapper(jeiHelpers, recipe));
+		CraftingRecipeValidator<ShapelessRecipes> shapelessRecipesValidator = new CraftingRecipeValidator<>(recipe -> new ShapelessRecipeWrapper(jeiHelpers, recipe));
 
 		Iterator<IRecipe> recipeIterator = CraftingManager.field_193380_a.iterator();
 		List<IRecipe> validRecipes = new ArrayList<>();
@@ -69,11 +58,9 @@ public final class CraftingRecipeChecker {
 	private static final class CraftingRecipeValidator<T extends IRecipe> {
 		private static final int INVALID_COUNT = -1;
 		private final IRecipeWrapperFactory<T> recipeWrapperFactory;
-		private final IIngredientGetter<T> ingredientGetter;
 
-		public CraftingRecipeValidator(IRecipeWrapperFactory<T> recipeWrapperFactory, IIngredientGetter<T> ingredientGetter) {
+		public CraftingRecipeValidator(IRecipeWrapperFactory<T> recipeWrapperFactory) {
 			this.recipeWrapperFactory = recipeWrapperFactory;
-			this.ingredientGetter = ingredientGetter;
 		}
 
 		public boolean isRecipeValid(T recipe) {
@@ -84,7 +71,7 @@ public final class CraftingRecipeChecker {
 				Log.get().error("Recipe has no output. {}", recipeInfo);
 				return false;
 			}
-			List<Ingredient> ingredients = ingredientGetter.getIngredients(recipe);
+			List<Ingredient> ingredients = recipe.func_192400_c();
 			int inputCount = getInputCount(ingredients);
 			if (inputCount == INVALID_COUNT) {
 				return false;
@@ -117,11 +104,6 @@ public final class CraftingRecipeChecker {
 				}
 			}
 			return inputCount;
-		}
-
-		@FunctionalInterface
-		interface IIngredientGetter<T extends IRecipe> {
-			List<Ingredient> getIngredients(T recipe);
 		}
 	}
 }

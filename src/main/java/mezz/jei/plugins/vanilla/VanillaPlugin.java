@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.Internal;
-import mezz.jei.api.BlankModPlugin;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
@@ -26,8 +25,7 @@ import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeChecker;
 import mezz.jei.plugins.vanilla.crafting.ShapedOreRecipeWrapper;
 import mezz.jei.plugins.vanilla.crafting.ShapedRecipesWrapper;
-import mezz.jei.plugins.vanilla.crafting.ShapelessOreRecipeWrapper;
-import mezz.jei.plugins.vanilla.crafting.ShapelessRecipesWrapper;
+import mezz.jei.plugins.vanilla.crafting.ShapelessRecipeWrapper;
 import mezz.jei.plugins.vanilla.crafting.TippedArrowRecipeMaker;
 import mezz.jei.plugins.vanilla.furnace.FuelRecipeMaker;
 import mezz.jei.plugins.vanilla.furnace.FurnaceFuelCategory;
@@ -125,9 +123,9 @@ public class VanillaPlugin implements IModPlugin {
 		AnvilRecipeMaker.registerVanillaAnvilRecipes(registry);
 
 		registry.handleRecipes(ShapedOreRecipe.class, recipe -> new ShapedOreRecipeWrapper(jeiHelpers, recipe), VanillaRecipeCategoryUid.CRAFTING);
-		registry.handleRecipes(ShapedRecipes.class, ShapedRecipesWrapper::new, VanillaRecipeCategoryUid.CRAFTING);
-		registry.handleRecipes(ShapelessOreRecipe.class, recipe -> new ShapelessOreRecipeWrapper(jeiHelpers, recipe), VanillaRecipeCategoryUid.CRAFTING);
-		registry.handleRecipes(ShapelessRecipes.class, ShapelessRecipesWrapper::new, VanillaRecipeCategoryUid.CRAFTING);
+		registry.handleRecipes(ShapedRecipes.class, recipe -> new ShapedRecipesWrapper(jeiHelpers, recipe), VanillaRecipeCategoryUid.CRAFTING);
+		registry.handleRecipes(ShapelessOreRecipe.class, recipe -> new ShapelessRecipeWrapper<>(jeiHelpers, recipe), VanillaRecipeCategoryUid.CRAFTING);
+		registry.handleRecipes(ShapelessRecipes.class, recipe -> new ShapelessRecipeWrapper<>(jeiHelpers, recipe), VanillaRecipeCategoryUid.CRAFTING);
 
 		registry.addRecipeClickArea(GuiCrafting.class, 88, 32, 28, 23, VanillaRecipeCategoryUid.CRAFTING);
 		registry.addRecipeClickArea(GuiInventory.class, 137, 29, 10, 13, VanillaRecipeCategoryUid.CRAFTING);
