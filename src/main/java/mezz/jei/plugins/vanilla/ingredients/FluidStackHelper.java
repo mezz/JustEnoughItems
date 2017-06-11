@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.color.ColorGetter;
@@ -117,7 +118,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Override
 	public String getErrorInfo(FluidStack ingredient) {
-		Objects.ToStringHelper toStringHelper = Objects.toStringHelper(FluidStack.class);
+		MoreObjects.ToStringHelper toStringHelper = MoreObjects.toStringHelper(FluidStack.class);
 
 		Fluid fluid = ingredient.getFluid();
 		if (fluid != null) {

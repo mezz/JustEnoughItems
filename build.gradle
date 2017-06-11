@@ -7,7 +7,7 @@ buildscript {
 		}
 	}
 	dependencies {
-		classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
 	}
 }
 
@@ -91,7 +91,7 @@ curseforge {
 		id = curse_project_id
 		changelog = file('changelog.html')
 		changelogType = 'html'
-		releaseType = 'beta'
+		releaseType = 'alpha'
 	}
 }
 
