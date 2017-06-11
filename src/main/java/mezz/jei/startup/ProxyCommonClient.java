@@ -107,7 +107,7 @@ public class ProxyCommonClient extends ProxyCommon {
 			if (SessionData.hasJoinedWorld()) {
 				// check that JEI has been started before. if not, do nothing
 				if (ProxyCommonClient.this.starter.hasStarted()) {
-					Log.info("Restarting JEI.");
+					Log.get().info("Restarting JEI.");
 					ProxyCommonClient.this.starter.start(ProxyCommonClient.this.plugins);
 				}
 			}
@@ -117,7 +117,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		try {
 			this.starter.start(plugins);
 		} catch (Exception e) {
-			Log.error("Exception on load", e);
+			Log.get().error("Exception on load", e);
 		}
 	}
 
@@ -170,12 +170,12 @@ public class ProxyCommonClient extends ProxyCommon {
 		try {
 			Config.saveFilterText();
 		} catch (RuntimeException e) {
-			Log.error("Failed to save filter text.", e);
+			Log.get().error("Failed to save filter text.", e);
 		}
 		try {
 			Internal.getIngredientLookupMemory().saveToFile();
 		} catch (RuntimeException e) {
-			Log.error("Failed to save ingredient lookup memory.", e);
+			Log.get().error("Failed to save ingredient lookup memory.", e);
 		}
 	}
 

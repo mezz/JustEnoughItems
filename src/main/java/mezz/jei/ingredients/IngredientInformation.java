@@ -177,7 +177,7 @@ public final class IngredientInformation {
 		});
 
 		if (write) {
-			Log.info("Saved tooltip cache to {}.", file.getAbsoluteFile());
+			Log.get().info("Saved tooltip cache to {}.", file.getAbsoluteFile());
 		}
 	}
 }

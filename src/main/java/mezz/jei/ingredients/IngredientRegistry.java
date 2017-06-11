@@ -48,7 +48,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 			}
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
-			Log.error("Failed to check if item is fuel {}.", itemStackInfo, e);
+			Log.get().error("Failed to check if item is fuel {}.", itemStackInfo, e);
 		}
 
 		try {
@@ -57,7 +57,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 			}
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
-			Log.error("Failed to check if item is a potion ingredient {}.", itemStackInfo, e);
+			Log.get().error("Failed to check if item is a potion ingredient {}.", itemStackInfo, e);
 		}
 	}
 

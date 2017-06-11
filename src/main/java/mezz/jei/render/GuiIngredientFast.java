@@ -329,7 +329,7 @@ public class GuiIngredientFast {
 		try {
 			return LegacyUtil.getTooltip(ingredientRenderer, minecraft, ingredient, minecraft.gameSettings.advancedItemTooltips);
 		} catch (RuntimeException | LinkageError e) {
-			Log.error("Tooltip crashed.", e);
+			Log.get().error("Tooltip crashed.", e);
 		}
 
 		List<String> tooltip = new ArrayList<>();

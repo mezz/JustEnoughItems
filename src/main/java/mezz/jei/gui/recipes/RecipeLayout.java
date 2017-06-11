@@ -60,7 +60,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			recipeCategory.setRecipe(recipeLayout, recipeWrapper, ingredients);
 			return recipeLayout;
 		} catch (RuntimeException | LinkageError e) {
-			Log.error("Error caught from Recipe Category: {}", recipeCategory.getClass().getCanonicalName(), e);
+			Log.get().error("Error caught from Recipe Category: {}", recipeCategory.getClass().getCanonicalName(), e);
 		}
 		return null;
 	}

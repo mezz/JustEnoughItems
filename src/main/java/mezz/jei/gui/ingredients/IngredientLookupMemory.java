@@ -222,7 +222,7 @@ public class IngredientLookupMemory {
 		});
 
 		if (write) {
-			Log.debug("Saved IngredientLookupMemory to {}.", file.getAbsoluteFile());
+			Log.get().debug("Saved IngredientLookupMemory to {}.", file.getAbsoluteFile());
 		}
 	}
 

@@ -46,14 +46,14 @@ public final class ItemStackListFactory {
 			try {
 				creativeTab.displayAllRelevantItems(creativeTabItemStacks);
 			} catch (RuntimeException | LinkageError e) {
-				Log.error("Creative tab crashed while getting items. Some items from this tab will be missing from the item list. {}", creativeTab, e);
+				Log.get().error("Creative tab crashed while getting items. Some items from this tab will be missing from the item list. {}", creativeTab, e);
 			}
 			for (ItemStack itemStack : creativeTabItemStacks) {
 				subtypeCount.add(itemStack.getItem());
 			}
 			for (ItemStack itemStack : creativeTabItemStacks) {
 				if (itemStack.isEmpty()) {
-					Log.error("Found an empty itemStack from creative tab: {}", creativeTab);
+					Log.get().error("Found an empty itemStack from creative tab: {}", creativeTab);
 				} else {
 					addItemStack(stackHelper, itemStack, itemList, itemNameSet);
 				}
@@ -99,14 +99,14 @@ public final class ItemStackListFactory {
 				block.getSubBlocks(itemTab, subBlocks);
 			} catch (RuntimeException | LinkageError e) {
 				String itemStackInfo = ErrorUtil.getItemStackInfo(new ItemStack(item));
-				Log.error("Failed to getSubBlocks {}", itemStackInfo, e);
+				Log.get().error("Failed to getSubBlocks {}", itemStackInfo, e);
 			}
 
 			for (ItemStack subBlock : subBlocks) {
 				if (subBlock == null) {
-					Log.error("Found null subBlock of {}", block);
+					Log.get().error("Found null subBlock of {}", block);
 				} else if (subBlock.isEmpty()) {
-					Log.error("Found empty subBlock of {}", block);
+					Log.get().error("Found empty subBlock of {}", block);
 				} else {
 					addItemStack(stackHelper, subBlock, itemList, itemNameSet);
 				}
@@ -127,7 +127,7 @@ public final class ItemStackListFactory {
 			itemKey = stackHelper.getUniqueIdentifierForStack(stack, StackHelper.UidMode.FULL);
 		} catch (RuntimeException | LinkageError e) {
 			String stackInfo = ErrorUtil.getItemStackInfo(stack);
-			Log.error("Couldn't get unique name for itemStack {}", stackInfo, e);
+			Log.get().error("Couldn't get unique name for itemStack {}", stackInfo, e);
 		}
 
 		if (itemKey != null) {

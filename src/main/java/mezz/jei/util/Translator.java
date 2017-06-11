@@ -23,9 +23,8 @@ public final class Translator {
 		try {
 			return String.format(s, format);
 		} catch (IllegalFormatException e) {
-			String errorMessage = "Format error: " + s;
-			Log.error(errorMessage, e);
-			return errorMessage;
+			Log.get().error("Format error: {}", s, e);
+			return "Format error: " + s;
 		}
 	}
 

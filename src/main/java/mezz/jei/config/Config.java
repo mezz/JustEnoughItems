@@ -205,11 +205,11 @@ public final class Config {
 		if (!jeiConfigurationDir.exists()) {
 			try {
 				if (!jeiConfigurationDir.mkdir()) {
-					Log.error("Could not create config directory {}", jeiConfigurationDir);
+					Log.get().error("Could not create config directory {}", jeiConfigurationDir);
 					return;
 				}
 			} catch (SecurityException e) {
-				Log.error("Could not create config directory {}", jeiConfigurationDir, e);
+				Log.get().error("Could not create config directory {}", jeiConfigurationDir, e);
 				return;
 			}
 		}
@@ -352,7 +352,7 @@ public final class Config {
 			if (valueByName != null) {
 				format.append(valueByName.toString());
 			} else {
-				Log.error("Invalid format: {}", string);
+				Log.get().error("Invalid format: {}", string);
 			}
 		}
 		return format.toString();
@@ -425,7 +425,7 @@ public final class Config {
 		for (String entry : searchColors) {
 			final String[] values = entry.split(":");
 			if (values.length != 2) {
-				Log.error("Invalid format for searchColor entry: {}", entry);
+				Log.get().error("Invalid format for searchColor entry: {}", entry);
 			} else {
 				try {
 					final String name = values[0];
@@ -433,7 +433,7 @@ public final class Config {
 					final Color color = new Color(colorValue);
 					searchColorsMapBuilder.put(color, name);
 				} catch (NumberFormatException e) {
-					Log.error("Invalid number format for searchColor entry: {}", entry, e);
+					Log.get().error("Invalid number format for searchColor entry: {}", entry, e);
 				}
 			}
 		}

@@ -29,7 +29,7 @@ public final class ErrorUtil {
 		try {
 			recipeInfoBuilder.append(recipe);
 		} catch (RuntimeException e) {
-			Log.error("Failed recipe.toString", e);
+			Log.get().error("Failed recipe.toString", e);
 			recipeInfoBuilder.append(recipe.getClass());
 		}
 
@@ -74,7 +74,7 @@ public final class ErrorUtil {
 		try {
 			recipeInfoBuilder.append(recipe);
 		} catch (RuntimeException e) {
-			Log.error("Failed recipe.toString", e);
+			Log.get().error("Failed recipe.toString", e);
 			recipeInfoBuilder.append(recipe.getClass());
 		}
 

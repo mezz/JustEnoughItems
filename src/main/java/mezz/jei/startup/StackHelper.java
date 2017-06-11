@@ -234,12 +234,12 @@ public class StackHelper implements IStackHelper {
 			try {
 				item.getSubItems(itemTab, subItems);
 			} catch (RuntimeException | LinkageError e) {
-				Log.warning("Caught a crash while getting sub-items of {}", item, e);
+				Log.get().warn("Caught a crash while getting sub-items of {}", item, e);
 			}
 
 			for (ItemStack subItem : subItems) {
 				if (subItem.isEmpty()) {
-					Log.warning("Found an empty subItem of {}", item);
+					Log.get().warn("Found an empty subItem of {}", item);
 				} else {
 					if (subItem.getCount() != stackSize) {
 						ItemStack subItemCopy = subItem.copy();
@@ -289,7 +289,7 @@ public class StackHelper implements IStackHelper {
 			} else if (obj instanceof Iterable) {
 				getAllSubtypes(subtypesList, (Iterable) obj);
 			} else if (obj != null) {
-				Log.error("Unknown object found: {}", obj);
+				Log.get().error("Unknown object found: {}", obj);
 			} else {
 				subtypesList.add(null);
 			}
@@ -348,7 +348,7 @@ public class StackHelper implements IStackHelper {
 				toItemStackList(itemStackListBuilder, obj, expandSubtypes);
 			}
 		} else if (input != null) {
-			Log.error("Unknown object found: {}", input);
+			Log.get().error("Unknown object found: {}", input);
 		}
 	}
 

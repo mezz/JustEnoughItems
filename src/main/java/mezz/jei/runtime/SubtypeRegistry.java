@@ -32,7 +32,7 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 		ErrorUtil.checkNotNull(interpreter, "interpreter");
 
 		if (interpreters.containsKey(item)) {
-			Log.error("An interpreter is already registered for this item: {}", item, new IllegalArgumentException());
+			Log.get().error("An interpreter is already registered for this item: {}", item, new IllegalArgumentException());
 			return;
 		}
 

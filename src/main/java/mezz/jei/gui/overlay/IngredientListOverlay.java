@@ -68,10 +68,10 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	}
 
 	public void rebuildItemFilter() {
-		Log.info("Updating ingredient filter...");
+		Log.get().info("Updating ingredient filter...");
 		long start_time = System.currentTimeMillis();
 		this.ingredientFilter.modesChanged();
-		Log.info("Updated  ingredient filter in {} ms", System.currentTimeMillis() - start_time);
+		Log.get().info("Updated  ingredient filter in {} ms", System.currentTimeMillis() - start_time);
 		SessionData.setFirstItemIndex(0);
 		updateLayout();
 	}

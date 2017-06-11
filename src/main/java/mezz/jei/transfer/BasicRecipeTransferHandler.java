@@ -72,7 +72,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 		}
 
 		if (inputCount > craftingSlots.size()) {
-			Log.error("Recipe Transfer helper {} does not work for container {}", transferHelper.getClass(), container.getClass());
+			Log.get().error("Recipe Transfer helper {} does not work for container {}", transferHelper.getClass(), container.getClass());
 			return handlerHelper.createInternalError();
 		}
 
@@ -84,7 +84,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 			final ItemStack stack = slot.getStack();
 			if (!stack.isEmpty()) {
 				if (!slot.canTakeStack(player)) {
-					Log.error("Recipe Transfer helper {} does not work for container {}. Player can't move item out of Crafting Slot number {}", transferHelper.getClass(), container.getClass(), slot.slotNumber);
+					Log.get().error("Recipe Transfer helper {} does not work for container {}. Player can't move item out of Crafting Slot number {}", transferHelper.getClass(), container.getClass(), slot.slotNumber);
 					return handlerHelper.createInternalError();
 				}
 				filledCraftSlotCount++;
@@ -125,7 +125,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 			int craftNumber = entry.getKey();
 			int slotNumber = craftingSlotIndexes.get(craftNumber);
 			if (slotNumber < 0 || slotNumber >= container.inventorySlots.size()) {
-				Log.error("Recipes Transfer Helper {} references slot {} outside of the inventory's size {}", transferHelper.getClass(), slotNumber, container.inventorySlots.size());
+				Log.get().error("Recipes Transfer Helper {} references slot {} outside of the inventory's size {}", transferHelper.getClass(), slotNumber, container.inventorySlots.size());
 				return handlerHelper.createInternalError();
 			}
 		}

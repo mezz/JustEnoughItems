@@ -44,7 +44,7 @@ public final class CommandUtil {
 	private static void giveStackVanilla(ItemStack itemStack, int amount) {
 		if (itemStack.isEmpty()) {
 			String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
-			Log.error("Empty itemStack: " + stackInfo, new IllegalArgumentException());
+			Log.get().error("Empty itemStack: {}", stackInfo, new IllegalArgumentException());
 			return;
 		}
 

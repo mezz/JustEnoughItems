@@ -192,7 +192,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 
 			GlStateManager.enableDepth();
 		} catch (RuntimeException e) {
-			Log.error("Exception when rendering tooltip on {}.", value, e);
+			Log.get().error("Exception when rendering tooltip on {}.", value, e);
 		}
 	}
 

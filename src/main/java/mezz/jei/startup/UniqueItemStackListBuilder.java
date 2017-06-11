@@ -27,7 +27,7 @@ public class UniqueItemStackListBuilder {
 				ingredients.add(itemStack);
 			}
 		} catch (RuntimeException | LinkageError e) {
-			Log.error("Failed to get unique identifier for stack.", e);
+			Log.get().error("Failed to get unique identifier for stack.", e);
 		}
 	}
 

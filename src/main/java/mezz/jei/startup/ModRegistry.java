@@ -235,7 +235,7 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	public void addRecipeRegistryPlugin(IRecipeRegistryPlugin recipeRegistryPlugin) {
 		ErrorUtil.checkNotNull(recipeRegistryPlugin, "recipeRegistryPlugin");
 
-		Log.info("Added recipe registry plugin: {}", recipeRegistryPlugin.getClass());
+		Log.get().info("Added recipe registry plugin: {}", recipeRegistryPlugin.getClass());
 		recipeRegistryPlugins.add(recipeRegistryPlugin);
 	}
 

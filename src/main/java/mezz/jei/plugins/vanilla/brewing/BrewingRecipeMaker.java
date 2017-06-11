@@ -127,7 +127,7 @@ public class BrewingRecipeMaker {
 				if (!unhandledRecipeClasses.contains(recipeClass)) {
 					unhandledRecipeClasses.add(recipeClass);
 					if (Config.isDebugModeEnabled()) {
-						Log.debug("Can't handle brewing recipe class: {}", recipeClass);
+						Log.get().debug("Can't handle brewing recipe class: {}", recipeClass);
 					}
 				}
 			}

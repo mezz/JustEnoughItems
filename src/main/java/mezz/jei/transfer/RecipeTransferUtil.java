@@ -37,7 +37,7 @@ public final class RecipeTransferUtil {
 		final IRecipeTransferHandler transferHandler = recipeRegistry.getRecipeTransferHandler(container, recipeLayout.getRecipeCategory());
 		if (transferHandler == null) {
 			if (doTransfer) {
-				Log.error("No Recipe Transfer handler for container {}", container.getClass());
+				Log.get().error("No Recipe Transfer handler for container {}", container.getClass());
 			}
 			return RecipeTransferErrorInternal.INSTANCE;
 		}

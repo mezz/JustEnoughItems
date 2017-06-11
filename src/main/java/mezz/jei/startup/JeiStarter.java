@@ -29,7 +29,7 @@ public class JeiStarter {
 	public void start(List<IModPlugin> plugins) {
 		long jeiStartTime = System.currentTimeMillis();
 
-		Log.info("Starting JEI...");
+		Log.get().info("Starting JEI...");
 		SubtypeRegistry subtypeRegistry = new SubtypeRegistry();
 
 		registerItemSubtypes(plugins, subtypeRegistry);
@@ -49,36 +49,36 @@ public class JeiStarter {
 		registerCategories(plugins, modRegistry);
 		registerPlugins(plugins, modRegistry);
 
-		Log.info("Building recipe registry...");
+		Log.get().info("Building recipe registry...");
 		long start_time = System.currentTimeMillis();
 		RecipeRegistry recipeRegistry = modRegistry.createRecipeRegistry(ingredientRegistry);
-		Log.info("Built    recipe registry in {} ms", System.currentTimeMillis() - start_time);
+		Log.get().info("Built    recipe registry in {} ms", System.currentTimeMillis() - start_time);
 
-		Log.info("Loading ingredient lookup history...");
+		Log.get().info("Loading ingredient lookup history...");
 		start_time = System.currentTimeMillis();
 		Internal.setIngredientLookupMemory(new IngredientLookupMemory(recipeRegistry, ingredientRegistry));
-		Log.info("Loaded  ingredient lookup history in {} ms", System.currentTimeMillis() - start_time);
+		Log.get().info("Loaded  ingredient lookup history in {} ms", System.currentTimeMillis() - start_time);
 
-		Log.info("Building ingredient list...");
+		Log.get().info("Building ingredient list...");
 		start_time = System.currentTimeMillis();
 		List<IIngredientListElement> ingredientList = IngredientListElementFactory.createBaseList(ingredientRegistry, ForgeModIdHelper.getInstance());
-		Log.info("Built    ingredient list in {} ms", System.currentTimeMillis() - start_time);
+		Log.get().info("Built    ingredient list in {} ms", System.currentTimeMillis() - start_time);
 
-		Log.info("Building ingredient filter...");
+		Log.get().info("Building ingredient filter...");
 		start_time = System.currentTimeMillis();
 		IngredientFilter ingredientFilter = new IngredientFilter(jeiHelpers);
 		ingredientFilter.addIngredients(ingredientList);
 		Internal.setIngredientFilter(ingredientFilter);
-		Log.info("Built    ingredient filter in {} ms", System.currentTimeMillis() - start_time);
+		Log.get().info("Built    ingredient filter in {} ms", System.currentTimeMillis() - start_time);
 
-		Log.info("Building runtime...");
+		Log.get().info("Building runtime...");
 		start_time = System.currentTimeMillis();
 		List<IAdvancedGuiHandler<?>> advancedGuiHandlers = modRegistry.getAdvancedGuiHandlers();
 		IngredientListOverlay ingredientListOverlay = new IngredientListOverlay(ingredientFilter, ingredientRegistry);
 		RecipesGui recipesGui = new RecipesGui(recipeRegistry);
 		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, ingredientListOverlay, recipesGui, ingredientRegistry, advancedGuiHandlers, ingredientFilter);
 		Internal.setRuntime(jeiRuntime);
-		Log.info("Built    runtime in {} ms", System.currentTimeMillis() - start_time);
+		Log.get().info("Built    runtime in {} ms", System.currentTimeMillis() - start_time);
 
 		stackHelper.disableUidCache();
 
@@ -88,7 +88,7 @@ public class JeiStarter {
 		Internal.setGuiEventHandler(guiEventHandler);
 
 		started = true;
-		Log.info("Finished Starting JEI in {} ms", System.currentTimeMillis() - jeiStartTime);
+		Log.get().info("Finished Starting JEI in {} ms", System.currentTimeMillis() - jeiStartTime);
 	}
 
 	public boolean hasStarted() {
@@ -104,7 +104,7 @@ public class JeiStarter {
 				progressBar.step(plugin.getClass().getName());
 				plugin.registerItemSubtypes(subtypeRegistry);
 			} catch (RuntimeException | LinkageError e) {
-				Log.error("Failed to register item subtypes for mod plugin: {}", plugin.getClass(), e);
+				Log.get().error("Failed to register item subtypes for mod plugin: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
 		}
@@ -125,7 +125,7 @@ public class JeiStarter {
 				if (VanillaPlugin.class.isInstance(plugin)) {
 					throw e;
 				} else {
-					Log.error("Failed to register Ingredients for mod plugin: {}", plugin.getClass(), e);
+					Log.get().error("Failed to register Ingredients for mod plugin: {}", plugin.getClass(), e);
 					iterator.remove();
 				}
 			}
@@ -143,14 +143,14 @@ public class JeiStarter {
 			try {
 				progressBar.step(plugin.getClass().getName());
 				long start_time = System.currentTimeMillis();
-				Log.info("Registering categories: {} ...", plugin.getClass().getName());
+				Log.get().info("Registering categories: {} ...", plugin.getClass().getName());
 				plugin.registerCategories(modRegistry);
 				long timeElapsedMs = System.currentTimeMillis() - start_time;
-				Log.info("Registered  categories: {} in {} ms", plugin.getClass().getName(), timeElapsedMs);
+				Log.get().info("Registered  categories: {} in {} ms", plugin.getClass().getName(), timeElapsedMs);
 			} catch (AbstractMethodError ignored) {
 				// legacy plugins do not implement registerCategories
 			} catch (RuntimeException | LinkageError e) {
-				Log.error("Failed to register mod categories: {}", plugin.getClass(), e);
+				Log.get().error("Failed to register mod categories: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
 		}
@@ -165,12 +165,12 @@ public class JeiStarter {
 			try {
 				progressBar.step(plugin.getClass().getName());
 				long start_time = System.currentTimeMillis();
-				Log.info("Registering plugin: {} ...", plugin.getClass().getName());
+				Log.get().info("Registering plugin: {} ...", plugin.getClass().getName());
 				plugin.register(modRegistry);
 				long timeElapsedMs = System.currentTimeMillis() - start_time;
-				Log.info("Registered  plugin: {} in {} ms", plugin.getClass().getName(), timeElapsedMs);
+				Log.get().info("Registered  plugin: {} in {} ms", plugin.getClass().getName(), timeElapsedMs);
 			} catch (RuntimeException | LinkageError e) {
-				Log.error("Failed to register mod plugin: {}", plugin.getClass(), e);
+				Log.get().error("Failed to register mod plugin: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
 		}
@@ -185,14 +185,14 @@ public class JeiStarter {
 			try {
 				progressBar.step(plugin.getClass().getName());
 				long start_time = System.currentTimeMillis();
-				Log.info("Sending runtime to plugin: {} ...", plugin.getClass().getName());
+				Log.get().info("Sending runtime to plugin: {} ...", plugin.getClass().getName());
 				plugin.onRuntimeAvailable(jeiRuntime);
 				long timeElapsedMs = System.currentTimeMillis() - start_time;
 				if (timeElapsedMs > 100) {
-					Log.warning("Sending runtime to plugin: {} took {} ms", plugin.getClass().getName(), timeElapsedMs);
+					Log.get().warn("Sending runtime to plugin: {} took {} ms", plugin.getClass().getName(), timeElapsedMs);
 				}
 			} catch (RuntimeException | LinkageError e) {
-				Log.error("Sending runtime to plugin failed: {}", plugin.getClass(), e);
+				Log.get().error("Sending runtime to plugin failed: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
 		}

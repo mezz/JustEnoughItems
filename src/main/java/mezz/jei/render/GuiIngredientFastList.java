@@ -92,7 +92,7 @@ public class GuiIngredientFastList {
 			} catch (Throwable throwable) {
 				IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 				String stackInfo = ingredientHelper.getErrorInfo(ingredient);
-				Log.error("ItemStack crashed getting IBakedModel. " + stackInfo, throwable);
+				Log.get().error("ItemStack crashed getting IBakedModel. {}", stackInfo, throwable);
 				Config.addIngredientToConfigBlacklist(ingredient, Config.IngredientBlacklistType.WILDCARD, ingredientHelper);
 				guiItemStack.clear();
 				return;
@@ -101,7 +101,7 @@ public class GuiIngredientFastList {
 			if (bakedModel == null) {
 				IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 				String stackInfo = ingredientHelper.getErrorInfo(ingredient);
-				Log.error("ItemStack returned null IBakedModel. " + stackInfo, new NullPointerException());
+				Log.get().error("ItemStack returned null IBakedModel. {}", stackInfo, new NullPointerException());
 				Config.addIngredientToConfigBlacklist(ingredient, Config.IngredientBlacklistType.WILDCARD, ingredientHelper);
 				guiItemStack.clear();
 			} else {

@@ -31,7 +31,7 @@ public class ProxyCommon {
 	}
 
 	public void sendPacketToServer(PacketJei packet) {
-		Log.error("Tried to send packet to the server from the server: {}", packet);
+		Log.get().error("Tried to send packet to the server from the server: {}", packet);
 	}
 
 	public void sendPacketToClient(PacketJei packet, EntityPlayerMP player) {

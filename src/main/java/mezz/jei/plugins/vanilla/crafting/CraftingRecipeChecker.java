@@ -105,7 +105,7 @@ public final class CraftingRecipeChecker {
 			//noinspection ConstantConditions
 			if (recipeOutput == null || recipeOutput.isEmpty()) {
 				String recipeInfo = getInfo(recipe);
-				Log.error("Recipe has no output. {}", recipeInfo);
+				Log.get().error("Recipe has no output. {}", recipeInfo);
 				return false;
 			}
 			int inputCount = getInputCount(recipe);
@@ -113,11 +113,11 @@ public final class CraftingRecipeChecker {
 				return false;
 			} else if (inputCount > 9) {
 				String recipeInfo = getInfo(recipe);
-				Log.error("Recipe has too many inputs. {}", recipeInfo);
+				Log.get().error("Recipe has too many inputs. {}", recipeInfo);
 				return false;
 			} else if (inputCount == 0) {
 				String recipeInfo = getInfo(recipe);
-				Log.error("Recipe has no inputs. {}", recipeInfo);
+				Log.get().error("Recipe has no inputs. {}", recipeInfo);
 				return false;
 			}
 			return true;

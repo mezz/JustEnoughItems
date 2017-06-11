@@ -59,7 +59,7 @@ public class PacketHandler {
 
 			checkThreadAndEnqueue(packetHandler, packetBuffer, player, player.getServer());
 		} catch (RuntimeException ex) {
-			Log.error("Packet error", ex);
+			Log.get().error("Packet error", ex);
 		}
 	}
 
@@ -86,7 +86,7 @@ public class PacketHandler {
 
 			checkThreadAndEnqueue(packetHandler, packetBuffer, player, minecraft);
 		} catch (Exception ex) {
-			Log.error("Packet error", ex);
+			Log.get().error("Packet error", ex);
 		}
 	}
 
@@ -96,7 +96,7 @@ public class PacketHandler {
 				try {
 					packetHandler.readPacketData(packetBuffer, player);
 				} catch (IOException e) {
-					Log.error("Network Error", e);
+					Log.get().error("Network Error", e);
 				}
 			});
 		}

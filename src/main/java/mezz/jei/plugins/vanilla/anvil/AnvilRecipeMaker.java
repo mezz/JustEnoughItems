@@ -38,12 +38,12 @@ public final class AnvilRecipeMaker {
 		Stopwatch sw = Stopwatch.createStarted();
 		registerRepairRecipes(registry);
 		sw.stop();
-		Log.info("Registered vanilla repair recipes in {} ms", sw.elapsed(TimeUnit.MILLISECONDS));
+		Log.get().info("Registered vanilla repair recipes in {} ms", sw.elapsed(TimeUnit.MILLISECONDS));
 		sw.reset();
 		sw.start();
 		registerBookEnchantmentRecipes(registry);
 		sw.stop();
-		Log.info("Registered enchantment recipes in {} ms", sw.elapsed(TimeUnit.MILLISECONDS));
+		Log.get().info("Registered enchantment recipes in {} ms", sw.elapsed(TimeUnit.MILLISECONDS));
 	}
 
 	private static void registerBookEnchantmentRecipes(IModRegistry registry) {
@@ -191,7 +191,7 @@ public final class AnvilRecipeMaker {
 		} catch (RuntimeException e) {
 			String left = ErrorUtil.getItemStackInfo(leftStack);
 			String right = ErrorUtil.getItemStackInfo(rightStack);
-			Log.error("Could not get anvil level cost for: ({} and {}).", left, right, e);
+			Log.get().error("Could not get anvil level cost for: ({} and {}).", left, right, e);
 			return -1;
 		}
 	}

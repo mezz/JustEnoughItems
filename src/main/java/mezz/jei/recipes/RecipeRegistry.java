@@ -151,15 +151,15 @@ public class RecipeRegistry implements IRecipeRegistry {
 			try {
 				recipeClass = recipeHandler.getRecipeClass();
 			} catch (RuntimeException e) {
-				Log.error("Recipe handler crashed.", e);
+				Log.get().error("Recipe handler crashed.", e);
 				continue;
 			} catch (LinkageError e) {
-				Log.error("Recipe handler crashed.", e);
+				Log.get().error("Recipe handler crashed.", e);
 				continue;
 			}
 
 			if (recipeHandlerClasses.contains(recipeClass)) {
-				Log.error("A Recipe Handler has already been registered for this recipe class: " + recipeClass.getName());
+				Log.get().error("A Recipe Handler has already been registered for this recipe class: {}" + recipeClass.getName());
 				continue;
 			}
 
@@ -181,7 +181,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 				recipeHandlerClasses.add(recipeClass);
 				builder.put(entry);
 			} else {
-				Log.error("A Recipe Handler has already been registered for this recipe class: " + recipeClass.getName());
+				Log.get().error("A Recipe Handler has already been registered for this recipe class: {}" + recipeClass.getName());
 			}
 		}
 		return builder.build();
@@ -222,7 +222,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 		IRecipeCategory recipeCategory = getRecipeCategory(recipeCategoryUid);
 		if (recipeCategory == null) {
-			Log.error("No recipe category registered for recipeCategoryUid: {}", recipeCategoryUid);
+			Log.get().error("No recipe category registered for recipeCategoryUid: {}", recipeCategoryUid);
 			return;
 		}
 
@@ -242,7 +242,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			if (recipeHandler != null) {
 				recipeCategoryUid = recipeHandler.getRecipeCategoryUid(recipe);
 			} else {
-				Log.error("Could not determine recipe category for recipe: {}", recipeClass);
+				Log.get().error("Could not determine recipe category for recipe: {}", recipeClass);
 				return;
 			}
 		}
@@ -251,7 +251,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		if (recipeWrapper != null) {
 			IRecipeCategory recipeCategory = getRecipeCategory(recipeCategoryUid);
 			if (recipeCategory == null) {
-				Log.error("No recipe category registered for recipeCategoryUid: {}", recipeCategoryUid);
+				Log.get().error("No recipe category registered for recipeCategoryUid: {}", recipeCategoryUid);
 				return;
 			}
 
@@ -269,22 +269,22 @@ public class RecipeRegistry implements IRecipeRegistry {
 		try {
 			recipeInfoBuilder.append(recipe);
 		} catch (RuntimeException e2) {
-			Log.error("Failed recipe.toString", e2);
+			Log.get().error("Failed recipe.toString", e2);
 			recipeInfoBuilder.append(recipe.getClass());
 		}
 		recipeInfoBuilder.append("\nRecipe Handler failed to create recipe wrapper\n");
 		recipeInfoBuilder.append(recipeHandler.getClass());
-		Log.error(recipeInfoBuilder.toString());
+		Log.get().error("{}", recipeInfoBuilder.toString());
 	}
 
 	private <T> void addRecipe(T recipe, IRecipeWrapper recipeWrapper, IRecipeCategory recipeCategory) {
 		try {
 			addRecipeUnchecked(recipe, recipeWrapper, recipeCategory);
 		} catch (BrokenCraftingRecipeException e) {
-			Log.error("Found a broken crafting recipe.", e);
+			Log.get().error("Found a broken crafting recipe.", e);
 		} catch (RuntimeException | LinkageError e) {
 			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, recipeWrapper);
-			Log.error("Found a broken recipe: {}\n", recipeInfo, e);
+			Log.get().error("Found a broken recipe: {}\n", recipeInfo, e);
 		}
 	}
 
@@ -332,14 +332,14 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private <T> void removeRecipe(T recipe, String recipeCategoryUid) {
 		IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
 		if (recipeCategory == null) {
-			Log.error("No recipe category registered for recipeCategoryUid: {}", recipeCategoryUid);
+			Log.get().error("No recipe category registered for recipeCategoryUid: {}", recipeCategoryUid);
 			return;
 		}
 
 		try {
 			removeRecipeUnchecked(recipe, recipeCategory);
 		} catch (BrokenCraftingRecipeException e) {
-			Log.error("Found a broken crafting recipe.", e);
+			Log.get().error("Found a broken crafting recipe.", e);
 		}
 	}
 
@@ -444,7 +444,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 					return null;
 				}
 			} catch (RuntimeException | LinkageError e) {
-				Log.error("Recipe check crashed", e);
+				Log.get().error("Recipe check crashed", e);
 				return null;
 			}
 
@@ -597,7 +597,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			List<String> recipeCategoryUids = plugin.getRecipeCategoryUids(focus);
 			long timeElapsed = System.currentTimeMillis() - start_time;
 			if (timeElapsed > 10) {
-				Log.warning("Recipe Category lookup is slow: {} ms. {}", timeElapsed, plugin.getClass());
+				Log.get().warn("Recipe Category lookup is slow: {} ms. {}", timeElapsed, plugin.getClass());
 			}
 			allRecipeCategoryUids.addAll(recipeCategoryUids);
 		}
@@ -621,7 +621,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			List<T> recipeWrappers = plugin.getRecipeWrappers(recipeCategory, focus);
 			long timeElapsed = System.currentTimeMillis() - start_time;
 			if (timeElapsed > 10) {
-				Log.warning("Recipe Wrapper lookup is slow: {} ms. {}", timeElapsed, plugin.getClass());
+				Log.get().warn("Recipe Wrapper lookup is slow: {} ms. {}", timeElapsed, plugin.getClass());
 			}
 			allRecipeWrappers.addAll(recipeWrappers);
 		}
@@ -639,7 +639,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			List<T> recipeWrappers = plugin.getRecipeWrappers(recipeCategory);
 			long timeElapsed = System.currentTimeMillis() - start_time;
 			if (timeElapsed > 10) {
-				Log.warning("Recipe Wrapper lookup is slow: {} ms. {}", timeElapsed, plugin.getClass());
+				Log.get().warn("Recipe Wrapper lookup is slow: {} ms. {}", timeElapsed, plugin.getClass());
 			}
 			allRecipeWrappers.addAll(recipeWrappers);
 		}
