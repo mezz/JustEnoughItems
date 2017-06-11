@@ -22,11 +22,11 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.config.Config;
 import mezz.jei.util.FileUtil;
-import mezz.jei.util.LegacyUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.Language;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.TextFormatting;
 
@@ -62,7 +62,9 @@ public final class IngredientInformation {
 	}
 
 	private static <T> List<String> getTooltipStringsUncached(T ingredient, IIngredientRenderer<T> ingredientRenderer, Set<String> excludeWords) {
-		List<String> tooltip = LegacyUtil.getTooltip(ingredientRenderer, Minecraft.getMinecraft(), ingredient, Config.getSearchAdvancedTooltips());
+		ITooltipFlag.TooltipFlags tooltipFlag = Config.getSearchAdvancedTooltips() ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
+		Minecraft minecraft = Minecraft.getMinecraft();
+		List<String> tooltip = ingredientRenderer.getTooltip(minecraft, ingredient, tooltipFlag);
 		List<String> cleanTooltip = new ArrayList<>(tooltip.size());
 		for (String line : tooltip) {
 			line = removeChatFormatting(line);

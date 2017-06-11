@@ -5,22 +5,11 @@ import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.recipe.IRecipeCategory;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
 public final class LegacyUtil {
 	private LegacyUtil() {
-	}
-
-	public static <T> List<String> getTooltip(IIngredientRenderer<T> ingredientRenderer, Minecraft minecraft, T ingredient, boolean advanced) {
-		try {
-			return ingredientRenderer.getTooltip(minecraft, ingredient, advanced);
-		} catch (AbstractMethodError ignored) {
-			//noinspection deprecation
-			return ingredientRenderer.getTooltip(minecraft, ingredient);
-		}
 	}
 
 	public static <T> T getIngredientCopy(T value, IIngredientHelper<T> ingredientHelper) {

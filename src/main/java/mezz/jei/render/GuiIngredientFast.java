@@ -31,6 +31,7 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.item.Item;
@@ -327,7 +328,8 @@ public class GuiIngredientFast {
 		IIngredientRenderer<V> ingredientRenderer = element.getIngredientRenderer();
 		V ingredient = element.getIngredient();
 		try {
-			return LegacyUtil.getTooltip(ingredientRenderer, minecraft, ingredient, minecraft.gameSettings.advancedItemTooltips);
+			ITooltipFlag.TooltipFlags tooltipFlag = minecraft.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
+			return ingredientRenderer.getTooltip(minecraft, ingredient, tooltipFlag);
 		} catch (RuntimeException | LinkageError e) {
 			Log.get().error("Tooltip crashed.", e);
 		}

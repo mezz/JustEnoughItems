@@ -38,7 +38,9 @@ public interface IIngredientRenderer<T> {
 	 *
 	 * @since JEI 4.6.0
 	 */
-	List<String> getTooltip(Minecraft minecraft, T ingredient, ITooltipFlag tooltipFlag);
+	default List<String> getTooltip(Minecraft minecraft, T ingredient, ITooltipFlag tooltipFlag) {
+		return getTooltip(minecraft, ingredient, tooltipFlag == ITooltipFlag.TooltipFlags.ADVANCED);
+	}
 
 	/**
 	 * Get the tooltip font renderer for this ingredient. JEI renders the tooltip based on this.
@@ -64,8 +66,7 @@ public interface IIngredientRenderer<T> {
 	 */
 	@Deprecated
 	default List<String> getTooltip(Minecraft minecraft, T ingredient) {
-		ITooltipFlag.TooltipFlags tooltipFlag = minecraft.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
-		return getTooltip(minecraft, ingredient, tooltipFlag);
+		throw new UnsupportedOperationException("Calling old getTooltip is not supported.");
 	}
 
 	/**
@@ -81,7 +82,6 @@ public interface IIngredientRenderer<T> {
 	 */
 	@Deprecated
 	default List<String> getTooltip(Minecraft minecraft, T ingredient, boolean advanced) {
-		ITooltipFlag.TooltipFlags tooltipFlag = advanced ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
-		return getTooltip(minecraft, ingredient, tooltipFlag);
+		throw new UnsupportedOperationException("Calling old getTooltip is not supported.");
 	}
 }
