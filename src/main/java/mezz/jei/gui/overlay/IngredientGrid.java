@@ -79,7 +79,7 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 			final GuiContainer guiContainer = (GuiContainer) currentScreen;
 			final JeiRuntime jeiRuntime = Internal.getRuntime();
 			if (jeiRuntime != null) {
-				final Set<Rectangle> allGuiExtraAreas = new HashSet<Rectangle>();
+				final Set<Rectangle> allGuiExtraAreas = new HashSet<>();
 				final List<IAdvancedGuiHandler<GuiContainer>> activeAdvancedGuiHandlers = jeiRuntime.getActiveAdvancedGuiHandlers(guiContainer);
 				for (IAdvancedGuiHandler<GuiContainer> advancedGuiHandler : activeAdvancedGuiHandlers) {
 					final List<Rectangle> guiExtraAreas = advancedGuiHandler.getGuiExtraAreas(guiContainer);

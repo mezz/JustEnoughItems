@@ -71,7 +71,7 @@ public final class CraftingRecipeChecker {
 		};
 
 		Iterator<IRecipe> recipeIterator = CraftingManager.field_193380_a.iterator();
-		List<IRecipe> validRecipes = new ArrayList<IRecipe>();
+		List<IRecipe> validRecipes = new ArrayList<>();
 		while (recipeIterator.hasNext()) {
 			IRecipe recipe = recipeIterator.next();
 			if (recipe instanceof ShapedOreRecipe) {
@@ -97,7 +97,6 @@ public final class CraftingRecipeChecker {
 		return validRecipes;
 	}
 
-	// TODO Java 8 use lambdas to implement
 	private static abstract class CraftingRecipeValidator<T extends IRecipe> {
 		private static final int INVALID_COUNT = -1;
 

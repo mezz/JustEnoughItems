@@ -14,9 +14,9 @@ import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.util.ErrorUtil;
 
 public class ModIngredientRegistration implements IModIngredientRegistration {
-	private final Map<Class, Collection> allIngredientsMap = new IdentityHashMap<Class, Collection>();
-	private final Map<Class, IIngredientHelper> ingredientHelperMap = new IdentityHashMap<Class, IIngredientHelper>();
-	private final Map<Class, IIngredientRenderer> ingredientRendererMap = new IdentityHashMap<Class, IIngredientRenderer>();
+	private final Map<Class, Collection> allIngredientsMap = new IdentityHashMap<>();
+	private final Map<Class, IIngredientHelper> ingredientHelperMap = new IdentityHashMap<>();
+	private final Map<Class, IIngredientRenderer> ingredientRendererMap = new IdentityHashMap<>();
 
 	@Override
 	public <V> void register(Class<V> ingredientClass, Collection<V> allIngredients, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer) {
@@ -31,7 +31,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 	}
 
 	public IngredientRegistry createIngredientRegistry() {
-		Map<Class, List> ingredientsMap = new IdentityHashMap<Class, List>();
+		Map<Class, List> ingredientsMap = new IdentityHashMap<>();
 		for (Class ingredientClass : allIngredientsMap.keySet()) {
 			Collection ingredients = allIngredientsMap.get(ingredientClass);
 			ingredientsMap.put(ingredientClass, Lists.newArrayList(ingredients));

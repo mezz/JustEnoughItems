@@ -37,10 +37,7 @@ public final class ErrorUtil {
 
 		try {
 			recipeWrapper.getIngredients(ingredients);
-		} catch (RuntimeException ignored) {
-			recipeInfoBuilder.append("\nFailed to get ingredients from recipe wrapper");
-			return recipeInfoBuilder.toString();
-		} catch (LinkageError ignored) {
+		} catch (RuntimeException | LinkageError ignored) {
 			recipeInfoBuilder.append("\nFailed to get ingredients from recipe wrapper");
 			return recipeInfoBuilder.toString();
 		}
@@ -96,10 +93,10 @@ public final class ErrorUtil {
 
 	public static <T> List<String> getIngredientInfo(Class<T> ingredientClass, List<? extends List<T>> ingredients) {
 		IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredientClass);
-		List<String> allInfos = new ArrayList<String>(ingredients.size());
+		List<String> allInfos = new ArrayList<>(ingredients.size());
 
 		for (List<T> inputList : ingredients) {
-			List<String> infos = new ArrayList<String>(inputList.size());
+			List<String> infos = new ArrayList<>(inputList.size());
 			for (T input : inputList) {
 				String errorInfo = ingredientHelper.getErrorInfo(input);
 				infos.add(errorInfo);

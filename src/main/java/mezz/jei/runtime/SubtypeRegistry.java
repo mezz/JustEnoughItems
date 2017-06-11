@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class SubtypeRegistry implements ISubtypeRegistry {
-	private final Map<Item, ISubtypeInterpreter> interpreters = new IdentityHashMap<Item, ISubtypeInterpreter>();
+	private final Map<Item, ISubtypeInterpreter> interpreters = new IdentityHashMap<>();
 
 	@Override
 	public void useNbtForSubtypes(Item... items) {

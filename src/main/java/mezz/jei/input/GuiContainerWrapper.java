@@ -25,7 +25,7 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 		if (slotUnderMouse != null) {
 			ItemStack stack = slotUnderMouse.getStack();
 			if (!stack.isEmpty()) {
-				return new ClickedIngredient<ItemStack>(stack);
+				return new ClickedIngredient<>(stack);
 			}
 		}
 		return getAdvancedGuiHandlerIngredientUnderMouse(guiContainer, mouseX, mouseY);
@@ -39,7 +39,7 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 			for (IAdvancedGuiHandler<T> advancedGuiHandler : activeAdvancedGuiHandlers) {
 				Object clicked = advancedGuiHandler.getIngredientUnderMouse(guiContainer, mouseX, mouseY);
 				if (clicked != null) {
-					return new ClickedIngredient<Object>(clicked);
+					return new ClickedIngredient<>(clicked);
 				}
 			}
 		}

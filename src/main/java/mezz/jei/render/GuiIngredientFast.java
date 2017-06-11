@@ -33,7 +33,6 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
-import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ReportedException;
@@ -53,7 +52,7 @@ public class GuiIngredientFast {
 	private final ItemModelMesher itemModelMesher;
 
 	@Nullable
-	private IIngredientListElement element;
+	private IIngredientListElement<?> element;
 	private boolean blocked = false;
 
 	public GuiIngredientFast(int xPosition, int yPosition, int padding) {
@@ -111,9 +110,7 @@ public class GuiIngredientFast {
 		try {
 			//noinspection unchecked
 			renderItemAndEffectIntoGUI((IIngredientListElement<ItemStack>) element);
-		} catch (RuntimeException e) {
-			throw createRenderIngredientException(e, element);
-		} catch (LinkageError e) {
+		} catch (RuntimeException | LinkageError e) {
 			throw createRenderIngredientException(e, element);
 		}
 	}
@@ -190,9 +187,7 @@ public class GuiIngredientFast {
 
 			try {
 				renderSlow(element, area, padding);
-			} catch (RuntimeException e) {
-				throw createRenderIngredientException(e, element);
-			} catch (LinkageError e) {
+			} catch (RuntimeException | LinkageError e) {
 				throw createRenderIngredientException(e, element);
 			}
 		}
@@ -217,9 +212,7 @@ public class GuiIngredientFast {
 		ItemStack itemStack = (ItemStack) ingredient;
 		try {
 			renderOverlay(minecraft, itemStack);
-		} catch (RuntimeException e) {
-			throw createRenderIngredientException(e, element);
-		} catch (LinkageError e) {
+		} catch (RuntimeException | LinkageError e) {
 			throw createRenderIngredientException(e, element);
 		}
 	}
@@ -232,7 +225,7 @@ public class GuiIngredientFast {
 
 	private static <V> void renderEditMode(IIngredientListElement<V> element, Rectangle area, int padding) {
 		V ingredient = element.getIngredient();
-		IIngredientHelper ingredientHelper = element.getIngredientHelper();
+		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
 
 		if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.ITEM, ingredientHelper)) {
 			GuiScreen.drawRect(area.x + padding, area.y + padding, area.x + 8 + padding, area.y + 16 + padding, blacklistItemColor);
@@ -335,13 +328,11 @@ public class GuiIngredientFast {
 		V ingredient = element.getIngredient();
 		try {
 			return LegacyUtil.getTooltip(ingredientRenderer, minecraft, ingredient, minecraft.gameSettings.advancedItemTooltips);
-		} catch (RuntimeException e) {
-			Log.error("Tooltip crashed.", e);
-		} catch (LinkageError e) {
+		} catch (RuntimeException | LinkageError e) {
 			Log.error("Tooltip crashed.", e);
 		}
 
-		List<String> tooltip = new ArrayList<String>();
+		List<String> tooltip = new ArrayList<>();
 		tooltip.add(TextFormatting.RED + Translator.translateToLocal("jei.tooltip.error.crash"));
 		return tooltip;
 	}
@@ -405,18 +396,8 @@ public class GuiIngredientFast {
 		final IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredient);
 		CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering ingredient");
 		CrashReportCategory crashreportcategory = crashreport.makeCategory("Ingredient being rendered");
-		crashreportcategory.setDetail("Ingredient Mod", new ICrashReportDetail<String>() {
-			@Override
-			public String call() throws Exception {
-				return ForgeModIdHelper.getInstance().getModNameForIngredient(ingredient, ingredientHelper);
-			}
-		});
-		crashreportcategory.setDetail("Ingredient Info", new ICrashReportDetail<String>() {
-			@Override
-			public String call() throws Exception {
-				return ingredientHelper.getErrorInfo(ingredient);
-			}
-		});
+		crashreportcategory.setDetail("Ingredient Mod", () -> ForgeModIdHelper.getInstance().getModNameForIngredient(ingredient, ingredientHelper));
+		crashreportcategory.setDetail("Ingredient Info", () -> ingredientHelper.getErrorInfo(ingredient));
 		throw new ReportedException(crashreport);
 	}
 }

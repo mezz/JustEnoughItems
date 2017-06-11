@@ -35,16 +35,17 @@ public final class ItemStackListFactory {
 	}
 
 	public List<ItemStack> create(StackHelper stackHelper) {
-		final List<ItemStack> itemList = new ArrayList<ItemStack>();
-		final Set<String> itemNameSet = new HashSet<String>();
+		final List<ItemStack> itemList = new ArrayList<>();
+		final Set<String> itemNameSet = new HashSet<>();
 
 		for (CreativeTabs creativeTab : CreativeTabs.CREATIVE_TAB_ARRAY) {
+			if (creativeTab == CreativeTabs.field_192395_m) {
+				continue;
+			}
 			NonNullList<ItemStack> creativeTabItemStacks = NonNullList.create();
 			try {
 				creativeTab.displayAllRelevantItems(creativeTabItemStacks);
-			} catch (RuntimeException e) {
-				Log.error("Creative tab crashed while getting items. Some items from this tab will be missing from the item list. {}", creativeTab, e);
-			} catch (LinkageError e) {
+			} catch (RuntimeException | LinkageError e) {
 				Log.error("Creative tab crashed while getting items. Some items from this tab will be missing from the item list. {}", creativeTab, e);
 			}
 			for (ItemStack itemStack : creativeTabItemStacks) {
@@ -96,10 +97,7 @@ public final class ItemStackListFactory {
 			NonNullList<ItemStack> subBlocks = NonNullList.create();
 			try {
 				block.getSubBlocks(itemTab, subBlocks);
-			} catch (RuntimeException e) {
-				String itemStackInfo = ErrorUtil.getItemStackInfo(new ItemStack(item));
-				Log.error("Failed to getSubBlocks {}", itemStackInfo, e);
-			} catch (LinkageError e) {
+			} catch (RuntimeException | LinkageError e) {
 				String itemStackInfo = ErrorUtil.getItemStackInfo(new ItemStack(item));
 				Log.error("Failed to getSubBlocks {}", itemStackInfo, e);
 			}
@@ -127,10 +125,7 @@ public final class ItemStackListFactory {
 		try {
 			addFallbackSubtypeInterpreter(stack);
 			itemKey = stackHelper.getUniqueIdentifierForStack(stack, StackHelper.UidMode.FULL);
-		} catch (RuntimeException e) {
-			String stackInfo = ErrorUtil.getItemStackInfo(stack);
-			Log.error("Couldn't get unique name for itemStack {}", stackInfo, e);
-		} catch (LinkageError e) {
+		} catch (RuntimeException | LinkageError e) {
 			String stackInfo = ErrorUtil.getItemStackInfo(stack);
 			Log.error("Couldn't get unique name for itemStack {}", stackInfo, e);
 		}

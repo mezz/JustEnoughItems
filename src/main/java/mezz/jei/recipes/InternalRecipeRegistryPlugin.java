@@ -56,7 +56,7 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 	private ImmutableList<String> getRecipeCategories() {
 		ImmutableList.Builder<String> builder = ImmutableList.builder();
 		for (Map.Entry<String, IRecipeCategory> entry : recipeCategoriesMap.entrySet()) {
-			IRecipeCategory recipeCategory = entry.getValue();
+			IRecipeCategory<?> recipeCategory = entry.getValue();
 			if (!recipeRegistry.getRecipeWrappers(recipeCategory).isEmpty()) {
 				builder.add(entry.getKey());
 			}
@@ -80,7 +80,7 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 					ImmutableSet<T> specificRecipes = ImmutableSet.copyOf(recipes);
 					//noinspection unchecked
 					List<T> recipesForCategory = (List<T>) recipeWrappersForCategories.get(recipeCategory);
-					List<T> allRecipes = new ArrayList<T>(recipes);
+					List<T> allRecipes = new ArrayList<>(recipes);
 					for (T recipe : recipesForCategory) {
 						if (!specificRecipes.contains(recipe)) {
 							allRecipes.add(recipe);

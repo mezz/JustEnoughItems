@@ -21,11 +21,11 @@ import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
 public class GuiIngredientFastList {
-	private final List<GuiIngredientFast> renderAll = new ArrayList<GuiIngredientFast>();
+	private final List<GuiIngredientFast> renderAll = new ArrayList<>();
 
-	private final List<GuiIngredientFast> renderItems2d = new ArrayList<GuiIngredientFast>();
-	private final List<GuiIngredientFast> renderItems3d = new ArrayList<GuiIngredientFast>();
-	private final List<GuiIngredientFast> renderOther = new ArrayList<GuiIngredientFast>();
+	private final List<GuiIngredientFast> renderItems2d = new ArrayList<>();
+	private final List<GuiIngredientFast> renderItems3d = new ArrayList<>();
+	private final List<GuiIngredientFast> renderOther = new ArrayList<>();
 
 	private final IIngredientRegistry ingredientRegistry;
 
@@ -71,7 +71,7 @@ public class GuiIngredientFastList {
 				if (i >= ingredientList.size()) {
 					guiItemStack.clear();
 				} else {
-					IIngredientListElement element = ingredientList.get(i);
+					IIngredientListElement<?> element = ingredientList.get(i);
 					set(guiItemStack, element);
 				}
 				i++;
@@ -124,7 +124,7 @@ public class GuiIngredientFastList {
 		if (hovered != null) {
 			IIngredientListElement element = hovered.getElement();
 			if (element != null) {
-				return new ClickedIngredient<Object>(element.getIngredient());
+				return new ClickedIngredient<>(element.getIngredient());
 			}
 		}
 		return null;

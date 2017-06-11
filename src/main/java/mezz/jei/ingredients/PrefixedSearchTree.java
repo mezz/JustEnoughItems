@@ -29,12 +29,12 @@ class PrefixedSearchTree {
 		return modeGetter.getMode();
 	}
 
-	// TODO java 8
+	@FunctionalInterface
 	interface IStringsGetter {
 		Collection<String> getStrings(IIngredientListElement<?> element);
 	}
 
-	//TODO java 8
+	@FunctionalInterface
 	interface IModeGetter {
 		Config.SearchMode getMode();
 	}

@@ -59,15 +59,13 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			recipeWrapper.getIngredients(ingredients);
 			recipeCategory.setRecipe(recipeLayout, recipeWrapper, ingredients);
 			return recipeLayout;
-		} catch (RuntimeException e) {
-			Log.error("Error caught from Recipe Category: {}", recipeCategory.getClass().getCanonicalName(), e);
-		} catch (LinkageError e) {
+		} catch (RuntimeException | LinkageError e) {
 			Log.error("Error caught from Recipe Category: {}", recipeCategory.getClass().getCanonicalName(), e);
 		}
 		return null;
 	}
 
-	private  <T extends IRecipeWrapper> RecipeLayout(int index, IRecipeCategory<T> recipeCategory, T recipeWrapper, @Nullable IFocus focus, int posX, int posY) {
+	private <T extends IRecipeWrapper> RecipeLayout(int index, IRecipeCategory<T> recipeCategory, T recipeWrapper, @Nullable IFocus<?> focus, int posX, int posY) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		ErrorUtil.checkNotNull(recipeWrapper, "recipeWrapper");
 		if (focus != null) {
@@ -91,7 +89,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		this.guiItemStackGroup = new GuiItemStackGroup(itemStackFocus, ingredientCycleOffset);
 		this.guiFluidStackGroup = new GuiFluidStackGroup(fluidStackFocus, ingredientCycleOffset);
 
-		this.guiIngredientGroups = new IdentityHashMap<Class, GuiIngredientGroup>();
+		this.guiIngredientGroups = new IdentityHashMap<>();
 		this.guiIngredientGroups.put(ItemStack.class, this.guiItemStackGroup);
 		this.guiIngredientGroups.put(FluidStack.class, this.guiFluidStackGroup);
 
@@ -162,7 +160,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		if (hoveredIngredient != null) {
 			hoveredIngredient.drawHovered(minecraft, posX, posY, recipeMouseX, recipeMouseY);
 		} else if (isMouseOver(mouseX, mouseY)) {
-			List<String> tooltipStrings = new ArrayList<String>();
+			List<String> tooltipStrings = new ArrayList<>();
 			List<String> categoryTooltipStrings = LegacyUtil.getTooltipStrings(recipeCategory, recipeMouseX, recipeMouseY);
 			tooltipStrings.addAll(categoryTooltipStrings);
 			List<String> wrapperTooltips = recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY);
@@ -229,7 +227,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 					focus = (IFocus<T>) this.focus;
 				}
 			}
-			guiIngredientGroup = new GuiIngredientGroup<T>(ingredientClass, focus, ingredientCycleOffset);
+			guiIngredientGroup = new GuiIngredientGroup<>(ingredientClass, focus, ingredientCycleOffset);
 			guiIngredientGroups.put(ingredientClass, guiIngredientGroup);
 		}
 		return guiIngredientGroup;

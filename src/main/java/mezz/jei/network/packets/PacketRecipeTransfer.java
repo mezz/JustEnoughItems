@@ -55,7 +55,7 @@ public class PacketRecipeTransfer extends PacketJei {
 		@Override
 		public void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
 			int recipeMapSize = buf.readVarInt();
-			Map<Integer, Integer> recipeMap = new HashMap<Integer, Integer>(recipeMapSize);
+			Map<Integer, Integer> recipeMap = new HashMap<>(recipeMapSize);
 			for (int i = 0; i < recipeMapSize; i++) {
 				int slotIndex = buf.readVarInt();
 				int recipeItem = buf.readVarInt();
@@ -63,14 +63,14 @@ public class PacketRecipeTransfer extends PacketJei {
 			}
 
 			int craftingSlotsSize = buf.readVarInt();
-			List<Integer> craftingSlots = new ArrayList<Integer>(craftingSlotsSize);
+			List<Integer> craftingSlots = new ArrayList<>(craftingSlotsSize);
 			for (int i = 0; i < craftingSlotsSize; i++) {
 				int slotIndex = buf.readVarInt();
 				craftingSlots.add(slotIndex);
 			}
 
 			int inventorySlotsSize = buf.readVarInt();
-			List<Integer> inventorySlots = new ArrayList<Integer>(inventorySlotsSize);
+			List<Integer> inventorySlots = new ArrayList<>(inventorySlotsSize);
 			for (int i = 0; i < inventorySlotsSize; i++) {
 				int slotIndex = buf.readVarInt();
 				inventorySlots.add(slotIndex);

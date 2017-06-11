@@ -80,7 +80,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 
 	@Override
 	public List<String> getTooltip() {
-		List<String> tooltip = new ArrayList<String>();
+		List<String> tooltip = new ArrayList<>();
 		String title = category.getTitle();
 		//noinspection ConstantConditions
 		if (title != null) {

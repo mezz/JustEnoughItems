@@ -16,7 +16,7 @@ import org.lwjgl.input.Keyboard;
 public class GuiTextFieldFilter extends GuiTextField {
 	private static final int MAX_HISTORY = 100;
 	private static final int maxSearchLength = 128;
-	private static final List<String> history = new LinkedList<String>();
+	private static final List<String> history = new LinkedList<>();
 
 	private final HoverChecker hoverChecker;
 	private final IngredientFilter ingredientFilter;

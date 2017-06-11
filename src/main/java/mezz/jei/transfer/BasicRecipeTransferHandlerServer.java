@@ -23,7 +23,7 @@ public final class BasicRecipeTransferHandlerServer {
 		Container container = player.openContainer;
 
 		// grab items from slots
-		Map<Integer, ItemStack> slotMap = new HashMap<Integer, ItemStack>(slotIdMap.size());
+		Map<Integer, ItemStack> slotMap = new HashMap<>(slotIdMap.size());
 		for (Map.Entry<Integer, Integer> entry : slotIdMap.entrySet()) {
 			Slot slot = container.getSlot(entry.getValue());
 			final ItemStack slotStack = slot.getStack();
@@ -60,7 +60,7 @@ public final class BasicRecipeTransferHandlerServer {
 		}
 
 		// clear the crafting grid
-		List<ItemStack> clearedCraftingItems = new ArrayList<ItemStack>();
+		List<ItemStack> clearedCraftingItems = new ArrayList<>();
 		for (Integer craftingSlotNumber : craftingSlots) {
 			Slot craftingSlot = container.getSlot(craftingSlotNumber);
 			if (craftingSlot.getHasStack()) {
@@ -106,7 +106,7 @@ public final class BasicRecipeTransferHandlerServer {
 	}
 
 	private static boolean removeSetsFromInventory(Container container, Iterable<ItemStack> required, List<Integer> craftingSlots, List<Integer> inventorySlots) {
-		final Map<Slot, ItemStack> originalSlotContents = new HashMap<Slot, ItemStack>();
+		final Map<Slot, ItemStack> originalSlotContents = new HashMap<>();
 
 		for (ItemStack matchingStack : required) {
 			final ItemStack requiredStack = matchingStack.copy();

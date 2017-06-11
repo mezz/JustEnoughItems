@@ -100,7 +100,8 @@ public interface IRecipeRegistry {
 	 * @param focus          the focus of the recipe layout.
 	 * @since JEI 3.13.2
 	 */
-	<T extends IRecipeWrapper> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipeWrapper, IFocus focus);
+	@Nullable
+	<T extends IRecipeWrapper> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipeWrapper, IFocus<?> focus);
 
 	/**
 	 * Add a new recipe while the game is running.

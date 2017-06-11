@@ -22,7 +22,7 @@ public class TestPlugin extends BlankModPlugin {
 
 	@Override
 	public void registerIngredients(IModIngredientRegistration ingredientRegistry) {
-		Collection<TestIngredient> baseTestIngredients = new ArrayList<TestIngredient>();
+		Collection<TestIngredient> baseTestIngredients = new ArrayList<>();
 		for (int i = 0; i < BASE_INGREDIENT_COUNT; i++) {
 			baseTestIngredients.add(new TestIngredient(i));
 		}

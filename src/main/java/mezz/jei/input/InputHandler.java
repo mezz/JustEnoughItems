@@ -31,7 +31,7 @@ public class InputHandler {
 	private final IIngredientRegistry ingredientRegistry;
 	private final RecipesGui recipesGui;
 	private final IngredientListOverlay ingredientListOverlay;
-	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<IShowsRecipeFocuses>();
+	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<>();
 
 	private boolean clickHandled = false;
 
@@ -134,11 +134,11 @@ public class InputHandler {
 		}
 
 		if (mouseButton == 0) {
-			IFocus focus = new Focus<Object>(IFocus.Mode.OUTPUT, clicked.getValue());
+			IFocus<?> focus = new Focus<Object>(IFocus.Mode.OUTPUT, clicked.getValue());
 			recipesGui.show(focus);
 			return true;
 		} else if (mouseButton == 1) {
-			IFocus focus = new Focus<Object>(IFocus.Mode.INPUT, clicked.getValue());
+			IFocus<?> focus = new Focus<Object>(IFocus.Mode.INPUT, clicked.getValue());
 			recipesGui.show(focus);
 			return true;
 		}

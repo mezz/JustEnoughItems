@@ -17,7 +17,7 @@ public final class FluidStackListFactory {
 	}
 
 	public static List<FluidStack> create() {
-		List<FluidStack> fluidStacks = new ArrayList<FluidStack>();
+		List<FluidStack> fluidStacks = new ArrayList<>();
 
 		Map<String, Fluid> registeredFluids = FluidRegistry.getRegisteredFluids();
 		for (Fluid fluid : registeredFluids.values()) {

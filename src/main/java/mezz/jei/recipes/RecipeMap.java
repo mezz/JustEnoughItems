@@ -34,7 +34,7 @@ public class RecipeMap {
 	public <V> List<String> getRecipeCategories(V ingredient) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 
-		Set<String> recipeCategories = new HashSet<String>();
+		Set<String> recipeCategories = new HashSet<>();
 
 		for (String key : IngredientUtil.getUniqueIdsWithWildcard(ingredientHelper, ingredient)) {
 			recipeCategories.addAll(categoryUidMap.get(key));
@@ -84,7 +84,7 @@ public class RecipeMap {
 		//noinspection unchecked
 		Map<String, List<T>> recipesWrappersForType = (Map<String, List<T>>) (Object) recipeWrapperTable.row(recipeCategory);
 
-		Set<String> uniqueIds = new HashSet<String>();
+		Set<String> uniqueIds = new HashSet<>();
 
 		List<V> expandedIngredients = ingredientHelper.expandSubtypes(ingredients);
 
@@ -100,11 +100,7 @@ public class RecipeMap {
 				uniqueIds.add(key);
 			}
 
-			List<T> recipeWrappers = recipesWrappersForType.get(key);
-			if (recipeWrappers == null) {
-				recipeWrappers = Lists.newArrayList();
-				recipesWrappersForType.put(key, recipeWrappers);
-			}
+			List<T> recipeWrappers = recipesWrappersForType.computeIfAbsent(key, k -> Lists.newArrayList());
 
 			recipeWrappers.add(recipeWrapper);
 

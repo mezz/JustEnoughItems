@@ -58,6 +58,7 @@ public interface ISubtypeRegistry {
 	 */
 	boolean hasSubtypeInterpreter(ItemStack itemStack);
 
+	@FunctionalInterface
 	interface ISubtypeInterpreter {
 		/**
 		 * Get the data from an itemStack that is relevant to telling subtypes apart.

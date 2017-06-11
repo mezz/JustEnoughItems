@@ -29,7 +29,7 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 		ErrorUtil.checkNotNull(containerClass, "containerClass");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 
-		IRecipeTransferInfo<C> recipeTransferHelper = new BasicRecipeTransferInfo<C>(containerClass, recipeCategoryUid, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
+		IRecipeTransferInfo<C> recipeTransferHelper = new BasicRecipeTransferInfo<>(containerClass, recipeCategoryUid, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
 		addRecipeTransferHandler(recipeTransferHelper);
 	}
 
@@ -37,7 +37,7 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 	public <C extends Container> void addRecipeTransferHandler(IRecipeTransferInfo<C> recipeTransferInfo) {
 		ErrorUtil.checkNotNull(recipeTransferInfo, "recipeTransferInfo");
 
-		IRecipeTransferHandler<C> recipeTransferHandler = new BasicRecipeTransferHandler<C>(stackHelper, handlerHelper, recipeTransferInfo);
+		IRecipeTransferHandler<C> recipeTransferHandler = new BasicRecipeTransferHandler<>(stackHelper, handlerHelper, recipeTransferInfo);
 		addRecipeTransferHandler(recipeTransferHandler, recipeTransferInfo.getRecipeCategoryUid());
 	}
 

@@ -2,8 +2,8 @@ package mezz.jei.util;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
+import java.util.Optional;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
@@ -36,11 +36,7 @@ public final class ReflectionUtil {
 		Class<?> objectClass = object.getClass();
 		Optional<Field> cachedField = CACHE.get(fieldClass, objectClass);
 		if (cachedField != null) {
-			if (cachedField.isPresent()) {
-				return cachedField.get();
-			} else {
-				return null;
-			}
+			return cachedField.orElse(null);
 		}
 
 		try {
@@ -57,7 +53,7 @@ public final class ReflectionUtil {
 		} catch (SecurityException ignored) {
 
 		}
-		CACHE.put(fieldClass, objectClass, Optional.<Field>absent());
+		CACHE.put(fieldClass, objectClass, Optional.empty());
 		return null;
 	}
 

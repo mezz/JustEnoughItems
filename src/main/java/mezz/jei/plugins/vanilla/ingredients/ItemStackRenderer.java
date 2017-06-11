@@ -36,16 +36,10 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 		List<String> list;
 		try {
 			list = ingredient.getTooltip(player, tooltipFlag);
-		} catch (RuntimeException e) {
+		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
 			Log.error("Failed to get tooltip: {}", itemStackInfo, e);
-			list = new ArrayList<String>();
-			list.add(TextFormatting.RED + Translator.translateToLocal("jei.tooltip.error.crash"));
-			return list;
-		} catch (LinkageError e) {
-			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
-			Log.error("Failed to get tooltip: {}", itemStackInfo, e);
-			list = new ArrayList<String>();
+			list = new ArrayList<>();
 			list.add(TextFormatting.RED + Translator.translateToLocal("jei.tooltip.error.crash"));
 			return list;
 		}

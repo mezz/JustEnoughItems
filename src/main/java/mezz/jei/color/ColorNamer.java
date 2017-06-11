@@ -18,7 +18,7 @@ public class ColorNamer {
 	}
 
 	public Collection<String> getColorNames(Iterable<Color> colors, boolean lowercase) {
-		final Set<String> allColorNames = new LinkedHashSet<String>();
+		final Set<String> allColorNames = new LinkedHashSet<>();
 		for (Color color : colors) {
 			final String colorName = getClosestColorName(color);
 			if (colorName != null) {

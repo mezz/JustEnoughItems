@@ -39,8 +39,8 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	private final int yPadding;
 
 	private final CycleTimer cycleTimer;
-	private final List<T> displayIngredients = new ArrayList<T>(); // ingredients, taking focus into account
-	private final List<T> allIngredients = new ArrayList<T>(); // all ingredients, ignoring focus
+	private final List<T> displayIngredients = new ArrayList<>(); // ingredients, taking focus into account
+	private final List<T> allIngredients = new ArrayList<>(); // all ingredients, ignoring focus
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final IIngredientHelper<T> ingredientHelper;
 	@Nullable

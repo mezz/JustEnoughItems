@@ -8,7 +8,7 @@ public final class DebugIngredientListFactory {
 	}
 
 	public static List<DebugIngredient> create() {
-		List<DebugIngredient> ingredients = new ArrayList<DebugIngredient>();
+		List<DebugIngredient> ingredients = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
 			DebugIngredient debugIngredient = new DebugIngredient(i);
 			ingredients.add(debugIngredient);

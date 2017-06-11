@@ -30,7 +30,7 @@ public abstract class AbstractModIdHelper implements IModIdHelper {
 			}
 		}
 
-		List<String> tooltipCopy = new ArrayList<String>(tooltip);
+		List<String> tooltipCopy = new ArrayList<>(tooltip);
 		tooltipCopy.add(modNameFormat + modName);
 		return tooltipCopy;
 	}

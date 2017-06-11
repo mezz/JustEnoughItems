@@ -203,7 +203,7 @@ public class GeneralizedSuffixTree implements ISearchTree {
 			String label = g.getLabel();
 			// must see whether "str" is substring of the label of an edge
 			if (label.length() > str.length() && label.charAt(str.length()) == t) {
-				return new Pair<Boolean, Node>(true, s);
+				return new Pair<>(true, s);
 			} else {
 				// need to split the edge
 				String newlabel = label.substring(str.length());
@@ -220,21 +220,21 @@ public class GeneralizedSuffixTree implements ISearchTree {
 				r.addEdge(newlabel.charAt(0), g);
 				s.addEdge(str.charAt(0), newedge);
 
-				return new Pair<Boolean, Node>(false, r);
+				return new Pair<>(false, r);
 			}
 
 		} else {
 			Edge e = s.getEdge(t);
 			if (null == e) {
 				// if there is no t-transtion from s
-				return new Pair<Boolean, Node>(false, s);
+				return new Pair<>(false, s);
 			} else {
 				if (remainder.equals(e.getLabel())) {
 					// update payload of destination node
 					e.getDest().addRef(value);
-					return new Pair<Boolean, Node>(true, s);
+					return new Pair<>(true, s);
 				} else if (remainder.startsWith(e.getLabel())) {
-					return new Pair<Boolean, Node>(true, s);
+					return new Pair<>(true, s);
 				} else if (e.getLabel().startsWith(remainder)) {
 					// need to split as above
 					Node newNode = new Node();
@@ -248,10 +248,10 @@ public class GeneralizedSuffixTree implements ISearchTree {
 
 					s.addEdge(t, newEdge);
 
-					return new Pair<Boolean, Node>(false, s);
+					return new Pair<>(false, s);
 				} else {
 					// they are different words. No prefix. but they may still share some common substr
-					return new Pair<Boolean, Node>(true, s);
+					return new Pair<>(true, s);
 				}
 			}
 		}
@@ -267,7 +267,7 @@ public class GeneralizedSuffixTree implements ISearchTree {
 	private Pair<Node, String> canonize(final Node s, final String inputstr) {
 
 		if ("".equals(inputstr)) {
-			return new Pair<Node, String>(s, inputstr);
+			return new Pair<>(s, inputstr);
 		} else {
 			Node currentNode = s;
 			String str = inputstr;
@@ -281,7 +281,7 @@ public class GeneralizedSuffixTree implements ISearchTree {
 				}
 			}
 
-			return new Pair<Node, String>(currentNode, str);
+			return new Pair<>(currentNode, str);
 		}
 	}
 

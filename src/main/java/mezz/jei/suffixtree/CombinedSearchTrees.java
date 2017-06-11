@@ -7,7 +7,7 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
 public class CombinedSearchTrees implements ISearchTree {
-	private final List<ISearchTree> searchTrees = new ArrayList<ISearchTree>();
+	private final List<ISearchTree> searchTrees = new ArrayList<>();
 
 	@Override
 	public TIntSet search(String word) {

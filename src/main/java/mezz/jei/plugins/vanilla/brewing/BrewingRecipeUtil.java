@@ -18,7 +18,7 @@ public class BrewingRecipeUtil {
 	public static final ItemStack POTION = new ItemStack(Items.POTIONITEM);
 	public static final ItemStack WATER_BOTTLE = PotionUtils.addPotionToItemStack(POTION.copy(), PotionTypes.WATER);
 
-	private final Map<String, Integer> brewingStepCache = new HashMap<String, Integer>(); // output potion -> brewing steps
+	private final Map<String, Integer> brewingStepCache = new HashMap<>(); // output potion -> brewing steps
 	private final Multimap<String, String> potionMap = HashMultimap.create(); // output potion -> input potions
 
 	public BrewingRecipeUtil() {
@@ -34,7 +34,7 @@ public class BrewingRecipeUtil {
 
 	public int getBrewingSteps(ItemStack outputPotion) {
 		String potionInputUid = Internal.getStackHelper().getUniqueIdentifierForStack(outputPotion);
-		return getBrewingSteps(potionInputUid, new HashSet<String>());
+		return getBrewingSteps(potionInputUid, new HashSet<>());
 	}
 
 	private void clearCache() {

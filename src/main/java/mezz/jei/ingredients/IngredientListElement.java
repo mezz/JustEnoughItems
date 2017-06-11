@@ -27,7 +27,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 public class IngredientListElement<V> implements IIngredientListElement<V> {
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");
-	private static final Map<String, Integer> WILDCARD_ADDED_ORDER = new HashMap<String, Integer>();
+	private static final Map<String, Integer> WILDCARD_ADDED_ORDER = new HashMap<>();
 	private static int ADDED_INDEX = 0;
 
 	private final V ingredient;
@@ -53,7 +53,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 				ADDED_INDEX++;
 			}
 
-			return new IngredientListElement<V>(ingredient, orderIndex, ingredientHelper, ingredientRenderer, modIdHelper);
+			return new IngredientListElement<>(ingredient, orderIndex, ingredientHelper, ingredientRenderer, modIdHelper);
 		} catch (RuntimeException e) {
 			try {
 				String ingredientInfo = ingredientHelper.getErrorInfo(ingredient);
@@ -126,7 +126,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 
 	@Override
 	public Collection<String> getOreDictStrings() {
-		Collection<String> oreDictStrings = new ArrayList<String>();
+		Collection<String> oreDictStrings = new ArrayList<>();
 
 		if (ingredient instanceof ItemStack) {
 			ItemStack itemStack = (ItemStack) ingredient;
@@ -141,7 +141,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 
 	@Override
 	public Collection<String> getCreativeTabsStrings() {
-		Collection<String> creativeTabsStrings = new ArrayList<String>();
+		Collection<String> creativeTabsStrings = new ArrayList<>();
 
 		if (ingredient instanceof ItemStack) {
 			ItemStack itemStack = (ItemStack) ingredient;

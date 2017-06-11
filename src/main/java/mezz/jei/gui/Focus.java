@@ -37,7 +37,7 @@ public class Focus<V> implements IFocus<V> {
 			checkInternal(focus);
 			return (Focus<V>) focus;
 		}
-		return new Focus<V>(focus.getMode(), focus.getValue());
+		return new Focus<>(focus.getMode(), focus.getValue());
 	}
 
 	private static void checkInternal(IFocus<?> focus) {

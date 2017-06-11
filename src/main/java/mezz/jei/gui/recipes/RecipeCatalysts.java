@@ -35,7 +35,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 	private int top = 0;
 
 	public RecipeCatalysts() {
-		ingredients = new ArrayList<GuiIngredient<Object>>();
+		ingredients = new ArrayList<>();
 
 		ResourceLocation recipeBackgroundResource = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
 
@@ -65,7 +65,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 			top = guiProperties.getGuiTop();
 			left = guiProperties.getGuiLeft() - topDrawable.getWidth() + 4; // overlaps the recipe gui slightly
 
-			List<Object> ingredientsForSlots = new ArrayList<Object>();
+			List<Object> ingredientsForSlots = new ArrayList<>();
 			for (int i = 0; i < ingredients.size() && i < ingredientCount; i++) {
 				Object ingredient = ingredients.get(i);
 				ingredientsForSlots.add(ingredient);
@@ -84,7 +84,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 		IIngredientRenderer<T> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 		Rectangle rect = new Rectangle(left + 6, top + 6 + (index * middleDrawable.getHeight()), 16, 16);
-		GuiIngredient<T> guiIngredient = new GuiIngredient<T>(index, true, ingredientRenderer, ingredientHelper, rect, 0, 0, 0);
+		GuiIngredient<T> guiIngredient = new GuiIngredient<>(index, true, ingredientRenderer, ingredientHelper, rect, 0, 0, 0);
 		guiIngredient.set(Collections.singletonList(ingredient), null);
 		return guiIngredient;
 	}
@@ -142,7 +142,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 		if (hovered != null) {
 			Object ingredientUnderMouse = hovered.getDisplayedIngredient();
 			if (ingredientUnderMouse != null) {
-				return new ClickedIngredient<Object>(ingredientUnderMouse);
+				return new ClickedIngredient<>(ingredientUnderMouse);
 			}
 		}
 		return null;

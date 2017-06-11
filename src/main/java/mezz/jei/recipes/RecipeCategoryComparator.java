@@ -11,7 +11,7 @@ public class RecipeCategoryComparator implements Comparator<String> {
 	private final ImmutableList<String> recipeCategories;
 
 	public RecipeCategoryComparator(List<IRecipeCategory> recipeCategories) {
-		List<String> recipeCategoryUids = new ArrayList<String>();
+		List<String> recipeCategoryUids = new ArrayList<>();
 		for (IRecipeCategory recipeCategory : recipeCategories) {
 			recipeCategoryUids.add(recipeCategory.getUid());
 		}

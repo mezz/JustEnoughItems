@@ -33,13 +33,13 @@ public class StackHelper implements IStackHelper {
 	/**
 	 * Uids are cached during loading to improve startup performance.
 	 */
-	private final Map<UidMode, Map<ItemStack, String>> uidCache = new EnumMap<UidMode, Map<ItemStack, String>>(UidMode.class);
+	private final Map<UidMode, Map<ItemStack, String>> uidCache = new EnumMap<>(UidMode.class);
 	private boolean uidCacheEnabled = true;
 
 	public StackHelper(ISubtypeRegistry subtypeRegistry) {
 		this.subtypeRegistry = subtypeRegistry;
 		for (UidMode mode : UidMode.values()) {
-			uidCache.put(mode, new IdentityHashMap<ItemStack, String>());
+			uidCache.put(mode, new IdentityHashMap<>());
 		}
 	}
 
@@ -82,7 +82,7 @@ public class StackHelper implements IStackHelper {
 		MatchingItemsResult matchingItemResult = new MatchingItemsResult();
 
 		int recipeSlotNumber = -1;
-		SortedSet<Integer> keys = new TreeSet<Integer>(ingredientsMap.keySet());
+		SortedSet<Integer> keys = new TreeSet<>(ingredientsMap.keySet());
 		for (Integer key : keys) {
 			IGuiIngredient<ItemStack> ingredient = ingredientsMap.get(key);
 			if (!ingredient.isInput()) {
@@ -215,7 +215,9 @@ public class StackHelper implements IStackHelper {
 		}
 
 		if (itemStack.getItemDamage() != OreDictionary.WILDCARD_VALUE) {
-			return Collections.singletonList(itemStack);
+			List<ItemStack> subtypes = new ArrayList<>();
+			subtypes.add(itemStack);
+			return subtypes;
 		}
 
 		return getSubtypes(itemStack.getItem(), itemStack.getCount());
@@ -228,9 +230,7 @@ public class StackHelper implements IStackHelper {
 			NonNullList<ItemStack> subItems = NonNullList.create();
 			try {
 				item.getSubItems(itemTab, subItems);
-			} catch (RuntimeException e) {
-				Log.warning("Caught a crash while getting sub-items of {}", item, e);
-			} catch (LinkageError e) {
+			} catch (RuntimeException | LinkageError e) {
 				Log.warning("Caught a crash while getting sub-items of {}", item, e);
 			}
 
@@ -258,7 +258,7 @@ public class StackHelper implements IStackHelper {
 			return Collections.emptyList();
 		}
 
-		List<ItemStack> allSubtypes = new ArrayList<ItemStack>();
+		List<ItemStack> allSubtypes = new ArrayList<>();
 		getAllSubtypes(allSubtypes, stacks);
 
 		if (isAllNulls(allSubtypes)) {
@@ -303,7 +303,7 @@ public class StackHelper implements IStackHelper {
 	}
 
 	public List<List<ItemStack>> expandRecipeItemStackInputs(List inputs, boolean expandSubtypes) {
-		List<List<ItemStack>> expandedInputs = new ArrayList<List<ItemStack>>();
+		List<List<ItemStack>> expandedInputs = new ArrayList<>();
 		for (Object input : inputs) {
 			List<ItemStack> expandedInput = toItemStackList(input, expandSubtypes);
 			expandedInputs.add(expandedInput);
@@ -409,8 +409,8 @@ public class StackHelper implements IStackHelper {
 	}
 
 	public static class MatchingItemsResult {
-		public final Map<Integer, Integer> matchingItems = new HashMap<Integer, Integer>();
-		public final List<Integer> missingItems = new ArrayList<Integer>();
+		public final Map<Integer, Integer> matchingItems = new HashMap<>();
+		public final List<Integer> missingItems = new ArrayList<>();
 	}
 
 	private interface ItemStackMatchable<R> {

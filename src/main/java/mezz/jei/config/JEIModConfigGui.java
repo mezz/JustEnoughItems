@@ -40,7 +40,7 @@ public class JEIModConfigGui extends GuiConfig {
 	}
 
 	private static List<IConfigElement> getConfigElements() {
-		List<IConfigElement> configElements = new ArrayList<IConfigElement>();
+		List<IConfigElement> configElements = new ArrayList<>();
 
 		if (Minecraft.getMinecraft().world != null) {
 			Configuration worldConfig = Config.getWorldConfig();

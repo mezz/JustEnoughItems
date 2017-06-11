@@ -56,17 +56,17 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final ImmutableList<IRecipeHandler> unsortedRecipeHandlers;
 	private final ImmutableMultimap<String, IRecipeHandler> recipeHandlers;
 	private final ImmutableList<IRecipeCategory> recipeCategories;
-	private final Set<IRecipeCategory> emptyRecipeCategories = new HashSet<IRecipeCategory>();
-	private final Set<IRecipeCategory> checkIfEmptyRecipeCategories = new HashSet<IRecipeCategory>();
+	private final Set<IRecipeCategory> emptyRecipeCategories = new HashSet<>();
+	private final Set<IRecipeCategory> checkIfEmptyRecipeCategories = new HashSet<>();
 	private final ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers;
 	private final ImmutableMultimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap;
 	private final ImmutableListMultimap<IRecipeCategory, Object> recipeCatalysts;
 	private final ImmutableMap<String, IRecipeCategory> recipeCategoriesMap;
-	private final Map<Object, IRecipeWrapper> wrapperMap = new IdentityHashMap<Object, IRecipeWrapper>(); // used when removing recipes
+	private final Map<Object, IRecipeWrapper> wrapperMap = new IdentityHashMap<>(); // used when removing recipes
 	private final ListMultimap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories = ArrayListMultimap.create();
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
-	private final List<IRecipeRegistryPlugin> plugins = new ArrayList<IRecipeRegistryPlugin>();
+	private final List<IRecipeRegistryPlugin> plugins = new ArrayList<>();
 
 	public RecipeRegistry(
 			List<IRecipeCategory> recipeCategories,
@@ -117,7 +117,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		this.plugins.add(internalRecipeRegistryPlugin);
 		this.plugins.addAll(plugins);
 
-		for (IRecipeCategory recipeCategory : recipeCategories) {
+		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
 			List recipeWrappers = getRecipeWrappers(recipeCategory);
 			if (recipeWrappers.isEmpty()) {
 				this.emptyRecipeCategories.add(recipeCategory);
@@ -141,7 +141,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	private static ImmutableList<IRecipeHandler> buildRecipeHandlersList(List<IRecipeHandler> recipeHandlers) {
 		ImmutableList.Builder<IRecipeHandler> listBuilder = ImmutableList.builder();
-		Set<Class> recipeHandlerClasses = new HashSet<Class>();
+		Set<Class> recipeHandlerClasses = new HashSet<>();
 		for (IRecipeHandler recipeHandler : recipeHandlers) {
 			if (recipeHandler == null) {
 				continue;
@@ -205,7 +205,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public <V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient) {
-		return new Focus<V>(mode, ingredient);
+		return new Focus<>(mode, ingredient);
 	}
 
 	@Override
@@ -282,10 +282,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			addRecipeUnchecked(recipe, recipeWrapper, recipeCategory);
 		} catch (BrokenCraftingRecipeException e) {
 			Log.error("Found a broken crafting recipe.", e);
-		} catch (RuntimeException e) {
-			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, recipeWrapper);
-			Log.error("Found a broken recipe: {}\n", recipeInfo, e);
-		} catch (LinkageError e) {
+		} catch (RuntimeException | LinkageError e) {
 			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, recipeWrapper);
 			Log.error("Found a broken recipe: {}\n", recipeInfo, e);
 		}
@@ -397,7 +394,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		}
 		this.checkIfEmptyRecipeCategories.clear();
 
-		List<IRecipeCategory> recipeCategories = new ArrayList<IRecipeCategory>(this.recipeCategories);
+		List<IRecipeCategory> recipeCategories = new ArrayList<>(this.recipeCategories);
 		recipeCategories.removeAll(this.emptyRecipeCategories);
 		return recipeCategories;
 	}
@@ -406,7 +403,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	public ImmutableList<IRecipeCategory> getRecipeCategories(List<String> recipeCategoryUids) {
 		ErrorUtil.checkNotNull(recipeCategoryUids, "recipeCategoryUids");
 
-		Set<String> uniqueUids = new HashSet<String>();
+		Set<String> uniqueUids = new HashSet<>();
 		ImmutableList.Builder<IRecipeCategory> builder = ImmutableList.builder();
 		for (String recipeCategoryUid : recipeCategoryUids) {
 			if (!uniqueUids.contains(recipeCategoryUid)) {
@@ -446,10 +443,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 				if (!recipeHandler.isRecipeValid(recipe)) {
 					return null;
 				}
-			} catch (RuntimeException e) {
-				Log.error("Recipe check crashed", e);
-				return null;
-			} catch (LinkageError e) {
+			} catch (RuntimeException | LinkageError e) {
 				Log.error("Recipe check crashed", e);
 				return null;
 			}
@@ -458,10 +452,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 				IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
 				wrapperMap.put(recipe, recipeWrapper);
 				return recipeWrapper;
-			} catch (RuntimeException e) {
-				logBrokenRecipeHandler(recipe, recipeHandler);
-				return null;
-			} catch (LinkageError e) {
+			} catch (RuntimeException | LinkageError e) {
 				logBrokenRecipeHandler(recipe, recipeHandler);
 				return null;
 			}
@@ -519,7 +510,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private <T> List<IRecipeHandler<T>> getRecipeHandlers(Class<? extends T> recipeClass) {
 		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
 
-		List<IRecipeHandler<T>> recipeHandlers = new ArrayList<IRecipeHandler<T>>();
+		List<IRecipeHandler<T>> recipeHandlers = new ArrayList<>();
 
 		ImmutableCollection<IRecipeHandler> allRecipeHandlers = this.recipeHandlers.values();
 
@@ -600,7 +591,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			return getRecipeCategories(createFocus(focus.getMode(), fluidStack));
 		}
 
-		List<String> allRecipeCategoryUids = new ArrayList<String>();
+		List<String> allRecipeCategoryUids = new ArrayList<>();
 		for (IRecipeRegistryPlugin plugin : this.plugins) {
 			long start_time = System.currentTimeMillis();
 			List<String> recipeCategoryUids = plugin.getRecipeCategoryUids(focus);
@@ -624,7 +615,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			return getRecipeWrappers(recipeCategory, createFocus(focus.getMode(), fluidStack));
 		}
 
-		List<T> allRecipeWrappers = new ArrayList<T>();
+		List<T> allRecipeWrappers = new ArrayList<>();
 		for (IRecipeRegistryPlugin plugin : this.plugins) {
 			long start_time = System.currentTimeMillis();
 			List<T> recipeWrappers = plugin.getRecipeWrappers(recipeCategory, focus);
@@ -642,7 +633,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	public <T extends IRecipeWrapper> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 
-		List<T> allRecipeWrappers = new ArrayList<T>();
+		List<T> allRecipeWrappers = new ArrayList<>();
 		for (IRecipeRegistryPlugin plugin : this.plugins) {
 			long start_time = System.currentTimeMillis();
 			List<T> recipeWrappers = plugin.getRecipeWrappers(recipeCategory);
@@ -681,7 +672,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	public List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		List<Object> objects = getRecipeCatalysts(recipeCategory);
-		List<ItemStack> itemStacks = new ArrayList<ItemStack>();
+		List<ItemStack> itemStacks = new ArrayList<>();
 		for (Object object : objects) {
 			if (object instanceof ItemStack) {
 				itemStacks.add((ItemStack) object);
@@ -711,9 +702,8 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return recipeTransferHandlers.get(containerClass, Constants.UNIVERSAL_RECIPE_TRANSFER_UID);
 	}
 
-	// TODO next breaking version, make this nullable
 	@Override
-	public <T extends IRecipeWrapper> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipeWrapper, IFocus focus) {
+	public <T extends IRecipeWrapper> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipeWrapper, IFocus<?> focus) {
 		focus = Focus.check(focus);
 		RecipeLayout recipeLayout = RecipeLayout.create(-1, recipeCategory, recipeWrapper, focus, 0, 0);
 		Preconditions.checkNotNull(recipeLayout, "Recipe layout crashed during creation, see log.");

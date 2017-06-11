@@ -25,8 +25,8 @@ import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 
 public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
-	private final Map<Integer, GuiIngredient<T>> guiIngredients = new HashMap<Integer, GuiIngredient<T>>();
-	private final Set<Integer> inputSlots = new HashSet<Integer>();
+	private final Map<Integer, GuiIngredient<T>> guiIngredients = new HashMap<>();
+	private final Set<Integer> inputSlots = new HashSet<>();
 	private final IIngredientHelper<T> ingredientHelper;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final Class<T> ingredientClass;
@@ -73,7 +73,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	@Override
 	public void init(int slotIndex, boolean input, IIngredientRenderer<T> ingredientRenderer, int xPosition, int yPosition, int width, int height, int xPadding, int yPadding) {
 		Rectangle rect = new Rectangle(xPosition, yPosition, width, height);
-		GuiIngredient<T> guiIngredient = new GuiIngredient<T>(slotIndex, input, ingredientRenderer, ingredientHelper, rect, xPadding, yPadding, cycleOffset);
+		GuiIngredient<T> guiIngredient = new GuiIngredient<>(slotIndex, input, ingredientRenderer, ingredientHelper, rect, xPadding, yPadding, cycleOffset);
 		guiIngredients.put(slotIndex, guiIngredient);
 		if (input) {
 			inputSlots.add(slotIndex);
@@ -87,7 +87,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		int inputIndex = 0;
 		int outputIndex = 0;
 
-		List<Integer> slots = new ArrayList<Integer>(guiIngredients.keySet());
+		List<Integer> slots = new ArrayList<>(guiIngredients.keySet());
 		Collections.sort(slots);
 		for (Integer slot : slots) {
 			if (inputSlots.contains(slot)) {

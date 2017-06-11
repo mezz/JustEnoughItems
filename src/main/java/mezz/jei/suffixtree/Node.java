@@ -19,7 +19,6 @@ import javax.annotation.Nullable;
 
 import gnu.trove.map.TCharObjectMap;
 import gnu.trove.map.hash.TCharObjectHashMap;
-import gnu.trove.procedure.TObjectProcedure;
 import gnu.trove.set.TIntSet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -61,7 +60,7 @@ class Node {
 	 * Creates a new Node
 	 */
 	Node() {
-		edges = new TCharObjectHashMap<Edge>();
+		edges = new TCharObjectHashMap<>();
 		suffix = null;
 		data = new IntArrayList(0);
 	}
@@ -73,12 +72,9 @@ class Node {
 	void getData(final TIntSet ret) {
 		ret.addAll(data);
 
-		edges.forEachValue(new TObjectProcedure<Edge>() {
-			@Override
-			public boolean execute(Edge e) {
-				e.getDest().getData(ret);
-				return true;
-			}
+		edges.forEachValue(e -> {
+			e.getDest().getData(ret);
+			return true;
 		});
 	}
 

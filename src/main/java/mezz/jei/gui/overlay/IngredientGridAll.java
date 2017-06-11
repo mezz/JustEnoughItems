@@ -84,7 +84,7 @@ public class IngredientGridAll extends IngredientGrid {
 
 	@Override
 	public List<IIngredientListElement> getVisibleElements() {
-		List<IIngredientListElement> visibleElements = new ArrayList<IIngredientListElement>();
+		List<IIngredientListElement> visibleElements = new ArrayList<>();
 		for (GuiIngredientFast guiItemStack : guiIngredientList.getAllGuiIngredients()) {
 			IIngredientListElement element = guiItemStack.getElement();
 			if (element != null) {

@@ -11,7 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
 
 public class RecipeTransferErrorTooltip implements IRecipeTransferError {
-	private final List<String> message = new ArrayList<String>();
+	private final List<String> message = new ArrayList<>();
 
 	public RecipeTransferErrorTooltip(String message) {
 		this.message.add(Constants.RECIPE_TRANSFER_TOOLTIP);

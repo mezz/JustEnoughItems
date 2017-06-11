@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 public final class TippedArrowRecipeMaker {
 
 	public static List<TippedArrowRecipeWrapper> getTippedArrowRecipes() {
-		List<TippedArrowRecipeWrapper> recipes = new ArrayList<TippedArrowRecipeWrapper>();
+		List<TippedArrowRecipeWrapper> recipes = new ArrayList<>();
 		for (ResourceLocation potionTypeResourceLocation : PotionType.REGISTRY.getKeys()) {
 			PotionType potionType = PotionType.REGISTRY.getObject(potionTypeResourceLocation);
 			TippedArrowRecipeWrapper recipe = new TippedArrowRecipeWrapper(potionType);

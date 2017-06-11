@@ -10,7 +10,7 @@ import net.minecraft.util.NonNullList;
 public class UniqueItemStackListBuilder {
 	private final StackHelper stackHelper;
 	private final NonNullList<ItemStack> ingredients = NonNullList.create();
-	private final Set<String> ingredientUids = new HashSet<String>();
+	private final Set<String> ingredientUids = new HashSet<>();
 
 	public UniqueItemStackListBuilder(StackHelper stackHelper) {
 		this.stackHelper = stackHelper;
@@ -26,9 +26,7 @@ public class UniqueItemStackListBuilder {
 				ingredientUids.add(uid);
 				ingredients.add(itemStack);
 			}
-		} catch (RuntimeException e) {
-			Log.error("Failed to get unique identifier for stack.", e);
-		} catch (LinkageError e) {
+		} catch (RuntimeException | LinkageError e) {
 			Log.error("Failed to get unique identifier for stack.", e);
 		}
 	}

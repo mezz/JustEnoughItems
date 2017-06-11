@@ -74,9 +74,7 @@ public final class ColorGetter {
 	public static List<Color> getColors(ItemStack itemStack, int colorCount) {
 		try {
 			return unsafeGetColors(itemStack, colorCount);
-		} catch (RuntimeException ignored) {
-			return Collections.emptyList();
-		} catch (LinkageError ignored) {
+		} catch (RuntimeException | LinkageError ignored) {
 			return Collections.emptyList();
 		}
 	}
@@ -113,9 +111,7 @@ public final class ColorGetter {
 		IBlockState blockState;
 		try {
 			blockState = block.getStateFromMeta(meta);
-		} catch (RuntimeException ignored) {
-			blockState = block.getDefaultState();
-		} catch (LinkageError ignored) {
+		} catch (RuntimeException | LinkageError ignored) {
 			blockState = block.getDefaultState();
 		}
 
@@ -133,7 +129,7 @@ public final class ColorGetter {
 		if (bufferedImage == null) {
 			return Collections.emptyList();
 		}
-		final List<Color> colors = new ArrayList<Color>(colorCount);
+		final List<Color> colors = new ArrayList<>(colorCount);
 		final int[][] palette = ColorThief.getPalette(bufferedImage, colorCount);
 		if (palette != null) {
 			for (int[] colorInt : palette) {

@@ -48,7 +48,7 @@ public final class Config {
 	private static final ConfigValues values = new ConfigValues();
 
 	// item blacklist
-	private static final Set<String> itemBlacklist = new HashSet<String>();
+	private static final Set<String> itemBlacklist = new HashSet<>();
 	private static final String[] defaultItemBlacklist = new String[]{};
 
 	private Config() {

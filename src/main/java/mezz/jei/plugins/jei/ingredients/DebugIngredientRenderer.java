@@ -32,7 +32,7 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 
 	@Override
 	public List<String> getTooltip(Minecraft minecraft, DebugIngredient ingredient, ITooltipFlag tooltipFlag) {
-		List<String> tooltip = new ArrayList<String>();
+		List<String> tooltip = new ArrayList<>();
 		String displayName = ingredientHelper.getDisplayName(ingredient);
 		tooltip.add(displayName);
 		tooltip.add(TextFormatting.GRAY + "debug ingredient");

@@ -43,7 +43,7 @@ public class JEIInternalPlugin extends BlankModPlugin {
 		if (Config.isDebugModeEnabled()) {
 			DebugIngredientHelper ingredientHelper = new DebugIngredientHelper();
 			DebugIngredientRenderer ingredientRenderer = new DebugIngredientRenderer(ingredientHelper);
-			ingredientRegistration.register(DebugIngredient.class, Collections.<DebugIngredient>emptyList(), ingredientHelper, ingredientRenderer);
+			ingredientRegistration.register(DebugIngredient.class, Collections.emptyList(), ingredientHelper, ingredientRenderer);
 		}
 	}
 

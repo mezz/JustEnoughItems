@@ -53,12 +53,12 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 			return handlerHelper.createInternalError();
 		}
 
-		Map<Integer, Slot> inventorySlots = new HashMap<Integer, Slot>();
+		Map<Integer, Slot> inventorySlots = new HashMap<>();
 		for (Slot slot : transferHelper.getInventorySlots(container)) {
 			inventorySlots.put(slot.slotNumber, slot);
 		}
 
-		Map<Integer, Slot> craftingSlots = new HashMap<Integer, Slot>();
+		Map<Integer, Slot> craftingSlots = new HashMap<>();
 		for (Slot slot : transferHelper.getRecipeSlots(container)) {
 			craftingSlots.put(slot.slotNumber, slot);
 		}
@@ -76,7 +76,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 			return handlerHelper.createInternalError();
 		}
 
-		Map<Integer, ItemStack> availableItemStacks = new HashMap<Integer, ItemStack>();
+		Map<Integer, ItemStack> availableItemStacks = new HashMap<>();
 		int filledCraftSlotCount = 0;
 		int emptySlotCount = 0;
 
@@ -114,10 +114,10 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 			return handlerHelper.createUserErrorForSlots(message, matchingItemsResult.missingItems);
 		}
 
-		List<Integer> craftingSlotIndexes = new ArrayList<Integer>(craftingSlots.keySet());
+		List<Integer> craftingSlotIndexes = new ArrayList<>(craftingSlots.keySet());
 		Collections.sort(craftingSlotIndexes);
 
-		List<Integer> inventorySlotIndexes = new ArrayList<Integer>(inventorySlots.keySet());
+		List<Integer> inventorySlotIndexes = new ArrayList<>(inventorySlots.keySet());
 		Collections.sort(inventorySlotIndexes);
 
 		// check that the slots exist and can be altered

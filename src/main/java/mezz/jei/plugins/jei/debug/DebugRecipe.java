@@ -7,21 +7,15 @@ import java.util.List;
 
 import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.IJeiRuntime;
-import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
-import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
-import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -71,7 +65,7 @@ public class DebugRecipe extends BlankRecipeWrapper {
 
 	@Override
 	public List<String> getTooltipStrings(int mouseX, int mouseY) {
-		List<String> tooltipStrings = new ArrayList<String>();
+		List<String> tooltipStrings = new ArrayList<>();
 		if (buttonHoverChecker.checkHover(mouseX, mouseY)) {
 			tooltipStrings.add("button tooltip!");
 		} else {

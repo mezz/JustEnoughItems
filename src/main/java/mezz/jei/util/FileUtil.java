@@ -16,14 +16,17 @@ public final class FileUtil {
 	private FileUtil() {
 	}
 
+	@FunctionalInterface
 	public interface FileOperation {
 		void handle(File file) throws IOException;
 	}
 
+	@FunctionalInterface
 	public interface ZipInputFileOperation {
 		void handle(ZipInputStream zipInputStream) throws IOException;
 	}
 
+	@FunctionalInterface
 	public interface ZipOutputFileOperation {
 		void handle(ZipOutputStream zipOutputStream) throws IOException;
 	}
@@ -93,28 +96,22 @@ public final class FileUtil {
 	}
 
 	public static void readZipFileSafely(final File file, final String zipEntryName, final ZipInputFileOperation fileOperation) {
-		FileUtil.readFileSafely(file, new FileOperation() {
-			@Override
-			public void handle(File file) throws IOException {
-				final ZipInputStream zipInput = new ZipInputStream(new FileInputStream(file));
-				if (FileUtil.getZipEntry(zipInput, zipEntryName)) {
-					fileOperation.handle(zipInput);
-					zipInput.close();
-				}
+		FileUtil.readFileSafely(file, file1 -> {
+			final ZipInputStream zipInput = new ZipInputStream(new FileInputStream(file1));
+			if (FileUtil.getZipEntry(zipInput, zipEntryName)) {
+				fileOperation.handle(zipInput);
+				zipInput.close();
 			}
 		});
 	}
 
 	public static boolean writeZipFileSafely(final File file, final String zipEntryName, final ZipOutputFileOperation fileOperation) {
-		return FileUtil.writeFileSafely(file, new FileUtil.FileOperation() {
-			@Override
-			public void handle(File file) throws IOException {
-				ZipOutputStream zipOutput = new ZipOutputStream(new FileOutputStream(file));
-				zipOutput.putNextEntry(new ZipEntry(zipEntryName));
-				fileOperation.handle(zipOutput);
-				zipOutput.closeEntry();
-				zipOutput.close();
-			}
+		return FileUtil.writeFileSafely(file, file1 -> {
+			ZipOutputStream zipOutput = new ZipOutputStream(new FileOutputStream(file1));
+			zipOutput.putNextEntry(new ZipEntry(zipEntryName));
+			fileOperation.handle(zipOutput);
+			zipOutput.closeEntry();
+			zipOutput.close();
 		});
 	}
 

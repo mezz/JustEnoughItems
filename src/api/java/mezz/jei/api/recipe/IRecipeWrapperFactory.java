@@ -7,7 +7,7 @@ package mezz.jei.api.recipe;
  * @param <T> the recipe type
  * @since JEI 4.3.0
  */
-//TODO Java 8, add @FunctionalInterface
+@FunctionalInterface
 public interface IRecipeWrapperFactory<T> {
 	/**
 	 * Returns a recipe wrapper for the given recipe.

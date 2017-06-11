@@ -43,7 +43,7 @@ public final class CommandUtilServer {
 			throw new IllegalArgumentException("item.getRegistryName() returned null for: " + stackInfo);
 		}
 
-		List<String> commandStrings = new ArrayList<String>();
+		List<String> commandStrings = new ArrayList<>();
 		commandStrings.add(senderName);
 		commandStrings.add(itemResourceLocation.toString());
 		commandStrings.add(String.valueOf(amount));
@@ -76,7 +76,7 @@ public final class CommandUtilServer {
 			if (MinecraftForge.EVENT_BUS.post(event)) {
 				Throwable exception = event.getException();
 				if (exception != null) {
-					Throwables.propagateIfPossible(exception);
+					Throwables.throwIfUnchecked(exception);
 				}
 				return false;
 			}

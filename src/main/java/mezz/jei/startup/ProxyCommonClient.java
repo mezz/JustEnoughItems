@@ -21,8 +21,6 @@ import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.resources.IReloadableResourceManager;
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
@@ -42,7 +40,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 @SuppressWarnings("unused")
 public class ProxyCommonClient extends ProxyCommon {
-	private List<IModPlugin> plugins = new ArrayList<IModPlugin>();
+	private List<IModPlugin> plugins = new ArrayList<>();
 	private final JeiStarter starter = new JeiStarter();
 
 	private static void initVersionChecker() {
@@ -105,18 +103,15 @@ public class ProxyCommonClient extends ProxyCommon {
 		// Reload when resources change
 		Minecraft minecraft = Minecraft.getMinecraft();
 		IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) minecraft.getResourceManager();
-		reloadableResourceManager.registerReloadListener(new IResourceManagerReloadListener() {
-			@Override
-			public void onResourceManagerReload(IResourceManager resourceManager) {
-				if (SessionData.hasJoinedWorld()) {
-					// check that JEI has been started before. if not, do nothing
-					if (ProxyCommonClient.this.starter.hasStarted()) {
-						Log.info("Restarting JEI.");
-						ProxyCommonClient.this.starter.start(ProxyCommonClient.this.plugins);
-					}
+		reloadableResourceManager.registerReloadListener(resourceManager -> {
+			if (SessionData.hasJoinedWorld()) {
+				// check that JEI has been started before. if not, do nothing
+				if (ProxyCommonClient.this.starter.hasStarted()) {
+					Log.info("Restarting JEI.");
+					ProxyCommonClient.this.starter.start(ProxyCommonClient.this.plugins);
 				}
-				IngredientInformation.onResourceReload();
 			}
+			IngredientInformation.onResourceReload();
 		});
 
 		try {

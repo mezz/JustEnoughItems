@@ -14,7 +14,7 @@ import net.minecraft.item.ItemStack;
 
 public class IngredientBlacklist implements IIngredientBlacklist, IItemBlacklist {
 	private final IIngredientRegistry ingredientRegistry;
-	private final Set<String> ingredientBlacklist = new HashSet<String>();
+	private final Set<String> ingredientBlacklist = new HashSet<>();
 
 	public IngredientBlacklist(IIngredientRegistry ingredientRegistry) {
 		this.ingredientRegistry = ingredientRegistry;

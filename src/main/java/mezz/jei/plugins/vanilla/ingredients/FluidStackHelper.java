@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.color.ColorGetter;
 import net.minecraft.client.Minecraft;

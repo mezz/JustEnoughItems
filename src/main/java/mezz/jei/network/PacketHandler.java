@@ -92,14 +92,11 @@ public class PacketHandler {
 
 	private static void checkThreadAndEnqueue(final IPacketJeiHandler packetHandler, final PacketBuffer packetBuffer, final EntityPlayer player, @Nullable IThreadListener threadListener) {
 		if (threadListener != null && !threadListener.isCallingFromMinecraftThread()) {
-			threadListener.addScheduledTask(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						packetHandler.readPacketData(packetBuffer, player);
-					} catch (IOException e) {
-						Log.error("Network Error", e);
-					}
+			threadListener.addScheduledTask(() -> {
+				try {
+					packetHandler.readPacketData(packetBuffer, player);
+				} catch (IOException e) {
+					Log.error("Network Error", e);
 				}
 			});
 		}

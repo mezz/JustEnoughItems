@@ -24,8 +24,8 @@ public class IngredientRegistry implements IIngredientRegistry {
 	private final Map<Class, List> ingredientsMap;
 	private final ImmutableMap<Class, IIngredientHelper> ingredientHelperMap;
 	private final ImmutableMap<Class, IIngredientRenderer> ingredientRendererMap;
-	private final List<ItemStack> fuels = new ArrayList<ItemStack>();
-	private final List<ItemStack> potionIngredients = new ArrayList<ItemStack>();
+	private final List<ItemStack> fuels = new ArrayList<>();
+	private final List<ItemStack> potionIngredients = new ArrayList<>();
 
 	public IngredientRegistry(
 			Map<Class, List> ingredientsMap,
@@ -46,10 +46,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 			if (TileEntityFurnace.isItemFuel(itemStack)) {
 				fuels.add(itemStack);
 			}
-		} catch (RuntimeException e) {
-			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
-			Log.error("Failed to check if item is fuel {}.", itemStackInfo, e);
-		} catch (LinkageError e) {
+		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
 			Log.error("Failed to check if item is fuel {}.", itemStackInfo, e);
 		}
@@ -58,10 +55,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 			if (PotionHelper.isReagent(itemStack)) {
 				potionIngredients.add(itemStack);
 			}
-		} catch (RuntimeException e) {
-			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
-			Log.error("Failed to check if item is a potion ingredient {}.", itemStackInfo, e);
-		} catch (LinkageError e) {
+		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
 			Log.error("Failed to check if item is a potion ingredient {}.", itemStackInfo, e);
 		}
@@ -147,11 +141,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 
 		//noinspection unchecked
-		List<V> list = ingredientsMap.get(ingredientClass);
-		if (list == null) {
-			list = new ArrayList<V>();
-			ingredientsMap.put(ingredientClass, list);
-		}
+		List<V> list = ingredientsMap.computeIfAbsent(ingredientClass, k -> new ArrayList<V>());
 		list.addAll(ingredients);
 
 		List<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, ForgeModIdHelper.getInstance());

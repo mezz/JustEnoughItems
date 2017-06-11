@@ -20,7 +20,7 @@ import net.minecraft.client.renderer.GlStateManager;
  */
 public class RecipeGuiTabs implements IMouseHandler, IPaged {
 	private final IRecipeGuiLogic recipeGuiLogic;
-	private final List<RecipeGuiTab> tabs = new ArrayList<RecipeGuiTab>();
+	private final List<RecipeGuiTab> tabs = new ArrayList<>();
 	private final PageNavigation pageNavigation;
 	private final Rectangle area = new Rectangle();
 

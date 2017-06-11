@@ -39,19 +39,19 @@ import net.minecraft.item.ItemStack;
 public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	private final IJeiHelpers jeiHelpers;
 	private final IIngredientRegistry ingredientRegistry;
-	private final List<IRecipeCategory> recipeCategories = new ArrayList<IRecipeCategory>();
-	private final Set<String> recipeCategoryUids = new HashSet<String>();
+	private final List<IRecipeCategory> recipeCategories = new ArrayList<>();
+	private final Set<String> recipeCategoryUids = new HashSet<>();
 	@Deprecated
-	private final List<IRecipeHandler> unsortedRecipeHandlers = new ArrayList<IRecipeHandler>();
+	private final List<IRecipeHandler> unsortedRecipeHandlers = new ArrayList<>();
 	private final Multimap<String, IRecipeHandler> recipeHandlers = ArrayListMultimap.create();
-	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers = new ArrayList<IAdvancedGuiHandler<?>>();
+	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers = new ArrayList<>();
 	@Deprecated
-	private final List<Object> unsortedRecipes = new ArrayList<Object>();
+	private final List<Object> unsortedRecipes = new ArrayList<>();
 	private final Multimap<String, Object> recipes = ArrayListMultimap.create();
 	private final RecipeTransferRegistry recipeTransferRegistry;
 	private final Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas = ArrayListMultimap.create();
 	private final Multimap<String, Object> recipeCatalysts = ArrayListMultimap.create();
-	private final List<IRecipeRegistryPlugin> recipeRegistryPlugins = new ArrayList<IRecipeRegistryPlugin>();
+	private final List<IRecipeRegistryPlugin> recipeRegistryPlugins = new ArrayList<>();
 
 	public ModRegistry(JeiHelpers jeiHelpers, IIngredientRegistry ingredientRegistry) {
 		this.jeiHelpers = jeiHelpers;

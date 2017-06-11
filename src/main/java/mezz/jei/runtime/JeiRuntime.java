@@ -72,7 +72,7 @@ public class JeiRuntime implements IJeiRuntime {
 	}
 
 	public <T extends GuiContainer> List<IAdvancedGuiHandler<T>> getActiveAdvancedGuiHandlers(T guiContainer) {
-		List<IAdvancedGuiHandler<T>> activeAdvancedGuiHandler = new ArrayList<IAdvancedGuiHandler<T>>();
+		List<IAdvancedGuiHandler<T>> activeAdvancedGuiHandler = new ArrayList<>();
 		for (IAdvancedGuiHandler<?> advancedGuiHandler : advancedGuiHandlers) {
 			Class<?> guiContainerClass = advancedGuiHandler.getGuiContainerClass();
 			if (guiContainerClass.isInstance(guiContainer)) {

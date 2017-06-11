@@ -14,8 +14,6 @@ import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
-import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.api.recipe.IRecipeWrapperFactory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeCategory;
@@ -80,20 +78,13 @@ public class VanillaPlugin extends BlankModPlugin {
 		subtypeRegistry.registerSubtypeInterpreter(Items.POTIONITEM, PotionSubtypeInterpreter.INSTANCE);
 		subtypeRegistry.registerSubtypeInterpreter(Items.SPLASH_POTION, PotionSubtypeInterpreter.INSTANCE);
 		subtypeRegistry.registerSubtypeInterpreter(Items.LINGERING_POTION, PotionSubtypeInterpreter.INSTANCE);
-		subtypeRegistry.registerSubtypeInterpreter(Items.BANNER, new ISubtypeRegistry.ISubtypeInterpreter() {
-			@Override
-			public String getSubtypeInfo(ItemStack itemStack) {
-				EnumDyeColor baseColor = ItemBanner.getBaseColor(itemStack);
-				return baseColor.toString();
-			}
+		subtypeRegistry.registerSubtypeInterpreter(Items.BANNER, itemStack -> {
+			EnumDyeColor baseColor = ItemBanner.getBaseColor(itemStack);
+			return baseColor.toString();
 		});
-		subtypeRegistry.registerSubtypeInterpreter(Items.SPAWN_EGG, new ISubtypeRegistry.ISubtypeInterpreter() {
-			@Nullable
-			@Override
-			public String getSubtypeInfo(ItemStack itemStack) {
-				ResourceLocation resourceLocation = ItemMonsterPlacer.getNamedIdFrom(itemStack);
-				return resourceLocation == null ? null : resourceLocation.toString();
-			}
+		subtypeRegistry.registerSubtypeInterpreter(Items.SPAWN_EGG, itemStack -> {
+			ResourceLocation resourceLocation = ItemMonsterPlacer.getNamedIdFrom(itemStack);
+			return resourceLocation == null ? null : resourceLocation.toString();
 		});
 	}
 
@@ -132,35 +123,10 @@ public class VanillaPlugin extends BlankModPlugin {
 		registry.addRecipes(TippedArrowRecipeMaker.getTippedArrowRecipes(), VanillaRecipeCategoryUid.CRAFTING);
 		AnvilRecipeMaker.registerVanillaAnvilRecipes(registry);
 
-		// TODO Java 8, these can be one line each using lambdas.
-
-		registry.handleRecipes(ShapedOreRecipe.class, new IRecipeWrapperFactory<ShapedOreRecipe>() {
-			@Override
-			public IRecipeWrapper getRecipeWrapper(ShapedOreRecipe recipe) {
-				return new ShapedOreRecipeWrapper(jeiHelpers, recipe);
-			}
-		}, VanillaRecipeCategoryUid.CRAFTING);
-
-		registry.handleRecipes(ShapedRecipes.class, new IRecipeWrapperFactory<ShapedRecipes>() {
-			@Override
-			public IRecipeWrapper getRecipeWrapper(ShapedRecipes recipe) {
-				return new ShapedRecipesWrapper(recipe);
-			}
-		}, VanillaRecipeCategoryUid.CRAFTING);
-
-		registry.handleRecipes(ShapelessOreRecipe.class, new IRecipeWrapperFactory<ShapelessOreRecipe>() {
-			@Override
-			public IRecipeWrapper getRecipeWrapper(ShapelessOreRecipe recipe) {
-				return new ShapelessOreRecipeWrapper(jeiHelpers, recipe);
-			}
-		}, VanillaRecipeCategoryUid.CRAFTING);
-
-		registry.handleRecipes(ShapelessRecipes.class, new IRecipeWrapperFactory<ShapelessRecipes>() {
-			@Override
-			public IRecipeWrapper getRecipeWrapper(ShapelessRecipes recipe) {
-				return new ShapelessRecipesWrapper(recipe);
-			}
-		}, VanillaRecipeCategoryUid.CRAFTING);
+		registry.handleRecipes(ShapedOreRecipe.class, recipe -> new ShapedOreRecipeWrapper(jeiHelpers, recipe), VanillaRecipeCategoryUid.CRAFTING);
+		registry.handleRecipes(ShapedRecipes.class, ShapedRecipesWrapper::new, VanillaRecipeCategoryUid.CRAFTING);
+		registry.handleRecipes(ShapelessOreRecipe.class, recipe -> new ShapelessOreRecipeWrapper(jeiHelpers, recipe), VanillaRecipeCategoryUid.CRAFTING);
+		registry.handleRecipes(ShapelessRecipes.class, ShapelessRecipesWrapper::new, VanillaRecipeCategoryUid.CRAFTING);
 
 		registry.addRecipeClickArea(GuiCrafting.class, 88, 32, 28, 23, VanillaRecipeCategoryUid.CRAFTING);
 		registry.addRecipeClickArea(GuiInventory.class, 137, 29, 10, 13, VanillaRecipeCategoryUid.CRAFTING);

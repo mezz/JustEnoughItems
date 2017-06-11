@@ -21,7 +21,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	private boolean initialState = true;
 	private IngredientLookupState state;
-	private final Stack<IngredientLookupState> history = new Stack<IngredientLookupState>();
+	private final Stack<IngredientLookupState> history = new Stack<>();
 
 	/**
 	 * List of recipes for the currently selected recipeClass
@@ -153,7 +153,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public List<RecipeLayout> getRecipeLayouts(final int posX, final int posY, final int spacingY) {
-		List<RecipeLayout> recipeLayouts = new ArrayList<RecipeLayout>();
+		List<RecipeLayout> recipeLayouts = new ArrayList<>();
 
 		IRecipeCategory recipeCategory = getSelectedRecipeCategory();
 

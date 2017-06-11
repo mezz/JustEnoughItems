@@ -38,7 +38,7 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Conta
 	public PlayerRecipeTransferHandler(IRecipeTransferHandlerHelper handlerHelper) {
 		this.stackHelper = Internal.getStackHelper();
 		this.handlerHelper = handlerHelper;
-		this.transferHelper = new BasicRecipeTransferInfo<ContainerPlayer>(ContainerPlayer.class, VanillaRecipeCategoryUid.CRAFTING, 1, 4, 9, 36);
+		this.transferHelper = new BasicRecipeTransferInfo<>(ContainerPlayer.class, VanillaRecipeCategoryUid.CRAFTING, 1, 4, 9, 36);
 	}
 
 	@Override
@@ -58,12 +58,12 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Conta
 			return handlerHelper.createInternalError();
 		}
 
-		Map<Integer, Slot> inventorySlots = new HashMap<Integer, Slot>();
+		Map<Integer, Slot> inventorySlots = new HashMap<>();
 		for (Slot slot : transferHelper.getInventorySlots(container)) {
 			inventorySlots.put(slot.slotNumber, slot);
 		}
 
-		Map<Integer, Slot> craftingSlots = new HashMap<Integer, Slot>();
+		Map<Integer, Slot> craftingSlots = new HashMap<>();
 		for (Slot slot : transferHelper.getRecipeSlots(container)) {
 			craftingSlots.put(slot.slotNumber, slot);
 		}
@@ -90,7 +90,7 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Conta
 		}
 
 		// compact the crafting grid into a 2x2 area
-		List<IGuiIngredient<ItemStack>> guiIngredients = new ArrayList<IGuiIngredient<ItemStack>>();
+		List<IGuiIngredient<ItemStack>> guiIngredients = new ArrayList<>();
 		for (IGuiIngredient<ItemStack> guiIngredient : itemStackGroup.getGuiIngredients().values()) {
 			if (guiIngredient.isInput()) {
 				guiIngredients.add(guiIngredient);
@@ -107,7 +107,7 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Conta
 			}
 		}
 
-		Map<Integer, ItemStack> availableItemStacks = new HashMap<Integer, ItemStack>();
+		Map<Integer, ItemStack> availableItemStacks = new HashMap<>();
 		int filledCraftSlotCount = 0;
 		int emptySlotCount = 0;
 
@@ -146,10 +146,10 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Conta
 			return handlerHelper.createUserErrorForSlots(message, matchingItemsResult.missingItems);
 		}
 
-		List<Integer> craftingSlotIndexes = new ArrayList<Integer>(craftingSlots.keySet());
+		List<Integer> craftingSlotIndexes = new ArrayList<>(craftingSlots.keySet());
 		Collections.sort(craftingSlotIndexes);
 
-		List<Integer> inventorySlotIndexes = new ArrayList<Integer>(inventorySlots.keySet());
+		List<Integer> inventorySlotIndexes = new ArrayList<>(inventorySlots.keySet());
 		Collections.sort(inventorySlotIndexes);
 
 		// check that the slots exist and can be altered

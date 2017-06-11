@@ -7,6 +7,7 @@ import java.util.List;
  * Implement a tooltip callback and set it with {@link IGuiIngredientGroup#addTooltipCallback(ITooltipCallback)}.
  * Note that this works on anything that implements {@link IGuiIngredientGroup}, like {@link IGuiItemStackGroup} and {@link IGuiFluidStackGroup}.
  */
+@FunctionalInterface
 public interface ITooltipCallback<T> {
 	/**
 	 * Change the tooltip for an ingredient.

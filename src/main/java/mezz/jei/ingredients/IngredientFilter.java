@@ -42,8 +42,8 @@ public class IngredientFilter implements IIngredientFilter {
 	 */
 	private final List<IIngredientListElement> elementList;
 	private final GeneralizedSuffixTree searchTree;
-	private final TCharObjectMap<PrefixedSearchTree> prefixedSearchTrees = new TCharObjectHashMap<PrefixedSearchTree>();
-	private final List<PrefixedSearchTree> earlyLoadSearchTrees = new ArrayList<PrefixedSearchTree>();
+	private final TCharObjectMap<PrefixedSearchTree> prefixedSearchTrees = new TCharObjectHashMap<>();
+	private final List<PrefixedSearchTree> earlyLoadSearchTrees = new ArrayList<>();
 	private CombinedSearchTrees combinedSearchTrees;
 
 	@Nullable
@@ -52,74 +52,14 @@ public class IngredientFilter implements IIngredientFilter {
 
 	public IngredientFilter(JeiHelpers helpers) {
 		this.helpers = helpers;
-		this.elementList = new ArrayList<IIngredientListElement>();
+		this.elementList = new ArrayList<>();
 		this.searchTree = new GeneralizedSuffixTree();
-		PrefixedSearchTree modNameSearchTree = createPrefixedSearchTree('@', new PrefixedSearchTree.IModeGetter() {
-			@Override
-			public Config.SearchMode getMode() {
-				return Config.getModNameSearchMode();
-			}
-		}, new PrefixedSearchTree.IStringsGetter() {
-			@Override
-			public Collection<String> getStrings(IIngredientListElement<?> element) {
-				return element.getModNameStrings();
-			}
-		});
-		PrefixedSearchTree tooltipSearchTree = createPrefixedSearchTree('#', new PrefixedSearchTree.IModeGetter() {
-			@Override
-			public Config.SearchMode getMode() {
-				return Config.getTooltipSearchMode();
-			}
-		}, new PrefixedSearchTree.IStringsGetter() {
-			@Override
-			public Collection<String> getStrings(IIngredientListElement<?> element) {
-				return element.getTooltipStrings();
-			}
-		});
-		PrefixedSearchTree oreDictSearchTree = createPrefixedSearchTree('$', new PrefixedSearchTree.IModeGetter() {
-			@Override
-			public Config.SearchMode getMode() {
-				return Config.getOreDictSearchMode();
-			}
-		}, new PrefixedSearchTree.IStringsGetter() {
-			@Override
-			public Collection<String> getStrings(IIngredientListElement<?> element) {
-				return element.getOreDictStrings();
-			}
-		});
-		PrefixedSearchTree creativeTabSearchTree = createPrefixedSearchTree('%', new PrefixedSearchTree.IModeGetter() {
-			@Override
-			public Config.SearchMode getMode() {
-				return Config.getCreativeTabSearchMode();
-			}
-		}, new PrefixedSearchTree.IStringsGetter() {
-			@Override
-			public Collection<String> getStrings(IIngredientListElement<?> element) {
-				return element.getCreativeTabsStrings();
-			}
-		});
-		PrefixedSearchTree colorSearchTree = createPrefixedSearchTree('^', new PrefixedSearchTree.IModeGetter() {
-			@Override
-			public Config.SearchMode getMode() {
-				return Config.getColorSearchMode();
-			}
-		}, new PrefixedSearchTree.IStringsGetter() {
-			@Override
-			public Collection<String> getStrings(IIngredientListElement<?> element) {
-				return element.getColorStrings();
-			}
-		});
-		PrefixedSearchTree resourceIdSearchTree = createPrefixedSearchTree('&', new PrefixedSearchTree.IModeGetter() {
-			@Override
-			public Config.SearchMode getMode() {
-				return Config.getResourceIdSearchMode();
-			}
-		}, new PrefixedSearchTree.IStringsGetter() {
-			@Override
-			public Collection<String> getStrings(IIngredientListElement<?> element) {
-				return Collections.singleton(element.getResourceId());
-			}
-		});
+		PrefixedSearchTree modNameSearchTree = createPrefixedSearchTree('@', Config::getModNameSearchMode, IIngredientListElement::getModNameStrings);
+		PrefixedSearchTree tooltipSearchTree = createPrefixedSearchTree('#', Config::getTooltipSearchMode, IIngredientListElement::getTooltipStrings);
+		PrefixedSearchTree oreDictSearchTree = createPrefixedSearchTree('$', Config::getOreDictSearchMode, IIngredientListElement::getOreDictStrings);
+		PrefixedSearchTree creativeTabSearchTree = createPrefixedSearchTree('%', Config::getCreativeTabSearchMode, IIngredientListElement::getCreativeTabsStrings);
+		PrefixedSearchTree colorSearchTree = createPrefixedSearchTree('^', Config::getColorSearchMode, IIngredientListElement::getColorStrings);
+		PrefixedSearchTree resourceIdSearchTree = createPrefixedSearchTree('&', Config::getResourceIdSearchMode, element -> Collections.singleton(element.getResourceId()));
 
 		this.earlyLoadSearchTrees.add(modNameSearchTree);
 		this.earlyLoadSearchTrees.add(oreDictSearchTree);
@@ -188,7 +128,7 @@ public class IngredientFilter implements IIngredientFilter {
 	}
 
 	public void removeIngredients(Collection<IIngredientListElement> ingredients) {
-		for (IIngredientListElement element : ingredients) {
+		for (IIngredientListElement<?> element : ingredients) {
 			removeIngredient(element);
 		}
 		filterCached = null;
@@ -261,7 +201,7 @@ public class IngredientFilter implements IIngredientFilter {
 		String filterText = Translator.toLowercaseWithLocale(Config.getFilterText());
 		if (!filterText.equals(filterCached)) {
 			List<IIngredientListElement> ingredientList = getIngredientListUncached(filterText);
-			Collections.sort(ingredientList, IngredientListElementComparator.INSTANCE);
+			ingredientList.sort(IngredientListElementComparator.INSTANCE);
 			ingredientListCached = Collections.unmodifiableList(ingredientList);
 			filterCached = filterText;
 		}
@@ -303,7 +243,7 @@ public class IngredientFilter implements IIngredientFilter {
 			String filter = filters[0];
 			return getElements(filter);
 		} else {
-			List<IIngredientListElement> ingredientList = new ArrayList<IIngredientListElement>();
+			List<IIngredientListElement> ingredientList = new ArrayList<>();
 			for (String filter : filters) {
 				List<IIngredientListElement> ingredients = getElements(filter);
 				ingredientList.addAll(ingredients);
@@ -334,7 +274,7 @@ public class IngredientFilter implements IIngredientFilter {
 			}
 		}
 
-		List<IIngredientListElement> matchingIngredients = new ArrayList<IIngredientListElement>();
+		List<IIngredientListElement> matchingIngredients = new ArrayList<>();
 
 		if (matches == null) {
 			for (IIngredientListElement element : elementList) {

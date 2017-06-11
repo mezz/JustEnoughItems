@@ -8,7 +8,6 @@ import java.util.List;
 import com.google.common.base.Objects;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
-import mezz.jei.util.Java6Util;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
@@ -33,7 +32,7 @@ public class BrewingRecipeWrapper extends BlankRecipeWrapper {
 
 		UTIL.addRecipe(potionInput, potionOutput);
 
-		this.inputs = new ArrayList<List<ItemStack>>();
+		this.inputs = new ArrayList<>();
 		this.inputs.add(Collections.singletonList(potionInput));
 		this.inputs.add(Collections.singletonList(potionInput));
 		this.inputs.add(Collections.singletonList(potionInput));
@@ -103,7 +102,7 @@ public class BrewingRecipeWrapper extends BlankRecipeWrapper {
 		PotionType type2 = PotionUtils.getPotionFromItem(potion2);
 		ResourceLocation key1 = ForgeRegistries.POTION_TYPES.getKey(type1);
 		ResourceLocation key2 = ForgeRegistries.POTION_TYPES.getKey(type2);
-		return Java6Util.equals(key1, key2);
+		return java.util.Objects.equals(key1, key2);
 	}
 
 	public int getBrewingSteps() {

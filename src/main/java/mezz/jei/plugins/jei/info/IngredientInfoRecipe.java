@@ -21,7 +21,7 @@ public class IngredientInfoRecipe<T> extends BlankRecipeWrapper {
 	private final IDrawable slotDrawable;
 
 	public static <T> List<IngredientInfoRecipe<T>> create(IGuiHelper guiHelper, List<T> ingredients, Class<? extends T> ingredientClass, String... descriptionKeys) {
-		List<IngredientInfoRecipe<T>> recipes = new ArrayList<IngredientInfoRecipe<T>>();
+		List<IngredientInfoRecipe<T>> recipes = new ArrayList<>();
 
 		List<String> descriptionLines = translateDescriptionLines(descriptionKeys);
 		descriptionLines = expandNewlines(descriptionLines);
@@ -35,7 +35,7 @@ public class IngredientInfoRecipe<T> extends BlankRecipeWrapper {
 			int startLine = i * maxLinesPerPage;
 			int endLine = Math.min((i + 1) * maxLinesPerPage, lineCount);
 			List<String> description = descriptionLines.subList(startLine, endLine);
-			IngredientInfoRecipe<T> recipe = new IngredientInfoRecipe<T>(guiHelper, ingredients, ingredientClass, description);
+			IngredientInfoRecipe<T> recipe = new IngredientInfoRecipe<>(guiHelper, ingredients, ingredientClass, description);
 			recipes.add(recipe);
 		}
 
@@ -43,7 +43,7 @@ public class IngredientInfoRecipe<T> extends BlankRecipeWrapper {
 	}
 
 	private static List<String> translateDescriptionLines(String... descriptionKeys) {
-		List<String> descriptionLines = new ArrayList<String>();
+		List<String> descriptionLines = new ArrayList<>();
 		for (String descriptionKey : descriptionKeys) {
 			String translatedLine = Translator.translateToLocal(descriptionKey);
 			descriptionLines.add(translatedLine);
@@ -52,7 +52,7 @@ public class IngredientInfoRecipe<T> extends BlankRecipeWrapper {
 	}
 
 	private static List<String> expandNewlines(List<String> descriptionLines) {
-		List<String> descriptionLinesExpanded = new ArrayList<String>();
+		List<String> descriptionLinesExpanded = new ArrayList<>();
 		for (String descriptionLine : descriptionLines) {
 			String[] descriptionLineExpanded = descriptionLine.split("\\\\n");
 			Collections.addAll(descriptionLinesExpanded, descriptionLineExpanded);
@@ -62,7 +62,7 @@ public class IngredientInfoRecipe<T> extends BlankRecipeWrapper {
 
 	private static List<String> wrapDescriptionLines(List<String> descriptionLines) {
 		Minecraft minecraft = Minecraft.getMinecraft();
-		List<String> descriptionLinesWrapped = new ArrayList<String>();
+		List<String> descriptionLinesWrapped = new ArrayList<>();
 		for (String descriptionLine : descriptionLines) {
 			List<String> textLines = minecraft.fontRenderer.listFormattedStringToWidth(descriptionLine, IngredientInfoRecipeCategory.recipeWidth);
 			descriptionLinesWrapped.addAll(textLines);

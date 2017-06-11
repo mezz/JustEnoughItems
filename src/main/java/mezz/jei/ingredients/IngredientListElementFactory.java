@@ -1,7 +1,6 @@
 package mezz.jei.ingredients;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,13 +16,13 @@ public final class IngredientListElementFactory {
 	}
 
 	public static List<IIngredientListElement> createBaseList(IIngredientRegistry ingredientRegistry, IModIdHelper modIdHelper) {
-		List<IIngredientListElement> ingredientListElements = new LinkedList<IIngredientListElement>();
+		List<IIngredientListElement> ingredientListElements = new LinkedList<>();
 
-		for (Class ingredientClass : ingredientRegistry.getRegisteredIngredientClasses()) {
+		for (Class<?> ingredientClass : ingredientRegistry.getRegisteredIngredientClasses()) {
 			addToBaseList(ingredientListElements, ingredientRegistry, ingredientClass, modIdHelper);
 		}
 
-		Collections.sort(ingredientListElements, IngredientListElementComparator.INSTANCE);
+		ingredientListElements.sort(IngredientListElementComparator.INSTANCE);
 		return ingredientListElements;
 	}
 
@@ -31,7 +30,7 @@ public final class IngredientListElementFactory {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientClass);
 
-		List<IIngredientListElement> list = new ArrayList<IIngredientListElement>();
+		List<IIngredientListElement> list = new ArrayList<>();
 		for (V ingredient : ingredients) {
 			if (ingredient != null) {
 				IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer, modIdHelper);

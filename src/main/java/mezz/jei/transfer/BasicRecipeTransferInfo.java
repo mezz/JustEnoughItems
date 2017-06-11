@@ -41,7 +41,7 @@ public class BasicRecipeTransferInfo<C extends Container> implements IRecipeTran
 
 	@Override
 	public List<Slot> getRecipeSlots(C container) {
-		List<Slot> slots = new ArrayList<Slot>();
+		List<Slot> slots = new ArrayList<>();
 		for (int i = recipeSlotStart; i < recipeSlotStart + recipeSlotCount; i++) {
 			Slot slot = container.getSlot(i);
 			slots.add(slot);
@@ -51,7 +51,7 @@ public class BasicRecipeTransferInfo<C extends Container> implements IRecipeTran
 
 	@Override
 	public List<Slot> getInventorySlots(C container) {
-		List<Slot> slots = new ArrayList<Slot>();
+		List<Slot> slots = new ArrayList<>();
 		for (int i = inventorySlotStart; i < inventorySlotStart + inventorySlotCount; i++) {
 			Slot slot = container.getSlot(i);
 			slots.add(slot);

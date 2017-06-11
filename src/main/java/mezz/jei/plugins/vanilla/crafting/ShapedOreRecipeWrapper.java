@@ -1,6 +1,5 @@
 package mezz.jei.plugins.vanilla.crafting;
 
-import java.util.Arrays;
 import java.util.List;
 
 import mezz.jei.api.IJeiHelpers;

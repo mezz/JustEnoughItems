@@ -103,10 +103,7 @@ public class JeiStarter {
 			try {
 				progressBar.step(plugin.getClass().getName());
 				plugin.registerItemSubtypes(subtypeRegistry);
-			} catch (RuntimeException e) {
-				Log.error("Failed to register item subtypes for mod plugin: {}", plugin.getClass(), e);
-				iterator.remove();
-			} catch (LinkageError e) {
+			} catch (RuntimeException | LinkageError e) {
 				Log.error("Failed to register item subtypes for mod plugin: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
@@ -124,14 +121,7 @@ public class JeiStarter {
 			try {
 				progressBar.step(plugin.getClass().getName());
 				plugin.registerIngredients(modIngredientRegistry);
-			} catch (RuntimeException e) {
-				if (VanillaPlugin.class.isInstance(plugin)) {
-					throw e;
-				} else {
-					Log.error("Failed to register Ingredients for mod plugin: {}", plugin.getClass(), e);
-					iterator.remove();
-				}
-			} catch (LinkageError e) {
+			} catch (RuntimeException | LinkageError e) {
 				if (VanillaPlugin.class.isInstance(plugin)) {
 					throw e;
 				} else {
@@ -159,10 +149,7 @@ public class JeiStarter {
 				Log.info("Registered  categories: {} in {} ms", plugin.getClass().getName(), timeElapsedMs);
 			} catch (AbstractMethodError ignored) {
 				// legacy plugins do not implement registerCategories
-			} catch (RuntimeException e) {
-				Log.error("Failed to register mod categories: {}", plugin.getClass(), e);
-				iterator.remove();
-			} catch (LinkageError e) {
+			} catch (RuntimeException | LinkageError e) {
 				Log.error("Failed to register mod categories: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
@@ -182,10 +169,7 @@ public class JeiStarter {
 				plugin.register(modRegistry);
 				long timeElapsedMs = System.currentTimeMillis() - start_time;
 				Log.info("Registered  plugin: {} in {} ms", plugin.getClass().getName(), timeElapsedMs);
-			} catch (RuntimeException e) {
-				Log.error("Failed to register mod plugin: {}", plugin.getClass(), e);
-				iterator.remove();
-			} catch (LinkageError e) {
+			} catch (RuntimeException | LinkageError e) {
 				Log.error("Failed to register mod plugin: {}", plugin.getClass(), e);
 				iterator.remove();
 			}
@@ -207,10 +191,7 @@ public class JeiStarter {
 				if (timeElapsedMs > 100) {
 					Log.warning("Sending runtime to plugin: {} took {} ms", plugin.getClass().getName(), timeElapsedMs);
 				}
-			} catch (RuntimeException e) {
-				Log.error("Sending runtime to plugin failed: {}", plugin.getClass(), e);
-				iterator.remove();
-			} catch (LinkageError e) {
+			} catch (RuntimeException | LinkageError e) {
 				Log.error("Sending runtime to plugin failed: {}", plugin.getClass(), e);
 				iterator.remove();
 			}

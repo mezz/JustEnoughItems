@@ -12,7 +12,6 @@ import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.gui.ITooltipCallback;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredients;
@@ -91,14 +90,11 @@ public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 	public void setRecipe(IRecipeLayout recipeLayout, DebugRecipe recipeWrapper, IIngredients ingredients) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
-		guiItemStacks.addTooltipCallback(new ITooltipCallback<ItemStack>() {
-			@Override
-			public void onTooltip(int slotIndex, boolean input, ItemStack ingredient, List<String> tooltip) {
-				if (input) {
-					tooltip.add(slotIndex + " Input itemStack");
-				} else {
-					tooltip.add(slotIndex + " Output itemStack");
-				}
+		guiItemStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
+			if (input) {
+				tooltip.add(slotIndex + " Input itemStack");
+			} else {
+				tooltip.add(slotIndex + " Output itemStack");
 			}
 		});
 
@@ -108,14 +104,11 @@ public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 		guiItemStacks.set(1, new ItemStack(Items.LAVA_BUCKET));
 
 		IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
-		guiFluidStacks.addTooltipCallback(new ITooltipCallback<FluidStack>() {
-			@Override
-			public void onTooltip(int slotIndex, boolean input, FluidStack ingredient, List<String> tooltip) {
-				if (input) {
-					tooltip.add(slotIndex + " Input fluidStack");
-				} else {
-					tooltip.add(slotIndex + " Output fluidStack");
-				}
+		guiFluidStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
+			if (input) {
+				tooltip.add(slotIndex + " Input fluidStack");
+			} else {
+				tooltip.add(slotIndex + " Output fluidStack");
 			}
 		});
 
@@ -129,14 +122,11 @@ public class DebugRecipeCategory extends BlankRecipeCategory<DebugRecipe> {
 		guiFluidStacks.set(1, fluidInputs.get(1));
 
 		IGuiIngredientGroup<DebugIngredient> debugIngredientsGroup = recipeLayout.getIngredientsGroup(DebugIngredient.class);
-		debugIngredientsGroup.addTooltipCallback(new ITooltipCallback<DebugIngredient>() {
-			@Override
-			public void onTooltip(int slotIndex, boolean input, DebugIngredient ingredient, List<String> tooltip) {
-				if (input) {
-					tooltip.add(slotIndex + " Input DebugIngredient");
-				} else {
-					tooltip.add(slotIndex + " Output DebugIngredient");
-				}
+		debugIngredientsGroup.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
+			if (input) {
+				tooltip.add(slotIndex + " Input DebugIngredient");
+			} else {
+				tooltip.add(slotIndex + " Output DebugIngredient");
 			}
 		});
 

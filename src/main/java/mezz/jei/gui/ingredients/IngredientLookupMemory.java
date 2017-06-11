@@ -9,8 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableCollection;
@@ -69,7 +67,7 @@ public class IngredientLookupMemory {
 			if (stateFromFile != null) {
 				final int categoryIndex = getRecipeCategoryIndex(recipeCategories, stateFromFile.categoryUid);
 				if (categoryIndex >= 0) {
-					IRecipeCategory recipeCategory = recipeCategories.get(categoryIndex);
+					IRecipeCategory<?> recipeCategory = recipeCategories.get(categoryIndex);
 					if (stateFromFile.recipeIndex < this.recipeRegistry.getRecipeWrappers(recipeCategory, focus).size()) {
 						state = new IngredientLookupState(focus, recipeCategories, categoryIndex, stateFromFile.recipeIndex);
 					}
@@ -98,7 +96,7 @@ public class IngredientLookupMemory {
 	}
 
 	private Set<Integer> getRecipeCategoryIndexesForOpenContainer(List<IRecipeCategory> recipeCategories) {
-		final Set<Integer> indexes = new HashSet<Integer>();
+		final Set<Integer> indexes = new HashSet<>();
 		final Minecraft minecraft = Minecraft.getMinecraft();
 		final EntityPlayerSP player = minecraft.player;
 		if (player != null) {
@@ -119,7 +117,7 @@ public class IngredientLookupMemory {
 			if (screen instanceof GuiContainer) {
 				final GuiContainer guiContainer = (GuiContainer) screen;
 				final ImmutableCollection<RecipeClickableArea> clickableAreas = this.recipeRegistry.getAllRecipeClickableAreas(guiContainer);
-				final Set<String> recipeCategoryUids = new HashSet<String>();
+				final Set<String> recipeCategoryUids = new HashSet<>();
 				for (RecipeClickableArea clickableArea : clickableAreas) {
 					recipeCategoryUids.addAll(clickableArea.getRecipeCategoryUids());
 				}
@@ -147,21 +145,18 @@ public class IngredientLookupMemory {
 
 	private void readFromFile() {
 		final File file = new File(Config.getJeiConfigurationDir(), "lookupHistory.zip");
-		FileUtil.readZipFileSafely(file, "lookupHistory.json", new FileUtil.ZipInputFileOperation() {
-			@Override
-			public void handle(ZipInputStream zipInputStream) throws IOException {
-				final JsonReader jsonReader = new JsonReader(new InputStreamReader(zipInputStream));
-				jsonReader.beginObject();
+		FileUtil.readZipFileSafely(file, "lookupHistory.json", zipInputStream -> {
+			final JsonReader jsonReader = new JsonReader(new InputStreamReader(zipInputStream));
+			jsonReader.beginObject();
 
-				while (jsonReader.hasNext()) {
-					final String name = jsonReader.nextName();
-					if (name.equals("lookupStates")) {
-						readLookupStatesObject(jsonReader);
-					}
+			while (jsonReader.hasNext()) {
+				final String name = jsonReader.nextName();
+				if (name.equals("lookupStates")) {
+					readLookupStatesObject(jsonReader);
 				}
-
-				jsonReader.endObject();
 			}
+
+			jsonReader.endObject();
 		});
 	}
 
@@ -203,13 +198,10 @@ public class IngredientLookupMemory {
 	private void saveToFileAsync() {
 		final Table<IFocus.Mode, String, IngredientLookupState> mostRecentLookups = HashBasedTable.create(this.mostRecentLookups);
 		final Table<IFocus.Mode, String, RecipeLookupFromFile> mostRecentLookupsFromFile = HashBasedTable.create(this.mostRecentLookupsFromFile);
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				saveToFileSync(mostRecentLookups, mostRecentLookupsFromFile);
-				synchronized (saveLock) {
-					saving = false;
-				}
+		new Thread(() -> {
+			saveToFileSync(mostRecentLookups, mostRecentLookupsFromFile);
+			synchronized (saveLock) {
+				saving = false;
 			}
 		}).start();
 	}
@@ -219,17 +211,14 @@ public class IngredientLookupMemory {
 			final Table<IFocus.Mode, String, RecipeLookupFromFile> mostRecentLookupsFromFile) {
 		final File file = new File(Config.getJeiConfigurationDir(), "lookupHistory.zip");
 
-		final boolean write = FileUtil.writeZipFileSafely(file, "lookupHistory.json", new FileUtil.ZipOutputFileOperation() {
-			@Override
-			public void handle(ZipOutputStream zipOutputStream) throws IOException {
-				JsonWriter jsonWriter = new JsonWriter(new OutputStreamWriter(zipOutputStream));
-				jsonWriter.beginObject();
-				{
-					writeLookupStatesObject(jsonWriter, mostRecentLookups, mostRecentLookupsFromFile);
-				}
-				jsonWriter.endObject();
-				jsonWriter.flush();
+		final boolean write = FileUtil.writeZipFileSafely(file, "lookupHistory.json", zipOutputStream -> {
+			JsonWriter jsonWriter = new JsonWriter(new OutputStreamWriter(zipOutputStream));
+			jsonWriter.beginObject();
+			{
+				writeLookupStatesObject(jsonWriter, mostRecentLookups, mostRecentLookupsFromFile);
 			}
+			jsonWriter.endObject();
+			jsonWriter.flush();
 		});
 
 		if (write) {

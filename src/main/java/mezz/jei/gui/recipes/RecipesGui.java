@@ -60,7 +60,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	private final IRecipeGuiLogic logic;
 
 	/* List of RecipeLayout to display */
-	private final List<RecipeLayout> recipeLayouts = new ArrayList<RecipeLayout>();
+	private final List<RecipeLayout> recipeLayouts = new ArrayList<>();
 
 	private String pageString = "1/1";
 	private String title = "";
@@ -253,7 +253,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 				for (RecipeLayout recipeLayouts : this.recipeLayouts) {
 					Object clicked = recipeLayouts.getIngredientUnderMouse(mouseX, mouseY);
 					if (clicked != null) {
-						return new ClickedIngredient<Object>(clicked);
+						return new ClickedIngredient<>(clicked);
 					}
 				}
 			}

@@ -3,7 +3,6 @@ package mezz.jei.plugins.vanilla.furnace;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -24,8 +23,8 @@ public final class FuelRecipeMaker {
 		IGuiHelper guiHelper = helpers.getGuiHelper();
 		IStackHelper stackHelper = helpers.getStackHelper();
 		List<ItemStack> fuelStacks = ingredientRegistry.getFuels();
-		Set<String> oreDictNames = new HashSet<String>();
-		List<FuelRecipe> fuelRecipes = new ArrayList<FuelRecipe>(fuelStacks.size());
+		Set<String> oreDictNames = new HashSet<>();
+		List<FuelRecipe> fuelRecipes = new ArrayList<>(fuelStacks.size());
 		for (ItemStack fuelStack : fuelStacks) {
 			if (fuelStack == null) {
 				continue;
@@ -64,13 +63,7 @@ public final class FuelRecipeMaker {
 	}
 
 	private static void removeNoBurnTime(Collection<ItemStack> itemStacks) {
-		Iterator<ItemStack> iterator = itemStacks.iterator();
-		while (iterator.hasNext()) {
-			ItemStack itemStack = iterator.next();
-			if (getBurnTime(itemStack) == 0) {
-				iterator.remove();
-			}
-		}
+		itemStacks.removeIf(itemStack -> getBurnTime(itemStack) == 0);
 	}
 
 	private static int getBurnTime(ItemStack itemStack) {

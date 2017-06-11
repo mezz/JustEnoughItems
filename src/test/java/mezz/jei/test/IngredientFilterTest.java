@@ -101,7 +101,7 @@ public class IngredientFilterTest {
 		Assert.assertNotNull(ingredientRegistry);
 		Assert.assertNotNull(modIdHelper);
 
-		List<TestIngredient> ingredientsToAdd = new ArrayList<TestIngredient>();
+		List<TestIngredient> ingredientsToAdd = new ArrayList<>();
 		for (int i = TestPlugin.BASE_INGREDIENT_COUNT; i < TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT; i++) {
 			ingredientsToAdd.add(new TestIngredient(i));
 		}
@@ -119,7 +119,7 @@ public class IngredientFilterTest {
 		Assert.assertNotNull(ingredientRegistry);
 		Assert.assertNotNull(modIdHelper);
 
-		List<TestIngredient> ingredientsToRemove = new ArrayList<TestIngredient>();
+		List<TestIngredient> ingredientsToRemove = new ArrayList<>();
 		for (int i = TestPlugin.BASE_INGREDIENT_COUNT; i < TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT; i++) {
 			ingredientsToRemove.add(new TestIngredient(i));
 		}

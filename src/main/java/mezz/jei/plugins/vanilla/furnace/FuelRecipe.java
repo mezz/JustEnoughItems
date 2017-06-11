@@ -24,7 +24,7 @@ public class FuelRecipe extends BlankRecipeWrapper {
 	private final IDrawableAnimated flame;
 
 	public FuelRecipe(IGuiHelper guiHelper, Collection<ItemStack> input, int burnTime) {
-		List<ItemStack> inputList = new ArrayList<ItemStack>(input);
+		List<ItemStack> inputList = new ArrayList<>(input);
 		this.inputs = Collections.singletonList(inputList);
 
 		if (burnTime == 200) {
