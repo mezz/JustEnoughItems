@@ -34,7 +34,7 @@ key.jei.toggleCheatMode=Переключить режим жульничеств
 
 # Config
 config.jei.default=По-умолчанию
-config.jei.valid=Valid
+config.jei.valid=Действительный
 
 config.jei.title=Конфигурация %MODNAME
 
