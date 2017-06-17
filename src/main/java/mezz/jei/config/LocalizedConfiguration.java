@@ -135,4 +135,14 @@ public class LocalizedConfiguration extends Configuration {
 		String comment = Translator.translateToLocal(commentKey);
 		return getInt(name, category, defaultValue, minValue, maxValue, comment, langKey);
 	}
+
+	public int setInt(String name, String category, int value, int minValue, int maxValue) {
+		String langKey = keyPrefix + category + '.' + name;
+		String commentKey = langKey + commentPostfix;
+		String comment = Translator.translateToLocal(commentKey);
+		Property property = get(category, name, value, comment, minValue, maxValue);
+		property.setLanguageKey(langKey);
+		property.setValue(value);
+		return property.getInt();
+	}
 }
