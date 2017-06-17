@@ -72,6 +72,12 @@ public final class CraftingRecipeChecker {
 				return false;
 			}
 			List<Ingredient> ingredients = recipe.func_192400_c();
+			//noinspection ConstantConditions
+			if (ingredients == null) {
+				String recipeInfo = getInfo(recipe);
+				Log.get().error("Recipe has no input Ingredients. {}", recipeInfo);
+				return false;
+			}
 			int inputCount = getInputCount(ingredients);
 			if (inputCount == INVALID_COUNT) {
 				return false;
