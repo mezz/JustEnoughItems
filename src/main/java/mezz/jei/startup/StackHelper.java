@@ -337,6 +337,9 @@ public class StackHelper implements IStackHelper {
 			} else {
 				itemStackListBuilder.add(stack);
 			}
+		} else if (input instanceof String) {
+			List<ItemStack> stacks = OreDictionary.getOres((String) input);
+			toItemStackList(itemStackListBuilder, stacks, expandSubtypes);
 		} else if (input instanceof Ingredient) {
 			List<ItemStack> stacks = Arrays.asList(((Ingredient) input).func_193365_a());
 			toItemStackList(itemStackListBuilder, stacks, expandSubtypes);
