@@ -227,9 +227,6 @@ public class StackHelper implements IStackHelper {
 		NonNullList<ItemStack> itemStacks = NonNullList.create();
 
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
-			if (itemTab == null) {
-				continue;
-			}
 			NonNullList<ItemStack> subItems = NonNullList.create();
 			try {
 				item.getSubItems(itemTab, subItems);
