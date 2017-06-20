@@ -12,7 +12,7 @@ buildscript {
 }
 
 plugins {
-	id "com.matthewprenger.cursegradle" version "1.0.7"
+	id "com.matthewprenger.cursegradle" version "1.0.9"
 	id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.32"
 }
 
