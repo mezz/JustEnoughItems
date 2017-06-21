@@ -227,23 +227,27 @@ public class StackHelper implements IStackHelper {
 		NonNullList<ItemStack> itemStacks = NonNullList.create();
 
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
-			NonNullList<ItemStack> subItems = NonNullList.create();
-			try {
-				item.getSubItems(itemTab, subItems);
-			} catch (RuntimeException | LinkageError e) {
-				Log.get().warn("Caught a crash while getting sub-items of {}", item, e);
-			}
+			if (itemTab == null) {
+				itemStacks.add(new ItemStack(item, stackSize));
+			} else {
+				NonNullList<ItemStack> subItems = NonNullList.create();
+				try {
+					item.getSubItems(itemTab, subItems);
+				} catch (RuntimeException | LinkageError e) {
+					Log.get().warn("Caught a crash while getting sub-items of {}", item, e);
+				}
 
-			for (ItemStack subItem : subItems) {
-				if (subItem.isEmpty()) {
-					Log.get().warn("Found an empty subItem of {}", item);
-				} else {
-					if (subItem.getCount() != stackSize) {
-						ItemStack subItemCopy = subItem.copy();
-						subItemCopy.setCount(stackSize);
-						itemStacks.add(subItemCopy);
+				for (ItemStack subItem : subItems) {
+					if (subItem.isEmpty()) {
+						Log.get().warn("Found an empty subItem of {}", item);
 					} else {
-						itemStacks.add(subItem);
+						if (subItem.getCount() != stackSize) {
+							ItemStack subItemCopy = subItem.copy();
+							subItemCopy.setCount(stackSize);
+							itemStacks.add(subItemCopy);
+						} else {
+							itemStacks.add(subItem);
+						}
 					}
 				}
 			}
