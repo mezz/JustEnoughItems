@@ -26,11 +26,11 @@ public class ShapelessRecipeWrapper<T extends IRecipe> implements ICraftingRecip
 		IStackHelper stackHelper = jeiHelpers.getStackHelper();
 
 		try {
-			List<List<ItemStack>> inputLists = stackHelper.expandRecipeItemStackInputs(recipe.func_192400_c());
+			List<List<ItemStack>> inputLists = stackHelper.expandRecipeItemStackInputs(recipe.getIngredients());
 			ingredients.setInputLists(ItemStack.class, inputLists);
 			ingredients.setOutput(ItemStack.class, recipeOutput);
 		} catch (RuntimeException e) {
-			String info = ErrorUtil.getInfoFromBrokenCraftingRecipe(recipe, recipe.func_192400_c(), recipeOutput);
+			String info = ErrorUtil.getInfoFromBrokenCraftingRecipe(recipe, recipe.getIngredients(), recipeOutput);
 			throw new BrokenCraftingRecipeException(info, e);
 		}
 	}

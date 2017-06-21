@@ -16,11 +16,11 @@ public class GuiIconButton extends GuiButton {
 	}
 
 	@Override
-	public void func_191745_a(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
-		super.func_191745_a(mc, mouseX, mouseY, partialTicks);
+	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+		super.drawButton(mc, mouseX, mouseY, partialTicks);
 		if (this.visible) {
-			int xOffset = xPosition + (height - this.icon.getWidth()) / 2;
-			int yOffset = yPosition + (width - this.icon.getHeight()) / 2;
+			int xOffset = x + (height - this.icon.getWidth()) / 2;
+			int yOffset = y + (width - this.icon.getHeight()) / 2;
 			this.icon.draw(mc, xOffset, yOffset);
 		}
 	}

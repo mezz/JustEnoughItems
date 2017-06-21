@@ -136,7 +136,7 @@ public class GuiIngredientFast {
 
 			Minecraft minecraft = Minecraft.getMinecraft();
 			RenderItem renderItem = minecraft.getRenderItem();
-			renderItem.func_191961_a(bakedModel, itemStack);
+			renderItem.renderModel(bakedModel, itemStack);
 
 			if (itemStack.hasEffect()) {
 				renderEffect(bakedModel);
@@ -161,7 +161,7 @@ public class GuiIngredientFast {
 		float f = (float) (Minecraft.getSystemTime() % 3000L) / 3000.0F / 8.0F;
 		GlStateManager.translate(f, 0.0F, 0.0F);
 		GlStateManager.rotate(-50.0F, 0.0F, 0.0F, 1.0F);
-		renderItem.func_191965_a(model, -8372020);
+		renderItem.renderModel(model, -8372020);
 		GlStateManager.popMatrix();
 
 		GlStateManager.pushMatrix();
@@ -169,7 +169,7 @@ public class GuiIngredientFast {
 		float f1 = (float) (Minecraft.getSystemTime() % 4873L) / 4873.0F / 8.0F;
 		GlStateManager.translate(-f1, 0.0F, 0.0F);
 		GlStateManager.rotate(10.0F, 0.0F, 0.0F, 1.0F);
-		renderItem.func_191965_a(model, -8372020);
+		renderItem.renderModel(model, -8372020);
 		GlStateManager.popMatrix();
 
 		GlStateManager.matrixMode(5888);
@@ -397,8 +397,8 @@ public class GuiIngredientFast {
 		final IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredient);
 		CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering ingredient");
 		CrashReportCategory crashreportcategory = crashreport.makeCategory("Ingredient being rendered");
-		crashreportcategory.setDetail("Ingredient Mod", () -> ForgeModIdHelper.getInstance().getModNameForIngredient(ingredient, ingredientHelper));
-		crashreportcategory.setDetail("Ingredient Info", () -> ingredientHelper.getErrorInfo(ingredient));
+		crashreportcategory.addDetail("Ingredient Mod", () -> ForgeModIdHelper.getInstance().getModNameForIngredient(ingredient, ingredientHelper));
+		crashreportcategory.addDetail("Ingredient Info", () -> ingredientHelper.getErrorInfo(ingredient));
 		throw new ReportedException(crashreport);
 	}
 }

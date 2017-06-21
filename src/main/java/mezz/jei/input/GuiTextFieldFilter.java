@@ -30,8 +30,8 @@ public class GuiTextFieldFilter extends GuiTextField {
 	}
 
 	public void updateBounds(Rectangle area) {
-		this.xPosition = area.x;
-		this.yPosition = area.y;
+		this.x = area.x;
+		this.y = area.y;
 		this.width = area.width;
 		this.height = area.height;
 		this.hoverChecker.updateBounds(area.y, area.y + area.height, area.x, area.x + area.width);

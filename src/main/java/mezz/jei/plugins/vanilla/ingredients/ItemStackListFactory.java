@@ -39,7 +39,7 @@ public final class ItemStackListFactory {
 		final Set<String> itemNameSet = new HashSet<>();
 
 		for (CreativeTabs creativeTab : CreativeTabs.CREATIVE_TAB_ARRAY) {
-			if (creativeTab == CreativeTabs.field_192395_m) {
+			if (creativeTab == CreativeTabs.HOTBAR) {
 				continue;
 			}
 			NonNullList<ItemStack> creativeTabItemStacks = NonNullList.create();

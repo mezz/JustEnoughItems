@@ -142,16 +142,16 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 		int titleHeight = fontRenderer.FONT_HEIGHT + borderPadding;
 		int recipeClassButtonTop = guiTop + titleHeight - buttonHeight + 2;
-		nextRecipeCategory.xPosition = rightButtonX;
-		nextRecipeCategory.yPosition = recipeClassButtonTop;
-		previousRecipeCategory.xPosition = leftButtonX;
-		previousRecipeCategory.yPosition = recipeClassButtonTop;
+		nextRecipeCategory.x = rightButtonX;
+		nextRecipeCategory.y = recipeClassButtonTop;
+		previousRecipeCategory.x = leftButtonX;
+		previousRecipeCategory.y = recipeClassButtonTop;
 
 		int pageButtonTop = recipeClassButtonTop + buttonHeight + 2;
-		nextPage.xPosition = rightButtonX;
-		nextPage.yPosition = pageButtonTop;
-		previousPage.xPosition = leftButtonX;
-		previousPage.yPosition = pageButtonTop;
+		nextPage.x = rightButtonX;
+		nextPage.y = pageButtonTop;
+		previousPage.x = leftButtonX;
+		previousPage.y = pageButtonTop;
 
 		this.headerHeight = (pageButtonTop + buttonHeight) - guiTop;
 
@@ -179,26 +179,26 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		GlStateManager.disableBlend();
 
 		drawRect(guiLeft + borderPadding + buttonWidth,
-				nextRecipeCategory.yPosition,
+				nextRecipeCategory.y,
 				guiLeft + xSize - borderPadding - buttonWidth,
-				nextRecipeCategory.yPosition + buttonHeight,
+				nextRecipeCategory.y + buttonHeight,
 				0x30000000);
 		drawRect(guiLeft + borderPadding + buttonWidth,
-				nextPage.yPosition,
+				nextPage.y,
 				guiLeft + xSize - borderPadding - buttonWidth,
-				nextPage.yPosition + buttonHeight,
+				nextPage.y + buttonHeight,
 				0x30000000);
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
 		int textPadding = (buttonHeight - fontRenderer.FONT_HEIGHT) / 2;
-		drawCenteredString(fontRenderer, title, xSize, guiLeft, nextRecipeCategory.yPosition + textPadding, Color.WHITE.getRGB(), true);
-		drawCenteredString(fontRenderer, pageString, xSize, guiLeft, nextPage.yPosition + textPadding, Color.WHITE.getRGB(), true);
+		drawCenteredString(fontRenderer, title, xSize, guiLeft, nextRecipeCategory.y + textPadding, Color.WHITE.getRGB(), true);
+		drawCenteredString(fontRenderer, pageString, xSize, guiLeft, nextPage.y + textPadding, Color.WHITE.getRGB(), true);
 
-		nextRecipeCategory.func_191745_a(mc, mouseX, mouseY, partialTicks);
-		previousRecipeCategory.func_191745_a(mc, mouseX, mouseY, partialTicks);
-		nextPage.func_191745_a(mc, mouseX, mouseY, partialTicks);
-		previousPage.func_191745_a(mc, mouseX, mouseY, partialTicks);
+		nextRecipeCategory.drawButton(mc, mouseX, mouseY, partialTicks);
+		previousRecipeCategory.drawButton(mc, mouseX, mouseY, partialTicks);
+		nextPage.drawButton(mc, mouseX, mouseY, partialTicks);
+		previousPage.drawButton(mc, mouseX, mouseY, partialTicks);
 
 		RecipeLayout hovered = null;
 		for (RecipeLayout recipeLayout : recipeLayouts) {

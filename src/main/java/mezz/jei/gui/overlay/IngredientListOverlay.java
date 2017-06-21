@@ -144,8 +144,8 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 				this.searchField.updateBounds(searchArea);
 			}
 
-			int configButtonX = this.searchField.xPosition + this.searchField.width + 1;
-			int configButtonY = this.searchField.yPosition - BORDER_PADDING;
+			int configButtonX = this.searchField.x + this.searchField.width + 1;
+			int configButtonY = this.searchField.y - BORDER_PADDING;
 			this.configButton.updateBounds(new Rectangle(configButtonX, configButtonY, BUTTON_SIZE, BUTTON_SIZE));
 
 			updateLayout();

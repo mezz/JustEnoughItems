@@ -21,11 +21,11 @@ public class GuiIconButtonSmall extends GuiButton {
 	}
 
 	@Override
-	public void func_191745_a(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
 		if (this.visible) {
-			this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+			this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 			int k = this.getHoverState(this.hovered);
-			GuiUtils.drawContinuousTexturedBox(BUTTON_RESOURCE, this.xPosition, this.yPosition, 0, 182 + k * 20, this.width, this.height, 95, 20, 2, 2, 2, 2, this.zLevel);
+			GuiUtils.drawContinuousTexturedBox(BUTTON_RESOURCE, this.x, this.y, 0, 182 + k * 20, this.width, this.height, 95, 20, 2, 2, 2, 2, this.zLevel);
 			this.mouseDragged(mc, mouseX, mouseY);
 
 			int color = 14737632;
@@ -44,8 +44,8 @@ public class GuiIconButtonSmall extends GuiButton {
 			float alpha = (float) (color >> 24 & 255) / 255.0F;
 			GlStateManager.color(red, blue, green, alpha);
 
-			int xOffset = xPosition + (height - this.icon.getWidth()) / 2;
-			int yOffset = yPosition + (width - this.icon.getHeight()) / 2;
+			int xOffset = x + (height - this.icon.getWidth()) / 2;
+			int yOffset = y + (width - this.icon.getHeight()) / 2;
 			this.icon.draw(mc, xOffset, yOffset);
 		}
 	}

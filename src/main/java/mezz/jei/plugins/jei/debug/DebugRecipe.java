@@ -34,7 +34,7 @@ public class DebugRecipe implements IRecipeWrapper {
 
 	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-		button.func_191745_a(minecraft, mouseX, mouseY, minecraft.getRenderPartialTicks());
+		button.drawButton(minecraft, mouseX, mouseY, minecraft.getRenderPartialTicks());
 	}
 
 	@Override

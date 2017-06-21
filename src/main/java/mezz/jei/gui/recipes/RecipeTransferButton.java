@@ -41,8 +41,8 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 	}
 
 	@Override
-	public void func_191745_a(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
-		super.func_191745_a(mc, mouseX, mouseY, partialTicks);
+	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+		super.drawButton(mc, mouseX, mouseY, partialTicks);
 		if (hovered && visible) {
 			if (recipeTransferError != null) {
 				recipeTransferError.showError(mc, mouseX, mouseY, recipeLayout, recipeLayout.getPosX(), recipeLayout.getPosY());

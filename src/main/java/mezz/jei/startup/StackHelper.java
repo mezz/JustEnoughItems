@@ -341,7 +341,7 @@ public class StackHelper implements IStackHelper {
 			List<ItemStack> stacks = OreDictionary.getOres((String) input);
 			toItemStackList(itemStackListBuilder, stacks, expandSubtypes);
 		} else if (input instanceof Ingredient) {
-			List<ItemStack> stacks = Arrays.asList(((Ingredient) input).func_193365_a());
+			List<ItemStack> stacks = Arrays.asList(((Ingredient) input).getMatchingStacks());
 			toItemStackList(itemStackListBuilder, stacks, expandSubtypes);
 		} else if (input instanceof Iterable) {
 			for (Object obj : (Iterable) input) {

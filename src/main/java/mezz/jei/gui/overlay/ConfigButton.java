@@ -40,15 +40,15 @@ public class ConfigButton {
 	public void updateBounds(Rectangle area) {
 		this.configButton.width = area.width;
 		this.configButton.height = area.height;
-		this.configButton.xPosition = area.x;
-		this.configButton.yPosition = area.y;
+		this.configButton.x = area.x;
+		this.configButton.y = area.y;
 	}
 
 	public void draw(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
-		this.configButton.func_191745_a(minecraft, mouseX, mouseY, partialTicks);
+		this.configButton.drawButton(minecraft, mouseX, mouseY, partialTicks);
 
 		IDrawable icon = Config.isCheatItemsEnabled() ? this.configButtonCheatIcon : this.configButtonIcon;
-		icon.draw(minecraft, this.configButton.xPosition + 2, this.configButton.yPosition + 2);
+		icon.draw(minecraft, this.configButton.x + 2, this.configButton.y + 2);
 	}
 
 	public boolean isMouseOver(int mouseX, int mouseY) {

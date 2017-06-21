@@ -113,8 +113,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		if (this.recipeTransferButton != null) {
 			int width = recipeCategory.getBackground().getWidth();
 			int height = recipeCategory.getBackground().getHeight();
-			this.recipeTransferButton.xPosition = posX + width + 2;
-			this.recipeTransferButton.yPosition = posY + height - RECIPE_BUTTON_SIZE;
+			this.recipeTransferButton.x = posX + width + 2;
+			this.recipeTransferButton.y = posY + height - RECIPE_BUTTON_SIZE;
 		}
 	}
 
@@ -152,7 +152,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		}
 		if (recipeTransferButton != null) {
 			float partialTicks = minecraft.getRenderPartialTicks();
-			recipeTransferButton.func_191745_a(minecraft, mouseX, mouseY, partialTicks);
+			recipeTransferButton.drawButton(minecraft, mouseX, mouseY, partialTicks);
 		}
 		GlStateManager.disableBlend();
 		GlStateManager.disableLighting();
@@ -236,8 +236,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	@Override
 	public void setRecipeTransferButton(int posX, int posY) {
 		if (recipeTransferButton != null) {
-			recipeTransferButton.xPosition = posX + this.posX;
-			recipeTransferButton.yPosition = posY + this.posY;
+			recipeTransferButton.x = posX + this.posX;
+			recipeTransferButton.y = posY + this.posY;
 		}
 	}
 

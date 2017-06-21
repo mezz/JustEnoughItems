@@ -28,7 +28,7 @@ public final class CraftingRecipeChecker {
 		CraftingRecipeValidator<ShapelessOreRecipe> shapelessOreRecipeValidator = new CraftingRecipeValidator<>(recipe -> new ShapelessRecipeWrapper(jeiHelpers, recipe));
 		CraftingRecipeValidator<ShapelessRecipes> shapelessRecipesValidator = new CraftingRecipeValidator<>(recipe -> new ShapelessRecipeWrapper(jeiHelpers, recipe));
 
-		Iterator<IRecipe> recipeIterator = CraftingManager.field_193380_a.iterator();
+		Iterator<IRecipe> recipeIterator = CraftingManager.REGISTRY.iterator();
 		List<IRecipe> validRecipes = new ArrayList<>();
 		while (recipeIterator.hasNext()) {
 			IRecipe recipe = recipeIterator.next();
@@ -71,7 +71,7 @@ public final class CraftingRecipeChecker {
 				Log.get().error("Recipe has no output. {}", recipeInfo);
 				return false;
 			}
-			List<Ingredient> ingredients = recipe.func_192400_c();
+			List<Ingredient> ingredients = recipe.getIngredients();
 			//noinspection ConstantConditions
 			if (ingredients == null) {
 				String recipeInfo = getInfo(recipe);
@@ -101,7 +101,7 @@ public final class CraftingRecipeChecker {
 		protected static int getInputCount(List<Ingredient> ingredientList) {
 			int inputCount = 0;
 			for (Ingredient ingredient : ingredientList) {
-				ItemStack[] input = ingredient.func_193365_a();
+				ItemStack[] input = ingredient.getMatchingStacks();
 				//noinspection ConstantConditions
 				if (input == null) {
 					return INVALID_COUNT;
