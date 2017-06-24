@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.LegacyUtil;
@@ -58,10 +57,8 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 			try {
 				String ingredientInfo = ingredientHelper.getErrorInfo(ingredient);
 				Log.warning("Found a broken ingredient {}", ingredientInfo, e);
-				Config.addIngredientToConfigBlacklist(ingredient, Config.IngredientBlacklistType.WILDCARD, ingredientHelper);
 			} catch (RuntimeException e2) {
 				Log.warning("Found a broken ingredient.", e2);
-				Config.addIngredientToConfigBlacklist(ingredient, Config.IngredientBlacklistType.WILDCARD, ingredientHelper);
 			}
 			return null;
 		}
