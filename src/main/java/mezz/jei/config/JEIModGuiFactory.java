@@ -23,20 +23,9 @@ public class JEIModGuiFactory implements IModGuiFactory {
 		return new JEIModConfigGui(parentScreen);
 	}
 
-	@Override
-	public Class<? extends GuiScreen> mainConfigGuiClass() {
-		return JEIModConfigGui.class;
-	}
-
 	@Nullable
 	@Override
 	public Set<RuntimeOptionCategoryElement> runtimeGuiCategories() {
-		return null;
-	}
-
-	@Nullable
-	@Override
-	public RuntimeOptionGuiHandler getHandlerFor(RuntimeOptionCategoryElement element) {
 		return null;
 	}
 }
