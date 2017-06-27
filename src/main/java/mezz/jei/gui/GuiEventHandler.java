@@ -24,6 +24,7 @@ public class GuiEventHandler {
 	private final JeiRuntime runtime;
 	@Nullable
 	private InputHandler inputHandler;
+	private boolean drawnOnBackground = false;
 
 	public GuiEventHandler(JeiRuntime runtime) {
 		this.runtime = runtime;
@@ -71,12 +72,22 @@ public class GuiEventHandler {
 
 		if (ingredientListOverlay.isEnabled()) {
 			ingredientListOverlay.drawScreen(gui.mc, event.getMouseX(), event.getMouseY(), gui.mc.getRenderPartialTicks());
+			drawnOnBackground = true;
 		}
 	}
 
 	@SubscribeEvent
 	public void onDrawScreenEventPost(GuiScreenEvent.DrawScreenEvent.Post event) {
 		GuiScreen gui = event.getGui();
+
+		IngredientListOverlay ingredientListOverlay = runtime.getItemListOverlay();
+		ingredientListOverlay.updateScreen(gui);
+
+		if (!drawnOnBackground && ingredientListOverlay.isEnabled()) {
+			ingredientListOverlay.drawScreen(gui.mc, event.getMouseX(), event.getMouseY(), gui.mc.getRenderPartialTicks());
+		}
+		drawnOnBackground = false;
+
 		if (gui instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) gui;
 			RecipeRegistry recipeRegistry = runtime.getRecipeRegistry();
@@ -85,8 +96,6 @@ public class GuiEventHandler {
 			}
 		}
 
-		IngredientListOverlay ingredientListOverlay = runtime.getItemListOverlay();
-		ingredientListOverlay.updateScreen(gui);
 		if (ingredientListOverlay.isEnabled()) {
 			ingredientListOverlay.drawTooltips(gui.mc, event.getMouseX(), event.getMouseY());
 		}
