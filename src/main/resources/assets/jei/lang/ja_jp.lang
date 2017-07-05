@@ -29,8 +29,10 @@ key.jei.toggleOverlay=アイテムリストの表示/非表示
 key.jei.focusSearch=検索バーの選択
 key.jei.showRecipe=アイテムのレシピの表示
 key.jei.showUses=アイテムの用途の表示
-key.jei.recipeBack=前のレシピページに戻る
+key.jei.recipeBack=前のレシピに戻る
 key.jei.toggleCheatMode=チートモードのオン/オフ
+key.jei.previousPage=前のページに戻る
+key.jei.nextPage=次のページに進む
 
 # Config
 config.jei.default=デフォルト
@@ -55,15 +57,17 @@ config.jei.interface.recipeAnimationsEnabled.comment=レシピをアニメーシ
 config.jei.search=検索の設定
 config.jei.search.comment=検索バーに関する設定。
 config.jei.search.modNameSearchMode=@Mod名
-config.jei.search.modNameSearchMode.comment=Mod名検索 (prefix: @)
+config.jei.search.modNameSearchMode.comment=Mod名検索 (プレフィックス：@)
 config.jei.search.tooltipSearchMode=#ツールチップ
-config.jei.search.tooltipSearchMode.comment=ツールチップ検索 (prefix: #)
+config.jei.search.tooltipSearchMode.comment=ツールチップ検索 (プレフィックス：#)
 config.jei.search.oreDictSearchMode=$鉱石辞書
-config.jei.search.oreDictSearchMode.comment=鉱石辞書名検索 (prefix: $)
+config.jei.search.oreDictSearchMode.comment=鉱石辞書名検索 (プレフィックス：$)
 config.jei.search.creativeTabSearchMode=%%クリエイティブタブ
-config.jei.search.creativeTabSearchMode.comment=クリエイティブタブ名検索 (prefix: %)
+config.jei.search.creativeTabSearchMode.comment=クリエイティブタブ名検索 (プレフィックス：%)
 config.jei.search.colorSearchMode=^色
-config.jei.search.colorSearchMode.comment=アイテム色検索 (prefix: ^)
+config.jei.search.colorSearchMode.comment=アイテム色検索 (プレフィックス：^)
+config.jei.search.resourceIdSearchMode=&リソースID
+config.jei.search.resourceIdSearchMode.comment=リソースID検索 (プレフィックス：&)
 
 config.jei.advanced=高度な設定
 config.jei.advanced.comment=JEIの機能を変更する高度な設定。
@@ -77,6 +81,8 @@ config.jei.advanced.centerSearchBarEnabled=検索バーの中央配置
 config.jei.advanced.centerSearchBarEnabled.comment=JEI検索バーを中央下に移動します。
 config.jei.advanced.modNameFormat=Mod名の書式
 config.jei.advanced.modNameFormat.comment=JEIのGUIやツールチップにおいてどのようにMod名を表示するか指定します。空欄で無効。
+config.jei.advanced.maxSubtypes=最多サブタイプ数
+config.jei.advanced.maxSubtypes.comment=これより多いサブタイプを持つアイテムはJEIで表示されなくなります。
 
 # Edit Mode
 gui.jei.editMode.description=JEIアイテムリストエディットモード:
@@ -87,14 +93,19 @@ gui.jei.editMode.description.show.wild=ワイルドカードにより隠蔽済�
 gui.jei.editMode.description.hide.mod.id=%CTRL+SHIFT+左クリックでModIDによる隠蔽。
 gui.jei.editMode.description.show.mod.id=ModIDにより隠蔽済み。%CTRL+SHIFT+左クリックで解除。
 
+#PC/Linux Control Key
+key.jei.ctrl=CTRL
+#Mac Command Key
+key.jei.ctrl.mac=CMD
+
 # Recipe Categories
 gui.jei.category.craftingTable=クラフト
 gui.jei.category.smelting=精錬
 gui.jei.category.smelting.experience=%s EXP
 gui.jei.category.fuel=燃料
-gui.jei.category.fuel.burnTime=燃焼時間: %s
 gui.jei.category.fuel.smeltCount.single=1回精錬可能
 gui.jei.category.fuel.smeltCount=%s回精錬可能
+gui.jei.category.fuel.burnTime=燃焼時間: %s
 gui.jei.category.brewing=醸造
 gui.jei.category.brewing.steps=第%s段階
 gui.jei.category.itemInformation=説明
