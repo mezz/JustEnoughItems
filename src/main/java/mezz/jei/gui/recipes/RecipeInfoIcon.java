@@ -6,8 +6,10 @@ import mezz.jei.config.Config;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.startup.ForgeModIdHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.HoverChecker;
 
 import java.util.ArrayList;
@@ -46,7 +48,9 @@ public class RecipeInfoIcon {
     public List<String> getTooltipStrings(ResourceLocation recipeRegistryName, int mouseX, int mouseY) {
         if (hoverChecker.checkHover(mouseX, mouseY)) {
             List<String> tooltipStrings = new ArrayList<>();
-            tooltipStrings.add(recipeRegistryName.getResourcePath());
+            if (Minecraft.getMinecraft().gameSettings.advancedItemTooltips || GuiScreen.isShiftKeyDown()) {
+                tooltipStrings.add(TextFormatting.GRAY + recipeRegistryName.getResourcePath());
+            }
             String modNameFormat = Config.getModNameFormat();
             String modName = ForgeModIdHelper.getInstance().getModNameForModId(recipeRegistryName.getResourceDomain());
             tooltipStrings.add(modNameFormat + modName);
