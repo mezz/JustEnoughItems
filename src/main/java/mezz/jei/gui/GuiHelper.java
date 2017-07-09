@@ -35,7 +35,7 @@ public class GuiHelper implements IGuiHelper {
 		tabSelected = createDrawable(recipeBackgroundResource, 196, 15, 24, 24);
 		tabUnselected = createDrawable(recipeBackgroundResource, 220, 15, 24, 22);
 
-		shapelessIcon = createDrawable(recipeBackgroundResource, 196, 0, 19, 15);
+		shapelessIcon = createDrawable(recipeBackgroundResource, 196, 0, 16, 15);
 		infoIcon = createDrawable(recipeBackgroundResource, 212, 39, 16, 16);
 
 		arrowPrevious = createDrawable(recipeBackgroundResource, 196, 55, 5, 8, 1, 0, 0, 0);
