@@ -111,7 +111,6 @@ public class ProxyCommonClient extends ProxyCommon {
 					ProxyCommonClient.this.starter.start(ProxyCommonClient.this.plugins);
 				}
 			}
-			IngredientInformation.onResourceReload();
 		});
 
 		try {
@@ -134,7 +133,6 @@ public class ProxyCommonClient extends ProxyCommon {
 		if (event.side == Side.CLIENT && SessionData.hasJoinedWorld() && Minecraft.getMinecraft().player != null) {
 			IngredientFilter ingredientFilter = Internal.getIngredientFilter();
 			ingredientFilter.onClientTick(20);
-			IngredientInformation.onClientTick();
 		}
 	}
 

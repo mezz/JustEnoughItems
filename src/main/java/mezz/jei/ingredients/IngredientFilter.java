@@ -61,11 +61,12 @@ public class IngredientFilter implements IIngredientFilter {
 		PrefixedSearchTree colorSearchTree = createPrefixedSearchTree('^', Config::getColorSearchMode, IIngredientListElement::getColorStrings);
 		PrefixedSearchTree resourceIdSearchTree = createPrefixedSearchTree('&', Config::getResourceIdSearchMode, element -> Collections.singleton(element.getResourceId()));
 
+		this.earlyLoadSearchTrees.add(tooltipSearchTree);
 		this.earlyLoadSearchTrees.add(modNameSearchTree);
 		this.earlyLoadSearchTrees.add(oreDictSearchTree);
 		this.earlyLoadSearchTrees.add(creativeTabSearchTree);
 		this.earlyLoadSearchTrees.add(resourceIdSearchTree);
-		// tooltip and color search trees get loaded in onTick
+		// color search tree gets loaded in onTick
 
 		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.valueCollection());
 	}
