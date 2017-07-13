@@ -7,7 +7,7 @@ jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
 jei.tooltip.liquid.amount=%,d mB
 jei.tooltip.transfer=Placera föremål
 jei.tooltip.recipe.ore.dict=Fungerar med alla %s
-jei.tooltip.item.colors=Färg: %s
+jei.tooltip.item.colors=Färger: %s
 jei.tooltip.shapeless.recipe=Formlöst recept
 jei.tooltip.cheat.mode=Fuskläge
 
@@ -31,6 +31,8 @@ key.jei.showRecipe=Visa föremålsrecept
 key.jei.showUses=Visa användningar av föremål
 key.jei.recipeBack=Visa föregående receptsida
 key.jei.toggleCheatMode=Slå på/av föremålsfusk
+key.jei.previousPage=Visa föregående sida
+key.jei.nextPage=Visa nästa sida
 
 # Config
 config.jei.default=Standard
@@ -64,6 +66,8 @@ config.jei.search.creativeTabSearchMode=%%Fliknamn
 config.jei.search.creativeTabSearchMode.comment=Sök efter fliknamn i kreativt läge (prefix: %)
 config.jei.search.colorSearchMode=^Färger
 config.jei.search.colorSearchMode.comment=Sök efter färger på föremål (prefix: ^)
+config.jei.search.resourceIdSearchMode=&Resurs-ID
+config.jei.search.resourceIdSearchMode.comment=Sök efter resurs-ID (prefix: &)
 
 config.jei.advanced=Avancerat
 config.jei.advanced.comment=Avancerade konfigurationsalternativ för att ändra hur JEI fungerar.
@@ -102,4 +106,4 @@ gui.jei.category.fuel.smeltCount=Smälter %s föremål
 gui.jei.category.fuel.burnTime=Brinntid: %s
 gui.jei.category.brewing=Bryggning
 gui.jei.category.brewing.steps=Steg: %s
-gui.jei.category.itemInformation=Beskrivning
+gui.jei.category.itemInformation=Information
