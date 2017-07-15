@@ -5,7 +5,6 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.LegacyUtil;
-import net.minecraft.item.ItemStack;
 
 public class Focus<V> implements IFocus<V> {
 	private final Mode mode;

@@ -12,7 +12,6 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.config.SessionData;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.ingredients.IngredientFilter;
-import mezz.jei.ingredients.IngredientInformation;
 import mezz.jei.network.packets.PacketJei;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;

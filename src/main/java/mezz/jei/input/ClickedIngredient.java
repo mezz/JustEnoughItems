@@ -1,7 +1,6 @@
 package mezz.jei.input;
 
 import mezz.jei.util.ErrorUtil;
-import net.minecraft.item.ItemStack;
 
 public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	private final V value;

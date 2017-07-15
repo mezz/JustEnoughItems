@@ -159,7 +159,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			}
 
 			if (recipeHandlerClasses.contains(recipeClass)) {
-				Log.get().error("A Recipe Handler has already been registered for this recipe class: {}" + recipeClass.getName());
+				Log.get().error("A Recipe Handler has already been registered for this recipe class: {}", recipeClass.getName());
 				continue;
 			}
 
@@ -181,7 +181,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 				recipeHandlerClasses.add(recipeClass);
 				builder.put(entry);
 			} else {
-				Log.get().error("A Recipe Handler has already been registered for this recipe class: {}" + recipeClass.getName());
+				Log.get().error("A Recipe Handler has already been registered for this recipe class: {}", recipeClass.getName());
 			}
 		}
 		return builder.build();
