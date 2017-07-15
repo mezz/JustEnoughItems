@@ -361,7 +361,7 @@ public class StackHelper implements IStackHelper {
 	}
 
 	public String getUniqueIdentifierForStack(ItemStack stack, UidMode mode) {
-		ErrorUtil.checkNotEmpty(stack);
+		ErrorUtil.checkNotEmpty(stack, "stack");
 		if (uidCacheEnabled) {
 			String result = uidCache.get(mode).get(stack);
 			if (result != null) {

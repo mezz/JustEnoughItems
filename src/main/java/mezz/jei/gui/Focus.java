@@ -43,10 +43,6 @@ public class Focus<V> implements IFocus<V> {
 	private static void checkInternal(IFocus<?> focus) {
 		ErrorUtil.checkNotNull(focus.getMode(), "focus mode");
 		Object value = focus.getValue();
-		ErrorUtil.checkNotNull(value, "focus value");
-		if (value instanceof ItemStack) {
-			ItemStack itemStack = (ItemStack) value;
-			ErrorUtil.checkNotEmpty(itemStack);
-		}
+		ErrorUtil.checkIsValidIngredient(value, "focus value");
 	}
 }

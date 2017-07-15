@@ -94,6 +94,17 @@ public interface IIngredientHelper<V> {
 	V copyIngredient(V ingredient);
 
 	/**
+	 * Checks if the given ingredient is valid for lookups and recipes.
+	 *
+	 * @param ingredient the ingredient to check
+	 * @return whether the ingredient is valid for lookups and recipes.
+	 * @since JEI 4.7.2
+	 */
+	default boolean isValidIngredient(V ingredient) {
+		return true;
+	}
+
+	/**
 	 * Get information for error messages involving this ingredient.
 	 * Be extremely careful not to crash here, get as much useful info as possible.
 	 */

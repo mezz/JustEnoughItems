@@ -38,7 +38,7 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 			List<IAdvancedGuiHandler<T>> activeAdvancedGuiHandlers = runtime.getActiveAdvancedGuiHandlers(guiContainer);
 			for (IAdvancedGuiHandler<T> advancedGuiHandler : activeAdvancedGuiHandlers) {
 				Object clicked = advancedGuiHandler.getIngredientUnderMouse(guiContainer, mouseX, mouseY);
-				if (clicked != null) {
+				if (clicked != null && Internal.getIngredientRegistry().isValidIngredient(clicked)) {
 					return new ClickedIngredient<>(clicked);
 				}
 			}

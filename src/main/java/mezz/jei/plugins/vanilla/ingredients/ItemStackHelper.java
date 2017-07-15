@@ -91,6 +91,11 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
+	public boolean isValidIngredient(ItemStack ingredient) {
+		return !ingredient.isEmpty();
+	}
+
+	@Override
 	public String getErrorInfo(ItemStack ingredient) {
 		return ErrorUtil.getItemStackInfo(ingredient);
 	}

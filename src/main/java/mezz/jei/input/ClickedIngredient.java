@@ -8,12 +8,7 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	private boolean allowsCheating;
 
 	public ClickedIngredient(V value) {
-		ErrorUtil.checkNotNull(value, "value");
-		ErrorUtil.checkIsKnownIngredientType(value);
-		if (value instanceof ItemStack) {
-			ItemStack itemStack = (ItemStack) value;
-			ErrorUtil.checkNotEmpty(itemStack);
-		}
+		ErrorUtil.checkIsValidIngredient(value, "value");
 		this.value = value;
 	}
 

@@ -14,7 +14,7 @@ import net.minecraft.item.ItemStack;
 public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 	@Override
 	public IRecipeWrapper createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
-		ErrorUtil.checkNotEmpty(leftInput);
+		ErrorUtil.checkNotEmpty(leftInput, "leftInput");
 		ErrorUtil.checkNotEmpty(rightInputs, "rightInputs");
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 		Preconditions.checkArgument(rightInputs.size() == outputs.size(), "Input and output sizes must match.");

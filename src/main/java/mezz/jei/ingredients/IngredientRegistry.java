@@ -74,9 +74,10 @@ public class IngredientRegistry implements IIngredientRegistry {
 		}
 	}
 
-	public boolean isKnownIngredientType(Object ingredient) {
-		ErrorUtil.checkNotNull(ingredient, "ingredient");
-		return ingredientHelperMap.get(ingredient.getClass()) != null;
+	public <V> boolean isValidIngredient(V ingredient) {
+		//noinspection unchecked
+		IIngredientHelper<V> ingredientHelper = ingredientHelperMap.get(ingredient.getClass());
+		return ingredientHelper != null && ingredientHelper.isValidIngredient(ingredient);
 	}
 
 	@Override

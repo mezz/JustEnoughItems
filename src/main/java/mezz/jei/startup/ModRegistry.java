@@ -160,7 +160,7 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 
 	@Override
 	public void addRecipeCatalyst(Object catalystIngredient, String... recipeCategoryUids) {
-		ErrorUtil.checkIsKnownIngredientType(catalystIngredient);
+		ErrorUtil.checkIsValidIngredient(catalystIngredient, "catalystIngredient");
 		ErrorUtil.checkNotEmpty(recipeCategoryUids, "recipeCategoryUids");
 
 		for (String recipeCategoryUid : recipeCategoryUids) {
@@ -196,7 +196,7 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 
 	@Override
 	public <T> void addIngredientInfo(T ingredient, Class<? extends T> ingredientClass, String... descriptionKeys) {
-		ErrorUtil.checkIsKnownIngredientType(ingredient);
+		ErrorUtil.checkIsValidIngredient(ingredient, "ingredient");
 		ErrorUtil.checkNotEmpty(descriptionKeys, "descriptionKeys");
 
 		addIngredientInfo(Collections.singletonList(ingredient), ingredientClass, descriptionKeys);
@@ -206,7 +206,7 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	public <T> void addIngredientInfo(List<T> ingredients, Class<? extends T> ingredientClass, String... descriptionKeys) {
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 		for (Object ingredient : ingredients) {
-			ErrorUtil.checkIsKnownIngredientType(ingredient);
+			ErrorUtil.checkIsValidIngredient(ingredient, "ingredient");
 		}
 		ErrorUtil.checkNotEmpty(descriptionKeys, "descriptionKeys");
 
@@ -217,7 +217,7 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 
 	@Override
 	public void addAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
-		ErrorUtil.checkNotEmpty(leftInput);
+		ErrorUtil.checkNotEmpty(leftInput, "leftInput");
 		ErrorUtil.checkNotEmpty(rightInputs, "rightInputs");
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 		Preconditions.checkArgument(rightInputs.size() == outputs.size(), "Input and output sizes must match.");

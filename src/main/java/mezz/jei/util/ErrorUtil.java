@@ -197,12 +197,10 @@ public final class ErrorUtil {
 		return object;
 	}
 
-	public static void checkIsKnownIngredientType(Object object) {
-		if (!Internal.getIngredientRegistry().isKnownIngredientType(object)) {
-			throw new IllegalArgumentException(object.getClass() + " is not a known ingredient type.");
-		}
-		if (object instanceof ItemStack) {
-			checkNotEmpty((ItemStack) object);
+	public static void checkIsValidIngredient(@Nullable Object ingredient, String name) {
+		checkNotNull(ingredient, name);
+		if (!Internal.getIngredientRegistry().isValidIngredient(ingredient)) {
+			throw new IllegalArgumentException("Invalid ingredient found. Parameter Name: " + name + " Class: " + ingredient.getClass() + " Object: " + ingredient);
 		}
 	}
 }
