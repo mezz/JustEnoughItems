@@ -101,7 +101,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		} else if (fluid.getName().equals("milk")) {
 			return new ItemStack(Items.MILK_BUCKET);
 		} else if (FluidRegistry.isUniversalBucketEnabled()) {
-			ItemStack filledBucket = UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket, fluid);
+			ItemStack filledBucket = FluidUtil.getFilledBucket(ingredient);
 			FluidStack fluidContained = FluidUtil.getFluidContained(filledBucket);
 			if (fluidContained != null && fluidContained.isFluidEqual(ingredient)) {
 				return filledBucket;
