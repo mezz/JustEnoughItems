@@ -1,9 +1,8 @@
 package mezz.jei.config;
 
-import java.util.Locale;
-
-import mezz.jei.util.Translator;
 import net.minecraft.util.ResourceLocation;
+
+import java.util.Locale;
 
 public final class Constants {
 	public static final String minecraftModName = "Minecraft";
@@ -25,8 +24,6 @@ public final class Constants {
 	public static final ResourceLocation RECIPE_BACKGROUND_TALL = new ResourceLocation(RESOURCE_DOMAIN, TEXTURE_RECIPE_BACKGROUND_TALL_PATH);
 
 	public static final int MAX_TOOLTIP_WIDTH = 125;
-
-	public static final String RECIPE_TRANSFER_TOOLTIP = Translator.translateToLocal("jei.tooltip.transfer");
 
 	public static final String UNIVERSAL_RECIPE_TRANSFER_UID = "universal recipe transfer handler";
 
