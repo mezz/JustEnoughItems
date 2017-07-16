@@ -142,7 +142,7 @@ public class JeiStarter {
 		}
 		ProgressManager.pop(progressBar);
 
-		return modIngredientRegistry.createIngredientRegistry();
+		return modIngredientRegistry.createIngredientRegistry(ForgeModIdHelper.getInstance());
 	}
 
 	private static void registerCategories(List<IModPlugin> plugins, ModRegistry modRegistry) {
