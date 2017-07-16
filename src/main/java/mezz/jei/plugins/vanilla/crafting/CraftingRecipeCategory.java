@@ -31,8 +31,8 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 	private final ICraftingGridHelper craftingGridHelper;
 
 	public CraftingRecipeCategory(IGuiHelper guiHelper) {
-		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/crafting_table.png");
-		background = guiHelper.createDrawable(location, 29, 16, width, height);
+		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
+		background = guiHelper.createDrawable(location, 0, 60, width, height);
 		localizedName = Translator.translateToLocal("gui.jei.category.craftingTable");
 		craftingGridHelper = guiHelper.createCraftingGridHelper(craftInputSlot1, craftOutputSlot);
 	}

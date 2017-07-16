@@ -13,6 +13,7 @@ import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.GuiHelper;
@@ -56,7 +57,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	private String pageString = "1/1";
 	private String title = "";
-	private ResourceLocation backgroundTexture = Internal.getHelpers().getGuiHelper().getRecipeBackgroundResource();
+	private ResourceLocation backgroundTexture = Constants.RECIPE_BACKGROUND;
 
 	private final RecipeCatalysts recipeCatalysts;
 	private final RecipeGuiTabs recipeGuiTabs;
@@ -125,13 +126,12 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 		this.xSize = 196;
 
-		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
 		if (this.height > 300) {
 			this.ySize = 256;
-			this.backgroundTexture = guiHelper.getRecipeBackgroundTallResource();
+			this.backgroundTexture = Constants.RECIPE_BACKGROUND_TALL;
 		} else {
 			this.ySize = 166;
-			this.backgroundTexture = guiHelper.getRecipeBackgroundResource();
+			this.backgroundTexture = Constants.RECIPE_BACKGROUND;
 		}
 
 		this.guiLeft = (width - this.xSize) / 2;

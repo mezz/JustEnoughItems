@@ -13,6 +13,7 @@ import mezz.jei.util.ErrorUtil;
 import net.minecraft.util.ResourceLocation;
 
 public class GuiHelper implements IGuiHelper {
+
 	private final IDrawableStatic slotDrawable;
 	private final IDrawableStatic tabSelected;
 	private final IDrawableStatic tabUnselected;
@@ -22,25 +23,18 @@ public class GuiHelper implements IGuiHelper {
 	private final IDrawableStatic arrowNext;
 	private final IDrawableStatic plusSign;
 
-	private final ResourceLocation recipeBackgroundResource;
-	private final ResourceLocation recipeBackgroundTallResource;
-
 	public GuiHelper() {
-		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/furnace.png");
-		this.slotDrawable = createDrawable(location, 55, 16, 18, 18);
+		slotDrawable = createDrawable(Constants.RECIPE_BACKGROUND, 196, 93, 18, 18);
 
-		recipeBackgroundResource = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
-		recipeBackgroundTallResource = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_TALL_PATH);
+		tabSelected = createDrawable(Constants.RECIPE_BACKGROUND, 196, 15, 24, 24);
+		tabUnselected = createDrawable(Constants.RECIPE_BACKGROUND, 220, 15, 24, 22);
 
-		tabSelected = createDrawable(recipeBackgroundResource, 196, 15, 24, 24);
-		tabUnselected = createDrawable(recipeBackgroundResource, 220, 15, 24, 22);
+		shapelessIcon = createDrawable(Constants.RECIPE_BACKGROUND, 196, 0, 16, 15);
+		infoIcon = createDrawable(Constants.RECIPE_BACKGROUND, 212, 39, 16, 16);
 
-		shapelessIcon = createDrawable(recipeBackgroundResource, 196, 0, 16, 15);
-		infoIcon = createDrawable(recipeBackgroundResource, 212, 39, 16, 16);
-
-		arrowPrevious = createDrawable(recipeBackgroundResource, 196, 55, 5, 8, 1, 0, 0, 0);
-		arrowNext = createDrawable(recipeBackgroundResource, 204, 55, 5, 8, 1, 0, 1, 0);
-		plusSign = createDrawable(recipeBackgroundResource, 212, 55, 6, 6, 1, 0, 1, 0);
+		arrowPrevious = createDrawable(Constants.RECIPE_BACKGROUND, 196, 55, 5, 8, 1, 0, 0, 0);
+		arrowNext = createDrawable(Constants.RECIPE_BACKGROUND, 204, 55, 5, 8, 1, 0, 1, 0);
+		plusSign = createDrawable(Constants.RECIPE_BACKGROUND, 212, 55, 6, 6, 1, 0, 1, 0);
 	}
 
 	@Override
@@ -126,14 +120,6 @@ public class GuiHelper implements IGuiHelper {
 
 	public IDrawableStatic getInfoIcon() {
 		return infoIcon;
-	}
-
-	public ResourceLocation getRecipeBackgroundResource() {
-		return recipeBackgroundResource;
-	}
-
-	public ResourceLocation getRecipeBackgroundTallResource() {
-		return recipeBackgroundTallResource;
 	}
 
 	public IDrawableStatic getArrowPrevious() {

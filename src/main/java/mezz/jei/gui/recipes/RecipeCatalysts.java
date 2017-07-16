@@ -37,7 +37,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 	public RecipeCatalysts() {
 		ingredients = new ArrayList<>();
 
-		ResourceLocation recipeBackgroundResource = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
+		ResourceLocation recipeBackgroundResource = Constants.RECIPE_BACKGROUND;
 
 		IGuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
 		topDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 65, 26, 6);

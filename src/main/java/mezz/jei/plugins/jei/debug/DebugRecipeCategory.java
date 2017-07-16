@@ -37,7 +37,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		this.background = guiHelper.createBlankDrawable(RECIPE_WIDTH, RECIPE_HEIGHT);
 		this.localizedName = "debug";
 
-		ResourceLocation backgroundTexture = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
+		ResourceLocation backgroundTexture = Constants.RECIPE_BACKGROUND;
 		this.tankBackground = guiHelper.createDrawable(backgroundTexture, 220, 196, 18, 60, -1, -1, -1, -1);
 		this.tankOverlay = guiHelper.createDrawable(backgroundTexture, 238, 196, 18, 60, -1, -1, -1, -1);
 	}

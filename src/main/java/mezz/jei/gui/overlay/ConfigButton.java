@@ -30,7 +30,7 @@ public class ConfigButton {
 	public ConfigButton(IngredientListOverlay parent) {
 		this.parent = parent;
 		this.configButton = new GuiButton(2, 0, 0, 0, 0, "");
-		ResourceLocation configButtonIconLocation = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
+		ResourceLocation configButtonIconLocation = Constants.RECIPE_BACKGROUND;
 		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
 		this.configButtonIcon = guiHelper.createDrawable(configButtonIconLocation, 0, 166, 16, 16);
 		this.configButtonCheatIcon = guiHelper.createDrawable(configButtonIconLocation, 16, 166, 16, 16);

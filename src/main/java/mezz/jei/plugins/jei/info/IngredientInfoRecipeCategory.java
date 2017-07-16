@@ -23,7 +23,7 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 
 	public IngredientInfoRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.createBlankDrawable(recipeWidth, recipeHeight);
-		ResourceLocation recipeBackgroundResource = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
+		ResourceLocation recipeBackgroundResource = Constants.RECIPE_BACKGROUND;
 		icon = guiHelper.createDrawable(recipeBackgroundResource, 196, 39, 16, 16);
 		slotBackground = guiHelper.getSlotDrawable();
 		localizedName = Translator.translateToLocal("gui.jei.category.itemInformation");

@@ -16,8 +16,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipeWrapper> 
 	private final IDrawable background;
 
 	public AnvilRecipeCategory(IGuiHelper guiHelper) {
-		ResourceLocation backgroundLocation = new ResourceLocation("textures/gui/container/anvil.png");
-		background = guiHelper.createDrawable(backgroundLocation, 16, 40, 145, 37);
+		background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 168, 125, 18, 0, 20, 0, 0);
 	}
 
 	@Override
@@ -44,9 +43,9 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipeWrapper> 
 	public void setRecipe(IRecipeLayout recipeLayout, AnvilRecipeWrapper recipeWrapper, IIngredients ingredients) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
-		guiItemStacks.init(0, true, 10, 6);
-		guiItemStacks.init(1, true, 59, 6);
-		guiItemStacks.init(2, false, 117, 6);
+		guiItemStacks.init(0, true, 10-10, 0);
+		guiItemStacks.init(1, true, 59-10, 0);
+		guiItemStacks.init(2, false, 117-10, 0);
 
 		guiItemStacks.set(ingredients);
 

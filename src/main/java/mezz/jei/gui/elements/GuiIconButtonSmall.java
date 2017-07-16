@@ -12,7 +12,6 @@ import net.minecraftforge.fml.client.config.GuiUtils;
  * A small gui button that has an {@link IDrawable} instead of a string label.
  */
 public class GuiIconButtonSmall extends GuiButton {
-	private static final ResourceLocation BUTTON_RESOURCE = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
 	private final IDrawable icon;
 
 	public GuiIconButtonSmall(int buttonId, int x, int y, int widthIn, int heightIn, IDrawable icon) {
@@ -25,7 +24,7 @@ public class GuiIconButtonSmall extends GuiButton {
 		if (this.visible) {
 			this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 			int k = this.getHoverState(this.hovered);
-			GuiUtils.drawContinuousTexturedBox(BUTTON_RESOURCE, this.x, this.y, 0, 182 + k * 20, this.width, this.height, 95, 20, 2, 2, 2, 2, this.zLevel);
+			GuiUtils.drawContinuousTexturedBox(Constants.RECIPE_BACKGROUND, this.x, this.y, 0, 182 + k * 20, this.width, this.height, 95, 20, 2, 2, 2, 2, this.zLevel);
 			this.mouseDragged(mc, mouseX, mouseY);
 
 			int color = 14737632;

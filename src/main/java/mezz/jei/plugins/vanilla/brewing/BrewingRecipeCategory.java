@@ -30,17 +30,17 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipeWrapp
 	private final IDrawableStatic blazeHeat;
 
 	public BrewingRecipeCategory(IGuiHelper guiHelper) {
-		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/brewing_stand.png");
-		background = guiHelper.createDrawable(location, 55, 15, 64, 60, 0, 0, 0, 40);
+		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
+		background = guiHelper.createDrawable(location, 0, 0, 64, 60, 0, 0, 0, 40);
 		localizedName = Translator.translateToLocal("gui.jei.category.brewing");
 
-		IDrawableStatic brewArrowDrawable = guiHelper.createDrawable(location, 176, 0, 9, 28);
+		IDrawableStatic brewArrowDrawable = guiHelper.createDrawable(location, 64, 0, 9, 28);
 		arrow = guiHelper.createAnimatedDrawable(brewArrowDrawable, 400, IDrawableAnimated.StartDirection.TOP, false);
 
-		IDrawableStatic brewBubblesDrawable = guiHelper.createDrawable(location, 185, 1, 12, 28);
+		IDrawableStatic brewBubblesDrawable = guiHelper.createDrawable(location, 73, 1, 12, 28);
 		bubbles = guiHelper.createAnimatedDrawable(brewBubblesDrawable, 20, IDrawableAnimated.StartDirection.BOTTOM, false);
 
-		blazeHeat = guiHelper.createDrawable(location, 176, 29, 18, 4);
+		blazeHeat = guiHelper.createDrawable(location, 64, 29, 18, 4);
 
 		slotDrawable = guiHelper.getSlotDrawable();
 	}

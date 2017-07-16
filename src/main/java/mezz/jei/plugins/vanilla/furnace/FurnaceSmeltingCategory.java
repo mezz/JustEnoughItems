@@ -9,7 +9,6 @@ import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
 
 public class FurnaceSmeltingCategory extends FurnaceRecipeCategory<SmeltingRecipe> {
 	private final IDrawable background;
@@ -17,8 +16,7 @@ public class FurnaceSmeltingCategory extends FurnaceRecipeCategory<SmeltingRecip
 
 	public FurnaceSmeltingCategory(IGuiHelper guiHelper) {
 		super(guiHelper);
-		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/furnace.png");
-		background = guiHelper.createDrawable(location, 55, 16, 82, 54);
+		background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 114, 82, 54);
 		localizedName = Translator.translateToLocal("gui.jei.category.smelting");
 	}
 
@@ -29,7 +27,7 @@ public class FurnaceSmeltingCategory extends FurnaceRecipeCategory<SmeltingRecip
 
 	@Override
 	public void drawExtras(Minecraft minecraft) {
-		flame.draw(minecraft, 2, 20);
+		animatedFlame.draw(minecraft, 2, 20);
 		arrow.draw(minecraft, 24, 18);
 	}
 
