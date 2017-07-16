@@ -16,6 +16,7 @@ import mezz.jei.JustEnoughItems;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.color.ColorNamer;
+import mezz.jei.ingredients.IngredientListElementComparator;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
@@ -194,6 +195,11 @@ public final class Config {
 	public static Configuration getWorldConfig() {
 		return worldConfig;
 	}
+	
+	public static String getSortOrder()
+	{
+		return values.itemSortlist;
+	}
 
 	public static File getJeiConfigurationDir() {
 		Preconditions.checkState(jeiConfigurationDir != null);
@@ -223,6 +229,8 @@ public final class Config {
 		config = new LocalizedConfiguration(configKeyPrefix, configFile, "0.4.0");
 		itemBlacklistConfig = new LocalizedConfiguration(configKeyPrefix, itemBlacklistConfigFile, "0.1.0");
 		searchColorsConfig = new LocalizedConfiguration(configKeyPrefix, searchColorsConfigFile, "0.1.0");
+		
+		
 
 		syncConfig();
 		syncItemBlacklistConfig();
@@ -340,6 +348,21 @@ public final class Config {
 			property.setShowInGui(false);
 			values.debugModeEnabled = property.getBoolean();
 		}
+		
+		{
+
+			//This also loads up the comparators.
+			defaultValues.itemSortlist = IngredientListElementComparator.initConfig();
+			Property property = config.get(CATEGORY_ADVANCED, "itemSortList", defaultValues.itemSortlist);			
+			if (IngredientListElementComparator.INSTANCE != null) {
+				IngredientListElementComparator.loadConfig(property.getString());
+			}
+			
+			if (categoryAdvanced.get("itemSortList").hasChanged()) {
+				needsReload = true;
+			}
+		}
+				
 
 		final boolean configChanged = config.hasChanged();
 		if (configChanged) {
