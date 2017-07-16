@@ -2,19 +2,13 @@ package mezz.jei.ingredients;
 
 import java.util.Comparator;
 
-import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.Config;
-import mezz.jei.config.Constants;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.util.Java6Util;
 import mezz.jei.util.Translator;
 import net.minecraft.item.ItemStack;
-import mezz.jei.startup.IModIdHelper;
 
-import mezz.jei.util.Log;
 import net.minecraft.item.Item;
-import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.Loader;
 
 
@@ -24,6 +18,10 @@ import invtweaks.api.InvTweaksAPI;
 
 public final class IngredientListElementComparator implements Comparator<IIngredientListElement> {
 	public static final IngredientListElementComparator INSTANCE = new IngredientListElementComparator();
+
+	public static InvTweaksAPI invTweaksAPI;
+    public static ArrayList<SortEntry> entries = new ArrayList<SortEntry>();
+    public static ArrayList<SortEntry> list = new ArrayList<SortEntry>();
 
 	private IngredientListElementComparator() {
 	}
@@ -55,12 +53,7 @@ public final class IngredientListElementComparator implements Comparator<IIngred
         }
     }
 	
-	
-	public static InvTweaksAPI invTweaksAPI;
-    public static ArrayList<SortEntry> entries = new ArrayList<SortEntry>();
-    public static ArrayList<SortEntry> list = new ArrayList<SortEntry>();
-    private static String lastListOrder = "";
-    
+	    
 	@Override
 	public int compare(IIngredientListElement o1, IIngredientListElement o2) {
 		if (list.size() == 0) {
@@ -223,13 +216,6 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 		
 		return getSaveString(list); //Default value        
     }
-
-    
-	private static <V> String getWildcardUid(IIngredientListElement<V> ingredientListElement) {
-		V ingredient = ingredientListElement.getIngredient();
-		IIngredientHelper<V> ingredientHelper = ingredientListElement.getIngredientHelper();
-		return ingredientHelper.getWildcardId(ingredient);
-	}
 
 	
 	private static <V> ItemStack getItemStack(IIngredientListElement<V> ingredientListElement){

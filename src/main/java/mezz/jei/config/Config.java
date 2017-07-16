@@ -26,7 +26,7 @@ import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.versioning.ArtifactVersion;
+
 
 public final class Config {
 	private static final String configKeyPrefix = "config.jei";
