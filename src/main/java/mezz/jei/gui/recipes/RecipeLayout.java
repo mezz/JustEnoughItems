@@ -1,7 +1,8 @@
 package mezz.jei.gui.recipes;
 
 import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Rectangle;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
