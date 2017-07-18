@@ -1,7 +1,5 @@
 package mezz.jei.gui.recipes;
 
-import javax.annotation.Nullable;
-
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.config.Constants;
@@ -12,6 +10,8 @@ import mezz.jei.transfer.RecipeTransferUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+
+import javax.annotation.Nullable;
 
 public class RecipeTransferButton extends GuiIconButtonSmall {
 	private final RecipeLayout recipeLayout;
@@ -43,6 +43,9 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 	@Override
 	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
 		super.drawButton(mc, mouseX, mouseY, partialTicks);
+	}
+
+	public void drawToolTip(Minecraft mc, int mouseX, int mouseY) {
 		if (hovered && visible) {
 			if (recipeTransferError != null) {
 				recipeTransferError.showError(mc, mouseX, mouseY, recipeLayout, recipeLayout.getPosX(), recipeLayout.getPosY());
