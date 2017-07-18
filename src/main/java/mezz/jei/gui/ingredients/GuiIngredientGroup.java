@@ -160,6 +160,16 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	}
 
 	@Nullable
+	public GuiIngredient<T> getHoveredIngredient(int xOffset, int yOffset, int mouseX, int mouseY) {
+		for (GuiIngredient<T> ingredient : guiIngredients.values()) {
+			if (ingredient.isMouseOver(xOffset, yOffset, mouseX, mouseY)) {
+				return ingredient;
+			}
+		}
+		return null;
+	}
+
+	@Nullable
 	public GuiIngredient<T> draw(Minecraft minecraft, int xOffset, int yOffset, int mouseX, int mouseY) {
 		GuiIngredient<T> hovered = null;
 		for (GuiIngredient<T> ingredient : guiIngredients.values()) {
