@@ -1,8 +1,8 @@
 package mezz.jei.util;
 
 import java.util.AbstractSet;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -13,7 +13,7 @@ public class IngredientSet<V> extends AbstractSet<V> {
 	
 	public IngredientSet(IIngredientHelper<V> ingredientHelper) {
 		this.ingredientHelper = ingredientHelper;
-		this.ingredients = new HashMap<String, V>();
+		this.ingredients = new LinkedHashMap<String, V>();
 	}
 	
 	@Override
