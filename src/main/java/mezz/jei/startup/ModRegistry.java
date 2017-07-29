@@ -104,12 +104,18 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 		this.unsortedRecipes.addAll(recipes);
 	}
 
+	/**
+	 * TODO: crash when there is no recipe category registered for recipeCategoryUid
+	 * when {@link mezz.jei.api.IModRegistry#addRecipeCategories(IRecipeCategory[])} is removed
+	 */
 	@Override
 	public void addRecipes(Collection<?> recipes, String recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipes, "recipes");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-		//TODO : add this without breaking info recipes
 //		Preconditions.checkArgument(this.recipeCategoryUids.contains(recipeCategoryUid), "No recipe category has been registered for recipeCategoryUid %s", recipeCategoryUid);
+		if (!this.recipeCategoryUids.contains(recipeCategoryUid)) {
+			Log.get().warn("No recipe category has been registered for recipeCategoryUid {}", recipeCategoryUid);
+		}
 
 		for (Object recipe : recipes) {
 			ErrorUtil.checkNotNull(recipe, "recipe");
