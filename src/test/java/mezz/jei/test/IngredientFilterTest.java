@@ -1,9 +1,5 @@
 package mezz.jei.test;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientListElementFactory;
@@ -19,6 +15,11 @@ import mezz.jei.test.lib.TestPlugin;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class IngredientFilterTest {
 	private static final int EXTRA_INGREDIENT_COUNT = 5;
@@ -39,9 +40,9 @@ public class IngredientFilterTest {
 		ModIngredientRegistration modIngredientRegistry = new ModIngredientRegistration();
 		testPlugin.registerIngredients(modIngredientRegistry);
 
-		this.ingredientRegistry = modIngredientRegistry.createIngredientRegistry();
-
 		this.modIdHelper = new TestModIdHelper();
+		this.ingredientRegistry = modIngredientRegistry.createIngredientRegistry(modIdHelper);
+
 		List<IIngredientListElement> baseList = IngredientListElementFactory.createBaseList(ingredientRegistry, modIdHelper);
 
 		StackHelper stackHelper = new StackHelper(subtypeRegistry);
@@ -109,7 +110,11 @@ public class IngredientFilterTest {
 
 		List<IIngredientListElement> listToAdd = IngredientListElementFactory.createList(ingredientRegistry, TestIngredient.class, ingredientsToAdd, modIdHelper);
 		Assert.assertEquals(EXTRA_INGREDIENT_COUNT, listToAdd.size());
-		ingredientFilter.addIngredients(listToAdd);
+
+		ingredientRegistry.addIngredientsAtRuntime(TestIngredient.class, ingredientsToAdd, ingredientFilter);
+
+		Collection<TestIngredient> testIngredients = ingredientRegistry.getAllIngredients(TestIngredient.class);
+		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT, testIngredients.size());
 
 		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList();
 		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT, ingredientList.size());
@@ -127,9 +132,13 @@ public class IngredientFilterTest {
 
 		List<IIngredientListElement> listToRemove = IngredientListElementFactory.createList(ingredientRegistry, TestIngredient.class, ingredientsToRemove, modIdHelper);
 		Assert.assertEquals(EXTRA_INGREDIENT_COUNT, listToRemove.size());
-		ingredientFilter.removeIngredients(listToRemove);
+
+		ingredientRegistry.removeIngredientsAtRuntime(TestIngredient.class, ingredientsToRemove, ingredientFilter);
 
 		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList();
 		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientList.size());
+
+		Collection<TestIngredient> testIngredients = ingredientRegistry.getAllIngredients(TestIngredient.class);
+		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, testIngredients.size());
 	}
 }

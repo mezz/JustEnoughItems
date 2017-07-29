@@ -1,7 +1,6 @@
 package mezz.jei.api;
 
 import mezz.jei.api.ingredients.IIngredientBlacklist;
-import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
@@ -52,7 +51,6 @@ public interface IJeiHelpers {
 	 * Used by mods that add and remove items or recipes like MineTweaker's /mt reload.
 	 *
 	 * @deprecated since JEI 4.2.2. This has been deactivated because it takes too long and causes server disconnects.
-	 * If you need to change recipes, use {@link IRecipeRegistry#addRecipe(IRecipeWrapper, String)}  and {@link IRecipeRegistry#removeRecipe(IRecipeWrapper, String)}
 	 */
 	@Deprecated
 	void reload();

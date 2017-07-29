@@ -1,11 +1,11 @@
 package mezz.jei.api;
 
-import javax.annotation.Nullable;
-import java.util.Collection;
-
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import net.minecraft.item.ItemStack;
+
+import javax.annotation.Nullable;
+import java.util.Collection;
 
 /**
  * The IItemListOverlay is JEI's gui that displays all the items next to an open container gui.
@@ -49,7 +49,7 @@ public interface IItemListOverlay {
 
 	/**
 	 * @return a list containing all stacks that match the current filter.
-	 * For the list of all ItemStacks known to JEI, see {@link IIngredientRegistry#getIngredients(Class)}.
+	 * To get all the ItemStacks known to JEI, see {@link IIngredientRegistry#getAllIngredients(Class)}.
 	 * @deprecated since JEI 4.5.0, use {@link IIngredientFilter#getFilteredIngredients()}
 	 */
 	@Deprecated

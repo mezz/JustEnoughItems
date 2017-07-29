@@ -1,20 +1,18 @@
 package mezz.jei.api.recipe;
 
-import java.util.Collection;
-import java.util.List;
-
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModRegistry;
-import mezz.jei.api.IRecipeRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Allows creation of vanilla recipes.
  * Get the instance from {@link IJeiHelpers#getStackHelper()}.
  * <p>
- * Use {@link IModRegistry#addRecipes(Collection, String)} to add the recipe, or
- * use {@link IRecipeRegistry#addRecipe(IRecipeWrapper, String)} to add the recipe while the game is running.
+ * Use {@link IModRegistry#addRecipes(Collection, String)} to add the recipe.
  *
  * @since JEI 4.5.0
  */

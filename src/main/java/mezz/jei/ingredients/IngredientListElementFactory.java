@@ -1,15 +1,16 @@
 package mezz.jei.ingredients;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.IModIdHelper;
 import net.minecraftforge.fml.common.ProgressManager;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 public final class IngredientListElementFactory {
 	private IngredientListElementFactory() {
@@ -46,7 +47,7 @@ public final class IngredientListElementFactory {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientClass);
 
-		List<V> ingredients = ingredientRegistry.getIngredients(ingredientClass);
+		Collection<V> ingredients = ingredientRegistry.getAllIngredients(ingredientClass);
 		ProgressManager.ProgressBar progressBar = ProgressManager.push("Registering ingredients: " + ingredientClass.getSimpleName(), ingredients.size());
 		for (V ingredient : ingredients) {
 			progressBar.step("");

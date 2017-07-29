@@ -1,17 +1,16 @@
 package mezz.jei.startup;
 
-import java.util.Collection;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.IngredientSet;
+
+import java.util.Collection;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 public class ModIngredientRegistration implements IModIngredientRegistration {
 	private final Map<Class, Collection> allIngredientsMap = new IdentityHashMap<>();
@@ -30,14 +29,19 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 		ingredientRendererMap.put(ingredientClass, ingredientRenderer);
 	}
 
-	public IngredientRegistry createIngredientRegistry() {
-		Map<Class, List> ingredientsMap = new IdentityHashMap<>();
-		for (Class ingredientClass : allIngredientsMap.keySet()) {
-			Collection ingredients = allIngredientsMap.get(ingredientClass);
-			ingredientsMap.put(ingredientClass, Lists.newArrayList(ingredients));
+	public IngredientRegistry createIngredientRegistry(IModIdHelper modIdHelper) {
+		Map<Class, IngredientSet> ingredientsMap = new IdentityHashMap<>();
+		for (Map.Entry<Class, Collection> entry : allIngredientsMap.entrySet()) {
+			Class ingredientClass = entry.getKey();
+			Collection ingredients = entry.getValue();
+			IIngredientHelper ingredientHelper = ingredientHelperMap.get(ingredientClass);
+			IngredientSet ingredientSet = new IngredientSet<>(ingredientHelper);
+			ingredientSet.addAll(ingredients);
+			ingredientsMap.put(ingredientClass, ingredientSet);
 		}
 
 		return new IngredientRegistry(
+				modIdHelper,
 				ingredientsMap,
 				ImmutableMap.copyOf(ingredientHelperMap),
 				ImmutableMap.copyOf(ingredientRendererMap)

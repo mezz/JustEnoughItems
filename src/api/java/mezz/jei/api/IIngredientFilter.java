@@ -23,7 +23,7 @@ public interface IIngredientFilter {
 
 	/**
 	 * @return a list containing all ingredients that match the current filter.
-	 * For the list of all ingredients known to JEI, see {@link IIngredientRegistry#getIngredients(Class)}.
+	 * To get all the ingredients known to JEI, see {@link IIngredientRegistry#getAllIngredients(Class)}.
 	 */
 	ImmutableList<Object> getFilteredIngredients();
 }

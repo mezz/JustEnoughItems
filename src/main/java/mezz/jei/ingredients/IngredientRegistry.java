@@ -1,11 +1,5 @@
 package mezz.jei.ingredients;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
@@ -13,30 +7,41 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.startup.ForgeModIdHelper;
+import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.IngredientSet;
 import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionHelper;
 import net.minecraft.tileentity.TileEntityFurnace;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 public class IngredientRegistry implements IIngredientRegistry {
-	private final Map<Class, List> ingredientsMap;
+	private final IModIdHelper modIdHelper;
+	private final Map<Class, IngredientSet> ingredientsMap;
 	private final ImmutableMap<Class, IIngredientHelper> ingredientHelperMap;
 	private final ImmutableMap<Class, IIngredientRenderer> ingredientRendererMap;
 	private final List<ItemStack> fuels = new ArrayList<>();
 	private final List<ItemStack> potionIngredients = new ArrayList<>();
 
 	public IngredientRegistry(
-			Map<Class, List> ingredientsMap,
+			IModIdHelper modIdHelper,
+			Map<Class, IngredientSet> ingredientsMap,
 			ImmutableMap<Class, IIngredientHelper> ingredientHelperMap,
 			ImmutableMap<Class, IIngredientRenderer> ingredientRendererMap
 	) {
+		this.modIdHelper = modIdHelper;
 		this.ingredientsMap = ingredientsMap;
 		this.ingredientHelperMap = ingredientHelperMap;
 		this.ingredientRendererMap = ingredientRendererMap;
 
-		for (ItemStack itemStack : getIngredients(ItemStack.class)) {
+		for (ItemStack itemStack : getAllIngredients(ItemStack.class)) {
 			getStackProperties(itemStack);
 		}
 	}
@@ -66,11 +71,22 @@ public class IngredientRegistry implements IIngredientRegistry {
 		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 
 		//noinspection unchecked
-		List<V> ingredients = ingredientsMap.get(ingredientClass);
+		IngredientSet<V> ingredients = ingredientsMap.get(ingredientClass);
 		if (ingredients == null) {
 			return ImmutableList.of();
 		} else {
-			return Collections.unmodifiableList(ingredients);
+			return ImmutableList.copyOf(ingredients);
+		}
+	}
+
+	@Override
+	public <V> Collection<V> getAllIngredients(Class<V> ingredientClass) {
+		//noinspection unchecked
+		IngredientSet<V> ingredients = ingredientsMap.get(ingredientClass);
+		if (ingredients == null) {
+			return Collections.emptySet();
+		} else {
+			return Collections.unmodifiableCollection(ingredients);
 		}
 	}
 
@@ -138,29 +154,43 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	@Override
 	public <V> void addIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients) {
+		addIngredientsAtRuntime(ingredientClass, ingredients, Internal.getIngredientFilter());
+	}
+
+	public <V> void addIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients, IngredientFilter ingredientFilter) {
 		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 
+		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientClass);
 		//noinspection unchecked
-		List<V> list = ingredientsMap.computeIfAbsent(ingredientClass, k -> new ArrayList<V>());
-		list.addAll(ingredients);
+		Set<V> set = ingredientsMap.computeIfAbsent(ingredientClass, k -> new IngredientSet<>(ingredientHelper));
+		for (V ingredient : ingredients) {
+			set.add(ingredient);
+			if (ingredient instanceof ItemStack) {
+				getStackProperties((ItemStack) ingredient);
+			}
+		}
 
-		List<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, ForgeModIdHelper.getInstance());
-		Internal.getIngredientFilter().addIngredients(ingredientListElements);
+		List<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, modIdHelper);
+		ingredientFilter.addIngredients(ingredientListElements);
 	}
 
 	@Override
 	public <V> void removeIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients) {
+		removeIngredientsAtRuntime(ingredientClass, ingredients, Internal.getIngredientFilter());
+	}
+
+	public <V> void removeIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients, IngredientFilter ingredientFilter) {
 		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 
 		//noinspection unchecked
-		List<V> list = ingredientsMap.get(ingredientClass);
-		if (list != null) {
-			list.removeAll(ingredients);
+		IngredientSet<V> set = ingredientsMap.get(ingredientClass);
+		if (set != null) {
+			set.removeAll(ingredients);
 		}
 
-		List<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, ForgeModIdHelper.getInstance());
-		Internal.getIngredientFilter().removeIngredients(ingredientListElements);
+		List<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, modIdHelper);
+		ingredientFilter.removeIngredients(ingredientListElements);
 	}
 }

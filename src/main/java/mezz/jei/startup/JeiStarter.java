@@ -1,8 +1,5 @@
 package mezz.jei.startup;
 
-import java.util.Iterator;
-import java.util.List;
-
 import mezz.jei.Internal;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
@@ -22,6 +19,9 @@ import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.runtime.SubtypeRegistry;
 import mezz.jei.util.Log;
 import net.minecraftforge.fml.common.ProgressManager;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class JeiStarter {
 	private boolean started;
@@ -132,7 +132,7 @@ public class JeiStarter {
 		}
 		ProgressManager.pop(progressBar);
 
-		return modIngredientRegistry.createIngredientRegistry();
+		return modIngredientRegistry.createIngredientRegistry(ForgeModIdHelper.getInstance());
 	}
 
 	private static void registerCategories(List<IModPlugin> plugins, ModRegistry modRegistry) {

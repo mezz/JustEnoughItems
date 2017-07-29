@@ -1,10 +1,5 @@
 package mezz.jei.plugins.vanilla.anvil;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -28,6 +23,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.OreDictionary;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 public final class AnvilRecipeMaker {
 	private static final ItemStack ENCHANTED_BOOK = new ItemStack(Items.ENCHANTED_BOOK);
 
@@ -47,7 +48,7 @@ public final class AnvilRecipeMaker {
 	}
 
 	private static void registerBookEnchantmentRecipes(IModRegistry registry) {
-		List<ItemStack> ingredients = registry.getIngredientRegistry().getIngredients(ItemStack.class);
+		Collection<ItemStack> ingredients = registry.getIngredientRegistry().getAllIngredients(ItemStack.class);
 		List<Enchantment> enchantments = ForgeRegistries.ENCHANTMENTS.getValues();
 		for (ItemStack ingredient : ingredients) {
 			if (ingredient.isItemEnchantable()) {
