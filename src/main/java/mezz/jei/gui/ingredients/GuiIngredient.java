@@ -147,6 +147,40 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		}
 	}
 
+	public void drawToolTipOnly(Minecraft minecraft, int xOffset, int yOffset, int mouseX, int mouseY) {
+		T value = getDisplayedIngredient();
+		if (value != null) {
+			try {
+				GlStateManager.disableDepth();
+
+				List<String> tooltip = LegacyUtil.getTooltip(ingredientRenderer, minecraft, value, minecraft.gameSettings.advancedItemTooltips);
+				tooltip = ForgeModIdHelper.getInstance().addModNameToIngredientTooltip(tooltip, value, ingredientHelper);
+
+				if (tooltipCallback != null) {
+					tooltipCallback.onTooltip(slotIndex, input, value, tooltip);
+				}
+
+				FontRenderer fontRenderer = ingredientRenderer.getFontRenderer(minecraft, value);
+				if (value instanceof ItemStack) {
+					//noinspection unchecked
+					Collection<ItemStack> itemStacks = (Collection<ItemStack>) this.allIngredients;
+					String oreDictEquivalent = Internal.getStackHelper().getOreDictEquivalent(itemStacks);
+					if (oreDictEquivalent != null) {
+						final String acceptsAny = String.format(oreDictionaryIngredient, oreDictEquivalent);
+						tooltip.add(TextFormatting.GRAY + acceptsAny);
+					}
+					TooltipRenderer.drawHoveringText((ItemStack) value, minecraft, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
+				} else {
+					TooltipRenderer.drawHoveringText(minecraft, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
+				}
+
+				GlStateManager.enableDepth();
+			} catch (RuntimeException e) {
+				Log.error("Exception when rendering tooltip on {}.", value, e);
+			}
+		}
+	}
+
 	@Override
 	public void drawHighlight(Minecraft minecraft, Color color, int xOffset, int yOffset) {
 		int x = rect.x + xOffset + xPadding;
