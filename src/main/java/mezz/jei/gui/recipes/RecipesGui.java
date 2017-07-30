@@ -1,11 +1,5 @@
 package mezz.jei.gui.recipes;
 
-import javax.annotation.Nullable;
-import java.awt.Color;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import mezz.jei.Internal;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.IRecipesGui;
@@ -40,6 +34,12 @@ import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.HoverChecker;
 import org.lwjgl.input.Mouse;
+
+import javax.annotation.Nullable;
+import java.awt.Color;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFocuses, IRecipeLogicStateListener {
 	private static final int borderPadding = 6;
@@ -200,24 +200,23 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		nextPage.drawButton(mc, mouseX, mouseY, partialTicks);
 		previousPage.drawButton(mc, mouseX, mouseY, partialTicks);
 
-		RecipeLayout hovered = null;
+		RecipeLayout hoveredLayout = null;
 		for (RecipeLayout recipeLayout : recipeLayouts) {
 			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
-				hovered = recipeLayout;
-			} else {
-				recipeLayout.draw(mc, mouseX, mouseY);
+				hoveredLayout = recipeLayout;
 			}
+			recipeLayout.drawRecipe(mc, mouseX, mouseY);
 		}
 
-		GuiIngredient hoveredItemStack = recipeCatalysts.draw(mc, mouseX, mouseY);
+		GuiIngredient hoveredRecipeCatalyst = recipeCatalysts.draw(mc, mouseX, mouseY);
 
 		recipeGuiTabs.draw(mc, mouseX, mouseY);
 
-		if (hovered != null) {
-			hovered.draw(mc, mouseX, mouseY);
+		if (hoveredLayout != null) {
+			hoveredLayout.drawOverlays(mc, mouseX, mouseY);
 		}
-		if (hoveredItemStack != null) {
-			hoveredItemStack.drawHovered(mc, 0, 0, mouseX, mouseY);
+		if (hoveredRecipeCatalyst != null) {
+			hoveredRecipeCatalyst.drawOverlays(mc, 0, 0, mouseX, mouseY);
 		}
 
 		if (titleHoverChecker.checkHover(mouseX, mouseY) && !logic.hasAllCategories()) {

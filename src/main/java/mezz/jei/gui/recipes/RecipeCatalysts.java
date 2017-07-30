@@ -1,11 +1,5 @@
 package mezz.jei.gui.recipes;
 
-import javax.annotation.Nullable;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import mezz.jei.Internal;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
@@ -21,6 +15,12 @@ import mezz.jei.input.IShowsRecipeFocuses;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+
+import javax.annotation.Nullable;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The area drawn on left side of the {@link RecipesGui} that shows which items can craft the current recipe category.
@@ -116,9 +116,8 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 			for (GuiIngredient guiIngredient : this.ingredients) {
 				if (guiIngredient.isMouseOver(0, 0, mouseX, mouseY)) {
 					hovered = guiIngredient;
-				} else {
-					guiIngredient.draw(minecraft, 0, 0);
 				}
+				guiIngredient.draw(minecraft, 0, 0);
 			}
 			return hovered;
 		}
