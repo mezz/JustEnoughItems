@@ -21,9 +21,16 @@ public interface IRecipeLayoutDrawable extends IRecipeLayout {
 	void setPosition(int posX, int posY);
 
 	/**
-	 * Draw the recipe layout.
+	 * Draw the recipe without overlays such as item tool tips.
+	 * @since JEI 4.5.1
 	 */
-	void draw(Minecraft minecraft, int mouseX, int mouseY);
+	void drawRecipe(Minecraft minecraft, int mouseX, int mouseY);
+
+	/**
+	 * Draw the recipe overlays such as item tool tips.
+	 * @since JEI 4.5.1
+	 */
+	void drawOverlays(Minecraft minecraft, int mouseX, int mouseY);
 
 	/**
 	 * Returns true if the mouse is hovering over the recipe.
@@ -37,4 +44,13 @@ public interface IRecipeLayoutDrawable extends IRecipeLayout {
 	 */
 	@Nullable
 	Object getIngredientUnderMouse(int mouseX, int mouseY);
+
+	// DEPRECATED BELOW
+
+	/**
+	 * Draw the recipe layout.
+	 * @deprecated since JEI 4.5.1, use {@link #drawRecipe(Minecraft, int, int)} and {@link #drawOverlays(Minecraft, int, int)}
+	 */
+	@Deprecated
+	void draw(Minecraft minecraft, int mouseX, int mouseY);
 }

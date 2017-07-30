@@ -1,13 +1,5 @@
 package mezz.jei.gui.ingredients;
 
-import javax.annotation.Nullable;
-import java.awt.Color;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiIngredient;
@@ -27,6 +19,14 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
+
+import javax.annotation.Nullable;
+import java.awt.Color;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	private static final String oreDictionaryIngredient = Translator.translateToLocal("jei.tooltip.recipe.ore.dict");
@@ -138,15 +138,6 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		ingredientRenderer.render(minecraft, xOffset + rect.x + xPadding, yOffset + rect.y + yPadding, value);
 	}
 
-	public void drawHovered(Minecraft minecraft, int xOffset, int yOffset, int mouseX, int mouseY) {
-		draw(minecraft, xOffset, yOffset);
-
-		T value = getDisplayedIngredient();
-		if (value != null) {
-			drawTooltip(minecraft, xOffset, yOffset, mouseX, mouseY, value);
-		}
-	}
-
 	@Override
 	public void drawHighlight(Minecraft minecraft, Color color, int xOffset, int yOffset) {
 		int x = rect.x + xOffset + xPadding;
@@ -155,6 +146,13 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		GlStateManager.disableDepth();
 		drawRect(x, y, x + rect.width - xPadding * 2, y + rect.height - yPadding * 2, color.getRGB());
 		GlStateManager.color(1f, 1f, 1f, 1f);
+	}
+
+	public void drawOverlays(Minecraft minecraft, int xOffset, int yOffset, int mouseX, int mouseY) {
+		T value = getDisplayedIngredient();
+		if (value != null) {
+			drawTooltip(minecraft, xOffset, yOffset, mouseX, mouseY, value);
+		}
 	}
 
 	private void drawTooltip(Minecraft minecraft, int xOffset, int yOffset, int mouseX, int mouseY, T value) {
