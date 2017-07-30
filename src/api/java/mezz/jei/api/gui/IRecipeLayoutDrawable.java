@@ -26,6 +26,16 @@ public interface IRecipeLayoutDrawable extends IRecipeLayout {
 	void draw(Minecraft minecraft, int mouseX, int mouseY);
 
 	/**
+	 * Draw the recipe without tool overlay's such as item tool tips
+	 */
+	void drawRecipe(Minecraft minecraft, int mouseX, int mouseY);
+
+	/**
+	 * Draw recipe overlay's such as item tool tips
+	 */
+	void drawOverlay(Minecraft minecraft, int mouseX, int mouseY);
+
+	/**
 	 * Returns true if the mouse is hovering over the recipe.
 	 * Hovered recipes should be drawn after other recipes to have the drawn tooltips overlap other elements properly.
 	 */

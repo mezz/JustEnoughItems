@@ -2,6 +2,7 @@ package mezz.jei.gui.recipes;
 
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -45,6 +46,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	private final IRecipeWrapper recipeWrapper;
 	@Nullable
 	private final IFocus<?> focus;
+	private final Color highlightColor = new Color(0x7FFFFFFF, true);
 	@Nullable
 	private ShapelessIcon shapelessIcon;
 
@@ -153,6 +155,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		if (recipeTransferButton != null) {
 			float partialTicks = minecraft.getRenderPartialTicks();
 			recipeTransferButton.drawButton(minecraft, mouseX, mouseY, partialTicks);
+			recipeTransferButton.drawToolTip(minecraft, mouseX, mouseY);
 		}
 		GlStateManager.disableBlend();
 		GlStateManager.disableLighting();
@@ -161,6 +164,92 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			hoveredIngredient.drawHovered(minecraft, posX, posY, recipeMouseX, recipeMouseY);
 		} else if (isMouseOver(mouseX, mouseY)) {
 			List<String> tooltipStrings = new ArrayList<>();
+			List<String> categoryTooltipStrings = LegacyUtil.getTooltipStrings(recipeCategory, recipeMouseX, recipeMouseY);
+			tooltipStrings.addAll(categoryTooltipStrings);
+			List<String> wrapperTooltips = recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY);
+			//noinspection ConstantConditions
+			if (wrapperTooltips != null) {
+				tooltipStrings.addAll(wrapperTooltips);
+			}
+			if (tooltipStrings.isEmpty() && shapelessIcon != null) {
+				tooltipStrings = shapelessIcon.getTooltipStrings(recipeMouseX, recipeMouseY);
+			}
+			if (tooltipStrings != null && !tooltipStrings.isEmpty()) {
+				TooltipRenderer.drawHoveringText(minecraft, tooltipStrings, mouseX, mouseY);
+			}
+		}
+
+		GlStateManager.disableAlpha();
+	}
+
+	@Override
+	public void drawRecipe(Minecraft minecraft, int mouseX, int mouseY) {
+		IDrawable background = recipeCategory.getBackground();
+
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.disableLighting();
+		GlStateManager.enableAlpha();
+
+		final int recipeMouseX = mouseX - posX;
+		final int recipeMouseY = mouseY - posY;
+
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(posX, posY, 0.0F);
+		{
+			background.draw(minecraft);
+			recipeCategory.drawExtras(minecraft);
+			recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight(), recipeMouseX, recipeMouseY);
+			// drawExtras and drawInfo often render text which messes with the color, this clears it
+			GlStateManager.color(1, 1, 1, 1);
+			if (shapelessIcon != null) {
+				shapelessIcon.draw(minecraft, background.getWidth());
+			}
+		}
+		GlStateManager.popMatrix();
+
+		for (GuiIngredientGroup guiIngredientGroup : guiIngredientGroups.values()) {
+			GuiIngredient hovered = guiIngredientGroup.draw(minecraft, posX, posY, mouseX, mouseY);
+			if (hovered != null) {
+				hovered.draw(minecraft, posX, posY);
+				hovered.drawHighlight(minecraft, highlightColor, posX, posY);
+			}
+		}
+		if (recipeTransferButton != null) {
+			float partialTicks = minecraft.getRenderPartialTicks();
+			recipeTransferButton.drawButton(minecraft, mouseX, mouseY, partialTicks);
+		}
+
+		GlStateManager.disableBlend();
+		GlStateManager.disableLighting();
+		GlStateManager.disableAlpha();
+	}
+
+	@Override
+	public void drawOverlay(Minecraft minecraft, int mouseX, int mouseY) {
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.disableLighting();
+		GlStateManager.enableAlpha();
+
+		final int recipeMouseX = mouseX - posX;
+		final int recipeMouseY = mouseY - posY;
+
+		GuiIngredient hoveredIngredient = null;
+		for (GuiIngredientGroup guiIngredientGroup : guiIngredientGroups.values()) {
+			GuiIngredient hovered = guiIngredientGroup.getHoveredIngredient(posX, posY, mouseX, mouseY);
+			if (hovered != null) {
+				hoveredIngredient = hovered;
+			}
+		}
+		if (recipeTransferButton != null) {
+			recipeTransferButton.drawToolTip(minecraft, mouseX, mouseY);
+		}
+		GlStateManager.disableBlend();
+		GlStateManager.disableLighting();
+
+		if (hoveredIngredient != null) {
+			hoveredIngredient.drawToolTipOnly(minecraft, posX, posY, recipeMouseX, recipeMouseY);
+		} else if (isMouseOver(mouseX, mouseY)) {
+			List<String> tooltipStrings = new ArrayList<String>();
 			List<String> categoryTooltipStrings = LegacyUtil.getTooltipStrings(recipeCategory, recipeMouseX, recipeMouseY);
 			tooltipStrings.addAll(categoryTooltipStrings);
 			List<String> wrapperTooltips = recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY);

@@ -157,6 +157,43 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		GlStateManager.color(1f, 1f, 1f, 1f);
 	}
 
+	public void drawToolTipOnly(Minecraft minecraft, int xOffset, int yOffset, int mouseX, int mouseY) {
+		T value = getDisplayedIngredient();
+		if (value != null) {
+			try {
+				GlStateManager.disableDepth();
+				RenderHelper.disableStandardItemLighting();
+
+				ITooltipFlag.TooltipFlags tooltipFlag = minecraft.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
+				List<String> tooltip = ingredientRenderer.getTooltip(minecraft, value, tooltipFlag);
+				tooltip = ForgeModIdHelper.getInstance().addModNameToIngredientTooltip(tooltip, value, ingredientHelper);
+
+				if (tooltipCallback != null) {
+					tooltipCallback.onTooltip(slotIndex, input, value, tooltip);
+				}
+
+				FontRenderer fontRenderer = ingredientRenderer.getFontRenderer(minecraft, value);
+				if (value instanceof ItemStack) {
+					//noinspection unchecked
+					Collection<ItemStack> itemStacks = (Collection<ItemStack>) this.allIngredients;
+					String oreDictEquivalent = Internal.getStackHelper().getOreDictEquivalent(itemStacks);
+					if (oreDictEquivalent != null) {
+						final String acceptsAny = String.format(oreDictionaryIngredient, oreDictEquivalent);
+						tooltip.add(TextFormatting.GRAY + acceptsAny);
+					}
+					TooltipRenderer.drawHoveringText((ItemStack) value, minecraft, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
+				} else {
+					TooltipRenderer.drawHoveringText(minecraft, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
+				}
+
+				GlStateManager.enableDepth();
+			} catch (RuntimeException e) {
+				Log.get().error("Exception when rendering tooltip on {}.", value, e);
+			}
+		}
+	}
+
+
 	private void drawTooltip(Minecraft minecraft, int xOffset, int yOffset, int mouseX, int mouseY, T value) {
 		try {
 			GlStateManager.disableDepth();
