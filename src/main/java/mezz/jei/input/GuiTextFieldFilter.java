@@ -38,7 +38,10 @@ public class GuiTextFieldFilter extends GuiTextField {
 	}
 
 	public void update() {
-		setText(Config.getFilterText());
+		String filterText = Config.getFilterText();
+		if (!filterText.equals(getText())) {
+			setText(filterText);
+		}
 		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList();
 		if (ingredientList.size() == 0) {
 			setTextColor(Color.red.getRGB());
