@@ -7,6 +7,8 @@ public class ConfigValues {
 	public final String modNameFormatFriendly = "blue italic";
 	public String modNameFormat = Config.parseFriendlyModNameFormat(modNameFormatFriendly);
 	public int maxSubtypes = 300;
+	public String itemSortlist = "invtweaks,minecraft,mod,id,default,meta,name";
+	public String defaultItemSortlist = "invtweaks,minecraft,mod,id,default,meta,name";
 
 	// search
 	public Config.SearchMode modNameSearchMode = Config.SearchMode.REQUIRE_PREFIX;
@@ -22,4 +24,6 @@ public class ConfigValues {
 	public boolean cheatItemsEnabled = false;
 	public boolean editModeEnabled = false;
 	public String filterText = "";
+	
+
 }
