@@ -1,12 +1,5 @@
 package mezz.jei.plugins.vanilla.furnace;
 
-import java.awt.Color;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
@@ -16,7 +9,13 @@ import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+
+import java.awt.Color;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class FuelRecipe implements IRecipeWrapper {
 	private final List<List<ItemStack>> inputs;
@@ -39,7 +38,7 @@ public class FuelRecipe implements IRecipeWrapper {
 
 		this.burnTimeString = Translator.translateToLocalFormatted("gui.jei.category.fuel.burnTime", burnTime);
 
-		IDrawableStatic flameDrawable = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 176, 114, 14, 14);
+		IDrawableStatic flameDrawable = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 82, 114, 14, 14);
 		this.flame = guiHelper.createAnimatedDrawable(flameDrawable, burnTime, IDrawableAnimated.StartDirection.TOP, true);
 	}
 
@@ -50,7 +49,7 @@ public class FuelRecipe implements IRecipeWrapper {
 
 	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-		flame.draw(minecraft, 2, 0);
+		flame.draw(minecraft, 1, 0);
 		minecraft.fontRenderer.drawString(smeltCountString, 24, 8, Color.gray.getRGB());
 		minecraft.fontRenderer.drawString(burnTimeString, 24, 18, Color.gray.getRGB());
 	}

@@ -1,42 +1,38 @@
 package mezz.jei.gui;
 
 import mezz.jei.api.gui.ITickTimer;
-import net.minecraft.client.Minecraft;
 
 public class TickTimer implements ITickTimer {
-	private final int ticksPerCycle;
+	private final int msPerCycle;
 	private final int maxValue;
 	private final boolean countDown;
-
-	private long lastUpdateWorldTime = 0;
-	private int tickCount = 0;
+	private final long startTime;
 
 	public TickTimer(int ticksPerCycle, int maxValue, boolean countDown) {
-		this.ticksPerCycle = ticksPerCycle;
+		this.msPerCycle = ticksPerCycle * 50;
 		this.maxValue = maxValue;
 		this.countDown = countDown;
+		this.startTime = System.currentTimeMillis();
 	}
 
 	@Override
 	public int getValue() {
-		long worldTime = Minecraft.getMinecraft().world.getTotalWorldTime();
-		long ticksPassed = worldTime - lastUpdateWorldTime;
-		lastUpdateWorldTime = worldTime;
-		tickCount += ticksPassed;
-		if (tickCount >= ticksPerCycle) {
-			tickCount = 0;
-		}
-
-		int value = Math.round(tickCount * maxValue / (float) ticksPerCycle);
-		if (countDown) {
-			return maxValue - value;
-		} else {
-			return value;
-		}
+		long currentTime = System.currentTimeMillis();
+		return getValue(startTime, currentTime, maxValue, msPerCycle, countDown);
 	}
 
 	@Override
 	public int getMaxValue() {
 		return maxValue;
+	}
+
+	public static int getValue(long startTime, long currentTime, int maxValue, int msPerCycle, boolean countDown) {
+		long msPassed = (currentTime - startTime) % msPerCycle;
+		int value = (int) Math.floorDiv(msPassed * (maxValue + 1), msPerCycle);
+		if (countDown) {
+			return maxValue - value;
+		} else {
+			return value;
+		}
 	}
 }
