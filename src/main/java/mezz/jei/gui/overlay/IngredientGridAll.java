@@ -1,14 +1,16 @@
 package mezz.jei.gui.overlay;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.SessionData;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.render.GuiIngredientFast;
 import mezz.jei.util.MathUtil;
+
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Displays all known recipe ingredients.
@@ -22,8 +24,8 @@ public class IngredientGridAll extends IngredientGrid {
 	}
 
 	@Override
-	public void updateLayout() {
-		super.updateLayout();
+	public void updateLayout(Collection<Rectangle> guiExclusionAreas) {
+		super.updateLayout(guiExclusionAreas);
 		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList();
 		this.guiIngredientList.set(SessionData.getFirstItemIndex(), ingredientList);
 	}

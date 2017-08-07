@@ -1,5 +1,8 @@
 package mezz.jei.util;
 
+import java.awt.Rectangle;
+import java.util.Collection;
+
 public final class MathUtil {
 	private MathUtil() {
 
@@ -18,5 +21,23 @@ public final class MathUtil {
 		} else {
 			return value;
 		}
+	}
+
+	public static boolean intersects(Collection<Rectangle> areas, Rectangle comparisonArea) {
+		for (Rectangle area : areas) {
+			if (area.intersects(comparisonArea)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean contains(Collection<Rectangle> areas, int x, int y) {
+		for (Rectangle guiArea : areas) {
+			if (guiArea.contains(x, y)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

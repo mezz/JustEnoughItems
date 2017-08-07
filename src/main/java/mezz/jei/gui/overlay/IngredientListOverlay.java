@@ -1,13 +1,10 @@
 package mezz.jei.gui.overlay;
 
-import javax.annotation.Nullable;
-import java.awt.Rectangle;
-import java.util.Collection;
-import java.util.List;
-
 import com.google.common.collect.ImmutableList;
+import mezz.jei.Internal;
 import mezz.jei.api.IIngredientListOverlay;
 import mezz.jei.api.IItemListOverlay;
+import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
@@ -20,13 +17,24 @@ import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IPaged;
 import mezz.jei.input.IShowsRecipeFocuses;
+import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
+import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+
+import javax.annotation.Nullable;
+import java.awt.Rectangle;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class IngredientListOverlay implements IItemListOverlay, IIngredientListOverlay, IPaged, IMouseHandler, IShowsRecipeFocuses {
 	private static final int BORDER_PADDING = 2;
@@ -52,6 +60,8 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	private final PageNavigation navigation;
 	private final IngredientGrid contents;
 	private final GuiTextFieldFilter searchField;
+	private Set<Rectangle> guiExclusionAreas = Collections.emptySet();
+	private Rectangle displayArea = new Rectangle();
 
 	// properties of the gui we're beside
 	@Nullable
@@ -120,13 +130,13 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 			final int y = BORDER_PADDING;
 			final int width = guiProperties.getScreenWidth() - x - (2 * BORDER_PADDING);
 			final int height = guiProperties.getScreenHeight() - y - (2 * BORDER_PADDING);
-			Rectangle displayArea = new Rectangle(x, y, width, height);
+			displayArea = new Rectangle(x, y, width, height);
 
 			final boolean searchBarCentered = isSearchBarCentered(guiProperties);
 			final int searchHeight = searchBarCentered ? 0 : SEARCH_HEIGHT + 4;
 
 			Rectangle contentsArea = new Rectangle(displayArea.x, displayArea.y + NAVIGATION_HEIGHT + 2, displayArea.width, displayArea.height - NAVIGATION_HEIGHT - searchHeight);
-			this.contents.updateBounds(contentsArea);
+			this.contents.updateBounds(contentsArea, this.guiExclusionAreas);
 
 			// update area to match contents size
 			contentsArea = this.contents.getArea();
@@ -153,7 +163,7 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	}
 
 	private void updateLayout() {
-		this.contents.updateLayout();
+		this.contents.updateLayout(this.guiExclusionAreas);
 
 		int pageNum = this.contents.getPageNum();
 		int pageCount = this.contents.getPageCount();
@@ -163,7 +173,7 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	}
 
 	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY) {
-		if (this.contents.updateGuiAreas()) {
+		if (this.updateGuiExclusionAreas()) {
 			updateLayout();
 		}
 
@@ -173,6 +183,15 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 		this.searchField.drawTextBox();
 		this.contents.draw(minecraft, mouseX, mouseY);
 		this.configButton.draw(minecraft, mouseX, mouseY);
+	}
+
+	public boolean updateGuiExclusionAreas() {
+		final Set<Rectangle> guiAreas = getGuiAreas();
+		if (!guiAreas.equals(this.guiExclusionAreas)) {
+			this.guiExclusionAreas = guiAreas;
+			return true;
+		}
+		return false;
 	}
 
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
@@ -214,10 +233,10 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 
 	@Override
 	public boolean isMouseOver(int mouseX, int mouseY) {
-		return this.navigation.isMouseOver(mouseX, mouseY) ||
-				this.contents.isMouseOver(mouseX, mouseY) ||
-				this.searchField.isMouseOver(mouseX, mouseY) ||
-				this.configButton.isMouseOver(mouseX, mouseY);
+		if (displayArea.contains(mouseX, mouseY) || searchField.isMouseOver(mouseX, mouseY) || configButton.isMouseOver(mouseX, mouseY)) {
+			return !MathUtil.contains(guiExclusionAreas, mouseX, mouseY);
+		}
+		return false;
 	}
 
 	@Override
@@ -367,5 +386,25 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 		}
 
 		return visibleIngredients.build();
+	}
+
+	private static Set<Rectangle> getGuiAreas() {
+		final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+		if (currentScreen instanceof GuiContainer) {
+			final GuiContainer guiContainer = (GuiContainer) currentScreen;
+			final JeiRuntime jeiRuntime = Internal.getRuntime();
+			if (jeiRuntime != null) {
+				final Set<Rectangle> allGuiExtraAreas = new HashSet<Rectangle>();
+				final List<IAdvancedGuiHandler<GuiContainer>> activeAdvancedGuiHandlers = jeiRuntime.getActiveAdvancedGuiHandlers(guiContainer);
+				for (IAdvancedGuiHandler<GuiContainer> advancedGuiHandler : activeAdvancedGuiHandlers) {
+					final List<Rectangle> guiExtraAreas = advancedGuiHandler.getGuiExtraAreas(guiContainer);
+					if (guiExtraAreas != null) {
+						allGuiExtraAreas.addAll(guiExtraAreas);
+					}
+				}
+				return allGuiExtraAreas;
+			}
+		}
+		return Collections.emptySet();
 	}
 }
