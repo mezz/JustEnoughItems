@@ -257,16 +257,6 @@ public class GuiIngredientFast {
 		return fontRenderer;
 	}
 
-	public void drawHovered(Minecraft minecraft) {
-		if (element == null) {
-			return;
-		}
-
-		renderSlow();
-		renderOverlay(minecraft);
-		drawHighlight();
-	}
-
 	/**
 	 * Matches the highlight code in {@link GuiContainer#drawScreen(int, int, float)}
 	 */

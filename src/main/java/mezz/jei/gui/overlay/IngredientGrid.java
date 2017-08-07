@@ -20,12 +20,12 @@ import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IPaged;
 import mezz.jei.input.IShowsRecipeFocuses;
+import mezz.jei.input.MouseHelper;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
 import mezz.jei.network.packets.PacketJei;
 import mezz.jei.render.GuiIngredientFast;
 import mezz.jei.render.GuiIngredientFastList;
 import mezz.jei.runtime.JeiRuntime;
-import mezz.jei.startup.StackHelper;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -34,7 +34,6 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 
 /**
  * An ingredient grid displays a rectangular area of clickable recipe ingredients.
@@ -47,9 +46,6 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 	private Set<Rectangle> guiAreas = Collections.emptySet();
 	private Rectangle area = new Rectangle();
 	protected final GuiIngredientFastList guiIngredientList;
-
-	@Nullable
-	private GuiIngredientFast hovered;
 
 	public IngredientGrid(IIngredientRegistry ingredientRegistry) {
 		this.guiIngredientList = new GuiIngredientFastList(ingredientRegistry);
@@ -134,56 +130,29 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 	public void draw(Minecraft minecraft, int mouseX, int mouseY) {
 		GlStateManager.disableBlend();
 
-		if (shouldShowDeleteItemTooltip(minecraft)) {
-			hovered = guiIngredientList.render(minecraft, false, mouseX, mouseY);
-		} else {
-			boolean mouseOver = isMouseOver(mouseX, mouseY);
-			hovered = guiIngredientList.render(minecraft, mouseOver, mouseX, mouseY);
-		}
+		guiIngredientList.render(minecraft);
 
-		drawHighlightedIngredients();
-
-		if (hovered != null) {
-			hovered.drawHovered(minecraft);
+		if (!shouldShowDeleteItemTooltip(minecraft) && isMouseOver(mouseX, mouseY)) {
+			GuiIngredientFast hovered = guiIngredientList.getHovered(mouseX, mouseY);
+			if (hovered != null) {
+				hovered.drawHighlight();
+			}
 		}
 
 		GlStateManager.enableAlpha();
 	}
 
-	private void drawHighlightedIngredients() {
-		JeiRuntime runtime = Internal.getRuntime();
-		if (runtime == null) {
-			return;
-		}
-
-		NonNullList<ItemStack> highlightedStacks = runtime.getItemListOverlay().getHighlightedStacks();
-		if (highlightedStacks.isEmpty()) {
-			return;
-		}
-
-		StackHelper helper = Internal.getHelpers().getStackHelper();
-		for (GuiIngredientFast guiItemStack : guiIngredientList.getAllGuiIngredients()) {
-			IIngredientListElement element = guiItemStack.getElement();
-			if (element != null) {
-				Object ingredient = element.getIngredient();
-				if (ingredient instanceof ItemStack) {
-					if (helper.containsStack(highlightedStacks, (ItemStack) ingredient) != null) {
-						guiItemStack.drawHighlight();
-					}
+	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
+		if (isMouseOver(mouseX, mouseY)) {
+			if (shouldShowDeleteItemTooltip(minecraft)) {
+				String deleteItem = Translator.translateToLocal("jei.tooltip.delete.item");
+				TooltipRenderer.drawHoveringText(minecraft, deleteItem, mouseX, mouseY);
+			} else {
+				GuiIngredientFast hovered = guiIngredientList.getHovered(mouseX, mouseY);
+				if (hovered != null) {
+					hovered.drawTooltip(minecraft, mouseX, mouseY);
 				}
 			}
-		}
-	}
-
-	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
-		boolean mouseOver = isMouseOver(mouseX, mouseY);
-		if (mouseOver && shouldShowDeleteItemTooltip(minecraft)) {
-			String deleteItem = Translator.translateToLocal("jei.tooltip.delete.item");
-			TooltipRenderer.drawHoveringText(minecraft, deleteItem, mouseX, mouseY);
-		}
-
-		if (hovered != null) {
-			hovered.drawTooltip(minecraft, mouseX, mouseY);
 		}
 	}
 
@@ -225,6 +194,7 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 
 	@Nullable
 	public IIngredientListElement getElementUnderMouse() {
+		GuiIngredientFast hovered = guiIngredientList.getHovered(MouseHelper.getX(), MouseHelper.getY());
 		if (hovered != null) {
 			IIngredientListElement element = hovered.getElement();
 			if (element != null) {

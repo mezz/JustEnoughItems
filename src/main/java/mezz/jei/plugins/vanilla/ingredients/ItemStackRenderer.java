@@ -20,6 +20,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	@Override
 	public void render(Minecraft minecraft, int xPosition, int yPosition, @Nullable ItemStack ingredient) {
 		if (ingredient != null) {
+			GlStateManager.enableDepth();
 			RenderHelper.enableGUIStandardItemLighting();
 			FontRenderer font = getFontRenderer(minecraft, ingredient);
 			minecraft.getRenderItem().renderItemAndEffectIntoGUI(null, ingredient, xPosition, yPosition);

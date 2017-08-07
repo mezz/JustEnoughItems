@@ -129,7 +129,7 @@ public class GuiIngredientFastList {
 	}
 
 	@Nullable
-	private GuiIngredientFast getHovered(int mouseX, int mouseY) {
+	public GuiIngredientFast getHovered(int mouseX, int mouseY) {
 		for (GuiIngredientFast guiItemStack : renderAll) {
 			if (guiItemStack.isMouseOver(mouseX, mouseY)) {
 				return guiItemStack;
@@ -139,15 +139,9 @@ public class GuiIngredientFastList {
 	}
 
 	/**
-	 * renders all ItemStacks and returns hovered gui item stack for later render pass
+	 * renders all ItemStacks
 	 */
-	@Nullable
-	public GuiIngredientFast render(Minecraft minecraft, boolean isMouseOver, int mouseX, int mouseY) {
-		GuiIngredientFast hovered = null;
-		if (isMouseOver) {
-			hovered = getHovered(mouseX, mouseY);
-		}
-
+	public void render(Minecraft minecraft) {
 		RenderHelper.enableGUIStandardItemLighting();
 
 		RenderItem renderItem = minecraft.getRenderItem();
@@ -166,17 +160,13 @@ public class GuiIngredientFastList {
 		// 3d Items
 		GlStateManager.enableLighting();
 		for (GuiIngredientFast guiItemStack : renderItems3d) {
-			if (hovered != guiItemStack) {
-				guiItemStack.renderItemAndEffectIntoGUI();
-			}
+			guiItemStack.renderItemAndEffectIntoGUI();
 		}
 
 		// 2d Items
 		GlStateManager.disableLighting();
 		for (GuiIngredientFast guiItemStack : renderItems2d) {
-			if (hovered != guiItemStack) {
-				guiItemStack.renderItemAndEffectIntoGUI();
-			}
+			guiItemStack.renderItemAndEffectIntoGUI();
 		}
 
 		GlStateManager.disableAlpha();
@@ -191,26 +181,18 @@ public class GuiIngredientFastList {
 
 		// overlays
 		for (GuiIngredientFast guiItemStack : renderItems3d) {
-			if (hovered != guiItemStack) {
-				guiItemStack.renderOverlay(minecraft);
-			}
+			guiItemStack.renderOverlay(minecraft);
 		}
 
 		for (GuiIngredientFast guiItemStack : renderItems2d) {
-			if (hovered != guiItemStack) {
-				guiItemStack.renderOverlay(minecraft);
-			}
+			guiItemStack.renderOverlay(minecraft);
 		}
 
 		// other rendering
 		for (GuiIngredientFast guiItemStack : renderOther) {
-			if (hovered != guiItemStack) {
-				guiItemStack.renderSlow();
-			}
+			guiItemStack.renderSlow();
 		}
 
 		RenderHelper.disableStandardItemLighting();
-
-		return hovered;
 	}
 }
