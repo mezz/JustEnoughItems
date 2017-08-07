@@ -2,7 +2,6 @@ package mezz.jei.gui;
 
 import javax.annotation.Nullable;
 
-import mezz.jei.Internal;
 import mezz.jei.config.Config;
 import mezz.jei.config.OverlayToggleEvent;
 import mezz.jei.gui.overlay.IngredientListOverlay;
@@ -60,7 +59,6 @@ public class GuiEventHandler {
 
 		if (wasEnabled && !ingredientListOverlay.isEnabled()) {
 			Config.saveFilterText();
-			Internal.getIngredientLookupMemory().saveToFile();
 		}
 	}
 

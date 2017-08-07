@@ -169,11 +169,6 @@ public class ProxyCommonClient extends ProxyCommon {
 		} catch (RuntimeException e) {
 			Log.get().error("Failed to save filter text.", e);
 		}
-		try {
-			Internal.getIngredientLookupMemory().saveToFile();
-		} catch (RuntimeException e) {
-			Log.get().error("Failed to save ingredient lookup memory.", e);
-		}
 	}
 
 	@SubscribeEvent

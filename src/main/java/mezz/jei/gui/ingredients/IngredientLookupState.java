@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import mezz.jei.Internal;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.gui.Focus;
@@ -48,7 +47,6 @@ public class IngredientLookupState {
 
 	public void setRecipeCategoryIndex(int recipeCategoryIndex) {
 		this.recipeCategoryIndex = recipeCategoryIndex;
-		Internal.getIngredientLookupMemory().markDirty();
 	}
 
 	public int getRecipeIndex() {
@@ -57,7 +55,6 @@ public class IngredientLookupState {
 
 	public void setRecipeIndex(int recipeIndex) {
 		this.recipeIndex = recipeIndex;
-		Internal.getIngredientLookupMemory().markDirty();
 	}
 
 	public int getRecipesPerPage() {

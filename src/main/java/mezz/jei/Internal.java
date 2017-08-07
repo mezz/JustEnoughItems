@@ -5,7 +5,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.Preconditions;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.gui.GuiEventHandler;
-import mezz.jei.gui.ingredients.IngredientLookupMemory;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.runtime.JeiHelpers;
@@ -27,8 +26,6 @@ public final class Internal {
 	private static IngredientRegistry ingredientRegistry;
 	@Nullable
 	private static ColorNamer colorNamer;
-	@Nullable
-	private static IngredientLookupMemory ingredientLookupMemory;
 	@Nullable
 	private static IngredientFilter ingredientFilter;
 	@Nullable
@@ -85,15 +82,6 @@ public final class Internal {
 
 	public static void setColorNamer(ColorNamer colorNamer) {
 		Internal.colorNamer = colorNamer;
-	}
-
-	public static IngredientLookupMemory getIngredientLookupMemory() {
-		Preconditions.checkState(ingredientLookupMemory != null, "Ingredient Lookup Memory has not been created yet.");
-		return ingredientLookupMemory;
-	}
-
-	public static void setIngredientLookupMemory(IngredientLookupMemory ingredientLookupMemory) {
-		Internal.ingredientLookupMemory = ingredientLookupMemory;
 	}
 
 	public static IngredientFilter getIngredientFilter() {
