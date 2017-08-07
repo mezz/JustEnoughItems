@@ -35,6 +35,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 		this.width = area.width;
 		this.height = area.height;
 		this.hoverChecker.updateBounds(area.y, area.y + area.height, area.x, area.x + area.width);
+		setSelectionPos(getCursorPosition());
 	}
 
 	public void update() {
