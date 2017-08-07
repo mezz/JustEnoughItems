@@ -158,7 +158,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 		//noinspection unchecked
 		IngredientSet<V> set = ingredientsMap.get(ingredientClass);
 		if (set == null) {
-			set = new IngredientSet<V>(ingredientHelper);
+			set = IngredientSet.create(ingredientClass, ingredientHelper);
 			ingredientsMap.put(ingredientClass, set);
 		}
 		

@@ -1,12 +1,9 @@
 package mezz.jei.startup;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
-import java.util.List;
 import java.util.Map;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -38,7 +35,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 		for (Class ingredientClass : allIngredientsMap.keySet()) {
 			IIngredientHelper ingredientHelper = ingredientHelperMap.get(ingredientClass);
 			Collection ingredients = allIngredientsMap.get(ingredientClass);
-			IngredientSet ingredientSet = new IngredientSet(ingredientHelper);
+			IngredientSet ingredientSet = IngredientSet.create(ingredientClass, ingredientHelper);
 			ingredientSet.addAll(ingredients);
 			ingredientsMap.put(ingredientClass, ingredientSet);
 		}
