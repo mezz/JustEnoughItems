@@ -163,7 +163,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientClass);
 		//noinspection unchecked
-		Set<V> set = ingredientsMap.computeIfAbsent(ingredientClass, k -> new IngredientSet<>(ingredientHelper));
+		Set<V> set = ingredientsMap.computeIfAbsent(ingredientClass, k -> IngredientSet.create(ingredientClass, ingredientHelper));
 		for (V ingredient : ingredients) {
 			set.add(ingredient);
 			if (ingredient instanceof ItemStack) {

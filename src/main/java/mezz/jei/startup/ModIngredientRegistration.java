@@ -35,7 +35,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 			Class ingredientClass = entry.getKey();
 			Collection ingredients = entry.getValue();
 			IIngredientHelper ingredientHelper = ingredientHelperMap.get(ingredientClass);
-			IngredientSet ingredientSet = new IngredientSet<>(ingredientHelper);
+			IngredientSet ingredientSet = IngredientSet.create(ingredientClass, ingredientHelper);
 			ingredientSet.addAll(ingredients);
 			ingredientsMap.put(ingredientClass, ingredientSet);
 		}
