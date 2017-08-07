@@ -45,6 +45,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -460,6 +461,15 @@ public class RecipeRegistry implements IRecipeRegistry {
 			}
 		} else if (recipe instanceof IRecipeWrapper) {
 			return (IRecipeWrapper) recipe;
+		} else if (recipe instanceof IRecipe) {
+			try {
+				IRecipeWrapper recipeWrapper = DefaultCraftingRecipeWrapper.create((IRecipe) recipe);
+				wrapperMap.put(recipe, recipeWrapper);
+				return recipeWrapper;
+			} catch (RuntimeException | LinkageError e) {
+				Log.get().warn("Failed to create default wrapper for recipe {}", recipe.getClass());
+				return null;
+			}
 		} else {
 			return null;
 		}
