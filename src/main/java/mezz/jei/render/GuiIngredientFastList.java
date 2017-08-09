@@ -187,6 +187,8 @@ public class GuiIngredientFastList {
 			guiItemStack.renderOverlay(minecraft);
 		}
 
+		GlStateManager.disableLighting();
+
 		// other rendering
 		for (GuiIngredientFast guiItemStack : renderOther) {
 			guiItemStack.renderSlow();
