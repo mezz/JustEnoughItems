@@ -196,6 +196,19 @@ public class IngredientFilter implements IIngredientFilter {
 	@SubscribeEvent
 	public void onEditModeToggleEvent(EditModeToggleEvent event) {
 		this.filterCached = null;
+		updateHidden();
+	}
+
+	public void updateHidden() {
+		for (IIngredientListElement<?> element : elementList) {
+			updateHiddenState(element);
+		}
+	}
+
+	private <V> void updateHiddenState(IIngredientListElement<V> element) {
+		V ingredient = element.getIngredient();
+		boolean hidden = Config.isIngredientOnConfigBlacklist(ingredient, element.getIngredientHelper());
+		element.setHidden(hidden);
 	}
 
 	public List<IIngredientListElement> getIngredientList() {
