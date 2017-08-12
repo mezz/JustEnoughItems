@@ -201,7 +201,9 @@ public class IngredientFilter implements IIngredientFilter {
 
 	public void updateHidden() {
 		for (IIngredientListElement<?> element : elementList) {
-			updateHiddenState(element);
+			if (element != null) {
+				updateHiddenState(element);
+			}
 		}
 	}
 
