@@ -150,10 +150,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			Class recipeClass;
 			try {
 				recipeClass = recipeHandler.getRecipeClass();
-			} catch (RuntimeException e) {
-				Log.get().error("Recipe handler crashed.", e);
-				continue;
-			} catch (LinkageError e) {
+			} catch (RuntimeException | LinkageError e) {
 				Log.get().error("Recipe handler crashed.", e);
 				continue;
 			}

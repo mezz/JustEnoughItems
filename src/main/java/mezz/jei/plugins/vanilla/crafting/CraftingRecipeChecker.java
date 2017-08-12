@@ -105,7 +105,7 @@ public final class CraftingRecipeChecker {
 				//noinspection ConstantConditions
 				if (input == null) {
 					return INVALID_COUNT;
-				} else if (input.length >= 0) {
+				} else {
 					inputCount++;
 				}
 			}

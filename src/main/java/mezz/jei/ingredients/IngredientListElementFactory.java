@@ -5,19 +5,18 @@ import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.IModIdHelper;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.ProgressManager;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 public final class IngredientListElementFactory {
 	private IngredientListElementFactory() {
 	}
 
-	public static List<IIngredientListElement> createBaseList(IIngredientRegistry ingredientRegistry, IModIdHelper modIdHelper) {
-		List<IIngredientListElement> ingredientListElements = new LinkedList<>();
+	public static NonNullList<IIngredientListElement> createBaseList(IIngredientRegistry ingredientRegistry, IModIdHelper modIdHelper) {
+		NonNullList<IIngredientListElement> ingredientListElements = NonNullList.create();
 
 		for (Class<?> ingredientClass : ingredientRegistry.getRegisteredIngredientClasses()) {
 			addToBaseList(ingredientListElements, ingredientRegistry, ingredientClass, modIdHelper);
@@ -27,11 +26,11 @@ public final class IngredientListElementFactory {
 		return ingredientListElements;
 	}
 
-	public static <V> List<IIngredientListElement> createList(IIngredientRegistry ingredientRegistry, Class<V> ingredientClass, List<V> ingredients, IModIdHelper modIdHelper) {
+	public static <V> NonNullList<IIngredientListElement> createList(IIngredientRegistry ingredientRegistry, Class<V> ingredientClass, List<V> ingredients, IModIdHelper modIdHelper) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientClass);
 
-		List<IIngredientListElement> list = new ArrayList<>();
+		NonNullList<IIngredientListElement> list = NonNullList.create();
 		for (V ingredient : ingredients) {
 			if (ingredient != null) {
 				IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer, modIdHelper);
@@ -43,7 +42,7 @@ public final class IngredientListElementFactory {
 		return list;
 	}
 
-	private static <V> void addToBaseList(List<IIngredientListElement> baseList, IIngredientRegistry ingredientRegistry, Class<V> ingredientClass, IModIdHelper modIdHelper) {
+	private static <V> void addToBaseList(NonNullList<IIngredientListElement> baseList, IIngredientRegistry ingredientRegistry, Class<V> ingredientClass, IModIdHelper modIdHelper) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientClass);
 

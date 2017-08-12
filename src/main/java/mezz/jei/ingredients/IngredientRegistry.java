@@ -14,6 +14,7 @@ import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionHelper;
 import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.util.NonNullList;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -171,7 +172,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 			}
 		}
 
-		List<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, modIdHelper);
+		NonNullList<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, modIdHelper);
 		ingredientFilter.addIngredients(ingredientListElements);
 	}
 
@@ -190,7 +191,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 			set.removeAll(ingredients);
 		}
 
-		List<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, modIdHelper);
+		NonNullList<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, modIdHelper);
 		ingredientFilter.removeIngredients(ingredientListElements);
 	}
 }

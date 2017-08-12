@@ -17,6 +17,7 @@ import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.runtime.SubtypeRegistry;
 import mezz.jei.util.Log;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.ProgressManager;
 
 import java.util.Iterator;
@@ -55,7 +56,7 @@ public class JeiStarter {
 
 		Log.get().info("Building ingredient list...");
 		start_time = System.currentTimeMillis();
-		List<IIngredientListElement> ingredientList = IngredientListElementFactory.createBaseList(ingredientRegistry, ForgeModIdHelper.getInstance());
+		NonNullList<IIngredientListElement> ingredientList = IngredientListElementFactory.createBaseList(ingredientRegistry, ForgeModIdHelper.getInstance());
 		Log.get().info("Built    ingredient list in {} ms", System.currentTimeMillis() - start_time);
 
 		Log.get().info("Building ingredient filter...");

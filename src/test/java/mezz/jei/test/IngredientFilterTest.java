@@ -12,6 +12,7 @@ import mezz.jei.startup.StackHelper;
 import mezz.jei.test.lib.TestIngredient;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
+import net.minecraft.util.NonNullList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +44,7 @@ public class IngredientFilterTest {
 		this.modIdHelper = new TestModIdHelper();
 		this.ingredientRegistry = modIngredientRegistry.createIngredientRegistry(modIdHelper);
 
-		List<IIngredientListElement> baseList = IngredientListElementFactory.createBaseList(ingredientRegistry, modIdHelper);
+		NonNullList<IIngredientListElement> baseList = IngredientListElementFactory.createBaseList(ingredientRegistry, modIdHelper);
 
 		StackHelper stackHelper = new StackHelper(subtypeRegistry);
 		JeiHelpers jeiHelpers = new JeiHelpers(ingredientRegistry, stackHelper);

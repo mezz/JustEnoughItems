@@ -9,7 +9,6 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.config.Constants;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.ResourceLocation;
 
 public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipeWrapper> {
 
@@ -43,9 +42,9 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipeWrapper> 
 	public void setRecipe(IRecipeLayout recipeLayout, AnvilRecipeWrapper recipeWrapper, IIngredients ingredients) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
-		guiItemStacks.init(0, true, 10-10, 0);
-		guiItemStacks.init(1, true, 59-10, 0);
-		guiItemStacks.init(2, false, 117-10, 0);
+		guiItemStacks.init(0, true, 0, 0);
+		guiItemStacks.init(1, true, 49, 0);
+		guiItemStacks.init(2, false, 107, 0);
 
 		guiItemStacks.set(ingredients);
 

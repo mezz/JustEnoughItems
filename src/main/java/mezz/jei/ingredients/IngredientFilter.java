@@ -1,6 +1,5 @@
 package mezz.jei.ingredients;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,8 +27,11 @@ import mezz.jei.suffixtree.GeneralizedSuffixTree;
 import mezz.jei.suffixtree.ISearchTree;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Translator;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import javax.annotation.Nullable;
 
 public class IngredientFilter implements IIngredientFilter {
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
@@ -43,7 +45,6 @@ public class IngredientFilter implements IIngredientFilter {
 	private final List<IIngredientListElement> elementList;
 	private final GeneralizedSuffixTree searchTree;
 	private final TCharObjectMap<PrefixedSearchTree> prefixedSearchTrees = new TCharObjectHashMap<>();
-	private final List<PrefixedSearchTree> earlyLoadSearchTrees = new ArrayList<>();
 	private CombinedSearchTrees combinedSearchTrees;
 
 	@Nullable
@@ -54,19 +55,12 @@ public class IngredientFilter implements IIngredientFilter {
 		this.helpers = helpers;
 		this.elementList = new ArrayList<>();
 		this.searchTree = new GeneralizedSuffixTree();
-		PrefixedSearchTree modNameSearchTree = createPrefixedSearchTree('@', Config::getModNameSearchMode, IIngredientListElement::getModNameStrings);
-		PrefixedSearchTree tooltipSearchTree = createPrefixedSearchTree('#', Config::getTooltipSearchMode, IIngredientListElement::getTooltipStrings);
-		PrefixedSearchTree oreDictSearchTree = createPrefixedSearchTree('$', Config::getOreDictSearchMode, IIngredientListElement::getOreDictStrings);
-		PrefixedSearchTree creativeTabSearchTree = createPrefixedSearchTree('%', Config::getCreativeTabSearchMode, IIngredientListElement::getCreativeTabsStrings);
-		PrefixedSearchTree colorSearchTree = createPrefixedSearchTree('^', Config::getColorSearchMode, IIngredientListElement::getColorStrings);
-		PrefixedSearchTree resourceIdSearchTree = createPrefixedSearchTree('&', Config::getResourceIdSearchMode, element -> Collections.singleton(element.getResourceId()));
-
-		this.earlyLoadSearchTrees.add(tooltipSearchTree);
-		this.earlyLoadSearchTrees.add(modNameSearchTree);
-		this.earlyLoadSearchTrees.add(oreDictSearchTree);
-		this.earlyLoadSearchTrees.add(creativeTabSearchTree);
-		this.earlyLoadSearchTrees.add(resourceIdSearchTree);
-		// color search tree gets loaded in onTick
+		createPrefixedSearchTree('@', Config::getModNameSearchMode, IIngredientListElement::getModNameStrings);
+		createPrefixedSearchTree('#', Config::getTooltipSearchMode, IIngredientListElement::getTooltipStrings);
+		createPrefixedSearchTree('$', Config::getOreDictSearchMode, IIngredientListElement::getOreDictStrings);
+		createPrefixedSearchTree('%', Config::getCreativeTabSearchMode, IIngredientListElement::getCreativeTabsStrings);
+		createPrefixedSearchTree('^', Config::getColorSearchMode, IIngredientListElement::getColorStrings);
+		createPrefixedSearchTree('&', Config::getResourceIdSearchMode, element -> Collections.singleton(element.getResourceId()));
 
 		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.valueCollection());
 	}
@@ -82,14 +76,13 @@ public class IngredientFilter implements IIngredientFilter {
 		return combinedSearchTrees;
 	}
 
-	private PrefixedSearchTree createPrefixedSearchTree(char prefix, PrefixedSearchTree.IModeGetter modeGetter, PrefixedSearchTree.IStringsGetter stringsGetter) {
+	private void createPrefixedSearchTree(char prefix, PrefixedSearchTree.IModeGetter modeGetter, PrefixedSearchTree.IStringsGetter stringsGetter) {
 		GeneralizedSuffixTree tree = new GeneralizedSuffixTree();
 		PrefixedSearchTree prefixedTree = new PrefixedSearchTree(tree, stringsGetter, modeGetter);
 		this.prefixedSearchTrees.put(prefix, prefixedTree);
-		return prefixedTree;
 	}
 
-	public void addIngredients(Collection<IIngredientListElement> ingredients) {
+	public void addIngredients(NonNullList<IIngredientListElement> ingredients) {
 		ProgressManager.ProgressBar progressBar = ProgressManager.push("Indexing ingredients", ingredients.size());
 		for (IIngredientListElement<?> element : ingredients) {
 			progressBar.step(element.getDisplayName());
@@ -99,10 +92,7 @@ public class IngredientFilter implements IIngredientFilter {
 		ProgressManager.pop(progressBar);
 	}
 
-	private <V> void addIngredient(@Nullable IIngredientListElement<V> element) {
-		if (element == null) {
-			return;
-		}
+	private <V> void addIngredient(IIngredientListElement<V> element) {
 		V ingredient = element.getIngredient();
 
 		IngredientBlacklist ingredientBlacklist = helpers.getIngredientBlacklist();
@@ -117,7 +107,7 @@ public class IngredientFilter implements IIngredientFilter {
 		elementList.add(element);
 		searchTree.put(Translator.toLowercaseWithLocale(element.getDisplayName()), index);
 
-		for (PrefixedSearchTree prefixedSearchTree : this.earlyLoadSearchTrees) {
+		for (PrefixedSearchTree prefixedSearchTree : this.prefixedSearchTrees.valueCollection()) {
 			Config.SearchMode searchMode = prefixedSearchTree.getMode();
 			if (searchMode != Config.SearchMode.DISABLED) {
 				Collection<String> strings = prefixedSearchTree.getStringsGetter().getStrings(element);
@@ -128,7 +118,7 @@ public class IngredientFilter implements IIngredientFilter {
 		}
 	}
 
-	public void removeIngredients(Collection<IIngredientListElement> ingredients) {
+	public void removeIngredients(NonNullList<IIngredientListElement> ingredients) {
 		for (IIngredientListElement<?> element : ingredients) {
 			removeIngredient(element);
 		}

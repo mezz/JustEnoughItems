@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Stack;
 
 import com.google.common.collect.ImmutableList;
-import mezz.jei.Internal;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
