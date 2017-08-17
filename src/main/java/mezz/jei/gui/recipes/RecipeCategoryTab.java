@@ -9,6 +9,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.Config;
 import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.util.LegacyUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -89,6 +90,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 
 		String modName = LegacyUtil.getModName(category);
 		if (modName != null) {
+			modName = ForgeModIdHelper.getInstance().getModNameForModId(modName);
 			tooltip.add(Config.getModNameFormat() + modName);
 		}
 		return tooltip;
