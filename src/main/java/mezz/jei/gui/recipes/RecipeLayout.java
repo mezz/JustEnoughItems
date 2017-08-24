@@ -285,6 +285,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		return recipeTransferButton;
 	}
 
+	@Override
 	public IRecipeCategory getRecipeCategory() {
 		return recipeCategory;
 	}

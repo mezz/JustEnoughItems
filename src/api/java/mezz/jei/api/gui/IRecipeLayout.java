@@ -48,6 +48,13 @@ public interface IRecipeLayout {
 	IFocus<?> getFocus();
 
 	/**
+	 * The current recipe category.
+	 *
+	 * @since JEI 4.7.6
+	 */
+	IRecipeCategory<?> getRecipeCategory();
+
+	/**
 	 * Moves the recipe transfer button's position relative to the recipe layout.
 	 * By default the recipe transfer button is at the bottom, to the right of the recipe.
 	 * If it doesn't fit there, you can use this to move it when you init the recipe layout.
