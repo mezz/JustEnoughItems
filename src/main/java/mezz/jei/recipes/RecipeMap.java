@@ -107,39 +107,4 @@ public class RecipeMap {
 			addRecipeCategory(recipeCategory, ingredient);
 		}
 	}
-
-	public <T extends IRecipeWrapper> void removeRecipe(T recipeWrapper, IRecipeCategory<T> recipeCategory, Map<Class, List> ingredientsByType) {
-		for (Map.Entry<Class, List> entry : ingredientsByType.entrySet()) {
-			if (entry != null) {
-				removeRecipe(recipeWrapper, recipeCategory, entry.getKey(), entry.getValue());
-			}
-		}
-	}
-
-	private <T extends IRecipeWrapper, V> void removeRecipe(T recipeWrapper, IRecipeCategory<T> recipeCategory, Class<V> ingredientClass, List<V> ingredients) {
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
-
-		//noinspection unchecked
-		Map<String, List<T>> recipesWrappersForType = (Map<String, List<T>>) (Object) recipeWrapperTable.row(recipeCategory);
-
-		ingredients = ingredientHelper.expandSubtypes(ingredients);
-
-		for (V ingredient : ingredients) {
-			if (ingredient == null) {
-				continue;
-			}
-
-			List<String> uniqueIdsWithWildcard = IngredientUtil.getUniqueIdsWithWildcard(ingredientHelper, ingredient);
-			for (String key : uniqueIdsWithWildcard) {
-				List<T> recipeWrappers = recipesWrappersForType.get(key);
-				if (recipeWrappers != null) {
-					recipeWrappers.remove(recipeWrapper);
-					if (recipeWrappers.isEmpty()) {
-						categoryUidMap.remove(key, recipeCategory.getUid());
-						recipesWrappersForType.remove(key);
-					}
-				}
-			}
-		}
-	}
 }

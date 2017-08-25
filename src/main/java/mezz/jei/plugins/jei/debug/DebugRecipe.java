@@ -7,8 +7,11 @@ import java.util.List;
 
 import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.IJeiRuntime;
+import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 import net.minecraft.client.Minecraft;
@@ -22,9 +25,13 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
 
+import javax.annotation.Nullable;
+
 public class DebugRecipe implements IRecipeWrapper {
 	private final GuiButtonExt button;
 	private final HoverChecker buttonHoverChecker;
+	@Nullable
+	private List<IRecipeWrapper> hiddenRecipes;
 
 	public DebugRecipe() {
 		this.button = new GuiButtonExt(0, 110, 30, "test");
@@ -86,6 +93,23 @@ public class DebugRecipe implements IRecipeWrapper {
 				IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
 				String filterText = ingredientFilter.getFilterText();
 				ingredientFilter.setFilterText(filterText + " test");
+
+				IRecipeRegistry recipeRegistry = runtime.getRecipeRegistry();
+				if (hiddenRecipes == null) {
+					@SuppressWarnings("unchecked")
+					IRecipeCategory<IRecipeWrapper> craftingRecipeCategory = recipeRegistry.getRecipeCategory(VanillaRecipeCategoryUid.CRAFTING);
+					if (craftingRecipeCategory != null) {
+						hiddenRecipes = recipeRegistry.getRecipeWrappers(craftingRecipeCategory);
+					}
+					for (IRecipeWrapper recipeWrapper : hiddenRecipes) {
+						recipeRegistry.hideRecipe(recipeWrapper);
+					}
+				} else {
+					for (IRecipeWrapper recipeWrapper : hiddenRecipes) {
+						recipeRegistry.unhideRecipe(recipeWrapper);
+					}
+					hiddenRecipes = null;
+				}
 			}
 			return true;
 		}

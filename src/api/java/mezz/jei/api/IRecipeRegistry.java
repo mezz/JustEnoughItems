@@ -33,6 +33,14 @@ public interface IRecipeRegistry {
 	List<IRecipeCategory> getRecipeCategories(List<String> recipeCategoryUids);
 
 	/**
+	 * Returns the recipe category for the given UID.
+	 * Returns null if the recipe category does not exist.
+	 * @since JEI 4.7.7
+	 */
+	@Nullable
+	IRecipeCategory getRecipeCategory(String recipeCategoryUid);
+
+	/**
 	 * Returns a new focus.
 	 */
 	<V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient);
@@ -101,6 +109,30 @@ public interface IRecipeRegistry {
 	 */
 	@Nullable
 	<T extends IRecipeWrapper> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipeWrapper, IFocus<?> focus);
+
+	/**
+	 * Hides a recipe so that it will not be displayed.
+	 * This can be used by mods that create recipe progression.
+	 *
+	 * @param recipe the recipe to hide.
+	 *               Get an instance using {@link #getRecipeWrapper(Object, String)}
+	 *               or {@link #getRecipeWrappers(IRecipeCategory)}
+	 * @see #unhideRecipe(IRecipeWrapper)
+	 * @since JEI 4.7.7
+	 */
+	void hideRecipe(IRecipeWrapper recipe);
+
+	/**
+	 * Unhides a recipe that was hidden by {@link #hideRecipe(IRecipeWrapper)}
+	 * This can be used by mods that create recipe progression.
+	 *
+	 * @param recipe the recipe to unhide.
+	 *               Get an instance using {@link #getRecipeWrapper(Object, String)}
+	 *               or {@link #getRecipeWrappers(IRecipeCategory)}
+	 * @see #hideRecipe(IRecipeWrapper)
+	 * @since JEI 4.7.7
+	 */
+	void unhideRecipe(IRecipeWrapper recipe);
 
 	// DEPRECATED BELOW
 
@@ -197,7 +229,7 @@ public interface IRecipeRegistry {
 	 * Remove a recipe while the game is running.
 	 *
 	 * @since JEI 4.2.2
-	 * @deprecated since JEI 4.3.0. This is not supported by Minecraft 1.12 and using this is discouraged.
+	 * @deprecated since JEI 4.3.0. Use {@link #hideRecipe(IRecipeWrapper)}
 	 */
 	@Deprecated
 	void removeRecipe(Object recipe);

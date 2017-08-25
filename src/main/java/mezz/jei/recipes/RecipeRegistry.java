@@ -56,8 +56,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final ImmutableList<IRecipeHandler> unsortedRecipeHandlers;
 	private final ImmutableMultimap<String, IRecipeHandler> recipeHandlers;
 	private final ImmutableList<IRecipeCategory> recipeCategories;
-	private final Set<IRecipeCategory> emptyRecipeCategories = new HashSet<>();
-	private final Set<IRecipeCategory> checkIfEmptyRecipeCategories = new HashSet<>();
+	private final List<IRecipeCategory> recipeCategoriesVisibleCache = new ArrayList<>();
 	private final ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers;
 	private final ImmutableMultimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap;
 	private final ImmutableListMultimap<IRecipeCategory, Object> recipeCatalysts;
@@ -67,6 +66,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
 	private final List<IRecipeRegistryPlugin> plugins = new ArrayList<>();
+	private final Set<IRecipeWrapper> hiddenRecipes = Collections.newSetFromMap(new IdentityHashMap<>());
 
 	public RecipeRegistry(
 			List<IRecipeCategory> recipeCategories,
@@ -117,12 +117,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		this.plugins.add(internalRecipeRegistryPlugin);
 		this.plugins.addAll(plugins);
 
-		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
-			List recipeWrappers = getRecipeWrappers(recipeCategory);
-			if (recipeWrappers.isEmpty()) {
-				this.emptyRecipeCategories.add(recipeCategory);
-			}
-		}
 		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
 	}
 
@@ -258,8 +252,10 @@ public class RecipeRegistry implements IRecipeRegistry {
 		}
 	}
 
+	@Override
 	@Nullable
-	private IRecipeCategory getRecipeCategory(String recipeCategoryUid) {
+	public IRecipeCategory getRecipeCategory(String recipeCategoryUid) {
+		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		return recipeCategoriesMap.get(recipeCategoryUid);
 	}
 
@@ -297,9 +293,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 		recipeWrappersForCategories.put(recipeCategory, recipeWrapper);
 
-		if (emptyRecipeCategories.contains(recipeCategory)) {
-			emptyRecipeCategories.remove(recipeCategory);
-		}
+		recipeCategoriesVisibleCache.clear();
 	}
 
 	public Ingredients getIngredients(IRecipeWrapper recipeWrapper) {
@@ -320,14 +314,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		}
 	}
 
-	@Override
-	public void removeRecipe(IRecipeWrapper recipe, String recipeCategoryUid) {
-		ErrorUtil.checkNotNull(recipe, "recipe");
-		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-
-		removeRecipe((Object) recipe, recipeCategoryUid);
-	}
-
 	private <T> void removeRecipe(T recipe, String recipeCategoryUid) {
 		IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
 		if (recipeCategory == null) {
@@ -336,24 +322,22 @@ public class RecipeRegistry implements IRecipeRegistry {
 		}
 
 		try {
-			removeRecipeUnchecked(recipe, recipeCategory);
+			IRecipeWrapper recipeWrapper = getRecipeWrapper(recipe, recipeCategory.getUid());
+			if (recipeWrapper != null) {
+				hideRecipe(recipeWrapper);
+			}
 		} catch (BrokenCraftingRecipeException e) {
 			Log.get().error("Found a broken crafting recipe.", e);
 		}
 	}
 
-	private <T> void removeRecipeUnchecked(T recipe, IRecipeCategory recipeCategory) {
-		IRecipeWrapper recipeWrapper = getRecipeWrapper(recipe, recipeCategory.getUid());
-		if (recipeWrapper != null) {
-			Ingredients ingredients = getIngredients(recipeWrapper);
+	@Override
+	@Deprecated
+	public void removeRecipe(IRecipeWrapper recipe, String recipeCategoryUid) {
+		ErrorUtil.checkNotNull(recipe, "recipe");
+		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 
-			recipeInputMap.removeRecipe(recipeWrapper, recipeCategory, ingredients.getInputIngredients());
-			recipeOutputMap.removeRecipe(recipeWrapper, recipeCategory, ingredients.getOutputIngredients());
-
-			recipeWrappersForCategories.remove(recipeCategory, recipeWrapper);
-
-			checkIfEmptyRecipeCategories.add(recipeCategory);
-		}
+		hideRecipe(recipe);
 	}
 
 	@Override
@@ -386,31 +370,25 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public List<IRecipeCategory> getRecipeCategories() {
-		for (IRecipeCategory recipeCategory : this.checkIfEmptyRecipeCategories) {
-			if (getRecipeWrappers(recipeCategory).isEmpty()) {
-				this.emptyRecipeCategories.add(recipeCategory);
+		if (recipeCategoriesVisibleCache.isEmpty()) {
+			for (IRecipeCategory recipeCategory : this.recipeCategories) {
+				if (!getRecipeWrappers(recipeCategory).isEmpty()) {
+					recipeCategoriesVisibleCache.add(recipeCategory);
+				}
 			}
 		}
-		this.checkIfEmptyRecipeCategories.clear();
-
-		List<IRecipeCategory> recipeCategories = new ArrayList<>(this.recipeCategories);
-		recipeCategories.removeAll(this.emptyRecipeCategories);
-		return recipeCategories;
+		return recipeCategoriesVisibleCache;
 	}
 
 	@Override
 	public ImmutableList<IRecipeCategory> getRecipeCategories(List<String> recipeCategoryUids) {
 		ErrorUtil.checkNotNull(recipeCategoryUids, "recipeCategoryUids");
 
-		Set<String> uniqueUids = new HashSet<>();
 		ImmutableList.Builder<IRecipeCategory> builder = ImmutableList.builder();
 		for (String recipeCategoryUid : recipeCategoryUids) {
-			if (!uniqueUids.contains(recipeCategoryUid)) {
-				uniqueUids.add(recipeCategoryUid);
-				IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
-				if (recipeCategory != null && !getRecipeWrappers(recipeCategory).isEmpty()) {
-					builder.add(recipeCategory);
-				}
+			IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
+			if (recipeCategory != null && getRecipeCategories().contains(recipeCategory)) {
+				builder.add(recipeCategory);
 			}
 		}
 		return builder.build();
@@ -555,10 +533,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return null;
 	}
 
-	public ImmutableCollection<RecipeClickableArea> getAllRecipeClickableAreas(GuiContainer gui) {
-		return recipeClickableAreasMap.get(gui.getClass());
-	}
-
 	/**
 	 * Special case for ItemBlocks containing fluid blocks.
 	 * Nothing crafts those, the player probably wants to look up fluids.
@@ -642,6 +616,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			}
 			allRecipeWrappers.addAll(recipeWrappers);
 		}
+		allRecipeWrappers.removeAll(hiddenRecipes);
 
 		return allRecipeWrappers;
 	}
@@ -707,5 +682,19 @@ public class RecipeRegistry implements IRecipeRegistry {
 		RecipeLayout recipeLayout = RecipeLayout.create(-1, recipeCategory, recipeWrapper, focus, 0, 0);
 		Preconditions.checkNotNull(recipeLayout, "Recipe layout crashed during creation, see log.");
 		return recipeLayout;
+	}
+
+	@Override
+	public void hideRecipe(IRecipeWrapper recipe) {
+		ErrorUtil.checkNotNull(recipe, "recipe");
+		hiddenRecipes.add(recipe);
+		recipeCategoriesVisibleCache.clear();
+	}
+
+	@Override
+	public void unhideRecipe(IRecipeWrapper recipe) {
+		ErrorUtil.checkNotNull(recipe, "recipe");
+		hiddenRecipes.remove(recipe);
+		recipeCategoriesVisibleCache.clear();
 	}
 }
