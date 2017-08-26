@@ -5,6 +5,8 @@ import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+import java.util.function.Function;
+
 /**
  * Tell JEI how to interpret NBT tags and capabilities when comparing and looking up items.
  * <p>
@@ -59,13 +61,30 @@ public interface ISubtypeRegistry {
 	boolean hasSubtypeInterpreter(ItemStack itemStack);
 
 	@FunctionalInterface
-	interface ISubtypeInterpreter {
+	interface ISubtypeInterpreter extends Function<ItemStack, String> {
+		String NONE = "";
+		
+		/**
+		 * Get the data from an itemStack that is relevant to telling subtypes apart.
+		 * This should account for meta, nbt, and anything else that's relevant.
+		 * Return {@link #NONE} if there is no data used for subtypes.
+		 *
+		 * @since JEI 4.7.8
+		 */
+		@Override
+		String apply(ItemStack itemStack);
+
 		/**
 		 * Get the data from an itemStack that is relevant to telling subtypes apart.
 		 * This should account for meta, nbt, and anything else that's relevant.
 		 * Returns null if there is no data used for subtypes.
+		 *
+		 * @deprecated since JEI 4.7.8
 		 */
+		@Deprecated
 		@Nullable
-		String getSubtypeInfo(ItemStack itemStack);
+		default String getSubtypeInfo(ItemStack itemStack) {
+			return apply(itemStack);
+		}
 	}
 }

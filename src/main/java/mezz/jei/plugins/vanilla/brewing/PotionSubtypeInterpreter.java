@@ -1,6 +1,5 @@
 package mezz.jei.plugins.vanilla.brewing;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 import mezz.jei.api.ISubtypeRegistry;
@@ -16,11 +15,10 @@ public class PotionSubtypeInterpreter implements ISubtypeRegistry.ISubtypeInterp
 
 	}
 
-	@Nullable
 	@Override
-	public String getSubtypeInfo(ItemStack itemStack) {
+	public String apply(ItemStack itemStack) {
 		if (!itemStack.hasTagCompound()) {
-			return null;
+			return ISubtypeRegistry.ISubtypeInterpreter.NONE;
 		}
 		PotionType potionType = PotionUtils.getPotionFromItem(itemStack);
 		String potionTypeString = potionType.getNamePrefixed("");

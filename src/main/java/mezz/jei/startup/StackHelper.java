@@ -382,7 +382,9 @@ public class StackHelper implements IStackHelper {
 		if (mode != UidMode.WILDCARD && metadata != OreDictionary.WILDCARD_VALUE) {
 			String subtypeInfo = subtypeRegistry.getSubtypeInfo(stack);
 			if (subtypeInfo != null) {
-				itemKey.append(':').append(subtypeInfo);
+				if (!subtypeInfo.isEmpty()) {
+					itemKey.append(':').append(subtypeInfo);
+				}
 			} else {
 				if (mode == UidMode.FULL) {
 					itemKey.append(':').append(metadata);
