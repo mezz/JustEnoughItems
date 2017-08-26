@@ -83,7 +83,7 @@ public class VanillaPlugin implements IModPlugin {
 		});
 		subtypeRegistry.registerSubtypeInterpreter(Items.SPAWN_EGG, itemStack -> {
 			ResourceLocation resourceLocation = ItemMonsterPlacer.getNamedIdFrom(itemStack);
-			return resourceLocation == null ? null : resourceLocation.toString();
+			return resourceLocation == null ? ISubtypeRegistry.ISubtypeInterpreter.NONE : resourceLocation.toString();
 		});
 	}
 

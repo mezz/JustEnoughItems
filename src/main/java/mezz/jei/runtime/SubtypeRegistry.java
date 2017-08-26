@@ -67,12 +67,11 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 		private AllNbt() {
 		}
 
-		@Nullable
 		@Override
-		public String getSubtypeInfo(ItemStack itemStack) {
+		public String apply(ItemStack itemStack) {
 			NBTTagCompound nbtTagCompound = itemStack.getTagCompound();
 			if (nbtTagCompound == null || nbtTagCompound.hasNoTags()) {
-				return null;
+				return ISubtypeInterpreter.NONE;
 			}
 			return nbtTagCompound.toString();
 		}

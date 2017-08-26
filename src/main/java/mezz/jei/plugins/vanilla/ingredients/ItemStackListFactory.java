@@ -154,9 +154,8 @@ public final class ItemStackListFactory {
 
 		}
 
-		@Nullable
 		@Override
-		public String getSubtypeInfo(ItemStack itemStack) {
+		public String apply(ItemStack itemStack) {
 			if (itemStack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
 				IFluidHandler capability = itemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
 				if (capability != null) {
@@ -178,7 +177,7 @@ public final class ItemStackListFactory {
 					}
 				}
 			}
-			return null;
+			return ISubtypeRegistry.ISubtypeInterpreter.NONE;
 		}
 
 		@Nullable
