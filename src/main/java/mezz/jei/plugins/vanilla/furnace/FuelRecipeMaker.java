@@ -10,6 +10,8 @@ import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IStackHelper;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraftforge.oredict.OreDictionary;
@@ -45,9 +47,14 @@ public final class FuelRecipeMaker {
 					if (oreDictFuels.isEmpty()) {
 						continue;
 					}
-					int burnTime = getBurnTime(oreDictFuels.get(0));
-
-					fuelRecipes.add(new FuelRecipe(guiHelper, oreDictFuelsSet, burnTime));
+					ItemStack itemStack = oreDictFuels.get(0);
+					int burnTime = getBurnTime(itemStack);
+					if (burnTime > 0) {
+						fuelRecipes.add(new FuelRecipe(guiHelper, oreDictFuelsSet, burnTime));
+					} else {
+						String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
+						Log.get().error("Fuel has no burn time ({}): {}", burnTime, itemStackInfo);
+					}
 				}
 			} else {
 				List<ItemStack> fuels = stackHelper.getSubtypes(fuelStack);
@@ -55,8 +62,14 @@ public final class FuelRecipeMaker {
 				if (fuels.isEmpty()) {
 					continue;
 				}
-				int burnTime = getBurnTime(fuels.get(0));
-				fuelRecipes.add(new FuelRecipe(guiHelper, fuels, burnTime));
+				ItemStack itemStack = fuels.get(0);
+				int burnTime = getBurnTime(itemStack);
+				if (burnTime > 0) {
+					fuelRecipes.add(new FuelRecipe(guiHelper, fuels, burnTime));
+				} else {
+					String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
+					Log.get().error("Fuel has no burn time ({}): {}", burnTime, itemStackInfo);
+				}
 			}
 		}
 		return fuelRecipes;

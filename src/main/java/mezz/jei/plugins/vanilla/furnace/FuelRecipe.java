@@ -1,5 +1,6 @@
 package mezz.jei.plugins.vanilla.furnace;
 
+import com.google.common.base.Preconditions;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
@@ -24,6 +25,7 @@ public class FuelRecipe implements IRecipeWrapper {
 	private final IDrawableAnimated flame;
 
 	public FuelRecipe(IGuiHelper guiHelper, Collection<ItemStack> input, int burnTime) {
+		Preconditions.checkArgument(burnTime > 0, "burn time must be greater than 0");
 		List<ItemStack> inputList = new ArrayList<>(input);
 		this.inputs = Collections.singletonList(inputList);
 

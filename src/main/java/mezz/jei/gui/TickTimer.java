@@ -1,5 +1,6 @@
 package mezz.jei.gui;
 
+import com.google.common.base.Preconditions;
 import mezz.jei.api.gui.ITickTimer;
 
 public class TickTimer implements ITickTimer {
@@ -9,6 +10,8 @@ public class TickTimer implements ITickTimer {
 	private final long startTime;
 
 	public TickTimer(int ticksPerCycle, int maxValue, boolean countDown) {
+		Preconditions.checkArgument(ticksPerCycle > 0, "Must have at least 1 tick per cycle.");
+		Preconditions.checkArgument(maxValue > 0, "max value must be greater than 0");
 		this.msPerCycle = ticksPerCycle * 50;
 		this.maxValue = maxValue;
 		this.countDown = countDown;
