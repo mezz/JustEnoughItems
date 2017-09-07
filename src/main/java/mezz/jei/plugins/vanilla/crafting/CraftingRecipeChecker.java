@@ -15,6 +15,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraftforge.oredict.OreIngredient;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
@@ -104,6 +105,8 @@ public final class CraftingRecipeChecker {
 				ItemStack[] input = ingredient.getMatchingStacks();
 				//noinspection ConstantConditions
 				if (input == null) {
+					return INVALID_COUNT;
+				} else if (ingredient instanceof OreIngredient && input.length == 0) {
 					return INVALID_COUNT;
 				} else {
 					inputCount++;
