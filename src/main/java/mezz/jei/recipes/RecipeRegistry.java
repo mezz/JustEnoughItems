@@ -572,7 +572,11 @@ public class RecipeRegistry implements IRecipeRegistry {
 			if (timeElapsed > 10) {
 				Log.get().warn("Recipe Category lookup is slow: {} ms. {}", timeElapsed, plugin.getClass());
 			}
-			allRecipeCategoryUids.addAll(recipeCategoryUids);
+			for (String recipeCategoryUid : recipeCategoryUids) {
+				if (!allRecipeCategoryUids.contains(recipeCategoryUid)) {
+					allRecipeCategoryUids.add(recipeCategoryUid);
+				}
+			}
 		}
 
 		return getRecipeCategories(allRecipeCategoryUids);
