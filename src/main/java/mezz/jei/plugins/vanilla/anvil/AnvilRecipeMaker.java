@@ -39,12 +39,12 @@ public final class AnvilRecipeMaker {
 		Stopwatch sw = Stopwatch.createStarted();
 		registerRepairRecipes(registry);
 		sw.stop();
-		Log.get().info("Registered vanilla repair recipes in {} ms", sw.elapsed(TimeUnit.MILLISECONDS));
+		Log.get().debug("Registered vanilla repair recipes in {} ms", sw.elapsed(TimeUnit.MILLISECONDS));
 		sw.reset();
 		sw.start();
 		registerBookEnchantmentRecipes(registry);
 		sw.stop();
-		Log.get().info("Registered enchantment recipes in {} ms", sw.elapsed(TimeUnit.MILLISECONDS));
+		Log.get().debug("Registered enchantment recipes in {} ms", sw.elapsed(TimeUnit.MILLISECONDS));
 	}
 
 	private static void registerBookEnchantmentRecipes(IModRegistry registry) {
