@@ -105,9 +105,9 @@ public class ProxyCommonClient extends ProxyCommon {
 		reloadableResourceManager.registerReloadListener(resourceManager -> {
 			if (SessionData.hasJoinedWorld()) {
 				// check that JEI has been started before. if not, do nothing
-				if (ProxyCommonClient.this.starter.hasStarted()) {
+				if (this.starter.hasStarted()) {
 					Log.get().info("Restarting JEI.");
-					ProxyCommonClient.this.starter.start(ProxyCommonClient.this.plugins);
+					this.starter.start(this.plugins);
 				}
 			}
 		});
@@ -153,12 +153,14 @@ public class ProxyCommonClient extends ProxyCommon {
 
 	@SubscribeEvent
 	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
-		if (!Constants.MOD_ID.equals(eventArgs.getModID())) {
-			return;
-		}
-
-		if (Config.syncAllConfig()) {
-			reloadItemList();
+		if (Constants.MOD_ID.equals(eventArgs.getModID())) {
+			if (Config.syncAllConfig()) {
+				reloadItemList();
+			}
+		} else {
+			if (starter.hasStarted()) {
+				Config.checkForModNameFormatOverride();
+			}
 		}
 	}
 

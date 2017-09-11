@@ -5,6 +5,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
+import mezz.jei.config.Config;
 import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IngredientListOverlay;
@@ -84,6 +85,8 @@ public class JeiStarter {
 
 		GuiEventHandler guiEventHandler = new GuiEventHandler(jeiRuntime);
 		Internal.setGuiEventHandler(guiEventHandler);
+
+		Config.checkForModNameFormatOverride();
 
 		started = true;
 		totalTime.stop();

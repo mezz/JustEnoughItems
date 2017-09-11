@@ -5,7 +5,6 @@ import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.Config;
-import net.minecraft.util.text.TextFormatting;
 
 public abstract class AbstractModIdHelper implements IModIdHelper {
 	@Override
@@ -16,20 +15,15 @@ public abstract class AbstractModIdHelper implements IModIdHelper {
 
 	@Override
 	public <T> List<String> addModNameToIngredientTooltip(List<String> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
+		if (Config.isModNameFormatOverrideActive()) { // we detected that another mod is adding the mod name already
+			return tooltip;
+		}
 		String modNameFormat = Config.getModNameFormat();
 		if (modNameFormat.isEmpty()) {
 			return tooltip;
 		}
 
 		String modName = getModNameForIngredient(ingredient, ingredientHelper);
-		if (tooltip.size() > 1) {
-			String lastTooltipLine = tooltip.get(tooltip.size() - 1);
-			lastTooltipLine = TextFormatting.getTextWithoutFormattingCodes(lastTooltipLine);
-			if (modName.equals(lastTooltipLine)) {
-				return tooltip;
-			}
-		}
-
 		List<String> tooltipCopy = new ArrayList<>(tooltip);
 		tooltipCopy.add(modNameFormat + modName);
 		return tooltipCopy;

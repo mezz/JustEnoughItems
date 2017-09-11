@@ -43,7 +43,7 @@ public class LocalizedConfiguration extends Configuration {
 		return getString(name, category, defaultValue, comment, langKey);
 	}
 
-	public String getString(String name, String category, String defaultValue, String[] validValues) {
+	public Property getString(String name, String category, String defaultValue, String[] validValues) {
 		String langKey = keyPrefix + category + '.' + name;
 		String commentKey = langKey + commentPostfix;
 		String comment = Translator.translateToLocal(commentKey);
@@ -51,7 +51,7 @@ public class LocalizedConfiguration extends Configuration {
 		Property prop = get(category, name, defaultValue);
 		prop.setLanguageKey(langKey);
 		prop.setComment(comment + " [" + defaultLocalized + ": " + defaultValue + "] [" + validLocalized + ": " + Arrays.toString(validValues) + ']');
-		return prop.getString();
+		return prop;
 	}
 
 	public <T extends Enum<T>> T getEnum(String name, String category, T defaultValue, T[] validEnumValues) {

@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
@@ -17,6 +16,8 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
+import mezz.jei.startup.ForgeModIdHelper;
+import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import net.minecraft.util.text.TextFormatting;
@@ -41,11 +42,11 @@ public final class Config {
 	private static LocalizedConfiguration itemBlacklistConfig;
 	@Nullable
 	private static LocalizedConfiguration searchColorsConfig;
-	@Nullable
-	private static File jeiConfigurationDir;
 
 	private static final ConfigValues defaultValues = new ConfigValues();
 	private static final ConfigValues values = new ConfigValues();
+	@Nullable
+	private static String modNameFormatOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
 
 	// item blacklist
 	private static final Set<String> itemBlacklist = new HashSet<>();
@@ -120,7 +121,23 @@ public final class Config {
 	}
 
 	public static String getModNameFormat() {
+		String override = Config.modNameFormatOverride;
+		if (override != null) {
+			return override;
+		}
 		return values.modNameFormat;
+	}
+
+	public static boolean isModNameFormatOverrideActive() {
+		return Config.modNameFormatOverride != null;
+	}
+
+	public static void checkForModNameFormatOverride() {
+		IModIdHelper modIdHelper = ForgeModIdHelper.getInstance();
+		Config.modNameFormatOverride = modIdHelper.getModNameTooltipFormatting();
+		if (config != null) {
+			updateModNameFormat(config);
+		}
 	}
 
 	public static int getMaxSubtypes() {
@@ -194,14 +211,9 @@ public final class Config {
 		return worldConfig;
 	}
 
-	public static File getJeiConfigurationDir() {
-		Preconditions.checkState(jeiConfigurationDir != null);
-		return jeiConfigurationDir;
-	}
-
 	public static void preInit(FMLPreInitializationEvent event) {
 
-		jeiConfigurationDir = new File(event.getModConfigurationDirectory(), Constants.MOD_ID);
+		File jeiConfigurationDir = new File(event.getModConfigurationDirectory(), Constants.MOD_ID);
 		if (!jeiConfigurationDir.exists()) {
 			try {
 				if (!jeiConfigurationDir.mkdir()) {
@@ -316,16 +328,7 @@ public final class Config {
 
 		values.centerSearchBarEnabled = config.getBoolean(CATEGORY_ADVANCED, "centerSearchBarEnabled", defaultValues.centerSearchBarEnabled);
 
-		EnumSet<TextFormatting> validFormatting = EnumSet.allOf(TextFormatting.class);
-		validFormatting.remove(TextFormatting.RESET);
-		String[] validValues = new String[validFormatting.size()];
-		int i = 0;
-		for (TextFormatting formatting : validFormatting) {
-			validValues[i] = formatting.getFriendlyName().toLowerCase(Locale.ENGLISH);
-			i++;
-		}
-		String modNameFormatFriendly = config.getString("modNameFormat", CATEGORY_ADVANCED, defaultValues.modNameFormatFriendly, validValues);
-		values.modNameFormat = parseFriendlyModNameFormat(modNameFormatFriendly);
+		updateModNameFormat(config);
 
 		{
 			String comment = Translator.translateToLocal("config.jei.advanced.maxSubtypes.comment");
@@ -345,6 +348,22 @@ public final class Config {
 			config.save();
 		}
 		return needsReload;
+	}
+
+	private static void updateModNameFormat(LocalizedConfiguration config) {
+		EnumSet<TextFormatting> validFormatting = EnumSet.allOf(TextFormatting.class);
+		validFormatting.remove(TextFormatting.RESET);
+		String[] validValues = new String[validFormatting.size()];
+		int i = 0;
+		for (TextFormatting formatting : validFormatting) {
+			validValues[i] = formatting.getFriendlyName().toLowerCase(Locale.ENGLISH);
+			i++;
+		}
+		Property property = config.getString("modNameFormat", CATEGORY_ADVANCED, defaultValues.modNameFormatFriendly, validValues);
+		boolean showInGui = !isModNameFormatOverrideActive();
+		property.setShowInGui(showInGui);
+		String modNameFormatFriendly = property.getString();
+		values.modNameFormat = parseFriendlyModNameFormat(modNameFormatFriendly);
 	}
 
 	public static String parseFriendlyModNameFormat(String formatWithEnumNames) {
@@ -453,9 +472,9 @@ public final class Config {
 		return configChanged;
 	}
 
-	private static boolean updateBlacklist() {
+	private static void updateBlacklist() {
 		if (itemBlacklistConfig == null) {
-			return false;
+			return;
 		}
 		Property property = itemBlacklistConfig.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
 
@@ -466,7 +485,6 @@ public final class Config {
 		if (changed) {
 			itemBlacklistConfig.save();
 		}
-		return changed;
 	}
 
 	public static <V> void addIngredientToConfigBlacklist(V itemStack, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
