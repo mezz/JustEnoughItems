@@ -98,7 +98,7 @@ public final class ColorGetter {
 
 	private static List<Color> getItemColors(ItemStack itemStack, int colorCount) {
 		final ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
-		final int renderColor = itemColors.getColorFromItemstack(itemStack, 0);
+		final int renderColor = itemColors.colorMultiplier(itemStack, 0);
 		final TextureAtlasSprite textureAtlasSprite = getTextureAtlasSprite(itemStack);
 		if (textureAtlasSprite == null) {
 			return Collections.emptyList();
