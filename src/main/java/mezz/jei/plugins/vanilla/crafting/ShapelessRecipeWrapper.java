@@ -4,26 +4,22 @@ import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
-import mezz.jei.gui.recipes.RecipeInfoIcon;
 import mezz.jei.recipes.BrokenCraftingRecipeException;
 import mezz.jei.util.ErrorUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 
-import java.util.Collections;
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class ShapelessRecipeWrapper<T extends IRecipe> implements ICraftingRecipeWrapper {
 	private final IJeiHelpers jeiHelpers;
-	private final RecipeInfoIcon recipeInfoIcon;
 	protected final T recipe;
 
 	public ShapelessRecipeWrapper(IJeiHelpers jeiHelpers, T recipe) {
 		this.jeiHelpers = jeiHelpers;
 		this.recipe = recipe;
-		this.recipeInfoIcon = new RecipeInfoIcon();
 	}
 
 	@Override
@@ -41,20 +37,9 @@ public class ShapelessRecipeWrapper<T extends IRecipe> implements ICraftingRecip
 		}
 	}
 
+	@Nullable
 	@Override
-	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-		ResourceLocation registryName = recipe.getRegistryName();
-		if (registryName != null) {
-			recipeInfoIcon.draw(minecraft);
-		}
-	}
-
-	@Override
-	public List<String> getTooltipStrings(int mouseX, int mouseY) {
-		ResourceLocation registryName = recipe.getRegistryName();
-		if (registryName != null) {
-			return recipeInfoIcon.getTooltipStrings(registryName, mouseX, mouseY);
-		}
-		return Collections.emptyList();
+	public ResourceLocation getRegistryName() {
+		return recipe.getRegistryName();
 	}
 }
