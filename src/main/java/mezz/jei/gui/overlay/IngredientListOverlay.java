@@ -5,7 +5,6 @@ import mezz.jei.Internal;
 import mezz.jei.api.IIngredientListOverlay;
 import mezz.jei.api.IItemListOverlay;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
-import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.SessionData;
@@ -67,10 +66,10 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	@Nullable
 	private GuiProperties guiProperties;
 
-	public IngredientListOverlay(IngredientFilter ingredientFilter, IIngredientRegistry ingredientRegistry) {
+	public IngredientListOverlay(IngredientFilter ingredientFilter) {
 		this.ingredientFilter = ingredientFilter;
 
-		this.contents = new IngredientGridAll(ingredientRegistry, ingredientFilter);
+		this.contents = new IngredientGridAll(ingredientFilter);
 		this.searchField = new GuiTextFieldFilter(0, ingredientFilter);
 		this.navigation = new PageNavigation(this, false);
 		this.configButton = new ConfigButton(this);

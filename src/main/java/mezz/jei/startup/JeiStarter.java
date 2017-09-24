@@ -73,7 +73,7 @@ public class JeiStarter {
 
 		timer.start("Building runtime");
 		List<IAdvancedGuiHandler<?>> advancedGuiHandlers = modRegistry.getAdvancedGuiHandlers();
-		IngredientListOverlay ingredientListOverlay = new IngredientListOverlay(ingredientFilter, ingredientRegistry);
+		IngredientListOverlay ingredientListOverlay = new IngredientListOverlay(ingredientFilter);
 		RecipesGui recipesGui = new RecipesGui(recipeRegistry);
 		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, ingredientListOverlay, recipesGui, ingredientRegistry, advancedGuiHandlers, ingredientFilter);
 		Internal.setRuntime(jeiRuntime);

@@ -1,10 +1,10 @@
 package mezz.jei.gui.overlay;
 
-import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.SessionData;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientFilter;
-import mezz.jei.render.GuiIngredientFast;
+import mezz.jei.render.IngredientListSlot;
+import mezz.jei.render.IngredientRenderer;
 import mezz.jei.util.MathUtil;
 
 import java.awt.Rectangle;
@@ -18,8 +18,7 @@ import java.util.List;
 public class IngredientGridAll extends IngredientGrid {
 	private final IngredientFilter ingredientFilter;
 
-	public IngredientGridAll(IIngredientRegistry ingredientRegistry, IngredientFilter ingredientFilter) {
-		super(ingredientRegistry);
+	public IngredientGridAll(IngredientFilter ingredientFilter) {
 		this.ingredientFilter = ingredientFilter;
 	}
 
@@ -27,14 +26,14 @@ public class IngredientGridAll extends IngredientGrid {
 	public void updateLayout(Collection<Rectangle> guiExclusionAreas) {
 		super.updateLayout(guiExclusionAreas);
 		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList();
-		this.guiIngredientList.set(SessionData.getFirstItemIndex(), ingredientList);
+		this.guiIngredientSlots.set(SessionData.getFirstItemIndex(), ingredientList);
 	}
 
 	@Override
 	public boolean nextPage() {
 		final int itemsCount = ingredientFilter.size();
 		if (itemsCount > 0) {
-			SessionData.setFirstItemIndex(SessionData.getFirstItemIndex() + guiIngredientList.size());
+			SessionData.setFirstItemIndex(SessionData.getFirstItemIndex() + guiIngredientSlots.size());
 			if (SessionData.getFirstItemIndex() >= itemsCount) {
 				SessionData.setFirstItemIndex(0);
 			}
@@ -48,7 +47,7 @@ public class IngredientGridAll extends IngredientGrid {
 
 	@Override
 	public boolean previousPage() {
-		final int itemsPerPage = guiIngredientList.size();
+		final int itemsPerPage = guiIngredientSlots.size();
 		if (itemsPerPage == 0) {
 			SessionData.setFirstItemIndex(0);
 			return false;
@@ -73,24 +72,24 @@ public class IngredientGridAll extends IngredientGrid {
 	@Override
 	public boolean hasNext() {
 		// true if there is more than one page because this wraps around
-		int itemsPerPage = guiIngredientList.size();
+		int itemsPerPage = guiIngredientSlots.size();
 		return itemsPerPage > 0 && ingredientFilter.size() > itemsPerPage;
 	}
 
 	@Override
 	public boolean hasPrevious() {
 		// true if there is more than one page because this wraps around
-		int itemsPerPage = guiIngredientList.size();
+		int itemsPerPage = guiIngredientSlots.size();
 		return itemsPerPage > 0 && ingredientFilter.size() > itemsPerPage;
 	}
 
 	@Override
 	public List<IIngredientListElement> getVisibleElements() {
 		List<IIngredientListElement> visibleElements = new ArrayList<>();
-		for (GuiIngredientFast guiItemStack : guiIngredientList.getAllGuiIngredients()) {
-			IIngredientListElement element = guiItemStack.getElement();
-			if (element != null) {
-				visibleElements.add(element);
+		for (IngredientListSlot slot : guiIngredientSlots.getAllGuiIngredientSlots()) {
+			IngredientRenderer renderer = slot.getIngredientRenderer();
+			if (renderer != null) {
+				visibleElements.add(renderer.getElement());
 			}
 		}
 		return visibleElements;
@@ -99,7 +98,7 @@ public class IngredientGridAll extends IngredientGrid {
 	@Override
 	public int getPageCount() {
 		final int itemCount = ingredientFilter.size();
-		final int stacksPerPage = guiIngredientList.size();
+		final int stacksPerPage = guiIngredientSlots.size();
 		if (stacksPerPage == 0) {
 			return 1;
 		}
@@ -110,7 +109,7 @@ public class IngredientGridAll extends IngredientGrid {
 
 	@Override
 	public int getPageNum() {
-		final int stacksPerPage = guiIngredientList.size();
+		final int stacksPerPage = guiIngredientSlots.size();
 		if (stacksPerPage == 0) {
 			return 1;
 		}

@@ -2,7 +2,6 @@ package mezz.jei.gui.overlay;
 
 import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
-import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
@@ -14,8 +13,9 @@ import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.MouseHelper;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
 import mezz.jei.network.packets.PacketJei;
-import mezz.jei.render.GuiIngredientFast;
-import mezz.jei.render.GuiIngredientFastList;
+import mezz.jei.render.IngredientListBatchRenderer;
+import mezz.jei.render.IngredientListSlot;
+import mezz.jei.render.IngredientRenderer;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
@@ -39,10 +39,10 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 	private static final int INGREDIENT_HEIGHT = GuiItemStackGroup.getHeight(INGREDIENT_PADDING);
 
 	private Rectangle area = new Rectangle();
-	protected final GuiIngredientFastList guiIngredientList;
+	protected final IngredientListBatchRenderer guiIngredientSlots;
 
-	public IngredientGrid(IIngredientRegistry ingredientRegistry) {
-		this.guiIngredientList = new GuiIngredientFastList(ingredientRegistry);
+	public IngredientGrid() {
+		this.guiIngredientSlots = new IngredientListBatchRenderer();
 	}
 
 	public void updateBounds(Rectangle area, Collection<Rectangle> exclusionAreas) {
@@ -55,26 +55,26 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 		final int y = area.y + (area.height - height) / 2;
 
 		this.area = new Rectangle(x, y, width, height);
-		this.guiIngredientList.clear();
+		this.guiIngredientSlots.clear();
 
 		for (int row = 0; row < rows; row++) {
 			int y1 = y + (row * INGREDIENT_HEIGHT);
 			for (int column = 0; column < columns; column++) {
 				int x1 = x + (column * INGREDIENT_WIDTH);
-				GuiIngredientFast guiIngredientFast = new GuiIngredientFast(x1, y1, INGREDIENT_PADDING);
-				Rectangle stackArea = guiIngredientFast.getArea();
+				IngredientListSlot ingredientListSlot = new IngredientListSlot(x1, y1, INGREDIENT_PADDING);
+				Rectangle stackArea = ingredientListSlot.getArea();
 				final boolean blocked = MathUtil.intersects(exclusionAreas, stackArea);
-				guiIngredientFast.setBlocked(blocked);
-				this.guiIngredientList.add(guiIngredientFast);
+				ingredientListSlot.setBlocked(blocked);
+				this.guiIngredientSlots.add(ingredientListSlot);
 			}
 		}
 	}
 
 	public void updateLayout(Collection<Rectangle> guiExclusionAreas) {
-		for (GuiIngredientFast guiIngredientFast : this.guiIngredientList.getAllGuiIngredients()) {
-			Rectangle stackArea = guiIngredientFast.getArea();
+		for (IngredientListSlot ingredientListSlot : this.guiIngredientSlots.getAllGuiIngredientSlots()) {
+			Rectangle stackArea = ingredientListSlot.getArea();
 			final boolean blocked = MathUtil.intersects(guiExclusionAreas, stackArea);
-			guiIngredientFast.setBlocked(blocked);
+			ingredientListSlot.setBlocked(blocked);
 		}
 	}
 
@@ -85,10 +85,10 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 	public void draw(Minecraft minecraft, int mouseX, int mouseY) {
 		GlStateManager.disableBlend();
 
-		guiIngredientList.render(minecraft);
+		guiIngredientSlots.render(minecraft);
 
 		if (!shouldShowDeleteItemTooltip(minecraft) && isMouseOver(mouseX, mouseY)) {
-			GuiIngredientFast hovered = guiIngredientList.getHovered(mouseX, mouseY);
+			IngredientRenderer hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
 			if (hovered != null) {
 				hovered.drawHighlight();
 			}
@@ -103,7 +103,7 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 				String deleteItem = Translator.translateToLocal("jei.tooltip.delete.item");
 				TooltipRenderer.drawHoveringText(minecraft, deleteItem, mouseX, mouseY);
 			} else {
-				GuiIngredientFast hovered = guiIngredientList.getHovered(mouseX, mouseY);
+				IngredientRenderer hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
 				if (hovered != null) {
 					hovered.drawTooltip(minecraft, mouseX, mouseY);
 				}
@@ -148,12 +148,9 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 
 	@Nullable
 	public IIngredientListElement getElementUnderMouse() {
-		GuiIngredientFast hovered = guiIngredientList.getHovered(MouseHelper.getX(), MouseHelper.getY());
+		IngredientRenderer hovered = guiIngredientSlots.getHovered(MouseHelper.getX(), MouseHelper.getY());
 		if (hovered != null) {
-			IIngredientListElement element = hovered.getElement();
-			if (element != null) {
-				return element;
-			}
+			return hovered.getElement();
 		}
 		return null;
 	}
@@ -162,7 +159,7 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 	@Nullable
 	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
-			ClickedIngredient<?> clicked = guiIngredientList.getIngredientUnderMouse(mouseX, mouseY);
+			ClickedIngredient<?> clicked = guiIngredientSlots.getIngredientUnderMouse(mouseX, mouseY);
 			if (clicked != null) {
 				clicked.setAllowsCheating();
 			}
