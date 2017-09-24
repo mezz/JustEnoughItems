@@ -1,6 +1,7 @@
 package mezz.jei.render;
 
 import com.google.common.base.Preconditions;
+import mezz.jei.api.ingredients.ISlowRenderItem;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.util.ErrorUtil;
@@ -93,7 +94,7 @@ public class IngredientListBatchRenderer {
 				return;
 			}
 
-			if (!bakedModel.isBuiltInRenderer()) {
+			if (!bakedModel.isBuiltInRenderer() && !(itemStack.getItem() instanceof ISlowRenderItem)) {
 				ItemStackFastRenderer renderer = new ItemStackFastRenderer(itemStackElement, bakedModel);
 				ingredientListSlot.setIngredientRenderer(renderer);
 				if (bakedModel.isGui3d()) {
