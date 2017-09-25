@@ -38,7 +38,7 @@ public class FurnaceSmeltingCategory extends FurnaceRecipeCategory<SmeltingRecip
 
 	@Override
 	public String getModName() {
-		return Constants.minecraftModName;
+		return Constants.MINECRAFT_NAME;
 	}
 
 	@Override

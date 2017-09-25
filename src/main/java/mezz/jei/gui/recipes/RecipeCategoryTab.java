@@ -90,8 +90,8 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 
 		String modName = LegacyUtil.getModName(category);
 		if (modName != null) {
-			modName = ForgeModIdHelper.getInstance().getModNameForModId(modName);
-			tooltip.add(Config.getModNameFormat() + modName);
+			modName = ForgeModIdHelper.getInstance().getFormattedModNameForModId(modName);
+			tooltip.add(modName);
 		}
 		return tooltip;
 	}

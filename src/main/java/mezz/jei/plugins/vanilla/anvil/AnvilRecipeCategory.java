@@ -30,7 +30,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipeWrapper> 
 
 	@Override
 	public String getModName() {
-		return Constants.minecraftModName;
+		return Constants.MINECRAFT_NAME;
 	}
 
 	@Override

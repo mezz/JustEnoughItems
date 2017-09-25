@@ -5,7 +5,7 @@ import net.minecraft.util.ResourceLocation;
 import java.util.Locale;
 
 public final class Constants {
-	public static final String minecraftModName = "Minecraft";
+	public static final String MINECRAFT_NAME = "Minecraft";
 
 	// Mod info
 	public static final String MOD_ID = "jei";

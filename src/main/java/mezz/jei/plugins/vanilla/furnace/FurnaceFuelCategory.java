@@ -42,7 +42,7 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory<FuelRecipe> {
 
 	@Override
 	public String getModName() {
-		return Constants.minecraftModName;
+		return Constants.MINECRAFT_NAME;
 	}
 
 	@Nullable

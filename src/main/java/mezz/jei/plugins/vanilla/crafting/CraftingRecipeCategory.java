@@ -55,7 +55,7 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 
 	@Override
 	public String getModName() {
-		return Constants.minecraftModName;
+		return Constants.MINECRAFT_NAME;
 	}
 
 	@Override
@@ -110,8 +110,7 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 						}
 
 						if (modIdDifferent) {
-							String modNameFormat = Config.getModNameFormat();
-							String modName = modNameFormat + ForgeModIdHelper.getInstance().getModNameForModId(recipeModId);
+							String modName = ForgeModIdHelper.getInstance().getFormattedModNameForModId(recipeModId);
 							tooltip.add(TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.recipe.by", modName));
 						}
 

@@ -10,6 +10,11 @@ public class TestModIdHelper extends AbstractModIdHelper {
 		return "ModName(" + modId + ")";
 	}
 
+	@Override
+	public String getFormattedModNameForModId(String modId) {
+		return getModNameForModId(modId);
+	}
+
 	@Nullable
 	@Override
 	public String getModNameTooltipFormatting() {

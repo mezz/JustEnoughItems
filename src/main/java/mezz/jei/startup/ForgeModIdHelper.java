@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import mezz.jei.config.Config;
+import mezz.jei.config.Constants;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -16,8 +18,10 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
+import org.apache.commons.lang3.StringUtils;
 
 public class ForgeModIdHelper extends AbstractModIdHelper {
+	private static final String MOD_NAME_FORMAT_CODE = "%MODNAME%";
 	@Nullable
 	private static ForgeModIdHelper INSTANCE;
 
@@ -43,6 +47,22 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 		return modContainer.getName();
 	}
 
+	@Override
+	public String getFormattedModNameForModId(String modId) {
+		String modNameFormat = Config.getModNameFormat();
+		String modName = getModNameForModId(modId);
+		modName = removeChatFormatting(modName); // some crazy mod has formatting in the name
+		if (modNameFormat.contains(MOD_NAME_FORMAT_CODE)) {
+			return StringUtils.replaceOnce(modNameFormat, MOD_NAME_FORMAT_CODE, modName);
+		}
+		return modNameFormat + modName;
+	}
+
+	private static String removeChatFormatting(String string) {
+		String withoutFormattingCodes = TextFormatting.getTextWithoutFormattingCodes(string);
+		return (withoutFormattingCodes == null) ? "" : withoutFormattingCodes;
+	}
+
 	@Nullable
 	@Override
 	public String getModNameTooltipFormatting() {
@@ -56,14 +76,13 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 
 			if (tooltip.size() > 1) {
 				String lastLine = tooltip.get(tooltip.size() - 1);
-				if (lastLine.contains("Minecraft")) {
+				if (lastLine.contains(Constants.MINECRAFT_NAME)) {
 					String withoutFormatting = TextFormatting.getTextWithoutFormattingCodes(lastLine);
 					if (withoutFormatting != null) {
 						if (lastLine.equals(withoutFormatting)) {
 							return "";
-						} else if (lastLine.endsWith(withoutFormatting)) {
-							int i = lastLine.length() - withoutFormatting.length();
-							return lastLine.substring(0, i);
+						} else if (lastLine.contains(withoutFormatting)) {
+							return StringUtils.replaceOnce(lastLine, Constants.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
 						}
 					}
 				}

@@ -24,9 +24,10 @@ public abstract class AbstractModIdHelper implements IModIdHelper {
 			return tooltip;
 		}
 
-		String modName = getModNameForIngredient(ingredient, ingredientHelper);
+		String modId = ingredientHelper.getModId(ingredient);
+		String modName = getFormattedModNameForModId(modId);
 		List<String> tooltipCopy = new ArrayList<>(tooltip);
-		tooltipCopy.add(modNameFormat + modName);
+		tooltipCopy.add(modName);
 		return tooltipCopy;
 	}
 }
