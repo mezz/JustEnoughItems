@@ -5,10 +5,11 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -18,20 +19,16 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.ForgeHooksClient;
 
-import javax.annotation.Nullable;
 import java.awt.Rectangle;
-import java.nio.ByteBuffer;
+import java.util.List;
 
 public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
 	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
 	private static final WorldVertexBufferUploader VBO_UPLOADER = new WorldVertexBufferUploader();
 
 	private final IBakedModel bakedModel;
-	@Nullable
-	private ReusableBufferBuilder bufferBuilder;
 
 	public ItemStackFastRenderer(IIngredientListElement<ItemStack> itemStackElement, IBakedModel bakedModel) {
 		super(itemStackElement);
@@ -64,12 +61,7 @@ public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
 
 			Minecraft minecraft = Minecraft.getMinecraft();
 			RenderItem renderItem = minecraft.getRenderItem();
-
-			if (this.bufferBuilder == null) {
-				bufferBuilder = new ReusableBufferBuilder();
-				renderModel(renderItem, bufferBuilder, bakedModel, -1, itemStack);
-			}
-			VBO_UPLOADER.draw(bufferBuilder);
+			renderModel(renderItem, bakedModel, -1, itemStack);
 
 			if (itemStack.hasEffect()) {
 				renderEffect(bakedModel);
@@ -78,15 +70,21 @@ public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
 		GlStateManager.popMatrix();
 	}
 
-	private void renderModel(RenderItem renderItem, BufferBuilder bufferBuilder, IBakedModel model, int color, ItemStack stack) {
+	private void renderModel(RenderItem renderItem, IBakedModel model, int color, ItemStack stack) {
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(7, DefaultVertexFormats.ITEM);
 
-		for (EnumFacing enumfacing : EnumFacing.values()) {
-			renderItem.renderQuads(bufferBuilder, model.getQuads(null, enumfacing, 0L), color, stack);
+		if (model.isGui3d()) {
+			for (EnumFacing enumfacing : EnumFacing.values()) {
+				List<BakedQuad> quads = model.getQuads(null, enumfacing, 0L);
+				renderItem.renderQuads(bufferBuilder, quads, color, stack);
+			}
 		}
 
-		renderItem.renderQuads(bufferBuilder, model.getQuads(null, null, 0L), color, stack);
-		bufferBuilder.finishDrawing();
+		List<BakedQuad> quads = model.getQuads(null, null, 0L);
+		renderItem.renderQuads(bufferBuilder, quads, color, stack);
+		tessellator.draw();
 	}
 
 	protected void renderEffect(IBakedModel model) {
@@ -145,39 +143,5 @@ public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
 			fontRenderer = Minecraft.getMinecraft().fontRenderer;
 		}
 		return fontRenderer;
-	}
-
-	private static class ReusableBufferBuilder extends BufferBuilder {
-
-		public ReusableBufferBuilder() {
-			super(16384);
-		}
-
-		@Override
-		public void reset() {
-			// do not reset, this gets reused
-		}
-
-		/**
-		 * Same as {@link BufferBuilder#growBuffer(int)} but grows it 2x each time instead of by 2097152.
-		 */
-		@Override
-		protected void growBuffer(int p_181670_1_) {
-			if (MathHelper.roundUp(p_181670_1_, 4) / 4 > this.rawIntBuffer.remaining() || this.getVertexCount() * this.getVertexFormat().getNextOffset() + p_181670_1_ > this.byteBuffer.capacity()) {
-				int i = this.byteBuffer.capacity();
-				int j = i * 2;
-				int k = this.rawIntBuffer.position();
-				ByteBuffer bytebuffer = GLAllocation.createDirectByteBuffer(j);
-				this.byteBuffer.position(0);
-				bytebuffer.put(this.byteBuffer);
-				bytebuffer.rewind();
-				this.byteBuffer = bytebuffer;
-				this.rawFloatBuffer = this.byteBuffer.asFloatBuffer().asReadOnlyBuffer();
-				this.rawIntBuffer = this.byteBuffer.asIntBuffer();
-				this.rawIntBuffer.position(k);
-				this.rawShortBuffer = this.byteBuffer.asShortBuffer();
-				this.rawShortBuffer.position(k << 1);
-			}
-		}
 	}
 }
