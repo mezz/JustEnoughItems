@@ -26,7 +26,7 @@ public final class IngredientInformation {
 		return removeChatFormatting(displayName);
 	}
 
-	public static <T> List<String> getTooltipStrings(T ingredient, IIngredientHelper<T> ingredientHelper, IIngredientRenderer<T> ingredientRenderer, Set<String> toRemove) {
+	public static <T> List<String> getTooltipStrings(T ingredient, IIngredientRenderer<T> ingredientRenderer, Set<String> toRemove) {
 		ITooltipFlag.TooltipFlags tooltipFlag = Config.getSearchAdvancedTooltips() ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
 		Minecraft minecraft = Minecraft.getMinecraft();
 		List<String> tooltip = ingredientRenderer.getTooltip(minecraft, ingredient, tooltipFlag);

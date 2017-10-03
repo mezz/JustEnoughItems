@@ -54,6 +54,14 @@ public interface IIngredientHelper<V> {
 	String getModId(V ingredient);
 
 	/**
+	 * Return the modId of the mod that should be displayed.
+	 * @since JEI 4.8.0
+	 */
+	default String getDisplayModId(V ingredient) {
+		return getModId(ingredient);
+	}
+
+	/**
 	 * Get the main colors of this ingredient. Used for the color search.
 	 * If this is too difficult to implement for your ingredient, just return an empty collection.
 	 */

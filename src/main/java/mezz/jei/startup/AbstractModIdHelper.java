@@ -2,6 +2,7 @@ package mezz.jei.startup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.Config;
@@ -24,7 +25,7 @@ public abstract class AbstractModIdHelper implements IModIdHelper {
 			return tooltip;
 		}
 
-		String modId = ingredientHelper.getModId(ingredient);
+		String modId = ingredientHelper.getDisplayModId(ingredient);
 		String modName = getFormattedModNameForModId(modId);
 		List<String> tooltipCopy = new ArrayList<>(tooltip);
 		tooltipCopy.add(modName);

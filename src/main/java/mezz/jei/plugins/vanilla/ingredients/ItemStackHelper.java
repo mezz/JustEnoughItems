@@ -62,6 +62,19 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
+	public String getDisplayModId(ItemStack ingredient) {
+		ErrorUtil.checkNotEmpty(ingredient);
+
+		Item item = ingredient.getItem();
+		String modId = item.getCreatorModId(ingredient);
+		if (modId == null) {
+			String stackInfo = getErrorInfo(ingredient);
+			throw new IllegalStateException("item.getCreatorModId() returned null for: " + stackInfo);
+		}
+		return modId;
+	}
+
+	@Override
 	public Iterable<Color> getColors(ItemStack ingredient) {
 		return ColorGetter.getColors(ingredient, 2);
 	}

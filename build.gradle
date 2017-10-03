@@ -92,8 +92,6 @@ curseforge {
 		changelog = file('changelog.html')
 		changelogType = 'html'
 		releaseType = 'beta'
-		addGameVersion '1.12'
-		addGameVersion '1.12.1'
 	}
 }
 

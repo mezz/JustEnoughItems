@@ -15,8 +15,8 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 
 	@Override
 	public int compare(IIngredientListElement o1, IIngredientListElement o2) {
-		final String modName1 = o1.getModName();
-		final String modName2 = o2.getModName();
+		final String modName1 = o1.getModNameForSorting();
+		final String modName2 = o2.getModNameForSorting();
 
 		if (modName1.equals(modName2)) {
 			boolean isItemStack1 = (o1.getIngredient() instanceof ItemStack);
