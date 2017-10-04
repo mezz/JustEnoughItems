@@ -4,25 +4,19 @@ import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
-import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ForgeHooksClient;
 
 import java.awt.Rectangle;
-import java.util.List;
 
 public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
 	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
@@ -61,30 +55,13 @@ public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
 
 			Minecraft minecraft = Minecraft.getMinecraft();
 			RenderItem renderItem = minecraft.getRenderItem();
-			renderModel(renderItem, bakedModel, -1, itemStack);
+			renderItem.renderModel(bakedModel, itemStack);
 
 			if (itemStack.hasEffect()) {
 				renderEffect(bakedModel);
 			}
 		}
 		GlStateManager.popMatrix();
-	}
-
-	private void renderModel(RenderItem renderItem, IBakedModel model, int color, ItemStack stack) {
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		bufferBuilder.begin(7, DefaultVertexFormats.ITEM);
-
-		if (model.isGui3d()) {
-			for (EnumFacing enumfacing : EnumFacing.values()) {
-				List<BakedQuad> quads = model.getQuads(null, enumfacing, 0L);
-				renderItem.renderQuads(bufferBuilder, quads, color, stack);
-			}
-		}
-
-		List<BakedQuad> quads = model.getQuads(null, null, 0L);
-		renderItem.renderQuads(bufferBuilder, quads, color, stack);
-		tessellator.draw();
 	}
 
 	protected void renderEffect(IBakedModel model) {
