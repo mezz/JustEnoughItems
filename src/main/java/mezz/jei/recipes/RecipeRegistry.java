@@ -602,6 +602,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			}
 			allRecipeWrappers.addAll(recipeWrappers);
 		}
+		allRecipeWrappers.removeAll(hiddenRecipes);
 
 		return allRecipeWrappers;
 	}
