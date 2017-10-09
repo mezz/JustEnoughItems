@@ -10,19 +10,20 @@ jei.tooltip.recipe.ore.dict=接受下列任何物品：%s
 jei.tooltip.item.colors=颜色：%s
 jei.tooltip.shapeless.recipe=无序合成
 jei.tooltip.cheat.mode=作弊模式
+jei.tooltip.recipe.by=该配方由 %s 添加
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=缺失物品
 jei.tooltip.error.recipe.transfer.inventory.full=物品栏已满
 jei.tooltip.error.recipe.transfer.unknown=未知错误，请查阅日志获得详细信息
-jei.tooltip.error.recipe.transfer.no.server=服务器必须安装JEI
+jei.tooltip.error.recipe.transfer.no.server=服务器必须安装 JEI
 jei.tooltip.error.recipe.transfer.too.large.player.inventory=合成表不是2×2的
 jei.tooltip.error.crash=提示错误，请查看日志
 
 # Error Messages
-jei.chat.error.command.too.long=JEI必须安装于服务器上，方能处理本指令，这条指令对Minecraft来说太长了。
-jei.chat.error.no.cheat.permission.1=你没有使用JEI作弊模式的权限。
-jei.chat.error.no.cheat.permission.2=可以使用/give或处在创造模式下的玩家拥有此权限。
+jei.chat.error.command.too.long=JEI必须安装于服务器上，方能处理本指令，这条指令对 Minecraft 来说太长了。
+jei.chat.error.no.cheat.permission.1=你没有使用 JEI 作弊模式的权限。
+jei.chat.error.no.cheat.permission.2=可以使用 /give 或处在创造模式下的玩家拥有此权限。
 
 # Key Bindings
 key.jei.toggleOverlay=切换物品列表叠层
@@ -31,6 +32,8 @@ key.jei.showRecipe=显示物品合成表
 key.jei.showUses=显示物品用途
 key.jei.recipeBack=显示上一页
 key.jei.toggleCheatMode=作弊模式开关
+key.jei.previousPage=上一页
+key.jei.nextPage=下一页
 
 # Config
 config.jei.default=默认
@@ -48,44 +51,48 @@ config.jei.mode.editEnabled.comment=在列表中点击物品以隐藏或取消�
 config.jei.interface=用户界面
 config.jei.interface.comment=用户使用界面的相关设定。
 config.jei.interface.overlayEnabled=启用物品列表
-config.jei.interface.overlayEnabled.comment=在打开的GUI一侧显示物品列表。
+config.jei.interface.overlayEnabled.comment=在打开的 GUI 一侧显示物品列表。
 config.jei.interface.recipeAnimationsEnabled=合成界面动画
-config.jei.interface.recipeAnimationsEnabled.comment=显示部分合成表的动画效果，如熔炉火焰，进度条，等等。
+config.jei.interface.recipeAnimationsEnabled.comment=显示部分合成表的动画效果，如熔炉火焰、进度条，等等。
 
 config.jei.search=搜索选项
 config.jei.search.comment=搜索的相关设定。
-config.jei.search.atPrefixRequiredForModName=按Mod名搜索时强制@前缀
+config.jei.search.atPrefixRequiredForModName=按 Mod 名搜索时强制@前缀
 config.jei.search.atPrefixRequiredForModName.comment=当按模组名搜索物品时，要求使用"@"作为前缀。
 config.jei.search.prefixRequiredForTooltipSearch=按信息提示搜索时强制#前缀
-config.jei.search.prefixRequiredForTooltipSearch.comment=当按Tooltip(信息提示)搜索时，要求使用"#"作为前缀。
+config.jei.search.prefixRequiredForTooltipSearch.comment=当按信息提示搜索时，要求使用"#"作为前缀。
 config.jei.search.prefixRequiredForOreDictSearch=按矿物字典搜索时强制$前缀
 config.jei.search.prefixRequiredForOreDictSearch.comment=当按矿物字典搜索时，要求使用"$"作为前缀。
 config.jei.search.prefixRequiredForCreativeTabSearch=按创造标签页搜索时强制%%前缀
 config.jei.search.prefixRequiredForCreativeTabSearch.comment=当按创造模式物品栏的标签页搜索时，要求使用"%"作为前缀。
 config.jei.search.prefixRequiredForColorSearch=按颜色搜索时强制^前缀
 config.jei.search.prefixRequiredForColorSearch.comment=当按物品颜色搜索时，要求使用"^"作为前缀。
+config.jei.search.resourceIdSearchMode=按资源 ID 搜索时强制&前缀
+config.jei.search.resourceIdSearchMode.comment=当按资源 ID 搜索时，要求使用"&"作为前缀。
 
 config.jei.advanced=高级设定
-config.jei.advanced.comment=用于更改JEI功能的高级选项。
+config.jei.advanced.comment=用于更改 JEI 功能的高级选项。
 config.jei.advanced.itemBlacklist=物品黑名单
-config.jei.advanced.itemBlacklist.comment=黑名单中物品将不会显示于JEI物品列表。添加格式：modId[:name[:meta]]。使用编辑模式可自动添加或删除这里的条目。
+config.jei.advanced.itemBlacklist.comment=黑名单中物品将不会显示于 JEI 物品列表。添加格式：modId[:name[:meta]]。使用编辑模式可自动添加或删除这里的条目。
 config.jei.advanced.colorSearchEnabled=启用颜色搜索
-config.jei.advanced.colorSearchEnabled.comment=按颜色搜索物品，并在可以此法搜索的物品的Tooltip中加以注明。
+config.jei.advanced.colorSearchEnabled.comment=按颜色搜索物品，并在可以此法搜索的物品的信息提示中加以注明。
 config.jei.advanced.debugModeEnabled=调试模式
 config.jei.advanced.debugModeEnabled.comment=仅对JEI开发者有用，启用后会添加数千测试物品以及一些测试合成表。
 config.jei.advanced.centerSearchBarEnabled=搜索框居中
 config.jei.advanced.centerSearchBarEnabled.comment=启用后，搜索框会被移动至底部居中的位置。
 config.jei.advanced.modNameFormat=模组名称格式
-config.jei.advanced.modNameFormat.comment=定义JEI界面的信息提示中的Mod名称格式。留空以禁用。
+config.jei.advanced.modNameFormat.comment=定义 JEI 界面的信息提示中的 Mod 名称格式。留空以禁用。
+config.jei.advanced.maxSubtypes=物品子类型最大数量
+config.jei.advanced.maxSubtypes.comment=JEI 将只显示指定数量的某种物品的子类型。
 
 # Edit Mode
-gui.jei.editMode.description=JEI物品列表编辑模式：
-gui.jei.editMode.description.hide=按住%CTRL点击以隐藏
-gui.jei.editMode.description.show=已隐藏。按住%CTRL点击以显示。
-gui.jei.editMode.description.hide.wild=按住%CTRL右击以隐藏相同id的物品
-gui.jei.editMode.description.show.wild=相同id物品以隐藏。按住%CTRL右击以显示。
-gui.jei.editMode.description.hide.mod.id=同时按下%CTRL和SHIFT时，单击以按Mod ID隐藏。
-gui.jei.editMode.description.show.mod.id=已按Mod ID隐藏。同时按下%CTRL和SHIFT时单击以显示。
+gui.jei.editMode.description=JEI 物品列表编辑模式：
+gui.jei.editMode.description.hide=按住 %CTRL 点击以隐藏
+gui.jei.editMode.description.show=已隐藏。按住 %CTRL 点击以显示。
+gui.jei.editMode.description.hide.wild=按住 %CTRL 右击以隐藏相同 id 的物品
+gui.jei.editMode.description.show.wild=相同 id 物品以隐藏。按住 %CTRL 右击以显示。
+gui.jei.editMode.description.hide.mod.id=同时按下 %CTRL 和 SHIFT 时，单击以按 Mod ID 隐藏。
+gui.jei.editMode.description.show.mod.id=已按 Mod ID 隐藏。同时按下 %CTRL 和 SHIFT 时单击以显示。
 
 #PC/Linux Control Key
 key.jei.ctrl=CTRL
@@ -95,16 +102,16 @@ key.jei.ctrl.mac=CMD
 # Recipe Categories
 gui.jei.category.craftingTable=工作台合成
 gui.jei.category.smelting=烧炼
-gui.jei.category.smelting.experience=%s点经验
+gui.jei.category.smelting.experience=%s 点经验
 gui.jei.category.fuel=燃料
-gui.jei.category.fuel.smeltCount.single=烧炼1个物品
-gui.jei.category.fuel.smeltCount=烧炼%s个物品
+gui.jei.category.fuel.smeltCount.single=烧炼 1 个物品
+gui.jei.category.fuel.smeltCount=烧炼 %s 个物品
 gui.jei.category.fuel.burnTime=燃烧时间：%s
 gui.jei.category.brewing=酿造配方
 gui.jei.category.brewing.steps=步数：%s
 gui.jei.category.itemInformation=描述
 
-# DEBUG （调试模式，无需翻译）
-description.jei.wooden.door.1=木门允许你阻止怪物进入你的建筑。\n正在测试。
-description.jei.wooden.door.2=点击一扇门把它的状态从开改变至关，或反之。
-description.jei.wooden.door.3=木制的门可以通过红石电路开关。
+# DEBUG （调试用条目，不需翻译，请不要将英文条目重新复制回来）
+#
+#
+#
