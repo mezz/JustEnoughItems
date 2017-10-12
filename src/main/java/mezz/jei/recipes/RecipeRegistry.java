@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -61,7 +62,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final ImmutableMultimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap;
 	private final ImmutableListMultimap<IRecipeCategory, Object> recipeCatalysts;
 	private final ImmutableMap<String, IRecipeCategory> recipeCategoriesMap;
-	private final Map<Object, IRecipeWrapper> wrapperMap = new IdentityHashMap<>(); // used when removing recipes
+	private final Map<String, Map<Object, IRecipeWrapper>> wrapperMaps = new HashMap<>(); // used when removing recipes
 	private final ListMultimap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories = ArrayListMultimap.create();
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
@@ -284,6 +285,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	private <T> void addRecipeUnchecked(T recipe, IRecipeWrapper recipeWrapper, IRecipeCategory recipeCategory) {
+		Map<Object, IRecipeWrapper> wrapperMap = wrapperMaps.computeIfAbsent(recipeCategory.getUid(), k -> new IdentityHashMap<>());
 		wrapperMap.put(recipe, recipeWrapper);
 
 		Ingredients ingredients = getIngredients(recipeWrapper);
@@ -411,9 +413,12 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Nullable
 	private <T> IRecipeWrapper getRecipeWrapper(T recipe, Class<? extends T> recipeClass, String recipeCategoryUid) {
-		if (wrapperMap.containsKey(recipe)) {
-			return wrapperMap.get(recipe);
+		Map<Object, IRecipeWrapper> wrapperMap = wrapperMaps.computeIfAbsent(recipeCategoryUid, k -> new IdentityHashMap<>());
+		IRecipeWrapper recipeWrapper = wrapperMap.get(recipe);
+		if (recipeWrapper != null) {
+			return recipeWrapper;
 		}
+
 		IRecipeHandler<T> recipeHandler = getRecipeHandler(recipeClass, recipeCategoryUid);
 		if (recipeHandler != null) {
 			try {
@@ -426,7 +431,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			}
 
 			try {
-				IRecipeWrapper recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
+				recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
 				wrapperMap.put(recipe, recipeWrapper);
 				return recipeWrapper;
 			} catch (RuntimeException | LinkageError e) {
