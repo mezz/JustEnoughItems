@@ -1,15 +1,14 @@
 package mezz.jei.util;
 
+import mezz.jei.collect.Table;
+
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Optional;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
-
 public final class ReflectionUtil {
 
-	private static final Table<Class, Class, Optional<Field>> CACHE = HashBasedTable.create();
+	private static final Table<Class, Class, Optional<Field>> CACHE = Table.hashBasedTable();
 
 	private ReflectionUtil() {
 	}

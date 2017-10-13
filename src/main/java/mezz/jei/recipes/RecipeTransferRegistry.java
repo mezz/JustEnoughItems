@@ -1,12 +1,11 @@
 package mezz.jei.recipes;
 
-import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableTable;
-import com.google.common.collect.Table;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
+import mezz.jei.collect.Table;
 import mezz.jei.config.Constants;
 import mezz.jei.startup.StackHelper;
 import mezz.jei.transfer.BasicRecipeTransferHandler;
@@ -15,7 +14,7 @@ import mezz.jei.util.ErrorUtil;
 import net.minecraft.inventory.Container;
 
 public class RecipeTransferRegistry implements IRecipeTransferRegistry {
-	private final Table<Class, String, IRecipeTransferHandler> recipeTransferHandlers = HashBasedTable.create();
+	private final Table<Class, String, IRecipeTransferHandler> recipeTransferHandlers = Table.hashBasedTable();
 	private final StackHelper stackHelper;
 	private final IRecipeTransferHandlerHelper handlerHelper;
 
@@ -59,6 +58,6 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 	}
 
 	public ImmutableTable<Class, String, IRecipeTransferHandler> getRecipeTransferHandlers() {
-		return ImmutableTable.copyOf(recipeTransferHandlers);
+		return recipeTransferHandlers.toImmutable();
 	}
 }

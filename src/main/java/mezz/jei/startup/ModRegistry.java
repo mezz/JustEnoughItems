@@ -1,16 +1,7 @@
 package mezz.jei.startup;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableTable;
-import com.google.common.collect.Multimap;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModRegistry;
@@ -25,6 +16,8 @@ import mezz.jei.api.recipe.IRecipeWrapperFactory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
+import mezz.jei.collect.ListMultiMap;
+import mezz.jei.collect.SetMultiMap;
 import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.plugins.jei.info.IngredientInfoRecipe;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeWrapper;
@@ -36,6 +29,13 @@ import mezz.jei.util.Log;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	private final IJeiHelpers jeiHelpers;
 	private final IIngredientRegistry ingredientRegistry;
@@ -43,14 +43,15 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	private final Set<String> recipeCategoryUids = new HashSet<>();
 	@Deprecated
 	private final List<IRecipeHandler> unsortedRecipeHandlers = new ArrayList<>();
-	private final Multimap<String, IRecipeHandler> recipeHandlers = ArrayListMultimap.create();
+	private final ListMultiMap<String, IRecipeHandler> recipeHandlers = new ListMultiMap<>();
+	private final SetMultiMap<String, Class> recipeHandlerClasses = new SetMultiMap<>();
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers = new ArrayList<>();
 	@Deprecated
 	private final List<Object> unsortedRecipes = new ArrayList<>();
-	private final Multimap<String, Object> recipes = ArrayListMultimap.create();
+	private final ListMultiMap<String, Object> recipes = new ListMultiMap<>();
 	private final RecipeTransferRegistry recipeTransferRegistry;
-	private final Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas = ArrayListMultimap.create();
-	private final Multimap<String, Object> recipeCatalysts = ArrayListMultimap.create();
+	private final ListMultiMap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas = new ListMultiMap<>();
+	private final ListMultiMap<String, Object> recipeCatalysts = new ListMultiMap<>();
 	private final List<IRecipeRegistryPlugin> recipeRegistryPlugins = new ArrayList<>();
 
 	public ModRegistry(JeiHelpers jeiHelpers, IIngredientRegistry ingredientRegistry) {
@@ -90,8 +91,9 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 		ErrorUtil.checkNotEmpty(recipeHandlers, "recipeHandlers");
 
 		for (IRecipeHandler recipeHandler : recipeHandlers) {
-			Preconditions.checkNotNull(recipeHandler.getRecipeClass());
-			Preconditions.checkArgument(!recipeHandler.getRecipeClass().equals(Object.class), "Recipe handlers must handle a specific class, not Object.class");
+			Class recipeClass = recipeHandler.getRecipeClass();
+			Preconditions.checkNotNull(recipeClass);
+			Preconditions.checkArgument(!recipeClass.equals(Object.class), "Recipe handlers must handle a specific class, not Object.class");
 			this.unsortedRecipeHandlers.add(recipeHandler);
 		}
 	}
@@ -152,7 +154,13 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 			}
 		};
 
-		this.recipeHandlers.put(recipeCategoryUid, recipeHandler);
+		if (this.recipeHandlerClasses.contains(recipeCategoryUid, recipeClass)) {
+			// TODO 1.13: throw exception
+			Log.get().error("A Recipe Handler has already been registered for '{}': {}", recipeCategoryUid, recipeClass.getName());
+		} else {
+			this.recipeHandlerClasses.put(recipeCategoryUid, recipeClass);
+			this.recipeHandlers.put(recipeCategoryUid, recipeHandler);
+		}
 	}
 
 	@Override

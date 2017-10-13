@@ -1,23 +1,23 @@
 package mezz.jei.recipes;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ListMultimap;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeRegistryPlugin;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.collect.ListMultiMap;
 import mezz.jei.gui.Focus;
 import mezz.jei.ingredients.IngredientUtil;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 	private final RecipeRegistry recipeRegistry;
@@ -26,9 +26,9 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 	private final ImmutableMap<String, IRecipeCategory> recipeCategoriesMap;
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
-	private final ListMultimap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories;
+	private final ListMultiMap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories;
 
-	public InternalRecipeRegistryPlugin(RecipeRegistry recipeRegistry, ImmutableMultimap<String, String> categoriesForRecipeCatalystKeys, IIngredientRegistry ingredientRegistry, ImmutableMap<String, IRecipeCategory> recipeCategoriesMap, RecipeMap recipeInputMap, RecipeMap recipeOutputMap, ListMultimap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories) {
+	public InternalRecipeRegistryPlugin(RecipeRegistry recipeRegistry, ImmutableMultimap<String, String> categoriesForRecipeCatalystKeys, IIngredientRegistry ingredientRegistry, ImmutableMap<String, IRecipeCategory> recipeCategoriesMap, RecipeMap recipeInputMap, RecipeMap recipeOutputMap, ListMultiMap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories) {
 		this.recipeRegistry = recipeRegistry;
 		this.categoriesForRecipeCatalystKeys = categoriesForRecipeCatalystKeys;
 		this.ingredientRegistry = ingredientRegistry;

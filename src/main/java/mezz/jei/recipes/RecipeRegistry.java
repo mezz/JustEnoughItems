@@ -1,26 +1,12 @@
 package mezz.jei.recipes;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableTable;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimap;
 import mezz.jei.Internal;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
@@ -32,6 +18,8 @@ import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeRegistryPlugin;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.collect.ListMultiMap;
+import mezz.jei.collect.Table;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.RecipeClickableArea;
@@ -51,6 +39,17 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.ProgressManager;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 public class RecipeRegistry implements IRecipeRegistry {
 	private final IIngredientRegistry ingredientRegistry;
 	@Deprecated
@@ -62,31 +61,31 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final ImmutableMultimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap;
 	private final ImmutableListMultimap<IRecipeCategory, Object> recipeCatalysts;
 	private final ImmutableMap<String, IRecipeCategory> recipeCategoriesMap;
-	private final Map<String, Map<Object, IRecipeWrapper>> wrapperMaps = new HashMap<>(); // used when removing recipes
-	private final ListMultimap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories = ArrayListMultimap.create();
+	private final Table<String, Object, IRecipeWrapper> wrapperMaps = new Table<>(new HashMap<>(), IdentityHashMap::new); // used when removing recipes
+	private final ListMultiMap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories = new ListMultiMap<>();
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
 	private final List<IRecipeRegistryPlugin> plugins = new ArrayList<>();
 	private final Set<IRecipeWrapper> hiddenRecipes = Collections.newSetFromMap(new IdentityHashMap<>());
 
 	public RecipeRegistry(
-			List<IRecipeCategory> recipeCategories,
-			List<IRecipeHandler> unsortedRecipeHandlers,
-			Multimap<String, IRecipeHandler> recipeHandlers,
-			ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers,
-			List<Object> unsortedRecipes,
-			Multimap<String, Object> recipes,
-			Multimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap,
-			Multimap<String, Object> recipeCatalysts,
-			IIngredientRegistry ingredientRegistry,
-			List<IRecipeRegistryPlugin> plugins
+		List<IRecipeCategory> recipeCategories,
+		List<IRecipeHandler> unsortedRecipeHandlers,
+		ListMultiMap<String, IRecipeHandler> recipeHandlers,
+		ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers,
+		List<Object> unsortedRecipes,
+		ListMultiMap<String, Object> recipes,
+		ListMultiMap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap,
+		ListMultiMap<String, Object> recipeCatalysts,
+		IIngredientRegistry ingredientRegistry,
+		List<IRecipeRegistryPlugin> plugins
 	) {
 		this.ingredientRegistry = ingredientRegistry;
 		this.recipeCategoriesMap = buildRecipeCategoriesMap(recipeCategories);
 		this.recipeTransferHandlers = recipeTransferHandlers;
-		this.recipeHandlers = buildRecipeHandlersMap(recipeHandlers);
+		this.recipeHandlers = recipeHandlers.toImmutable();
 		this.unsortedRecipeHandlers = buildRecipeHandlersList(unsortedRecipeHandlers);
-		this.recipeClickableAreasMap = ImmutableMultimap.copyOf(recipeClickableAreasMap);
+		this.recipeClickableAreasMap = recipeClickableAreasMap.toImmutable();
 
 		RecipeCategoryComparator recipeCategoryComparator = new RecipeCategoryComparator(recipeCategories);
 		this.recipeInputMap = new RecipeMap(recipeCategoryComparator, ingredientRegistry);
@@ -97,7 +96,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		ImmutableListMultimap.Builder<IRecipeCategory, Object> recipeCatalystsBuilder = ImmutableListMultimap.builder();
 		ImmutableMultimap.Builder<String, String> categoriesForRecipeCatalystKeysBuilder = ImmutableMultimap.builder();
 
-		for (Map.Entry<String, Collection<Object>> recipeCatalystEntry : recipeCatalysts.asMap().entrySet()) {
+		for (Map.Entry<String, List<Object>> recipeCatalystEntry : recipeCatalysts.entrySet()) {
 			String recipeCategoryUid = recipeCatalystEntry.getKey();
 			IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
 			if (recipeCategory != null) {
@@ -142,14 +141,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 				continue;
 			}
 
-			Class recipeClass;
-			try {
-				recipeClass = recipeHandler.getRecipeClass();
-			} catch (RuntimeException | LinkageError e) {
-				Log.get().error("Recipe handler crashed.", e);
-				continue;
-			}
-
+			Class recipeClass = recipeHandler.getRecipeClass();
 			if (recipeHandlerClasses.contains(recipeClass)) {
 				Log.get().error("A Recipe Handler has already been registered for this recipe class: {}", recipeClass.getName());
 				continue;
@@ -161,32 +153,15 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return listBuilder.build();
 	}
 
-	private static ImmutableMultimap<String, IRecipeHandler> buildRecipeHandlersMap(Multimap<String, IRecipeHandler> recipeHandlers) {
-		ImmutableMultimap.Builder<String, IRecipeHandler> builder = ImmutableMultimap.builder();
-		Multimap<String, Class> recipeHandlerClassesMap = ArrayListMultimap.create();
-		for (Map.Entry<String, IRecipeHandler> entry : recipeHandlers.entries()) {
-			IRecipeHandler recipeHandler = entry.getValue();
-			Class recipeClass = recipeHandler.getRecipeClass();
+	private void addRecipes(List<Object> unsortedRecipes, ListMultiMap<String, Object> recipes) {
+		Collection<Map.Entry<String, List<Object>>> entries = recipes.entrySet();
+		ProgressManager.ProgressBar progressBar = ProgressManager.push("Loading recipes", recipes.getTotalSize() + unsortedRecipes.size());
+		for (Map.Entry<String, List<Object>> entry : entries) {
 			String recipeCategoryUid = entry.getKey();
-			Collection<Class> recipeHandlerClasses = recipeHandlerClassesMap.get(recipeCategoryUid);
-			if (!recipeHandlerClasses.contains(recipeClass)) {
-				recipeHandlerClasses.add(recipeClass);
-				builder.put(entry);
-			} else {
-				Log.get().error("A Recipe Handler has already been registered for this recipe class: {}", recipeClass.getName());
+			for (Object recipe : entry.getValue()) {
+				progressBar.step("");
+				addRecipe(recipe, recipeCategoryUid);
 			}
-		}
-		return builder.build();
-	}
-
-	private void addRecipes(List<Object> unsortedRecipes, Multimap<String, Object> recipes) {
-		Collection<Map.Entry<String, Object>> entries = recipes.entries();
-		ProgressManager.ProgressBar progressBar = ProgressManager.push("Adding recipes", entries.size() + unsortedRecipes.size());
-		for (Map.Entry<String, Object> entry : entries) {
-			progressBar.step("");
-			String recipeCategoryUid = entry.getKey();
-			Object recipe = entry.getValue();
-			addRecipe(recipe, recipeCategoryUid);
 		}
 		for (Object recipe : unsortedRecipes) {
 			progressBar.step("");
@@ -285,8 +260,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	private <T> void addRecipeUnchecked(T recipe, IRecipeWrapper recipeWrapper, IRecipeCategory recipeCategory) {
-		Map<Object, IRecipeWrapper> wrapperMap = wrapperMaps.computeIfAbsent(recipeCategory.getUid(), k -> new IdentityHashMap<>());
-		wrapperMap.put(recipe, recipeWrapper);
+		wrapperMaps.put(recipeCategory.getUid(), recipe, recipeWrapper);
 
 		Ingredients ingredients = getIngredients(recipeWrapper);
 
@@ -413,8 +387,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Nullable
 	private <T> IRecipeWrapper getRecipeWrapper(T recipe, Class<? extends T> recipeClass, String recipeCategoryUid) {
-		Map<Object, IRecipeWrapper> wrapperMap = wrapperMaps.computeIfAbsent(recipeCategoryUid, k -> new IdentityHashMap<>());
-		IRecipeWrapper recipeWrapper = wrapperMap.get(recipe);
+		IRecipeWrapper recipeWrapper = wrapperMaps.get(recipeCategoryUid, recipe);
 		if (recipeWrapper != null) {
 			return recipeWrapper;
 		}
@@ -432,7 +405,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 			try {
 				recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
-				wrapperMap.put(recipe, recipeWrapper);
+				wrapperMaps.put(recipeCategoryUid, recipe, recipeWrapper);
 				return recipeWrapper;
 			} catch (RuntimeException | LinkageError e) {
 				logBrokenRecipeHandler(recipe, recipeHandler);
