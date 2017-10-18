@@ -10,6 +10,7 @@ jei.tooltip.recipe.ore.dict=Fungerar med alla %s
 jei.tooltip.item.colors=Färg: %s
 jei.tooltip.shapeless.recipe=Formlöst recept
 jei.tooltip.cheat.mode=Fuskläge
+jei.tooltip.recipe.by=Recept av: %s
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Föremål saknas
@@ -31,6 +32,8 @@ key.jei.showRecipe=Visa föremålsrecept
 key.jei.showUses=Visa användningar av föremål
 key.jei.recipeBack=Visa föregående receptsida
 key.jei.toggleCheatMode=Slå på/av föremålsfusk
+key.jei.previousPage=Visa föregående sida
+key.jei.nextPage=Visa nästa sida
 
 # Config
 config.jei.default=Standard
@@ -64,6 +67,8 @@ config.jei.search.creativeTabSearchMode=%%Fliknamn
 config.jei.search.creativeTabSearchMode.comment=Sök efter fliknamn i kreativt läge (prefix: %)
 config.jei.search.colorSearchMode=^Färger
 config.jei.search.colorSearchMode.comment=Sök efter färger på föremål (prefix: ^)
+config.jei.search.resourceIdSearchMode=&Resurs-ID
+config.jei.search.resourceIdSearchMode.comment=Sök efter resursernas ID (prefix: &)
 
 config.jei.advanced=Avancerat
 config.jei.advanced.comment=Avancerade konfigurationsalternativ för att ändra hur JEI fungerar.
@@ -77,6 +82,8 @@ config.jei.advanced.centerSearchBarEnabled=Centrera sökfältet
 config.jei.advanced.centerSearchBarEnabled.comment=Placera JEIs sökfält längst ned i mitten på skärmen.
 config.jei.advanced.modNameFormat=Namnformat för moddar
 config.jei.advanced.modNameFormat.comment=Hur modnamnet bör formateras i inforutan för JEI:s gränssnitt. Lämna tomt för att inaktivera.
+config.jei.advanced.maxSubtypes=Max undertyper av föremål
+config.jei.advanced.maxSubtypes.comment=Föremål med fler än så många undertyper kommer inte att visas i JEI.
 
 # Edit Mode
 gui.jei.editMode.description=Redigeringsläge för JEIs föremålslista:
