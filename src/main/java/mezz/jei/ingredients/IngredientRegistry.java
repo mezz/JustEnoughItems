@@ -165,15 +165,20 @@ public class IngredientRegistry implements IIngredientRegistry {
 		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientClass);
 		//noinspection unchecked
 		Set<V> set = ingredientsMap.computeIfAbsent(ingredientClass, k -> IngredientSet.create(ingredientClass, ingredientHelper));
+		List<V> newIngredients = new ArrayList<>(ingredients.size());
 		for (V ingredient : ingredients) {
-			set.add(ingredient);
+			if (set.add(ingredient)) {
+				newIngredients.add(ingredient);
+			}
 			if (ingredient instanceof ItemStack) {
 				getStackProperties((ItemStack) ingredient);
 			}
 		}
 
-		NonNullList<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, modIdHelper);
-		ingredientFilter.addIngredients(ingredientListElements);
+		if (!newIngredients.isEmpty()) {
+			NonNullList<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, newIngredients, modIdHelper);
+			ingredientFilter.addIngredients(ingredientListElements);
+		}
 	}
 
 	@Override
