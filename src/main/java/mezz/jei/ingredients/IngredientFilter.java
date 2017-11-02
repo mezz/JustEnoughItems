@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
 
 public class IngredientFilter implements IIngredientFilter {
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
-	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(\".*?(?:\"|$)|\\S+)");
+	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
 	private final JeiHelpers helpers;
 	/**
@@ -262,22 +262,38 @@ public class IngredientFilter implements IIngredientFilter {
 		Matcher filterMatcher = FILTER_SPLIT_PATTERN.matcher(filterText);
 
 		TIntSet matches = null;
+		TIntSet removeMatches = null;
 		while (filterMatcher.find()) {
 			String token = filterMatcher.group(1);
+			final boolean remove = token.startsWith("-");
+			if (remove) {
+				token = token.substring(1);
+			}
 			token = QUOTE_PATTERN.matcher(token).replaceAll("");
 
 			TIntSet searchResults = getSearchResults(token);
 			if (searchResults != null) {
-				if (matches == null) {
-					matches = searchResults;
+				if (remove) {
+					if (removeMatches == null) {
+						removeMatches = searchResults;
+					} else {
+						removeMatches.addAll(searchResults);
+					}
 				} else {
-					matches = intersection(matches, searchResults);
-				}
-
-				if (matches.isEmpty()) {
-					break;
+					if (matches == null) {
+						matches = searchResults;
+					} else {
+						matches = intersection(matches, searchResults);
+					}
+					if (matches.isEmpty()) {
+						break;
+					}
 				}
 			}
+		}
+
+		if (matches != null && removeMatches != null) {
+			matches.removeAll(removeMatches);
 		}
 
 		List<IIngredientListElement> matchingIngredients = new ArrayList<>();
