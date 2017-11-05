@@ -19,10 +19,7 @@ import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Set;
 
 public class IngredientListBatchRenderer {
 	private final List<IngredientListSlot> slots = new ArrayList<>();
@@ -30,7 +27,6 @@ public class IngredientListBatchRenderer {
 	private final List<ItemStackFastRenderer> renderItems2d = new ArrayList<>();
 	private final List<ItemStackFastRenderer> renderItems3d = new ArrayList<>();
 	private final List<IngredientRenderer> renderOther = new ArrayList<>();
-	private final Set<IBakedModel> bakedModels = Collections.newSetFromMap(new IdentityHashMap<>());
 
 	private int blocked = 0;
 
@@ -40,7 +36,6 @@ public class IngredientListBatchRenderer {
 		renderItems2d.clear();
 		renderItems3d.clear();
 		renderOther.clear();
-		bakedModels.clear();
 		blocked = 0;
 	}
 
@@ -60,7 +55,6 @@ public class IngredientListBatchRenderer {
 		renderItems2d.clear();
 		renderItems3d.clear();
 		renderOther.clear();
-		bakedModels.clear();
 		blocked = 0;
 
 		int i = startIndex;
@@ -101,14 +95,7 @@ public class IngredientListBatchRenderer {
 			}
 
 			if (!bakedModel.isBuiltInRenderer() && !(itemStack.getItem() instanceof ISlowRenderItem)) {
-				ItemStackFastRenderer renderer;
-				if (bakedModels.contains(bakedModel)) {
-					// we can't cache baked models for mods that reuse their models across multiple items
-					renderer = new ItemStackFastRenderer(itemStackElement);
-				} else {
-					renderer = new ItemStackFastRenderer(itemStackElement, bakedModel);
-					bakedModels.add(bakedModel);
-				}
+				ItemStackFastRenderer renderer = new ItemStackFastRenderer(itemStackElement);
 				ingredientListSlot.setIngredientRenderer(renderer);
 				if (bakedModel.isGui3d()) {
 					renderItems3d.add(renderer);

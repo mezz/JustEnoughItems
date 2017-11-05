@@ -16,23 +16,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ForgeHooksClient;
 
-import javax.annotation.Nullable;
 import java.awt.Rectangle;
 
 public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
 	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
 
-	@Nullable
-	private final IBakedModel bakedModel;
-
 	public ItemStackFastRenderer(IIngredientListElement<ItemStack> itemStackElement) {
 		super(itemStackElement);
-		this.bakedModel = null;
-	}
-
-	public ItemStackFastRenderer(IIngredientListElement<ItemStack> itemStackElement, IBakedModel bakedModel) {
-		super(itemStackElement);
-		this.bakedModel = bakedModel;
 	}
 
 	public void renderItemAndEffectIntoGUI() {
@@ -44,9 +34,6 @@ public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
 	}
 
 	private IBakedModel getBakedModel() {
-		if (bakedModel != null) {
-			return bakedModel;
-		}
 		ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
 		ItemStack itemStack = element.getIngredient();
 		IBakedModel bakedModel = itemModelMesher.getItemModel(itemStack);
