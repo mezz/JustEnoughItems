@@ -178,6 +178,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Override
 	public void addRecipe(Object recipe) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
+		ErrorUtil.assertMainThread();
 
 		addRecipe(recipe, recipe.getClass(), null);
 	}
@@ -186,6 +187,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	public void addRecipe(IRecipeWrapper recipe, String recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
+		ErrorUtil.assertMainThread();
 
 		IRecipeCategory recipeCategory = getRecipeCategory(recipeCategoryUid);
 		if (recipeCategory == null) {
@@ -282,6 +284,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Override
 	public void removeRecipe(Object recipe) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
+		ErrorUtil.assertMainThread();
 
 		List<IRecipeHandler<Object>> recipeHandlers1 = getRecipeHandlers(recipe.getClass());
 		for (IRecipeHandler<Object> recipeHandler : recipeHandlers1) {
@@ -312,6 +315,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	public void removeRecipe(IRecipeWrapper recipe, String recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
+		ErrorUtil.assertMainThread();
 
 		hideRecipe(recipe);
 	}
@@ -670,6 +674,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Override
 	public void hideRecipe(IRecipeWrapper recipe) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
+		ErrorUtil.assertMainThread();
 		hiddenRecipes.add(recipe);
 		recipeCategoriesVisibleCache.clear();
 	}
@@ -677,6 +682,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Override
 	public void unhideRecipe(IRecipeWrapper recipe) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
+		ErrorUtil.assertMainThread();
 		hiddenRecipes.remove(recipe);
 		recipeCategoriesVisibleCache.clear();
 	}

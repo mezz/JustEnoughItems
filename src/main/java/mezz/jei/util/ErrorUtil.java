@@ -13,6 +13,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.ingredients.Ingredients;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -201,6 +202,14 @@ public final class ErrorUtil {
 		checkNotNull(ingredient, name);
 		if (!Internal.getIngredientRegistry().isValidIngredient(ingredient)) {
 			throw new IllegalArgumentException("Invalid ingredient found. Parameter Name: " + name + " Class: " + ingredient.getClass() + " Object: " + ingredient);
+		}
+	}
+
+	@SuppressWarnings("ConstantConditions")
+	public static void assertMainThread() {
+		Minecraft minecraft = Minecraft.getMinecraft();
+		if (minecraft != null && !minecraft.isCallingFromMinecraftThread()) {
+			throw new IllegalStateException("A JEI API method is being called by another mod from the wrong thread. It must be called on the main thread.");
 		}
 	}
 }
