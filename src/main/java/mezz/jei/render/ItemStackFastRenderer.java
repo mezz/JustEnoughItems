@@ -5,8 +5,8 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -16,13 +16,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ForgeHooksClient;
 
+import javax.annotation.Nullable;
 import java.awt.Rectangle;
 
 public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
 	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
-	private static final WorldVertexBufferUploader VBO_UPLOADER = new WorldVertexBufferUploader();
 
+	@Nullable
 	private final IBakedModel bakedModel;
+
+	public ItemStackFastRenderer(IIngredientListElement<ItemStack> itemStackElement) {
+		super(itemStackElement);
+		this.bakedModel = null;
+	}
 
 	public ItemStackFastRenderer(IIngredientListElement<ItemStack> itemStackElement, IBakedModel bakedModel) {
 		super(itemStackElement);
@@ -37,6 +43,16 @@ public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
 		}
 	}
 
+	private IBakedModel getBakedModel() {
+		if (bakedModel != null) {
+			return bakedModel;
+		}
+		ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+		ItemStack itemStack = element.getIngredient();
+		IBakedModel bakedModel = itemModelMesher.getItemModel(itemStack);
+		return bakedModel.getOverrides().handleItemState(bakedModel, itemStack, null, null);
+	}
+
 	private void uncheckedRenderItemAndEffectIntoGUI() {
 		if (Config.isEditModeEnabled()) {
 			renderEditMode(element, area, padding);
@@ -44,7 +60,7 @@ public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
 		}
 
 		ItemStack itemStack = element.getIngredient();
-		IBakedModel bakedModel = this.bakedModel;
+		IBakedModel bakedModel = getBakedModel();
 
 		GlStateManager.pushMatrix();
 		{
