@@ -2,8 +2,12 @@ package mezz.jei.plugins.jei.info;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.ImmutableList;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.IGuiFluidStackGroup;
+import mezz.jei.api.gui.IGuiIngredient;
+import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
@@ -12,6 +16,8 @@ import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
 import net.minecraft.util.ResourceLocation;
+
+import java.util.List;
 
 public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientInfoRecipe> {
 	public static final int recipeWidth = 160;
@@ -63,5 +69,9 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 		guiItemStacks.init(0, true, xPos, 0);
 		guiItemStacks.setBackground(0, slotBackground);
 		guiItemStacks.set(ingredients);
+
+		IGuiFluidStackGroup guiFluidStackGroup = recipeLayout.getFluidStacks();
+		guiFluidStackGroup.init(0, true, xPos + 1, 1);
+		guiFluidStackGroup.set(ingredients);
 	}
 }

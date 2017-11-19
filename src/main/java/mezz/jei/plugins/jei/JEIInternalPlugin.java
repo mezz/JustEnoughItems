@@ -82,6 +82,8 @@ public class JEIInternalPlugin implements IModPlugin {
 					"description.jei.wooden.door.3"
 			);
 
+			registry.addIngredientInfo(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), FluidStack.class, "water");
+
 			registry.addRecipes(Arrays.asList(
 					new DebugRecipe(),
 					new DebugRecipe()
