@@ -12,6 +12,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.ingredients.Ingredients;
+import mezz.jei.startup.ForgeModIdHelper;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
@@ -20,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public final class ErrorUtil {
 	private ErrorUtil() {
@@ -27,12 +29,8 @@ public final class ErrorUtil {
 
 	public static <T> String getInfoFromRecipe(T recipe, IRecipeWrapper recipeWrapper) {
 		StringBuilder recipeInfoBuilder = new StringBuilder();
-		try {
-			recipeInfoBuilder.append(recipe);
-		} catch (RuntimeException e) {
-			Log.get().error("Failed recipe.toString", e);
-			recipeInfoBuilder.append(recipe.getClass());
-		}
+		String recipeName = getNameForRecipe(recipe);
+		recipeInfoBuilder.append(recipeName);
 
 		Ingredients ingredients = new Ingredients();
 
@@ -70,14 +68,28 @@ public final class ErrorUtil {
 		return getIngredientInfo(ingredientClass, inputs);
 	}
 
-	public static <T> String getInfoFromBrokenCraftingRecipe(T recipe, List inputs, ItemStack output) {
-		StringBuilder recipeInfoBuilder = new StringBuilder();
+	public static String getNameForRecipe(Object recipe) {
+		if (recipe instanceof IForgeRegistryEntry) {
+			IForgeRegistryEntry registryEntry = (IForgeRegistryEntry) recipe;
+			ResourceLocation registryName = registryEntry.getRegistryName();
+			if (registryName != null) {
+				String modId = registryName.getResourceDomain();
+				String modName = ForgeModIdHelper.getInstance().getModNameForModId(modId);
+				return modName + " " + registryName;
+			}
+		}
 		try {
-			recipeInfoBuilder.append(recipe);
+			return recipe.toString();
 		} catch (RuntimeException e) {
 			Log.get().error("Failed recipe.toString", e);
-			recipeInfoBuilder.append(recipe.getClass());
+			return recipe.getClass().toString();
 		}
+	}
+
+	public static <T> String getInfoFromBrokenCraftingRecipe(T recipe, List inputs, ItemStack output) {
+		StringBuilder recipeInfoBuilder = new StringBuilder();
+		String recipeName = getNameForRecipe(recipe);
+		recipeInfoBuilder.append(recipeName);
 
 		recipeInfoBuilder.append("\nOutputs:");
 		List<List<ItemStack>> outputs = Collections.singletonList(Collections.singletonList(output));

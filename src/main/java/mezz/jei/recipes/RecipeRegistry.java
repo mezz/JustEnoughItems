@@ -226,7 +226,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 			addRecipe(recipe, recipeWrapper, recipeCategory);
 		} else {
-			Log.get().debug("No recipe wrapper for recipe: {}", recipeClass);
+			Log.get().debug("No recipe wrapper for recipe: {}", ErrorUtil.getNameForRecipe(recipe));
 		}
 	}
 
