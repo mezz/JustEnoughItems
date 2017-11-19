@@ -10,10 +10,11 @@ jei.tooltip.recipe.ore.dict=Принимает любые: %s
 jei.tooltip.item.colors=Цвета: %s
 jei.tooltip.shapeless.recipe=Бесформенный рецепт
 jei.tooltip.cheat.mode=Режим жульничества
+jei.tooltip.recipe.by=Рецепт из: %s
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Отсутствуют предметы
-jei.tooltip.error.recipe.transfer.inventory.full=Инвентарь заполнен
+jei.tooltip.error.recipe.transfer.inventory.full=Инвентарь переполнен
 jei.tooltip.error.recipe.transfer.unknown=Неизвестная ошибка, смотрите логи
 jei.tooltip.error.recipe.transfer.no.server=На сервере должен быть установлен JEI
 jei.tooltip.error.recipe.transfer.too.large.player.inventory=Рецепт не для 2x2
@@ -22,7 +23,7 @@ jei.tooltip.error.crash=Ошибка подсказки, смотрите лог
 # Error Messages
 jei.chat.error.command.too.long=JEI необходимо установить на сервер, чтобы использовать эту команду, она слишком длинна для отправки.
 jei.chat.error.no.cheat.permission.1=У вас нет разрешения на использование режима жульничества в JEI.
-jei.chat.error.no.cheat.permission.2=Разрешение выдаётся игрокам, которые могут использовать комманду /give или находятся в творческом режиме.
+jei.chat.error.no.cheat.permission.2=Разрешение выдаётся игрокам, которые могут использовать /give или находятся в творческом режиме.
 
 # Key Bindings
 key.jei.toggleOverlay=Переключить оверлей предметов
@@ -31,29 +32,31 @@ key.jei.showRecipe=Показывать рецепты предметов
 key.jei.showUses=Показывать применения предметов
 key.jei.recipeBack=Показать предыдущую страницу рецептов
 key.jei.toggleCheatMode=Переключить режим жульничества
+key.jei.previousPage=Предыдущая
+key.jei.nextPage=Следующая
 
 # Config
 config.jei.default=По-умолчанию
-config.jei.valid=Valid
+config.jei.valid=Доступны
 
 config.jei.title=Конфигурация %MODNAME
 
 config.jei.mode=Режим
-config.jei.mode.comment=Изменение режима JEI.
+config.jei.mode.comment=Изменение режима работы JEI.
 config.jei.mode.cheatItemsEnabled=Режим жульничества
-config.jei.mode.cheatItemsEnabled.comment=Давать предметы вместо отображения рецепта.
-config.jei.mode.editEnabled=Режим редактирования
-config.jei.mode.editEnabled.comment=Прячьте предметы в списке простым нажатием клавиши.
+config.jei.mode.cheatItemsEnabled.comment=Брать предметы вместо отображения рецепта.
+config.jei.mode.editEnabled=Режим сокрытия предметов
+config.jei.mode.editEnabled.comment=Скрывать и показывать предметы в списке нажатием клавиши по ним.
 
 config.jei.interface=Интерфейс
-config.jei.interface.comment=Настройки, отвечающие за интерфейс пользователя.
+config.jei.interface.comment=Настройки интерфейса пользователя.
 config.jei.interface.overlayEnabled=Доступность списка предметов
-config.jei.interface.overlayEnabled.comment=Показывать список предметов при открытии интерфейса.
+config.jei.interface.overlayEnabled.comment=Показывать список предметов рядом с открытым интерфейсом.
 config.jei.interface.recipeAnimationsEnabled=Анимации рецептов
 config.jei.interface.recipeAnimationsEnabled.comment=Показывать анимации рецептов (огонь в печи, индикаторы и т.д)
 
-config.jei.search=Поиск
-config.jei.search.comment=Настройки, отвечающие за поиск.
+config.jei.search=Настройки поиска
+config.jei.search.comment=Настройки строки поиска.
 config.jei.search.modNameSearchMode=@ИмяМода
 config.jei.search.modNameSearchMode.comment=Режим поиска по имени мода (префикс: @)
 config.jei.search.tooltipSearchMode=#ВсплывающаяПодсказка
@@ -64,28 +67,32 @@ config.jei.search.creativeTabSearchMode=%%ТворческаяВкладка
 config.jei.search.creativeTabSearchMode.comment=Режим поиска по имени творческой вкладки (префикс: %)
 config.jei.search.colorSearchMode=^Цвет
 config.jei.search.colorSearchMode.comment=Режим поиска по цвету предмета (префикс: ^)
+config.jei.search.resourceIdSearchMode=&Идентификатор
+config.jei.search.resourceIdSearchMode.comment=Режим поиска по идентификатору (префикс: &)
 
-config.jei.advanced=Продвинутое
-config.jei.advanced.comment=Продвинутые настройки функций JEI.
-config.jei.advanced.itemBlacklist=Чёрный список для предметов
+config.jei.advanced=Дополнительные
+config.jei.advanced.comment=Дополнительные настройки функций JEI.
+config.jei.advanced.itemBlacklist=Чёрный список предметов
 config.jei.advanced.itemBlacklist.comment=Список предметов, которые не будут отображаться в списке предметов JEI. Формат: modId[:name[:meta]]. Режим редактирования будет автоматически добавлять записи сюда, или удалять.
 config.jei.advanced.colorSearchEnabled=Поиск по цвету
-config.jei.advanced.colorSearchEnabled.comment=Искать предметы по цвету и показывать доступные цвета предметов в всплывающей подсказке в списке предмета.		  
+config.jei.advanced.colorSearchEnabled.comment=Искать предметы по цвету и показывать доступные цвета в подсказках к списку предметов.
 config.jei.advanced.debugModeEnabled=Режим отладки
-config.jei.advanced.debugModeEnabled.comment=Добавляет разные вещи, чтобы помочь в разработке JEI.
+config.jei.advanced.debugModeEnabled.comment=Используется разработчиками JEI, добавляет тысячи тестовых предметов и несколько отладочных рецептов.
 config.jei.advanced.centerSearchBarEnabled=Строка поиска по центру
 config.jei.advanced.centerSearchBarEnabled.comment=Переместить строку поиска JEI в центр нижней части экрана.
 config.jei.advanced.modNameFormat=Формат названия мода
-config.jei.advanced.modNameFormat.comment=Название мода отображающееся в подсказке для меню JEI. Оставьте пустым, чтобы отключить.
+config.jei.advanced.modNameFormat.comment=Как название мода должно быть отформатировано для подсказок JEI. Оставьте пустым, чтобы отключить.
+config.jei.advanced.maxSubtypes=Мак. кол-во подтипов предмета
+config.jei.advanced.maxSubtypes.comment=Предметы с большим количеством подтипов не будут показаны в JEI.
 
 # Edit Mode
-gui.jei.editMode.description=Режим редактирования списка предметов JEI:
-gui.jei.editMode.description.hide=%CTRL+ЛКМ, чтобы спрятать.
-gui.jei.editMode.description.show=Спрятано. %CTRL+ЛКМ, чтобы показать.
-gui.jei.editMode.description.hide.wild=%CTRL+ПКМ, чтобы спрятать по Wildcard.
-gui.jei.editMode.description.show.wild=Спрятано по Wildcard. %CTRL+ПКМ, чтобы показать.
-gui.jei.editMode.description.hide.mod.id=%CTRL+SHIFT+ЛКМ, чтобы спрятать по ID-мода.
-gui.jei.editMode.description.show.mod.id=Спрятано по ID-мода. %CTRL+SHIFT+ЛКМ, чтобы показать.
+gui.jei.editMode.description=Режим редактирования списка JEI:
+gui.jei.editMode.description.hide=%CTRL+ЛКМ, чтобы скрыть.
+gui.jei.editMode.description.show=Скрыто. %CTRL+ЛКМ, чтобы показать.
+gui.jei.editMode.description.hide.wild=%CTRL+ПКМ, чтобы скрыть по шаблону.
+gui.jei.editMode.description.show.wild=Скрыто по шаблону. %CTRL+ПКМ, чтобы показать.
+gui.jei.editMode.description.hide.mod.id=%CTRL+SHIFT+ЛКМ, чтобы скрыть по ID-мода.
+gui.jei.editMode.description.show.mod.id=Скрыто по ID-мода. %CTRL+SHIFT+ЛКМ, чтобы показать.
 
 #PC/Linux Control Key
 key.jei.ctrl=CTRL
@@ -93,7 +100,7 @@ key.jei.ctrl=CTRL
 key.jei.ctrl.mac=CMD
 
 # Recipe Categories
-gui.jei.category.craftingTable=Крафт
+gui.jei.category.craftingTable=Создание предметов
 gui.jei.category.smelting=Плавка
 gui.jei.category.smelting.experience=Опыт: %s
 gui.jei.category.fuel=Топливо
