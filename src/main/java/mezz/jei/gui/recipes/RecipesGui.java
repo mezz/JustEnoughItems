@@ -296,26 +296,37 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			}
 		}
 
+		if (handleKeybinds(mouseButton - 100)) {
+			return;
+		}
+
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 
 	@Override
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
-		if (InputHandler.isInventoryCloseKey(keyCode) || InputHandler.isInventoryToggleKey(keyCode)) {
+		if (handleKeybinds(keyCode)) {
+			keyHandled = true;
+		}
+	}
+
+	private boolean handleKeybinds(int eventKey) {
+		if (InputHandler.isInventoryCloseKey(eventKey) || InputHandler.isInventoryToggleKey(eventKey)) {
 			close();
-			keyHandled = true;
-		} else if (KeyBindings.recipeBack.isActiveAndMatches(keyCode)) {
+			return true;
+		} else if (KeyBindings.recipeBack.isActiveAndMatches(eventKey)) {
 			back();
-			keyHandled = true;
+			return true;
 		} else if (!Internal.getRuntime().getItemListOverlay().isMouseOver(MouseHelper.getX(), MouseHelper.getY())) {
-			if (KeyBindings.nextPage.isActiveAndMatches(keyCode)) {
+			if (KeyBindings.nextPage.isActiveAndMatches(eventKey)) {
 				logic.nextPage();
-				keyHandled = true;
-			} else if (KeyBindings.previousPage.isActiveAndMatches(keyCode)) {
+				return true;
+			} else if (KeyBindings.previousPage.isActiveAndMatches(eventKey)) {
 				logic.previousPage();
-				keyHandled = true;
+				return true;
 			}
 		}
+		return false;
 	}
 
 	public boolean isOpen() {

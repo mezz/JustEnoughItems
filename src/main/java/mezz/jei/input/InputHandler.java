@@ -76,6 +76,9 @@ public class InputHandler {
 		if (clicked != null && handleMouseClickedFocus(mouseButton, clicked)) {
 			return true;
 		}
+		if (handleFocusKeybinds(mouseButton - 100)) {
+			return true;
+		}
 
 		if (guiScreen instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) guiScreen;
@@ -83,10 +86,11 @@ public class InputHandler {
 			if (clickableArea != null) {
 				List<String> recipeCategoryUids = clickableArea.getRecipeCategoryUids();
 				recipesGui.showCategories(recipeCategoryUids);
+				return true;
 			}
 		}
 
-		return false;
+		return handleGlobalKeybinds(mouseButton - 100);
 	}
 
 	@Nullable
@@ -198,6 +202,19 @@ public class InputHandler {
 			}
 		}
 
+		if (handleGlobalKeybinds(eventKey)) {
+			return true;
+		}
+
+		if (!isContainerTextFieldFocused()) {
+			return handleFocusKeybinds(eventKey) ||
+				(ingredientListOverlay.isEnabled() && ingredientListOverlay.onKeyPressed(typedChar, eventKey));
+		}
+
+		return false;
+	}
+
+	private boolean handleGlobalKeybinds(int eventKey) {
 		if (KeyBindings.toggleOverlay.isActiveAndMatches(eventKey)) {
 			Config.toggleOverlayEnabled();
 			return false;
@@ -215,23 +232,20 @@ public class InputHandler {
 			}
 		}
 
-		if (!isContainerTextFieldFocused()) {
-			final boolean showRecipe = KeyBindings.showRecipe.isActiveAndMatches(eventKey);
-			final boolean showUses = KeyBindings.showUses.isActiveAndMatches(eventKey);
-			if (showRecipe || showUses) {
-				IClickedIngredient<?> clicked = getIngredientUnderMouseForKey(MouseHelper.getX(), MouseHelper.getY());
-				if (clicked != null) {
-					IFocus.Mode mode = showRecipe ? IFocus.Mode.OUTPUT : IFocus.Mode.INPUT;
-					recipesGui.show(new Focus<Object>(mode, clicked.getValue()));
-					return true;
-				}
-			}
+		return false;
+	}
 
-			if (ingredientListOverlay.isEnabled() && ingredientListOverlay.onKeyPressed(typedChar, eventKey)) {
+	private boolean handleFocusKeybinds(int eventKey) {
+		final boolean showRecipe = KeyBindings.showRecipe.isActiveAndMatches(eventKey);
+		final boolean showUses = KeyBindings.showUses.isActiveAndMatches(eventKey);
+		if (showRecipe || showUses) {
+			IClickedIngredient<?> clicked = getIngredientUnderMouseForKey(MouseHelper.getX(), MouseHelper.getY());
+			if (clicked != null) {
+				IFocus.Mode mode = showRecipe ? IFocus.Mode.OUTPUT : IFocus.Mode.INPUT;
+				recipesGui.show(new Focus<Object>(mode, clicked.getValue()));
 				return true;
 			}
 		}
-
 		return false;
 	}
 
