@@ -26,6 +26,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 /**
  * Server-side-safe utilities for commands.
@@ -92,7 +93,30 @@ public final class CommandUtilServer {
 	 *
 	 * @see CommandGive#execute(MinecraftServer, ICommandSender, String[])
 	 */
-	public static void executeGive(EntityPlayerMP sender, ItemStack itemStack) {
+	public static void executeGive(EntityPlayerMP sender, ItemStack itemStack, GiveMode giveMode) {
+		if (giveMode == GiveMode.INVENTORY) {
+			giveToInventory(sender, itemStack);
+		} else if (giveMode == GiveMode.MOUSE_PICKUP) {
+			mousePickupItemStack(sender, itemStack);
+		}
+	}
+
+	private static void mousePickupItemStack(EntityPlayerMP sender, ItemStack itemStack) {
+		int giveCount;
+		ItemStack existingStack = sender.inventory.getItemStack();
+		if (ItemHandlerHelper.canItemStacksStack(existingStack, itemStack)) {
+			int newCount = Math.min(existingStack.getMaxStackSize(), existingStack.getCount() + itemStack.getCount());
+			giveCount = newCount - existingStack.getCount();
+			existingStack.setCount(newCount);
+		} else {
+			sender.inventory.setItemStack(itemStack);
+			giveCount = itemStack.getCount();
+		}
+		notifyGive(sender, itemStack, giveCount);
+		sender.updateHeldItem();
+	}
+
+	private static void giveToInventory(EntityPlayerMP sender, ItemStack itemStack) {
 		int count = itemStack.getCount();
 		boolean addedToInventory = sender.inventory.addItemStackToInventory(itemStack);
 
@@ -112,10 +136,16 @@ public final class CommandUtilServer {
 			}
 		}
 
-		ICommand giveCommand = getGiveCommand(sender);
-		if (giveCommand != null) {
-			itemStack.setCount(1);
-			CommandBase.notifyCommandListener(sender, giveCommand, "commands.give.success", itemStack.getTextComponent(), count, sender.getName());
+		notifyGive(sender, itemStack, count);
+	}
+
+	private static void notifyGive(EntityPlayerMP sender, ItemStack itemStack, int count) {
+		if (!sender.isCreative() && count > 0) {
+			ICommand giveCommand = getGiveCommand(sender);
+			if (giveCommand != null) {
+				ItemStack copy = ItemHandlerHelper.copyStackWithSize(itemStack, 1);
+				CommandBase.notifyCommandListener(sender, giveCommand, "commands.give.success", copy.getTextComponent(), count, sender.getName());
+			}
 		}
 	}
 

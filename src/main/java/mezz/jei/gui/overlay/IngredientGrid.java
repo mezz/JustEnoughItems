@@ -17,6 +17,7 @@ import mezz.jei.render.IngredientListBatchRenderer;
 import mezz.jei.render.IngredientListSlot;
 import mezz.jei.render.IngredientRenderer;
 import mezz.jei.runtime.JeiRuntime;
+import mezz.jei.util.GiveMode;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -24,6 +25,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
@@ -87,7 +89,7 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 
 		guiIngredientSlots.render(minecraft);
 
-		if (!shouldShowDeleteItemTooltip(minecraft) && isMouseOver(mouseX, mouseY)) {
+		if (!shouldDeleteItemOnClick(minecraft, mouseX, mouseY) && isMouseOver(mouseX, mouseY)) {
 			IngredientRenderer hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
 			if (hovered != null) {
 				hovered.drawHighlight();
@@ -99,7 +101,7 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
-			if (shouldShowDeleteItemTooltip(minecraft)) {
+			if (shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				String deleteItem = Translator.translateToLocal("jei.tooltip.delete.item");
 				TooltipRenderer.drawHoveringText(minecraft, deleteItem, mouseX, mouseY);
 			} else {
@@ -111,12 +113,25 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 		}
 	}
 
-	private static boolean shouldShowDeleteItemTooltip(Minecraft minecraft) {
+	private boolean shouldDeleteItemOnClick(Minecraft minecraft, int mouseX, int mouseY) {
 		if (Config.isDeleteItemsInCheatModeActive()) {
 			EntityPlayer player = minecraft.player;
-			if (!player.inventory.getItemStack().isEmpty()) {
+			ItemStack itemStack = player.inventory.getItemStack();
+			if (!itemStack.isEmpty()) {
 				JeiRuntime runtime = Internal.getRuntime();
-				return runtime == null || !runtime.getRecipesGui().isOpen();
+				if (runtime == null || !runtime.getRecipesGui().isOpen()) {
+					GiveMode giveMode = Config.getGiveMode();
+					if (giveMode == GiveMode.MOUSE_PICKUP) {
+						IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);
+						if (ingredientUnderMouse != null && ingredientUnderMouse.getValue() instanceof ItemStack) {
+							ItemStack value = (ItemStack) ingredientUnderMouse.getValue();
+							if (ItemHandlerHelper.canItemStacksStack(itemStack, value)) {
+								return false;
+							}
+						}
+					}
+					return true;
+				}
 			}
 		}
 		return false;
@@ -129,10 +144,7 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 	public boolean handleMouseClicked(int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
 			Minecraft minecraft = Minecraft.getMinecraft();
-
-			JeiRuntime runtime = Internal.getRuntime();
-			if (Config.isDeleteItemsInCheatModeActive() && (runtime == null || !runtime.getRecipesGui().isOpen())) {
-
+			if (shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				EntityPlayerSP player = minecraft.player;
 				ItemStack itemStack = player.inventory.getItemStack();
 				if (!itemStack.isEmpty()) {

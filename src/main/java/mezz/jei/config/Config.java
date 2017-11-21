@@ -18,6 +18,7 @@ import mezz.jei.color.ColorNamer;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
 import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.startup.IModIdHelper;
+import mezz.jei.util.GiveMode;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import net.minecraft.util.text.TextFormatting;
@@ -118,6 +119,10 @@ public final class Config {
 
 	public static boolean isCenterSearchBarEnabled() {
 		return values.centerSearchBarEnabled;
+	}
+
+	public static GiveMode getGiveMode() {
+		return values.giveMode;
 	}
 
 	public static String getModNameFormat() {
@@ -327,6 +332,8 @@ public final class Config {
 		categoryAdvanced.remove("colorSearchEnabled");
 
 		values.centerSearchBarEnabled = config.getBoolean(CATEGORY_ADVANCED, "centerSearchBarEnabled", defaultValues.centerSearchBarEnabled);
+
+		values.giveMode = config.getEnum("giveMode", CATEGORY_ADVANCED, defaultValues.giveMode, GiveMode.values());
 
 		updateModNameFormat(config);
 

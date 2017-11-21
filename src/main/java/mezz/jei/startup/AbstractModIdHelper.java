@@ -2,7 +2,6 @@ package mezz.jei.startup;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.Config;

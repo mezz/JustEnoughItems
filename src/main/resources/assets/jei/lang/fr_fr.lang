@@ -32,7 +32,7 @@ config.jei.title=Configuration de %MODNAME
 
 config.jei.mode=Mode
 config.jei.mode.comment=Changer le mode JEI utilise.
-config.jei.mode.cheatItemsEnabled=Item Cheating Mode
+config.jei.mode.cheatItemsEnabled=Cheating Enabled
 config.jei.mode.cheatItemsEnabled.comment=Donne les items au lieu de donner leur recette.
 config.jei.mode.editEnabled=Item Hiding Mode
 config.jei.mode.editEnabled.comment=Cache ou non les items par click dans la liste.

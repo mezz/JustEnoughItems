@@ -1,6 +1,7 @@
 package mezz.jei.util;
 
 import mezz.jei.JustEnoughItems;
+import mezz.jei.config.Config;
 import mezz.jei.config.SessionData;
 import mezz.jei.network.packets.PacketGiveItemStack;
 import net.minecraft.client.Minecraft;
@@ -19,20 +20,18 @@ public final class CommandUtil {
 	private CommandUtil() {
 	}
 
-	public static void giveStack(ItemStack itemstack, boolean fullStack) {
-		int amount = fullStack ? itemstack.getMaxStackSize() : 1;
-		giveStack(itemstack, amount);
-	}
-
 	/**
 	 * /give <player> <item> [amount] [data] [dataTag]
 	 */
-	public static void giveStack(ItemStack itemStack, int amount) {
+	public static void giveStack(ItemStack itemStack, int mouseButton) {
 		if (SessionData.isJeiOnServer()) {
+			final GiveMode giveMode = Config.getGiveMode();
+			final int amount = giveMode.getStackSize(itemStack, mouseButton);
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
-			PacketGiveItemStack packet = new PacketGiveItemStack(sendStack);
+			PacketGiveItemStack packet = new PacketGiveItemStack(sendStack, giveMode);
 			JustEnoughItems.getProxy().sendPacketToServer(packet);
 		} else {
+			int amount = GiveMode.INVENTORY.getStackSize(itemStack, mouseButton);
 			giveStackVanilla(itemStack, amount);
 		}
 	}

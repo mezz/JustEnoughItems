@@ -7,7 +7,6 @@ import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.config.Config;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.util.LegacyUtil;

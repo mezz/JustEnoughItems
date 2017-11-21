@@ -33,7 +33,7 @@ config.jei.title=%MODNAME konfigūracija
 
 config.jei.mode=Rėžimas
 config.jei.mode.comment=Change the mode that JEI is operating in.
-config.jei.mode.cheatItemsEnabled=Item Cheating Mode
+config.jei.mode.cheatItemsEnabled=Cheating Enabled
 config.jei.mode.cheatItemsEnabled.comment=Give items instead of showing the recipe.
 config.jei.mode.editEnabled=Item Hiding Mode
 config.jei.mode.editEnabled.comment=Hide and unhide items by clicking them in the item list.

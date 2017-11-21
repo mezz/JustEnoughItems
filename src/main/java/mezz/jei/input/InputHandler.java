@@ -4,6 +4,8 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IFocus;
@@ -21,6 +23,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -32,7 +35,7 @@ public class InputHandler {
 	private final IngredientListOverlay ingredientListOverlay;
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<>();
 
-	private boolean clickHandled = false;
+	private IntSet clickHandled = new IntArraySet();
 
 	public InputHandler(JeiRuntime runtime, IngredientListOverlay ingredientListOverlay) {
 		this.recipeRegistry = runtime.getRecipeRegistry();
@@ -47,14 +50,17 @@ public class InputHandler {
 
 	public boolean handleMouseEvent(GuiScreen guiScreen, int mouseX, int mouseY) {
 		boolean cancelEvent = false;
-		if (Mouse.getEventButton() > -1) {
+		final int eventButton = Mouse.getEventButton();
+		if (eventButton > -1) {
 			if (Mouse.getEventButtonState()) {
-				if (!clickHandled) {
-					cancelEvent = handleMouseClick(guiScreen, Mouse.getEventButton(), mouseX, mouseY);
-					clickHandled = cancelEvent;
+				if (!clickHandled.contains(eventButton)) {
+					cancelEvent = handleMouseClick(guiScreen, eventButton, mouseX, mouseY);
+					if (cancelEvent) {
+						clickHandled.add(eventButton);
+					}
 				}
-			} else if (clickHandled) {
-				clickHandled = false;
+			} else if (clickHandled.contains(eventButton)) {
+				clickHandled.remove(eventButton);
 				cancelEvent = true;
 			}
 		} else if (Mouse.getEventDWheel() != 0) {
@@ -124,14 +130,16 @@ public class InputHandler {
 		}
 
 		if (Config.isCheatItemsEnabled() && clicked.allowsCheating() && !recipesGui.isOpen()) {
-			final boolean fullStack = (mouseButton == 0);
+			Minecraft minecraft = Minecraft.getMinecraft();
+			GameSettings gameSettings = minecraft.gameSettings;
+			final boolean fullStack = (mouseButton == 0 || gameSettings.keyBindPickBlock.isActiveAndMatches(mouseButton - 100));
 			if (fullStack || mouseButton == 1) {
 				V focusValue = clicked.getValue();
 				IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(focusValue);
 
 				ItemStack itemStack = ingredientHelper.cheatIngredient(focusValue, fullStack);
 				if (!itemStack.isEmpty()) {
-					CommandUtil.giveStack(itemStack, fullStack);
+					CommandUtil.giveStack(itemStack, mouseButton);
 				}
 				return true;
 			}

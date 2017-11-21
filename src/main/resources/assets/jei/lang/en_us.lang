@@ -31,7 +31,7 @@ key.jei.focusSearch=Select Search Bar
 key.jei.showRecipe=Show Item Recipe
 key.jei.showUses=Show Item Uses
 key.jei.recipeBack=Show Previously Viewed Recipe
-key.jei.toggleCheatMode=Toggle Item Cheating Mode
+key.jei.toggleCheatMode=Toggle Cheating Enabled
 key.jei.previousPage=Show Previous Page
 key.jei.nextPage=Show Next Page
 
@@ -43,7 +43,7 @@ config.jei.title=%MODNAME Config
 
 config.jei.mode=Mode
 config.jei.mode.comment=Change the mode that JEI is operating in.
-config.jei.mode.cheatItemsEnabled=Item Cheating Mode
+config.jei.mode.cheatItemsEnabled=Cheating Enabled
 config.jei.mode.cheatItemsEnabled.comment=Give items instead of showing the recipe.
 config.jei.mode.editEnabled=Item Hiding Mode
 config.jei.mode.editEnabled.comment=Hide and unhide items by clicking them in the item list.
@@ -84,6 +84,8 @@ config.jei.advanced.modNameFormat=Mod Name Format
 config.jei.advanced.modNameFormat.comment=How the mod name should be formatted in the tooltip for JEI guis. Leave blank to disable.
 config.jei.advanced.maxSubtypes=Max Item Subtypes
 config.jei.advanced.maxSubtypes.comment=Items with more than this many subtypes will not be displayed in JEI.
+config.jei.advanced.giveMode=Give Mode
+config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to the inventory (inventory) or pick them up with the mouse (mouse_pickup).
 
 # Edit Mode
 gui.jei.editMode.description=JEI Item List Edit Mode:
