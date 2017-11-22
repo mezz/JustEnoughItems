@@ -118,6 +118,7 @@ public final class CommandUtilServer {
 
 	private static void giveToInventory(EntityPlayerMP sender, ItemStack itemStack) {
 		int count = itemStack.getCount();
+		ItemStack originalStack = itemStack.copy();
 		boolean addedToInventory = sender.inventory.addItemStackToInventory(itemStack);
 
 		if (addedToInventory) {
@@ -136,7 +137,7 @@ public final class CommandUtilServer {
 			}
 		}
 
-		notifyGive(sender, itemStack, count);
+		notifyGive(sender, originalStack, count);
 	}
 
 	private static void notifyGive(EntityPlayerMP sender, ItemStack itemStack, int count) {
