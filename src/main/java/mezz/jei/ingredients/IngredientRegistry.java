@@ -161,7 +161,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 	}
 
 	@Override
-	public <V> void addIngredientsAtRuntime(Class<V> ingredientClass, Set<V> ingredients) {
+	public <V> void addIngredientsAtRuntime(Class<V> ingredientClass, Collection<V> ingredients) {
 		ErrorUtil.assertMainThread();
 		addIngredientsAtRuntime(ingredientClass, ingredients, Internal.getIngredientFilter());
 	}
@@ -196,7 +196,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 	}
 
 	@Override
-	public <V> void removeIngredientsAtRuntime(Class<V> ingredientClass, Set<V> ingredients) {
+	public <V> void removeIngredientsAtRuntime(Class<V> ingredientClass, Collection<V> ingredients) {
 		ErrorUtil.assertMainThread();
 		removeIngredientsAtRuntime(ingredientClass, ingredients, Internal.getIngredientFilter());
 	}

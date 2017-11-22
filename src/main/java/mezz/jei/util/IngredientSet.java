@@ -6,9 +6,11 @@ import mezz.jei.startup.StackHelper;
 import net.minecraft.item.ItemStack;
 
 import java.util.AbstractSet;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class IngredientSet<V> extends AbstractSet<V> {
@@ -42,6 +44,19 @@ public class IngredientSet<V> extends AbstractSet<V> {
 		//noinspection unchecked
 		String uid = uidGenerator.apply((V) o);
 		return ingredients.remove(uid) != null;
+	}
+
+	@Override
+	public boolean removeAll(Collection<?> c) {
+		if (c instanceof IngredientSet) {
+			return super.removeAll(c);
+		}
+		Objects.requireNonNull(c);
+		boolean modified = false;
+		for (Object aC : c) {
+			modified |= remove(aC);
+		}
+		return modified;
 	}
 
 	@Override

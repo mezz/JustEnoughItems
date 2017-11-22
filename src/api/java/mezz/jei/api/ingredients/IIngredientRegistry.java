@@ -62,7 +62,7 @@ public interface IIngredientRegistry {
 	 *
 	 * @since JEI 4.8.2
 	 */
-	<V> void addIngredientsAtRuntime(Class<V> ingredientClass, Set<V> ingredients);
+	<V> void addIngredientsAtRuntime(Class<V> ingredientClass, Collection<V> ingredients);
 
 	/**
 	 * Remove ingredients from JEI at runtime.
@@ -70,14 +70,14 @@ public interface IIngredientRegistry {
 	 *
 	 * @since JEI 4.8.2
 	 */
-	<V> void removeIngredientsAtRuntime(Class<V> ingredientClass, Set<V> ingredients);
+	<V> void removeIngredientsAtRuntime(Class<V> ingredientClass, Collection<V> ingredients);
 
 	/**
 	 * Add new ingredients to JEI at runtime.
 	 * Used by mods that have items created while the game is running, or use the server to define items.
 	 *
 	 * @since JEI 4.0.2
-	 * @deprecated since JEI 4.7.3. Use {@link #addIngredientsAtRuntime(Class, Set)}
+	 * @deprecated since JEI 4.7.3. Use {@link #addIngredientsAtRuntime(Class, Collection)}
 	 */
 	@Deprecated
 	<V> void addIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients);
@@ -87,7 +87,7 @@ public interface IIngredientRegistry {
 	 * Used by mods that have items created while the game is running, or use the server to define items.
 	 *
 	 * @since JEI 4.3.5
-	 * @deprecated since JEI 4.7.3. Use {@link #removeIngredientsAtRuntime(Class, Set)}
+	 * @deprecated since JEI 4.7.3. Use {@link #removeIngredientsAtRuntime(Class, Collection)}
 	 */
 	@Deprecated
 	<V> void removeIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients);
