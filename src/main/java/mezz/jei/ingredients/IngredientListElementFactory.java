@@ -26,7 +26,7 @@ public final class IngredientListElementFactory {
 		return ingredientListElements;
 	}
 
-	public static <V> NonNullList<IIngredientListElement> createList(IIngredientRegistry ingredientRegistry, Class<V> ingredientClass, List<V> ingredients, IModIdHelper modIdHelper) {
+	public static <V> NonNullList<IIngredientListElement> createList(IIngredientRegistry ingredientRegistry, Class<V> ingredientClass, Collection<V> ingredients, IModIdHelper modIdHelper) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientClass);
 

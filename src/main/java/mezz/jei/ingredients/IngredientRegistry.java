@@ -19,6 +19,7 @@ import net.minecraft.util.NonNullList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -159,7 +160,13 @@ public class IngredientRegistry implements IIngredientRegistry {
 		addIngredientsAtRuntime(ingredientClass, ingredients, Internal.getIngredientFilter());
 	}
 
-	public <V> void addIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients, IngredientFilter ingredientFilter) {
+	@Override
+	public <V> void addIngredientsAtRuntime(Class<V> ingredientClass, Set<V> ingredients) {
+		ErrorUtil.assertMainThread();
+		addIngredientsAtRuntime(ingredientClass, ingredients, Internal.getIngredientFilter());
+	}
+
+	public <V> void addIngredientsAtRuntime(Class<V> ingredientClass, Collection<V> ingredients, IngredientFilter ingredientFilter) {
 		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 
@@ -188,7 +195,13 @@ public class IngredientRegistry implements IIngredientRegistry {
 		removeIngredientsAtRuntime(ingredientClass, ingredients, Internal.getIngredientFilter());
 	}
 
-	public <V> void removeIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients, IngredientFilter ingredientFilter) {
+	@Override
+	public <V> void removeIngredientsAtRuntime(Class<V> ingredientClass, Set<V> ingredients) {
+		ErrorUtil.assertMainThread();
+		removeIngredientsAtRuntime(ingredientClass, ingredients, Internal.getIngredientFilter());
+	}
+
+	public <V> void removeIngredientsAtRuntime(Class<V> ingredientClass, Collection<V> ingredients, IngredientFilter ingredientFilter) {
 		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 

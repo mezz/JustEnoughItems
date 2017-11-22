@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The IIngredientRegistry is provided by JEI and has some useful functions related to recipe ingredients.
@@ -59,8 +60,24 @@ public interface IIngredientRegistry {
 	 * Add new ingredients to JEI at runtime.
 	 * Used by mods that have items created while the game is running, or use the server to define items.
 	 *
+	 * @since JEI 4.8.2
+	 */
+	<V> void addIngredientsAtRuntime(Class<V> ingredientClass, Set<V> ingredients);
+
+	/**
+	 * Remove ingredients from JEI at runtime.
+	 * Used by mods that have items created while the game is running, or use the server to define items.
+	 *
+	 * @since JEI 4.8.2
+	 */
+	<V> void removeIngredientsAtRuntime(Class<V> ingredientClass, Set<V> ingredients);
+
+	/**
+	 * Add new ingredients to JEI at runtime.
+	 * Used by mods that have items created while the game is running, or use the server to define items.
+	 *
 	 * @since JEI 4.0.2
-	 * @deprecated since JEI 4.7.3. This is not supported by Minecraft 1.12 and using this is discouraged.
+	 * @deprecated since JEI 4.7.3. Use {@link #addIngredientsAtRuntime(Class, Set)}
 	 */
 	@Deprecated
 	<V> void addIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients);
@@ -70,7 +87,7 @@ public interface IIngredientRegistry {
 	 * Used by mods that have items created while the game is running, or use the server to define items.
 	 *
 	 * @since JEI 4.3.5
-	 * @deprecated since JEI 4.7.3. This is not supported by Minecraft 1.12 and using this is discouraged.
+	 * @deprecated since JEI 4.7.3. Use {@link #removeIngredientsAtRuntime(Class, Set)}
 	 */
 	@Deprecated
 	<V> void removeIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients);
