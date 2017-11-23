@@ -129,7 +129,7 @@ public final class CommandUtilServer {
 		}
 	}
 
-	private static void mousePickupItemStack(EntityPlayerMP sender, ItemStack itemStack) {
+	public static void mousePickupItemStack(EntityPlayer sender, ItemStack itemStack) {
 		int giveCount;
 		ItemStack existingStack = sender.inventory.getItemStack();
 		if (ItemHandlerHelper.canItemStacksStack(existingStack, itemStack)) {
@@ -140,8 +140,12 @@ public final class CommandUtilServer {
 			sender.inventory.setItemStack(itemStack);
 			giveCount = itemStack.getCount();
 		}
-		notifyGive(sender, itemStack, giveCount);
-		sender.updateHeldItem();
+
+		if (sender instanceof EntityPlayerMP) {
+			EntityPlayerMP playerMP = (EntityPlayerMP) sender;
+			notifyGive(playerMP, itemStack, giveCount);
+			playerMP.updateHeldItem();
+		}
 	}
 
 	/**

@@ -7,6 +7,7 @@ import mezz.jei.network.packets.PacketGiveItemStack;
 import mezz.jei.network.packets.PacketSetHotbarItemStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -23,10 +24,16 @@ public final class CommandUtil {
 
 	/**
 	 * /give <player> <item> [amount] [data] [dataTag]
+	 * @implNote {@link GuiContainerCreative} has special client-side handling for itemStacks, just give the item on the client
 	 */
 	public static void giveStack(ItemStack itemStack, int mouseButton) {
-		if (SessionData.isJeiOnServer()) {
-			final GiveMode giveMode = Config.getGiveMode();
+		final GiveMode giveMode = Config.getGiveMode();
+		Minecraft minecraft = Minecraft.getMinecraft();
+		if (minecraft.currentScreen instanceof GuiContainerCreative && giveMode == GiveMode.MOUSE_PICKUP) {
+			final int amount = giveMode.getStackSize(itemStack, mouseButton);
+			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
+			CommandUtilServer.mousePickupItemStack(minecraft.player, sendStack);
+		} else if (SessionData.isJeiOnServer()) {
 			final int amount = giveMode.getStackSize(itemStack, mouseButton);
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
 			PacketGiveItemStack packet = new PacketGiveItemStack(sendStack, giveMode);
