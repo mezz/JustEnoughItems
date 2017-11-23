@@ -1,17 +1,13 @@
 package mezz.jei.network;
 
-import javax.annotation.Nullable;
-import java.io.IOException;
-
 import mezz.jei.config.Constants;
 import mezz.jei.network.packets.IPacketJeiHandler;
-import mezz.jei.network.packets.PacketCheatPermission;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
 import mezz.jei.network.packets.PacketGiveItemStack;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
+import mezz.jei.network.packets.PacketSetHotbarItemStack;
 import mezz.jei.util.Log;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
@@ -19,11 +15,23 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.util.EnumMap;
 
 public class PacketHandler {
 	public static final String CHANNEL_ID = Constants.MOD_ID;
+
+	public final EnumMap<PacketIdServer, IPacketJeiHandler> serverHandlers = new EnumMap<>(PacketIdServer.class);
+
+	public PacketHandler() {
+		serverHandlers.put(PacketIdServer.RECIPE_TRANSFER, PacketRecipeTransfer::readPacketData);
+		serverHandlers.put(PacketIdServer.DELETE_ITEM, PacketDeletePlayerItem::readPacketData);
+		serverHandlers.put(PacketIdServer.GIVE_ITEM, PacketGiveItemStack::readPacketData);
+		serverHandlers.put(PacketIdServer.SET_HOTBAR_ITEM, PacketSetHotbarItemStack::readPacketData);
+		serverHandlers.put(PacketIdServer.CHEAT_PERMISSION_REQUEST, PacketRequestCheatPermission::readPacketData);
+	}
 
 	@SubscribeEvent
 	public void onPacket(FMLNetworkEvent.ServerCustomPacketEvent event) {
@@ -33,64 +41,14 @@ public class PacketHandler {
 		try {
 			byte packetIdOrdinal = packetBuffer.readByte();
 			PacketIdServer packetId = PacketIdServer.VALUES[packetIdOrdinal];
-			IPacketJeiHandler packetHandler;
-
-			switch (packetId) {
-				case RECIPE_TRANSFER: {
-					packetHandler = new PacketRecipeTransfer.Handler();
-					break;
-				}
-				case DELETE_ITEM: {
-					packetHandler = new PacketDeletePlayerItem.Handler();
-					break;
-				}
-				case GIVE_BIG: {
-					packetHandler = new PacketGiveItemStack.Handler();
-					break;
-				}
-				case CHEAT_PERMISSION_REQUEST: {
-					packetHandler = new PacketRequestCheatPermission.Handler();
-					break;
-				}
-				default: {
-					return;
-				}
-			}
-
+			IPacketJeiHandler packetHandler = serverHandlers.get(packetId);
 			checkThreadAndEnqueue(packetHandler, packetBuffer, player, player.getServer());
 		} catch (RuntimeException ex) {
 			Log.get().error("Packet error", ex);
 		}
 	}
 
-	@SubscribeEvent
-	@SideOnly(Side.CLIENT)
-	public void onPacket(FMLNetworkEvent.ClientCustomPacketEvent event) {
-		PacketBuffer packetBuffer = new PacketBuffer(event.getPacket().payload());
-		Minecraft minecraft = Minecraft.getMinecraft();
-		EntityPlayer player = minecraft.player;
-		IPacketJeiHandler packetHandler;
-
-		try {
-			byte packetIdOrdinal = packetBuffer.readByte();
-			PacketIdClient packetId = PacketIdClient.VALUES[packetIdOrdinal];
-			switch (packetId) {
-				case CHEAT_PERMISSION: {
-					packetHandler = new PacketCheatPermission.Handler();
-					break;
-				}
-				default: {
-					return;
-				}
-			}
-
-			checkThreadAndEnqueue(packetHandler, packetBuffer, player, minecraft);
-		} catch (Exception ex) {
-			Log.get().error("Packet error", ex);
-		}
-	}
-
-	private static void checkThreadAndEnqueue(final IPacketJeiHandler packetHandler, final PacketBuffer packetBuffer, final EntityPlayer player, @Nullable IThreadListener threadListener) {
+	private static void checkThreadAndEnqueue(IPacketJeiHandler packetHandler, PacketBuffer packetBuffer, EntityPlayer player, @Nullable IThreadListener threadListener) {
 		if (threadListener != null && !threadListener.isCallingFromMinecraftThread()) {
 			threadListener.addScheduledTask(() -> {
 				try {

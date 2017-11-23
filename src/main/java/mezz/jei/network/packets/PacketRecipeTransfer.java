@@ -51,34 +51,31 @@ public class PacketRecipeTransfer extends PacketJei {
 		buf.writeBoolean(maxTransfer);
 	}
 
-	public static class Handler implements IPacketJeiHandler {
-		@Override
-		public void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
-			int recipeMapSize = buf.readVarInt();
-			Map<Integer, Integer> recipeMap = new HashMap<>(recipeMapSize);
-			for (int i = 0; i < recipeMapSize; i++) {
-				int slotIndex = buf.readVarInt();
-				int recipeItem = buf.readVarInt();
-				recipeMap.put(slotIndex, recipeItem);
-			}
-
-			int craftingSlotsSize = buf.readVarInt();
-			List<Integer> craftingSlots = new ArrayList<>(craftingSlotsSize);
-			for (int i = 0; i < craftingSlotsSize; i++) {
-				int slotIndex = buf.readVarInt();
-				craftingSlots.add(slotIndex);
-			}
-
-			int inventorySlotsSize = buf.readVarInt();
-			List<Integer> inventorySlots = new ArrayList<>(inventorySlotsSize);
-			for (int i = 0; i < inventorySlotsSize; i++) {
-				int slotIndex = buf.readVarInt();
-				inventorySlots.add(slotIndex);
-			}
-			boolean maxTransfer = buf.readBoolean();
-
-			BasicRecipeTransferHandlerServer.setItems(player, recipeMap, craftingSlots, inventorySlots, maxTransfer);
+	public static void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
+		int recipeMapSize = buf.readVarInt();
+		Map<Integer, Integer> recipeMap = new HashMap<>(recipeMapSize);
+		for (int i = 0; i < recipeMapSize; i++) {
+			int slotIndex = buf.readVarInt();
+			int recipeItem = buf.readVarInt();
+			recipeMap.put(slotIndex, recipeItem);
 		}
+
+		int craftingSlotsSize = buf.readVarInt();
+		List<Integer> craftingSlots = new ArrayList<>(craftingSlotsSize);
+		for (int i = 0; i < craftingSlotsSize; i++) {
+			int slotIndex = buf.readVarInt();
+			craftingSlots.add(slotIndex);
+		}
+
+		int inventorySlotsSize = buf.readVarInt();
+		List<Integer> inventorySlots = new ArrayList<>(inventorySlotsSize);
+		for (int i = 0; i < inventorySlotsSize; i++) {
+			int slotIndex = buf.readVarInt();
+			inventorySlots.add(slotIndex);
+		}
+		boolean maxTransfer = buf.readBoolean();
+
+		BasicRecipeTransferHandlerServer.setItems(player, recipeMap, craftingSlots, inventorySlots, maxTransfer);
 	}
 
 }

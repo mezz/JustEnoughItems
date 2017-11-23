@@ -9,7 +9,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.ProgressManager;
 
 import java.util.Collection;
-import java.util.List;
 
 public final class IngredientListElementFactory {
 	private IngredientListElementFactory() {

@@ -27,16 +27,13 @@ public class PacketCheatPermission extends PacketJei {
 		buf.writeBoolean(hasPermission);
 	}
 
-	public static class Handler implements IPacketJeiHandler {
-		@Override
-		public void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
-			boolean hasPermission = buf.readBoolean();
-			if (!hasPermission && Config.isCheatItemsEnabled()) {
-				CommandUtilServer.writeChatMessage(player, "jei.chat.error.no.cheat.permission.1", TextFormatting.RED);
-				CommandUtilServer.writeChatMessage(player, "jei.chat.error.no.cheat.permission.2", TextFormatting.RED);
-				Config.setCheatItemsEnabled(false);
-				player.closeScreen();
-			}
+	public static void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
+		boolean hasPermission = buf.readBoolean();
+		if (!hasPermission && Config.isCheatItemsEnabled()) {
+			CommandUtilServer.writeChatMessage(player, "jei.chat.error.no.cheat.permission.1", TextFormatting.RED);
+			CommandUtilServer.writeChatMessage(player, "jei.chat.error.no.cheat.permission.2", TextFormatting.RED);
+			Config.setCheatItemsEnabled(false);
+			player.closeScreen();
 		}
 	}
 }

@@ -129,15 +129,11 @@ public class InputHandler {
 			return true;
 		}
 
-		if (Config.isCheatItemsEnabled() && clicked.allowsCheating() && !recipesGui.isOpen()) {
+		if (Config.isCheatItemsEnabled() && !recipesGui.isOpen()) {
 			Minecraft minecraft = Minecraft.getMinecraft();
 			GameSettings gameSettings = minecraft.gameSettings;
-			final boolean fullStack = (mouseButton == 0 || gameSettings.keyBindPickBlock.isActiveAndMatches(mouseButton - 100));
-			if (fullStack || mouseButton == 1) {
-				V focusValue = clicked.getValue();
-				IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(focusValue);
-
-				ItemStack itemStack = ingredientHelper.cheatIngredient(focusValue, fullStack);
+			if (mouseButton == 0 || mouseButton == 1 || gameSettings.keyBindPickBlock.isActiveAndMatches(mouseButton - 100)) {
+				ItemStack itemStack = clicked.getCheatItemStack(ingredientRegistry);
 				if (!itemStack.isEmpty()) {
 					CommandUtil.giveStack(itemStack, mouseButton);
 				}
@@ -146,11 +142,11 @@ public class InputHandler {
 		}
 
 		if (mouseButton == 0) {
-			IFocus<?> focus = new Focus<Object>(IFocus.Mode.OUTPUT, clicked.getValue());
+			IFocus<?> focus = new Focus<>(IFocus.Mode.OUTPUT, clicked.getValue());
 			recipesGui.show(focus);
 			return true;
 		} else if (mouseButton == 1) {
-			IFocus<?> focus = new Focus<Object>(IFocus.Mode.INPUT, clicked.getValue());
+			IFocus<?> focus = new Focus<>(IFocus.Mode.INPUT, clicked.getValue());
 			recipesGui.show(focus);
 			return true;
 		}
@@ -215,10 +211,47 @@ public class InputHandler {
 		}
 
 		if (!isContainerTextFieldFocused()) {
-			return handleFocusKeybinds(eventKey) ||
-				(ingredientListOverlay.isEnabled() && ingredientListOverlay.onKeyPressed(typedChar, eventKey));
+			if (handleFocusKeybinds(eventKey)) {
+				return true;
+			}
+			if (ingredientListOverlay.isEnabled()) {
+				if (ingredientListOverlay.onKeyPressed(typedChar, eventKey)) {
+					return true;
+				}
+				if (checkHotbarKeys(eventKey)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
+		return false;
+	}
+
+	/**
+	 * Modeled after {@link GuiContainer#checkHotbarKeys(int)}
+	 * Sets the stack in a hotbar slot to the one that's hovered over.
+	 */
+	protected boolean checkHotbarKeys(int keyCode) {
+		if (Config.isCheatItemsEnabled() && !recipesGui.isOpen()) {
+			final int mouseX = MouseHelper.getX();
+			final int mouseY = MouseHelper.getY();
+			if (ingredientListOverlay.isMouseOver(mouseX, mouseY)) {
+				GameSettings gameSettings = Minecraft.getMinecraft().gameSettings;
+				for (int hotbarSlot = 0; hotbarSlot < 9; ++hotbarSlot) {
+					if (gameSettings.keyBindsHotbar[hotbarSlot].isActiveAndMatches(keyCode)) {
+						IClickedIngredient<?> ingredientUnderMouse = ingredientListOverlay.getIngredientUnderMouse(mouseX, mouseY);
+						if (ingredientUnderMouse != null) {
+							ItemStack itemStack = ingredientUnderMouse.getCheatItemStack(ingredientRegistry);
+							if (!itemStack.isEmpty()) {
+								CommandUtil.setHotbarStack(itemStack, hotbarSlot);
+							}
+						}
+						return true;
+					}
+				}
+			}
+		}
 		return false;
 	}
 

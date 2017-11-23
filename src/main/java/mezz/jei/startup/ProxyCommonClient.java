@@ -12,6 +12,8 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.config.SessionData;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.network.PacketHandler;
+import mezz.jei.network.PacketHandlerClient;
 import mezz.jei.network.packets.PacketJei;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
@@ -35,6 +37,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
 @SuppressWarnings("unused")
@@ -51,7 +54,10 @@ public class ProxyCommonClient extends ProxyCommon {
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		super.preInit(event);
+		PacketHandlerClient packetHandler = new PacketHandlerClient();
+		channel = NetworkRegistry.INSTANCE.newEventDrivenChannel(PacketHandler.CHANNEL_ID);
+		channel.register(packetHandler);
+
 		Config.preInit(event);
 		initVersionChecker();
 

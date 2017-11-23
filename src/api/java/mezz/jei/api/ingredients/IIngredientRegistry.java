@@ -5,7 +5,6 @@ import net.minecraft.item.ItemStack;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * The IIngredientRegistry is provided by JEI and has some useful functions related to recipe ingredients.

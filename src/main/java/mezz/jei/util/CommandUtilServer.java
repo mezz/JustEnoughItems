@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.base.Throwables;
+import mezz.jei.JustEnoughItems;
+import mezz.jei.network.packets.PacketCheatPermission;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandGive;
 import net.minecraft.command.CommandResultStats;
@@ -15,6 +17,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -88,16 +91,41 @@ public final class CommandUtilServer {
 	}
 
 	/**
-	 * Gives a player an item. Similar to vanilla but without the "fake" itemStack popping into the player's face.
-	 * (no {@link EntityItem#makeFakeItem()}
+	 * Gives a player an item.
 	 *
 	 * @see CommandGive#execute(MinecraftServer, ICommandSender, String[])
 	 */
 	public static void executeGive(EntityPlayerMP sender, ItemStack itemStack, GiveMode giveMode) {
-		if (giveMode == GiveMode.INVENTORY) {
-			giveToInventory(sender, itemStack);
-		} else if (giveMode == GiveMode.MOUSE_PICKUP) {
-			mousePickupItemStack(sender, itemStack);
+		if (hasPermission(sender, itemStack)) {
+			if (giveMode == GiveMode.INVENTORY) {
+				giveToInventory(sender, itemStack);
+			} else if (giveMode == GiveMode.MOUSE_PICKUP) {
+				mousePickupItemStack(sender, itemStack);
+			}
+		} else {
+			JustEnoughItems.getProxy().sendPacketToClient(new PacketCheatPermission(false), sender);
+		}
+	}
+
+	public static void setHotbarSlot(EntityPlayerMP sender, ItemStack itemStack, int hotbarSlot) {
+		if (hasPermission(sender, itemStack)) {
+			if (!InventoryPlayer.isHotbar(hotbarSlot)) {
+				Log.get().error("Tried to set slot that is not in the hotbar: {}", hotbarSlot);
+				return;
+			}
+			ItemStack stackInSlot = sender.inventory.getStackInSlot(hotbarSlot);
+			if (ItemStack.areItemStacksEqual(stackInSlot, itemStack)) {
+				return;
+			}
+			final int count = itemStack.getCount();
+			ItemStack originalStack = itemStack.copy();
+			sender.inventory.setInventorySlotContents(hotbarSlot, itemStack);
+			sender.world.playSound(null, sender.posX, sender.posY, sender.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((sender.getRNG().nextFloat() - sender.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+			sender.inventoryContainer.detectAndSendChanges();
+			sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, count);
+			notifyGive(sender, originalStack, count);
+		} else {
+			JustEnoughItems.getProxy().sendPacketToClient(new PacketCheatPermission(false), sender);
 		}
 	}
 
@@ -116,6 +144,10 @@ public final class CommandUtilServer {
 		sender.updateHeldItem();
 	}
 
+	/**
+	 * Gives a player an item. Similar to vanilla but without the "fake" itemStack popping into the player's face.
+	 * (no {@link EntityItem#makeFakeItem()}
+	 */
 	private static void giveToInventory(EntityPlayerMP sender, ItemStack itemStack) {
 		int count = itemStack.getCount();
 		ItemStack originalStack = itemStack.copy();

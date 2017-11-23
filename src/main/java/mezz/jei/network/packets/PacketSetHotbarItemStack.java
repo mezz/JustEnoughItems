@@ -1,36 +1,40 @@
 package mezz.jei.network.packets;
 
-import java.io.IOException;
-
+import com.google.common.base.Preconditions;
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
 import mezz.jei.util.CommandUtilServer;
-import mezz.jei.util.GiveMode;
+import mezz.jei.util.ErrorUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 
-public class PacketGiveItemStack extends PacketJei {
-	private final ItemStack itemStack;
-	private final GiveMode giveMode;
+import java.io.IOException;
 
-	public PacketGiveItemStack(ItemStack itemStack, GiveMode giveMode) {
+public class PacketSetHotbarItemStack extends PacketJei {
+	private final ItemStack itemStack;
+	private final int hotbarSlot;
+
+	public PacketSetHotbarItemStack(ItemStack itemStack, int hotbarSlot) {
+		ErrorUtil.checkNotNull(itemStack, "itemStack");
+		Preconditions.checkArgument(InventoryPlayer.isHotbar(hotbarSlot), "hotbar slot must be in the hotbar. got: " + hotbarSlot);
 		this.itemStack = itemStack;
-		this.giveMode = giveMode;
+		this.hotbarSlot = hotbarSlot;
 	}
 
 	@Override
 	public IPacketId getPacketId() {
-		return PacketIdServer.GIVE_ITEM;
+		return PacketIdServer.SET_HOTBAR_ITEM;
 	}
 
 	@Override
 	public void writePacketData(PacketBuffer buf) {
 		NBTTagCompound nbt = itemStack.serializeNBT();
 		buf.writeCompoundTag(nbt);
-		buf.writeEnumValue(giveMode);
+		buf.writeVarInt(hotbarSlot);
 	}
 
 	public static void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
@@ -39,10 +43,10 @@ public class PacketGiveItemStack extends PacketJei {
 
 			NBTTagCompound itemStackSerialized = buf.readCompoundTag();
 			if (itemStackSerialized != null) {
-				GiveMode giveMode = buf.readEnumValue(GiveMode.class);
+				int hotbarSlot = buf.readVarInt();
 				ItemStack itemStack = new ItemStack(itemStackSerialized);
 				if (!itemStack.isEmpty()) {
-					CommandUtilServer.executeGive(sender, itemStack, giveMode);
+					CommandUtilServer.setHotbarSlot(sender, itemStack, hotbarSlot);
 				}
 			}
 		}

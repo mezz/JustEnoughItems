@@ -24,17 +24,14 @@ public class PacketRequestCheatPermission extends PacketJei {
 		// the packet itself is the only data needed
 	}
 
-	public static class Handler implements IPacketJeiHandler {
-		@Override
-		public void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
-			if (player instanceof EntityPlayerMP) {
-				EntityPlayerMP sender = (EntityPlayerMP) player;
-				boolean hasPermission = CommandUtilServer.hasPermission(sender, new ItemStack(Items.NETHER_STAR, 64));
-				PacketCheatPermission packetCheatPermission = new PacketCheatPermission(hasPermission);
+	public static void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
+		if (player instanceof EntityPlayerMP) {
+			EntityPlayerMP sender = (EntityPlayerMP) player;
+			boolean hasPermission = CommandUtilServer.hasPermission(sender, new ItemStack(Items.NETHER_STAR, 64));
+			PacketCheatPermission packetCheatPermission = new PacketCheatPermission(hasPermission);
 
-				ProxyCommon proxy = JustEnoughItems.getProxy();
-				proxy.sendPacketToClient(packetCheatPermission, sender);
-			}
+			ProxyCommon proxy = JustEnoughItems.getProxy();
+			proxy.sendPacketToClient(packetCheatPermission, sender);
 		}
 	}
 }

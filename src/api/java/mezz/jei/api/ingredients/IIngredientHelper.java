@@ -75,20 +75,14 @@ public interface IIngredientHelper<V> {
 	String getResourceId(V ingredient);
 
 	/**
-	 * An action for when a player is in cheat mode and clicks an ingredient in the list.
-	 * <p>
-	 * This method can either:
-	 * return an ItemStack for JEI to give the player,
-	 * or
-	 * return an empty ItemStack and handle the action manually.
+	 * Called when a player is in cheat mode and clicks an ingredient in the list.
 	 *
 	 * @param ingredient The ingredient to cheat in. Do not edit this ingredient.
-	 * @param fullStack  Only used for manual handling, true if a full stack should be cheated in instead of a single ingredient.
-	 * @return an ItemStack for JEI to give the player, or an empty stack if this method handles it manually.
-	 * @since JEI 4.2.9
+	 * @return an ItemStack for JEI to give the player, or an empty stack if there is nothing that can be given.
+	 * @since JEI 4.8.3
 	 */
-	default ItemStack cheatIngredient(V ingredient, boolean fullStack) {
-		return ItemStack.EMPTY;
+	default ItemStack getCheatItemStack(V ingredient) {
+		return cheatIngredient(ingredient, false);
 	}
 
 	/**
@@ -117,4 +111,23 @@ public interface IIngredientHelper<V> {
 	 * Be extremely careful not to crash here, get as much useful info as possible.
 	 */
 	String getErrorInfo(V ingredient);
+
+	/**
+	 * An action for when a player is in cheat mode and clicks an ingredient in the list.
+	 * <p>
+	 * This method can either:
+	 * return an ItemStack for JEI to give the player,
+	 * or
+	 * return an empty ItemStack and handle the action manually.
+	 *
+	 * @param ingredient The ingredient to cheat in. Do not edit this ingredient.
+	 * @param fullStack  Only used for manual handling, true if a full stack should be cheated in instead of a single ingredient.
+	 * @return an ItemStack for JEI to give the player, or an empty stack if this method handles it manually.
+	 * @since JEI 4.2.9
+	 * @deprecated since JEI 4.8.3, use {@link #getCheatItemStack(Object)}
+	 */
+	@Deprecated
+	default ItemStack cheatIngredient(V ingredient, boolean fullStack) {
+		return ItemStack.EMPTY;
+	}
 }

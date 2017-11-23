@@ -1,8 +1,11 @@
 package mezz.jei.input;
 
+import mezz.jei.api.ingredients.IIngredientRegistry;
+import net.minecraft.item.ItemStack;
+
 public interface IClickedIngredient<V> {
 
 	V getValue();
 
-	boolean allowsCheating();
+	ItemStack getCheatItemStack(IIngredientRegistry ingredientRegistry);
 }

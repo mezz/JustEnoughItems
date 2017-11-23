@@ -27,15 +27,12 @@ public class PacketDeletePlayerItem extends PacketJei {
 		buf.writeShort(itemId);
 	}
 
-	public static class Handler implements IPacketJeiHandler {
-		@Override
-		public void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
-			int itemId = buf.readShort();
-			Item item = Item.getItemById(itemId);
-			ItemStack playerItem = player.inventory.getItemStack();
-			if (!playerItem.isEmpty() && playerItem.getItem() == item) {
-				player.inventory.setItemStack(ItemStack.EMPTY);
-			}
+	public static void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
+		int itemId = buf.readShort();
+		Item item = Item.getItemById(itemId);
+		ItemStack playerItem = player.inventory.getItemStack();
+		if (!playerItem.isEmpty() && playerItem.getItem() == item) {
+			player.inventory.setItemStack(ItemStack.EMPTY);
 		}
 	}
 }

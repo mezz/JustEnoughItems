@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 public class ProxyCommon {
 	@Nullable
-	private FMLEventChannel channel;
+	protected FMLEventChannel channel;
 
 	public void preInit(FMLPreInitializationEvent event) {
 		PacketHandler packetHandler = new PacketHandler();
