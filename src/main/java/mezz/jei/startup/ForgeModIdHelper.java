@@ -75,14 +75,16 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 			tooltip = tooltipEvent.getToolTip();
 
 			if (tooltip.size() > 1) {
-				String lastLine = tooltip.get(tooltip.size() - 1);
-				if (lastLine.contains(Constants.MINECRAFT_NAME)) {
-					String withoutFormatting = TextFormatting.getTextWithoutFormattingCodes(lastLine);
-					if (withoutFormatting != null) {
-						if (lastLine.equals(withoutFormatting)) {
-							return "";
-						} else if (lastLine.contains(withoutFormatting)) {
-							return StringUtils.replaceOnce(lastLine, Constants.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
+				for (int lineNum = 1; lineNum < tooltip.size(); lineNum++) {
+					String line = tooltip.get(lineNum);
+					if (line.contains(Constants.MINECRAFT_NAME)) {
+						String withoutFormatting = TextFormatting.getTextWithoutFormattingCodes(line);
+						if (withoutFormatting != null) {
+							if (line.equals(withoutFormatting)) {
+								return "";
+							} else if (line.contains(withoutFormatting)) {
+								return StringUtils.replaceOnce(line, Constants.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
+							}
 						}
 					}
 				}
