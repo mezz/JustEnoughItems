@@ -31,7 +31,7 @@ key.jei.focusSearch=Markera sökfält
 key.jei.showRecipe=Visa föremålsrecept
 key.jei.showUses=Visa användningar av föremål
 key.jei.recipeBack=Visa föregående receptsida
-key.jei.toggleCheatMode=Slå på/av föremålsfusk
+key.jei.toggleCheatMode=Slå på/av fusk
 key.jei.previousPage=Visa föregående sida
 key.jei.nextPage=Visa nästa sida
 
@@ -43,7 +43,7 @@ config.jei.title=Konfiguration för %MODNAME
 
 config.jei.mode=Läge
 config.jei.mode.comment=Ändra läget som JEI fungerar i.
-config.jei.mode.cheatItemsEnabled=Föremålsfusk
+config.jei.mode.cheatItemsEnabled=Fusk har aktiverats
 config.jei.mode.cheatItemsEnabled.comment=Ge föremål istället för att visa receptet.
 config.jei.mode.editEnabled=Dölj föremål
 config.jei.mode.editEnabled.comment=Dölj och visa föremål genom att klicka på dem i föremålslistan.
@@ -84,6 +84,8 @@ config.jei.advanced.modNameFormat=Namnformat för moddar
 config.jei.advanced.modNameFormat.comment=Hur modnamnet bör formateras i inforutan för JEI:s gränssnitt. Lämna tomt för att inaktivera.
 config.jei.advanced.maxSubtypes=Max undertyper av föremål
 config.jei.advanced.maxSubtypes.comment=Föremål med fler än så många undertyper kommer inte att visas i JEI.
+config.jei.advanced.giveMode=Placeringsläge
+config.jei.advanced.giveMode.comment=Välj om JEI ska placera föremål direkt i utrustningen (inventory) eller plocka upp dem med musen (mouse_pickup).
 
 # Edit Mode
 gui.jei.editMode.description=Redigeringsläge för JEIs föremålslista:
