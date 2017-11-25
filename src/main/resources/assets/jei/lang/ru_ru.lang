@@ -84,6 +84,8 @@ config.jei.advanced.modNameFormat=Формат названия мода
 config.jei.advanced.modNameFormat.comment=Как название мода должно быть отформатировано для подсказок JEI. Оставьте пустым, чтобы отключить.
 config.jei.advanced.maxSubtypes=Мак. кол-во подтипов предмета
 config.jei.advanced.maxSubtypes.comment=Предметы с большим количеством подтипов не будут показаны в JEI.
+config.jei.advanced.giveMode=Режим получения предметов
+config.jei.advanced.giveMode.comment=Выберите, должен ли JEI давать предметы напрямую в инвентарь (inventory) или же набирать их мышкой (mouse_pickup).
 
 # Edit Mode
 gui.jei.editMode.description=Режим редактирования списка JEI:
