@@ -57,6 +57,10 @@ public class IngredientRenderer<T> {
 		return element;
 	}
 
+	public Rectangle getArea() {
+		return area;
+	}
+
 	public void renderSlow() {
 		if (Config.isEditModeEnabled()) {
 			renderEditMode(element, area, padding);

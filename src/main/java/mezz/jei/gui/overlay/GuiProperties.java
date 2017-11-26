@@ -1,12 +1,11 @@
 package mezz.jei.gui.overlay;
 
-import javax.annotation.Nullable;
-
+import mezz.jei.api.gui.IGuiProperties;
 import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
-public class GuiProperties {
+public class GuiProperties implements IGuiProperties {
 	private final Class<? extends GuiScreen> guiClass;
 	private final int guiLeft;
 	private final int guiTop;
@@ -14,17 +13,6 @@ public class GuiProperties {
 	private final int guiYSize;
 	private final int screenWidth;
 	private final int screenHeight;
-
-	@Nullable
-	public static GuiProperties create(@Nullable GuiScreen guiScreen) {
-		if (guiScreen instanceof RecipesGui) {
-			return create((RecipesGui) guiScreen);
-		} else if (guiScreen instanceof GuiContainer) {
-			return create((GuiContainer) guiScreen);
-		} else {
-			return null;
-		}
-	}
 
 	public static GuiProperties create(GuiContainer guiContainer) {
 		return new GuiProperties(
@@ -86,28 +74,5 @@ public class GuiProperties {
 
 	public int getScreenHeight() {
 		return screenHeight;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof GuiProperties)) {
-			return false;
-		}
-		GuiProperties other = (GuiProperties) obj;
-		return guiClass == other.getGuiClass() &&
-				guiLeft == other.getGuiLeft() &&
-				guiXSize == other.getGuiXSize() &&
-				screenWidth == other.getScreenWidth() &&
-				screenHeight == other.getScreenHeight();
-	}
-
-	@Override
-	public int hashCode() {
-		int result = guiClass.hashCode();
-		result = 31 * result + guiLeft;
-		result = 31 * result + guiXSize;
-		result = 31 * result + screenWidth;
-		result = 31 * result + screenHeight;
-		return result;
 	}
 }

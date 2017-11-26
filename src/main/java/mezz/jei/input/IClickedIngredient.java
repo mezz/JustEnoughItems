@@ -1,11 +1,16 @@
 package mezz.jei.input;
 
-import mezz.jei.api.ingredients.IIngredientRegistry;
 import net.minecraft.item.ItemStack;
+
+import javax.annotation.Nullable;
+import java.awt.Rectangle;
 
 public interface IClickedIngredient<V> {
 
 	V getValue();
 
-	ItemStack getCheatItemStack(IIngredientRegistry ingredientRegistry);
+	@Nullable
+	Rectangle getArea();
+
+	ItemStack getCheatItemStack();
 }

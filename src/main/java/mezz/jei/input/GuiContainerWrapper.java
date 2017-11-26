@@ -1,6 +1,7 @@
 package mezz.jei.input;
 
 import javax.annotation.Nullable;
+import java.awt.Rectangle;
 import java.util.List;
 
 import mezz.jei.Internal;
@@ -25,7 +26,8 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 		if (slotUnderMouse != null) {
 			ItemStack stack = slotUnderMouse.getStack();
 			if (!stack.isEmpty()) {
-				return new ClickedIngredient<>(stack);
+				Rectangle slotArea = new Rectangle(slotUnderMouse.xPos, slotUnderMouse.yPos, 16, 16);
+				return new ClickedIngredient<>(stack, slotArea);
 			}
 		}
 		return getAdvancedGuiHandlerIngredientUnderMouse(guiContainer, mouseX, mouseY);
@@ -39,7 +41,12 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 			for (IAdvancedGuiHandler<T> advancedGuiHandler : activeAdvancedGuiHandlers) {
 				Object clicked = advancedGuiHandler.getIngredientUnderMouse(guiContainer, mouseX, mouseY);
 				if (clicked != null && Internal.getIngredientRegistry().isValidIngredient(clicked)) {
-					return new ClickedIngredient<>(clicked);
+					Rectangle area = null;
+					Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
+					if (clicked instanceof ItemStack && slotUnderMouse != null && ItemStack.areItemStacksEqual(slotUnderMouse.getStack(), (ItemStack) clicked)) {
+						area = new Rectangle(slotUnderMouse.xPos, slotUnderMouse.yPos, 16, 16);
+					}
+					return new ClickedIngredient<>(clicked, area);
 				}
 			}
 		}

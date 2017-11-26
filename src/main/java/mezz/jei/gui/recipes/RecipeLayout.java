@@ -218,13 +218,22 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	@Override
 	@Nullable
 	public Object getIngredientUnderMouse(int mouseX, int mouseY) {
+		GuiIngredient<?> guiIngredient = getGuiIngredientUnderMouse(mouseX, mouseY);
+		if (guiIngredient != null) {
+			return guiIngredient.getDisplayedIngredient();
+		}
+
+		return null;
+	}
+
+	@Nullable
+	public GuiIngredient<?> getGuiIngredientUnderMouse(int mouseX, int mouseY) {
 		for (GuiIngredientGroup<?> guiIngredientGroup : guiIngredientGroups.values()) {
-			Object clicked = guiIngredientGroup.getIngredientUnderMouse(posX, posY, mouseX, mouseY);
+			GuiIngredient<?> clicked = guiIngredientGroup.getHoveredIngredient(posX, posY, mouseX, mouseY);
 			if (clicked != null) {
 				return clicked;
 			}
 		}
-
 		return null;
 	}
 

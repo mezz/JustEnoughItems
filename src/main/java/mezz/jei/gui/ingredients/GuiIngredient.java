@@ -72,6 +72,10 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		this.cycleTimer = new CycleTimer(cycleOffset);
 	}
 
+	public Rectangle getRect() {
+		return rect;
+	}
+
 	public boolean isMouseOver(int xOffset, int yOffset, int mouseX, int mouseY) {
 		return enabled && (mouseX >= xOffset + rect.x) && (mouseY >= yOffset + rect.y) && (mouseX < xOffset + rect.x + rect.width) && (mouseY < yOffset + rect.y + rect.height);
 	}

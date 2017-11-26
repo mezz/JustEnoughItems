@@ -141,7 +141,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 		if (hovered != null) {
 			Object ingredientUnderMouse = hovered.getDisplayedIngredient();
 			if (ingredientUnderMouse != null) {
-				return new ClickedIngredient<>(ingredientUnderMouse);
+				return new ClickedIngredient<>(ingredientUnderMouse, hovered.getRect());
 			}
 		}
 		return null;

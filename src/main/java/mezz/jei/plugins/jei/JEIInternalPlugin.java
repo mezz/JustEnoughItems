@@ -17,6 +17,9 @@ import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.config.Config;
+import mezz.jei.gui.overlay.GuiProperties;
+import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.plugins.jei.debug.DebugGhostIngredientHandler;
 import mezz.jei.plugins.jei.debug.DebugRecipe;
 import mezz.jei.plugins.jei.debug.DebugRecipeCategory;
 import mezz.jei.plugins.jei.info.IngredientInfoRecipeCategory;
@@ -25,6 +28,7 @@ import mezz.jei.plugins.jei.ingredients.DebugIngredientHelper;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientListFactory;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientRenderer;
 import net.minecraft.client.gui.inventory.GuiBrewingStand;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
@@ -66,6 +70,8 @@ public class JEIInternalPlugin implements IModPlugin {
 	@Override
 	public void register(IModRegistry registry) {
 		ingredientRegistry = registry.getIngredientRegistry();
+		registry.addGuiScreenHandler(GuiContainer.class, GuiProperties::create);
+		registry.addGuiScreenHandler(RecipesGui.class, GuiProperties::create);
 
 		if (Config.isDebugModeEnabled()) {
 			registry.addIngredientInfo(Arrays.asList(
@@ -117,6 +123,8 @@ public class JEIInternalPlugin implements IModPlugin {
 					return null;
 				}
 			});
+
+			registry.addGhostIngredientHandler(GuiBrewingStand.class, new DebugGhostIngredientHandler<>());
 		}
 	}
 

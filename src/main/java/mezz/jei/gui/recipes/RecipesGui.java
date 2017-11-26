@@ -242,9 +242,12 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 			if (isMouseOver(mouseX, mouseY)) {
 				for (RecipeLayout recipeLayouts : this.recipeLayouts) {
-					Object clicked = recipeLayouts.getIngredientUnderMouse(mouseX, mouseY);
+					GuiIngredient<?> clicked = recipeLayouts.getGuiIngredientUnderMouse(mouseX, mouseY);
 					if (clicked != null) {
-						return new ClickedIngredient<>(clicked);
+						Object displayedIngredient = clicked.getDisplayedIngredient();
+						if (displayedIngredient != null) {
+							return new ClickedIngredient<>(displayedIngredient, clicked.getRect());
+						}
 					}
 				}
 			}

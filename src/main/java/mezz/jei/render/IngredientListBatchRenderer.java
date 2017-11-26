@@ -116,7 +116,7 @@ public class IngredientListBatchRenderer {
 		IngredientRenderer hovered = getHovered(mouseX, mouseY);
 		if (hovered != null) {
 			IIngredientListElement element = hovered.getElement();
-			return new ClickedIngredient<>(element.getIngredient());
+			return new ClickedIngredient<>(element.getIngredient(), hovered.getArea());
 		}
 		return null;
 	}

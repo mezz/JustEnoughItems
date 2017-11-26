@@ -1,9 +1,8 @@
 package mezz.jei.api;
 
-import java.util.Collection;
-import java.util.List;
-
 import mezz.jei.api.gui.IAdvancedGuiHandler;
+import mezz.jei.api.gui.IGhostIngredientHandler;
+import mezz.jei.api.gui.IGuiScreenHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
@@ -14,8 +13,12 @@ import mezz.jei.api.recipe.IRecipeWrapperFactory;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Entry point for the JEI API, functions for registering recipes are available from here.
@@ -84,6 +87,21 @@ public interface IModRegistry {
 	 * Used for guis with tabs on the side that would normally intersect with JEI's item list.
 	 */
 	void addAdvancedGuiHandlers(IAdvancedGuiHandler<?>... advancedGuiHandlers);
+
+	/**
+	 * Add a handler to let JEI draw next to a specific class (or subclass) of {@link GuiScreen}.
+	 * By default, JEI can only draw next to {@link GuiContainer}.
+	 * @since JEI 4.8.4
+	 */
+	<T extends GuiScreen> void addGuiScreenHandler(Class<T> guiClass, IGuiScreenHandler<T> handler);
+
+	/**
+	 * Lets mods accept ghost ingredients from JEI.
+	 * These ingredients are dragged from the ingredient list on to your gui, and are useful
+	 * for setting recipes or anything else that does not need the real ingredient to exist.
+	 * @since JEI 4.8.4
+	 */
+	<T extends GuiScreen> void addGhostIngredientHandler(Class<T> guiClass, IGhostIngredientHandler<T> handler);
 
 	/**
 	 * Add an info page for an ingredient.

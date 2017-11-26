@@ -5,18 +5,23 @@ import mezz.jei.Internal;
 import mezz.jei.api.IIngredientListOverlay;
 import mezz.jei.api.IItemListOverlay;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
+import mezz.jei.api.gui.IGuiProperties;
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.SessionData;
+import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IPaged;
 import mezz.jei.input.IShowsRecipeFocuses;
+import mezz.jei.input.MouseHelper;
 import mezz.jei.runtime.JeiRuntime;
+import mezz.jei.util.CommandUtil;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.MathUtil;
@@ -24,6 +29,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
@@ -44,11 +50,11 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	/**
 	 * @return true if this can be displayed next to the gui with the given guiProperties
 	 */
-	private static boolean hasRoom(GuiProperties guiProperties) {
+	private static boolean hasRoom(IGuiProperties guiProperties) {
 		return guiProperties.getScreenWidth() - (guiProperties.getGuiLeft() + guiProperties.getGuiXSize()) >= 72;
 	}
 
-	private static boolean isSearchBarCentered(GuiProperties guiProperties) {
+	private static boolean isSearchBarCentered(IGuiProperties guiProperties) {
 		return Config.isCenterSearchBarEnabled() &&
 				guiProperties.getGuiTop() + guiProperties.getGuiYSize() + SEARCH_HEIGHT < guiProperties.getScreenHeight();
 	}
@@ -59,12 +65,13 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	private final PageNavigation navigation;
 	private final IngredientGrid contents;
 	private final GuiTextFieldFilter searchField;
+	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private Set<Rectangle> guiExclusionAreas = Collections.emptySet();
 	private Rectangle displayArea = new Rectangle();
 
 	// properties of the gui we're beside
 	@Nullable
-	private GuiProperties guiProperties;
+	private IGuiProperties guiProperties;
 
 	public IngredientListOverlay(IngredientFilter ingredientFilter) {
 		this.ingredientFilter = ingredientFilter;
@@ -73,6 +80,7 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 		this.searchField = new GuiTextFieldFilter(0, ingredientFilter);
 		this.navigation = new PageNavigation(this, false);
 		this.configButton = new ConfigButton(this);
+		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents);
 		this.setKeyboardFocus(false);
 	}
 
@@ -109,20 +117,28 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 		highlightedStacks.addAll(stacks);
 	}
 
-	public NonNullList<ItemStack> getHighlightedStacks() {
-		return highlightedStacks;
-	}
-
 	public boolean isEnabled() {
 		return Config.isOverlayEnabled() && this.guiProperties != null && hasRoom(this.guiProperties);
 	}
 
+	private static boolean areGuiPropertiesEqual(IGuiProperties guiProperties1, IGuiProperties guiProperties2) {
+		return guiProperties1.getGuiClass().equals(guiProperties2.getGuiClass()) &&
+			guiProperties1.getGuiLeft() == guiProperties2.getGuiLeft() &&
+			guiProperties1.getGuiXSize() == guiProperties2.getGuiXSize() &&
+			guiProperties1.getScreenWidth() == guiProperties2.getScreenWidth() &&
+			guiProperties1.getScreenHeight() == guiProperties2.getScreenHeight();
+	}
+
 	public void updateScreen(@Nullable GuiScreen guiScreen) {
-		GuiProperties guiProperties = GuiProperties.create(guiScreen);
+		JeiRuntime runtime = Internal.getRuntime();
+		if (runtime == null) {
+			return;
+		}
+		IGuiProperties guiProperties = runtime.getGuiProperties(guiScreen);
 		if (guiProperties == null) {
 			this.guiProperties = null;
 			setKeyboardFocus(false);
-		} else if (this.guiProperties == null || !this.guiProperties.equals(guiProperties)) {
+		} else if (this.guiProperties == null || !areGuiPropertiesEqual(this.guiProperties, guiProperties)) {
 			this.guiProperties = guiProperties;
 
 			final int x = guiProperties.getGuiLeft() + guiProperties.getGuiXSize() + BORDER_PADDING;
@@ -196,6 +212,11 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
 		this.contents.drawTooltips(minecraft, mouseX, mouseY);
 		this.configButton.drawTooltips(minecraft, mouseX, mouseY);
+		this.ghostIngredientDragManager.drawTooltips(minecraft, mouseX, mouseY);
+	}
+
+	public void drawOnForeground(Minecraft minecraft, int mouseX, int mouseY) {
+		this.ghostIngredientDragManager.drawOnForeground(minecraft, mouseX, mouseY);
 	}
 
 	public void handleTick() {
@@ -255,6 +276,10 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 
 	@Override
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
+		if (this.ghostIngredientDragManager.handleMouseClicked(mouseX, mouseY)) {
+			return true;
+		} // if the ghost ingredient drag failed, fall through to let the click be handled by something else
+
 		if (!isMouseOver(mouseX, mouseY)) {
 			setKeyboardFocus(false);
 			return false;
@@ -265,8 +290,7 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 			return true;
 		}
 
-		boolean buttonClicked = this.navigation.handleMouseClickedButtons(mouseX, mouseY);
-		if (buttonClicked) {
+		if (this.navigation.handleMouseClickedButtons(mouseX, mouseY)) {
 			setKeyboardFocus(false);
 			return true;
 		}
@@ -281,7 +305,30 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 			return true;
 		}
 
-		return this.configButton.handleMouseClick(Minecraft.getMinecraft(), mouseX, mouseY);
+		if (this.configButton.handleMouseClick(Minecraft.getMinecraft(), mouseX, mouseY)) {
+			return true;
+		}
+
+		Minecraft minecraft = Minecraft.getMinecraft();
+		GuiScreen currentScreen = minecraft.currentScreen;
+		if (currentScreen != null && !(currentScreen instanceof RecipesGui) &&
+			(mouseButton == 0 || mouseButton == 1 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(mouseButton - 100)))
+		{
+			IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
+			if (clicked != null) {
+				if (Config.isCheatItemsEnabled()) {
+					ItemStack itemStack = clicked.getCheatItemStack();
+					if (!itemStack.isEmpty()) {
+						CommandUtil.giveStack(itemStack, mouseButton);
+					}
+					return true;
+				}
+				if (this.ghostIngredientDragManager.handleClickGhostIngredient(currentScreen, clicked)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -323,6 +370,34 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 		} else if (KeyBindings.previousPage.isActiveAndMatches(keyCode)) {
 			previousPage();
 			return true;
+		}
+		return checkHotbarKeys(keyCode);
+	}
+
+	/**
+	 * Modeled after {@link GuiContainer#checkHotbarKeys(int)}
+	 * Sets the stack in a hotbar slot to the one that's hovered over.
+	 */
+	protected boolean checkHotbarKeys(int keyCode) {
+		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
+		if (Config.isCheatItemsEnabled() && guiScreen != null && !(guiScreen instanceof RecipesGui)) {
+			final int mouseX = MouseHelper.getX();
+			final int mouseY = MouseHelper.getY();
+			if (isMouseOver(mouseX, mouseY)) {
+				GameSettings gameSettings = Minecraft.getMinecraft().gameSettings;
+				for (int hotbarSlot = 0; hotbarSlot < 9; ++hotbarSlot) {
+					if (gameSettings.keyBindsHotbar[hotbarSlot].isActiveAndMatches(keyCode)) {
+						IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);
+						if (ingredientUnderMouse != null) {
+							ItemStack itemStack = ingredientUnderMouse.getCheatItemStack();
+							if (!itemStack.isEmpty()) {
+								CommandUtil.setHotbarStack(itemStack, hotbarSlot);
+							}
+						}
+						return true;
+					}
+				}
+			}
 		}
 		return false;
 	}

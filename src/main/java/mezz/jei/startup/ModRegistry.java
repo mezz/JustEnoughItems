@@ -1,11 +1,14 @@
 package mezz.jei.startup;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
+import mezz.jei.api.gui.IGhostIngredientHandler;
+import mezz.jei.api.gui.IGuiScreenHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
@@ -26,14 +29,19 @@ import mezz.jei.recipes.RecipeTransferRegistry;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
@@ -46,6 +54,8 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	private final ListMultiMap<String, IRecipeHandler> recipeHandlers = new ListMultiMap<>();
 	private final SetMultiMap<String, Class> recipeHandlerClasses = new SetMultiMap<>();
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers = new ArrayList<>();
+	private final Map<Class, IGuiScreenHandler> guiScreenHandlers = new HashMap<>();
+	private final Map<Class, IGhostIngredientHandler> ghostIngredientHandlers = new HashMap<>();
 	@Deprecated
 	private final List<Object> unsortedRecipes = new ArrayList<>();
 	private final ListMultiMap<String, Object> recipes = new ListMultiMap<>();
@@ -197,6 +207,28 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	}
 
 	@Override
+	public <T extends GuiScreen> void addGuiScreenHandler(Class<T> guiClass, IGuiScreenHandler<T> handler) {
+		ErrorUtil.checkNotNull(guiClass, "guiClass");
+		Preconditions.checkArgument(GuiScreen.class.isAssignableFrom(guiClass), "guiClass must inherit from GuiScreen");
+		Preconditions.checkArgument(!GuiScreen.class.equals(guiClass), "you cannot add a handler for GuiScreen, only a subclass.");
+		ErrorUtil.checkNotNull(handler, "guiScreenHandler");
+		this.guiScreenHandlers.put(guiClass, handler);
+	}
+
+	private static final List<Class<? extends GuiScreen>> ghostIngredientGuiBlacklist = ImmutableList.of(
+		GuiScreen.class, GuiInventory.class, GuiContainerCreative.class
+	);
+
+	@Override
+	public <T extends GuiScreen> void addGhostIngredientHandler(Class<T> guiClass, IGhostIngredientHandler<T> handler) {
+		ErrorUtil.checkNotNull(guiClass, "guiClass");
+		Preconditions.checkArgument(GuiScreen.class.isAssignableFrom(guiClass), "guiClass must inherit from GuiScreen");
+		Preconditions.checkArgument(!ghostIngredientGuiBlacklist.contains(guiClass), "you cannot add a ghost ingredient handler for the following Guis, it would interfere with using JEI: %s", ghostIngredientGuiBlacklist);
+		ErrorUtil.checkNotNull(handler, "handler");
+		this.ghostIngredientHandlers.put(guiClass, handler);
+	}
+
+	@Override
 	@Deprecated
 	public void addDescription(List<ItemStack> itemStacks, String... descriptionKeys) {
 		addIngredientInfo(itemStacks, ItemStack.class, descriptionKeys);
@@ -255,6 +287,14 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 
 	public List<IAdvancedGuiHandler<?>> getAdvancedGuiHandlers() {
 		return advancedGuiHandlers;
+	}
+
+	public Map<Class, IGuiScreenHandler> getGuiScreenHandlers() {
+		return guiScreenHandlers;
+	}
+
+	public Map<Class, IGhostIngredientHandler> getGhostIngredientHandlers() {
+		return ghostIngredientHandlers;
 	}
 
 	public RecipeRegistry createRecipeRegistry(IIngredientRegistry ingredientRegistry) {

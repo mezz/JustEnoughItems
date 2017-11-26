@@ -148,19 +148,6 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	}
 
 	@Nullable
-	public T getIngredientUnderMouse(int xOffset, int yOffset, int mouseX, int mouseY) {
-		for (GuiIngredient<T> guiIngredient : guiIngredients.values()) {
-			if (guiIngredient != null && guiIngredient.isMouseOver(xOffset, yOffset, mouseX, mouseY)) {
-				T displayedIngredient = guiIngredient.getDisplayedIngredient();
-				if (displayedIngredient != null) {
-					return displayedIngredient;
-				}
-			}
-		}
-		return null;
-	}
-
-	@Nullable
 	public GuiIngredient<T> getHoveredIngredient(int xOffset, int yOffset, int mouseX, int mouseY) {
 		for (GuiIngredient<T> ingredient : guiIngredients.values()) {
 			if (ingredient.isMouseOver(xOffset, yOffset, mouseX, mouseY)) {
