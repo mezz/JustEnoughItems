@@ -253,10 +253,12 @@ public class IngredientFilter implements IIngredientFilter {
 		} else {
 			for (String filter : filters) {
 				TIntSet elements = getElements(filter);
-				if (matches == null) {
-					matches = elements;
-				} else {
-					matches.addAll(elements);
+				if (elements != null) {
+					if (matches == null) {
+						matches = elements;
+					} else {
+						matches.addAll(elements);
+					}
 				}
 			}
 		}
