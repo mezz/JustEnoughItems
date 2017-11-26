@@ -23,12 +23,12 @@ public final class FileUtil {
 
 	@FunctionalInterface
 	public interface ZipInputFileOperation {
-		void handle(ZipInputStream zipInputStream) throws IOException;
+		void handle(ZipInputStream zipInputStream);
 	}
 
 	@FunctionalInterface
 	public interface ZipOutputFileOperation {
-		void handle(ZipOutputStream zipOutputStream) throws IOException;
+		void handle(ZipOutputStream zipOutputStream);
 	}
 
 	public static boolean writeFileSafely(final File file, final FileOperation fileOperation) {

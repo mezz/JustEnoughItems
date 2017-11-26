@@ -1,7 +1,5 @@
 package mezz.jei.network.packets;
 
-import java.io.IOException;
-
 import mezz.jei.config.Config;
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdClient;
@@ -27,7 +25,7 @@ public class PacketCheatPermission extends PacketJei {
 		buf.writeBoolean(hasPermission);
 	}
 
-	public static void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
+	public static void readPacketData(PacketBuffer buf, EntityPlayer player) {
 		boolean hasPermission = buf.readBoolean();
 		if (!hasPermission && Config.isCheatItemsEnabled()) {
 			CommandUtilServer.writeChatMessage(player, "jei.chat.error.no.cheat.permission.1", TextFormatting.RED);

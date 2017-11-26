@@ -1,6 +1,5 @@
 package mezz.jei.network.packets;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +50,7 @@ public class PacketRecipeTransfer extends PacketJei {
 		buf.writeBoolean(maxTransfer);
 	}
 
-	public static void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
+	public static void readPacketData(PacketBuffer buf, EntityPlayer player) {
 		int recipeMapSize = buf.readVarInt();
 		Map<Integer, Integer> recipeMap = new HashMap<>(recipeMapSize);
 		for (int i = 0; i < recipeMapSize; i++) {

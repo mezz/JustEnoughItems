@@ -21,13 +21,13 @@ import java.util.Objects;
 
 public class GhostIngredientDragManager {
 	private final IngredientGrid contents;
+	private final List<GhostIngredientReturning> ghostIngredientsReturning = new ArrayList<>();
 	@Nullable
 	private GhostIngredientDrag<?> ghostIngredientDrag;
 	@Nullable
 	private Object hoveredIngredient;
 	@Nullable
 	private List<IGhostIngredientHandler.Target<Object>> hoveredIngredientTargets;
-	private List<GhostIngredientReturning> ghostIngredientsReturning = new ArrayList<>();
 
 	public GhostIngredientDragManager(IngredientGrid contents) {
 		this.contents = contents;

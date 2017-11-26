@@ -31,8 +31,7 @@ public class InputHandler {
 	private final RecipesGui recipesGui;
 	private final IngredientListOverlay ingredientListOverlay;
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<>();
-
-	private IntSet clickHandled = new IntArraySet();
+	private final IntSet clickHandled = new IntArraySet();
 
 	public InputHandler(JeiRuntime runtime, IngredientListOverlay ingredientListOverlay) {
 		this.recipeRegistry = runtime.getRecipeRegistry();
