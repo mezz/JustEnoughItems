@@ -245,20 +245,45 @@ public class IngredientFilter implements IIngredientFilter {
 	private List<IIngredientListElement> getIngredientListUncached(String filterText) {
 		String[] filters = filterText.split("\\|");
 
+		TIntSet matches = null;
+
 		if (filters.length == 1) {
 			String filter = filters[0];
-			return getElements(filter);
+			matches = getElements(filter);
 		} else {
-			List<IIngredientListElement> ingredientList = new ArrayList<>();
 			for (String filter : filters) {
-				List<IIngredientListElement> ingredients = getElements(filter);
-				ingredientList.addAll(ingredients);
+				TIntSet elements = getElements(filter);
+				if (matches == null) {
+					matches = elements;
+				} else {
+					matches.addAll(elements);
+				}
 			}
-			return ingredientList;
 		}
+
+		List<IIngredientListElement> matchingIngredients = new ArrayList<>();
+
+		if (matches == null) {
+			for (IIngredientListElement element : elementList) {
+				if (element != null && (!element.isHidden() || Config.isEditModeEnabled())) {
+					matchingIngredients.add(element);
+				}
+			}
+		} else {
+			int[] matchesList = matches.toArray();
+			Arrays.sort(matchesList);
+			for (Integer match : matchesList) {
+				IIngredientListElement<?> element = elementList.get(match);
+				if (element != null && (!element.isHidden() || Config.isEditModeEnabled())) {
+					matchingIngredients.add(element);
+				}
+			}
+		}
+		return matchingIngredients;
 	}
 
-	private List<IIngredientListElement> getElements(String filterText) {
+	@Nullable
+	private TIntSet getElements(String filterText) {
 		Matcher filterMatcher = FILTER_SPLIT_PATTERN.matcher(filterText);
 
 		TIntSet matches = null;
@@ -296,25 +321,7 @@ public class IngredientFilter implements IIngredientFilter {
 			matches.removeAll(removeMatches);
 		}
 
-		List<IIngredientListElement> matchingIngredients = new ArrayList<>();
-
-		if (matches == null) {
-			for (IIngredientListElement element : elementList) {
-				if (element != null && (!element.isHidden() || Config.isEditModeEnabled())) {
-					matchingIngredients.add(element);
-				}
-			}
-		} else {
-			int[] matchesList = matches.toArray();
-			Arrays.sort(matchesList);
-			for (Integer match : matchesList) {
-				IIngredientListElement<?> element = elementList.get(match);
-				if (element != null && (!element.isHidden() || Config.isEditModeEnabled())) {
-					matchingIngredients.add(element);
-				}
-			}
-		}
-		return matchingIngredients;
+		return matches;
 	}
 
 	/**
