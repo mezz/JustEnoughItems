@@ -22,6 +22,7 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
+import mezz.jei.startup.PlayerJoinedWorldEvent;
 import mezz.jei.suffixtree.CombinedSearchTrees;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 import mezz.jei.suffixtree.ISearchTree;
@@ -102,8 +103,6 @@ public class IngredientFilter implements IIngredientFilter {
 			return;
 		}
 
-		updateHiddenState(element);
-
 		final int index = elementList.size();
 		elementList.add(element);
 		searchTree.put(Translator.toLowercaseWithLocale(element.getDisplayName()), index);
@@ -163,7 +162,13 @@ public class IngredientFilter implements IIngredientFilter {
 		updateHidden();
 	}
 
-	public void updateHidden() {
+	@SubscribeEvent
+	public void onPlayerJoinedWorldEvent(PlayerJoinedWorldEvent event) {
+		this.filterCached = null;
+		updateHidden();
+	}
+
+	private void updateHidden() {
 		for (IIngredientListElement<?> element : elementList) {
 			if (element != null) {
 				updateHiddenState(element);
@@ -171,10 +176,12 @@ public class IngredientFilter implements IIngredientFilter {
 		}
 	}
 
-	private <V> void updateHiddenState(IIngredientListElement<V> element) {
+	private static <V> void updateHiddenState(IIngredientListElement<V> element) {
 		V ingredient = element.getIngredient();
-		boolean hidden = Config.isIngredientOnConfigBlacklist(ingredient, element.getIngredientHelper());
-		element.setHidden(hidden);
+		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
+		boolean visible = !Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper) &&
+			ingredientHelper.isIngredientOnServer(ingredient);
+		element.setVisible(visible);
 	}
 
 	public List<IIngredientListElement> getIngredientList() {
@@ -236,7 +243,7 @@ public class IngredientFilter implements IIngredientFilter {
 
 		if (matches == null) {
 			for (IIngredientListElement element : elementList) {
-				if (element != null && (!element.isHidden() || Config.isEditModeEnabled())) {
+				if (element != null && (element.isVisible() || Config.isEditModeEnabled())) {
 					matchingIngredients.add(element);
 				}
 			}
@@ -245,7 +252,7 @@ public class IngredientFilter implements IIngredientFilter {
 			Arrays.sort(matchesList);
 			for (Integer match : matchesList) {
 				IIngredientListElement<?> element = elementList.get(match);
-				if (element != null && (!element.isHidden() || Config.isEditModeEnabled())) {
+				if (element != null && (element.isVisible() || Config.isEditModeEnabled())) {
 					matchingIngredients.add(element);
 				}
 			}

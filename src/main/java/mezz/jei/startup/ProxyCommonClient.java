@@ -11,7 +11,6 @@ import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.SessionData;
 import mezz.jei.gui.overlay.IngredientListOverlay;
-import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.network.PacketHandler;
 import mezz.jei.network.PacketHandlerClient;
 import mezz.jei.network.packets.PacketJei;
@@ -35,10 +34,8 @@ import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.relauncher.Side;
 
 @SuppressWarnings("unused")
 public class ProxyCommonClient extends ProxyCommon {
@@ -127,9 +124,24 @@ public class ProxyCommonClient extends ProxyCommon {
 
 	@SubscribeEvent
 	public void onEntityJoinedWorld(EntityJoinWorldEvent event) {
-		if (event.getWorld().isRemote && !SessionData.hasJoinedWorld() && Minecraft.getMinecraft().player != null) {
-			SessionData.setJoinedWorld();
+		if (event.getWorld().isRemote && Minecraft.getMinecraft().player != null && !SessionData.hasJoinedWorld()) {
+			SessionData.setJoinedWorld(true);
 			Config.syncWorldConfig();
+			MinecraftForge.EVENT_BUS.post(new PlayerJoinedWorldEvent());
+		}
+	}
+
+	@SubscribeEvent
+	public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
+		if (!event.isLocal() && !event.getConnectionType().equals("MODDED")) {
+			SessionData.onConnectedToServer(false);
+		}
+	}
+
+	@SubscribeEvent
+	public void onClientDisconnectionFromServer(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
+		if (SessionData.hasJoinedWorld()) {
+			SessionData.setJoinedWorld(false);
 		}
 	}
 
@@ -168,13 +180,6 @@ public class ProxyCommonClient extends ProxyCommon {
 			Config.saveFilterText();
 		} catch (RuntimeException e) {
 			Log.get().error("Failed to save filter text.", e);
-		}
-	}
-
-	@SubscribeEvent
-	public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
-		if (!event.isLocal() && !event.getConnectionType().equals("MODDED")) {
-			SessionData.onConnectedToServer(false);
 		}
 	}
 }

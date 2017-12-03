@@ -59,8 +59,8 @@ public final class SessionData {
 		return joinedWorld;
 	}
 
-	public static void setJoinedWorld() {
-		SessionData.joinedWorld = true;
+	public static void setJoinedWorld(boolean value) {
+		SessionData.joinedWorld = value;
 	}
 
 	public static int getFirstItemIndex() {
