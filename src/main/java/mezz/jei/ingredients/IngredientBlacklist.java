@@ -52,7 +52,7 @@ public class IngredientBlacklist implements IIngredientBlacklist, IItemBlacklist
 
 	public <V> boolean isIngredientBlacklistedByApi(V ingredient) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-		List<String> uids = IngredientUtil.getUniqueIdsWithWildcard(ingredientHelper, ingredient);
+		List<String> uids = IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient);
 
 		for (String uid : uids) {
 			if (ingredientBlacklist.contains(uid)) {

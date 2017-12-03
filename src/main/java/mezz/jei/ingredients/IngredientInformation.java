@@ -2,7 +2,9 @@ package mezz.jei.ingredients;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -53,5 +55,16 @@ public final class IngredientInformation {
 		Iterable<Color> colors = ingredientHelper.getColors(ingredient);
 		ColorNamer colorNamer = Internal.getColorNamer();
 		return colorNamer.getColorNames(colors, true);
+	}
+
+	public static <V> List<String> getUniqueIdsWithWildcard(IIngredientHelper<V> ingredientHelper, V ingredient) {
+		String uid = ingredientHelper.getUniqueId(ingredient);
+		String uidWild = ingredientHelper.getWildcardId(ingredient);
+
+		if (uid.equals(uidWild)) {
+			return Collections.singletonList(uid);
+		} else {
+			return Arrays.asList(uid, uidWild);
+		}
 	}
 }

@@ -133,14 +133,6 @@ public class ProxyCommonClient extends ProxyCommon {
 		}
 	}
 
-	@SubscribeEvent
-	public void onClientTick(TickEvent.ClientTickEvent event) {
-		if (event.side == Side.CLIENT && SessionData.hasJoinedWorld() && Minecraft.getMinecraft().player != null) {
-			IngredientFilter ingredientFilter = Internal.getIngredientFilter();
-			ingredientFilter.onClientTick(20);
-		}
-	}
-
 	private static void reloadItemList() {
 		JeiRuntime runtime = Internal.getRuntime();
 		if (runtime != null) {

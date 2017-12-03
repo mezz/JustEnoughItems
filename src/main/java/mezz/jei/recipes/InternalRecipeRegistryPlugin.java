@@ -12,7 +12,7 @@ import mezz.jei.api.recipe.IRecipeRegistryPlugin;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.collect.ListMultiMap;
 import mezz.jei.gui.Focus;
-import mezz.jei.ingredients.IngredientUtil;
+import mezz.jei.ingredients.IngredientInformation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,7 +75,7 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 			final ImmutableList<T> recipes = recipeInputMap.getRecipeWrappers(recipeCategory, ingredient);
 
 			String recipeCategoryUid = recipeCategory.getUid();
-			for (String inputKey : IngredientUtil.getUniqueIdsWithWildcard(ingredientHelper, ingredient)) {
+			for (String inputKey : IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient)) {
 				if (categoriesForRecipeCatalystKeys.get(inputKey).contains(recipeCategoryUid)) {
 					ImmutableSet<T> specificRecipes = ImmutableSet.copyOf(recipes);
 					//noinspection unchecked

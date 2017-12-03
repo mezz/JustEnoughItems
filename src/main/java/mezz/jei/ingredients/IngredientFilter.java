@@ -45,6 +45,7 @@ public class IngredientFilter implements IIngredientFilter {
 	private final List<IIngredientListElement> elementList;
 	private final GeneralizedSuffixTree searchTree;
 	private final TCharObjectMap<PrefixedSearchTree> prefixedSearchTrees = new TCharObjectHashMap<>();
+	private final IngredientFilterBackgroundBuilder backgroundBuilder;
 	private CombinedSearchTrees combinedSearchTrees;
 
 	@Nullable
@@ -63,6 +64,7 @@ public class IngredientFilter implements IIngredientFilter {
 		createPrefixedSearchTree('&', Config::getResourceIdSearchMode, element -> Collections.singleton(element.getResourceId()));
 
 		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.valueCollection());
+		this.backgroundBuilder = new IngredientFilterBackgroundBuilder(prefixedSearchTrees, elementList);
 	}
 
 	private static CombinedSearchTrees buildCombinedSearchTrees(ISearchTree searchTree, Collection<PrefixedSearchTree> prefixedSearchTrees) {
@@ -100,8 +102,7 @@ public class IngredientFilter implements IIngredientFilter {
 			return;
 		}
 
-		boolean hidden = Config.isIngredientOnConfigBlacklist(ingredient, element.getIngredientHelper());
-		element.setHidden(hidden);
+		updateHiddenState(element);
 
 		final int index = elementList.size();
 		elementList.add(element);
@@ -152,35 +153,8 @@ public class IngredientFilter implements IIngredientFilter {
 
 	public void modesChanged() {
 		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.valueCollection());
-		onClientTick(10000);
+		this.backgroundBuilder.start();
 		this.filterCached = null;
-	}
-
-	public void onClientTick(final int timeoutMs) {
-		final long startTime = System.currentTimeMillis();
-		for (PrefixedSearchTree prefixedTree : this.prefixedSearchTrees.valueCollection()) {
-			Config.SearchMode mode = prefixedTree.getMode();
-			if (mode != Config.SearchMode.DISABLED) {
-				PrefixedSearchTree.IStringsGetter stringsGetter = prefixedTree.getStringsGetter();
-				GeneralizedSuffixTree tree = prefixedTree.getTree();
-				for (int i = tree.getHighestIndex() + 1; i < this.elementList.size(); i++) {
-					IIngredientListElement element = elementList.get(i);
-					if (element != null) {
-						Collection<String> strings = stringsGetter.getStrings(element);
-						if (strings.isEmpty()) {
-							tree.put("", i);
-						} else {
-							for (String string : strings) {
-								tree.put(string, i);
-							}
-						}
-					}
-					if (System.currentTimeMillis() - startTime >= timeoutMs) {
-						return;
-					}
-				}
-			}
-		}
 	}
 
 	@SubscribeEvent
@@ -247,18 +221,13 @@ public class IngredientFilter implements IIngredientFilter {
 
 		TIntSet matches = null;
 
-		if (filters.length == 1) {
-			String filter = filters[0];
-			matches = getElements(filter);
-		} else {
-			for (String filter : filters) {
-				TIntSet elements = getElements(filter);
-				if (elements != null) {
-					if (matches == null) {
-						matches = elements;
-					} else {
-						matches.addAll(elements);
-					}
+		for (String filter : filters) {
+			TIntSet elements = getElements(filter);
+			if (elements != null) {
+				if (matches == null) {
+					matches = elements;
+				} else {
+					matches.addAll(elements);
 				}
 			}
 		}
