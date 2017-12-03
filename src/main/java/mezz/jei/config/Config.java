@@ -21,11 +21,13 @@ import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.GiveMode;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public final class Config {
@@ -65,7 +67,8 @@ public final class Config {
 		values.overlayEnabled = !values.overlayEnabled;
 
 		if (worldConfig != null) {
-			final String worldCategory = SessionData.getWorldUid();
+			NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
+			final String worldCategory = SessionData.getWorldUid(networkManager);
 			Property property = worldConfig.get(worldCategory, "overlayEnabled", defaultValues.overlayEnabled);
 			property.set(values.overlayEnabled);
 
@@ -90,7 +93,8 @@ public final class Config {
 			values.cheatItemsEnabled = value;
 
 			if (worldConfig != null) {
-				final String worldCategory = SessionData.getWorldUid();
+				NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
+				final String worldCategory = SessionData.getWorldUid(networkManager);
 				Property property = worldConfig.get(worldCategory, "cheatItemsEnabled", defaultValues.cheatItemsEnabled);
 				property.set(values.cheatItemsEnabled);
 
@@ -196,7 +200,8 @@ public final class Config {
 
 	public static void saveFilterText() {
 		if (worldConfig != null) {
-			final String worldCategory = SessionData.getWorldUid();
+			NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
+			final String worldCategory = SessionData.getWorldUid(networkManager);
 			Property property = worldConfig.get(worldCategory, "filterText", defaultValues.filterText);
 			property.set(values.filterText);
 
@@ -255,7 +260,8 @@ public final class Config {
 			needsReload = true;
 		}
 
-		if (syncWorldConfig()) {
+		NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
+		if (syncWorldConfig(networkManager)) {
 			needsReload = true;
 		}
 
@@ -407,12 +413,12 @@ public final class Config {
 		return configChanged;
 	}
 
-	public static boolean syncWorldConfig() {
+	public static boolean syncWorldConfig(@Nullable NetworkManager networkManager) {
 		if (worldConfig == null) {
 			return false;
 		}
 
-		final String worldCategory = SessionData.getWorldUid();
+		final String worldCategory = SessionData.getWorldUid(networkManager);
 
 		Property property = worldConfig.get(worldCategory, "overlayEnabled", defaultValues.overlayEnabled);
 		property.setLanguageKey("config.jei.interface.overlayEnabled");

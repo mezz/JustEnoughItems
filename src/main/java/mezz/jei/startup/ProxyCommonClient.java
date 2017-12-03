@@ -22,9 +22,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -123,19 +123,14 @@ public class ProxyCommonClient extends ProxyCommon {
 	}
 
 	@SubscribeEvent
-	public void onEntityJoinedWorld(EntityJoinWorldEvent event) {
-		if (event.getWorld().isRemote && Minecraft.getMinecraft().player != null && !SessionData.hasJoinedWorld()) {
-			SessionData.setJoinedWorld(true);
-			Config.syncWorldConfig();
-			MinecraftForge.EVENT_BUS.post(new PlayerJoinedWorldEvent());
-		}
-	}
-
-	@SubscribeEvent
 	public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
 		if (!event.isLocal() && !event.getConnectionType().equals("MODDED")) {
 			SessionData.onConnectedToServer(false);
 		}
+		SessionData.setJoinedWorld(true);
+		NetworkManager networkManager = event.getManager();
+		Config.syncWorldConfig(networkManager);
+		MinecraftForge.EVENT_BUS.post(new PlayerJoinedWorldEvent());
 	}
 
 	@SubscribeEvent

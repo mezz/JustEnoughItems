@@ -29,19 +29,18 @@ public final class SessionData {
 		SessionData.worldUid = null;
 	}
 
-	public static String getWorldUid() {
+	public static String getWorldUid(@Nullable NetworkManager networkManager) {
 		if (worldUid == null) {
-			FMLClientHandler fmlClientHandler = FMLClientHandler.instance();
-			final NetworkManager networkManager = fmlClientHandler.getClientToServerNetworkManager();
 			if (networkManager == null) {
-				worldUid = "default";
+				worldUid = "default"; // we get here when opening the in-game config before loading a world
 			} else if (networkManager.isLocalChannel()) {
-				final MinecraftServer minecraftServer = fmlClientHandler.getServer();
+				FMLClientHandler fmlClientHandler = FMLClientHandler.instance();
+				MinecraftServer minecraftServer = fmlClientHandler.getServer();
 				if (minecraftServer != null) {
 					worldUid = minecraftServer.getFolderName();
 				}
 			} else {
-				final ServerData serverData = Minecraft.getMinecraft().getCurrentServerData();
+				ServerData serverData = Minecraft.getMinecraft().getCurrentServerData();
 				if (serverData != null) {
 					worldUid = serverData.serverIP + ' ' + serverData.serverName;
 				}
