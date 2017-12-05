@@ -29,6 +29,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 public class BrewingRecipeMaker {
 
 	private final Set<Class> unhandledRecipeClasses = new HashSet<>();
+	private final Set<BrewingRecipeWrapper> disabledRecipes = new HashSet<>();
 	private final IIngredientRegistry ingredientRegistry;
 
 	public static List<BrewingRecipeWrapper> getBrewingRecipes(IIngredientRegistry ingredientRegistry) {
@@ -92,8 +93,12 @@ public class BrewingRecipeMaker {
 				}
 
 				BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(Collections.singletonList(potionIngredient), potionInput.copy(), potionOutput);
-				if (!recipes.contains(recipe)) {
-					recipes.add(recipe);
+				if (!recipes.contains(recipe) && !disabledRecipes.contains(recipe)) {
+					if (BrewingRecipeRegistry.hasOutput(potionInput, potionIngredient)) {
+						recipes.add(recipe);
+					} else {
+						disabledRecipes.add(recipe);
+					}
 					newPotions.add(potionOutput);
 				}
 			}
