@@ -70,11 +70,14 @@ public class InputHandler {
 	}
 
 	private boolean handleMouseClick(GuiScreen guiScreen, int mouseButton, int mouseX, int mouseY) {
+		IClickedIngredient<?> clicked = getFocusUnderMouseForClick(mouseX, mouseY);
+		if (Config.isEditModeEnabled() && clicked != null && handleClickEdit(mouseButton, clicked)) {
+			return true;
+		}
 		if (ingredientListOverlay.isEnabled() && ingredientListOverlay.handleMouseClicked(mouseX, mouseY, mouseButton)) {
 			return true;
 		}
 
-		IClickedIngredient<?> clicked = getFocusUnderMouseForClick(mouseX, mouseY);
 		if (clicked != null && handleMouseClickedFocus(mouseButton, clicked)) {
 			return true;
 		}
@@ -120,25 +123,23 @@ public class InputHandler {
 	}
 
 	private <V> boolean handleMouseClickedFocus(int mouseButton, IClickedIngredient<V> clicked) {
-		if (Config.isEditModeEnabled() &&
-				handleClickEdit(mouseButton, clicked.getValue())) {
-			return true;
-		}
-
 		if (mouseButton == 0) {
 			IFocus<?> focus = new Focus<>(IFocus.Mode.OUTPUT, clicked.getValue());
 			recipesGui.show(focus);
+			clicked.onClickHandled();
 			return true;
 		} else if (mouseButton == 1) {
 			IFocus<?> focus = new Focus<>(IFocus.Mode.INPUT, clicked.getValue());
 			recipesGui.show(focus);
+			clicked.onClickHandled();
 			return true;
 		}
 
 		return false;
 	}
 
-	private <V> boolean handleClickEdit(int mouseButton, V ingredient) {
+	private <V> boolean handleClickEdit(int mouseButton, IClickedIngredient<V> clicked) {
+		V ingredient = clicked.getValue();
 		Config.IngredientBlacklistType blacklistType = null;
 		if (GuiScreen.isCtrlKeyDown()) {
 			if (GuiScreen.isShiftKeyDown()) {
@@ -165,6 +166,7 @@ public class InputHandler {
 		} else {
 			Config.addIngredientToConfigBlacklist(ingredient, blacklistType, ingredientHelper);
 		}
+		clicked.onClickHandled();
 		return true;
 	}
 
@@ -238,6 +240,7 @@ public class InputHandler {
 			if (clicked != null) {
 				IFocus.Mode mode = showRecipe ? IFocus.Mode.OUTPUT : IFocus.Mode.INPUT;
 				recipesGui.show(new Focus<Object>(mode, clicked.getValue()));
+				clicked.onClickHandled();
 				return true;
 			}
 		}

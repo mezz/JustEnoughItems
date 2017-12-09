@@ -13,6 +13,8 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	private final V value;
 	@Nullable
 	private final Rectangle area;
+	@Nullable
+	private IOnClickHandler onClickHandler;
 	private boolean allowsCheating;
 
 	public ClickedIngredient(V value, @Nullable Rectangle area) {
@@ -37,6 +39,11 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	}
 
 	@Override
+	public void setOnClickHandler(IOnClickHandler onClickHandler) {
+		this.onClickHandler = onClickHandler;
+	}
+
+	@Override
 	public ItemStack getCheatItemStack() {
 		if (allowsCheating) {
 			IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
@@ -44,5 +51,12 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 			return ingredientHelper.getCheatItemStack(value);
 		}
 		return ItemStack.EMPTY;
+	}
+
+	@Override
+	public void onClickHandled() {
+		if (this.onClickHandler != null) {
+			this.onClickHandler.onClick();
+		}
 	}
 }
