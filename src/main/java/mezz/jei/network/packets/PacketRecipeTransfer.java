@@ -16,14 +16,14 @@ public class PacketRecipeTransfer extends PacketJei {
 	public final List<Integer> craftingSlots;
 	public final List<Integer> inventorySlots;
 	private final boolean maxTransfer;
-	private final boolean ignoreTransferLimit;
+	private final boolean requireCompleteSets;
 
-	public PacketRecipeTransfer(Map<Integer, Integer> recipeMap, List<Integer> craftingSlots, List<Integer> inventorySlots, boolean maxTransfer, boolean ignoreTransferLimit) {
+	public PacketRecipeTransfer(Map<Integer, Integer> recipeMap, List<Integer> craftingSlots, List<Integer> inventorySlots, boolean maxTransfer, boolean requireCompleteSets) {
 		this.recipeMap = recipeMap;
 		this.craftingSlots = craftingSlots;
 		this.inventorySlots = inventorySlots;
 		this.maxTransfer = maxTransfer;
-		this.ignoreTransferLimit = ignoreTransferLimit;
+		this.requireCompleteSets = requireCompleteSets;
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class PacketRecipeTransfer extends PacketJei {
 		}
 
 		buf.writeBoolean(maxTransfer);
-		buf.writeBoolean(ignoreTransferLimit);
+		buf.writeBoolean(requireCompleteSets);
 	}
 
 	public static void readPacketData(PacketBuffer buf, EntityPlayer player) {
