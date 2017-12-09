@@ -38,4 +38,11 @@ public interface IRecipeTransferInfo<C extends Container> {
 	 * Return a list of slots that the transfer can use to get items for crafting, or place leftover items.
 	 */
 	List<Slot> getInventorySlots(C container);
+
+	/**
+	 * Return false if the recipe transfer should attempt to place as many items as possible for all slots, even if one slot has less.
+	 */
+	default boolean requireCompleteSets() {
+		return true;
+	}
 }

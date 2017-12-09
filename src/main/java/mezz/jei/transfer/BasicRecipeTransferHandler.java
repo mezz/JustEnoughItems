@@ -130,8 +130,10 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 			}
 		}
 
+		boolean requireCompleteSets = transferHelper.requireCompleteSets();
+
 		if (doTransfer) {
-			PacketRecipeTransfer packet = new PacketRecipeTransfer(matchingItemsResult.matchingItems, craftingSlotIndexes, inventorySlotIndexes, maxTransfer);
+			PacketRecipeTransfer packet = new PacketRecipeTransfer(matchingItemsResult.matchingItems, craftingSlotIndexes, inventorySlotIndexes, maxTransfer, requireCompleteSets);
 			JustEnoughItems.getProxy().sendPacketToServer(packet);
 		}
 
