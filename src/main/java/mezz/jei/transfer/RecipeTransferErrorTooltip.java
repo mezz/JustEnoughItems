@@ -25,6 +25,6 @@ public class RecipeTransferErrorTooltip implements IRecipeTransferError {
 
 	@Override
 	public void showError(Minecraft minecraft, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY) {
-		TooltipRenderer.drawHoveringText(minecraft, message, mouseX, mouseY);
+		TooltipRenderer.drawHoveringText(minecraft, message, mouseX, mouseY, 150);
 	}
 }

@@ -14,19 +14,31 @@ public final class TooltipRenderer {
 	}
 
 	public static void drawHoveringText(Minecraft minecraft, String textLine, int x, int y) {
-		drawHoveringText(minecraft, Collections.singletonList(textLine), x, y, minecraft.fontRenderer);
+		drawHoveringText(ItemStack.EMPTY, minecraft, Collections.singletonList(textLine), x, y, -1, minecraft.fontRenderer);
 	}
 
 	public static void drawHoveringText(Minecraft minecraft, List<String> textLines, int x, int y) {
-		drawHoveringText(minecraft, textLines, x, y, minecraft.fontRenderer);
+		drawHoveringText(ItemStack.EMPTY, minecraft, textLines, x, y, -1, minecraft.fontRenderer);
+	}
+
+	public static void drawHoveringText(Minecraft minecraft, List<String> textLines, int x, int y, int maxWidth) {
+		drawHoveringText(ItemStack.EMPTY, minecraft, textLines, x, y, maxWidth, minecraft.fontRenderer);
 	}
 
 	public static void drawHoveringText(Minecraft minecraft, List<String> textLines, int x, int y, FontRenderer font) {
-		drawHoveringText(ItemStack.EMPTY, minecraft, textLines, x, y, font);
+		drawHoveringText(ItemStack.EMPTY, minecraft, textLines, x, y, -1, font);
+	}
+
+	public static void drawHoveringText(Minecraft minecraft, List<String> textLines, int x, int y, int maxWidth, FontRenderer font) {
+		drawHoveringText(ItemStack.EMPTY, minecraft, textLines, x, y, maxWidth, font);
 	}
 
 	public static void drawHoveringText(ItemStack itemStack, Minecraft minecraft, List<String> textLines, int x, int y, FontRenderer font) {
+		drawHoveringText(itemStack, minecraft, textLines, x, y, -1, font);
+	}
+
+	public static void drawHoveringText(ItemStack itemStack, Minecraft minecraft, List<String> textLines, int x, int y, int maxWidth, FontRenderer font) {
 		ScaledResolution scaledresolution = new ScaledResolution(minecraft);
-		GuiUtils.drawHoveringText(itemStack, textLines, x, y, scaledresolution.getScaledWidth(), scaledresolution.getScaledHeight(), -1, font);
+		GuiUtils.drawHoveringText(itemStack, textLines, x, y, scaledresolution.getScaledWidth(), scaledresolution.getScaledHeight(), maxWidth, font);
 	}
 }
