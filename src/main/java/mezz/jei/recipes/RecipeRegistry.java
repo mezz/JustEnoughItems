@@ -237,7 +237,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return recipeCategoriesMap.get(recipeCategoryUid);
 	}
 
-	private static <T> void logBrokenRecipeHandler(T recipe, IRecipeHandler<T> recipeHandler) {
+	private static <T> void logBrokenRecipeHandler(T recipe, IRecipeHandler<T> recipeHandler, Throwable e) {
 		StringBuilder recipeInfoBuilder = new StringBuilder();
 		try {
 			recipeInfoBuilder.append(recipe);
@@ -247,7 +247,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		}
 		recipeInfoBuilder.append("\nRecipe Handler failed to create recipe wrapper\n");
 		recipeInfoBuilder.append(recipeHandler.getClass());
-		Log.get().error("{}", recipeInfoBuilder.toString());
+		Log.get().error("{}", recipeInfoBuilder.toString(), e);
 	}
 
 	private <T> void addRecipe(T recipe, IRecipeWrapper recipeWrapper, IRecipeCategory recipeCategory) {
@@ -412,7 +412,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 				wrapperMaps.put(recipeCategoryUid, recipe, recipeWrapper);
 				return recipeWrapper;
 			} catch (RuntimeException | LinkageError e) {
-				logBrokenRecipeHandler(recipe, recipeHandler);
+				logBrokenRecipeHandler(recipe, recipeHandler, e);
 				return null;
 			}
 		} else if (recipe instanceof IRecipeWrapper) {
