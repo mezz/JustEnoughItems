@@ -32,38 +32,15 @@ public final class BasicRecipeTransferHandlerServer {
 			slotMap.put(entry.getKey(), stack);
 		}
 
-		int maxRemovedSets = maxTransfer ? 64 : 1;
-		for (Map.Entry<Integer, ItemStack> entry : slotMap.entrySet()) {
-			ItemStack stack = entry.getValue();
-			if (stack.isStackable()) {
-				Integer craftNumber = entry.getKey();
-				Integer slotNumber = craftingSlots.get(craftNumber);
-				Slot craftSlot = container.getSlot(slotNumber);
-				int maxStackSize = Math.min(craftSlot.getItemStackLimit(stack), stack.getMaxStackSize());
-				maxRemovedSets = Math.min(maxRemovedSets, maxStackSize);
-			} else {
-				maxRemovedSets = 1;
-			}
-		}
+		// Transfer as many items as possible only if it has been explicitly requested by the implementation
+    // and a max-transfer operation has been requested by the player.
+		boolean transferAsCompleteSets = requireCompleteSets || !maxTransfer;
 
-		if (maxRemovedSets <= 0) {
-			return;
-		}
+    Map<Integer, ItemStack> toTransfer = removeItemsFromInventory(container, slotMap, craftingSlots, inventorySlots, transferAsCompleteSets, maxTransfer);
 
-		// remove items from the container and place them in a map of items to transfer
-		Map<Integer, ItemStack> toTransfer;
-		if (requireCompleteSets || !maxTransfer) {
-			// Transfer complete sets only if it's required or if it's not a shift-click transfer.
-			toTransfer = removeSetsFromInventory(container, slotMap, craftingSlots, inventorySlots, maxRemovedSets);
-			if (toTransfer.isEmpty()) {
-				return;
-			}
-
-		} else {
-			// Otherwise, the implementation doesn't require complete sets and it is a shift-click transfer,
-			// therefore we transfer as many of each ingredient as we can.
-			toTransfer = removeItemsFromInventory(container, slotMap, craftingSlots, inventorySlots);
-		}
+    if (toTransfer.isEmpty()) {
+      return;
+    }
 
 		// clear the crafting grid
 		List<ItemStack> clearedCraftingItems = new ArrayList<>();
@@ -104,93 +81,94 @@ public final class BasicRecipeTransferHandlerServer {
 	}
 
 	@Nonnull
-	private static Map<Integer, ItemStack> removeItemsFromInventory(Container container, Map<Integer, ItemStack> required, List<Integer> craftingSlots, List<Integer> inventorySlots) {
+	private static Map<Integer, ItemStack> removeItemsFromInventory(
+			Container container,
+			Map<Integer, ItemStack> required,
+			List<Integer> craftingSlots,
+			List<Integer> inventorySlots,
+			boolean transferAsCompleteSets,
+			boolean maxTransfer
+	) {
 
-		Map<Integer, ItemStack> result = new HashMap<>(required.size());
+		// This map becomes populated with the resulting items to transfer and is returned by this method.
+		final Map<Integer, ItemStack> result = new HashMap<>(required.size());
 
-		for (Map.Entry<Integer, ItemStack> requiredEntry : required.entrySet()) {
+		loopSets:
+		while (true) { // for each set
 
-			// Iterate through all the required entries. Copy each required stack
-			// and grow the copied stack by removing one item from the container
-			// until the item's max stack size is reached or we run out of items
-			// in the container. Store each copy in the result map we ultimately
-			// return.
+			// This map holds the original contents of a slot we have removed items from. This is used if we don't
+			// have enough items to complete a whole set, we can roll back the items that were removed.
+			final Map<Slot, ItemStack> originalSlotContents = new HashMap<>();
 
-			// Note: this will allow transfers of recipe ingredients even if there
-			// aren't enough ingredients for a complete set. The client check will
-			// still prevent clicking the transfer button and notify the player
-			// that items are missing.
+			// This map holds items found for each set iteration. Its contents are added to the result map
+			// after each complete set iteration. If we are transferring as complete sets, this allows
+			// us to simply ignore the map's contents when a complete set isn't found.
+			final Map<Integer, ItemStack> foundItemsInSet = new HashMap<>(required.size());
 
-			ItemStack requiredStack = requiredEntry.getValue().copy();
-			int maxStackSize = requiredStack.getMaxStackSize();
-			int stackSize = 0;
+			// This flag is set to false if at least one item is found during the set iteration. It is used
+			// to determine if iteration should continue and prevents an infinite loop if not transferring
+			// as complete sets.
+			boolean noItemsFound = true;
 
-			while (stackSize < maxStackSize) {
-				Slot slot = getSlotWithStack(container, requiredStack, craftingSlots, inventorySlots);
+			for (Map.Entry<Integer, ItemStack> entry : required.entrySet()) { // for each item in set
+				final ItemStack requiredStack = entry.getValue().copy();
 
-				if (slot == null || slot.getStack().isEmpty()) {
-					break;
-				}
+				// Locate a slot that has what we need.
+				final Slot slot = getSlotWithStack(container, requiredStack, craftingSlots, inventorySlots);
 
-				slot.decrStackSize(1);
-				stackSize += 1;
+				boolean itemFound = (slot != null) && !slot.getStack().isEmpty();
+				ItemStack resultItemStack = result.get(entry.getKey());
+				boolean resultItemStackLimitReached = (resultItemStack != null) && (resultItemStack.getCount() == resultItemStack.getMaxStackSize());
+
+				if (!itemFound || resultItemStackLimitReached) {
+					// We can't find any more items to fulfill the requirements or the maximum stack size for this item
+					// has been reached.
+
+          if (transferAsCompleteSets) {
+            // Since the full set requirement wasn't satisfied, we need to roll back any
+            // slot changes we've made during this set iteration.
+            for (Map.Entry<Slot, ItemStack> slotEntry : originalSlotContents.entrySet()) {
+              ItemStack stack = slotEntry.getValue();
+              slotEntry.getKey().putStack(stack);
+            }
+            break loopSets;
+          }
+
+				} else { // the item was found and the stack limit has not been reached
+
+          // Keep a copy of the slots original contents in case we need to roll back.
+          if (!originalSlotContents.containsKey(slot)) {
+            originalSlotContents.put(slot, slot.getStack().copy());
+          }
+
+          // Reduce the size of the found slot.
+          ItemStack removedItemStack = slot.decrStackSize(1);
+          foundItemsInSet.put(entry.getKey(), removedItemStack);
+
+          noItemsFound = false;
+        }
+      }
+
+      // Merge the contents of the temporary map with the result map.
+      for (Map.Entry<Integer, ItemStack> entry : foundItemsInSet.entrySet()) {
+        ItemStack resultItemStack = result.get(entry.getKey());
+
+        if (resultItemStack == null) {
+          result.put(entry.getKey(), entry.getValue());
+
+        } else {
+          resultItemStack.grow(1);
+        }
+      }
+
+			if (!maxTransfer || noItemsFound) {
+				// If max transfer is not requested by the player this will exit the loop after trying one set.
+				// If no items were found during this iteration, we're done.
+				break;
 			}
-
-			requiredStack.setCount(stackSize);
-			result.put(requiredEntry.getKey(), requiredStack);
 		}
 
 		return result;
-	}
-
-	@Nonnull
-	private static Map<Integer, ItemStack> removeSetsFromInventory(Container container, Map<Integer, ItemStack> required, List<Integer> craftingSlots, List<Integer> inventorySlots, final int maxRemovedSets) {
-		int removedSets = 0;
-		while (removedSets < maxRemovedSets && removeSetsFromInventory(container, required.values(), craftingSlots, inventorySlots)) {
-			removedSets++;
-		}
-		// If sets were successfully removed, we populate the result map with copies of
-		// the required items that have had their count set to the number of removed sets.
-		if (removedSets > 0) {
-			Map<Integer, ItemStack> result = new HashMap<>(required.size());
-			for (Map.Entry<Integer, ItemStack> entry : required.entrySet()) {
-				ItemStack itemStack = entry.getValue().copy();
-				itemStack.setCount(removedSets);
-				result.put(entry.getKey(), itemStack);
-			}
-			return result;
-
-		} else {
-			return Collections.emptyMap();
-		}
-	}
-
-	private static boolean removeSetsFromInventory(Container container, Iterable<ItemStack> required, List<Integer> craftingSlots, List<Integer> inventorySlots) {
-		final Map<Slot, ItemStack> originalSlotContents = new HashMap<>();
-
-		for (ItemStack matchingStack : required) {
-			final ItemStack requiredStack = matchingStack.copy();
-			while (requiredStack.getCount() > 0) {
-				final Slot slot = getSlotWithStack(container, requiredStack, craftingSlots, inventorySlots);
-				if (slot == null || slot.getStack().isEmpty()) {
-					// abort! put removed items back where they came from
-					for (Map.Entry<Slot, ItemStack> slotEntry : originalSlotContents.entrySet()) {
-						ItemStack stack = slotEntry.getValue();
-						slotEntry.getKey().putStack(stack);
-					}
-					return false;
-				}
-
-				if (!originalSlotContents.containsKey(slot)) {
-					originalSlotContents.put(slot, slot.getStack().copy());
-				}
-
-				ItemStack removed = slot.decrStackSize(requiredStack.getCount());
-				requiredStack.shrink(removed.getCount());
-			}
-		}
-
-		return true;
 	}
 
 	@Nullable
