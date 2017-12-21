@@ -136,8 +136,8 @@ public final class BasicRecipeTransferHandlerServer {
 
 				} else { // the item was found and the stack limit has not been reached
 
-          // Keep a copy of the slots original contents in case we need to roll back.
-          if (!originalSlotContents.containsKey(slot)) {
+          // Keep a copy of the slot's original contents in case we need to roll back.
+          if (transferAsCompleteSets && !originalSlotContents.containsKey(slot)) {
             originalSlotContents.put(slot, slot.getStack().copy());
           }
 
