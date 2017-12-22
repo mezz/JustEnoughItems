@@ -33,14 +33,14 @@ public final class BasicRecipeTransferHandlerServer {
 		}
 
 		// Transfer as many items as possible only if it has been explicitly requested by the implementation
-    // and a max-transfer operation has been requested by the player.
+		// and a max-transfer operation has been requested by the player.
 		boolean transferAsCompleteSets = requireCompleteSets || !maxTransfer;
 
-    Map<Integer, ItemStack> toTransfer = removeItemsFromInventory(container, slotMap, craftingSlots, inventorySlots, transferAsCompleteSets, maxTransfer);
+		Map<Integer, ItemStack> toTransfer = removeItemsFromInventory(container, slotMap, craftingSlots, inventorySlots, transferAsCompleteSets, maxTransfer);
 
-    if (toTransfer.isEmpty()) {
-      return;
-    }
+		if (toTransfer.isEmpty()) {
+			return;
+		}
 
 		// clear the crafting grid
 		List<ItemStack> clearedCraftingItems = new ArrayList<>();
@@ -124,42 +124,42 @@ public final class BasicRecipeTransferHandlerServer {
 					// We can't find any more items to fulfill the requirements or the maximum stack size for this item
 					// has been reached.
 
-          if (transferAsCompleteSets) {
-            // Since the full set requirement wasn't satisfied, we need to roll back any
-            // slot changes we've made during this set iteration.
-            for (Map.Entry<Slot, ItemStack> slotEntry : originalSlotContents.entrySet()) {
-              ItemStack stack = slotEntry.getValue();
-              slotEntry.getKey().putStack(stack);
-            }
-            break loopSets;
-          }
+					if (transferAsCompleteSets) {
+						// Since the full set requirement wasn't satisfied, we need to roll back any
+						// slot changes we've made during this set iteration.
+						for (Map.Entry<Slot, ItemStack> slotEntry : originalSlotContents.entrySet()) {
+							ItemStack stack = slotEntry.getValue();
+							slotEntry.getKey().putStack(stack);
+						}
+						break loopSets;
+					}
 
 				} else { // the item was found and the stack limit has not been reached
 
-          // Keep a copy of the slot's original contents in case we need to roll back.
-          if (transferAsCompleteSets && !originalSlotContents.containsKey(slot)) {
-            originalSlotContents.put(slot, slot.getStack().copy());
-          }
+					// Keep a copy of the slot's original contents in case we need to roll back.
+					if (transferAsCompleteSets && !originalSlotContents.containsKey(slot)) {
+						originalSlotContents.put(slot, slot.getStack().copy());
+					}
 
-          // Reduce the size of the found slot.
-          ItemStack removedItemStack = slot.decrStackSize(1);
-          foundItemsInSet.put(entry.getKey(), removedItemStack);
+					// Reduce the size of the found slot.
+					ItemStack removedItemStack = slot.decrStackSize(1);
+					foundItemsInSet.put(entry.getKey(), removedItemStack);
 
-          noItemsFound = false;
-        }
-      }
+					noItemsFound = false;
+				}
+			}
 
-      // Merge the contents of the temporary map with the result map.
-      for (Map.Entry<Integer, ItemStack> entry : foundItemsInSet.entrySet()) {
-        ItemStack resultItemStack = result.get(entry.getKey());
+			// Merge the contents of the temporary map with the result map.
+			for (Map.Entry<Integer, ItemStack> entry : foundItemsInSet.entrySet()) {
+				ItemStack resultItemStack = result.get(entry.getKey());
 
-        if (resultItemStack == null) {
-          result.put(entry.getKey(), entry.getValue());
+				if (resultItemStack == null) {
+					result.put(entry.getKey(), entry.getValue());
 
-        } else {
-          resultItemStack.grow(1);
-        }
-      }
+				} else {
+					resultItemStack.grow(1);
+				}
+			}
 
 			if (!maxTransfer || noItemsFound) {
 				// If max transfer is not requested by the player this will exit the loop after trying one set.
