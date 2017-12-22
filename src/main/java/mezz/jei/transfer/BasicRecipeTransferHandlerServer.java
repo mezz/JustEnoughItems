@@ -98,7 +98,12 @@ public final class BasicRecipeTransferHandlerServer {
 
 			// This map holds the original contents of a slot we have removed items from. This is used if we don't
 			// have enough items to complete a whole set, we can roll back the items that were removed.
-			final Map<Slot, ItemStack> originalSlotContents = new HashMap<>();
+			Map<Slot, ItemStack> originalSlotContents = null;
+
+			if (transferAsCompleteSets) {
+				// We only need to create a new map for each set iteration if we're transferring as complete sets.
+				originalSlotContents = new HashMap<>();
+			}
 
 			// This map holds items found for each set iteration. Its contents are added to the result map
 			// after each complete set iteration. If we are transferring as complete sets, this allows
@@ -137,7 +142,7 @@ public final class BasicRecipeTransferHandlerServer {
 				} else { // the item was found and the stack limit has not been reached
 
 					// Keep a copy of the slot's original contents in case we need to roll back.
-					if (transferAsCompleteSets && !originalSlotContents.containsKey(slot)) {
+					if (originalSlotContents != null && !originalSlotContents.containsKey(slot)) {
 						originalSlotContents.put(slot, slot.getStack().copy());
 					}
 
