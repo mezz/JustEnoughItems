@@ -17,7 +17,7 @@ jei.tooltip.error.recipe.transfer.missing=Föremål saknas
 jei.tooltip.error.recipe.transfer.inventory.full=Det finns ingen plats
 jei.tooltip.error.recipe.transfer.unknown=Okänt fel, se loggarna
 jei.tooltip.error.recipe.transfer.no.server=Servern måste ha JEI installerat
-jei.tooltip.error.recipe.transfer.too.large.player.inventory=Receptet är större än 2x2
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=Receptet är för stort för att tillverkas i spelarens rutnät på 2x2.
 jei.tooltip.error.crash=Fel i inforuta, se loggen
 
 # Error Messages
