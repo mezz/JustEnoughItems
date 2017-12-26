@@ -17,7 +17,7 @@ jei.tooltip.error.recipe.transfer.missing=Föremål saknas
 jei.tooltip.error.recipe.transfer.inventory.full=Det finns ingen plats
 jei.tooltip.error.recipe.transfer.unknown=Okänt fel, se loggarna
 jei.tooltip.error.recipe.transfer.no.server=Servern måste ha JEI installerat
-jei.tooltip.error.recipe.transfer.too.large.player.inventory=Receptet är större än 2x2
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=Receptet är för stort för att tillverkas i spelarens rutnät på 2x2.
 jei.tooltip.error.crash=Fel i inforuta, se loggen
 
 # Error Messages
@@ -89,12 +89,12 @@ config.jei.advanced.giveMode.comment=Välj om JEI ska placera föremål direkt i
 
 # Edit Mode
 gui.jei.editMode.description=Redigeringsläge för JEIs föremålslista:
-gui.jei.editMode.description.hide=%CTRL-klicka för att dölja.
-gui.jei.editMode.description.show=Dold. %CTRL-klicka för att visa.
-gui.jei.editMode.description.hide.wild=%CTRL-högerklicka för att dölja liknande föremål.
-gui.jei.editMode.description.show.wild=Dold efter liknande föremål. %CTRL-högerklicka för att visa.
-gui.jei.editMode.description.hide.mod.id=%CTRL-SHIFT-klicka för att dölja efter ModId.
-gui.jei.editMode.description.show.mod.id=Dold efter ModId. %CTRL-SHIFT-klicka för att visa.
+gui.jei.editMode.description.hide=Dölj. (%CTRL-klick).
+gui.jei.editMode.description.show=Dold. (%CTRL-klick).
+gui.jei.editMode.description.hide.wild=Dölj efter liknande föremål. (%CTRL-högerklick).
+gui.jei.editMode.description.show.wild=Dold efter liknande föremål. (%CTRL-högerklick).
+gui.jei.editMode.description.hide.mod.id=Dölj mod. (%CTRL-SHIFT-klick).
+gui.jei.editMode.description.show.mod.id=Dold mod. (%CTRL-SHIFT-klick).
 
 #PC/Linux Control Key
 key.jei.ctrl=CTRL

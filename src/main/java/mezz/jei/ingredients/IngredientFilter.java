@@ -22,6 +22,7 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
+import mezz.jei.startup.PlayerJoinedWorldEvent;
 import mezz.jei.suffixtree.CombinedSearchTrees;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 import mezz.jei.suffixtree.ISearchTree;
@@ -45,6 +46,7 @@ public class IngredientFilter implements IIngredientFilter {
 	private final List<IIngredientListElement> elementList;
 	private final GeneralizedSuffixTree searchTree;
 	private final TCharObjectMap<PrefixedSearchTree> prefixedSearchTrees = new TCharObjectHashMap<>();
+	private final IngredientFilterBackgroundBuilder backgroundBuilder;
 	private CombinedSearchTrees combinedSearchTrees;
 
 	@Nullable
@@ -63,6 +65,7 @@ public class IngredientFilter implements IIngredientFilter {
 		createPrefixedSearchTree('&', Config::getResourceIdSearchMode, element -> Collections.singleton(element.getResourceId()));
 
 		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.valueCollection());
+		this.backgroundBuilder = new IngredientFilterBackgroundBuilder(prefixedSearchTrees, elementList);
 	}
 
 	private static CombinedSearchTrees buildCombinedSearchTrees(ISearchTree searchTree, Collection<PrefixedSearchTree> prefixedSearchTrees) {
@@ -99,9 +102,6 @@ public class IngredientFilter implements IIngredientFilter {
 		if (ingredientBlacklist.isIngredientBlacklistedByApi(ingredient)) {
 			return;
 		}
-
-		boolean hidden = Config.isIngredientOnConfigBlacklist(ingredient, element.getIngredientHelper());
-		element.setHidden(hidden);
 
 		final int index = elementList.size();
 		elementList.add(element);
@@ -152,35 +152,8 @@ public class IngredientFilter implements IIngredientFilter {
 
 	public void modesChanged() {
 		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.valueCollection());
-		onClientTick(10000);
+		this.backgroundBuilder.start();
 		this.filterCached = null;
-	}
-
-	public void onClientTick(final int timeoutMs) {
-		final long startTime = System.currentTimeMillis();
-		for (PrefixedSearchTree prefixedTree : this.prefixedSearchTrees.valueCollection()) {
-			Config.SearchMode mode = prefixedTree.getMode();
-			if (mode != Config.SearchMode.DISABLED) {
-				PrefixedSearchTree.IStringsGetter stringsGetter = prefixedTree.getStringsGetter();
-				GeneralizedSuffixTree tree = prefixedTree.getTree();
-				for (int i = tree.getHighestIndex() + 1; i < this.elementList.size(); i++) {
-					IIngredientListElement element = elementList.get(i);
-					if (element != null) {
-						Collection<String> strings = stringsGetter.getStrings(element);
-						if (strings.isEmpty()) {
-							tree.put("", i);
-						} else {
-							for (String string : strings) {
-								tree.put(string, i);
-							}
-						}
-					}
-					if (System.currentTimeMillis() - startTime >= timeoutMs) {
-						return;
-					}
-				}
-			}
-		}
 	}
 
 	@SubscribeEvent
@@ -189,7 +162,13 @@ public class IngredientFilter implements IIngredientFilter {
 		updateHidden();
 	}
 
-	public void updateHidden() {
+	@SubscribeEvent
+	public void onPlayerJoinedWorldEvent(PlayerJoinedWorldEvent event) {
+		this.filterCached = null;
+		updateHidden();
+	}
+
+	private void updateHidden() {
 		for (IIngredientListElement<?> element : elementList) {
 			if (element != null) {
 				updateHiddenState(element);
@@ -197,10 +176,12 @@ public class IngredientFilter implements IIngredientFilter {
 		}
 	}
 
-	private <V> void updateHiddenState(IIngredientListElement<V> element) {
+	private static <V> void updateHiddenState(IIngredientListElement<V> element) {
 		V ingredient = element.getIngredient();
-		boolean hidden = Config.isIngredientOnConfigBlacklist(ingredient, element.getIngredientHelper());
-		element.setHidden(hidden);
+		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
+		boolean visible = !Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper) &&
+			ingredientHelper.isIngredientOnServer(ingredient);
+		element.setVisible(visible);
 	}
 
 	public List<IIngredientListElement> getIngredientList() {
@@ -247,18 +228,13 @@ public class IngredientFilter implements IIngredientFilter {
 
 		TIntSet matches = null;
 
-		if (filters.length == 1) {
-			String filter = filters[0];
-			matches = getElements(filter);
-		} else {
-			for (String filter : filters) {
-				TIntSet elements = getElements(filter);
-				if (elements != null) {
-					if (matches == null) {
-						matches = elements;
-					} else {
-						matches.addAll(elements);
-					}
+		for (String filter : filters) {
+			TIntSet elements = getElements(filter);
+			if (elements != null) {
+				if (matches == null) {
+					matches = elements;
+				} else {
+					matches.addAll(elements);
 				}
 			}
 		}
@@ -267,7 +243,7 @@ public class IngredientFilter implements IIngredientFilter {
 
 		if (matches == null) {
 			for (IIngredientListElement element : elementList) {
-				if (element != null && (!element.isHidden() || Config.isEditModeEnabled())) {
+				if (element != null && (element.isVisible() || Config.isEditModeEnabled())) {
 					matchingIngredients.add(element);
 				}
 			}
@@ -276,7 +252,7 @@ public class IngredientFilter implements IIngredientFilter {
 			Arrays.sort(matchesList);
 			for (Integer match : matchesList) {
 				IIngredientListElement<?> element = elementList.get(match);
-				if (element != null && (!element.isHidden() || Config.isEditModeEnabled())) {
+				if (element != null && (element.isVisible() || Config.isEditModeEnabled())) {
 					matchingIngredients.add(element);
 				}
 			}

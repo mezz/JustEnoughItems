@@ -39,7 +39,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	private final List<String> modIds;
 	private final List<String> modNames;
 	private final String resourceId;
-	private boolean hidden = false;
+	private boolean visible = true;
 
 	@Nullable
 	public static <V> IngredientListElement<V> create(V ingredient, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer, IModIdHelper modIdHelper) {
@@ -187,12 +187,12 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	}
 
 	@Override
-	public boolean isHidden() {
-		return hidden;
+	public boolean isVisible() {
+		return visible;
 	}
 
 	@Override
-	public void setHidden(boolean hidden) {
-		this.hidden = hidden;
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 }

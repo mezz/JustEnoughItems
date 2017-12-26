@@ -11,7 +11,6 @@ import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.SessionData;
 import mezz.jei.gui.overlay.IngredientListOverlay;
-import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.network.PacketHandler;
 import mezz.jei.network.PacketHandlerClient;
 import mezz.jei.network.packets.PacketJei;
@@ -23,9 +22,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -35,10 +34,8 @@ import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.relauncher.Side;
 
 @SuppressWarnings("unused")
 public class ProxyCommonClient extends ProxyCommon {
@@ -126,18 +123,20 @@ public class ProxyCommonClient extends ProxyCommon {
 	}
 
 	@SubscribeEvent
-	public void onEntityJoinedWorld(EntityJoinWorldEvent event) {
-		if (event.getWorld().isRemote && !SessionData.hasJoinedWorld() && Minecraft.getMinecraft().player != null) {
-			SessionData.setJoinedWorld();
-			Config.syncWorldConfig();
+	public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
+		if (!event.isLocal() && !event.getConnectionType().equals("MODDED")) {
+			SessionData.onConnectedToServer(false);
 		}
+		SessionData.setJoinedWorld(true);
+		NetworkManager networkManager = event.getManager();
+		Config.syncWorldConfig(networkManager);
+		MinecraftForge.EVENT_BUS.post(new PlayerJoinedWorldEvent());
 	}
 
 	@SubscribeEvent
-	public void onClientTick(TickEvent.ClientTickEvent event) {
-		if (event.side == Side.CLIENT && SessionData.hasJoinedWorld() && Minecraft.getMinecraft().player != null) {
-			IngredientFilter ingredientFilter = Internal.getIngredientFilter();
-			ingredientFilter.onClientTick(20);
+	public void onClientDisconnectionFromServer(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
+		if (SessionData.hasJoinedWorld()) {
+			SessionData.setJoinedWorld(false);
 		}
 	}
 
@@ -176,13 +175,6 @@ public class ProxyCommonClient extends ProxyCommon {
 			Config.saveFilterText();
 		} catch (RuntimeException e) {
 			Log.get().error("Failed to save filter text.", e);
-		}
-	}
-
-	@SubscribeEvent
-	public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
-		if (!event.isLocal() && !event.getConnectionType().equals("MODDED")) {
-			SessionData.onConnectedToServer(false);
 		}
 	}
 }

@@ -8,7 +8,7 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.collect.ListMultiMap;
 import mezz.jei.collect.Table;
-import mezz.jei.ingredients.IngredientUtil;
+import mezz.jei.ingredients.IngredientInformation;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,7 +35,7 @@ public class RecipeMap {
 
 		Set<String> recipeCategories = new HashSet<>();
 
-		for (String key : IngredientUtil.getUniqueIdsWithWildcard(ingredientHelper, ingredient)) {
+		for (String key : IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient)) {
 			recipeCategories.addAll(categoryUidMap.get(key));
 		}
 
@@ -59,7 +59,7 @@ public class RecipeMap {
 		Map<String, List<IRecipeWrapper>> recipesForType = recipeWrapperTable.getRow(recipeCategory);
 
 		ImmutableList.Builder<T> listBuilder = ImmutableList.builder();
-		for (String key : IngredientUtil.getUniqueIdsWithWildcard(ingredientHelper, ingredient)) {
+		for (String key : IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient)) {
 			@SuppressWarnings("unchecked")
 			List<T> recipes = (List<T>) recipesForType.get(key);
 			if (recipes != null) {

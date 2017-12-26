@@ -50,9 +50,11 @@ public class PacketHandler {
 
 	private static void checkThreadAndEnqueue(IPacketJeiHandler packetHandler, PacketBuffer packetBuffer, EntityPlayer player, @Nullable IThreadListener threadListener) {
 		if (threadListener != null && !threadListener.isCallingFromMinecraftThread()) {
+			packetBuffer.retain();
 			threadListener.addScheduledTask(() -> {
 				try {
 					packetHandler.readPacketData(packetBuffer, player);
+					packetBuffer.release();
 				} catch (IOException e) {
 					Log.get().error("Network Error", e);
 				}

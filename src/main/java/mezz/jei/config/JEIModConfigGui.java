@@ -11,9 +11,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.network.NetworkManager;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.GuiModList;
 import net.minecraftforge.fml.client.config.GuiConfig;
 import net.minecraftforge.fml.client.config.IConfigElement;
@@ -45,7 +47,8 @@ public class JEIModConfigGui extends GuiConfig {
 		if (Minecraft.getMinecraft().world != null) {
 			Configuration worldConfig = Config.getWorldConfig();
 			if (worldConfig != null) {
-				ConfigCategory categoryWorldConfig = worldConfig.getCategory(SessionData.getWorldUid());
+				NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
+				ConfigCategory categoryWorldConfig = worldConfig.getCategory(SessionData.getWorldUid(networkManager));
 				configElements.addAll(new ConfigElement(categoryWorldConfig).getChildElements());
 			}
 		}

@@ -264,7 +264,7 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
 		IClickedIngredient<?> clicked = this.contents.getIngredientUnderMouse(mouseX, mouseY);
 		if (clicked != null) {
-			setKeyboardFocus(false);
+			clicked.setOnClickHandler(() -> setKeyboardFocus(false));
 		}
 		return clicked;
 	}
@@ -321,6 +321,7 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 					if (!itemStack.isEmpty()) {
 						CommandUtil.giveStack(itemStack, mouseButton);
 					}
+					clicked.onClickHandled();
 					return true;
 				}
 				if (this.ghostIngredientDragManager.handleClickGhostIngredient(currentScreen, clicked)) {
@@ -393,6 +394,7 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 							if (!itemStack.isEmpty()) {
 								CommandUtil.setHotbarStack(itemStack, hotbarSlot);
 							}
+							ingredientUnderMouse.onClickHandled();
 						}
 						return true;
 					}

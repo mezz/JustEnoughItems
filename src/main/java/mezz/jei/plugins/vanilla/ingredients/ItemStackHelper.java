@@ -11,6 +11,7 @@ import mezz.jei.util.ErrorUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	private final StackHelper stackHelper;
@@ -106,6 +107,12 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	public boolean isValidIngredient(ItemStack ingredient) {
 		return !ingredient.isEmpty();
+	}
+
+	@Override
+	public boolean isIngredientOnServer(ItemStack ingredient) {
+		Item item = ingredient.getItem();
+		return ForgeRegistries.ITEMS.containsValue(item);
 	}
 
 	@Override

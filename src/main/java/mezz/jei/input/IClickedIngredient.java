@@ -13,4 +13,13 @@ public interface IClickedIngredient<V> {
 	Rectangle getArea();
 
 	ItemStack getCheatItemStack();
+
+	void onClickHandled();
+
+	void setOnClickHandler(IOnClickHandler onClickHandler);
+
+	@FunctionalInterface
+	interface IOnClickHandler {
+		void onClick();
+	}
 }

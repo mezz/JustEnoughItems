@@ -97,6 +97,7 @@ public class GhostIngredientDragManager {
 					IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
 					Rectangle clickedArea = clicked.getArea();
 					this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, clickedArea);
+					clicked.onClickHandled();
 					return true;
 				}
 			}

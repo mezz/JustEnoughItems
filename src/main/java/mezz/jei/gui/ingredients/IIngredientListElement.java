@@ -32,7 +32,7 @@ public interface IIngredientListElement<V> {
 
 	String getResourceId();
 
-	boolean isHidden();
+	boolean isVisible();
 
-	void setHidden(boolean hidden);
+	void setVisible(boolean visible);
 }

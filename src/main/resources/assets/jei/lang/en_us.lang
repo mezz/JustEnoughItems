@@ -17,7 +17,7 @@ jei.tooltip.error.recipe.transfer.missing=Missing Items
 jei.tooltip.error.recipe.transfer.inventory.full=Inventory is too full
 jei.tooltip.error.recipe.transfer.unknown=Unknown Error, see logs
 jei.tooltip.error.recipe.transfer.no.server=The server must have JEI installed
-jei.tooltip.error.recipe.transfer.too.large.player.inventory=Recipe is not 2x2
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=Recipe is too large to craft in the 2x2 player crafting grid.
 jei.tooltip.error.crash=Tooltip error, see log
 
 # Error Messages
@@ -89,12 +89,12 @@ config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to t
 
 # Edit Mode
 gui.jei.editMode.description=JEI Item List Edit Mode:
-gui.jei.editMode.description.hide=%CTRL-click to hide.
-gui.jei.editMode.description.show=Hidden. %CTRL-click to show.
-gui.jei.editMode.description.hide.wild=%CTRL-right-click to hide with wildcard.
-gui.jei.editMode.description.show.wild=Hidden by Wildcard. %CTRL-right-click to show.
-gui.jei.editMode.description.hide.mod.id=%CTRL-SHIFT-click to hide by ModId.
-gui.jei.editMode.description.show.mod.id=Hidden by ModId. %CTRL-SHIFT-click to show.
+gui.jei.editMode.description.hide=Hide. (%CTRL-click).
+gui.jei.editMode.description.show=Hidden. (%CTRL-click).
+gui.jei.editMode.description.hide.wild=Hide by Wildcard. (%CTRL-right-click).
+gui.jei.editMode.description.show.wild=Hidden by Wildcard. (%CTRL-right-click).
+gui.jei.editMode.description.hide.mod.id=Hide Mod. (%CTRL-SHIFT-click).
+gui.jei.editMode.description.show.mod.id=Hidden Mod. (%CTRL-SHIFT-click).
 
 #PC/Linux Control Key
 key.jei.ctrl=CTRL

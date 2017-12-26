@@ -107,6 +107,19 @@ public interface IIngredientHelper<V> {
 	}
 
 	/**
+	 * This is called when connecting to a server, to hide ingredients that are missing on the server.
+	 * This call must be fast, the client should already know the answer without making any network calls.
+	 * If in doubt, just leave this with the default implementation and return true.
+	 *
+	 * @param ingredient the ingredient to check
+	 * @return true if the ingredient is on the server as well as the client
+	 * @since JEI 4.8.5
+	 */
+	default boolean isIngredientOnServer(V ingredient) {
+		return true;
+	}
+
+	/**
 	 * Get information for error messages involving this ingredient.
 	 * Be extremely careful not to crash here, get as much useful info as possible.
 	 */
