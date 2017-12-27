@@ -163,7 +163,7 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Conta
 		}
 
 		if (doTransfer) {
-			PacketRecipeTransfer packet = new PacketRecipeTransfer(matchingItemsResult.matchingItems, craftingSlotIndexes, inventorySlotIndexes, maxTransfer);
+			PacketRecipeTransfer packet = new PacketRecipeTransfer(matchingItemsResult.matchingItems, craftingSlotIndexes, inventorySlotIndexes, maxTransfer, false);
 			JustEnoughItems.getProxy().sendPacketToServer(packet);
 		}
 
