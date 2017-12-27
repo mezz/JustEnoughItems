@@ -17,7 +17,7 @@ jei.tooltip.error.recipe.transfer.missing=Brakuje przedmiotów
 jei.tooltip.error.recipe.transfer.inventory.full=Ekwipunek jest przepełniony
 jei.tooltip.error.recipe.transfer.unknown=Nieznany błąd, sprawdź logi
 jei.tooltip.error.recipe.transfer.no.server=Serwer musi mieć zainstalowane JEI
-jei.tooltip.error.recipe.transfer.too.large.player.inventory=Receptura nie jest 2x2
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=Receptura jest za duża, aby móc coś skonstruować w siatce 2x2 gracza.
 jei.tooltip.error.crash=Błąd z tooltipem, sprawdź log
 
 # Error Messages
@@ -89,12 +89,12 @@ config.jei.advanced.giveMode.comment=Zdecyduj, czy JEI ma dawać przedmioty bezp
 
 # Edit Mode
 gui.jei.editMode.description=Tryb edycji listy przedmiotów JEI:
-gui.jei.editMode.description.hide=%CTRL + klik aby ukryć.
-gui.jei.editMode.description.show=Ukryte. %CTRL + klik aby pokazać.
-gui.jei.editMode.description.hide.wild=%CTRL + prawoklik aby ukryć z wieloznacznikiem.
-gui.jei.editMode.description.show.wild=Ukryte przez wieloznacznik. %CTRL + prawoklik aby pokazać.
-gui.jei.editMode.description.hide.mod.id=%CTRL + SHIFT + klik aby ukryć z ModId.
-gui.jei.editMode.description.show.mod.id=Ukryte przez ModId. %CTRL + SHIFT + klik aby pokazać.
+gui.jei.editMode.description.hide=Ukryj (%CTRL + klik).
+gui.jei.editMode.description.show=Ukryte (%CTRL + klik).
+gui.jei.editMode.description.hide.wild=Ukryj przez wieloznacznik (%CTRL + prawoklik).
+gui.jei.editMode.description.show.wild=Ukryte przez wieloznacznik (%CTRL + prawoklik).
+gui.jei.editMode.description.hide.mod.id=Ukryj mod (%CTRL + SHIFT + klik).
+gui.jei.editMode.description.show.mod.id=Mod ukryty (%CTRL + SHIFT + klik.
 
 #PC/Linux Control Key
 key.jei.ctrl=CTRL
