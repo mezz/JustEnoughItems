@@ -114,7 +114,10 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	}
 
 	@Override
-	public String getErrorInfo(FluidStack ingredient) {
+	public String getErrorInfo(@Nullable FluidStack ingredient) {
+		if (ingredient == null) {
+			return "null";
+		}
 		MoreObjects.ToStringHelper toStringHelper = MoreObjects.toStringHelper(FluidStack.class);
 
 		Fluid fluid = ingredient.getFluid();

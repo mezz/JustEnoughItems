@@ -123,7 +123,7 @@ public interface IIngredientHelper<V> {
 	 * Get information for error messages involving this ingredient.
 	 * Be extremely careful not to crash here, get as much useful info as possible.
 	 */
-	String getErrorInfo(V ingredient);
+	String getErrorInfo(@Nullable V ingredient);
 
 	/**
 	 * An action for when a player is in cheat mode and clicks an ingredient in the list.
