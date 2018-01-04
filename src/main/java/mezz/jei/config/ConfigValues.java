@@ -10,6 +10,7 @@ public class ConfigValues {
 	public final String modNameFormatFriendly = "blue italic";
 	public String modNameFormat = Config.parseFriendlyModNameFormat(modNameFormatFriendly);
 	public int maxSubtypes = 300;
+	public int maxColumns = 100;
 
 	// search
 	public Config.SearchMode modNameSearchMode = Config.SearchMode.REQUIRE_PREFIX;

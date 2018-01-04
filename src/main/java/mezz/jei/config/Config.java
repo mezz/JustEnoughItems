@@ -153,6 +153,10 @@ public final class Config {
 		return values.maxSubtypes;
 	}
 
+	public static int getMaxColumns() {
+		return values.maxColumns;
+	}
+
 	public static SearchMode getModNameSearchMode() {
 		return values.modNameSearchMode;
 	}
@@ -340,6 +344,8 @@ public final class Config {
 		values.centerSearchBarEnabled = config.getBoolean(CATEGORY_ADVANCED, "centerSearchBarEnabled", defaultValues.centerSearchBarEnabled);
 
 		values.giveMode = config.getEnum("giveMode", CATEGORY_ADVANCED, defaultValues.giveMode, GiveMode.values());
+
+		values.maxColumns = config.getInt("maxColumns", CATEGORY_ADVANCED, defaultValues.maxColumns, 3, 100);
 
 		updateModNameFormat(config);
 

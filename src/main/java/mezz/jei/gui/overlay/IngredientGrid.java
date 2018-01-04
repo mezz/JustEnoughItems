@@ -48,12 +48,12 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 	}
 
 	public void updateBounds(Rectangle area, Collection<Rectangle> exclusionAreas) {
-		final int columns = area.width / INGREDIENT_WIDTH;
+		final int columns = Math.min(area.width / INGREDIENT_WIDTH, Config.getMaxColumns());
 		final int rows = area.height / INGREDIENT_HEIGHT;
 
 		final int width = columns * INGREDIENT_WIDTH;
 		final int height = rows * INGREDIENT_HEIGHT;
-		final int x = area.x + (area.width - width) / 2;
+		final int x = area.x + (area.width - width);
 		final int y = area.y + (area.height - height) / 2;
 
 		this.area = new Rectangle(x, y, width, height);
