@@ -84,6 +84,8 @@ config.jei.advanced.modNameFormat=Namnformat för moddar
 config.jei.advanced.modNameFormat.comment=Hur modnamnet bör formateras i inforutan för JEI:s gränssnitt. Lämna tomt för att inaktivera.
 config.jei.advanced.maxSubtypes=Max undertyper av föremål
 config.jei.advanced.maxSubtypes.comment=Föremål med fler än så många undertyper kommer inte att visas i JEI.
+config.jei.advanced.maxColumns=Maximal bredd
+config.jei.advanced.maxColumns.comment=Maximal bredd för ingredienslistan.
 config.jei.advanced.giveMode=Placeringsläge
 config.jei.advanced.giveMode.comment=Välj om JEI ska placera föremål direkt i utrustningen (inventory) eller plocka upp dem med musen (mouse_pickup).
 
