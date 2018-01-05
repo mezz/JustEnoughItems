@@ -84,6 +84,8 @@ config.jei.advanced.modNameFormat=Format nazwy modu
 config.jei.advanced.modNameFormat.comment=Określa, jak powinna być sformatowana nazwa modu w tooltipach interfejsu JEI. Pozostaw puste aby wyłączyć.
 config.jei.advanced.maxSubtypes=Podtypy przedmiotu
 config.jei.advanced.maxSubtypes.comment=Przedmioty posiadające więcej niż tyle podtypów nie będą wyświetlane w JEI.
+config.jei.advanced.maxColumns=Maksymalna szerokość
+config.jei.advanced.maxColumns.comment=Maksymalna szerokość listy składników.
 config.jei.advanced.giveMode=Tryb dawania
 config.jei.advanced.giveMode.comment=Zdecyduj, czy JEI ma dawać przedmioty bezpośrednio do ekwipunku (inventory), czy chcesz zabierać i przenosić je samemu (mouse_pickup).
 
