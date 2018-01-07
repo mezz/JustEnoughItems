@@ -17,7 +17,7 @@ jei.tooltip.error.recipe.transfer.missing=Отсутствуют предмет�
 jei.tooltip.error.recipe.transfer.inventory.full=Инвентарь переполнен
 jei.tooltip.error.recipe.transfer.unknown=Неизвестная ошибка, смотрите логи
 jei.tooltip.error.recipe.transfer.no.server=На сервере должен быть установлен JEI
-jei.tooltip.error.recipe.transfer.too.large.player.inventory=Рецепт не для 2x2
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=Рецепт слишком большой для сетки крафта 2x2 игрока.
 jei.tooltip.error.crash=Ошибка подсказки, смотрите логи
 
 # Error Messages
@@ -84,6 +84,8 @@ config.jei.advanced.modNameFormat=Формат названия мода
 config.jei.advanced.modNameFormat.comment=Как название мода должно быть отформатировано для подсказок JEI. Оставьте пустым, чтобы отключить.
 config.jei.advanced.maxSubtypes=Мак. кол-во подтипов предмета
 config.jei.advanced.maxSubtypes.comment=Предметы с большим количеством подтипов не будут показаны в JEI.
+config.jei.advanced.maxColumns=Максимальная ширина
+config.jei.advanced.maxColumns.comment=Максимальная ширина списка ингредиентов.
 config.jei.advanced.giveMode=Режим получения предметов
 config.jei.advanced.giveMode.comment=Выберите, должен ли JEI давать предметы напрямую в инвентарь (inventory) или же набирать их мышкой (mouse_pickup).
 
