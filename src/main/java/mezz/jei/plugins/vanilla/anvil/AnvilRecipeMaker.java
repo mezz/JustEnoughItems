@@ -49,7 +49,7 @@ public final class AnvilRecipeMaker {
 
 	private static void registerBookEnchantmentRecipes(IModRegistry registry) {
 		Collection<ItemStack> ingredients = registry.getIngredientRegistry().getAllIngredients(ItemStack.class);
-		List<Enchantment> enchantments = ForgeRegistries.ENCHANTMENTS.getValues();
+		Collection<Enchantment> enchantments = ForgeRegistries.ENCHANTMENTS.getValuesCollection();
 		for (ItemStack ingredient : ingredients) {
 			if (ingredient.isItemEnchantable()) {
 				for (Enchantment enchantment : enchantments) {
