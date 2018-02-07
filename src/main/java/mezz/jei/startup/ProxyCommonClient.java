@@ -44,7 +44,7 @@ public class ProxyCommonClient extends ProxyCommon {
 
 	private static void initVersionChecker() {
 		final NBTTagCompound compound = new NBTTagCompound();
-		compound.setString("curseProjectName", "just-enough-items-jei");
+		compound.setString("curseProjectName", "jei");
 		compound.setString("curseFilenameParser", "jei_" + ForgeVersion.mcVersion + "-[].jar");
 		FMLInterModComms.sendRuntimeMessage(Constants.MOD_ID, "VersionChecker", "addCurseCheck", compound);
 	}

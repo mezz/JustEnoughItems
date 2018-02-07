@@ -1,13 +1,11 @@
 package mezz.jei.plugins.vanilla.anvil;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import mezz.jei.api.IModRegistry;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
-import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
@@ -23,11 +21,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.OreDictionary;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public final class AnvilRecipeMaker {
 	private static final ItemStack ENCHANTED_BOOK = new ItemStack(Items.ENCHANTED_BOOK);
@@ -35,33 +33,48 @@ public final class AnvilRecipeMaker {
 	private AnvilRecipeMaker() {
 	}
 
-	public static void registerVanillaAnvilRecipes(IModRegistry registry) {
+	public static List<IRecipeWrapper> getAnvilRecipes(IVanillaRecipeFactory vanillaRecipeFactory, IIngredientRegistry ingredientRegistry) {
+		List<IRecipeWrapper> recipes = new ArrayList<>();
 		Stopwatch sw = Stopwatch.createStarted();
-		registerRepairRecipes(registry);
+		try {
+			getRepairRecipes(recipes, vanillaRecipeFactory);
+		} catch (RuntimeException e) {
+			Log.get().error("Failed to create repair recipes.", e);
+		}
 		sw.stop();
-		Log.get().debug("Registered vanilla repair recipes in {} ms", sw.elapsed(TimeUnit.MILLISECONDS));
+		Log.get().debug("Registered vanilla repair recipes in {}", sw);
 		sw.reset();
 		sw.start();
-		registerBookEnchantmentRecipes(registry);
+		try {
+			getBookEnchantmentRecipes(recipes, vanillaRecipeFactory, ingredientRegistry);
+		} catch (RuntimeException e) {
+			Log.get().error("Failed to create enchantment recipes.", e);
+		}
 		sw.stop();
-		Log.get().debug("Registered enchantment recipes in {} ms", sw.elapsed(TimeUnit.MILLISECONDS));
+		Log.get().debug("Registered enchantment recipes in {}", sw);
+		return recipes;
 	}
 
-	private static void registerBookEnchantmentRecipes(IModRegistry registry) {
-		Collection<ItemStack> ingredients = registry.getIngredientRegistry().getAllIngredients(ItemStack.class);
+	private static void getBookEnchantmentRecipes(List<IRecipeWrapper> recipes, IVanillaRecipeFactory vanillaRecipeFactory, IIngredientRegistry ingredientRegistry) {
+		Collection<ItemStack> ingredients = ingredientRegistry.getAllIngredients(ItemStack.class);
 		Collection<Enchantment> enchantments = ForgeRegistries.ENCHANTMENTS.getValuesCollection();
 		for (ItemStack ingredient : ingredients) {
 			if (ingredient.isItemEnchantable()) {
 				for (Enchantment enchantment : enchantments) {
 					if (enchantment.canApply(ingredient)) {
-						registerBookEnchantmentRecipes(registry, enchantment, ingredient);
+						try {
+							getBookEnchantmentRecipes(recipes, vanillaRecipeFactory, enchantment, ingredient);
+						} catch (RuntimeException e) {
+							String ingredientInfo = ErrorUtil.getIngredientInfo(ingredient);
+							Log.get().error("Failed to register book enchantment recipes for ingredient: {}", ingredientInfo, e);
+						}
 					}
 				}
 			}
 		}
 	}
 
-	private static void registerBookEnchantmentRecipes(IModRegistry registry, Enchantment enchantment, ItemStack ingredient) {
+	private static void getBookEnchantmentRecipes(List<IRecipeWrapper> recipes, IVanillaRecipeFactory vanillaRecipeFactory, Enchantment enchantment, ItemStack ingredient) {
 		Item item = ingredient.getItem();
 		List<ItemStack> perLevelBooks = Lists.newArrayList();
 		List<ItemStack> perLevelOutputs = Lists.newArrayList();
@@ -78,14 +91,13 @@ public final class AnvilRecipeMaker {
 				perLevelOutputs.add(withEnchant);
 			}
 		}
-		IVanillaRecipeFactory vanillaRecipeFactory = registry.getJeiHelpers().getVanillaRecipeFactory();
 		if (!perLevelBooks.isEmpty() && !perLevelOutputs.isEmpty()) {
 			IRecipeWrapper anvilRecipe = vanillaRecipeFactory.createAnvilRecipe(ingredient, perLevelBooks, perLevelOutputs);
-			registry.addRecipes(Collections.singletonList(anvilRecipe), VanillaRecipeCategoryUid.ANVIL);
+			recipes.add(anvilRecipe);
 		}
 	}
 
-	private static void registerRepairRecipes(IModRegistry registry) {
+	private static void getRepairRecipes(List<IRecipeWrapper> recipes, IVanillaRecipeFactory vanillaRecipeFactory) {
 		Map<ItemStack, List<ItemStack>> items = Maps.newHashMap();
 
 		ItemStack repairWood = new ItemStack(Blocks.PLANKS, 1, OreDictionary.WILDCARD_VALUE);
@@ -159,8 +171,6 @@ public final class AnvilRecipeMaker {
 				new ItemStack(Items.DIAMOND_BOOTS)
 		));
 
-		IVanillaRecipeFactory vanillaRecipeFactory = registry.getJeiHelpers().getVanillaRecipeFactory();
-
 		for (Map.Entry<ItemStack, List<ItemStack>> entry : items.entrySet()) {
 
 			ItemStack repairMaterial = entry.getKey();
@@ -176,7 +186,8 @@ public final class AnvilRecipeMaker {
 
 				IRecipeWrapper repairWithMaterial = vanillaRecipeFactory.createAnvilRecipe(damaged1, Collections.singletonList(repairMaterial), Collections.singletonList(damaged2));
 				IRecipeWrapper repairWithSame = vanillaRecipeFactory.createAnvilRecipe(damaged2, Collections.singletonList(damaged2), Collections.singletonList(damaged3));
-				registry.addRecipes(ImmutableList.of(repairWithMaterial, repairWithSame), VanillaRecipeCategoryUid.ANVIL);
+				recipes.add(repairWithMaterial);
+				recipes.add(repairWithSame);
 			}
 		}
 	}
