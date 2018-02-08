@@ -262,11 +262,14 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	@Override
 	@Nullable
 	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
-		IClickedIngredient<?> clicked = this.contents.getIngredientUnderMouse(mouseX, mouseY);
-		if (clicked != null) {
-			clicked.setOnClickHandler(() -> setKeyboardFocus(false));
+		if (this.isEnabled()) {
+			IClickedIngredient<?> clicked = this.contents.getIngredientUnderMouse(mouseX, mouseY);
+			if (clicked != null) {
+				clicked.setOnClickHandler(() -> setKeyboardFocus(false));
+				return clicked;
+			}
 		}
-		return clicked;
+		return null;
 	}
 
 	@Override
