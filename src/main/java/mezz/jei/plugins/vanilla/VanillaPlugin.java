@@ -45,6 +45,7 @@ import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.client.gui.inventory.GuiCrafting;
 import net.minecraft.client.gui.inventory.GuiFurnace;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerBrewingStand;
@@ -53,14 +54,21 @@ import net.minecraft.inventory.ContainerRepair;
 import net.minecraft.inventory.ContainerWorkbench;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemBanner;
+import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @JEIPlugin
 public class VanillaPlugin implements IModPlugin {
@@ -70,9 +78,6 @@ public class VanillaPlugin implements IModPlugin {
 	@Override
 	public void registerItemSubtypes(ISubtypeRegistry subtypeRegistry) {
 		this.subtypeRegistry = subtypeRegistry;
-		subtypeRegistry.useNbtForSubtypes(
-				Items.ENCHANTED_BOOK
-		);
 
 		subtypeRegistry.registerSubtypeInterpreter(Items.TIPPED_ARROW, PotionSubtypeInterpreter.INSTANCE);
 		subtypeRegistry.registerSubtypeInterpreter(Items.POTIONITEM, PotionSubtypeInterpreter.INSTANCE);
@@ -85,6 +90,24 @@ public class VanillaPlugin implements IModPlugin {
 		subtypeRegistry.registerSubtypeInterpreter(Items.SPAWN_EGG, itemStack -> {
 			ResourceLocation resourceLocation = ItemMonsterPlacer.getNamedIdFrom(itemStack);
 			return resourceLocation == null ? ISubtypeRegistry.ISubtypeInterpreter.NONE : resourceLocation.toString();
+		});
+		subtypeRegistry.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, itemStack -> {
+			List<String> enchantmentNames = new ArrayList<>();
+			NBTTagList enchantments = ItemEnchantedBook.getEnchantments(itemStack);
+			for (NBTBase nbt : enchantments) {
+				if (nbt instanceof NBTTagCompound) {
+					NBTTagCompound nbttagcompound = (NBTTagCompound) nbt;
+					int j = nbttagcompound.getShort("id");
+					Enchantment enchantment = Enchantment.getEnchantmentByID(j);
+					if (enchantment != null)
+					{
+						String enchantmentUid = enchantment.getName() + ".lvl" + nbttagcompound.getShort("lvl");
+						enchantmentNames.add(enchantmentUid);
+					}
+				}
+			}
+			enchantmentNames.sort(null);
+			return enchantmentNames.toString();
 		});
 	}
 
