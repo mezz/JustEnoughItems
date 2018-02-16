@@ -47,10 +47,10 @@ config.jei.mode.editEnabled=Режим редагування
 config.jei.mode.editEnabled.comment=Сховайте предмети в списку простим натисканням клавіші.
 
 config.jei.interface=Інтерфейс
-config.jei.interface.comment=Наліштування, які відповідають за інтерфейс користувача.
+config.jei.interface.comment=Налаштування, які відповідають за інтерфейс користувача
 config.jei.interface.overlayEnabled=Доступність списка предметів
-config.jei.interface.overlayEnabled.comment=Показувати список предметів при відкриванні интерфейсу.
-config.jei.interface.recipeAnimationsEnabled=Анимації рецептів
+config.jei.interface.overlayEnabled.comment=Показувати список предметів при відкриванні интерфейсу
+config.jei.interface.recipeAnimationsEnabled=Анімації рецептів
 config.jei.interface.recipeAnimationsEnabled.comment=Показувати анімації рецептів (вогонь в печі, індикатори і тд.)
 
 config.jei.search=Пошук
