@@ -1,0 +1,116 @@
+jei.tooltip.config=ᵷᴉɟuoƆ IƎՐ
+jei.tooltip.show.recipes=sǝdᴉɔǝᴚ ʍoɥS
+jei.tooltip.show.all.recipes=sǝdᴉɔǝᴚ ꞁꞁⱯ ʍoɥS
+jei.tooltip.delete.item=ǝʇǝꞁǝᗡ oʇ ʞɔᴉꞁƆ
+jei.tooltip.liquid.amount.with.capacity=ᗺɯ p'% / p'%
+jei.tooltip.liquid.amount=ᗺɯ p'%
+jei.tooltip.transfer=sɯǝʇI ǝʌoW
+jei.tooltip.recipe.ore.dict=%s :ʎuɐ sʇdǝɔɔⱯ
+jei.tooltip.item.colors=%s :sɹoꞁoƆ
+jei.tooltip.shapeless.recipe=ǝdᴉɔǝᴚ ssǝꞁǝdɐɥS
+jei.tooltip.cheat.mode=ǝpoW ʇɐǝɥƆ
+jei.tooltip.recipe.by=%s :ʎᗺ ǝdᴉɔǝᴚ
+
+jei.tooltip.error.recipe.transfer.missing=sɯǝʇI ᵷuᴉssᴉW
+jei.tooltip.error.recipe.transfer.inventory.full=ꞁꞁnɟ ooʇ sᴉ ʎɹoʇuǝʌuI
+jei.tooltip.error.recipe.transfer.unknown=sᵷoꞁ ǝǝs 'ɹoɹɹƎ uʍouʞu∩
+jei.tooltip.error.recipe.transfer.no.server=pǝꞁꞁɐʇsuᴉ IƎՐ ǝʌɐɥ ʇsnɯ ɹǝʌɹǝs ǝɥ⟘
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=˙pᴉɹᵷ ᵷuᴉʇɟɐɹɔ ɹǝʎɐꞁd ᘔxᘔ ǝɥʇ uᴉ ʇɟɐɹɔ oʇ ǝᵷɹɐꞁ ooʇ sᴉ ǝdᴉɔǝᴚ
+jei.tooltip.error.crash=ᵷoꞁ ǝǝs 'ɹoɹɹǝ dᴉʇꞁoo⟘
+
+jei.chat.error.command.too.long=˙puǝs oʇ ʇɟɐɹɔǝuᴉW ɹoɟ ᵷuoꞁ ooʇ sᴉ ʇᴉ 'puɐɯɯoƆ ʇɐɥƆ sᴉɥʇ ǝꞁpuɐɥ oʇ ɹǝʌɹǝs ǝɥʇ uo ǝq ʇsnɯ IƎՐ
+jei.chat.error.no.cheat.permission.1=˙ǝpoW ʇɐǝɥƆ s,IƎՐ ǝsn oʇ uoᴉssᴉɯɹǝd ǝʌɐɥ ʇou op no⅄
+jei.chat.error.no.cheat.permission.2=˙ǝpoW ǝʌᴉʇɐǝɹƆ uᴉ ǝɹɐ ɹo sɯǝʇᴉ ǝʌᴉᵷ/ uɐɔ oɥʍ sɹǝʎɐꞁd oʇ uǝʌᴉᵷ sᴉ uoᴉssᴉɯɹǝԀ
+
+key.jei.toggleOverlay=ʎɐꞁɹǝʌO ʇsᴉꞀ ɯǝʇI ǝꞁᵷᵷo⟘
+key.jei.focusSearch=ɹɐᗺ ɥɔɹɐǝS ʇɔǝꞁǝS
+key.jei.showRecipe=ǝdᴉɔǝᴚ ɯǝʇI ʍoɥS
+key.jei.showUses=sǝs∩ ɯǝʇI ʍoɥS
+key.jei.recipeBack=ǝdᴉɔǝᴚ pǝʍǝᴉᴧ ʎꞁsnoᴉʌǝɹԀ ʍoɥS
+key.jei.toggleCheatMode=pǝꞁqɐuƎ ᵷuᴉʇɐǝɥƆ ǝꞁᵷᵷo⟘
+key.jei.previousPage=ǝᵷɐԀ snoᴉʌǝɹԀ ʍoɥS
+key.jei.nextPage=ǝᵷɐԀ ʇxǝN ʍoɥS
+
+config.jei.default=ʇꞁnɐɟǝᗡ
+config.jei.valid=pᴉꞁɐᴧ
+
+config.jei.title=ᵷᴉɟuoƆ ƎWⱯNᗡO%M
+
+config.jei.mode=ǝpoW
+config.jei.mode.comment=˙uᴉ ᵷuᴉʇɐɹǝdo sᴉ IƎՐ ʇɐɥʇ ǝpoɯ ǝɥʇ ǝᵷuɐɥƆ
+config.jei.mode.cheatItemsEnabled=pǝꞁqɐuƎ ᵷuᴉʇɐǝɥƆ
+config.jei.mode.cheatItemsEnabled.comment=˙ǝdᴉɔǝɹ ǝɥʇ ᵷuᴉʍoɥs ɟo pɐǝʇsuᴉ sɯǝʇᴉ ǝʌᴉ⅁
+config.jei.mode.editEnabled=ǝpoW ᵷuᴉpᴉH ɯǝʇI
+config.jei.mode.editEnabled.comment=˙ʇsᴉꞁ ɯǝʇᴉ ǝɥʇ uᴉ ɯǝɥʇ ᵷuᴉʞɔᴉꞁɔ ʎq sɯǝʇᴉ ǝpᴉɥun puɐ ǝpᴉH
+
+config.jei.interface=ǝɔɐɟɹǝʇuI
+config.jei.interface.comment=˙ǝɔɐɟɹǝʇuI ɹǝs∩ ǝɥʇ oʇ ᵷuᴉʇɐꞁǝɹ suoᴉʇdO
+config.jei.interface.overlayEnabled=pǝꞁqɐuƎ ʇsᴉꞀ ɯǝʇI
+config.jei.interface.overlayEnabled.comment=˙sᴉnᵷ uǝdo oʇ ʇxǝu sɯǝʇᴉ ɟo ʇsᴉꞁ ǝɥʇ ʍoɥS
+config.jei.interface.recipeAnimationsEnabled=suoᴉʇɐɯᴉuⱯ ǝdᴉɔǝᴚ
+config.jei.interface.recipeAnimationsEnabled.comment=(ɔʇǝ 'sɹɐq ssǝɹᵷoɹd 'ǝɹᴉɟ ǝɔɐuɹnɟ) suoᴉʇɐɯᴉuɐ ǝdᴉɔǝɹ ʍoɥS
+
+config.jei.search=suoᴉʇdO ɥɔɹɐǝS
+config.jei.search.comment=˙ɹɐq ɥɔɹɐǝs ǝɥʇ oʇ ᵷuᴉʇɐꞁǝɹ suoᴉʇdO
+config.jei.search.modNameSearchMode=ǝɯɐNpoW@
+config.jei.search.modNameSearchMode.comment=(@ :xᴉɟǝɹd) sǝɯɐN poW ɹoɟ ǝpoɯ ɥɔɹɐǝS
+config.jei.search.tooltipSearchMode=dᴉʇꞁoo⟘#
+config.jei.search.tooltipSearchMode.comment=(# :xᴉɟǝɹd) sdᴉʇꞁoo⟘ ɹoɟ ǝpoɯ ɥɔɹɐǝS
+config.jei.search.oreDictSearchMode=ʎɹɐuoᴉʇɔᴉᗡǝɹO$
+config.jei.search.oreDictSearchMode.comment=($ :xᴉɟǝɹd) sǝɯɐN ʎɹɐuoᴉʇɔᴉᗡ ǝɹO ɹoɟ ǝpoɯ ɥɔɹɐǝS
+config.jei.search.creativeTabSearchMode=qɐ⟘ǝʌᴉʇɐǝɹ%C%
+config.jei.search.creativeTabSearchMode.comment=(% :xᴉɟǝɹd) sǝɯɐN qɐ⟘ ǝʌᴉʇɐǝɹƆ ɹoɟ ǝpoɯ ɥɔɹɐǝS
+config.jei.search.colorSearchMode=ɹoꞁoƆ^
+config.jei.search.colorSearchMode.comment=(^ :xᴉɟǝɹd) sɹoꞁoƆ ɯǝʇI ɹoɟ ǝpoɯ ɥɔɹɐǝS
+config.jei.search.resourceIdSearchMode=pIǝɔɹnosǝᴚ⅋
+config.jei.search.resourceIdSearchMode.comment=(⅋ :xᴉɟǝɹd) spᴉ sǝɔɹnosǝɹ ɹoɟ ǝpoɯ ɥɔɹɐǝS
+
+config.jei.advanced=pǝɔuɐʌpⱯ
+config.jei.advanced.comment=˙suoᴉʇɔunɟ IƎՐ ʎɐʍ ǝɥʇ ǝᵷuɐɥɔ oʇ suoᴉʇdo ᵷᴉɟuoɔ pǝɔuɐʌpⱯ
+config.jei.advanced.itemBlacklist=ʇsᴉꞁʞɔɐꞁᗺ ɯǝʇI
+config.jei.advanced.itemBlacklist.comment=˙ǝɹǝɥ sǝᴉɹʇuǝ ǝʌoɯǝɹ ɹo ppɐ ʎꞁꞁɐɔᴉʇɐɯoʇnɐ ꞁꞁᴉʍ ǝpoW ʇᴉpƎ ˙[[ɐʇǝɯ:]ǝɯɐu:]pIpoɯ :ʇɐɯɹoℲ ˙ʇsᴉꞁ ɯǝʇᴉ ǝɥʇ uᴉ pǝʎɐꞁdsᴉp ǝq ʇou pꞁnoɥs ʇɐɥʇ sɯǝʇᴉ ɟo ʇsᴉꞀ
+config.jei.advanced.colorSearchEnabled=ɥɔɹɐǝS ɹoꞁoƆ ǝꞁqɐuƎ
+config.jei.advanced.colorSearchEnabled.comment=˙ʇsᴉꞁ ɯǝʇᴉ ǝɥʇ uᴉ sdᴉʇꞁooʇ uo sɹoꞁoɔ ɯǝʇᴉ ǝꞁqɐɥɔɹɐǝs ǝɥʇ ʍoɥs puɐ ɹoꞁoɔ ʎq sɯǝʇᴉ ɥɔɹɐǝS
+config.jei.advanced.debugModeEnabled=ǝpoW ᵷnqǝᗡ
+config.jei.advanced.debugModeEnabled.comment=˙sǝdᴉɔǝɹ ᵷnqǝp ǝɯos puɐ sɯǝʇᴉ ʇsǝʇ ɟo spuɐsnoɥʇ sppɐ 'sɹǝdoꞁǝʌǝp IƎՐ ɹoɟ ꞁnɟǝsn ʎꞁuO
+config.jei.advanced.centerSearchBarEnabled=ɹɐᗺ ɥɔɹɐǝS ɹǝʇuǝƆ
+config.jei.advanced.centerSearchBarEnabled.comment=˙uǝǝɹɔs ǝɥʇ ɟo ɹǝʇuǝɔ ɯoʇʇoq ǝɥʇ oʇ ɹɐq ɥɔɹɐǝs IƎՐ ǝɥʇ ǝʌoW
+config.jei.advanced.modNameFormat=ʇɐɯɹoℲ ǝɯɐN poW
+config.jei.advanced.modNameFormat.comment=˙ǝꞁqɐsᴉp oʇ ʞuɐꞁq ǝʌɐǝꞀ ˙sᴉnᵷ IƎՐ ɹoɟ dᴉʇꞁooʇ ǝɥʇ uᴉ pǝʇʇɐɯɹoɟ ǝq pꞁnoɥs ǝɯɐu poɯ ǝɥʇ ʍoH
+config.jei.advanced.maxSubtypes=sǝdʎʇqnS ɯǝʇI xɐW
+config.jei.advanced.maxSubtypes.comment=˙IƎՐ uᴉ pǝʎɐꞁdsᴉp ǝq ʇou ꞁꞁᴉʍ sǝdʎʇqns ʎuɐɯ sᴉɥʇ uɐɥʇ ǝɹoɯ ɥʇᴉʍ sɯǝʇI
+config.jei.advanced.maxColumns=ɥʇpᴉM xɐW
+config.jei.advanced.maxColumns.comment=˙ʇsᴉꞁ ʇuǝᴉpǝɹᵷuᴉ ǝɥʇ ɟo ɥʇpᴉʍ ɯnɯᴉxɐɯ ǝɥ⟘
+config.jei.advanced.giveMode=ǝpoW ǝʌᴉ⅁
+config.jei.advanced.giveMode.comment=˙(dnʞɔᴉd‾ǝsnoɯ) ǝsnoɯ ǝɥʇ ɥʇᴉʍ dn ɯǝɥʇ ʞɔᴉd ɹo (ʎɹoʇuǝʌuᴉ) ʎɹoʇuǝʌuᴉ ǝɥʇ oʇ ʇɔǝɹᴉp sɯǝʇᴉ ǝʌᴉᵷ pꞁnoɥs IƎՐ ɟᴉ ǝsooɥƆ
+
+gui.jei.editMode.description=:ǝpoW ʇᴉpƎ ʇsᴉꞀ ɯǝʇI IƎՐ
+gui.jei.editMode.description.hide=˙(ʞɔᴉꞁɔ-Ꞁᴚ⟘%C) ˙ǝpᴉH
+gui.jei.editMode.description.show=˙(ʞɔᴉꞁɔ-Ꞁᴚ⟘%C) ˙uǝppᴉH
+gui.jei.editMode.description.hide.wild=˙(ʞɔᴉꞁɔ-ʇɥᵷᴉɹ-Ꞁᴚ⟘%C) ˙pɹɐɔpꞁᴉM ʎq ǝpᴉH
+gui.jei.editMode.description.show.wild=˙(ʞɔᴉꞁɔ-ʇɥᵷᴉɹ-Ꞁᴚ⟘%C) ˙pɹɐɔpꞁᴉM ʎq uǝppᴉH
+gui.jei.editMode.description.hide.mod.id=˙(ʞɔᴉꞁɔ-⟘ℲIHS-Ꞁᴚ⟘%C) ˙poW ǝpᴉH
+gui.jei.editMode.description.show.mod.id=˙(ʞɔᴉꞁɔ-⟘ℲIHS-Ꞁᴚ⟘%C) ˙poW uǝppᴉH
+
+key.jei.ctrl=Ꞁᴚ⟘Ɔ
+key.jei.ctrl.mac=ᗡWƆ
+
+gui.jei.category.craftingTable=ᵷuᴉʇɟɐɹƆ
+gui.jei.category.smelting=ᵷuᴉʇꞁǝɯS
+gui.jei.category.smelting.experience=ԀX %s
+gui.jei.category.fuel=ꞁǝnℲ
+gui.jei.category.fuel.smeltCount.single=ɯǝʇᴉ ⥝ sʇꞁǝɯS
+gui.jei.category.fuel.smeltCount=sɯǝʇᴉ %s sʇꞁǝɯS
+gui.jei.category.fuel.burnTime=%s :ǝɯᴉ⟘ uɹnᗺ
+gui.jei.category.brewing=ᵷuᴉʍǝɹᗺ
+gui.jei.category.brewing.steps=%s :sdǝʇS
+gui.jei.category.itemInformation=uoᴉʇɐɯɹoɟuI
+
+description.jei.wooden.door.1=˙sǝɔuǝʇuǝs ᵷuᴉʇsǝ⟘\n˙ᵷuᴉpꞁᴉnq ɹnoʎ ᵷuᴉɹǝʇuǝ ɯoɹɟ sɹǝʇsuoɯ ʞɔoꞁq oʇ noʎ ʍoꞁꞁɐ sɹooᗡ uǝpooM
+description.jei.wooden.door.2=˙ɐsɹǝʌ ɐsᴉʌ puɐ pǝsoꞁɔ oʇ uǝdo ɯoɹɟ ǝʇɐʇs sʇᴉ sǝᵷuɐɥɔ ɹoop ɐ uo ᵷuᴉʞɔᴉꞁƆ
+description.jei.wooden.door.3=˙sʇᴉnɔɹᴉƆ ǝuoʇspǝᴚ ɐᴉʌ pǝsoꞁɔ/pǝuǝdo ǝq uɐɔ sɹooᗡ uǝpooM
+
+
+config.jei.search.prefixRequiredForColorSearch=sɹnoꞁoƆ ɹoɟ ^ ǝɹᴉnbǝᴚ
+config.jei.search.prefixRequiredForColorSearch.comment=˙sɹnoꞁoɔ ɯǝʇᴉ ɥɔɹɐǝs oʇ pɹoʍ ɐ ɟo ʇuoɹɟ uᴉ „^„ ǝɹᴉnbǝᴚ
+
