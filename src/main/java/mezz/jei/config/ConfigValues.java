@@ -9,7 +9,6 @@ public class ConfigValues {
 	public GiveMode giveMode = GiveMode.MOUSE_PICKUP;
 	public final String modNameFormatFriendly = "blue italic";
 	public String modNameFormat = Config.parseFriendlyModNameFormat(modNameFormatFriendly);
-	public int maxSubtypes = 300;
 	public int maxColumns = 100;
 
 	// search

@@ -149,10 +149,6 @@ public final class Config {
 		}
 	}
 
-	public static int getMaxSubtypes() {
-		return values.maxSubtypes;
-	}
-
 	public static int getMaxColumns() {
 		return values.maxColumns;
 	}
@@ -316,11 +312,6 @@ public final class Config {
 			config.setEnum("oreDictSearchMode", CATEGORY_SEARCH, defaultValues.oreDictSearchMode, searchModes);
 		}
 
-		// set new defaults moving to config version 0.4.0
-		if (loadedConfigVersion != null && versionCompare(loadedConfigVersion, "0.4.0") < 0) {
-			config.setInt("maxSubtypes", CATEGORY_ADVANCED, defaultValues.maxSubtypes, 10, 10000);
-		}
-
 		values.modNameSearchMode = config.getEnum("modNameSearchMode", CATEGORY_SEARCH, defaultValues.modNameSearchMode, searchModes);
 		values.tooltipSearchMode = config.getEnum("tooltipSearchMode", CATEGORY_SEARCH, defaultValues.tooltipSearchMode, searchModes);
 		values.oreDictSearchMode = config.getEnum("oreDictSearchMode", CATEGORY_SEARCH, defaultValues.oreDictSearchMode, searchModes);
@@ -340,6 +331,7 @@ public final class Config {
 		categoryAdvanced.remove("hideMissingModelsEnabled");
 		categoryAdvanced.remove("debugItemEnabled");
 		categoryAdvanced.remove("colorSearchEnabled");
+		categoryAdvanced.remove("maxSubtypes");
 
 		values.centerSearchBarEnabled = config.getBoolean(CATEGORY_ADVANCED, "centerSearchBarEnabled", defaultValues.centerSearchBarEnabled);
 
@@ -348,13 +340,6 @@ public final class Config {
 		values.maxColumns = config.getInt("maxColumns", CATEGORY_ADVANCED, defaultValues.maxColumns, 3, 100);
 
 		updateModNameFormat(config);
-
-		{
-			String comment = Translator.translateToLocal("config.jei.advanced.maxSubtypes.comment");
-			Property property = config.get(CATEGORY_ADVANCED, "maxSubtypes", defaultValues.maxSubtypes, comment, 10, 10000);
-			property.setShowInGui(false);
-			values.maxSubtypes = property.getInt();
-		}
 
 		{
 			Property property = config.get(CATEGORY_ADVANCED, "debugModeEnabled", defaultValues.debugModeEnabled);

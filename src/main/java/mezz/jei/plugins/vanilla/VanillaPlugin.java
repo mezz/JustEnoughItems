@@ -14,6 +14,7 @@ import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
+import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeCategory;
@@ -44,6 +45,7 @@ import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.client.gui.inventory.GuiCrafting;
 import net.minecraft.client.gui.inventory.GuiFurnace;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerBrewingStand;
@@ -52,14 +54,21 @@ import net.minecraft.inventory.ContainerRepair;
 import net.minecraft.inventory.ContainerWorkbench;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemBanner;
+import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @JEIPlugin
 public class VanillaPlugin implements IModPlugin {
@@ -69,9 +78,6 @@ public class VanillaPlugin implements IModPlugin {
 	@Override
 	public void registerItemSubtypes(ISubtypeRegistry subtypeRegistry) {
 		this.subtypeRegistry = subtypeRegistry;
-		subtypeRegistry.useNbtForSubtypes(
-				Items.ENCHANTED_BOOK
-		);
 
 		subtypeRegistry.registerSubtypeInterpreter(Items.TIPPED_ARROW, PotionSubtypeInterpreter.INSTANCE);
 		subtypeRegistry.registerSubtypeInterpreter(Items.POTIONITEM, PotionSubtypeInterpreter.INSTANCE);
@@ -84,6 +90,24 @@ public class VanillaPlugin implements IModPlugin {
 		subtypeRegistry.registerSubtypeInterpreter(Items.SPAWN_EGG, itemStack -> {
 			ResourceLocation resourceLocation = ItemMonsterPlacer.getNamedIdFrom(itemStack);
 			return resourceLocation == null ? ISubtypeRegistry.ISubtypeInterpreter.NONE : resourceLocation.toString();
+		});
+		subtypeRegistry.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, itemStack -> {
+			List<String> enchantmentNames = new ArrayList<>();
+			NBTTagList enchantments = ItemEnchantedBook.getEnchantments(itemStack);
+			for (NBTBase nbt : enchantments) {
+				if (nbt instanceof NBTTagCompound) {
+					NBTTagCompound nbttagcompound = (NBTTagCompound) nbt;
+					int j = nbttagcompound.getShort("id");
+					Enchantment enchantment = Enchantment.getEnchantmentByID(j);
+					if (enchantment != null)
+					{
+						String enchantmentUid = enchantment.getName() + ".lvl" + nbttagcompound.getShort("lvl");
+						enchantmentNames.add(enchantmentUid);
+					}
+				}
+			}
+			enchantmentNames.sort(null);
+			return enchantmentNames.toString();
 		});
 	}
 
@@ -112,15 +136,16 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void register(IModRegistry registry) {
-		final IIngredientRegistry ingredientRegistry = registry.getIngredientRegistry();
-		final IJeiHelpers jeiHelpers = registry.getJeiHelpers();
+		IIngredientRegistry ingredientRegistry = registry.getIngredientRegistry();
+		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
+		IVanillaRecipeFactory vanillaRecipeFactory = jeiHelpers.getVanillaRecipeFactory();
 
 		registry.addRecipes(CraftingRecipeChecker.getValidRecipes(jeiHelpers), VanillaRecipeCategoryUid.CRAFTING);
 		registry.addRecipes(SmeltingRecipeMaker.getFurnaceRecipes(jeiHelpers), VanillaRecipeCategoryUid.SMELTING);
 		registry.addRecipes(FuelRecipeMaker.getFuelRecipes(ingredientRegistry, jeiHelpers), VanillaRecipeCategoryUid.FUEL);
 		registry.addRecipes(BrewingRecipeMaker.getBrewingRecipes(ingredientRegistry), VanillaRecipeCategoryUid.BREWING);
 		registry.addRecipes(TippedArrowRecipeMaker.getTippedArrowRecipes(), VanillaRecipeCategoryUid.CRAFTING);
-		AnvilRecipeMaker.registerVanillaAnvilRecipes(registry);
+		registry.addRecipes(AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientRegistry), VanillaRecipeCategoryUid.ANVIL);
 
 		registry.handleRecipes(ShapedOreRecipe.class, recipe -> new ShapedOreRecipeWrapper(jeiHelpers, recipe), VanillaRecipeCategoryUid.CRAFTING);
 		registry.handleRecipes(ShapedRecipes.class, recipe -> new ShapedRecipesWrapper(jeiHelpers, recipe), VanillaRecipeCategoryUid.CRAFTING);

@@ -104,6 +104,11 @@ public final class ErrorUtil {
 		return recipeInfoBuilder.toString();
 	}
 
+	public static <T> String getIngredientInfo(T ingredient) {
+		IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredient);
+		return ingredientHelper.getErrorInfo(ingredient);
+	}
+
 	public static <T> List<String> getIngredientInfo(Class<T> ingredientClass, List<? extends List<T>> ingredients) {
 		IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredientClass);
 		List<String> allInfos = new ArrayList<>(ingredients.size());

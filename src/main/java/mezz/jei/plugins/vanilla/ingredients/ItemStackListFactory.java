@@ -6,10 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 import mezz.jei.api.ISubtypeRegistry;
-import mezz.jei.config.Config;
 import mezz.jei.startup.StackHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
@@ -28,7 +25,6 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public final class ItemStackListFactory {
 	private final ISubtypeRegistry subtypeRegistry;
-	private final Multiset<Item> subtypeCount = HashMultiset.create();
 
 	public ItemStackListFactory(ISubtypeRegistry subtypeRegistry) {
 		this.subtypeRegistry = subtypeRegistry;
@@ -47,9 +43,6 @@ public final class ItemStackListFactory {
 				creativeTab.displayAllRelevantItems(creativeTabItemStacks);
 			} catch (RuntimeException | LinkageError e) {
 				Log.get().error("Creative tab crashed while getting items. Some items from this tab will be missing from the item list. {}", creativeTab, e);
-			}
-			for (ItemStack itemStack : creativeTabItemStacks) {
-				subtypeCount.add(itemStack.getItem());
 			}
 			for (ItemStack itemStack : creativeTabItemStacks) {
 				if (itemStack.isEmpty()) {
@@ -77,7 +70,6 @@ public final class ItemStackListFactory {
 		}
 
 		NonNullList<ItemStack> items = stackHelper.getSubtypes(item, 1);
-		subtypeCount.setCount(item, items.size());
 		for (ItemStack stack : items) {
 			addItemStack(stackHelper, stack, itemList, itemNameSet);
 		}
@@ -115,11 +107,6 @@ public final class ItemStackListFactory {
 	}
 
 	private void addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<String> itemNameSet) {
-		Item item = stack.getItem();
-		if (subtypeCount.count(item) >= Config.getMaxSubtypes()) {
-			return;
-		}
-
 		String itemKey = null;
 
 		try {

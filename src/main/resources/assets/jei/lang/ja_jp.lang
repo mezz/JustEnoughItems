@@ -82,8 +82,6 @@ config.jei.advanced.centerSearchBarEnabled=検索バーの中央配置
 config.jei.advanced.centerSearchBarEnabled.comment=JEI検索バーを中央下に移動します。
 config.jei.advanced.modNameFormat=Mod名の書式
 config.jei.advanced.modNameFormat.comment=JEIのGUIやツールチップにおいてどのようにMod名を表示するか指定します。空欄で無効。
-config.jei.advanced.maxSubtypes=サブタイプ数制限
-config.jei.advanced.maxSubtypes.comment=これより多いサブタイプを持つアイテムはJEIで表示されなくなります。
 config.jei.advanced.giveMode=付与モード
 config.jei.advanced.giveMode.comment=インベントリに直接アイテムに送るか (inventory)、マウスでアイテムを取得するか (mouse_pickup) を指定します。
 

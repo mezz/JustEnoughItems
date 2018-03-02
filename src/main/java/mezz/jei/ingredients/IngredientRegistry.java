@@ -92,9 +92,12 @@ public class IngredientRegistry implements IIngredientRegistry {
 	}
 
 	public <V> boolean isValidIngredient(V ingredient) {
-		//noinspection unchecked
-		IIngredientHelper<V> ingredientHelper = ingredientHelperMap.get(ingredient.getClass());
-		return ingredientHelper != null && ingredientHelper.isValidIngredient(ingredient);
+		try {
+			IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredient);
+			return ingredientHelper.isValidIngredient(ingredient);
+		} catch (RuntimeException ignored) {
+			return false;
+		}
 	}
 
 	@Override
@@ -105,16 +108,21 @@ public class IngredientRegistry implements IIngredientRegistry {
 		return (IIngredientHelper<V>) getIngredientHelper(ingredient.getClass());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <V> IIngredientHelper<V> getIngredientHelper(Class<? extends V> ingredientClass) {
 		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 
-		//noinspection unchecked
 		IIngredientHelper<V> ingredientHelper = ingredientHelperMap.get(ingredientClass);
-		if (ingredientHelper == null) {
-			throw new IllegalArgumentException("Unknown ingredient type: " + ingredientClass);
+		if (ingredientHelper != null) {
+			return ingredientHelper;
 		}
-		return ingredientHelper;
+		for (Map.Entry<Class, IIngredientHelper> entry : ingredientHelperMap.entrySet()) {
+			if (entry.getKey().isAssignableFrom(ingredientClass)) {
+				return entry.getValue();
+			}
+		}
+		throw new IllegalArgumentException("Unknown ingredient type: " + ingredientClass);
 	}
 
 	@Override
