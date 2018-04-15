@@ -12,6 +12,7 @@ import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientRegistry;
@@ -43,10 +44,12 @@ public class JeiStarter {
 		stackHelper.enableUidCache();
 		Internal.setStackHelper(stackHelper);
 
-		IngredientRegistry ingredientRegistry = registerIngredients(plugins);
+		IngredientBlacklistInternal ingredientBlacklistInternal = new IngredientBlacklistInternal();
+		ModIngredientRegistration modIngredientRegistry = registerIngredients(plugins);
+		IngredientRegistry ingredientRegistry = modIngredientRegistry.createIngredientRegistry(ForgeModIdHelper.getInstance(), ingredientBlacklistInternal);
 		Internal.setIngredientRegistry(ingredientRegistry);
 
-		JeiHelpers jeiHelpers = new JeiHelpers(ingredientRegistry, stackHelper);
+		JeiHelpers jeiHelpers = new JeiHelpers(ingredientRegistry, ingredientBlacklistInternal, stackHelper);
 		Internal.setHelpers(jeiHelpers);
 
 		ModRegistry modRegistry = new ModRegistry(jeiHelpers, ingredientRegistry);
@@ -117,7 +120,7 @@ public class JeiStarter {
 		ProgressManager.pop(progressBar);
 	}
 
-	private static IngredientRegistry registerIngredients(List<IModPlugin> plugins) {
+	private static ModIngredientRegistration registerIngredients(List<IModPlugin> plugins) {
 		ProgressManager.ProgressBar progressBar = ProgressManager.push("Registering ingredients", plugins.size());
 		ModIngredientRegistration modIngredientRegistry = new ModIngredientRegistration();
 
@@ -138,7 +141,7 @@ public class JeiStarter {
 		}
 		ProgressManager.pop(progressBar);
 
-		return modIngredientRegistry.createIngredientRegistry(ForgeModIdHelper.getInstance());
+		return modIngredientRegistry;
 	}
 
 	private static void registerCategories(List<IModPlugin> plugins, ModRegistry modRegistry) {

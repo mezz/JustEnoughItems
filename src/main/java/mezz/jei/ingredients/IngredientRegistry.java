@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.IngredientSet;
@@ -25,6 +26,7 @@ import java.util.Set;
 
 public class IngredientRegistry implements IIngredientRegistry {
 	private final IModIdHelper modIdHelper;
+	private final IngredientBlacklistInternal ingredientBlacklistInternal;
 	private final Map<Class, IngredientSet> ingredientsMap;
 	private final ImmutableMap<Class, IIngredientHelper> ingredientHelperMap;
 	private final ImmutableMap<Class, IIngredientRenderer> ingredientRendererMap;
@@ -33,11 +35,13 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	public IngredientRegistry(
 			IModIdHelper modIdHelper,
+			IngredientBlacklistInternal ingredientBlacklistInternal,
 			Map<Class, IngredientSet> ingredientsMap,
 			ImmutableMap<Class, IIngredientHelper> ingredientHelperMap,
 			ImmutableMap<Class, IIngredientRenderer> ingredientRendererMap
 	) {
 		this.modIdHelper = modIdHelper;
+		this.ingredientBlacklistInternal = ingredientBlacklistInternal;
 		this.ingredientsMap = ingredientsMap;
 		this.ingredientHelperMap = ingredientHelperMap;
 		this.ingredientRendererMap = ingredientRendererMap;
@@ -193,6 +197,10 @@ public class IngredientRegistry implements IIngredientRegistry {
 		if (!newIngredients.isEmpty()) {
 			NonNullList<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, newIngredients, modIdHelper);
 			ingredientFilter.addIngredients(ingredientListElements);
+
+			for (V ingredient : newIngredients) {
+				ingredientBlacklistInternal.removeIngredientFromBlacklist(ingredient, ingredientHelper);
+			}
 		}
 	}
 
@@ -220,5 +228,11 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 		NonNullList<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, modIdHelper);
 		ingredientFilter.removeIngredients(ingredientListElements);
+
+		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientClass);
+		// blacklist items so they stay hidden after a reload
+		for (V ingredient : ingredients) {
+			ingredientBlacklistInternal.addIngredientToBlacklist(ingredient, ingredientHelper);
+		}
 	}
 }

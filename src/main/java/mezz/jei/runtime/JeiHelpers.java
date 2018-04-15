@@ -5,6 +5,7 @@ import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.ingredients.IngredientBlacklist;
+import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.startup.StackHelper;
 import mezz.jei.transfer.RecipeTransferHandlerHelper;
@@ -17,10 +18,10 @@ public class JeiHelpers implements IJeiHelpers {
 	private final RecipeTransferHandlerHelper recipeTransferHandlerHelper;
 	private final IVanillaRecipeFactory vanillaRecipeFactory = new VanillaRecipeFactory();
 
-	public JeiHelpers(IIngredientRegistry ingredientRegistry, StackHelper stackHelper) {
+	public JeiHelpers(IIngredientRegistry ingredientRegistry, IngredientBlacklistInternal ingredientBlacklistInternal, StackHelper stackHelper) {
 		this.guiHelper = new GuiHelper();
 		this.stackHelper = stackHelper;
-		this.ingredientBlacklist = new IngredientBlacklist(ingredientRegistry);
+		this.ingredientBlacklist = new IngredientBlacklist(ingredientRegistry, ingredientBlacklistInternal);
 		this.recipeTransferHandlerHelper = new RecipeTransferHandlerHelper();
 	}
 

@@ -99,7 +99,7 @@ public class IngredientFilter implements IIngredientFilter {
 		V ingredient = element.getIngredient();
 
 		IngredientBlacklist ingredientBlacklist = helpers.getIngredientBlacklist();
-		if (ingredientBlacklist.isIngredientBlacklistedByApi(ingredient)) {
+		if (ingredientBlacklist.isIngredientBlacklisted(ingredient)) {
 			return;
 		}
 

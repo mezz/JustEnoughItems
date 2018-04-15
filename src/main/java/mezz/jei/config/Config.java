@@ -491,8 +491,8 @@ public final class Config {
 		}
 	}
 
-	public static <V> void addIngredientToConfigBlacklist(V itemStack, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
-		final String uid = getIngredientUid(itemStack, blacklistType, ingredientHelper);
+	public static <V> void addIngredientToConfigBlacklist(V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
+		final String uid = getIngredientUid(ingredient, blacklistType, ingredientHelper);
 		if (itemBlacklist.add(uid)) {
 			updateBlacklist();
 		}
