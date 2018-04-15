@@ -10,7 +10,6 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 
 public final class SessionData {
 	private static boolean jeiOnServer = false;
-	private static boolean joinedWorld = false;
 	@Nullable
 	private static String worldUid = null;
 	private static int firstItemIndex = 0;
@@ -25,7 +24,6 @@ public final class SessionData {
 
 	public static void onConnectedToServer(boolean jeiOnServer) {
 		SessionData.jeiOnServer = jeiOnServer;
-		SessionData.joinedWorld = false;
 		SessionData.worldUid = null;
 	}
 
@@ -52,14 +50,6 @@ public final class SessionData {
 			worldUid = "world" + Integer.toString(worldUid.hashCode());
 		}
 		return worldUid;
-	}
-
-	public static boolean hasJoinedWorld() {
-		return joinedWorld;
-	}
-
-	public static void setJoinedWorld(boolean value) {
-		SessionData.joinedWorld = value;
 	}
 
 	public static int getFirstItemIndex() {

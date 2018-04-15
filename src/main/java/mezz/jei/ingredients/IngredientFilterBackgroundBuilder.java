@@ -2,7 +2,6 @@ package mezz.jei.ingredients;
 
 import gnu.trove.map.TCharObjectMap;
 import mezz.jei.config.Config;
-import mezz.jei.config.SessionData;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 import net.minecraft.client.Minecraft;
@@ -32,7 +31,7 @@ public class IngredientFilterBackgroundBuilder {
 
 	@SubscribeEvent
 	public void onClientTick(TickEvent.ClientTickEvent event) {
-		if (event.side == Side.CLIENT && SessionData.hasJoinedWorld() && Minecraft.getMinecraft().player != null) {
+		if (event.side == Side.CLIENT && Minecraft.getMinecraft().player != null) {
 			boolean finished = run(20);
 			if (!finished) {
 				return;

@@ -106,12 +106,10 @@ public class ProxyCommonClient extends ProxyCommon {
 		Minecraft minecraft = Minecraft.getMinecraft();
 		IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) minecraft.getResourceManager();
 		reloadableResourceManager.registerReloadListener(resourceManager -> {
-			if (SessionData.hasJoinedWorld()) {
-				// check that JEI has been started before. if not, do nothing
-				if (this.starter.hasStarted()) {
-					Log.get().info("Restarting JEI.");
-					this.starter.start(this.plugins);
-				}
+			// check that JEI has been started before. if not, do nothing
+			if (this.starter.hasStarted()) {
+				Log.get().info("Restarting JEI.");
+				this.starter.start(this.plugins);
 			}
 		});
 
@@ -123,17 +121,9 @@ public class ProxyCommonClient extends ProxyCommon {
 		if (!event.isLocal() && !event.getConnectionType().equals("MODDED")) {
 			SessionData.onConnectedToServer(false);
 		}
-		SessionData.setJoinedWorld(true);
 		NetworkManager networkManager = event.getManager();
 		Config.syncWorldConfig(networkManager);
 		MinecraftForge.EVENT_BUS.post(new PlayerJoinedWorldEvent());
-	}
-
-	@SubscribeEvent
-	public void onClientDisconnectionFromServer(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
-		if (SessionData.hasJoinedWorld()) {
-			SessionData.setJoinedWorld(false);
-		}
 	}
 
 	private static void reloadItemList() {
