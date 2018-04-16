@@ -5,19 +5,19 @@ import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.Collection;
-import java.util.List;
 
 public class IngredientFilterBackgroundBuilder {
 	private final TCharObjectMap<PrefixedSearchTree> prefixedSearchTrees;
-	private final List<IIngredientListElement> elementList;
+	private final NonNullList<IIngredientListElement> elementList;
 
-	public IngredientFilterBackgroundBuilder(TCharObjectMap<PrefixedSearchTree> prefixedSearchTrees, List<IIngredientListElement> elementList) {
+	public IngredientFilterBackgroundBuilder(TCharObjectMap<PrefixedSearchTree> prefixedSearchTrees, NonNullList<IIngredientListElement> elementList) {
 		this.prefixedSearchTrees = prefixedSearchTrees;
 		this.elementList = elementList;
 	}
@@ -49,14 +49,12 @@ public class IngredientFilterBackgroundBuilder {
 				GeneralizedSuffixTree tree = prefixedTree.getTree();
 				for (int i = tree.getHighestIndex() + 1; i < this.elementList.size(); i++) {
 					IIngredientListElement element = elementList.get(i);
-					if (element != null) {
-						Collection<String> strings = stringsGetter.getStrings(element);
-						if (strings.isEmpty()) {
-							tree.put("", i);
-						} else {
-							for (String string : strings) {
-								tree.put(string, i);
-							}
+					Collection<String> strings = stringsGetter.getStrings(element);
+					if (strings.isEmpty()) {
+						tree.put("", i);
+					} else {
+						for (String string : strings) {
+							tree.put(string, i);
 						}
 					}
 					if (System.currentTimeMillis() - startTime >= timeoutMs) {

@@ -2,7 +2,6 @@ package mezz.jei.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.Config;
-import mezz.jei.util.ErrorUtil;
 
 import java.util.HashSet;
 import java.util.List;
@@ -22,12 +21,11 @@ public class IngredientBlacklistInternal {
 	}
 
 	public <V> boolean isIngredientBlacklisted(V ingredient, IIngredientHelper<V> ingredientHelper) {
-		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		return isIngredientBlacklistedByApi(ingredient, ingredientHelper) ||
+			Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper);
+	}
 
-		if (isIngredientBlacklistedByApi(ingredient, ingredientHelper)) {
-			return true;
-		}
-
+	public <V> boolean isIngredientBlacklistedByConfig(V ingredient, IIngredientHelper<V> ingredientHelper) {
 		return Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper);
 	}
 

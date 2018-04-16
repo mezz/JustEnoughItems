@@ -44,12 +44,12 @@ public class JeiStarter {
 		stackHelper.enableUidCache();
 		Internal.setStackHelper(stackHelper);
 
-		IngredientBlacklistInternal ingredientBlacklistInternal = new IngredientBlacklistInternal();
+		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
 		ModIngredientRegistration modIngredientRegistry = registerIngredients(plugins);
-		IngredientRegistry ingredientRegistry = modIngredientRegistry.createIngredientRegistry(ForgeModIdHelper.getInstance(), ingredientBlacklistInternal);
+		IngredientRegistry ingredientRegistry = modIngredientRegistry.createIngredientRegistry(ForgeModIdHelper.getInstance());
 		Internal.setIngredientRegistry(ingredientRegistry);
 
-		JeiHelpers jeiHelpers = new JeiHelpers(ingredientRegistry, ingredientBlacklistInternal, stackHelper);
+		JeiHelpers jeiHelpers = new JeiHelpers(ingredientRegistry, blacklist, stackHelper);
 		Internal.setHelpers(jeiHelpers);
 
 		ModRegistry modRegistry = new ModRegistry(jeiHelpers, ingredientRegistry);
@@ -72,7 +72,7 @@ public class JeiStarter {
 		timer.stop();
 
 		timer.start("Building ingredient filter");
-		IngredientFilter ingredientFilter = new IngredientFilter(jeiHelpers);
+		IngredientFilter ingredientFilter = new IngredientFilter(blacklist);
 		ingredientFilter.addIngredients(ingredientList);
 		Internal.setIngredientFilter(ingredientFilter);
 		timer.stop();

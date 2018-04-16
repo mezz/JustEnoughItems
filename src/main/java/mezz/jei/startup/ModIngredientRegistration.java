@@ -4,9 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
-import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientRegistry;
-import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.IngredientSet;
 
@@ -31,7 +29,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 		ingredientRendererMap.put(ingredientClass, ingredientRenderer);
 	}
 
-	public IngredientRegistry createIngredientRegistry(IModIdHelper modIdHelper, IngredientBlacklistInternal ingredientBlacklistInternal) {
+	public IngredientRegistry createIngredientRegistry(IModIdHelper modIdHelper) {
 		Map<Class, IngredientSet> ingredientsMap = new IdentityHashMap<>();
 		for (Map.Entry<Class, Collection> entry : allIngredientsMap.entrySet()) {
 			Class ingredientClass = entry.getKey();
@@ -44,7 +42,6 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 
 		return new IngredientRegistry(
 				modIdHelper,
-				ingredientBlacklistInternal,
 				ingredientsMap,
 				ImmutableMap.copyOf(ingredientHelperMap),
 				ImmutableMap.copyOf(ingredientRendererMap)

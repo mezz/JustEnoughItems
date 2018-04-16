@@ -20,13 +20,13 @@ import mezz.jei.config.Config;
 import mezz.jei.config.EditModeToggleEvent;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IngredientListOverlay;
-import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.startup.PlayerJoinedWorldEvent;
 import mezz.jei.suffixtree.CombinedSearchTrees;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 import mezz.jei.suffixtree.ISearchTree;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.ProgressManager;
@@ -38,12 +38,12 @@ public class IngredientFilter implements IIngredientFilter {
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
-	private final JeiHelpers helpers;
+	private final IngredientBlacklistInternal blacklist;
 	/**
 	 * indexed list of ingredients for use with the suffix trees
 	 * includes all elements (even hidden ones) for use when rebuilding
 	 */
-	private final List<IIngredientListElement> elementList;
+	private final NonNullList<IIngredientListElement> elementList;
 	private final GeneralizedSuffixTree searchTree;
 	private final TCharObjectMap<PrefixedSearchTree> prefixedSearchTrees = new TCharObjectHashMap<>();
 	private final IngredientFilterBackgroundBuilder backgroundBuilder;
@@ -53,9 +53,9 @@ public class IngredientFilter implements IIngredientFilter {
 	private String filterCached;
 	private List<IIngredientListElement> ingredientListCached = Collections.emptyList();
 
-	public IngredientFilter(JeiHelpers helpers) {
-		this.helpers = helpers;
-		this.elementList = new ArrayList<>();
+	public IngredientFilter(IngredientBlacklistInternal blacklist) {
+		this.blacklist = blacklist;
+		this.elementList = NonNullList.create();
 		this.searchTree = new GeneralizedSuffixTree();
 		createPrefixedSearchTree('@', Config::getModNameSearchMode, IIngredientListElement::getModNameStrings);
 		createPrefixedSearchTree('#', Config::getTooltipSearchMode, IIngredientListElement::getTooltipStrings);
@@ -95,14 +95,32 @@ public class IngredientFilter implements IIngredientFilter {
 		ProgressManager.pop(progressBar);
 	}
 
-	private <V> void addIngredient(IIngredientListElement<V> element) {
-		V ingredient = element.getIngredient();
-
-		IngredientBlacklist ingredientBlacklist = helpers.getIngredientBlacklist();
-		if (ingredientBlacklist.isIngredientBlacklisted(ingredient)) {
-			return;
+	public void addIngredientsAtRuntime(NonNullList<IIngredientListElement> ingredients) {
+		for (IIngredientListElement<?> element : ingredients) {
+			List<IIngredientListElement> matchingElements = findMatchingElements(element);
+			if (!matchingElements.isEmpty()) {
+				updateHiddenStates(matchingElements);
+				if (Config.isDebugModeEnabled()) {
+					Log.get().debug("addIngredientsAtRuntime Updated ingredient: {}", getErrorInfo(element));
+				}
+			} else {
+				addIngredient(element);
+				if (Config.isDebugModeEnabled()) {
+					Log.get().debug("addIngredientsAtRuntime Added ingredient: {}", getErrorInfo(element));
+				}
+			}
 		}
+		filterCached = null;
+	}
 
+	private static <V> String getErrorInfo(IIngredientListElement<V> element) {
+		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
+		V ingredient = element.getIngredient();
+		return ingredientHelper.getErrorInfo(ingredient);
+	}
+
+	private <V> void addIngredient(IIngredientListElement<V> element) {
+		updateHiddenState(element);
 		final int index = elementList.size();
 		elementList.add(element);
 		searchTree.put(Translator.toLowercaseWithLocale(element.getDisplayName()), index);
@@ -118,36 +136,51 @@ public class IngredientFilter implements IIngredientFilter {
 		}
 	}
 
-	public void removeIngredients(NonNullList<IIngredientListElement> ingredients) {
+	public void removeIngredientsAtRuntime(NonNullList<IIngredientListElement> ingredients) {
 		for (IIngredientListElement<?> element : ingredients) {
-			removeIngredient(element);
+			removeIngredientAtRuntime(element);
 		}
 		filterCached = null;
 	}
 
-	private <V> void removeIngredient(IIngredientListElement<V> element) {
+	private <V> void removeIngredientAtRuntime(IIngredientListElement<V> element) {
+		List<IIngredientListElement> matchingElements = findMatchingElements(element);
+		if (matchingElements.isEmpty()) {
+			IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
+			V ingredient = element.getIngredient();
+			String errorInfo = ingredientHelper.getErrorInfo(ingredient);
+			Log.get().error("Could not find any matching ingredients to remove: {}", errorInfo);
+		} else if (Config.isDebugModeEnabled()) {
+			Log.get().debug("removeIngredientsAtRuntime Removed ingredient: {}", getErrorInfo(element));
+		}
+		for (IIngredientListElement matchingElement : matchingElements) {
+			matchingElement.setVisible(false);
+		}
+	}
+
+	private <V> List<IIngredientListElement> findMatchingElements(IIngredientListElement<V> element) {
 		final IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
 		final V ingredient = element.getIngredient();
 		final String ingredientUid = ingredientHelper.getUniqueId(ingredient);
-		//noinspection unchecked
+		@SuppressWarnings("unchecked")
 		final Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
 
+		final List<IIngredientListElement> matchingElements = new ArrayList<>();
 		final TIntSet matchingIndexes = searchTree.search(Translator.toLowercaseWithLocale(element.getDisplayName()));
 		final TIntIterator iterator = matchingIndexes.iterator();
 		while (iterator.hasNext()) {
 			int index = iterator.next();
 			IIngredientListElement matchingElement = this.elementList.get(index);
-			if (matchingElement != null) {
-				Object matchingIngredient = matchingElement.getIngredient();
-				if (ingredientClass.isInstance(matchingIngredient)) {
-					V castMatchingIngredient = ingredientClass.cast(matchingIngredient);
-					String matchingUid = ingredientHelper.getUniqueId(castMatchingIngredient);
-					if (ingredientUid.equals(matchingUid)) {
-						this.elementList.set(index, null);
-					}
+			Object matchingIngredient = matchingElement.getIngredient();
+			if (ingredientClass.isInstance(matchingIngredient)) {
+				V castMatchingIngredient = ingredientClass.cast(matchingIngredient);
+				String matchingUid = ingredientHelper.getUniqueId(castMatchingIngredient);
+				if (ingredientUid.equals(matchingUid)) {
+					matchingElements.add(matchingElement);
 				}
 			}
 		}
+		return matchingElements;
 	}
 
 	public void modesChanged() {
@@ -169,19 +202,24 @@ public class IngredientFilter implements IIngredientFilter {
 	}
 
 	private void updateHidden() {
-		for (IIngredientListElement<?> element : elementList) {
-			if (element != null) {
-				updateHiddenState(element);
-			}
+		updateHiddenStates(elementList);
+	}
+
+	private void updateHiddenStates(Iterable<IIngredientListElement> elements) {
+		for (IIngredientListElement<?> element : elements) {
+			updateHiddenState(element);
 		}
 	}
 
-	private static <V> void updateHiddenState(IIngredientListElement<V> element) {
+	private <V> void updateHiddenState(IIngredientListElement<V> element) {
 		V ingredient = element.getIngredient();
 		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
-		boolean visible = !Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper) &&
-			ingredientHelper.isIngredientOnServer(ingredient);
-		element.setVisible(visible);
+		if (blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper) || !ingredientHelper.isIngredientOnServer(ingredient)) {
+			element.setVisible(false);
+		} else {
+			boolean visible = Config.isEditModeEnabled() || !blacklist.isIngredientBlacklistedByConfig(ingredient, ingredientHelper);
+			element.setVisible(visible);
+		}
 	}
 
 	public List<IIngredientListElement> getIngredientList() {
@@ -243,7 +281,7 @@ public class IngredientFilter implements IIngredientFilter {
 
 		if (matches == null) {
 			for (IIngredientListElement element : elementList) {
-				if (element != null && (element.isVisible() || Config.isEditModeEnabled())) {
+				if (element.isVisible()) {
 					matchingIngredients.add(element);
 				}
 			}
@@ -252,7 +290,7 @@ public class IngredientFilter implements IIngredientFilter {
 			Arrays.sort(matchesList);
 			for (Integer match : matchesList) {
 				IIngredientListElement<?> element = elementList.get(match);
-				if (element != null && (element.isVisible() || Config.isEditModeEnabled())) {
+				if (element.isVisible()) {
 					matchingIngredients.add(element);
 				}
 			}

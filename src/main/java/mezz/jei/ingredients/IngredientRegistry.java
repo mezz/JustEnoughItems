@@ -7,7 +7,6 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.IngredientSet;
@@ -26,7 +25,6 @@ import java.util.Set;
 
 public class IngredientRegistry implements IIngredientRegistry {
 	private final IModIdHelper modIdHelper;
-	private final IngredientBlacklistInternal ingredientBlacklistInternal;
 	private final Map<Class, IngredientSet> ingredientsMap;
 	private final ImmutableMap<Class, IIngredientHelper> ingredientHelperMap;
 	private final ImmutableMap<Class, IIngredientRenderer> ingredientRendererMap;
@@ -35,13 +33,11 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	public IngredientRegistry(
 			IModIdHelper modIdHelper,
-			IngredientBlacklistInternal ingredientBlacklistInternal,
 			Map<Class, IngredientSet> ingredientsMap,
 			ImmutableMap<Class, IIngredientHelper> ingredientHelperMap,
 			ImmutableMap<Class, IIngredientRenderer> ingredientRendererMap
 	) {
 		this.modIdHelper = modIdHelper;
-		this.ingredientBlacklistInternal = ingredientBlacklistInternal;
 		this.ingredientsMap = ingredientsMap;
 		this.ingredientHelperMap = ingredientHelperMap;
 		this.ingredientRendererMap = ingredientRendererMap;
@@ -167,58 +163,51 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	@Override
 	public <V> void addIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients) {
-		ErrorUtil.assertMainThread();
 		addIngredientsAtRuntime(ingredientClass, ingredients, Internal.getIngredientFilter());
 	}
 
 	@Override
 	public <V> void addIngredientsAtRuntime(Class<V> ingredientClass, Collection<V> ingredients) {
-		ErrorUtil.assertMainThread();
 		addIngredientsAtRuntime(ingredientClass, ingredients, Internal.getIngredientFilter());
 	}
 
 	public <V> void addIngredientsAtRuntime(Class<V> ingredientClass, Collection<V> ingredients, IngredientFilter ingredientFilter) {
+		ErrorUtil.assertMainThread();
 		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
+
+		Log.get().info("Ingredients are being added at runtime: {} {}", ingredients.size(), ingredientClass.getName());
 
 		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientClass);
 		//noinspection unchecked
 		Set<V> set = ingredientsMap.computeIfAbsent(ingredientClass, k -> IngredientSet.create(ingredientClass, ingredientHelper));
-		List<V> newIngredients = new ArrayList<>(ingredients.size());
 		for (V ingredient : ingredients) {
-			if (set.add(ingredient)) {
-				newIngredients.add(ingredient);
-			}
+			set.add(ingredient);
 			if (ingredient instanceof ItemStack) {
 				getStackProperties((ItemStack) ingredient);
 			}
 		}
 
-		if (!newIngredients.isEmpty()) {
-			NonNullList<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, newIngredients, modIdHelper);
-			ingredientFilter.addIngredients(ingredientListElements);
-
-			for (V ingredient : newIngredients) {
-				ingredientBlacklistInternal.removeIngredientFromBlacklist(ingredient, ingredientHelper);
-			}
-		}
+		NonNullList<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, modIdHelper);
+		ingredientFilter.addIngredientsAtRuntime(ingredientListElements);
 	}
 
 	@Override
 	public <V> void removeIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients) {
-		ErrorUtil.assertMainThread();
 		removeIngredientsAtRuntime(ingredientClass, ingredients, Internal.getIngredientFilter());
 	}
 
 	@Override
 	public <V> void removeIngredientsAtRuntime(Class<V> ingredientClass, Collection<V> ingredients) {
-		ErrorUtil.assertMainThread();
 		removeIngredientsAtRuntime(ingredientClass, ingredients, Internal.getIngredientFilter());
 	}
 
 	public <V> void removeIngredientsAtRuntime(Class<V> ingredientClass, Collection<V> ingredients, IngredientFilter ingredientFilter) {
+		ErrorUtil.assertMainThread();
 		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
+
+		Log.get().info("Ingredients are being removed at runtime: {} {}", ingredients.size(), ingredientClass.getName());
 
 		//noinspection unchecked
 		IngredientSet<V> set = ingredientsMap.get(ingredientClass);
@@ -227,12 +216,6 @@ public class IngredientRegistry implements IIngredientRegistry {
 		}
 
 		NonNullList<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, modIdHelper);
-		ingredientFilter.removeIngredients(ingredientListElements);
-
-		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientClass);
-		// blacklist items so they stay hidden after a reload
-		for (V ingredient : ingredients) {
-			ingredientBlacklistInternal.addIngredientToBlacklist(ingredient, ingredientHelper);
-		}
+		ingredientFilter.removeIngredientsAtRuntime(ingredientListElements);
 	}
 }

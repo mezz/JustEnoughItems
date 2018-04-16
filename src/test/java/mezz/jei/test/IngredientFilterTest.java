@@ -49,16 +49,16 @@ public class IngredientFilterTest {
 		ModIngredientRegistration modIngredientRegistry = new ModIngredientRegistration();
 		testPlugin.registerIngredients(modIngredientRegistry);
 
-		IngredientBlacklistInternal ingredientBlacklistInternal = new IngredientBlacklistInternal();
+		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
 		this.modIdHelper = new TestModIdHelper();
-		this.ingredientRegistry = modIngredientRegistry.createIngredientRegistry(modIdHelper, ingredientBlacklistInternal);
+		this.ingredientRegistry = modIngredientRegistry.createIngredientRegistry(modIdHelper);
 
 		this.baseList = IngredientListElementFactory.createBaseList(ingredientRegistry, modIdHelper);
 
 		StackHelper stackHelper = new StackHelper(subtypeRegistry);
-		this.jeiHelpers = new JeiHelpers(ingredientRegistry, ingredientBlacklistInternal, stackHelper);
+		this.jeiHelpers = new JeiHelpers(ingredientRegistry, blacklist, stackHelper);
 
-		this.ingredientFilter = new IngredientFilter(jeiHelpers);
+		this.ingredientFilter = new IngredientFilter(blacklist);
 	}
 
 	@Test
