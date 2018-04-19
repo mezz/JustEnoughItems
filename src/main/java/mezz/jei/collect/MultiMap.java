@@ -30,6 +30,17 @@ public class MultiMap<K, V, T extends Collection<V>> {
 		return get(key).add(value);
 	}
 
+	public boolean remove(K key, V value) {
+		if (map.containsKey(key)) {
+			return get(key).remove(value);
+		}
+		return false;
+	}
+
+	public boolean containsKey(K key) {
+		return map.containsKey(key);
+	}
+
 	public boolean contains(K key, V value) {
 		return get(key).contains(value);
 	}

@@ -117,9 +117,41 @@ public interface IRecipeRegistry {
 	 * @param recipe the recipe to hide.
 	 *               Get an instance using {@link #getRecipeWrapper(Object, String)}
 	 *               or {@link #getRecipeWrappers(IRecipeCategory)}
+	 * @param recipeCategoryUid the unique ID for the recipe category this recipe is a part of.
+	 *                          See {@link VanillaRecipeCategoryUid} for vanilla recipe category UIDs.
+	 * @see #unhideRecipe(IRecipeWrapper, String)
+	 * @since JEI 4.9.0
+	 */
+	void hideRecipe(IRecipeWrapper recipe, String recipeCategoryUid);
+
+	/**
+	 * Unhides a recipe that was hidden by {@link #hideRecipe(IRecipeWrapper)}
+	 * This can be used by mods that create recipe progression.
+	 *
+	 * @param recipe the recipe to unhide.
+	 *               Get an instance using {@link #getRecipeWrapper(Object, String)}
+	 *               or {@link #getRecipeWrappers(IRecipeCategory)}
+	 * @param recipeCategoryUid the unique ID for the recipe category this recipe is a part of.
+	 *                          See {@link VanillaRecipeCategoryUid} for vanilla recipe category UIDs.
+	 * @see #hideRecipe(IRecipeWrapper, String)
+	 * @since JEI 4.9.0
+	 */
+	void unhideRecipe(IRecipeWrapper recipe, String recipeCategoryUid);
+
+	// DEPRECATED BELOW
+
+	/**
+	 * Hides a recipe so that it will not be displayed.
+	 * This can be used by mods that create recipe progression.
+	 *
+	 * @param recipe the recipe to hide.
+	 *               Get an instance using {@link #getRecipeWrapper(Object, String)}
+	 *               or {@link #getRecipeWrappers(IRecipeCategory)}
 	 * @see #unhideRecipe(IRecipeWrapper)
 	 * @since JEI 4.7.7
+	 * @deprecated since JEI 4.9.0, use {@link #hideRecipe(IRecipeWrapper, String)}
 	 */
+	@Deprecated
 	void hideRecipe(IRecipeWrapper recipe);
 
 	/**
@@ -131,10 +163,10 @@ public interface IRecipeRegistry {
 	 *               or {@link #getRecipeWrappers(IRecipeCategory)}
 	 * @see #hideRecipe(IRecipeWrapper)
 	 * @since JEI 4.7.7
+	 * @deprecated since JEI 4.9.0, use {@link #unhideRecipe(IRecipeWrapper, String)}
 	 */
+	@Deprecated
 	void unhideRecipe(IRecipeWrapper recipe);
-
-	// DEPRECATED BELOW
 
 	/**
 	 * Add a new recipe while the game is running.
