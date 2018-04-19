@@ -26,6 +26,7 @@ import mezz.jei.config.Constants;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.gui.recipes.RecipeLayout;
+import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipe;
 import mezz.jei.util.ErrorUtil;
@@ -53,7 +54,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class RecipeRegistry implements IRecipeRegistry {
-	private final IIngredientRegistry ingredientRegistry;
+	private final IngredientRegistry ingredientRegistry;
 	@Deprecated
 	private final ImmutableList<IRecipeHandler> unsortedRecipeHandlers;
 	private final ImmutableMultimap<String, IRecipeHandler> recipeHandlers;
@@ -79,7 +80,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		ListMultiMap<String, Object> recipes,
 		ListMultiMap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap,
 		ListMultiMap<String, Object> recipeCatalysts,
-		IIngredientRegistry ingredientRegistry,
+		IngredientRegistry ingredientRegistry,
 		List<IRecipeRegistryPlugin> plugins
 	) {
 		this.ingredientRegistry = ingredientRegistry;
@@ -354,12 +355,23 @@ public class RecipeRegistry implements IRecipeRegistry {
 	public List<IRecipeCategory> getRecipeCategories() {
 		if (recipeCategoriesVisibleCache.isEmpty()) {
 			for (IRecipeCategory<?> recipeCategory : this.recipeCategories) {
-				if (!getRecipeWrappers(recipeCategory).isEmpty()) {
+				if (isCategoryVisible(recipeCategory)) {
 					recipeCategoriesVisibleCache.add(recipeCategory);
 				}
 			}
 		}
 		return recipeCategoriesVisibleCache;
+	}
+
+	private boolean isCategoryVisible(IRecipeCategory<?> recipeCategory) {
+		ImmutableList<Object> catalysts = recipeCatalysts.get(recipeCategory);
+		if (!catalysts.isEmpty()) {
+			List<Object> visibleCatalysts = getRecipeCatalysts(recipeCategory);
+			if (visibleCatalysts.isEmpty()) {
+				return false;
+			}
+		}
+		return !getRecipeWrappers(recipeCategory).isEmpty();
 	}
 
 	@Override
@@ -663,7 +675,14 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Override
 	public List<Object> getRecipeCatalysts(IRecipeCategory recipeCategory) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		return recipeCatalysts.get(recipeCategory);
+		List<Object> visibleCatalysts = new ArrayList<>();
+		ImmutableList<Object> catalysts = recipeCatalysts.get(recipeCategory);
+		for (Object catalyst : catalysts) {
+			if (!ingredientRegistry.isIngredientInvisible(catalyst, Internal.getIngredientFilter())) {
+				visibleCatalysts.add(catalyst);
+			}
+		}
+		return visibleCatalysts;
 	}
 
 	@Override

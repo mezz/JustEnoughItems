@@ -218,4 +218,23 @@ public class IngredientRegistry implements IIngredientRegistry {
 		NonNullList<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, modIdHelper);
 		ingredientFilter.removeIngredientsAtRuntime(ingredientListElements);
 	}
+
+	public <V> boolean isIngredientInvisible(V ingredient, IngredientFilter ingredientFilter) {
+		@SuppressWarnings("unchecked")
+		Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
+		IIngredientListElement<V> element = IngredientListElementFactory.createElement(this, ingredientClass, ingredient, modIdHelper);
+		if (element == null) {
+			return true;
+		}
+		List<IIngredientListElement> matchingElements = ingredientFilter.findMatchingElements(element);
+		if (matchingElements.isEmpty()) {
+			return false;
+		}
+		for (IIngredientListElement matchingElement : matchingElements) {
+			if (matchingElement.isVisible()) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

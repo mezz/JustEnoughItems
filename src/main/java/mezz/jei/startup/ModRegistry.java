@@ -22,6 +22,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.collect.ListMultiMap;
 import mezz.jei.collect.SetMultiMap;
 import mezz.jei.gui.recipes.RecipeClickableArea;
+import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.plugins.jei.info.IngredientInfoRecipe;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeWrapper;
 import mezz.jei.recipes.RecipeRegistry;
@@ -297,7 +298,7 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 		return ghostIngredientHandlers;
 	}
 
-	public RecipeRegistry createRecipeRegistry(IIngredientRegistry ingredientRegistry) {
+	public RecipeRegistry createRecipeRegistry(IngredientRegistry ingredientRegistry) {
 		ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers = recipeTransferRegistry.getRecipeTransferHandlers();
 		return new RecipeRegistry(recipeCategories, unsortedRecipeHandlers, recipeHandlers, recipeTransferHandlers, unsortedRecipes, recipes, recipeClickableAreas, recipeCatalysts, ingredientRegistry, recipeRegistryPlugins);
 	}

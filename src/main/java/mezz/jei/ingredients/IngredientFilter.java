@@ -158,7 +158,7 @@ public class IngredientFilter implements IIngredientFilter {
 		}
 	}
 
-	private <V> List<IIngredientListElement> findMatchingElements(IIngredientListElement<V> element) {
+	public <V> List<IIngredientListElement> findMatchingElements(IIngredientListElement<V> element) {
 		final IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
 		final V ingredient = element.getIngredient();
 		final String ingredientUid = ingredientHelper.getUniqueId(ingredient);

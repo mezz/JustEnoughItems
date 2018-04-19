@@ -8,6 +8,7 @@ import mezz.jei.startup.IModIdHelper;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.ProgressManager;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 public final class IngredientListElementFactory {
@@ -25,7 +26,7 @@ public final class IngredientListElementFactory {
 		return ingredientListElements;
 	}
 
-	public static <V> NonNullList<IIngredientListElement> createList(IIngredientRegistry ingredientRegistry, Class<V> ingredientClass, Collection<V> ingredients, IModIdHelper modIdHelper) {
+	public static <V> NonNullList<IIngredientListElement> createList(IIngredientRegistry ingredientRegistry, Class<? extends V> ingredientClass, Collection<V> ingredients, IModIdHelper modIdHelper) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientClass);
 
@@ -39,6 +40,13 @@ public final class IngredientListElementFactory {
 			}
 		}
 		return list;
+	}
+
+	@Nullable
+	public static <V> IIngredientListElement<V> createElement(IIngredientRegistry ingredientRegistry, Class<? extends V> ingredientClass, V ingredient, IModIdHelper modIdHelper) {
+		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
+		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientClass);
+		return IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer, modIdHelper);
 	}
 
 	private static <V> void addToBaseList(NonNullList<IIngredientListElement> baseList, IIngredientRegistry ingredientRegistry, Class<V> ingredientClass, IModIdHelper modIdHelper) {
