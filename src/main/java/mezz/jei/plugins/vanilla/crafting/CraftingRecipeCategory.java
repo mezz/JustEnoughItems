@@ -115,7 +115,7 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 
 						boolean showAdvanced = Minecraft.getMinecraft().gameSettings.advancedItemTooltips || GuiScreen.isShiftKeyDown();
 						if (showAdvanced) {
-							tooltip.add(TextFormatting.GRAY + registryName.toString());
+							tooltip.add(TextFormatting.DARK_GRAY + Translator.translateToLocalFormatted("jei.tooltip.recipe.id", registryName.toString()));
 						}
 					}
 				});
