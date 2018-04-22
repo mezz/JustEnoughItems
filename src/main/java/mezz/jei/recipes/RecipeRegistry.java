@@ -26,6 +26,7 @@ import mezz.jei.config.Constants;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.gui.recipes.RecipeLayout;
+import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipe;
@@ -364,9 +365,9 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	private boolean isCategoryVisible(IRecipeCategory<?> recipeCategory) {
-		ImmutableList<Object> catalysts = recipeCatalysts.get(recipeCategory);
-		if (!catalysts.isEmpty()) {
-			List<Object> visibleCatalysts = getRecipeCatalysts(recipeCategory);
+		List<Object> allCatalysts = getRecipeCatalysts(recipeCategory, true);
+		if (!allCatalysts.isEmpty()) {
+			List<Object> visibleCatalysts = getRecipeCatalysts(recipeCategory, false);
 			if (visibleCatalysts.isEmpty()) {
 				return false;
 			}
@@ -672,17 +673,25 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return Collections.unmodifiableList(itemStacks);
 	}
 
-	@Override
-	public List<Object> getRecipeCatalysts(IRecipeCategory recipeCategory) {
+	public List<Object> getRecipeCatalysts(IRecipeCategory recipeCategory, boolean includeHidden) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		List<Object> visibleCatalysts = new ArrayList<>();
 		ImmutableList<Object> catalysts = recipeCatalysts.get(recipeCategory);
+		if (includeHidden) {
+			return catalysts;
+		}
+		List<Object> visibleCatalysts = new ArrayList<>();
+		IngredientFilter ingredientFilter = Internal.getIngredientFilter();
 		for (Object catalyst : catalysts) {
-			if (!ingredientRegistry.isIngredientInvisible(catalyst, Internal.getIngredientFilter())) {
+			if (!ingredientRegistry.isIngredientInvisible(catalyst, ingredientFilter)) {
 				visibleCatalysts.add(catalyst);
 			}
 		}
 		return visibleCatalysts;
+	}
+
+	@Override
+	public List<Object> getRecipeCatalysts(IRecipeCategory recipeCategory) {
+		return getRecipeCatalysts(recipeCategory, false);
 	}
 
 	@Override

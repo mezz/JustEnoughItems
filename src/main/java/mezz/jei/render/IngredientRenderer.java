@@ -124,10 +124,6 @@ public class IngredientRenderer<T> {
 		V ingredient = element.getIngredient();
 		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
 		tooltip = ForgeModIdHelper.getInstance().addModNameToIngredientTooltip(tooltip, ingredient, ingredientHelper);
-		if (Config.isDebugModeEnabled()) {
-			tooltip.add(TextFormatting.GRAY + "JEI Debug ingredient info:");
-			tooltip.add(TextFormatting.GRAY + ingredientHelper.getErrorInfo(ingredient));
-		}
 
 		int maxWidth = Constants.MAX_TOOLTIP_WIDTH;
 		for (String tooltipLine : tooltip) {

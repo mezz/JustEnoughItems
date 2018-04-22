@@ -26,11 +26,11 @@ public final class IngredientListElementFactory {
 		return ingredientListElements;
 	}
 
-	public static <V> NonNullList<IIngredientListElement> createList(IIngredientRegistry ingredientRegistry, Class<? extends V> ingredientClass, Collection<V> ingredients, IModIdHelper modIdHelper) {
+	public static <V> NonNullList<IIngredientListElement<V>> createList(IIngredientRegistry ingredientRegistry, Class<? extends V> ingredientClass, Collection<V> ingredients, IModIdHelper modIdHelper) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
 		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientClass);
 
-		NonNullList<IIngredientListElement> list = NonNullList.create();
+		NonNullList<IIngredientListElement<V>> list = NonNullList.create();
 		for (V ingredient : ingredients) {
 			if (ingredient != null) {
 				IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer, modIdHelper);

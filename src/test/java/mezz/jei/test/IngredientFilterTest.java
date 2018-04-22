@@ -51,7 +51,7 @@ public class IngredientFilterTest {
 
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
 		this.modIdHelper = new TestModIdHelper();
-		this.ingredientRegistry = modIngredientRegistry.createIngredientRegistry(modIdHelper);
+		this.ingredientRegistry = modIngredientRegistry.createIngredientRegistry(modIdHelper, blacklist);
 
 		this.baseList = IngredientListElementFactory.createBaseList(ingredientRegistry, modIdHelper);
 
@@ -159,7 +159,7 @@ public class IngredientFilterTest {
 		}
 		Assert.assertEquals(EXTRA_INGREDIENT_COUNT, ingredientsToAdd.size());
 
-		List<IIngredientListElement> listToAdd = IngredientListElementFactory.createList(ingredientRegistry, TestIngredient.class, ingredientsToAdd, modIdHelper);
+		List<IIngredientListElement<TestIngredient>> listToAdd = IngredientListElementFactory.createList(ingredientRegistry, TestIngredient.class, ingredientsToAdd, modIdHelper);
 		Assert.assertEquals(EXTRA_INGREDIENT_COUNT, listToAdd.size());
 
 		ingredientRegistry.addIngredientsAtRuntime(TestIngredient.class, ingredientsToAdd, ingredientFilter);
@@ -181,7 +181,7 @@ public class IngredientFilterTest {
 		}
 		Assert.assertEquals(EXTRA_INGREDIENT_COUNT, ingredientsToRemove.size());
 
-		List<IIngredientListElement> listToRemove = IngredientListElementFactory.createList(ingredientRegistry, TestIngredient.class, ingredientsToRemove, modIdHelper);
+		List<IIngredientListElement<TestIngredient>> listToRemove = IngredientListElementFactory.createList(ingredientRegistry, TestIngredient.class, ingredientsToRemove, modIdHelper);
 		Assert.assertEquals(EXTRA_INGREDIENT_COUNT, listToRemove.size());
 
 		ingredientRegistry.removeIngredientsAtRuntime(TestIngredient.class, ingredientsToRemove, ingredientFilter);

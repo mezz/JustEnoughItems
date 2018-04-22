@@ -108,7 +108,11 @@ public class ProxyCommonClient extends ProxyCommon {
 		reloadableResourceManager.registerReloadListener(resourceManager -> {
 			// check that JEI has been started before. if not, do nothing
 			if (this.starter.hasStarted()) {
-				Log.get().info("Restarting JEI.");
+				if (Config.isDebugModeEnabled()) {
+					Log.get().info("Restarting JEI.", new RuntimeException("Stack trace for debugging"));
+				} else {
+					Log.get().info("Restarting JEI.");
+				}
 				this.starter.start(this.plugins);
 			}
 		});

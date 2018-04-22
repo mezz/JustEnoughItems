@@ -46,7 +46,7 @@ public class JeiStarter {
 
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
 		ModIngredientRegistration modIngredientRegistry = registerIngredients(plugins);
-		IngredientRegistry ingredientRegistry = modIngredientRegistry.createIngredientRegistry(ForgeModIdHelper.getInstance());
+		IngredientRegistry ingredientRegistry = modIngredientRegistry.createIngredientRegistry(ForgeModIdHelper.getInstance(), blacklist);
 		Internal.setIngredientRegistry(ingredientRegistry);
 
 		JeiHelpers jeiHelpers = new JeiHelpers(ingredientRegistry, blacklist, stackHelper);

@@ -6,6 +6,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.ErrorUtil;
@@ -25,6 +26,7 @@ import java.util.Set;
 
 public class IngredientRegistry implements IIngredientRegistry {
 	private final IModIdHelper modIdHelper;
+	private final IngredientBlacklistInternal blacklist;
 	private final Map<Class, IngredientSet> ingredientsMap;
 	private final ImmutableMap<Class, IIngredientHelper> ingredientHelperMap;
 	private final ImmutableMap<Class, IIngredientRenderer> ingredientRendererMap;
@@ -33,11 +35,13 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	public IngredientRegistry(
 			IModIdHelper modIdHelper,
+			IngredientBlacklistInternal blacklist,
 			Map<Class, IngredientSet> ingredientsMap,
 			ImmutableMap<Class, IIngredientHelper> ingredientHelperMap,
 			ImmutableMap<Class, IIngredientRenderer> ingredientRendererMap
 	) {
 		this.modIdHelper = modIdHelper;
+		this.blacklist = blacklist;
 		this.ingredientsMap = ingredientsMap;
 		this.ingredientHelperMap = ingredientHelperMap;
 		this.ingredientRendererMap = ingredientRendererMap;
@@ -188,8 +192,26 @@ public class IngredientRegistry implements IIngredientRegistry {
 			}
 		}
 
-		NonNullList<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, modIdHelper);
-		ingredientFilter.addIngredientsAtRuntime(ingredientListElements);
+		NonNullList<IIngredientListElement<V>> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, modIdHelper);
+		for (IIngredientListElement<V> element : ingredientListElements) {
+			List<IIngredientListElement<V>> matchingElements = ingredientFilter.findMatchingElements(element);
+			if (!matchingElements.isEmpty()) {
+				for (IIngredientListElement<V> matchingElement : matchingElements) {
+					blacklist.removeIngredientFromBlacklist(matchingElement.getIngredient(), ingredientHelper);
+					ingredientFilter.updateHiddenState(matchingElement);
+				}
+				if (Config.isDebugModeEnabled()) {
+					Log.get().debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(element.getIngredient()));
+				}
+			} else {
+				blacklist.removeIngredientFromBlacklist(element.getIngredient(), ingredientHelper);
+				ingredientFilter.addIngredient(element);
+				if (Config.isDebugModeEnabled()) {
+					Log.get().debug("Added ingredient: {}", ingredientHelper.getErrorInfo(element.getIngredient()));
+				}
+			}
+		}
+		ingredientFilter.invalidateCache();
 	}
 
 	@Override
@@ -215,8 +237,24 @@ public class IngredientRegistry implements IIngredientRegistry {
 			set.removeAll(ingredients);
 		}
 
-		NonNullList<IIngredientListElement> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, modIdHelper);
-		ingredientFilter.removeIngredientsAtRuntime(ingredientListElements);
+		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientClass);
+
+		NonNullList<IIngredientListElement<V>> ingredientListElements = IngredientListElementFactory.createList(this, ingredientClass, ingredients, modIdHelper);
+		for (IIngredientListElement<V> element : ingredientListElements) {
+			List<IIngredientListElement<V>> matchingElements = ingredientFilter.findMatchingElements(element);
+			if (matchingElements.isEmpty()) {
+				V ingredient = element.getIngredient();
+				String errorInfo = ingredientHelper.getErrorInfo(ingredient);
+				Log.get().error("Could not find any matching ingredients to remove: {}", errorInfo);
+			} else if (Config.isDebugModeEnabled()) {
+				Log.get().debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(element.getIngredient()));
+			}
+			for (IIngredientListElement<V> matchingElement : matchingElements) {
+				blacklist.addIngredientToBlacklist(matchingElement.getIngredient(), ingredientHelper);
+				matchingElement.setVisible(false);
+			}
+		}
+		ingredientFilter.invalidateCache();
 	}
 
 	public <V> boolean isIngredientInvisible(V ingredient, IngredientFilter ingredientFilter) {
@@ -226,7 +264,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 		if (element == null) {
 			return true;
 		}
-		List<IIngredientListElement> matchingElements = ingredientFilter.findMatchingElements(element);
+		List<IIngredientListElement<V>> matchingElements = ingredientFilter.findMatchingElements(element);
 		if (matchingElements.isEmpty()) {
 			return false;
 		}

@@ -26,7 +26,6 @@ import mezz.jei.suffixtree.CombinedSearchTrees;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 import mezz.jei.suffixtree.ISearchTree;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.ProgressManager;
@@ -91,35 +90,10 @@ public class IngredientFilter implements IIngredientFilter {
 			progressBar.step(element.getDisplayName());
 			addIngredient(element);
 		}
-		filterCached = null;
 		ProgressManager.pop(progressBar);
 	}
 
-	public void addIngredientsAtRuntime(NonNullList<IIngredientListElement> ingredients) {
-		for (IIngredientListElement<?> element : ingredients) {
-			List<IIngredientListElement> matchingElements = findMatchingElements(element);
-			if (!matchingElements.isEmpty()) {
-				updateHiddenStates(matchingElements);
-				if (Config.isDebugModeEnabled()) {
-					Log.get().debug("addIngredientsAtRuntime Updated ingredient: {}", getErrorInfo(element));
-				}
-			} else {
-				addIngredient(element);
-				if (Config.isDebugModeEnabled()) {
-					Log.get().debug("addIngredientsAtRuntime Added ingredient: {}", getErrorInfo(element));
-				}
-			}
-		}
-		filterCached = null;
-	}
-
-	private static <V> String getErrorInfo(IIngredientListElement<V> element) {
-		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
-		V ingredient = element.getIngredient();
-		return ingredientHelper.getErrorInfo(ingredient);
-	}
-
-	private <V> void addIngredient(IIngredientListElement<V> element) {
+	public <V> void addIngredient(IIngredientListElement<V> element) {
 		updateHiddenState(element);
 		final int index = elementList.size();
 		elementList.add(element);
@@ -134,38 +108,21 @@ public class IngredientFilter implements IIngredientFilter {
 				}
 			}
 		}
-	}
-
-	public void removeIngredientsAtRuntime(NonNullList<IIngredientListElement> ingredients) {
-		for (IIngredientListElement<?> element : ingredients) {
-			removeIngredientAtRuntime(element);
-		}
 		filterCached = null;
 	}
 
-	private <V> void removeIngredientAtRuntime(IIngredientListElement<V> element) {
-		List<IIngredientListElement> matchingElements = findMatchingElements(element);
-		if (matchingElements.isEmpty()) {
-			IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
-			V ingredient = element.getIngredient();
-			String errorInfo = ingredientHelper.getErrorInfo(ingredient);
-			Log.get().error("Could not find any matching ingredients to remove: {}", errorInfo);
-		} else if (Config.isDebugModeEnabled()) {
-			Log.get().debug("removeIngredientsAtRuntime Removed ingredient: {}", getErrorInfo(element));
-		}
-		for (IIngredientListElement matchingElement : matchingElements) {
-			matchingElement.setVisible(false);
-		}
+	public void invalidateCache() {
+		this.filterCached = null;
 	}
 
-	public <V> List<IIngredientListElement> findMatchingElements(IIngredientListElement<V> element) {
+	public <V> List<IIngredientListElement<V>> findMatchingElements(IIngredientListElement<V> element) {
 		final IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
 		final V ingredient = element.getIngredient();
 		final String ingredientUid = ingredientHelper.getUniqueId(ingredient);
 		@SuppressWarnings("unchecked")
 		final Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
 
-		final List<IIngredientListElement> matchingElements = new ArrayList<>();
+		final List<IIngredientListElement<V>> matchingElements = new ArrayList<>();
 		final TIntSet matchingIndexes = searchTree.search(Translator.toLowercaseWithLocale(element.getDisplayName()));
 		final TIntIterator iterator = matchingIndexes.iterator();
 		while (iterator.hasNext()) {
@@ -176,7 +133,9 @@ public class IngredientFilter implements IIngredientFilter {
 				V castMatchingIngredient = ingredientClass.cast(matchingIngredient);
 				String matchingUid = ingredientHelper.getUniqueId(castMatchingIngredient);
 				if (ingredientUid.equals(matchingUid)) {
-					matchingElements.add(matchingElement);
+					@SuppressWarnings("unchecked")
+					IIngredientListElement<V> matchingElementCast = (IIngredientListElement<V>) matchingElement;
+					matchingElements.add(matchingElementCast);
 				}
 			}
 		}
@@ -202,23 +161,20 @@ public class IngredientFilter implements IIngredientFilter {
 	}
 
 	private void updateHidden() {
-		updateHiddenStates(elementList);
-	}
-
-	private void updateHiddenStates(Iterable<IIngredientListElement> elements) {
-		for (IIngredientListElement<?> element : elements) {
+		for (IIngredientListElement<?> element : elementList) {
 			updateHiddenState(element);
 		}
 	}
 
-	private <V> void updateHiddenState(IIngredientListElement<V> element) {
+	public <V> void updateHiddenState(IIngredientListElement<V> element) {
 		V ingredient = element.getIngredient();
 		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
-		if (blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper) || !ingredientHelper.isIngredientOnServer(ingredient)) {
-			element.setVisible(false);
-		} else {
-			boolean visible = Config.isEditModeEnabled() || !blacklist.isIngredientBlacklistedByConfig(ingredient, ingredientHelper);
+		boolean visible = !blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper) &&
+			ingredientHelper.isIngredientOnServer(ingredient) &&
+			(Config.isEditModeEnabled() || !blacklist.isIngredientBlacklistedByConfig(ingredient, ingredientHelper));
+		if (element.isVisible() != visible) {
 			element.setVisible(visible);
+			this.filterCached = null;
 		}
 	}
 
