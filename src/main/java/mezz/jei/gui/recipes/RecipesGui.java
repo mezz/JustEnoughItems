@@ -22,6 +22,7 @@ import mezz.jei.input.InputHandler;
 import mezz.jei.input.MouseHelper;
 import mezz.jei.transfer.RecipeTransferUtil;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.StringUtil;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -412,7 +413,12 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		logic.setRecipesPerPage(recipesPerPage);
 
 		title = recipeCategory.getTitle();
-		final int titleWidth = fontRenderer.getStringWidth(title);
+		int titleWidth = fontRenderer.getStringWidth(title);
+		final int availableTitleWidth = (nextPage.x - (previousPage.x + previousPage.width)) - (2 * innerPadding);
+		if (titleWidth > availableTitleWidth) {
+			title = StringUtil.truncateStringToWidth(title, availableTitleWidth, fontRenderer);
+			titleWidth = fontRenderer.getStringWidth(title);
+		}
 		final int titleX = guiLeft + (xSize - titleWidth) / 2;
 		final int titleY = guiTop + borderPadding;
 		titleHoverChecker = new HoverChecker(titleY, titleY + fontRenderer.FONT_HEIGHT, titleX, titleX + titleWidth, 0);
