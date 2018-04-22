@@ -1,6 +1,7 @@
 package mezz.jei.api;
 
 import mezz.jei.api.gui.ICraftingGridHelper;
+import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.gui.ITickTimer;
@@ -44,6 +45,12 @@ public interface IGuiHelper {
 	 * Returns a blank drawable for using as a blank recipe background.
 	 */
 	IDrawableStatic createBlankDrawable(int width, int height);
+
+	/**
+	 * Returns a 16x16 drawable for the given ingredient, matching the one JEI draws in the ingredient list.
+	 * @since JEI 4.9.1
+	 */
+	<V> IDrawable createDrawableIngredient(V ingredient);
 
 	/**
 	 * Create a crafting grid helper.

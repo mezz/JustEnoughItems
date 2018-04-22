@@ -14,6 +14,8 @@ import mezz.jei.config.Constants;
 import mezz.jei.gui.elements.DrawableAnimated;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipeWrapper> {
@@ -25,6 +27,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipeWrapp
 	private static final int outputSlot = 4; // for display only
 
 	private final IDrawable background;
+	private final IDrawable icon;
 	private final IDrawable slotDrawable;
 	private final String localizedName;
 	private final IDrawableAnimated arrow;
@@ -34,6 +37,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipeWrapp
 	public BrewingRecipeCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
 		background = guiHelper.createDrawable(location, 0, 0, 64, 60, 1, 0, 0, 40);
+		icon = guiHelper.createDrawableIngredient(new ItemStack(Items.BREWING_STAND));
 		localizedName = Translator.translateToLocal("gui.jei.category.brewing");
 
 		IDrawableStatic brewArrowDrawable = guiHelper.createDrawable(location, 64, 0, 9, 28);
@@ -66,6 +70,11 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipeWrapp
 	@Override
 	public IDrawable getBackground() {
 		return background;
+	}
+
+	@Override
+	public IDrawable getIcon() {
+		return icon;
 	}
 
 	@Override

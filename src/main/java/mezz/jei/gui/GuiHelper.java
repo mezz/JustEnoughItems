@@ -2,18 +2,22 @@ package mezz.jei.gui;
 
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.ICraftingGridHelper;
+import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.gui.ITickTimer;
+import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.elements.DrawableAnimated;
 import mezz.jei.gui.elements.DrawableBlank;
+import mezz.jei.gui.elements.DrawableIngredient;
 import mezz.jei.gui.elements.DrawableResource;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.util.ResourceLocation;
 
 public class GuiHelper implements IGuiHelper {
-
+	private final IIngredientRegistry ingredientRegistry;
 	private final IDrawableStatic slotDrawable;
 	private final IDrawableStatic tabSelected;
 	private final IDrawableStatic tabUnselected;
@@ -23,7 +27,8 @@ public class GuiHelper implements IGuiHelper {
 	private final IDrawableStatic arrowNext;
 	private final IDrawableStatic plusSign;
 
-	public GuiHelper() {
+	public GuiHelper(IIngredientRegistry ingredientRegistry) {
+		this.ingredientRegistry = ingredientRegistry;
 		slotDrawable = createDrawable(Constants.RECIPE_BACKGROUND, 196, 93, 18, 18);
 
 		tabSelected = createDrawable(Constants.RECIPE_BACKGROUND, 196, 15, 24, 24);
@@ -94,6 +99,12 @@ public class GuiHelper implements IGuiHelper {
 	@Override
 	public IDrawableStatic createBlankDrawable(int width, int height) {
 		return new DrawableBlank(width, height);
+	}
+
+	@Override
+	public <V> IDrawable createDrawableIngredient(V ingredient) {
+		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
+		return new DrawableIngredient<>(ingredient, ingredientRenderer);
 	}
 
 	@Override
