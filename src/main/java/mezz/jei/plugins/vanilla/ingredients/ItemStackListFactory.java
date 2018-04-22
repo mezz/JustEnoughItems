@@ -132,8 +132,14 @@ public final class ItemStackListFactory {
 
 	private void addFallbackSubtypeInterpreter(ItemStack itemStack) {
 		if (!this.subtypeRegistry.hasSubtypeInterpreter(itemStack)) {
-			if (itemStack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
-				this.subtypeRegistry.registerSubtypeInterpreter(itemStack.getItem(), FluidSubtypeInterpreter.INSTANCE);
+			try {
+				String info = FluidSubtypeInterpreter.INSTANCE.apply(itemStack);
+				if (!ISubtypeRegistry.ISubtypeInterpreter.NONE.equals(info)) {
+					this.subtypeRegistry.registerSubtypeInterpreter(itemStack.getItem(), FluidSubtypeInterpreter.INSTANCE);
+				}
+			} catch (RuntimeException | LinkageError e) {
+				String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
+				Log.get().error("Failed to apply FluidSubtypeInterpreter to ItemStack: {}", itemStackInfo, e);
 			}
 		}
 	}
