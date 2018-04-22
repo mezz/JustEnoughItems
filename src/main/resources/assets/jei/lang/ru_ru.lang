@@ -11,6 +11,7 @@ jei.tooltip.item.colors=Цвета: %s
 jei.tooltip.shapeless.recipe=Бесформенный рецепт
 jei.tooltip.cheat.mode=Режим жульничества
 jei.tooltip.recipe.by=Рецепт из: %s
+jei.tooltip.recipe.id=ID репепта: %s
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Отсутствуют предметы
