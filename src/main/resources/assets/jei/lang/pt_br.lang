@@ -1,23 +1,23 @@
 # Tooltips
 jei.tooltip.config=Configuração do JEI
-jei.tooltip.show.recipes=Mostrar Receitas
+jei.tooltip.show.recipes=Mostrar receitas
 jei.tooltip.show.all.recipes=Mostrar Todas as Receitas
-jei.tooltip.delete.item=Clique para Excluir
+jei.tooltip.delete.item=Clique para limpar
 jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
 jei.tooltip.liquid.amount=%,d mB
 jei.tooltip.transfer=Mover Itens
 jei.tooltip.recipe.ore.dict=Aceita qualquer: %s
 jei.tooltip.item.colors=Cores: %s
-jei.tooltip.shapeless.recipe=Receita Sem Forma
+jei.tooltip.shapeless.recipe=Receita não definida
 jei.tooltip.cheat.mode=Modo de Trapaças
 
 # Error Tooltips
-jei.tooltip.error.recipe.transfer.missing=Itens Faltando
-jei.tooltip.error.recipe.transfer.inventory.full=Inventário Cheio
-jei.tooltip.error.recipe.transfer.unknown=Erro não conhecido, verificar os logs
+jei.tooltip.error.recipe.transfer.missing=Itens faltando
+jei.tooltip.error.recipe.transfer.inventory.full=Inventário cheio
+jei.tooltip.error.recipe.transfer.unknown=Erro desconhecido, verifique os logs
 jei.tooltip.error.recipe.transfer.no.server=O servidor precisa ter o JEI instalado
-jei.tooltip.error.recipe.transfer.too.large.player.inventory=Receita não é 2x2
-jei.tooltip.error.crash=Erro na dica, veja os logs
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=A receita não é 2x2
+jei.tooltip.error.crash=Mensagem de erros, veja os logs
 
 # Error Messages
 jei.chat.error.command.too.long=JEI precisa está no servidor para manipular este comando de Chat, ele é muito grande para que o cliente do Minecraft consiga enviar.
@@ -39,7 +39,7 @@ config.jei.title=%MODNAME Configuração
 config.jei.mode=Modo
 config.jei.mode.comment=Modificar o modo que o JEI está operando.
 config.jei.mode.cheatItemsEnabled=Modo de Trapaça de Itens
-config.jei.mode.cheatItemsEnabled.comment=Dar intes invês de mostrar a receita.
+config.jei.mode.cheatItemsEnabled.comment=Dar itens ao invês de mostrar a receita.
 config.jei.mode.editEnabled=Modo de Esconder Itens
 config.jei.mode.editEnabled.comment=Esconda e Mostre itens ao clicar neles na lista de itens.
 
@@ -90,11 +90,11 @@ key.jei.ctrl.mac=CMD
 
 # Recipe Categories
 gui.jei.category.craftingTable=Crafting
-gui.jei.category.smelting=Smelting
+gui.jei.category.smelting=Fundição
 gui.jei.category.smelting.experience=%s XP
-gui.jei.category.fuel=Fuel
-gui.jei.category.fuel.smeltCount.single=Smelts 1 item
-gui.jei.category.fuel.smeltCount=Smelts %s itens
+gui.jei.category.fuel=Combustível
+gui.jei.category.fuel.smeltCount.single=Fundirá 1 item
+gui.jei.category.fuel.smeltCount=Fundirá %s itens
 gui.jei.category.fuel.burnTime=Tempo de Queima: %s
 gui.jei.category.brewing=Poções
 gui.jei.category.brewing.steps=Passos: %s
