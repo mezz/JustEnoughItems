@@ -11,6 +11,7 @@ jei.tooltip.item.colors=Färg: %s
 jei.tooltip.shapeless.recipe=Formlöst recept
 jei.tooltip.cheat.mode=Fuskläge
 jei.tooltip.recipe.by=Recept av: %s
+jei.tooltip.recipe.id=Recept-ID: %s
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Föremål saknas
