@@ -30,8 +30,8 @@ public class IngredientRegistry implements IIngredientRegistry {
 	private final Map<Class, IngredientSet> ingredientsMap;
 	private final ImmutableMap<Class, IIngredientHelper> ingredientHelperMap;
 	private final ImmutableMap<Class, IIngredientRenderer> ingredientRendererMap;
-	private final List<ItemStack> fuels = new ArrayList<>();
-	private final List<ItemStack> potionIngredients = new ArrayList<>();
+	private final NonNullList<ItemStack> fuels = NonNullList.create();
+	private final NonNullList<ItemStack> potionIngredients = NonNullList.create();
 
 	public IngredientRegistry(
 			IModIdHelper modIdHelper,
