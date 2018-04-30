@@ -17,7 +17,9 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipeWrapper> 
 	private final IDrawable icon;
 
 	public AnvilRecipeCategory(IGuiHelper guiHelper) {
-		background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 168, 125, 18, 0, 20, 0, 0);
+		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 168, 125, 18)
+			.addPadding(0, 20, 0, 0)
+			.build();
 		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.ANVIL));
 	}
 

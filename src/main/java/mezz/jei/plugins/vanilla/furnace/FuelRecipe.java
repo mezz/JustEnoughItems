@@ -3,7 +3,6 @@ package mezz.jei.plugins.vanilla.furnace;
 import com.google.common.base.Preconditions;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawableAnimated;
-import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
@@ -37,8 +36,8 @@ public class FuelRecipe implements IRecipeWrapper {
 			this.smeltCountString = Translator.translateToLocalFormatted("gui.jei.category.fuel.smeltCount", smeltCount);
 		}
 
-		IDrawableStatic flameDrawable = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 82, 114, 14, 14);
-		this.flame = guiHelper.createAnimatedDrawable(flameDrawable, burnTime, IDrawableAnimated.StartDirection.TOP, true);
+		this.flame = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 82, 114, 14, 14)
+			.buildAnimated(burnTime, IDrawableAnimated.StartDirection.TOP, true);
 	}
 
 	@Override

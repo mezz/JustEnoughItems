@@ -3,12 +3,38 @@ package mezz.jei.gui.elements;
 import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.gui.ITickTimer;
+import mezz.jei.gui.TickTimer;
 import net.minecraft.client.Minecraft;
 
 public class DrawableAnimated implements IDrawableAnimated {
 	private final IDrawableStatic drawable;
 	private final ITickTimer tickTimer;
 	private final StartDirection startDirection;
+
+	public DrawableAnimated(IDrawableStatic drawable, int ticksPerCycle, IDrawableAnimated.StartDirection startDirection, boolean inverted) {
+		IDrawableAnimated.StartDirection animationStartDirection = startDirection;
+		if (inverted) {
+			if (startDirection == IDrawableAnimated.StartDirection.TOP) {
+				animationStartDirection = IDrawableAnimated.StartDirection.BOTTOM;
+			} else if (startDirection == IDrawableAnimated.StartDirection.BOTTOM) {
+				animationStartDirection = IDrawableAnimated.StartDirection.TOP;
+			} else if (startDirection == IDrawableAnimated.StartDirection.LEFT) {
+				animationStartDirection = IDrawableAnimated.StartDirection.RIGHT;
+			} else {
+				animationStartDirection = IDrawableAnimated.StartDirection.LEFT;
+			}
+		}
+
+		int tickTimerMaxValue;
+		if (animationStartDirection == IDrawableAnimated.StartDirection.TOP || animationStartDirection == IDrawableAnimated.StartDirection.BOTTOM) {
+			tickTimerMaxValue = drawable.getHeight();
+		} else {
+			tickTimerMaxValue = drawable.getWidth();
+		}
+		this.drawable = drawable;
+		this.tickTimer = new TickTimer(ticksPerCycle, tickTimerMaxValue, !inverted);
+		this.startDirection = animationStartDirection;
+	}
 
 	public DrawableAnimated(IDrawableStatic drawable, ITickTimer tickTimer, StartDirection startDirection) {
 		this.drawable = drawable;

@@ -19,7 +19,9 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory<FuelRecipe> {
 
 	public FurnaceFuelCategory(IGuiHelper guiHelper) {
 		super(guiHelper);
-		background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 134, 18, 34, 0, 0, 0, 88);
+		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 134, 18, 34)
+			.addPadding(0, 0, 0, 88)
+			.build();
 
 		flameTransparentBackground = guiHelper.createDrawable(Constants.RECIPE_BACKGROUND, 215, 0, 14, 14);
 		localizedName = Translator.translateToLocal("gui.jei.category.fuel");
