@@ -11,13 +11,14 @@ jei.tooltip.item.colors=Kolory: %s
 jei.tooltip.shapeless.recipe=Bezkształtna receptura
 jei.tooltip.cheat.mode=Tryb cheatów
 jei.tooltip.recipe.by=Receptura z: %s
+jei.tooltip.recipe.id=ID receptury: %s
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Brakuje przedmiotów
 jei.tooltip.error.recipe.transfer.inventory.full=Ekwipunek jest przepełniony
 jei.tooltip.error.recipe.transfer.unknown=Nieznany błąd, sprawdź logi
 jei.tooltip.error.recipe.transfer.no.server=Serwer musi mieć zainstalowane JEI
-jei.tooltip.error.recipe.transfer.too.large.player.inventory=Receptura jest za duża, aby móc coś skonstruować w siatce 2x2 gracza.
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=Receptura jest za duża, żeby móc coś skonstruować w siatce 2x2 gracza.
 jei.tooltip.error.crash=Błąd z tooltipem, sprawdź log
 
 # Error Messages
@@ -94,7 +95,7 @@ gui.jei.editMode.description.show=Ukryte (%CTRL + klik).
 gui.jei.editMode.description.hide.wild=Ukryj przez wieloznacznik (%CTRL + prawoklik).
 gui.jei.editMode.description.show.wild=Ukryte przez wieloznacznik (%CTRL + prawoklik).
 gui.jei.editMode.description.hide.mod.id=Ukryj mod (%CTRL + SHIFT + klik).
-gui.jei.editMode.description.show.mod.id=Mod ukryty (%CTRL + SHIFT + klik.
+gui.jei.editMode.description.show.mod.id=Mod ukryty (%CTRL + SHIFT + klik).
 
 #PC/Linux Control Key
 key.jei.ctrl=CTRL
