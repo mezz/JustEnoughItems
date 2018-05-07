@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
@@ -45,9 +46,18 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 			return list;
 		}
 
+		EnumRarity rarity;
+		try {
+			rarity = ingredient.getRarity();
+		} catch (RuntimeException | LinkageError e) {
+			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
+			Log.get().error("Failed to get rarity: {}", itemStackInfo, e);
+			rarity = EnumRarity.COMMON;
+		}
+
 		for (int k = 0; k < list.size(); ++k) {
 			if (k == 0) {
-				list.set(k, ingredient.getRarity().rarityColor + list.get(k));
+				list.set(k, rarity.rarityColor + list.get(k));
 			} else {
 				list.set(k, TextFormatting.GRAY + list.get(k));
 			}
