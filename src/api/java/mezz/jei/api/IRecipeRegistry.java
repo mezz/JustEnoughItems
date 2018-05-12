@@ -125,7 +125,7 @@ public interface IRecipeRegistry {
 	void hideRecipe(IRecipeWrapper recipe, String recipeCategoryUid);
 
 	/**
-	 * Unhides a recipe that was hidden by {@link #hideRecipe(IRecipeWrapper)}
+	 * Unhides a recipe that was hidden by {@link #hideRecipe(IRecipeWrapper, String)}
 	 * This can be used by mods that create recipe progression.
 	 *
 	 * @param recipe the recipe to unhide.
@@ -181,7 +181,7 @@ public interface IRecipeRegistry {
 	 * Remove a recipe while the game is running.
 	 *
 	 * @since JEI 4.3.0
-	 * @deprecated since JEI 4.7.3. This is not supported by Minecraft 1.12 and using this is discouraged.
+	 * @deprecated since JEI 4.7.3. Use {@link #hideRecipe(IRecipeWrapper, String)}
 	 */
 	@Deprecated
 	void removeRecipe(IRecipeWrapper recipe, String recipeCategoryUid);
@@ -261,7 +261,7 @@ public interface IRecipeRegistry {
 	 * Remove a recipe while the game is running.
 	 *
 	 * @since JEI 4.2.2
-	 * @deprecated since JEI 4.3.0. Use {@link #hideRecipe(IRecipeWrapper)}
+	 * @deprecated since JEI 4.3.0. Use {@link #hideRecipe(IRecipeWrapper, String)}
 	 */
 	@Deprecated
 	void removeRecipe(Object recipe);

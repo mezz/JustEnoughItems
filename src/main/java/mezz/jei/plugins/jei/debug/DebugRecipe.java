@@ -102,11 +102,11 @@ public class DebugRecipe implements IRecipeWrapper {
 						hiddenRecipes = recipeRegistry.getRecipeWrappers(craftingRecipeCategory);
 					}
 					for (IRecipeWrapper recipeWrapper : hiddenRecipes) {
-						recipeRegistry.hideRecipe(recipeWrapper);
+						recipeRegistry.hideRecipe(recipeWrapper, VanillaRecipeCategoryUid.CRAFTING);
 					}
 				} else {
 					for (IRecipeWrapper recipeWrapper : hiddenRecipes) {
-						recipeRegistry.unhideRecipe(recipeWrapper);
+						recipeRegistry.unhideRecipe(recipeWrapper, VanillaRecipeCategoryUid.CRAFTING);
 					}
 					hiddenRecipes = null;
 				}
