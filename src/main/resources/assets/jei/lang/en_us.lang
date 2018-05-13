@@ -9,9 +9,14 @@ jei.tooltip.transfer=Move Items
 jei.tooltip.recipe.ore.dict=Accepts any: %s
 jei.tooltip.item.colors=Colors: %s
 jei.tooltip.shapeless.recipe=Shapeless Recipe
-jei.tooltip.cheat.mode=Cheat Mode
+jei.tooltip.cheat.mode=Cheat Mode is enabled.
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=Hold %s and click here to toggle it.
 jei.tooltip.recipe.by=Recipe By: %s
 jei.tooltip.recipe.id=Recipe ID: %s
+jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
+jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Missing Items
@@ -85,6 +90,8 @@ config.jei.advanced.modNameFormat=Mod Name Format
 config.jei.advanced.modNameFormat.comment=How the mod name should be formatted in the tooltip for JEI guis. Leave blank to disable.
 config.jei.advanced.maxColumns=Max Width
 config.jei.advanced.maxColumns.comment=The maximum width of the ingredient list.
+config.jei.advanced.minColumns=Min Width
+config.jei.advanced.minColumns.comment=The minimum width of the ingredient list. If there is not enough room it will be hidden.
 config.jei.advanced.giveMode=Give Mode
 config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to the inventory (inventory) or pick them up with the mouse (mouse_pickup).
 

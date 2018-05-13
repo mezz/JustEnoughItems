@@ -37,6 +37,10 @@ public final class Config {
 	public static final String CATEGORY_ADVANCED = "advanced";
 	public static final String CATEGORY_SEARCH_COLORS = "searchColors";
 
+	public static final String defaultModNameFormatFriendly = "blue italic";
+	public static final int smallestNumColumns = 4;
+	public static final int largestNumColumns = 100;
+
 	@Nullable
 	private static LocalizedConfiguration config;
 	@Nullable
@@ -60,7 +64,8 @@ public final class Config {
 	}
 
 	public static boolean isOverlayEnabled() {
-		return values.overlayEnabled;
+		return values.overlayEnabled ||
+			KeyBindings.toggleOverlay.getKeyCode() == 0; // if there is no key binding to enable it, don't allow the overlay to be disabled
 	}
 
 	public static void toggleOverlayEnabled() {
@@ -337,7 +342,7 @@ public final class Config {
 
 		values.giveMode = config.getEnum("giveMode", CATEGORY_ADVANCED, defaultValues.giveMode, GiveMode.values());
 
-		values.maxColumns = config.getInt("maxColumns", CATEGORY_ADVANCED, defaultValues.maxColumns, 3, 100);
+		values.maxColumns = config.getInt("maxColumns", CATEGORY_ADVANCED, defaultValues.maxColumns, smallestNumColumns, largestNumColumns);
 
 		updateModNameFormat(config);
 
@@ -363,7 +368,7 @@ public final class Config {
 			validValues[i] = formatting.getFriendlyName().toLowerCase(Locale.ENGLISH);
 			i++;
 		}
-		Property property = config.getString("modNameFormat", CATEGORY_ADVANCED, defaultValues.modNameFormatFriendly, validValues);
+		Property property = config.getString("modNameFormat", CATEGORY_ADVANCED, defaultModNameFormatFriendly, validValues);
 		boolean showInGui = !isModNameFormatOverrideActive();
 		property.setShowInGui(showInGui);
 		String modNameFormatFriendly = property.getString();

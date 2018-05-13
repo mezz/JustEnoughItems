@@ -51,7 +51,9 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	 * @return true if this can be displayed next to the gui with the given guiProperties
 	 */
 	private static boolean hasRoom(IGuiProperties guiProperties) {
-		return guiProperties.getScreenWidth() - (guiProperties.getGuiLeft() + guiProperties.getGuiXSize()) >= 72;
+		Rectangle displayArea = getDisplayArea(guiProperties);
+		final int availableColumns = displayArea.width / IngredientGrid.INGREDIENT_WIDTH;
+		return availableColumns >= Config.smallestNumColumns;
 	}
 
 	private static boolean isSearchBarCentered(IGuiProperties guiProperties) {
@@ -118,6 +120,10 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	}
 
 	public boolean isEnabled() {
+		return this.guiProperties != null;
+	}
+
+	public boolean isListDisplayed() {
 		return Config.isOverlayEnabled() && this.guiProperties != null && hasRoom(this.guiProperties);
 	}
 
@@ -127,6 +133,14 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 			guiProperties1.getGuiXSize() == guiProperties2.getGuiXSize() &&
 			guiProperties1.getScreenWidth() == guiProperties2.getScreenWidth() &&
 			guiProperties1.getScreenHeight() == guiProperties2.getScreenHeight();
+	}
+
+	private static Rectangle getDisplayArea(IGuiProperties guiProperties) {
+		final int x = guiProperties.getGuiLeft() + guiProperties.getGuiXSize() + BORDER_PADDING;
+		final int y = BORDER_PADDING;
+		final int width = guiProperties.getScreenWidth() - x - (2 * BORDER_PADDING);
+		final int height = guiProperties.getScreenHeight() - y - (2 * BORDER_PADDING);
+		return new Rectangle(x, y, width, height);
 	}
 
 	public void updateScreen(@Nullable GuiScreen guiScreen) {
@@ -140,12 +154,7 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 			setKeyboardFocus(false);
 		} else if (this.guiProperties == null || !areGuiPropertiesEqual(this.guiProperties, guiProperties)) {
 			this.guiProperties = guiProperties;
-
-			final int x = guiProperties.getGuiLeft() + guiProperties.getGuiXSize() + BORDER_PADDING;
-			final int y = BORDER_PADDING;
-			final int width = guiProperties.getScreenWidth() - x - (2 * BORDER_PADDING);
-			final int height = guiProperties.getScreenHeight() - y - (2 * BORDER_PADDING);
-			displayArea = new Rectangle(x, y, width, height);
+			this.displayArea = getDisplayArea(guiProperties);
 
 			final boolean searchBarCentered = isSearchBarCentered(guiProperties);
 			final int searchHeight = searchBarCentered ? 0 : SEARCH_HEIGHT + 4;
@@ -194,9 +203,11 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 
 		GlStateManager.disableLighting();
 
-		this.navigation.draw(minecraft, mouseX, mouseY, partialTicks);
-		this.searchField.drawTextBox();
-		this.contents.draw(minecraft, mouseX, mouseY);
+		if (isListDisplayed()) {
+			this.navigation.draw(minecraft, mouseX, mouseY, partialTicks);
+			this.searchField.drawTextBox();
+			this.contents.draw(minecraft, mouseX, mouseY);
+		}
 		this.configButton.draw(minecraft, mouseX, mouseY, partialTicks);
 	}
 
@@ -210,9 +221,14 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	}
 
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
-		this.contents.drawTooltips(minecraft, mouseX, mouseY);
-		this.configButton.drawTooltips(minecraft, mouseX, mouseY);
-		this.ghostIngredientDragManager.drawTooltips(minecraft, mouseX, mouseY);
+		if (this.guiProperties != null) {
+			boolean hasRoom = hasRoom(this.guiProperties);
+			this.configButton.drawTooltips(minecraft, mouseX, mouseY, hasRoom);
+			this.ghostIngredientDragManager.drawTooltips(minecraft, mouseX, mouseY);
+			if (Config.isOverlayEnabled() && hasRoom) {
+				this.contents.drawTooltips(minecraft, mouseX, mouseY);
+			}
+		}
 	}
 
 	public void drawOnForeground(Minecraft minecraft, int mouseX, int mouseY) {
@@ -262,7 +278,7 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	@Override
 	@Nullable
 	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
-		if (this.isEnabled()) {
+		if (isListDisplayed()) {
 			IClickedIngredient<?> clicked = this.contents.getIngredientUnderMouse(mouseX, mouseY);
 			if (clicked != null) {
 				clicked.setOnClickHandler(() -> setKeyboardFocus(false));
@@ -274,7 +290,7 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 
 	@Override
 	public boolean canSetFocusWithMouse() {
-		return this.isEnabled() && this.contents.canSetFocusWithMouse();
+		return this.isListDisplayed() && this.contents.canSetFocusWithMouse();
 	}
 
 	@Override
@@ -283,52 +299,53 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 			return true;
 		} // if the ghost ingredient drag failed, fall through to let the click be handled by something else
 
-		if (!isMouseOver(mouseX, mouseY)) {
-			setKeyboardFocus(false);
-			return false;
-		}
-
-		if (this.contents.handleMouseClicked(mouseX, mouseY)) {
-			setKeyboardFocus(false);
-			return true;
-		}
-
-		if (this.navigation.handleMouseClickedButtons(mouseX, mouseY)) {
-			setKeyboardFocus(false);
-			return true;
-		}
-
-		boolean searchClicked = this.searchField.isMouseOver(mouseX, mouseY);
-		setKeyboardFocus(searchClicked);
-		if (searchClicked) {
-			final boolean updated = this.searchField.handleMouseClicked(mouseX, mouseY, mouseButton);
-			if (updated) {
-				updateLayout();
-			}
-			return true;
-		}
-
 		if (this.configButton.handleMouseClick(Minecraft.getMinecraft(), mouseX, mouseY)) {
 			return true;
 		}
 
-		Minecraft minecraft = Minecraft.getMinecraft();
-		GuiScreen currentScreen = minecraft.currentScreen;
-		if (currentScreen != null && !(currentScreen instanceof RecipesGui) &&
-			(mouseButton == 0 || mouseButton == 1 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(mouseButton - 100)))
-		{
-			IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
-			if (clicked != null) {
-				if (Config.isCheatItemsEnabled()) {
-					ItemStack itemStack = clicked.getCheatItemStack();
-					if (!itemStack.isEmpty()) {
-						CommandUtil.giveStack(itemStack, mouseButton);
-					}
-					clicked.onClickHandled();
-					return true;
+		if (isListDisplayed()) {
+			if (!isMouseOver(mouseX, mouseY)) {
+				setKeyboardFocus(false);
+				return false;
+			}
+
+			if (this.contents.handleMouseClicked(mouseX, mouseY)) {
+				setKeyboardFocus(false);
+				return true;
+			}
+
+			if (this.navigation.handleMouseClickedButtons(mouseX, mouseY)) {
+				setKeyboardFocus(false);
+				return true;
+			}
+
+			boolean searchClicked = this.searchField.isMouseOver(mouseX, mouseY);
+			setKeyboardFocus(searchClicked);
+			if (searchClicked) {
+				final boolean updated = this.searchField.handleMouseClicked(mouseX, mouseY, mouseButton);
+				if (updated) {
+					updateLayout();
 				}
-				if (this.ghostIngredientDragManager.handleClickGhostIngredient(currentScreen, clicked)) {
-					return true;
+				return true;
+			}
+
+			Minecraft minecraft = Minecraft.getMinecraft();
+			GuiScreen currentScreen = minecraft.currentScreen;
+			if (currentScreen != null && !(currentScreen instanceof RecipesGui) &&
+				(mouseButton == 0 || mouseButton == 1 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(mouseButton - 100))) {
+				IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
+				if (clicked != null) {
+					if (Config.isCheatItemsEnabled()) {
+						ItemStack itemStack = clicked.getCheatItemStack();
+						if (!itemStack.isEmpty()) {
+							CommandUtil.giveStack(itemStack, mouseButton);
+						}
+						clicked.onClickHandled();
+						return true;
+					}
+					if (this.ghostIngredientDragManager.handleClickGhostIngredient(currentScreen, clicked)) {
+						return true;
+					}
 				}
 			}
 		}
@@ -337,15 +354,14 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 
 	@Override
 	public boolean handleMouseScrolled(int mouseX, int mouseY, int scrollDelta) {
-		if (!isMouseOver(mouseX, mouseY)) {
-			return false;
-		}
-		if (scrollDelta < 0) {
-			nextPage();
-			return true;
-		} else if (scrollDelta > 0) {
-			previousPage();
-			return true;
+		if (isListDisplayed() && isMouseOver(mouseX, mouseY)) {
+			if (scrollDelta < 0) {
+				nextPage();
+				return true;
+			} else if (scrollDelta > 0) {
+				previousPage();
+				return true;
+			}
 		}
 		return false;
 	}
@@ -360,6 +376,9 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	}
 
 	public boolean onKeyPressed(char typedChar, int keyCode) {
+		if (!isListDisplayed()) {
+			return false;
+		}
 		if (hasKeyboardFocus() &&
 				searchField.textboxKeyTyped(typedChar, keyCode)) {
 			boolean changed = Config.setFilterText(searchField.getText());
