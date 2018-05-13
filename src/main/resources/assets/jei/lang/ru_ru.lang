@@ -90,8 +90,6 @@ config.jei.advanced.modNameFormat=Формат названия мода
 config.jei.advanced.modNameFormat.comment=Как название мода должно быть отформатировано для подсказок JEI. Оставьте пустым, чтобы отключить.
 config.jei.advanced.maxColumns=Максимальная ширина
 config.jei.advanced.maxColumns.comment=Максимальная ширина списка ингредиентов.
-config.jei.advanced.minColumns=Минимальная ширина
-config.jei.advanced.minColumns.comment=Минимальная ширина списка ингредиентов. Если не хватает места, оно будет скрыто.
 config.jei.advanced.giveMode=Режим получения предметов
 config.jei.advanced.giveMode.comment=Выберите, должен ли JEI давать предметы напрямую в инвентарь (inventory) или же набирать их мышкой (mouse_pickup).
 
