@@ -1,12 +1,10 @@
 package mezz.jei.network.packets;
 
-import java.io.IOException;
-
 import mezz.jei.JustEnoughItems;
 import mezz.jei.ProxyCommon;
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
-import mezz.jei.util.CommandUtil;
+import mezz.jei.util.CommandUtilServer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
@@ -21,15 +19,15 @@ public class PacketRequestCheatPermission extends PacketJei {
 
 	@Override
 	public void writePacketData(PacketBuffer buf) {
-
+		// the packet itself is the only data needed
 	}
 
 	public static class Handler implements IPacketJeiHandler {
 		@Override
-		public void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
+		public void readPacketData(PacketBuffer buf, EntityPlayer player) {
 			if (player instanceof EntityPlayerMP) {
 				EntityPlayerMP sender = (EntityPlayerMP) player;
-				boolean hasPermission = CommandUtil.hasPermission(sender, new ItemStack(Items.NETHER_STAR, 64));
+				boolean hasPermission = CommandUtilServer.hasPermission(sender, new ItemStack(Items.NETHER_STAR, 64));
 				PacketCheatPermission packetCheatPermission = new PacketCheatPermission(hasPermission);
 
 				ProxyCommon proxy = JustEnoughItems.getProxy();

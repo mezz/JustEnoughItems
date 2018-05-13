@@ -1,125 +1,116 @@
 package mezz.jei.util;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
-import com.google.common.base.Throwables;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandGive;
-import net.minecraft.command.CommandResultStats;
-import net.minecraft.command.ICommand;
-import net.minecraft.command.ICommandManager;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.SoundEvents;
+import com.google.common.base.Preconditions;
+import mezz.jei.JustEnoughItems;
+import mezz.jei.config.SessionData;
+import mezz.jei.network.packets.PacketGiveItemStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.CommandEvent;
+import net.minecraftforge.items.ItemHandlerHelper;
+import org.apache.commons.lang3.StringUtils;
 
-/**
- * Server-side-safe utilities for commands.
- */
-public class CommandUtil {
-	public static String[] getGiveCommandParameters(EntityPlayer sender, ItemStack itemStack, int amount) {
-		String senderName = sender.getName();
-		Item item = itemStack.getItem();
-		ResourceLocation itemResourceLocation = item.getRegistryName();
-		if (itemResourceLocation == null) {
-			String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
-			throw new IllegalArgumentException("item.getRegistryName() returned null for: " + stackInfo);
-		}
-
-		List<String> commandStrings = new ArrayList<String>();
-		commandStrings.add(senderName);
-		commandStrings.add(itemResourceLocation.toString());
-		commandStrings.add(String.valueOf(amount));
-		commandStrings.add(String.valueOf(itemStack.getMetadata()));
-
-		NBTTagCompound tagCompound = itemStack.getTagCompound();
-		if (tagCompound != null) {
-			commandStrings.add(tagCompound.toString());
-		}
-
-		return commandStrings.toArray(new String[commandStrings.size()]);
+public final class CommandUtil {
+	private CommandUtil() {
 	}
 
-	public static void writeChatMessage(EntityPlayer player, String translationKey, TextFormatting color) {
-		TextComponentTranslation component = new TextComponentTranslation(translationKey);
-		component.getStyle().setColor(color);
-		player.addChatMessage(component);
-	}
-
-	public static boolean hasPermission(EntityPlayerMP sender, ItemStack itemStack) {
-		if (sender.isCreative()) {
-			return true;
-		}
-
-		MinecraftServer minecraftServer = sender.mcServer;
-		ICommand giveCommand = getGiveCommand(sender);
-		if (giveCommand != null && giveCommand.checkPermission(minecraftServer, sender)) {
-			String[] commandParameters = getGiveCommandParameters(sender, itemStack, itemStack.stackSize);
-			CommandEvent event = new CommandEvent(giveCommand, sender, commandParameters);
-			if (MinecraftForge.EVENT_BUS.post(event)) {
-				Throwable exception = event.getException();
-				if (exception != null) {
-					Throwables.propagateIfPossible(exception);
-				}
-				return false;
-			}
-			return true;
+	/**
+	 * /give <player> <item> [amount] [data] [dataTag]
+	 * {@link GuiContainerCreative} has special client-side handling for itemStacks, just give the item on the client
+	 */
+	public static void giveStack(ItemStack itemStack, int mouseButton) {
+		final int amount = (mouseButton == 0) ? itemStack.getMaxStackSize() : 1;
+		if (SessionData.isJeiOnServer()) {
+			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
+			PacketGiveItemStack packet = new PacketGiveItemStack(sendStack);
+			JustEnoughItems.getProxy().sendPacketToServer(packet);
 		} else {
-			return sender.canCommandSenderUseCommand(minecraftServer.getOpPermissionLevel(), "give");
+			giveStackVanilla(itemStack, amount);
 		}
 	}
 
 	/**
-	 * Gives a player an item. Similar to vanilla but without the "fake" itemStack popping into the player's face.
-	 * (no {@link EntityItem#makeFakeItem()}
-	 * @see CommandGive#execute(MinecraftServer, ICommandSender, String[])
+	 * Fallback for when JEI is not on the server, tries to use the /give command
+	 * Uses the Creative Inventory Action Packet when in creative, which doesn't require the player to be op.
 	 */
-	public static void executeGive(EntityPlayerMP sender, ItemStack itemStack) {
-		int count = itemStack.stackSize;
-		boolean addedToInventory = sender.inventory.addItemStackToInventory(itemStack);
-
-		if (addedToInventory) {
-			sender.worldObj.playSound(null, sender.posX, sender.posY, sender.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((sender.getRNG().nextFloat() - sender.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
-			sender.inventoryContainer.detectAndSendChanges();
+	private static void giveStackVanilla(@Nullable ItemStack itemStack, int amount) {
+		if (itemStack == null || itemStack.stackSize == 0) {
+			String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
+			Log.error("Empty itemStack: {}", stackInfo, new IllegalArgumentException());
+			return;
 		}
 
-		if (addedToInventory && itemStack.stackSize <= 0) {
-			sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, count);
+		Item item = itemStack.getItem();
+		ResourceLocation itemResourceLocation = item.getRegistryName();
+		Preconditions.checkNotNull(itemResourceLocation, "itemStack.getItem().getRegistryName()");
+
+		EntityPlayerSP sender = Minecraft.getMinecraft().thePlayer;
+		if (sender.canCommandSenderUseCommand(2, "give")) {
+			sendGiveAction(sender, itemStack, amount);
+		} else if (sender.isCreative()) {
+			sendCreativeInventoryActions(sender, itemStack, amount);
 		} else {
-			sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, count - itemStack.stackSize);
-			EntityItem entityitem = sender.dropItem(itemStack, false);
-			if (entityitem != null) {
-				entityitem.setNoPickupDelay();
-				entityitem.setOwner(sender.getName());
-			}
-		}
-
-		ICommand giveCommand = getGiveCommand(sender);
-		if (giveCommand != null) {
-			itemStack.stackSize = 1;
-			CommandBase.notifyCommandListener(sender, giveCommand, "commands.give.success", itemStack.getTextComponent(), count, sender.getName());
+			// try this in case the vanilla server has permissions set so regular players can use /give
+			sendGiveAction(sender, itemStack, amount);
 		}
 	}
 
-	@Nullable
-	private static ICommand getGiveCommand(EntityPlayerMP sender) {
-		MinecraftServer minecraftServer = sender.mcServer;
-		ICommandManager commandManager = minecraftServer.getCommandManager();
-		Map<String, ICommand> commands = commandManager.getCommands();
-		return commands.get("give");
+	private static void sendGiveAction(EntityPlayerSP sender, ItemStack itemStack, int amount) {
+		String[] commandParameters = CommandUtilServer.getGiveCommandParameters(sender, itemStack, amount);
+		String fullCommand = "/give " + StringUtils.join(commandParameters, " ");
+		sendChatMessage(sender, fullCommand);
+	}
+
+	private static void sendChatMessage(EntityPlayerSP sender, String chatMessage) {
+		if (chatMessage.length() <= 256) {
+			sender.sendChatMessage(chatMessage);
+		} else {
+			ITextComponent errorMessage = new TextComponentTranslation("jei.chat.error.command.too.long");
+			errorMessage.getStyle().setColor(TextFormatting.RED);
+			sender.addChatComponentMessage(errorMessage);
+
+			ITextComponent chatMessageComponent = new TextComponentString(chatMessage);
+			chatMessageComponent.getStyle().setColor(TextFormatting.RED);
+			sender.addChatComponentMessage(chatMessageComponent);
+		}
+	}
+
+	private static void sendCreativeInventoryActions(EntityPlayerSP sender, ItemStack stack, int amount) {
+		int i = 0; // starting in the inventory, not armour or crafting slots
+		while (i < sender.inventory.mainInventory.length && amount > 0) {
+			ItemStack currentStack = sender.inventory.mainInventory[i];
+			if (currentStack == null || currentStack.stackSize == 0) {
+				ItemStack sendAllRemaining = ItemHandlerHelper.copyStackWithSize(stack, amount);
+				sendSlotPacket(sendAllRemaining, i);
+				amount = 0;
+			} else if (currentStack.isItemEqual(stack) && currentStack.getMaxStackSize() > currentStack.stackSize) {
+				int canAdd = Math.min(currentStack.getMaxStackSize() - currentStack.stackSize, amount);
+				ItemStack fillRemainingSpace = ItemHandlerHelper.copyStackWithSize(stack, canAdd + currentStack.stackSize);
+				sendSlotPacket(fillRemainingSpace, i);
+				amount -= canAdd;
+			}
+			i++;
+		}
+		if (amount > 0) {
+			ItemStack toDrop = ItemHandlerHelper.copyStackWithSize(stack, amount);
+			sendSlotPacket(toDrop, -1);
+		}
+	}
+
+	private static void sendSlotPacket(ItemStack stack, int mainInventorySlot) {
+		if (mainInventorySlot < 9 && mainInventorySlot != -1) {
+			// slot ID for the message is different from the slot id used in the mainInventory
+			mainInventorySlot += 36;
+		}
+		Minecraft.getMinecraft().playerController.sendSlotPacket(stack, mainInventorySlot);
 	}
 }

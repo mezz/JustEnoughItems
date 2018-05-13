@@ -15,7 +15,7 @@ import mezz.jei.gui.Focus;
 import mezz.jei.gui.ItemListOverlayInternal;
 import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.util.Commands;
+import mezz.jei.util.CommandUtil;
 import mezz.jei.util.MouseHelper;
 import mezz.jei.util.ReflectionUtil;
 import net.minecraft.client.Minecraft;
@@ -131,14 +131,8 @@ public class InputHandler {
 			Object focusValue = clicked.getValue();
 			if (focusValue instanceof ItemStack) {
 				ItemStack itemStack = (ItemStack) focusValue;
-
-				if (mouseButton == 0) {
-					Commands.giveFullStack(itemStack);
-					return true;
-				} else if (mouseButton == 1) {
-					Commands.giveOneFromStack(itemStack);
-					return true;
-				}
+				CommandUtil.giveStack(itemStack, mouseButton);
+				return true;
 			}
 		}
 
