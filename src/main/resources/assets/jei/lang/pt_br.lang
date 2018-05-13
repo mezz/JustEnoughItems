@@ -10,8 +10,13 @@ jei.tooltip.recipe.ore.dict=Aceita qualquer: %s
 jei.tooltip.item.colors=Cores: %s
 jei.tooltip.shapeless.recipe=Receita indefinida
 jei.tooltip.cheat.mode=Modo de Trapaça
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Pressione %s para ativá-lo.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=Mantenha %s pressionado e clique para ativá-lo.
 jei.tooltip.recipe.by=Receita por: %s
 jei.tooltip.recipe.id=ID da receita: %s
+jei.tooltip.not.enough.space=Não há espaço suficiente para exibir a lista de ingredientes aqui.
+jei.tooltip.ingredient.list.disabled=A lista de ingredientes está desativada.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Pressione %s para ativá-la.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Itens ausentes
@@ -66,18 +71,18 @@ config.jei.search.oreDictSearchMode=$OreDictionary
 config.jei.search.oreDictSearchMode.comment=Modo de busca para Ore Dictionary Names (prefixo: $)
 config.jei.search.creativeTabSearchMode=%%CreativeTab
 config.jei.search.creativeTabSearchMode.comment=Modo de busca para Creative Tab Names (prefixo: %)
-config.jei.search.colorSearchMode=^Cor
+config.jei.search.colorSearchMode=^Color
 config.jei.search.colorSearchMode.comment=Modo de busca para Item Colors (prefixo: ^)
 config.jei.search.resourceIdSearchMode=&ResourceId
 config.jei.search.resourceIdSearchMode.comment=Modo de busca para IDs de recursos (prefixo: &)
 
 config.jei.advanced=Avançado
-config.jei.advanced.comment=Opções avançadas para alterar funcionalidades do JEI.
+config.jei.advanced.comment=Opções avançadas para alterar as funções do JEI.
 config.jei.advanced.itemBlacklist=Itens bloqueados
 config.jei.advanced.itemBlacklist.comment=Itens que não devem ser exibidos na lista de itens. Formato: modId[:name[:meta]]. O modo de edição adicionará ou removerá automaticamente entradas aqui.
 config.jei.advanced.colorSearchEnabled=Ativar pesquisa por cor
 config.jei.advanced.colorSearchEnabled.comment=Procurar itens por cor e exibir os itens compatíveis com a busca por dicas na lista de itens.
-config.jei.advanced.debugModeEnabled=Modo de depuração
+config.jei.advanced.debugModeEnabled=Modo depuração
 config.jei.advanced.debugModeEnabled.comment=Recomendado apenas para desenvolvedores do JEI. Adiciona milhares de itens para testes e algumas receitas de depuração.
 config.jei.advanced.centerSearchBarEnabled=Centralizar barra de busca
 config.jei.advanced.centerSearchBarEnabled.comment=Mover a barra de busca do JEI para o centro-inferior da tela.
@@ -90,12 +95,12 @@ config.jei.advanced.giveMode.comment=Escolha se o JEI pode dar itens diretamente
 
 # Edit Mode
 gui.jei.editMode.description=Modo de edição de lista de itens do JEI:
-gui.jei.editMode.description.hide=Ocultar. (%CTRL-click).
-gui.jei.editMode.description.show=Oculto. (%CTRL-click).
-gui.jei.editMode.description.hide.wild=Ocultar pelo curinga. (%CTRL-right-click).
-gui.jei.editMode.description.show.wild=Oculto pelo curinga. (%CTRL-right-click).
-gui.jei.editMode.description.hide.mod.id=Ocultar mod. (%CTRL-SHIFT-click).
-gui.jei.editMode.description.show.mod.id=Mod oculto. (%CTRL-SHIFT-click).
+gui.jei.editMode.description.hide=Ocultar. (%CTRL-clique).
+gui.jei.editMode.description.show=Oculto. (%CTRL-clique).
+gui.jei.editMode.description.hide.wild=Ocultar pelo curinga. (%CTRL-botão direito).
+gui.jei.editMode.description.show.wild=Oculto pelo curinga. (%CTRL-botão direito).
+gui.jei.editMode.description.hide.mod.id=Ocultar mod. (%CTRL-SHIFT-clique).
+gui.jei.editMode.description.show.mod.id=Mod oculto. (%CTRL-SHIFT-clique).
 
 #PC/Linux Control Key
 key.jei.ctrl=CTRL
