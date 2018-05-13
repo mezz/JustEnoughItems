@@ -10,8 +10,13 @@ jei.tooltip.recipe.ore.dict=Принимает любые: %s
 jei.tooltip.item.colors=Цвета: %s
 jei.tooltip.shapeless.recipe=Бесформенный рецепт
 jei.tooltip.cheat.mode=Режим жульничества
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Нажмите %s для переключения.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=Зажмите %s и нажмите здесь, для переключения.
 jei.tooltip.recipe.by=Рецепт из: %s
 jei.tooltip.recipe.id=ID репепта: %s
+jei.tooltip.not.enough.space=Здесь недостаточно места для отображения списка ингредиентов.
+jei.tooltip.ingredient.list.disabled=Список ингредиентов отключен.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Нажмите %s для включения.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Отсутствуют предметы
@@ -85,6 +90,8 @@ config.jei.advanced.modNameFormat=Формат названия мода
 config.jei.advanced.modNameFormat.comment=Как название мода должно быть отформатировано для подсказок JEI. Оставьте пустым, чтобы отключить.
 config.jei.advanced.maxColumns=Максимальная ширина
 config.jei.advanced.maxColumns.comment=Максимальная ширина списка ингредиентов.
+config.jei.advanced.minColumns=Минимальная ширина
+config.jei.advanced.minColumns.comment=Минимальная ширина списка ингредиентов. Если не хватает места, оно будет скрыто.
 config.jei.advanced.giveMode=Режим получения предметов
 config.jei.advanced.giveMode.comment=Выберите, должен ли JEI давать предметы напрямую в инвентарь (inventory) или же набирать их мышкой (mouse_pickup).
 
