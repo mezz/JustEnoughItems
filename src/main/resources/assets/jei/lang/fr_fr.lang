@@ -10,8 +10,13 @@ jei.tooltip.recipe.ore.dict=Accepte n'importe lequel : %s
 jei.tooltip.item.colors=Couleurs : %s
 jei.tooltip.shapeless.recipe=Recette sans forme
 jei.tooltip.cheat.mode=Mode triche
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
 jei.tooltip.recipe.by=Recette par : %s
 jei.tooltip.recipe.id=ID de la recette : %s
+jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
+jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Objets manquants
@@ -53,8 +58,6 @@ config.jei.interface=Interface
 config.jei.interface.comment=Options relatives à l'interface utilisateur.
 config.jei.interface.overlayEnabled=Liste d'objets activée
 config.jei.interface.overlayEnabled.comment=Affiche la liste des objets à côté de l'interface utilisateur ouverte.
-config.jei.interface.recipeAnimationsEnabled=Animation des recettes
-config.jei.interface.recipeAnimationsEnabled.comment=Affiche l'animation des recettes (feu des fournaises, barre de progression, etc)
 
 config.jei.search=Options de recherche
 config.jei.search.comment=Options relatives à la barre de recherche.
@@ -97,9 +100,9 @@ gui.jei.editMode.description.show.wild=Afficher par caractères génériques (%C
 gui.jei.editMode.description.hide.mod.id=Cacher ModID (%CTRL-MAJ-clic).
 gui.jei.editMode.description.show.mod.id=Afficher ModID (%CTRL-MAJ-clic).
 
-#PC/Linux Control Key
+# PC/Linux Control Key
 key.jei.ctrl=CTRL
-#Mac Command Key
+# Mac Command Key
 key.jei.ctrl.mac=CMD
 
 # Recipe Categories

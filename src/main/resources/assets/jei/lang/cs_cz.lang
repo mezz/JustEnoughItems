@@ -10,15 +10,26 @@ jei.tooltip.recipe.ore.dict=Jakkýkoliv přístup: %s
 jei.tooltip.item.colors=Barvy: %s
 jei.tooltip.shapeless.recipe=Beztvárný Recept
 jei.tooltip.cheat.mode=Cheat Mód
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
+jei.tooltip.recipe.by=Recipe By: %s
+jei.tooltip.recipe.id=Recipe ID: %s
+jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
+jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Chybné hlášky
 jei.tooltip.error.recipe.transfer.missing=Chybějící Itemy
 jei.tooltip.error.recipe.transfer.inventory.full=Inventář je tak plný
 jei.tooltip.error.recipe.transfer.unknown=Neznámá chyba, více v logu
 jei.tooltip.error.recipe.transfer.no.server=Server musí mít instalované JEI
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=Recipe is too large to craft in the 2x2 player crafting grid.
+jei.tooltip.error.crash=Tooltip error, see log
 
 # Chybné zprávy
 jei.chat.error.command.too.long=JEI musí být na serveru pro tenhle Chat Command, pro Minecraft je moc dlouhý.
+jei.chat.error.no.cheat.permission.1=You do not have permission to use JEI's Cheat Mode.
+jei.chat.error.no.cheat.permission.2=Permission is given to players who can /give items or are in Creative Mode.
 
 # Klávesové zkratky
 key.jei.toggleOverlay=Ovládat s listem itemu
@@ -27,6 +38,8 @@ key.jei.showRecipe=Zobrazit recept
 key.jei.showUses=Zobrazit použití
 key.jei.recipeBack=Zobrazit předchozí stránku
 key.jei.toggleCheatMode=Ovládat s Cheat Módem
+key.jei.previousPage=Show Previous Page
+key.jei.nextPage=Show Next Page
 
 # Config
 config.jei.default=Výchozí
@@ -45,21 +58,21 @@ config.jei.interface=Rozhraní
 config.jei.interface.comment=Nastavení související s Rozhraním.
 config.jei.interface.overlayEnabled=Item List
 config.jei.interface.overlayEnabled.comment=Zobrazí list itemů vedle otevřených GUI.
-config.jei.interface.recipeAnimationsEnabled=Animované Recepty
-config.jei.interface.recipeAnimationsEnabled.comment=Zobrazí animace u receptů (ohen v peci, progresova bary, atd.)
 
 config.jei.search=Nastavení Hledání
 config.jei.search.comment=Nastavení související s hledacím polem.
-config.jei.search.atPrefixRequiredForModName=Vyžaduje @ pro jméno módu
-config.jei.search.atPrefixRequiredForModName.comment=Vyžaduje "@" před slovem pro hledání v módu.
-config.jei.search.prefixRequiredForTooltipSearch=Vyžaduje # pro nástrojový tip
-config.jei.search.prefixRequiredForTooltipSearch.comment=Vyžaduje "#" před slovem pro hledání tipů.
-config.jei.search.prefixRequiredForOreDictSearch=Vyžaduje $ pro Slovín Rud
-config.jei.search.prefixRequiredForOreDictSearch.comment=Vyžaduje "$" před slovem pro hledání jedné z rud.
-config.jei.search.prefixRequiredForCreativeTabSearch=Vyžaduje %% pro jméno v Creative Tabulce
-config.jei.search.prefixRequiredForCreativeTabSearch.comment=Vyžaduje "%" před slovem pro hledání v creative tabulce.
-config.jei.search.prefixRequiredForColorSearch=Vyžaduje ^ pro barvy
-config.jei.search.prefixRequiredForColorSearch.comment=Vyžaduje "^" před slovem pro hledání barev itemů.
+config.jei.search.modNameSearchMode=Vyžaduje @ pro jméno módu
+config.jei.search.modNameSearchMode.comment=Vyžaduje "@" před slovem pro hledání v módu.
+config.jei.search.tooltipSearchMode=Vyžaduje # pro nástrojový tip
+config.jei.search.tooltipSearchMode.comment=Vyžaduje "#" před slovem pro hledání tipů.
+config.jei.search.oreDictSearchMode=Vyžaduje $ pro Slovín Rud
+config.jei.search.oreDictSearchMode.comment=Vyžaduje "$" před slovem pro hledání jedné z rud.
+config.jei.search.creativeTabSearchMode=Vyžaduje %% pro jméno v Creative Tabulce
+config.jei.search.creativeTabSearchMode.comment=Vyžaduje "%" před slovem pro hledání v creative tabulce.
+config.jei.search.colorSearchMode=Vyžaduje ^ pro barvy
+config.jei.search.colorSearchMode.comment=Vyžaduje "^" před slovem pro hledání barev itemů.
+config.jei.search.resourceIdSearchMode=&ResourceId
+config.jei.search.resourceIdSearchMode.comment=Search mode for resources ids (prefix: &)
 
 config.jei.advanced=Pokročilé
 config.jei.advanced.comment=Pokročilé funkce pro JEI.
@@ -71,6 +84,12 @@ config.jei.advanced.debugModeEnabled=Programovací Mód
 config.jei.advanced.debugModeEnabled.comment=Použitelné jen pro JEI vývojáře, přidá tisíce test itemů a některé vývojářské recepty.
 config.jei.advanced.centerSearchBarEnabled=Hýbat s vyhledávacím polem
 config.jei.advanced.centerSearchBarEnabled.comment=Přesune JEI bar dolů doprostřed obrazovky.
+config.jei.advanced.modNameFormat=Mod Name Format
+config.jei.advanced.modNameFormat.comment=How the mod name should be formatted in the tooltip for JEI guis. Leave blank to disable.
+config.jei.advanced.maxColumns=Max Width
+config.jei.advanced.maxColumns.comment=The maximum width of the ingredient list.
+config.jei.advanced.giveMode=Give Mode
+config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to the inventory (inventory) or pick them up with the mouse (mouse_pickup).
 
 # Edit Mode
 gui.jei.editMode.description=JEI Item List Editovací Mód:
@@ -81,11 +100,18 @@ gui.jei.editMode.description.show.wild=Schováno Divokou Kartou. %CTRL-pravý-kl
 gui.jei.editMode.description.hide.mod.id=%CTRL-SHIFT-klik pro schování ModId.
 gui.jei.editMode.description.show.mod.id=Schováno ModId. %CTRL-SHIFT-klik pro zobrazení.
 
+# PC/Linux Control Key
+key.jei.ctrl=CTRL
+# Mac Command Key
+key.jei.ctrl.mac=CMD
+
 # Recipe Categories
 gui.jei.category.craftingTable=Výroba
 gui.jei.category.smelting=Tavení
 gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=Palivo
+gui.jei.category.fuel.smeltCount.single=Smelts 1 item
+gui.jei.category.fuel.smeltCount=Smelts %s items
 gui.jei.category.fuel.burnTime=Čas hoření: %s
 gui.jei.category.brewing=Lektvaření
 gui.jei.category.brewing.steps=Krok: %s

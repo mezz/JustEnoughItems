@@ -10,16 +10,26 @@ jei.tooltip.recipe.ore.dict=Δέχεται: %s
 jei.tooltip.item.colors=Χρώματα: %s
 jei.tooltip.shapeless.recipe=Άμορφη Συνταγή
 jei.tooltip.cheat.mode=Λειτουργία Cheat
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
+jei.tooltip.recipe.by=Recipe By: %s
+jei.tooltip.recipe.id=Recipe ID: %s
+jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
+jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Ελλιπές Αντικείμενα
 jei.tooltip.error.recipe.transfer.inventory.full=Το inventory σου είναι υπερβολικά γεμάτο
 jei.tooltip.error.recipe.transfer.unknown=Άγνωστο πρόβλημα, δες την καταγραφή παιχνιδιού
 jei.tooltip.error.recipe.transfer.no.server=Ο σερβερ πρέπει να έχει εγκατεστημένο το JEI
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=Recipe is too large to craft in the 2x2 player crafting grid.
 jei.tooltip.error.crash=Πρόβλημα Επεξήγησης, δες την καταγραφή παιχνιδιού
 
 # Error Messages
 jei.chat.error.command.too.long=Το JEI πρέπει να υπάρχει στον σερβερ για να χειριστεί αυτή την εντολή τσατ, είναι πολύ μεγάλη για να μπορεί να την στείλει το Minecraft.
+jei.chat.error.no.cheat.permission.1=You do not have permission to use JEI's Cheat Mode.
+jei.chat.error.no.cheat.permission.2=Permission is given to players who can /give items or are in Creative Mode.
 
 # Key Bindings
 key.jei.toggleOverlay=Ενάλλαξε την Επικάληψη του Καταλόγου Αντικειμένων
@@ -28,6 +38,8 @@ key.jei.showRecipe=Δείξε Συνταγή Αντικειμένου
 key.jei.showUses=Δείξε Χρήσεις Αντικειμένου
 key.jei.recipeBack=Δείξε Προηγούμενη Σελίδα Συνταγών
 key.jei.toggleCheatMode=Ενάλλαξε Λειτουργία Cheat Αντικειμένων
+key.jei.previousPage=Show Previous Page
+key.jei.nextPage=Show Next Page
 
 # Config
 config.jei.default=Αρχικό
@@ -46,21 +58,21 @@ config.jei.interface=Διεπαφή
 config.jei.interface.comment=Ρυθμίσεις με σχέση την Διεπαφή του Χρήστη.
 config.jei.interface.overlayEnabled=Λίστα Αντικειμένων Ενεργοποιημένη
 config.jei.interface.overlayEnabled.comment=Δείξε την λίστα αντικειμένων δίπλα από αλλα GUIs.
-config.jei.interface.recipeAnimationsEnabled=Γραφικά Συνταγών
-config.jei.interface.recipeAnimationsEnabled.comment=Δείξε γραφικά συνταγών (φωτιά φούρνου, μπάρες προόδου, κ.α.)
 
 config.jei.search=Ρυθμίσεις Αναζήτησης
 config.jei.search.comment=Ρυθμίσεις με σχέση την Μπάρα Αναζήτησης.
-config.jei.search.atPrefixRequiredForModName=Απαίτηση @ για Όνομα Mod
-config.jei.search.atPrefixRequiredForModName.comment=Απαίτηση "@" μπροστά από μια λέξη για αναζήτηση από το όνομα του mod.
-config.jei.search.prefixRequiredForTooltipSearch=Απαίτηση # για Πληροφορίες Αντικειμένου
-config.jei.search.prefixRequiredForTooltipSearch.comment=Απαίτηση "#" μπροστά από μια λέξη για αναζήτηση από τις πληροφορίες των αντικειμένων.
-config.jei.search.prefixRequiredForOreDictSearch=Απαίτηση $ για Ore Dictionary
-config.jei.search.prefixRequiredForOreDictSearch.comment=Απαίτηση "$" μπροστά από μια λέξη για αναζήτηση από τα ore dictionary ονόματα.
-config.jei.search.prefixRequiredForCreativeTabSearch=Απαίτηση %% για όνομα Creative Tab
-config.jei.search.prefixRequiredForCreativeTabSearch.comment=Απαίτηση "%" μπροστά από μια λέξη για αναζήτηση από τα ονόματα των creative tab.
-config.jei.search.prefixRequiredForColorSearch=Απαίτηση ^ για Χρώματα
-config.jei.search.prefixRequiredForColorSearch.comment=Απαίτηση "^" μπροστά από μια λέξη για αναζήτηση από χρώματα αντικειμένων.
+config.jei.search.modNameSearchMode=Απαίτηση @ για Όνομα Mod
+config.jei.search.modNameSearchMode.comment=Απαίτηση "@" μπροστά από μια λέξη για αναζήτηση από το όνομα του mod.
+config.jei.search.tooltipSearchMode=Απαίτηση # για Πληροφορίες Αντικειμένου
+config.jei.search.tooltipSearchMode.comment=Απαίτηση "#" μπροστά από μια λέξη για αναζήτηση από τις πληροφορίες των αντικειμένων.
+config.jei.search.oreDictSearchMode=Απαίτηση $ για Ore Dictionary
+config.jei.search.oreDictSearchMode.comment=Απαίτηση "$" μπροστά από μια λέξη για αναζήτηση από τα ore dictionary ονόματα.
+config.jei.search.creativeTabSearchMode=Απαίτηση %% για όνομα Creative Tab
+config.jei.search.creativeTabSearchMode.comment=Απαίτηση "%" μπροστά από μια λέξη για αναζήτηση από τα ονόματα των creative tab.
+config.jei.search.colorSearchMode=Απαίτηση ^ για Χρώματα
+config.jei.search.colorSearchMode.comment=Απαίτηση "^" μπροστά από μια λέξη για αναζήτηση από χρώματα αντικειμένων.
+config.jei.search.resourceIdSearchMode=&ResourceId
+config.jei.search.resourceIdSearchMode.comment=Search mode for resources ids (prefix: &)
 
 config.jei.advanced=Προχωρημένα
 config.jei.advanced.comment=Προχωρημένες ρυθμίσεις για να αλλάξεις τον τρόπο που λειτουργεί το JEI.
@@ -72,6 +84,12 @@ config.jei.advanced.debugModeEnabled=Λειτουργία Debug
 config.jei.advanced.debugModeEnabled.comment=Μόνο χρήσιμο για προγραμματιστές του JEI, βάζει χιλιάδες δοκιμαστικά αντικείμενα και συνταγές.
 config.jei.advanced.centerSearchBarEnabled=Κέντραρε Μπάρα Αναζήτησης
 config.jei.advanced.centerSearchBarEnabled.comment=Μετακίνησε την JEI μπάρα αναζήτης στο κεντρικό κάτω μέρος της οθόνης.
+config.jei.advanced.modNameFormat=Mod Name Format
+config.jei.advanced.modNameFormat.comment=How the mod name should be formatted in the tooltip for JEI guis. Leave blank to disable.
+config.jei.advanced.maxColumns=Max Width
+config.jei.advanced.maxColumns.comment=The maximum width of the ingredient list.
+config.jei.advanced.giveMode=Give Mode
+config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to the inventory (inventory) or pick them up with the mouse (mouse_pickup).
 
 # Edit Mode
 gui.jei.editMode.description=JEI Λίστα Αντικειμένων Λειτουργία Επεξεργασίας:
@@ -81,6 +99,11 @@ gui.jei.editMode.description.hide.wild=Ctrl-δεξί-κλικ για εξαφά�
 gui.jei.editMode.description.show.wild=Εξαφανισμένο από Wildcard. Ctrl-δεξί-κλικ για εμφάνιση.
 gui.jei.editMode.description.hide.mod.id=Ctrl-Shift-κλικ για εξαφάνιση από ModId.
 gui.jei.editMode.description.show.mod.id=Εξαφανισμένο απο ModId. Ctrl-Shift-κλικ για εμφάνιση.
+
+# PC/Linux Control Key
+key.jei.ctrl=CTRL
+# Mac Command Key
+key.jei.ctrl.mac=CMD
 
 # Recipe Categories
 gui.jei.category.craftingTable=Χειροτεχνία

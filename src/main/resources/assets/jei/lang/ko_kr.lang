@@ -10,16 +10,26 @@ jei.tooltip.recipe.ore.dict=Accepts any: %s
 jei.tooltip.item.colors=색깔: %s
 jei.tooltip.shapeless.recipe=무형 조합법
 jei.tooltip.cheat.mode=치트 모드
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
+jei.tooltip.recipe.by=Recipe By: %s
+jei.tooltip.recipe.id=Recipe ID: %s
+jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
+jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=부족한 아이템:
 jei.tooltip.error.recipe.transfer.inventory.full=인벤토리에 공간이 부족합니다.
 jei.tooltip.error.recipe.transfer.unknown=알려지지 않은 오류입니다. 로그 파일을 확인하세요.
 jei.tooltip.error.recipe.transfer.no.server=서버에 JEI가 설치되어 있어야 합니다.
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=Recipe is too large to craft in the 2x2 player crafting grid.
 jei.tooltip.error.crash=툴팁 에러입니다. 로그를 확인하세요.
 
 # Error Messages
 jei.chat.error.command.too.long=이 명령어를 처리하려면 서버에 JEI가 설치되어 있어야 합니다. 이 명령어는 일반 마인크래프트가 처리하기에는 너무 깁니다.
+jei.chat.error.no.cheat.permission.1=You do not have permission to use JEI's Cheat Mode.
+jei.chat.error.no.cheat.permission.2=Permission is given to players who can /give items or are in Creative Mode.
 
 # Key Bindings
 key.jei.toggleOverlay=아이템 목록 겹침 켜기/끄기
@@ -28,6 +38,8 @@ key.jei.showRecipe=아이템 조합법 보기
 key.jei.showUses=아이템 사용법 보기
 key.jei.recipeBack=이전 아이템 조합법 보기
 key.jei.toggleCheatMode=아이템 치트 모드 켜기/끄기
+key.jei.previousPage=Show Previous Page
+key.jei.nextPage=Show Next Page
 
 # Config
 config.jei.default=기본값
@@ -46,21 +58,21 @@ config.jei.interface=인터페이스
 config.jei.interface.comment=인터페이스에 관련된 설정들입니다.
 config.jei.interface.overlayEnabled=아이템 목록 활성화됨
 config.jei.interface.overlayEnabled.comment=아이템들의 목록을 열려 있는 GUI 옆에 엽니다.
-config.jei.interface.recipeAnimationsEnabled=조합법 애니메이션 보기
-config.jei.interface.recipeAnimationsEnabled.comment=조합법 애니메이션을 봅니다. (화로 불, 진행도 바 등)
 
 config.jei.search=검색 설정들
 config.jei.search.comment=검색에 관련된 설정들입니다.
-config.jei.search.atPrefixRequiredForModName=@ 붙여서 모드  검색하기
-config.jei.search.atPrefixRequiredForModName.comment=Require "@" 를 모드 이름 앞에 붙여 모드를 기준으로 검색할 수 있도록 합니다.
-config.jei.search.prefixRequiredForTooltipSearch=# 붙여서 툴팁 내용 검색하기
-config.jei.search.prefixRequiredForTooltipSearch.comment="#"를 붙여 툴팁 내용을 검색할 수 있도록 합니다.
-config.jei.search.prefixRequiredForOreDictSearch=$ 붙여서 광물 사전 검색하기
-config.jei.search.prefixRequiredForOreDictSearch.comment="$"를 붙여 광물 사전을 검색합니다.
-config.jei.search.prefixRequiredForCreativeTabSearch=%% 붙여 크리에이티브 탭 이름으로 검색하기
-config.jei.search.prefixRequiredForCreativeTabSearch.comment="%"를 붙여 크리에이티브 탭 이름으로 검색합니다.
-config.jei.search.prefixRequiredForColorSearch=^ 붙여 색깔로 검색하기
-config.jei.search.prefixRequiredForColorSearch.comment="^"를 붙여 아이템 색깔로 검색합니다.
+config.jei.search.modNameSearchMode=@ 붙여서 모드  검색하기
+config.jei.search.modNameSearchMode.comment=Require "@" 를 모드 이름 앞에 붙여 모드를 기준으로 검색할 수 있도록 합니다.
+config.jei.search.tooltipSearchMode=# 붙여서 툴팁 내용 검색하기
+config.jei.search.tooltipSearchMode.comment="#"를 붙여 툴팁 내용을 검색할 수 있도록 합니다.
+config.jei.search.oreDictSearchMode=$ 붙여서 광물 사전 검색하기
+config.jei.search.oreDictSearchMode.comment="$"를 붙여 광물 사전을 검색합니다.
+config.jei.search.creativeTabSearchMode=%% 붙여 크리에이티브 탭 이름으로 검색하기
+config.jei.search.creativeTabSearchMode.comment="%"를 붙여 크리에이티브 탭 이름으로 검색합니다.
+config.jei.search.colorSearchMode=^ 붙여 색깔로 검색하기
+config.jei.search.colorSearchMode.comment="^"를 붙여 아이템 색깔로 검색합니다.
+config.jei.search.resourceIdSearchMode=&ResourceId
+config.jei.search.resourceIdSearchMode.comment=Search mode for resources ids (prefix: &)
 
 config.jei.advanced=고급
 config.jei.advanced.comment=JEI의 고급 기능들에 대해 설정합니다.
@@ -72,6 +84,12 @@ config.jei.advanced.debugModeEnabled=디버그 모드
 config.jei.advanced.debugModeEnabled.comment=JEI 개발자들에게만 유용한 항목입니다. 몇천 개의 테스트 아이템과 몇몇 디버그용 조합법을 추가합니다.
 config.jei.advanced.centerSearchBarEnabled=중앙 검색 창
 config.jei.advanced.centerSearchBarEnabled.comment=JEI의 검색 창을 아래쪽 중앙으로 이동합니다.
+config.jei.advanced.modNameFormat=Mod Name Format
+config.jei.advanced.modNameFormat.comment=How the mod name should be formatted in the tooltip for JEI guis. Leave blank to disable.
+config.jei.advanced.maxColumns=Max Width
+config.jei.advanced.maxColumns.comment=The maximum width of the ingredient list.
+config.jei.advanced.giveMode=Give Mode
+config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to the inventory (inventory) or pick them up with the mouse (mouse_pickup).
 
 # Edit Mode
 gui.jei.editMode.description=JEI 아이템 목록 수정 모드
@@ -82,9 +100,9 @@ gui.jei.editMode.description.show.wild=와일드카드에 의해 숨겨짐. 표�
 gui.jei.editMode.description.hide.mod.id=모드 ID로 %CTRL-SHIFT-클릭하세요
 gui.jei.editMode.description.show.mod.id=모드 ID에 의해 숨겨짐. 표시하려면 %CTRL-SHIFT-클릭하세요
 
-#PC/Linux Control Key
+# PC/Linux Control Key
 key.jei.ctrl=CTRL
-#Mac Command Key
+# Mac Command Key
 key.jei.ctrl.mac=CMD
 
 # Recipe Categories

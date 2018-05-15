@@ -58,8 +58,6 @@ config.jei.interface=Gränssnitt
 config.jei.interface.comment=Alternativ för användargränssnittet.
 config.jei.interface.overlayEnabled=Föremålslista aktiverad
 config.jei.interface.overlayEnabled.comment=Visar listan över föremål intill öppet gränssnitt.
-config.jei.interface.recipeAnimationsEnabled=Receptanimationer
-config.jei.interface.recipeAnimationsEnabled.comment=Visa receptanimationer (ugnseld, förloppsmätare, etc.)
 
 config.jei.search=Sökalternativ
 config.jei.search.comment=Alternativ för sökfältet.
@@ -102,9 +100,9 @@ gui.jei.editMode.description.show.wild=Dold efter liknande föremål. (%CTRL-hö
 gui.jei.editMode.description.hide.mod.id=Dölj mod. (%CTRL-SHIFT-klick).
 gui.jei.editMode.description.show.mod.id=Dold mod. (%CTRL-SHIFT-klick).
 
-#PC/Linux Control Key
+# PC/Linux Control Key
 key.jei.ctrl=CTRL
-#Mac Command Key
+# Mac Command Key
 key.jei.ctrl.mac=CMD
 
 # Recipe Categories
@@ -118,3 +116,8 @@ gui.jei.category.fuel.burnTime=Brinntid: %s
 gui.jei.category.brewing=Bryggning
 gui.jei.category.brewing.steps=Steg: %s
 gui.jei.category.itemInformation=Beskrivning
+
+# DEBUG (for debug mode, do not need translation)
+description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.
+description.jei.wooden.door.2=Clicking on a door changes its state from open to closed and visa versa.
+description.jei.wooden.door.3=Wooden Doors can be opened/closed via Redstone Circuits.
