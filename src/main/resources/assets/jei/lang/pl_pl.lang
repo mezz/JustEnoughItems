@@ -10,8 +10,13 @@ jei.tooltip.recipe.ore.dict=Akceptuje: %s
 jei.tooltip.item.colors=Kolory: %s
 jei.tooltip.shapeless.recipe=Bezkształtna receptura
 jei.tooltip.cheat.mode=Tryb cheatów
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
 jei.tooltip.recipe.by=Receptura z: %s
 jei.tooltip.recipe.id=ID receptury: %s
+jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
+jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Brakuje przedmiotów
@@ -53,8 +58,6 @@ config.jei.interface=Interfejs
 config.jei.interface.comment=Opcje dotyczące interfejsu.
 config.jei.interface.overlayEnabled=Nakładka z listą przedmiotów włączona
 config.jei.interface.overlayEnabled.comment=Pokazuj nakładkę z listą przedmiotów obok otwartych okienek interfejsu.
-config.jei.interface.recipeAnimationsEnabled=Animacje receptur
-config.jei.interface.recipeAnimationsEnabled.comment=Pokazuj animacje receptur (ogień pieca, paski postępu, itp.)
 
 config.jei.search=Opcje wyszukiwania
 config.jei.search.comment=Opcje dotyczące paska wyszukiwania.
@@ -97,9 +100,9 @@ gui.jei.editMode.description.show.wild=Ukryte przez wieloznacznik (%CTRL + prawo
 gui.jei.editMode.description.hide.mod.id=Ukryj mod (%CTRL + SHIFT + klik).
 gui.jei.editMode.description.show.mod.id=Mod ukryty (%CTRL + SHIFT + klik).
 
-#PC/Linux Control Key
+# PC/Linux Control Key
 key.jei.ctrl=CTRL
-#Mac Command Key
+# Mac Command Key
 key.jei.ctrl.mac=CMD
 
 # Recipe Categories

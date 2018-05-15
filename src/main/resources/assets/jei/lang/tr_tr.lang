@@ -10,7 +10,13 @@ jei.tooltip.recipe.ore.dict=Herhangi Biri Olur: %s
 jei.tooltip.item.colors=Renkler: %s
 jei.tooltip.shapeless.recipe=Sekilsiz Tarif
 jei.tooltip.cheat.mode=Hile Modu
-jei.tooltip.recipe.by=%s Tarifi 
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
+jei.tooltip.recipe.by=%s Tarifi
+jei.tooltip.recipe.id=Recipe ID: %s
+jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
+jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Eşyalar Eksik
@@ -52,9 +58,6 @@ config.jei.interface=Arayüz
 config.jei.interface.comment=Kullanıcı arayüzü ile ilgili seçenekler.
 config.jei.interface.overlayEnabled=Eşya Listesi Aktif
 config.jei.interface.overlayEnabled.comment=Eşya listesini açık arayüzün yanında göster.
-config.jei.interface.recipeAnimationsEnabled=Tarif Animasyonları
-config.jei.interface.recipeAnimationsEnabled.comment=Tarif animasyonlarını göster.
-(ocak ateşi, ilerleme çubukları vb)
 
 config.jei.search=Arama Seçenekleri
 config.jei.search.comment=Arama çubuğuyla ilgili seçenekler.
@@ -97,9 +100,9 @@ gui.jei.editMode.description.show.wild=Joker ile Gizlenmiş (%CTRL-right-click).
 gui.jei.editMode.description.hide.mod.id=Gizleme Modu Aç (%CTRL-SHIFT-click).
 gui.jei.editMode.description.show.mod.id=Gizleme Modu Kapa (%CTRL-SHIFT-click).
 
-#PC/Linux Control Key
+# PC/Linux Control Key
 key.jei.ctrl=CTRL
-#Mac Command Key
+# Mac Command Key
 key.jei.ctrl.mac=CMD
 
 # Recipe Categories

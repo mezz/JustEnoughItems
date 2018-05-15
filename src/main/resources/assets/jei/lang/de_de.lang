@@ -10,6 +10,13 @@ jei.tooltip.recipe.ore.dict=Akzeptiert: %s
 jei.tooltip.item.colors=Farben: %s
 jei.tooltip.shapeless.recipe=Formloses Rezept
 jei.tooltip.cheat.mode=Cheat-Modus
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
+jei.tooltip.recipe.by=Recipe By: %s
+jei.tooltip.recipe.id=Recipe ID: %s
+jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
+jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Fehlende Items
@@ -31,6 +38,8 @@ key.jei.showRecipe=Zeige Rezept
 key.jei.showUses=Zeige Verwendung
 key.jei.recipeBack=Zeige vorherige Rezeptseite
 key.jei.toggleCheatMode=Item-Cheating (de-)aktivieren
+key.jei.previousPage=Show Previous Page
+key.jei.nextPage=Show Next Page
 
 # Config
 config.jei.default=Standard
@@ -49,8 +58,6 @@ config.jei.interface=Interface
 config.jei.interface.comment=Das Benutzer-Interface betreffende Optionen
 config.jei.interface.overlayEnabled=Aktiviere Item-Liste
 config.jei.interface.overlayEnabled.comment=Zeige die Liste der Gegenstände neben einem geöffneten Benutzer-Interface.
-config.jei.interface.recipeAnimationsEnabled=Aktiviere Rezept-Animationen
-config.jei.interface.recipeAnimationsEnabled.comment=Animiere Rezepte (Feuer im Ofen, Fortschrittsbalken, usw.)
 
 config.jei.search=Suche
 config.jei.search.comment=Suchleisteneinstellungen
@@ -64,6 +71,8 @@ config.jei.search.creativeTabSearchMode=%%Kategorie
 config.jei.search.creativeTabSearchMode.comment=Suchmodus für Kategorien im Kreativmodus-Inventar (Präfix: %)
 config.jei.search.colorSearchMode=^Farbe
 config.jei.search.colorSearchMode.comment=Suchmodus für Item-Farben (Präfix: ^)
+config.jei.search.resourceIdSearchMode=&ResourceId
+config.jei.search.resourceIdSearchMode.comment=Search mode for resources ids (prefix: &)
 
 config.jei.advanced=Erweitert
 config.jei.advanced.comment=Erweiterte Konfigurationsoptionen, die ändern, wie JEI funktioniert.
@@ -77,6 +86,10 @@ config.jei.advanced.centerSearchBarEnabled=Zentriere Suchleiste
 config.jei.advanced.centerSearchBarEnabled.comment=Die JEI-Suchleiste wird unten in der Mitte des Bildschirms angezeigt.
 config.jei.advanced.modNameFormat=Mod-Namensformat
 config.jei.advanced.modNameFormat.comment=Wie der Mod-Name in Tooltips für JEI-Interfaces formatiert werden soll. Zum Deaktivieren leer lassen.
+config.jei.advanced.maxColumns=Max Width
+config.jei.advanced.maxColumns.comment=The maximum width of the ingredient list.
+config.jei.advanced.giveMode=Give Mode
+config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to the inventory (inventory) or pick them up with the mouse (mouse_pickup).
 
 # Edit Mode
 gui.jei.editMode.description=JEI-Listeneditiermodus:
@@ -87,9 +100,9 @@ gui.jei.editMode.description.show.wild=Ausgeblendet per Wildcard. Einblenden mit
 gui.jei.editMode.description.hide.mod.id=Ausblenden per ModId mit %CTRL-SHIFT-Klick.
 gui.jei.editMode.description.show.mod.id=Ausgeblendet per ModId. Einblenden mit %CTRL-SHIFT-Klick.
 
-#PC/Linux Control Key
+# PC/Linux Control Key
 key.jei.ctrl=STRG
-#Mac Command Key
+# Mac Command Key
 key.jei.ctrl.mac=CMD
 
 # Recipe Categories

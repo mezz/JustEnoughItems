@@ -23,7 +23,7 @@ public final class Constants {
 	public static final ResourceLocation RECIPE_BACKGROUND = new ResourceLocation(RESOURCE_DOMAIN, TEXTURE_RECIPE_BACKGROUND_PATH);
 	public static final ResourceLocation RECIPE_BACKGROUND_TALL = new ResourceLocation(RESOURCE_DOMAIN, TEXTURE_RECIPE_BACKGROUND_TALL_PATH);
 
-	public static final int MAX_TOOLTIP_WIDTH = 125;
+	public static final int MAX_TOOLTIP_WIDTH = 150;
 
 	public static final String UNIVERSAL_RECIPE_TRANSFER_UID = "universal recipe transfer handler";
 

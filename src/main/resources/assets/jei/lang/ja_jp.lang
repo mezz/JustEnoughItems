@@ -10,8 +10,13 @@ jei.tooltip.recipe.ore.dict=以下の全てで: %s
 jei.tooltip.item.colors=色: %s
 jei.tooltip.shapeless.recipe=不定形レシピ
 jei.tooltip.cheat.mode=チートモード
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
 jei.tooltip.recipe.by=%s によるレシピ
 jei.tooltip.recipe.id=レシピID: %s
+jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
+jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=アイテムがインベントリ内に存在しません
@@ -53,8 +58,6 @@ config.jei.interface=インターフェース
 config.jei.interface.comment=ユーザーインターフェースに関係する設定。
 config.jei.interface.overlayEnabled=アイテムリストの有効化
 config.jei.interface.overlayEnabled.comment=GUIの隣にアイテムリストを表示します。
-config.jei.interface.recipeAnimationsEnabled=レシピのアニメーション
-config.jei.interface.recipeAnimationsEnabled.comment=レシピをアニメーションします (かまどの火、プログレスバー、等々)
 
 config.jei.search=検索の設定
 config.jei.search.comment=検索バーに関する設定。
@@ -97,9 +100,9 @@ gui.jei.editMode.description.show.wild=ワイルドカードによる隠蔽中�
 gui.jei.editMode.description.hide.mod.id=ModIDによる隠蔽。 (%CTRL+SHIFT+左クリック)
 gui.jei.editMode.description.show.mod.id=ModIDによる隠蔽中。 (%CTRL+SHIFT+左クリック)
 
-#PC/Linux Control Key
+# PC/Linux Control Key
 key.jei.ctrl=CTRL
-#Mac Command Key
+# Mac Command Key
 key.jei.ctrl.mac=CMD
 
 # Recipe Categories

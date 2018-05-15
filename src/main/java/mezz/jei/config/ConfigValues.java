@@ -7,8 +7,7 @@ public class ConfigValues {
 	public boolean debugModeEnabled = false;
 	public boolean centerSearchBarEnabled = false;
 	public GiveMode giveMode = GiveMode.MOUSE_PICKUP;
-	public final String modNameFormatFriendly = "blue italic";
-	public String modNameFormat = Config.parseFriendlyModNameFormat(modNameFormatFriendly);
+	public String modNameFormat = Config.parseFriendlyModNameFormat(Config.defaultModNameFormatFriendly);
 	public int maxColumns = 100;
 
 	// search

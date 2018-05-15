@@ -10,8 +10,13 @@ jei.tooltip.recipe.ore.dict=Принимает любые: %s
 jei.tooltip.item.colors=Цвета: %s
 jei.tooltip.shapeless.recipe=Бесформенный рецепт
 jei.tooltip.cheat.mode=Режим жульничества
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Нажмите %s для переключения.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=Зажмите %s и нажмите здесь, для переключения.
 jei.tooltip.recipe.by=Рецепт из: %s
 jei.tooltip.recipe.id=ID репепта: %s
+jei.tooltip.not.enough.space=Здесь недостаточно места для отображения списка ингредиентов.
+jei.tooltip.ingredient.list.disabled=Список ингредиентов отключен.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Нажмите %s для включения.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Отсутствуют предметы
@@ -53,8 +58,6 @@ config.jei.interface=Интерфейс
 config.jei.interface.comment=Настройки интерфейса пользователя.
 config.jei.interface.overlayEnabled=Доступность списка предметов
 config.jei.interface.overlayEnabled.comment=Показывать список предметов рядом с открытым интерфейсом.
-config.jei.interface.recipeAnimationsEnabled=Анимации рецептов
-config.jei.interface.recipeAnimationsEnabled.comment=Показывать анимации рецептов (огонь в печи, индикаторы и т.д)
 
 config.jei.search=Настройки поиска
 config.jei.search.comment=Настройки строки поиска.

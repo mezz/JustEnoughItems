@@ -66,7 +66,7 @@ public class InputHandler {
 	}
 
 	private boolean handleMouseScroll(int dWheel, int mouseX, int mouseY) {
-		return ingredientListOverlay.isEnabled() && ingredientListOverlay.handleMouseScrolled(mouseX, mouseY, dWheel);
+		return ingredientListOverlay.handleMouseScrolled(mouseX, mouseY, dWheel);
 	}
 
 	private boolean handleMouseClick(GuiScreen guiScreen, int mouseButton, int mouseX, int mouseY) {
@@ -74,7 +74,7 @@ public class InputHandler {
 		if (Config.isEditModeEnabled() && clicked != null && handleClickEdit(mouseButton, clicked)) {
 			return true;
 		}
-		if (ingredientListOverlay.isEnabled() && ingredientListOverlay.handleMouseClicked(mouseX, mouseY, mouseButton)) {
+		if (ingredientListOverlay.handleMouseClicked(mouseX, mouseY, mouseButton)) {
 			return true;
 		}
 
@@ -201,9 +201,7 @@ public class InputHandler {
 				return true;
 			}
 			if (ingredientListOverlay.isEnabled()) {
-				if (ingredientListOverlay.onKeyPressed(typedChar, eventKey)) {
-					return true;
-				}
+				return ingredientListOverlay.onKeyPressed(typedChar, eventKey);
 			}
 			return false;
 		}

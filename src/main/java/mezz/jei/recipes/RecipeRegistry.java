@@ -307,7 +307,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		try {
 			IRecipeWrapper recipeWrapper = getRecipeWrapper(recipe, recipeCategory.getUid());
 			if (recipeWrapper != null) {
-				hideRecipe(recipeWrapper);
+				hideRecipe(recipeWrapper, recipeCategoryUid);
 			}
 		} catch (BrokenCraftingRecipeException e) {
 			Log.get().error("Found a broken crafting recipe.", e);
@@ -321,7 +321,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		ErrorUtil.assertMainThread();
 
-		hideRecipe(recipe);
+		hideRecipe(recipe, recipeCategoryUid);
 	}
 
 	@Override
@@ -736,11 +736,13 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
+	@Deprecated
 	public void hideRecipe(IRecipeWrapper recipe) {
 		hideRecipe(recipe, VanillaRecipeCategoryUid.CRAFTING);
 	}
 
 	@Override
+	@Deprecated
 	public void unhideRecipe(IRecipeWrapper recipe) {
 		unhideRecipe(recipe, VanillaRecipeCategoryUid.CRAFTING);
 	}
