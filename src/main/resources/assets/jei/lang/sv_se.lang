@@ -9,9 +9,14 @@ jei.tooltip.transfer=Placera föremål
 jei.tooltip.recipe.ore.dict=Fungerar med alla %s
 jei.tooltip.item.colors=Färg: %s
 jei.tooltip.shapeless.recipe=Formlöst recept
-jei.tooltip.cheat.mode=Fuskläge
+jei.tooltip.cheat.mode=Fuskläge är aktiverat.
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Tryck på %s för att slå på/av det.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-klicka för att slå på/av det.
 jei.tooltip.recipe.by=Recept av: %s
 jei.tooltip.recipe.id=Recept-ID: %s
+jei.tooltip.not.enough.space=Det finns inte tillräckligt mycket utrymme för att visa ingredienslistan här.
+jei.tooltip.ingredient.list.disabled=Ingredienslistan är inaktiverad.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Tryck på %s för att aktivera den.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Föremål saknas
