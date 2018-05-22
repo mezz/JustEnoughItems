@@ -11,7 +11,6 @@ import mezz.jei.Internal;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
@@ -682,7 +681,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		List<Object> visibleCatalysts = new ArrayList<>();
 		IngredientFilter ingredientFilter = Internal.getIngredientFilter();
 		for (Object catalyst : catalysts) {
-			if (!ingredientRegistry.isIngredientInvisible(catalyst, ingredientFilter)) {
+			if (ingredientRegistry.isIngredientVisible(catalyst, ingredientFilter)) {
 				visibleCatalysts.add(catalyst);
 			}
 		}
