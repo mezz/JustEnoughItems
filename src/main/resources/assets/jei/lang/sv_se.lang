@@ -32,7 +32,7 @@ jei.chat.error.no.cheat.permission.1=Du har inte behörighet att använda JEI:s 
 jei.chat.error.no.cheat.permission.2=Behörighet ges till spelare som kan använda kommandot /give eller som är i Kreativt läge.
 
 # Key Bindings
-key.jei.toggleOverlay=Visa/dölj föremålslista
+key.jei.toggleOverlay=Visa/dölj ingredienslista
 key.jei.focusSearch=Markera sökfält
 key.jei.showRecipe=Visa föremålsrecept
 key.jei.showUses=Visa användningar av föremål
@@ -52,7 +52,7 @@ config.jei.mode.comment=Ändra läget som JEI fungerar i.
 config.jei.mode.cheatItemsEnabled=Fusk har aktiverats
 config.jei.mode.cheatItemsEnabled.comment=Ge föremål istället för att visa receptet.
 config.jei.mode.editEnabled=Dölj föremål
-config.jei.mode.editEnabled.comment=Dölj och visa föremål genom att klicka på dem i föremålslistan.
+config.jei.mode.editEnabled.comment=Dölj och visa föremål genom att klicka på dem i ingredienslistan.
 
 config.jei.interface=Gränssnitt
 config.jei.interface.comment=Alternativ för användargränssnittet.
@@ -77,9 +77,9 @@ config.jei.search.resourceIdSearchMode.comment=Sök efter resursernas ID (prefix
 config.jei.advanced=Avancerat
 config.jei.advanced.comment=Avancerade konfigurationsalternativ för att ändra hur JEI fungerar.
 config.jei.advanced.itemBlacklist=Föremålssvartlista
-config.jei.advanced.itemBlacklist.comment=Lista över föremål som inte bör visas i föremålslistan. Format: modId[:name[:meta]]. Redigeringsläget kommer automatiskt lägga till eller ta bort element här.
+config.jei.advanced.itemBlacklist.comment=Lista över föremål som inte bör visas i ingredienslistan. Format: modId[:name[:meta]]. Redigeringsläget kommer automatiskt lägga till eller ta bort element här.
 config.jei.advanced.colorSearchEnabled=Aktivera färgsökning
-config.jei.advanced.colorSearchEnabled.comment=Sök föremål efter färg och visa de sökbara föremålens färger i inforutan i föremålslistan.
+config.jei.advanced.colorSearchEnabled.comment=Sök föremål efter färg och visa de sökbara föremålens färger i inforutan i ingredienslistan.
 config.jei.advanced.debugModeEnabled=Felsökningsläge
 config.jei.advanced.debugModeEnabled.comment=Endast användbart gör JEI-utvecklare, lägger till tusentals testföremål och några felsökningsrecept.
 config.jei.advanced.centerSearchBarEnabled=Centrera sökfältet
@@ -92,7 +92,7 @@ config.jei.advanced.giveMode=Placeringsläge
 config.jei.advanced.giveMode.comment=Välj om JEI ska placera föremål direkt i utrustningen (inventory) eller plocka upp dem med musen (mouse_pickup).
 
 # Edit Mode
-gui.jei.editMode.description=Redigeringsläge för JEIs föremålslista:
+gui.jei.editMode.description=Redigeringsläge för JEIs ingredienslista:
 gui.jei.editMode.description.hide=Dölj. (%CTRL-klick).
 gui.jei.editMode.description.show=Dold. (%CTRL-klick).
 gui.jei.editMode.description.hide.wild=Dölj efter liknande föremål. (%CTRL-högerklick).
