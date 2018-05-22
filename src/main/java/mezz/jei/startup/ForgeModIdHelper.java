@@ -50,6 +50,9 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 	@Override
 	public String getFormattedModNameForModId(String modId) {
 		String modNameFormat = Config.getModNameFormat();
+		if (modNameFormat.isEmpty()) {
+			return null;
+		}
 		String modName = getModNameForModId(modId);
 		modName = removeChatFormatting(modName); // some crazy mod has formatting in the name
 		if (modNameFormat.contains(MOD_NAME_FORMAT_CODE)) {
