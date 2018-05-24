@@ -125,7 +125,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		IngredientFilter ingredientFilter = Internal.getIngredientFilter();
 		List<T> visible = new ArrayList<>();
 		for (T ingredient : ingredients) {
-			if (ingredientRegistry.isIngredientVisible(ingredient, ingredientFilter)) {
+			if (ingredient == null || ingredientRegistry.isIngredientVisible(ingredient, ingredientFilter)) {
 				visible.add(ingredient);
 			}
 		}
