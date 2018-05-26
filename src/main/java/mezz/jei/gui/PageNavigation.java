@@ -48,10 +48,7 @@ public class PageNavigation {
 	}
 
 	public void draw(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
-		nextButton.enabled = this.paged.hasNext();
-		backButton.enabled = this.paged.hasPrevious();
-
-		if (!hideOnSinglePage || nextButton.enabled || backButton.enabled) {
+		if (!hideOnSinglePage || this.paged.hasNext() || this.paged.hasPrevious()) {
 			minecraft.fontRenderer.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(), true);
 			nextButton.drawButton(minecraft, mouseX, mouseY, partialTicks);
 			backButton.drawButton(minecraft, mouseX, mouseY, partialTicks);

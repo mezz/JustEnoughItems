@@ -150,10 +150,11 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 	public boolean nextPage() {
 		if (hasNext()) {
 			pageNumber++;
-			updateLayout();
-			return true;
+		} else {
+			pageNumber = 0;
 		}
-		return false;
+		updateLayout();
+		return true;
 	}
 
 	@Override
@@ -165,10 +166,11 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 	public boolean previousPage() {
 		if (hasPrevious()) {
 			pageNumber--;
-			updateLayout();
-			return true;
+		} else {
+			pageNumber = pageCount - 1;
 		}
-		return false;
+		updateLayout();
+		return true;
 	}
 
 	@Override
