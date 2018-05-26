@@ -274,6 +274,8 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 		recipeWrappersForCategories.put(recipeCategory, recipeWrapper);
 
+		unhideRecipe(recipeWrapper, recipeCategory.getUid());
+
 		recipeCategoriesVisibleCache.clear();
 	}
 
