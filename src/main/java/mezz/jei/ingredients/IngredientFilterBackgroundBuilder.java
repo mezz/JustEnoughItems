@@ -1,6 +1,6 @@
 package mezz.jei.ingredients;
 
-import gnu.trove.map.TCharObjectMap;
+import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
@@ -14,10 +14,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import java.util.Collection;
 
 public class IngredientFilterBackgroundBuilder {
-	private final TCharObjectMap<PrefixedSearchTree> prefixedSearchTrees;
+	private final Char2ObjectMap<PrefixedSearchTree> prefixedSearchTrees;
 	private final NonNullList<IIngredientListElement> elementList;
 
-	public IngredientFilterBackgroundBuilder(TCharObjectMap<PrefixedSearchTree> prefixedSearchTrees, NonNullList<IIngredientListElement> elementList) {
+	public IngredientFilterBackgroundBuilder(Char2ObjectMap<PrefixedSearchTree> prefixedSearchTrees, NonNullList<IIngredientListElement> elementList) {
 		this.prefixedSearchTrees = prefixedSearchTrees;
 		this.elementList = elementList;
 	}
@@ -42,7 +42,7 @@ public class IngredientFilterBackgroundBuilder {
 
 	private boolean run(final int timeoutMs) {
 		final long startTime = System.currentTimeMillis();
-		for (PrefixedSearchTree prefixedTree : this.prefixedSearchTrees.valueCollection()) {
+		for (PrefixedSearchTree prefixedTree : this.prefixedSearchTrees.values()) {
 			Config.SearchMode mode = prefixedTree.getMode();
 			if (mode != Config.SearchMode.DISABLED) {
 				PrefixedSearchTree.IStringsGetter stringsGetter = prefixedTree.getStringsGetter();

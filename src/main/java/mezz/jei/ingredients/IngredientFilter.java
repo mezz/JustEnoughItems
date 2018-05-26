@@ -9,10 +9,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.common.collect.ImmutableList;
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.map.TCharObjectMap;
-import gnu.trove.map.hash.TCharObjectHashMap;
-import gnu.trove.set.TIntSet;
+import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
+import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.Internal;
 import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -44,7 +44,7 @@ public class IngredientFilter implements IIngredientFilter {
 	 */
 	private final NonNullList<IIngredientListElement> elementList;
 	private final GeneralizedSuffixTree searchTree;
-	private final TCharObjectMap<PrefixedSearchTree> prefixedSearchTrees = new TCharObjectHashMap<>();
+	private final Char2ObjectMap<PrefixedSearchTree> prefixedSearchTrees = new Char2ObjectOpenHashMap<>();
 	private final IngredientFilterBackgroundBuilder backgroundBuilder;
 	private CombinedSearchTrees combinedSearchTrees;
 
@@ -63,7 +63,7 @@ public class IngredientFilter implements IIngredientFilter {
 		createPrefixedSearchTree('^', Config::getColorSearchMode, IIngredientListElement::getColorStrings);
 		createPrefixedSearchTree('&', Config::getResourceIdSearchMode, element -> Collections.singleton(element.getResourceId()));
 
-		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.valueCollection());
+		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.values());
 		this.backgroundBuilder = new IngredientFilterBackgroundBuilder(prefixedSearchTrees, elementList);
 	}
 
@@ -99,7 +99,7 @@ public class IngredientFilter implements IIngredientFilter {
 		elementList.add(element);
 		searchTree.put(Translator.toLowercaseWithLocale(element.getDisplayName()), index);
 
-		for (PrefixedSearchTree prefixedSearchTree : this.prefixedSearchTrees.valueCollection()) {
+		for (PrefixedSearchTree prefixedSearchTree : this.prefixedSearchTrees.values()) {
 			Config.SearchMode searchMode = prefixedSearchTree.getMode();
 			if (searchMode != Config.SearchMode.DISABLED) {
 				Collection<String> strings = prefixedSearchTree.getStringsGetter().getStrings(element);
@@ -123,10 +123,10 @@ public class IngredientFilter implements IIngredientFilter {
 		final Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
 
 		final List<IIngredientListElement<V>> matchingElements = new ArrayList<>();
-		final TIntSet matchingIndexes = searchTree.search(Translator.toLowercaseWithLocale(element.getDisplayName()));
-		final TIntIterator iterator = matchingIndexes.iterator();
+		final IntSet matchingIndexes = searchTree.search(Translator.toLowercaseWithLocale(element.getDisplayName()));
+		final IntIterator iterator = matchingIndexes.iterator();
 		while (iterator.hasNext()) {
-			int index = iterator.next();
+			int index = iterator.nextInt();
 			IIngredientListElement matchingElement = this.elementList.get(index);
 			Object matchingIngredient = matchingElement.getIngredient();
 			if (ingredientClass.isInstance(matchingIngredient)) {
@@ -143,7 +143,7 @@ public class IngredientFilter implements IIngredientFilter {
 	}
 
 	public void modesChanged() {
-		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.valueCollection());
+		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.values());
 		this.backgroundBuilder.start();
 		this.filterCached = null;
 	}
@@ -220,10 +220,10 @@ public class IngredientFilter implements IIngredientFilter {
 	private List<IIngredientListElement> getIngredientListUncached(String filterText) {
 		String[] filters = filterText.split("\\|");
 
-		TIntSet matches = null;
+		IntSet matches = null;
 
 		for (String filter : filters) {
-			TIntSet elements = getElements(filter);
+			IntSet elements = getElements(filter);
 			if (elements != null) {
 				if (matches == null) {
 					matches = elements;
@@ -242,9 +242,9 @@ public class IngredientFilter implements IIngredientFilter {
 				}
 			}
 		} else {
-			int[] matchesList = matches.toArray();
+			int[] matchesList = matches.toIntArray();
 			Arrays.sort(matchesList);
-			for (Integer match : matchesList) {
+			for (int match : matchesList) {
 				IIngredientListElement<?> element = elementList.get(match);
 				if (element.isVisible()) {
 					matchingIngredients.add(element);
@@ -255,11 +255,11 @@ public class IngredientFilter implements IIngredientFilter {
 	}
 
 	@Nullable
-	private TIntSet getElements(String filterText) {
+	private IntSet getElements(String filterText) {
 		Matcher filterMatcher = FILTER_SPLIT_PATTERN.matcher(filterText);
 
-		TIntSet matches = null;
-		TIntSet removeMatches = null;
+		IntSet matches = null;
+		IntSet removeMatches = null;
 		while (filterMatcher.find()) {
 			String token = filterMatcher.group(1);
 			final boolean remove = token.startsWith("-");
@@ -268,7 +268,7 @@ public class IngredientFilter implements IIngredientFilter {
 			}
 			token = QUOTE_PATTERN.matcher(token).replaceAll("");
 
-			TIntSet searchResults = getSearchResults(token);
+			IntSet searchResults = getSearchResults(token);
 			if (searchResults != null) {
 				if (remove) {
 					if (removeMatches == null) {
@@ -300,7 +300,7 @@ public class IngredientFilter implements IIngredientFilter {
 	 * Gets the appropriate search tree for the given token, based on if the token has a prefix.
 	 */
 	@Nullable
-	private TIntSet getSearchResults(String token) {
+	private IntSet getSearchResults(String token) {
 		if (token.isEmpty()) {
 			return null;
 		}
@@ -322,7 +322,7 @@ public class IngredientFilter implements IIngredientFilter {
 	 * Efficiently get the elements contained in both sets.
 	 * Note that this implementation will alter the original sets.
 	 */
-	private static TIntSet intersection(TIntSet set1, TIntSet set2) {
+	private static IntSet intersection(IntSet set1, IntSet set2) {
 		if (set1.size() > set2.size()) {
 			set2.retainAll(set1);
 			return set2;
