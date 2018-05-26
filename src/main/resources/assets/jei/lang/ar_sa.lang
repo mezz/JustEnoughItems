@@ -94,11 +94,7 @@ config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to t
 # Edit Mode
 gui.jei.editMode.description=:وضع جاي إي آي لتعديل قائمة العناصر
 gui.jei.editMode.description.hide=.للإخفاء %CTRL أنقر
-gui.jei.editMode.description.show=.للإظهار %CTRL مخفي. أنقر
 gui.jei.editMode.description.hide.wild=.مع زر الفأرة الأيمن للإخفاء مع البدل %CTRL أنقر
-gui.jei.editMode.description.show.wild=.مع زر الفأرة الأيمن للإظهار %CTRL بالبدل. أنقر
-gui.jei.editMode.description.hide.mod.id=.للإخفاء عن طريق هوية المود SHIFT %CTRL أنقر
-gui.jei.editMode.description.show.mod.id=.للإظهار SHIFT %CTRL مخفي عن طريق هوية المود. أنقر
 
 # PC/Linux Control Key
 key.jei.ctrl=CTRL

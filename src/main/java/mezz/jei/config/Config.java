@@ -6,16 +6,23 @@ import java.io.File;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.color.ColorNamer;
+import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
+import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.GiveMode;
@@ -487,7 +494,7 @@ public final class Config {
 		}
 		Property property = itemBlacklistConfig.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
 
-		String[] currentBlacklist = itemBlacklist.toArray(new String[itemBlacklist.size()]);
+		String[] currentBlacklist = itemBlacklist.toArray(new String[0]);
 		property.set(currentBlacklist);
 
 		boolean changed = itemBlacklistConfig.hasChanged();
@@ -496,16 +503,99 @@ public final class Config {
 		}
 	}
 
-	public static <V> void addIngredientToConfigBlacklist(V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
-		final String uid = getIngredientUid(ingredient, blacklistType, ingredientHelper);
-		if (itemBlacklist.add(uid)) {
+	public static <V> void addIngredientToConfigBlacklist(IngredientFilter ingredientFilter, IIngredientRegistry ingredientRegistry, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
+		@SuppressWarnings("unchecked")
+		Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
+		IIngredientListElement<V> element = IngredientListElementFactory.createElement(ingredientRegistry, ingredientClass, ingredient, ForgeModIdHelper.getInstance());
+		Preconditions.checkNotNull(element, "Failed to create element for blacklist");
+
+		// combine item-level blacklist into wildcard-level ones
+		if (blacklistType == IngredientBlacklistType.ITEM) {
+			final String uid = getIngredientUid(ingredient, IngredientBlacklistType.ITEM, ingredientHelper);
+			List<IIngredientListElement<V>> elementsToBeBlacklisted = ingredientFilter.getMatches(element, (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD));
+			if (areAllBlacklisted(elementsToBeBlacklisted, uid, IngredientBlacklistType.ITEM)) {
+				if (addIngredientToConfigBlacklist(ingredientFilter, element, ingredient, IngredientBlacklistType.WILDCARD, ingredientHelper)) {
+					updateBlacklist();
+				}
+				return;
+			}
+		}
+		if (addIngredientToConfigBlacklist(ingredientFilter, element, ingredient, blacklistType, ingredientHelper)) {
 			updateBlacklist();
 		}
 	}
 
-	public static <V> void removeIngredientFromConfigBlacklist(V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
+	private static <V> boolean addIngredientToConfigBlacklist(IngredientFilter ingredientFilter, IIngredientListElement<V> element, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
+		boolean updated = false;
+
+		// remove lower-level blacklist entries when a higher-level one is added
+		if (blacklistType == IngredientBlacklistType.WILDCARD) {
+			List<IIngredientListElement<V>> elementsToBeBlacklisted = ingredientFilter.getMatches(element, (input) -> getIngredientUid(input, blacklistType));
+			for (IIngredientListElement<V> elementToBeBlacklisted : elementsToBeBlacklisted) {
+				String uid = getIngredientUid(elementToBeBlacklisted, IngredientBlacklistType.ITEM);
+				updated |= itemBlacklist.remove(uid);
+			}
+		}
+
 		final String uid = getIngredientUid(ingredient, blacklistType, ingredientHelper);
-		if (itemBlacklist.remove(uid)) {
+		updated |= itemBlacklist.add(uid);
+		return updated;
+	}
+
+	private static <V> boolean areAllBlacklisted(List<IIngredientListElement<V>> elements, String newUid, IngredientBlacklistType blacklistType) {
+		for (IIngredientListElement<V> element : elements) {
+			String uid = getIngredientUid(element, blacklistType);
+			if (!uid.equals(newUid) && !itemBlacklist.contains(uid)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static <V> void removeIngredientFromConfigBlacklist(IngredientFilter ingredientFilter, IIngredientRegistry ingredientRegistry, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
+		@SuppressWarnings("unchecked")
+		Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
+		IIngredientListElement<V> element = IngredientListElementFactory.createElement(ingredientRegistry, ingredientClass, ingredient, ForgeModIdHelper.getInstance());
+		Preconditions.checkNotNull(element, "Failed to create element for blacklist");
+
+		boolean updated = false;
+
+		// deconstruct any mod-id blacklists into lower-level ones first. mod-id blacklist is deprecated
+		{
+			final String modUid = getIngredientUid(ingredient, IngredientBlacklistType.MOD_ID, ingredientHelper);
+			if (itemBlacklist.contains(modUid)) {
+				updated = true;
+				itemBlacklist.remove(modUid);
+				List<IIngredientListElement<V>> modMatches = ingredientFilter.getMatches(element, (input) -> getIngredientUid(input, IngredientBlacklistType.MOD_ID));
+				for (IIngredientListElement<V> modMatch : modMatches) {
+					addIngredientToConfigBlacklist(ingredientFilter, modMatch, modMatch.getIngredient(), IngredientBlacklistType.ITEM, ingredientHelper);
+				}
+			}
+		}
+
+		if (blacklistType == IngredientBlacklistType.ITEM) {
+			// deconstruct any wildcard blacklist since we are removing one element from it
+			final String wildUid = getIngredientUid(ingredient, IngredientBlacklistType.WILDCARD, ingredientHelper);
+			if (itemBlacklist.contains(wildUid)) {
+				updated = true;
+				itemBlacklist.remove(wildUid);
+				List<IIngredientListElement<V>> modMatches = ingredientFilter.getMatches(element, (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD));
+				for (IIngredientListElement<V> modMatch : modMatches) {
+					addIngredientToConfigBlacklist(ingredientFilter, modMatch, modMatch.getIngredient(), IngredientBlacklistType.ITEM, ingredientHelper);
+				}
+			}
+		} else if (blacklistType == IngredientBlacklistType.WILDCARD) {
+			// remove any item-level blacklist on items that match this wildcard
+			List<IIngredientListElement<V>> modMatches = ingredientFilter.getMatches(element, (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD));
+			for (IIngredientListElement<V> modMatch : modMatches) {
+				final String uid = getIngredientUid(modMatch, IngredientBlacklistType.ITEM);
+				updated |= itemBlacklist.remove(uid);
+			}
+		}
+
+		final String uid = getIngredientUid(ingredient, blacklistType, ingredientHelper);
+		updated |= itemBlacklist.remove(uid);
+		if (updated) {
 			updateBlacklist();
 		}
 	}
@@ -524,6 +614,15 @@ public final class Config {
 		return itemBlacklist.contains(uid);
 	}
 
+	private static <V> String getIngredientUid(@Nullable IIngredientListElement<V> element, IngredientBlacklistType blacklistType) {
+		if (element == null) {
+			return "";
+		}
+		V ingredient = element.getIngredient();
+		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
+		return getIngredientUid(ingredient, blacklistType, ingredientHelper);
+	}
+
 	private static <V> String getIngredientUid(V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
 		switch (blacklistType) {
 			case ITEM:
@@ -535,12 +634,6 @@ public final class Config {
 			default:
 				throw new IllegalStateException("Unknown blacklist type: " + blacklistType);
 		}
-	}
-
-	public enum IngredientBlacklistType {
-		ITEM, WILDCARD, MOD_ID;
-
-		public static final IngredientBlacklistType[] VALUES = values();
 	}
 
 	/**

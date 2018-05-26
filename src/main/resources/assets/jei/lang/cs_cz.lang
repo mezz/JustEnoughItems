@@ -94,11 +94,7 @@ config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to t
 # Edit Mode
 gui.jei.editMode.description=JEI Item List Editovací Mód:
 gui.jei.editMode.description.hide=%CTRL-klik pro skrytí.
-gui.jei.editMode.description.show=Hidden. %CTRL-klik pro zobrazení.
 gui.jei.editMode.description.hide.wild=%CTRL-pravý-klik pro schování divoké karty.
-gui.jei.editMode.description.show.wild=Schováno Divokou Kartou. %CTRL-pravý-klik pro zobrazení.
-gui.jei.editMode.description.hide.mod.id=%CTRL-SHIFT-klik pro schování ModId.
-gui.jei.editMode.description.show.mod.id=Schováno ModId. %CTRL-SHIFT-klik pro zobrazení.
 
 # PC/Linux Control Key
 key.jei.ctrl=CTRL

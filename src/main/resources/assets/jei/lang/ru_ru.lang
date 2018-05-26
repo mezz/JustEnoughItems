@@ -94,11 +94,7 @@ config.jei.advanced.giveMode.comment=Выберите, должен ли JEI д�
 # Edit Mode
 gui.jei.editMode.description=Режим редактирования списка JEI:
 gui.jei.editMode.description.hide=%CTRL+ЛКМ, чтобы скрыть.
-gui.jei.editMode.description.show=Скрыто. %CTRL+ЛКМ, чтобы показать.
 gui.jei.editMode.description.hide.wild=%CTRL+ПКМ, чтобы скрыть по шаблону.
-gui.jei.editMode.description.show.wild=Скрыто по шаблону. %CTRL+ПКМ, чтобы показать.
-gui.jei.editMode.description.hide.mod.id=%CTRL+SHIFT+ЛКМ, чтобы скрыть по ID-мода.
-gui.jei.editMode.description.show.mod.id=Скрыто по ID-мода. %CTRL+SHIFT+ЛКМ, чтобы показать.
 
 #PC/Linux Control Key
 key.jei.ctrl=CTRL

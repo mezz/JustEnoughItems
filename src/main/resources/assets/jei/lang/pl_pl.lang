@@ -94,11 +94,7 @@ config.jei.advanced.giveMode.comment=Zdecyduj, czy JEI ma dawać przedmioty bezp
 # Edit Mode
 gui.jei.editMode.description=Tryb edycji listy składników JEI:
 gui.jei.editMode.description.hide=Ukryj (%CTRL + klik).
-gui.jei.editMode.description.show=Ukryte (%CTRL + klik).
 gui.jei.editMode.description.hide.wild=Ukryj przez wieloznacznik (%CTRL + prawoklik).
-gui.jei.editMode.description.show.wild=Ukryte przez wieloznacznik (%CTRL + prawoklik).
-gui.jei.editMode.description.hide.mod.id=Ukryj mod (%CTRL + SHIFT + klik).
-gui.jei.editMode.description.show.mod.id=Mod ukryty (%CTRL + SHIFT + klik).
 
 # PC/Linux Control Key
 key.jei.ctrl=CTRL

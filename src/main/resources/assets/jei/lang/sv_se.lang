@@ -94,11 +94,7 @@ config.jei.advanced.giveMode.comment=Välj om JEI ska placera föremål direkt i
 # Edit Mode
 gui.jei.editMode.description=Redigeringsläge för JEIs ingredienslista:
 gui.jei.editMode.description.hide=Dölj. (%CTRL-klick).
-gui.jei.editMode.description.show=Dold. (%CTRL-klick).
 gui.jei.editMode.description.hide.wild=Dölj efter liknande föremål. (%CTRL-högerklick).
-gui.jei.editMode.description.show.wild=Dold efter liknande föremål. (%CTRL-högerklick).
-gui.jei.editMode.description.hide.mod.id=Dölj mod. (%CTRL-SHIFT-klick).
-gui.jei.editMode.description.show.mod.id=Dold mod. (%CTRL-SHIFT-klick).
 
 # PC/Linux Control Key
 key.jei.ctrl=CTRL

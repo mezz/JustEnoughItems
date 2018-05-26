@@ -94,11 +94,7 @@ config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to t
 # Edit Mode
 gui.jei.editMode.description=JEI Λίστα Αντικειμένων Λειτουργία Επεξεργασίας:
 gui.jei.editMode.description.hide=Ctrl-κλικ για να εξαφανίσεις.
-gui.jei.editMode.description.show=Εξαφανισμένο. Ctrl-κλικ για εμφάνιση.
 gui.jei.editMode.description.hide.wild=Ctrl-δεξί-κλικ για εξαφάνιση από wildcard.
-gui.jei.editMode.description.show.wild=Εξαφανισμένο από Wildcard. Ctrl-δεξί-κλικ για εμφάνιση.
-gui.jei.editMode.description.hide.mod.id=Ctrl-Shift-κλικ για εξαφάνιση από ModId.
-gui.jei.editMode.description.show.mod.id=Εξαφανισμένο απο ModId. Ctrl-Shift-κλικ για εμφάνιση.
 
 # PC/Linux Control Key
 key.jei.ctrl=CTRL

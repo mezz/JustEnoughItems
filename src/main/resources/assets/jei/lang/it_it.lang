@@ -94,11 +94,7 @@ config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to t
 # Edit Mode
 gui.jei.editMode.description=Modalita' di modifica della lista item di JEI:
 gui.jei.editMode.description.hide=%CTRL-click per nascondere.
-gui.jei.editMode.description.show=Nascosto. %CTRL-click per mostrare.
 gui.jei.editMode.description.hide.wild=%CTRL-click-destro per nascondere con carattere jolly.
-gui.jei.editMode.description.show.wild=Nascosto con carattere jolly. %CTRL-click-destro per mostrare.
-gui.jei.editMode.description.hide.mod.id=%CTRL-SHIFT-click per nascondere la mod.
-gui.jei.editMode.description.show.mod.id=Nascosto con la mod. %CTRL-SHIFT-click per mostrare.
 
 # PC/Linux Control Key
 key.jei.ctrl=CTRL

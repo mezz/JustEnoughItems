@@ -94,11 +94,7 @@ config.jei.advanced.giveMode.comment=Виберіть, повинен JEI дав
 # Edit Mode
 gui.jei.editMode.description=Режим редагування списку предметів JEI:
 gui.jei.editMode.description.hide=%CTRL+ЛКМ, щоб сховати.
-gui.jei.editMode.description.show=Спрятано. %CTRL+ЛКМ, чтобы показати.
 gui.jei.editMode.description.hide.wild=%CTRL+ПКМ, щоб сховати по шаблону.
-gui.jei.editMode.description.show.wild=Приховано по шаблону. %CTRL+ПКМ, щоб показати.
-gui.jei.editMode.description.hide.mod.id=%CTRL+SHIFT+ЛКМ, щоб сховати по ID-моду.
-gui.jei.editMode.description.show.mod.id=Сховано по ID-моду. %CTRL+SHIFT+ЛКМ, щоб показати.
 
 # PC/Linux Control Key
 key.jei.ctrl=CTRL

@@ -94,11 +94,7 @@ config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to t
 # Edit Mode
 gui.jei.editMode.description=JEI Режим на Редактиращ Списък на Предмети:
 gui.jei.editMode.description.hide=%CTRL-click да скриеш.
-gui.jei.editMode.description.show=Скрити. %CTRL-click да покажеш.
 gui.jei.editMode.description.hide.wild=%CTRL-right-click да скриеш с wildcard.
-gui.jei.editMode.description.show.wild=Скрити от Wildcard. %CTRL-right-click да покажеш.
-gui.jei.editMode.description.hide.mod.id=%CTRL-SHIFT-click да скриеш с ModId.
-gui.jei.editMode.description.show.mod.id=Скрити от ModId. %CTRL-SHIFT-click да покажеш.
 
 # PC/Linux Control Key
 key.jei.ctrl=CTRL

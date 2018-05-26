@@ -25,10 +25,6 @@ public class IngredientBlacklistInternal {
 			Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper);
 	}
 
-	public <V> boolean isIngredientBlacklistedByConfig(V ingredient, IIngredientHelper<V> ingredientHelper) {
-		return Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper);
-	}
-
 	public <V> boolean isIngredientBlacklistedByApi(V ingredient, IIngredientHelper<V> ingredientHelper) {
 		List<String> uids = IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient);
 

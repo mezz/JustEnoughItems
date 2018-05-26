@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,6 +13,7 @@ import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.Internal;
 import mezz.jei.api.IIngredientFilter;
@@ -160,7 +162,7 @@ public class IngredientFilter implements IIngredientFilter {
 		updateHidden();
 	}
 
-	private void updateHidden() {
+	public void updateHidden() {
 		for (IIngredientListElement<?> element : elementList) {
 			updateHiddenState(element);
 		}
@@ -171,7 +173,7 @@ public class IngredientFilter implements IIngredientFilter {
 		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
 		boolean visible = !blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper) &&
 			ingredientHelper.isIngredientOnServer(ingredient) &&
-			(Config.isEditModeEnabled() || !blacklist.isIngredientBlacklistedByConfig(ingredient, ingredientHelper));
+			(Config.isEditModeEnabled() || !Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
 		if (element.isVisible() != visible) {
 			element.setVisible(visible);
 			this.filterCached = null;
@@ -252,6 +254,51 @@ public class IngredientFilter implements IIngredientFilter {
 			}
 		}
 		return matchingIngredients;
+	}
+
+	/**
+	 * Scans up and down the element list to find wildcard matches that touch the given element.
+	 */
+	public <T> List<IIngredientListElement<T>> getMatches(IIngredientListElement<T> ingredientListElement, Function<IIngredientListElement<?>, String> uidFunction) {
+		final String uid = uidFunction.apply(ingredientListElement);
+		List<IIngredientListElement<T>> matchingElements = findMatchingElements(ingredientListElement);
+		IntSet matchingIndexes = new IntOpenHashSet(50);
+		IntSet startingIndexes = new IntOpenHashSet(matchingElements.size());
+		for (IIngredientListElement matchingElement : matchingElements) {
+			int index = this.elementList.indexOf(matchingElement);
+			startingIndexes.add(index);
+			matchingIndexes.add(index);
+		}
+
+		IntIterator iterator = startingIndexes.iterator();
+		while (iterator.hasNext()) {
+			int startingIndex = iterator.nextInt();
+			for (int i = startingIndex - 1; i >= 0 && !matchingIndexes.contains(i); i--) {
+				IIngredientListElement<?> element = this.elementList.get(i);
+				String elementWildcardId = uidFunction.apply(element);
+				if (uid.equals(elementWildcardId)) {
+					matchingIndexes.add(i);
+					@SuppressWarnings("unchecked")
+					IIngredientListElement<T> castElement = (IIngredientListElement<T>) element;
+					matchingElements.add(castElement);
+				} else {
+					break;
+				}
+			}
+			for (int i = startingIndex + 1; i < this.elementList.size() && !matchingIndexes.contains(i); i++) {
+				IIngredientListElement<?> element = this.elementList.get(i);
+				String elementWildcardId = uidFunction.apply(element);
+				if (uid.equals(elementWildcardId)) {
+					matchingIndexes.add(i);
+					@SuppressWarnings("unchecked")
+					IIngredientListElement<T> castElement = (IIngredientListElement<T>) element;
+					matchingElements.add(castElement);
+				} else {
+					break;
+				}
+			}
+		}
+		return matchingElements;
 	}
 
 	@Nullable

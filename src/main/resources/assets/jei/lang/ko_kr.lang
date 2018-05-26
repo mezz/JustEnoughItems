@@ -94,11 +94,7 @@ config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to t
 # Edit Mode
 gui.jei.editMode.description=JEI 아이템 목록 수정 모드
 gui.jei.editMode.description.hide=숨기려면 %CTRL-클릭하세요
-gui.jei.editMode.description.show=숨겨짐. 표시하려면 %CTRL-클릭하세요
 gui.jei.editMode.description.hide.wild=와일드카드로 숨기려면 %CTRL-우클릭하세요
-gui.jei.editMode.description.show.wild=와일드카드에 의해 숨겨짐. 표시하려면 %CTRL-우클릭하세요
-gui.jei.editMode.description.hide.mod.id=모드 ID로 %CTRL-SHIFT-클릭하세요
-gui.jei.editMode.description.show.mod.id=모드 ID에 의해 숨겨짐. 표시하려면 %CTRL-SHIFT-클릭하세요
 
 # PC/Linux Control Key
 key.jei.ctrl=CTRL

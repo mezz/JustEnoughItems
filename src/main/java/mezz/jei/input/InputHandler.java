@@ -10,11 +10,13 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.config.Config;
+import mezz.jei.config.IngredientBlacklistType;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.ReflectionUtil;
@@ -28,6 +30,7 @@ import org.lwjgl.input.Mouse;
 public class InputHandler {
 	private final RecipeRegistry recipeRegistry;
 	private final IIngredientRegistry ingredientRegistry;
+	private final IngredientFilter ingredientFilter;
 	private final RecipesGui recipesGui;
 	private final IngredientListOverlay ingredientListOverlay;
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<>();
@@ -36,6 +39,7 @@ public class InputHandler {
 	public InputHandler(JeiRuntime runtime, IngredientListOverlay ingredientListOverlay) {
 		this.recipeRegistry = runtime.getRecipeRegistry();
 		this.ingredientRegistry = runtime.getIngredientRegistry();
+		this.ingredientFilter = runtime.getIngredientFilter();
 		this.recipesGui = runtime.getRecipesGui();
 		this.ingredientListOverlay = ingredientListOverlay;
 
@@ -140,18 +144,12 @@ public class InputHandler {
 
 	private <V> boolean handleClickEdit(int mouseButton, IClickedIngredient<V> clicked) {
 		V ingredient = clicked.getValue();
-		Config.IngredientBlacklistType blacklistType = null;
+		IngredientBlacklistType blacklistType = null;
 		if (GuiScreen.isCtrlKeyDown()) {
-			if (GuiScreen.isShiftKeyDown()) {
-				if (mouseButton == 0) {
-					blacklistType = Config.IngredientBlacklistType.MOD_ID;
-				}
-			} else {
-				if (mouseButton == 0) {
-					blacklistType = Config.IngredientBlacklistType.ITEM;
-				} else if (mouseButton == 1) {
-					blacklistType = Config.IngredientBlacklistType.WILDCARD;
-				}
+			if (mouseButton == 0) {
+				blacklistType = IngredientBlacklistType.ITEM;
+			} else if (mouseButton == 1) {
+				blacklistType = IngredientBlacklistType.WILDCARD;
 			}
 		}
 
@@ -161,10 +159,10 @@ public class InputHandler {
 
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 
-		if (Config.isIngredientOnConfigBlacklist(ingredient, blacklistType, ingredientHelper)) {
-			Config.removeIngredientFromConfigBlacklist(ingredient, blacklistType, ingredientHelper);
+		if (Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
+			Config.removeIngredientFromConfigBlacklist(ingredientFilter, ingredientRegistry, ingredient, blacklistType, ingredientHelper);
 		} else {
-			Config.addIngredientToConfigBlacklist(ingredient, blacklistType, ingredientHelper);
+			Config.addIngredientToConfigBlacklist(ingredientFilter, ingredientRegistry, ingredient, blacklistType, ingredientHelper);
 		}
 		clicked.onClickHandled();
 		return true;

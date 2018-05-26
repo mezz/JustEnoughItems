@@ -94,11 +94,7 @@ config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to t
 # Edit Mode
 gui.jei.editMode.description=JEI:n tavaralistan muokkaustila:
 gui.jei.editMode.description.hide=Piilota %CTRL-klikkaamalla.
-gui.jei.editMode.description.show=Piilossa. Näytä %CTRL-klikkaamalla.
 gui.jei.editMode.description.hide.wild=Piilota jokerimerkin perusteella %CTRL-klikkaamalla hiiren oikealla painikkeella.
-gui.jei.editMode.description.show.wild=Piilotettu jokerimerkin perusteella. Näytä %CTRL-klikkaamalla hiiren oikealla painikkeella.
-gui.jei.editMode.description.hide.mod.id=Piilota modi-id:n perusteella %CTRL-SHIFT-klikkaamalla.
-gui.jei.editMode.description.show.mod.id=Piilotettu modi-id:n perusteella. Näytä %CTRL-SHIFT-klikkaamalla.
 
 # PC/Linux Control Key
 key.jei.ctrl=CTRL

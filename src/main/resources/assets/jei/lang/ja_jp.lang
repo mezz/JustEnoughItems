@@ -94,11 +94,7 @@ config.jei.advanced.giveMode.comment=インベントリに直接アイテムに�
 # Edit Mode
 gui.jei.editMode.description=JEIアイテムリストエディットモード:
 gui.jei.editMode.description.hide=隠蔽。 (%CTRL+左クリック)
-gui.jei.editMode.description.show=隠蔽中。 (%CTRL+左クリック)
 gui.jei.editMode.description.hide.wild=ワイルドカードによる隠蔽。 (%CTRL+右クリック)
-gui.jei.editMode.description.show.wild=ワイルドカードによる隠蔽中。 (%CTRL+右クリック)
-gui.jei.editMode.description.hide.mod.id=ModIDによる隠蔽。 (%CTRL+SHIFT+左クリック)
-gui.jei.editMode.description.show.mod.id=ModIDによる隠蔽中。 (%CTRL+SHIFT+左クリック)
 
 # PC/Linux Control Key
 key.jei.ctrl=CTRL
