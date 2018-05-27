@@ -85,6 +85,13 @@ public class GhostIngredientDragManager {
 		return false;
 	}
 
+	public void stopDrag() {
+		if (this.ghostIngredientDrag != null) {
+			this.ghostIngredientDrag.stop();
+			this.ghostIngredientDrag = null;
+		}
+	}
+
 	public <T extends GuiScreen, V> boolean handleClickGhostIngredient(T currentScreen, IClickedIngredient<V> clicked) {
 		JeiRuntime runtime = Internal.getRuntime();
 		if (runtime != null) {

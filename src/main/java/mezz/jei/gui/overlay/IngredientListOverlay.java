@@ -150,8 +150,11 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 		}
 		IGuiProperties guiProperties = runtime.getGuiProperties(guiScreen);
 		if (guiProperties == null) {
-			this.guiProperties = null;
-			setKeyboardFocus(false);
+			if (this.guiProperties != null) {
+				this.guiProperties = null;
+				setKeyboardFocus(false);
+				this.ghostIngredientDragManager.stopDrag();
+			}
 		} else if (this.guiProperties == null || !areGuiPropertiesEqual(this.guiProperties, guiProperties)) {
 			this.guiProperties = guiProperties;
 			this.displayArea = getDisplayArea(guiProperties);
