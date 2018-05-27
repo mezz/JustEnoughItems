@@ -343,7 +343,8 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 						clicked.onClickHandled();
 						return true;
 					}
-					if (this.ghostIngredientDragManager.handleClickGhostIngredient(currentScreen, clicked)) {
+					ItemStack mouseItem = minecraft.player.inventory.getItemStack();
+					if (mouseItem.isEmpty() && this.ghostIngredientDragManager.handleClickGhostIngredient(currentScreen, clicked)) {
 						return true;
 					}
 				}
