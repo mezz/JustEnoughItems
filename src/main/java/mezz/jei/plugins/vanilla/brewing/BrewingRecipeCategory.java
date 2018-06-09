@@ -36,7 +36,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipeWrapp
 
 	public BrewingRecipeCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
-		background = guiHelper.createDrawable(location, 0, 0, 64, 60, 1, 0, 0, 40);
+		background = guiHelper.createDrawable(location, 0, 0, 64, 60, 1, 0, 0, 50);
 		icon = guiHelper.createDrawableIngredient(new ItemStack(Items.BREWING_STAND));
 		localizedName = Translator.translateToLocal("gui.jei.category.brewing");
 

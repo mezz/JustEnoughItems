@@ -9,13 +9,13 @@ jei.tooltip.transfer=حرك الأشاء
 jei.tooltip.recipe.ore.dict=%s :يقبل أي من
 jei.tooltip.item.colors=Colors: %s
 jei.tooltip.shapeless.recipe=وصفة بلا ترتيب معين
-jei.tooltip.cheat.mode=وضع الغش
+jei.tooltip.cheat.mode.button.enabled=وضع الغش
 jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
 jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
 jei.tooltip.recipe.by=Recipe By: %s
 jei.tooltip.recipe.id=Recipe ID: %s
 jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled=The JEI overlay is disabled.
 jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
@@ -91,7 +91,7 @@ config.jei.advanced.maxColumns.comment=The maximum width of the ingredient list.
 config.jei.advanced.giveMode=Give Mode
 config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to the inventory (inventory) or pick them up with the mouse (mouse_pickup).
 
-# Edit Mode
+# Hide Ingredients Mode
 gui.jei.editMode.description=:وضع جاي إي آي لتعديل قائمة العناصر
 gui.jei.editMode.description.hide=.للإخفاء %CTRL أنقر
 gui.jei.editMode.description.hide.wild=.مع زر الفأرة الأيمن للإخفاء مع البدل %CTRL أنقر
@@ -108,7 +108,6 @@ gui.jei.category.smelting.experience=%s xp
 gui.jei.category.fuel=الوقود
 gui.jei.category.fuel.smeltCount.single=تصهر شيء واحد
 gui.jei.category.fuel.smeltCount=من الأشياء %s تصهر
-gui.jei.category.fuel.burnTime= %s :وقت الحرق
 gui.jei.category.brewing=التخمير
 gui.jei.category.brewing.steps=%s :الخطوات
 gui.jei.category.itemInformation=الوصف

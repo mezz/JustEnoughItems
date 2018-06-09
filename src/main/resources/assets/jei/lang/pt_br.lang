@@ -9,7 +9,7 @@ jei.tooltip.transfer=Transferir itens
 jei.tooltip.recipe.ore.dict=Aceita qualquer: %s
 jei.tooltip.item.colors=Cores: %s
 jei.tooltip.shapeless.recipe=Receita indefinida
-jei.tooltip.cheat.mode=Modo trapaça
+jei.tooltip.cheat.mode.button.enabled=Modo trapaça
 jei.tooltip.cheat.mode.how.to.disable.hotkey=Pressione %s para ativá-lo.
 jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-clique aqui para ativá-lo.
 jei.tooltip.recipe.by=Receita por: %s
@@ -91,14 +91,14 @@ config.jei.advanced.maxColumns.comment=A largura máxima da lista de ingrediente
 config.jei.advanced.giveMode=Modo Give
 config.jei.advanced.giveMode.comment=Permitir que o JEI envie itens diretamente para o inventário ou possa obtê-los apenas com o mouse (mouse_pickup).
 
-# Edit Mode
+# Hide Ingredients Mode
 gui.jei.editMode.description=Edição da lista de ingredientes do JEI:
 gui.jei.editMode.description.hide=Ocultar. (%CTRL-clique).
 gui.jei.editMode.description.hide.wild=Ocultar com caractere-curinga. (%CTRL-botão direito).
 
-#PC/Linux Control Key
+# PC/Linux Control Key
 key.jei.ctrl=CTRL
-#Mac Command Key
+# Mac Command Key
 key.jei.ctrl.mac=CMD
 
 # Recipe Categories
@@ -108,7 +108,6 @@ gui.jei.category.smelting.experience=%s de XP
 gui.jei.category.fuel=Combustível
 gui.jei.category.fuel.smeltCount.single=Funde 1 item
 gui.jei.category.fuel.smeltCount=Funde %s itens
-gui.jei.category.fuel.burnTime=Tempo de combustão: %s
 gui.jei.category.brewing=Poções
 gui.jei.category.brewing.steps=Passos: %s
 gui.jei.category.itemInformation=Informação

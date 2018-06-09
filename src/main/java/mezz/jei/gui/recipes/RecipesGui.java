@@ -5,6 +5,7 @@ import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.IRecipesGui;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableStatic;
+import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.Constants;
@@ -12,13 +13,13 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.TooltipRenderer;
+import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.elements.GuiIconButtonSmall;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.overlay.GuiProperties;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
-import mezz.jei.input.InputHandler;
 import mezz.jei.input.MouseHelper;
 import mezz.jei.transfer.RecipeTransferUtil;
 import mezz.jei.util.ErrorUtil;
@@ -32,7 +33,6 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.HoverChecker;
 import org.lwjgl.input.Mouse;
 
@@ -43,8 +43,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFocuses, IRecipeLogicStateListener {
+	private static final int MAX_HEIGHT = 600;
 	private static final int borderPadding = 6;
-	private static final int innerPadding = 5;
+	private static final int innerPadding = 14;
 	private static final int buttonWidth = 13;
 	private static final int buttonHeight = 13;
 
@@ -58,7 +59,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	private String pageString = "1/1";
 	private String title = "";
-	private ResourceLocation backgroundTexture = Constants.RECIPE_BACKGROUND;
+	private final DrawableNineSliceTexture background;
 
 	private final RecipeCatalysts recipeCatalysts;
 	private final RecipeGuiTabs recipeGuiTabs;
@@ -94,6 +95,8 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 		nextPage = new GuiIconButtonSmall(4, 0, 0, buttonWidth, buttonHeight, arrowNext);
 		previousPage = new GuiIconButtonSmall(5, 0, 0, buttonWidth, buttonHeight, arrowPrevious);
+
+		background = new DrawableNineSliceTexture(Constants.RECIPE_BACKGROUND, 0, 0, 64, 64, 16, 16, 16, 16);
 	}
 
 	private static void drawCenteredString(FontRenderer fontRenderer, String string, int guiWidth, int xOffset, int yPos, int color, boolean shadow) {
@@ -125,18 +128,19 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	public void initGui() {
 		super.initGui();
 
-		this.xSize = 196;
-
-		if (this.height > 300) {
-			this.ySize = 256;
-			this.backgroundTexture = Constants.RECIPE_BACKGROUND_TALL;
-		} else {
-			this.ySize = 166;
-			this.backgroundTexture = Constants.RECIPE_BACKGROUND;
+		this.xSize = 198;
+		this.ySize = this.height - 68;
+		int extraSpace = 0;
+		if (this.ySize > MAX_HEIGHT) {
+			extraSpace = this.ySize - MAX_HEIGHT;
+			this.ySize = MAX_HEIGHT;
 		}
 
 		this.guiLeft = (width - this.xSize) / 2;
-		this.guiTop = (height - this.ySize) / 2 + 8;
+		this.guiTop = RecipeGuiTab.TAB_HEIGHT + 21 + (extraSpace / 2);
+
+		this.background.setWidth(this.xSize);
+		this.background.setHeight(this.ySize);
 
 		final int rightButtonX = guiLeft + xSize - borderPadding - buttonWidth;
 		final int leftButtonX = guiLeft + borderPadding;
@@ -173,9 +177,8 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		drawDefaultBackground();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.getTextureManager().bindTexture(backgroundTexture);
 		this.zLevel = 0;
-		drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
+		this.background.draw(Minecraft.getMinecraft(), guiLeft, guiTop);
 
 		GlStateManager.disableBlend();
 
@@ -227,7 +230,17 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	}
 
 	public boolean isMouseOver(int mouseX, int mouseY) {
-		return mc.currentScreen == this && (mouseX >= guiLeft) && (mouseY >= guiTop) && (mouseX < guiLeft + xSize) && (mouseY < guiTop + ySize);
+		if (mc.currentScreen == this) {
+			if ((mouseX >= guiLeft) && (mouseY >= guiTop) && (mouseX < guiLeft + xSize) && (mouseY < guiTop + ySize)) {
+				return true;
+			}
+			for (RecipeLayout recipeLayout : this.recipeLayouts) {
+				if (recipeLayout.isMouseOver(mouseX, mouseY)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Nullable
@@ -308,14 +321,14 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	}
 
 	@Override
-	protected void keyTyped(char typedChar, int keyCode) throws IOException {
+	protected void keyTyped(char typedChar, int keyCode) {
 		if (handleKeybinds(keyCode)) {
 			keyHandled = true;
 		}
 	}
 
 	private boolean handleKeybinds(int eventKey) {
-		if (InputHandler.isInventoryCloseKey(eventKey) || InputHandler.isInventoryToggleKey(eventKey)) {
+		if (KeyBindings.isInventoryCloseKey(eventKey) || KeyBindings.isInventoryToggleKey(eventKey)) {
 			close();
 			return true;
 		} else if (KeyBindings.recipeBack.isActiveAndMatches(eventKey)) {
@@ -406,9 +419,17 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		IRecipeCategory recipeCategory = logic.getSelectedRecipeCategory();
 		IDrawable recipeBackground = recipeCategory.getBackground();
 
-		final int recipesPerPage = Math.max(1, (ySize - headerHeight) / (recipeBackground.getHeight() + innerPadding));
+		int availableHeight = ySize - headerHeight;
+		final int heightPerRecipe = recipeBackground.getHeight() + innerPadding;
+		int recipesPerPage = availableHeight / heightPerRecipe;
+
+		if (recipesPerPage == 0) {
+			availableHeight = heightPerRecipe;
+			recipesPerPage = 1;
+		}
+
 		final int recipeXOffset = guiLeft + (xSize - recipeBackground.getWidth()) / 2;
-		final int recipeSpacing = (ySize - headerHeight - (recipesPerPage * recipeBackground.getHeight())) / (recipesPerPage + 1);
+		final int recipeSpacing = (availableHeight - (recipesPerPage * recipeBackground.getHeight())) / (recipesPerPage + 1);
 
 		logic.setRecipesPerPage(recipesPerPage);
 

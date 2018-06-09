@@ -87,7 +87,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 			tabX += RecipeGuiTab.TAB_WIDTH;
 		}
 
-		pageNavigation.updatePageState(pageNumber, pageCount);
+		pageNavigation.updatePageState();
 	}
 
 	public void draw(Minecraft minecraft, int mouseX, int mouseY) {
@@ -122,7 +122,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 	@Override
 	public boolean isMouseOver(int mouseX, int mouseY) {
 		return area.contains(mouseX, mouseY) ||
-				pageNavigation.isMouseOver(mouseX, mouseY);
+				pageNavigation.isMouseOver();
 	}
 
 	@Override
@@ -134,7 +134,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 					return true;
 				}
 			}
-			if (pageNavigation.isMouseOver(mouseX, mouseY)) {
+			if (pageNavigation.isMouseOver()) {
 				return pageNavigation.handleMouseClickedButtons(mouseX, mouseY);
 			}
 		}
@@ -176,5 +176,15 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 	@Override
 	public boolean hasPrevious() {
 		return pageNumber > 0;
+	}
+
+	@Override
+	public int getPageCount() {
+		return pageCount;
+	}
+
+	@Override
+	public int getPageNumber() {
+		return pageNumber;
 	}
 }

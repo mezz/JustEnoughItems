@@ -60,7 +60,7 @@ public class IngredientRenderer<T> {
 	}
 
 	public void renderSlow() {
-		if (Config.isEditModeEnabled()) {
+		if (Config.isHideModeEnabled()) {
 			renderEditMode(element, area, padding);
 		}
 
@@ -127,7 +127,7 @@ public class IngredientRenderer<T> {
 			addColorSearchInfoToTooltip(minecraft, element, tooltip, maxWidth);
 		}
 
-		if (Config.isEditModeEnabled()) {
+		if (Config.isHideModeEnabled()) {
 			addEditModeInfoToTooltip(minecraft, tooltip, maxWidth);
 		}
 
@@ -165,7 +165,7 @@ public class IngredientRenderer<T> {
 
 	private static void addEditModeInfoToTooltip(Minecraft minecraft, List<String> tooltip, int maxWidth) {
 		tooltip.add("");
-		tooltip.add(TextFormatting.GRAY + Translator.translateToLocal("gui.jei.editMode.description"));
+		tooltip.add(TextFormatting.DARK_GREEN + Translator.translateToLocal("gui.jei.editMode.description"));
 
 		String controlKeyLocalization = Translator.translateToLocal(Minecraft.IS_RUNNING_ON_MAC ? "key.jei.ctrl.mac" : "key.jei.ctrl");
 

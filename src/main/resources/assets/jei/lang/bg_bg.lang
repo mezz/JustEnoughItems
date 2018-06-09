@@ -9,13 +9,13 @@ jei.tooltip.transfer=Премести Предмети
 jei.tooltip.recipe.ore.dict=Приема всички: %s
 jei.tooltip.item.colors=Colors: %s
 jei.tooltip.shapeless.recipe=Безформени рецепти
-jei.tooltip.cheat.mode=Режим на Мамене
+jei.tooltip.cheat.mode.button.enabled=Режим на Мамене
 jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
 jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
 jei.tooltip.recipe.by=Recipe By: %s
 jei.tooltip.recipe.id=Recipe ID: %s
 jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled=The JEI overlay is disabled.
 jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
@@ -63,14 +63,14 @@ config.jei.search=Опций за Търсене
 config.jei.search.comment=Опций свързани с лентата за търсене.
 config.jei.search.modNameSearchMode=Изисква @ за Име на Модификацията
 config.jei.search.modNameSearchMode.comment=Изисква "@" пред дума за да търсиш с името на моификацията
-config.jei.search.colorSearchMode=Изисква ^ за Цветове
-config.jei.search.colorSearchMode.comment=Изисква "^" пред дума за да търсиш цветове на предмет.
-config.jei.search.creativeTabSearchMode=Изисква %% за Creative Tab Name
-config.jei.search.creativeTabSearchMode.comment=Изисква "%" пред дума за да търсиш creative tab names.
-config.jei.search.oreDictSearchMode=Изисква $ за Ore Dictionary
-config.jei.search.oreDictSearchMode.comment=Изисква "$" пред дума за да търсиш ore dictionary имена.
 config.jei.search.tooltipSearchMode=Изисква # за Подсказки
 config.jei.search.tooltipSearchMode.comment=Изисква "#" пред дума за да търсиш подсказки.
+config.jei.search.oreDictSearchMode=Изисква $ за Ore Dictionary
+config.jei.search.oreDictSearchMode.comment=Изисква "$" пред дума за да търсиш ore dictionary имена.
+config.jei.search.creativeTabSearchMode=Изисква %% за Creative Tab Name
+config.jei.search.creativeTabSearchMode.comment=Изисква "%" пред дума за да търсиш creative tab names.
+config.jei.search.colorSearchMode=Изисква ^ за Цветове
+config.jei.search.colorSearchMode.comment=Изисква "^" пред дума за да търсиш цветове на предмет.
 config.jei.search.resourceIdSearchMode=&ResourceId
 config.jei.search.resourceIdSearchMode.comment=Search mode for resources ids (prefix: &)
 
@@ -91,7 +91,7 @@ config.jei.advanced.maxColumns.comment=The maximum width of the ingredient list.
 config.jei.advanced.giveMode=Give Mode
 config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to the inventory (inventory) or pick them up with the mouse (mouse_pickup).
 
-# Edit Mode
+# Hide Ingredients Mode
 gui.jei.editMode.description=JEI Режим на Редактиращ Списък на Предмети:
 gui.jei.editMode.description.hide=%CTRL-click да скриеш.
 gui.jei.editMode.description.hide.wild=%CTRL-right-click да скриеш с wildcard.
@@ -108,7 +108,6 @@ gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=Гориво
 gui.jei.category.fuel.smeltCount.single=Smelts 1 item
 gui.jei.category.fuel.smeltCount=Smelts %s items
-gui.jei.category.fuel.burnTime=Време на Горене: %s
 gui.jei.category.brewing=Варене
 gui.jei.category.brewing.steps=Стъпки: %s
 gui.jei.category.itemInformation=Описание

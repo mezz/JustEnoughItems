@@ -9,13 +9,13 @@ jei.tooltip.transfer=Siirrä tavaroita
 jei.tooltip.recipe.ore.dict=Hyväksyy minkä tahansa: %s
 jei.tooltip.item.colors=Värit: %s
 jei.tooltip.shapeless.recipe=Muodoton resepti
-jei.tooltip.cheat.mode=Huijaustila
+jei.tooltip.cheat.mode.button.enabled=Huijaustila
 jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
 jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
 jei.tooltip.recipe.by=Recipe By: %s
 jei.tooltip.recipe.id=Recipe ID: %s
 jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled=The JEI overlay is disabled.
 jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
@@ -91,7 +91,7 @@ config.jei.advanced.maxColumns.comment=The maximum width of the ingredient list.
 config.jei.advanced.giveMode=Give Mode
 config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to the inventory (inventory) or pick them up with the mouse (mouse_pickup).
 
-# Edit Mode
+# Hide Ingredients Mode
 gui.jei.editMode.description=JEI:n tavaralistan muokkaustila:
 gui.jei.editMode.description.hide=Piilota %CTRL-klikkaamalla.
 gui.jei.editMode.description.hide.wild=Piilota jokerimerkin perusteella %CTRL-klikkaamalla hiiren oikealla painikkeella.
@@ -108,7 +108,6 @@ gui.jei.category.smelting.experience=%s kokemuspistettä
 gui.jei.category.fuel=Polttoaine
 gui.jei.category.fuel.smeltCount.single=Smelts 1 item
 gui.jei.category.fuel.smeltCount=Smelts %s items
-gui.jei.category.fuel.burnTime=Paloaika: %s
 gui.jei.category.brewing=Haudutus
 gui.jei.category.brewing.steps=Vaiheita: %s
 gui.jei.category.itemInformation=Kuvaus

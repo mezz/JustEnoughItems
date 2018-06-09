@@ -9,13 +9,13 @@ jei.tooltip.transfer=アイテムを配置する
 jei.tooltip.recipe.ore.dict=以下の全てで: %s
 jei.tooltip.item.colors=色: %s
 jei.tooltip.shapeless.recipe=不定形レシピ
-jei.tooltip.cheat.mode=チートモード
+jei.tooltip.cheat.mode.button.enabled=チートモード
 jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
 jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
 jei.tooltip.recipe.by=%s によるレシピ
 jei.tooltip.recipe.id=レシピID: %s
 jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled=The JEI overlay is disabled.
 jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
@@ -91,7 +91,7 @@ config.jei.advanced.maxColumns.comment=アイテムリストの最大幅
 config.jei.advanced.giveMode=付与モード
 config.jei.advanced.giveMode.comment=インベントリに直接アイテムに送るか (inventory)、マウスでアイテムを取得するか (mouse_pickup) を指定します。
 
-# Edit Mode
+# Hide Ingredients Mode
 gui.jei.editMode.description=JEIアイテムリストエディットモード:
 gui.jei.editMode.description.hide=隠蔽。 (%CTRL+左クリック)
 gui.jei.editMode.description.hide.wild=ワイルドカードによる隠蔽。 (%CTRL+右クリック)
@@ -108,7 +108,6 @@ gui.jei.category.smelting.experience=%s EXP
 gui.jei.category.fuel=燃料
 gui.jei.category.fuel.smeltCount.single=1回精錬可能
 gui.jei.category.fuel.smeltCount=%s回精錬可能
-gui.jei.category.fuel.burnTime=燃焼時間: %s
 gui.jei.category.brewing=醸造
 gui.jei.category.brewing.steps=第%s段階
 gui.jei.category.itemInformation=説明

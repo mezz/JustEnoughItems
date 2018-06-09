@@ -2,7 +2,7 @@ package mezz.jei.util;
 
 import mezz.jei.JustEnoughItems;
 import mezz.jei.config.Config;
-import mezz.jei.config.SessionData;
+import mezz.jei.config.ServerInfo;
 import mezz.jei.network.packets.PacketGiveItemStack;
 import mezz.jei.network.packets.PacketSetHotbarItemStack;
 import net.minecraft.client.Minecraft;
@@ -33,7 +33,7 @@ public final class CommandUtil {
 			final int amount = giveMode.getStackSize(itemStack, mouseButton);
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
 			CommandUtilServer.mousePickupItemStack(minecraft.player, sendStack);
-		} else if (SessionData.isJeiOnServer()) {
+		} else if (ServerInfo.isJeiOnServer()) {
 			final int amount = giveMode.getStackSize(itemStack, mouseButton);
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
 			PacketGiveItemStack packet = new PacketGiveItemStack(sendStack, giveMode);
@@ -45,7 +45,7 @@ public final class CommandUtil {
 	}
 
 	public static void setHotbarStack(ItemStack itemStack, int hotbarSlot) {
-		if (SessionData.isJeiOnServer()) {
+		if (ServerInfo.isJeiOnServer()) {
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, itemStack.getMaxStackSize());
 			PacketSetHotbarItemStack packet = new PacketSetHotbarItemStack(sendStack, hotbarSlot);
 			JustEnoughItems.getProxy().sendPacketToServer(packet);

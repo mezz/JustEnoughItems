@@ -16,6 +16,7 @@ import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.input.InputHandler;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.runtime.JeiHelpers;
@@ -91,8 +92,10 @@ public class JeiStarter {
 
 		sendRuntime(plugins, jeiRuntime);
 
-		GuiEventHandler guiEventHandler = new GuiEventHandler(jeiRuntime);
+		GuiEventHandler guiEventHandler = new GuiEventHandler(ingredientListOverlay, recipeRegistry);
 		Internal.setGuiEventHandler(guiEventHandler);
+		InputHandler inputHandler = new InputHandler(jeiRuntime, ingredientListOverlay);
+		Internal.setInputHandler(inputHandler);
 
 		Config.checkForModNameFormatOverride();
 

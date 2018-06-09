@@ -25,7 +25,7 @@ public class GuiHelper implements IGuiHelper {
 	private final IDrawableStatic infoIcon;
 	private final IDrawableStatic arrowPrevious;
 	private final IDrawableStatic arrowNext;
-	private final IDrawableStatic plusSign;
+	private final IDrawableStatic recipeTransfer;
 
 	public GuiHelper(IIngredientRegistry ingredientRegistry) {
 		this.ingredientRegistry = ingredientRegistry;
@@ -39,7 +39,7 @@ public class GuiHelper implements IGuiHelper {
 
 		arrowPrevious = createDrawable(Constants.RECIPE_BACKGROUND, 196, 55, 5, 8, 1, 0, 0, 0);
 		arrowNext = createDrawable(Constants.RECIPE_BACKGROUND, 204, 55, 5, 8, 1, 0, 1, 0);
-		plusSign = createDrawable(Constants.RECIPE_BACKGROUND, 212, 55, 6, 6, 1, 0, 1, 0);
+		recipeTransfer = createDrawable(Constants.RECIPE_BACKGROUND, 212, 55, 6, 6, 1, 0, 1, 0);
 	}
 
 	@Override
@@ -141,7 +141,7 @@ public class GuiHelper implements IGuiHelper {
 		return arrowNext;
 	}
 
-	public IDrawableStatic getPlusSign() {
-		return plusSign;
+	public IDrawableStatic getRecipeTransfer() {
+		return recipeTransfer;
 	}
 }

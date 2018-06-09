@@ -9,7 +9,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
-import mezz.jei.config.SessionData;
+import mezz.jei.config.ServerInfo;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.network.PacketHandler;
 import mezz.jei.network.PacketHandlerClient;
@@ -123,7 +123,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	@SubscribeEvent
 	public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
 		if (!event.isLocal() && !event.getConnectionType().equals("MODDED")) {
-			SessionData.onConnectedToServer(false);
+			ServerInfo.onConnectedToServer(false);
 		}
 		NetworkManager networkManager = event.getManager();
 		Config.syncWorldConfig(networkManager);
@@ -141,7 +141,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	@Override
 	public void sendPacketToServer(PacketJei packet) {
 		NetHandlerPlayClient netHandler = FMLClientHandler.instance().getClient().getConnection();
-		if (netHandler != null && SessionData.isJeiOnServer()) {
+		if (netHandler != null && ServerInfo.isJeiOnServer()) {
 			netHandler.sendPacket(packet.getPacket());
 		}
 	}

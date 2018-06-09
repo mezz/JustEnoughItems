@@ -15,7 +15,7 @@ public interface IItemBlacklist {
 	/**
 	 * Stop JEI from displaying a specific item in the item list.
 	 * Use {@link OreDictionary#WILDCARD_VALUE} meta for wildcard.
-	 * Items blacklisted with this API can't be seen in the config or in edit mode.
+	 * Items blacklisted with this API can't be seen in the config or in hide ingredients mode.
 	 *
 	 * @deprecated Since JEI 4.2.1. Use {@link IIngredientBlacklist#addIngredientToBlacklist(Object)}.
 	 */

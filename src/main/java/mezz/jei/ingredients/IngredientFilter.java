@@ -173,7 +173,7 @@ public class IngredientFilter implements IIngredientFilter {
 		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
 		boolean visible = !blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper) &&
 			ingredientHelper.isIngredientOnServer(ingredient) &&
-			(Config.isEditModeEnabled() || !Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
+			(Config.isHideModeEnabled() || !Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
 		if (element.isVisible() != visible) {
 			element.setVisible(visible);
 			this.filterCached = null;

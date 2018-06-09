@@ -22,7 +22,6 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
-import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.GiveMode;
@@ -80,7 +79,7 @@ public final class Config {
 
 		if (worldConfig != null) {
 			NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
-			final String worldCategory = SessionData.getWorldUid(networkManager);
+			final String worldCategory = ServerInfo.getWorldUid(networkManager);
 			Property property = worldConfig.get(worldCategory, "overlayEnabled", defaultValues.overlayEnabled);
 			property.set(values.overlayEnabled);
 
@@ -106,7 +105,7 @@ public final class Config {
 
 			if (worldConfig != null) {
 				NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
-				final String worldCategory = SessionData.getWorldUid(networkManager);
+				final String worldCategory = ServerInfo.getWorldUid(networkManager);
 				Property property = worldConfig.get(worldCategory, "cheatItemsEnabled", defaultValues.cheatItemsEnabled);
 				property.set(values.cheatItemsEnabled);
 
@@ -115,14 +114,30 @@ public final class Config {
 				}
 			}
 
-			if (values.cheatItemsEnabled && SessionData.isJeiOnServer()) {
+			if (values.cheatItemsEnabled && ServerInfo.isJeiOnServer()) {
 				JustEnoughItems.getProxy().sendPacketToServer(new PacketRequestCheatPermission());
 			}
 		}
 	}
 
-	public static boolean isEditModeEnabled() {
-		return values.editModeEnabled;
+	public static boolean isHideModeEnabled() {
+		return values.hideModeEnabled;
+	}
+
+	public static void toggleHideModeEnabled() {
+		values.hideModeEnabled = !values.hideModeEnabled;
+		if (worldConfig != null) {
+			NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
+			final String worldCategory = ServerInfo.getWorldUid(networkManager);
+			Property property = worldConfig.get(worldCategory, "editEnabled", defaultValues.hideModeEnabled);
+			property.set(values.hideModeEnabled);
+
+			if (worldConfig.hasChanged()) {
+				worldConfig.save();
+			}
+		}
+
+		MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.hideModeEnabled));
 	}
 
 	public static boolean isDebugModeEnabled() {
@@ -130,7 +145,7 @@ public final class Config {
 	}
 
 	public static boolean isDeleteItemsInCheatModeActive() {
-		return values.cheatItemsEnabled && SessionData.isJeiOnServer();
+		return values.cheatItemsEnabled && ServerInfo.isJeiOnServer();
 	}
 
 	public static boolean isCenterSearchBarEnabled() {
@@ -213,7 +228,7 @@ public final class Config {
 	public static void saveFilterText() {
 		if (worldConfig != null) {
 			NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
-			final String worldCategory = SessionData.getWorldUid(networkManager);
+			final String worldCategory = ServerInfo.getWorldUid(networkManager);
 			Property property = worldConfig.get(worldCategory, "filterText", defaultValues.filterText);
 			property.set(values.filterText);
 
@@ -421,7 +436,7 @@ public final class Config {
 			return false;
 		}
 
-		final String worldCategory = SessionData.getWorldUid(networkManager);
+		final String worldCategory = ServerInfo.getWorldUid(networkManager);
 
 		Property property = worldConfig.get(worldCategory, "overlayEnabled", defaultValues.overlayEnabled);
 		property.setLanguageKey("config.jei.interface.overlayEnabled");
@@ -434,12 +449,12 @@ public final class Config {
 		property.setComment(Translator.translateToLocal("config.jei.mode.cheatItemsEnabled.comment"));
 		values.cheatItemsEnabled = property.getBoolean();
 
-		property = worldConfig.get(worldCategory, "editEnabled", defaultValues.editModeEnabled);
+		property = worldConfig.get(worldCategory, "editEnabled", defaultValues.hideModeEnabled);
 		property.setLanguageKey("config.jei.mode.editEnabled");
 		property.setComment(Translator.translateToLocal("config.jei.mode.editEnabled.comment"));
-		values.editModeEnabled = property.getBoolean();
+		values.hideModeEnabled = property.getBoolean();
 		if (property.hasChanged()) {
-			MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.editModeEnabled));
+			MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.hideModeEnabled));
 		}
 
 		property = worldConfig.get(worldCategory, "filterText", defaultValues.filterText);

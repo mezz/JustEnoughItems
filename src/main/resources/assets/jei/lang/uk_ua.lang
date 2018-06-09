@@ -9,13 +9,13 @@ jei.tooltip.transfer=Переміщення предметів
 jei.tooltip.recipe.ore.dict=Приймає будь-які: %s
 jei.tooltip.item.colors=Кольори: %s
 jei.tooltip.shapeless.recipe=Безформний рецепт
-jei.tooltip.cheat.mode=Режим шахрайства
+jei.tooltip.cheat.mode.button.enabled=Режим шахрайства
 jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
 jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
 jei.tooltip.recipe.by=Рецепт з: %s
 jei.tooltip.recipe.id=Recipe ID: %s
 jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled=The JEI overlay is disabled.
 jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
@@ -91,7 +91,7 @@ config.jei.advanced.maxColumns.comment=Максимальная ширина с�
 config.jei.advanced.giveMode=Режим отримання предметів
 config.jei.advanced.giveMode.comment=Виберіть, повинен JEI давати предмети напряму в інвентарь (inventory) чи набирати їх за допомогою мишки (mouse_pickup).
 
-# Edit Mode
+# Hide Ingredients Mode
 gui.jei.editMode.description=Режим редагування списку предметів JEI:
 gui.jei.editMode.description.hide=%CTRL+ЛКМ, щоб сховати.
 gui.jei.editMode.description.hide.wild=%CTRL+ПКМ, щоб сховати по шаблону.
@@ -108,7 +108,6 @@ gui.jei.category.smelting.experience=Досвід: %s
 gui.jei.category.fuel=Паливо
 gui.jei.category.fuel.smeltCount.single=Плавить 1 предмет
 gui.jei.category.fuel.smeltCount=Плавить %s предмети(-ів)
-gui.jei.category.fuel.burnTime=Час горіння: %s
 gui.jei.category.brewing=Зіллєваріння
 gui.jei.category.brewing.steps=Кроки: %s
 gui.jei.category.itemInformation=Опис

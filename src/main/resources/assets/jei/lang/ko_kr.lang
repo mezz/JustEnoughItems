@@ -9,13 +9,13 @@ jei.tooltip.transfer=아이템 옮기기
 jei.tooltip.recipe.ore.dict=Accepts any: %s
 jei.tooltip.item.colors=색깔: %s
 jei.tooltip.shapeless.recipe=무형 조합법
-jei.tooltip.cheat.mode=치트 모드
+jei.tooltip.cheat.mode.button.enabled=치트 모드
 jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
 jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
 jei.tooltip.recipe.by=Recipe By: %s
 jei.tooltip.recipe.id=Recipe ID: %s
 jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled=The JEI overlay is disabled.
 jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
@@ -91,7 +91,7 @@ config.jei.advanced.maxColumns.comment=The maximum width of the ingredient list.
 config.jei.advanced.giveMode=Give Mode
 config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to the inventory (inventory) or pick them up with the mouse (mouse_pickup).
 
-# Edit Mode
+# Hide Ingredients Mode
 gui.jei.editMode.description=JEI 아이템 목록 수정 모드
 gui.jei.editMode.description.hide=숨기려면 %CTRL-클릭하세요
 gui.jei.editMode.description.hide.wild=와일드카드로 숨기려면 %CTRL-우클릭하세요
@@ -108,7 +108,6 @@ gui.jei.category.smelting.experience=%s 경험치
 gui.jei.category.fuel=화로 연료
 gui.jei.category.fuel.smeltCount.single=1개 아이템을 굽습니다.
 gui.jei.category.fuel.smeltCount=%s개 아이템을 굽습니다.
-gui.jei.category.fuel.burnTime=타는 시간: %s
 gui.jei.category.brewing=양조기
 gui.jei.category.brewing.steps=단계: %s개
 gui.jei.category.itemInformation=설명

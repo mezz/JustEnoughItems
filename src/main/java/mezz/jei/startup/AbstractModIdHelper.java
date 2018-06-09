@@ -5,6 +5,7 @@ import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.Config;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
@@ -17,7 +18,7 @@ public abstract class AbstractModIdHelper implements IModIdHelper {
 
 	@Override
 	public <T> List<String> addModNameToIngredientTooltip(List<String> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
-		if (Config.isDebugModeEnabled()) {
+		if (Config.isDebugModeEnabled() && Minecraft.getMinecraft().gameSettings.advancedItemTooltips) {
 			tooltip.add(TextFormatting.GRAY + "JEI Debug:");
 			tooltip.add(TextFormatting.GRAY + "info: " + ingredientHelper.getErrorInfo(ingredient));
 			tooltip.add(TextFormatting.GRAY + "uid: " + ingredientHelper.getUniqueId(ingredient));

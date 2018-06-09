@@ -9,13 +9,13 @@ jei.tooltip.transfer=移動物品
 jei.tooltip.recipe.ore.dict=接受: %s
 jei.tooltip.item.colors=顏色: %s
 jei.tooltip.shapeless.recipe=無序合成
-jei.tooltip.cheat.mode=作弊模式
+jei.tooltip.cheat.mode.button.enabled=作弊模式
 jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
 jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
 jei.tooltip.recipe.by=Recipe By: %s
 jei.tooltip.recipe.id=Recipe ID: %s
 jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled=The JEI overlay is disabled.
 jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
@@ -91,7 +91,7 @@ config.jei.advanced.maxColumns.comment=The maximum width of the ingredient list.
 config.jei.advanced.giveMode=Give Mode
 config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to the inventory (inventory) or pick them up with the mouse (mouse_pickup).
 
-# Edit Mode
+# Hide Ingredients Mode
 gui.jei.editMode.description=JEI物品清單編輯模式:
 gui.jei.editMode.description.hide=按住%CTRL點擊以隱藏
 gui.jei.editMode.description.hide.wild=按住%CTRL右擊以隱藏相同ID的物品
@@ -108,7 +108,6 @@ gui.jei.category.smelting.experience=%s經驗
 gui.jei.category.fuel=燃料
 gui.jei.category.fuel.smeltCount.single=燒煉1個物品
 gui.jei.category.fuel.smeltCount=燒煉%s個物品
-gui.jei.category.fuel.burnTime=燃燒時間: %s
 gui.jei.category.brewing=釀造
 gui.jei.category.brewing.steps=需要步驟: %s
 gui.jei.category.itemInformation=描述

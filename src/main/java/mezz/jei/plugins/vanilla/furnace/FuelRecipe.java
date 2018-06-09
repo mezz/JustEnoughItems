@@ -21,7 +21,6 @@ import java.util.List;
 public class FuelRecipe implements IRecipeWrapper {
 	private final List<List<ItemStack>> inputs;
 	private final String smeltCountString;
-	private final String burnTimeString;
 	private final IDrawableAnimated flame;
 
 	public FuelRecipe(IGuiHelper guiHelper, Collection<ItemStack> input, int burnTime) {
@@ -38,8 +37,6 @@ public class FuelRecipe implements IRecipeWrapper {
 			this.smeltCountString = Translator.translateToLocalFormatted("gui.jei.category.fuel.smeltCount", smeltCount);
 		}
 
-		this.burnTimeString = Translator.translateToLocalFormatted("gui.jei.category.fuel.burnTime", burnTime);
-
 		IDrawableStatic flameDrawable = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 82, 114, 14, 14);
 		this.flame = guiHelper.createAnimatedDrawable(flameDrawable, burnTime, IDrawableAnimated.StartDirection.TOP, true);
 	}
@@ -52,7 +49,6 @@ public class FuelRecipe implements IRecipeWrapper {
 	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 		flame.draw(minecraft, 1, 0);
-		minecraft.fontRenderer.drawString(smeltCountString, 24, 8, Color.gray.getRGB());
-		minecraft.fontRenderer.drawString(burnTimeString, 24, 18, Color.gray.getRGB());
+		minecraft.fontRenderer.drawString(smeltCountString, 24, 13, Color.gray.getRGB());
 	}
 }

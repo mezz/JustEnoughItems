@@ -48,7 +48,7 @@ public class JEIModConfigGui extends GuiConfig {
 			Configuration worldConfig = Config.getWorldConfig();
 			if (worldConfig != null) {
 				NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
-				ConfigCategory categoryWorldConfig = worldConfig.getCategory(SessionData.getWorldUid(networkManager));
+				ConfigCategory categoryWorldConfig = worldConfig.getCategory(ServerInfo.getWorldUid(networkManager));
 				configElements.addAll(new ConfigElement(categoryWorldConfig).getChildElements());
 			}
 		}
@@ -79,7 +79,7 @@ public class JEIModConfigGui extends GuiConfig {
 	protected void actionPerformed(GuiButton button) {
 		super.actionPerformed(button);
 
-		if (Config.isCheatItemsEnabled() && SessionData.isJeiOnServer()) {
+		if (Config.isCheatItemsEnabled() && ServerInfo.isJeiOnServer()) {
 			JustEnoughItems.getProxy().sendPacketToServer(new PacketRequestCheatPermission());
 		}
 	}

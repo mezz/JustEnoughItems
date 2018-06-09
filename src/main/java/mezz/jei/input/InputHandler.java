@@ -24,6 +24,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -46,6 +48,36 @@ public class InputHandler {
 		this.showsRecipeFocuses.add(recipesGui);
 		this.showsRecipeFocuses.add(ingredientListOverlay);
 		this.showsRecipeFocuses.add(new GuiContainerWrapper());
+	}
+
+	/**
+	 * When we have keyboard focus, use Pre
+	 */
+	@SubscribeEvent
+	public void onGuiKeyboardEvent(GuiScreenEvent.KeyboardInputEvent.Pre event) {
+		if (hasKeyboardFocus() && handleKeyEvent()) {
+			event.setCanceled(true);
+		}
+	}
+
+	/**
+	 * Without focus, use Post
+	 */
+	@SubscribeEvent
+	public void onGuiKeyboardEvent(GuiScreenEvent.KeyboardInputEvent.Post event) {
+		if (!hasKeyboardFocus() && handleKeyEvent()) {
+			event.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
+	public void onGuiMouseEvent(GuiScreenEvent.MouseInputEvent.Pre event) {
+		GuiScreen guiScreen = event.getGui();
+		int x = Mouse.getEventX() * guiScreen.width / guiScreen.mc.displayWidth;
+		int y = guiScreen.height - Mouse.getEventY() * guiScreen.height / guiScreen.mc.displayHeight - 1;
+		if (handleMouseEvent(guiScreen, x, y)) {
+			event.setCanceled(true);
+		}
 	}
 
 	public boolean handleMouseEvent(GuiScreen guiScreen, int mouseX, int mouseY) {
@@ -75,7 +107,7 @@ public class InputHandler {
 
 	private boolean handleMouseClick(GuiScreen guiScreen, int mouseButton, int mouseX, int mouseY) {
 		IClickedIngredient<?> clicked = getFocusUnderMouseForClick(mouseX, mouseY);
-		if (Config.isEditModeEnabled() && clicked != null && handleClickEdit(mouseButton, clicked)) {
+		if (Config.isHideModeEnabled() && clicked != null && handleClickEdit(clicked)) {
 			return true;
 		}
 		if (ingredientListOverlay.handleMouseClicked(mouseX, mouseY, mouseButton)) {
@@ -142,20 +174,9 @@ public class InputHandler {
 		return false;
 	}
 
-	private <V> boolean handleClickEdit(int mouseButton, IClickedIngredient<V> clicked) {
+	private <V> boolean handleClickEdit(IClickedIngredient<V> clicked) {
 		V ingredient = clicked.getValue();
-		IngredientBlacklistType blacklistType = null;
-		if (GuiScreen.isCtrlKeyDown()) {
-			if (mouseButton == 0) {
-				blacklistType = IngredientBlacklistType.ITEM;
-			} else if (mouseButton == 1) {
-				blacklistType = IngredientBlacklistType.WILDCARD;
-			}
-		}
-
-		if (blacklistType == null) {
-			return false;
-		}
+		IngredientBlacklistType blacklistType = GuiScreen.isCtrlKeyDown() ? IngredientBlacklistType.WILDCARD : IngredientBlacklistType.ITEM;
 
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 
@@ -168,11 +189,11 @@ public class InputHandler {
 		return true;
 	}
 
-	public boolean hasKeyboardFocus() {
-		return ingredientListOverlay.isEnabled() && ingredientListOverlay.hasKeyboardFocus();
+	private boolean hasKeyboardFocus() {
+		return ingredientListOverlay.hasKeyboardFocus();
 	}
 
-	public boolean handleKeyEvent() {
+	private boolean handleKeyEvent() {
 		char typedChar = Keyboard.getEventCharacter();
 		int eventKey = Keyboard.getEventKey();
 
@@ -181,8 +202,8 @@ public class InputHandler {
 	}
 
 	private boolean handleKeyDown(char typedChar, int eventKey) {
-		if (ingredientListOverlay.isEnabled() && ingredientListOverlay.hasKeyboardFocus()) {
-			if (isInventoryCloseKey(eventKey) || isEnterKey(eventKey)) {
+		if (ingredientListOverlay.hasKeyboardFocus()) {
+			if (KeyBindings.isInventoryCloseKey(eventKey) || KeyBindings.isEnterKey(eventKey)) {
 				ingredientListOverlay.setKeyboardFocus(false);
 				return true;
 			} else if (ingredientListOverlay.onKeyPressed(typedChar, eventKey)) {
@@ -198,10 +219,7 @@ public class InputHandler {
 			if (handleFocusKeybinds(eventKey)) {
 				return true;
 			}
-			if (ingredientListOverlay.isEnabled()) {
-				return ingredientListOverlay.onKeyPressed(typedChar, eventKey);
-			}
-			return false;
+			return ingredientListOverlay.onKeyPressed(typedChar, eventKey);
 		}
 
 		return false;
@@ -212,20 +230,7 @@ public class InputHandler {
 			Config.toggleOverlayEnabled();
 			return false;
 		}
-
-		if (ingredientListOverlay.isEnabled()) {
-			if (KeyBindings.toggleCheatMode.isActiveAndMatches(eventKey)) {
-				Config.toggleCheatItemsEnabled();
-				return true;
-			}
-
-			if (KeyBindings.focusSearch.isActiveAndMatches(eventKey)) {
-				ingredientListOverlay.setKeyboardFocus(true);
-				return true;
-			}
-		}
-
-		return false;
+		return ingredientListOverlay.onGlobalKeyPressed(eventKey);
 	}
 
 	private boolean handleFocusKeybinds(int eventKey) {
@@ -252,15 +257,4 @@ public class InputHandler {
 		return textField != null && textField.getVisible() && textField.isFocused();
 	}
 
-	public static boolean isInventoryToggleKey(int keyCode) {
-		return Minecraft.getMinecraft().gameSettings.keyBindInventory.isActiveAndMatches(keyCode);
-	}
-
-	public static boolean isInventoryCloseKey(int keyCode) {
-		return keyCode == Keyboard.KEY_ESCAPE;
-	}
-
-	public static boolean isEnterKey(int keyCode) {
-		return keyCode == Keyboard.KEY_RETURN;
-	}
 }

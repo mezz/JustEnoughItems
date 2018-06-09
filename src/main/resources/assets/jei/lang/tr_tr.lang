@@ -9,13 +9,13 @@ jei.tooltip.transfer=Eşyaları Taşı
 jei.tooltip.recipe.ore.dict=Herhangi Biri Olur: %s
 jei.tooltip.item.colors=Renkler: %s
 jei.tooltip.shapeless.recipe=Sekilsiz Tarif
-jei.tooltip.cheat.mode=Hile Modu
+jei.tooltip.cheat.mode.button.enabled=Hile Modu
 jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
 jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
 jei.tooltip.recipe.by=%s Tarifi
 jei.tooltip.recipe.id=Recipe ID: %s
 jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled=The JEI overlay is disabled.
 jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
@@ -91,7 +91,7 @@ config.jei.advanced.maxColumns.comment=Malzeme listesinin maksimum genişliği.
 config.jei.advanced.giveMode=Alma Modu
 config.jei.advanced.giveMode.comment=JEI'nin envantere (inventory) doğrudan eşyaları vermesini mi yoksa fareyle (mouse_pickup) almasını mı istediğinizi seçin.
 
-# Edit Mode
+# Hide Ingredients Mode
 gui.jei.editMode.description=JEI Eşya Listesi Düzenleme Modu:
 gui.jei.editMode.description.hide=Gizle (%CTRL-click).
 gui.jei.editMode.description.hide.wild=Joker ile Gizle (%CTRL-right-click).
@@ -108,7 +108,6 @@ gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=Yakıt
 gui.jei.category.fuel.smeltCount.single=1 eşya pişirir.
 gui.jei.category.fuel.smeltCount=%s eşya pişirir.
-gui.jei.category.fuel.burnTime=Pişirme Süresi: %s
 gui.jei.category.brewing=İksir Tezgahı
 gui.jei.category.brewing.steps=Adım: %s
 gui.jei.category.itemInformation=Bilgi

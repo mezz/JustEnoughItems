@@ -9,13 +9,13 @@ jei.tooltip.transfer=Bewege Items
 jei.tooltip.recipe.ore.dict=Akzeptiert: %s
 jei.tooltip.item.colors=Farben: %s
 jei.tooltip.shapeless.recipe=Formloses Rezept
-jei.tooltip.cheat.mode=Cheat-Modus
+jei.tooltip.cheat.mode.button.enabled=Cheat-Modus
 jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
 jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
 jei.tooltip.recipe.by=Recipe By: %s
 jei.tooltip.recipe.id=Recipe ID: %s
 jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled=The JEI overlay is disabled.
 jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
@@ -91,7 +91,7 @@ config.jei.advanced.maxColumns.comment=The maximum width of the ingredient list.
 config.jei.advanced.giveMode=Give Mode
 config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to the inventory (inventory) or pick them up with the mouse (mouse_pickup).
 
-# Edit Mode
+# Hide Ingredients Mode
 gui.jei.editMode.description=JEI-Listeneditiermodus:
 gui.jei.editMode.description.hide=Ausblenden mit %CTRL-Klick.
 gui.jei.editMode.description.hide.wild=Ausblenden per Wildcard mit %CTRL-Rechtsklick.
@@ -108,7 +108,6 @@ gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=Kraftstoffrezepte
 gui.jei.category.fuel.smeltCount.single=Schmilzt 1 Item
 gui.jei.category.fuel.smeltCount=Schmilzt %s Items
-gui.jei.category.fuel.burnTime=Brennzeit: %s
 gui.jei.category.brewing=Braurezepte
 gui.jei.category.brewing.steps=Schritte: %s
 gui.jei.category.itemInformation=Beschreibung

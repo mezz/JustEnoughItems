@@ -22,6 +22,6 @@ public class ConfigValues {
 	// per-world
 	public boolean overlayEnabled = true;
 	public boolean cheatItemsEnabled = false;
-	public boolean editModeEnabled = false;
+	public boolean hideModeEnabled = false;
 	public String filterText = "";
 }

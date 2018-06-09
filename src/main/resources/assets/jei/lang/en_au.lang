@@ -10,13 +10,13 @@ jei.tooltip.recipe.ore.dict=Accepts any: %s
 # Tooltips
 jei.tooltip.item.colors=Colours: %s
 jei.tooltip.shapeless.recipe=Shapeless Recipe
-jei.tooltip.cheat.mode=Cheat Mode is enabled.
+jei.tooltip.cheat.mode.button.enabled=Cheat Mode is enabled.
 jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
 jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
 jei.tooltip.recipe.by=Recipe By: %s
 jei.tooltip.recipe.id=Recipe ID: %s
 jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
+jei.tooltip.ingredient.list.disabled=The JEI overlay is disabled.
 jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
@@ -78,7 +78,7 @@ config.jei.search.resourceIdSearchMode.comment=Search mode for resources ids (pr
 config.jei.advanced=Advanced
 config.jei.advanced.comment=Advanced config options to change the way JEI functions.
 config.jei.advanced.itemBlacklist=Item Blacklist
-config.jei.advanced.itemBlacklist.comment=List of items that should not be displayed in the item list. Format: modId[:name[:meta]]. Edit Mode will automatically add or remove entries here.
+config.jei.advanced.itemBlacklist.comment=List of items that should not be displayed in the item list. Format: modId[:name[:meta]]. Hide Ingredients Mode will automatically add or remove entries here.
 config.jei.advanced.colorSearchEnabled=Enable Colour Search
 config.jei.advanced.colorSearchEnabled.comment=Search items by colour and show the searchable item colours on tooltips in the item list.
 config.jei.advanced.debugModeEnabled=Debug Mode
@@ -92,10 +92,10 @@ config.jei.advanced.maxColumns.comment=The maximum width of the ingredient list.
 config.jei.advanced.giveMode=Give Mode
 config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to the inventory (inventory) or pick them up with the mouse (mouse_pickup).
 
-# Edit Mode
-gui.jei.editMode.description=JEI Item List Edit Mode:
-gui.jei.editMode.description.hide=Hide. (%CTRL-click).
-gui.jei.editMode.description.hide.wild=Hide by Wildcard. (%CTRL-right-click).
+# Hide Ingredients Mode
+gui.jei.editMode.description=JEI Hide Ingredients Mode:
+gui.jei.editMode.description.hide=%CTRL-Click to Hide
+gui.jei.editMode.description.hide.wild=%CTRL-right-click to Hide by Wildcard
 
 # PC/Linux Control Key
 key.jei.ctrl=CTRL
@@ -109,7 +109,6 @@ gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=Fuel
 gui.jei.category.fuel.smeltCount.single=Smelts 1 item
 gui.jei.category.fuel.smeltCount=Smelts %s items
-gui.jei.category.fuel.burnTime=Burn Time: %s
 gui.jei.category.brewing=Brewing
 gui.jei.category.brewing.steps=Steps: %s
 gui.jei.category.itemInformation=Information

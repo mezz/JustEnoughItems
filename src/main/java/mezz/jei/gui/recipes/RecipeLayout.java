@@ -9,8 +9,10 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.config.Constants;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.TooltipRenderer;
+import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.ingredients.GuiFluidStackGroup;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiIngredientGroup;
@@ -34,6 +36,7 @@ import java.util.Map;
 
 public class RecipeLayout implements IRecipeLayoutDrawable {
 	private static final int RECIPE_BUTTON_SIZE = 13;
+	private static final int RECIPE_BORDER_PADDING = 4;
 	public static final int recipeTransferButtonIndex = 100;
 
 	private final int ingredientCycleOffset = (int) (Math.random() * 10000);
@@ -49,6 +52,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	private final Color highlightColor = new Color(0x7FFFFFFF, true);
 	@Nullable
 	private ShapelessIcon shapelessIcon;
+	private final DrawableNineSliceTexture recipeBorder;
 
 	private int posX;
 	private int posY;
@@ -96,8 +100,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		this.guiIngredientGroups.put(FluidStack.class, this.guiFluidStackGroup);
 
 		if (index >= 0) {
-			IDrawable plusIcon = Internal.getHelpers().getGuiHelper().getPlusSign();
-			this.recipeTransferButton = new RecipeTransferButton(recipeTransferButtonIndex + index, 0, 0, RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, plusIcon, this);
+			IDrawable icon = Internal.getHelpers().getGuiHelper().getRecipeTransfer();
+			this.recipeTransferButton = new RecipeTransferButton(recipeTransferButtonIndex + index, 0, 0, RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, icon, this);
 		} else {
 			this.recipeTransferButton = null;
 		}
@@ -105,6 +109,10 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		setPosition(posX, posY);
 
 		this.recipeWrapper = recipeWrapper;
+		this.recipeBorder = new DrawableNineSliceTexture(Constants.RECIPE_BACKGROUND, 64, 0, 64, 64, 4, 4, 4, 4);
+		IDrawable categoryBackground = recipeCategory.getBackground();
+		this.recipeBorder.setWidth(categoryBackground.getWidth() + (2 * RECIPE_BORDER_PADDING));
+		this.recipeBorder.setHeight(categoryBackground.getHeight() + (2 * RECIPE_BORDER_PADDING));
 	}
 
 	@Override
@@ -115,7 +123,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		if (this.recipeTransferButton != null) {
 			int width = recipeCategory.getBackground().getWidth();
 			int height = recipeCategory.getBackground().getHeight();
-			this.recipeTransferButton.x = posX + width + 2;
+			this.recipeTransferButton.x = posX + width + RECIPE_BORDER_PADDING + 2;
 			this.recipeTransferButton.y = posY + height - RECIPE_BUTTON_SIZE;
 		}
 	}
@@ -140,6 +148,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(posX, posY, 0.0F);
 		{
+			recipeBorder.draw(minecraft, -RECIPE_BORDER_PADDING, -RECIPE_BORDER_PADDING);
 			background.draw(minecraft);
 			recipeCategory.drawExtras(minecraft);
 			recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight(), recipeMouseX, recipeMouseY);
