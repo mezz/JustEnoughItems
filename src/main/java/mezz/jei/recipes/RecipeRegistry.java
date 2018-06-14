@@ -198,7 +198,11 @@ public class RecipeRegistry implements IRecipeRegistry {
 			return;
 		}
 
-		addRecipe(recipe, recipe, recipeCategory);
+		if (hiddenRecipes.contains(recipeCategoryUid, recipe)) {
+			unhideRecipe(recipe, recipeCategoryUid);
+		} else {
+			addRecipe(recipe, recipe, recipeCategory);
+		}
 	}
 
 	private void addRecipe(Object recipe, String recipeCategoryUid) {

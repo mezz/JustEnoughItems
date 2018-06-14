@@ -31,10 +31,8 @@ public class MultiMap<K, V, T extends Collection<V>> {
 	}
 
 	public boolean remove(K key, V value) {
-		if (map.containsKey(key)) {
-			return get(key).remove(value);
-		}
-		return false;
+		T collection = map.get(key);
+		return collection != null && collection.remove(value);
 	}
 
 	public boolean containsKey(K key) {
@@ -42,7 +40,8 @@ public class MultiMap<K, V, T extends Collection<V>> {
 	}
 
 	public boolean contains(K key, V value) {
-		return get(key).contains(value);
+		T collection = map.get(key);
+		return collection != null && collection.contains(value);
 	}
 
 	public Set<Map.Entry<K, T>> entrySet() {
