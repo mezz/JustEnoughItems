@@ -165,20 +165,20 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 				searchField.updateBounds(new Rectangle(
 					guiProperties.getGuiLeft(),
 					guiProperties.getScreenHeight() - SEARCH_HEIGHT - BORDER_PADDING,
-					guiProperties.getGuiXSize() - BUTTON_SIZE,
+					guiProperties.getGuiXSize() - BUTTON_SIZE + 1,
 					SEARCH_HEIGHT
 				));
 			} else {
 				searchField.updateBounds(new Rectangle(
 					displayArea.x,
 					displayArea.y + displayArea.height - SEARCH_HEIGHT - BORDER_PADDING,
-					displayArea.width - BUTTON_SIZE,
+					displayArea.width - BUTTON_SIZE + 1,
 					SEARCH_HEIGHT
 				));
 			}
 
 			this.configButton.updateBounds(new Rectangle(
-				searchField.x + searchField.width,
+				searchField.x + searchField.width - 1,
 				searchField.y,
 				BUTTON_SIZE,
 				BUTTON_SIZE
