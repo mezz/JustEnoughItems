@@ -197,9 +197,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		if (hoveredIngredient != null) {
 			hoveredIngredient.drawOverlays(minecraft, posX, posY, recipeMouseX, recipeMouseY);
 		} else if (isMouseOver(mouseX, mouseY)) {
-			List<String> tooltipStrings = new ArrayList<>();
 			List<String> categoryTooltipStrings = LegacyUtil.getTooltipStrings(recipeCategory, recipeMouseX, recipeMouseY);
-			tooltipStrings.addAll(categoryTooltipStrings);
+			List<String> tooltipStrings = new ArrayList<>(categoryTooltipStrings);
 			List<String> wrapperTooltips = recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY);
 			//noinspection ConstantConditions
 			if (wrapperTooltips != null) {

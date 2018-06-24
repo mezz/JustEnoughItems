@@ -20,6 +20,7 @@ import mezz.jei.util.CommandUtil;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -310,9 +311,12 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 						clicked.onClickHandled();
 						return true;
 					}
-					ItemStack mouseItem = minecraft.player.inventory.getItemStack();
-					if (mouseItem.isEmpty() && this.ghostIngredientDragManager.handleClickGhostIngredient(currentScreen, clicked)) {
-						return true;
+					EntityPlayerSP player = minecraft.player;
+					if (player != null) {
+						ItemStack mouseItem = player.inventory.getItemStack();
+						if (mouseItem.isEmpty() && this.ghostIngredientDragManager.handleClickGhostIngredient(currentScreen, clicked)) {
+							return true;
+						}
 					}
 				}
 			}

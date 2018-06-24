@@ -120,21 +120,23 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	private boolean shouldDeleteItemOnClick(Minecraft minecraft, int mouseX, int mouseY) {
 		if (Config.isDeleteItemsInCheatModeActive()) {
 			EntityPlayer player = minecraft.player;
-			ItemStack itemStack = player.inventory.getItemStack();
-			if (!itemStack.isEmpty()) {
-				JeiRuntime runtime = Internal.getRuntime();
-				if (runtime == null || !runtime.getRecipesGui().isOpen()) {
-					GiveMode giveMode = Config.getGiveMode();
-					if (giveMode == GiveMode.MOUSE_PICKUP) {
-						IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);
-						if (ingredientUnderMouse != null && ingredientUnderMouse.getValue() instanceof ItemStack) {
-							ItemStack value = (ItemStack) ingredientUnderMouse.getValue();
-							if (ItemHandlerHelper.canItemStacksStack(itemStack, value)) {
-								return false;
+			if (player != null) {
+				ItemStack itemStack = player.inventory.getItemStack();
+				if (!itemStack.isEmpty()) {
+					JeiRuntime runtime = Internal.getRuntime();
+					if (runtime == null || !runtime.getRecipesGui().isOpen()) {
+						GiveMode giveMode = Config.getGiveMode();
+						if (giveMode == GiveMode.MOUSE_PICKUP) {
+							IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);
+							if (ingredientUnderMouse != null && ingredientUnderMouse.getValue() instanceof ItemStack) {
+								ItemStack value = (ItemStack) ingredientUnderMouse.getValue();
+								if (ItemHandlerHelper.canItemStacksStack(itemStack, value)) {
+									return false;
+								}
 							}
 						}
+						return true;
 					}
-					return true;
 				}
 			}
 		}
@@ -150,12 +152,14 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 			Minecraft minecraft = Minecraft.getMinecraft();
 			if (shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				EntityPlayerSP player = minecraft.player;
-				ItemStack itemStack = player.inventory.getItemStack();
-				if (!itemStack.isEmpty()) {
-					player.inventory.setItemStack(ItemStack.EMPTY);
-					PacketJei packet = new PacketDeletePlayerItem(itemStack);
-					JustEnoughItems.getProxy().sendPacketToServer(packet);
-					return true;
+				if (player != null) {
+					ItemStack itemStack = player.inventory.getItemStack();
+					if (!itemStack.isEmpty()) {
+						player.inventory.setItemStack(ItemStack.EMPTY);
+						PacketJei packet = new PacketDeletePlayerItem(itemStack);
+						JustEnoughItems.getProxy().sendPacketToServer(packet);
+						return true;
+					}
 				}
 			}
 		}

@@ -19,6 +19,7 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * A Generalized Suffix Tree, based on the Ukkonen's paper "On-line construction of suffix trees"
@@ -199,7 +200,7 @@ public class GeneralizedSuffixTree implements ISearchTree {
 
 		if (!"".equals(str)) {
 			Edge g = s.getEdge(str.charAt(0));
-
+			Objects.requireNonNull(g);
 			String label = g.getLabel();
 			// must see whether "str" is substring of the label of an edge
 			if (label.length() > str.length() && label.charAt(str.length()) == t) {

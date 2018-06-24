@@ -8,6 +8,7 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -35,7 +36,11 @@ public class JEIModConfigGui extends GuiConfig {
 			if (parentScreen != null) {
 				return parentScreen;
 			} else {
-				return new GuiInventory(parent.mc.player);
+				Minecraft minecraft = parent.mc;
+				EntityPlayerSP player = minecraft.player;
+				if (player != null) {
+					return new GuiInventory(player);
+				}
 			}
 		}
 		return parent;

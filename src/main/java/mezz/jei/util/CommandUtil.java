@@ -29,10 +29,15 @@ public final class CommandUtil {
 	public static void giveStack(ItemStack itemStack, int mouseButton) {
 		final GiveMode giveMode = Config.getGiveMode();
 		Minecraft minecraft = Minecraft.getMinecraft();
+		EntityPlayerSP player = minecraft.player;
+		if (player == null) {
+			Log.get().error("Can't give stack, there is no player");
+			return;
+		}
 		if (minecraft.currentScreen instanceof GuiContainerCreative && giveMode == GiveMode.MOUSE_PICKUP) {
 			final int amount = giveMode.getStackSize(itemStack, mouseButton);
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
-			CommandUtilServer.mousePickupItemStack(minecraft.player, sendStack);
+			CommandUtilServer.mousePickupItemStack(player, sendStack);
 		} else if (ServerInfo.isJeiOnServer()) {
 			final int amount = giveMode.getStackSize(itemStack, mouseButton);
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
@@ -68,13 +73,15 @@ public final class CommandUtil {
 		ErrorUtil.checkNotNull(itemResourceLocation, "itemStack.getItem().getRegistryName()");
 
 		EntityPlayerSP sender = Minecraft.getMinecraft().player;
-		if (sender.canUseCommand(2, "give")) {
-			sendGiveAction(sender, itemStack, amount);
-		} else if (sender.isCreative()) {
-			sendCreativeInventoryActions(sender, itemStack, amount);
-		} else {
-			// try this in case the vanilla server has permissions set so regular players can use /give
-			sendGiveAction(sender, itemStack, amount);
+		if (sender != null) {
+			if (sender.canUseCommand(2, "give")) {
+				sendGiveAction(sender, itemStack, amount);
+			} else if (sender.isCreative()) {
+				sendCreativeInventoryActions(sender, itemStack, amount);
+			} else {
+				// try this in case the vanilla server has permissions set so regular players can use /give
+				sendGiveAction(sender, itemStack, amount);
+			}
 		}
 	}
 

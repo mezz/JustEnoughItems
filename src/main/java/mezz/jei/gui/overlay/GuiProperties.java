@@ -54,30 +54,37 @@ public class GuiProperties implements IGuiProperties {
 		this.screenHeight = screenHeight;
 	}
 
+	@Override
 	public Class<? extends GuiScreen> getGuiClass() {
 		return guiClass;
 	}
 
+	@Override
 	public int getGuiLeft() {
 		return guiLeft;
 	}
 
+	@Override
 	public int getGuiTop() {
 		return guiTop;
 	}
 
+	@Override
 	public int getGuiXSize() {
 		return guiXSize;
 	}
 
+	@Override
 	public int getGuiYSize() {
 		return guiYSize;
 	}
 
+	@Override
 	public int getScreenWidth() {
 		return screenWidth;
 	}
 
+	@Override
 	public int getScreenHeight() {
 		return screenHeight;
 	}

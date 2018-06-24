@@ -4,6 +4,7 @@ import mezz.jei.api.IModRegistry;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
+import javax.annotation.Nullable;
 import java.util.function.Function;
 
 /**
@@ -15,5 +16,6 @@ import java.util.function.Function;
 @FunctionalInterface
 public interface IGuiScreenHandler<T extends GuiScreen> extends Function<T, IGuiProperties> {
 	@Override
+	@Nullable
 	IGuiProperties apply(T guiScreen);
 }

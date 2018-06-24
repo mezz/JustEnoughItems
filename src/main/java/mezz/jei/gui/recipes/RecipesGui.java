@@ -5,7 +5,6 @@ import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.IRecipesGui;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableStatic;
-import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.Constants;
@@ -17,15 +16,18 @@ import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.elements.GuiIconButtonSmall;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.overlay.GuiProperties;
+import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.MouseHelper;
+import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.transfer.RecipeTransferUtil;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.StringUtil;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -334,13 +336,19 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		} else if (KeyBindings.recipeBack.isActiveAndMatches(eventKey)) {
 			back();
 			return true;
-		} else if (!Internal.getRuntime().getItemListOverlay().isMouseOver(MouseHelper.getX(), MouseHelper.getY())) {
-			if (KeyBindings.nextPage.isActiveAndMatches(eventKey)) {
-				logic.nextPage();
-				return true;
-			} else if (KeyBindings.previousPage.isActiveAndMatches(eventKey)) {
-				logic.previousPage();
-				return true;
+		} else {
+			JeiRuntime runtime = Internal.getRuntime();
+			if (runtime != null) {
+				IngredientListOverlay itemListOverlay = runtime.getItemListOverlay();
+				if (!itemListOverlay.isMouseOver(MouseHelper.getX(), MouseHelper.getY())) {
+					if (KeyBindings.nextPage.isActiveAndMatches(eventKey)) {
+						logic.nextPage();
+						return true;
+					} else if (KeyBindings.previousPage.isActiveAndMatches(eventKey)) {
+						logic.previousPage();
+						return true;
+					}
+				}
 			}
 		}
 		return false;
@@ -363,7 +371,10 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 				mc.displayGuiScreen(parentScreen);
 				parentScreen = null;
 			} else {
-				mc.player.closeScreen();
+				EntityPlayerSP player = mc.player;
+				if (player != null) {
+					player.closeScreen();
+				}
 			}
 			logic.clearHistory();
 		}
@@ -406,7 +417,8 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			RecipeLayout recipeLayout = recipeLayouts.get(recipeIndex);
 			boolean maxTransfer = GuiScreen.isShiftKeyDown();
 			Container container = getParentContainer();
-			if (container != null && RecipeTransferUtil.transferRecipe(container, recipeLayout, mc.player, maxTransfer)) {
+			EntityPlayerSP player = mc.player;
+			if (container != null && player != null && RecipeTransferUtil.transferRecipe(container, recipeLayout, player, maxTransfer)) {
 				close();
 			}
 		}
@@ -466,13 +478,15 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		addButtons();
 
 		EntityPlayer player = mc.player;
-		Container container = getParentContainer();
+		if (player != null) {
+			Container container = getParentContainer();
 
-		for (RecipeLayout recipeLayout : recipeLayouts) {
-			RecipeTransferButton button = recipeLayout.getRecipeTransferButton();
-			if (button != null) {
-				button.init(container, player);
-				buttonList.add(button);
+			for (RecipeLayout recipeLayout : recipeLayouts) {
+				RecipeTransferButton button = recipeLayout.getRecipeTransferButton();
+				if (button != null) {
+					button.init(container, player);
+					buttonList.add(button);
+				}
 			}
 		}
 	}

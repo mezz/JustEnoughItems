@@ -66,7 +66,7 @@ public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 	}
 
 	@Override
-	public String getErrorInfo(TestIngredient ingredient) {
+	public String getErrorInfo(@Nullable TestIngredient ingredient) {
 		return "Test Ingredient Error Info " + ingredient;
 	}
 }
