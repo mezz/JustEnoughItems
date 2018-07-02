@@ -34,7 +34,7 @@ public class GuiHelper implements IGuiHelper {
 		tabSelected = createDrawable(Constants.RECIPE_BACKGROUND, 196, 15, 24, 24);
 		tabUnselected = createDrawable(Constants.RECIPE_BACKGROUND, 220, 15, 24, 22);
 
-		shapelessIcon = createDrawable(Constants.RECIPE_BACKGROUND, 196, 0, 16, 15);
+		shapelessIcon = createDrawable(Constants.RECIPE_BACKGROUND, 196, 128, 16, 15);
 
 		arrowPrevious = drawableBuilder(Constants.RECIPE_BACKGROUND, 196, 55, 5, 8)
 			.addPadding(1, 0, 0, 0)
