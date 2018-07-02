@@ -102,8 +102,9 @@ public class IngredientGridAll implements IShowsRecipeFocuses, IMouseHandler, IG
 
 	@Override
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
-		return this.ingredientGrid.handleMouseClicked(mouseX, mouseY) ||
-			this.navigation.handleMouseClickedButtons(mouseX, mouseY);
+		return !MathUtil.contains(guiExclusionAreas, mouseX, mouseY) &&
+			(this.ingredientGrid.handleMouseClicked(mouseX, mouseY) ||
+			this.navigation.handleMouseClickedButtons(mouseX, mouseY));
 	}
 
 	@Override
