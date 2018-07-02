@@ -3,20 +3,20 @@ jei.tooltip.config=JEIの設定
 jei.tooltip.show.recipes=レシピを見る
 jei.tooltip.show.all.recipes=全てのレシピを見る
 jei.tooltip.delete.item=クリックで削除
-jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
-jei.tooltip.liquid.amount=%,d mB
+jei.tooltip.liquid.amount.with.capacity=%,d / %,d ミリバケツ
+jei.tooltip.liquid.amount=%,d ミリバケツ
 jei.tooltip.transfer=アイテムを配置する
 jei.tooltip.recipe.ore.dict=以下の全てで: %s
 jei.tooltip.item.colors=色: %s
 jei.tooltip.shapeless.recipe=不定形レシピ
 jei.tooltip.cheat.mode.button.enabled=チートモード
-jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
-jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
+jei.tooltip.cheat.mode.how.to.disable.hotkey=%s キーで無効にします。
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=ここで %s-click すると無効にします。
 jei.tooltip.recipe.by=%s によるレシピ
 jei.tooltip.recipe.id=レシピID: %s
-jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The JEI overlay is disabled.
-jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
+jei.tooltip.not.enough.space=JEIを表示するためのスペースが足りません。
+jei.tooltip.ingredient.list.disabled=JEIオーバーレイは無効です。
+jei.tooltip.ingredient.list.disabled.how.to.fix=%s キーで有効にします。
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=アイテムがインベントリ内に存在しません
@@ -88,6 +88,8 @@ config.jei.advanced.modNameFormat=Mod名の書式
 config.jei.advanced.modNameFormat.comment=JEIのGUIやツールチップにおいてどのようにMod名を表示するか指定します。空欄で無効。
 config.jei.advanced.maxColumns=最大幅
 config.jei.advanced.maxColumns.comment=アイテムリストの最大幅
+config.jei.advanced.maxRecipeGuiHeight=最大レシピGUI高さ
+config.jei.advanced.maxRecipeGuiHeight.comment=レシピGUIの最大の高さ
 config.jei.advanced.giveMode=付与モード
 config.jei.advanced.giveMode.comment=インベントリに直接アイテムに送るか (inventory)、マウスでアイテムを取得するか (mouse_pickup) を指定します。
 
@@ -104,7 +106,7 @@ key.jei.ctrl.mac=CMD
 # Recipe Categories
 gui.jei.category.craftingTable=クラフト
 gui.jei.category.smelting=精錬
-gui.jei.category.smelting.experience=%s EXP
+gui.jei.category.smelting.experience=経験値: %s
 gui.jei.category.fuel=燃料
 gui.jei.category.fuel.smeltCount.single=1回精錬可能
 gui.jei.category.fuel.smeltCount=%s回精錬可能
