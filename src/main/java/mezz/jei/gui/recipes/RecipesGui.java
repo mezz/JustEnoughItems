@@ -7,6 +7,7 @@ import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
@@ -45,7 +46,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFocuses, IRecipeLogicStateListener {
-	private static final int MAX_HEIGHT = 600;
 	private static final int borderPadding = 6;
 	private static final int innerPadding = 14;
 	private static final int buttonWidth = 13;
@@ -133,9 +133,10 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		this.xSize = 198;
 		this.ySize = this.height - 68;
 		int extraSpace = 0;
-		if (this.ySize > MAX_HEIGHT) {
-			extraSpace = this.ySize - MAX_HEIGHT;
-			this.ySize = MAX_HEIGHT;
+		final int maxHeight = Config.getMaxRecipeGuiHeight();
+		if (this.ySize > maxHeight) {
+			extraSpace = this.ySize - maxHeight;
+			this.ySize = maxHeight;
 		}
 
 		this.guiLeft = (width - this.xSize) / 2;

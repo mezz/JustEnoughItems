@@ -46,6 +46,8 @@ public final class Config {
 	public static final String defaultModNameFormatFriendly = "blue italic";
 	public static final int smallestNumColumns = 4;
 	public static final int largestNumColumns = 100;
+	public static final int minRecipeGuiHeight = 175;
+	public static final int maxRecipeGuiHeight = 5000;
 
 	@Nullable
 	private static LocalizedConfiguration config;
@@ -178,6 +180,10 @@ public final class Config {
 
 	public static int getMaxColumns() {
 		return values.maxColumns;
+	}
+
+	public static int getMaxRecipeGuiHeight() {
+		return values.maxRecipeGuiHeight;
 	}
 
 	public static SearchMode getModNameSearchMode() {
@@ -365,6 +371,8 @@ public final class Config {
 		values.giveMode = config.getEnum("giveMode", CATEGORY_ADVANCED, defaultValues.giveMode, GiveMode.values());
 
 		values.maxColumns = config.getInt("maxColumns", CATEGORY_ADVANCED, defaultValues.maxColumns, smallestNumColumns, largestNumColumns);
+
+		values.maxRecipeGuiHeight = config.getInt("maxRecipeGuiHeight", CATEGORY_ADVANCED, defaultValues.maxRecipeGuiHeight, minRecipeGuiHeight, maxRecipeGuiHeight);
 
 		updateModNameFormat(config);
 
