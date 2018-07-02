@@ -1,6 +1,7 @@
 package mezz.jei.test;
 
 import mezz.jei.config.Config;
+import mezz.jei.config.IngredientBlacklistType;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientBlacklist;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
@@ -132,13 +133,17 @@ public class IngredientFilterTest {
 	@Test
 	public void testConfigBlacklist() {
 		Assert.assertNotNull(ingredientFilter);
+		Assert.assertNotNull(ingredientRegistry);
 		Assert.assertNotNull(baseList);
+
+		ingredientFilter.addIngredients(baseList);
 
 		TestIngredient blacklistedIngredient = (TestIngredient) baseList.get(0).getIngredient();
 		TestIngredientHelper testIngredientHelper = new TestIngredientHelper();
-		Config.addIngredientToConfigBlacklist(blacklistedIngredient, Config.IngredientBlacklistType.ITEM, testIngredientHelper);
+		Config.addIngredientToConfigBlacklist(ingredientFilter, ingredientRegistry, blacklistedIngredient, IngredientBlacklistType.ITEM, testIngredientHelper);
 
-		ingredientFilter.addIngredients(baseList);
+		ingredientFilter.updateHidden();
+
 		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList();
 		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT - 1, ingredientList.size());
 

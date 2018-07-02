@@ -118,7 +118,9 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 
 						if (modIdDifferent) {
 							String modName = ForgeModIdHelper.getInstance().getFormattedModNameForModId(recipeModId);
-							tooltip.add(TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.recipe.by", modName));
+							if (modName != null) {
+								tooltip.add(TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.recipe.by", modName));
+							}
 						}
 
 						boolean showAdvanced = Minecraft.getMinecraft().gameSettings.advancedItemTooltips || GuiScreen.isShiftKeyDown();

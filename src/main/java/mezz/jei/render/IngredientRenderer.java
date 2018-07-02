@@ -32,9 +32,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class IngredientRenderer<T> {
-	private static final int BLACKLIST_COLOR_ITEM = Color.yellow.getRGB();
-	private static final int BLACKLIST_COLOR_WILD = Color.red.getRGB();
-	private static final int BLACKLIST_COLOR_MOD = Color.blue.getRGB();
+	private static final int BLACKLIST_COLOR = Color.red.getRGB();
 	private static final Rectangle DEFAULT_AREA = new Rectangle(0, 0, 16, 16);
 
 	protected final IIngredientListElement<T> element;
@@ -62,7 +60,7 @@ public class IngredientRenderer<T> {
 	}
 
 	public void renderSlow() {
-		if (Config.isEditModeEnabled()) {
+		if (Config.isHideModeEnabled()) {
 			renderEditMode(element, area, padding);
 		}
 
@@ -105,16 +103,8 @@ public class IngredientRenderer<T> {
 		V ingredient = element.getIngredient();
 		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
 
-		if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.ITEM, ingredientHelper)) {
-			GuiScreen.drawRect(area.x + padding, area.y + padding, area.x + 8 + padding, area.y + 16 + padding, BLACKLIST_COLOR_ITEM);
-			GlStateManager.color(1f, 1f, 1f, 1f);
-		}
-		if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.WILDCARD, ingredientHelper)) {
-			GuiScreen.drawRect(area.x + 8 + padding, area.y + padding, area.x + 16 + padding, area.y + 16 + padding, BLACKLIST_COLOR_WILD);
-			GlStateManager.color(1f, 1f, 1f, 1f);
-		}
-		if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.MOD_ID, ingredientHelper)) {
-			GuiScreen.drawRect(area.x + padding, area.y + 8 + padding, area.x + 16 + padding, area.y + 16 + padding, BLACKLIST_COLOR_MOD);
+		if (Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
+			GuiScreen.drawRect(area.x + padding, area.y + padding, area.x + 16 + padding, area.y + 16 + padding, BLACKLIST_COLOR);
 			GlStateManager.color(1f, 1f, 1f, 1f);
 		}
 	}
@@ -137,8 +127,8 @@ public class IngredientRenderer<T> {
 			addColorSearchInfoToTooltip(minecraft, element, tooltip, maxWidth);
 		}
 
-		if (Config.isEditModeEnabled()) {
-			addEditModeInfoToTooltip(minecraft, element, tooltip, maxWidth);
+		if (Config.isHideModeEnabled()) {
+			addEditModeInfoToTooltip(minecraft, tooltip, maxWidth);
 		}
 
 		return tooltip;
@@ -173,44 +163,17 @@ public class IngredientRenderer<T> {
 		}
 	}
 
-	private static <V> void addEditModeInfoToTooltip(Minecraft minecraft, IIngredientListElement<V> element, List<String> tooltip, int maxWidth) {
-		V ingredient = element.getIngredient();
-		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
-
+	private static void addEditModeInfoToTooltip(Minecraft minecraft, List<String> tooltip, int maxWidth) {
 		tooltip.add("");
-		tooltip.add(TextFormatting.ITALIC + Translator.translateToLocal("gui.jei.editMode.description"));
+		tooltip.add(TextFormatting.DARK_GREEN + Translator.translateToLocal("gui.jei.editMode.description"));
 
 		String controlKeyLocalization = Translator.translateToLocal(Minecraft.IS_RUNNING_ON_MAC ? "key.jei.ctrl.mac" : "key.jei.ctrl");
 
-		if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.ITEM, ingredientHelper)) {
-			String message = Translator.translateToLocal("gui.jei.editMode.description.show").replace("%CTRL", controlKeyLocalization);
-			String description = TextFormatting.YELLOW + message;
-			tooltip.addAll(minecraft.fontRenderer.listFormattedStringToWidth(description, maxWidth));
-		} else {
-			String message = Translator.translateToLocal("gui.jei.editMode.description.hide").replace("%CTRL", controlKeyLocalization);
-			String description = TextFormatting.YELLOW + message;
-			tooltip.addAll(minecraft.fontRenderer.listFormattedStringToWidth(description, maxWidth));
-		}
+		String hideMessage = TextFormatting.GRAY + Translator.translateToLocal("gui.jei.editMode.description.hide").replace("%CTRL", controlKeyLocalization);
+		tooltip.addAll(minecraft.fontRenderer.listFormattedStringToWidth(hideMessage, maxWidth));
 
-		if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.WILDCARD, ingredientHelper)) {
-			String message = Translator.translateToLocal("gui.jei.editMode.description.show.wild").replace("%CTRL", controlKeyLocalization);
-			String description = TextFormatting.RED + message;
-			tooltip.addAll(minecraft.fontRenderer.listFormattedStringToWidth(description, maxWidth));
-		} else {
-			String message = Translator.translateToLocal("gui.jei.editMode.description.hide.wild").replace("%CTRL", controlKeyLocalization);
-			String description = TextFormatting.RED + message;
-			tooltip.addAll(minecraft.fontRenderer.listFormattedStringToWidth(description, maxWidth));
-		}
-
-		if (Config.isIngredientOnConfigBlacklist(ingredient, Config.IngredientBlacklistType.MOD_ID, ingredientHelper)) {
-			String message = Translator.translateToLocal("gui.jei.editMode.description.show.mod.id").replace("%CTRL", controlKeyLocalization);
-			String description = TextFormatting.BLUE + message;
-			tooltip.addAll(minecraft.fontRenderer.listFormattedStringToWidth(description, maxWidth));
-		} else {
-			String message = Translator.translateToLocal("gui.jei.editMode.description.hide.mod.id").replace("%CTRL", controlKeyLocalization);
-			String description = TextFormatting.BLUE + message;
-			tooltip.addAll(minecraft.fontRenderer.listFormattedStringToWidth(description, maxWidth));
-		}
+		String hideWildMessage = TextFormatting.GRAY + Translator.translateToLocal("gui.jei.editMode.description.hide.wild").replace("%CTRL", controlKeyLocalization);
+		tooltip.addAll(minecraft.fontRenderer.listFormattedStringToWidth(hideWildMessage, maxWidth));
 	}
 
 	protected static <T> ReportedException createRenderIngredientException(Throwable throwable, final IIngredientListElement<T> element) {

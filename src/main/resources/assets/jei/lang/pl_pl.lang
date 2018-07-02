@@ -9,14 +9,14 @@ jei.tooltip.transfer=Przenieś przedmioty
 jei.tooltip.recipe.ore.dict=Akceptuje: %s
 jei.tooltip.item.colors=Kolory: %s
 jei.tooltip.shapeless.recipe=Bezkształtna receptura
-jei.tooltip.cheat.mode=Tryb cheatów
-jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
-jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
+jei.tooltip.cheat.mode.button.enabled=Tryb cheatów włączony
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Naciśnij %s, aby go wyłączyć/włączyć.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s + klik tutaj, aby go wyłączyć/włączyć.
 jei.tooltip.recipe.by=Receptura z: %s
 jei.tooltip.recipe.id=ID receptury: %s
-jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The Ingredient list is disabled.
-jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
+jei.tooltip.not.enough.space=Nie ma wystarczająco dużo miejsca, aby wyświetlić tutaj JEI.
+jei.tooltip.ingredient.list.disabled=Nakładka JEI jest wyłączona.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Naciśnij %s, aby ją włączyć.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Brakuje przedmiotów
@@ -27,15 +27,15 @@ jei.tooltip.error.recipe.transfer.too.large.player.inventory=Receptura jest za d
 jei.tooltip.error.crash=Błąd z tooltipem, sprawdź log
 
 # Error Messages
-jei.chat.error.command.too.long=JEI musi być na serwerze aby obsłużyć tę komendę czatu, jest ona zbyt długa dla Minecrafta żeby ją wysłać.
+jei.chat.error.command.too.long=JEI musi być na serwerze, aby obsłużyć tę komendę czatu. Jest ona zbyt długa dla Minecrafta, żeby ją wysłać.
 jei.chat.error.no.cheat.permission.1=You Nie masz uprawnień do używania trybu cheatów JEI.
 jei.chat.error.no.cheat.permission.2=Uprawnienia są nadawane graczom, którzy mogą używać komendy /give lub są w trybie kreatywnym.
 
 # Key Bindings
-key.jei.toggleOverlay=Włącz/wyłącz nakładkę z listą przedmiotów
+key.jei.toggleOverlay=Pokaż/ukryj JEI
 key.jei.focusSearch=Zaznacz pasek wyszukiwania
-key.jei.showRecipe=Wyświetl recepturę przedmiotu
-key.jei.showUses=Wyświetl zastosowania przedmiotu
+key.jei.showRecipe=Wyświetl recepturę
+key.jei.showUses=Wyświetl zastosowania
 key.jei.recipeBack=Wyświetl poprzednio oglądaną recepturę
 key.jei.toggleCheatMode=Włącz/wyłącz tryb cheatów
 key.jei.previousPage=Pokaż poprzednią stronę
@@ -49,19 +49,19 @@ config.jei.title=Konfiguracja %MODNAME
 
 config.jei.mode=Tryb
 config.jei.mode.comment=Zmień tryb, w jakim działa JEI.
-config.jei.mode.cheatItemsEnabled=Cheatowanie włączone
+config.jei.mode.cheatItemsEnabled=Tryb cheatów
 config.jei.mode.cheatItemsEnabled.comment=Dawaj przedmioty zamiast pokazywać ich receptury.
-config.jei.mode.editEnabled=Tryb ukrywania przedmiotów
-config.jei.mode.editEnabled.comment=Pokazuj lub ukrywaj przedmioty po kliknięciu na nie na nakładce z listą przedmiotów.
+config.jei.mode.editEnabled=Ukryj składniki
+config.jei.mode.editEnabled.comment=Ukrywaj lub pokazuj składniki po kliknięciu na nie na nakładce z listą.
 
 config.jei.interface=Interfejs
-config.jei.interface.comment=Opcje dotyczące interfejsu.
-config.jei.interface.overlayEnabled=Nakładka z listą przedmiotów włączona
-config.jei.interface.overlayEnabled.comment=Pokazuj nakładkę z listą przedmiotów obok otwartych okienek interfejsu.
+config.jei.interface.comment=Opcje dotyczące interfejsu użytkownika.
+config.jei.interface.overlayEnabled=Pokazuj nakładkę z listą składników
+config.jei.interface.overlayEnabled.comment=Pokazuj nakładkę z listą składników obok otwartych okienek interfejsu.
 
 config.jei.search=Opcje wyszukiwania
 config.jei.search.comment=Opcje dotyczące paska wyszukiwania.
-config.jei.search.modNameSearchMode=@NazwaModu
+config.jei.search.modNameSearchMode=@NazwaModa
 config.jei.search.modNameSearchMode.comment=Tryb wyszukiwania po nazwach modów (prefiks: @)
 config.jei.search.tooltipSearchMode=#Tooltip
 config.jei.search.tooltipSearchMode.comment=Tryb wyszukiwania po tooltipach (prefiks: #)
@@ -70,35 +70,31 @@ config.jei.search.oreDictSearchMode.comment=Tryb wyszukiwania po nazwach przedmi
 config.jei.search.creativeTabSearchMode=%%KartaTrybuKreatywnego
 config.jei.search.creativeTabSearchMode.comment=Tryb wyszukiwania po nazwach kart znajdujących się w ekwipunku trybu kreatywnego (prefiks: %)
 config.jei.search.colorSearchMode=^Kolor
-config.jei.search.colorSearchMode.comment=Tryb wyszukiwania po kolorach przedmiotów (prefiks: ^)
+config.jei.search.colorSearchMode.comment=Tryb wyszukiwania po kolorach (prefiks: ^)
 config.jei.search.resourceIdSearchMode=&IdZasobu
 config.jei.search.resourceIdSearchMode.comment=Tryb wyszukiwania po ID zasobów (prefiks: &)
 
 config.jei.advanced=Zaawansowane
 config.jei.advanced.comment=Zaawansowane opcje konfiguracyjne do zmiany sposobu, w jaki funkcjonuje JEI.
-config.jei.advanced.itemBlacklist=Czarna lista przedmiotów
-config.jei.advanced.itemBlacklist.comment=Lista przedmiotów, które nie powinny być wyświetlane na nakładce z listą przedmiotów. Format: modId[:name[:meta]]. Tryb edycji automatycznie doda tutaj wpisy lub je usunie.
+config.jei.advanced.itemBlacklist=Czarna lista składników
+config.jei.advanced.itemBlacklist.comment=Lista składników, które nie powinny być wyświetlane na nakładce z listą. Format: IdModa[:nazwa[:meta]]. Tryb ukrywania składników automatycznie doda tutaj wpisy lub je usunie.
 config.jei.advanced.colorSearchEnabled=Włącz wyszukiwanie po kolorach
-config.jei.advanced.colorSearchEnabled.comment=Wyszukuj przedmioty po kolorach oraz pokazuj możliwe do wyszukania kolory przedmiotów w tooltipach na nakładce z listą przedmiotów.
+config.jei.advanced.colorSearchEnabled.comment=Wyszukuj składniki po kolorach oraz pokazuj te kolory w tooltipach na nakładce z listą.
 config.jei.advanced.debugModeEnabled=Tryb debugowania
-config.jei.advanced.debugModeEnabled.comment=Przydatny tylko dla deweloperów JEI, dodaje mnóstwo testowych przedmiotów i kilka debugerskich receptur.
+config.jei.advanced.debugModeEnabled.comment=Przydatny tylko dla deweloperów JEI, dodaje testowe składniki i kilka debugerskich receptur.
 config.jei.advanced.centerSearchBarEnabled=Wyśrodkuj pasek wyszukiwania
 config.jei.advanced.centerSearchBarEnabled.comment=Przenieś pasek wyszukiwania JEI na środek dolnej krawędzi ekranu.
-config.jei.advanced.modNameFormat=Format nazwy modu
-config.jei.advanced.modNameFormat.comment=Określa, jak powinna być sformatowana nazwa modu w tooltipach interfejsu JEI. Pozostaw puste aby wyłączyć.
+config.jei.advanced.modNameFormat=Format nazwy moda
+config.jei.advanced.modNameFormat.comment=Określa, jak powinna być sformatowana nazwa moda w tooltipach interfejsu JEI. Pozostaw puste, aby wyłączyć.
 config.jei.advanced.maxColumns=Maksymalna szerokość
 config.jei.advanced.maxColumns.comment=Maksymalna szerokość listy składników.
 config.jei.advanced.giveMode=Tryb dawania
-config.jei.advanced.giveMode.comment=Zdecyduj, czy JEI ma dawać przedmioty bezpośrednio do ekwipunku (inventory), czy chcesz zabierać i przenosić je samemu (mouse_pickup).
+config.jei.advanced.giveMode.comment=Zdecyduj, czy JEI ma dawać składniki bezpośrednio do ekwipunku (inventory), czy chcesz zabierać i przenosić je samemu (mouse_pickup).
 
-# Edit Mode
-gui.jei.editMode.description=Tryb edycji listy przedmiotów JEI:
-gui.jei.editMode.description.hide=Ukryj (%CTRL + klik).
-gui.jei.editMode.description.show=Ukryte (%CTRL + klik).
-gui.jei.editMode.description.hide.wild=Ukryj przez wieloznacznik (%CTRL + prawoklik).
-gui.jei.editMode.description.show.wild=Ukryte przez wieloznacznik (%CTRL + prawoklik).
-gui.jei.editMode.description.hide.mod.id=Ukryj mod (%CTRL + SHIFT + klik).
-gui.jei.editMode.description.show.mod.id=Mod ukryty (%CTRL + SHIFT + klik).
+# Hide Ingredients Mode
+gui.jei.editMode.description=Tryb ukrywania składników JEI:
+gui.jei.editMode.description.hide=%CTRL + klik, aby ukryć
+gui.jei.editMode.description.hide.wild=%CTRL + prawoklik, aby ukryć przez wieloznacznik
 
 # PC/Linux Control Key
 key.jei.ctrl=CTRL
@@ -112,7 +108,6 @@ gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=Paliwo
 gui.jei.category.fuel.smeltCount.single=Przetapia 1 przedmiot
 gui.jei.category.fuel.smeltCount=Przetapia %s przedmiotów
-gui.jei.category.fuel.burnTime=Czas palenia: %s
 gui.jei.category.brewing=Warzenie
 gui.jei.category.brewing.steps=Kroki: %s
 gui.jei.category.itemInformation=Informacja

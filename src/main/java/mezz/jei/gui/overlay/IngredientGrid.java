@@ -8,7 +8,6 @@ import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
-import mezz.jei.input.IPaged;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.MouseHelper;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
@@ -30,12 +29,11 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * An ingredient grid displays a rectangular area of clickable recipe ingredients.
  */
-public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
+public class IngredientGrid implements IShowsRecipeFocuses {
 	private static final int INGREDIENT_PADDING = 1;
 	public static final int INGREDIENT_WIDTH = GuiItemStackGroup.getWidth(INGREDIENT_PADDING);
 	public static final int INGREDIENT_HEIGHT = GuiItemStackGroup.getHeight(INGREDIENT_PADDING);
@@ -47,14 +45,20 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 		this.guiIngredientSlots = new IngredientListBatchRenderer();
 	}
 
-	public void updateBounds(Rectangle area, Collection<Rectangle> exclusionAreas) {
-		final int columns = Math.min(area.width / INGREDIENT_WIDTH, Config.getMaxColumns());
-		final int rows = area.height / INGREDIENT_HEIGHT;
+	public int size() {
+		return this.guiIngredientSlots.size();
+	}
 
-		final int width = columns * INGREDIENT_WIDTH;
+	public void updateBounds(Rectangle availableArea, int minWidth, Collection<Rectangle> exclusionAreas) {
+		final int columns = Math.min(availableArea.width / INGREDIENT_WIDTH, Config.getMaxColumns());
+		final int rows = availableArea.height / INGREDIENT_HEIGHT;
+
+		final int ingredientsWidth = columns * INGREDIENT_WIDTH;
+		final int width = Math.max(ingredientsWidth, minWidth);
 		final int height = rows * INGREDIENT_HEIGHT;
-		final int x = area.x + (area.width - width);
-		final int y = area.y + (area.height - height) / 2;
+		final int x = availableArea.x + (availableArea.width - width);
+		final int y = availableArea.y + (availableArea.height - height) / 2;
+		final int xOffset = x + Math.max(0, (width - ingredientsWidth) / 2);
 
 		this.area = new Rectangle(x, y, width, height);
 		this.guiIngredientSlots.clear();
@@ -62,7 +66,7 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 		for (int row = 0; row < rows; row++) {
 			int y1 = y + (row * INGREDIENT_HEIGHT);
 			for (int column = 0; column < columns; column++) {
-				int x1 = x + (column * INGREDIENT_WIDTH);
+				int x1 = xOffset + (column * INGREDIENT_WIDTH);
 				IngredientListSlot ingredientListSlot = new IngredientListSlot(x1, y1, INGREDIENT_PADDING);
 				Rectangle stackArea = ingredientListSlot.getArea();
 				final boolean blocked = MathUtil.intersects(exclusionAreas, stackArea);
@@ -116,21 +120,23 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 	private boolean shouldDeleteItemOnClick(Minecraft minecraft, int mouseX, int mouseY) {
 		if (Config.isDeleteItemsInCheatModeActive()) {
 			EntityPlayer player = minecraft.player;
-			ItemStack itemStack = player.inventory.getItemStack();
-			if (!itemStack.isEmpty()) {
-				JeiRuntime runtime = Internal.getRuntime();
-				if (runtime == null || !runtime.getRecipesGui().isOpen()) {
-					GiveMode giveMode = Config.getGiveMode();
-					if (giveMode == GiveMode.MOUSE_PICKUP) {
-						IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);
-						if (ingredientUnderMouse != null && ingredientUnderMouse.getValue() instanceof ItemStack) {
-							ItemStack value = (ItemStack) ingredientUnderMouse.getValue();
-							if (ItemHandlerHelper.canItemStacksStack(itemStack, value)) {
-								return false;
+			if (player != null) {
+				ItemStack itemStack = player.inventory.getItemStack();
+				if (!itemStack.isEmpty()) {
+					JeiRuntime runtime = Internal.getRuntime();
+					if (runtime == null || !runtime.getRecipesGui().isOpen()) {
+						GiveMode giveMode = Config.getGiveMode();
+						if (giveMode == GiveMode.MOUSE_PICKUP) {
+							IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);
+							if (ingredientUnderMouse != null && ingredientUnderMouse.getValue() instanceof ItemStack) {
+								ItemStack value = (ItemStack) ingredientUnderMouse.getValue();
+								if (ItemHandlerHelper.canItemStacksStack(itemStack, value)) {
+									return false;
+								}
 							}
 						}
+						return true;
 					}
-					return true;
 				}
 			}
 		}
@@ -146,12 +152,14 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 			Minecraft minecraft = Minecraft.getMinecraft();
 			if (shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				EntityPlayerSP player = minecraft.player;
-				ItemStack itemStack = player.inventory.getItemStack();
-				if (!itemStack.isEmpty()) {
-					player.inventory.setItemStack(ItemStack.EMPTY);
-					PacketJei packet = new PacketDeletePlayerItem(itemStack);
-					JustEnoughItems.getProxy().sendPacketToServer(packet);
-					return true;
+				if (player != null) {
+					ItemStack itemStack = player.inventory.getItemStack();
+					if (!itemStack.isEmpty()) {
+						player.inventory.setItemStack(ItemStack.EMPTY);
+						PacketJei packet = new PacketDeletePlayerItem(itemStack);
+						JustEnoughItems.getProxy().sendPacketToServer(packet);
+						return true;
+					}
 				}
 			}
 		}
@@ -184,10 +192,4 @@ public abstract class IngredientGrid implements IShowsRecipeFocuses, IPaged {
 	public boolean canSetFocusWithMouse() {
 		return true;
 	}
-
-	public abstract int getPageCount();
-
-	public abstract int getPageNum();
-
-	public abstract List<IIngredientListElement> getVisibleElements();
 }

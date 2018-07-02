@@ -3,7 +3,6 @@ package mezz.jei.plugins.vanilla.furnace;
 import com.google.common.base.Preconditions;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawableAnimated;
-import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
@@ -21,7 +20,6 @@ import java.util.List;
 public class FuelRecipe implements IRecipeWrapper {
 	private final List<List<ItemStack>> inputs;
 	private final String smeltCountString;
-	private final String burnTimeString;
 	private final IDrawableAnimated flame;
 
 	public FuelRecipe(IGuiHelper guiHelper, Collection<ItemStack> input, int burnTime) {
@@ -38,10 +36,8 @@ public class FuelRecipe implements IRecipeWrapper {
 			this.smeltCountString = Translator.translateToLocalFormatted("gui.jei.category.fuel.smeltCount", smeltCount);
 		}
 
-		this.burnTimeString = Translator.translateToLocalFormatted("gui.jei.category.fuel.burnTime", burnTime);
-
-		IDrawableStatic flameDrawable = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 82, 114, 14, 14);
-		this.flame = guiHelper.createAnimatedDrawable(flameDrawable, burnTime, IDrawableAnimated.StartDirection.TOP, true);
+		this.flame = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 82, 114, 14, 14)
+			.buildAnimated(burnTime, IDrawableAnimated.StartDirection.TOP, true);
 	}
 
 	@Override
@@ -52,7 +48,6 @@ public class FuelRecipe implements IRecipeWrapper {
 	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 		flame.draw(minecraft, 1, 0);
-		minecraft.fontRenderer.drawString(smeltCountString, 24, 8, Color.gray.getRGB());
-		minecraft.fontRenderer.drawString(burnTimeString, 24, 18, Color.gray.getRGB());
+		minecraft.fontRenderer.drawString(smeltCountString, 24, 13, Color.gray.getRGB());
 	}
 }

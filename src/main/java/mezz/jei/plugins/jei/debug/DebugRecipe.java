@@ -15,6 +15,7 @@ import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.init.Items;
@@ -85,9 +86,11 @@ public class DebugRecipe implements IRecipeWrapper {
 	@Override
 	public boolean handleClick(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
 		if (mouseButton == 0 && button.mousePressed(minecraft, mouseX, mouseY)) {
-			GuiScreen screen = new GuiInventory(minecraft.player);
-			minecraft.displayGuiScreen(screen);
-
+			EntityPlayerSP player = minecraft.player;
+			if (player != null) {
+				GuiScreen screen = new GuiInventory(player);
+				minecraft.displayGuiScreen(screen);
+			}
 			IJeiRuntime runtime = JEIInternalPlugin.jeiRuntime;
 			if (runtime != null) {
 				IIngredientFilter ingredientFilter = runtime.getIngredientFilter();

@@ -9,7 +9,7 @@ jei.tooltip.transfer=Placera föremål
 jei.tooltip.recipe.ore.dict=Fungerar med alla %s
 jei.tooltip.item.colors=Färg: %s
 jei.tooltip.shapeless.recipe=Formlöst recept
-jei.tooltip.cheat.mode=Fuskläge är aktiverat.
+jei.tooltip.cheat.mode.button.enabled=Fuskläge är aktiverat.
 jei.tooltip.cheat.mode.how.to.disable.hotkey=Tryck på %s för att slå på/av det.
 jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-klicka för att slå på/av det.
 jei.tooltip.recipe.by=Recept av: %s
@@ -32,7 +32,7 @@ jei.chat.error.no.cheat.permission.1=Du har inte behörighet att använda JEI:s 
 jei.chat.error.no.cheat.permission.2=Behörighet ges till spelare som kan använda kommandot /give eller som är i Kreativt läge.
 
 # Key Bindings
-key.jei.toggleOverlay=Visa/dölj föremålslista
+key.jei.toggleOverlay=Visa/dölj ingredienslista
 key.jei.focusSearch=Markera sökfält
 key.jei.showRecipe=Visa föremålsrecept
 key.jei.showUses=Visa användningar av föremål
@@ -52,7 +52,7 @@ config.jei.mode.comment=Ändra läget som JEI fungerar i.
 config.jei.mode.cheatItemsEnabled=Fusk har aktiverats
 config.jei.mode.cheatItemsEnabled.comment=Ge föremål istället för att visa receptet.
 config.jei.mode.editEnabled=Dölj föremål
-config.jei.mode.editEnabled.comment=Dölj och visa föremål genom att klicka på dem i föremålslistan.
+config.jei.mode.editEnabled.comment=Dölj och visa föremål genom att klicka på dem i ingredienslistan.
 
 config.jei.interface=Gränssnitt
 config.jei.interface.comment=Alternativ för användargränssnittet.
@@ -77,9 +77,9 @@ config.jei.search.resourceIdSearchMode.comment=Sök efter resursernas ID (prefix
 config.jei.advanced=Avancerat
 config.jei.advanced.comment=Avancerade konfigurationsalternativ för att ändra hur JEI fungerar.
 config.jei.advanced.itemBlacklist=Föremålssvartlista
-config.jei.advanced.itemBlacklist.comment=Lista över föremål som inte bör visas i föremålslistan. Format: modId[:name[:meta]]. Redigeringsläget kommer automatiskt lägga till eller ta bort element här.
+config.jei.advanced.itemBlacklist.comment=Lista över föremål som inte bör visas i ingredienslistan. Format: modId[:name[:meta]]. Redigeringsläget kommer automatiskt lägga till eller ta bort element här.
 config.jei.advanced.colorSearchEnabled=Aktivera färgsökning
-config.jei.advanced.colorSearchEnabled.comment=Sök föremål efter färg och visa de sökbara föremålens färger i inforutan i föremålslistan.
+config.jei.advanced.colorSearchEnabled.comment=Sök föremål efter färg och visa de sökbara föremålens färger i inforutan i ingredienslistan.
 config.jei.advanced.debugModeEnabled=Felsökningsläge
 config.jei.advanced.debugModeEnabled.comment=Endast användbart gör JEI-utvecklare, lägger till tusentals testföremål och några felsökningsrecept.
 config.jei.advanced.centerSearchBarEnabled=Centrera sökfältet
@@ -91,14 +91,10 @@ config.jei.advanced.maxColumns.comment=Maximal bredd för ingredienslistan.
 config.jei.advanced.giveMode=Placeringsläge
 config.jei.advanced.giveMode.comment=Välj om JEI ska placera föremål direkt i utrustningen (inventory) eller plocka upp dem med musen (mouse_pickup).
 
-# Edit Mode
-gui.jei.editMode.description=Redigeringsläge för JEIs föremålslista:
+# Hide Ingredients Mode
+gui.jei.editMode.description=Redigeringsläge för JEIs ingredienslista:
 gui.jei.editMode.description.hide=Dölj. (%CTRL-klick).
-gui.jei.editMode.description.show=Dold. (%CTRL-klick).
 gui.jei.editMode.description.hide.wild=Dölj efter liknande föremål. (%CTRL-högerklick).
-gui.jei.editMode.description.show.wild=Dold efter liknande föremål. (%CTRL-högerklick).
-gui.jei.editMode.description.hide.mod.id=Dölj mod. (%CTRL-SHIFT-klick).
-gui.jei.editMode.description.show.mod.id=Dold mod. (%CTRL-SHIFT-klick).
 
 # PC/Linux Control Key
 key.jei.ctrl=CTRL
@@ -112,7 +108,6 @@ gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=Bränsle
 gui.jei.category.fuel.smeltCount.single=Smälter 1 föremål
 gui.jei.category.fuel.smeltCount=Smälter %s föremål
-gui.jei.category.fuel.burnTime=Brinntid: %s
 gui.jei.category.brewing=Bryggning
 gui.jei.category.brewing.steps=Steg: %s
 gui.jei.category.itemInformation=Beskrivning

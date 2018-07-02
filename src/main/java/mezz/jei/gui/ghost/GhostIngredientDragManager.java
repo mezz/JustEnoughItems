@@ -5,7 +5,6 @@ import mezz.jei.api.gui.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.runtime.JeiRuntime;
@@ -20,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class GhostIngredientDragManager {
-	private final IngredientGrid contents;
+	private final IGhostIngredientDragSource source;
 	private final List<GhostIngredientReturning> ghostIngredientsReturning = new ArrayList<>();
 	@Nullable
 	private GhostIngredientDrag<?> ghostIngredientDrag;
@@ -29,8 +28,8 @@ public class GhostIngredientDragManager {
 	@Nullable
 	private List<IGhostIngredientHandler.Target<Object>> hoveredIngredientTargets;
 
-	public GhostIngredientDragManager(IngredientGrid contents) {
-		this.contents = contents;
+	public GhostIngredientDragManager(IGhostIngredientDragSource source) {
+		this.source = source;
 	}
 
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
@@ -52,7 +51,7 @@ public class GhostIngredientDragManager {
 		if (this.ghostIngredientDrag != null) {
 			this.ghostIngredientDrag.drawTargets(mouseX, mouseY);
 		} else {
-			IIngredientListElement elementUnderMouse = this.contents.getElementUnderMouse();
+			IIngredientListElement elementUnderMouse = this.source.getElementUnderMouse();
 			Object hovered = elementUnderMouse == null ? null : elementUnderMouse.getIngredient();
 			if (!Objects.equals(hovered, this.hoveredIngredient)) {
 				this.hoveredIngredient = hovered;
@@ -83,6 +82,13 @@ public class GhostIngredientDragManager {
 			return success;
 		}
 		return false;
+	}
+
+	public void stopDrag() {
+		if (this.ghostIngredientDrag != null) {
+			this.ghostIngredientDrag.stop();
+			this.ghostIngredientDrag = null;
+		}
 	}
 
 	public <T extends GuiScreen, V> boolean handleClickGhostIngredient(T currentScreen, IClickedIngredient<V> clicked) {

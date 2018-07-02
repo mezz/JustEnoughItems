@@ -1,7 +1,7 @@
 package mezz.jei.suffixtree;
 
-import gnu.trove.set.TIntSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public interface ISearchTree {
-	TIntSet search(String word);
+	IntSet search(String word);
 }

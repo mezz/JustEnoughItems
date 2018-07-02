@@ -16,7 +16,7 @@ public interface IIngredientBlacklist {
 	/**
 	 * Stop JEI from displaying a specific ingredient in the ingredient list.
 	 * Use {@link OreDictionary#WILDCARD_VALUE} meta for wildcard.
-	 * Ingredients blacklisted with this API can't be seen in the config or in edit mode.
+	 * Ingredients blacklisted with this API can't be seen in the config or in hide ingredients mode.
 	 */
 	<V> void addIngredientToBlacklist(V ingredient);
 

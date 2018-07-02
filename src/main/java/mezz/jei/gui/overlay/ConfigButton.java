@@ -68,7 +68,7 @@ public class ConfigButton {
 				tooltip.add(TextFormatting.GOLD + Translator.translateToLocal("jei.tooltip.not.enough.space"));
 			}
 			if (Config.isCheatItemsEnabled()) {
-				tooltip.add(TextFormatting.RED + Translator.translateToLocal("jei.tooltip.cheat.mode"));
+				tooltip.add(TextFormatting.RED + Translator.translateToLocal("jei.tooltip.cheat.mode.button.enabled"));
 				KeyBinding toggleCheatMode = KeyBindings.toggleCheatMode;
 				if (toggleCheatMode.getKeyCode() != 0) {
 					tooltip.add(TextFormatting.RED + Translator.translateToLocalFormatted("jei.tooltip.cheat.mode.how.to.disable.hotkey", toggleCheatMode.getDisplayName()));
@@ -81,7 +81,8 @@ public class ConfigButton {
 		}
 	}
 
-	public boolean handleMouseClick(Minecraft minecraft, int mouseX, int mouseY) {
+	public boolean handleMouseClick(int mouseX, int mouseY) {
+		Minecraft minecraft = Minecraft.getMinecraft();
 		if (Config.isOverlayEnabled() && configButton.mousePressed(minecraft, mouseX, mouseY)) {
 			configButton.playPressSound(minecraft.getSoundHandler());
 			if (Keyboard.getEventKeyState() && (Keyboard.getEventKey() == Keyboard.KEY_LCONTROL || Keyboard.getEventKey() == Keyboard.KEY_RCONTROL)) {

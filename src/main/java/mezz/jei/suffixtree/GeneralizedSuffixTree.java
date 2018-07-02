@@ -15,10 +15,11 @@
  */
 package mezz.jei.suffixtree;
 
-import javax.annotation.Nullable;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
+import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * A Generalized Suffix Tree, based on the Ukkonen's paper "On-line construction of suffix trees"
@@ -81,13 +82,13 @@ public class GeneralizedSuffixTree implements ISearchTree {
 	 * @return the collection of indexes associated with the input <tt>word</tt>
 	 */
 	@Override
-	public TIntSet search(String word) {
+	public IntSet search(String word) {
 		Node tmpNode = searchNode(word);
 		if (tmpNode == null) {
-			return new TIntHashSet();
+			return new IntOpenHashSet();
 		}
 
-		TIntSet ret = new TIntHashSet(1000);
+		IntSet ret = new IntOpenHashSet(1000);
 		tmpNode.getData(ret);
 		return ret;
 	}
@@ -199,7 +200,7 @@ public class GeneralizedSuffixTree implements ISearchTree {
 
 		if (!"".equals(str)) {
 			Edge g = s.getEdge(str.charAt(0));
-
+			Objects.requireNonNull(g);
 			String label = g.getLabel();
 			// must see whether "str" is substring of the label of an edge
 			if (label.length() > str.length() && label.charAt(str.length()) == t) {

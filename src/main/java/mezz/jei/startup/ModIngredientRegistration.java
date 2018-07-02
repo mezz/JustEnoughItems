@@ -34,10 +34,8 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 		Map<Class, IngredientSet> ingredientsMap = new IdentityHashMap<>();
 		for (Map.Entry<Class, Collection> entry : allIngredientsMap.entrySet()) {
 			Class ingredientClass = entry.getKey();
-			Collection ingredients = entry.getValue();
-			IIngredientHelper ingredientHelper = ingredientHelperMap.get(ingredientClass);
-			IngredientSet ingredientSet = IngredientSet.create(ingredientClass, ingredientHelper);
-			ingredientSet.addAll(ingredients);
+			@SuppressWarnings("unchecked")
+			IngredientSet ingredientSet = createIngredientSet(ingredientClass, entry.getValue());
 			ingredientsMap.put(ingredientClass, ingredientSet);
 		}
 
@@ -48,5 +46,13 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 				ImmutableMap.copyOf(ingredientHelperMap),
 				ImmutableMap.copyOf(ingredientRendererMap)
 		);
+	}
+
+	private <T> IngredientSet<T> createIngredientSet(Class<T> ingredientClass, Collection<T> ingredients) {
+		@SuppressWarnings("unchecked")
+		IIngredientHelper<T> ingredientHelper = ingredientHelperMap.get(ingredientClass);
+		IngredientSet<T> ingredientSet = IngredientSet.create(ingredientClass, ingredientHelper);
+		ingredientSet.addAll(ingredients);
+		return ingredientSet;
 	}
 }

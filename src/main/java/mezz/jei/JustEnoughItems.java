@@ -3,7 +3,7 @@ package mezz.jei;
 import java.util.Map;
 
 import mezz.jei.config.Constants;
-import mezz.jei.config.SessionData;
+import mezz.jei.config.ServerInfo;
 import mezz.jei.startup.ProxyCommon;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -33,7 +33,7 @@ public class JustEnoughItems {
 	public boolean checkModLists(Map<String, String> modList, Side side) {
 		if (side == Side.SERVER) {
 			boolean jeiOnServer = modList.containsKey(Constants.MOD_ID);
-			SessionData.onConnectedToServer(jeiOnServer);
+			ServerInfo.onConnectedToServer(jeiOnServer);
 		}
 
 		return true;

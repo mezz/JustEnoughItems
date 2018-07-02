@@ -6,10 +6,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import mezz.jei.config.Config;
+import mezz.jei.config.Constants;
+import mezz.jei.config.KeyBindings;
+import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientFilter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.client.config.HoverChecker;
 import org.lwjgl.input.Keyboard;
 
@@ -22,11 +26,16 @@ public class GuiTextFieldFilter extends GuiTextField {
 	private final IngredientFilter ingredientFilter;
 	private boolean previousKeyboardRepeatEnabled;
 
+	private final DrawableNineSliceTexture background;
+
 	public GuiTextFieldFilter(int componentId, IngredientFilter ingredientFilter) {
 		super(componentId, Minecraft.getMinecraft().fontRenderer, 0, 0, 0, 0);
+
 		setMaxStringLength(maxSearchLength);
 		this.hoverChecker = new HoverChecker(0, 0, 0, 0, 0);
 		this.ingredientFilter = ingredientFilter;
+
+		this.background = new DrawableNineSliceTexture(Constants.RECIPE_BACKGROUND, 95, 182, 95, 20, 4, 4, 4, 4);
 	}
 
 	public void updateBounds(Rectangle area) {
@@ -34,6 +43,8 @@ public class GuiTextFieldFilter extends GuiTextField {
 		this.y = area.y;
 		this.width = area.width;
 		this.height = area.height;
+		this.background.setWidth(area.width);
+		this.background.setHeight(area.height);
 		this.hoverChecker.updateBounds(area.y, area.y + area.height, area.x, area.x + area.width);
 		setSelectionPos(getCursorPosition());
 	}
@@ -83,7 +94,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 					setText(historyString);
 					handled = true;
 				}
-			} else if (keyCode == Keyboard.KEY_RETURN) {
+			} else if (KeyBindings.isEnterKey(keyCode)) {
 				saveHistory();
 			}
 		}
@@ -133,4 +144,29 @@ public class GuiTextFieldFilter extends GuiTextField {
 		}
 		return false;
 	}
+
+	// begin hack to draw our own background texture instead of the ugly default one
+	private boolean isDrawing = false;
+
+	@Override
+	public boolean getEnableBackgroundDrawing() {
+		if (this.isDrawing) {
+			GlStateManager.color(1, 1, 1, 1);
+			background.draw(Minecraft.getMinecraft(), this.x, this.y);
+		}
+		return false;
+	}
+
+	@Override
+	public int getWidth() {
+		return this.width - 8;
+	}
+
+	@Override
+	public void drawTextBox() {
+		this.isDrawing = true;
+		super.drawTextBox();
+		this.isDrawing = false;
+	}
+	// end background hack
 }

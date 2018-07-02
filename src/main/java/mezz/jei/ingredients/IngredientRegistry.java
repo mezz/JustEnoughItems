@@ -17,7 +17,6 @@ import net.minecraft.potion.PotionHelper;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.NonNullList;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -257,22 +256,22 @@ public class IngredientRegistry implements IIngredientRegistry {
 		ingredientFilter.invalidateCache();
 	}
 
-	public <V> boolean isIngredientInvisible(V ingredient, IngredientFilter ingredientFilter) {
+	public <V> boolean isIngredientVisible(V ingredient, IngredientFilter ingredientFilter) {
 		@SuppressWarnings("unchecked")
 		Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
 		IIngredientListElement<V> element = IngredientListElementFactory.createElement(this, ingredientClass, ingredient, modIdHelper);
 		if (element == null) {
-			return true;
+			return false;
 		}
 		List<IIngredientListElement<V>> matchingElements = ingredientFilter.findMatchingElements(element);
 		if (matchingElements.isEmpty()) {
-			return false;
+			return true;
 		}
 		for (IIngredientListElement matchingElement : matchingElements) {
 			if (matchingElement.isVisible()) {
-				return false;
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 }

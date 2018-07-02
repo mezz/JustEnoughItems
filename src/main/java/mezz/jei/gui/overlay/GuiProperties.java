@@ -5,6 +5,8 @@ import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
+import javax.annotation.Nullable;
+
 public class GuiProperties implements IGuiProperties {
 	private final Class<? extends GuiScreen> guiClass;
 	private final int guiLeft;
@@ -14,7 +16,11 @@ public class GuiProperties implements IGuiProperties {
 	private final int screenWidth;
 	private final int screenHeight;
 
+	@Nullable
 	public static GuiProperties create(GuiContainer guiContainer) {
+		if (guiContainer.width == 0 || guiContainer.height == 0) {
+			return null;
+		}
 		return new GuiProperties(
 				guiContainer.getClass(),
 				guiContainer.getGuiLeft(),
@@ -48,30 +54,37 @@ public class GuiProperties implements IGuiProperties {
 		this.screenHeight = screenHeight;
 	}
 
+	@Override
 	public Class<? extends GuiScreen> getGuiClass() {
 		return guiClass;
 	}
 
+	@Override
 	public int getGuiLeft() {
 		return guiLeft;
 	}
 
+	@Override
 	public int getGuiTop() {
 		return guiTop;
 	}
 
+	@Override
 	public int getGuiXSize() {
 		return guiXSize;
 	}
 
+	@Override
 	public int getGuiYSize() {
 		return guiYSize;
 	}
 
+	@Override
 	public int getScreenWidth() {
 		return screenWidth;
 	}
 
+	@Override
 	public int getScreenHeight() {
 		return screenHeight;
 	}

@@ -10,6 +10,7 @@ import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
@@ -59,8 +60,10 @@ public class AnvilRecipeWrapper implements IRecipeWrapper {
 			String text = I18n.format("container.repair.cost", costText);
 
 			int mainColor = 0xFF80FF20;
-			if ((lastCost >= 40 || lastCost > minecraft.player.experienceLevel)
-					&& !minecraft.player.capabilities.isCreativeMode) {
+			EntityPlayerSP player = minecraft.player;
+			if (player != null &&
+				(lastCost >= 40 || lastCost > player.experienceLevel) &&
+				!player.capabilities.isCreativeMode) {
 				// Show red if the player doesn't have enough levels
 				mainColor = 0xFFFF6060;
 			}
