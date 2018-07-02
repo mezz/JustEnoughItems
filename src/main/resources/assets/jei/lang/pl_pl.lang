@@ -52,7 +52,7 @@ config.jei.mode.comment=Zmień tryb, w jakim działa JEI.
 config.jei.mode.cheatItemsEnabled=Tryb cheatów
 config.jei.mode.cheatItemsEnabled.comment=Dawaj przedmioty zamiast pokazywać ich receptury.
 config.jei.mode.editEnabled=Ukryj składniki
-config.jei.mode.editEnabled.comment=Ukrywaj lub pokazuj składniki po kliknięciu na nie na nakładce z listą.
+config.jei.mode.editEnabled.comment=Ukrywaj lub pokazuj składniki po kliknięciu na nie na nakładce z listą składników.
 
 config.jei.interface=Interfejs
 config.jei.interface.comment=Opcje dotyczące interfejsu użytkownika.
@@ -76,10 +76,10 @@ config.jei.search.resourceIdSearchMode.comment=Tryb wyszukiwania po ID zasobów 
 
 config.jei.advanced=Zaawansowane
 config.jei.advanced.comment=Zaawansowane opcje konfiguracyjne do zmiany sposobu, w jaki funkcjonuje JEI.
-config.jei.advanced.itemBlacklist=Czarna lista składników
-config.jei.advanced.itemBlacklist.comment=Lista składników, które nie powinny być wyświetlane na nakładce z listą. Format: IdModa[:nazwa[:meta]]. Tryb ukrywania składników automatycznie doda tutaj wpisy lub je usunie.
+config.jei.advanced.itemBlacklist=Blacklista składników
+config.jei.advanced.itemBlacklist.comment=Lista składników, które nie powinny być wyświetlane na nakładce z listą składników. Format: IdModa[:nazwa[:meta]]. Tryb ukrywania składników automatycznie doda tutaj wpisy lub je usunie.
 config.jei.advanced.colorSearchEnabled=Włącz wyszukiwanie po kolorach
-config.jei.advanced.colorSearchEnabled.comment=Wyszukuj składniki po kolorach oraz pokazuj te kolory w tooltipach na nakładce z listą.
+config.jei.advanced.colorSearchEnabled.comment=Wyszukuj składniki po kolorach oraz pokazuj te kolory w tooltipach na nakładce z listą składników.
 config.jei.advanced.debugModeEnabled=Tryb debugowania
 config.jei.advanced.debugModeEnabled.comment=Przydatny tylko dla deweloperów JEI, dodaje testowe składniki i kilka debugerskich receptur.
 config.jei.advanced.centerSearchBarEnabled=Wyśrodkuj pasek wyszukiwania
@@ -87,7 +87,9 @@ config.jei.advanced.centerSearchBarEnabled.comment=Przenieś pasek wyszukiwania 
 config.jei.advanced.modNameFormat=Format nazwy moda
 config.jei.advanced.modNameFormat.comment=Określa, jak powinna być sformatowana nazwa moda w tooltipach interfejsu JEI. Pozostaw puste, aby wyłączyć.
 config.jei.advanced.maxColumns=Maksymalna szerokość
-config.jei.advanced.maxColumns.comment=Maksymalna szerokość listy składników.
+config.jei.advanced.maxColumns.comment=Maksymalna szerokość nakładki z listą składników.
+config.jei.advanced.maxRecipeGuiHeight=Maksymalna wysokość interfejsu z recepturami
+config.jei.advanced.maxRecipeGuiHeight.comment=Maksymalna wysokość dla interfejsu z recepturami.
 config.jei.advanced.giveMode=Tryb dawania
 config.jei.advanced.giveMode.comment=Zdecyduj, czy JEI ma dawać składniki bezpośrednio do ekwipunku (inventory), czy chcesz zabierać i przenosić je samemu (mouse_pickup).
 
