@@ -88,6 +88,8 @@ config.jei.advanced.modNameFormat=Formato de nome do mod
 config.jei.advanced.modNameFormat.comment=Alterar o formato do nome do mod em dicas nas interfaces do JEI. Deixe em branco para desativar.
 config.jei.advanced.maxColumns=Largura máxima
 config.jei.advanced.maxColumns.comment=A largura máxima da lista de ingredientes.
+config.jei.advanced.maxRecipeGuiHeight=Altura máxima da interface de receitas
+config.jei.advanced.maxRecipeGuiHeight.comment=A altura máxima para a interface de receitas.
 config.jei.advanced.giveMode=Modo Give
 config.jei.advanced.giveMode.comment=Permitir que o JEI envie itens diretamente para o inventário ou possa obtê-los apenas com o mouse (mouse_pickup).
 
