@@ -9,9 +9,9 @@ jei.tooltip.transfer=アイテムを配置する
 jei.tooltip.recipe.ore.dict=以下の全てで: %s
 jei.tooltip.item.colors=色: %s
 jei.tooltip.shapeless.recipe=不定形レシピ
-jei.tooltip.cheat.mode.button.enabled=チートモード
-jei.tooltip.cheat.mode.how.to.disable.hotkey=%s キーで無効にします。
-jei.tooltip.cheat.mode.how.to.disable.no.hotkey=ここで %s-click すると無効にします。
+jei.tooltip.cheat.mode.button.enabled=チートモード有効
+jei.tooltip.cheat.mode.how.to.disable.hotkey=%sキーで無効にします。
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=ここで%s+左クリックすると無効にします。
 jei.tooltip.recipe.by=%s によるレシピ
 jei.tooltip.recipe.id=レシピID: %s
 jei.tooltip.not.enough.space=JEIを表示するためのスペースが足りません。
@@ -32,10 +32,10 @@ jei.chat.error.no.cheat.permission.1=JEIチートモードを使う権限を有�
 jei.chat.error.no.cheat.permission.2=権限はgiveコマンドが使用できるか、クリエイティブモードのプレイヤーに与えられます。
 
 # Key Bindings
-key.jei.toggleOverlay=アイテムリストの表示/非表示
+key.jei.toggleOverlay=JEIの表示/非表示
 key.jei.focusSearch=検索バーの選択
-key.jei.showRecipe=アイテムのレシピの表示
-key.jei.showUses=アイテムの用途の表示
+key.jei.showRecipe=レシピの表示
+key.jei.showUses=用途の表示
 key.jei.recipeBack=前のレシピに戻る
 key.jei.toggleCheatMode=チートモードのオン/オフ
 key.jei.previousPage=前のページに戻る
@@ -49,10 +49,10 @@ config.jei.title=%MODNAMEの設定
 
 config.jei.mode=モード
 config.jei.mode.comment=JEIのモードを変更します。
-config.jei.mode.cheatItemsEnabled=チートモードの有効化
+config.jei.mode.cheatItemsEnabled=チートモード
 config.jei.mode.cheatItemsEnabled.comment=レシピを見せるのではなくアイテムを与えます。
-config.jei.mode.editEnabled=アイテム隠蔽モード
-config.jei.mode.editEnabled.comment=クリックでアイテムリストでのアイテムの表示/非表示を切り替えます。
+config.jei.mode.editEnabled=アイテム隠蔽
+config.jei.mode.editEnabled.comment=クリックでリストへのアイテムの表示/非表示を切り替えられます。
 
 config.jei.interface=インターフェース
 config.jei.interface.comment=ユーザーインターフェースに関係する設定。
@@ -70,14 +70,14 @@ config.jei.search.oreDictSearchMode.comment=鉱石辞書名検索 (プレフィ�
 config.jei.search.creativeTabSearchMode=%%クリエイティブタブ
 config.jei.search.creativeTabSearchMode.comment=クリエイティブタブ名検索 (プレフィックス：%)
 config.jei.search.colorSearchMode=^色
-config.jei.search.colorSearchMode.comment=アイテム色検索 (プレフィックス：^)
+config.jei.search.colorSearchMode.comment=色検索 (プレフィックス：^)
 config.jei.search.resourceIdSearchMode=&リソースID
 config.jei.search.resourceIdSearchMode.comment=リソースID検索 (プレフィックス：&)
 
 config.jei.advanced=高度な設定
 config.jei.advanced.comment=JEIの機能を変更する高度な設定。
 config.jei.advanced.itemBlacklist=アイテムのブラックリスト
-config.jei.advanced.itemBlacklist.comment=アイテムリストに表示されるべきではないアイテムのリスト。 書式: modId[:name[:meta]]. エディットモードではここに自動的に追加削除を行います。
+config.jei.advanced.itemBlacklist.comment=リストに表示されるべきではないアイテムのリスト。 書式: modId[:name[:meta]]. アイテム隠蔽時はここに自動的に追加削除を行います。
 config.jei.advanced.colorSearchEnabled=色による検索の有効化
 config.jei.advanced.colorSearchEnabled.comment=色による検索とアイテムリスト内ツールチップでのアイテムの色情報表示を有効化します。
 config.jei.advanced.debugModeEnabled=デバッグモード
@@ -94,9 +94,9 @@ config.jei.advanced.giveMode=付与モード
 config.jei.advanced.giveMode.comment=インベントリに直接アイテムに送るか (inventory)、マウスでアイテムを取得するか (mouse_pickup) を指定します。
 
 # Hide Ingredients Mode
-gui.jei.editMode.description=JEIアイテムリストエディットモード:
-gui.jei.editMode.description.hide=隠蔽。 (%CTRL+左クリック)
-gui.jei.editMode.description.hide.wild=ワイルドカードによる隠蔽。 (%CTRL+右クリック)
+gui.jei.editMode.description=JEIアイテム隠蔽モード:
+gui.jei.editMode.description.hide=%CTRL+左クリックで隠蔽
+gui.jei.editMode.description.hide.wild=%CTRL+右クリックでワイルドカードによる隠蔽
 
 # PC/Linux Control Key
 key.jei.ctrl=CTRL
