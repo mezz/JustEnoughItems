@@ -215,9 +215,7 @@ public class StackHelper implements IStackHelper {
 		}
 
 		if (itemStack.getItemDamage() != OreDictionary.WILDCARD_VALUE) {
-			List<ItemStack> subtypes = new ArrayList<>();
-			subtypes.add(itemStack);
-			return subtypes;
+			return Collections.singletonList(itemStack);
 		}
 
 		return getSubtypes(itemStack.getItem(), itemStack.getCount());
