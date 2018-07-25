@@ -2,6 +2,7 @@ package mezz.jei.render;
 
 import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -29,7 +30,7 @@ public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
 		try {
 			uncheckedRenderItemAndEffectIntoGUI();
 		} catch (RuntimeException | LinkageError e) {
-			throw createRenderIngredientException(e, element);
+			throw ErrorUtil.createRenderIngredientException(e, element.getIngredient());
 		}
 	}
 
@@ -106,7 +107,7 @@ public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
 		try {
 			renderOverlay(itemStack, area, padding);
 		} catch (RuntimeException | LinkageError e) {
-			throw createRenderIngredientException(e, element);
+			throw ErrorUtil.createRenderIngredientException(e, element.getIngredient());
 		}
 	}
 

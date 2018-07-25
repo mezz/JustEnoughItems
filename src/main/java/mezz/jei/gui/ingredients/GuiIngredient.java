@@ -11,6 +11,7 @@ import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.startup.ForgeModIdHelper;
+import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -160,7 +161,14 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		}
 
 		T value = getDisplayedIngredient();
-		ingredientRenderer.render(minecraft, xOffset + rect.x + xPadding, yOffset + rect.y + yPadding, value);
+		try {
+			ingredientRenderer.render(minecraft, xOffset + rect.x + xPadding, yOffset + rect.y + yPadding, value);
+		} catch (RuntimeException | LinkageError e) {
+			if (value != null) {
+				throw ErrorUtil.createRenderIngredientException(e, value);
+			}
+			throw e;
+		}
 	}
 
 	@Override

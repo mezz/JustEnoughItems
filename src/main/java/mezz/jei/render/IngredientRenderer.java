@@ -10,6 +10,7 @@ import mezz.jei.config.Constants;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.ForgeModIdHelper;
+import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -18,10 +19,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ReportedException;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
@@ -69,7 +67,7 @@ public class IngredientRenderer<T> {
 			T ingredient = element.getIngredient();
 			ingredientRenderer.render(Minecraft.getMinecraft(), area.x + padding, area.y + padding, ingredient);
 		} catch (RuntimeException | LinkageError e) {
-			throw createRenderIngredientException(e, element);
+			throw ErrorUtil.createRenderIngredientException(e, element.getIngredient());
 		}
 	}
 
@@ -176,13 +174,4 @@ public class IngredientRenderer<T> {
 		tooltip.addAll(minecraft.fontRenderer.listFormattedStringToWidth(hideWildMessage, maxWidth));
 	}
 
-	protected static <T> ReportedException createRenderIngredientException(Throwable throwable, final IIngredientListElement<T> element) {
-		final T ingredient = element.getIngredient();
-		final IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredient);
-		CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering ingredient");
-		CrashReportCategory crashreportcategory = crashreport.makeCategory("Ingredient being rendered");
-		crashreportcategory.addDetail("Ingredient Mod", () -> ForgeModIdHelper.getInstance().getModNameForIngredient(ingredient, ingredientHelper));
-		crashreportcategory.addDetail("Ingredient Info", () -> ingredientHelper.getErrorInfo(ingredient));
-		throw new ReportedException(crashreport);
-	}
 }
