@@ -52,7 +52,7 @@ config.jei.mode.comment=切換JEI工作模式
 config.jei.mode.cheatItemsEnabled=開啟作弊模式
 config.jei.mode.cheatItemsEnabled.comment=給予物品而不是顯示合成配方
 config.jei.mode.editEnabled=開啟編輯物品列表模式
-config.jei.mode.editEnabled.comment=在清單中點擊物品以隱藏或取消隱藏
+config.jei.mode.editEnabled.comment=在列表中點擊物品以隱藏或取消隱藏
 
 config.jei.interface=使用者介面
 config.jei.interface.comment=使用者介面的相關配置
