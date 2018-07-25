@@ -8,6 +8,7 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
@@ -35,7 +36,11 @@ public class JEIModConfigGui extends GuiConfig {
 			if (parentScreen != null) {
 				return parentScreen;
 			} else {
-				return new GuiInventory(parent.mc.player);
+				Minecraft minecraft = parent.mc;
+				EntityPlayerSP player = minecraft.player;
+				if (player != null) {
+					return new GuiInventory(player);
+				}
 			}
 		}
 		return parent;
@@ -48,7 +53,7 @@ public class JEIModConfigGui extends GuiConfig {
 			Configuration worldConfig = Config.getWorldConfig();
 			if (worldConfig != null) {
 				NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
-				ConfigCategory categoryWorldConfig = worldConfig.getCategory(SessionData.getWorldUid(networkManager));
+				ConfigCategory categoryWorldConfig = worldConfig.getCategory(ServerInfo.getWorldUid(networkManager));
 				configElements.addAll(new ConfigElement(categoryWorldConfig).getChildElements());
 			}
 		}
@@ -79,7 +84,7 @@ public class JEIModConfigGui extends GuiConfig {
 	protected void actionPerformed(GuiButton button) {
 		super.actionPerformed(button);
 
-		if (Config.isCheatItemsEnabled() && SessionData.isJeiOnServer()) {
+		if (Config.isCheatItemsEnabled() && ServerInfo.isJeiOnServer()) {
 			JustEnoughItems.getProxy().sendPacketToServer(new PacketRequestCheatPermission());
 		}
 	}

@@ -1,6 +1,10 @@
 package mezz.jei.test;
 
+import mezz.jei.config.Config;
+import mezz.jei.config.IngredientBlacklistType;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.ingredients.IngredientBlacklist;
+import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientRegistry;
@@ -10,6 +14,7 @@ import mezz.jei.startup.IModIdHelper;
 import mezz.jei.startup.ModIngredientRegistration;
 import mezz.jei.startup.StackHelper;
 import mezz.jei.test.lib.TestIngredient;
+import mezz.jei.test.lib.TestIngredientHelper;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
 import net.minecraft.util.NonNullList;
@@ -27,9 +32,13 @@ public class IngredientFilterTest {
 	@Nullable
 	private IModIdHelper modIdHelper;
 	@Nullable
+	private JeiHelpers jeiHelpers;
+	@Nullable
 	private IngredientRegistry ingredientRegistry;
 	@Nullable
 	private IngredientFilter ingredientFilter;
+	@Nullable
+	private NonNullList<IIngredientListElement> baseList;
 
 	@Before
 	public void setup() {
@@ -41,36 +50,34 @@ public class IngredientFilterTest {
 		ModIngredientRegistration modIngredientRegistry = new ModIngredientRegistration();
 		testPlugin.registerIngredients(modIngredientRegistry);
 
+		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
 		this.modIdHelper = new TestModIdHelper();
-		this.ingredientRegistry = modIngredientRegistry.createIngredientRegistry(modIdHelper);
+		this.ingredientRegistry = modIngredientRegistry.createIngredientRegistry(modIdHelper, blacklist);
 
-		NonNullList<IIngredientListElement> baseList = IngredientListElementFactory.createBaseList(ingredientRegistry, modIdHelper);
+		this.baseList = IngredientListElementFactory.createBaseList(ingredientRegistry, modIdHelper);
 
 		StackHelper stackHelper = new StackHelper(subtypeRegistry);
-		JeiHelpers jeiHelpers = new JeiHelpers(ingredientRegistry, stackHelper);
+		this.jeiHelpers = new JeiHelpers(ingredientRegistry, blacklist, stackHelper);
 
-		this.ingredientFilter = new IngredientFilter(jeiHelpers);
-		this.ingredientFilter.addIngredients(baseList);
+		this.ingredientFilter = new IngredientFilter(blacklist);
 	}
 
 	@Test
 	public void testSetup() {
 		Assert.assertNotNull(ingredientFilter);
+		Assert.assertNotNull(baseList);
 
+		ingredientFilter.addIngredients(baseList);
 		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList();
 		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientList.size());
 	}
 
 	@Test
-	public void testAddingIngredients() {
-		Assert.assertNotNull(ingredientFilter);
-		addIngredients(ingredientFilter);
-		removeIngredients(ingredientFilter);
-	}
-
-	@Test
 	public void testAddingAndRemovingIngredients() {
 		Assert.assertNotNull(ingredientFilter);
+		Assert.assertNotNull(baseList);
+
+		ingredientFilter.addIngredients(baseList);
 		addIngredients(ingredientFilter);
 		removeIngredients(ingredientFilter);
 	}
@@ -78,6 +85,9 @@ public class IngredientFilterTest {
 	@Test
 	public void testRebuilding() {
 		Assert.assertNotNull(ingredientFilter);
+		Assert.assertNotNull(baseList);
+
+		ingredientFilter.addIngredients(baseList);
 
 		ingredientFilter.modesChanged();
 
@@ -99,6 +109,51 @@ public class IngredientFilterTest {
 		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientList.size());
 	}
 
+	@Test
+	public void testApiBlacklist() {
+		Assert.assertNotNull(ingredientFilter);
+		Assert.assertNotNull(jeiHelpers);
+		Assert.assertNotNull(baseList);
+
+		IngredientBlacklist ingredientBlacklist = this.jeiHelpers.getIngredientBlacklist();
+		Object blacklistedIngredient = baseList.get(0).getIngredient();
+		ingredientBlacklist.addIngredientToBlacklist(blacklistedIngredient);
+
+		ingredientFilter.addIngredients(baseList);
+		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList();
+		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT - 1, ingredientList.size());
+
+		// test after reloading the ingredient filter
+		ingredientFilter.modesChanged();
+
+		ingredientList = ingredientFilter.getIngredientList();
+		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT - 1, ingredientList.size());
+	}
+
+	@Test
+	public void testConfigBlacklist() {
+		Assert.assertNotNull(ingredientFilter);
+		Assert.assertNotNull(ingredientRegistry);
+		Assert.assertNotNull(baseList);
+
+		ingredientFilter.addIngredients(baseList);
+
+		TestIngredient blacklistedIngredient = (TestIngredient) baseList.get(0).getIngredient();
+		TestIngredientHelper testIngredientHelper = new TestIngredientHelper();
+		Config.addIngredientToConfigBlacklist(ingredientFilter, ingredientRegistry, blacklistedIngredient, IngredientBlacklistType.ITEM, testIngredientHelper);
+
+		ingredientFilter.updateHidden();
+
+		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList();
+		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT - 1, ingredientList.size());
+
+		// test after reloading the ingredient filter
+		ingredientFilter.modesChanged();
+
+		ingredientList = ingredientFilter.getIngredientList();
+		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT - 1, ingredientList.size());
+	}
+
 	private void addIngredients(IngredientFilter ingredientFilter) {
 		Assert.assertNotNull(ingredientRegistry);
 		Assert.assertNotNull(modIdHelper);
@@ -109,7 +164,7 @@ public class IngredientFilterTest {
 		}
 		Assert.assertEquals(EXTRA_INGREDIENT_COUNT, ingredientsToAdd.size());
 
-		List<IIngredientListElement> listToAdd = IngredientListElementFactory.createList(ingredientRegistry, TestIngredient.class, ingredientsToAdd, modIdHelper);
+		List<IIngredientListElement<TestIngredient>> listToAdd = IngredientListElementFactory.createList(ingredientRegistry, TestIngredient.class, ingredientsToAdd, modIdHelper);
 		Assert.assertEquals(EXTRA_INGREDIENT_COUNT, listToAdd.size());
 
 		ingredientRegistry.addIngredientsAtRuntime(TestIngredient.class, ingredientsToAdd, ingredientFilter);
@@ -131,7 +186,7 @@ public class IngredientFilterTest {
 		}
 		Assert.assertEquals(EXTRA_INGREDIENT_COUNT, ingredientsToRemove.size());
 
-		List<IIngredientListElement> listToRemove = IngredientListElementFactory.createList(ingredientRegistry, TestIngredient.class, ingredientsToRemove, modIdHelper);
+		List<IIngredientListElement<TestIngredient>> listToRemove = IngredientListElementFactory.createList(ingredientRegistry, TestIngredient.class, ingredientsToRemove, modIdHelper);
 		Assert.assertEquals(EXTRA_INGREDIENT_COUNT, listToRemove.size());
 
 		ingredientRegistry.removeIngredientsAtRuntime(TestIngredient.class, ingredientsToRemove, ingredientFilter);

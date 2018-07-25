@@ -18,18 +18,16 @@ public class PageNavigation {
 	private String pageNumDisplayString = "1/1";
 	private int pageNumDisplayX;
 	private int pageNumDisplayY;
-	private Rectangle area = new Rectangle();
 
 	public PageNavigation(IPaged paged, boolean hideOnSinglePage) {
 		this.paged = paged;
 		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
-		this.nextButton = new GuiIconButton(0, guiHelper.getArrowNext());
-		this.backButton = new GuiIconButton(1, guiHelper.getArrowPrevious());
+		this.nextButton = new GuiIconButton(0, guiHelper.getArrowNext(), (mc, mouseX, mouseY) -> paged.nextPage());
+		this.backButton = new GuiIconButton(1, guiHelper.getArrowPrevious(), (mc, mouseX, mouseY) -> paged.previousPage());
 		this.hideOnSinglePage = hideOnSinglePage;
 	}
 
 	public void updateBounds(Rectangle area) {
-		this.area = area;
 		int buttonSize = area.height;
 		this.nextButton.x = area.x + area.width - buttonSize;
 		this.nextButton.y = area.y;
@@ -39,7 +37,9 @@ public class PageNavigation {
 		this.backButton.width = this.backButton.height = buttonSize;
 	}
 
-	public void updatePageState(int pageNum, int pageCount) {
+	public void updatePageState() {
+		int pageNum = this.paged.getPageNumber();
+		int pageCount = this.paged.getPageCount();
 		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
 		pageNumDisplayString = (pageNum + 1) + "/" + pageCount;
 		int pageDisplayWidth = fontRenderer.getStringWidth(pageNumDisplayString);
@@ -48,31 +48,21 @@ public class PageNavigation {
 	}
 
 	public void draw(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
-		nextButton.enabled = this.paged.hasNext();
-		backButton.enabled = this.paged.hasPrevious();
-
-		if (!hideOnSinglePage || nextButton.enabled || backButton.enabled) {
+		if (!hideOnSinglePage || this.paged.hasNext() || this.paged.hasPrevious()) {
 			minecraft.fontRenderer.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(), true);
 			nextButton.drawButton(minecraft, mouseX, mouseY, partialTicks);
 			backButton.drawButton(minecraft, mouseX, mouseY, partialTicks);
 		}
 	}
 
-	public boolean isMouseOver(int mouseX, int mouseY) {
-		return area.contains(mouseX, mouseY);
+	public boolean isMouseOver() {
+		return nextButton.isMouseOver() ||
+			backButton.isMouseOver();
 	}
 
 	public boolean handleMouseClickedButtons(int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getMinecraft();
-		if (nextButton.mousePressed(minecraft, mouseX, mouseY)) {
-			paged.nextPage();
-			nextButton.playPressSound(minecraft.getSoundHandler());
-			return true;
-		} else if (backButton.mousePressed(minecraft, mouseX, mouseY)) {
-			paged.previousPage();
-			backButton.playPressSound(minecraft.getSoundHandler());
-			return true;
-		}
-		return false;
+		return nextButton.mousePressed(minecraft, mouseX, mouseY) ||
+			backButton.mousePressed(minecraft, mouseX, mouseY);
 	}
 }

@@ -9,20 +9,29 @@ import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 
 public class FurnaceSmeltingCategory extends FurnaceRecipeCategory<SmeltingRecipe> {
 	private final IDrawable background;
+	private final IDrawable icon;
 	private final String localizedName;
 
 	public FurnaceSmeltingCategory(IGuiHelper guiHelper) {
 		super(guiHelper);
 		background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 114, 82, 54);
+		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.FURNACE));
 		localizedName = Translator.translateToLocal("gui.jei.category.smelting");
 	}
 
 	@Override
 	public IDrawable getBackground() {
 		return background;
+	}
+
+	@Override
+	public IDrawable getIcon() {
+		return icon;
 	}
 
 	@Override

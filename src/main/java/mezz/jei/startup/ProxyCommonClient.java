@@ -9,7 +9,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
-import mezz.jei.config.SessionData;
+import mezz.jei.config.ServerInfo;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.network.PacketHandler;
 import mezz.jei.network.PacketHandlerClient;
@@ -106,12 +106,14 @@ public class ProxyCommonClient extends ProxyCommon {
 		Minecraft minecraft = Minecraft.getMinecraft();
 		IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) minecraft.getResourceManager();
 		reloadableResourceManager.registerReloadListener(resourceManager -> {
-			if (SessionData.hasJoinedWorld()) {
-				// check that JEI has been started before. if not, do nothing
-				if (this.starter.hasStarted()) {
+			// check that JEI has been started before. if not, do nothing
+			if (this.starter.hasStarted()) {
+				if (Config.isDebugModeEnabled()) {
+					Log.get().info("Restarting JEI.", new RuntimeException("Stack trace for debugging"));
+				} else {
 					Log.get().info("Restarting JEI.");
-					this.starter.start(this.plugins);
 				}
+				this.starter.start(this.plugins);
 			}
 		});
 
@@ -121,19 +123,11 @@ public class ProxyCommonClient extends ProxyCommon {
 	@SubscribeEvent
 	public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
 		if (!event.isLocal() && !event.getConnectionType().equals("MODDED")) {
-			SessionData.onConnectedToServer(false);
+			ServerInfo.onConnectedToServer(false);
 		}
-		SessionData.setJoinedWorld(true);
 		NetworkManager networkManager = event.getManager();
 		Config.syncWorldConfig(networkManager);
 		MinecraftForge.EVENT_BUS.post(new PlayerJoinedWorldEvent());
-	}
-
-	@SubscribeEvent
-	public void onClientDisconnectionFromServer(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
-		if (SessionData.hasJoinedWorld()) {
-			SessionData.setJoinedWorld(false);
-		}
 	}
 
 	private static void reloadItemList() {
@@ -147,7 +141,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	@Override
 	public void sendPacketToServer(PacketJei packet) {
 		NetHandlerPlayClient netHandler = FMLClientHandler.instance().getClient().getConnection();
-		if (netHandler != null && SessionData.isJeiOnServer()) {
+		if (netHandler != null && ServerInfo.isJeiOnServer()) {
 			netHandler.sendPacket(packet.getPacket());
 		}
 	}

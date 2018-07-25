@@ -10,9 +10,15 @@ import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.ingredients.IngredientLookupState;
 import mezz.jei.util.MathUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.inventory.Container;
+
+import javax.annotation.Nonnegative;
 
 public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IRecipeRegistry recipeRegistry;
@@ -46,10 +52,30 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			history.push(this.state);
 		}
 
-		IngredientLookupState state = new IngredientLookupState(focus, recipeCategories, 0, 0);
+		int recipeCategoryIndex = getRecipeCategoryIndexToShowFirst(recipeCategories);
+		IngredientLookupState state = new IngredientLookupState(focus, recipeCategories, recipeCategoryIndex, 0);
 		setState(state);
 
 		return true;
+	}
+
+	@Nonnegative
+	private int getRecipeCategoryIndexToShowFirst(List<IRecipeCategory> recipeCategories) {
+		Minecraft minecraft = Minecraft.getMinecraft();
+		EntityPlayerSP player = minecraft.player;
+		if (player != null) {
+			Container openContainer = player.openContainer;
+			if (openContainer != null) {
+				for (int i = 0; i < recipeCategories.size(); i++) {
+					IRecipeCategory recipeCategory = recipeCategories.get(i);
+					IRecipeTransferHandler recipeTransferHandler = recipeRegistry.getRecipeTransferHandler(openContainer, recipeCategory);
+					if (recipeTransferHandler != null) {
+						return i;
+					}
+				}
+			}
+		}
+		return 0;
 	}
 
 	@Override
@@ -161,10 +187,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		final int firstRecipeIndex = state.getRecipeIndex() - (state.getRecipeIndex() % state.getRecipesPerPage());
 		for (int recipeIndex = firstRecipeIndex; recipeIndex < recipes.size() && recipeLayouts.size() < state.getRecipesPerPage(); recipeIndex++) {
 			IRecipeWrapper recipeWrapper = recipes.get(recipeIndex);
+			@SuppressWarnings("unchecked")
 			RecipeLayout recipeLayout = RecipeLayout.create(recipeWidgetIndex++, recipeCategory, recipeWrapper, state.getFocus(), posX, recipePosY);
 			if (recipeLayout == null) {
 				recipes.remove(recipeIndex);
-				recipeRegistry.removeRecipe(recipeWrapper, recipeCategory.getUid());
+				recipeRegistry.hideRecipe(recipeWrapper, recipeCategory.getUid());
 				recipeIndex--;
 			} else {
 				recipeLayouts.add(recipeLayout);

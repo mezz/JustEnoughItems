@@ -17,11 +17,11 @@ package mezz.jei.suffixtree;
 
 import javax.annotation.Nullable;
 
-import gnu.trove.map.TCharObjectMap;
-import gnu.trove.map.hash.TCharObjectHashMap;
-import gnu.trove.set.TIntSet;
+import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
+import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Represents a node of the generalized suffix tree graph
@@ -46,7 +46,7 @@ class Node {
 	/**
 	 * The set of edges starting from this node
 	 */
-	private final TCharObjectMap<Edge> edges;
+	private final Char2ObjectMap<Edge> edges;
 
 	/**
 	 * The suffix link as described in Ukkonen's paper.
@@ -60,7 +60,7 @@ class Node {
 	 * Creates a new Node
 	 */
 	Node() {
-		edges = new TCharObjectHashMap<>();
+		edges = new Char2ObjectOpenHashMap<>();
 		suffix = null;
 		data = new IntArrayList(0);
 	}
@@ -69,13 +69,12 @@ class Node {
 	 * Gets data from the payload of both this node and its children, the string representation
 	 * of the path to this node is a substring of the one of the children nodes.
 	 */
-	void getData(final TIntSet ret) {
+	void getData(final IntSet ret) {
 		ret.addAll(data);
 
-		edges.forEachValue(e -> {
+		for (Edge e : edges.values()) {
 			e.getDest().getData(ret);
-			return true;
-		});
+		}
 	}
 
 	/**

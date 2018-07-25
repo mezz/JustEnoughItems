@@ -7,6 +7,7 @@ import mezz.jei.color.ColorNamer;
 import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.input.InputHandler;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.startup.StackHelper;
@@ -30,6 +31,8 @@ public final class Internal {
 	private static IngredientFilter ingredientFilter;
 	@Nullable
 	private static GuiEventHandler guiEventHandler;
+	@Nullable
+	private static InputHandler inputHandler;
 
 	private Internal() {
 
@@ -104,5 +107,14 @@ public final class Internal {
 
 		Internal.guiEventHandler = guiEventHandler;
 		MinecraftForge.EVENT_BUS.register(guiEventHandler);
+	}
+
+	public static void setInputHandler(InputHandler inputHandler) {
+		if (Internal.inputHandler != null) {
+			MinecraftForge.EVENT_BUS.unregister(Internal.inputHandler);
+		}
+
+		Internal.inputHandler = inputHandler;
+		MinecraftForge.EVENT_BUS.register(inputHandler);
 	}
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Log;
@@ -50,6 +51,9 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 	@Override
 	public String getFormattedModNameForModId(String modId) {
 		String modNameFormat = Config.getModNameFormat();
+		if (modNameFormat.isEmpty()) {
+			return null;
+		}
 		String modName = getModNameForModId(modId);
 		modName = removeChatFormatting(modName); // some crazy mod has formatting in the name
 		if (modNameFormat.contains(MOD_NAME_FORMAT_CODE)) {
@@ -93,5 +97,18 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 			Log.get().error("Error while Testing for mod name formatting", e);
 		}
 		return null;
+	}
+
+	@Override
+	public <T> List<String> addModNameToIngredientTooltip(List<String> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
+		if (Config.isDebugModeEnabled() && Minecraft.getMinecraft().gameSettings.advancedItemTooltips) {
+			tooltip.add(TextFormatting.GRAY + "JEI Debug:");
+			tooltip.add(TextFormatting.GRAY + "info: " + ingredientHelper.getErrorInfo(ingredient));
+			tooltip.add(TextFormatting.GRAY + "uid: " + ingredientHelper.getUniqueId(ingredient));
+		}
+		if (Config.isModNameFormatOverrideActive() && ingredient instanceof ItemStack) { // we detected that another mod is adding the mod name already
+			return tooltip;
+		}
+		return super.addModNameToIngredientTooltip(tooltip, ingredient, ingredientHelper);
 	}
 }

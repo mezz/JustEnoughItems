@@ -8,8 +8,8 @@ import net.minecraft.client.gui.GuiScreen;
 public class CycleTimer {
 	/* the amount of time in ms to display one thing before cycling to the next one */
 	private static final int cycleTime = 1000;
-	private long startTime = 0;
-	private long drawTime = 0;
+	private long startTime;
+	private long drawTime;
 	private long pausedDuration = 0;
 
 	public CycleTimer(int offset) {

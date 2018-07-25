@@ -9,13 +9,18 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.config.Constants;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 
 public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipeWrapper> {
 
 	private final IDrawable background;
+	private final IDrawable icon;
 
 	public AnvilRecipeCategory(IGuiHelper guiHelper) {
-		background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 168, 125, 18, 0, 20, 0, 0);
+		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 168, 125, 18)
+			.addPadding(0, 20, 0, 0)
+			.build();
+		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.ANVIL));
 	}
 
 	@Override
@@ -36,6 +41,11 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipeWrapper> 
 	@Override
 	public IDrawable getBackground() {
 		return background;
+	}
+
+	@Override
+	public IDrawable getIcon() {
+		return icon;
 	}
 
 	@Override

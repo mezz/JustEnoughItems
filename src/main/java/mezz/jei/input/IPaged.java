@@ -8,4 +8,8 @@ public interface IPaged {
 	boolean hasNext();
 
 	boolean hasPrevious();
+
+	int getPageCount();
+
+	int getPageNumber();
 }

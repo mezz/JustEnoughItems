@@ -194,6 +194,9 @@ public final class AnvilRecipeMaker {
 
 	public static int findLevelsCost(ItemStack leftStack, ItemStack rightStack) {
 		EntityPlayer player = Minecraft.getMinecraft().player;
+		if (player == null) {
+			return -1;
+		}
 		InventoryPlayer fakeInventory = new InventoryPlayer(player);
 		try {
 			ContainerRepair repair = new ContainerRepair(fakeInventory, player.world, player);

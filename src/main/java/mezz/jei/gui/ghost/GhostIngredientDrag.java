@@ -103,6 +103,10 @@ public class GhostIngredientDrag<T> {
 		return false;
 	}
 
+	public void stop() {
+		handler.onComplete();
+	}
+
 	public IIngredientRenderer<T> getIngredientRenderer() {
 		return ingredientRenderer;
 	}

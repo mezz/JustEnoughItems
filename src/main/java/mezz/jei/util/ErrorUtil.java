@@ -15,11 +15,14 @@ import mezz.jei.ingredients.Ingredients;
 import mezz.jei.startup.ForgeModIdHelper;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
@@ -228,5 +231,14 @@ public final class ErrorUtil {
 		if (minecraft != null && !minecraft.isCallingFromMinecraftThread()) {
 			throw new IllegalStateException("A JEI API method is being called by another mod from the wrong thread. It must be called on the main thread.");
 		}
+	}
+
+	public static <T> ReportedException createRenderIngredientException(Throwable throwable, final T ingredient) {
+		final IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredient);
+		CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering ingredient");
+		CrashReportCategory crashreportcategory = crashreport.makeCategory("Ingredient being rendered");
+		crashreportcategory.addDetail("Ingredient Mod", () -> ForgeModIdHelper.getInstance().getModNameForIngredient(ingredient, ingredientHelper));
+		crashreportcategory.addDetail("Ingredient Info", () -> ingredientHelper.getErrorInfo(ingredient));
+		throw new ReportedException(crashreport);
 	}
 }

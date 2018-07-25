@@ -37,9 +37,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	 * they will only display focus instead of rotating through all their values.
 	 */
 	@Nullable
-	private IFocus<T> inputFocus;
-	@Nullable
-	private IFocus<T> outputFocus;
+	private IFocus<T> focus;
 
 	@Nullable
 	private ITooltipCallback<T> tooltipCallback;
@@ -48,17 +46,9 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 		this.ingredientClass = ingredientClass;
 		if (focus == null) {
-			this.inputFocus = null;
-			this.outputFocus = null;
+			this.focus = null;
 		} else {
-			focus = Focus.check(focus);
-			if (focus.getMode() == IFocus.Mode.INPUT) {
-				this.inputFocus = focus;
-				this.outputFocus = null;
-			} else if (focus.getMode() == IFocus.Mode.OUTPUT) {
-				this.inputFocus = null;
-				this.outputFocus = focus;
-			}
+			this.focus = Focus.check(focus);
 		}
 		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		this.ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
@@ -119,10 +109,12 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 			}
 		}
 		GuiIngredient<T> guiIngredient = guiIngredients.get(slotIndex);
-		if (guiIngredient.isInput()) {
-			guiIngredient.set(ingredients, inputFocus);
+
+		IFocus.Mode ingredientMode = guiIngredient.isInput() ? IFocus.Mode.INPUT : IFocus.Mode.OUTPUT;
+		if (focus == null || focus.getMode() == ingredientMode) {
+			guiIngredient.set(ingredients, focus);
 		} else {
-			guiIngredient.set(ingredients, outputFocus);
+			guiIngredient.set(ingredients, null);
 		}
 	}
 
@@ -170,15 +162,9 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	@Override
 	public void setOverrideDisplayFocus(@Nullable IFocus<T> focus) {
 		if (focus == null) {
-			this.inputFocus = null;
-			this.outputFocus = null;
+			this.focus = null;
 		} else {
-			focus = Focus.check(focus);
-			if (focus.getMode() == IFocus.Mode.INPUT) {
-				this.inputFocus = focus;
-			} else if (focus.getMode() == IFocus.Mode.OUTPUT) {
-				this.outputFocus = focus;
-			}
+			this.focus = Focus.check(focus);
 		}
 	}
 }

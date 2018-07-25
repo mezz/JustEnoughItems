@@ -1,17 +1,14 @@
 package mezz.jei.plugins.vanilla.furnace;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
+import it.unimi.dsi.fastutil.ints.Int2BooleanArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2BooleanMap;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IStackHelper;
-import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraftforge.oredict.OreDictionary;
@@ -25,61 +22,44 @@ public final class FuelRecipeMaker {
 		IGuiHelper guiHelper = helpers.getGuiHelper();
 		IStackHelper stackHelper = helpers.getStackHelper();
 		List<ItemStack> fuelStacks = ingredientRegistry.getFuels();
-		Set<String> oreDictNames = new HashSet<>();
+		Int2BooleanMap oreIdsHaveRecipe = new Int2BooleanArrayMap();
 		List<FuelRecipe> fuelRecipes = new ArrayList<>(fuelStacks.size());
 		for (ItemStack fuelStack : fuelStacks) {
-			if (fuelStack == null) {
-				continue;
+			int burnTime = TileEntityFurnace.getItemBurnTime(fuelStack);
+			List<ItemStack> subtypes = stackHelper.getSubtypes(fuelStack);
+			List<ItemStack> fuels = new ArrayList<>();
+			for (ItemStack subtype : subtypes) {
+				if (TileEntityFurnace.getItemBurnTime(subtype) == burnTime) {
+					fuels.add(subtype);
+				}
 			}
-
-			int[] oreIDs = OreDictionary.getOreIDs(fuelStack);
-			if (oreIDs.length > 0) {
-				for (int oreID : oreIDs) {
-					String name = OreDictionary.getOreName(oreID);
-					if (oreDictNames.contains(name)) {
-						continue;
+			if (fuels.isEmpty()) {
+				fuels.add(fuelStack);
+			}
+			if (fuels.size() <= 1) {
+				int[] oreIDs = OreDictionary.getOreIDs(fuelStack);
+				boolean hasOreRecipe = false;
+				for (int oreId : oreIDs) {
+					if (!oreIdsHaveRecipe.containsKey(oreId)) {
+						String oreName = OreDictionary.getOreName(oreId);
+						List<ItemStack> ores = stackHelper.getAllSubtypes(OreDictionary.getOres(oreName));
+						if (ores.size() > 1 && ores.stream().allMatch(itemStack -> TileEntityFurnace.getItemBurnTime(itemStack) == burnTime)) {
+							oreIdsHaveRecipe.put(oreId, true);
+							fuelRecipes.add(new FuelRecipe(guiHelper, ores, burnTime));
+						} else {
+							oreIdsHaveRecipe.put(oreId, false);
+						}
 					}
-
-					oreDictNames.add(name);
-					List<ItemStack> oreDictFuels = OreDictionary.getOres(name);
-					Collection<ItemStack> oreDictFuelsSet = stackHelper.getAllSubtypes(oreDictFuels);
-					removeNoBurnTime(oreDictFuelsSet);
-					if (oreDictFuels.isEmpty()) {
-						continue;
-					}
-					ItemStack itemStack = oreDictFuels.get(0);
-					int burnTime = getBurnTime(itemStack);
-					if (burnTime > 0) {
-						fuelRecipes.add(new FuelRecipe(guiHelper, oreDictFuelsSet, burnTime));
-					} else {
-						String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
-						Log.get().error("Fuel has no burn time ({}): {}", burnTime, itemStackInfo);
-					}
+					hasOreRecipe |= oreIdsHaveRecipe.get(oreId);
+				}
+				if (!hasOreRecipe) {
+					fuelRecipes.add(new FuelRecipe(guiHelper, fuels, burnTime));
 				}
 			} else {
-				List<ItemStack> fuels = stackHelper.getSubtypes(fuelStack);
-				removeNoBurnTime(fuels);
-				if (fuels.isEmpty()) {
-					continue;
-				}
-				ItemStack itemStack = fuels.get(0);
-				int burnTime = getBurnTime(itemStack);
-				if (burnTime > 0) {
-					fuelRecipes.add(new FuelRecipe(guiHelper, fuels, burnTime));
-				} else {
-					String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
-					Log.get().error("Fuel has no burn time ({}): {}", burnTime, itemStackInfo);
-				}
+				fuelRecipes.add(new FuelRecipe(guiHelper, fuels, burnTime));
 			}
 		}
 		return fuelRecipes;
 	}
 
-	private static void removeNoBurnTime(Collection<ItemStack> itemStacks) {
-		itemStacks.removeIf(itemStack -> getBurnTime(itemStack) == 0);
-	}
-
-	private static int getBurnTime(ItemStack itemStack) {
-		return TileEntityFurnace.getItemBurnTime(itemStack);
-	}
 }

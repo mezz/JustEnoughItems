@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.gui.IGhostIngredientHandler;
@@ -66,7 +65,7 @@ public class JeiRuntime implements IJeiRuntime {
 	}
 
 	@Override
-	public IIngredientFilter getIngredientFilter() {
+	public IngredientFilter getIngredientFilter() {
 		return ingredientFilter;
 	}
 

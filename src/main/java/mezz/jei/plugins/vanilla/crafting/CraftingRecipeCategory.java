@@ -19,6 +19,7 @@ import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
@@ -32,12 +33,14 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 	public static final int height = 54;
 
 	private final IDrawable background;
+	private final IDrawable icon;
 	private final String localizedName;
 	private final ICraftingGridHelper craftingGridHelper;
 
 	public CraftingRecipeCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
 		background = guiHelper.createDrawable(location, 0, 60, width, height);
+		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.CRAFTING_TABLE));
 		localizedName = Translator.translateToLocal("gui.jei.category.craftingTable");
 		craftingGridHelper = guiHelper.createCraftingGridHelper(craftInputSlot1, craftOutputSlot);
 	}
@@ -60,6 +63,11 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 	@Override
 	public IDrawable getBackground() {
 		return background;
+	}
+
+	@Override
+	public IDrawable getIcon() {
+		return icon;
 	}
 
 	@Override
@@ -110,12 +118,14 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 
 						if (modIdDifferent) {
 							String modName = ForgeModIdHelper.getInstance().getFormattedModNameForModId(recipeModId);
-							tooltip.add(TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.recipe.by", modName));
+							if (modName != null) {
+								tooltip.add(TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.recipe.by", modName));
+							}
 						}
 
 						boolean showAdvanced = Minecraft.getMinecraft().gameSettings.advancedItemTooltips || GuiScreen.isShiftKeyDown();
 						if (showAdvanced) {
-							tooltip.add(TextFormatting.GRAY + registryName.getResourcePath());
+							tooltip.add(TextFormatting.DARK_GRAY + Translator.translateToLocalFormatted("jei.tooltip.recipe.id", registryName.toString()));
 						}
 					}
 				});

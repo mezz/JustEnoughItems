@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.base.Preconditions;
 import mezz.jei.util.MathUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -100,9 +101,6 @@ public final class ColorGetter {
 		final ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
 		final int renderColor = itemColors.colorMultiplier(itemStack, 0);
 		final TextureAtlasSprite textureAtlasSprite = getTextureAtlasSprite(itemStack);
-		if (textureAtlasSprite == null) {
-			return Collections.emptyList();
-		}
 		return getColors(textureAtlasSprite, renderColor, colorCount);
 	}
 
@@ -177,11 +175,11 @@ public final class ColorGetter {
 		return textureAtlasSprite;
 	}
 
-	@Nullable
 	private static TextureAtlasSprite getTextureAtlasSprite(ItemStack itemStack) {
 		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
 		ItemModelMesher itemModelMesher = renderItem.getItemModelMesher();
 		IBakedModel itemModel = itemModelMesher.getItemModel(itemStack);
-		return itemModel.getParticleTexture();
+		TextureAtlasSprite particleTexture = itemModel.getParticleTexture();
+		return Preconditions.checkNotNull(particleTexture);
 	}
 }

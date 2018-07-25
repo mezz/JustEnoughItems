@@ -7,14 +7,20 @@ jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
 jei.tooltip.liquid.amount=%,d mB
 jei.tooltip.transfer=Placera föremål
 jei.tooltip.recipe.ore.dict=Fungerar med alla %s
-jei.tooltip.item.colors=Färg: %s
+jei.tooltip.item.colors=Färger: %s
 jei.tooltip.shapeless.recipe=Formlöst recept
-jei.tooltip.cheat.mode=Fuskläge
+jei.tooltip.cheat.mode.button.enabled=Fuskläget är aktiverat
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Tryck på %s för att slå på/av det.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-klicka för att slå på/av det.
 jei.tooltip.recipe.by=Recept av: %s
+jei.tooltip.recipe.id=Recept-ID: %s
+jei.tooltip.not.enough.space=Det finns inte tillräckligt mycket utrymme för att visa JEI här.
+jei.tooltip.ingredient.list.disabled=JEI:s överlägg är inaktiverat.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Tryck på %s för att aktivera det.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Föremål saknas
-jei.tooltip.error.recipe.transfer.inventory.full=Det finns ingen plats
+jei.tooltip.error.recipe.transfer.inventory.full=Utrustningen är för full
 jei.tooltip.error.recipe.transfer.unknown=Okänt fel, se loggarna
 jei.tooltip.error.recipe.transfer.no.server=Servern måste ha JEI installerat
 jei.tooltip.error.recipe.transfer.too.large.player.inventory=Receptet är för stort för att tillverkas i spelarens rutnät på 2x2.
@@ -26,79 +32,75 @@ jei.chat.error.no.cheat.permission.1=Du har inte behörighet att använda JEI:s 
 jei.chat.error.no.cheat.permission.2=Behörighet ges till spelare som kan använda kommandot /give eller som är i Kreativt läge.
 
 # Key Bindings
-key.jei.toggleOverlay=Visa/dölj föremålslista
+key.jei.toggleOverlay=Visa/dölj JEI
 key.jei.focusSearch=Markera sökfält
-key.jei.showRecipe=Visa föremålsrecept
-key.jei.showUses=Visa användningar av föremål
-key.jei.recipeBack=Visa föregående receptsida
-key.jei.toggleCheatMode=Slå på/av fusk
+key.jei.showRecipe=Visa recept
+key.jei.showUses=Visa användningar
+key.jei.recipeBack=Visa tidigare visad receptsida
+key.jei.toggleCheatMode=Slå på/av fuskläge
 key.jei.previousPage=Visa föregående sida
 key.jei.nextPage=Visa nästa sida
 
 # Config
 config.jei.default=Standard
-config.jei.valid=Giltig
+config.jei.valid=Giltiga
 
 config.jei.title=Konfiguration för %MODNAME
 
 config.jei.mode=Läge
 config.jei.mode.comment=Ändra läget som JEI fungerar i.
-config.jei.mode.cheatItemsEnabled=Fusk har aktiverats
+config.jei.mode.cheatItemsEnabled=Fuskläge
 config.jei.mode.cheatItemsEnabled.comment=Ge föremål istället för att visa receptet.
-config.jei.mode.editEnabled=Dölj föremål
-config.jei.mode.editEnabled.comment=Dölj och visa föremål genom att klicka på dem i föremålslistan.
+config.jei.mode.editEnabled=Dölj ingredienser
+config.jei.mode.editEnabled.comment=Dölj och visa ingredienser genom att klicka på dem i listan.
 
 config.jei.interface=Gränssnitt
 config.jei.interface.comment=Alternativ för användargränssnittet.
-config.jei.interface.overlayEnabled=Föremålslista aktiverad
-config.jei.interface.overlayEnabled.comment=Visar listan över föremål intill öppet gränssnitt.
-config.jei.interface.recipeAnimationsEnabled=Receptanimationer
-config.jei.interface.recipeAnimationsEnabled.comment=Visa receptanimationer (ugnseld, förloppsmätare, etc.)
+config.jei.interface.overlayEnabled=Visa ingredienslistan
+config.jei.interface.overlayEnabled.comment=Visar listan över ingredienser intill öppet gränssnitt.
 
 config.jei.search=Sökalternativ
 config.jei.search.comment=Alternativ för sökfältet.
 config.jei.search.modNameSearchMode=@Modnamn
-config.jei.search.modNameSearchMode.comment=Sök efter namn på moddar (prefix: @)
+config.jei.search.modNameSearchMode.comment=Sökläge för namn på moddar (prefix: @)
 config.jei.search.tooltipSearchMode=#Inforutor
-config.jei.search.tooltipSearchMode.comment=Sök efter inforutor (prefix: #)
+config.jei.search.tooltipSearchMode.comment=Sökläge för inforutor (prefix: #)
 config.jei.search.oreDictSearchMode=$Malm
-config.jei.search.oreDictSearchMode.comment=Sök efter namn på malmer i Ore Dictionary (prefix: $)
+config.jei.search.oreDictSearchMode.comment=Sökläge för namn på malmer i Ore Dictionary (prefix: $)
 config.jei.search.creativeTabSearchMode=%%Fliknamn
-config.jei.search.creativeTabSearchMode.comment=Sök efter fliknamn i kreativt läge (prefix: %)
+config.jei.search.creativeTabSearchMode.comment=Sökläge för fliknamn i kreativt läge (prefix: %)
 config.jei.search.colorSearchMode=^Färger
-config.jei.search.colorSearchMode.comment=Sök efter färger på föremål (prefix: ^)
+config.jei.search.colorSearchMode.comment=Sökläge för färger (prefix: ^)
 config.jei.search.resourceIdSearchMode=&Resurs-ID
-config.jei.search.resourceIdSearchMode.comment=Sök efter resursernas ID (prefix: &)
+config.jei.search.resourceIdSearchMode.comment=Sökläge för resursernas ID (prefix: &)
 
 config.jei.advanced=Avancerat
 config.jei.advanced.comment=Avancerade konfigurationsalternativ för att ändra hur JEI fungerar.
-config.jei.advanced.itemBlacklist=Föremålssvartlista
-config.jei.advanced.itemBlacklist.comment=Lista över föremål som inte bör visas i föremålslistan. Format: modId[:name[:meta]]. Redigeringsläget kommer automatiskt lägga till eller ta bort element här.
+config.jei.advanced.itemBlacklist=Svartlista för ingredienser
+config.jei.advanced.itemBlacklist.comment=Lista över ingredienser som inte bör visas i listan. Format: modId[:name[:meta]]. Läget för att dölja ingredienser kommer automatiskt lägga till eller ta bort element här.
 config.jei.advanced.colorSearchEnabled=Aktivera färgsökning
-config.jei.advanced.colorSearchEnabled.comment=Sök föremål efter färg och visa de sökbara föremålens färger i inforutan i föremålslistan.
+config.jei.advanced.colorSearchEnabled.comment=Sök ingredienser efter färg och visa färgerna i inforutorna för listan.
 config.jei.advanced.debugModeEnabled=Felsökningsläge
-config.jei.advanced.debugModeEnabled.comment=Endast användbart gör JEI-utvecklare, lägger till tusentals testföremål och några felsökningsrecept.
+config.jei.advanced.debugModeEnabled.comment=Endast användbart gör JEI-utvecklare, lägger till testingredienser och några felsökningsrecept.
 config.jei.advanced.centerSearchBarEnabled=Centrera sökfältet
 config.jei.advanced.centerSearchBarEnabled.comment=Placera JEIs sökfält längst ned i mitten på skärmen.
 config.jei.advanced.modNameFormat=Namnformat för moddar
 config.jei.advanced.modNameFormat.comment=Hur modnamnet bör formateras i inforutan för JEI:s gränssnitt. Lämna tomt för att inaktivera.
 config.jei.advanced.maxColumns=Maximal bredd
 config.jei.advanced.maxColumns.comment=Maximal bredd för ingredienslistan.
+config.jei.advanced.maxRecipeGuiHeight=Maxbredd för receptgränssnittet
+config.jei.advanced.maxRecipeGuiHeight.comment=Maximal höjd för receptgränssnittet.
 config.jei.advanced.giveMode=Placeringsläge
-config.jei.advanced.giveMode.comment=Välj om JEI ska placera föremål direkt i utrustningen (inventory) eller plocka upp dem med musen (mouse_pickup).
+config.jei.advanced.giveMode.comment=Välj om JEI ska placera ingredienser direkt i utrustningen (inventory) eller plocka upp dem med musen (mouse_pickup).
 
-# Edit Mode
-gui.jei.editMode.description=Redigeringsläge för JEIs föremålslista:
-gui.jei.editMode.description.hide=Dölj. (%CTRL-klick).
-gui.jei.editMode.description.show=Dold. (%CTRL-klick).
-gui.jei.editMode.description.hide.wild=Dölj efter liknande föremål. (%CTRL-högerklick).
-gui.jei.editMode.description.show.wild=Dold efter liknande föremål. (%CTRL-högerklick).
-gui.jei.editMode.description.hide.mod.id=Dölj mod. (%CTRL-SHIFT-klick).
-gui.jei.editMode.description.show.mod.id=Dold mod. (%CTRL-SHIFT-klick).
+# Hide Ingredients Mode
+gui.jei.editMode.description=Läge för att dölja ingredienser:
+gui.jei.editMode.description.hide=%CTRL-klicka för att dölja
+gui.jei.editMode.description.hide.wild=%CTRL-högerklicka för att dölja efter jokertecken.
 
-#PC/Linux Control Key
+# PC/Linux Control Key
 key.jei.ctrl=CTRL
-#Mac Command Key
+# Mac Command Key
 key.jei.ctrl.mac=CMD
 
 # Recipe Categories
@@ -108,7 +110,11 @@ gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=Bränsle
 gui.jei.category.fuel.smeltCount.single=Smälter 1 föremål
 gui.jei.category.fuel.smeltCount=Smälter %s föremål
-gui.jei.category.fuel.burnTime=Brinntid: %s
 gui.jei.category.brewing=Bryggning
 gui.jei.category.brewing.steps=Steg: %s
-gui.jei.category.itemInformation=Beskrivning
+gui.jei.category.itemInformation=Information
+
+# DEBUG (for debug mode, do not need translation)
+description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.
+description.jei.wooden.door.2=Clicking on a door changes its state from open to closed and visa versa.
+description.jei.wooden.door.3=Wooden Doors can be opened/closed via Redstone Circuits.

@@ -9,6 +9,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.Constants;
 import mezz.jei.util.CommandUtilServer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
@@ -61,7 +62,10 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 
 	@Override
 	public ItemStack cheatIngredient(DebugIngredient ingredient, boolean fullStack) {
-		CommandUtilServer.writeChatMessage(Minecraft.getMinecraft().player, "Debug ingredients cannot be cheated", TextFormatting.RED);
+		EntityPlayerSP player = Minecraft.getMinecraft().player;
+		if (player != null) {
+			CommandUtilServer.writeChatMessage(player, "Debug ingredients cannot be cheated", TextFormatting.RED);
+		}
 		return ItemStack.EMPTY;
 	}
 
@@ -71,7 +75,10 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 	}
 
 	@Override
-	public String getErrorInfo(DebugIngredient ingredient) {
+	public String getErrorInfo(@Nullable DebugIngredient ingredient) {
+		if (ingredient == null) {
+			return "debug ingredient: null";
+		}
 		return getDisplayName(ingredient);
 	}
 }

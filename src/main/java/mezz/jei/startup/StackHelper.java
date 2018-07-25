@@ -215,9 +215,7 @@ public class StackHelper implements IStackHelper {
 		}
 
 		if (itemStack.getItemDamage() != OreDictionary.WILDCARD_VALUE) {
-			List<ItemStack> subtypes = new ArrayList<>();
-			subtypes.add(itemStack);
-			return subtypes;
+			return Collections.singletonList(itemStack);
 		}
 
 		return getSubtypes(itemStack.getItem(), itemStack.getCount());
@@ -240,6 +238,9 @@ public class StackHelper implements IStackHelper {
 				for (ItemStack subItem : subItems) {
 					if (subItem.isEmpty()) {
 						Log.get().warn("Found an empty subItem of {}", item);
+					} else if (subItem.getMetadata() == OreDictionary.WILDCARD_VALUE) {
+						String itemStackInfo = ErrorUtil.getItemStackInfo(subItem);
+						Log.get().error("Found an subItem of {} with wildcard metadata: {}", item, itemStackInfo);
 					} else {
 						if (subItem.getCount() != stackSize) {
 							ItemStack subItemCopy = subItem.copy();

@@ -8,7 +8,10 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.gui.TooltipRenderer;
+import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.startup.ForgeModIdHelper;
+import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -105,6 +108,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		if (match != null) {
 			this.displayIngredients.add(match);
 		} else {
+			displayIngredients = filterOutHidden(displayIngredients);
 			this.displayIngredients.addAll(displayIngredients);
 		}
 
@@ -112,6 +116,24 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 			this.allIngredients.addAll(ingredients);
 		}
 		enabled = !this.displayIngredients.isEmpty();
+	}
+
+	private List<T> filterOutHidden(List<T> ingredients) {
+		if (ingredients.isEmpty()) {
+			return ingredients;
+		}
+		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+		IngredientFilter ingredientFilter = Internal.getIngredientFilter();
+		List<T> visible = new ArrayList<>();
+		for (T ingredient : ingredients) {
+			if (ingredient == null || ingredientRegistry.isIngredientVisible(ingredient, ingredientFilter)) {
+				visible.add(ingredient);
+			}
+		}
+		if (visible.size() > 0) {
+			return visible;
+		}
+		return ingredients;
 	}
 
 	public void setBackground(IDrawable background) {
@@ -139,7 +161,14 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		}
 
 		T value = getDisplayedIngredient();
-		ingredientRenderer.render(minecraft, xOffset + rect.x + xPadding, yOffset + rect.y + yPadding, value);
+		try {
+			ingredientRenderer.render(minecraft, xOffset + rect.x + xPadding, yOffset + rect.y + yPadding, value);
+		} catch (RuntimeException | LinkageError e) {
+			if (value != null) {
+				throw ErrorUtil.createRenderIngredientException(e, value);
+			}
+			throw e;
+		}
 	}
 
 	@Override

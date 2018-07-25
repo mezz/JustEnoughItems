@@ -58,7 +58,7 @@ public final class CommandUtilServer {
 			commandStrings.add(tagCompound.toString());
 		}
 
-		return commandStrings.toArray(new String[commandStrings.size()]);
+		return commandStrings.toArray(new String[0]);
 	}
 
 	public static void writeChatMessage(EntityPlayer player, String translationKey, TextFormatting color) {

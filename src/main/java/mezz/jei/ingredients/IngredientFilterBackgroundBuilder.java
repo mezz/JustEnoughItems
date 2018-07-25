@@ -1,24 +1,23 @@
 package mezz.jei.ingredients;
 
-import gnu.trove.map.TCharObjectMap;
+import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import mezz.jei.config.Config;
-import mezz.jei.config.SessionData;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.Collection;
-import java.util.List;
 
 public class IngredientFilterBackgroundBuilder {
-	private final TCharObjectMap<PrefixedSearchTree> prefixedSearchTrees;
-	private final List<IIngredientListElement> elementList;
+	private final Char2ObjectMap<PrefixedSearchTree> prefixedSearchTrees;
+	private final NonNullList<IIngredientListElement> elementList;
 
-	public IngredientFilterBackgroundBuilder(TCharObjectMap<PrefixedSearchTree> prefixedSearchTrees, List<IIngredientListElement> elementList) {
+	public IngredientFilterBackgroundBuilder(Char2ObjectMap<PrefixedSearchTree> prefixedSearchTrees, NonNullList<IIngredientListElement> elementList) {
 		this.prefixedSearchTrees = prefixedSearchTrees;
 		this.elementList = elementList;
 	}
@@ -32,7 +31,7 @@ public class IngredientFilterBackgroundBuilder {
 
 	@SubscribeEvent
 	public void onClientTick(TickEvent.ClientTickEvent event) {
-		if (event.side == Side.CLIENT && SessionData.hasJoinedWorld() && Minecraft.getMinecraft().player != null) {
+		if (event.side == Side.CLIENT && Minecraft.getMinecraft().player != null) {
 			boolean finished = run(20);
 			if (!finished) {
 				return;
@@ -43,21 +42,19 @@ public class IngredientFilterBackgroundBuilder {
 
 	private boolean run(final int timeoutMs) {
 		final long startTime = System.currentTimeMillis();
-		for (PrefixedSearchTree prefixedTree : this.prefixedSearchTrees.valueCollection()) {
+		for (PrefixedSearchTree prefixedTree : this.prefixedSearchTrees.values()) {
 			Config.SearchMode mode = prefixedTree.getMode();
 			if (mode != Config.SearchMode.DISABLED) {
 				PrefixedSearchTree.IStringsGetter stringsGetter = prefixedTree.getStringsGetter();
 				GeneralizedSuffixTree tree = prefixedTree.getTree();
 				for (int i = tree.getHighestIndex() + 1; i < this.elementList.size(); i++) {
 					IIngredientListElement element = elementList.get(i);
-					if (element != null) {
-						Collection<String> strings = stringsGetter.getStrings(element);
-						if (strings.isEmpty()) {
-							tree.put("", i);
-						} else {
-							for (String string : strings) {
-								tree.put(string, i);
-							}
+					Collection<String> strings = stringsGetter.getStrings(element);
+					if (strings.isEmpty()) {
+						tree.put("", i);
+					} else {
+						for (String string : strings) {
+							tree.put(string, i);
 						}
 					}
 					if (System.currentTimeMillis() - startTime >= timeoutMs) {

@@ -1,23 +1,19 @@
 package mezz.jei.ingredients;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import mezz.jei.api.IItemBlacklist;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
-import mezz.jei.config.Config;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.item.ItemStack;
 
 public class IngredientBlacklist implements IIngredientBlacklist, IItemBlacklist {
 	private final IIngredientRegistry ingredientRegistry;
-	private final Set<String> ingredientBlacklist = new HashSet<>();
+	private final IngredientBlacklistInternal internal;
 
-	public IngredientBlacklist(IIngredientRegistry ingredientRegistry) {
+	public IngredientBlacklist(IIngredientRegistry ingredientRegistry, IngredientBlacklistInternal internal) {
 		this.ingredientRegistry = ingredientRegistry;
+		this.internal = internal;
 	}
 
 	@Override
@@ -25,8 +21,7 @@ public class IngredientBlacklist implements IIngredientBlacklist, IItemBlacklist
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-		String uniqueName = ingredientHelper.getUniqueId(ingredient);
-		ingredientBlacklist.add(uniqueName);
+		internal.addIngredientToBlacklist(ingredient, ingredientHelper);
 	}
 
 	@Override
@@ -34,33 +29,15 @@ public class IngredientBlacklist implements IIngredientBlacklist, IItemBlacklist
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-		String uniqueName = ingredientHelper.getUniqueId(ingredient);
-		ingredientBlacklist.remove(uniqueName);
+		internal.removeIngredientFromBlacklist(ingredient, ingredientHelper);
 	}
 
 	@Override
 	public <V> boolean isIngredientBlacklisted(V ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
-		if (isIngredientBlacklistedByApi(ingredient)) {
-			return true;
-		}
-
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-		return Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper);
-	}
-
-	public <V> boolean isIngredientBlacklistedByApi(V ingredient) {
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-		List<String> uids = IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient);
-
-		for (String uid : uids) {
-			if (ingredientBlacklist.contains(uid)) {
-				return true;
-			}
-		}
-
-		return false;
+		return internal.isIngredientBlacklisted(ingredient, ingredientHelper);
 	}
 
 	@Override
@@ -82,10 +59,5 @@ public class IngredientBlacklist implements IIngredientBlacklist, IItemBlacklist
 	public boolean isItemBlacklisted(ItemStack itemStack) {
 		ErrorUtil.checkNotEmpty(itemStack);
 		return isIngredientBlacklisted(itemStack);
-	}
-
-	@Deprecated
-	public boolean isItemBlacklistedByApi(ItemStack itemStack) {
-		return isIngredientBlacklistedByApi(itemStack);
 	}
 }

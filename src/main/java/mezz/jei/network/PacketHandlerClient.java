@@ -47,7 +47,9 @@ public class PacketHandlerClient extends PacketHandler {
 				try {
 					Minecraft minecraft = Minecraft.getMinecraft();
 					EntityPlayer player = minecraft.player;
-					packetHandler.readPacketData(packetBuffer, player);
+					if (player != null) {
+						packetHandler.readPacketData(packetBuffer, player);
+					}
 					packetBuffer.release();
 				} catch (IOException e) {
 					Log.get().error("Network Error", e);

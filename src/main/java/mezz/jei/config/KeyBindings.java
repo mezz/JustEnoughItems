@@ -1,6 +1,7 @@
 package mezz.jei.config;
 
 import com.google.common.collect.ImmutableList;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
@@ -42,5 +43,17 @@ public final class KeyBindings {
 		for (KeyBinding binding : allBindings) {
 			ClientRegistry.registerKeyBinding(binding);
 		}
+	}
+
+	public static boolean isInventoryToggleKey(int keyCode) {
+		return Minecraft.getMinecraft().gameSettings.keyBindInventory.isActiveAndMatches(keyCode);
+	}
+
+	public static boolean isInventoryCloseKey(int keyCode) {
+		return keyCode == Keyboard.KEY_ESCAPE;
+	}
+
+	public static boolean isEnterKey(int keyCode) {
+		return keyCode == Keyboard.KEY_RETURN;
 	}
 }

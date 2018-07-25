@@ -22,6 +22,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.oredict.OreDictionary;
 
 public final class ItemStackListFactory {
 	private final ISubtypeRegistry subtypeRegistry;
@@ -47,6 +48,9 @@ public final class ItemStackListFactory {
 			for (ItemStack itemStack : creativeTabItemStacks) {
 				if (itemStack.isEmpty()) {
 					Log.get().error("Found an empty itemStack from creative tab: {}", creativeTab);
+				} else if (itemStack.getMetadata() == OreDictionary.WILDCARD_VALUE) {
+					String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
+					Log.get().error("Found an itemStack with wildcard metadata from creative tab: {}. {}", creativeTab, itemStackInfo);
 				} else {
 					addItemStack(stackHelper, itemStack, itemList, itemNameSet);
 				}
@@ -128,8 +132,14 @@ public final class ItemStackListFactory {
 
 	private void addFallbackSubtypeInterpreter(ItemStack itemStack) {
 		if (!this.subtypeRegistry.hasSubtypeInterpreter(itemStack)) {
-			if (itemStack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
-				this.subtypeRegistry.registerSubtypeInterpreter(itemStack.getItem(), FluidSubtypeInterpreter.INSTANCE);
+			try {
+				String info = FluidSubtypeInterpreter.INSTANCE.apply(itemStack);
+				if (!ISubtypeRegistry.ISubtypeInterpreter.NONE.equals(info)) {
+					this.subtypeRegistry.registerSubtypeInterpreter(itemStack.getItem(), FluidSubtypeInterpreter.INSTANCE);
+				}
+			} catch (RuntimeException | LinkageError e) {
+				String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
+				Log.get().error("Failed to apply FluidSubtypeInterpreter to ItemStack: {}", itemStackInfo, e);
 			}
 		}
 	}

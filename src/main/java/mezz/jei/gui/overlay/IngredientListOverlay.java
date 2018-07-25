@@ -4,54 +4,49 @@ import com.google.common.collect.ImmutableList;
 import mezz.jei.Internal;
 import mezz.jei.api.IIngredientListOverlay;
 import mezz.jei.api.IItemListOverlay;
-import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.gui.IGuiProperties;
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
-import mezz.jei.config.SessionData;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
-import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IMouseHandler;
-import mezz.jei.input.IPaged;
 import mezz.jei.input.IShowsRecipeFocuses;
-import mezz.jei.input.MouseHelper;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.CommandUtil;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
-import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-public class IngredientListOverlay implements IItemListOverlay, IIngredientListOverlay, IPaged, IMouseHandler, IShowsRecipeFocuses {
+public class IngredientListOverlay implements IItemListOverlay, IIngredientListOverlay, IMouseHandler, IShowsRecipeFocuses {
 	private static final int BORDER_PADDING = 2;
 	private static final int BUTTON_SIZE = 20;
-	private static final int NAVIGATION_HEIGHT = 20;
-	private static final int SEARCH_HEIGHT = 16;
+	private static final int SEARCH_HEIGHT = 20;
 
 	/**
 	 * @return true if this can be displayed next to the gui with the given guiProperties
 	 */
 	private static boolean hasRoom(IGuiProperties guiProperties) {
-		return guiProperties.getScreenWidth() - (guiProperties.getGuiLeft() + guiProperties.getGuiXSize()) >= 72;
+		Rectangle displayArea = getDisplayArea(guiProperties);
+		return displayArea.width >= getMinWidth();
+	}
+
+	private static int getMinWidth() {
+		return Math.max(4 * BUTTON_SIZE, Config.smallestNumColumns * IngredientGrid.INGREDIENT_WIDTH);
 	}
 
 	private static boolean isSearchBarCentered(IGuiProperties guiProperties) {
@@ -62,11 +57,9 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	private final IngredientFilter ingredientFilter;
 	private final NonNullList<ItemStack> highlightedStacks = NonNullList.create();
 	private final ConfigButton configButton;
-	private final PageNavigation navigation;
-	private final IngredientGrid contents;
+	private final IngredientGridAll contents;
 	private final GuiTextFieldFilter searchField;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
-	private Set<Rectangle> guiExclusionAreas = Collections.emptySet();
 	private Rectangle displayArea = new Rectangle();
 
 	// properties of the gui we're beside
@@ -78,7 +71,6 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 
 		this.contents = new IngredientGridAll(ingredientFilter);
 		this.searchField = new GuiTextFieldFilter(0, ingredientFilter);
-		this.navigation = new PageNavigation(this, false);
 		this.configButton = new ConfigButton(this);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents);
 		this.setKeyboardFocus(false);
@@ -89,8 +81,7 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 		long start_time = System.currentTimeMillis();
 		this.ingredientFilter.modesChanged();
 		Log.get().info("Updated  ingredient filter in {} ms", System.currentTimeMillis() - start_time);
-		SessionData.setFirstItemIndex(0);
-		updateLayout();
+		updateLayout(true);
 	}
 
 	@Override
@@ -117,7 +108,7 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 		highlightedStacks.addAll(stacks);
 	}
 
-	public boolean isEnabled() {
+	public boolean isListDisplayed() {
 		return Config.isOverlayEnabled() && this.guiProperties != null && hasRoom(this.guiProperties);
 	}
 
@@ -129,132 +120,130 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 			guiProperties1.getScreenHeight() == guiProperties2.getScreenHeight();
 	}
 
+	private static Rectangle getDisplayArea(IGuiProperties guiProperties) {
+		final int x = guiProperties.getGuiLeft() + guiProperties.getGuiXSize() + BORDER_PADDING;
+		final int y = BORDER_PADDING;
+		final int width = guiProperties.getScreenWidth() - x - BORDER_PADDING;
+		final int height = guiProperties.getScreenHeight() - y - BORDER_PADDING;
+		return new Rectangle(x, y, width, height);
+	}
+
 	public void updateScreen(@Nullable GuiScreen guiScreen) {
 		JeiRuntime runtime = Internal.getRuntime();
 		if (runtime == null) {
 			return;
 		}
+		final boolean wasDisplayed = isListDisplayed();
 		IGuiProperties guiProperties = runtime.getGuiProperties(guiScreen);
 		if (guiProperties == null) {
-			this.guiProperties = null;
-			setKeyboardFocus(false);
+			if (this.guiProperties != null) {
+				this.guiProperties = null;
+				setKeyboardFocus(false);
+				this.ghostIngredientDragManager.stopDrag();
+			}
 		} else if (this.guiProperties == null || !areGuiPropertiesEqual(this.guiProperties, guiProperties)) {
 			this.guiProperties = guiProperties;
-
-			final int x = guiProperties.getGuiLeft() + guiProperties.getGuiXSize() + BORDER_PADDING;
-			final int y = BORDER_PADDING;
-			final int width = guiProperties.getScreenWidth() - x - (2 * BORDER_PADDING);
-			final int height = guiProperties.getScreenHeight() - y - (2 * BORDER_PADDING);
-			displayArea = new Rectangle(x, y, width, height);
+			this.displayArea = getDisplayArea(guiProperties);
 
 			final boolean searchBarCentered = isSearchBarCentered(guiProperties);
-			final int searchHeight = searchBarCentered ? 0 : SEARCH_HEIGHT + 4;
+			final int searchHeight = searchBarCentered ? 0 : SEARCH_HEIGHT + BORDER_PADDING;
 
-			Rectangle contentsArea = new Rectangle(displayArea.x, displayArea.y + NAVIGATION_HEIGHT + 2, displayArea.width, displayArea.height - NAVIGATION_HEIGHT - searchHeight);
-			this.contents.updateBounds(contentsArea, this.guiExclusionAreas);
+			Rectangle availableContentsArea = new Rectangle(
+				displayArea.x,
+				displayArea.y,
+				displayArea.width,
+				displayArea.height - searchHeight
+			);
+			final int minWidth = getMinWidth();
+			this.contents.updateBounds(availableContentsArea, minWidth);
 
 			// update area to match contents size
-			contentsArea = this.contents.getArea();
+			Rectangle contentsArea = this.contents.getArea();
 			displayArea.x = contentsArea.x;
 			displayArea.width = contentsArea.width;
 
-			Rectangle navigationArea = new Rectangle(displayArea.x, displayArea.y, displayArea.width, NAVIGATION_HEIGHT);
-			this.navigation.updateBounds(navigationArea);
-
-			if (searchBarCentered) {
-				Rectangle searchArea = new Rectangle(guiProperties.getGuiLeft() + 2, guiProperties.getScreenHeight() - 4 - SEARCH_HEIGHT, guiProperties.getGuiXSize() - 3 - BUTTON_SIZE, SEARCH_HEIGHT);
-				this.searchField.updateBounds(searchArea);
+			if (searchBarCentered && isListDisplayed()) {
+				searchField.updateBounds(new Rectangle(
+					guiProperties.getGuiLeft(),
+					guiProperties.getScreenHeight() - SEARCH_HEIGHT - BORDER_PADDING,
+					guiProperties.getGuiXSize() - BUTTON_SIZE + 1,
+					SEARCH_HEIGHT
+				));
 			} else {
-				Rectangle searchArea = new Rectangle(displayArea.x + 2, displayArea.y + displayArea.height - SEARCH_HEIGHT, displayArea.width - 3 - BUTTON_SIZE, SEARCH_HEIGHT);
-				this.searchField.updateBounds(searchArea);
+				searchField.updateBounds(new Rectangle(
+					displayArea.x,
+					displayArea.y + displayArea.height - SEARCH_HEIGHT - BORDER_PADDING,
+					displayArea.width - BUTTON_SIZE + 1,
+					SEARCH_HEIGHT
+				));
 			}
 
-			int configButtonX = this.searchField.x + this.searchField.width + 1;
-			int configButtonY = this.searchField.y - BORDER_PADDING;
-			this.configButton.updateBounds(new Rectangle(configButtonX, configButtonY, BUTTON_SIZE, BUTTON_SIZE));
+			this.configButton.updateBounds(new Rectangle(
+				searchField.x + searchField.width - 1,
+				searchField.y,
+				BUTTON_SIZE,
+				BUTTON_SIZE
+			));
 
-			updateLayout();
+			updateLayout(false);
+		}
+		if (wasDisplayed && !isListDisplayed()) {
+			Config.saveFilterText();
 		}
 	}
 
-	private void updateLayout() {
-		this.contents.updateLayout(this.guiExclusionAreas);
-
-		int pageNum = this.contents.getPageNum();
-		int pageCount = this.contents.getPageCount();
-		this.navigation.updatePageState(pageNum, pageCount);
-
+	public void updateLayout(boolean filterChanged) {
+		this.contents.updateLayout(filterChanged);
 		this.searchField.update();
 	}
 
 	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
-		if (this.updateGuiExclusionAreas()) {
-			updateLayout();
+		if (this.guiProperties != null) {
+			if (isListDisplayed()) {
+				GlStateManager.disableLighting();
+				this.searchField.drawTextBox();
+				this.contents.draw(minecraft, mouseX, mouseY, partialTicks);
+				this.configButton.draw(minecraft, mouseX, mouseY, partialTicks);
+			} else {
+				this.configButton.draw(minecraft, mouseX, mouseY, partialTicks);
+			}
 		}
-
-		GlStateManager.disableLighting();
-
-		this.navigation.draw(minecraft, mouseX, mouseY, partialTicks);
-		this.searchField.drawTextBox();
-		this.contents.draw(minecraft, mouseX, mouseY);
-		this.configButton.draw(minecraft, mouseX, mouseY, partialTicks);
-	}
-
-	public boolean updateGuiExclusionAreas() {
-		final Set<Rectangle> guiAreas = getGuiAreas();
-		if (!guiAreas.equals(this.guiExclusionAreas)) {
-			this.guiExclusionAreas = guiAreas;
-			return true;
-		}
-		return false;
 	}
 
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
-		this.contents.drawTooltips(minecraft, mouseX, mouseY);
-		this.configButton.drawTooltips(minecraft, mouseX, mouseY);
-		this.ghostIngredientDragManager.drawTooltips(minecraft, mouseX, mouseY);
+		if (isListDisplayed()) {
+			this.configButton.drawTooltips(minecraft, mouseX, mouseY, true);
+			this.ghostIngredientDragManager.drawTooltips(minecraft, mouseX, mouseY);
+			this.contents.drawTooltips(minecraft, mouseX, mouseY);
+		} else if (this.guiProperties != null) {
+			this.configButton.drawTooltips(minecraft, mouseX, mouseY, false);
+		}
 	}
 
-	public void drawOnForeground(Minecraft minecraft, int mouseX, int mouseY) {
-		this.ghostIngredientDragManager.drawOnForeground(minecraft, mouseX, mouseY);
+	public void drawOnForeground(GuiContainer gui, int mouseX, int mouseY) {
+		if (isListDisplayed()) {
+			GlStateManager.pushMatrix();
+			GlStateManager.translate(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
+			this.ghostIngredientDragManager.drawOnForeground(gui.mc, mouseX, mouseY);
+			GlStateManager.popMatrix();
+		}
 	}
 
 	public void handleTick() {
-		this.searchField.updateCursorCounter();
-	}
-
-	@Override
-	public boolean nextPage() {
-		if (this.contents.nextPage()) {
-			updateLayout();
-			return true;
+		if (this.isListDisplayed()) {
+			this.searchField.updateCursorCounter();
 		}
-		return false;
-	}
-
-	@Override
-	public boolean previousPage() {
-		if (this.contents.previousPage()) {
-			updateLayout();
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return this.contents.hasNext();
-	}
-
-	@Override
-	public boolean hasPrevious() {
-		return this.contents.hasPrevious();
 	}
 
 	@Override
 	public boolean isMouseOver(int mouseX, int mouseY) {
-		if (displayArea.contains(mouseX, mouseY) || searchField.isMouseOver(mouseX, mouseY) || configButton.isMouseOver(mouseX, mouseY)) {
-			return !MathUtil.contains(guiExclusionAreas, mouseX, mouseY);
+		if (isListDisplayed()) {
+			if (Config.isCenterSearchBarEnabled() && searchField.isMouseOver(mouseX, mouseY)) {
+				return true;
+			}
+			return displayArea.contains(mouseX, mouseY);
+		} else if (this.guiProperties != null) {
+			return this.configButton.isMouseOver(mouseX, mouseY);
 		}
 		return false;
 	}
@@ -262,7 +251,7 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	@Override
 	@Nullable
 	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
-		if (this.isEnabled()) {
+		if (isListDisplayed()) {
 			IClickedIngredient<?> clicked = this.contents.getIngredientUnderMouse(mouseX, mouseY);
 			if (clicked != null) {
 				clicked.setOnClickHandler(() -> setKeyboardFocus(false));
@@ -274,135 +263,110 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 
 	@Override
 	public boolean canSetFocusWithMouse() {
-		return this.isEnabled() && this.contents.canSetFocusWithMouse();
+		return this.isListDisplayed() && this.contents.canSetFocusWithMouse();
 	}
 
 	@Override
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
-		if (this.ghostIngredientDragManager.handleMouseClicked(mouseX, mouseY)) {
-			return true;
-		} // if the ghost ingredient drag failed, fall through to let the click be handled by something else
-
-		if (!isMouseOver(mouseX, mouseY)) {
-			setKeyboardFocus(false);
-			return false;
-		}
-
-		if (this.contents.handleMouseClicked(mouseX, mouseY)) {
-			setKeyboardFocus(false);
-			return true;
-		}
-
-		if (this.navigation.handleMouseClickedButtons(mouseX, mouseY)) {
-			setKeyboardFocus(false);
-			return true;
-		}
-
-		boolean searchClicked = this.searchField.isMouseOver(mouseX, mouseY);
-		setKeyboardFocus(searchClicked);
-		if (searchClicked) {
-			final boolean updated = this.searchField.handleMouseClicked(mouseX, mouseY, mouseButton);
-			if (updated) {
-				updateLayout();
+		if (isListDisplayed()) {
+			if (this.ghostIngredientDragManager.handleMouseClicked(mouseX, mouseY)) {
+				return true;
 			}
-			return true;
-		}
 
-		if (this.configButton.handleMouseClick(Minecraft.getMinecraft(), mouseX, mouseY)) {
-			return true;
-		}
+			if (this.configButton.handleMouseClick(mouseX, mouseY)) {
+				return true;
+			}
 
-		Minecraft minecraft = Minecraft.getMinecraft();
-		GuiScreen currentScreen = minecraft.currentScreen;
-		if (currentScreen != null && !(currentScreen instanceof RecipesGui) &&
-			(mouseButton == 0 || mouseButton == 1 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(mouseButton - 100)))
-		{
-			IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
-			if (clicked != null) {
-				if (Config.isCheatItemsEnabled()) {
-					ItemStack itemStack = clicked.getCheatItemStack();
-					if (!itemStack.isEmpty()) {
-						CommandUtil.giveStack(itemStack, mouseButton);
+			if (!isMouseOver(mouseX, mouseY)) {
+				setKeyboardFocus(false);
+				return false;
+			}
+
+			if (this.contents.handleMouseClicked(mouseX, mouseY, mouseButton)) {
+				setKeyboardFocus(false);
+				return true;
+			}
+
+			boolean searchClicked = this.searchField.isMouseOver(mouseX, mouseY);
+			setKeyboardFocus(searchClicked);
+			if (searchClicked) {
+				final boolean updated = this.searchField.handleMouseClicked(mouseX, mouseY, mouseButton);
+				if (updated) {
+					updateLayout(false);
+				}
+				return true;
+			}
+
+			Minecraft minecraft = Minecraft.getMinecraft();
+			GuiScreen currentScreen = minecraft.currentScreen;
+			if (currentScreen != null && !(currentScreen instanceof RecipesGui) &&
+				(mouseButton == 0 || mouseButton == 1 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(mouseButton - 100))) {
+				IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
+				if (clicked != null) {
+					if (Config.isCheatItemsEnabled()) {
+						ItemStack itemStack = clicked.getCheatItemStack();
+						if (!itemStack.isEmpty()) {
+							CommandUtil.giveStack(itemStack, mouseButton);
+						}
+						clicked.onClickHandled();
+						return true;
 					}
-					clicked.onClickHandled();
-					return true;
-				}
-				if (this.ghostIngredientDragManager.handleClickGhostIngredient(currentScreen, clicked)) {
-					return true;
+					EntityPlayerSP player = minecraft.player;
+					if (player != null) {
+						ItemStack mouseItem = player.inventory.getItemStack();
+						if (mouseItem.isEmpty() && this.ghostIngredientDragManager.handleClickGhostIngredient(currentScreen, clicked)) {
+							return true;
+						}
+					}
 				}
 			}
+		} else if (this.guiProperties != null) {
+			return this.configButton.handleMouseClick(mouseX, mouseY);
 		}
 		return false;
 	}
 
 	@Override
 	public boolean handleMouseScrolled(int mouseX, int mouseY, int scrollDelta) {
-		if (!isMouseOver(mouseX, mouseY)) {
-			return false;
-		}
-		if (scrollDelta < 0) {
-			nextPage();
-			return true;
-		} else if (scrollDelta > 0) {
-			previousPage();
-			return true;
-		}
-		return false;
+		return isListDisplayed() &&
+			isMouseOver(mouseX, mouseY) &&
+			this.contents.handleMouseScrolled(mouseX, mouseY, scrollDelta);
 	}
 
 	@Override
 	public boolean hasKeyboardFocus() {
-		return this.searchField.isFocused();
+		return isListDisplayed() && this.searchField.isFocused();
 	}
 
 	public void setKeyboardFocus(boolean keyboardFocus) {
 		this.searchField.setFocused(keyboardFocus);
 	}
 
-	public boolean onKeyPressed(char typedChar, int keyCode) {
-		if (hasKeyboardFocus() &&
-				searchField.textboxKeyTyped(typedChar, keyCode)) {
-			boolean changed = Config.setFilterText(searchField.getText());
-			if (changed) {
-				SessionData.setFirstItemIndex(0);
-				updateLayout();
+	public boolean onGlobalKeyPressed(int eventKey) {
+		if (isListDisplayed()) {
+			if (KeyBindings.toggleCheatMode.isActiveAndMatches(eventKey)) {
+				Config.toggleCheatItemsEnabled();
+				return true;
 			}
-			return true;
-		} else if (KeyBindings.nextPage.isActiveAndMatches(keyCode)) {
-			nextPage();
-			return true;
-		} else if (KeyBindings.previousPage.isActiveAndMatches(keyCode)) {
-			previousPage();
-			return true;
+			if (KeyBindings.focusSearch.isActiveAndMatches(eventKey)) {
+				setKeyboardFocus(true);
+				return true;
+			}
 		}
-		return checkHotbarKeys(keyCode);
+		return false;
 	}
 
-	/**
-	 * Modeled after {@link GuiContainer#checkHotbarKeys(int)}
-	 * Sets the stack in a hotbar slot to the one that's hovered over.
-	 */
-	protected boolean checkHotbarKeys(int keyCode) {
-		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
-		if (Config.isCheatItemsEnabled() && guiScreen != null && !(guiScreen instanceof RecipesGui)) {
-			final int mouseX = MouseHelper.getX();
-			final int mouseY = MouseHelper.getY();
-			if (isMouseOver(mouseX, mouseY)) {
-				GameSettings gameSettings = Minecraft.getMinecraft().gameSettings;
-				for (int hotbarSlot = 0; hotbarSlot < 9; ++hotbarSlot) {
-					if (gameSettings.keyBindsHotbar[hotbarSlot].isActiveAndMatches(keyCode)) {
-						IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);
-						if (ingredientUnderMouse != null) {
-							ItemStack itemStack = ingredientUnderMouse.getCheatItemStack();
-							if (!itemStack.isEmpty()) {
-								CommandUtil.setHotbarStack(itemStack, hotbarSlot);
-							}
-							ingredientUnderMouse.onClickHandled();
-						}
-						return true;
-					}
+	public boolean onKeyPressed(char typedChar, int eventKey) {
+		if (isListDisplayed()) {
+			if (hasKeyboardFocus() &&
+					searchField.textboxKeyTyped(typedChar, eventKey)) {
+				boolean changed = Config.setFilterText(searchField.getText());
+				if (changed) {
+					updateLayout(true);
 				}
+				return true;
 			}
+			return this.contents.onKeyPressed(typedChar, eventKey);
 		}
 		return false;
 	}
@@ -420,9 +384,11 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	@Nullable
 	@Override
 	public Object getIngredientUnderMouse() {
-		IIngredientListElement elementUnderMouse = this.contents.getElementUnderMouse();
-		if (elementUnderMouse != null) {
-			return elementUnderMouse.getIngredient();
+		if (isListDisplayed()) {
+			IIngredientListElement elementUnderMouse = this.contents.getElementUnderMouse();
+			if (elementUnderMouse != null) {
+				return elementUnderMouse.getIngredient();
+			}
 		}
 		return null;
 	}
@@ -437,53 +403,39 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 
 	public void onSetFilterText(String filterText) {
 		this.searchField.setText(filterText);
-		SessionData.setFirstItemIndex(0);
-		updateLayout();
+		updateLayout(true);
 	}
 
 	@Override
 	public ImmutableList<ItemStack> getVisibleStacks() {
-		ImmutableList.Builder<ItemStack> visibleStacks = ImmutableList.builder();
-		List<IIngredientListElement> visibleElements = this.contents.getVisibleElements();
-		for (IIngredientListElement element : visibleElements) {
-			Object ingredient = element.getIngredient();
-			if (ingredient instanceof ItemStack) {
-				visibleStacks.add((ItemStack) ingredient);
+		if (isListDisplayed()) {
+			ImmutableList.Builder<ItemStack> visibleStacks = ImmutableList.builder();
+			List<IIngredientListElement> visibleElements = this.contents.getVisibleElements();
+			for (IIngredientListElement element : visibleElements) {
+				Object ingredient = element.getIngredient();
+				if (ingredient instanceof ItemStack) {
+					visibleStacks.add((ItemStack) ingredient);
+				}
 			}
-		}
 
-		return visibleStacks.build();
+			return visibleStacks.build();
+		}
+		return ImmutableList.of();
 	}
 
 	@Override
 	public ImmutableList<Object> getVisibleIngredients() {
-		ImmutableList.Builder<Object> visibleIngredients = ImmutableList.builder();
-		List<IIngredientListElement> visibleElements = this.contents.getVisibleElements();
-		for (IIngredientListElement element : visibleElements) {
-			Object ingredient = element.getIngredient();
-			visibleIngredients.add(ingredient);
-		}
-
-		return visibleIngredients.build();
-	}
-
-	private static Set<Rectangle> getGuiAreas() {
-		final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
-		if (currentScreen instanceof GuiContainer) {
-			final GuiContainer guiContainer = (GuiContainer) currentScreen;
-			final JeiRuntime jeiRuntime = Internal.getRuntime();
-			if (jeiRuntime != null) {
-				final Set<Rectangle> allGuiExtraAreas = new HashSet<>();
-				final List<IAdvancedGuiHandler<GuiContainer>> activeAdvancedGuiHandlers = jeiRuntime.getActiveAdvancedGuiHandlers(guiContainer);
-				for (IAdvancedGuiHandler<GuiContainer> advancedGuiHandler : activeAdvancedGuiHandlers) {
-					final List<Rectangle> guiExtraAreas = advancedGuiHandler.getGuiExtraAreas(guiContainer);
-					if (guiExtraAreas != null) {
-						allGuiExtraAreas.addAll(guiExtraAreas);
-					}
-				}
-				return allGuiExtraAreas;
+		if (isListDisplayed()) {
+			ImmutableList.Builder<Object> visibleIngredients = ImmutableList.builder();
+			List<IIngredientListElement> visibleElements = this.contents.getVisibleElements();
+			for (IIngredientListElement element : visibleElements) {
+				Object ingredient = element.getIngredient();
+				visibleIngredients.add(ingredient);
 			}
+
+			return visibleIngredients.build();
 		}
-		return Collections.emptySet();
+		return ImmutableList.of();
 	}
+
 }

@@ -7,9 +7,9 @@ public class ConfigValues {
 	public boolean debugModeEnabled = false;
 	public boolean centerSearchBarEnabled = false;
 	public GiveMode giveMode = GiveMode.MOUSE_PICKUP;
-	public final String modNameFormatFriendly = "blue italic";
-	public String modNameFormat = Config.parseFriendlyModNameFormat(modNameFormatFriendly);
+	public String modNameFormat = Config.parseFriendlyModNameFormat(Config.defaultModNameFormatFriendly);
 	public int maxColumns = 100;
+	public int maxRecipeGuiHeight = 350;
 
 	// search
 	public Config.SearchMode modNameSearchMode = Config.SearchMode.REQUIRE_PREFIX;
@@ -23,6 +23,6 @@ public class ConfigValues {
 	// per-world
 	public boolean overlayEnabled = true;
 	public boolean cheatItemsEnabled = false;
-	public boolean editModeEnabled = false;
+	public boolean hideModeEnabled = false;
 	public String filterText = "";
 }
