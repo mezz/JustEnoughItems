@@ -88,6 +88,8 @@ config.jei.advanced.modNameFormat=模組名稱格式
 config.jei.advanced.modNameFormat.comment=定義JEI介面的資訊提示中的模組名稱格式, 留空以禁用
 config.jei.advanced.maxColumns=Max Width
 config.jei.advanced.maxColumns.comment=The maximum width of the ingredient list.
+config.jei.advanced.maxRecipeGuiHeight=Max Recipe Gui Height
+config.jei.advanced.maxRecipeGuiHeight.comment=The maximum height for the recipe gui.
 config.jei.advanced.giveMode=Give Mode
 config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to the inventory (inventory) or pick them up with the mouse (mouse_pickup).
 
