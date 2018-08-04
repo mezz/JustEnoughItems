@@ -24,7 +24,7 @@ jei.tooltip.error.recipe.transfer.inventory.full=O inventário está muito cheio
 jei.tooltip.error.recipe.transfer.unknown=Erro desconhecido, ver registros
 jei.tooltip.error.recipe.transfer.no.server=O servidor deve ter o JEI instalado
 jei.tooltip.error.recipe.transfer.too.large.player.inventory=Não é possível fabricar isto em uma grade 2x2.
-jei.tooltip.error.crash=Descrição de erro, ver registros
+jei.tooltip.error.crash=Descrição do erro, ver registros
 
 # Error Messages
 jei.chat.error.command.too.long=O JEI deve ser instalado no servidor para poder usar este comando de bate-papo, que é longo demais para o Minecraft enviar.
@@ -37,9 +37,9 @@ key.jei.focusSearch=Selecionar barra de busca
 key.jei.showRecipe=Mostrar receita
 key.jei.showUses=Mostrar usos
 key.jei.recipeBack=Mostrar receita anterior
-key.jei.toggleCheatMode=Ativar/desativar modo trapaça
-key.jei.previousPage=Anterior
-key.jei.nextPage=Seguinte
+key.jei.toggleCheatMode=Ativar/Desativar modo trapaça
+key.jei.previousPage=Página anterior
+key.jei.nextPage=Próxima página
 
 # Config
 config.jei.default=Padrão
@@ -50,9 +50,9 @@ config.jei.title=Configurações do %MODNAME
 config.jei.mode=Modo
 config.jei.mode.comment=Alterar o modo de operação do JEI.
 config.jei.mode.cheatItemsEnabled=Modo trapaça ativado
-config.jei.mode.cheatItemsEnabled.comment=Dar itens ao invés de apenas exibir a receita.
+config.jei.mode.cheatItemsEnabled.comment=Dar itens ao invés de apenas mostrar a receita.
 config.jei.mode.editEnabled=Ocultar ingredientes
-config.jei.mode.editEnabled.comment=Ocultar ou exibir ingredientes ao clicá-los na lista.
+config.jei.mode.editEnabled.comment=Ocultar ou mostrar ingredientes ao clicá-los na lista.
 
 config.jei.interface=Interface
 config.jei.interface.comment=Opções de interface do usuário.
@@ -75,7 +75,7 @@ config.jei.search.resourceIdSearchMode=&ResourceId
 config.jei.search.resourceIdSearchMode.comment=Modo de busca para IDs de recursos (prefixo: &)
 
 config.jei.advanced=Avançado
-config.jei.advanced.comment=Configurações avançadas de funcionalidades do JEI.
+config.jei.advanced.comment=Configurações avançadas do JEI.
 config.jei.advanced.itemBlacklist=Lista negra de ingredientes
 config.jei.advanced.itemBlacklist.comment=Lista de ingredientes que não deve ser exibida na lista principal. Formato: modId[:name[:meta]]. O modo ingredientes ocultos adicionará ou removerá automaticamente entradas aqui.
 config.jei.advanced.colorSearchEnabled=Ativar busca por cor
