@@ -107,12 +107,12 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 			if (registryName != null) {
 				guiItemStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
 					if (slotIndex == craftOutputSlot) {
-						String recipeModId = registryName.getResourceDomain();
+						String recipeModId = registryName.getNamespace();
 
 						boolean modIdDifferent = false;
 						ResourceLocation itemRegistryName = ingredient.getItem().getRegistryName();
 						if (itemRegistryName != null) {
-							String itemModId = itemRegistryName.getResourceDomain();
+							String itemModId = itemRegistryName.getNamespace();
 							modIdDifferent = !recipeModId.equals(itemModId);
 						}
 

@@ -57,7 +57,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 
 		for (int k = 0; k < list.size(); ++k) {
 			if (k == 0) {
-				list.set(k, rarity.rarityColor + list.get(k));
+				list.set(k, rarity.color + list.get(k));
 			} else {
 				list.set(k, TextFormatting.GRAY + list.get(k));
 			}

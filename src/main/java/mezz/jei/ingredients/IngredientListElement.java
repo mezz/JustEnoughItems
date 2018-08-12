@@ -166,7 +166,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 			Item item = itemStack.getItem();
 			for (CreativeTabs creativeTab : item.getCreativeTabs()) {
 				if (creativeTab != null) {
-					String creativeTabName = I18n.format(creativeTab.getTranslatedTabLabel());
+					String creativeTabName = I18n.format(creativeTab.getTranslationKey());
 					String creativeTabNameLowercase = Translator.toLowercaseWithLocale(creativeTabName);
 					creativeTabsStrings.add(creativeTabNameLowercase);
 				}

@@ -61,7 +61,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 			return "";
 		}
 		ResourceLocation fluidResourceName = new ResourceLocation(defaultFluidName);
-		return fluidResourceName.getResourceDomain();
+		return fluidResourceName.getNamespace();
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 			return "";
 		}
 		ResourceLocation fluidResourceName = new ResourceLocation(defaultFluidName);
-		return fluidResourceName.getResourcePath();
+		return fluidResourceName.getPath();
 	}
 
 	@Override

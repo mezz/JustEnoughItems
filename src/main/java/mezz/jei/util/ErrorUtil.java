@@ -76,7 +76,7 @@ public final class ErrorUtil {
 			IForgeRegistryEntry registryEntry = (IForgeRegistryEntry) recipe;
 			ResourceLocation registryName = registryEntry.getRegistryName();
 			if (registryName != null) {
-				String modId = registryName.getResourceDomain();
+				String modId = registryName.getNamespace();
 				String modName = ForgeModIdHelper.getInstance().getModNameForModId(modId);
 				return modName + " " + registryName;
 			}
