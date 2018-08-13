@@ -384,10 +384,6 @@ public class GeneralizedSuffixTree implements ISearchTree {
 		return highestIndex;
 	}
 
-	public String dumpToString(){
-		return root.dumpToString();
-	}
-
 	/**
 	 * A private class used to return a tuples of two elements
 	 */

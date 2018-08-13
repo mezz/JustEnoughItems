@@ -93,11 +93,6 @@ public class IngredientFilter implements IIngredientFilter {
 			addIngredient(element);
 		}
 		ProgressManager.pop(progressBar);
-
-		prefixedSearchTrees.forEach((character, prefixedSearchTree) -> {
-			System.out.println("character = " + character);
-			System.out.println("prefixedSearchTree = " + prefixedSearchTree.getTree().dumpToString());
-		});
 	}
 
 	public <V> void addIngredient(IIngredientListElement<V> element) {

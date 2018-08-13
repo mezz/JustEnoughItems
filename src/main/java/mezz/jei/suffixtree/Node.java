@@ -91,9 +91,8 @@ class Node {
 		// add this reference to all the suffixes as well
 		Node iter = this.suffix;
 		while (iter != null) {
-			if (iter.addRef(index)) {
-			//if (!iter.contains(index)) {
-				// iter.addIndex(index);
+			if (!iter.contains(index)) {
+				iter.addIndex(index);
 				iter = iter.suffix;
 			} else {
 				break;
@@ -133,24 +132,6 @@ class Node {
 
 	private void addIndex(int index) {
 		data.add(index);
-	}
-
-	public String dumpToString(){
-		StringBuilder sb = new StringBuilder();
-
-		if (DumpHelper.nodes.contains(this)) {
-		    return "[Already dumped<" /*+ System.identityHashCode(this)*/ + ">]";
-        }
-
-        DumpHelper.nodes.add(this);
-        sb.append("<")/*.append(System.identityHashCode(this))*/.append(">");
-		sb.append(data.toString());
-		sb.append(" : ");
-		edges.forEach((character, edge) -> sb.append("(").append(character).append(")").append(edge.dumpToString()));
-
-		sb.append("\n\tsuffix: ").append(suffix == null ? "leaf" : suffix.dumpToString());
-
-		return sb.toString();
 	}
 
 	@Override
