@@ -68,7 +68,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final ListMultiMap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories = new ListMultiMap<>();
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
-	private final List<IRecipeRegistryPlugin> plugins = new ArrayList<>();
+	private final List<RecipeRegistryPluginSafeWrapper> plugins = new ArrayList<>();
 	private final SetMultiMap<String, IRecipeWrapper> hiddenRecipes = new SetMultiMap<>(() -> Collections.newSetFromMap(new IdentityHashMap<>())); // recipe category uid key
 
 	public RecipeRegistry(
@@ -117,8 +117,10 @@ public class RecipeRegistry implements IRecipeRegistry {
 		ImmutableMultimap<String, String> categoriesForRecipeCatalystKeys = categoriesForRecipeCatalystKeysBuilder.build();
 
 		IRecipeRegistryPlugin internalRecipeRegistryPlugin = new InternalRecipeRegistryPlugin(this, categoriesForRecipeCatalystKeys, ingredientRegistry, recipeCategoriesMap, recipeInputMap, recipeOutputMap, recipeWrappersForCategories);
-		this.plugins.add(internalRecipeRegistryPlugin);
-		this.plugins.addAll(plugins);
+		this.plugins.add(new RecipeRegistryPluginSafeWrapper(internalRecipeRegistryPlugin));
+		for (IRecipeRegistryPlugin plugin : plugins) {
+			this.plugins.add(new RecipeRegistryPluginSafeWrapper(plugin));
+		}
 
 		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
 	}
@@ -568,12 +570,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 		List<String> allRecipeCategoryUids = new ArrayList<>();
 		for (IRecipeRegistryPlugin plugin : this.plugins) {
-			long start_time = System.currentTimeMillis();
 			List<String> recipeCategoryUids = plugin.getRecipeCategoryUids(focus);
-			long timeElapsed = System.currentTimeMillis() - start_time;
-			if (timeElapsed > 10) {
-				Log.get().warn("Recipe Category lookup is slow: {} ms. {}", timeElapsed, plugin.getClass());
-			}
 			for (String recipeCategoryUid : recipeCategoryUids) {
 				if (!allRecipeCategoryUids.contains(recipeCategoryUid)) {
 					if (hiddenRecipes.containsKey(recipeCategoryUid)) {
@@ -606,12 +603,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 		List<T> allRecipeWrappers = new ArrayList<>();
 		for (IRecipeRegistryPlugin plugin : this.plugins) {
-			long start_time = System.currentTimeMillis();
 			List<T> recipeWrappers = plugin.getRecipeWrappers(recipeCategory, focus);
-			long timeElapsed = System.currentTimeMillis() - start_time;
-			if (timeElapsed > 10) {
-				Log.get().warn("Recipe Wrapper lookup is slow: {} ms. {}", timeElapsed, plugin.getClass());
-			}
 			allRecipeWrappers.addAll(recipeWrappers);
 		}
 
@@ -628,12 +620,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 		List<T> allRecipeWrappers = new ArrayList<>();
 		for (IRecipeRegistryPlugin plugin : this.plugins) {
-			long start_time = System.currentTimeMillis();
 			List<T> recipeWrappers = plugin.getRecipeWrappers(recipeCategory);
-			long timeElapsed = System.currentTimeMillis() - start_time;
-			if (timeElapsed > 10) {
-				Log.get().warn("Recipe Wrapper lookup is slow: {} ms. {}", timeElapsed, plugin.getClass());
-			}
 			allRecipeWrappers.addAll(recipeWrappers);
 		}
 
