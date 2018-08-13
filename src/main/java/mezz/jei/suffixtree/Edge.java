@@ -47,4 +47,8 @@ class Edge {
 	public String toString() {
 		return "Edge: " + label;
 	}
+
+	public String dumpToString(){
+		return "<" +label+ ">:" + dest.dumpToString();
+	}
 }
