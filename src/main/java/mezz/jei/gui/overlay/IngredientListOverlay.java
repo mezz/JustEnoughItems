@@ -3,7 +3,6 @@ package mezz.jei.gui.overlay;
 import com.google.common.collect.ImmutableList;
 import mezz.jei.Internal;
 import mezz.jei.api.IIngredientListOverlay;
-import mezz.jei.api.IItemListOverlay;
 import mezz.jei.api.gui.IGuiProperties;
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
@@ -17,7 +16,6 @@ import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.CommandUtil;
-import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -25,14 +23,12 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
-import java.util.Collection;
 import java.util.List;
 
-public class IngredientListOverlay implements IItemListOverlay, IIngredientListOverlay, IMouseHandler, IShowsRecipeFocuses {
+public class IngredientListOverlay implements IIngredientListOverlay, IMouseHandler, IShowsRecipeFocuses {
 	private static final int BORDER_PADDING = 2;
 	private static final int BUTTON_SIZE = 20;
 	private static final int SEARCH_HEIGHT = 20;
@@ -55,7 +51,6 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 	}
 
 	private final IngredientFilter ingredientFilter;
-	private final NonNullList<ItemStack> highlightedStacks = NonNullList.create();
 	private final ConfigButton configButton;
 	private final IngredientGridAll contents;
 	private final GuiTextFieldFilter searchField;
@@ -82,30 +77,6 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 		this.ingredientFilter.modesChanged();
 		Log.get().info("Updated  ingredient filter in {} ms", System.currentTimeMillis() - start_time);
 		updateLayout(true);
-	}
-
-	@Override
-	public String getFilterText() {
-		return Config.getFilterText();
-	}
-
-	@Override
-	public ImmutableList<ItemStack> getFilteredStacks() {
-		List<IIngredientListElement> elements = ingredientFilter.getIngredientList();
-		ImmutableList.Builder<ItemStack> builder = ImmutableList.builder();
-		for (IIngredientListElement element : elements) {
-			Object ingredient = element.getIngredient();
-			if (ingredient instanceof ItemStack) {
-				builder.add((ItemStack) ingredient);
-			}
-		}
-		return builder.build();
-	}
-
-	@Override
-	public void highlightStacks(Collection<ItemStack> stacks) {
-		highlightedStacks.clear();
-		highlightedStacks.addAll(stacks);
 	}
 
 	public boolean isListDisplayed() {
@@ -371,16 +342,6 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 		return false;
 	}
 
-	@Override
-	@Nullable
-	public ItemStack getStackUnderMouse() {
-		Object ingredient = getIngredientUnderMouse();
-		if (ingredient instanceof ItemStack) {
-			return (ItemStack) ingredient;
-		}
-		return null;
-	}
-
 	@Nullable
 	@Override
 	public Object getIngredientUnderMouse() {
@@ -393,34 +354,9 @@ public class IngredientListOverlay implements IItemListOverlay, IIngredientListO
 		return null;
 	}
 
-	@Override
-	public void setFilterText(String filterText) {
-		ErrorUtil.checkNotNull(filterText, "filterText");
-		if (Config.setFilterText(filterText)) {
-			onSetFilterText(filterText);
-		}
-	}
-
 	public void onSetFilterText(String filterText) {
 		this.searchField.setText(filterText);
 		updateLayout(true);
-	}
-
-	@Override
-	public ImmutableList<ItemStack> getVisibleStacks() {
-		if (isListDisplayed()) {
-			ImmutableList.Builder<ItemStack> visibleStacks = ImmutableList.builder();
-			List<IIngredientListElement> visibleElements = this.contents.getVisibleElements();
-			for (IIngredientListElement element : visibleElements) {
-				Object ingredient = element.getIngredient();
-				if (ingredient instanceof ItemStack) {
-					visibleStacks.add((ItemStack) ingredient);
-				}
-			}
-
-			return visibleStacks.build();
-		}
-		return ImmutableList.of();
 	}
 
 	@Override

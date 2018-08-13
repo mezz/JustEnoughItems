@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.collect.ListMultiMap;
@@ -69,16 +70,16 @@ public class RecipeMap {
 		return listBuilder.build();
 	}
 
-	public <T extends IRecipeWrapper> void addRecipe(T recipeWrapper, IRecipeCategory<T> recipeCategory, Map<Class, List> ingredientsByType) {
-		for (Map.Entry<Class, List> entry : ingredientsByType.entrySet()) {
+	public <T extends IRecipeWrapper> void addRecipe(T recipeWrapper, IRecipeCategory<T> recipeCategory, Map<IIngredientType, List> ingredientsByType) {
+		for (Map.Entry<IIngredientType, List> entry : ingredientsByType.entrySet()) {
 			if (entry != null) {
 				addRecipe(recipeWrapper, recipeCategory, entry.getKey(), entry.getValue());
 			}
 		}
 	}
 
-	private <T extends IRecipeWrapper, V> void addRecipe(T recipeWrapper, IRecipeCategory<T> recipeCategory, Class<V> ingredientClass, List<V> ingredients) {
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
+	private <T extends IRecipeWrapper, V> void addRecipe(T recipeWrapper, IRecipeCategory<T> recipeCategory, IIngredientType<V> ingredientType, List<V> ingredients) {
+		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
 
 		Map<String, List<IRecipeWrapper>> recipesWrappersForType = recipeWrapperTable.getRow(recipeCategory);
 

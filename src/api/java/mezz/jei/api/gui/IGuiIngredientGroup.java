@@ -10,6 +10,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 
@@ -68,7 +69,7 @@ public interface IGuiIngredientGroup<T> {
 	 * Initialize a guiIngredient for the given slot.
 	 * This can handle mod ingredients registered with {@link IModIngredientRegistration}.
 	 * <p>
-	 * Uses the default {@link IIngredientRenderer} registered for the ingredient list in {@link IModIngredientRegistration#register(Class, Collection, IIngredientHelper, IIngredientRenderer)}
+	 * Uses the default {@link IIngredientRenderer} registered for the ingredient list in {@link IModIngredientRegistration#register(IIngredientType, Collection, IIngredientHelper, IIngredientRenderer)}
 	 * Uses the same 16x16 size as the ingredient list.
 	 * <p>
 	 * For more advanced control over rendering, use {@link #init(int, boolean, IIngredientRenderer, int, int, int, int, int, int)}

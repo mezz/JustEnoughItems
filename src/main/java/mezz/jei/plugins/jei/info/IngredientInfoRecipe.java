@@ -8,6 +8,7 @@ import java.util.List;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
@@ -17,10 +18,10 @@ public class IngredientInfoRecipe<T> implements IRecipeWrapper {
 	private static final int lineSpacing = 2;
 	private final List<String> description;
 	private final List<T> ingredients;
-	private final Class<? extends T> ingredientClass;
+	private final IIngredientType<T> ingredientType;
 	private final IDrawable slotDrawable;
 
-	public static <T> List<IngredientInfoRecipe<T>> create(IGuiHelper guiHelper, List<T> ingredients, Class<? extends T> ingredientClass, String... descriptionKeys) {
+	public static <T> List<IngredientInfoRecipe<T>> create(IGuiHelper guiHelper, List<T> ingredients, IIngredientType<T> ingredientType, String... descriptionKeys) {
 		List<IngredientInfoRecipe<T>> recipes = new ArrayList<>();
 
 		List<String> descriptionLines = translateDescriptionLines(descriptionKeys);
@@ -35,7 +36,7 @@ public class IngredientInfoRecipe<T> implements IRecipeWrapper {
 			int startLine = i * maxLinesPerPage;
 			int endLine = Math.min((i + 1) * maxLinesPerPage, lineCount);
 			List<String> description = descriptionLines.subList(startLine, endLine);
-			IngredientInfoRecipe<T> recipe = new IngredientInfoRecipe<>(guiHelper, ingredients, ingredientClass, description);
+			IngredientInfoRecipe<T> recipe = new IngredientInfoRecipe<>(guiHelper, ingredients, ingredientType, description);
 			recipes.add(recipe);
 		}
 
@@ -70,17 +71,17 @@ public class IngredientInfoRecipe<T> implements IRecipeWrapper {
 		return descriptionLinesWrapped;
 	}
 
-	private IngredientInfoRecipe(IGuiHelper guiHelper, List<T> ingredients, Class<? extends T> ingredientClass, List<String> description) {
+	private IngredientInfoRecipe(IGuiHelper guiHelper, List<T> ingredients, IIngredientType<T> ingredientType, List<String> description) {
 		this.description = description;
 		this.ingredients = ingredients;
-		this.ingredientClass = ingredientClass;
+		this.ingredientType = ingredientType;
 		this.slotDrawable = guiHelper.getSlotDrawable();
 	}
 
 	@Override
 	public void getIngredients(IIngredients ingredients) {
-		ingredients.setInputLists(this.ingredientClass, Collections.singletonList(this.ingredients));
-		ingredients.setOutputs(this.ingredientClass, this.ingredients);
+		ingredients.setInputLists(this.ingredientType, Collections.singletonList(this.ingredients));
+		ingredients.setOutputs(this.ingredientType, this.ingredients);
 	}
 
 	@Override

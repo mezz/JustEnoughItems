@@ -5,8 +5,11 @@ import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
@@ -43,7 +46,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	private final IRecipeCategory recipeCategory;
 	private final GuiItemStackGroup guiItemStackGroup;
 	private final GuiFluidStackGroup guiFluidStackGroup;
-	private final Map<Class, GuiIngredientGroup> guiIngredientGroups;
+	private final Map<IIngredientType, GuiIngredientGroup> guiIngredientGroups;
 	@Nullable
 	private final RecipeTransferButton recipeTransferButton;
 	private final IRecipeWrapper recipeWrapper;
@@ -96,8 +99,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		this.guiFluidStackGroup = new GuiFluidStackGroup(fluidStackFocus, ingredientCycleOffset);
 
 		this.guiIngredientGroups = new IdentityHashMap<>();
-		this.guiIngredientGroups.put(ItemStack.class, this.guiItemStackGroup);
-		this.guiIngredientGroups.put(FluidStack.class, this.guiFluidStackGroup);
+		this.guiIngredientGroups.put(VanillaTypes.ITEM, this.guiItemStackGroup);
+		this.guiIngredientGroups.put(VanillaTypes.FLUID, this.guiFluidStackGroup);
 
 		if (index >= 0) {
 			IDrawable icon = Internal.getHelpers().getGuiHelper().getRecipeTransfer();
@@ -129,6 +132,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	}
 
 	@Override
+	@Deprecated
 	public void draw(Minecraft minecraft, final int mouseX, final int mouseY) {
 		drawRecipe(minecraft, mouseX, mouseY);
 		drawOverlays(minecraft, mouseX, mouseY);
@@ -260,22 +264,30 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	}
 
 	@Override
-	public <T> IGuiIngredientGroup<T> getIngredientsGroup(Class<T> ingredientClass) {
-		//noinspection unchecked
-		GuiIngredientGroup<T> guiIngredientGroup = guiIngredientGroups.get(ingredientClass);
+	public <T> IGuiIngredientGroup<T> getIngredientsGroup(IIngredientType<T> ingredientType) {
+		@SuppressWarnings("unchecked")
+		GuiIngredientGroup<T> guiIngredientGroup = guiIngredientGroups.get(ingredientType);
 		if (guiIngredientGroup == null) {
 			IFocus<T> focus = null;
 			if (this.focus != null) {
 				Object focusValue = this.focus.getValue();
-				if (ingredientClass.isInstance(focusValue)) {
+				if (ingredientType.getIngredientClass().isInstance(focusValue)) {
 					//noinspection unchecked
 					focus = (IFocus<T>) this.focus;
 				}
 			}
-			guiIngredientGroup = new GuiIngredientGroup<>(ingredientClass, focus, ingredientCycleOffset);
-			guiIngredientGroups.put(ingredientClass, guiIngredientGroup);
+			guiIngredientGroup = new GuiIngredientGroup<>(ingredientType, focus, ingredientCycleOffset);
+			guiIngredientGroups.put(ingredientType, guiIngredientGroup);
 		}
 		return guiIngredientGroup;
+	}
+
+	@Override
+	@Deprecated
+	public <T> IGuiIngredientGroup<T> getIngredientsGroup(Class<T> ingredientClass) {
+		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+		IIngredientType<T> ingredientType = ingredientRegistry.getIngredientType(ingredientClass);
+		return getIngredientsGroup(ingredientType);
 	}
 
 	@Override

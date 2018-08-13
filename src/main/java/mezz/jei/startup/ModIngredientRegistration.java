@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.util.ErrorUtil;
@@ -14,29 +15,36 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 public class ModIngredientRegistration implements IModIngredientRegistration {
-	private final Map<Class, Collection> allIngredientsMap = new IdentityHashMap<>();
-	private final Map<Class, IIngredientHelper> ingredientHelperMap = new IdentityHashMap<>();
-	private final Map<Class, IIngredientRenderer> ingredientRendererMap = new IdentityHashMap<>();
+	private final Map<IIngredientType, Collection> allIngredientsMap = new IdentityHashMap<>();
+	private final Map<IIngredientType, IIngredientHelper> ingredientHelperMap = new IdentityHashMap<>();
+	private final Map<IIngredientType, IIngredientRenderer> ingredientRendererMap = new IdentityHashMap<>();
 
 	@Override
-	public <V> void register(Class<V> ingredientClass, Collection<V> allIngredients, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer) {
-		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
+	public <V> void register(IIngredientType<V> ingredientType, Collection<V> allIngredients, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer) {
+		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotNull(allIngredients, "allIngredients");
 		ErrorUtil.checkNotNull(ingredientHelper, "ingredientHelper");
 		ErrorUtil.checkNotNull(ingredientRenderer, "ingredientRenderer");
 
-		allIngredientsMap.put(ingredientClass, allIngredients);
-		ingredientHelperMap.put(ingredientClass, ingredientHelper);
-		ingredientRendererMap.put(ingredientClass, ingredientRenderer);
+		allIngredientsMap.put(ingredientType, allIngredients);
+		ingredientHelperMap.put(ingredientType, ingredientHelper);
+		ingredientRendererMap.put(ingredientType, ingredientRenderer);
+	}
+
+	@Override
+	@Deprecated
+	public <V> void register(Class<V> ingredientClass, Collection<V> allIngredients, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer) {
+		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
+		register(() -> ingredientClass, allIngredients, ingredientHelper, ingredientRenderer);
 	}
 
 	public IngredientRegistry createIngredientRegistry(IModIdHelper modIdHelper, IngredientBlacklistInternal blacklist) {
-		Map<Class, IngredientSet> ingredientsMap = new IdentityHashMap<>();
-		for (Map.Entry<Class, Collection> entry : allIngredientsMap.entrySet()) {
-			Class ingredientClass = entry.getKey();
+		Map<IIngredientType, IngredientSet> ingredientsMap = new IdentityHashMap<>();
+		for (Map.Entry<IIngredientType, Collection> entry : allIngredientsMap.entrySet()) {
+			IIngredientType ingredientType = entry.getKey();
 			@SuppressWarnings("unchecked")
-			IngredientSet ingredientSet = createIngredientSet(ingredientClass, entry.getValue());
-			ingredientsMap.put(ingredientClass, ingredientSet);
+			IngredientSet ingredientSet = createIngredientSet(ingredientType, entry.getValue());
+			ingredientsMap.put(ingredientType, ingredientSet);
 		}
 
 		return new IngredientRegistry(
@@ -48,10 +56,10 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 		);
 	}
 
-	private <T> IngredientSet<T> createIngredientSet(Class<T> ingredientClass, Collection<T> ingredients) {
+	private <T> IngredientSet<T> createIngredientSet(IIngredientType<T> ingredientType, Collection<T> ingredients) {
 		@SuppressWarnings("unchecked")
-		IIngredientHelper<T> ingredientHelper = ingredientHelperMap.get(ingredientClass);
-		IngredientSet<T> ingredientSet = IngredientSet.create(ingredientClass, ingredientHelper);
+		IIngredientHelper<T> ingredientHelper = ingredientHelperMap.get(ingredientType);
+		IngredientSet<T> ingredientSet = IngredientSet.create(ingredientType, ingredientHelper);
 		ingredientSet.addAll(ingredients);
 		return ingredientSet;
 	}

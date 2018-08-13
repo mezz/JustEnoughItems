@@ -6,6 +6,7 @@ import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.ingredients.IngredientBlacklist;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
+import mezz.jei.ingredients.ItemBlacklist;
 import mezz.jei.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.startup.StackHelper;
 import mezz.jei.transfer.RecipeTransferHandlerHelper;
@@ -15,6 +16,7 @@ public class JeiHelpers implements IJeiHelpers {
 	private final GuiHelper guiHelper;
 	private final StackHelper stackHelper;
 	private final IngredientBlacklist ingredientBlacklist;
+	private final ItemBlacklist itemBlacklist;
 	private final RecipeTransferHandlerHelper recipeTransferHandlerHelper;
 	private final IVanillaRecipeFactory vanillaRecipeFactory = new VanillaRecipeFactory();
 
@@ -22,6 +24,7 @@ public class JeiHelpers implements IJeiHelpers {
 		this.guiHelper = new GuiHelper(ingredientRegistry);
 		this.stackHelper = stackHelper;
 		this.ingredientBlacklist = new IngredientBlacklist(ingredientRegistry, ingredientBlacklistInternal);
+		this.itemBlacklist = new ItemBlacklist(this.ingredientBlacklist);
 		this.recipeTransferHandlerHelper = new RecipeTransferHandlerHelper();
 	}
 
@@ -37,8 +40,8 @@ public class JeiHelpers implements IJeiHelpers {
 
 	@Override
 	@Deprecated
-	public IngredientBlacklist getItemBlacklist() {
-		return ingredientBlacklist;
+	public ItemBlacklist getItemBlacklist() {
+		return itemBlacklist;
 	}
 
 	@Override

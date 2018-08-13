@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 
@@ -29,15 +30,16 @@ public interface IRecipeLayout {
 	IGuiFluidStackGroup getFluidStacks();
 
 	/**
-	 * Get all the ingredients of one class that are displayed on this recipe layout.
+	 * Get all the ingredients of one type that are displayed on this recipe layout.
 	 * Init and set them in your recipe category.
 	 * <p>
 	 * This method is for handling custom item types, registered with {@link IModIngredientRegistration}.
 	 *
 	 * @see #getItemStacks()
 	 * @see #getFluidStacks()
+	 * @since JEI 4.12.0
 	 */
-	<T> IGuiIngredientGroup<T> getIngredientsGroup(Class<T> ingredientClass);
+	<T> IGuiIngredientGroup<T> getIngredientsGroup(IIngredientType<T> ingredientType);
 
 	/**
 	 * The current search focus. Set by the player when they look up the recipe. The object being looked up is the focus.
@@ -66,4 +68,17 @@ public interface IRecipeLayout {
 	 * @since JEI 4.0.2
 	 */
 	void setShapeless();
+
+	/**
+	 * Get all the ingredients of one class that are displayed on this recipe layout.
+	 * Init and set them in your recipe category.
+	 * <p>
+	 * This method is for handling custom item types, registered with {@link IModIngredientRegistration}.
+	 *
+	 * @see #getItemStacks()
+	 * @see #getFluidStacks()
+	 * @deprecated since JEI 4.12.0. Use {@link #getIngredientsGroup(IIngredientType)}
+	 */
+	@Deprecated
+	<T> IGuiIngredientGroup<T> getIngredientsGroup(Class<T> ingredientClass);
 }

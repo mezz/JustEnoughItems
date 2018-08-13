@@ -1,7 +1,5 @@
 package mezz.jei.plugins.vanilla;
 
-import javax.annotation.Nullable;
-
 import com.google.common.base.Preconditions;
 import mezz.jei.Internal;
 import mezz.jei.api.IGuiHelper;
@@ -13,6 +11,7 @@ import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
@@ -63,10 +62,10 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -117,8 +116,8 @@ public class VanillaPlugin implements IModPlugin {
 		StackHelper stackHelper = Internal.getStackHelper();
 		ItemStackListFactory itemStackListFactory = new ItemStackListFactory(this.subtypeRegistry);
 
-		ingredientRegistration.register(ItemStack.class, itemStackListFactory.create(stackHelper), new ItemStackHelper(stackHelper), new ItemStackRenderer());
-		ingredientRegistration.register(FluidStack.class, FluidStackListFactory.create(), new FluidStackHelper(), new FluidStackRenderer());
+		ingredientRegistration.register(VanillaTypes.ITEM, itemStackListFactory.create(stackHelper), new ItemStackHelper(stackHelper), new ItemStackRenderer());
+		ingredientRegistration.register(VanillaTypes.FLUID, FluidStackListFactory.create(), new FluidStackHelper(), new FluidStackRenderer());
 	}
 
 	@Override

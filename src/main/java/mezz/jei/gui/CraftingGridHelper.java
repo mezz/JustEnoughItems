@@ -5,7 +5,6 @@ import java.util.List;
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
-import mezz.jei.api.gui.IRecipeLayout;
 import net.minecraft.item.ItemStack;
 
 public class CraftingGridHelper implements ICraftingGridHelper {
@@ -41,21 +40,12 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		}
 	}
 
-	private <T> void setInput(IRecipeLayout recipeLayout, int inputIndex, List<T> input) {
-		if (!input.isEmpty()) {
-			T firstInput = input.get(0);
-			//noinspection unchecked
-			Class<T> ingredientClass = (Class<T>) firstInput.getClass();
-			IGuiIngredientGroup<T> ingredientsGroup = recipeLayout.getIngredientsGroup(ingredientClass);
-			setInput(ingredientsGroup, inputIndex, input);
-		}
-	}
-
 	private <T> void setInput(IGuiIngredientGroup<T> guiIngredients, int inputIndex, List<T> input) {
 		guiIngredients.set(craftInputSlot1 + inputIndex, input);
 	}
 
 	@Override
+	@Deprecated
 	public void setInputStacks(IGuiItemStackGroup guiItemStacks, List<List<ItemStack>> input) {
 		int width, height;
 		if (input.size() > 4) {
@@ -70,6 +60,7 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 	}
 
 	@Override
+	@Deprecated
 	public void setInputStacks(IGuiItemStackGroup guiItemStacks, List<List<ItemStack>> input, int width, int height) {
 		for (int i = 0; i < input.size(); i++) {
 			List<ItemStack> recipeItem = input.get(i);

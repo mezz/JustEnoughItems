@@ -1,13 +1,11 @@
 package mezz.jei.ingredients;
 
-import mezz.jei.api.IItemBlacklist;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.util.ErrorUtil;
-import net.minecraft.item.ItemStack;
 
-public class IngredientBlacklist implements IIngredientBlacklist, IItemBlacklist {
+public class IngredientBlacklist implements IIngredientBlacklist {
 	private final IIngredientRegistry ingredientRegistry;
 	private final IngredientBlacklistInternal internal;
 
@@ -38,26 +36,5 @@ public class IngredientBlacklist implements IIngredientBlacklist, IItemBlacklist
 
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 		return internal.isIngredientBlacklisted(ingredient, ingredientHelper);
-	}
-
-	@Override
-	@Deprecated
-	public void addItemToBlacklist(ItemStack itemStack) {
-		ErrorUtil.checkNotEmpty(itemStack);
-		addIngredientToBlacklist(itemStack);
-	}
-
-	@Override
-	@Deprecated
-	public void removeItemFromBlacklist(ItemStack itemStack) {
-		ErrorUtil.checkNotEmpty(itemStack);
-		removeIngredientFromBlacklist(itemStack);
-	}
-
-	@Override
-	@Deprecated
-	public boolean isItemBlacklisted(ItemStack itemStack) {
-		ErrorUtil.checkNotEmpty(itemStack);
-		return isIngredientBlacklisted(itemStack);
 	}
 }

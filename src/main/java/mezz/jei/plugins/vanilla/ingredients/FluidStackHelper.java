@@ -90,7 +90,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	}
 
 	@Override
-	public ItemStack cheatIngredient(FluidStack ingredient, boolean fullStack) {
+	public ItemStack getCheatItemStack(FluidStack ingredient) {
 		Fluid fluid = ingredient.getFluid();
 		if (fluid == FluidRegistry.WATER) {
 			return new ItemStack(Items.WATER_BUCKET);

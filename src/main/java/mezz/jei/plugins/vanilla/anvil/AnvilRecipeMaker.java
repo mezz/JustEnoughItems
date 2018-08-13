@@ -4,6 +4,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.util.ErrorUtil;
@@ -56,7 +57,7 @@ public final class AnvilRecipeMaker {
 	}
 
 	private static void getBookEnchantmentRecipes(List<IRecipeWrapper> recipes, IVanillaRecipeFactory vanillaRecipeFactory, IIngredientRegistry ingredientRegistry) {
-		Collection<ItemStack> ingredients = ingredientRegistry.getAllIngredients(ItemStack.class);
+		Collection<ItemStack> ingredients = ingredientRegistry.getAllIngredients(VanillaTypes.ITEM);
 		Collection<Enchantment> enchantments = ForgeRegistries.ENCHANTMENTS.getValuesCollection();
 		for (ItemStack ingredient : ingredients) {
 			if (ingredient.isItemEnchantable()) {

@@ -10,6 +10,8 @@ import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.gui.IGhostIngredientHandler;
 import mezz.jei.api.gui.IGuiScreenHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.IRecipeHandler;
@@ -82,6 +84,7 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	}
 
 	@Override
+	@Deprecated
 	public void addRecipeCategories(IRecipeCategory... recipeCategories) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 
@@ -232,25 +235,33 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	@Override
 	@Deprecated
 	public void addDescription(List<ItemStack> itemStacks, String... descriptionKeys) {
-		addIngredientInfo(itemStacks, ItemStack.class, descriptionKeys);
+		addIngredientInfo(itemStacks, VanillaTypes.ITEM, descriptionKeys);
 	}
 
 	@Override
 	@Deprecated
 	public void addDescription(ItemStack itemStack, String... descriptionKeys) {
-		addIngredientInfo(itemStack, ItemStack.class, descriptionKeys);
+		addIngredientInfo(itemStack, VanillaTypes.ITEM, descriptionKeys);
 	}
 
 	@Override
-	public <T> void addIngredientInfo(T ingredient, Class<? extends T> ingredientClass, String... descriptionKeys) {
+	public <T> void addIngredientInfo(T ingredient, IIngredientType<T> ingredientType, String... descriptionKeys) {
 		ErrorUtil.checkIsValidIngredient(ingredient, "ingredient");
+		ErrorUtil.checkIsValidIngredient(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(descriptionKeys, "descriptionKeys");
 
-		addIngredientInfo(Collections.singletonList(ingredient), ingredientClass, descriptionKeys);
+		addIngredientInfo(Collections.singletonList(ingredient), ingredientType, descriptionKeys);
 	}
 
 	@Override
-	public <T> void addIngredientInfo(List<T> ingredients, Class<? extends T> ingredientClass, String... descriptionKeys) {
+	@Deprecated
+	public <T> void addIngredientInfo(T ingredient, Class<? extends T> ingredientClass, String... descriptionKeys) {
+		IIngredientType<T> ingredientType = ingredientRegistry.getIngredientType(ingredientClass);
+		addIngredientInfo(ingredient, ingredientType, descriptionKeys);
+	}
+
+	@Override
+	public <T> void addIngredientInfo(List<T> ingredients, IIngredientType<T> ingredientType, String... descriptionKeys) {
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 		for (Object ingredient : ingredients) {
 			ErrorUtil.checkIsValidIngredient(ingredient, "ingredient");
@@ -258,11 +269,19 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 		ErrorUtil.checkNotEmpty(descriptionKeys, "descriptionKeys");
 
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
-		List<IngredientInfoRecipe<T>> recipes = IngredientInfoRecipe.create(guiHelper, ingredients, ingredientClass, descriptionKeys);
+		List<IngredientInfoRecipe<T>> recipes = IngredientInfoRecipe.create(guiHelper, ingredients, ingredientType, descriptionKeys);
 		addRecipes(recipes, VanillaRecipeCategoryUid.INFORMATION);
 	}
 
 	@Override
+	@Deprecated
+	public <T> void addIngredientInfo(List<T> ingredients, Class<? extends T> ingredientClass, String... descriptionKeys) {
+		IIngredientType<T> ingredientType = ingredientRegistry.getIngredientType(ingredientClass);
+		addIngredientInfo(ingredients, ingredientType, descriptionKeys);
+	}
+
+	@Override
+	@Deprecated
 	public void addAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
 		ErrorUtil.checkNotEmpty(leftInput, "leftInput");
 		ErrorUtil.checkNotEmpty(rightInputs, "rightInputs");

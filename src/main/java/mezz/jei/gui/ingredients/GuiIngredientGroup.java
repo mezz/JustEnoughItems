@@ -8,6 +8,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.gui.Focus;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.util.ErrorUtil;
@@ -30,7 +31,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	private final Set<Integer> inputSlots = new HashSet<>();
 	private final IIngredientHelper<T> ingredientHelper;
 	private final IIngredientRenderer<T> ingredientRenderer;
-	private final Class<T> ingredientClass;
+	private final IIngredientType<T> ingredientType;
 	private final int cycleOffset;
 	/**
 	 * If focus is set and any of the guiIngredients contains focus
@@ -42,17 +43,17 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	@Nullable
 	private ITooltipCallback<T> tooltipCallback;
 
-	public GuiIngredientGroup(Class<T> ingredientClass, @Nullable IFocus<T> focus, int cycleOffset) {
-		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
-		this.ingredientClass = ingredientClass;
+	public GuiIngredientGroup(IIngredientType<T> ingredientType, @Nullable IFocus<T> focus, int cycleOffset) {
+		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
+		this.ingredientType = ingredientType;
 		if (focus == null) {
 			this.focus = null;
 		} else {
 			this.focus = Focus.check(focus);
 		}
 		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		this.ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientClass);
-		this.ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientClass);
+		this.ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
+		this.ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientType);
 		this.cycleOffset = cycleOffset;
 	}
 
@@ -73,8 +74,8 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 
 	@Override
 	public void set(IIngredients ingredients) {
-		List<List<T>> inputs = ingredients.getInputs(ingredientClass);
-		List<List<T>> outputs = ingredients.getOutputs(ingredientClass);
+		List<List<T>> inputs = ingredients.getInputs(ingredientType);
+		List<List<T>> outputs = ingredients.getOutputs(ingredientType);
 		int inputIndex = 0;
 		int outputIndex = 0;
 
@@ -102,6 +103,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		// Sanitize API input
 		if (ingredients != null) {
 			for (T ingredient : ingredients) {
+				Class<? extends T> ingredientClass = ingredientType.getIngredientClass();
 				if (!ingredientClass.isInstance(ingredient) && ingredient != null) {
 					Log.get().error("Received wrong type of ingredient. Expected {}, got {}", ingredientClass, ingredient.getClass(), new IllegalArgumentException());
 					return;

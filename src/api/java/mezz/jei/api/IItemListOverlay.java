@@ -2,6 +2,7 @@ package mezz.jei.api;
 
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.recipe.IIngredientType;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -49,7 +50,7 @@ public interface IItemListOverlay {
 
 	/**
 	 * @return a list containing all stacks that match the current filter.
-	 * To get all the ItemStacks known to JEI, see {@link IIngredientRegistry#getAllIngredients(Class)}.
+	 * To get all the ItemStacks known to JEI, see {@link IIngredientRegistry#getAllIngredients(IIngredientType)}.
 	 * @deprecated since JEI 4.5.0, use {@link IIngredientFilter#getFilteredIngredients()}
 	 */
 	@Deprecated

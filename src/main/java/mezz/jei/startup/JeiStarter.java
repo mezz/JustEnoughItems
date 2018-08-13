@@ -134,7 +134,7 @@ public class JeiStarter {
 				progressBar.step(plugin.getClass().getName());
 				plugin.registerIngredients(modIngredientRegistry);
 			} catch (RuntimeException | LinkageError e) {
-				if (VanillaPlugin.class.isInstance(plugin)) {
+				if (plugin instanceof VanillaPlugin) {
 					throw e;
 				} else {
 					Log.get().error("Failed to register Ingredients for mod plugin: {}", plugin.getClass(), e);

@@ -2,6 +2,8 @@ package mezz.jei.util;
 
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.startup.StackHelper;
 import net.minecraft.item.ItemStack;
 
@@ -14,9 +16,9 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public class IngredientSet<V> extends AbstractSet<V> {
-	public static <V> IngredientSet<V> create(Class<V> ingredientClass, IIngredientHelper<V> ingredientHelper) {
+	public static <V> IngredientSet<V> create(IIngredientType<V> ingredientType, IIngredientHelper<V> ingredientHelper) {
 		final Function<V, String> uidGenerator;
-		if (ingredientClass == ItemStack.class) {
+		if (ingredientType == VanillaTypes.ITEM) {
 			StackHelper stackHelper = Internal.getStackHelper();
 			uidGenerator = stack -> stackHelper.getUniqueIdentifierForStack((ItemStack) stack, StackHelper.UidMode.FULL);
 		} else {

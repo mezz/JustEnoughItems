@@ -8,6 +8,7 @@ import java.util.Map;
 import com.google.common.collect.Lists;
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -92,8 +93,8 @@ public class AnvilRecipeWrapper implements IRecipeWrapper {
 
 	@Override
 	public void getIngredients(IIngredients ingredients) {
-		ingredients.setInputLists(ItemStack.class, inputs);
-		ingredients.setOutputLists(ItemStack.class, output);
+		ingredients.setInputLists(VanillaTypes.ITEM, inputs);
+		ingredients.setOutputLists(VanillaTypes.ITEM, output);
 	}
 
 	public void setCurrentIngredients(Map<Integer, ? extends IGuiIngredient<ItemStack>> currentIngredients) {

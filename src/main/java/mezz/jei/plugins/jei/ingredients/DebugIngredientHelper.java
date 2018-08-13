@@ -61,7 +61,7 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 	}
 
 	@Override
-	public ItemStack cheatIngredient(DebugIngredient ingredient, boolean fullStack) {
+	public ItemStack getCheatItemStack(DebugIngredient ingredient) {
 		EntityPlayerSP player = Minecraft.getMinecraft().player;
 		if (player != null) {
 			CommandUtilServer.writeChatMessage(player, "Debug ingredients cannot be cheated", TextFormatting.RED);

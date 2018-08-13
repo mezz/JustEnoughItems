@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -23,8 +24,8 @@ public class SmeltingRecipe implements IRecipeWrapper {
 
 	@Override
 	public void getIngredients(IIngredients ingredients) {
-		ingredients.setInputLists(ItemStack.class, inputs);
-		ingredients.setOutput(ItemStack.class, output);
+		ingredients.setInputLists(VanillaTypes.ITEM, inputs);
+		ingredients.setOutput(VanillaTypes.ITEM, output);
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.api.recipe.IIngredientType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.util.ITooltipFlag;
@@ -12,7 +13,7 @@ import net.minecraft.client.util.ITooltipFlag;
  * Renders a type of ingredient in JEI's item list and recipes.
  * <p>
  * If you have a new type of ingredient to add to JEI, you will have to implement this in order to use
- * {@link IModIngredientRegistration#register(Class, Collection, IIngredientHelper, IIngredientRenderer)}
+ * {@link IModIngredientRegistration#register(IIngredientType, Collection, IIngredientHelper, IIngredientRenderer)}
  *
  * @since JEI 3.11.0
  */

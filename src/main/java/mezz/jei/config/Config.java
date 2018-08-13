@@ -16,6 +16,7 @@ import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
@@ -527,9 +528,8 @@ public final class Config {
 	}
 
 	public static <V> void addIngredientToConfigBlacklist(IngredientFilter ingredientFilter, IIngredientRegistry ingredientRegistry, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
-		@SuppressWarnings("unchecked")
-		Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
-		IIngredientListElement<V> element = IngredientListElementFactory.createElement(ingredientRegistry, ingredientClass, ingredient, ForgeModIdHelper.getInstance());
+		IIngredientType<V> ingredientType = ingredientRegistry.getIngredientType(ingredient);
+		IIngredientListElement<V> element = IngredientListElementFactory.createElement(ingredientRegistry, ingredientType, ingredient, ForgeModIdHelper.getInstance());
 		Preconditions.checkNotNull(element, "Failed to create element for blacklist");
 
 		// combine item-level blacklist into wildcard-level ones
@@ -576,9 +576,8 @@ public final class Config {
 	}
 
 	public static <V> void removeIngredientFromConfigBlacklist(IngredientFilter ingredientFilter, IIngredientRegistry ingredientRegistry, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
-		@SuppressWarnings("unchecked")
-		Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
-		IIngredientListElement<V> element = IngredientListElementFactory.createElement(ingredientRegistry, ingredientClass, ingredient, ForgeModIdHelper.getInstance());
+		IIngredientType<V> ingredientType = ingredientRegistry.getIngredientType(ingredient);
+		IIngredientListElement<V> element = IngredientListElementFactory.createElement(ingredientRegistry, ingredientType, ingredient, ForgeModIdHelper.getInstance());
 		Preconditions.checkNotNull(element, "Failed to create element for blacklist");
 
 		boolean updated = false;

@@ -9,6 +9,7 @@ import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
@@ -50,15 +51,15 @@ public class DebugRecipe implements IRecipeWrapper {
 		FluidStack water = new FluidStack(FluidRegistry.WATER, 1000 + (int) (Math.random() * 1000));
 		FluidStack lava = new FluidStack(FluidRegistry.LAVA, 1000 + (int) (Math.random() * 1000));
 
-		ingredients.setInputs(FluidStack.class, Arrays.asList(water, lava));
+		ingredients.setInputs(VanillaTypes.FLUID, Arrays.asList(water, lava));
 
-		ingredients.setInput(ItemStack.class, new ItemStack(Items.STICK));
+		ingredients.setInput(VanillaTypes.ITEM, new ItemStack(Items.STICK));
 
-		ingredients.setInputLists(DebugIngredient.class, Collections.singletonList(
+		ingredients.setInputLists(DebugIngredient.TYPE, Collections.singletonList(
 				Arrays.asList(new DebugIngredient(0), new DebugIngredient(1))
 		));
 
-		ingredients.setOutputs(DebugIngredient.class, Arrays.asList(
+		ingredients.setOutputs(DebugIngredient.TYPE, Arrays.asList(
 				new DebugIngredient(2),
 				new DebugIngredient(3)
 		));

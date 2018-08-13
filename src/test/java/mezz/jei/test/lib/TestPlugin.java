@@ -24,7 +24,7 @@ public class TestPlugin implements IModPlugin {
 			baseTestIngredients.add(new TestIngredient(i));
 		}
 
-		ingredientRegistry.register(TestIngredient.class, baseTestIngredients, new TestIngredientHelper(), new TestIngredientRenderer());
+		ingredientRegistry.register(TestIngredient.TYPE, baseTestIngredients, new TestIngredientHelper(), new TestIngredientRenderer());
 	}
 
 	private static class TestIngredientRenderer implements IIngredientRenderer<TestIngredient> {

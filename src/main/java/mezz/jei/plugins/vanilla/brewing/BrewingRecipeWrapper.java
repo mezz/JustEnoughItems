@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.google.common.base.Objects;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -49,8 +50,8 @@ public class BrewingRecipeWrapper implements IRecipeWrapper {
 
 	@Override
 	public void getIngredients(IIngredients ingredients) {
-		ingredients.setInputLists(ItemStack.class, inputs);
-		ingredients.setOutput(ItemStack.class, potionOutput);
+		ingredients.setInputLists(VanillaTypes.ITEM, inputs);
+		ingredients.setOutput(VanillaTypes.ITEM, potionOutput);
 	}
 
 	public List getInputs() {

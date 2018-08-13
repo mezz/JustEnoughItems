@@ -133,7 +133,7 @@ public class ProxyCommonClient extends ProxyCommon {
 	private static void reloadItemList() {
 		JeiRuntime runtime = Internal.getRuntime();
 		if (runtime != null) {
-			IngredientListOverlay ingredientListOverlay = runtime.getItemListOverlay();
+			IngredientListOverlay ingredientListOverlay = runtime.getIngredientListOverlay();
 			ingredientListOverlay.rebuildItemFilter();
 		}
 	}

@@ -340,7 +340,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		} else {
 			JeiRuntime runtime = Internal.getRuntime();
 			if (runtime != null) {
-				IngredientListOverlay itemListOverlay = runtime.getItemListOverlay();
+				IngredientListOverlay itemListOverlay = runtime.getIngredientListOverlay();
 				if (!itemListOverlay.isMouseOver(MouseHelper.getX(), MouseHelper.getY())) {
 					if (KeyBindings.nextPage.isActiveAndMatches(eventKey)) {
 						logic.nextPage();

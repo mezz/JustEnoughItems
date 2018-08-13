@@ -2,6 +2,7 @@ package mezz.jei.api;
 
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.recipe.IIngredientType;
 
 /**
  * The IIngredientFilter is JEI's filter that can be set by players or controlled by mods.
@@ -23,7 +24,7 @@ public interface IIngredientFilter {
 
 	/**
 	 * @return a list containing all ingredients that match the current filter.
-	 * To get all the ingredients known to JEI, see {@link IIngredientRegistry#getAllIngredients(Class)}.
+	 * To get all the ingredients known to JEI, see {@link IIngredientRegistry#getAllIngredients(IIngredientType)}.
 	 */
 	ImmutableList<Object> getFilteredIngredients();
 }

@@ -10,6 +10,8 @@ import java.util.Set;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.startup.ForgeModIdHelper;
@@ -45,30 +47,30 @@ public final class ErrorUtil {
 		}
 
 		recipeInfoBuilder.append("\nOutputs:");
-		Set<Class> outputClasses = ingredients.getOutputIngredients().keySet();
-		for (Class<?> outputClass : outputClasses) {
-			List<String> ingredientOutputInfo = getIngredientOutputInfo(outputClass, ingredients);
-			recipeInfoBuilder.append('\n').append(outputClass.getName()).append(": ").append(ingredientOutputInfo);
+		Set<IIngredientType> outputTypes = ingredients.getOutputIngredients().keySet();
+		for (IIngredientType<?> outputType : outputTypes) {
+			List<String> ingredientOutputInfo = getIngredientOutputInfo(outputType, ingredients);
+			recipeInfoBuilder.append('\n').append(outputType.getIngredientClass().getName()).append(": ").append(ingredientOutputInfo);
 		}
 
 		recipeInfoBuilder.append("\nInputs:");
-		Set<Class> inputClasses = ingredients.getInputIngredients().keySet();
-		for (Class<?> inputClass : inputClasses) {
-			List<String> ingredientInputInfo = getIngredientInputInfo(inputClass, ingredients);
-			recipeInfoBuilder.append('\n').append(inputClass.getName()).append(": ").append(ingredientInputInfo);
+		Set<IIngredientType> inputTypes = ingredients.getInputIngredients().keySet();
+		for (IIngredientType<?> inputType : inputTypes) {
+			List<String> ingredientInputInfo = getIngredientInputInfo(inputType, ingredients);
+			recipeInfoBuilder.append('\n').append(inputType.getIngredientClass().getName()).append(": ").append(ingredientInputInfo);
 		}
 
 		return recipeInfoBuilder.toString();
 	}
 
-	private static <T> List<String> getIngredientOutputInfo(Class<T> ingredientClass, IIngredients ingredients) {
-		List<List<T>> outputs = ingredients.getOutputs(ingredientClass);
-		return getIngredientInfo(ingredientClass, outputs);
+	private static <T> List<String> getIngredientOutputInfo(IIngredientType<T> ingredientType, IIngredients ingredients) {
+		List<List<T>> outputs = ingredients.getOutputs(ingredientType);
+		return getIngredientInfo(ingredientType, outputs);
 	}
 
-	private static <T> List<String> getIngredientInputInfo(Class<T> ingredientClass, IIngredients ingredients) {
-		List<List<T>> inputs = ingredients.getInputs(ingredientClass);
-		return getIngredientInfo(ingredientClass, inputs);
+	private static <T> List<String> getIngredientInputInfo(IIngredientType<T> ingredientType, IIngredients ingredients) {
+		List<List<T>> inputs = ingredients.getInputs(ingredientType);
+		return getIngredientInfo(ingredientType, inputs);
 	}
 
 	public static String getNameForRecipe(Object recipe) {
@@ -96,12 +98,12 @@ public final class ErrorUtil {
 
 		recipeInfoBuilder.append("\nOutputs:");
 		List<List<ItemStack>> outputs = Collections.singletonList(Collections.singletonList(output));
-		List<String> ingredientOutputInfo = getIngredientInfo(ItemStack.class, outputs);
+		List<String> ingredientOutputInfo = getIngredientInfo(VanillaTypes.ITEM, outputs);
 		recipeInfoBuilder.append('\n').append(ItemStack.class.getName()).append(": ").append(ingredientOutputInfo);
 
 		recipeInfoBuilder.append("\nInputs:");
 		List<List<ItemStack>> inputLists = Internal.getStackHelper().expandRecipeItemStackInputs(inputs, false);
-		List<String> ingredientInputInfo = getIngredientInfo(ItemStack.class, inputLists);
+		List<String> ingredientInputInfo = getIngredientInfo(VanillaTypes.ITEM, inputLists);
 		recipeInfoBuilder.append('\n').append(ItemStack.class.getName()).append(": ").append(ingredientInputInfo);
 
 		return recipeInfoBuilder.toString();
@@ -112,8 +114,8 @@ public final class ErrorUtil {
 		return ingredientHelper.getErrorInfo(ingredient);
 	}
 
-	public static <T> List<String> getIngredientInfo(Class<T> ingredientClass, List<? extends List<T>> ingredients) {
-		IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredientClass);
+	public static <T> List<String> getIngredientInfo(IIngredientType<T> ingredientType, List<? extends List<T>> ingredients) {
+		IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredientType);
 		List<String> allInfos = new ArrayList<>(ingredients.size());
 
 		for (List<T> inputList : ingredients) {

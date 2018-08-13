@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -28,8 +29,8 @@ public class TippedArrowRecipeWrapper implements IShapedCraftingRecipeWrapper {
 
 	@Override
 	public void getIngredients(IIngredients ingredients) {
-		ingredients.setInputs(ItemStack.class, this.inputs);
-		ingredients.setOutput(ItemStack.class, this.output);
+		ingredients.setInputs(VanillaTypes.ITEM, this.inputs);
+		ingredients.setOutput(VanillaTypes.ITEM, this.output);
 	}
 
 	@Override

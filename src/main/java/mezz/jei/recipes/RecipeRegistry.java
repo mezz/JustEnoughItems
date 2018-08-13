@@ -11,6 +11,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
@@ -181,6 +182,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
+	@Deprecated
 	public void addRecipe(Object recipe) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.assertMainThread();
@@ -189,6 +191,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
+	@Deprecated
 	public void addRecipe(IRecipeWrapper recipe, String recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
@@ -632,6 +635,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
+	@Deprecated
 	public List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory, @Nullable IFocus focus) {
 		if (focus != null) {
 			focus = Focus.check(focus);
@@ -642,7 +646,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			Object ingredient = focus.getValue();
 			if (ingredient instanceof ItemStack) {
 				ItemStack itemStack = (ItemStack) ingredient;
-				IIngredientHelper<ItemStack> ingredientHelper = ingredientRegistry.getIngredientHelper(ItemStack.class);
+				IIngredientHelper<ItemStack> ingredientHelper = ingredientRegistry.getIngredientHelper(VanillaTypes.ITEM);
 				ItemStack matchingStack = ingredientHelper.getMatch(craftingItems, itemStack);
 				if (matchingStack != null) {
 					return Collections.singletonList(matchingStack);
@@ -653,6 +657,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
+	@Deprecated
 	public List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		List<Object> objects = getRecipeCatalysts(recipeCategory);

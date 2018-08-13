@@ -15,6 +15,7 @@ import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.config.Config;
 import mezz.jei.gui.overlay.GuiProperties;
@@ -47,7 +48,7 @@ public class JEIInternalPlugin implements IModPlugin {
 		if (Config.isDebugModeEnabled()) {
 			DebugIngredientHelper ingredientHelper = new DebugIngredientHelper();
 			DebugIngredientRenderer ingredientRenderer = new DebugIngredientRenderer(ingredientHelper);
-			ingredientRegistration.register(DebugIngredient.class, Collections.emptyList(), ingredientHelper, ingredientRenderer);
+			ingredientRegistration.register(DebugIngredient.TYPE, Collections.emptyList(), ingredientHelper, ingredientRenderer);
 		}
 	}
 
@@ -82,13 +83,13 @@ public class JEIInternalPlugin implements IModPlugin {
 					new ItemStack(Items.ACACIA_DOOR),
 					new ItemStack(Items.DARK_OAK_DOOR)
 					),
-					ItemStack.class,
+					VanillaTypes.ITEM,
 					"description.jei.wooden.door.1", // actually 2 lines
 					"description.jei.wooden.door.2",
 					"description.jei.wooden.door.3"
 			);
 
-			registry.addIngredientInfo(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), FluidStack.class, "water");
+			registry.addIngredientInfo(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), VanillaTypes.FLUID, "water");
 
 			registry.addRecipes(Arrays.asList(
 					new DebugRecipe(),
@@ -134,7 +135,7 @@ public class JEIInternalPlugin implements IModPlugin {
 
 		if (Config.isDebugModeEnabled()) {
 			if (ingredientRegistry != null) {
-				ingredientRegistry.addIngredientsAtRuntime(DebugIngredient.class, DebugIngredientListFactory.create());
+				ingredientRegistry.addIngredientsAtRuntime(DebugIngredient.TYPE, DebugIngredientListFactory.create());
 			}
 		}
 	}

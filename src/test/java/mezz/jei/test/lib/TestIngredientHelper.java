@@ -1,7 +1,6 @@
 package mezz.jei.test.lib;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
-import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
@@ -53,11 +52,6 @@ public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 	@Override
 	public String getResourceId(TestIngredient ingredient) {
 		return "Test Ingredient Resource Id " + ingredient;
-	}
-
-	@Override
-	public ItemStack cheatIngredient(TestIngredient ingredient, boolean fullStack) {
-		return ItemStack.EMPTY;
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.gui.IGhostIngredientHandler;
 import mezz.jei.api.gui.IGuiScreenHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.IRecipeHandler;
@@ -108,28 +109,28 @@ public interface IModRegistry {
 	 * Description pages show in the recipes for an ingredient and tell the player a little bit about it.
 	 *
 	 * @param ingredient      the ingredient to describe
-	 * @param ingredientClass the class of the ingredient
+	 * @param ingredientType  the type of the ingredient
 	 * @param descriptionKeys Localization keys for info text.
 	 *                        New lines can be added with "\n" or by giving multiple descriptionKeys.
 	 *                        Long lines are wrapped automatically.
 	 *                        Very long entries will span multiple pages automatically.
-	 * @since JEI 4.5.0
+	 * @since JEI 4.12.0
 	 */
-	<T> void addIngredientInfo(T ingredient, Class<? extends T> ingredientClass, String... descriptionKeys);
+	<T> void addIngredientInfo(T ingredient, IIngredientType<T> ingredientType, String... descriptionKeys);
 
 	/**
 	 * Add an info page for multiple ingredients together.
 	 * Description pages show in the recipes for an ingredient and tell the player a little bit about it.
 	 *
 	 * @param ingredients     the ingredients to describe
-	 * @param ingredientClass the class of the ingredients
+	 * @param ingredientType  the type of the ingredients
 	 * @param descriptionKeys Localization keys for info text.
 	 *                        New lines can be added with "\n" or by giving multiple descriptionKeys.
 	 *                        Long lines are wrapped automatically.
 	 *                        Very long entries will span multiple pages automatically.
-	 * @since JEI 4.5.0
+	 * @since JEI 4.12.0
 	 */
-	<T> void addIngredientInfo(List<T> ingredients, Class<? extends T> ingredientClass, String... descriptionKeys);
+	<T> void addIngredientInfo(List<T> ingredients, IIngredientType<T> ingredientType, String... descriptionKeys);
 
 	/**
 	 * Get the registry for setting up recipe transfer.
@@ -145,6 +146,38 @@ public interface IModRegistry {
 	void addRecipeRegistryPlugin(IRecipeRegistryPlugin recipeRegistryPlugin);
 
 	// DEPRECATED BELOW
+
+	/**
+	 * Add an info page for multiple ingredients together.
+	 * Description pages show in the recipes for an ingredient and tell the player a little bit about it.
+	 *
+	 * @param ingredients     the ingredients to describe
+	 * @param ingredientClass the class of the ingredients
+	 * @param descriptionKeys Localization keys for info text.
+	 *                        New lines can be added with "\n" or by giving multiple descriptionKeys.
+	 *                        Long lines are wrapped automatically.
+	 *                        Very long entries will span multiple pages automatically.
+	 * @since JEI 4.5.0
+	 * @deprecated since JEI 4.12.0. Use {@link #addIngredientInfo(List, IIngredientType, String...)}
+	 */
+	@Deprecated
+	<T> void addIngredientInfo(List<T> ingredients, Class<? extends T> ingredientClass, String... descriptionKeys);
+
+	/**
+	 * Add an info page for an ingredient.
+	 * Description pages show in the recipes for an ingredient and tell the player a little bit about it.
+	 *
+	 * @param ingredient      the ingredient to describe
+	 * @param ingredientClass the class of the ingredient
+	 * @param descriptionKeys Localization keys for info text.
+	 *                        New lines can be added with "\n" or by giving multiple descriptionKeys.
+	 *                        Long lines are wrapped automatically.
+	 *                        Very long entries will span multiple pages automatically.
+	 * @since JEI 4.5.0
+	 * @deprecated since JEI 4.12.0. Use {@link #addIngredientInfo(Object, IIngredientType, String...)}
+	 */
+	@Deprecated
+	<T> void addIngredientInfo(T ingredient, Class<? extends T> ingredientClass, String... descriptionKeys);
 
 	/**
 	 * Add the recipe categories provided by this plugin.
@@ -193,13 +226,13 @@ public interface IModRegistry {
 	 *                        New lines can be added with "\n" or by giving multiple descriptionKeys.
 	 *                        Long lines are wrapped automatically.
 	 *                        Very long entries will span multiple pages automatically.
-	 * @deprecated since JEI 4.5.0. Use {@link #addIngredientInfo(Object, Class, String...)}
+	 * @deprecated since JEI 4.5.0. Use {@link #addIngredientInfo(Object, IIngredientType, String...)}
 	 */
 	@Deprecated
 	void addDescription(ItemStack itemStack, String... descriptionKeys);
 
 	/**
-	 * @deprecated since JEI 4.5.0. Use {@link #addIngredientInfo(List, Class, String...)}
+	 * @deprecated since JEI 4.5.0. Use {@link #addIngredientInfo(List, IIngredientType, String...)}
 	 */
 	@Deprecated
 	void addDescription(List<ItemStack> itemStacks, String... descriptionKeys);

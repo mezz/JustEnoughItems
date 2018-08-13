@@ -95,7 +95,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
-	public ItemStack cheatIngredient(ItemStack ingredient, boolean fullStack) {
+	public ItemStack getCheatItemStack(ItemStack ingredient) {
 		return ingredient;
 	}
 

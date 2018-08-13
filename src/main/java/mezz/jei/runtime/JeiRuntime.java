@@ -10,6 +10,7 @@ import mezz.jei.api.gui.IGhostIngredientHandler;
 import mezz.jei.api.gui.IGuiProperties;
 import mezz.jei.api.gui.IGuiScreenHandler;
 import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.gui.overlay.ItemListOverlay;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientRegistry;
@@ -23,6 +24,7 @@ public class JeiRuntime implements IJeiRuntime {
 
 	private final RecipeRegistry recipeRegistry;
 	private final IngredientListOverlay ingredientListOverlay;
+	private final ItemListOverlay itemListOverlay;
 	private final RecipesGui recipesGui;
 	private final IngredientRegistry ingredientRegistry;
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers;
@@ -48,6 +50,7 @@ public class JeiRuntime implements IJeiRuntime {
 		this.guiScreenHandlers = guiScreenHandlers;
 		this.ghostIngredientHandlers = ghostIngredientHandlers;
 		this.ingredientFilter = ingredientFilter;
+		this.itemListOverlay = new ItemListOverlay(ingredientListOverlay, ingredientFilter);
 	}
 
 	public void close() {
@@ -60,8 +63,8 @@ public class JeiRuntime implements IJeiRuntime {
 	}
 
 	@Override
-	public IngredientListOverlay getItemListOverlay() {
-		return ingredientListOverlay;
+	public ItemListOverlay getItemListOverlay() {
+		return itemListOverlay;
 	}
 
 	@Override

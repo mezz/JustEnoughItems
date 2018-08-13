@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.api.recipe.IIngredientType;
 import net.minecraft.item.ItemStack;
 
 /**
@@ -12,7 +13,7 @@ import net.minecraft.item.ItemStack;
  * An ingredient is anything used in a recipe, like ItemStacks and FluidStacks.
  * <p>
  * If you have a new type of ingredient to add to JEI, you will have to implement this in order to use
- * {@link IModIngredientRegistration#register(Class, Collection, IIngredientHelper, IIngredientRenderer)}
+ * {@link IModIngredientRegistration#register(IIngredientType, Collection, IIngredientHelper, IIngredientRenderer)}
  *
  * @since JEI 3.11.0
  */
@@ -82,7 +83,7 @@ public interface IIngredientHelper<V> {
 	 * @since JEI 4.8.3
 	 */
 	default ItemStack getCheatItemStack(V ingredient) {
-		return cheatIngredient(ingredient, false);
+		return ItemStack.EMPTY;
 	}
 
 	/**

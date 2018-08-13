@@ -125,7 +125,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		guiFluidStacks.set(0, fluidInputs.get(0));
 		guiFluidStacks.set(1, fluidInputs.get(1));
 
-		IGuiIngredientGroup<DebugIngredient> debugIngredientsGroup = recipeLayout.getIngredientsGroup(DebugIngredient.class);
+		IGuiIngredientGroup<DebugIngredient> debugIngredientsGroup = recipeLayout.getIngredientsGroup(DebugIngredient.TYPE);
 		debugIngredientsGroup.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
 			if (input) {
 				tooltip.add(slotIndex + " Input DebugIngredient");
