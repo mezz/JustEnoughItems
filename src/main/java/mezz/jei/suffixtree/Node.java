@@ -91,7 +91,8 @@ class Node {
 		// add this reference to all the suffixes as well
 		Node iter = this.suffix;
 		while (iter != null) {
-			if (iter.addRef(index)) {
+			if (!iter.contains(index)) {
+				iter.addIndex(index);
 				iter = iter.suffix;
 			} else {
 				break;
