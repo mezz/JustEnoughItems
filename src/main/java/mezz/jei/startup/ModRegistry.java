@@ -247,7 +247,7 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	@Override
 	public <T> void addIngredientInfo(T ingredient, IIngredientType<T> ingredientType, String... descriptionKeys) {
 		ErrorUtil.checkIsValidIngredient(ingredient, "ingredient");
-		ErrorUtil.checkIsValidIngredient(ingredientType, "ingredientType");
+		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(descriptionKeys, "descriptionKeys");
 
 		addIngredientInfo(Collections.singletonList(ingredient), ingredientType, descriptionKeys);
