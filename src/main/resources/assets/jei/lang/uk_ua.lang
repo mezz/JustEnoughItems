@@ -10,26 +10,26 @@ jei.tooltip.recipe.ore.dict=Приймає будь-які: %s
 jei.tooltip.item.colors=Кольори: %s
 jei.tooltip.shapeless.recipe=Безформний рецепт
 jei.tooltip.cheat.mode.button.enabled=Режим шахрайства
-jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
-jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Аби перемкнути, натисніть %s.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=Затисніть %s-та натисніть тут для перемикання.
 jei.tooltip.recipe.by=Рецепт з: %s
-jei.tooltip.recipe.id=Recipe ID: %s
-jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The JEI overlay is disabled.
-jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
+jei.tooltip.recipe.id=ID рецепту: %s
+jei.tooltip.not.enough.space=Тут недостатньо місця для показу списку.
+jei.tooltip.ingredient.list.disabled=JEI вимкнуто.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Для активації натисніть %s.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Відсутні предмети
-jei.tooltip.error.recipe.transfer.inventory.full=Інвертар заповнений
-jei.tooltip.error.recipe.transfer.unknown=Невідома помилка, дивіться логи
+jei.tooltip.error.recipe.transfer.inventory.full=Інвентар заповнений
+jei.tooltip.error.recipe.transfer.unknown=Невідома помилка, дивіться звіти
 jei.tooltip.error.recipe.transfer.no.server=На сервері повинен бути встановлений JEI
 jei.tooltip.error.recipe.transfer.too.large.player.inventory=Рецепт занадто великий для сітки крафту 2x2.
-jei.tooltip.error.crash=Помилка підказки, дивіться логи
+jei.tooltip.error.crash=Помилка підказки, дивіться звіти
 
 # Error Messages
-jei.chat.error.command.too.long=JEI потрібно встановити на сервер, щоб використовувати цю команду, вона занадто довга для відправки.
+jei.chat.error.command.too.long=JEI потрібно встановити на сервер, щоб використовувати цю команду, вона занадто довга для надсилання.
 jei.chat.error.no.cheat.permission.1=У вас нема дозволу на використання режиму шахрая в JEI.
-jei.chat.error.no.cheat.permission.2=Дозвіл видається грацям, які можуть використовувати команду /give або знаходяться в креативі.
+jei.chat.error.no.cheat.permission.2=Дозвіл видається гравцям, які можуть використовувати команду /give або знаходяться в креативі.
 
 # Key Bindings
 key.jei.toggleOverlay=Перемкнути перекривання предметів
@@ -38,8 +38,8 @@ key.jei.showRecipe=Показувати рецепти предметів
 key.jei.showUses=Показувати використання предметів
 key.jei.recipeBack=Показувати минулу сторінку рецептів
 key.jei.toggleCheatMode=Перемкнути режим шахрайства
-key.jei.previousPage=Show Previous Page
-key.jei.nextPage=Show Next Page
+key.jei.previousPage=Показати попередню сторінку
+key.jei.nextPage=Показати наступну сторінку
 
 # Config
 config.jei.default=По замовчуванню
@@ -50,25 +50,25 @@ config.jei.title=Конфігурація %MODNAME
 config.jei.mode=Режим
 config.jei.mode.comment=Зміна режиму JEI.
 config.jei.mode.cheatItemsEnabled=Режим шахрайства
-config.jei.mode.cheatItemsEnabled.comment=Давати предмети замість відображення рецепта.
+config.jei.mode.cheatItemsEnabled.comment=Давати предмети замість показу рецепта.
 config.jei.mode.editEnabled=Режим редагування
 config.jei.mode.editEnabled.comment=Сховайте предмети в списку простим натисканням клавіші.
 
 config.jei.interface=Інтерфейс
 config.jei.interface.comment=Налаштування, які відповідають за інтерфейс користувача
-config.jei.interface.overlayEnabled=Доступність списка предметів
-config.jei.interface.overlayEnabled.comment=Показувати список предметів при відкриванні интерфейсу
+config.jei.interface.overlayEnabled=Доступність списку предметів
+config.jei.interface.overlayEnabled.comment=Показувати список предметів при відкриванні інтерфейсу
 
 config.jei.search=Пошук
 config.jei.search.comment=Налаштування, які відповідають за пошук.
 config.jei.search.modNameSearchMode=@Ім'яМоду
-config.jei.search.modNameSearchMode.comment=Режим пошуку по імені мода(префікс: @)
+config.jei.search.modNameSearchMode.comment=Режим пошуку за іменем мода(префікс: @)
 config.jei.search.tooltipSearchMode=#СпливаючаПідказка
-config.jei.search.tooltipSearchMode.comment=Режим пошуку по сливаючій підказці (префікс: #)
+config.jei.search.tooltipSearchMode.comment=Режим пошуку по спливаючій підказці (префікс: #)
 config.jei.search.oreDictSearchMode=$СловникРуд
-config.jei.search.oreDictSearchMode.comment=Режим пошуку по імені в словнику руд (префікс: $)
+config.jei.search.oreDictSearchMode.comment=Режим пошуку за іменем в словнику руд (префікс: $)
 config.jei.search.creativeTabSearchMode=%%ТворчаВкладка
-config.jei.search.creativeTabSearchMode.comment=Режим пошуку по імені творчої вкладки (префікс: %)
+config.jei.search.creativeTabSearchMode.comment=Режим пошуку за іменем творчої вкладки (префікс: %)
 config.jei.search.colorSearchMode=^Колір
 config.jei.search.colorSearchMode.comment=Режим пошуку по кольору предмета (префікс: ^)
 config.jei.search.resourceIdSearchMode=&Ідентифікатор
@@ -77,19 +77,21 @@ config.jei.search.resourceIdSearchMode.comment=Режим пошуку по ід
 config.jei.advanced=Додаткові
 config.jei.advanced.comment=Додаткові налаштування функцій JEI.
 config.jei.advanced.itemBlacklist=Чорний список для предметів
-config.jei.advanced.itemBlacklist.comment=Список предметів, які не будуть відображатись у списку предметів JEI. Формат: modId[:name[:meta]]. Режим редагування буде автоматично додавати записи сюди, або видаляти.
+config.jei.advanced.itemBlacklist.comment=Список предметів, які не будуть показуватись у списку предметів JEI. Формат: modId[:name[:meta]]. Режим редагування буде автоматично додавати записи сюди, або видаляти.
 config.jei.advanced.colorSearchEnabled=Пошук по кольору
-config.jei.advanced.colorSearchEnabled.comment=Шукати предмети по кольору і показувати доступні кольори предметів у спливаючій підсказці в списку предметів.
-config.jei.advanced.debugModeEnabled=Режим відладки
-config.jei.advanced.debugModeEnabled.comment=Використовується розобниками JEI, додає тисячі тестових предметів і декілька тестових рецептів.
+config.jei.advanced.colorSearchEnabled.comment=Шукати предмети по кольору і показувати доступні кольори предметів у спливаючій підказці в списку предметів.
+config.jei.advanced.debugModeEnabled=Режим зневадження
+config.jei.advanced.debugModeEnabled.comment=Використовується розробниками JEI, додає тисячі тестових предметів і декілька тестових рецептів.
 config.jei.advanced.centerSearchBarEnabled=Рядок пошуку по центру
-config.jei.advanced.centerSearchBarEnabled.comment=Перемістити рядок пошкуку JEI в центр нижньої частини екрану.
+config.jei.advanced.centerSearchBarEnabled.comment=Перемістити рядок пошуку JEI в центр нижньої частини екрану.
 config.jei.advanced.modNameFormat=Формат назви моду
 config.jei.advanced.modNameFormat.comment=Як потрібно відформатувати назву мода для підказок JEI. Залиште пустим, щоб вимкнути.
 config.jei.advanced.maxColumns=Максимальна ширина
-config.jei.advanced.maxColumns.comment=Максимальная ширина списка інгредієнтів.
+config.jei.advanced.maxColumns.comment=Максимальна ширина списку інгредієнтів.
+config.jei.advanced.maxRecipeGuiHeight=Максимальна висота
+config.jei.advanced.maxRecipeGuiHeight.comment=Максимальна висота вікна рецептів.
 config.jei.advanced.giveMode=Режим отримання предметів
-config.jei.advanced.giveMode.comment=Виберіть, повинен JEI давати предмети напряму в інвентарь (inventory) чи набирати їх за допомогою мишки (mouse_pickup).
+config.jei.advanced.giveMode.comment=Виберіть, повинен JEI давати предмети напряму в інвентар (inventory) чи набирати їх за допомогою мишки (mouse_pickup).
 
 # Hide Ingredients Mode
 gui.jei.editMode.description=Режим редагування списку предметів JEI:
@@ -108,7 +110,7 @@ gui.jei.category.smelting.experience=Досвід: %s
 gui.jei.category.fuel=Паливо
 gui.jei.category.fuel.smeltCount.single=Плавить 1 предмет
 gui.jei.category.fuel.smeltCount=Плавить %s предмети(-ів)
-gui.jei.category.brewing=Зіллєваріння
+gui.jei.category.brewing=Зіллє-варіння
 gui.jei.category.brewing.steps=Кроки: %s
 gui.jei.category.itemInformation=Опис
 
