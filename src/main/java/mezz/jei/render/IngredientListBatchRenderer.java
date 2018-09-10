@@ -144,7 +144,6 @@ public class IngredientListBatchRenderer {
 				}
 				return;
 			}
-			System.out.println("adding slow renderer for:" + ForgeRegistries.ITEMS.getKey(item));
 		}
 		IngredientRenderer<V> renderer = new IngredientRenderer<>(element);
 		ingredientListSlot.setIngredientRenderer(renderer);
