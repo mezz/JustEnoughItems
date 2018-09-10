@@ -1,6 +1,16 @@
 package mezz.jei.render;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Nullable;
+
+import org.lwjgl.opengl.GL11;
+
 import com.google.common.base.Preconditions;
+
 import mezz.jei.api.ingredients.ISlowRenderItem;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.input.ClickedIngredient;
@@ -12,16 +22,17 @@ import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import org.lwjgl.opengl.GL11;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+import net.minecraftforge.client.ItemModelMesherForge;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class IngredientListBatchRenderer {
+	private static final Set<Item> slowItems = new HashSet<>();
+	private static final Set<ModelResourceLocation> slowModels = new HashSet();
 	private final List<IngredientListSlot> slots = new ArrayList<>();
 
 	private final List<ItemStackFastRenderer> renderItems2d = new ArrayList<>();
@@ -41,6 +52,34 @@ public class IngredientListBatchRenderer {
 
 	public int size() {
 		return slots.size() - blocked;
+	}
+	/**
+	 * call before or on load complete starts
+	 */
+	public static void addSlowRenderer(Item i)
+	{
+		slowItems.add(i);
+	}
+	/**
+	 * call before or on load complete starts
+	 */
+	public static void addSlowRenderer(ModelResourceLocation loc)
+	{
+		slowModels.add(loc);
+	}
+	/**
+	 * call before or on load complete starts
+	 */
+	public static void removeSlowRenderer(ModelResourceLocation loc)
+	{
+		slowModels.remove(loc);
+	}
+	/**
+	 * call before or on loadcomplete starts
+	 */
+	public static void removeSlowRenderer(Item i)
+	{
+		slowItems.remove(i);
 	}
 
 	public void add(IngredientListSlot ingredientListSlot) {
@@ -82,8 +121,9 @@ public class IngredientListBatchRenderer {
 			//noinspection unchecked
 			IIngredientListElement<ItemStack> itemStackElement = (IIngredientListElement<ItemStack>) element;
 			ItemStack itemStack = itemStackElement.getIngredient();
+			Item item = itemStack.getItem();
 			IBakedModel bakedModel;
-			ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+			ItemModelMesherForge itemModelMesher = (ItemModelMesherForge) Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
 			try {
 				bakedModel = itemModelMesher.getItemModel(itemStack);
 				bakedModel = bakedModel.getOverrides().handleItemState(bakedModel, itemStack, null, null);
@@ -93,8 +133,8 @@ public class IngredientListBatchRenderer {
 				Log.get().error("ItemStack crashed getting IBakedModel. {}", stackInfo, throwable);
 				return;
 			}
-
-			if (!bakedModel.isBuiltInRenderer() && !(itemStack.getItem() instanceof ISlowRenderItem)) {
+			
+			if (!bakedModel.isBuiltInRenderer() && !(item instanceof ISlowRenderItem) && !slowItems.contains(item) && !slowModels.contains(itemModelMesher.getLocation(itemStack))) {
 				ItemStackFastRenderer renderer = new ItemStackFastRenderer(itemStackElement);
 				ingredientListSlot.setIngredientRenderer(renderer);
 				if (bakedModel.isGui3d()) {
@@ -105,7 +145,6 @@ public class IngredientListBatchRenderer {
 				return;
 			}
 		}
-
 		IngredientRenderer<V> renderer = new IngredientRenderer<>(element);
 		ingredientListSlot.setIngredientRenderer(renderer);
 		renderOther.add(renderer);
