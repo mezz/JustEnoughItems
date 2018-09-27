@@ -72,8 +72,8 @@ public final class ItemStackListFactory {
 		if (item == null || item == Items.AIR) {
 			return;
 		}
-
-		NonNullList<ItemStack> items = stackHelper.getSubtypes(item, 1);
+		NonNullList<ItemStack> items = NonNullList.create();
+		stackHelper.addSubtypesToList(items, item);
 		for (ItemStack stack : items) {
 			addItemStack(stackHelper, stack, itemList, itemNameSet);
 		}
@@ -111,7 +111,7 @@ public final class ItemStackListFactory {
 	}
 
 	private void addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<String> itemNameSet) {
-		String itemKey = null;
+		final String itemKey;
 
 		try {
 			addFallbackSubtypeInterpreter(stack);
@@ -119,12 +119,10 @@ public final class ItemStackListFactory {
 		} catch (RuntimeException | LinkageError e) {
 			String stackInfo = ErrorUtil.getItemStackInfo(stack);
 			Log.get().error("Couldn't get unique name for itemStack {}", stackInfo, e);
+			return;
 		}
 
-		if (itemKey != null) {
-			if (itemNameSet.contains(itemKey)) {
-				return;
-			}
+		if (!itemNameSet.contains(itemKey)) {
 			itemNameSet.add(itemKey);
 			itemList.add(stack);
 		}

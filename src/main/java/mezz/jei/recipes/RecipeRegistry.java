@@ -13,6 +13,7 @@ import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeRegistryPlugin;
@@ -107,7 +108,9 @@ public class RecipeRegistry implements IRecipeRegistry {
 				Collection<Object> catalystIngredients = recipeCatalystEntry.getValue();
 				recipeCatalystsBuilder.putAll(recipeCategory, catalystIngredients);
 				for (Object catalystIngredient : catalystIngredients) {
-					recipeInputMap.addRecipeCategory(recipeCategory, catalystIngredient);
+					IIngredientType ingredientType = ingredientRegistry.getIngredientType(catalystIngredient);
+					IIngredientHelper ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
+					recipeInputMap.addRecipeCategory(recipeCategory, catalystIngredient, ingredientHelper);
 					String catalystIngredientKey = getUniqueId(catalystIngredient);
 					categoriesForRecipeCatalystKeysBuilder.put(catalystIngredientKey, recipeCategoryUid);
 				}
@@ -166,12 +169,12 @@ public class RecipeRegistry implements IRecipeRegistry {
 			String recipeCategoryUid = entry.getKey();
 			for (Object recipe : entry.getValue()) {
 				progressBar.step("");
-				addRecipe(recipe, recipeCategoryUid);
+				addRecipe(recipe, recipe.getClass(), recipeCategoryUid);
 			}
 		}
 		for (Object recipe : unsortedRecipes) {
 			progressBar.step("");
-			addRecipe(recipe);
+			addRecipe(recipe, recipe.getClass(), null);
 		}
 		ProgressManager.pop(progressBar);
 	}
@@ -208,13 +211,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		} else {
 			addRecipe(recipe, recipe, recipeCategory);
 		}
-	}
-
-	private void addRecipe(Object recipe, String recipeCategoryUid) {
-		ErrorUtil.checkNotNull(recipe, "recipe");
-		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-
-		addRecipe(recipe, recipe.getClass(), recipeCategoryUid);
 	}
 
 	private <T> void addRecipe(T recipe, Class<? extends T> recipeClass, @Nullable String recipeCategoryUid) {

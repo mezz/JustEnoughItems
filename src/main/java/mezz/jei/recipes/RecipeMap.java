@@ -43,9 +43,7 @@ public class RecipeMap {
 		return recipeCategoryOrdering.immutableSortedCopy(recipeCategories);
 	}
 
-	public <V> void addRecipeCategory(IRecipeCategory recipeCategory, V ingredient) {
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-
+	public <V> void addRecipeCategory(IRecipeCategory recipeCategory, V ingredient, IIngredientHelper<V> ingredientHelper) {
 		String key = ingredientHelper.getUniqueId(ingredient);
 		List<String> recipeCategories = categoryUidMap.get(key);
 		String recipeCategoryUid = recipeCategory.getUid();
@@ -104,7 +102,7 @@ public class RecipeMap {
 
 			recipeWrappers.add(recipeWrapper);
 
-			addRecipeCategory(recipeCategory, ingredient);
+			addRecipeCategory(recipeCategory, ingredient, ingredientHelper);
 		}
 	}
 }
