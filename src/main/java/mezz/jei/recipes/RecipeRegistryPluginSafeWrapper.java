@@ -37,6 +37,7 @@ public class RecipeRegistryPluginSafeWrapper implements IRecipeRegistryPlugin {
 
 	private <T> T callPluginMethod(Supplier<T> supplier, T defaultValue) {
 		try {
+			stopWatch.reset();
 			stopWatch.start();
 			T result = supplier.get();
 			stopWatch.stop();
@@ -45,7 +46,6 @@ public class RecipeRegistryPluginSafeWrapper implements IRecipeRegistryPlugin {
 			}
 			return result;
 		} catch (RuntimeException | LinkageError e) {
-			stopWatch.reset();
 			Log.get().error("Recipe registry plugin crashed: {}", plugin.getClass(), e);
 			return defaultValue;
 		}
