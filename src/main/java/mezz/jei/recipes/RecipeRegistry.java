@@ -61,6 +61,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final ImmutableList<IRecipeHandler> unsortedRecipeHandlers;
 	private final ImmutableMultimap<String, IRecipeHandler> recipeHandlers;
 	private final ImmutableList<IRecipeCategory> recipeCategories;
+	private final Set<String> hiddenRecipeCategoryUids = new HashSet<>();
 	private final List<IRecipeCategory> recipeCategoriesVisibleCache = new ArrayList<>();
 	private final ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers;
 	private final ImmutableMultimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap;
@@ -371,6 +372,9 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	private boolean isCategoryVisible(IRecipeCategory<?> recipeCategory) {
+		if (hiddenRecipeCategoryUids.contains(recipeCategory.getUid())) {
+			return false;
+		}
 		List<Object> allCatalysts = getRecipeCatalysts(recipeCategory, true);
 		if (!allCatalysts.isEmpty()) {
 			List<Object> visibleCatalysts = getRecipeCatalysts(recipeCategory, false);
@@ -725,6 +729,29 @@ public class RecipeRegistry implements IRecipeRegistry {
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		ErrorUtil.assertMainThread();
 		hiddenRecipes.remove(recipeCategoryUid, recipe);
+		recipeCategoriesVisibleCache.clear();
+	}
+
+	@Override
+	public void hideRecipeCategory(String recipeCategoryUid) {
+		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
+		ErrorUtil.assertMainThread();
+		IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
+		if (recipeCategory == null) {
+			throw new IllegalArgumentException("Unknown recipe category: " + recipeCategoryUid);
+		}
+		hiddenRecipeCategoryUids.add(recipeCategoryUid);
+		recipeCategoriesVisibleCache.remove(recipeCategory);
+	}
+
+	@Override
+	public void unhideRecipeCategory(String recipeCategoryUid) {
+		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
+		ErrorUtil.assertMainThread();
+		if (!recipeCategoriesMap.containsKey(recipeCategoryUid)) {
+			throw new IllegalArgumentException("Unknown recipe category: " + recipeCategoryUid);
+		}
+		hiddenRecipeCategoryUids.remove(recipeCategoryUid);
 		recipeCategoriesVisibleCache.clear();
 	}
 

@@ -231,7 +231,12 @@ public final class ErrorUtil {
 	public static void assertMainThread() {
 		Minecraft minecraft = Minecraft.getMinecraft();
 		if (minecraft != null && !minecraft.isCallingFromMinecraftThread()) {
-			throw new IllegalStateException("A JEI API method is being called by another mod from the wrong thread. It must be called on the main thread.");
+			Thread currentThread = Thread.currentThread();
+			throw new IllegalStateException(
+				"A JEI API method is being called by another mod from the wrong thread:\n" +
+					currentThread + "\n" +
+					"It must be called on the main thread by using Minecraft.addScheduledTask."
+			);
 		}
 	}
 

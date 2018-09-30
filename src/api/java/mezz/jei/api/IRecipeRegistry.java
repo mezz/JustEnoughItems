@@ -138,6 +138,26 @@ public interface IRecipeRegistry {
 	 */
 	void unhideRecipe(IRecipeWrapper recipe, String recipeCategoryUid);
 
+	/**
+	 * Hide an entire recipe category of recipes from JEI.
+	 * This can be used by mods that create recipe progression.
+	 *
+	 * @param recipeCategoryUid the unique ID for the recipe category
+	 * @see #unhideRecipeCategory(String)
+	 * @since JEI 4.13.0
+	 */
+	void hideRecipeCategory(String recipeCategoryUid);
+
+	/**
+	 * Unhides a recipe category that was hidden by {@link #hideRecipeCategory(String)}.
+	 * This can be used by mods that create recipe progression.
+	 *
+	 * @param recipeCategoryUid the unique ID for the recipe category
+	 * @see #hideRecipeCategory(String)
+	 * @since JEI 4.13.0
+	 */
+	void unhideRecipeCategory(String recipeCategoryUid);
+
 	// DEPRECATED BELOW
 
 	/**

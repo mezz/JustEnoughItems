@@ -10,7 +10,6 @@ import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
@@ -27,13 +26,10 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.HoverChecker;
 
-import javax.annotation.Nullable;
-
 public class DebugRecipe implements IRecipeWrapper {
 	private final GuiButtonExt button;
 	private final HoverChecker buttonHoverChecker;
-	@Nullable
-	private List<IRecipeWrapper> hiddenRecipes;
+	private boolean hiddenRecipes;
 
 	public DebugRecipe() {
 		this.button = new GuiButtonExt(0, 110, 30, "test");
@@ -99,20 +95,12 @@ public class DebugRecipe implements IRecipeWrapper {
 				ingredientFilter.setFilterText(filterText + " test");
 
 				IRecipeRegistry recipeRegistry = runtime.getRecipeRegistry();
-				if (hiddenRecipes == null) {
-					@SuppressWarnings("unchecked")
-					IRecipeCategory<IRecipeWrapper> craftingRecipeCategory = recipeRegistry.getRecipeCategory(VanillaRecipeCategoryUid.CRAFTING);
-					if (craftingRecipeCategory != null) {
-						hiddenRecipes = recipeRegistry.getRecipeWrappers(craftingRecipeCategory);
-					}
-					for (IRecipeWrapper recipeWrapper : hiddenRecipes) {
-						recipeRegistry.hideRecipe(recipeWrapper, VanillaRecipeCategoryUid.CRAFTING);
-					}
+				if (!hiddenRecipes) {
+					recipeRegistry.hideRecipeCategory(VanillaRecipeCategoryUid.CRAFTING);
+					hiddenRecipes = true;
 				} else {
-					for (IRecipeWrapper recipeWrapper : hiddenRecipes) {
-						recipeRegistry.unhideRecipe(recipeWrapper, VanillaRecipeCategoryUid.CRAFTING);
-					}
-					hiddenRecipes = null;
+					recipeRegistry.unhideRecipeCategory(VanillaRecipeCategoryUid.CRAFTING);
+					hiddenRecipes = false;
 				}
 			}
 			return true;
