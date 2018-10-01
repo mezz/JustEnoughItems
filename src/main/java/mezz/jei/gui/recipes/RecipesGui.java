@@ -399,6 +399,16 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		}
 	}
 
+	@Nullable
+	@Override
+	public Object getIngredientUnderMouse() {
+		IClickedIngredient<?> ingredient = getIngredientUnderMouse(MouseHelper.getX(), MouseHelper.getY());
+		if (ingredient != null) {
+			return ingredient.getValue();
+		}
+		return null;
+	}
+
 	public void back() {
 		logic.back();
 	}
