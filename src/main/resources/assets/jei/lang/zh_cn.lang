@@ -10,13 +10,13 @@ jei.tooltip.recipe.ore.dict=接受下列任何物品：%s
 jei.tooltip.item.colors=颜色：%s
 jei.tooltip.shapeless.recipe=无序配方
 jei.tooltip.cheat.mode.button.enabled=作弊模式
-jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
-jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
+jei.tooltip.cheat.mode.how.to.disable.hotkey=按 %s 以切换。
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=按住 %s 并点击以切换。
 jei.tooltip.recipe.by=该配方由 %s 添加
-jei.tooltip.recipe.id=Recipe ID: %s
-jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The JEI overlay is disabled.
-jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
+jei.tooltip.recipe.id=配方 ID: %s
+jei.tooltip.not.enough.space=屏幕空间不足，无法显示 JEI 界面。
+jei.tooltip.ingredient.list.disabled=JEI 悬浮界面已禁用。
+jei.tooltip.ingredient.list.disabled.how.to.fix=按 %s 以启用。
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=缺失物品
@@ -84,10 +84,12 @@ config.jei.advanced.debugModeEnabled=调试模式
 config.jei.advanced.debugModeEnabled.comment=仅对 JEI 开发者有用，启用后会添加数千测试物品以及一些测试配方。
 config.jei.advanced.centerSearchBarEnabled=搜索框居中
 config.jei.advanced.centerSearchBarEnabled.comment=启用后，搜索框会被移动至底部居中的位置。
-config.jei.advanced.modNameFormat=模组名称格式
-config.jei.advanced.modNameFormat.comment=定义 JEI 界面的信息提示中的 Mod 名称格式。留空以禁用。
-config.jei.advanced.maxColumns=Max Width
-config.jei.advanced.maxColumns.comment=The maximum width of the ingredient list.
+config.jei.advanced.modNameFormat=模组名称样式
+config.jei.advanced.modNameFormat.comment=定义 JEI 界面的信息提示中的 Mod 名称样式。留空以禁用。
+config.jei.advanced.maxColumns=最大宽度
+config.jei.advanced.maxColumns.comment=输入物品列表的最大宽度。
+config.jei.advanced.maxRecipeGuiHeight=合成 Gui 最大高度
+config.jei.advanced.maxRecipeGuiHeight.comment=合成表查询 Gui 允许的最大高度。
 config.jei.advanced.giveMode=拿取模式
 config.jei.advanced.giveMode.comment=选择 JEI 会直接将物品移入物品栏或是用鼠标将其捡起。
 
