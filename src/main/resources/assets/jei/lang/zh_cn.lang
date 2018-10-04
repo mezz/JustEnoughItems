@@ -32,7 +32,7 @@ jei.chat.error.no.cheat.permission.1=你没有使用 JEI 作弊模式的权限�
 jei.chat.error.no.cheat.permission.2=可以使用 /give 或处在创造模式下的玩家拥有此权限。
 
 # Key Bindings
-key.jei.toggleOverlay=切换物品列表叠层
+key.jei.toggleOverlay=显示/隐藏 JEI
 key.jei.focusSearch=高亮搜索框
 key.jei.showRecipe=显示物品配方
 key.jei.showUses=显示物品用途
