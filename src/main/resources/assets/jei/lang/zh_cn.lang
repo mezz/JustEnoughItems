@@ -88,8 +88,8 @@ config.jei.advanced.modNameFormat=模组名称样式
 config.jei.advanced.modNameFormat.comment=定义 JEI 界面的信息提示中的 Mod 名称样式。留空以禁用。
 config.jei.advanced.maxColumns=最大宽度
 config.jei.advanced.maxColumns.comment=输入物品列表的最大宽度。
-config.jei.advanced.maxRecipeGuiHeight=合成 Gui 最大高度
-config.jei.advanced.maxRecipeGuiHeight.comment=合成表查询 Gui 允许的最大高度。
+config.jei.advanced.maxRecipeGuiHeight=合成界面最大高度
+config.jei.advanced.maxRecipeGuiHeight.comment=合成表查询界面允许的最大高度。
 config.jei.advanced.giveMode=拿取模式
 config.jei.advanced.giveMode.comment=选择 JEI 会直接将物品移入物品栏或是用鼠标将其捡起。
 
