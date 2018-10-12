@@ -16,6 +16,7 @@ import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.ingredients.IngredientListElementComparator;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.color.ColorNamer;
@@ -255,6 +256,11 @@ public final class Config {
 		return worldConfig;
 	}
 
+	public static String getSortOrder()
+	{
+		return values.itemSortlist;
+	}
+	
 	public static void preInit(FMLPreInitializationEvent event) {
 
 		File jeiConfigurationDir = new File(event.getModConfigurationDirectory(), Constants.MOD_ID);
@@ -383,6 +389,19 @@ public final class Config {
 			values.debugModeEnabled = property.getBoolean();
 		}
 
+		{
+			//This also loads up the comparators.
+			defaultValues.itemSortlist = IngredientListElementComparator.initConfig();
+			Property property = config.get(CATEGORY_ADVANCED, "itemSortList", defaultValues.itemSortlist);			
+			if (IngredientListElementComparator.INSTANCE != null) {
+				IngredientListElementComparator.loadConfig(property.getString());
+			}
+			
+			if (categoryAdvanced.get("itemSortList").hasChanged()) {
+				needsReload = true;
+			}
+		}
+		
 		final boolean configChanged = config.hasChanged();
 		if (configChanged) {
 			config.save();

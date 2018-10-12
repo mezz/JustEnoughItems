@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.IModIdHelper;
+import mezz.jei.util.Log;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.ProgressManager;
 
@@ -23,7 +24,12 @@ public final class IngredientListElementFactory {
 			addToBaseList(ingredientListElements, ingredientRegistry, ingredientType, modIdHelper);
 		}
 
-		ingredientListElements.sort(IngredientListElementComparator.INSTANCE);
+		try {
+			ingredientListElements.sort(IngredientListElementComparator.INSTANCE);
+		}
+		catch (IllegalArgumentException ex) {
+			Log.get().error("Item sorting failed.  Aborting sort.", ex);
+		}
 		return ingredientListElements;
 	}
 

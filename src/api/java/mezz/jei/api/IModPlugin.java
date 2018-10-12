@@ -1,7 +1,10 @@
 package mezz.jei.api;
 
+import java.util.Comparator;
+
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
+import net.minecraft.item.ItemStack;
 
 /**
  * The main class to implement to create a JEI plugin. Everything communicated between a mod and JEI is through this class.
@@ -52,4 +55,14 @@ public interface IModPlugin {
 	default void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 
 	}
+	
+	/**
+	 * Register additional sorting option.
+	 *
+	 * @since JEI 4.12.0
+	 */
+	default void registerSorter(String name, Comparator<ItemStack> comparator) {
+
+	}
+	
 }

@@ -28,6 +28,7 @@ import mezz.jei.suffixtree.CombinedSearchTrees;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 import mezz.jei.suffixtree.ISearchTree;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.ProgressManager;
@@ -184,7 +185,12 @@ public class IngredientFilter implements IIngredientFilter {
 		String filterText = Translator.toLowercaseWithLocale(Config.getFilterText());
 		if (!filterText.equals(filterCached)) {
 			List<IIngredientListElement> ingredientList = getIngredientListUncached(filterText);
-			ingredientList.sort(IngredientListElementComparator.INSTANCE);
+			try {
+				ingredientList.sort(IngredientListElementComparator.INSTANCE);
+			}
+			catch (IllegalArgumentException ex) {
+				Log.get().error("Item sorting failed.  Aborting sort.", ex);
+			}
 			ingredientListCached = Collections.unmodifiableList(ingredientList);
 			filterCached = filterText;
 		}
