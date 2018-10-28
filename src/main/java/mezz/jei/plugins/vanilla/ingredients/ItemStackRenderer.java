@@ -13,7 +13,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
@@ -34,10 +33,9 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 
 	@Override
 	public List<String> getTooltip(Minecraft minecraft, ItemStack ingredient, ITooltipFlag tooltipFlag) {
-		EntityPlayer player = minecraft.player;
 		List<String> list;
 		try {
-			list = ingredient.getTooltip(player, tooltipFlag);
+			list = ingredient.getTooltip(null, tooltipFlag);
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
 			Log.get().error("Failed to get tooltip: {}", itemStackInfo, e);
