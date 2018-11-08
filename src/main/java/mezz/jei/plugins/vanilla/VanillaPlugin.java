@@ -31,6 +31,9 @@ import mezz.jei.plugins.vanilla.furnace.FuelRecipeMaker;
 import mezz.jei.plugins.vanilla.furnace.FurnaceFuelCategory;
 import mezz.jei.plugins.vanilla.furnace.FurnaceSmeltingCategory;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipeMaker;
+import mezz.jei.plugins.vanilla.ingredients.EnchantDataHelper;
+import mezz.jei.plugins.vanilla.ingredients.EnchantDataListFactory;
+import mezz.jei.plugins.vanilla.ingredients.EnchantDataRenderer;
 import mezz.jei.plugins.vanilla.ingredients.FluidStackHelper;
 import mezz.jei.plugins.vanilla.ingredients.FluidStackListFactory;
 import mezz.jei.plugins.vanilla.ingredients.FluidStackRenderer;
@@ -44,7 +47,6 @@ import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.client.gui.inventory.GuiCrafting;
 import net.minecraft.client.gui.inventory.GuiFurnace;
 import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerBrewingStand;
@@ -53,21 +55,15 @@ import net.minecraft.inventory.ContainerRepair;
 import net.minecraft.inventory.ContainerWorkbench;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemBanner;
-import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 @JEIPlugin
 public class VanillaPlugin implements IModPlugin {
@@ -90,24 +86,8 @@ public class VanillaPlugin implements IModPlugin {
 			ResourceLocation resourceLocation = ItemMonsterPlacer.getNamedIdFrom(itemStack);
 			return resourceLocation == null ? ISubtypeRegistry.ISubtypeInterpreter.NONE : resourceLocation.toString();
 		});
-		subtypeRegistry.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, itemStack -> {
-			List<String> enchantmentNames = new ArrayList<>();
-			NBTTagList enchantments = ItemEnchantedBook.getEnchantments(itemStack);
-			for (NBTBase nbt : enchantments) {
-				if (nbt instanceof NBTTagCompound) {
-					NBTTagCompound nbttagcompound = (NBTTagCompound) nbt;
-					int j = nbttagcompound.getShort("id");
-					Enchantment enchantment = Enchantment.getEnchantmentByID(j);
-					if (enchantment != null)
-					{
-						String enchantmentUid = enchantment.getName() + ".lvl" + nbttagcompound.getShort("lvl");
-						enchantmentNames.add(enchantmentUid);
-					}
-				}
-			}
-			enchantmentNames.sort(null);
-			return enchantmentNames.toString();
-		});
+		// Hide ID-based enchanted book items to render as ingredients instead
+		subtypeRegistry.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, itemStack -> null);
 	}
 
 	@Override
@@ -117,6 +97,7 @@ public class VanillaPlugin implements IModPlugin {
 		ItemStackListFactory itemStackListFactory = new ItemStackListFactory(this.subtypeRegistry);
 
 		ingredientRegistration.register(VanillaTypes.ITEM, itemStackListFactory.create(stackHelper), new ItemStackHelper(stackHelper), new ItemStackRenderer());
+		ingredientRegistration.register(VanillaTypes.ENCHANT, EnchantDataListFactory.create(), new EnchantDataHelper(), new EnchantDataRenderer());
 		ingredientRegistration.register(VanillaTypes.FLUID, FluidStackListFactory.create(), new FluidStackHelper(), new FluidStackRenderer());
 	}
 
