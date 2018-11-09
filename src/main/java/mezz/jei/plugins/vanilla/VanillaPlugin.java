@@ -87,7 +87,7 @@ public class VanillaPlugin implements IModPlugin {
 			return resourceLocation == null ? ISubtypeRegistry.ISubtypeInterpreter.NONE : resourceLocation.toString();
 		});
 		// Hide ID-based enchanted book items to render as ingredients instead
-		subtypeRegistry.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, itemStack -> null);
+		subtypeRegistry.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, itemStack -> "");
 	}
 
 	@Override
