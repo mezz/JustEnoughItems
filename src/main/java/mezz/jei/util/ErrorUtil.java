@@ -13,6 +13,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.startup.ForgeModIdHelper;
 import net.minecraft.block.Block;
@@ -220,10 +221,13 @@ public final class ErrorUtil {
 		return object;
 	}
 
-	public static void checkIsValidIngredient(@Nullable Object ingredient, String name) {
+	public static <T> void checkIsValidIngredient(@Nullable T ingredient, String name) {
 		checkNotNull(ingredient, name);
-		if (!Internal.getIngredientRegistry().isValidIngredient(ingredient)) {
-			throw new IllegalArgumentException("Invalid ingredient found. Parameter Name: " + name + " Class: " + ingredient.getClass() + " Object: " + ingredient);
+		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		if (!ingredientHelper.isValidIngredient(ingredient)) {
+			String ingredientInfo = ingredientHelper.getErrorInfo(ingredient);
+			throw new IllegalArgumentException("Invalid ingredient found. Parameter Name: " + name + " Ingredient Info: " + ingredientInfo);
 		}
 	}
 

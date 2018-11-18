@@ -27,7 +27,7 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 			ItemStack stack = slotUnderMouse.getStack();
 			if (!stack.isEmpty()) {
 				Rectangle slotArea = new Rectangle(slotUnderMouse.xPos, slotUnderMouse.yPos, 16, 16);
-				return new ClickedIngredient<>(stack, slotArea);
+				return ClickedIngredient.create(stack, slotArea);
 			}
 		}
 		return getAdvancedGuiHandlerIngredientUnderMouse(guiContainer, mouseX, mouseY);
@@ -46,7 +46,7 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 					if (clicked instanceof ItemStack && slotUnderMouse != null && ItemStack.areItemStacksEqual(slotUnderMouse.getStack(), (ItemStack) clicked)) {
 						area = new Rectangle(slotUnderMouse.xPos, slotUnderMouse.yPos, 16, 16);
 					}
-					return new ClickedIngredient<>(clicked, area);
+					return ClickedIngredient.create(clicked, area);
 				}
 			}
 		}

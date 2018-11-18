@@ -263,7 +263,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 					if (clicked != null) {
 						Object displayedIngredient = clicked.getDisplayedIngredient();
 						if (displayedIngredient != null) {
-							return new ClickedIngredient<>(displayedIngredient, clicked.getRect());
+							return ClickedIngredient.create(displayedIngredient, clicked.getRect());
 						}
 					}
 				}
