@@ -42,8 +42,8 @@ public class IngredientFilter implements IIngredientFilter {
 
 	private final IngredientBlacklistInternal blacklist;
 	/**
-	 * indexed list of ingredients for use with the suffix trees
-	 * includes all elements (even hidden ones) for use when rebuilding
+	 * indexed list of ingredients for use with the suffix trees includes all
+	 * elements (even hidden ones) for use when rebuilding
 	 */
 	private final NonNullList<IIngredientListElement> elementList;
 	private final GeneralizedSuffixTree searchTree;
@@ -64,13 +64,15 @@ public class IngredientFilter implements IIngredientFilter {
 		createPrefixedSearchTree('$', Config::getOreDictSearchMode, IIngredientListElement::getOreDictStrings);
 		createPrefixedSearchTree('%', Config::getCreativeTabSearchMode, IIngredientListElement::getCreativeTabsStrings);
 		createPrefixedSearchTree('^', Config::getColorSearchMode, IIngredientListElement::getColorStrings);
-		createPrefixedSearchTree('&', Config::getResourceIdSearchMode, element -> Collections.singleton(element.getResourceId()));
+		createPrefixedSearchTree('&', Config::getResourceIdSearchMode,
+				element -> Collections.singleton(element.getResourceId()));
 
 		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.values());
 		this.backgroundBuilder = new IngredientFilterBackgroundBuilder(prefixedSearchTrees, elementList);
 	}
 
-	private static CombinedSearchTrees buildCombinedSearchTrees(ISearchTree searchTree, Collection<PrefixedSearchTree> prefixedSearchTrees) {
+	private static CombinedSearchTrees buildCombinedSearchTrees(ISearchTree searchTree,
+			Collection<PrefixedSearchTree> prefixedSearchTrees) {
 		CombinedSearchTrees combinedSearchTrees = new CombinedSearchTrees();
 		combinedSearchTrees.addSearchTree(searchTree);
 		for (PrefixedSearchTree prefixedTree : prefixedSearchTrees) {
@@ -81,7 +83,8 @@ public class IngredientFilter implements IIngredientFilter {
 		return combinedSearchTrees;
 	}
 
-	private void createPrefixedSearchTree(char prefix, PrefixedSearchTree.IModeGetter modeGetter, PrefixedSearchTree.IStringsGetter stringsGetter) {
+	private void createPrefixedSearchTree(char prefix, PrefixedSearchTree.IModeGetter modeGetter,
+			PrefixedSearchTree.IStringsGetter stringsGetter) {
 		GeneralizedSuffixTree tree = new GeneralizedSuffixTree();
 		PrefixedSearchTree prefixedTree = new PrefixedSearchTree(tree, stringsGetter, modeGetter);
 		this.prefixedSearchTrees.put(prefix, prefixedTree);
@@ -172,9 +175,9 @@ public class IngredientFilter implements IIngredientFilter {
 	public <V> void updateHiddenState(IIngredientListElement<V> element) {
 		V ingredient = element.getIngredient();
 		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
-		boolean visible = !blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper) &&
-			ingredientHelper.isIngredientOnServer(ingredient) &&
-			(Config.isHideModeEnabled() || !Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
+		boolean visible = !blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper)
+				&& ingredientHelper.isIngredientOnServer(ingredient)
+				&& (Config.isHideModeEnabled() || !Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
 		if (element.isVisible() != visible) {
 			element.setVisible(visible);
 			this.filterCached = null;
@@ -187,8 +190,7 @@ public class IngredientFilter implements IIngredientFilter {
 			List<IIngredientListElement> ingredientList = getIngredientListUncached(filterText);
 			try {
 				ingredientList.sort(IngredientListElementComparator.INSTANCE);
-			}
-			catch (IllegalArgumentException ex) {
+			} catch (IllegalArgumentException ex) {
 				Log.get().error("Item sorting failed.  Aborting sort.", ex);
 			}
 			ingredientListCached = Collections.unmodifiableList(ingredientList);
@@ -263,9 +265,11 @@ public class IngredientFilter implements IIngredientFilter {
 	}
 
 	/**
-	 * Scans up and down the element list to find wildcard matches that touch the given element.
+	 * Scans up and down the element list to find wildcard matches that touch the
+	 * given element.
 	 */
-	public <T> List<IIngredientListElement<T>> getMatches(IIngredientListElement<T> ingredientListElement, Function<IIngredientListElement<?>, String> uidFunction) {
+	public <T> List<IIngredientListElement<T>> getMatches(IIngredientListElement<T> ingredientListElement,
+			Function<IIngredientListElement<?>, String> uidFunction) {
 		final String uid = uidFunction.apply(ingredientListElement);
 		List<IIngredientListElement<T>> matchingElements = findMatchingElements(ingredientListElement);
 		IntSet matchingIndexes = new IntOpenHashSet(50);
@@ -350,7 +354,8 @@ public class IngredientFilter implements IIngredientFilter {
 	}
 
 	/**
-	 * Gets the appropriate search tree for the given token, based on if the token has a prefix.
+	 * Gets the appropriate search tree for the given token, based on if the token
+	 * has a prefix.
 	 */
 	@Nullable
 	private IntSet getSearchResults(String token) {
@@ -372,8 +377,8 @@ public class IngredientFilter implements IIngredientFilter {
 	}
 
 	/**
-	 * Efficiently get the elements contained in both sets.
-	 * Note that this implementation will alter the original sets.
+	 * Efficiently get the elements contained in both sets. Note that this
+	 * implementation will alter the original sets.
 	 */
 	private static IntSet intersection(IntSet set1, IntSet set2) {
 		if (set1.size() > set2.size()) {

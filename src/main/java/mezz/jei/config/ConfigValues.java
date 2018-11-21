@@ -25,8 +25,7 @@ public class ConfigValues {
 	public boolean cheatItemsEnabled = false;
 	public boolean hideModeEnabled = false;
 	public String filterText = "";
-	
+
 	// Sort
-	public String itemSortlist = "invtweaks,minecraft,mod,id,default,meta,name";
-	public String defaultItemSortlist = "invtweaks,minecraft,mod,id,default,meta,name";
+	public String itemSortlist = ""; // Gets populated dynamically.
 }

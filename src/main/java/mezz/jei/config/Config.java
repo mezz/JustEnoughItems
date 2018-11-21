@@ -63,19 +63,21 @@ public final class Config {
 	private static final ConfigValues defaultValues = new ConfigValues();
 	private static final ConfigValues values = new ConfigValues();
 	@Nullable
-	private static String modNameFormatOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
+	private static String modNameFormatOverride; // when we detect another mod is adding mod names to tooltips, use its
+													// formatting
 
 	// item blacklist
 	private static final Set<String> itemBlacklist = new HashSet<>();
-	private static final String[] defaultItemBlacklist = new String[]{};
+	private static final String[] defaultItemBlacklist = new String[] {};
 
 	private Config() {
 
 	}
 
 	public static boolean isOverlayEnabled() {
-		return values.overlayEnabled ||
-			KeyBindings.toggleOverlay.getKeyCode() == 0; // if there is no key binding to enable it, don't allow the overlay to be disabled
+		return values.overlayEnabled || KeyBindings.toggleOverlay.getKeyCode() == 0; // if there is no key binding to
+																						// enable it, don't allow the
+																						// overlay to be disabled
 	}
 
 	public static void toggleOverlayEnabled() {
@@ -110,7 +112,8 @@ public final class Config {
 			if (worldConfig != null) {
 				NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
 				final String worldCategory = ServerInfo.getWorldUid(networkManager);
-				Property property = worldConfig.get(worldCategory, "cheatItemsEnabled", defaultValues.cheatItemsEnabled);
+				Property property = worldConfig.get(worldCategory, "cheatItemsEnabled",
+						defaultValues.cheatItemsEnabled);
 				property.set(values.cheatItemsEnabled);
 
 				if (worldConfig.hasChanged()) {
@@ -256,11 +259,44 @@ public final class Config {
 		return worldConfig;
 	}
 
-	public static String getSortOrder()
-	{
-		return values.itemSortlist;
+	// Call this function after an API call for a new sort option. 
+	public static void updateSortOrder() {
+		resetDefaultSortOrder();
+		if (IngredientListElementComparator.INSTANCE != null) {
+			setSortOrder(IngredientListElementComparator.getInclusiveSaveString());	
+		}		
 	}
 	
+	public static void resetDefaultSortOrder() {
+		defaultValues.itemSortlist = IngredientListElementComparator.initConfig();
+		Property property = config.get(CATEGORY_ADVANCED, "itemSortList", defaultValues.itemSortlist);
+		property.setDefaultValue(defaultValues.itemSortlist);
+	}
+
+	public static boolean setSortOrder(String sortOrder) {
+		if (values.itemSortlist.equals(sortOrder)) {
+			return false;
+		} else {
+			values.itemSortlist = sortOrder;
+			if (IngredientListElementComparator.INSTANCE != null) {
+				// Reset the list so the user can reset the order and the comparator knows to
+				// load it. Do not load now because other mods may add options between now and
+				// when it needs to test the list.
+				IngredientListElementComparator.clearList();
+			}
+			Property property = config.get(CATEGORY_ADVANCED, "itemSortList", defaultValues.itemSortlist);
+			property.set(values.itemSortlist);
+			
+			// This does not reset the cached filters, needsReload being true works its way
+			// back to what needs to happen, ultimately IngredientFilter.modesChanged()
+			return true;
+		}
+	}
+
+	public static String getSortOrder() {
+		return values.itemSortlist;
+	}
+
 	public static void preInit(FMLPreInitializationEvent event) {
 
 		File jeiConfigurationDir = new File(event.getModConfigurationDirectory(), Constants.MOD_ID);
@@ -352,17 +388,24 @@ public final class Config {
 			config.setEnum("oreDictSearchMode", CATEGORY_SEARCH, defaultValues.oreDictSearchMode, searchModes);
 		}
 
-		values.modNameSearchMode = config.getEnum("modNameSearchMode", CATEGORY_SEARCH, defaultValues.modNameSearchMode, searchModes);
-		values.tooltipSearchMode = config.getEnum("tooltipSearchMode", CATEGORY_SEARCH, defaultValues.tooltipSearchMode, searchModes);
-		values.oreDictSearchMode = config.getEnum("oreDictSearchMode", CATEGORY_SEARCH, defaultValues.oreDictSearchMode, searchModes);
-		values.creativeTabSearchMode = config.getEnum("creativeTabSearchMode", CATEGORY_SEARCH, defaultValues.creativeTabSearchMode, searchModes);
-		values.colorSearchMode = config.getEnum("colorSearchMode", CATEGORY_SEARCH, defaultValues.colorSearchMode, searchModes);
-		values.resourceIdSearchMode = config.getEnum("resourceIdSearchMode", CATEGORY_SEARCH, defaultValues.resourceIdSearchMode, searchModes);
+		values.modNameSearchMode = config.getEnum("modNameSearchMode", CATEGORY_SEARCH, defaultValues.modNameSearchMode,
+				searchModes);
+		values.tooltipSearchMode = config.getEnum("tooltipSearchMode", CATEGORY_SEARCH, defaultValues.tooltipSearchMode,
+				searchModes);
+		values.oreDictSearchMode = config.getEnum("oreDictSearchMode", CATEGORY_SEARCH, defaultValues.oreDictSearchMode,
+				searchModes);
+		values.creativeTabSearchMode = config.getEnum("creativeTabSearchMode", CATEGORY_SEARCH,
+				defaultValues.creativeTabSearchMode, searchModes);
+		values.colorSearchMode = config.getEnum("colorSearchMode", CATEGORY_SEARCH, defaultValues.colorSearchMode,
+				searchModes);
+		values.resourceIdSearchMode = config.getEnum("resourceIdSearchMode", CATEGORY_SEARCH,
+				defaultValues.resourceIdSearchMode, searchModes);
 		if (config.getCategory(CATEGORY_SEARCH).hasChanged()) {
 			needsReload = true;
 		}
 
-		values.searchAdvancedTooltips = config.getBoolean("searchAdvancedTooltips", CATEGORY_SEARCH, defaultValues.searchAdvancedTooltips);
+		values.searchAdvancedTooltips = config.getBoolean("searchAdvancedTooltips", CATEGORY_SEARCH,
+				defaultValues.searchAdvancedTooltips);
 
 		ConfigCategory categoryAdvanced = config.getCategory(CATEGORY_ADVANCED);
 		categoryAdvanced.remove("nbtKeyIgnoreList");
@@ -373,13 +416,16 @@ public final class Config {
 		categoryAdvanced.remove("colorSearchEnabled");
 		categoryAdvanced.remove("maxSubtypes");
 
-		values.centerSearchBarEnabled = config.getBoolean(CATEGORY_ADVANCED, "centerSearchBarEnabled", defaultValues.centerSearchBarEnabled);
+		values.centerSearchBarEnabled = config.getBoolean(CATEGORY_ADVANCED, "centerSearchBarEnabled",
+				defaultValues.centerSearchBarEnabled);
 
 		values.giveMode = config.getEnum("giveMode", CATEGORY_ADVANCED, defaultValues.giveMode, GiveMode.values());
 
-		values.maxColumns = config.getInt("maxColumns", CATEGORY_ADVANCED, defaultValues.maxColumns, smallestNumColumns, largestNumColumns);
+		values.maxColumns = config.getInt("maxColumns", CATEGORY_ADVANCED, defaultValues.maxColumns, smallestNumColumns,
+				largestNumColumns);
 
-		values.maxRecipeGuiHeight = config.getInt("maxRecipeGuiHeight", CATEGORY_ADVANCED, defaultValues.maxRecipeGuiHeight, minRecipeGuiHeight, maxRecipeGuiHeight);
+		values.maxRecipeGuiHeight = config.getInt("maxRecipeGuiHeight", CATEGORY_ADVANCED,
+				defaultValues.maxRecipeGuiHeight, minRecipeGuiHeight, maxRecipeGuiHeight);
 
 		updateModNameFormat(config);
 
@@ -390,18 +436,16 @@ public final class Config {
 		}
 
 		{
-			//This also loads up the comparators.
+			// This also loads up the comparators.
+			// This value needs to be reset after a mod adds a comparator.
 			defaultValues.itemSortlist = IngredientListElementComparator.initConfig();
-			Property property = config.get(CATEGORY_ADVANCED, "itemSortList", defaultValues.itemSortlist);			
-			if (IngredientListElementComparator.INSTANCE != null) {
-				IngredientListElementComparator.loadConfig(property.getString());
-			}
-			
-			if (categoryAdvanced.get("itemSortList").hasChanged()) {
+			Property property = config.get(CATEGORY_ADVANCED, "itemSortList", defaultValues.itemSortlist);
+
+			if (setSortOrder(property.getString())) {
 				needsReload = true;
 			}
 		}
-		
+
 		final boolean configChanged = config.hasChanged();
 		if (configChanged) {
 			config.save();
@@ -418,7 +462,8 @@ public final class Config {
 			validValues[i] = formatting.getFriendlyName().toLowerCase(Locale.ENGLISH);
 			i++;
 		}
-		Property property = config.getString("modNameFormat", CATEGORY_ADVANCED, defaultModNameFormatFriendly, validValues);
+		Property property = config.getString("modNameFormat", CATEGORY_ADVANCED, defaultModNameFormatFriendly,
+				validValues);
 		boolean showInGui = !isModNameFormatOverrideActive();
 		property.setShowInGui(showInGui);
 		String modNameFormatFriendly = property.getString();
@@ -448,7 +493,8 @@ public final class Config {
 		}
 		itemBlacklistConfig.addCategory(CATEGORY_ADVANCED);
 
-		String[] itemBlacklistArray = itemBlacklistConfig.getStringList("itemBlacklist", CATEGORY_ADVANCED, defaultItemBlacklist);
+		String[] itemBlacklistArray = itemBlacklistConfig.getStringList("itemBlacklist", CATEGORY_ADVANCED,
+				defaultItemBlacklist);
 		itemBlacklist.clear();
 		Collections.addAll(itemBlacklist, itemBlacklistArray);
 
@@ -503,7 +549,8 @@ public final class Config {
 		searchColorsConfig.addCategory(CATEGORY_SEARCH_COLORS);
 
 		final String[] searchColorDefaults = ColorGetter.getColorDefaults();
-		final String[] searchColors = searchColorsConfig.getStringList("searchColors", CATEGORY_SEARCH_COLORS, searchColorDefaults);
+		final String[] searchColors = searchColorsConfig.getStringList("searchColors", CATEGORY_SEARCH_COLORS,
+				searchColorDefaults);
 
 		final ImmutableMap.Builder<Color, String> searchColorsMapBuilder = ImmutableMap.builder();
 		for (String entry : searchColors) {
@@ -546,17 +593,22 @@ public final class Config {
 		}
 	}
 
-	public static <V> void addIngredientToConfigBlacklist(IngredientFilter ingredientFilter, IIngredientRegistry ingredientRegistry, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
+	public static <V> void addIngredientToConfigBlacklist(IngredientFilter ingredientFilter,
+			IIngredientRegistry ingredientRegistry, V ingredient, IngredientBlacklistType blacklistType,
+			IIngredientHelper<V> ingredientHelper) {
 		IIngredientType<V> ingredientType = ingredientRegistry.getIngredientType(ingredient);
-		IIngredientListElement<V> element = IngredientListElementFactory.createElement(ingredientRegistry, ingredientType, ingredient, ForgeModIdHelper.getInstance());
+		IIngredientListElement<V> element = IngredientListElementFactory.createElement(ingredientRegistry,
+				ingredientType, ingredient, ForgeModIdHelper.getInstance());
 		Preconditions.checkNotNull(element, "Failed to create element for blacklist");
 
 		// combine item-level blacklist into wildcard-level ones
 		if (blacklistType == IngredientBlacklistType.ITEM) {
 			final String uid = getIngredientUid(ingredient, IngredientBlacklistType.ITEM, ingredientHelper);
-			List<IIngredientListElement<V>> elementsToBeBlacklisted = ingredientFilter.getMatches(element, (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD));
+			List<IIngredientListElement<V>> elementsToBeBlacklisted = ingredientFilter.getMatches(element,
+					(input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD));
 			if (areAllBlacklisted(elementsToBeBlacklisted, uid, IngredientBlacklistType.ITEM)) {
-				if (addIngredientToConfigBlacklist(ingredientFilter, element, ingredient, IngredientBlacklistType.WILDCARD, ingredientHelper)) {
+				if (addIngredientToConfigBlacklist(ingredientFilter, element, ingredient,
+						IngredientBlacklistType.WILDCARD, ingredientHelper)) {
 					updateBlacklist();
 				}
 				return;
@@ -567,12 +619,15 @@ public final class Config {
 		}
 	}
 
-	private static <V> boolean addIngredientToConfigBlacklist(IngredientFilter ingredientFilter, IIngredientListElement<V> element, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
+	private static <V> boolean addIngredientToConfigBlacklist(IngredientFilter ingredientFilter,
+			IIngredientListElement<V> element, V ingredient, IngredientBlacklistType blacklistType,
+			IIngredientHelper<V> ingredientHelper) {
 		boolean updated = false;
 
 		// remove lower-level blacklist entries when a higher-level one is added
 		if (blacklistType == IngredientBlacklistType.WILDCARD) {
-			List<IIngredientListElement<V>> elementsToBeBlacklisted = ingredientFilter.getMatches(element, (input) -> getIngredientUid(input, blacklistType));
+			List<IIngredientListElement<V>> elementsToBeBlacklisted = ingredientFilter.getMatches(element,
+					(input) -> getIngredientUid(input, blacklistType));
 			for (IIngredientListElement<V> elementToBeBlacklisted : elementsToBeBlacklisted) {
 				String uid = getIngredientUid(elementToBeBlacklisted, IngredientBlacklistType.ITEM);
 				updated |= itemBlacklist.remove(uid);
@@ -584,7 +639,8 @@ public final class Config {
 		return updated;
 	}
 
-	private static <V> boolean areAllBlacklisted(List<IIngredientListElement<V>> elements, String newUid, IngredientBlacklistType blacklistType) {
+	private static <V> boolean areAllBlacklisted(List<IIngredientListElement<V>> elements, String newUid,
+			IngredientBlacklistType blacklistType) {
 		for (IIngredientListElement<V> element : elements) {
 			String uid = getIngredientUid(element, blacklistType);
 			if (!uid.equals(newUid) && !itemBlacklist.contains(uid)) {
@@ -594,22 +650,28 @@ public final class Config {
 		return true;
 	}
 
-	public static <V> void removeIngredientFromConfigBlacklist(IngredientFilter ingredientFilter, IIngredientRegistry ingredientRegistry, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
+	public static <V> void removeIngredientFromConfigBlacklist(IngredientFilter ingredientFilter,
+			IIngredientRegistry ingredientRegistry, V ingredient, IngredientBlacklistType blacklistType,
+			IIngredientHelper<V> ingredientHelper) {
 		IIngredientType<V> ingredientType = ingredientRegistry.getIngredientType(ingredient);
-		IIngredientListElement<V> element = IngredientListElementFactory.createElement(ingredientRegistry, ingredientType, ingredient, ForgeModIdHelper.getInstance());
+		IIngredientListElement<V> element = IngredientListElementFactory.createElement(ingredientRegistry,
+				ingredientType, ingredient, ForgeModIdHelper.getInstance());
 		Preconditions.checkNotNull(element, "Failed to create element for blacklist");
 
 		boolean updated = false;
 
-		// deconstruct any mod-id blacklists into lower-level ones first. mod-id blacklist is deprecated
+		// deconstruct any mod-id blacklists into lower-level ones first. mod-id
+		// blacklist is deprecated
 		{
 			final String modUid = getIngredientUid(ingredient, IngredientBlacklistType.MOD_ID, ingredientHelper);
 			if (itemBlacklist.contains(modUid)) {
 				updated = true;
 				itemBlacklist.remove(modUid);
-				List<IIngredientListElement<V>> modMatches = ingredientFilter.getMatches(element, (input) -> getIngredientUid(input, IngredientBlacklistType.MOD_ID));
+				List<IIngredientListElement<V>> modMatches = ingredientFilter.getMatches(element,
+						(input) -> getIngredientUid(input, IngredientBlacklistType.MOD_ID));
 				for (IIngredientListElement<V> modMatch : modMatches) {
-					addIngredientToConfigBlacklist(ingredientFilter, modMatch, modMatch.getIngredient(), IngredientBlacklistType.ITEM, ingredientHelper);
+					addIngredientToConfigBlacklist(ingredientFilter, modMatch, modMatch.getIngredient(),
+							IngredientBlacklistType.ITEM, ingredientHelper);
 				}
 			}
 		}
@@ -620,14 +682,17 @@ public final class Config {
 			if (itemBlacklist.contains(wildUid)) {
 				updated = true;
 				itemBlacklist.remove(wildUid);
-				List<IIngredientListElement<V>> modMatches = ingredientFilter.getMatches(element, (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD));
+				List<IIngredientListElement<V>> modMatches = ingredientFilter.getMatches(element,
+						(input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD));
 				for (IIngredientListElement<V> modMatch : modMatches) {
-					addIngredientToConfigBlacklist(ingredientFilter, modMatch, modMatch.getIngredient(), IngredientBlacklistType.ITEM, ingredientHelper);
+					addIngredientToConfigBlacklist(ingredientFilter, modMatch, modMatch.getIngredient(),
+							IngredientBlacklistType.ITEM, ingredientHelper);
 				}
 			}
 		} else if (blacklistType == IngredientBlacklistType.WILDCARD) {
 			// remove any item-level blacklist on items that match this wildcard
-			List<IIngredientListElement<V>> modMatches = ingredientFilter.getMatches(element, (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD));
+			List<IIngredientListElement<V>> modMatches = ingredientFilter.getMatches(element,
+					(input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD));
 			for (IIngredientListElement<V> modMatch : modMatches) {
 				final String uid = getIngredientUid(modMatch, IngredientBlacklistType.ITEM);
 				updated |= itemBlacklist.remove(uid);
@@ -650,12 +715,14 @@ public final class Config {
 		return false;
 	}
 
-	public static <V> boolean isIngredientOnConfigBlacklist(V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
+	public static <V> boolean isIngredientOnConfigBlacklist(V ingredient, IngredientBlacklistType blacklistType,
+			IIngredientHelper<V> ingredientHelper) {
 		final String uid = getIngredientUid(ingredient, blacklistType, ingredientHelper);
 		return itemBlacklist.contains(uid);
 	}
 
-	private static <V> String getIngredientUid(@Nullable IIngredientListElement<V> element, IngredientBlacklistType blacklistType) {
+	private static <V> String getIngredientUid(@Nullable IIngredientListElement<V> element,
+			IngredientBlacklistType blacklistType) {
 		if (element == null) {
 			return "";
 		}
@@ -664,16 +731,17 @@ public final class Config {
 		return getIngredientUid(ingredient, blacklistType, ingredientHelper);
 	}
 
-	private static <V> String getIngredientUid(V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
+	private static <V> String getIngredientUid(V ingredient, IngredientBlacklistType blacklistType,
+			IIngredientHelper<V> ingredientHelper) {
 		switch (blacklistType) {
-			case ITEM:
-				return ingredientHelper.getUniqueId(ingredient);
-			case WILDCARD:
-				return ingredientHelper.getWildcardId(ingredient);
-			case MOD_ID:
-				return ingredientHelper.getModId(ingredient);
-			default:
-				throw new IllegalStateException("Unknown blacklist type: " + blacklistType);
+		case ITEM:
+			return ingredientHelper.getUniqueId(ingredient);
+		case WILDCARD:
+			return ingredientHelper.getWildcardId(ingredient);
+		case MOD_ID:
+			return ingredientHelper.getModId(ingredient);
+		default:
+			throw new IllegalStateException("Unknown blacklist type: " + blacklistType);
 		}
 	}
 
@@ -681,16 +749,19 @@ public final class Config {
 	 * https://stackoverflow.com/questions/6701948/efficient-way-to-compare-version-strings-in-java
 	 * Compares two version strings.
 	 *
-	 * Use this instead of String.compareTo() for a non-lexicographical
-	 * comparison that works for version strings. e.g. "1.10".compareTo("1.6").
+	 * Use this instead of String.compareTo() for a non-lexicographical comparison
+	 * that works for version strings. e.g. "1.10".compareTo("1.6").
 	 *
 	 * note It does not work if "1.10" is supposed to be equal to "1.10.0".
 	 *
-	 * @param str1 a string of ordinal numbers separated by decimal points.
-	 * @param str2 a string of ordinal numbers separated by decimal points.
-	 * @return The result is a negative integer if str1 is _numerically_ less than str2.
-	 *         The result is a positive integer if str1 is _numerically_ greater than str2.
-	 *         The result is zero if the strings are _numerically_ equal.
+	 * @param str1
+	 *            a string of ordinal numbers separated by decimal points.
+	 * @param str2
+	 *            a string of ordinal numbers separated by decimal points.
+	 * @return The result is a negative integer if str1 is _numerically_ less than
+	 *         str2. The result is a positive integer if str1 is _numerically_
+	 *         greater than str2. The result is zero if the strings are
+	 *         _numerically_ equal.
 	 */
 	private static int versionCompare(String str1, String str2) {
 		String[] vals1 = str1.split("\\.");
