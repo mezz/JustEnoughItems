@@ -1,6 +1,5 @@
 package mezz.jei.config;
 
-import javax.annotation.Nullable;
 import java.awt.Color;
 import java.io.File;
 import java.util.Collections;
@@ -10,8 +9,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+
 import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -58,6 +60,8 @@ public final class Config {
 	private static LocalizedConfiguration itemBlacklistConfig;
 	@Nullable
 	private static LocalizedConfiguration searchColorsConfig;
+  @Nullable
+  private static File bookmarkFile;
 
 	private static final ConfigValues defaultValues = new ConfigValues();
 	private static final ConfigValues values = new ConfigValues();
@@ -255,6 +259,11 @@ public final class Config {
 		return worldConfig;
 	}
 
+  @Nullable
+  public static File getBookmarkFile() {
+    return bookmarkFile;
+  }
+
 	public static void preInit(FMLPreInitializationEvent event) {
 
 		File jeiConfigurationDir = new File(event.getModConfigurationDirectory(), Constants.MOD_ID);
@@ -274,6 +283,7 @@ public final class Config {
 		final File itemBlacklistConfigFile = new File(jeiConfigurationDir, "itemBlacklist.cfg");
 		final File searchColorsConfigFile = new File(jeiConfigurationDir, "searchColors.cfg");
 		final File worldConfigFile = new File(jeiConfigurationDir, "worldSettings.cfg");
+    bookmarkFile = new File(jeiConfigurationDir, "bookmarks.ini");
 		worldConfig = new Configuration(worldConfigFile, "0.1.0");
 		config = new LocalizedConfiguration(configKeyPrefix, configFile, "0.4.0");
 		itemBlacklistConfig = new LocalizedConfiguration(configKeyPrefix, itemBlacklistConfigFile, "0.1.0");

@@ -1,12 +1,18 @@
 package mezz.jei.startup;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import com.google.common.base.Stopwatch;
+
 import mezz.jei.Internal;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.gui.IGhostIngredientHandler;
 import mezz.jei.api.gui.IGuiScreenHandler;
+import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.Config;
 import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.gui.ingredients.IIngredientListElement;
@@ -25,10 +31,6 @@ import mezz.jei.runtime.SubtypeRegistry;
 import mezz.jei.util.Log;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.ProgressManager;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 public class JeiStarter {
 	private boolean started;
@@ -89,6 +91,10 @@ public class JeiStarter {
 		timer.stop();
 
 		stackHelper.disableUidCache();
+
+    BookmarkList mookmarkList = new BookmarkList();
+    mookmarkList.loadBookmarks();
+    Internal.setBookmarkList(mookmarkList);
 
 		sendRuntime(plugins, jeiRuntime);
 
