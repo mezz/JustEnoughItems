@@ -98,6 +98,27 @@ public final class Config {
 		MinecraftForge.EVENT_BUS.post(new OverlayToggleEvent(values.overlayEnabled));
 	}
 
+  public static boolean isBookmarkOverlayEnabled() {
+    return isOverlayEnabled() && values.overlayEnabled;
+  }
+
+  public static void toggleBookmarkEnabled() {
+    values.bookmarkOverlayEnabled = !values.bookmarkOverlayEnabled;
+
+    if (worldConfig != null) {
+      NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
+      final String worldCategory = ServerInfo.getWorldUid(networkManager);
+      Property property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);
+      property.set(values.bookmarkOverlayEnabled);
+
+      if (worldConfig.hasChanged()) {
+        worldConfig.save();
+      }
+    }
+
+    MinecraftForge.EVENT_BUS.post(new BookmarkOverlayToggleEvent(values.bookmarkOverlayEnabled));
+  }
+
 	public static boolean isCheatItemsEnabled() {
 		return values.cheatItemsEnabled;
 	}
@@ -475,6 +496,11 @@ public final class Config {
 		if (property.hasChanged()) {
 			MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.hideModeEnabled));
 		}
+
+    property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);
+    property.setLanguageKey("config.jei.interface.bookmarkOverlayEnabled");
+    property.setComment(Translator.translateToLocal("config.jei.interface.bookmarkOverlayEnabled.comment"));
+    values.bookmarkOverlayEnabled = property.getBoolean();
 
 		property = worldConfig.get(worldCategory, "filterText", defaultValues.filterText);
 		property.setShowInGui(false);

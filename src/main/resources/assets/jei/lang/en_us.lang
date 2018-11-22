@@ -40,6 +40,8 @@ key.jei.recipeBack=Show Previously Viewed Recipe
 key.jei.toggleCheatMode=Toggle Cheating Mode
 key.jei.previousPage=Show Previous Page
 key.jei.nextPage=Show Next Page
+key.jei.bookmark=Bookmark (add/remove)
+key.jei.toggleBookmarkOverlay=Show/Hide Bookmarks
 
 # Config
 config.jei.default=Default
@@ -58,6 +60,9 @@ config.jei.interface=Interface
 config.jei.interface.comment=Options relating to the User Interface.
 config.jei.interface.overlayEnabled=Show Ingredient List
 config.jei.interface.overlayEnabled.comment=Show the list of ingredients next to open guis.
+
+config.jei.interface.bookmarkOverlayEnabled=Show Bookmarks
+config.jei.interface.bookmarkOverlayEnabled.comment=Show the list of bookmarks next to open guis.
 
 config.jei.search=Search Options
 config.jei.search.comment=Options relating to the search bar.

@@ -1,11 +1,16 @@
 package mezz.jei.input;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IFocus;
@@ -26,8 +31,6 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
 public class InputHandler {
 	private final RecipeRegistry recipeRegistry;
@@ -48,6 +51,7 @@ public class InputHandler {
 		this.showsRecipeFocuses.add(recipesGui);
 		this.showsRecipeFocuses.add(ingredientListOverlay);
 		this.showsRecipeFocuses.add(new GuiContainerWrapper());
+    // TODO add bookmark list gui
 	}
 
 	/**
@@ -236,13 +240,22 @@ public class InputHandler {
 	private boolean handleFocusKeybinds(int eventKey) {
 		final boolean showRecipe = KeyBindings.showRecipe.isActiveAndMatches(eventKey);
 		final boolean showUses = KeyBindings.showUses.isActiveAndMatches(eventKey);
-		if (showRecipe || showUses) {
+    final boolean bookmark = KeyBindings.bookmark.isActiveAndMatches(eventKey);
+		if (showRecipe || showUses || bookmark) {
 			IClickedIngredient<?> clicked = getIngredientUnderMouseForKey(MouseHelper.getX(), MouseHelper.getY());
 			if (clicked != null) {
+        if (bookmark) {
+          if (Internal.getBookmarkList().get().contains(clicked.getValue())) {
+            return Internal.getBookmarkList().remove(clicked.getValue());
+          } else {
+            return Internal.getBookmarkList().add(clicked.getValue());
+          }
+        } else {
 				IFocus.Mode mode = showRecipe ? IFocus.Mode.OUTPUT : IFocus.Mode.INPUT;
 				recipesGui.show(new Focus<Object>(mode, clicked.getValue()));
 				clicked.onClickHandled();
 				return true;
+        }
 			}
 		}
 		return false;
