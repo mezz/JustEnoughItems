@@ -90,7 +90,7 @@ public class ConfigButton {
 			} else {
 				if (minecraft.currentScreen != null) {
 					GuiScreen configScreen = new JEIModConfigGui(minecraft.currentScreen);
-					parent.updateScreen(configScreen);
+					parent.updateScreen(configScreen, false);
 					minecraft.displayGuiScreen(configScreen);
 				}
 			}
