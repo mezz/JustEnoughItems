@@ -7,15 +7,13 @@ import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import net.minecraft.item.ItemStack;
 
 /**
- * The main class to implement to create a JEI plugin. Everything communicated
- * between a mod and JEI is through this class. IModPlugins must have the
- * {@link JEIPlugin} annotation to get loaded by JEI.
+ * The main class to implement to create a JEI plugin. Everything communicated between a mod and JEI is through this class. 
+ * IModPlugins must have the {@link JEIPlugin} annotation to get loaded by JEI.
  */
 public interface IModPlugin {
 
 	/**
-	 * If your item has subtypes that depend on NBT or capabilities, use this to
-	 * help JEI identify those subtypes correctly.
+	 * If your item has subtypes that depend on NBT or capabilities, use this to help JEI identify those subtypes correctly.
 	 *
 	 * @since JEI 3.12.1
 	 */
@@ -33,8 +31,8 @@ public interface IModPlugin {
 	}
 
 	/**
-	 * Register the categories handled by this plugin. These are registered before
-	 * recipes so they can be checked for validity.
+	 * Register the categories handled by this plugin. 
+	 * These are registered before recipes so they can be checked for validity.
 	 *
 	 * @since JEI 4.5.0
 	 */
@@ -50,25 +48,12 @@ public interface IModPlugin {
 	}
 
 	/**
-	 * Called when jei's runtime features are available, after all mods have
-	 * registered.
+	 * Called when jei's runtime features are available, after all mods have registered.
 	 *
 	 * @since JEI 2.23.0
 	 */
 	default void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 
-	}
-
-	/**
-	 * Register additional sorting option.
-	 *
-	 * @since JEI 4.?.0
-	 */
-	default void registerSorter(String name, Comparator<ItemStack> comparator) {
-		// The JEI side needs to update the default config value and ensure the sorter
-		// is in the current value (add to the end.) Otherwise, it will be really hard
-		// for the user to discover the options. Call Config.updateSortOrder after the
-		// API call is complete.
 	}
 
 }

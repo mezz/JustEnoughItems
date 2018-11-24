@@ -19,6 +19,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -144,6 +145,14 @@ public interface IModRegistry {
 	 * @since JEI 3.12.0
 	 */
 	void addRecipeRegistryPlugin(IRecipeRegistryPlugin recipeRegistryPlugin);
+	
+	/**
+	 * Register your own sorting option here.
+	 *
+	 * @since JEI 4.?.0
+	 */
+	void addIngredientListSorter(String name, Comparator<ItemStack> comparator);
+	
 
 	// DEPRECATED BELOW
 

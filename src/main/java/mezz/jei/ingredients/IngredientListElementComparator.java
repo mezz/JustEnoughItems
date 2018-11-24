@@ -12,6 +12,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemHoe;
+import net.minecraft.item.ItemShears;
 import scala.Int;
 import java.util.*;
 
@@ -100,6 +101,10 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 	public static int compareInt(int a, int b) {
 		return a == b ? 0 : a < b ? -1 : 1;
 	}
+	
+	public static int compareDouble(double a, double b) {
+		return b > a ? -1 : (b < a ? 1 : 0);
+	}
 
 	public static void add(String name, Comparator<ItemStack> comparator) {
 		SortEntry existingEntry = find(name);
@@ -134,16 +139,34 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 
 		// Don't load the entries list twice.
 		areDefaultEntriesLoaded = true;
-
+		
+		//The order these are called sets the default order.
+		addToolComparator();
+		addMeleeComparator();
+		addArmorComparator();
+		addMinecraftComparator();
+		addModComparator();
+		addNameComparator();
+		addDamageComparator();
+		addIdComparator();
+		addDefaultOrderComparator();
+		
+		
+		return getSaveString(entries); // Default value
+	}
+	
+	private static void addMinecraftComparator() {
 		addListElementComparison("minecraft", new Comparator<IIngredientListElement>() {
 			@Override
 			public int compare(IIngredientListElement o1, IIngredientListElement o2) {
-				boolean isMinecraftool1 = Constants.MINECRAFT_NAME.equals(o1.getModNameForSorting());
-				boolean isMinecraftool2 = Constants.MINECRAFT_NAME.equals(o2.getModNameForSorting());
-				return isMinecraftool1 == isMinecraftool2 ? 0 : isMinecraftool1 ? -1 : 1;
+				boolean isMinecraft1 = Constants.MINECRAFT_NAME.equals(o1.getModNameForSorting());
+				boolean isMinecraft2 = Constants.MINECRAFT_NAME.equals(o2.getModNameForSorting());
+				return isMinecraft1 == isMinecraft2 ? 0 : isMinecraft1 ? -1 : 1;
 			}
 		});
-
+	}
+	
+	private static void addModComparator() {
 		addListElementComparison("mod", new Comparator<IIngredientListElement>() {
 			@Override
 			public int compare(IIngredientListElement o1, IIngredientListElement o2) {
@@ -159,7 +182,9 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 				return modName1.compareTo(modName2);
 			}
 		});
-
+	}
+	
+	private static void addIdComparator() {
 		add("id", new Comparator<ItemStack>() {
 			@Override
 			public int compare(ItemStack o1, ItemStack o2) {
@@ -169,6 +194,9 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 			}
 		});
 
+	}
+	
+	private static void addDefaultOrderComparator() {
 		addListElementComparison("default", new Comparator<IIngredientListElement>() {
 			@Override
 			public int compare(IIngredientListElement o1, IIngredientListElement o2) {
@@ -178,6 +206,9 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 			}
 		});
 
+	}
+	
+	private static void addDamageComparator() {
 		add("damage", new Comparator<ItemStack>() {
 			@Override
 			public int compare(ItemStack o1, ItemStack o2) {
@@ -187,6 +218,9 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 			}
 		});
 
+	}
+	
+	private static void addNameComparator() {
 		addListElementComparison("name", new Comparator<IIngredientListElement>() {
 			@Override
 			public int compare(IIngredientListElement o1, IIngredientListElement o2) {
@@ -198,57 +232,89 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 			}
 		});
 
+	}
+
+	private static String getToolClass(ItemStack itemStack, Item item)
+	{
+		if (itemStack == null || item == null) return "";
+		Set<String> toolClassSet = item.getToolClasses(itemStack);
+
+		if (toolClassSet.contains("sword")) {
+			//Swords are not "tools".
+			Set<String> newClassSet = new HashSet<String>();
+			for (String toolClass: toolClassSet)
+				if (toolClass != "sword")
+					newClassSet.add(toolClass);
+			toolClassSet = newClassSet;
+		}
+
+		//Minecraft hoes and shears don't have tool class names.
+		if (toolClassSet.isEmpty()) {
+			if (item instanceof ItemHoe) return "hoe";
+			if (item instanceof ItemShears) return "shears";
+			return "";
+		}
+		
+		//Get the only thing.
+		if (toolClassSet.size() == 1)
+			return (String) toolClassSet.toArray()[0];
+		
+		//We have a preferred type to list tools under, primarily the pickaxe for harvest level.
+		String[] prefOrder = {"pickaxe", "axe", "shovel", "hoe", "shears", "wrench"};
+		for (int i = 0; i < prefOrder.length; i++)
+			if (toolClassSet.contains(prefOrder[i])) 
+				return prefOrder[i];
+		
+		//Whatever happens to be the first thing:
+		return (String) toolClassSet.toArray()[0];
+	}
+	
+	private static void addToolComparator() {
 		addListElementComparison("tool", new Comparator<IIngredientListElement>() {
 			@Override
 			public int compare(IIngredientListElement o1, IIngredientListElement o2) {
 				ItemStack itemStack1 = getItemStack(o1);
 				ItemStack itemStack2 = getItemStack(o2);
-				if (itemStack1 == null || itemStack2 == null)
+				if (itemStack1 == null && itemStack2 == null)
 					return 0;
-				Item item1 = itemStack1.getItem();
-				Item item2 = itemStack2.getItem();
+				Item item1 = itemStack1 != null ? itemStack1.getItem() : null;
+				Item item2 = itemStack2 != null ? itemStack2.getItem() : null;
+
+				String toolClass1 = getToolClass(itemStack1, item1);
+				String toolClass2 = getToolClass(itemStack2, item2);
 				// These are ints so I can subtract for a comparison value later instead of
 				// booleans.
-				int isTool1 = (item1 instanceof ItemTool) ? 1 : 0;
-				int isTool2 = (item2 instanceof ItemTool) ? 1 : 0;
-				int isHoe1 = (item1 instanceof ItemHoe) ? 1 : 0;
-				int isHoe2 = (item2 instanceof ItemHoe) ? 1 : 0;
-				boolean isFakeTool1 = isTool1 != 0 || isHoe1 != 0;
-				boolean isFakeTool2 = isTool2 != 0 || isHoe2 != 0;
-				if (!isFakeTool1 || !isFakeTool2) {
-					return (isFakeTool2 ? 1 : 0) - (isFakeTool1 ? 1 : 0);
+				int isTool1 = toolClass1 != "" ? 1 : 0;
+				int isTool2 = toolClass2 != "" ? 1 : 0;
+				if (isTool1 == 0 || isTool2 == 0) {
+					//This should catch any instances where one of the stacks is null.
+					return isTool2 - isTool1;
 				} else if (isTool1 == 1 && isTool2 == 1) {
-					ItemTool tool1 = (ItemTool) item1;
-					ItemTool tool2 = (ItemTool) item2;
-					Set<String> toolClassSet1 = tool1.getToolClasses(itemStack1);
-					Set<String> toolClassSet2 = tool2.getToolClasses(itemStack2);
-					// Grab the first tool class from the list.
-					String toolClasses1 = toolClassSet1.isEmpty() ? "" : (String) toolClassSet1.toArray()[0];
-					String toolClasses2 = toolClassSet2.isEmpty() ? "" : (String) toolClassSet2.toArray()[0];
-					int toolClassComparison = toolClasses1.compareTo(toolClasses2);
+					int toolClassComparison = toolClass1.compareTo(toolClass2);
 					if (toolClassComparison != 0) {
 						return toolClassComparison;
 					}
 					// If they were the same type, sort with the better harvest level first.
-					int toolLevelComparison = tool2.getHarvestLevel(itemStack2, toolClasses2, null, null)
-							- tool1.getHarvestLevel(itemStack1, toolClasses1, null, null);
+					int harvestLevel1 = item1.getHarvestLevel(itemStack1, toolClass1, null, null);
+					int harvestLevel2 = item2.getHarvestLevel(itemStack2, toolClass2, null, null);
+					int toolLevelComparison = harvestLevel2 - harvestLevel1;
 					if (toolLevelComparison != 0) {
-						return toolLevelComparison;
+						return compareInt(harvestLevel2 , harvestLevel1);
 					}
-
-				} else if (isTool1 == 1 || isTool2 == 1) {
-					return isTool2 - isTool1;
 				}
 
 				// If all else is the same, sort the highest-durability tool first.
 				// No durability is treated as basically infinite.
 				int durability1 = itemStack1.getMaxDamage() <= 0 ? Int.MaxValue() : itemStack1.getMaxDamage();
 				int durability2 = itemStack2.getMaxDamage() <= 0 ? Int.MaxValue() : itemStack2.getMaxDamage();
-				return durability2 - durability1;
+				return compareInt(durability2 , durability1);
 
 			}
 		});
 
+	}
+	
+	private static void addMeleeComparator() {
 		// Sort by melee damage and speed (Sort by Tool first if you don't want swords
 		// and tools mixed together.
 		addListElementComparison("melee", new Comparator<IIngredientListElement>() {
@@ -256,20 +322,19 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 			public int compare(IIngredientListElement o1, IIngredientListElement o2) {
 				ItemStack itemStack1 = getItemStack(o1);
 				ItemStack itemStack2 = getItemStack(o2);
-				if (itemStack1 == null || itemStack2 == null)
+				if (itemStack1 == null && itemStack2 == null)
 					return 0;
 
-				Multimap<String, AttributeModifier> multimap1 = itemStack1
-						.getAttributeModifiers(EntityEquipmentSlot.MAINHAND);
-				Multimap<String, AttributeModifier> multimap2 = itemStack2
-						.getAttributeModifiers(EntityEquipmentSlot.MAINHAND);
+				Multimap<String, AttributeModifier> multimap1 = itemStack1 != null ? itemStack1.getAttributeModifiers(EntityEquipmentSlot.MAINHAND) : null;
+				Multimap<String, AttributeModifier> multimap2 = itemStack2 != null ? itemStack2.getAttributeModifiers(EntityEquipmentSlot.MAINHAND) : null;
+
 				final String attackDamageName = SharedMonsterAttributes.ATTACK_DAMAGE.getName();
 				final String attackSpeedName = SharedMonsterAttributes.ATTACK_SPEED.getName();
 
-				boolean hasDamage1 = multimap1.containsKey(attackDamageName);
-				boolean hasDamage2 = multimap2.containsKey(attackDamageName);
-				boolean hasSpeed1 = multimap1.containsKey(attackSpeedName);
-				boolean hasSpeed2 = multimap2.containsKey(attackSpeedName);
+				boolean hasDamage1 = itemStack1 != null ? multimap1.containsKey(attackDamageName) : false;
+				boolean hasDamage2 = itemStack2 != null ? multimap2.containsKey(attackDamageName) : false;
+				boolean hasSpeed1 = itemStack1 != null ? multimap1.containsKey(attackSpeedName) : false;
+				boolean hasSpeed2 = itemStack2 != null ? multimap2.containsKey(attackSpeedName) : false;
 
 				if (!hasDamage1 || !hasDamage2) {
 					return (hasDamage2 ? 1 : 0) - (hasDamage1 ? 1 : 0);
@@ -279,42 +344,45 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 					Double attackDamage1 = ((AttributeModifier) damageMap1.toArray()[0]).getAmount();
 					Double attackDamage2 = ((AttributeModifier) damageMap2.toArray()[0]).getAmount();
 					// This funny comparison is because Double == Double never seems to work.
-					int damageComparison = attackDamage1 > attackDamage2 ? -1 : (attackDamage1 < attackDamage2 ? 1 : 0);
+					int damageComparison = compareDouble(attackDamage2, attackDamage1);
 					if (damageComparison == 0 && hasSpeed1 && hasSpeed2) {
 						// Same damage, sort faster weapon first.
 						Collection<AttributeModifier> speedMap1 = multimap1.get(attackSpeedName);
 						Collection<AttributeModifier> speedMap2 = multimap2.get(attackSpeedName);
 						Double speed1 = ((AttributeModifier) speedMap1.toArray()[0]).getAmount();
 						Double speed2 = ((AttributeModifier) speedMap2.toArray()[0]).getAmount();
-						int speedComparison = speed1 > speed2 ? -1 : (speed1 < speed2 ? 1 : 0);
+						int speedComparison = compareDouble(speed2, speed1);
 						if (speedComparison != 0)
 							return speedComparison;
 					} else if (damageComparison != 0) {
 						// Higher damage first.
 						return damageComparison;
 					}
+					// Most durability if everything else is the same.
+					int durability1 = itemStack1.getMaxDamage() <= 0 ? Int.MaxValue() : itemStack1.getMaxDamage();
+					int durability2 = itemStack2.getMaxDamage() <= 0 ? Int.MaxValue() : itemStack2.getMaxDamage();
+					return compareInt(durability2 , durability1);
 				}
-				// Most durability if everything else is the same.
-				int durability1 = itemStack1.getMaxDamage() <= 0 ? Int.MaxValue() : itemStack1.getMaxDamage();
-				int durability2 = itemStack2.getMaxDamage() <= 0 ? Int.MaxValue() : itemStack2.getMaxDamage();
-				return durability2 - durability1;
-
 			}
 		});
 
+	}
+	
+	private static void addArmorComparator() {
 		// Armor sorting, High to low AC.
 		addListElementComparison("armor", new Comparator<IIngredientListElement>() {
 			@Override
 			public int compare(IIngredientListElement o1, IIngredientListElement o2) {
 				ItemStack itemStack1 = getItemStack(o1);
 				ItemStack itemStack2 = getItemStack(o2);
-				if (itemStack1 == null || itemStack2 == null)
+				if (itemStack1 == null && itemStack2 == null)
 					return 0;
-				Item item1 = itemStack1.getItem();
-				Item item2 = itemStack2.getItem();
+				Item item1 = itemStack1 != null ? itemStack1.getItem() : null;
+				Item item2 = itemStack2 != null ? itemStack2.getItem() : null;
 				int isArmor1 = (item1 instanceof ItemArmor) ? 1 : 0;
 				int isArmor2 = (item2 instanceof ItemArmor) ? 1 : 0;
-				if (isArmor1 == 0 || isArmor2 == 0) {
+				if (isArmor1 == 0 || isArmor2 == 0) { 
+					//This should catch any instances where one of the stacks is null.
 					return isArmor2 - isArmor1;
 				} else {
 					ItemArmor a1 = (ItemArmor) item1;
@@ -329,12 +397,11 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 					// Most durability if everything else is the same.
 					int durability1 = itemStack1.getMaxDamage() <= 0 ? Int.MaxValue() : itemStack1.getMaxDamage();
 					int durability2 = itemStack2.getMaxDamage() <= 0 ? Int.MaxValue() : itemStack2.getMaxDamage();
-					return durability2 - durability1;
+					return compareInt(durability2 , durability1);
 				}
 			}
 		});
 
-		return getSaveString(entries); // Default value
 	}
 
 	private static <V> ItemStack getItemStack(IIngredientListElement<V> ingredientListElement) {
@@ -350,10 +417,12 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 		return getInclusiveSaveString(Config.getSortOrder());
 	}
 
-	// I'm not sure if API items will get added to the config file automatically.
-	// If they do, they'll be added before the static ones above.
-	// I think there will be a need to have the API update the config value for new
-	// options that aren't already in the string list.
+
+	/*
+	 * This is a non-destructive way to ensure all options are preserved
+	 * in the configuration of the sorting options.  Not all of them may
+	 * exist at all times as the mods are loaded (or removed/added).
+	 */
 	public static String getInclusiveSaveString(String savedList) {
 		if (savedList == null || savedList.length() == 0) {
 			return getSaveString(entries);
@@ -408,8 +477,7 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 	}
 
 	public static void clearList() {
-		// Next time the comparator function gets called, it will pull the order from
-		// the config.
+		// Next time the comparator function gets called, it will pull the order from the config.
 		list = new ArrayList<SortEntry>();
 	}
 }
