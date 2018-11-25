@@ -17,6 +17,7 @@ import mezz.jei.config.Config;
 import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
@@ -85,6 +86,7 @@ public class JeiStarter {
 		Map<Class, IGuiScreenHandler> guiScreenHandlers = modRegistry.getGuiScreenHandlers();
 		Map<Class, IGhostIngredientHandler> ghostIngredientHandlers = modRegistry.getGhostIngredientHandlers();
 		IngredientListOverlay ingredientListOverlay = new IngredientListOverlay(ingredientFilter);
+    LeftAreaDispatcher leftAreaDispatcher = new LeftAreaDispatcher();
 		RecipesGui recipesGui = new RecipesGui(recipeRegistry);
 		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, ingredientListOverlay, recipesGui, ingredientRegistry, advancedGuiHandlers, guiScreenHandlers, ghostIngredientHandlers, ingredientFilter);
 		Internal.setRuntime(jeiRuntime);
@@ -98,7 +100,7 @@ public class JeiStarter {
 
 		sendRuntime(plugins, jeiRuntime);
 
-		GuiEventHandler guiEventHandler = new GuiEventHandler(ingredientListOverlay, recipeRegistry);
+    GuiEventHandler guiEventHandler = new GuiEventHandler(leftAreaDispatcher, ingredientListOverlay, recipeRegistry);
 		Internal.setGuiEventHandler(guiEventHandler);
 		InputHandler inputHandler = new InputHandler(jeiRuntime, ingredientListOverlay);
 		Internal.setInputHandler(inputHandler);

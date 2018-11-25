@@ -40,8 +40,12 @@ key.jei.recipeBack=Show Previously Viewed Recipe
 key.jei.toggleCheatMode=Toggle Cheating Mode
 key.jei.previousPage=Show Previous Page
 key.jei.nextPage=Show Next Page
-key.jei.bookmark=Bookmark (add/remove)
+key.jei.bookmark=Add/Remove Bookmark
 key.jei.toggleBookmarkOverlay=Show/Hide Bookmarks
+
+# Bookmark GUI
+gui.jei.bookmarks.nokey=Edit your key bindings
+gui.jei.bookmarks.key="%s" to (un)bookmark
 
 # Config
 config.jei.default=Default

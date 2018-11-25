@@ -40,29 +40,44 @@ public class BookmarkList {
   }
 
   public boolean add(@Nonnull Object ingredient) {
+    if (!contains(ingredient)) {
+      list.add(normalize(ingredient));
+      saveBookmarks();
+      return true;
+    }
+    return false;
+  }
+
+  protected @Nonnull Object normalize(@Nonnull Object ingredient) {
     IIngredientHelper<Object> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredient);
     Object copy = LegacyUtil.getIngredientCopy(ingredient, ingredientHelper);
-    boolean hasProperEquals = copy.equals(ingredient);
-    // Normalize it
     if (copy instanceof ItemStack) {
       ((ItemStack) copy).setCount(1);
     } else if (copy instanceof FluidStack) {
       ((FluidStack) copy).amount = 1000;
     }
-    // Dupe-check it
-    if (!list.contains(copy)) {
-      if (!hasProperEquals) { // e.g. ItemStack
-        for (Object existing : list) {
-          if (existing != null && existing.getClass() == copy.getClass()) {
-            if (ingredientHelper.getUniqueId(existing).equals(ingredientHelper.getUniqueId(copy))) {
-              return false;
-            }
-          }
+    return copy;
+  }
+
+  public boolean contains(@Nonnull Object ingredient) {
+    if (list.isEmpty()) {
+      return false;
+    }
+    if (list.contains(ingredient)) {
+      return true;
+    }
+    Object normalized = normalize(ingredient);
+    if (list.contains(normalized)) {
+      return true;
+    }
+    // We cannot assume that ingredients have a working equals() implementation. Even ItemStack doesn't have one...
+    IIngredientHelper<Object> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(normalized);
+    for (Object existing : list) {
+      if (existing != null && existing.getClass() == normalized.getClass()) {
+        if (ingredientHelper.getUniqueId(existing).equals(ingredientHelper.getUniqueId(normalized))) {
+          return true;
         }
       }
-      list.add(copy);
-      saveBookmarks();
-      return true;
     }
     return false;
   }
