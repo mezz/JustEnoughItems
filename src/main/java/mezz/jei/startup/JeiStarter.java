@@ -102,7 +102,7 @@ public class JeiStarter {
 
     GuiEventHandler guiEventHandler = new GuiEventHandler(leftAreaDispatcher, ingredientListOverlay, recipeRegistry);
 		Internal.setGuiEventHandler(guiEventHandler);
-		InputHandler inputHandler = new InputHandler(jeiRuntime, ingredientListOverlay);
+    InputHandler inputHandler = new InputHandler(jeiRuntime, ingredientListOverlay, leftAreaDispatcher);
 		Internal.setInputHandler(inputHandler);
 
 		Config.checkForModNameFormatOverride();

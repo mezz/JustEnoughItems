@@ -59,31 +59,48 @@ public class BookmarkList {
     return copy;
   }
 
+  private static final int NOT_FOUND = -3;
+  private static final int FOUND_NORMALIZED = -2;
+  private static final int FOUND_ASIS = -1;
+
   public boolean contains(@Nonnull Object ingredient) {
+    return index(ingredient) != NOT_FOUND;
+  }
+
+  private int index(@Nonnull Object ingredient) {
     if (list.isEmpty()) {
-      return false;
+      return NOT_FOUND;
     }
     if (list.contains(ingredient)) {
-      return true;
+      return FOUND_ASIS;
     }
     Object normalized = normalize(ingredient);
     if (list.contains(normalized)) {
-      return true;
+      return FOUND_NORMALIZED;
     }
     // We cannot assume that ingredients have a working equals() implementation. Even ItemStack doesn't have one...
     IIngredientHelper<Object> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(normalized);
-    for (Object existing : list) {
+    for (int i = 0; i < list.size(); i++) {
+      Object existing = list.get(i);
       if (existing != null && existing.getClass() == normalized.getClass()) {
         if (ingredientHelper.getUniqueId(existing).equals(ingredientHelper.getUniqueId(normalized))) {
-          return true;
+          return i;
         }
       }
     }
-    return false;
+    return -3;
   }
 
   public boolean remove(@Nonnull Object ingredient) {
-    if (list.remove(ingredient)) {
+    int index = index(ingredient);
+    if (index != NOT_FOUND) {
+      if (index == FOUND_ASIS) {
+        list.remove(ingredient);
+      } else if (index == FOUND_NORMALIZED) {
+          list.remove(normalize(ingredient));
+      } else {
+        list.remove(index);
+      }
       saveBookmarks();
       return true;
     }

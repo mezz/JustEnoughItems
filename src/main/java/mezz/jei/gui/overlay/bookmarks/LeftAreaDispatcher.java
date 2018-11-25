@@ -9,44 +9,54 @@ import javax.annotation.Nullable;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IGuiProperties;
+import mezz.jei.config.Config;
+import mezz.jei.gui.PageNavigation;
 import mezz.jei.input.IClickedIngredient;
+import mezz.jei.input.IPaged;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.runtime.JeiRuntime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
-public class LeftAreaDispatcher implements IShowsRecipeFocuses {
+public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 
   private static final int BORDER_PADDING = 2;
+  private static final int NAVIGATION_HEIGHT = 20;
 
   private final @Nonnull List<ILeftAreaContent> content = new ArrayList<>();
   private int current = 0;
   private IGuiProperties guiProperties;
+  private @Nonnull Rectangle naviArea = new Rectangle();
   private @Nonnull Rectangle displayArea = new Rectangle();
+  private final @Nonnull PageNavigation navigation;
   private boolean canShow = false;
 
   public LeftAreaDispatcher() {
     content.add(new BookmarkOverlay(new Rectangle()));
+    navigation = new PageNavigation(this, false);
   }
 
   private boolean hasContent() {
     return current >= 0 && current < content.size();
   }
 
-  public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
+  public void drawScreen(@Nonnull Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
     if (canShow && hasContent()) {
       content.get(current).drawScreen(minecraft, mouseX, mouseY, partialTicks);
+      if (naviArea.height > 0) {
+        navigation.draw(minecraft, mouseX, mouseY, partialTicks);
+      }
     }
   }
 
-  public void drawOnForeground(GuiContainer gui, int mouseX, int mouseY) {
+  public void drawOnForeground(@Nonnull GuiContainer gui, int mouseX, int mouseY) {
     if (canShow && hasContent()) {
       content.get(current).drawOnForeground(gui, mouseX, mouseY);
     }
   }
 
-  public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
+  public void drawTooltips(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
     if (canShow && hasContent()) {
       content.get(current).drawTooltips(minecraft, mouseX, mouseY);
     }
@@ -54,7 +64,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses {
 
   public void updateScreen(@Nullable GuiScreen guiScreen) {
     canShow = false;
-    if (hasContent()) {
+    if (hasContent() && Config.isBookmarkOverlayEnabled()) {
       JeiRuntime runtime = Internal.getRuntime();
       if (runtime == null) {
         return;
@@ -64,8 +74,10 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses {
         guiProperties = null;
       } else if (!areGuiPropertiesEqual(guiProperties, currentGuiProperties)) {
         guiProperties = currentGuiProperties;
-        displayArea = getDisplayArea(currentGuiProperties);
+        makeDisplayArea();
         content.get(current).updateBounds(displayArea);
+        canShow = true;
+      } else {
         canShow = true;
       }
     }
@@ -77,12 +89,25 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses {
         && guiProperties1.getScreenWidth() == guiProperties2.getScreenWidth() && guiProperties1.getScreenHeight() == guiProperties2.getScreenHeight();
   }
 
-  private static @Nonnull Rectangle getDisplayArea(@Nonnull IGuiProperties guiProperties) {
+  private void makeDisplayArea() {
     final int x = BORDER_PADDING;
     final int y = BORDER_PADDING;
-    final int width = guiProperties.getGuiLeft() - x - BORDER_PADDING;
+    int width = guiProperties.getGuiLeft() - x - BORDER_PADDING;
     final int height = guiProperties.getScreenHeight() - y - BORDER_PADDING;
-    return new Rectangle(x, y, width, height);
+    if (guiProperties.getGuiClass() == mezz.jei.gui.recipes.RecipesGui.class) {
+      // TODO: JEI doesn't define an exclusion area for its own side-tabs at the moment
+      width -= 22;
+    }
+    displayArea = new Rectangle(x, y, width, height);
+    if (content.size() > 1) {
+      naviArea = new Rectangle(displayArea);
+      naviArea.height = NAVIGATION_HEIGHT;
+      displayArea.y += NAVIGATION_HEIGHT + BORDER_PADDING;
+      displayArea.height -= NAVIGATION_HEIGHT + BORDER_PADDING;
+      navigation.updateBounds(naviArea);
+    } else {
+      naviArea = new Rectangle();
+    }
   }
 
   @Override
@@ -100,6 +125,73 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses {
       return content.get(current).canSetFocusWithMouse();
     }
     return false;
+  }
+
+  public boolean handleMouseScrolled(int mouseX, int mouseY, int dWheel) {
+    if (canShow && hasContent()) {
+      if (displayArea.contains(mouseX, mouseY)) {
+        return content.get(current).handleMouseScrolled(mouseX, mouseY, dWheel);
+      } else if (naviArea.contains(mouseX, mouseY)) {
+        if (dWheel < 0) {
+          nextPage();
+        } else {
+          previousPage();
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
+    if (canShow && hasContent()) {
+      if (displayArea.contains(mouseX, mouseY)) {
+        return content.get(current).handleMouseClicked(mouseX, mouseY, mouseButton);
+      } else if (naviArea.contains(mouseX, mouseY)) {
+        return navigation.handleMouseClickedButtons(mouseX, mouseY);
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public boolean nextPage() {
+    current++;
+    if (current >= content.size()) {
+      current = 0;
+    }
+    navigation.updatePageState();
+    return true;
+  }
+
+  @Override
+  public boolean previousPage() {
+    current--;
+    if (current < 0) {
+      current = content.size();
+    }
+    navigation.updatePageState();
+    return true;
+  }
+
+  @Override
+  public boolean hasNext() {
+    return current < content.size() - 1;
+  }
+
+  @Override
+  public boolean hasPrevious() {
+    return current > 0;
+  }
+
+  @Override
+  public int getPageCount() {
+    return content.size();
+  }
+
+  @Override
+  public int getPageNumber() {
+    return current;
   }
 
 }

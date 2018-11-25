@@ -10,12 +10,16 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 
 public interface ILeftAreaContent extends IShowsRecipeFocuses {
 
-  void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float partialTicks);
+  void drawScreen(@Nonnull Minecraft minecraft, int mouseX, int mouseY, float partialTicks);
 
-  void drawOnForeground(GuiContainer gui, int mouseX, int mouseY);
+  void drawOnForeground(@Nonnull GuiContainer gui, int mouseX, int mouseY);
 
-  void drawTooltips(Minecraft minecraft, int mouseX, int mouseY);
+  void drawTooltips(@Nonnull Minecraft minecraft, int mouseX, int mouseY);
 
   void updateBounds(@Nonnull Rectangle area);
+
+  boolean handleMouseScrolled(int mouseX, int mouseY, int dWheel);
+
+  boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton);
 
 }

@@ -99,7 +99,7 @@ public final class Config {
 	}
 
   public static boolean isBookmarkOverlayEnabled() {
-    return isOverlayEnabled() && values.overlayEnabled;
+    return isOverlayEnabled() && values.bookmarkOverlayEnabled;
   }
 
   public static void toggleBookmarkEnabled() {

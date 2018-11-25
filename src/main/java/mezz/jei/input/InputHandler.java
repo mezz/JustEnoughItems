@@ -19,6 +19,7 @@ import mezz.jei.config.IngredientBlacklistType;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientFilter;
@@ -38,20 +39,22 @@ public class InputHandler {
 	private final IngredientFilter ingredientFilter;
 	private final RecipesGui recipesGui;
 	private final IngredientListOverlay ingredientListOverlay;
+  private final LeftAreaDispatcher leftAreaDispatcher;
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<>();
 	private final IntSet clickHandled = new IntArraySet();
 
-	public InputHandler(JeiRuntime runtime, IngredientListOverlay ingredientListOverlay) {
+  public InputHandler(JeiRuntime runtime, IngredientListOverlay ingredientListOverlay, LeftAreaDispatcher leftAreaDispatcher) {
 		this.recipeRegistry = runtime.getRecipeRegistry();
 		this.ingredientRegistry = runtime.getIngredientRegistry();
 		this.ingredientFilter = runtime.getIngredientFilter();
 		this.recipesGui = runtime.getRecipesGui();
 		this.ingredientListOverlay = ingredientListOverlay;
+    this.leftAreaDispatcher = leftAreaDispatcher;
 
 		this.showsRecipeFocuses.add(recipesGui);
 		this.showsRecipeFocuses.add(ingredientListOverlay);
+    this.showsRecipeFocuses.add(leftAreaDispatcher);
 		this.showsRecipeFocuses.add(new GuiContainerWrapper());
-    // TODO add bookmark list gui
 	}
 
 	/**
@@ -106,7 +109,7 @@ public class InputHandler {
 	}
 
 	private boolean handleMouseScroll(int dWheel, int mouseX, int mouseY) {
-		return ingredientListOverlay.handleMouseScrolled(mouseX, mouseY, dWheel);
+    return ingredientListOverlay.handleMouseScrolled(mouseX, mouseY, dWheel) || leftAreaDispatcher.handleMouseScrolled(mouseX, mouseY, dWheel);
 	}
 
 	private boolean handleMouseClick(GuiScreen guiScreen, int mouseButton, int mouseX, int mouseY) {
@@ -117,6 +120,9 @@ public class InputHandler {
 		if (ingredientListOverlay.handleMouseClicked(mouseX, mouseY, mouseButton)) {
 			return true;
 		}
+    if (leftAreaDispatcher.handleMouseClicked(mouseX, mouseY, mouseButton)) {
+      return true;
+    }
 
 		if (clicked != null && handleMouseClickedFocus(mouseButton, clicked)) {
 			return true;
@@ -234,6 +240,10 @@ public class InputHandler {
 			Config.toggleOverlayEnabled();
 			return false;
 		}
+    if (KeyBindings.toggleBookmarkOverlay.isActiveAndMatches(eventKey)) {
+      Config.toggleBookmarkEnabled();
+      return false;
+    }
 		return ingredientListOverlay.onGlobalKeyPressed(eventKey);
 	}
 
@@ -245,7 +255,7 @@ public class InputHandler {
 			IClickedIngredient<?> clicked = getIngredientUnderMouseForKey(MouseHelper.getX(), MouseHelper.getY());
 			if (clicked != null) {
         if (bookmark) {
-          if (Internal.getBookmarkList().get().contains(clicked.getValue())) {
+          if (Internal.getBookmarkList().contains(clicked.getValue())) {
             return Internal.getBookmarkList().remove(clicked.getValue());
           } else {
             return Internal.getBookmarkList().add(clicked.getValue());

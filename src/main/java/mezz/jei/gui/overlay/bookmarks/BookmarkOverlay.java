@@ -15,18 +15,20 @@ import org.lwjgl.input.Keyboard;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
-import mezz.jei.api.gui.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
+import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IPaged;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.runtime.JeiRuntime;
+import mezz.jei.util.CommandUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
@@ -82,7 +84,6 @@ public class BookmarkOverlay implements IPaged, IShowsRecipeFocuses, ILeftAreaCo
   public BookmarkOverlay(@Nonnull Rectangle area) {
     this.parentArea = area;
     navigation = new PageNavigation(this, false);
-    updateBounds(area);
   }
 
   @Override
@@ -101,27 +102,22 @@ public class BookmarkOverlay implements IPaged, IShowsRecipeFocuses, ILeftAreaCo
   }
 
   @Override
-  public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
+  public void drawScreen(@Nonnull Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
     renderBookmarks(mouseX, mouseY);
     renderNavigation(mouseX, mouseY);
     renderKeyHint(mouseX, mouseY);
   }
 
   @Override
-  public void drawOnForeground(GuiContainer gui, int mouseX, int mouseY) {
+  public void drawOnForeground(@Nonnull GuiContainer gui, int mouseX, int mouseY) {
+  }
+
+  @Override
+  public void drawTooltips(@Nonnull Minecraft minecraft, int mouseX, int mouseY) {
     if (canBeVisible && !screen.isEmpty()) {
       Bookmark bookmarkUnderMouse = getBookmarkUnderMouse(mouseX, mouseY);
       if (bookmarkUnderMouse != null) {
         drawHighlight(bookmarkUnderMouse.area.x, bookmarkUnderMouse.area.y, INGREDIENT_WIDTH, INGREDIENT_HEIGHT);
-      }
-    }
-  }
-
-  @Override
-  public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
-    if (canBeVisible && !screen.isEmpty()) {
-      Bookmark bookmarkUnderMouse = getBookmarkUnderMouse(mouseX, mouseY);
-      if (bookmarkUnderMouse != null) {
         renderTooltip(mouseX, mouseY, bookmarkUnderMouse.ingredient);
       }
     }
@@ -143,8 +139,8 @@ public class BookmarkOverlay implements IPaged, IShowsRecipeFocuses, ILeftAreaCo
       return false;
     }
     FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
-    String str = (KeyBindings.toggleBookmarkOverlay.getKeyCode() != Keyboard.KEY_NONE)
-        ? Translator.translateToLocalFormatted("gui.jei.bookmarks.key", KeyBindings.toggleBookmarkOverlay.getDisplayName())
+    String str = (KeyBindings.bookmark.getKeyCode() != Keyboard.KEY_NONE)
+        ? Translator.translateToLocalFormatted("gui.jei.bookmarks.key", KeyBindings.bookmark.getDisplayName())
         : Translator.translateToLocal("gui.jei.bookmarks.nokey");
     int width = fontRenderer.getStringWidth(str);
     int txtX = Math.max((int) (textArea.getCenterX() - width / 2), BORDER_PADDING);
@@ -193,11 +189,6 @@ public class BookmarkOverlay implements IPaged, IShowsRecipeFocuses, ILeftAreaCo
   }
 
   public boolean updateBounds() {
-    JeiRuntime runtime = Internal.getRuntime();
-    if (runtime == null) {
-      return false;
-    }
-
     exclusionAreas = getGuiAreas();
     bookmarkArea = new Rectangle(parentArea);
     bookmarkArea = new Rectangle(bookmarkArea);
@@ -216,19 +207,9 @@ public class BookmarkOverlay implements IPaged, IShowsRecipeFocuses, ILeftAreaCo
     bookmarkArea.y += yCenteringOffset;
     bookmarkArea.height -= yCenteringOffset;
 
-    int guiLeft = (int) (parentArea.getMaxX() - BORDER_PADDING);
-    IGuiProperties guiProperties = runtime.getGuiProperties(Minecraft.getMinecraft().currentScreen);
-    if (guiProperties != null && guiProperties.getGuiClass() == mezz.jei.gui.recipes.RecipesGui.class && exclusionAreas.isEmpty()) {
-      // JEI doesn't define an exclusion area for its own side-tabs at the moment
-      guiLeft -= INGREDIENT_WIDTH + 4;
-    }
-
-    while (bookmarkArea.getMaxX() > (guiLeft)) {
-      bookmarkArea.width--;
       if (bookmarkArea.width <= INGREDIENT_WIDTH) {
         return false;
       }
-    }
 
     bookmarkArea.width = (bookmarkArea.width / INGREDIENT_WIDTH) * INGREDIENT_WIDTH;
 
@@ -413,6 +394,39 @@ public class BookmarkOverlay implements IPaged, IShowsRecipeFocuses, ILeftAreaCo
   @Override
   public boolean canSetFocusWithMouse() {
     return true;
+  }
+
+  @Override
+  public boolean handleMouseScrolled(int mouseX, int mouseY, int dWheel) {
+    if (dWheel < 0) {
+      nextPage();
+    } else {
+      previousPage();
+    }
+    return true;
+  }
+
+  @Override
+  public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
+    if (bookmarkArea.contains(mouseX, mouseY)) {
+      Minecraft minecraft = Minecraft.getMinecraft();
+      GuiScreen currentScreen = minecraft.currentScreen;
+      if (currentScreen != null && !(currentScreen instanceof RecipesGui)
+          && (mouseButton == 0 || mouseButton == 1 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(mouseButton - 100))) {
+        IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
+        if (clicked != null) {
+          if (Config.isCheatItemsEnabled()) {
+            ItemStack itemStack = clicked.getCheatItemStack();
+            if (!itemStack.isEmpty()) {
+              CommandUtil.giveStack(itemStack, mouseButton);
+            }
+            clicked.onClickHandled();
+            return true;
+          }
+        }
+      }
+    }
+    return navigation.isMouseOver() && navigation.handleMouseClickedButtons(mouseX, mouseY);
   }
 
 }
