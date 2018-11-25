@@ -99,7 +99,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		return new Rectangle(x, y, width, height);
 	}
 
-	public void updateScreen(@Nullable GuiScreen guiScreen) {
+	public void updateScreen(@Nullable GuiScreen guiScreen, boolean forceUpdate) {
 		JeiRuntime runtime = Internal.getRuntime();
 		if (runtime == null) {
 			return;
@@ -112,7 +112,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 				setKeyboardFocus(false);
 				this.ghostIngredientDragManager.stopDrag();
 			}
-		} else if (this.guiProperties == null || !areGuiPropertiesEqual(this.guiProperties, guiProperties)) {
+		} else if (this.guiProperties == null || !areGuiPropertiesEqual(this.guiProperties, guiProperties) || forceUpdate) {
 			this.guiProperties = guiProperties;
 			this.displayArea = getDisplayArea(guiProperties);
 

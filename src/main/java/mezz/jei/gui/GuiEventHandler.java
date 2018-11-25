@@ -30,28 +30,28 @@ public class GuiEventHandler {
 	@SubscribeEvent
 	public void onOverlayToggle(OverlayToggleEvent event) {
 		GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
-		ingredientListOverlay.updateScreen(currentScreen);
+		ingredientListOverlay.updateScreen(currentScreen, true);
     leftAreaDispatcher.updateScreen(currentScreen);
 	}
 
 	@SubscribeEvent
 	public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
 		GuiScreen gui = event.getGui();
-		ingredientListOverlay.updateScreen(gui);
+		ingredientListOverlay.updateScreen(gui, false);
     leftAreaDispatcher.updateScreen(gui);
 	}
 
 	@SubscribeEvent
 	public void onGuiOpen(GuiOpenEvent event) {
 		GuiScreen gui = event.getGui();
-		ingredientListOverlay.updateScreen(gui);
+		ingredientListOverlay.updateScreen(gui, false);
     leftAreaDispatcher.updateScreen(gui);
 	}
 
 	@SubscribeEvent
 	public void onDrawBackgroundEventPost(GuiScreenEvent.BackgroundDrawnEvent event) {
 		GuiScreen gui = event.getGui();
-		ingredientListOverlay.updateScreen(gui);
+		ingredientListOverlay.updateScreen(gui, false);
     leftAreaDispatcher.updateScreen(gui);
 
 		drawnOnBackground = true;
@@ -73,7 +73,7 @@ public class GuiEventHandler {
 	public void onDrawScreenEventPost(GuiScreenEvent.DrawScreenEvent.Post event) {
 		GuiScreen gui = event.getGui();
 
-		ingredientListOverlay.updateScreen(gui);
+		ingredientListOverlay.updateScreen(gui, false);
     leftAreaDispatcher.updateScreen(gui);
 
 		if (!drawnOnBackground) {
