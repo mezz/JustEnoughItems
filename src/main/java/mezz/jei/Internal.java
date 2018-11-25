@@ -35,8 +35,8 @@ public final class Internal {
 	private static GuiEventHandler guiEventHandler;
 	@Nullable
 	private static InputHandler inputHandler;
-  @Nullable
-  private static BookmarkList bookmarkList;
+	@Nullable
+	private static BookmarkList bookmarkList;
 
 	private Internal() {
 
@@ -122,13 +122,13 @@ public final class Internal {
 		MinecraftForge.EVENT_BUS.register(inputHandler);
 	}
 
-  public static BookmarkList getBookmarkList() {
-    Preconditions.checkState(bookmarkList != null, "BookmarkList has not been created yet.");
-    return bookmarkList;
-  }
+	public static BookmarkList getBookmarkList() {
+		Preconditions.checkState(bookmarkList != null, "BookmarkList has not been created yet.");
+		return bookmarkList;
+	}
 
-  public static void setBookmarkList(BookmarkList bookmarkList) {
-    Internal.bookmarkList = bookmarkList;
-  }
+	public static void setBookmarkList(BookmarkList bookmarkList) {
+		Internal.bookmarkList = bookmarkList;
+	}
 
 }

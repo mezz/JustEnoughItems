@@ -1,19 +1,7 @@
 package mezz.jei.config;
 
-import java.awt.Color;
-import java.io.File;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-
 import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -39,6 +27,16 @@ import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
+import javax.annotation.Nullable;
+import java.awt.Color;
+import java.io.File;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 public final class Config {
 	private static final String configKeyPrefix = "config.jei";
 
@@ -60,8 +58,8 @@ public final class Config {
 	private static LocalizedConfiguration itemBlacklistConfig;
 	@Nullable
 	private static LocalizedConfiguration searchColorsConfig;
-  @Nullable
-  private static File bookmarkFile;
+	@Nullable
+	private static File bookmarkFile;
 
 	private static final ConfigValues defaultValues = new ConfigValues();
 	private static final ConfigValues values = new ConfigValues();
@@ -98,26 +96,26 @@ public final class Config {
 		MinecraftForge.EVENT_BUS.post(new OverlayToggleEvent(values.overlayEnabled));
 	}
 
-  public static boolean isBookmarkOverlayEnabled() {
-    return isOverlayEnabled() && values.bookmarkOverlayEnabled;
-  }
+	public static boolean isBookmarkOverlayEnabled() {
+		return isOverlayEnabled() && values.bookmarkOverlayEnabled;
+	}
 
-  public static void toggleBookmarkEnabled() {
-    values.bookmarkOverlayEnabled = !values.bookmarkOverlayEnabled;
+	public static void toggleBookmarkEnabled() {
+		values.bookmarkOverlayEnabled = !values.bookmarkOverlayEnabled;
 
-    if (worldConfig != null) {
-      NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
-      final String worldCategory = ServerInfo.getWorldUid(networkManager);
-      Property property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);
-      property.set(values.bookmarkOverlayEnabled);
+		if (worldConfig != null) {
+			NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
+			final String worldCategory = ServerInfo.getWorldUid(networkManager);
+			Property property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);
+			property.set(values.bookmarkOverlayEnabled);
 
-      if (worldConfig.hasChanged()) {
-        worldConfig.save();
-      }
-    }
+			if (worldConfig.hasChanged()) {
+				worldConfig.save();
+			}
+		}
 
-    MinecraftForge.EVENT_BUS.post(new BookmarkOverlayToggleEvent(values.bookmarkOverlayEnabled));
-  }
+		MinecraftForge.EVENT_BUS.post(new BookmarkOverlayToggleEvent(values.bookmarkOverlayEnabled));
+	}
 
 	public static boolean isCheatItemsEnabled() {
 		return values.cheatItemsEnabled;
@@ -280,10 +278,10 @@ public final class Config {
 		return worldConfig;
 	}
 
-  @Nullable
-  public static File getBookmarkFile() {
-    return bookmarkFile;
-  }
+	@Nullable
+	public static File getBookmarkFile() {
+		return bookmarkFile;
+	}
 
 	public static void preInit(FMLPreInitializationEvent event) {
 
@@ -304,7 +302,7 @@ public final class Config {
 		final File itemBlacklistConfigFile = new File(jeiConfigurationDir, "itemBlacklist.cfg");
 		final File searchColorsConfigFile = new File(jeiConfigurationDir, "searchColors.cfg");
 		final File worldConfigFile = new File(jeiConfigurationDir, "worldSettings.cfg");
-    bookmarkFile = new File(jeiConfigurationDir, "bookmarks.ini");
+		bookmarkFile = new File(jeiConfigurationDir, "bookmarks.ini");
 		worldConfig = new Configuration(worldConfigFile, "0.1.0");
 		config = new LocalizedConfiguration(configKeyPrefix, configFile, "0.4.0");
 		itemBlacklistConfig = new LocalizedConfiguration(configKeyPrefix, itemBlacklistConfigFile, "0.1.0");
@@ -497,10 +495,10 @@ public final class Config {
 			MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.hideModeEnabled));
 		}
 
-    property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);
-    property.setLanguageKey("config.jei.interface.bookmarkOverlayEnabled");
-    property.setComment(Translator.translateToLocal("config.jei.interface.bookmarkOverlayEnabled.comment"));
-    values.bookmarkOverlayEnabled = property.getBoolean();
+		property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);
+		property.setLanguageKey("config.jei.interface.bookmarkOverlayEnabled");
+		property.setComment(Translator.translateToLocal("config.jei.interface.bookmarkOverlayEnabled.comment"));
+		values.bookmarkOverlayEnabled = property.getBoolean();
 
 		property = worldConfig.get(worldCategory, "filterText", defaultValues.filterText);
 		property.setShowInGui(false);

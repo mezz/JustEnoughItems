@@ -1,11 +1,6 @@
 package mezz.jei.startup;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.base.Stopwatch;
-
 import mezz.jei.Internal;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
@@ -32,6 +27,10 @@ import mezz.jei.runtime.SubtypeRegistry;
 import mezz.jei.util.Log;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.ProgressManager;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class JeiStarter {
 	private boolean started;
@@ -86,7 +85,7 @@ public class JeiStarter {
 		Map<Class, IGuiScreenHandler> guiScreenHandlers = modRegistry.getGuiScreenHandlers();
 		Map<Class, IGhostIngredientHandler> ghostIngredientHandlers = modRegistry.getGhostIngredientHandlers();
 		IngredientListOverlay ingredientListOverlay = new IngredientListOverlay(ingredientFilter);
-    LeftAreaDispatcher leftAreaDispatcher = new LeftAreaDispatcher();
+		LeftAreaDispatcher leftAreaDispatcher = new LeftAreaDispatcher();
 		RecipesGui recipesGui = new RecipesGui(recipeRegistry);
 		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, ingredientListOverlay, recipesGui, ingredientRegistry, advancedGuiHandlers, guiScreenHandlers, ghostIngredientHandlers, ingredientFilter);
 		Internal.setRuntime(jeiRuntime);
@@ -94,15 +93,15 @@ public class JeiStarter {
 
 		stackHelper.disableUidCache();
 
-    BookmarkList mookmarkList = new BookmarkList();
-    mookmarkList.loadBookmarks();
-    Internal.setBookmarkList(mookmarkList);
+		BookmarkList bookmarkList = new BookmarkList();
+		bookmarkList.loadBookmarks();
+		Internal.setBookmarkList(bookmarkList);
 
 		sendRuntime(plugins, jeiRuntime);
 
-    GuiEventHandler guiEventHandler = new GuiEventHandler(leftAreaDispatcher, ingredientListOverlay, recipeRegistry);
+		GuiEventHandler guiEventHandler = new GuiEventHandler(leftAreaDispatcher, ingredientListOverlay, recipeRegistry);
 		Internal.setGuiEventHandler(guiEventHandler);
-    InputHandler inputHandler = new InputHandler(jeiRuntime, ingredientListOverlay, leftAreaDispatcher);
+		InputHandler inputHandler = new InputHandler(jeiRuntime, ingredientListOverlay, leftAreaDispatcher);
 		Internal.setInputHandler(inputHandler);
 
 		Config.checkForModNameFormatOverride();

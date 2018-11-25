@@ -1,16 +1,14 @@
 package mezz.jei.config;
 
-import java.util.List;
-
-import org.lwjgl.input.Keyboard;
-
 import com.google.common.collect.ImmutableList;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import org.lwjgl.input.Keyboard;
+
+import java.util.List;
 
 public final class KeyBindings {
 	private static final String categoryName = Constants.MOD_ID + " (" + Constants.NAME + ')';
@@ -23,8 +21,8 @@ public final class KeyBindings {
 	public static final KeyBinding recipeBack;
 	public static final KeyBinding previousPage;
 	public static final KeyBinding nextPage;
-  public static final KeyBinding bookmark;
-  public static final KeyBinding toggleBookmarkOverlay;
+	public static final KeyBinding bookmark;
+	public static final KeyBinding toggleBookmarkOverlay;
 	private static final List<KeyBinding> allBindings;
 
 	static {
@@ -36,9 +34,9 @@ public final class KeyBindings {
 			showUses = new KeyBinding("key.jei.showUses", KeyConflictContext.GUI, Keyboard.KEY_U, categoryName),
 			recipeBack = new KeyBinding("key.jei.recipeBack", KeyConflictContext.GUI, Keyboard.KEY_BACK, categoryName),
 			previousPage = new KeyBinding("key.jei.previousPage", KeyConflictContext.GUI, Keyboard.KEY_PRIOR, categoryName),
-        nextPage = new KeyBinding("key.jei.nextPage", KeyConflictContext.GUI, Keyboard.KEY_NEXT, categoryName),
-        bookmark = new KeyBinding("key.jei.bookmark", KeyConflictContext.GUI, Keyboard.KEY_A, categoryName),
-        toggleBookmarkOverlay = new KeyBinding("key.jei.toggleBookmarkOverlay", KeyConflictContext.GUI, KeyModifier.CONTROL, Keyboard.KEY_A, categoryName)
+			nextPage = new KeyBinding("key.jei.nextPage", KeyConflictContext.GUI, Keyboard.KEY_NEXT, categoryName),
+			bookmark = new KeyBinding("key.jei.bookmark", KeyConflictContext.GUI, Keyboard.KEY_A, categoryName),
+			toggleBookmarkOverlay = new KeyBinding("key.jei.toggleBookmarkOverlay", KeyConflictContext.GUI, KeyModifier.CONTROL, Keyboard.KEY_A, categoryName)
 		);
 	}
 
