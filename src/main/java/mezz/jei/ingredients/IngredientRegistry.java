@@ -19,6 +19,7 @@ import net.minecraft.potion.PotionHelper;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.NonNullList;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -102,6 +103,17 @@ public class IngredientRegistry implements IIngredientRegistry {
 			return Collections.emptySet();
 		} else {
 			return Collections.unmodifiableCollection(ingredients);
+		}
+	}
+
+	@Nullable
+	public <V> V getIngredientByUid(IIngredientType<V> ingredientType, String uid) {
+		@SuppressWarnings("unchecked")
+		IngredientSet<V> ingredients = ingredientsMap.get(ingredientType);
+		if (ingredients == null) {
+			return null;
+		} else {
+			return ingredients.getByUid(uid);
 		}
 	}
 

@@ -6,7 +6,9 @@ import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.config.Config;
+import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.util.LegacyUtil;
+import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
@@ -14,15 +16,15 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.io.IOUtils;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class BookmarkList {
 
@@ -103,10 +105,6 @@ public class BookmarkList {
 		return false;
 	}
 
-	public void reset() {
-		list.clear();
-	}
-
 	public void saveBookmarks() {
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		List<String> strings = new ArrayList<>();
@@ -118,75 +116,70 @@ public class BookmarkList {
 				strings.add(MARKER_OTHER + ingredientHelper.getUniqueId(object));
 			}
 		}
-		File f = Config.getBookmarkFile();
-		if (f != null) {
-			try (FileWriter writer = new FileWriter(f)) {
+		File file = Config.getBookmarkFile();
+		if (file != null) {
+			try (FileWriter writer = new FileWriter(file)) {
 				IOUtils.writeLines(strings, "\n", writer);
 			} catch (IOException e) {
-				e.printStackTrace();
+				Log.get().error("Failed to save bookmarks list to file {}", file, e);
 			}
 		}
 	}
 
 	public void loadBookmarks() {
-		File f = Config.getBookmarkFile();
-		if (f == null || !f.exists()) {
+		File file = Config.getBookmarkFile();
+		if (file == null || !file.exists()) {
 			return;
 		}
-		List<String> strings;
-		try (FileReader reader = new FileReader(f)) {
-			strings = IOUtils.readLines(reader);
+		List<String> ingredientJsonStrings;
+		try (FileReader reader = new FileReader(file)) {
+			ingredientJsonStrings = IOUtils.readLines(reader);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.get().error("Failed to load bookmarks from file {}", file, e);
 			return;
-		}
-		Map<String, Object> map = new HashMap<>();
-		for (String s : strings) {
-			if (s.startsWith(MARKER_OTHER)) {
-				map.put(s.substring(MARKER_OTHER.length()), null);
-			}
 		}
 
-		mapNonItemStackIngredient(map);
+		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+		Collection<IIngredientType> otherIngredientTypes = new ArrayList<>(ingredientRegistry.getRegisteredIngredientTypes());
+		otherIngredientTypes.remove(VanillaTypes.ITEM);
 
 		list.clear();
-		for (String s : strings) {
-			if (s.startsWith(MARKER_STACK)) {
+		for (String ingredientJsonString : ingredientJsonStrings) {
+			if (ingredientJsonString.startsWith(MARKER_STACK)) {
+				String itemStackAsJson = ingredientJsonString.substring(MARKER_STACK.length());
 				try {
-					list.add(new ItemStack(JsonToNBT.getTagFromJson(s.substring(MARKER_STACK.length()))));
-				} catch (NBTException e) {
-					e.printStackTrace();
-				}
-			} else if (s.startsWith(MARKER_OTHER)) {
-				Object object = map.get(s.substring(MARKER_OTHER.length()));
-				if (object != null) {
-					list.add(object);
-				}
-			}
-		}
-
-	}
-
-	private void mapNonItemStackIngredient(Map<String, Object> map) {
-		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		for (IIngredientType<?> ingredientType : ingredientRegistry.getRegisteredIngredientTypes()) {
-			mapNonItemStackIngredient(ingredientType, map);
-		}
-	}
-
-	private <T> void mapNonItemStackIngredient(IIngredientType<T> ingredientType, Map<String, Object> map) {
-		if (ingredientType != null && ingredientType != VanillaTypes.ITEM) {
-			IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-			IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
-			for (T o : ingredientRegistry.getAllIngredients(ingredientType)) {
-				if (o != null) {
-					String id = ingredientHelper.getUniqueId(o);
-					if (map.containsKey(id)) {
-						map.put(id, o);
+					NBTTagCompound itemStackAsNbt = JsonToNBT.getTagFromJson(itemStackAsJson);
+					ItemStack itemStack = new ItemStack(itemStackAsNbt);
+					if (!itemStack.isEmpty()) {
+						list.add(itemStack);
+					} else {
+						Log.get().warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
 					}
+				} catch (NBTException e) {
+					Log.get().error("Failed to load bookmarked ItemStack from json string:\n{}", itemStackAsJson, e);
 				}
+			} else if (ingredientJsonString.startsWith(MARKER_OTHER)) {
+				String uid = ingredientJsonString.substring(MARKER_OTHER.length());
+				Object ingredient = getUnknownIngredientByUid(ingredientRegistry, otherIngredientTypes, uid);
+				if (ingredient != null) {
+					list.add(ingredient);
+				}
+			} else {
+				Log.get().error("Failed to load unknown bookmarked ingredient:\n{}", ingredientJsonString);
 			}
 		}
+
+	}
+
+	@Nullable
+	private static Object getUnknownIngredientByUid(IngredientRegistry ingredientRegistry, Collection<IIngredientType> ingredientTypes, String uid) {
+		for (IIngredientType<?> ingredientType : ingredientTypes) {
+			Object ingredient = ingredientRegistry.getIngredientByUid(ingredientType, uid);
+			if (ingredient != null) {
+				return ingredient;
+			}
+		}
+		return null;
 	}
 
 }

@@ -7,6 +7,7 @@ import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.startup.StackHelper;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nullable;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
@@ -66,6 +67,11 @@ public class IngredientSet<V> extends AbstractSet<V> {
 		//noinspection unchecked
 		String uid = uidGenerator.apply((V) o);
 		return ingredients.containsKey(uid);
+	}
+
+	@Nullable
+	public V getByUid(String uid) {
+		return ingredients.get(uid);
 	}
 
 	@Override
