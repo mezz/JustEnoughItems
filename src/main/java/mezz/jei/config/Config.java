@@ -74,7 +74,7 @@ public final class Config {
 	}
 
 	public static boolean isOverlayEnabled() {
-		return values.overlayEnabled || 
+		return values.overlayEnabled ||
 			KeyBindings.toggleOverlay.getKeyCode() == 0; // if there is no key binding to enable it, don't allow the overlay to be disabled
 	}
 
