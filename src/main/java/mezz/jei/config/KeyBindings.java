@@ -35,8 +35,8 @@ public final class KeyBindings {
 			recipeBack = new KeyBinding("key.jei.recipeBack", KeyConflictContext.GUI, Keyboard.KEY_BACK, categoryName),
 			previousPage = new KeyBinding("key.jei.previousPage", KeyConflictContext.GUI, Keyboard.KEY_PRIOR, categoryName),
 			nextPage = new KeyBinding("key.jei.nextPage", KeyConflictContext.GUI, Keyboard.KEY_NEXT, categoryName),
-			bookmark = new KeyBinding("key.jei.bookmark", KeyConflictContext.GUI, Keyboard.KEY_A, categoryName),
-			toggleBookmarkOverlay = new KeyBinding("key.jei.toggleBookmarkOverlay", KeyConflictContext.GUI, KeyModifier.CONTROL, Keyboard.KEY_A, categoryName)
+			bookmark = new KeyBinding("key.jei.bookmark", KeyConflictContext.GUI, Keyboard.KEY_B, categoryName),
+			toggleBookmarkOverlay = new KeyBinding("key.jei.toggleBookmarkOverlay", KeyConflictContext.GUI, KeyModifier.CONTROL, Keyboard.KEY_B, categoryName)
 		);
 	}
 
