@@ -498,6 +498,7 @@ public final class Config {
 		property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);
 		property.setLanguageKey("config.jei.interface.bookmarkOverlayEnabled");
 		property.setComment(Translator.translateToLocal("config.jei.interface.bookmarkOverlayEnabled.comment"));
+		property.setShowInGui(false);
 		values.bookmarkOverlayEnabled = property.getBoolean();
 
 		property = worldConfig.get(worldCategory, "filterText", defaultValues.filterText);

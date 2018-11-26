@@ -26,6 +26,10 @@ public class GuiHelper implements IGuiHelper {
 	private final IDrawableStatic arrowPrevious;
 	private final IDrawableStatic arrowNext;
 	private final IDrawableStatic recipeTransfer;
+	private final IDrawableStatic configButtonIcon;
+	private final IDrawableStatic configButtonCheatIcon;
+	private final IDrawableStatic bookmarkButtonDisabledIcon;
+	private final IDrawableStatic bookmarkButtonEnabledIcon;
 
 	public GuiHelper(IIngredientRegistry ingredientRegistry) {
 		this.ingredientRegistry = ingredientRegistry;
@@ -45,6 +49,10 @@ public class GuiHelper implements IGuiHelper {
 		recipeTransfer = drawableBuilder(Constants.RECIPE_BACKGROUND, 212, 55, 6, 6)
 			.addPadding(1, 0, 1, 0)
 			.build();
+		configButtonIcon = createDrawable(Constants.RECIPE_BACKGROUND, 0, 166, 16, 16);
+		configButtonCheatIcon = createDrawable(Constants.RECIPE_BACKGROUND, 16, 166, 16, 16);
+		bookmarkButtonDisabledIcon = createDrawable(Constants.RECIPE_BACKGROUND, 32, 166, 16, 16);
+		bookmarkButtonEnabledIcon = createDrawable(Constants.RECIPE_BACKGROUND, 48, 166, 16, 16);
 	}
 
 	@Override
@@ -107,5 +115,21 @@ public class GuiHelper implements IGuiHelper {
 
 	public IDrawableStatic getRecipeTransfer() {
 		return recipeTransfer;
+	}
+
+	public IDrawableStatic getConfigButtonIcon() {
+		return configButtonIcon;
+	}
+
+	public IDrawableStatic getConfigButtonCheatIcon() {
+		return configButtonCheatIcon;
+	}
+
+	public IDrawableStatic getBookmarkButtonDisabledIcon() {
+		return bookmarkButtonDisabledIcon;
+	}
+
+	public IDrawableStatic getBookmarkButtonEnabledIcon() {
+		return bookmarkButtonEnabledIcon;
 	}
 }

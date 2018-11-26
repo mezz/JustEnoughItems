@@ -12,6 +12,7 @@ import mezz.jei.config.Config;
 import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
@@ -28,6 +29,7 @@ import mezz.jei.util.Log;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.ProgressManager;
 
+import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -80,22 +82,26 @@ public class JeiStarter {
 		Internal.setIngredientFilter(ingredientFilter);
 		timer.stop();
 
+		timer.start("Building bookmark list");
+		BookmarkList bookmarkList = new BookmarkList();
+		bookmarkList.loadBookmarks();
+		Internal.setBookmarkList(bookmarkList);
+		timer.stop();
+
 		timer.start("Building runtime");
 		List<IAdvancedGuiHandler<?>> advancedGuiHandlers = modRegistry.getAdvancedGuiHandlers();
 		Map<Class, IGuiScreenHandler> guiScreenHandlers = modRegistry.getGuiScreenHandlers();
 		Map<Class, IGhostIngredientHandler> ghostIngredientHandlers = modRegistry.getGhostIngredientHandlers();
 		IngredientListOverlay ingredientListOverlay = new IngredientListOverlay(ingredientFilter);
 		LeftAreaDispatcher leftAreaDispatcher = new LeftAreaDispatcher();
+		BookmarkOverlay bookmarkOverlay = new BookmarkOverlay(new Rectangle(), bookmarkList, jeiHelpers.getGuiHelper());
+		leftAreaDispatcher.addContent(bookmarkOverlay);
 		RecipesGui recipesGui = new RecipesGui(recipeRegistry);
 		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, ingredientListOverlay, recipesGui, ingredientRegistry, advancedGuiHandlers, guiScreenHandlers, ghostIngredientHandlers, ingredientFilter);
 		Internal.setRuntime(jeiRuntime);
 		timer.stop();
 
 		stackHelper.disableUidCache();
-
-		BookmarkList bookmarkList = new BookmarkList();
-		bookmarkList.loadBookmarks();
-		Internal.setBookmarkList(bookmarkList);
 
 		sendRuntime(plugins, jeiRuntime);
 

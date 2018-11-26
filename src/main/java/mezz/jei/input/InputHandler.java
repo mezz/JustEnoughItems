@@ -256,6 +256,9 @@ public class InputHandler {
 					if (Internal.getBookmarkList().contains(clicked.getValue())) {
 						return Internal.getBookmarkList().remove(clicked.getValue());
 					} else {
+						if (!Config.isBookmarkOverlayEnabled()) {
+							Config.toggleBookmarkEnabled();
+						}
 						return Internal.getBookmarkList().add(clicked.getValue());
 					}
 				} else {

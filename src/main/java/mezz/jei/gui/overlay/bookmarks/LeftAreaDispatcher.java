@@ -23,7 +23,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 	private static final int BORDER_PADDING = 2;
 	private static final int NAVIGATION_HEIGHT = 20;
 
-	private final List<ILeftAreaContent> content = new ArrayList<>();
+	private final List<ILeftAreaContent> contents = new ArrayList<>();
 	private int current = 0;
 	@Nullable
 	private IGuiProperties guiProperties;
@@ -33,17 +33,20 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 	private boolean canShow = false;
 
 	public LeftAreaDispatcher() {
-		content.add(new BookmarkOverlay(new Rectangle()));
 		navigation = new PageNavigation(this, false);
 	}
 
+	public void addContent(ILeftAreaContent content) {
+		this.contents.add(content);
+	}
+
 	private boolean hasContent() {
-		return current >= 0 && current < content.size();
+		return current >= 0 && current < contents.size();
 	}
 
 	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
 		if (canShow && hasContent()) {
-			content.get(current).drawScreen(minecraft, mouseX, mouseY, partialTicks);
+			contents.get(current).drawScreen(minecraft, mouseX, mouseY, partialTicks);
 			if (naviArea.height > 0) {
 				navigation.draw(minecraft, mouseX, mouseY, partialTicks);
 			}
@@ -52,19 +55,19 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 
 	public void drawOnForeground(GuiContainer gui, int mouseX, int mouseY) {
 		if (canShow && hasContent()) {
-			content.get(current).drawOnForeground(gui, mouseX, mouseY);
+			contents.get(current).drawOnForeground(gui, mouseX, mouseY);
 		}
 	}
 
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
 		if (canShow && hasContent()) {
-			content.get(current).drawTooltips(minecraft, mouseX, mouseY);
+			contents.get(current).drawTooltips(minecraft, mouseX, mouseY);
 		}
 	}
 
 	public void updateScreen(@Nullable GuiScreen guiScreen) {
 		canShow = false;
-		if (hasContent() && Config.isBookmarkOverlayEnabled()) {
+		if (hasContent()) {
 			JeiRuntime runtime = Internal.getRuntime();
 			if (runtime == null) {
 				return;
@@ -75,7 +78,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 			} else if (!areGuiPropertiesEqual(guiProperties, currentGuiProperties)) {
 				guiProperties = currentGuiProperties;
 				makeDisplayArea(guiProperties);
-				content.get(current).updateBounds(displayArea);
+				contents.get(current).updateBounds(displayArea);
 				canShow = true;
 			} else {
 				canShow = true;
@@ -99,7 +102,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 			width -= 22;
 		}
 		displayArea = new Rectangle(x, y, width, height);
-		if (content.size() > 1) {
+		if (contents.size() > 1) {
 			naviArea = new Rectangle(displayArea);
 			naviArea.height = NAVIGATION_HEIGHT;
 			displayArea.y += NAVIGATION_HEIGHT + BORDER_PADDING;
@@ -114,7 +117,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 	@Nullable
 	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
 		if (canShow && hasContent()) {
-			return content.get(current).getIngredientUnderMouse(mouseX, mouseY);
+			return contents.get(current).getIngredientUnderMouse(mouseX, mouseY);
 		}
 		return null;
 	}
@@ -122,7 +125,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 	@Override
 	public boolean canSetFocusWithMouse() {
 		if (canShow && hasContent()) {
-			return content.get(current).canSetFocusWithMouse();
+			return contents.get(current).canSetFocusWithMouse();
 		}
 		return false;
 	}
@@ -130,7 +133,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 	public boolean handleMouseScrolled(int mouseX, int mouseY, int dWheel) {
 		if (canShow && hasContent()) {
 			if (displayArea.contains(mouseX, mouseY)) {
-				return content.get(current).handleMouseScrolled(mouseX, mouseY, dWheel);
+				return contents.get(current).handleMouseScrolled(mouseX, mouseY, dWheel);
 			} else if (naviArea.contains(mouseX, mouseY)) {
 				if (dWheel < 0) {
 					nextPage();
@@ -146,7 +149,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
 		if (canShow && hasContent()) {
 			if (displayArea.contains(mouseX, mouseY)) {
-				return content.get(current).handleMouseClicked(mouseX, mouseY, mouseButton);
+				return contents.get(current).handleMouseClicked(mouseX, mouseY, mouseButton);
 			} else if (naviArea.contains(mouseX, mouseY)) {
 				return navigation.handleMouseClickedButtons(mouseX, mouseY);
 			}
@@ -157,7 +160,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 	@Override
 	public boolean nextPage() {
 		current++;
-		if (current >= content.size()) {
+		if (current >= contents.size()) {
 			current = 0;
 		}
 		navigation.updatePageState();
@@ -168,7 +171,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 	public boolean previousPage() {
 		current--;
 		if (current < 0) {
-			current = content.size();
+			current = contents.size();
 		}
 		navigation.updatePageState();
 		return true;
@@ -176,7 +179,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 
 	@Override
 	public boolean hasNext() {
-		return current < content.size() - 1;
+		return current < contents.size() - 1;
 	}
 
 	@Override
@@ -186,7 +189,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 
 	@Override
 	public int getPageCount() {
-		return content.size();
+		return contents.size();
 	}
 
 	@Override

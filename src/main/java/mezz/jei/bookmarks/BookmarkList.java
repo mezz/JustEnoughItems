@@ -105,6 +105,10 @@ public class BookmarkList {
 		return false;
 	}
 
+	public boolean isEmpty() {
+		return list.isEmpty();
+	}
+
 	public void saveBookmarks() {
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		List<String> strings = new ArrayList<>();

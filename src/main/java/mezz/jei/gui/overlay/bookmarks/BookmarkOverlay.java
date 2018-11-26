@@ -4,11 +4,14 @@ import mezz.jei.Internal;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.Config;
-import mezz.jei.config.KeyBindings;
+import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.TooltipRenderer;
+import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
+import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
@@ -28,10 +31,8 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiUtils;
-import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,7 +54,7 @@ public class BookmarkOverlay implements IPaged, IShowsRecipeFocuses, ILeftAreaCo
 
 	private static final int BORDER_PADDING = 2;
 	private static final int NAVIGATION_HEIGHT = 20;
-	private static final int SEARCH_HEIGHT = 16;
+	private static final int BUTTON_SIZE = 20;
 	private static final int INGREDIENT_PADDING = 1;
 	private static final int INGREDIENT_WIDTH = GuiItemStackGroup.getWidth(INGREDIENT_PADDING);
 	private static final int INGREDIENT_HEIGHT = GuiItemStackGroup.getHeight(INGREDIENT_PADDING);
@@ -62,47 +63,60 @@ public class BookmarkOverlay implements IPaged, IShowsRecipeFocuses, ILeftAreaCo
 	private Rectangle parentArea;
 	private Rectangle bookmarkArea = new Rectangle();
 	private Rectangle naviArea = new Rectangle();
-	private Rectangle textArea = new Rectangle();
 	private Set<Rectangle> exclusionAreas = Collections.emptySet();
 
 	// display elements
 	private final PageNavigation navigation;
 	private final List<Rectangle> slots = new ArrayList<>();
 	private final List<Bookmark> screen = new ArrayList<>();
+	private final GuiIconToggleButton bookmarkButton;
 
 	// visibility
-	private boolean canBeVisible = false;
+	private boolean hasRoom = false;
 
 	// paging
 	private int page = 1;
 	private int pages = 1;
 	private int perPage = 0;
 
-	public BookmarkOverlay(Rectangle area) {
+	// data
+	private final BookmarkList bookmarkList;
+
+	public BookmarkOverlay(Rectangle area, BookmarkList bookmarkList, GuiHelper guiHelper) {
 		this.parentArea = area;
-		navigation = new PageNavigation(this, false);
+		this.bookmarkList = bookmarkList;
+		this.navigation = new PageNavigation(this, false);
+		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, guiHelper);
+	}
+
+	private boolean isListDisplayed() {
+		return Config.isBookmarkOverlayEnabled() && hasRoom && !bookmarkList.isEmpty();
+	}
+
+	public boolean hasRoom() {
+		return hasRoom;
 	}
 
 	@Override
 	public void updateBounds(Rectangle area) {
 		this.parentArea = area;
-		canBeVisible = updateBounds();
+		hasRoom = updateBounds();
 		computeSlots();
 	}
 
-	public boolean renderNavigation(int mouseX, int mouseY) {
-		if (canBeVisible && naviArea.width > 0) {
+	public void renderNavigation(int mouseX, int mouseY) {
+		if (isListDisplayed() && naviArea.width > 0) {
 			navigation.draw(Minecraft.getMinecraft(), mouseX, mouseY, 0);
-			return true;
 		}
-		return false;
 	}
 
 	@Override
 	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
-		renderBookmarks(mouseX, mouseY);
-		renderNavigation(mouseX, mouseY);
-		renderKeyHint(mouseX, mouseY);
+		if (Config.isBookmarkOverlayEnabled()) {
+			renderBookmarks(mouseX, mouseY);
+			renderNavigation(mouseX, mouseY);
+		}
+		this.bookmarkButton.draw(minecraft, mouseX, mouseY, partialTicks);
 	}
 
 	@Override
@@ -111,13 +125,14 @@ public class BookmarkOverlay implements IPaged, IShowsRecipeFocuses, ILeftAreaCo
 
 	@Override
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
-		if (canBeVisible && !screen.isEmpty()) {
+		if (isListDisplayed() && !screen.isEmpty()) {
 			Bookmark bookmarkUnderMouse = getBookmarkUnderMouse(mouseX, mouseY);
 			if (bookmarkUnderMouse != null) {
 				drawHighlight(bookmarkUnderMouse.area.x, bookmarkUnderMouse.area.y, INGREDIENT_WIDTH, INGREDIENT_HEIGHT);
 				renderTooltip(mouseX, mouseY, bookmarkUnderMouse.ingredient);
 			}
 		}
+		bookmarkButton.drawTooltips(minecraft, mouseX, mouseY);
 	}
 
 	@Nullable
@@ -132,34 +147,19 @@ public class BookmarkOverlay implements IPaged, IShowsRecipeFocuses, ILeftAreaCo
 		return null;
 	}
 
-	public boolean renderKeyHint(int mouseX, int mouseY) {
-		if (!canBeVisible) {
-			return false;
-		}
-		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
-		String str = (KeyBindings.bookmark.getKeyCode() != Keyboard.KEY_NONE)
-			? Translator.translateToLocalFormatted("gui.jei.bookmarks.key", KeyBindings.bookmark.getDisplayName())
-			: Translator.translateToLocal("gui.jei.bookmarks.nokey");
-		int width = fontRenderer.getStringWidth(str);
-		int txtX = Math.max((int) (textArea.getCenterX() - width / 2), BORDER_PADDING);
-		int txtY = (int) (textArea.getCenterY() - 8 / 2);
-		fontRenderer.drawString(str, txtX, txtY, Color.white.getRGB(), true);
-		return true;
-	}
-
-	public boolean renderBookmarks(int mouseX, int mouseY) {
-		if (!canBeVisible) {
-			return false;
+	public void renderBookmarks(int mouseX, int mouseY) {
+		if (!isListDisplayed()) {
+			return;
 		}
 		screen.clear();
 
 		if (slots.isEmpty()) {
-			return false;
+			return;
 		}
 
-		List<Object> list = Internal.getBookmarkList().get();
+		List<Object> list = bookmarkList.get();
 		if (list.isEmpty()) {
-			return false;
+			return;
 		}
 
 		setItemsPerPage(slots.size());
@@ -173,7 +173,7 @@ public class BookmarkOverlay implements IPaged, IShowsRecipeFocuses, ILeftAreaCo
 					renderIngredient(area.x + INGREDIENT_PADDING, area.y + INGREDIENT_PADDING, object);
 					screen.add(new Bookmark(area, object));
 					if (slotIdx >= slots.size()) {
-						return true;
+						return;
 					}
 				}
 			}
@@ -182,8 +182,10 @@ public class BookmarkOverlay implements IPaged, IShowsRecipeFocuses, ILeftAreaCo
 			// weird...
 			previousPage();
 		}
+	}
 
-		return true;
+	private static int getMinWidth() {
+		return Math.max(4 * BUTTON_SIZE, Config.smallestNumColumns * IngredientGrid.INGREDIENT_WIDTH);
 	}
 
 	public boolean updateBounds() {
@@ -193,19 +195,22 @@ public class BookmarkOverlay implements IPaged, IShowsRecipeFocuses, ILeftAreaCo
 		// TODO: pull up to parentArea
 		// bookmarkArea.width = guiProperties.getGuiLeft();
 		// bookmarkArea.x = 2 * BORDER_PADDING;
-		bookmarkArea.height -= NAVIGATION_HEIGHT + SEARCH_HEIGHT + 4;
+		bookmarkArea.height -= NAVIGATION_HEIGHT + BUTTON_SIZE + 4;
 		naviArea = new Rectangle(bookmarkArea);
 
 		bookmarkArea.y += BORDER_PADDING + NAVIGATION_HEIGHT;
-		textArea = new Rectangle(bookmarkArea);
-		textArea.y = (int) bookmarkArea.getMaxY();
-		textArea.height = SEARCH_HEIGHT;
+		this.bookmarkButton.updateBounds(new Rectangle(
+			bookmarkArea.x,
+			(int) Math.floor(bookmarkArea.getMaxY()),
+			BUTTON_SIZE,
+			BUTTON_SIZE
+		));
 
 		int yCenteringOffset = (bookmarkArea.height - ((bookmarkArea.height / INGREDIENT_HEIGHT) * INGREDIENT_HEIGHT)) / 2;
 		bookmarkArea.y += yCenteringOffset;
 		bookmarkArea.height -= yCenteringOffset;
 
-		if (bookmarkArea.width <= INGREDIENT_WIDTH) {
+		if (bookmarkArea.width < getMinWidth()) {
 			return false;
 		}
 
@@ -213,7 +218,6 @@ public class BookmarkOverlay implements IPaged, IShowsRecipeFocuses, ILeftAreaCo
 
 		naviArea.width = bookmarkArea.width;
 		naviArea.height = NAVIGATION_HEIGHT;
-		textArea.width = bookmarkArea.width;
 		navigation.updateBounds(naviArea);
 		navigation.updatePageState();
 		return true;
@@ -313,7 +317,7 @@ public class BookmarkOverlay implements IPaged, IShowsRecipeFocuses, ILeftAreaCo
 	}
 
 	void setItemsPerPage(int items) {
-		List<Object> list = Internal.getBookmarkList().get();
+		List<Object> list = bookmarkList.get();
 		perPage = items;
 		if (list.isEmpty() || items < 1) {
 			page = pages = 1;
@@ -418,6 +422,9 @@ public class BookmarkOverlay implements IPaged, IShowsRecipeFocuses, ILeftAreaCo
 					}
 				}
 			}
+		}
+		if (bookmarkButton.isMouseOver(mouseX, mouseY)) {
+			return bookmarkButton.handleMouseClick(mouseX, mouseY);
 		}
 		return navigation.isMouseOver() && navigation.handleMouseClickedButtons(mouseX, mouseY);
 	}
