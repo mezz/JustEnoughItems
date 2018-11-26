@@ -1,8 +1,6 @@
 package mezz.jei.bookmarks;
 
-import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.config.Config;
@@ -27,6 +25,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 public class BookmarkList implements IIngredientGridSource {
@@ -34,12 +33,12 @@ public class BookmarkList implements IIngredientGridSource {
 	private static final String MARKER_OTHER = "O:";
 	private static final String MARKER_STACK = "T:";
 
-	private final List<Object> list = new ArrayList<>();
-	private final List<IIngredientListElement> ingredientListElements = new ArrayList<>();
-	private final IIngredientRegistry ingredientRegistry;
+	private final List<Object> list = new LinkedList<>();
+	private final List<IIngredientListElement> ingredientListElements = new LinkedList<>();
+	private final IngredientRegistry ingredientRegistry;
 	private final List<IIngredientGridSource.Listener> listeners = new ArrayList<>();
 
-	public BookmarkList(IIngredientRegistry ingredientRegistry) {
+	public BookmarkList(IngredientRegistry ingredientRegistry) {
 		this.ingredientRegistry = ingredientRegistry;
 	}
 
@@ -56,7 +55,7 @@ public class BookmarkList implements IIngredientGridSource {
 	}
 
 	protected <T> T normalize(T ingredient) {
-		IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredient);
+		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 		T copy = LegacyUtil.getIngredientCopy(ingredient, ingredientHelper);
 		if (copy instanceof ItemStack) {
 			((ItemStack) copy).setCount(1);
@@ -86,7 +85,7 @@ public class BookmarkList implements IIngredientGridSource {
 			return indexNormalized;
 		}
 		// We cannot assume that ingredients have a working equals() implementation. Even ItemStack doesn't have one...
-		IIngredientHelper<Object> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(normalized);
+		IIngredientHelper<Object> ingredientHelper = ingredientRegistry.getIngredientHelper(normalized);
 		for (int i = 0; i < list.size(); i++) {
 			Object existing = list.get(i);
 			if (existing != null && existing.getClass() == normalized.getClass()) {
@@ -148,7 +147,6 @@ public class BookmarkList implements IIngredientGridSource {
 			return;
 		}
 
-		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		Collection<IIngredientType> otherIngredientTypes = new ArrayList<>(ingredientRegistry.getRegisteredIngredientTypes());
 		otherIngredientTypes.remove(VanillaTypes.ITEM);
 
@@ -170,7 +168,7 @@ public class BookmarkList implements IIngredientGridSource {
 				}
 			} else if (ingredientJsonString.startsWith(MARKER_OTHER)) {
 				String uid = ingredientJsonString.substring(MARKER_OTHER.length());
-				Object ingredient = getUnknownIngredientByUid(ingredientRegistry, otherIngredientTypes, uid);
+				Object ingredient = getUnknownIngredientByUid(otherIngredientTypes, uid);
 				if (ingredient != null) {
 					addToLists(ingredient);
 				}
@@ -182,7 +180,7 @@ public class BookmarkList implements IIngredientGridSource {
 	}
 
 	@Nullable
-	private static Object getUnknownIngredientByUid(IngredientRegistry ingredientRegistry, Collection<IIngredientType> ingredientTypes, String uid) {
+	private Object getUnknownIngredientByUid(Collection<IIngredientType> ingredientTypes, String uid) {
 		for (IIngredientType<?> ingredientType : ingredientTypes) {
 			Object ingredient = ingredientRegistry.getIngredientByUid(ingredientType, uid);
 			if (ingredient != null) {
@@ -196,8 +194,9 @@ public class BookmarkList implements IIngredientGridSource {
 		IIngredientType<T> ingredientType = ingredientRegistry.getIngredientType(ingredient);
 		IIngredientListElement<T> element = IngredientListElementFactory.createUnorderedElement(ingredientRegistry, ingredientType, ingredient, ForgeModIdHelper.getInstance());
 		if (element != null) {
-			list.add(ingredient);
-			ingredientListElements.add(element);
+			// add to the front of the list so new bookmarks are first
+			list.add(0, ingredient);
+			ingredientListElements.add(0, element);
 			return true;
 		}
 		return false;
