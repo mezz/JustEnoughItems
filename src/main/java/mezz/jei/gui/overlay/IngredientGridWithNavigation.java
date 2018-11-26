@@ -8,7 +8,6 @@ import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.ghost.IGhostIngredientDragSource;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IPaged;
@@ -34,32 +33,32 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Displays all known recipe ingredients.
+ * Displays a list of ingredients with navigation at the top.
  */
-public class IngredientGridAll implements IShowsRecipeFocuses, IMouseHandler, IGhostIngredientDragSource {
+public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouseHandler, IGhostIngredientDragSource {
 	private static final int NAVIGATION_HEIGHT = 20;
 	private static int firstItemIndex = 0;
 
 	private final IPaged pageDelegate;
 	private final PageNavigation navigation;
 	private final IngredientGrid ingredientGrid;
-	private final IngredientFilter ingredientFilter;
+	private final IIngredientGridSource ingredientSource;
 	private Rectangle area = new Rectangle();
 	private Set<Rectangle> guiExclusionAreas = Collections.emptySet();
 
-	public IngredientGridAll(IngredientFilter ingredientFilter) {
-		this.ingredientGrid = new IngredientGrid();
-		this.ingredientFilter = ingredientFilter;
+	public IngredientGridWithNavigation(IIngredientGridSource ingredientSource, GridAlignment alignment) {
+		this.ingredientGrid = new IngredientGrid(alignment);
+		this.ingredientSource = ingredientSource;
 		this.pageDelegate = new IngredientGridPaged();
 		this.navigation = new PageNavigation(this.pageDelegate, false);
 	}
 
-	public void updateLayout(boolean filterChanged) {
-		if (filterChanged) {
+	public void updateLayout(boolean resetToFirstPage) {
+		if (resetToFirstPage) {
 			firstItemIndex = 0;
 		}
 		this.ingredientGrid.updateLayout(this.guiExclusionAreas);
-		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList();
+		List<IIngredientListElement> ingredientList = ingredientSource.getIngredientList();
 		this.ingredientGrid.guiIngredientSlots.set(firstItemIndex, ingredientList);
 		this.navigation.updatePageState();
 	}
@@ -219,7 +218,7 @@ public class IngredientGridAll implements IShowsRecipeFocuses, IMouseHandler, IG
 	private class IngredientGridPaged implements IPaged {
 		@Override
 		public boolean nextPage() {
-			final int itemsCount = ingredientFilter.size();
+			final int itemsCount = ingredientSource.size();
 			if (itemsCount > 0) {
 				firstItemIndex += ingredientGrid.size();
 				if (firstItemIndex >= itemsCount) {
@@ -242,7 +241,7 @@ public class IngredientGridAll implements IShowsRecipeFocuses, IMouseHandler, IG
 				updateLayout(false);
 				return false;
 			}
-			final int itemsCount = ingredientFilter.size();
+			final int itemsCount = ingredientSource.size();
 
 			int pageNum = firstItemIndex / itemsPerPage;
 			if (pageNum == 0) {
@@ -264,19 +263,19 @@ public class IngredientGridAll implements IShowsRecipeFocuses, IMouseHandler, IG
 		public boolean hasNext() {
 			// true if there is more than one page because this wraps around
 			int itemsPerPage = ingredientGrid.size();
-			return itemsPerPage > 0 && ingredientFilter.size() > itemsPerPage;
+			return itemsPerPage > 0 && ingredientSource.size() > itemsPerPage;
 		}
 
 		@Override
 		public boolean hasPrevious() {
 			// true if there is more than one page because this wraps around
 			int itemsPerPage = ingredientGrid.size();
-			return itemsPerPage > 0 && ingredientFilter.size() > itemsPerPage;
+			return itemsPerPage > 0 && ingredientSource.size() > itemsPerPage;
 		}
 
 		@Override
 		public int getPageCount() {
-			final int itemCount = ingredientFilter.size();
+			final int itemCount = ingredientSource.size();
 			final int stacksPerPage = ingredientGrid.size();
 			if (stacksPerPage == 0) {
 				return 1;

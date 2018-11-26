@@ -53,7 +53,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 
 	private final IngredientFilter ingredientFilter;
 	private final GuiIconToggleButton configButton;
-	private final IngredientGridAll contents;
+	private final IngredientGridWithNavigation contents;
 	private final GuiTextFieldFilter searchField;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private Rectangle displayArea = new Rectangle();
@@ -65,7 +65,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	public IngredientListOverlay(IngredientFilter ingredientFilter) {
 		this.ingredientFilter = ingredientFilter;
 
-		this.contents = new IngredientGridAll(ingredientFilter);
+		this.contents = new IngredientGridWithNavigation(ingredientFilter, GridAlignment.LEFT);
+		ingredientFilter.addListener(() -> onSetFilterText(Config.getFilterText()));
 		this.searchField = new GuiTextFieldFilter(0, ingredientFilter);
 		this.configButton = ConfigButton.create(this);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents);

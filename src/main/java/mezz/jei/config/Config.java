@@ -564,7 +564,7 @@ public final class Config {
 
 	public static <V> void addIngredientToConfigBlacklist(IngredientFilter ingredientFilter, IIngredientRegistry ingredientRegistry, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
 		IIngredientType<V> ingredientType = ingredientRegistry.getIngredientType(ingredient);
-		IIngredientListElement<V> element = IngredientListElementFactory.createElement(ingredientRegistry, ingredientType, ingredient, ForgeModIdHelper.getInstance());
+		IIngredientListElement<V> element = IngredientListElementFactory.createUnorderedElement(ingredientRegistry, ingredientType, ingredient, ForgeModIdHelper.getInstance());
 		Preconditions.checkNotNull(element, "Failed to create element for blacklist");
 
 		// combine item-level blacklist into wildcard-level ones
@@ -612,7 +612,7 @@ public final class Config {
 
 	public static <V> void removeIngredientFromConfigBlacklist(IngredientFilter ingredientFilter, IIngredientRegistry ingredientRegistry, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
 		IIngredientType<V> ingredientType = ingredientRegistry.getIngredientType(ingredient);
-		IIngredientListElement<V> element = IngredientListElementFactory.createElement(ingredientRegistry, ingredientType, ingredient, ForgeModIdHelper.getInstance());
+		IIngredientListElement<V> element = IngredientListElementFactory.createUnorderedElement(ingredientRegistry, ingredientType, ingredient, ForgeModIdHelper.getInstance());
 		Preconditions.checkNotNull(element, "Failed to create element for blacklist");
 
 		boolean updated = false;

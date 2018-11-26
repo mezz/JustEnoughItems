@@ -37,11 +37,13 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	private static final int INGREDIENT_PADDING = 1;
 	public static final int INGREDIENT_WIDTH = GuiItemStackGroup.getWidth(INGREDIENT_PADDING);
 	public static final int INGREDIENT_HEIGHT = GuiItemStackGroup.getHeight(INGREDIENT_PADDING);
+	private final GridAlignment alignment;
 
 	private Rectangle area = new Rectangle();
 	protected final IngredientListBatchRenderer guiIngredientSlots;
 
-	public IngredientGrid() {
+	public IngredientGrid(GridAlignment alignment) {
+		this.alignment = alignment;
 		this.guiIngredientSlots = new IngredientListBatchRenderer();
 	}
 
@@ -56,7 +58,12 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		final int ingredientsWidth = columns * INGREDIENT_WIDTH;
 		final int width = Math.max(ingredientsWidth, minWidth);
 		final int height = rows * INGREDIENT_HEIGHT;
-		final int x = availableArea.x + (availableArea.width - width);
+		final int x;
+		if (alignment == GridAlignment.LEFT) {
+			x = availableArea.x + (availableArea.width - width);
+		} else {
+			x = availableArea.x;
+		}
 		final int y = availableArea.y + (availableArea.height - height) / 2;
 		final int xOffset = x + Math.max(0, (width - ingredientsWidth) / 2);
 

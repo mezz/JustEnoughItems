@@ -82,8 +82,8 @@ public class JeiStarter {
 		Internal.setIngredientFilter(ingredientFilter);
 		timer.stop();
 
-		timer.start("Building bookmark list");
-		BookmarkList bookmarkList = new BookmarkList();
+		timer.start("Building bookmarks");
+		BookmarkList bookmarkList = new BookmarkList(ingredientRegistry);
 		bookmarkList.loadBookmarks();
 		Internal.setBookmarkList(bookmarkList);
 		timer.stop();

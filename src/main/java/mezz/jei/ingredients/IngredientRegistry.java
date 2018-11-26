@@ -345,7 +345,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	public <V> boolean isIngredientVisible(V ingredient, IngredientFilter ingredientFilter) {
 		IIngredientType<V> ingredientType = getIngredientType(ingredient);
-		IIngredientListElement<V> element = IngredientListElementFactory.createElement(this, ingredientType, ingredient, modIdHelper);
+		IIngredientListElement<V> element = IngredientListElementFactory.createUnorderedElement(this, ingredientType, ingredient, modIdHelper);
 		if (element == null) {
 			return false;
 		}
