@@ -13,20 +13,39 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemShears;
-import scala.Int;
-import java.util.*;
+//import scala.Int;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.annotation.Nullable;
+
+import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
 
 import com.google.common.collect.Multimap;
 
 public final class IngredientListElementComparator implements Comparator<IIngredientListElement> {
-	public static final IngredientListElementComparator INSTANCE = new IngredientListElementComparator();
+	//public static final IngredientListElementComparator INSTANCE = new IngredientListElementComparator();
 
-	public static ArrayList<SortEntry> entries = new ArrayList<SortEntry>();
-	public static ArrayList<SortEntry> list = new ArrayList<SortEntry>();
+	public static ArrayList<SortEntry> entries = new ArrayList<>();
+	private ArrayList<SortEntry> list = new ArrayList<>();
 	private static boolean areDefaultEntriesLoaded = false;
 
-	private IngredientListElementComparator() {
+	public IngredientListElementComparator() {
+		if (entries.size() == 0) {
+			initConfig(); // emergency initializer, probably happened already.
+		}
+		loadConfig(Config.getSortOrder());
+	}
 
+	public IngredientListElementComparator(String itemSortConfig) {
+		if (entries.size() == 0) {
+			initConfig(); // emergency initializer, probably happened already.
+		}
+		loadConfig(itemSortConfig);
 	}
 
 	public static class SortEntry {
@@ -58,12 +77,6 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 
 	@Override
 	public int compare(IIngredientListElement o1, IIngredientListElement o2) {
-		if (list.size() == 0) {
-			initConfig(); // emergency initializer, probably happened already.
-			// This should be the first time this gets hit after each config (re)load.
-			// This should allow enough time for other mods to load their options.
-			loadConfig(Config.getSortOrder());
-		}
 
 		for (SortEntry entry : list) {
 			int comparison = 0;
@@ -72,12 +85,10 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 			} else if (entry.itemStackComparator != null) {
 				ItemStack itemStack1 = getItemStack(o1);
 				ItemStack itemStack2 = getItemStack(o2);
-				if (itemStack1 == null && itemStack2 == null) {
-					comparison = 0;
-				} else if (itemStack1 != null && itemStack2 == null) {
-					comparison = -1;
-				} else if (itemStack1 == null && itemStack2 != null) {
-					comparison = 1;
+				int haveItemStack1 = itemStack1 != null ? 1 : 0;
+				int haveItemStack2 = itemStack2 != null ? 1 : 0;
+				if (itemStack1 == null || itemStack2 == null) {
+					comparison = haveItemStack2 - haveItemStack1;
 				} else {
 					comparison = entry.itemStackComparator.compare(itemStack1, itemStack2);
 				}
@@ -98,14 +109,6 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 		return null;
 	}
 
-	public static int compareInt(int a, int b) {
-		return a == b ? 0 : a < b ? -1 : 1;
-	}
-	
-	public static int compareDouble(double a, double b) {
-		return b > a ? -1 : (b < a ? 1 : 0);
-	}
-
 	public static void add(String name, Comparator<ItemStack> comparator) {
 		SortEntry existingEntry = find(name);
 		if (existingEntry == null) {
@@ -113,9 +116,6 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 			entries.add(newEntry);
 			existingEntry = newEntry;
 		}
-		ArrayList<SortEntry> templist = new ArrayList<SortEntry>(list);
-		templist.add(existingEntry);
-		list = templist;// concurrency
 	}
 
 	private static void addListElementComparison(String name, Comparator<IIngredientListElement> comparator) {
@@ -126,9 +126,6 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 			entries.add(newEntry);
 			existingEntry = newEntry;
 		}
-		ArrayList<SortEntry> templist = new ArrayList<SortEntry>(list);
-		templist.add(existingEntry);
-		list = templist;// concurrency
 	}
 
 	public static String initConfig(/* ConfigTagParent tag */) {
@@ -190,7 +187,7 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 			public int compare(ItemStack o1, ItemStack o2) {
 				int id1 = Item.getIdFromItem(o1.getItem());
 				int id2 = Item.getIdFromItem(o2.getItem());
-				return compareInt(id1, id2);
+				return Integer.compare(id1, id2);
 			}
 		});
 
@@ -202,7 +199,7 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 			public int compare(IIngredientListElement o1, IIngredientListElement o2) {
 				final Integer order1 = o1.getOrderIndex();
 				final Integer order2 = o2.getOrderIndex();
-				return compareInt(order1, order2);
+				return Integer.compare(order1, order2);
 			}
 		});
 
@@ -214,7 +211,7 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 			public int compare(ItemStack o1, ItemStack o2) {
 				int damage1 = o1.getItemDamage();
 				int damage2 = o2.getItemDamage();
-				return compareInt(damage1, damage2);
+				return Integer.compare(damage1, damage2);
 			}
 		});
 
@@ -299,15 +296,15 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 					int harvestLevel2 = item2.getHarvestLevel(itemStack2, toolClass2, null, null);
 					int toolLevelComparison = harvestLevel2 - harvestLevel1;
 					if (toolLevelComparison != 0) {
-						return compareInt(harvestLevel2 , harvestLevel1);
+						return Integer.compare(harvestLevel2 , harvestLevel1);
 					}
 				}
 
 				// If all else is the same, sort the highest-durability tool first.
 				// No durability is treated as basically infinite.
-				int durability1 = itemStack1.getMaxDamage() <= 0 ? Int.MaxValue() : itemStack1.getMaxDamage();
-				int durability2 = itemStack2.getMaxDamage() <= 0 ? Int.MaxValue() : itemStack2.getMaxDamage();
-				return compareInt(durability2 , durability1);
+				int durability1 = itemStack1.getMaxDamage() <= 0 ? Integer.MAX_VALUE : itemStack1.getMaxDamage();
+				int durability2 = itemStack2.getMaxDamage() <= 0 ? Integer.MAX_VALUE : itemStack2.getMaxDamage();
+				return Integer.compare(durability2 , durability1);
 
 			}
 		});
@@ -344,14 +341,14 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 					Double attackDamage1 = ((AttributeModifier) damageMap1.toArray()[0]).getAmount();
 					Double attackDamage2 = ((AttributeModifier) damageMap2.toArray()[0]).getAmount();
 					// This funny comparison is because Double == Double never seems to work.
-					int damageComparison = compareDouble(attackDamage2, attackDamage1);
+					int damageComparison = Double.compare(attackDamage2, attackDamage1);
 					if (damageComparison == 0 && hasSpeed1 && hasSpeed2) {
 						// Same damage, sort faster weapon first.
 						Collection<AttributeModifier> speedMap1 = multimap1.get(attackSpeedName);
 						Collection<AttributeModifier> speedMap2 = multimap2.get(attackSpeedName);
 						Double speed1 = ((AttributeModifier) speedMap1.toArray()[0]).getAmount();
 						Double speed2 = ((AttributeModifier) speedMap2.toArray()[0]).getAmount();
-						int speedComparison = compareDouble(speed2, speed1);
+						int speedComparison = Double.compare(speed2, speed1);
 						if (speedComparison != 0)
 							return speedComparison;
 					} else if (damageComparison != 0) {
@@ -359,9 +356,9 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 						return damageComparison;
 					}
 					// Most durability if everything else is the same.
-					int durability1 = itemStack1.getMaxDamage() <= 0 ? Int.MaxValue() : itemStack1.getMaxDamage();
-					int durability2 = itemStack2.getMaxDamage() <= 0 ? Int.MaxValue() : itemStack2.getMaxDamage();
-					return compareInt(durability2 , durability1);
+					int durability1 = itemStack1.getMaxDamage() <= 0 ? Integer.MAX_VALUE : itemStack1.getMaxDamage();
+					int durability2 = itemStack2.getMaxDamage() <= 0 ? Integer.MAX_VALUE : itemStack2.getMaxDamage();
+					return Integer.compare(durability2 , durability1);
 				}
 			}
 		});
@@ -395,15 +392,16 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 						return a2.toughness > a1.toughness ? -1 : 1;
 					}
 					// Most durability if everything else is the same.
-					int durability1 = itemStack1.getMaxDamage() <= 0 ? Int.MaxValue() : itemStack1.getMaxDamage();
-					int durability2 = itemStack2.getMaxDamage() <= 0 ? Int.MaxValue() : itemStack2.getMaxDamage();
-					return compareInt(durability2 , durability1);
+					int durability1 = itemStack1.getMaxDamage() <= 0 ? Integer.MAX_VALUE : itemStack1.getMaxDamage();
+					int durability2 = itemStack2.getMaxDamage() <= 0 ? Integer.MAX_VALUE : itemStack2.getMaxDamage();
+					return Integer.compare(durability2 , durability1);
 				}
 			}
 		});
 
 	}
 
+	@Nullable
 	private static <V> ItemStack getItemStack(IIngredientListElement<V> ingredientListElement) {
 		Object ingredient = ingredientListElement.getIngredient();
 		if (ingredient instanceof ItemStack) {
@@ -472,11 +470,11 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 		return workingList;
 	}
 
-	public static void loadConfig(String itemSortConfig) {
+	public void loadConfig(String itemSortConfig) {
 		list = fromSaveString(itemSortConfig);
 	}
 
-	public static void clearList() {
+	public void clearList() {
 		// Next time the comparator function gets called, it will pull the order from the config.
 		list = new ArrayList<SortEntry>();
 	}

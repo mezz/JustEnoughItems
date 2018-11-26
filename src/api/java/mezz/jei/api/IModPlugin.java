@@ -1,13 +1,10 @@
 package mezz.jei.api;
 
-import java.util.Comparator;
-
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
-import net.minecraft.item.ItemStack;
 
 /**
- * The main class to implement to create a JEI plugin. Everything communicated between a mod and JEI is through this class. 
+ * The main class to implement to create a JEI plugin. Everything communicated between a mod and JEI is through this class.
  * IModPlugins must have the {@link JEIPlugin} annotation to get loaded by JEI.
  */
 public interface IModPlugin {
@@ -31,7 +28,7 @@ public interface IModPlugin {
 	}
 
 	/**
-	 * Register the categories handled by this plugin. 
+	 * Register the categories handled by this plugin.
 	 * These are registered before recipes so they can be checked for validity.
 	 *
 	 * @since JEI 4.5.0
@@ -55,5 +52,4 @@ public interface IModPlugin {
 	default void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 
 	}
-
 }

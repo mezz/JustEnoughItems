@@ -4,6 +4,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.Log;
@@ -25,9 +26,19 @@ public final class IngredientListElementFactory {
 		}
 
 		try {
-			ingredientListElements.sort(IngredientListElementComparator.INSTANCE);
-		} catch (IllegalArgumentException ex) {
-			Log.get().error("Item sorting failed.  Aborting sort.", ex);
+			ingredientListElements.sort(new IngredientListElementComparator());
+		} catch (Exception ex) {
+			if (Config.isDebugModeEnabled()) {
+				//If you are developing a new sorting option, you probably want it to stay stopped to see what it did. 
+				Log.get().error("Item sorting failed.  Aborting sort.", ex);
+			} else {
+				Log.get().error("Item sorting failed.  Using old method.", ex);
+				try {
+					ingredientListElements.sort(IngredientListElementClassicComparator.INSTANCE);
+				} catch (Exception ex2) {
+					Log.get().error("Classic Item sorting failed.  Aborting sort.", ex2);
+				}					
+			}
 		}
 		return ingredientListElements;
 	}

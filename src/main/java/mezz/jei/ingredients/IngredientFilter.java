@@ -42,7 +42,7 @@ public class IngredientFilter implements IIngredientFilter {
 
 	private final IngredientBlacklistInternal blacklist;
 	/**
-	 * indexed list of ingredients for use with the suffix trees 
+	 * indexed list of ingredients for use with the suffix trees
 	 * includes all elements (even hidden ones) for use when rebuilding
 	 */
 	private final NonNullList<IIngredientListElement> elementList;
@@ -172,9 +172,9 @@ public class IngredientFilter implements IIngredientFilter {
 	public <V> void updateHiddenState(IIngredientListElement<V> element) {
 		V ingredient = element.getIngredient();
 		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
-		boolean visible = !blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper) && 
-				ingredientHelper.isIngredientOnServer(ingredient) && 
-				(Config.isHideModeEnabled() || !Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
+		boolean visible = !blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper) &&
+			ingredientHelper.isIngredientOnServer(ingredient) &&
+			(Config.isHideModeEnabled() || !Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
 		if (element.isVisible() != visible) {
 			element.setVisible(visible);
 			this.filterCached = null;
@@ -185,10 +185,20 @@ public class IngredientFilter implements IIngredientFilter {
 		String filterText = Translator.toLowercaseWithLocale(Config.getFilterText());
 		if (!filterText.equals(filterCached)) {
 			List<IIngredientListElement> ingredientList = getIngredientListUncached(filterText);
-			try {
-				ingredientList.sort(IngredientListElementComparator.INSTANCE);
-			} catch (IllegalArgumentException ex) {
-				Log.get().error("Item sorting failed.  Aborting sort.", ex);
+			try {				
+				ingredientList.sort(new IngredientListElementComparator());
+			} catch (Exception ex) {
+				if (Config.isDebugModeEnabled()) {
+					//If you are developing a new sorting option, you probably want it to stay stopped to see what it did.
+					Log.get().error("Item sorting failed.  Aborting sort.", ex);
+				} else {
+					Log.get().error("Item sorting failed.  Using old method.", ex);
+					try {
+						ingredientList.sort(IngredientListElementClassicComparator.INSTANCE);
+					} catch (Exception ex2) {
+						Log.get().error("Classic Item sorting failed.  Aborting sort.", ex2);
+					}					
+				}
 			}
 			ingredientListCached = Collections.unmodifiableList(ingredientList);
 			filterCached = filterText;
@@ -371,7 +381,7 @@ public class IngredientFilter implements IIngredientFilter {
 	}
 
 	/**
-	 * Efficiently get the elements contained in both sets. 
+	 * Efficiently get the elements contained in both sets.
 	 * Note that this implementation will alter the original sets.
 	 */
 	private static IntSet intersection(IntSet set1, IntSet set2) {

@@ -75,7 +75,7 @@ public final class Config {
 
 	public static boolean isOverlayEnabled() {
 		return values.overlayEnabled || 
-				KeyBindings.toggleOverlay.getKeyCode() == 0; // if there is no key binding to enable it, don't allow the overlay to be disabled
+			KeyBindings.toggleOverlay.getKeyCode() == 0; // if there is no key binding to enable it, don't allow the overlay to be disabled
 	}
 
 	public static void toggleOverlayEnabled() {
@@ -276,7 +276,6 @@ public final class Config {
 			// Reset the list so the user can reset the order and the comparator knows to
 			// load it. Do not load now because other mods may add options between now and
 			// when it needs to test the list.
-			IngredientListElementComparator.clearList();
 			Property property = config.get(CATEGORY_ADVANCED, "itemSortList", defaultValues.itemSortlist);
 			property.set(values.itemSortlist);
 
@@ -627,8 +626,7 @@ public final class Config {
 
 		boolean updated = false;
 
-		// deconstruct any mod-id blacklists into lower-level ones first. mod-id
-		// blacklist is deprecated
+		// deconstruct any mod-id blacklists into lower-level ones first. mod-id blacklist is deprecated
 		{
 			final String modUid = getIngredientUid(ingredient, IngredientBlacklistType.MOD_ID, ingredientHelper);
 			if (itemBlacklist.contains(modUid)) {
@@ -708,16 +706,16 @@ public final class Config {
 	 * https://stackoverflow.com/questions/6701948/efficient-way-to-compare-version-strings-in-java
 	 * Compares two version strings.
 	 *
-	 * Use this instead of String.compareTo() for a non-lexicographical 
+	 * Use this instead of String.compareTo() for a non-lexicographical
 	 * comparison that works for version strings. e.g. "1.10".compareTo("1.6").
 	 *
 	 * note It does not work if "1.10" is supposed to be equal to "1.10.0".
 	 *
 	 * @param str1 a string of ordinal numbers separated by decimal points.
 	 * @param str2 a string of ordinal numbers separated by decimal points.
-	 * @return The result is a negative integer if str1 is _numerically_ less than str2. 
-	 *         The result is a positive integer if str1 is _numerically_ greater than str2. 
-	 *         The result is zero if the strings are_numerically_ equal.
+	 * @return The result is a negative integer if str1 is _numerically_ less than str2.
+	 *         The result is a positive integer if str1 is _numerically_ greater than str2.
+	 *         The result is zero if the strings are _numerically_ equal.
 	 */
 	private static int versionCompare(String str1, String str2) {
 		String[] vals1 = str1.split("\\.");
