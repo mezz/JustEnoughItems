@@ -4,6 +4,7 @@ import mezz.jei.config.Constants;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTool;
+import net.minecraftforge.oredict.OreDictionary;
 import mezz.jei.config.Config;
 import mezz.jei.util.Translator;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -22,6 +23,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -77,7 +79,7 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 
 	@Override
 	public int compare(IIngredientListElement o1, IIngredientListElement o2) {
-
+		//o1.getIngredient()
 		for (SortEntry entry : list) {
 			int comparison = 0;
 			if (entry.ingredientComparator != null) {
@@ -141,6 +143,7 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 		addToolComparator();
 		addMeleeComparator();
 		addArmorComparator();
+		addDictionaryComparator();
 		addMinecraftComparator();
 		addModComparator();
 		addNameComparator();
@@ -396,6 +399,42 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 					int durability2 = itemStack2.getMaxDamage() <= 0 ? Integer.MAX_VALUE : itemStack2.getMaxDamage();
 					return Integer.compare(durability2 , durability1);
 				}
+			}
+		});
+
+	}
+	
+	private static String getBestDictionaryName(ItemStack itemStack)
+	{
+		String bestOreName = "";
+		int most = 0;
+		for (int oreId : OreDictionary.getOreIDs(itemStack)) {
+			String oreName = OreDictionary.getOreName(oreId);
+			String oreNameLowercase = oreName.toLowerCase(Locale.ENGLISH);
+			int cnt = OreDictionary.getOres(oreName).size();
+			if (cnt > most) {
+				most = cnt;
+				bestOreName = oreNameLowercase;
+			} else if (cnt == most && oreNameLowercase.compareTo(bestOreName) < 0) {
+				bestOreName = oreNameLowercase;
+			}
+		}
+		
+		return bestOreName;
+	}
+	
+	private static void addDictionaryComparator() {
+		// Ore Dictionary sorting.
+		add("dictionary", new Comparator<ItemStack>() {
+			@Override
+			public int compare(ItemStack o1, ItemStack o2) {
+				String oreName1 = getBestDictionaryName(o1);
+				String oreName2 = getBestDictionaryName(o2);
+				if (oreName1 == oreName2 ) return 0;
+				else if (oreName1 == "") return 1;
+				else if (oreName2 == "") return -1;
+				
+				return oreName1.compareTo(oreName2);
 			}
 		});
 
