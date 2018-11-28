@@ -4,6 +4,8 @@ import mezz.jei.config.Constants;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTool;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.oredict.OreDictionary;
 import mezz.jei.config.Config;
 import mezz.jei.util.Translator;
@@ -52,8 +54,10 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 
 	public static class SortEntry {
 		public String name;
-		// External interfaces only have access to ItemStacks, sorry fluids.
+		// Most External interfaces will likely only do ItemStacks.
 		public Comparator<ItemStack> itemStackComparator;
+		// Smarter External interfaces will work with whatever getIngredient() sends them.
+		public Comparator<Object> objectComparator;
 		// This is the internal comparator, fluids supported here.
 		public Comparator<IIngredientListElement> ingredientComparator;
 
@@ -85,15 +89,15 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 			if (entry.ingredientComparator != null) {
 				comparison = entry.ingredientComparator.compare(o1, o2);
 			} else if (entry.itemStackComparator != null) {
-				ItemStack itemStack1 = getItemStack(o1);
-				ItemStack itemStack2 = getItemStack(o2);
-				int haveItemStack1 = itemStack1 != null ? 1 : 0;
-				int haveItemStack2 = itemStack2 != null ? 1 : 0;
-				if (itemStack1 == null || itemStack2 == null) {
-					comparison = haveItemStack2 - haveItemStack1;
+				ItemStack itemStack1 = getSneakyItemStack(o1);  //FluidStacks return buckets.
+				ItemStack itemStack2 = getSneakyItemStack(o2);  //FluidStacks return buckets.
+				if (itemStack1 == null && itemStack2 == null) {
+					comparison = 0;
 				} else {
 					comparison = entry.itemStackComparator.compare(itemStack1, itemStack2);
 				}
+			} else if (entry.objectComparator != null) {
+				comparison = entry.objectComparator.compare(o1.getIngredient(), o2.getIngredient());
 			}
 			if (comparison != 0) {
 				return comparison;
@@ -111,12 +115,20 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 		return null;
 	}
 
-	public static void add(String name, Comparator<ItemStack> comparator) {
+	public static void addItemStackComparison(String name, Comparator<ItemStack> comparator) {
 		SortEntry existingEntry = find(name);
 		if (existingEntry == null) {
 			SortEntry newEntry = new SortEntry(name, comparator);
 			entries.add(newEntry);
-			existingEntry = newEntry;
+		}
+	}
+
+	public static void addObjectComparison(String name, Comparator<Object> comparator) {
+		SortEntry existingEntry = find(name);
+		if (existingEntry == null) {
+			SortEntry newEntry = new SortEntry(name);
+			newEntry.objectComparator = comparator;
+			entries.add(newEntry);
 		}
 	}
 
@@ -126,7 +138,6 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 			SortEntry newEntry = new SortEntry(name);
 			newEntry.ingredientComparator = comparator;
 			entries.add(newEntry);
-			existingEntry = newEntry;
 		}
 	}
 
@@ -184,12 +195,33 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 		});
 	}
 	
+	/* 
+	 * This could be more easily implemented as addItemStackComparison
+	 * But has been intentionally set up like this to demonstrate
+	 * how to implement a comparator for addIngredientListObjectSorter
+	 */
 	private static void addIdComparator() {
-		add("id", new Comparator<ItemStack>() {
+		addObjectComparison("id", new Comparator<Object>() {
 			@Override
-			public int compare(ItemStack o1, ItemStack o2) {
-				int id1 = Item.getIdFromItem(o1.getItem());
-				int id2 = Item.getIdFromItem(o2.getItem());
+			public int compare(Object o1, Object o2) {
+				//Sort unknown items to the very end of the results:
+				int id1 = Integer.MAX_VALUE;
+				int id2 = Integer.MAX_VALUE;
+				
+				if (o1 instanceof ItemStack)
+					id1 = Item.getIdFromItem(((ItemStack)o1).getItem());
+				if (o2 instanceof ItemStack)
+					id2 = Item.getIdFromItem(((ItemStack)o2).getItem());
+				
+				if (o1 instanceof FluidStack) {
+					ItemStack bucket1 = FluidUtil.getFilledBucket((FluidStack)o1);
+					id1 = Item.getIdFromItem(bucket1.getItem());
+				}
+				if (o2 instanceof FluidStack) {
+					ItemStack bucket2 = FluidUtil.getFilledBucket((FluidStack)o2);
+					id2 = Item.getIdFromItem(bucket2.getItem());
+				}
+
 				return Integer.compare(id1, id2);
 			}
 		});
@@ -208,12 +240,15 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 
 	}
 	
+	/* 
+	 * Example comparator implementation for addIngredientListObjectSorter
+	 */
 	private static void addDamageComparator() {
-		add("damage", new Comparator<ItemStack>() {
+		addObjectComparison("damage", new Comparator<Object>() {
 			@Override
-			public int compare(ItemStack o1, ItemStack o2) {
-				int damage1 = o1.getItemDamage();
-				int damage2 = o2.getItemDamage();
+			public int compare(Object o1, Object o2) {				
+				int damage1 = (o1 instanceof ItemStack) ? ((ItemStack)o1).getItemDamage() : 0;
+				int damage2 = (o2 instanceof ItemStack) ? ((ItemStack)o2).getItemDamage() : 0;
 				return Integer.compare(damage1, damage2);
 			}
 		});
@@ -233,7 +268,7 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 		});
 
 	}
-
+	
 	private static String getToolClass(ItemStack itemStack, Item item)
 	{
 		if (itemStack == null || item == null) return "";
@@ -269,27 +304,32 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 		return (String) toolClassSet.toArray()[0];
 	}
 	
+	/* 
+	 * Example comparator implementation for addIngredientListItemStackSorter
+	 */
 	private static void addToolComparator() {
-		addListElementComparison("tool", new Comparator<IIngredientListElement>() {
+		addItemStackComparison("tool", new Comparator<ItemStack>() {
 			@Override
-			public int compare(IIngredientListElement o1, IIngredientListElement o2) {
-				ItemStack itemStack1 = getItemStack(o1);
-				ItemStack itemStack2 = getItemStack(o2);
-				if (itemStack1 == null && itemStack2 == null)
-					return 0;
+			public int compare(ItemStack itemStack1, ItemStack itemStack2) {
+				//We can't just give up because one of the inputs is null.
+				//We still have to decide if the not-null input is a tool or not.
+				//And pretend the null is not a tool and sort accordingly.
+				//This is required or else the comparator contract will be violated.
+				//The calling comparator is nice enough to not call this if both are null.
+				//However, the result would be valid with two null inputs.
+				
 				Item item1 = itemStack1 != null ? itemStack1.getItem() : null;
 				Item item2 = itemStack2 != null ? itemStack2.getItem() : null;
 
 				String toolClass1 = getToolClass(itemStack1, item1);
 				String toolClass2 = getToolClass(itemStack2, item2);
-				// These are ints so I can subtract for a comparison value later instead of
-				// booleans.
-				int isTool1 = toolClass1 != "" ? 1 : 0;
-				int isTool2 = toolClass2 != "" ? 1 : 0;
-				if (isTool1 == 0 || isTool2 == 0) {
+
+				boolean isTool1 = toolClass1 != "";
+				boolean isTool2 = toolClass2 != "";
+				if (!isTool1  || !isTool2 ) {
 					//This should catch any instances where one of the stacks is null.
-					return isTool2 - isTool1;
-				} else if (isTool1 == 1 && isTool2 == 1) {
+					return Boolean.compare(isTool2, isTool1);
+				} else {
 					int toolClassComparison = toolClass1.compareTo(toolClass2);
 					if (toolClassComparison != 0) {
 						return toolClassComparison;
@@ -314,17 +354,15 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 
 	}
 	
+	/* 
+	 * Example comparator implementation for addIngredientListItemStackSorter
+	 */
 	private static void addMeleeComparator() {
 		// Sort by melee damage and speed (Sort by Tool first if you don't want swords
 		// and tools mixed together.
-		addListElementComparison("melee", new Comparator<IIngredientListElement>() {
+		addItemStackComparison("melee", new Comparator<ItemStack>() {
 			@Override
-			public int compare(IIngredientListElement o1, IIngredientListElement o2) {
-				ItemStack itemStack1 = getItemStack(o1);
-				ItemStack itemStack2 = getItemStack(o2);
-				if (itemStack1 == null && itemStack2 == null)
-					return 0;
-
+			public int compare(ItemStack itemStack1, ItemStack itemStack2) {
 				Multimap<String, AttributeModifier> multimap1 = itemStack1 != null ? itemStack1.getAttributeModifiers(EntityEquipmentSlot.MAINHAND) : null;
 				Multimap<String, AttributeModifier> multimap2 = itemStack2 != null ? itemStack2.getAttributeModifiers(EntityEquipmentSlot.MAINHAND) : null;
 
@@ -337,7 +375,7 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 				boolean hasSpeed2 = itemStack2 != null ? multimap2.containsKey(attackSpeedName) : false;
 
 				if (!hasDamage1 || !hasDamage2) {
-					return (hasDamage2 ? 1 : 0) - (hasDamage1 ? 1 : 0);
+					return Boolean.compare(hasDamage2, hasDamage1);
 				} else {
 					Collection<AttributeModifier> damageMap1 = multimap1.get(attackDamageName);
 					Collection<AttributeModifier> damageMap2 = multimap2.get(attackDamageName);
@@ -368,15 +406,14 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 
 	}
 	
+	/* 
+	 * Example comparator implementation for addIngredientListItemStackSorter
+	 */
 	private static void addArmorComparator() {
 		// Armor sorting, High to low AC.
-		addListElementComparison("armor", new Comparator<IIngredientListElement>() {
+		addItemStackComparison("armor", new Comparator<ItemStack>() {
 			@Override
-			public int compare(IIngredientListElement o1, IIngredientListElement o2) {
-				ItemStack itemStack1 = getItemStack(o1);
-				ItemStack itemStack2 = getItemStack(o2);
-				if (itemStack1 == null && itemStack2 == null)
-					return 0;
+			public int compare(ItemStack itemStack1, ItemStack itemStack2) {
 				Item item1 = itemStack1 != null ? itemStack1.getItem() : null;
 				Item item2 = itemStack2 != null ? itemStack2.getItem() : null;
 				int isArmor1 = (item1 instanceof ItemArmor) ? 1 : 0;
@@ -406,6 +443,8 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 	
 	private static String getBestDictionaryName(ItemStack itemStack)
 	{
+		if (itemStack == null || itemStack.isEmpty()) 
+			return "";
 		String bestOreName = "";
 		int most = 0;
 		for (int oreId : OreDictionary.getOreIDs(itemStack)) {
@@ -423,9 +462,12 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 		return bestOreName;
 	}
 	
+	/* 
+	 * Example comparator implementation for addIngredientListItemStackSorter
+	 */
 	private static void addDictionaryComparator() {
 		// Ore Dictionary sorting.
-		add("dictionary", new Comparator<ItemStack>() {
+		addItemStackComparison("dictionary", new Comparator<ItemStack>() {
 			@Override
 			public int compare(ItemStack o1, ItemStack o2) {
 				String oreName1 = getBestDictionaryName(o1);
@@ -441,10 +483,26 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 	}
 
 	@Nullable
-	private static <V> ItemStack getItemStack(IIngredientListElement<V> ingredientListElement) {
+	private static ItemStack getItemStack(IIngredientListElement ingredientListElement) {
 		Object ingredient = ingredientListElement.getIngredient();
 		if (ingredient instanceof ItemStack) {
 			return ((ItemStack) ingredient);
+		}
+		return null;
+
+	}
+
+	@Nullable
+	private static ItemStack getSneakyItemStack(IIngredientListElement ingredientListElement) {
+		Object ingredient = ingredientListElement.getIngredient();
+		if (ingredient instanceof ItemStack) {
+			return ((ItemStack) ingredient);
+		}
+		
+		//This is sneaky because it silently converts FluidStacks to 
+		//an ItemStack of a bucket of that fluid.
+		if (ingredient instanceof FluidStack) {
+			return FluidUtil.getFilledBucket((FluidStack)ingredient);			
 		}
 		return null;
 

@@ -309,13 +309,24 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	}
 	
 	@Override
-	public void addIngredientListSorter(String name, Comparator<ItemStack> comparator) {		
+	public void addIngredientListItemStackSorter(String name, Comparator<ItemStack> comparator) {		
 		ErrorUtil.checkNotEmpty(name, "addIngredientListSorter requires a sort option name.");
 		Preconditions.checkArgument(!name.trim().isEmpty(), "addIngredientListSorter requires a sort option name.");
 		Preconditions.checkArgument(!name.contains(","), "addIngredientListSorter sort option name, '" + name + "', cannot contain commas.");
 		ErrorUtil.checkNotNull(comparator, "addIngredientListSorter sorting option, '" + name + "', requires a comparator object  (null provided).");
 		
-		IngredientListElementComparator.add(name.trim(), comparator);		
+		IngredientListElementComparator.addItemStackComparison(name.trim(), comparator);		
+		Config.updateSortOrder();		
+	}
+
+	@Override
+	public void addIngredientListObjectSorter(String name, Comparator<Object> comparator) {		
+		ErrorUtil.checkNotEmpty(name, "addIngredientListSorter requires a sort option name.");
+		Preconditions.checkArgument(!name.trim().isEmpty(), "addIngredientListSorter requires a sort option name.");
+		Preconditions.checkArgument(!name.contains(","), "addIngredientListSorter sort option name, '" + name + "', cannot contain commas.");
+		ErrorUtil.checkNotNull(comparator, "addIngredientListSorter sorting option, '" + name + "', requires a comparator object  (null provided).");
+		
+		IngredientListElementComparator.addObjectComparison(name.trim(), comparator);		
 		Config.updateSortOrder();		
 	}
 
