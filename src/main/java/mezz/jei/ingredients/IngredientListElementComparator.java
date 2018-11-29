@@ -8,6 +8,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.oredict.OreDictionary;
 import mezz.jei.config.Config;
+import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -83,7 +84,6 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 
 	@Override
 	public int compare(IIngredientListElement o1, IIngredientListElement o2) {
-		//o1.getIngredient()
 		for (SortEntry entry : list) {
 			int comparison = 0;
 			if (entry.ingredientComparator != null) {
@@ -106,6 +106,36 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 		return 0;
 	}
 
+	public int debugCompare(IIngredientListElement o1, IIngredientListElement o2) {
+		int finalComparison = 0;
+		String details = o1.getModNameForSorting() + ":" + o1.getResourceId() + ":" + o1.getDisplayName() + " vs " + o2.getModNameForSorting() + ":" + o2.getResourceId() + ":" + o2.getDisplayName() + ": ";
+		Log.get().info(details);
+		details = "";
+		for (SortEntry entry : list) {
+			int comparison = 0;
+			if (entry.ingredientComparator != null) {
+				comparison = entry.ingredientComparator.compare(o1, o2);
+			} else if (entry.itemStackComparator != null) {
+				ItemStack itemStack1 = getSneakyItemStack(o1);  //FluidStacks return buckets.
+				ItemStack itemStack2 = getSneakyItemStack(o2);  //FluidStacks return buckets.
+				if (itemStack1 == null && itemStack2 == null) {
+					comparison = 0;
+				} else {
+					comparison = entry.itemStackComparator.compare(itemStack1, itemStack2);
+				}
+			} else if (entry.objectComparator != null) {
+				comparison = entry.objectComparator.compare(o1.getIngredient(), o2.getIngredient());
+			}
+			details += entry.name + " (" + comparison + "), ";
+			if (comparison != 0 && finalComparison == 0) {
+				finalComparison = comparison;
+			}
+		}
+		Log.get().info(details + "final: " + finalComparison);
+		return finalComparison;
+	}
+
+	
 	public static SortEntry find(String name) {
 		for (SortEntry entry : entries) {
 			if (entry.name.equals(name)) {

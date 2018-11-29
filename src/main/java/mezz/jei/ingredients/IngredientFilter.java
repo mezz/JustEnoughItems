@@ -191,6 +191,7 @@ public class IngredientFilter implements IIngredientFilter {
 				if (Config.isDebugModeEnabled()) {
 					//If you are developing a new sorting option, you probably want it to stay stopped to see what it did.
 					Log.get().error("Item sorting failed.  Aborting sort.", ex);
+					IngredientListElementFactory.TheHuntForTheOffendingItems(ingredientList);
 				} else {
 					Log.get().error("Item sorting failed.  Using old method.", ex);
 					try {
