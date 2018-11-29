@@ -35,9 +35,11 @@ import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -541,6 +543,20 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	/**
+	 * Special case for EnchantmentData which replaces enchanted book items.
+	 */
+	@Nullable
+	private static ItemStack getEnchantBookFromEnchantData(IFocus<?> focus) {
+		Object ingredient = focus.getValue();
+		if (ingredient instanceof EnchantmentData) {
+			EnchantmentData enchantData = (EnchantmentData) ingredient;
+			return ItemEnchantedBook.getEnchantedItemStack(enchantData);
+		}
+
+		return null;
+	}
+
+	/**
 	 * Special case for ItemBlocks containing fluid blocks.
 	 * Nothing crafts those, the player probably wants to look up fluids.
 	 */
@@ -566,6 +582,10 @@ public class RecipeRegistry implements IRecipeRegistry {
 	public <V> List<IRecipeCategory> getRecipeCategories(IFocus<V> focus) {
 		focus = Focus.check(focus);
 
+		ItemStack enchantBook = getEnchantBookFromEnchantData(focus);
+		if (enchantBook != null) {
+			return getRecipeCategories(createFocus(focus.getMode(), enchantBook));
+		}
 		FluidStack fluidStack = getFluidFromItemBlock(focus);
 		if (fluidStack != null) {
 			return getRecipeCategories(createFocus(focus.getMode(), fluidStack));
@@ -599,6 +619,10 @@ public class RecipeRegistry implements IRecipeRegistry {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		focus = Focus.check(focus);
 
+		ItemStack enchantBook = getEnchantBookFromEnchantData(focus);
+		if (enchantBook != null) {
+			return getRecipeWrappers(recipeCategory, createFocus(focus.getMode(), enchantBook));
+		}
 		FluidStack fluidStack = getFluidFromItemBlock(focus);
 		if (fluidStack != null) {
 			return getRecipeWrappers(recipeCategory, createFocus(focus.getMode(), fluidStack));
