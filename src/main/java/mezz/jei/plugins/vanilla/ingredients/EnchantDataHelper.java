@@ -8,7 +8,6 @@ import java.util.List;
 import com.google.common.base.MoreObjects;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import net.minecraft.enchantment.EnchantmentData;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemStack;
 
@@ -62,9 +61,7 @@ public class EnchantDataHelper implements IIngredientHelper<EnchantmentData> {
 
 	@Override
 	public ItemStack getCheatItemStack(EnchantmentData ingredient) {
-		ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
-		ItemEnchantedBook.addEnchantment(enchantedBook, ingredient);
-		return enchantedBook;
+		return ItemEnchantedBook.getEnchantedItemStack(ingredient);
 	}
 
 	@Override
