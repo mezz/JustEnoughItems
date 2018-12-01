@@ -1,8 +1,6 @@
 package mezz.jei.gui.overlay.bookmarks;
 
-import mezz.jei.Internal;
 import mezz.jei.api.gui.IGuiProperties;
-import mezz.jei.config.Config;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IClickedIngredient;
@@ -24,6 +22,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 	private static final int NAVIGATION_HEIGHT = 20;
 
 	private final List<ILeftAreaContent> contents = new ArrayList<>();
+	private final JeiRuntime runtime;
 	private int current = 0;
 	@Nullable
 	private IGuiProperties guiProperties;
@@ -32,8 +31,9 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 	private final PageNavigation navigation;
 	private boolean canShow = false;
 
-	public LeftAreaDispatcher() {
-		navigation = new PageNavigation(this, false);
+	public LeftAreaDispatcher(JeiRuntime runtime) {
+		this.runtime = runtime;
+		this.navigation = new PageNavigation(this, false);
 	}
 
 	public void addContent(ILeftAreaContent content) {
@@ -68,10 +68,6 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 	public void updateScreen(@Nullable GuiScreen guiScreen) {
 		canShow = false;
 		if (hasContent()) {
-			JeiRuntime runtime = Internal.getRuntime();
-			if (runtime == null) {
-				return;
-			}
 			IGuiProperties currentGuiProperties = runtime.getGuiProperties(guiScreen);
 			if (currentGuiProperties == null) {
 				guiProperties = null;

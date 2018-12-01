@@ -93,9 +93,8 @@ public class JeiStarter {
 		Map<Class, IGuiScreenHandler> guiScreenHandlers = modRegistry.getGuiScreenHandlers();
 		Map<Class, IGhostIngredientHandler> ghostIngredientHandlers = modRegistry.getGhostIngredientHandlers();
 		IngredientListOverlay ingredientListOverlay = new IngredientListOverlay(ingredientFilter);
-		LeftAreaDispatcher leftAreaDispatcher = new LeftAreaDispatcher();
+
 		BookmarkOverlay bookmarkOverlay = new BookmarkOverlay(new Rectangle(), bookmarkList, jeiHelpers.getGuiHelper());
-		leftAreaDispatcher.addContent(bookmarkOverlay);
 		RecipesGui recipesGui = new RecipesGui(recipeRegistry);
 		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, ingredientListOverlay, recipesGui, ingredientRegistry, advancedGuiHandlers, guiScreenHandlers, ghostIngredientHandlers, ingredientFilter);
 		Internal.setRuntime(jeiRuntime);
@@ -104,6 +103,9 @@ public class JeiStarter {
 		stackHelper.disableUidCache();
 
 		sendRuntime(plugins, jeiRuntime);
+
+		LeftAreaDispatcher leftAreaDispatcher = new LeftAreaDispatcher(jeiRuntime);
+		leftAreaDispatcher.addContent(bookmarkOverlay);
 
 		GuiEventHandler guiEventHandler = new GuiEventHandler(leftAreaDispatcher, ingredientListOverlay, recipeRegistry);
 		Internal.setGuiEventHandler(guiEventHandler);
