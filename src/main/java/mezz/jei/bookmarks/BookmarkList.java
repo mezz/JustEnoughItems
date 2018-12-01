@@ -43,9 +43,9 @@ public class BookmarkList implements IIngredientGridSource {
 	}
 
 	public <T> boolean add(T ingredient) {
-		if (!contains(ingredient)) {
-			T normalized = normalize(ingredient);
-			if (addToLists(normalized)) {
+		Object normalized = normalize(ingredient);
+		if (!contains(normalized)) {
+			if (addToLists(normalized, true)) {
 				notifyListenersOfChange();
 				saveBookmarks();
 				return true;
@@ -65,46 +65,33 @@ public class BookmarkList implements IIngredientGridSource {
 		return copy;
 	}
 
-	private static final int NOT_FOUND = -1;
-
-	public boolean contains(Object ingredient) {
-		return index(ingredient) != NOT_FOUND;
-	}
-
-	private int index(Object ingredient) {
-		if (list.isEmpty()) {
-			return NOT_FOUND;
-		}
-		int index = list.indexOf(ingredient);
-		if (index >= 0) {
-			return index;
-		}
-		Object normalized = normalize(ingredient);
-		int indexNormalized = list.indexOf(normalized);
-		if (indexNormalized >= 0) {
-			return indexNormalized;
-		}
+	private boolean contains(Object ingredient) {
 		// We cannot assume that ingredients have a working equals() implementation. Even ItemStack doesn't have one...
-		IIngredientHelper<Object> ingredientHelper = ingredientRegistry.getIngredientHelper(normalized);
-		for (int i = 0; i < list.size(); i++) {
-			Object existing = list.get(i);
-			if (existing != null && existing.getClass() == normalized.getClass()) {
-				if (ingredientHelper.getUniqueId(existing).equals(ingredientHelper.getUniqueId(normalized))) {
-					return i;
+		IIngredientHelper<Object> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		for (Object existing : list) {
+			if (ingredient == existing) {
+				return true;
+			}
+			if (existing != null && existing.getClass() == ingredient.getClass()) {
+				if (ingredientHelper.getUniqueId(existing).equals(ingredientHelper.getUniqueId(ingredient))) {
+					return true;
 				}
 			}
 		}
-		return NOT_FOUND;
+		return false;
 	}
 
 	public boolean remove(Object ingredient) {
-		int index = index(ingredient);
-		if (index != NOT_FOUND) {
-			list.remove(index);
-			ingredientListElements.remove(index);
-			notifyListenersOfChange();
-			saveBookmarks();
-			return true;
+		int index = 0;
+		for (Object existing : list) {
+			if (ingredient == existing) {
+				list.remove(index);
+				ingredientListElements.remove(index);
+				notifyListenersOfChange();
+				saveBookmarks();
+				return true;
+			}
+			index++;
 		}
 		return false;
 	}
@@ -159,7 +146,8 @@ public class BookmarkList implements IIngredientGridSource {
 					NBTTagCompound itemStackAsNbt = JsonToNBT.getTagFromJson(itemStackAsJson);
 					ItemStack itemStack = new ItemStack(itemStackAsNbt);
 					if (!itemStack.isEmpty()) {
-						addToLists(itemStack);
+						ItemStack normalized = normalize(itemStack);
+						addToLists(normalized, false);
 					} else {
 						Log.get().warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
 					}
@@ -170,7 +158,8 @@ public class BookmarkList implements IIngredientGridSource {
 				String uid = ingredientJsonString.substring(MARKER_OTHER.length());
 				Object ingredient = getUnknownIngredientByUid(otherIngredientTypes, uid);
 				if (ingredient != null) {
-					addToLists(ingredient);
+					Object normalized = normalize(ingredient);
+					addToLists(normalized, false);
 				}
 			} else {
 				Log.get().error("Failed to load unknown bookmarked ingredient:\n{}", ingredientJsonString);
@@ -190,13 +179,17 @@ public class BookmarkList implements IIngredientGridSource {
 		return null;
 	}
 
-	private <T> boolean addToLists(T ingredient) {
+	private <T> boolean addToLists(T ingredient, boolean addToFront) {
 		IIngredientType<T> ingredientType = ingredientRegistry.getIngredientType(ingredient);
 		IIngredientListElement<T> element = IngredientListElementFactory.createUnorderedElement(ingredientRegistry, ingredientType, ingredient, ForgeModIdHelper.getInstance());
 		if (element != null) {
-			// add to the front of the list so new bookmarks are first
-			list.add(0, ingredient);
-			ingredientListElements.add(0, element);
+			if (addToFront) {
+				list.add(0, ingredient);
+				ingredientListElements.add(0, element);
+			} else {
+				list.add(ingredient);
+				ingredientListElements.add(element);
+			}
 			return true;
 		}
 		return false;

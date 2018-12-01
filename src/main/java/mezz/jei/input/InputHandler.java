@@ -2,10 +2,10 @@ package mezz.jei.input;
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.Config;
 import mezz.jei.config.IngredientBlacklistType;
 import mezz.jei.config.KeyBindings;
@@ -38,16 +38,18 @@ public class InputHandler {
 	private final RecipesGui recipesGui;
 	private final IngredientListOverlay ingredientListOverlay;
 	private final LeftAreaDispatcher leftAreaDispatcher;
+	private final BookmarkList bookmarkList;
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<>();
 	private final IntSet clickHandled = new IntArraySet();
 
-	public InputHandler(JeiRuntime runtime, IngredientListOverlay ingredientListOverlay, LeftAreaDispatcher leftAreaDispatcher) {
+	public InputHandler(JeiRuntime runtime, IngredientListOverlay ingredientListOverlay, LeftAreaDispatcher leftAreaDispatcher, BookmarkList bookmarkList) {
 		this.recipeRegistry = runtime.getRecipeRegistry();
 		this.ingredientRegistry = runtime.getIngredientRegistry();
 		this.ingredientFilter = runtime.getIngredientFilter();
 		this.recipesGui = runtime.getRecipesGui();
 		this.ingredientListOverlay = ingredientListOverlay;
 		this.leftAreaDispatcher = leftAreaDispatcher;
+		this.bookmarkList = bookmarkList;
 
 		this.showsRecipeFocuses.add(recipesGui);
 		this.showsRecipeFocuses.add(ingredientListOverlay);
@@ -253,13 +255,16 @@ public class InputHandler {
 			IClickedIngredient<?> clicked = getIngredientUnderMouseForKey(MouseHelper.getX(), MouseHelper.getY());
 			if (clicked != null) {
 				if (bookmark) {
-					if (Internal.getBookmarkList().contains(clicked.getValue())) {
-						return Internal.getBookmarkList().remove(clicked.getValue());
+					if (bookmarkList.remove(clicked.getValue())) {
+						if (bookmarkList.isEmpty() && Config.isBookmarkOverlayEnabled()) {
+							Config.toggleBookmarkEnabled();
+						}
+						return true;
 					} else {
 						if (!Config.isBookmarkOverlayEnabled()) {
 							Config.toggleBookmarkEnabled();
 						}
-						return Internal.getBookmarkList().add(clicked.getValue());
+						return bookmarkList.add(clicked.getValue());
 					}
 				} else {
 					IFocus.Mode mode = showRecipe ? IFocus.Mode.OUTPUT : IFocus.Mode.INPUT;
