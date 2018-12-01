@@ -37,8 +37,8 @@ import java.util.Set;
  */
 public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouseHandler, IGhostIngredientDragSource {
 	private static final int NAVIGATION_HEIGHT = 20;
-	private static int firstItemIndex = 0;
 
+	private int firstItemIndex = 0;
 	private final IPaged pageDelegate;
 	private final PageNavigation navigation;
 	private final IngredientGrid ingredientGrid;
