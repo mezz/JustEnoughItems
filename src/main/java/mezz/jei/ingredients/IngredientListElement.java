@@ -1,17 +1,5 @@
 package mezz.jei.ingredients;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -26,10 +14,18 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 public class IngredientListElement<V> implements IIngredientListElement<V> {
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");
-	private static final Map<String, Integer> WILDCARD_ADDED_ORDER = new HashMap<>();
-	private static int ADDED_INDEX = 0;
 
 	private final V ingredient;
 	private final int orderIndex;
@@ -42,18 +38,8 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	private boolean visible = true;
 
 	@Nullable
-	public static <V> IngredientListElement<V> create(V ingredient, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer, IModIdHelper modIdHelper) {
+	public static <V> IngredientListElement<V> create(V ingredient, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer, IModIdHelper modIdHelper, int orderIndex) {
 		try {
-			final int orderIndex;
-			String uid = ingredientHelper.getWildcardId(ingredient);
-			if (WILDCARD_ADDED_ORDER.containsKey(uid)) {
-				orderIndex = WILDCARD_ADDED_ORDER.get(uid);
-			} else {
-				WILDCARD_ADDED_ORDER.put(uid, ADDED_INDEX);
-				orderIndex = ADDED_INDEX;
-				ADDED_INDEX++;
-			}
-
 			return new IngredientListElement<>(ingredient, orderIndex, ingredientHelper, ingredientRenderer, modIdHelper);
 		} catch (RuntimeException e) {
 			try {

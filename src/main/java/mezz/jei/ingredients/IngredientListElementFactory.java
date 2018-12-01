@@ -13,6 +13,8 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 
 public final class IngredientListElementFactory {
+	private static IngredientOrderTracker ORDER_TRACKER = new IngredientOrderTracker();
+
 	private IngredientListElementFactory() {
 	}
 
@@ -34,7 +36,8 @@ public final class IngredientListElementFactory {
 		NonNullList<IIngredientListElement<V>> list = NonNullList.create();
 		for (V ingredient : ingredients) {
 			if (ingredient != null) {
-				IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer, modIdHelper);
+				int orderIndex = ORDER_TRACKER.getOrderIndex(ingredient, ingredientHelper);
+				IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer, modIdHelper, orderIndex);
 				if (ingredientListElement != null) {
 					list.add(ingredientListElement);
 				}
@@ -44,10 +47,10 @@ public final class IngredientListElementFactory {
 	}
 
 	@Nullable
-	public static <V> IIngredientListElement<V> createElement(IIngredientRegistry ingredientRegistry, IIngredientType<V> ingredientType, V ingredient, IModIdHelper modIdHelper) {
+	public static <V> IIngredientListElement<V> createUnorderedElement(IIngredientRegistry ingredientRegistry, IIngredientType<V> ingredientType, V ingredient, IModIdHelper modIdHelper) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
 		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientType);
-		return IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer, modIdHelper);
+		return IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer, modIdHelper, 0);
 	}
 
 	private static <V> void addToBaseList(NonNullList<IIngredientListElement> baseList, IIngredientRegistry ingredientRegistry, IIngredientType<V> ingredientType, IModIdHelper modIdHelper) {
@@ -59,7 +62,8 @@ public final class IngredientListElementFactory {
 		for (V ingredient : ingredients) {
 			progressBar.step("");
 			if (ingredient != null) {
-				IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer, modIdHelper);
+				int orderIndex = ORDER_TRACKER.getOrderIndex(ingredient, ingredientHelper);
+				IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer, modIdHelper, orderIndex);
 				if (ingredientListElement != null) {
 					baseList.add(ingredientListElement);
 				}

@@ -1,19 +1,17 @@
 package mezz.jei.input;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.Config;
 import mezz.jei.config.IngredientBlacklistType;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientFilter;
@@ -29,24 +27,33 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+
 public class InputHandler {
 	private final RecipeRegistry recipeRegistry;
 	private final IIngredientRegistry ingredientRegistry;
 	private final IngredientFilter ingredientFilter;
 	private final RecipesGui recipesGui;
 	private final IngredientListOverlay ingredientListOverlay;
+	private final LeftAreaDispatcher leftAreaDispatcher;
+	private final BookmarkList bookmarkList;
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<>();
 	private final IntSet clickHandled = new IntArraySet();
 
-	public InputHandler(JeiRuntime runtime, IngredientListOverlay ingredientListOverlay) {
+	public InputHandler(JeiRuntime runtime, IngredientListOverlay ingredientListOverlay, LeftAreaDispatcher leftAreaDispatcher, BookmarkList bookmarkList) {
 		this.recipeRegistry = runtime.getRecipeRegistry();
 		this.ingredientRegistry = runtime.getIngredientRegistry();
 		this.ingredientFilter = runtime.getIngredientFilter();
 		this.recipesGui = runtime.getRecipesGui();
 		this.ingredientListOverlay = ingredientListOverlay;
+		this.leftAreaDispatcher = leftAreaDispatcher;
+		this.bookmarkList = bookmarkList;
 
 		this.showsRecipeFocuses.add(recipesGui);
 		this.showsRecipeFocuses.add(ingredientListOverlay);
+		this.showsRecipeFocuses.add(leftAreaDispatcher);
 		this.showsRecipeFocuses.add(new GuiContainerWrapper());
 	}
 
@@ -102,7 +109,7 @@ public class InputHandler {
 	}
 
 	private boolean handleMouseScroll(int dWheel, int mouseX, int mouseY) {
-		return ingredientListOverlay.handleMouseScrolled(mouseX, mouseY, dWheel);
+		return ingredientListOverlay.handleMouseScrolled(mouseX, mouseY, dWheel) || leftAreaDispatcher.handleMouseScrolled(mouseX, mouseY, dWheel);
 	}
 
 	private boolean handleMouseClick(GuiScreen guiScreen, int mouseButton, int mouseX, int mouseY) {
@@ -111,6 +118,9 @@ public class InputHandler {
 			return true;
 		}
 		if (ingredientListOverlay.handleMouseClicked(mouseX, mouseY, mouseButton)) {
+			return true;
+		}
+		if (leftAreaDispatcher.handleMouseClicked(mouseX, mouseY, mouseButton)) {
 			return true;
 		}
 
@@ -230,19 +240,38 @@ public class InputHandler {
 			Config.toggleOverlayEnabled();
 			return false;
 		}
+		if (KeyBindings.toggleBookmarkOverlay.isActiveAndMatches(eventKey)) {
+			Config.toggleBookmarkEnabled();
+			return false;
+		}
 		return ingredientListOverlay.onGlobalKeyPressed(eventKey);
 	}
 
 	private boolean handleFocusKeybinds(int eventKey) {
 		final boolean showRecipe = KeyBindings.showRecipe.isActiveAndMatches(eventKey);
 		final boolean showUses = KeyBindings.showUses.isActiveAndMatches(eventKey);
-		if (showRecipe || showUses) {
+		final boolean bookmark = KeyBindings.bookmark.isActiveAndMatches(eventKey);
+		if (showRecipe || showUses || bookmark) {
 			IClickedIngredient<?> clicked = getIngredientUnderMouseForKey(MouseHelper.getX(), MouseHelper.getY());
 			if (clicked != null) {
-				IFocus.Mode mode = showRecipe ? IFocus.Mode.OUTPUT : IFocus.Mode.INPUT;
-				recipesGui.show(new Focus<Object>(mode, clicked.getValue()));
-				clicked.onClickHandled();
-				return true;
+				if (bookmark) {
+					if (bookmarkList.remove(clicked.getValue())) {
+						if (bookmarkList.isEmpty() && Config.isBookmarkOverlayEnabled()) {
+							Config.toggleBookmarkEnabled();
+						}
+						return true;
+					} else {
+						if (!Config.isBookmarkOverlayEnabled()) {
+							Config.toggleBookmarkEnabled();
+						}
+						return bookmarkList.add(clicked.getValue());
+					}
+				} else {
+					IFocus.Mode mode = showRecipe ? IFocus.Mode.OUTPUT : IFocus.Mode.INPUT;
+					recipesGui.show(new Focus<Object>(mode, clicked.getValue()));
+					clicked.onClickHandled();
+					return true;
+				}
 			}
 		}
 		return false;

@@ -3,6 +3,8 @@ package mezz.jei;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
+
+import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.ingredients.IngredientFilter;
@@ -33,6 +35,8 @@ public final class Internal {
 	private static GuiEventHandler guiEventHandler;
 	@Nullable
 	private static InputHandler inputHandler;
+	@Nullable
+	private static BookmarkList bookmarkList;
 
 	private Internal() {
 
@@ -117,4 +121,14 @@ public final class Internal {
 		Internal.inputHandler = inputHandler;
 		MinecraftForge.EVENT_BUS.register(inputHandler);
 	}
+
+	public static BookmarkList getBookmarkList() {
+		Preconditions.checkState(bookmarkList != null, "BookmarkList has not been created yet.");
+		return bookmarkList;
+	}
+
+	public static void setBookmarkList(BookmarkList bookmarkList) {
+		Internal.bookmarkList = bookmarkList;
+	}
+
 }

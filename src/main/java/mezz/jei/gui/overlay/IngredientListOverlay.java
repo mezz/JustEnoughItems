@@ -6,6 +6,7 @@ import mezz.jei.api.IIngredientListOverlay;
 import mezz.jei.api.gui.IGuiProperties;
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
+import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.recipes.RecipesGui;
@@ -51,8 +52,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	}
 
 	private final IngredientFilter ingredientFilter;
-	private final ConfigButton configButton;
-	private final IngredientGridAll contents;
+	private final GuiIconToggleButton configButton;
+	private final IngredientGridWithNavigation contents;
 	private final GuiTextFieldFilter searchField;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private Rectangle displayArea = new Rectangle();
@@ -64,9 +65,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	public IngredientListOverlay(IngredientFilter ingredientFilter) {
 		this.ingredientFilter = ingredientFilter;
 
-		this.contents = new IngredientGridAll(ingredientFilter);
+		this.contents = new IngredientGridWithNavigation(ingredientFilter, GridAlignment.LEFT);
+		ingredientFilter.addListener(() -> onSetFilterText(Config.getFilterText()));
 		this.searchField = new GuiTextFieldFilter(0, ingredientFilter);
-		this.configButton = new ConfigButton(this);
+		this.configButton = ConfigButton.create(this);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents);
 		this.setKeyboardFocus(false);
 	}
@@ -183,11 +185,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			this.configButton.drawTooltips(minecraft, mouseX, mouseY, true);
+			this.configButton.drawTooltips(minecraft, mouseX, mouseY);
 			this.ghostIngredientDragManager.drawTooltips(minecraft, mouseX, mouseY);
 			this.contents.drawTooltips(minecraft, mouseX, mouseY);
 		} else if (this.guiProperties != null) {
-			this.configButton.drawTooltips(minecraft, mouseX, mouseY, false);
+			this.configButton.drawTooltips(minecraft, mouseX, mouseY);
 		}
 	}
 

@@ -7,10 +7,13 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.gui.IGhostIngredientHandler;
 import mezz.jei.api.gui.IGuiScreenHandler;
+import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.Config;
 import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
+import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
@@ -26,6 +29,7 @@ import mezz.jei.util.Log;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.ProgressManager;
 
+import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -78,11 +82,19 @@ public class JeiStarter {
 		Internal.setIngredientFilter(ingredientFilter);
 		timer.stop();
 
+		timer.start("Building bookmarks");
+		BookmarkList bookmarkList = new BookmarkList(ingredientRegistry);
+		bookmarkList.loadBookmarks();
+		Internal.setBookmarkList(bookmarkList);
+		timer.stop();
+
 		timer.start("Building runtime");
 		List<IAdvancedGuiHandler<?>> advancedGuiHandlers = modRegistry.getAdvancedGuiHandlers();
 		Map<Class, IGuiScreenHandler> guiScreenHandlers = modRegistry.getGuiScreenHandlers();
 		Map<Class, IGhostIngredientHandler> ghostIngredientHandlers = modRegistry.getGhostIngredientHandlers();
 		IngredientListOverlay ingredientListOverlay = new IngredientListOverlay(ingredientFilter);
+
+		BookmarkOverlay bookmarkOverlay = new BookmarkOverlay(new Rectangle(), bookmarkList, jeiHelpers.getGuiHelper());
 		RecipesGui recipesGui = new RecipesGui(recipeRegistry);
 		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, ingredientListOverlay, recipesGui, ingredientRegistry, advancedGuiHandlers, guiScreenHandlers, ghostIngredientHandlers, ingredientFilter);
 		Internal.setRuntime(jeiRuntime);
@@ -92,9 +104,12 @@ public class JeiStarter {
 
 		sendRuntime(plugins, jeiRuntime);
 
-		GuiEventHandler guiEventHandler = new GuiEventHandler(ingredientListOverlay, recipeRegistry);
+		LeftAreaDispatcher leftAreaDispatcher = new LeftAreaDispatcher(jeiRuntime);
+		leftAreaDispatcher.addContent(bookmarkOverlay);
+
+		GuiEventHandler guiEventHandler = new GuiEventHandler(leftAreaDispatcher, ingredientListOverlay, recipeRegistry);
 		Internal.setGuiEventHandler(guiEventHandler);
-		InputHandler inputHandler = new InputHandler(jeiRuntime, ingredientListOverlay);
+		InputHandler inputHandler = new InputHandler(jeiRuntime, ingredientListOverlay, leftAreaDispatcher, bookmarkList);
 		Internal.setInputHandler(inputHandler);
 
 		Config.checkForModNameFormatOverride();
