@@ -19,23 +19,23 @@ import java.util.List;
  */
 public interface IVanillaRecipeFactory {
 
-    /**
+	/**
 	 * @deprecated Use {@link #createAnvilRecipe(List, List, List)}.
 	 */
-    @Deprecated
+	@Deprecated
 	default IRecipeWrapper createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
-        return createAnvilRecipe(Collections.singletonList(leftInput), rightInputs, outputs);
-    }
-    
-    /**
-     * Adds an anvil recipe for the given inputs and output.
-     *
-     * @param leftInputs   The itemStack(s) placed on the left slot.
-     * @param rightInputs The itemStack(s) placed on the right slot.
-     * @param outputs     The resulting itemStack(s).
-     * @return the {@link IRecipeWrapper} for this recipe.
-     */
-    IRecipeWrapper createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs);
+		return createAnvilRecipe(Collections.singletonList(leftInput), rightInputs, outputs);
+	}
+
+	/**
+	 * Adds an anvil recipe for the given inputs and output.
+	 *
+	 * @param leftInputs   The itemStack(s) placed on the left slot.
+	 * @param rightInputs The itemStack(s) placed on the right slot.
+	 * @param outputs     The resulting itemStack(s).
+	 * @return the {@link IRecipeWrapper} for this recipe.
+	 */
+	IRecipeWrapper createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs);
 
 	/**
 	 * Create a new smelting recipe.
