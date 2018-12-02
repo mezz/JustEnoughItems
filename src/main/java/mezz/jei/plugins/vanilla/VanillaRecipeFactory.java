@@ -17,7 +17,7 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 		ErrorUtil.checkNotEmpty(leftInputs, "leftInput");
 		ErrorUtil.checkNotEmpty(rightInputs, "rightInputs");
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
-	    Preconditions.checkArgument(leftInputs.size() == rightInputs.size(), "Both input sizes must match.");
+		Preconditions.checkArgument(leftInputs.size() == rightInputs.size(), "Both input sizes must match.");
 		Preconditions.checkArgument(rightInputs.size() == outputs.size(), "Input and output sizes must match.");
 
 		return new AnvilRecipeWrapper(leftInputs, rightInputs, outputs);
