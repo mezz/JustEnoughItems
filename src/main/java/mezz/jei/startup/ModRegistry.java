@@ -288,7 +288,7 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 		Preconditions.checkArgument(rightInputs.size() == outputs.size(), "Input and output sizes must match.");
 
-		AnvilRecipeWrapper anvilRecipeWrapper = new AnvilRecipeWrapper(leftInput, rightInputs, outputs);
+		AnvilRecipeWrapper anvilRecipeWrapper = new AnvilRecipeWrapper(Collections.singletonList(leftInput), rightInputs, outputs);
 		addRecipes(Collections.singletonList(anvilRecipeWrapper), VanillaRecipeCategoryUid.ANVIL);
 	}
 

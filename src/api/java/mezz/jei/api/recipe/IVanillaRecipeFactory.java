@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -17,15 +18,24 @@ import java.util.List;
  * @since JEI 4.5.0
  */
 public interface IVanillaRecipeFactory {
-	/**
-	 * Adds an anvil recipe for the given inputs and output.
-	 *
-	 * @param leftInput   The itemStack placed on the left slot.
-	 * @param rightInputs The itemStack(s) placed on the right slot.
-	 * @param outputs     The resulting itemStack(s).
-	 * @return the {@link IRecipeWrapper} for this recipe.
+
+    /**
+	 * @deprecated Use {@link #createAnvilRecipe(List, List, List)}.
 	 */
-	IRecipeWrapper createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs);
+    @Deprecated
+	default IRecipeWrapper createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
+        return createAnvilRecipe(Collections.singletonList(leftInput), rightInputs, outputs);
+    }
+    
+    /**
+     * Adds an anvil recipe for the given inputs and output.
+     *
+     * @param leftInputs   The itemStack(s) placed on the left slot.
+     * @param rightInputs The itemStack(s) placed on the right slot.
+     * @param outputs     The resulting itemStack(s).
+     * @return the {@link IRecipeWrapper} for this recipe.
+     */
+    IRecipeWrapper createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs);
 
 	/**
 	 * Create a new smelting recipe.

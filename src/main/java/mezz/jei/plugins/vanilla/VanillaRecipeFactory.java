@@ -13,13 +13,13 @@ import net.minecraft.item.ItemStack;
 
 public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 	@Override
-	public IRecipeWrapper createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
-		ErrorUtil.checkNotEmpty(leftInput, "leftInput");
+	public IRecipeWrapper createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs) {
+		ErrorUtil.checkNotEmpty(leftInputs, "leftInput");
 		ErrorUtil.checkNotEmpty(rightInputs, "rightInputs");
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 		Preconditions.checkArgument(rightInputs.size() == outputs.size(), "Input and output sizes must match.");
 
-		return new AnvilRecipeWrapper(leftInput, rightInputs, outputs);
+		return new AnvilRecipeWrapper(leftInputs, rightInputs, outputs);
 	}
 
 	@Override
