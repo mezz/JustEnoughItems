@@ -10,11 +10,13 @@ import mezz.jei.config.Config;
 import mezz.jei.config.IngredientBlacklistType;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
+import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.ReflectionUtil;
@@ -42,9 +44,9 @@ public class InputHandler {
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<>();
 	private final IntSet clickHandled = new IntArraySet();
 
-	public InputHandler(JeiRuntime runtime, IngredientListOverlay ingredientListOverlay, LeftAreaDispatcher leftAreaDispatcher, BookmarkList bookmarkList) {
+	public InputHandler(JeiRuntime runtime, IngredientRegistry ingredientRegistry, IngredientListOverlay ingredientListOverlay, GuiScreenHelper guiScreenHelper, LeftAreaDispatcher leftAreaDispatcher, BookmarkList bookmarkList) {
 		this.recipeRegistry = runtime.getRecipeRegistry();
-		this.ingredientRegistry = runtime.getIngredientRegistry();
+		this.ingredientRegistry = ingredientRegistry;
 		this.ingredientFilter = runtime.getIngredientFilter();
 		this.recipesGui = runtime.getRecipesGui();
 		this.ingredientListOverlay = ingredientListOverlay;
@@ -54,7 +56,7 @@ public class InputHandler {
 		this.showsRecipeFocuses.add(recipesGui);
 		this.showsRecipeFocuses.add(ingredientListOverlay);
 		this.showsRecipeFocuses.add(leftAreaDispatcher);
-		this.showsRecipeFocuses.add(new GuiContainerWrapper());
+		this.showsRecipeFocuses.add(new GuiContainerWrapper(guiScreenHelper));
 	}
 
 	/**

@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
 import java.awt.Rectangle;
+import java.util.Set;
 
 public interface ILeftAreaContent extends IShowsRecipeFocuses {
 
@@ -14,7 +15,7 @@ public interface ILeftAreaContent extends IShowsRecipeFocuses {
 
 	void drawTooltips(Minecraft minecraft, int mouseX, int mouseY);
 
-	void updateBounds(Rectangle area);
+	void updateBounds(Rectangle area, Set<Rectangle> guiExclusionAreas);
 
 	boolean handleMouseScrolled(int mouseX, int mouseY, int dWheel);
 

@@ -16,7 +16,6 @@ import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.elements.GuiIconButtonSmall;
 import mezz.jei.gui.ingredients.GuiIngredient;
-import mezz.jei.gui.overlay.GuiProperties;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
@@ -119,6 +118,13 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	public int getYSize() {
 		return ySize;
+	}
+
+	public int getRecipeCatalystExtraWidth() {
+		if (recipeCatalysts.isEmpty()) {
+			return 0;
+		}
+		return recipeCatalysts.getWidth();
 	}
 
 	@Override
@@ -479,9 +485,8 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		pageString = logic.getPageString();
 
 		List<Object> recipeCatalysts = logic.getRecipeCatalysts();
-		GuiProperties guiProperties = GuiProperties.create(this);
-		this.recipeCatalysts.updateLayout(recipeCatalysts, guiProperties);
-		recipeGuiTabs.initLayout(guiProperties);
+		this.recipeCatalysts.updateLayout(recipeCatalysts, this);
+		recipeGuiTabs.initLayout(this);
 	}
 
 	private void addRecipeTransferButtons(List<RecipeLayout> recipeLayouts) {

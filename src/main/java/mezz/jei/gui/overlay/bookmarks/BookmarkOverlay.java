@@ -3,6 +3,7 @@ package mezz.jei.gui.overlay.bookmarks;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.Config;
 import mezz.jei.gui.GuiHelper;
+import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.overlay.GridAlignment;
 import mezz.jei.gui.overlay.IngredientGrid;
@@ -18,12 +19,13 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
+import java.util.Set;
 
 public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 	private static final int BUTTON_SIZE = 20;
 
 	// areas
-	private Rectangle parentArea;
+	private Rectangle parentArea = new Rectangle();
 	private Rectangle displayArea = new Rectangle();
 
 	// display elements
@@ -36,12 +38,11 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 	// data
 	private final BookmarkList bookmarkList;
 
-	public BookmarkOverlay(Rectangle area, BookmarkList bookmarkList, GuiHelper guiHelper) {
-		this.parentArea = area;
+	public BookmarkOverlay(BookmarkList bookmarkList, GuiHelper guiHelper, GuiScreenHelper guiScreenHelper) {
 		this.bookmarkList = bookmarkList;
 		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, guiHelper);
-		this.contents = new IngredientGridWithNavigation(bookmarkList, GridAlignment.RIGHT);
-		bookmarkList.addListener(() -> contents.updateLayout(true));
+		this.contents = new IngredientGridWithNavigation(bookmarkList, guiScreenHelper, GridAlignment.RIGHT);
+		bookmarkList.addListener(() -> contents.updateLayout(false));
 	}
 
 	private boolean isListDisplayed() {
@@ -53,9 +54,9 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 	}
 
 	@Override
-	public void updateBounds(Rectangle area) {
+	public void updateBounds(Rectangle area, Set<Rectangle> guiExclusionAreas) {
 		this.parentArea = area;
-		hasRoom = updateBounds();
+		hasRoom = updateBounds(guiExclusionAreas);
 	}
 
 	@Override
@@ -82,7 +83,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 		return Math.max(4 * BUTTON_SIZE, Config.smallestNumColumns * IngredientGrid.INGREDIENT_WIDTH);
 	}
 
-	public boolean updateBounds() {
+	public boolean updateBounds(Set<Rectangle> guiExclusionAreas) {
 		displayArea = new Rectangle(parentArea);
 
 		final int minWidth = getMinWidth();
@@ -96,7 +97,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 			displayArea.width,
 			displayArea.height - (BUTTON_SIZE + 4)
 		);
-		this.contents.updateBounds(availableContentsArea, minWidth);
+		boolean contentsHasRoom = this.contents.updateBounds(availableContentsArea, guiExclusionAreas, minWidth);
 
 		// update area to match contents size
 		Rectangle contentsArea = this.contents.getArea();
@@ -112,7 +113,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 
 		this.contents.updateLayout(false);
 
-		return true;
+		return contentsHasRoom;
 	}
 
 	@Override

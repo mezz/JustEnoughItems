@@ -33,15 +33,28 @@ public class GuiProperties implements IGuiProperties {
 	}
 
 	public static GuiProperties create(RecipesGui recipesGui) {
+		int extraWidth = recipesGui.getRecipeCatalystExtraWidth();
 		return new GuiProperties(
 				recipesGui.getClass(),
-				recipesGui.getGuiLeft(),
+				recipesGui.getGuiLeft() - extraWidth,
 				recipesGui.getGuiTop(),
-				recipesGui.getXSize(),
+				recipesGui.getXSize() + extraWidth,
 				recipesGui.getYSize(),
 				recipesGui.width,
 				recipesGui.height
 		);
+	}
+
+	public static boolean areEqual(@Nullable IGuiProperties a, @Nullable IGuiProperties b) {
+		if (a == b) {
+			return true;
+		}
+		return a != null && b != null &&
+			a.getGuiClass().equals(b.getGuiClass()) &&
+			a.getGuiLeft() == b.getGuiLeft() &&
+			a.getGuiXSize() == b.getGuiXSize() &&
+			a.getScreenWidth() == b.getScreenWidth() &&
+			a.getScreenHeight() == b.getScreenHeight();
 	}
 
 	private GuiProperties(Class<? extends GuiScreen> guiClass, int guiLeft, int guiTop, int guiXSize, int guiYSize, int screenWidth, int screenHeight) {

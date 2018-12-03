@@ -8,6 +8,7 @@ import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.gui.IGhostIngredientHandler;
+import mezz.jei.api.gui.IGlobalGuiHandler;
 import mezz.jei.api.gui.IGuiScreenHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.VanillaTypes;
@@ -57,6 +58,7 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	private final ListMultiMap<String, IRecipeHandler> recipeHandlers = new ListMultiMap<>();
 	private final SetMultiMap<String, Class> recipeHandlerClasses = new SetMultiMap<>();
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers = new ArrayList<>();
+	private final List<IGlobalGuiHandler> globalGuiHandlers = new ArrayList<>();
 	private final Map<Class, IGuiScreenHandler> guiScreenHandlers = new HashMap<>();
 	private final Map<Class, IGhostIngredientHandler> ghostIngredientHandlers = new HashMap<>();
 	@Deprecated
@@ -211,6 +213,12 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	}
 
 	@Override
+	public void addGlobalGuiHandlers(IGlobalGuiHandler... globalGuiHandlers) {
+		ErrorUtil.checkNotEmpty(globalGuiHandlers, "globalGuiHandlers");
+		Collections.addAll(this.globalGuiHandlers, globalGuiHandlers);
+	}
+
+	@Override
 	public <T extends GuiScreen> void addGuiScreenHandler(Class<T> guiClass, IGuiScreenHandler<T> handler) {
 		ErrorUtil.checkNotNull(guiClass, "guiClass");
 		Preconditions.checkArgument(GuiScreen.class.isAssignableFrom(guiClass), "guiClass must inherit from GuiScreen");
@@ -307,6 +315,10 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 
 	public List<IAdvancedGuiHandler<?>> getAdvancedGuiHandlers() {
 		return advancedGuiHandlers;
+	}
+
+	public List<IGlobalGuiHandler> getGlobalGuiHandlers() {
+		return globalGuiHandlers;
 	}
 
 	public Map<Class, IGuiScreenHandler> getGuiScreenHandlers() {
