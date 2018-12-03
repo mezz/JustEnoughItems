@@ -74,7 +74,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	}
 
 	public boolean isListDisplayed() {
-		return Config.isOverlayEnabled() && this.hasRoom;
+		return Config.isOverlayEnabled() && this.guiProperties != null && this.hasRoom;
 	}
 
 	private static Rectangle getDisplayArea(IGuiProperties guiProperties) {
