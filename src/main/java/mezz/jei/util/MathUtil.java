@@ -32,6 +32,17 @@ public final class MathUtil {
 		return false;
 	}
 
+	public static Rectangle moveDownToAvoidIntersection(Collection<Rectangle> areas, Rectangle comparisonArea) {
+		for (Rectangle area : areas) {
+			if (area.intersects(comparisonArea)) {
+				Rectangle movedDown = new Rectangle(comparisonArea);
+				movedDown.y = area.y + area.height;
+				return moveDownToAvoidIntersection(areas, movedDown);
+			}
+		}
+		return comparisonArea;
+	}
+
 	public static boolean contains(Collection<Rectangle> areas, int x, int y) {
 		for (Rectangle guiArea : areas) {
 			if (guiArea.contains(x, y)) {

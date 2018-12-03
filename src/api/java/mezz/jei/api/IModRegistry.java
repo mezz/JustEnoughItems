@@ -2,6 +2,7 @@ package mezz.jei.api;
 
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.gui.IGhostIngredientHandler;
+import mezz.jei.api.gui.IGlobalGuiHandler;
 import mezz.jei.api.gui.IGuiScreenHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IIngredientType;
@@ -89,6 +90,13 @@ public interface IModRegistry {
 	 * Used for guis with tabs on the side that would normally intersect with JEI's item list.
 	 */
 	void addAdvancedGuiHandlers(IAdvancedGuiHandler<?>... advancedGuiHandlers);
+
+	/**
+	 * Add a handler to give JEI extra information about how to layout the item list.
+	 * Used for guis that display next to GUIs and would normally intersect with JEI.
+	 * @since JEI 4.14.0
+	 */
+	void addGlobalGuiHandlers(IGlobalGuiHandler... globalGuiHandlers);
 
 	/**
 	 * Add a handler to let JEI draw next to a specific class (or subclass) of {@link GuiScreen}.

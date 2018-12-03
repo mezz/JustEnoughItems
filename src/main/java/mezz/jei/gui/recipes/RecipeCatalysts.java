@@ -7,7 +7,6 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.ingredients.GuiIngredient;
-import mezz.jei.gui.overlay.GuiProperties;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
@@ -45,7 +44,15 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 		bottomDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 87, 26, 6);
 	}
 
-	public void updateLayout(List<Object> ingredients, GuiProperties guiProperties) {
+	public boolean isEmpty() {
+		return this.ingredients.isEmpty();
+	}
+
+	public int getWidth() {
+		return 22; // hard-coded for now, may be dynamic in the future if we have multiple columns
+	}
+
+	public void updateLayout(List<Object> ingredients, RecipesGui recipesGui) {
 		this.ingredients.clear();
 
 		if (!ingredients.isEmpty()) {
@@ -54,7 +61,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 
 			final int extraBoxHeight = middleDrawable.getHeight();
 			for (int i = 1; i < ingredients.size(); i++) {
-				if (totalHeight + extraBoxHeight <= (guiProperties.getGuiYSize() - 8)) {
+				if (totalHeight + extraBoxHeight <= (recipesGui.getYSize() - 8)) {
 					totalHeight += extraBoxHeight;
 					ingredientCount++;
 				} else {
@@ -62,8 +69,8 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 				}
 			}
 
-			top = guiProperties.getGuiTop();
-			left = guiProperties.getGuiLeft() - topDrawable.getWidth() + 4; // overlaps the recipe gui slightly
+			top = recipesGui.getGuiTop();
+			left = recipesGui.getGuiLeft() - topDrawable.getWidth() + 4; // overlaps the recipe gui slightly
 
 			List<Object> ingredientsForSlots = new ArrayList<>();
 			for (int i = 0; i < ingredients.size() && i < ingredientCount; i++) {
@@ -141,7 +148,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 		if (hovered != null) {
 			Object ingredientUnderMouse = hovered.getDisplayedIngredient();
 			if (ingredientUnderMouse != null) {
-				return new ClickedIngredient<>(ingredientUnderMouse, hovered.getRect());
+				return ClickedIngredient.create(ingredientUnderMouse, hovered.getRect());
 			}
 		}
 		return null;

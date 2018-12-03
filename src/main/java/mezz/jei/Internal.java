@@ -3,6 +3,7 @@ package mezz.jei;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
+
 import mezz.jei.color.ColorNamer;
 import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.ingredients.IngredientFilter;

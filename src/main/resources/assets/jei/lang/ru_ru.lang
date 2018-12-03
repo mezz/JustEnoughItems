@@ -11,12 +11,16 @@ jei.tooltip.item.colors=Цвета: %s
 jei.tooltip.shapeless.recipe=Бесформенный рецепт
 jei.tooltip.cheat.mode.button.enabled=Режим жульничества
 jei.tooltip.cheat.mode.how.to.disable.hotkey=Нажмите %s для переключения.
-jei.tooltip.cheat.mode.how.to.disable.no.hotkey=Зажмите %s и нажмите здесь, для переключения.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=Зажмите %s и нажмите здесь для переключения.
 jei.tooltip.recipe.by=Рецепт из: %s
 jei.tooltip.recipe.id=ID рецепта: %s
 jei.tooltip.not.enough.space=Здесь недостаточно места для отображения списка ингредиентов.
 jei.tooltip.ingredient.list.disabled=Список ингредиентов отключен.
 jei.tooltip.ingredient.list.disabled.how.to.fix=Нажмите %s для включения.
+jei.tooltip.bookmarks=Закладки JEI
+jei.tooltip.bookmarks.usage.nokey=Добавьте клавишу для закладок JEI в настройках управления.
+jei.tooltip.bookmarks.usage.key=Наведите указатель мыши на предмет и нажмите %s, чтобы добавить его в закладки.
+jei.tooltip.bookmarks.not.enough.space=Здесь недостаточно места для отображения закладок.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Отсутствуют предметы
@@ -40,6 +44,8 @@ key.jei.recipeBack=Показать предыдущую страницу рец
 key.jei.toggleCheatMode=Переключить режим жульничества
 key.jei.previousPage=Предыдущая
 key.jei.nextPage=Следующая
+key.jei.bookmark=Управление закладками
+key.jei.toggleBookmarkOverlay=Переключить оверлей закладок
 
 # Config
 config.jei.default=По-умолчанию
@@ -58,6 +64,9 @@ config.jei.interface=Интерфейс
 config.jei.interface.comment=Настройки интерфейса пользователя.
 config.jei.interface.overlayEnabled=Доступность списка предметов
 config.jei.interface.overlayEnabled.comment=Показывать список предметов рядом с открытым интерфейсом.
+
+config.jei.interface.bookmarkOverlayEnabled=Доступность списка закладок
+config.jei.interface.bookmarkOverlayEnabled.comment=Показывать список закладок рядом с открытым интерфейсом.
 
 config.jei.search=Настройки поиска
 config.jei.search.comment=Настройки строки поиска.
@@ -88,6 +97,8 @@ config.jei.advanced.modNameFormat=Формат названия мода
 config.jei.advanced.modNameFormat.comment=Как название мода должно быть отформатировано для подсказок JEI. Оставьте пустым, чтобы отключить.
 config.jei.advanced.maxColumns=Максимальная ширина
 config.jei.advanced.maxColumns.comment=Максимальная ширина списка ингредиентов.
+config.jei.advanced.maxRecipeGuiHeight=Максимальная высота
+config.jei.advanced.maxRecipeGuiHeight.comment=Максимальная высота интерфейса рецепта.
 config.jei.advanced.giveMode=Режим получения предметов
 config.jei.advanced.giveMode.comment=Выберите, должен ли JEI давать предметы напрямую в инвентарь (inventory) или же набирать их мышкой (mouse_pickup).
 

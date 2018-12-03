@@ -1,15 +1,5 @@
 package mezz.jei.config;
 
-import javax.annotation.Nullable;
-import java.awt.Color;
-import java.io.File;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
@@ -38,6 +28,16 @@ import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
+import javax.annotation.Nullable;
+import java.awt.Color;
+import java.io.File;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 public final class Config {
 	private static final String configKeyPrefix = "config.jei";
 
@@ -59,6 +59,8 @@ public final class Config {
 	private static LocalizedConfiguration itemBlacklistConfig;
 	@Nullable
 	private static LocalizedConfiguration searchColorsConfig;
+	@Nullable
+	private static File bookmarkFile;
 
 	private static final ConfigValues defaultValues = new ConfigValues();
 	private static final ConfigValues values = new ConfigValues();
@@ -93,6 +95,27 @@ public final class Config {
 		}
 
 		MinecraftForge.EVENT_BUS.post(new OverlayToggleEvent(values.overlayEnabled));
+	}
+
+	public static boolean isBookmarkOverlayEnabled() {
+		return isOverlayEnabled() && values.bookmarkOverlayEnabled;
+	}
+
+	public static void toggleBookmarkEnabled() {
+		values.bookmarkOverlayEnabled = !values.bookmarkOverlayEnabled;
+
+		if (worldConfig != null) {
+			NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
+			final String worldCategory = ServerInfo.getWorldUid(networkManager);
+			Property property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);
+			property.set(values.bookmarkOverlayEnabled);
+
+			if (worldConfig.hasChanged()) {
+				worldConfig.save();
+			}
+		}
+
+		MinecraftForge.EVENT_BUS.post(new BookmarkOverlayToggleEvent(values.bookmarkOverlayEnabled));
 	}
 
 	public static boolean isCheatItemsEnabled() {
@@ -289,6 +312,11 @@ public final class Config {
 		return values.itemSortlist;
 	}
 
+	@Nullable
+	public static File getBookmarkFile() {
+		return bookmarkFile;
+	}
+
 	public static void preInit(FMLPreInitializationEvent event) {
 
 		File jeiConfigurationDir = new File(event.getModConfigurationDirectory(), Constants.MOD_ID);
@@ -308,6 +336,7 @@ public final class Config {
 		final File itemBlacklistConfigFile = new File(jeiConfigurationDir, "itemBlacklist.cfg");
 		final File searchColorsConfigFile = new File(jeiConfigurationDir, "searchColors.cfg");
 		final File worldConfigFile = new File(jeiConfigurationDir, "worldSettings.cfg");
+		bookmarkFile = new File(jeiConfigurationDir, "bookmarks.ini");
 		worldConfig = new Configuration(worldConfigFile, "0.1.0");
 		config = new LocalizedConfiguration(configKeyPrefix, configFile, "0.4.0");
 		itemBlacklistConfig = new LocalizedConfiguration(configKeyPrefix, itemBlacklistConfigFile, "0.1.0");
@@ -510,6 +539,12 @@ public final class Config {
 			MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.hideModeEnabled));
 		}
 
+		property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);
+		property.setLanguageKey("config.jei.interface.bookmarkOverlayEnabled");
+		property.setComment(Translator.translateToLocal("config.jei.interface.bookmarkOverlayEnabled.comment"));
+		property.setShowInGui(false);
+		values.bookmarkOverlayEnabled = property.getBoolean();
+
 		property = worldConfig.get(worldCategory, "filterText", defaultValues.filterText);
 		property.setShowInGui(false);
 		values.filterText = property.getString();
@@ -573,7 +608,7 @@ public final class Config {
 
 	public static <V> void addIngredientToConfigBlacklist(IngredientFilter ingredientFilter, IIngredientRegistry ingredientRegistry, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
 		IIngredientType<V> ingredientType = ingredientRegistry.getIngredientType(ingredient);
-		IIngredientListElement<V> element = IngredientListElementFactory.createElement(ingredientRegistry, ingredientType, ingredient, ForgeModIdHelper.getInstance());
+		IIngredientListElement<V> element = IngredientListElementFactory.createUnorderedElement(ingredientRegistry, ingredientType, ingredient, ForgeModIdHelper.getInstance());
 		Preconditions.checkNotNull(element, "Failed to create element for blacklist");
 
 		// combine item-level blacklist into wildcard-level ones
@@ -621,7 +656,7 @@ public final class Config {
 
 	public static <V> void removeIngredientFromConfigBlacklist(IngredientFilter ingredientFilter, IIngredientRegistry ingredientRegistry, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
 		IIngredientType<V> ingredientType = ingredientRegistry.getIngredientType(ingredient);
-		IIngredientListElement<V> element = IngredientListElementFactory.createElement(ingredientRegistry, ingredientType, ingredient, ForgeModIdHelper.getInstance());
+		IIngredientListElement<V> element = IngredientListElementFactory.createUnorderedElement(ingredientRegistry, ingredientType, ingredient, ForgeModIdHelper.getInstance());
 		Preconditions.checkNotNull(element, "Failed to create element for blacklist");
 
 		boolean updated = false;

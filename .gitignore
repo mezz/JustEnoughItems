@@ -23,3 +23,8 @@ build/*
 changelog.html
 /classes
 /logs
+/build/
+\.classpath
+\.project
+\.settings/
+*.launch

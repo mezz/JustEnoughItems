@@ -1,14 +1,12 @@
 package mezz.jei.gui.overlay;
 
-import mezz.jei.Internal;
-import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
+import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.ghost.IGhostIngredientDragSource;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IPaged;
@@ -16,7 +14,6 @@ import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.MouseHelper;
 import mezz.jei.render.IngredientListSlot;
 import mezz.jei.render.IngredientRenderer;
-import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.CommandUtil;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
@@ -28,54 +25,67 @@ import net.minecraft.item.ItemStack;
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
- * Displays all known recipe ingredients.
+ * Displays a list of ingredients with navigation at the top.
  */
-public class IngredientGridAll implements IShowsRecipeFocuses, IMouseHandler, IGhostIngredientDragSource {
+public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouseHandler, IGhostIngredientDragSource {
 	private static final int NAVIGATION_HEIGHT = 20;
-	private static int firstItemIndex = 0;
 
+	private int firstItemIndex = 0;
 	private final IPaged pageDelegate;
 	private final PageNavigation navigation;
+	private final GuiScreenHelper guiScreenHelper;
 	private final IngredientGrid ingredientGrid;
-	private final IngredientFilter ingredientFilter;
+	private final IIngredientGridSource ingredientSource;
 	private Rectangle area = new Rectangle();
-	private Set<Rectangle> guiExclusionAreas = Collections.emptySet();
 
-	public IngredientGridAll(IngredientFilter ingredientFilter) {
-		this.ingredientGrid = new IngredientGrid();
-		this.ingredientFilter = ingredientFilter;
+	public IngredientGridWithNavigation(IIngredientGridSource ingredientSource, GuiScreenHelper guiScreenHelper, GridAlignment alignment) {
+		this.ingredientGrid = new IngredientGrid(alignment);
+		this.ingredientSource = ingredientSource;
+		this.guiScreenHelper = guiScreenHelper;
 		this.pageDelegate = new IngredientGridPaged();
 		this.navigation = new PageNavigation(this.pageDelegate, false);
 	}
 
-	public void updateLayout(boolean filterChanged) {
-		if (filterChanged) {
+	public void updateLayout(boolean resetToFirstPage) {
+		if (resetToFirstPage) {
 			firstItemIndex = 0;
 		}
-		this.ingredientGrid.updateLayout(this.guiExclusionAreas);
-		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList();
+		List<IIngredientListElement> ingredientList = ingredientSource.getIngredientList();
+		if (firstItemIndex >= ingredientList.size()) {
+			firstItemIndex = 0;
+		}
 		this.ingredientGrid.guiIngredientSlots.set(firstItemIndex, ingredientList);
 		this.navigation.updatePageState();
 	}
 
-	public void updateBounds(Rectangle availableArea, int minWidth) {
+	public boolean updateBounds(Rectangle availableArea, Set<Rectangle> guiExclusionAreas, int minWidth) {
+		Rectangle estimatedNavigationArea = new Rectangle(
+			availableArea.x,
+			availableArea.y,
+			availableArea.width,
+			NAVIGATION_HEIGHT
+		);
+		Rectangle movedNavigationArea = MathUtil.moveDownToAvoidIntersection(guiExclusionAreas, estimatedNavigationArea);
+		int navigationMaxY = movedNavigationArea.y + movedNavigationArea.height;
 		Rectangle boundsWithoutNavigation = new Rectangle(
 			availableArea.x,
-			availableArea.y + NAVIGATION_HEIGHT,
+			navigationMaxY,
 			availableArea.width,
-			availableArea.height - NAVIGATION_HEIGHT
+			availableArea.height - navigationMaxY
 		);
-		this.ingredientGrid.updateBounds(boundsWithoutNavigation, minWidth, this.guiExclusionAreas);
+		boolean gridHasRoom = this.ingredientGrid.updateBounds(boundsWithoutNavigation, minWidth, guiExclusionAreas);
+		if (!gridHasRoom) {
+			return false;
+		}
 		Rectangle displayArea = this.ingredientGrid.getArea();
-		Rectangle navigationArea = new Rectangle(displayArea.x, availableArea.y, displayArea.width, NAVIGATION_HEIGHT);
+		Rectangle navigationArea = new Rectangle(displayArea.x, movedNavigationArea.y, displayArea.width, NAVIGATION_HEIGHT);
 		this.navigation.updateBounds(navigationArea);
 		this.area = displayArea.union(navigationArea);
+		return true;
 	}
 
 	public Rectangle getArea() {
@@ -83,9 +93,6 @@ public class IngredientGridAll implements IShowsRecipeFocuses, IMouseHandler, IG
 	}
 
 	public void draw(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
-		if (this.updateGuiExclusionAreas()) {
-			updateLayout(false);
-		}
 		this.ingredientGrid.draw(minecraft, mouseX, mouseY);
 		this.navigation.draw(minecraft, mouseX, mouseY, partialTicks);
 	}
@@ -97,12 +104,12 @@ public class IngredientGridAll implements IShowsRecipeFocuses, IMouseHandler, IG
 	@Override
 	public boolean isMouseOver(int mouseX, int mouseY) {
 		return this.area.contains(mouseX, mouseY) &&
-			!MathUtil.contains(guiExclusionAreas, mouseX, mouseY);
+			!guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
 	}
 
 	@Override
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
-		return !MathUtil.contains(guiExclusionAreas, mouseX, mouseY) &&
+		return !guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY) &&
 			(this.ingredientGrid.handleMouseClicked(mouseX, mouseY) ||
 			this.navigation.handleMouseClickedButtons(mouseX, mouseY));
 	}
@@ -176,15 +183,6 @@ public class IngredientGridAll implements IShowsRecipeFocuses, IMouseHandler, IG
 		return this.ingredientGrid.canSetFocusWithMouse();
 	}
 
-	public boolean updateGuiExclusionAreas() {
-		final Set<Rectangle> guiAreas = getGuiAreas();
-		if (!guiAreas.equals(this.guiExclusionAreas)) {
-			this.guiExclusionAreas = guiAreas;
-			return true;
-		}
-		return false;
-	}
-
 	public List<IIngredientListElement> getVisibleElements() {
 		List<IIngredientListElement> visibleElements = new ArrayList<>();
 		for (IngredientListSlot slot : this.ingredientGrid.guiIngredientSlots.getAllGuiIngredientSlots()) {
@@ -196,30 +194,10 @@ public class IngredientGridAll implements IShowsRecipeFocuses, IMouseHandler, IG
 		return visibleElements;
 	}
 
-	private static Set<Rectangle> getGuiAreas() {
-		final GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
-		if (currentScreen instanceof GuiContainer) {
-			final GuiContainer guiContainer = (GuiContainer) currentScreen;
-			final JeiRuntime jeiRuntime = Internal.getRuntime();
-			if (jeiRuntime != null) {
-				final Set<Rectangle> allGuiExtraAreas = new HashSet<>();
-				final List<IAdvancedGuiHandler<GuiContainer>> activeAdvancedGuiHandlers = jeiRuntime.getActiveAdvancedGuiHandlers(guiContainer);
-				for (IAdvancedGuiHandler<GuiContainer> advancedGuiHandler : activeAdvancedGuiHandlers) {
-					final List<Rectangle> guiExtraAreas = advancedGuiHandler.getGuiExtraAreas(guiContainer);
-					if (guiExtraAreas != null) {
-						allGuiExtraAreas.addAll(guiExtraAreas);
-					}
-				}
-				return allGuiExtraAreas;
-			}
-		}
-		return Collections.emptySet();
-	}
-
 	private class IngredientGridPaged implements IPaged {
 		@Override
 		public boolean nextPage() {
-			final int itemsCount = ingredientFilter.size();
+			final int itemsCount = ingredientSource.size();
 			if (itemsCount > 0) {
 				firstItemIndex += ingredientGrid.size();
 				if (firstItemIndex >= itemsCount) {
@@ -242,7 +220,7 @@ public class IngredientGridAll implements IShowsRecipeFocuses, IMouseHandler, IG
 				updateLayout(false);
 				return false;
 			}
-			final int itemsCount = ingredientFilter.size();
+			final int itemsCount = ingredientSource.size();
 
 			int pageNum = firstItemIndex / itemsPerPage;
 			if (pageNum == 0) {
@@ -264,19 +242,19 @@ public class IngredientGridAll implements IShowsRecipeFocuses, IMouseHandler, IG
 		public boolean hasNext() {
 			// true if there is more than one page because this wraps around
 			int itemsPerPage = ingredientGrid.size();
-			return itemsPerPage > 0 && ingredientFilter.size() > itemsPerPage;
+			return itemsPerPage > 0 && ingredientSource.size() > itemsPerPage;
 		}
 
 		@Override
 		public boolean hasPrevious() {
 			// true if there is more than one page because this wraps around
 			int itemsPerPage = ingredientGrid.size();
-			return itemsPerPage > 0 && ingredientFilter.size() > itemsPerPage;
+			return itemsPerPage > 0 && ingredientSource.size() > itemsPerPage;
 		}
 
 		@Override
 		public int getPageCount() {
-			final int itemCount = ingredientFilter.size();
+			final int itemCount = ingredientSource.size();
 			final int stacksPerPage = ingredientGrid.size();
 			if (stacksPerPage == 0) {
 				return 1;
@@ -290,7 +268,7 @@ public class IngredientGridAll implements IShowsRecipeFocuses, IMouseHandler, IG
 		public int getPageNumber() {
 			final int stacksPerPage = ingredientGrid.size();
 			if (stacksPerPage == 0) {
-				return 1;
+				return 0;
 			}
 			return firstItemIndex / stacksPerPage;
 		}

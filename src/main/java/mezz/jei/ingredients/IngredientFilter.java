@@ -1,28 +1,17 @@
 package mezz.jei.ingredients;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import mezz.jei.Internal;
 import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.Config;
 import mezz.jei.config.EditModeToggleEvent;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.gui.overlay.IngredientListOverlay;
-import mezz.jei.runtime.JeiRuntime;
+import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.startup.PlayerJoinedWorldEvent;
 import mezz.jei.suffixtree.CombinedSearchTrees;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
@@ -35,8 +24,16 @@ import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class IngredientFilter implements IIngredientFilter {
+public class IngredientFilter implements IIngredientFilter, IIngredientGridSource {
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
@@ -54,6 +51,7 @@ public class IngredientFilter implements IIngredientFilter {
 	@Nullable
 	private String filterCached;
 	private List<IIngredientListElement> ingredientListCached = Collections.emptyList();
+	private final List<IIngredientGridSource.Listener> listeners = new ArrayList<>();
 
 	public IngredientFilter(IngredientBlacklistInternal blacklist) {
 		this.blacklist = blacklist;
@@ -181,6 +179,7 @@ public class IngredientFilter implements IIngredientFilter {
 		}
 	}
 
+	@Override
 	public List<IIngredientListElement> getIngredientList() {
 		String filterText = Translator.toLowercaseWithLocale(Config.getFilterText());
 		if (!filterText.equals(filterCached)) {
@@ -227,11 +226,7 @@ public class IngredientFilter implements IIngredientFilter {
 	public void setFilterText(String filterText) {
 		ErrorUtil.checkNotNull(filterText, "filterText");
 		if (Config.setFilterText(filterText)) {
-			JeiRuntime runtime = Internal.getRuntime();
-			if (runtime != null) {
-				IngredientListOverlay ingredientListOverlay = runtime.getIngredientListOverlay();
-				ingredientListOverlay.onSetFilterText(filterText);
-			}
+			notifyListenersOfChange();
 		}
 	}
 
@@ -395,7 +390,19 @@ public class IngredientFilter implements IIngredientFilter {
 		}
 	}
 
+	@Override
 	public int size() {
 		return getIngredientList().size();
+	}
+
+	@Override
+	public void addListener(IIngredientGridSource.Listener listener) {
+		listeners.add(listener);
+	}
+
+	private void notifyListenersOfChange() {
+		for (IIngredientGridSource.Listener listener : listeners) {
+			listener.onChange();
+		}
 	}
 }
