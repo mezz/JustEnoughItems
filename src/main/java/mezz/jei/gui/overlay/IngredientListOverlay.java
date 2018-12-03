@@ -95,8 +95,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 				this.ghostIngredientDragManager.stopDrag();
 			}
 		} else {
-			boolean exclusionAreasChanged = guiScreenHelper.updateGuiExclusionAreas();
-			if (exclusionAreasChanged || this.guiProperties == null || !GuiProperties.areEqual(this.guiProperties, guiProperties) || forceUpdate) {
+			if (forceUpdate || this.guiProperties == null || !GuiProperties.areEqual(this.guiProperties, guiProperties)) {
 				this.guiProperties = guiProperties;
 				this.displayArea = getDisplayArea(guiProperties);
 

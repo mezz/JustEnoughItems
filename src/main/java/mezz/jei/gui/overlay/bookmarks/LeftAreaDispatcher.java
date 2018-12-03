@@ -66,7 +66,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		}
 	}
 
-	public void updateScreen(@Nullable GuiScreen guiScreen) {
+	public void updateScreen(@Nullable GuiScreen guiScreen, boolean forceUpdate) {
 		canShow = false;
 		if (hasContent()) {
 			IGuiProperties currentGuiProperties = guiScreenHelper.getGuiProperties(guiScreen);
@@ -74,8 +74,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 				guiProperties = null;
 			} else {
 				ILeftAreaContent content = contents.get(current);
-				boolean exclusionAreasChanged = guiScreenHelper.updateGuiExclusionAreas();
-				if (exclusionAreasChanged || !GuiProperties.areEqual(guiProperties, currentGuiProperties)) {
+				if (forceUpdate || !GuiProperties.areEqual(guiProperties, currentGuiProperties)) {
 					Set<Rectangle> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
 					guiProperties = currentGuiProperties;
 					makeDisplayArea(guiProperties);
