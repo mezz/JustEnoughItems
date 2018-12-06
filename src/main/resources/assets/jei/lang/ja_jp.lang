@@ -1,27 +1,31 @@
 # Tooltips
 jei.tooltip.config=JEIの設定
-jei.tooltip.show.recipes=レシピを見る
-jei.tooltip.show.all.recipes=全てのレシピを見る
+jei.tooltip.show.recipes=レシピを表示
+jei.tooltip.show.all.recipes=全てのレシピを表示
 jei.tooltip.delete.item=クリックで削除
-jei.tooltip.liquid.amount.with.capacity=%,d / %,d ミリバケツ
-jei.tooltip.liquid.amount=%,d ミリバケツ
-jei.tooltip.transfer=アイテムを配置する
+jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
+jei.tooltip.liquid.amount=%,d mB
+jei.tooltip.transfer=アイテムを配置
 jei.tooltip.recipe.ore.dict=以下の全てで: %s
 jei.tooltip.item.colors=色: %s
 jei.tooltip.shapeless.recipe=不定形レシピ
 jei.tooltip.cheat.mode.button.enabled=チートモード有効
 jei.tooltip.cheat.mode.how.to.disable.hotkey=%sキーで無効にします。
-jei.tooltip.cheat.mode.how.to.disable.no.hotkey=ここで%s+左クリックすると無効にします。
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=ここを%s+左クリックで無効にします。
 jei.tooltip.recipe.by=%s によるレシピ
 jei.tooltip.recipe.id=レシピID: %s
-jei.tooltip.not.enough.space=JEIを表示するためのスペースが足りません。
+jei.tooltip.not.enough.space=JEIを表示する十分なスペースがありません。
 jei.tooltip.ingredient.list.disabled=JEIオーバーレイは無効です。
 jei.tooltip.ingredient.list.disabled.how.to.fix=%s キーで有効にします。
+jei.tooltip.bookmarks=JEIブックマーク
+jei.tooltip.bookmarks.usage.nokey=操作設定でJEIブックマークのキーバインドを設定してください。
+jei.tooltip.bookmarks.usage.key=アイテムにホバーして「%s」キーを押すことでブックマークできます。
+jei.tooltip.bookmarks.not.enough.space=ブックマークを表示する十分なスペースがありません。
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=アイテムがインベントリ内に存在しません
 jei.tooltip.error.recipe.transfer.inventory.full=インベントリが満杯です
-jei.tooltip.error.recipe.transfer.unknown=不明なエラー、ログを確認してください
+jei.tooltip.error.recipe.transfer.unknown=不明なエラー、ログを参照してください
 jei.tooltip.error.recipe.transfer.no.server=サーバーにJEIが導入されている必要があります
 jei.tooltip.error.recipe.transfer.too.large.player.inventory=2x2のクラフトグリッドではクラフトできないサイズのレシピです
 jei.tooltip.error.crash=ツールチップのエラー、ログを参照してください
@@ -40,6 +44,8 @@ key.jei.recipeBack=前のレシピに戻る
 key.jei.toggleCheatMode=チートモードのオン/オフ
 key.jei.previousPage=前のページに戻る
 key.jei.nextPage=次のページに進む
+key.jei.bookmark=ブックマークの追加/削除
+key.jei.toggleBookmarkOverlay=ブックマーク欄の表示/非表示
 
 # Config
 config.jei.default=デフォルト
@@ -52,12 +58,15 @@ config.jei.mode.comment=JEIのモードを変更します。
 config.jei.mode.cheatItemsEnabled=チートモード
 config.jei.mode.cheatItemsEnabled.comment=レシピを見せるのではなくアイテムを与えます。
 config.jei.mode.editEnabled=アイテム隠蔽
-config.jei.mode.editEnabled.comment=クリックでリストへのアイテムの表示/非表示を切り替えられます。
+config.jei.mode.editEnabled.comment=クリックでアイテムリストでの要素の表示/非表示を切り替えられます。
 
 config.jei.interface=インターフェース
 config.jei.interface.comment=ユーザーインターフェースに関係する設定。
 config.jei.interface.overlayEnabled=アイテムリストの有効化
 config.jei.interface.overlayEnabled.comment=GUIの隣にアイテムリストを表示します。
+
+config.jei.interface.bookmarkOverlayEnabled=ブックマーク欄の表示
+config.jei.interface.bookmarkOverlayEnabled.comment=GUIの隣にブックマークリストを表示します。
 
 config.jei.search=検索の設定
 config.jei.search.comment=検索バーに関する設定。
@@ -77,7 +86,7 @@ config.jei.search.resourceIdSearchMode.comment=リソースID検索 (プレフ�
 config.jei.advanced=高度な設定
 config.jei.advanced.comment=JEIの機能を変更する高度な設定。
 config.jei.advanced.itemBlacklist=アイテムのブラックリスト
-config.jei.advanced.itemBlacklist.comment=リストに表示されるべきではないアイテムのリスト。 書式: modId[:name[:meta]]. アイテム隠蔽時はここに自動的に追加削除を行います。
+config.jei.advanced.itemBlacklist.comment=アイテムリストに表示されるべきではない要素のリスト。 書式: modId[:name[:meta]]. アイテム隠蔽モード時はここに自動的に追加削除されます。
 config.jei.advanced.colorSearchEnabled=色による検索の有効化
 config.jei.advanced.colorSearchEnabled.comment=色による検索とアイテムリスト内ツールチップでのアイテムの色情報表示を有効化します。
 config.jei.advanced.debugModeEnabled=デバッグモード
@@ -108,8 +117,8 @@ gui.jei.category.craftingTable=クラフト
 gui.jei.category.smelting=精錬
 gui.jei.category.smelting.experience=経験値: %s
 gui.jei.category.fuel=燃料
-gui.jei.category.fuel.smeltCount.single=1回精錬可能
-gui.jei.category.fuel.smeltCount=%s回精錬可能
+gui.jei.category.fuel.smeltCount.single=1回精錬分
+gui.jei.category.fuel.smeltCount=%s回精錬分
 gui.jei.category.brewing=醸造
 gui.jei.category.brewing.steps=第%s段階
 gui.jei.category.itemInformation=説明
