@@ -14,9 +14,13 @@ jei.tooltip.cheat.mode.how.to.disable.hotkey=Naciśnij %s, aby go wyłączyć/w�
 jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s + klik tutaj, aby go wyłączyć/włączyć.
 jei.tooltip.recipe.by=Receptura z: %s
 jei.tooltip.recipe.id=ID receptury: %s
-jei.tooltip.not.enough.space=Nie ma wystarczająco dużo miejsca, aby wyświetlić tutaj JEI.
+jei.tooltip.not.enough.space=Nie ma wystarczająco dużo miejsca, żeby wyświetlić tutaj JEI.
 jei.tooltip.ingredient.list.disabled=Nakładka JEI jest wyłączona.
 jei.tooltip.ingredient.list.disabled.how.to.fix=Naciśnij %s, aby ją włączyć.
+jei.tooltip.bookmarks=Zakładki JEI
+jei.tooltip.bookmarks.usage.nokey=Przypisz klawisz dla zakładek JEI w ustawieniach sterowania.
+jei.tooltip.bookmarks.usage.key=Najedź kursorem na składnik i naciśnij "%s", aby dodać go do zakładek.
+jei.tooltip.bookmarks.not.enough.space=Nie ma wystarczająco dużo miejsca, żeby wyświetlić tutaj nakładkę z listą zakładek.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Brakuje przedmiotów
@@ -27,7 +31,7 @@ jei.tooltip.error.recipe.transfer.too.large.player.inventory=Receptura jest za d
 jei.tooltip.error.crash=Błąd z tooltipem, sprawdź log
 
 # Error Messages
-jei.chat.error.command.too.long=JEI musi być na serwerze, aby obsłużyć tę komendę czatu. Jest ona zbyt długa dla Minecrafta, żeby ją wysłać.
+jei.chat.error.command.too.long=JEI musi być na serwerze, żeby obsłużyć tę komendę czatu. Jest ona zbyt długa dla Minecrafta, aby ją wysłać.
 jei.chat.error.no.cheat.permission.1=You Nie masz uprawnień do używania trybu cheatów JEI.
 jei.chat.error.no.cheat.permission.2=Uprawnienia są nadawane graczom, którzy mogą używać komendy /give lub są w trybie kreatywnym.
 
@@ -40,6 +44,8 @@ key.jei.recipeBack=Wyświetl poprzednio oglądaną recepturę
 key.jei.toggleCheatMode=Włącz/wyłącz tryb cheatów
 key.jei.previousPage=Pokaż poprzednią stronę
 key.jei.nextPage=Pokaż następną stronę
+key.jei.bookmark=Dodaj/usuń składnik dodany do zakładek
+key.jei.toggleBookmarkOverlay=Pokaż/ukryj składniki dodane do zakładek
 
 # Config
 config.jei.default=Domyślne
@@ -51,13 +57,16 @@ config.jei.mode=Tryb
 config.jei.mode.comment=Zmień tryb, w jakim działa JEI.
 config.jei.mode.cheatItemsEnabled=Tryb cheatów
 config.jei.mode.cheatItemsEnabled.comment=Dawaj przedmioty zamiast pokazywać ich receptury.
-config.jei.mode.editEnabled=Ukryj składniki
+config.jei.mode.editEnabled=Tryb ukrywania składników
 config.jei.mode.editEnabled.comment=Ukrywaj lub pokazuj składniki po kliknięciu na nie na nakładce z listą składników.
 
 config.jei.interface=Interfejs
 config.jei.interface.comment=Opcje dotyczące interfejsu użytkownika.
 config.jei.interface.overlayEnabled=Pokazuj nakładkę z listą składników
 config.jei.interface.overlayEnabled.comment=Pokazuj nakładkę z listą składników obok otwartych okienek interfejsu.
+
+config.jei.interface.bookmarkOverlayEnabled=Pokazuj nakładkę z listą zakładek
+config.jei.interface.bookmarkOverlayEnabled.comment=Pokazuj nakładkę z listą zakładek obok otwartych okienek interfejsu.
 
 config.jei.search=Opcje wyszukiwania
 config.jei.search.comment=Opcje dotyczące paska wyszukiwania.
@@ -77,7 +86,7 @@ config.jei.search.resourceIdSearchMode.comment=Tryb wyszukiwania po ID zasobów 
 config.jei.advanced=Zaawansowane
 config.jei.advanced.comment=Zaawansowane opcje konfiguracyjne do zmiany sposobu, w jaki funkcjonuje JEI.
 config.jei.advanced.itemBlacklist=Blacklista składników
-config.jei.advanced.itemBlacklist.comment=Lista składników, które nie powinny być wyświetlane na nakładce z listą składników. Format: IdModa[:nazwa[:meta]]. Tryb ukrywania składników automatycznie doda tutaj wpisy lub je usunie.
+config.jei.advanced.itemBlacklist.comment=Lista składników, które nie powinny być wyświetlane na nakładce z listą składników. Format: idModa[:nazwa[:meta]]. Tryb ukrywania składników automatycznie doda tutaj wpisy lub je usunie.
 config.jei.advanced.colorSearchEnabled=Włącz wyszukiwanie po kolorach
 config.jei.advanced.colorSearchEnabled.comment=Wyszukuj składniki po kolorach oraz pokazuj te kolory w tooltipach na nakładce z listą składników.
 config.jei.advanced.debugModeEnabled=Tryb debugowania
@@ -88,8 +97,8 @@ config.jei.advanced.modNameFormat=Format nazwy moda
 config.jei.advanced.modNameFormat.comment=Określa, jak powinna być sformatowana nazwa moda w tooltipach interfejsu JEI. Pozostaw puste, aby wyłączyć.
 config.jei.advanced.maxColumns=Maksymalna szerokość
 config.jei.advanced.maxColumns.comment=Maksymalna szerokość nakładki z listą składników.
-config.jei.advanced.maxRecipeGuiHeight=Maksymalna wysokość interfejsu z recepturami
-config.jei.advanced.maxRecipeGuiHeight.comment=Maksymalna wysokość dla interfejsu z recepturami.
+config.jei.advanced.maxRecipeGuiHeight=Maksymalna wysokość
+config.jei.advanced.maxRecipeGuiHeight.comment=Maksymalna wysokość interfejsu z recepturami.
 config.jei.advanced.giveMode=Tryb dawania
 config.jei.advanced.giveMode.comment=Zdecyduj, czy JEI ma dawać składniki bezpośrednio do ekwipunku (inventory), czy chcesz zabierać i przenosić je samemu (mouse_pickup).
 
