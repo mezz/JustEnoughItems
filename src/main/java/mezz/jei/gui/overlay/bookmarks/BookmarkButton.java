@@ -44,7 +44,7 @@ public class BookmarkButton extends GuiIconToggleButton {
 
 	@Override
 	protected boolean isIconToggledOn() {
-		return Config.isBookmarkOverlayEnabled() && !bookmarkList.isEmpty() && bookmarkOverlay.hasRoom();
+		return bookmarkOverlay.isListDisplayed();
 	}
 
 	@Override
