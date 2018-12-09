@@ -27,14 +27,13 @@ public interface IVanillaRecipeFactory {
 	 * @param outputs     The resulting itemStack(s).
 	 * @return the {@link IRecipeWrapper} for this recipe.
 	 */
-	default IRecipeWrapper createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
-		return createAnvilRecipe(Collections.singletonList(leftInput), rightInputs, outputs);
-	}
+	IRecipeWrapper createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs);
 
 	/**
 	 * Adds an anvil recipe for the given inputs and output.
+	 * The number of inputs in the left and right side must match.
 	 *
-	 * @param leftInputs   The itemStack(s) placed on the left slot.
+	 * @param leftInputs  The itemStack(s) placed on the left slot.
 	 * @param rightInputs The itemStack(s) placed on the right slot.
 	 * @param outputs     The resulting itemStack(s).
 	 * @return the {@link IRecipeWrapper} for this recipe.
