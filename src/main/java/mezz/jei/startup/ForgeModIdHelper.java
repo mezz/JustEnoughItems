@@ -102,6 +102,7 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 	@Override
 	public <T> List<String> addModNameToIngredientTooltip(List<String> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
 		if (Config.isDebugModeEnabled() && Minecraft.getMinecraft().gameSettings.advancedItemTooltips) {
+			tooltip = new ArrayList<>(tooltip);
 			tooltip.add(TextFormatting.GRAY + "JEI Debug:");
 			tooltip.add(TextFormatting.GRAY + "info: " + ingredientHelper.getErrorInfo(ingredient));
 			tooltip.add(TextFormatting.GRAY + "uid: " + ingredientHelper.getUniqueId(ingredient));

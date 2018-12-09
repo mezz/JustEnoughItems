@@ -62,6 +62,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
@@ -116,8 +117,15 @@ public class VanillaPlugin implements IModPlugin {
 		StackHelper stackHelper = Internal.getStackHelper();
 		ItemStackListFactory itemStackListFactory = new ItemStackListFactory(this.subtypeRegistry);
 
-		ingredientRegistration.register(VanillaTypes.ITEM, itemStackListFactory.create(stackHelper), new ItemStackHelper(stackHelper), new ItemStackRenderer());
-		ingredientRegistration.register(VanillaTypes.FLUID, FluidStackListFactory.create(), new FluidStackHelper(), new FluidStackRenderer());
+		List<ItemStack> itemStacks = itemStackListFactory.create(stackHelper);
+		ItemStackHelper itemStackHelper = new ItemStackHelper(stackHelper);
+		ItemStackRenderer itemStackRenderer = new ItemStackRenderer();
+		ingredientRegistration.register(VanillaTypes.ITEM, itemStacks, itemStackHelper, itemStackRenderer);
+
+		List<FluidStack> fluidStacks = FluidStackListFactory.create();
+		FluidStackHelper fluidStackHelper = new FluidStackHelper();
+		FluidStackRenderer fluidStackRenderer = new FluidStackRenderer();
+		ingredientRegistration.register(VanillaTypes.FLUID, fluidStacks, fluidStackHelper, fluidStackRenderer);
 	}
 
 	@Override

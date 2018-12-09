@@ -8,11 +8,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
-	@Override
-	public List<TestIngredient> expandSubtypes(List<TestIngredient> ingredients) {
-		return ingredients;
-	}
-
 	@Nullable
 	@Override
 	public TestIngredient getMatch(Iterable<TestIngredient> ingredients, TestIngredient ingredientToMatch) {

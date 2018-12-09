@@ -8,11 +8,6 @@ import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.LegacyUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -130,36 +125,18 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 
 	@Override
 	public Collection<String> getOreDictStrings() {
-		Collection<String> oreDictStrings = new ArrayList<>();
-
-		if (ingredient instanceof ItemStack) {
-			ItemStack itemStack = (ItemStack) ingredient;
-			for (int oreId : OreDictionary.getOreIDs(itemStack)) {
-				String oreNameLowercase = OreDictionary.getOreName(oreId).toLowerCase(Locale.ENGLISH);
-				oreDictStrings.add(oreNameLowercase);
-			}
-		}
-
-		return oreDictStrings;
+		Collection<String> oreDictNames = ingredientHelper.getOreDictNames(ingredient);
+		return oreDictNames.stream()
+			.map(s -> s.toLowerCase(Locale.ENGLISH))
+			.collect(Collectors.toList());
 	}
 
 	@Override
 	public Collection<String> getCreativeTabsStrings() {
-		Collection<String> creativeTabsStrings = new ArrayList<>();
-
-		if (ingredient instanceof ItemStack) {
-			ItemStack itemStack = (ItemStack) ingredient;
-			Item item = itemStack.getItem();
-			for (CreativeTabs creativeTab : item.getCreativeTabs()) {
-				if (creativeTab != null) {
-					String creativeTabName = I18n.format(creativeTab.getTranslationKey());
-					String creativeTabNameLowercase = Translator.toLowercaseWithLocale(creativeTabName);
-					creativeTabsStrings.add(creativeTabNameLowercase);
-				}
-			}
-		}
-
-		return creativeTabsStrings;
+		Collection<String> creativeTabsStrings = ingredientHelper.getCreativeTabNames(ingredient);
+		return creativeTabsStrings.stream()
+			.map(Translator::toLowercaseWithLocale)
+			.collect(Collectors.toList());
 	}
 
 	@Override

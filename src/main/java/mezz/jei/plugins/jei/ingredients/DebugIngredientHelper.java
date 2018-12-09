@@ -14,11 +14,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
 public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient> {
-	@Override
-	public List<DebugIngredient> expandSubtypes(List<DebugIngredient> ingredients) {
-		return ingredients;
-	}
-
 	@Nullable
 	@Override
 	public DebugIngredient getMatch(Iterable<DebugIngredient> ingredients, DebugIngredient ingredientToMatch) {

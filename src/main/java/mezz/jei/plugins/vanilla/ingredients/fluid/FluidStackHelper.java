@@ -21,11 +21,6 @@ import net.minecraftforge.fluids.FluidUtil;
 
 public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	@Override
-	public List<FluidStack> expandSubtypes(List<FluidStack> contained) {
-		return contained;
-	}
-
-	@Override
 	@Nullable
 	public FluidStack getMatch(Iterable<FluidStack> ingredients, FluidStack toMatch) {
 		for (FluidStack fluidStack : ingredients) {
