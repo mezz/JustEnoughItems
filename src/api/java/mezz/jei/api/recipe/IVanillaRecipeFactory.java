@@ -28,6 +28,18 @@ public interface IVanillaRecipeFactory {
 	IRecipeWrapper createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs);
 
 	/**
+	 * Adds an anvil recipe for the given inputs and output.
+	 * The number of inputs in the left and right side must match.
+	 *
+	 * @param leftInputs  The itemStack(s) placed on the left slot.
+	 * @param rightInputs The itemStack(s) placed on the right slot.
+	 * @param outputs     The resulting itemStack(s).
+	 * @return the {@link IRecipeWrapper} for this recipe.
+	 * @since JEI 4.14.1
+	 */
+	IRecipeWrapper createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs);
+
+	/**
 	 * Create a new smelting recipe.
 	 * By default, all smelting recipes from {@link FurnaceRecipes#smeltingList} are already added by JEI.
 	 *
