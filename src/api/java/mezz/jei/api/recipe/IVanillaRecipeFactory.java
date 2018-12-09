@@ -18,7 +18,6 @@ import java.util.List;
  * @since JEI 4.5.0
  */
 public interface IVanillaRecipeFactory {
-
 	/**
 	 * Adds an anvil recipe for the given inputs and output.
 	 *
