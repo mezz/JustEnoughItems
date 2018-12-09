@@ -6,7 +6,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
