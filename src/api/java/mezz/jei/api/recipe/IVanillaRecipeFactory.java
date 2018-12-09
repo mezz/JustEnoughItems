@@ -20,9 +20,13 @@ import java.util.List;
 public interface IVanillaRecipeFactory {
 
 	/**
-	 * @deprecated Use {@link #createAnvilRecipe(List, List, List)}.
+	 * Adds an anvil recipe for the given inputs and output.
+	 *
+	 * @param leftInput   The itemStack placed on the left slot.
+	 * @param rightInputs The itemStack(s) placed on the right slot.
+	 * @param outputs     The resulting itemStack(s).
+	 * @return the {@link IRecipeWrapper} for this recipe.
 	 */
-	@Deprecated
 	default IRecipeWrapper createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
 		return createAnvilRecipe(Collections.singletonList(leftInput), rightInputs, outputs);
 	}
@@ -34,6 +38,7 @@ public interface IVanillaRecipeFactory {
 	 * @param rightInputs The itemStack(s) placed on the right slot.
 	 * @param outputs     The resulting itemStack(s).
 	 * @return the {@link IRecipeWrapper} for this recipe.
+	 * @since JEI 4.14.1
 	 */
 	IRecipeWrapper createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs);
 
