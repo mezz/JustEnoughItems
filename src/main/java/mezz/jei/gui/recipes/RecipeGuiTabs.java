@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableList;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.TooltipRenderer;
-import mezz.jei.gui.overlay.GuiProperties;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IPaged;
 import mezz.jei.util.MathUtil;
@@ -33,14 +32,14 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 		this.pageNavigation = new PageNavigation(this, true);
 	}
 
-	public void initLayout(GuiProperties guiProperties) {
+	public void initLayout(RecipesGui recipesGui) {
 		ImmutableList<IRecipeCategory> categories = recipeGuiLogic.getRecipeCategories();
 		if (!categories.isEmpty()) {
 			int totalWidth = 0;
 			categoriesPerPage = 0;
 
 			for (int i = 0; i < categories.size(); i++) {
-				if (totalWidth + RecipeGuiTab.TAB_WIDTH <= (guiProperties.getGuiXSize() - 4)) {
+				if (totalWidth + RecipeGuiTab.TAB_WIDTH <= (recipesGui.getXSize() - 4)) {
 					totalWidth += RecipeGuiTab.TAB_WIDTH;
 					categoriesPerPage++;
 				} else {
@@ -50,8 +49,8 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 
 			area.width = totalWidth;
 			area.height = RecipeGuiTab.TAB_HEIGHT;
-			area.x = guiProperties.getGuiLeft() + 2;
-			area.y = guiProperties.getGuiTop() - RecipeGuiTab.TAB_HEIGHT + 3; // overlaps the recipe gui slightly
+			area.x = recipesGui.getGuiLeft() + 2;
+			area.y = recipesGui.getGuiTop() - RecipeGuiTab.TAB_HEIGHT + 3; // overlaps the recipe gui slightly
 
 			pageCount = MathUtil.divideCeil(categories.size(), categoriesPerPage);
 

@@ -51,7 +51,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		return this.guiIngredientSlots.size();
 	}
 
-	public void updateBounds(Rectangle availableArea, int minWidth, Collection<Rectangle> exclusionAreas) {
+	public boolean updateBounds(Rectangle availableArea, int minWidth, Collection<Rectangle> exclusionAreas) {
 		final int columns = Math.min(availableArea.width / INGREDIENT_WIDTH, Config.getMaxColumns());
 		final int rows = availableArea.height / INGREDIENT_HEIGHT;
 
@@ -70,6 +70,10 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		this.area = new Rectangle(x, y, width, height);
 		this.guiIngredientSlots.clear();
 
+		if (rows == 0 || columns < Config.smallestNumColumns) {
+			return false;
+		}
+
 		for (int row = 0; row < rows; row++) {
 			int y1 = y + (row * INGREDIENT_HEIGHT);
 			for (int column = 0; column < columns; column++) {
@@ -81,14 +85,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 				this.guiIngredientSlots.add(ingredientListSlot);
 			}
 		}
-	}
-
-	public void updateLayout(Collection<Rectangle> guiExclusionAreas) {
-		for (IngredientListSlot ingredientListSlot : this.guiIngredientSlots.getAllGuiIngredientSlots()) {
-			Rectangle stackArea = ingredientListSlot.getArea();
-			final boolean blocked = MathUtil.intersects(guiExclusionAreas, stackArea);
-			ingredientListSlot.setBlocked(blocked);
-		}
+		return true;
 	}
 
 	public Rectangle getArea() {

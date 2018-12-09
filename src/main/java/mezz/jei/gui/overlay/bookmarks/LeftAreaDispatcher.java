@@ -1,12 +1,12 @@
 package mezz.jei.gui.overlay.bookmarks;
 
 import mezz.jei.api.gui.IGuiProperties;
+import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.PageNavigation;
-import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.gui.overlay.GuiProperties;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IPaged;
 import mezz.jei.input.IShowsRecipeFocuses;
-import mezz.jei.runtime.JeiRuntime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 
@@ -22,7 +23,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 	private static final int NAVIGATION_HEIGHT = 20;
 
 	private final List<ILeftAreaContent> contents = new ArrayList<>();
-	private final JeiRuntime runtime;
+	private final GuiScreenHelper guiScreenHelper;
 	private int current = 0;
 	@Nullable
 	private IGuiProperties guiProperties;
@@ -31,8 +32,8 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 	private final PageNavigation navigation;
 	private boolean canShow = false;
 
-	public LeftAreaDispatcher(JeiRuntime runtime) {
-		this.runtime = runtime;
+	public LeftAreaDispatcher(GuiScreenHelper guiScreenHelper) {
+		this.guiScreenHelper = guiScreenHelper;
 		this.navigation = new PageNavigation(this, false);
 	}
 
@@ -65,27 +66,25 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		}
 	}
 
-	public void updateScreen(@Nullable GuiScreen guiScreen) {
+	public void updateScreen(@Nullable GuiScreen guiScreen, boolean forceUpdate) {
 		canShow = false;
 		if (hasContent()) {
-			IGuiProperties currentGuiProperties = runtime.getGuiProperties(guiScreen);
+			IGuiProperties currentGuiProperties = guiScreenHelper.getGuiProperties(guiScreen);
 			if (currentGuiProperties == null) {
 				guiProperties = null;
-			} else if (!areGuiPropertiesEqual(guiProperties, currentGuiProperties)) {
-				guiProperties = currentGuiProperties;
-				makeDisplayArea(guiProperties);
-				contents.get(current).updateBounds(displayArea);
-				canShow = true;
 			} else {
-				canShow = true;
+				ILeftAreaContent content = contents.get(current);
+				if (forceUpdate || !GuiProperties.areEqual(guiProperties, currentGuiProperties)) {
+					Set<Rectangle> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
+					guiProperties = currentGuiProperties;
+					makeDisplayArea(guiProperties);
+					content.updateBounds(displayArea, guiExclusionAreas);
+					canShow = true;
+				} else {
+					canShow = true;
+				}
 			}
 		}
-	}
-
-	private static boolean areGuiPropertiesEqual(@Nullable IGuiProperties guiProperties1, IGuiProperties guiProperties2) {
-		return guiProperties1 != null && guiProperties1.getGuiClass().equals(guiProperties2.getGuiClass())
-			&& guiProperties1.getGuiLeft() == guiProperties2.getGuiLeft() && guiProperties1.getGuiXSize() == guiProperties2.getGuiXSize()
-			&& guiProperties1.getScreenWidth() == guiProperties2.getScreenWidth() && guiProperties1.getScreenHeight() == guiProperties2.getScreenHeight();
 	}
 
 	private void makeDisplayArea(IGuiProperties guiProperties) {
@@ -93,10 +92,6 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		final int y = BORDER_PADDING;
 		int width = guiProperties.getGuiLeft() - x - BORDER_PADDING;
 		final int height = guiProperties.getScreenHeight() - y - BORDER_PADDING;
-		if (guiProperties.getGuiClass() == RecipesGui.class) {
-			// TODO: JEI doesn't define an exclusion area for its own side-tabs at the moment
-			width -= 22;
-		}
 		displayArea = new Rectangle(x, y, width, height);
 		if (contents.size() > 1) {
 			naviArea = new Rectangle(displayArea);

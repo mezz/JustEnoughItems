@@ -198,6 +198,11 @@ public final class ErrorUtil {
 		} else if (values.length <= 0) {
 			throw new IllegalArgumentException(name + " must not be empty.");
 		}
+		for (T value : values) {
+			if (value == null) {
+				throw new NullPointerException(name + " must not contain null values.");
+			}
+		}
 	}
 
 	public static void checkNotEmpty(@Nullable Collection values, String name) {
