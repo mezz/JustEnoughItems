@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.ingredients;
+package mezz.jei.plugins.vanilla.ingredients.fluid;
 
 import javax.annotation.Nullable;
 import java.awt.Color;

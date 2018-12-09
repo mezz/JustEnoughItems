@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.ingredients;
+package mezz.jei.plugins.vanilla.ingredients.fluid;
 
 import java.util.ArrayList;
 import java.util.List;

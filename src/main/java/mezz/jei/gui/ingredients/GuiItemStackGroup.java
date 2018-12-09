@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IFocus;
-import mezz.jei.plugins.vanilla.ingredients.ItemStackRenderer;
+import mezz.jei.plugins.vanilla.ingredients.item.ItemStackRenderer;
 import net.minecraft.item.ItemStack;
 
 public class GuiItemStackGroup extends GuiIngredientGroup<ItemStack> implements IGuiItemStackGroup {
