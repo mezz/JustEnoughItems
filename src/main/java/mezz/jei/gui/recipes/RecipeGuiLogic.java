@@ -7,12 +7,14 @@ import java.util.Stack;
 
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.IRecipeRegistry;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.ingredients.IngredientLookupState;
+import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -23,6 +25,7 @@ import javax.annotation.Nonnegative;
 public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IRecipeRegistry recipeRegistry;
 	private final IRecipeLogicStateListener stateListener;
+	private final IngredientRegistry ingredientRegistry;
 
 	private boolean initialState = true;
 	private IngredientLookupState state;
@@ -33,9 +36,10 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	 */
 	private List<IRecipeWrapper> recipes = Collections.emptyList();
 
-	public RecipeGuiLogic(IRecipeRegistry recipeRegistry, IRecipeLogicStateListener stateListener) {
+	public RecipeGuiLogic(IRecipeRegistry recipeRegistry, IRecipeLogicStateListener stateListener, IngredientRegistry ingredientRegistry) {
 		this.recipeRegistry = recipeRegistry;
 		this.stateListener = stateListener;
+		this.ingredientRegistry = ingredientRegistry;
 		List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories();
 		this.state = new IngredientLookupState(null, recipeCategories, 0, 0);
 	}
@@ -43,7 +47,10 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	@Override
 	public <V> boolean setFocus(IFocus<V> focus) {
 		focus = Focus.check(focus);
-		final List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories(focus);
+		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(focus.getValue());
+		IFocus<?> translatedFocus = ingredientHelper.translateFocus(focus, Focus::new);
+
+		final List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories(translatedFocus);
 		if (recipeCategories.isEmpty()) {
 			return false;
 		}
@@ -53,7 +60,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 
 		int recipeCategoryIndex = getRecipeCategoryIndexToShowFirst(recipeCategories);
-		IngredientLookupState state = new IngredientLookupState(focus, recipeCategories, recipeCategoryIndex, 0);
+		IngredientLookupState state = new IngredientLookupState(translatedFocus, recipeCategories, recipeCategoryIndex, 0);
 		setState(state);
 
 		return true;

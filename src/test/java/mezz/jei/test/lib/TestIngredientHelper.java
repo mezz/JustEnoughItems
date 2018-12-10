@@ -5,7 +5,6 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.Collections;
-import java.util.List;
 
 public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 	@Nullable

@@ -3,7 +3,6 @@ package mezz.jei.plugins.vanilla.ingredients.fluid;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.Collections;
-import java.util.List;
 
 import com.google.common.base.MoreObjects;
 import mezz.jei.api.ingredients.IIngredientHelper;

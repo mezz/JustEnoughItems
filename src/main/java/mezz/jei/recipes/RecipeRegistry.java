@@ -538,19 +538,15 @@ public class RecipeRegistry implements IRecipeRegistry {
 	public <V> List<IRecipeCategory> getRecipeCategories(IFocus<V> focus) {
 		focus = Focus.check(focus);
 
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(focus.getValue());
-		IFocus<?> translatedFocus = ingredientHelper.translateFocus(focus, this::createFocus);
-		translatedFocus = Focus.check(translatedFocus);
-
 		List<String> allRecipeCategoryUids = new ArrayList<>();
 		for (IRecipeRegistryPlugin plugin : this.plugins) {
-			List<String> recipeCategoryUids = plugin.getRecipeCategoryUids(translatedFocus);
+			List<String> recipeCategoryUids = plugin.getRecipeCategoryUids(focus);
 			for (String recipeCategoryUid : recipeCategoryUids) {
 				if (!allRecipeCategoryUids.contains(recipeCategoryUid)) {
 					if (hiddenRecipes.containsKey(recipeCategoryUid)) {
 						IRecipeCategory<?> recipeCategory = getRecipeCategory(recipeCategoryUid);
 						if (recipeCategory != null) {
-							List<?> recipeWrappers = getRecipeWrappers(recipeCategory, translatedFocus);
+							List<?> recipeWrappers = getRecipeWrappers(recipeCategory, focus);
 							if (!recipeWrappers.isEmpty()) {
 								allRecipeCategoryUids.add(recipeCategoryUid);
 							}
@@ -570,13 +566,9 @@ public class RecipeRegistry implements IRecipeRegistry {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		focus = Focus.check(focus);
 
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(focus.getValue());
-		IFocus<?> translatedFocus = ingredientHelper.translateFocus(focus, this::createFocus);
-		translatedFocus = Focus.check(translatedFocus);
-
 		List<T> allRecipeWrappers = new ArrayList<>();
 		for (IRecipeRegistryPlugin plugin : this.plugins) {
-			List<T> recipeWrappers = plugin.getRecipeWrappers(recipeCategory, translatedFocus);
+			List<T> recipeWrappers = plugin.getRecipeWrappers(recipeCategory, focus);
 			allRecipeWrappers.addAll(recipeWrappers);
 		}
 
