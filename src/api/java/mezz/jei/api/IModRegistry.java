@@ -20,6 +20,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -152,6 +153,21 @@ public interface IModRegistry {
 	 * @since JEI 3.12.0
 	 */
 	void addRecipeRegistryPlugin(IRecipeRegistryPlugin recipeRegistryPlugin);
+	
+	/**
+	 * Register your own sorting option here.
+	 * The ItemStack comparator needs to be able to handle null ItemStack inputs 
+	 * (FluidStacks will be silently converted to bucket ItemStacks).
+	 * 
+	 * The Object comparator needs to be able to handle ItemStack, FluidStack, and unknown types 
+	 * (Mod specific stacks) inputs.  Examples of Mod specific ones are Mekanism's GasStack and 
+	 * EnderIO's EnergyIngredient
+	 *
+	 * @since JEI 4.?.0
+	 */
+	void addIngredientListItemStackSorter(String name, Comparator<ItemStack> comparator);
+	void addIngredientListObjectSorter(String name, Comparator<Object> comparator);
+	
 
 	// DEPRECATED BELOW
 

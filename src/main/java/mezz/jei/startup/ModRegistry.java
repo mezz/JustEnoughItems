@@ -24,7 +24,9 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.collect.ListMultiMap;
 import mezz.jei.collect.SetMultiMap;
+import mezz.jei.config.Config;
 import mezz.jei.gui.recipes.RecipeClickableArea;
+import mezz.jei.ingredients.IngredientListElementComparator;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.plugins.jei.info.IngredientInfoRecipe;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeWrapper;
@@ -42,6 +44,7 @@ import net.minecraft.item.ItemStack;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -311,6 +314,28 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 
 		Log.get().info("Added recipe registry plugin: {}", recipeRegistryPlugin.getClass());
 		recipeRegistryPlugins.add(recipeRegistryPlugin);
+	}
+	
+	@Override
+	public void addIngredientListItemStackSorter(String name, Comparator<ItemStack> comparator) {		
+		ErrorUtil.checkNotEmpty(name, "addIngredientListSorter requires a sort option name.");
+		Preconditions.checkArgument(!name.trim().isEmpty(), "addIngredientListSorter requires a sort option name.");
+		Preconditions.checkArgument(!name.contains(","), "addIngredientListSorter sort option name, '" + name + "', cannot contain commas.");
+		ErrorUtil.checkNotNull(comparator, "addIngredientListSorter sorting option, '" + name + "', requires a comparator object  (null provided).");
+		
+		IngredientListElementComparator.addItemStackComparison(name.trim(), comparator);		
+		Config.updateSortOrder();		
+	}
+
+	@Override
+	public void addIngredientListObjectSorter(String name, Comparator<Object> comparator) {		
+		ErrorUtil.checkNotEmpty(name, "addIngredientListSorter requires a sort option name.");
+		Preconditions.checkArgument(!name.trim().isEmpty(), "addIngredientListSorter requires a sort option name.");
+		Preconditions.checkArgument(!name.contains(","), "addIngredientListSorter sort option name, '" + name + "', cannot contain commas.");
+		ErrorUtil.checkNotNull(comparator, "addIngredientListSorter sorting option, '" + name + "', requires a comparator object  (null provided).");
+		
+		IngredientListElementComparator.addObjectComparison(name.trim(), comparator);		
+		Config.updateSortOrder();		
 	}
 
 	public List<IAdvancedGuiHandler<?>> getAdvancedGuiHandlers() {

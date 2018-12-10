@@ -26,4 +26,7 @@ public class ConfigValues {
 	public boolean hideModeEnabled = false;
 	public boolean bookmarkOverlayEnabled = true;
 	public String filterText = "";
+
+	// Sort
+	public String itemSortlist = ""; // Gets populated dynamically.
 }
