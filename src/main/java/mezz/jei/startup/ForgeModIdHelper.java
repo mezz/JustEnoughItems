@@ -12,6 +12,7 @@ import mezz.jei.util.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
@@ -107,7 +108,8 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 			tooltip.add(TextFormatting.GRAY + "info: " + ingredientHelper.getErrorInfo(ingredient));
 			tooltip.add(TextFormatting.GRAY + "uid: " + ingredientHelper.getUniqueId(ingredient));
 		}
-		if (Config.isModNameFormatOverrideActive() && ingredient instanceof ItemStack) { // we detected that another mod is adding the mod name already
+		if (Config.isModNameFormatOverrideActive() && (ingredient instanceof ItemStack || ingredient instanceof EnchantmentData)) {
+			// we detected that another mod is adding the mod name already
 			return tooltip;
 		}
 		return super.addModNameToIngredientTooltip(tooltip, ingredient, ingredientHelper);

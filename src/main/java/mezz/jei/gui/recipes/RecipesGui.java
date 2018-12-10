@@ -17,6 +17,7 @@ import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.elements.GuiIconButtonSmall;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
@@ -81,8 +82,8 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	private boolean init = false;
 
-	public RecipesGui(IRecipeRegistry recipeRegistry) {
-		this.logic = new RecipeGuiLogic(recipeRegistry, this);
+	public RecipesGui(IRecipeRegistry recipeRegistry, IngredientRegistry ingredientRegistry) {
+		this.logic = new RecipeGuiLogic(recipeRegistry, this, ingredientRegistry);
 		this.recipeCatalysts = new RecipeCatalysts();
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
 		this.mc = Minecraft.getMinecraft();
