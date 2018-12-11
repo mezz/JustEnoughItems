@@ -33,15 +33,9 @@ import mezz.jei.ingredients.Ingredients;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipe;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
-import net.minecraft.block.Block;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.ProgressManager;
 
 import javax.annotation.Nullable;
@@ -540,36 +534,9 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return null;
 	}
 
-	/**
-	 * Special case for ItemBlocks containing fluid blocks.
-	 * Nothing crafts those, the player probably wants to look up fluids.
-	 */
-	@Nullable
-	private static FluidStack getFluidFromItemBlock(IFocus<?> focus) {
-		Object ingredient = focus.getValue();
-		if (ingredient instanceof ItemStack) {
-			ItemStack itemStack = (ItemStack) ingredient;
-			Item item = itemStack.getItem();
-			if (item instanceof ItemBlock) {
-				Block block = ((ItemBlock) item).getBlock();
-				Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
-				if (fluid != null) {
-					return new FluidStack(fluid, Fluid.BUCKET_VOLUME);
-				}
-			}
-		}
-
-		return null;
-	}
-
 	@Override
 	public <V> List<IRecipeCategory> getRecipeCategories(IFocus<V> focus) {
 		focus = Focus.check(focus);
-
-		FluidStack fluidStack = getFluidFromItemBlock(focus);
-		if (fluidStack != null) {
-			return getRecipeCategories(createFocus(focus.getMode(), fluidStack));
-		}
 
 		List<String> allRecipeCategoryUids = new ArrayList<>();
 		for (IRecipeRegistryPlugin plugin : this.plugins) {
@@ -598,11 +565,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 	public <T extends IRecipeWrapper, V> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		focus = Focus.check(focus);
-
-		FluidStack fluidStack = getFluidFromItemBlock(focus);
-		if (fluidStack != null) {
-			return getRecipeWrappers(recipeCategory, createFocus(focus.getMode(), fluidStack));
-		}
 
 		List<T> allRecipeWrappers = new ArrayList<>();
 		for (IRecipeRegistryPlugin plugin : this.plugins) {

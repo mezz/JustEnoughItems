@@ -17,11 +17,13 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class GuiEventHandler {
 	private final IngredientListOverlay ingredientListOverlay;
+	private final GuiScreenHelper guiScreenHelper;
 	private final LeftAreaDispatcher leftAreaDispatcher;
 	private final RecipeRegistry recipeRegistry;
 	private boolean drawnOnBackground = false;
 
-	public GuiEventHandler(LeftAreaDispatcher leftAreaDispatcher, IngredientListOverlay ingredientListOverlay, RecipeRegistry recipeRegistry) {
+	public GuiEventHandler(GuiScreenHelper guiScreenHelper, LeftAreaDispatcher leftAreaDispatcher, IngredientListOverlay ingredientListOverlay, RecipeRegistry recipeRegistry) {
+		this.guiScreenHelper = guiScreenHelper;
 		this.leftAreaDispatcher = leftAreaDispatcher;
 		this.ingredientListOverlay = ingredientListOverlay;
 		this.recipeRegistry = recipeRegistry;
@@ -31,28 +33,29 @@ public class GuiEventHandler {
 	public void onOverlayToggle(OverlayToggleEvent event) {
 		GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
 		ingredientListOverlay.updateScreen(currentScreen, true);
-		leftAreaDispatcher.updateScreen(currentScreen);
+		leftAreaDispatcher.updateScreen(currentScreen, false);
 	}
 
 	@SubscribeEvent
 	public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
 		GuiScreen gui = event.getGui();
 		ingredientListOverlay.updateScreen(gui, false);
-		leftAreaDispatcher.updateScreen(gui);
+		leftAreaDispatcher.updateScreen(gui, false);
 	}
 
 	@SubscribeEvent
 	public void onGuiOpen(GuiOpenEvent event) {
 		GuiScreen gui = event.getGui();
 		ingredientListOverlay.updateScreen(gui, false);
-		leftAreaDispatcher.updateScreen(gui);
+		leftAreaDispatcher.updateScreen(gui, false);
 	}
 
 	@SubscribeEvent
 	public void onDrawBackgroundEventPost(GuiScreenEvent.BackgroundDrawnEvent event) {
 		GuiScreen gui = event.getGui();
-		ingredientListOverlay.updateScreen(gui, false);
-		leftAreaDispatcher.updateScreen(gui);
+		boolean exclusionAreasChanged = guiScreenHelper.updateGuiExclusionAreas();
+		ingredientListOverlay.updateScreen(gui, exclusionAreasChanged);
+		leftAreaDispatcher.updateScreen(gui, exclusionAreasChanged);
 
 		drawnOnBackground = true;
 		ingredientListOverlay.drawScreen(gui.mc, event.getMouseX(), event.getMouseY(), gui.mc.getRenderPartialTicks());
@@ -74,7 +77,7 @@ public class GuiEventHandler {
 		GuiScreen gui = event.getGui();
 
 		ingredientListOverlay.updateScreen(gui, false);
-		leftAreaDispatcher.updateScreen(gui);
+		leftAreaDispatcher.updateScreen(gui, false);
 
 		if (!drawnOnBackground) {
 			ingredientListOverlay.drawScreen(gui.mc, event.getMouseX(), event.getMouseY(), gui.mc.getRenderPartialTicks());

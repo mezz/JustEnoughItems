@@ -27,9 +27,9 @@ public class AnvilRecipeWrapper implements IRecipeWrapper {
 	private ItemStack lastRightStack;
 	private int lastCost;
 
-	public AnvilRecipeWrapper(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
+	public AnvilRecipeWrapper(List<ItemStack> leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
 		this.inputs = Lists.newArrayList();
-		this.inputs.add(Collections.singletonList(leftInput));
+		this.inputs.add(leftInput);
 		this.inputs.add(rightInputs);
 
 		this.output = Collections.singletonList(outputs);

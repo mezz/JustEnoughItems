@@ -74,7 +74,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	}
 
 	public boolean isListDisplayed() {
-		return Config.isOverlayEnabled() && this.hasRoom;
+		return Config.isOverlayEnabled() && this.guiProperties != null && this.hasRoom;
 	}
 
 	private static Rectangle getDisplayArea(IGuiProperties guiProperties) {
@@ -95,8 +95,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 				this.ghostIngredientDragManager.stopDrag();
 			}
 		} else {
-			boolean exclusionAreasChanged = guiScreenHelper.updateGuiExclusionAreas();
-			if (exclusionAreasChanged || this.guiProperties == null || !GuiProperties.areEqual(this.guiProperties, guiProperties) || forceUpdate) {
+			if (forceUpdate || this.guiProperties == null || !GuiProperties.areEqual(this.guiProperties, guiProperties)) {
 				this.guiProperties = guiProperties;
 				this.displayArea = getDisplayArea(guiProperties);
 

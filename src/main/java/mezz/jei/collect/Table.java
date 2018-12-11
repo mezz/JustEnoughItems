@@ -42,6 +42,10 @@ public class Table<R, C, V> {
 		return table.computeIfAbsent(row, rowMappingFunction);
 	}
 
+	public void clear() {
+		table.clear();
+	}
+
 	public ImmutableTable<R, C, V> toImmutable() {
 		ImmutableTable.Builder<R, C, V> builder = ImmutableTable.builder();
 		for (Map.Entry<R, Map<C, V>> entry : table.entrySet()) {

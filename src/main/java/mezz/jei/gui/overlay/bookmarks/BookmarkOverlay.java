@@ -45,7 +45,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 		bookmarkList.addListener(() -> contents.updateLayout(false));
 	}
 
-	private boolean isListDisplayed() {
+	public boolean isListDisplayed() {
 		return Config.isBookmarkOverlayEnabled() && hasRoom && !bookmarkList.isEmpty();
 	}
 

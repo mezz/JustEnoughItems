@@ -1,9 +1,8 @@
-package mezz.jei.plugins.vanilla.ingredients;
+package mezz.jei.plugins.vanilla.ingredients.fluid;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.Collections;
-import java.util.List;
 
 import com.google.common.base.MoreObjects;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -20,11 +19,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 
 public class FluidStackHelper implements IIngredientHelper<FluidStack> {
-	@Override
-	public List<FluidStack> expandSubtypes(List<FluidStack> contained) {
-		return contained;
-	}
-
 	@Override
 	@Nullable
 	public FluidStack getMatch(Iterable<FluidStack> ingredients, FluidStack toMatch) {

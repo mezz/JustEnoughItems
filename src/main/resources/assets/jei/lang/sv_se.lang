@@ -17,6 +17,10 @@ jei.tooltip.recipe.id=Recept-ID: %s
 jei.tooltip.not.enough.space=Det finns inte tillräckligt mycket utrymme för att visa JEI här.
 jei.tooltip.ingredient.list.disabled=JEI:s överlägg är inaktiverat.
 jei.tooltip.ingredient.list.disabled.how.to.fix=Tryck på %s för att aktivera det.
+jei.tooltip.bookmarks=JEI-bokmärken
+jei.tooltip.bookmarks.usage.nokey=Lägg till ett kortkommando för JEI-bokmärken i dina kontrollinställningar.
+jei.tooltip.bookmarks.usage.key=Lägg musen över en ingrediens och tryck på "%s" för att bokmärka den.
+jei.tooltip.bookmarks.not.enough.space=Det finns inte tillräckligt mycket utrymme för att visa bokmärken här.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Föremål saknas
@@ -40,6 +44,8 @@ key.jei.recipeBack=Visa tidigare visad receptsida
 key.jei.toggleCheatMode=Slå på/av fuskläge
 key.jei.previousPage=Visa föregående sida
 key.jei.nextPage=Visa nästa sida
+key.jei.bookmark=Lägg till/ta bort en bokmärkt ingrediens
+key.jei.toggleBookmarkOverlay=Visa/dölj bokmärkta ingredienser
 
 # Config
 config.jei.default=Standard
@@ -58,6 +64,9 @@ config.jei.interface=Gränssnitt
 config.jei.interface.comment=Alternativ för användargränssnittet.
 config.jei.interface.overlayEnabled=Visa ingredienslistan
 config.jei.interface.overlayEnabled.comment=Visar listan över ingredienser intill öppet gränssnitt.
+
+config.jei.interface.bookmarkOverlayEnabled=Visa bokmärken
+config.jei.interface.bookmarkOverlayEnabled.comment=Visa listan över bokmärken bredvid öppnade gränssnitt.
 
 config.jei.search=Sökalternativ
 config.jei.search.comment=Alternativ för sökfältet.

@@ -31,12 +31,16 @@ import mezz.jei.plugins.vanilla.furnace.FuelRecipeMaker;
 import mezz.jei.plugins.vanilla.furnace.FurnaceFuelCategory;
 import mezz.jei.plugins.vanilla.furnace.FurnaceSmeltingCategory;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipeMaker;
-import mezz.jei.plugins.vanilla.ingredients.FluidStackHelper;
-import mezz.jei.plugins.vanilla.ingredients.FluidStackListFactory;
-import mezz.jei.plugins.vanilla.ingredients.FluidStackRenderer;
-import mezz.jei.plugins.vanilla.ingredients.ItemStackHelper;
-import mezz.jei.plugins.vanilla.ingredients.ItemStackListFactory;
-import mezz.jei.plugins.vanilla.ingredients.ItemStackRenderer;
+import mezz.jei.plugins.vanilla.ingredients.enchant.EnchantDataHelper;
+import mezz.jei.plugins.vanilla.ingredients.enchant.EnchantDataListFactory;
+import mezz.jei.plugins.vanilla.ingredients.enchant.EnchantDataRenderer;
+import mezz.jei.plugins.vanilla.ingredients.enchant.EnchantedBookCache;
+import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackHelper;
+import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackListFactory;
+import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackRenderer;
+import mezz.jei.plugins.vanilla.ingredients.item.ItemStackHelper;
+import mezz.jei.plugins.vanilla.ingredients.item.ItemStackListFactory;
+import mezz.jei.plugins.vanilla.ingredients.item.ItemStackRenderer;
 import mezz.jei.startup.StackHelper;
 import mezz.jei.transfer.PlayerRecipeTransferHandler;
 import net.minecraft.client.gui.GuiRepair;
@@ -45,6 +49,7 @@ import net.minecraft.client.gui.inventory.GuiCrafting;
 import net.minecraft.client.gui.inventory.GuiFurnace;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerBrewingStand;
@@ -62,6 +67,9 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
@@ -116,8 +124,22 @@ public class VanillaPlugin implements IModPlugin {
 		StackHelper stackHelper = Internal.getStackHelper();
 		ItemStackListFactory itemStackListFactory = new ItemStackListFactory(this.subtypeRegistry);
 
-		ingredientRegistration.register(VanillaTypes.ITEM, itemStackListFactory.create(stackHelper), new ItemStackHelper(stackHelper), new ItemStackRenderer());
-		ingredientRegistration.register(VanillaTypes.FLUID, FluidStackListFactory.create(), new FluidStackHelper(), new FluidStackRenderer());
+		List<ItemStack> itemStacks = itemStackListFactory.create(stackHelper);
+		ItemStackHelper itemStackHelper = new ItemStackHelper(stackHelper);
+		ItemStackRenderer itemStackRenderer = new ItemStackRenderer();
+		ingredientRegistration.register(VanillaTypes.ITEM, itemStacks, itemStackHelper, itemStackRenderer);
+
+		List<FluidStack> fluidStacks = FluidStackListFactory.create();
+		FluidStackHelper fluidStackHelper = new FluidStackHelper();
+		FluidStackRenderer fluidStackRenderer = new FluidStackRenderer();
+		ingredientRegistration.register(VanillaTypes.FLUID, fluidStacks, fluidStackHelper, fluidStackRenderer);
+
+		List<EnchantmentData> enchantments = EnchantDataListFactory.create();
+		EnchantedBookCache enchantedBookCache = new EnchantedBookCache();
+		MinecraftForge.EVENT_BUS.register(enchantedBookCache);
+		EnchantDataHelper enchantmentHelper = new EnchantDataHelper(enchantedBookCache, itemStackHelper);
+		EnchantDataRenderer enchantmentRenderer = new EnchantDataRenderer(itemStackRenderer, enchantedBookCache);
+		ingredientRegistration.register(() -> EnchantmentData.class, enchantments, enchantmentHelper, enchantmentRenderer);
 	}
 
 	@Override
@@ -174,5 +196,7 @@ public class VanillaPlugin implements IModPlugin {
 		IIngredientBlacklist ingredientBlacklist = registry.getJeiHelpers().getIngredientBlacklist();
 		// Game freezes when loading player skulls, see https://bugs.mojang.com/browse/MC-65587
 		ingredientBlacklist.addIngredientToBlacklist(new ItemStack(Items.SKULL, 1, 3));
+		// hide enchanted books, we display them as special ingredients because vanilla does not properly store the enchantment data by its registry name
+		ingredientBlacklist.addIngredientToBlacklist(new ItemStack(Items.ENCHANTED_BOOK, 1, OreDictionary.WILDCARD_VALUE));
 	}
 }

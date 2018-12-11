@@ -51,15 +51,14 @@ public class Ingredients implements IIngredients {
 	}
 
 	@Override
-	public <T> void setInputs(IIngredientType<T> ingredientType, List<T> input) {
+	public <T> void setInputs(IIngredientType<T> ingredientType, List<T> inputs) {
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
 		List<List> expandedInputs = new ArrayList<>();
-		for (T input1 : input) {
-			List<T> itemStacks = ingredientHelper.expandSubtypes(Collections.singletonList(input1));
-			expandedInputs.add(itemStacks);
+		for (T input : inputs) {
+			List<T> expandedInput = ingredientHelper.expandSubtypes(Collections.singletonList(input));
+			expandedInputs.add(expandedInput);
 		}
-
 		this.inputs.put(ingredientType, expandedInputs);
 	}
 
