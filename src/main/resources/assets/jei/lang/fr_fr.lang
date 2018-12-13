@@ -1,5 +1,5 @@
 # Tooltips
-jei.tooltip.config=JEI Configuration
+jei.tooltip.config=Configurer JEI
 jei.tooltip.show.recipes=Afficher les recettes
 jei.tooltip.show.all.recipes=Afficher toutes les recettes
 jei.tooltip.delete.item=Cliquer pour supprimer
@@ -10,13 +10,17 @@ jei.tooltip.recipe.ore.dict=Accepte n'importe lequel : %s
 jei.tooltip.item.colors=Couleurs : %s
 jei.tooltip.shapeless.recipe=Recette sans forme
 jei.tooltip.cheat.mode.button.enabled=Mode triche
-jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
-jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Pressez %s pour l'activer.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=Cliquez sur %s ici pour le désactiver.
 jei.tooltip.recipe.by=Recette par : %s
 jei.tooltip.recipe.id=ID de la recette : %s
-jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The JEI overlay is disabled.
-jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
+jei.tooltip.not.enough.space=Il n'y a pas assez de place pour afficher la liste d'ingrédients.
+jei.tooltip.ingredient.list.disabled=L'overlay JEI a été désactivé.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Pressez %s pour l'activer.
+jei.tooltip.bookmarks=Marque-pages JEI
+jei.tooltip.bookmarks.usage.nokey=Ajoutez un raccourci pour les marque-page JEI dans vos paramètres de raccourcis.
+jei.tooltip.bookmarks.usage.key=Survolez un objet avec votre souris et pressez "%s" pour l'épingler.
+jei.tooltip.bookmarks.not.enough.space=Il n'y a pas assez de place pour afficher les marque-pages ici.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Objets manquants
@@ -40,6 +44,8 @@ key.jei.recipeBack=Montrer la recette précédente
 key.jei.toggleCheatMode=Activer/désactiver le Mode triche
 key.jei.previousPage=Afficher la page précédente
 key.jei.nextPage=Afficher la page suivante
+key.jei.bookmark=Ajouter/Supprimer un objet épinglé
+key.jei.toggleBookmarkOverlay=Afficher/Cacher les objets épinglés
 
 # Config
 config.jei.default=Défaut
@@ -58,6 +64,9 @@ config.jei.interface=Interface
 config.jei.interface.comment=Options relatives à l'interface utilisateur.
 config.jei.interface.overlayEnabled=Liste d'objets activée
 config.jei.interface.overlayEnabled.comment=Affiche la liste des objets à côté de l'interface utilisateur ouverte.
+
+config.jei.interface.bookmarkOverlayEnabled=Afficher les marque-pages
+config.jei.interface.bookmarkOverlayEnabled.comment=Show the list of bookmarks next to open guis.
 
 config.jei.search=Options de recherche
 config.jei.search.comment=Options relatives à la barre de recherche.
@@ -102,14 +111,14 @@ key.jei.ctrl=CTRL
 key.jei.ctrl.mac=CMD
 
 # Recipe Categories
-gui.jei.category.craftingTable=Etabli
+gui.jei.category.craftingTable=Établi
 gui.jei.category.smelting=Fournaise
 gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=Combustible
 gui.jei.category.fuel.smeltCount.single=Fond 1 objet
 gui.jei.category.fuel.smeltCount=Fond %s objets
 gui.jei.category.brewing=Création de potion
-gui.jei.category.brewing.steps=Etapes : %s
+gui.jei.category.brewing.steps=Étapes : %s
 gui.jei.category.itemInformation=Information
 
 # DEBUG (for debug mode, do not need translation)
