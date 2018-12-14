@@ -95,8 +95,10 @@ config.jei.advanced.centerSearchBarEnabled=Centrer la barre de recherche
 config.jei.advanced.centerSearchBarEnabled.comment=Déplace la barre de recherche de JEI en bas et au centre de l'écran.
 config.jei.advanced.modNameFormat=Format du nom des mods
 config.jei.advanced.modNameFormat.comment=Comment le nom des mods doit être formaté dans l'infobulle de l'interface JEI. Laisser vide pour désactiver.
-config.jei.advanced.maxColumns=Largeur maxi
-config.jei.advanced.maxColumns.comment=Largeur maxi de la liste d'ingrédients.
+config.jei.advanced.maxColumns=Largeur maximum
+config.jei.advanced.maxColumns.comment=Largeur maximum de la liste d'ingrédients.
+config.jei.advanced.maxRecipeGuiHeight=Hauteur maximum
+config.jei.advanced.maxRecipeGuiHeight.comment=Hauteur maximum de l'interface de recette.
 config.jei.advanced.giveMode=Mode Donner
 config.jei.advanced.giveMode.comment=Choisit si JEI doit placer les objets directement dans l'inventaire ou les accrocher au curseur de la souris.
 
