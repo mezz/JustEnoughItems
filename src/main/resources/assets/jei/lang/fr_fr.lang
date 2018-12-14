@@ -44,14 +44,14 @@ key.jei.recipeBack=Montrer la recette précédente
 key.jei.toggleCheatMode=Activer/désactiver le Mode triche
 key.jei.previousPage=Afficher la page précédente
 key.jei.nextPage=Afficher la page suivante
-key.jei.bookmark=Ajouter/Supprimer un objet épinglé
-key.jei.toggleBookmarkOverlay=Afficher/Cacher les objets épinglés
+key.jei.bookmark=Ajouter/supprimer un objet épinglé
+key.jei.toggleBookmarkOverlay=Afficher/cacher les objets épinglés
 
 # Config
 config.jei.default=Défaut
 config.jei.valid=Valide
 
-config.jei.title=%MODNAME Configuration
+config.jei.title=Configuration de %MODNAME
 
 config.jei.mode=Mode
 config.jei.mode.comment=Change le mode dans lequel JEI fonctionne.
@@ -96,7 +96,7 @@ config.jei.advanced.centerSearchBarEnabled.comment=Déplace la barre de recherch
 config.jei.advanced.modNameFormat=Format du nom des mods
 config.jei.advanced.modNameFormat.comment=Comment le nom des mods doit être formaté dans l'infobulle de l'interface JEI. Laisser vide pour désactiver.
 config.jei.advanced.maxColumns=Largeur maximum
-config.jei.advanced.maxColumns.comment=Largeur maximum de la liste d'ingrédients.
+config.jei.advanced.maxColumns.comment=Largeur maximum de la liste d'objets.
 config.jei.advanced.maxRecipeGuiHeight=Hauteur maximum
 config.jei.advanced.maxRecipeGuiHeight.comment=Hauteur maximum de l'interface de recette.
 config.jei.advanced.giveMode=Mode Donner
@@ -114,13 +114,13 @@ key.jei.ctrl.mac=CMD
 
 # Recipe Categories
 gui.jei.category.craftingTable=Établi
-gui.jei.category.smelting=Fournaise
+gui.jei.category.smelting=Fourneau
 gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=Combustible
 gui.jei.category.fuel.smeltCount.single=Fond 1 objet
 gui.jei.category.fuel.smeltCount=Fond %s objets
 gui.jei.category.brewing=Création de potion
-gui.jei.category.brewing.steps=Étapes : %s
+gui.jei.category.brewing.steps=Étapes: %s
 gui.jei.category.itemInformation=Information
 
 # DEBUG (for debug mode, do not need translation)
