@@ -3,10 +3,10 @@ package mezz.jei.ingredients;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemTool;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.oredict.OreDictionary;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.Config;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
@@ -15,6 +15,7 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemFishingRod;
 import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemShears;
 //import scala.Int;
@@ -117,7 +118,7 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 				comparison = entry.ingredientComparator.compare(o1, o2);
 			} else if (entry.itemStackComparator != null) {
 				ItemStack itemStack1 = getSneakyItemStack(o1);  //FluidStacks return buckets.
-				ItemStack itemStack2 = getSneakyItemStack(o2);  //FluidStacks return buckets.
+				ItemStack itemStack2 = getSneakyItemStack(o2);  //Enchantments return books.
 				if (itemStack1 == null && itemStack2 == null) {
 					comparison = 0;
 				} else {
@@ -317,6 +318,7 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 		if (toolClassSet.isEmpty()) {
 			if (item instanceof ItemHoe) return "hoe";
 			if (item instanceof ItemShears) return "shears";
+			if (item instanceof ItemFishingRod) return "fishingrod";
 			return "";
 		}
 		
@@ -521,21 +523,23 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 		return null;
 
 	}
-
-	@Nullable
+	
 	private static ItemStack getSneakyItemStack(IIngredientListElement ingredientListElement) {
 		Object ingredient = ingredientListElement.getIngredient();
 		if (ingredient instanceof ItemStack) {
 			return ((ItemStack) ingredient);
 		}
 		
-		//This is sneaky because it silently converts FluidStacks to 
-		//an ItemStack of a bucket of that fluid.
-		if (ingredient instanceof FluidStack) {
-			return FluidUtil.getFilledBucket((FluidStack)ingredient);			
+		//This is sneaky because it silently converts non-items to items:
+		
+		IIngredientHelper ingredientHelper = ingredientListElement.getIngredientHelper();
+		ItemStack itemStack = ingredientHelper.getCheatItemStack(ingredient);
+		if (!itemStack.isEmpty()) {
+			itemStack = itemStack.copy();  //Clone the item or we might poison a cache's name.
+			itemStack.setStackDisplayName(ingredientHelper.getDisplayName(ingredient));
 		}
-		return null;
-
+		return itemStack;
+		
 	}
 
 	public static String getInclusiveSaveString() {
