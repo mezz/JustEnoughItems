@@ -524,6 +524,7 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 
 	}
 	
+	@Nullable
 	private static ItemStack getSneakyItemStack(IIngredientListElement ingredientListElement) {
 		Object ingredient = ingredientListElement.getIngredient();
 		if (ingredient instanceof ItemStack) {
@@ -537,8 +538,10 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 		if (!itemStack.isEmpty()) {
 			itemStack = itemStack.copy();  //Clone the item or we might poison a cache's name.
 			itemStack.setStackDisplayName(ingredientHelper.getDisplayName(ingredient));
+			return itemStack;
 		}
-		return itemStack;
+		
+		return null;
 		
 	}
 
