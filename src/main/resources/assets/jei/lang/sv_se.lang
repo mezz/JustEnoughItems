@@ -64,7 +64,6 @@ config.jei.interface=Gränssnitt
 config.jei.interface.comment=Alternativ för användargränssnittet.
 config.jei.interface.overlayEnabled=Visa ingredienslistan
 config.jei.interface.overlayEnabled.comment=Visar listan över ingredienser intill öppet gränssnitt.
-
 config.jei.interface.bookmarkOverlayEnabled=Visa bokmärken
 config.jei.interface.bookmarkOverlayEnabled.comment=Visa listan över bokmärken bredvid öppnade gränssnitt.
 

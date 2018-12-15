@@ -64,7 +64,6 @@ config.jei.interface=インターフェース
 config.jei.interface.comment=ユーザーインターフェースに関係する設定。
 config.jei.interface.overlayEnabled=アイテムリストの有効化
 config.jei.interface.overlayEnabled.comment=GUIの隣にアイテムリストを表示します。
-
 config.jei.interface.bookmarkOverlayEnabled=ブックマーク欄の表示
 config.jei.interface.bookmarkOverlayEnabled.comment=GUIの隣にブックマークリストを表示します。
 
