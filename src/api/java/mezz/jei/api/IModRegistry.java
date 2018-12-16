@@ -156,7 +156,7 @@ public interface IModRegistry {
 	
 	/**
 	 * Register your own sorting option here.
-	 * The ItemStack comparator needs to be able to handle null ItemStack inputs 
+	 * The ItemStack comparator needs to be able to handle isEmpty ItemStack inputs (Never Null.) 
 	 * (FluidStacks will be silently converted to bucket ItemStacks).
 	 * 
 	 * The Object comparator needs to be able to handle ItemStack, FluidStack, and unknown types 

@@ -24,8 +24,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Arrays;
@@ -92,7 +90,7 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 			} else if (entry.itemStackComparator != null) {
 				ItemStack itemStack1 = getSneakyItemStack(o1);  //FluidStacks return buckets.
 				ItemStack itemStack2 = getSneakyItemStack(o2);  //FluidStacks return buckets.
-				if (itemStack1 == null && itemStack2 == null) {
+				if (itemStack1.isEmpty() && itemStack2.isEmpty()) {
 					comparison = 0;
 				} else {
 					comparison = entry.itemStackComparator.compare(itemStack1, itemStack2);
@@ -302,7 +300,7 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 	
 	private static String getToolClass(ItemStack itemStack, Item item)
 	{
-		if (itemStack == null || item == null) return "";
+		if (itemStack.isEmpty() || item == null) return "";
 		Set<String> toolClassSet = item.getToolClasses(itemStack);
 
 		if (toolClassSet.contains("sword")) {
@@ -350,8 +348,8 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 				//The calling comparator is nice enough to not call this if both are null.
 				//However, the result would be valid with two null inputs.
 				
-				Item item1 = itemStack1 != null ? itemStack1.getItem() : null;
-				Item item2 = itemStack2 != null ? itemStack2.getItem() : null;
+				Item item1 = !itemStack1.isEmpty() ? itemStack1.getItem() : null;
+				Item item2 = !itemStack2.isEmpty() ? itemStack2.getItem() : null;
 
 				String toolClass1 = getToolClass(itemStack1, item1);
 				String toolClass2 = getToolClass(itemStack2, item2);
@@ -395,16 +393,16 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 		addItemStackComparison("melee", new Comparator<ItemStack>() {
 			@Override
 			public int compare(ItemStack itemStack1, ItemStack itemStack2) {
-				Multimap<String, AttributeModifier> multimap1 = itemStack1 != null ? itemStack1.getAttributeModifiers(EntityEquipmentSlot.MAINHAND) : null;
-				Multimap<String, AttributeModifier> multimap2 = itemStack2 != null ? itemStack2.getAttributeModifiers(EntityEquipmentSlot.MAINHAND) : null;
+				Multimap<String, AttributeModifier> multimap1 = !itemStack1.isEmpty() ? itemStack1.getAttributeModifiers(EntityEquipmentSlot.MAINHAND) : null;
+				Multimap<String, AttributeModifier> multimap2 = !itemStack2.isEmpty() ? itemStack2.getAttributeModifiers(EntityEquipmentSlot.MAINHAND) : null;
 
 				final String attackDamageName = SharedMonsterAttributes.ATTACK_DAMAGE.getName();
 				final String attackSpeedName = SharedMonsterAttributes.ATTACK_SPEED.getName();
 
-				boolean hasDamage1 = itemStack1 != null ? multimap1.containsKey(attackDamageName) : false;
-				boolean hasDamage2 = itemStack2 != null ? multimap2.containsKey(attackDamageName) : false;
-				boolean hasSpeed1 = itemStack1 != null ? multimap1.containsKey(attackSpeedName) : false;
-				boolean hasSpeed2 = itemStack2 != null ? multimap2.containsKey(attackSpeedName) : false;
+				boolean hasDamage1 = !itemStack1.isEmpty() ? multimap1.containsKey(attackDamageName) : false;
+				boolean hasDamage2 = !itemStack2.isEmpty() ? multimap2.containsKey(attackDamageName) : false;
+				boolean hasSpeed1 = !itemStack1.isEmpty() ? multimap1.containsKey(attackSpeedName) : false;
+				boolean hasSpeed2 = !itemStack2.isEmpty() ? multimap2.containsKey(attackSpeedName) : false;
 
 				if (!hasDamage1 || !hasDamage2) {
 					return Boolean.compare(hasDamage2, hasDamage1);
@@ -446,12 +444,12 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 		addItemStackComparison("armor", new Comparator<ItemStack>() {
 			@Override
 			public int compare(ItemStack itemStack1, ItemStack itemStack2) {
-				Item item1 = itemStack1 != null ? itemStack1.getItem() : null;
-				Item item2 = itemStack2 != null ? itemStack2.getItem() : null;
+				Item item1 = !itemStack1.isEmpty() ? itemStack1.getItem() : null;
+				Item item2 = !itemStack2.isEmpty() ? itemStack2.getItem() : null;
 				int isArmor1 = (item1 instanceof ItemArmor) ? 1 : 0;
 				int isArmor2 = (item2 instanceof ItemArmor) ? 1 : 0;
 				if (isArmor1 == 0 || isArmor2 == 0) { 
-					//This should catch any instances where one of the stacks is null.
+					//This should catch any instances where one of the stacks is empty.
 					return isArmor2 - isArmor1;
 				} else {
 					ItemArmor a1 = (ItemArmor) item1;
@@ -514,17 +512,15 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 
 	}
 
-	@Nullable
 	private static ItemStack getItemStack(IIngredientListElement ingredientListElement) {
 		Object ingredient = ingredientListElement.getIngredient();
 		if (ingredient instanceof ItemStack) {
 			return ((ItemStack) ingredient);
 		}
-		return null;
+		return ItemStack.EMPTY;
 
 	}
 	
-	@Nullable
 	private static ItemStack getSneakyItemStack(IIngredientListElement ingredientListElement) {
 		Object ingredient = ingredientListElement.getIngredient();
 		if (ingredient instanceof ItemStack) {
@@ -535,13 +531,13 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 		
 		IIngredientHelper ingredientHelper = ingredientListElement.getIngredientHelper();
 		ItemStack itemStack = ingredientHelper.getCheatItemStack(ingredient);
-		if (!itemStack.isEmpty()) {
+		if (itemStack != null && !itemStack.isEmpty()) {
 			itemStack = itemStack.copy();  //Clone the item or we might poison a cache's name.
 			itemStack.setStackDisplayName(ingredientHelper.getDisplayName(ingredient));
 			return itemStack;
 		}
 		
-		return null;
+		return ItemStack.EMPTY;
 		
 	}
 
