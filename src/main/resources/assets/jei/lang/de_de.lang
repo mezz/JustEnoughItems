@@ -5,41 +5,41 @@ jei.tooltip.show.all.recipes=Zeige alle Rezepte
 jei.tooltip.delete.item=Klicke zum Löschen
 jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
 jei.tooltip.liquid.amount=%,d mB
-jei.tooltip.transfer=Bewege Items
+jei.tooltip.transfer=Bewege Gegenstände
 jei.tooltip.recipe.ore.dict=Akzeptiert: %s
 jei.tooltip.item.colors=Farben: %s
 jei.tooltip.shapeless.recipe=Formloses Rezept
 jei.tooltip.cheat.mode.button.enabled=Cheat-Modus
-jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
-jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Klicke auf %s um es umzuschalten.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-klicke hier um es umzuschalten.
 jei.tooltip.recipe.by=Recipe By: %s
 jei.tooltip.recipe.id=Recipe ID: %s
-jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The JEI overlay is disabled.
-jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
+jei.tooltip.not.enough.space=Da ist nicht genug Platz um die Zutaten-Liste hier anzeigen zukönnen.
+jei.tooltip.ingredient.list.disabled=Die JEI-Oberfläche ist deaktiviert.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Klicke auf %s um es zu aktivieren.
 
 # Error Tooltips
-jei.tooltip.error.recipe.transfer.missing=Fehlende Items
+jei.tooltip.error.recipe.transfer.missing=Fehlende Gegenstände
 jei.tooltip.error.recipe.transfer.inventory.full=Inventar ist zu voll
-jei.tooltip.error.recipe.transfer.unknown=Unbekannter Fehler, siehe Logs
+jei.tooltip.error.recipe.transfer.unknown=Unbekannter Fehler, siehe Protokoll(Logs)
 jei.tooltip.error.recipe.transfer.no.server=Auf dem Server muss JEI installiert sein
 jei.tooltip.error.recipe.transfer.too.large.player.inventory=Rezept ist zu groß für 2x2
-jei.tooltip.error.crash=Tooltip-Fehler, siehe Log
+jei.tooltip.error.crash=Fehler der Schnellinfo(Tooltip), siehe Protokoll(Log)
 
 # Error Messages
 jei.chat.error.command.too.long=JEI muss auf dem Server installiert sein, damit dieser Befehl funktioniert, da er zu lang für Minecraft ist.
 jei.chat.error.no.cheat.permission.1=Dir ist es nicht erlaubt, JEI's Cheat-Modus zu benutzen.
-jei.chat.error.no.cheat.permission.2=Es ist allen erlaubt, die /give verwenden können oder im Kreativmodus sind.
+jei.chat.error.no.cheat.permission.2=Es ist allen erlaubt, die den /give (dt. geben) Befehl verwenden können oder im Kreativmodus sind.
 
 # Key Bindings
-key.jei.toggleOverlay=Item-Liste (de-)aktivieren
+key.jei.toggleOverlay=Gegenstands-Liste (de-)aktivieren
 key.jei.focusSearch=Suchfeld
-key.jei.showRecipe=Zeige Rezept
-key.jei.showUses=Zeige Verwendung
+key.jei.showRecipe=Zeige Rezept des Gegenstandes
+key.jei.showUses=Zeige Verwendung des Gegenstandes
 key.jei.recipeBack=Zeige vorherige Rezeptseite
-key.jei.toggleCheatMode=Item-Cheating (de-)aktivieren
-key.jei.previousPage=Show Previous Page
-key.jei.nextPage=Show Next Page
+key.jei.toggleCheatMode=Gegenstands-Cheating (de-)aktivieren
+key.jei.previousPage=Zeige vorherige Seite
+key.jei.nextPage=Zeige nächste Seite
 
 # Config
 config.jei.default=Standard
@@ -49,52 +49,52 @@ config.jei.title=%MODNAME-Konfiguration
 
 config.jei.mode=Modus
 config.jei.mode.comment=Ändere den Modus, in dem sich JEI befindet
-config.jei.mode.cheatItemsEnabled=Aktiviere Item-Cheating
+config.jei.mode.cheatItemsEnabled=Aktiviere Gegenstands-Cheating
 config.jei.mode.cheatItemsEnabled.comment=Gibt den Gegenstand, statt das Rezept zu zeigen.
 config.jei.mode.editEnabled=Aktiviere Listeneditiermodus
-config.jei.mode.editEnabled.comment=Verstecke und zeige Gegenstände durch Klicken in der Item-Liste.
+config.jei.mode.editEnabled.comment=Verstecke und zeige Gegenstände durch Klicken in der Gegenstands-Liste.
 
-config.jei.interface=Interface
-config.jei.interface.comment=Das Benutzer-Interface betreffende Optionen
-config.jei.interface.overlayEnabled=Aktiviere Item-Liste
-config.jei.interface.overlayEnabled.comment=Zeige die Liste der Gegenstände neben einem geöffneten Benutzer-Interface.
+config.jei.interface=Oberfläche
+config.jei.interface.comment=Die Benutzer-Oberfläche betreffende Optionen
+config.jei.interface.overlayEnabled=Aktiviere Gegenstand-Liste
+config.jei.interface.overlayEnabled.comment=Zeige die Liste der Gegenstände neben einer geöffnete Benutzer-Oberfläche.
 
 config.jei.search=Suche
 config.jei.search.comment=Suchleisteneinstellungen
 config.jei.search.modNameSearchMode=@ModName
 config.jei.search.modNameSearchMode.comment=Suchmodus für Mod-Namen (Präfix: @)
-config.jei.search.tooltipSearchMode=#Tooltip
-config.jei.search.tooltipSearchMode.comment=Suche für Tooltips (Präfix: #)
-config.jei.search.oreDictSearchMode=$OreDictionary
-config.jei.search.oreDictSearchMode.comment=Suchmodus für Begriffe im Ore Dictionary (Präfix: $)
+config.jei.search.tooltipSearchMode=#Schnellinfo(Tooltip)
+config.jei.search.tooltipSearchMode.comment=Suche für Schnellinfos(Tooltips) (Präfix: #)
+config.jei.search.oreDictSearchMode=$Erze-Verzeichnis
+config.jei.search.oreDictSearchMode.comment=Suchmodus für Begriffe im Erze-Verzeichnis(Ore Dictionary) (Präfix: $)
 config.jei.search.creativeTabSearchMode=%%Kategorie
 config.jei.search.creativeTabSearchMode.comment=Suchmodus für Kategorien im Kreativmodus-Inventar (Präfix: %)
 config.jei.search.colorSearchMode=^Farbe
-config.jei.search.colorSearchMode.comment=Suchmodus für Item-Farben (Präfix: ^)
-config.jei.search.resourceIdSearchMode=&ResourceId
-config.jei.search.resourceIdSearchMode.comment=Search mode for resources ids (prefix: &)
+config.jei.search.colorSearchMode.comment=Suchmodus für Gegenstands-Farben (Präfix: ^)
+config.jei.search.resourceIdSearchMode=&RessourceId
+config.jei.search.resourceIdSearchMode.comment=Suchmodus für die Ressourcen-Id (prefix: &)
 
 config.jei.advanced=Erweitert
 config.jei.advanced.comment=Erweiterte Konfigurationsoptionen, die ändern, wie JEI funktioniert.
 config.jei.advanced.itemBlacklist=Aktiviere Blacklist
 config.jei.advanced.itemBlacklist.comment=Gegenstände, die nicht angezeigt werden sollen. Format: modId[:name[:meta]]. Der Listeneditiermodus entfernt und fügt automatisch neue Gegenstände zu dieser Liste hinzu.
 config.jei.advanced.colorSearchEnabled=Aktiviere Farbsuche
-config.jei.advanced.colorSearchEnabled.comment=Suche nach Gegenständen mittels ihrer Farbe und zeige die suchbaren Farben in Tooltips in der Item-Liste.
-config.jei.advanced.debugModeEnabled=Aktiviere Debug-Modus
-config.jei.advanced.debugModeEnabled.comment=Fügt tausende Test-Items und einige Debug-Rezepte hinzu. Nur für Entwickler bestimmt.
+config.jei.advanced.colorSearchEnabled.comment=Suche nach Gegenständen mittels ihrer Farbe und zeige die suchbaren Farben in der Schnellinfo(Tooltip) in der Gegenstands-Liste.
+config.jei.advanced.debugModeEnabled=Aktiviere Fehlersuche-Modus
+config.jei.advanced.debugModeEnabled.comment=Fügt tausende Test-Gegenstände und einige Fehlersuche-Rezepte hinzu. Nur für Entwickler bestimmt.
 config.jei.advanced.centerSearchBarEnabled=Zentriere Suchleiste
 config.jei.advanced.centerSearchBarEnabled.comment=Die JEI-Suchleiste wird unten in der Mitte des Bildschirms angezeigt.
-config.jei.advanced.modNameFormat=Mod-Namensformat
-config.jei.advanced.modNameFormat.comment=Wie der Mod-Name in Tooltips für JEI-Interfaces formatiert werden soll. Zum Deaktivieren leer lassen.
-config.jei.advanced.maxColumns=Max Width
-config.jei.advanced.maxColumns.comment=The maximum width of the ingredient list.
-config.jei.advanced.giveMode=Give Mode
-config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to the inventory (inventory) or pick them up with the mouse (mouse_pickup).
+config.jei.advanced.modNameFormat=Modifikations-Namensformat
+config.jei.advanced.modNameFormat.comment=Wie der Modifikations-Name in der Schnellinfo(Tooltip) für die JEI-Oberfläche formatiert werden soll. Zum Deaktivieren leer lassen.
+config.jei.advanced.maxColumns=Maximale Breite
+config.jei.advanced.maxColumns.comment=Die maximale Breite der Zutaten-Liste.
+config.jei.advanced.giveMode=Geben(give)-Modus
+config.jei.advanced.giveMode.comment=Wähle ob JEI die Gegenstände direkt in den Inventar geben soll oder diese aufnimmt mit der Maus.
 
 # Hide Ingredients Mode
 gui.jei.editMode.description=JEI-Listeneditiermodus:
 gui.jei.editMode.description.hide=Ausblenden mit %CTRL-Klick.
-gui.jei.editMode.description.hide.wild=Ausblenden per Wildcard mit %CTRL-Rechtsklick.
+gui.jei.editMode.description.hide.wild=Ausblenden per einem Platzhalter mit %CTRL-Rechtsklick.
 
 # PC/Linux Control Key
 key.jei.ctrl=STRG
@@ -102,12 +102,12 @@ key.jei.ctrl=STRG
 key.jei.ctrl.mac=CMD
 
 # Recipe Categories
-gui.jei.category.craftingTable=Crafting-Rezepte
+gui.jei.category.craftingTable=Herstellungs-Rezepte
 gui.jei.category.smelting=Schmelzrezepte
 gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=Kraftstoffrezepte
-gui.jei.category.fuel.smeltCount.single=Schmilzt 1 Item
-gui.jei.category.fuel.smeltCount=Schmilzt %s Items
+gui.jei.category.fuel.smeltCount.single=Schmilzt 1 Gegenstand
+gui.jei.category.fuel.smeltCount=Schmilzt %s Gegenstände
 gui.jei.category.brewing=Braurezepte
 gui.jei.category.brewing.steps=Schritte: %s
 gui.jei.category.itemInformation=Beschreibung
