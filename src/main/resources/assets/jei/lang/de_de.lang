@@ -29,7 +29,7 @@ jei.tooltip.error.crash=Fehler der Schnellinfo(Tooltip), siehe Protokoll(Log)
 # Error Messages
 jei.chat.error.command.too.long=JEI muss auf dem Server installiert sein, damit dieser Befehl funktioniert, da er zu lang für Minecraft ist.
 jei.chat.error.no.cheat.permission.1=Dir ist es nicht erlaubt, JEI's Cheat-Modus zu benutzen.
-jei.chat.error.no.cheat.permission.2=Es ist allen erlaubt, die den /give (dt. geben) Befehl verwenden können oder im Kreativmodus sind.
+jei.chat.error.no.cheat.permission.2=Es ist allen erlaubt, die den /give Befehl verwenden können oder im Kreativmodus sind.
 
 # Key Bindings
 key.jei.toggleOverlay=Gegenstands-Liste (de-)aktivieren
@@ -63,15 +63,15 @@ config.jei.search=Suche
 config.jei.search.comment=Suchleisteneinstellungen
 config.jei.search.modNameSearchMode=@ModName
 config.jei.search.modNameSearchMode.comment=Suchmodus für Mod-Namen (Präfix: @)
-config.jei.search.tooltipSearchMode=#Schnellinfo(Tooltip)
-config.jei.search.tooltipSearchMode.comment=Suche für Schnellinfos(Tooltips) (Präfix: #)
-config.jei.search.oreDictSearchMode=$Erze-Verzeichnis
-config.jei.search.oreDictSearchMode.comment=Suchmodus für Begriffe im Erze-Verzeichnis(Ore Dictionary) (Präfix: $)
+config.jei.search.tooltipSearchMode=#Tooltip
+config.jei.search.tooltipSearchMode.comment=Suche für den Tooltip (Präfix: #)
+config.jei.search.oreDictSearchMode=$OreDictionary
+config.jei.search.oreDictSearchMode.comment=Suchmodus für Begriffe im Ore Dictionary (Erze-Verzeichnis)(Präfix: $)
 config.jei.search.creativeTabSearchMode=%%Kategorie
 config.jei.search.creativeTabSearchMode.comment=Suchmodus für Kategorien im Kreativmodus-Inventar (Präfix: %)
 config.jei.search.colorSearchMode=^Farbe
 config.jei.search.colorSearchMode.comment=Suchmodus für Gegenstands-Farben (Präfix: ^)
-config.jei.search.resourceIdSearchMode=&RessourceId
+config.jei.search.resourceIdSearchMode=&ResourceId
 config.jei.search.resourceIdSearchMode.comment=Suchmodus für die Ressourcen-Id (prefix: &)
 
 config.jei.advanced=Erweitert
