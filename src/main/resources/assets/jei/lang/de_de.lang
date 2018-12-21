@@ -55,7 +55,7 @@ config.jei.mode.editEnabled=Aktiviere den Listeneditiermodus
 config.jei.mode.editEnabled.comment=Verstecke und zeige Items durch Klicken in der Item-Liste.
 
 config.jei.interface=Oberfläche
-config.jei.interface.comment=Die Benutzer-Oberfläche betreffende Optionen
+config.jei.interface.comment=Die Benutzeroberfläche betreffende Optionen
 config.jei.interface.overlayEnabled=Aktiviere die Items-Liste
 config.jei.interface.overlayEnabled.comment=Zeige die Liste der Items neben einer geöffnete Benutzer-Oberfläche.
 
