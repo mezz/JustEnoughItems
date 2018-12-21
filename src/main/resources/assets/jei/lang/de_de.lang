@@ -50,7 +50,7 @@ config.jei.title=%MODNAME-Konfiguration
 config.jei.mode=Modus
 config.jei.mode.comment=Ändere den Modus, in dem sich JEI befindet
 config.jei.mode.cheatItemsEnabled=Aktiviere Item-Cheating
-config.jei.mode.cheatItemsEnabled.comment=Gibt den Item, statt das Rezept zu zeigen.
+config.jei.mode.cheatItemsEnabled.comment=Gibt dir das Item, statt dessen Rezept anzuzeigen.
 config.jei.mode.editEnabled=Aktiviere den Listeneditiermodus
 config.jei.mode.editEnabled.comment=Verstecke und zeige Items durch das Klicken in der Items-Liste.
 
