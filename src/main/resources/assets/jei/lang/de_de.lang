@@ -32,7 +32,7 @@ jei.chat.error.no.cheat.permission.1=Dir ist es nicht erlaubt, JEI's Cheat-Modus
 jei.chat.error.no.cheat.permission.2=Es ist allen erlaubt, die den /give Befehl verwenden können oder im Kreativmodus sind.
 
 # Key Bindings
-key.jei.toggleOverlay=Die Items-Liste (de-)aktivieren
+key.jei.toggleOverlay=Item-Liste (de-)aktivieren
 key.jei.focusSearch=Suchfeld
 key.jei.showRecipe=Zeige Rezept des Items an
 key.jei.showUses=Zeige Verwendung des Items an
