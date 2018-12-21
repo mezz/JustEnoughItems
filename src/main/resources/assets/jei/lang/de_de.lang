@@ -52,7 +52,7 @@ config.jei.mode.comment=Ändere den Modus, in dem sich JEI befindet
 config.jei.mode.cheatItemsEnabled=Aktiviere Item-Cheating
 config.jei.mode.cheatItemsEnabled.comment=Gibt dir das Item, statt dessen Rezept anzuzeigen.
 config.jei.mode.editEnabled=Aktiviere den Listeneditiermodus
-config.jei.mode.editEnabled.comment=Verstecke und zeige Items durch das Klicken in der Items-Liste.
+config.jei.mode.editEnabled.comment=Verstecke und zeige Items durch Klicken in der Item-Liste.
 
 config.jei.interface=Oberfläche
 config.jei.interface.comment=Die Benutzer-Oberfläche betreffende Optionen
