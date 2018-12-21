@@ -102,7 +102,7 @@ key.jei.ctrl=STRG
 key.jei.ctrl.mac=CMD
 
 # Recipe Categories
-gui.jei.category.craftingTable=Herstellungs-Rezepte
+gui.jei.category.craftingTable=Fertigungsrezepte
 gui.jei.category.smelting=Schmelzrezepte
 gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=Kraftstoffrezepte
