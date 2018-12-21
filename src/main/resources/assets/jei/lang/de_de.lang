@@ -57,7 +57,7 @@ config.jei.mode.editEnabled.comment=Verstecke und zeige Items durch Klicken in d
 config.jei.interface=Oberfläche
 config.jei.interface.comment=Die Benutzeroberfläche betreffende Optionen
 config.jei.interface.overlayEnabled=Aktiviere die Item-Liste
-config.jei.interface.overlayEnabled.comment=Zeige die Liste der Items neben einer geöffnete Benutzer-Oberfläche.
+config.jei.interface.overlayEnabled.comment=Zeige die Liste der Items neben einer geöffneten Benutzeroberfläche.
 
 config.jei.search=Suche
 config.jei.search.comment=Suchleisteneinstellungen
