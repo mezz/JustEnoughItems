@@ -14,7 +14,7 @@ jei.tooltip.cheat.mode.how.to.disable.hotkey=Klicke auf %s, um es umzuschalten.
 jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-klicke hier, um es umzuschalten.
 jei.tooltip.recipe.by=Recipe By: %s
 jei.tooltip.recipe.id=Recipe ID: %s
-jei.tooltip.not.enough.space=Da ist nicht genug Platz, um die Zutaten-Liste hier anzeigen zukönnen.
+jei.tooltip.not.enough.space=Hier ist nicht genug Platz zum Anzeigen der Zutaten-Liste.
 jei.tooltip.ingredient.list.disabled=Die JEI-Oberfläche ist deaktiviert.
 jei.tooltip.ingredient.list.disabled.how.to.fix=Klicke auf %s um es zu aktivieren.
 
