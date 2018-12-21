@@ -89,7 +89,7 @@ config.jei.advanced.modNameFormat.comment=Wie der Mod-Name in dem Tooltip für d
 config.jei.advanced.maxColumns=Maximale Breite
 config.jei.advanced.maxColumns.comment=Die maximale Breite der Zutaten-Liste.
 config.jei.advanced.giveMode=Item-Aufnahmemodus
-config.jei.advanced.giveMode.comment=Wähle ob JEI die Items direkt in den Inventar geben soll oder diese aufnimmt mit der Maus.
+config.jei.advanced.giveMode.comment=Wähle, ob JEI die Items direkt in das Inventar geben soll oder du sie mit der Maus aufnimmst.
 
 # Hide Ingredients Mode
 gui.jei.editMode.description=JEI-Listeneditiermodus:
