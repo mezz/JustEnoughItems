@@ -39,7 +39,7 @@ key.jei.showUses=Verwendung anzeigen
 key.jei.recipeBack=Vorherige Rezeptseite anzeigen
 key.jei.toggleCheatMode=Item-Cheating (de-)aktivieren
 key.jei.previousPage=Vorherige Seite anzeigen
-key.jei.nextPage=Zeige nächste Seite
+key.jei.nextPage=Nächste Seite anzeigen
 
 # Config
 config.jei.default=Standard
