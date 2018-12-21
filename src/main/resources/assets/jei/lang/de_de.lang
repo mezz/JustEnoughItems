@@ -16,7 +16,7 @@ jei.tooltip.recipe.by=Recipe By: %s
 jei.tooltip.recipe.id=Recipe ID: %s
 jei.tooltip.not.enough.space=Hier ist nicht genug Platz zum Anzeigen der Zutaten-Liste.
 jei.tooltip.ingredient.list.disabled=Die JEI-Oberfläche ist deaktiviert.
-jei.tooltip.ingredient.list.disabled.how.to.fix=Klicke auf %s um es zu aktivieren.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Klicke auf %s, um es zu aktivieren.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Fehlende Items
