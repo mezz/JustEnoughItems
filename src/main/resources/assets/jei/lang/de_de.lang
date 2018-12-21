@@ -1,6 +1,6 @@
 # Tooltips
 jei.tooltip.config=JEI-Konfiguration
-jei.tooltip.show.recipes=Zeige die Rezepte
+jei.tooltip.show.recipes=Zeige Rezepte
 jei.tooltip.show.all.recipes=Zeige alle Rezepte
 jei.tooltip.delete.item=Klicke zum Löschen
 jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
