@@ -94,7 +94,7 @@ config.jei.advanced.giveMode.comment=Wähle, ob JEI die Items direkt in das Inve
 # Hide Ingredients Mode
 gui.jei.editMode.description=JEI-Listeneditiermodus:
 gui.jei.editMode.description.hide=Ausblenden mit %CTRL-Klick.
-gui.jei.editMode.description.hide.wild=Ausblenden per einem Platzhalter mit %CTRL-Rechtsklick.
+gui.jei.editMode.description.hide.wild=Ausblenden per Wildcard mit %CTRL-Rechtsklick.
 
 # PC/Linux Control Key
 key.jei.ctrl=STRG
