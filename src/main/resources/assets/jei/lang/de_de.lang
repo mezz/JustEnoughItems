@@ -34,7 +34,7 @@ jei.chat.error.no.cheat.permission.2=Es ist allen erlaubt, die den /give Befehl 
 # Key Bindings
 key.jei.toggleOverlay=Item-Liste (de-)aktivieren
 key.jei.focusSearch=Suchfeld
-key.jei.showRecipe=Zeige Rezept des Items an
+key.jei.showRecipe=Rezept anzeigen
 key.jei.showUses=Zeige Verwendung des Items an
 key.jei.recipeBack=Zeige vorherige Rezeptseite an
 key.jei.toggleCheatMode=Items-Cheating (de-)aktivieren
