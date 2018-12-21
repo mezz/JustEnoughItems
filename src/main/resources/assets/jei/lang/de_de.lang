@@ -70,7 +70,7 @@ config.jei.search.oreDictSearchMode.comment=Suchmodus für Begriffe im Ore Dicti
 config.jei.search.creativeTabSearchMode=%%Kategorie
 config.jei.search.creativeTabSearchMode.comment=Suchmodus für die Kategorien im Kreativmodus-Inventar (Präfix: %)
 config.jei.search.colorSearchMode=^Farbe
-config.jei.search.colorSearchMode.comment=Suchmodus für die Items-Farben (Präfix: ^)
+config.jei.search.colorSearchMode.comment=Suchmodus für die Item-Farben (Präfix: ^)
 config.jei.search.resourceIdSearchMode=&ResourceId
 config.jei.search.resourceIdSearchMode.comment=Suchmodus für die "Resource-Id" (prefix: &)
 
