@@ -64,7 +64,6 @@ config.jei.interface=Interfejs
 config.jei.interface.comment=Opcje dotyczące interfejsu użytkownika.
 config.jei.interface.overlayEnabled=Pokazuj nakładkę z listą składników
 config.jei.interface.overlayEnabled.comment=Pokazuj nakładkę z listą składników obok otwartych okienek interfejsu.
-
 config.jei.interface.bookmarkOverlayEnabled=Pokazuj nakładkę z listą zakładek
 config.jei.interface.bookmarkOverlayEnabled.comment=Pokazuj nakładkę z listą zakładek obok otwartych okienek interfejsu.
 

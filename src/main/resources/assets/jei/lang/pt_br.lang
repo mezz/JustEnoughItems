@@ -64,7 +64,6 @@ config.jei.interface=Interface
 config.jei.interface.comment=Opções de interface.
 config.jei.interface.overlayEnabled=Mostrar lista de ingredientes
 config.jei.interface.overlayEnabled.comment=Exibe a lista de itens próxima à interface.
-
 config.jei.interface.bookmarkOverlayEnabled=Exibir favoritos
 config.jei.interface.bookmarkOverlayEnabled.comment=Mostrar a lista de favoritos próxima às interfaces abertas.
 

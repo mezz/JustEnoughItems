@@ -64,7 +64,6 @@ config.jei.interface=Interface
 config.jei.interface.comment=Options relatives à l'interface utilisateur.
 config.jei.interface.overlayEnabled=Liste d'objets activée
 config.jei.interface.overlayEnabled.comment=Affiche la liste des objets à côté de l'interface utilisateur ouverte.
-
 config.jei.interface.bookmarkOverlayEnabled=Afficher les marque-pages
 config.jei.interface.bookmarkOverlayEnabled.comment=Show the list of bookmarks next to open guis.
 

@@ -64,7 +64,6 @@ config.jei.interface=Интерфейс
 config.jei.interface.comment=Настройки интерфейса пользователя.
 config.jei.interface.overlayEnabled=Доступность списка предметов
 config.jei.interface.overlayEnabled.comment=Показывать список предметов рядом с открытым интерфейсом.
-
 config.jei.interface.bookmarkOverlayEnabled=Доступность списка закладок
 config.jei.interface.bookmarkOverlayEnabled.comment=Показывать список закладок рядом с открытым интерфейсом.
 
