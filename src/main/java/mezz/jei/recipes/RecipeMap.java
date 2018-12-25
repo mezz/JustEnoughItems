@@ -1,5 +1,13 @@
 package mezz.jei.recipes;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import net.minecraft.util.ResourceLocation;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -11,19 +19,13 @@ import mezz.jei.collect.ListMultiMap;
 import mezz.jei.collect.Table;
 import mezz.jei.ingredients.IngredientInformation;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * A RecipeMap efficiently links IRecipeWrappers, IRecipeCategory, and Ingredients.
  */
 public class RecipeMap {
 	private final Table<IRecipeCategory, String, List<IRecipeWrapper>> recipeWrapperTable = Table.hashBasedTable();
-	private final ListMultiMap<String, String> categoryUidMap = new ListMultiMap<>();
-	private final Ordering<String> recipeCategoryOrdering;
+	private final ListMultiMap<String, ResourceLocation> categoryUidMap = new ListMultiMap<>();
+	private final Ordering<ResourceLocation> recipeCategoryOrdering;
 	private final IIngredientRegistry ingredientRegistry;
 
 	public RecipeMap(final RecipeCategoryComparator recipeCategoryComparator, IIngredientRegistry ingredientRegistry) {
@@ -31,10 +33,10 @@ public class RecipeMap {
 		this.ingredientRegistry = ingredientRegistry;
 	}
 
-	public <V> List<String> getRecipeCategories(V ingredient) {
+	public <V> List<ResourceLocation> getRecipeCategories(V ingredient) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 
-		Set<String> recipeCategories = new HashSet<>();
+		Set<ResourceLocation> recipeCategories = new HashSet<>();
 
 		for (String key : IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient)) {
 			recipeCategories.addAll(categoryUidMap.get(key));
@@ -45,8 +47,8 @@ public class RecipeMap {
 
 	public <V> void addRecipeCategory(IRecipeCategory recipeCategory, V ingredient, IIngredientHelper<V> ingredientHelper) {
 		String key = ingredientHelper.getUniqueId(ingredient);
-		List<String> recipeCategories = categoryUidMap.get(key);
-		String recipeCategoryUid = recipeCategory.getUid();
+		List<ResourceLocation> recipeCategories = categoryUidMap.get(key);
+		ResourceLocation recipeCategoryUid = recipeCategory.getUid();
 		if (!recipeCategories.contains(recipeCategoryUid)) {
 			recipeCategories.add(recipeCategoryUid);
 		}

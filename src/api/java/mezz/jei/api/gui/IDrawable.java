@@ -1,9 +1,10 @@
 package mezz.jei.api.gui;
 
+import net.minecraft.client.Minecraft;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import net.minecraft.client.Minecraft;
 
 /**
  * Represents something to be drawn on screen.
@@ -19,10 +20,10 @@ public interface IDrawable {
 
 	int getHeight();
 
-	default void draw(Minecraft minecraft) {
-		draw(minecraft, 0, 0);
+	default void draw() {
+		draw(0, 0);
 	}
 
-	void draw(Minecraft minecraft, int xOffset, int yOffset);
+	void draw(int xOffset, int yOffset);
 
 }

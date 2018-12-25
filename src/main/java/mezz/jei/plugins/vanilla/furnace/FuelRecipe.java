@@ -1,5 +1,15 @@
 package mezz.jei.plugins.vanilla.furnace;
 
+import java.awt.Color;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+
 import com.google.common.base.Preconditions;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawableAnimated;
@@ -8,15 +18,6 @@ import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-
-import java.awt.Color;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 public class FuelRecipe implements IRecipeWrapper {
 	private final List<List<ItemStack>> inputs;
@@ -47,8 +48,9 @@ public class FuelRecipe implements IRecipeWrapper {
 	}
 
 	@Override
-	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-		flame.draw(minecraft, 1, 0);
+	public void drawInfo(int recipeWidth, int recipeHeight, double mouseX, double mouseY) {
+		flame.draw(1, 0);
+		Minecraft minecraft = Minecraft.getInstance();
 		minecraft.fontRenderer.drawString(smeltCountString, 24, 13, Color.gray.getRGB());
 	}
 }

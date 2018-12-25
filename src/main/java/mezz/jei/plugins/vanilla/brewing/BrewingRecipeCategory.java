@@ -1,5 +1,9 @@
 package mezz.jei.plugins.vanilla.brewing;
 
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;
@@ -12,10 +16,6 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
-import net.minecraft.client.Minecraft;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 
 public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipeWrapper> {
 
@@ -38,7 +38,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipeWrapp
 		background = guiHelper.drawableBuilder(location, 0, 0, 64, 60)
 			.addPadding(1, 0, 0, 50)
 			.build();
-		icon = guiHelper.createDrawableIngredient(new ItemStack(Items.BREWING_STAND));
+		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.BREWING_STAND));
 		localizedName = Translator.translateToLocal("gui.jei.category.brewing");
 
 		arrow = guiHelper.drawableBuilder(location, 64, 0, 9, 28)
@@ -54,7 +54,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipeWrapp
 	}
 
 	@Override
-	public String getUid() {
+	public ResourceLocation getUid() {
 		return VanillaRecipeCategoryUid.BREWING;
 	}
 
@@ -79,10 +79,10 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipeWrapp
 	}
 
 	@Override
-	public void drawExtras(Minecraft minecraft) {
-		blazeHeat.draw(minecraft, 5, 30);
-		bubbles.draw(minecraft, 8, 0);
-		arrow.draw(minecraft, 42, 2);
+	public void drawExtras() {
+		blazeHeat.draw(5, 30);
+		bubbles.draw(8, 0);
+		arrow.draw(42, 2);
 	}
 
 	@Override

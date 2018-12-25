@@ -4,9 +4,10 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Locale;
 
-import mezz.jei.util.Translator;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+
+import mezz.jei.util.Translator;
 
 public class LocalizedConfiguration extends Configuration {
 	private static final String commentPostfix = ".comment";

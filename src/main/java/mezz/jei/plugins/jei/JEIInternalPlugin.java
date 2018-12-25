@@ -6,6 +6,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.client.gui.inventory.GuiBrewingStand;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IJeiRuntime;
@@ -17,7 +23,7 @@ import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
-import mezz.jei.config.Config;
+import mezz.jei.config.ClientConfig;
 import mezz.jei.gui.overlay.GuiProperties;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.plugins.jei.debug.DebugGhostIngredientHandler;
@@ -28,13 +34,6 @@ import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientHelper;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientListFactory;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientRenderer;
-import net.minecraft.client.gui.inventory.GuiBrewingStand;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
 
 @JEIPlugin
 public class JEIInternalPlugin implements IModPlugin {
@@ -45,7 +44,7 @@ public class JEIInternalPlugin implements IModPlugin {
 
 	@Override
 	public void registerIngredients(IModIngredientRegistration ingredientRegistration) {
-		if (Config.isDebugModeEnabled()) {
+		if (ClientConfig.getInstance().isDebugModeEnabled()) {
 			DebugIngredientHelper ingredientHelper = new DebugIngredientHelper();
 			DebugIngredientRenderer ingredientRenderer = new DebugIngredientRenderer(ingredientHelper);
 			ingredientRegistration.register(DebugIngredient.TYPE, Collections.emptyList(), ingredientHelper, ingredientRenderer);
@@ -58,12 +57,12 @@ public class JEIInternalPlugin implements IModPlugin {
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 
 		registry.addRecipeCategories(
-				new IngredientInfoRecipeCategory(guiHelper)
+			new IngredientInfoRecipeCategory(guiHelper)
 		);
 
-		if (Config.isDebugModeEnabled()) {
+		if (ClientConfig.getInstance().isDebugModeEnabled()) {
 			registry.addRecipeCategories(
-					new DebugRecipeCategory(guiHelper)
+				new DebugRecipeCategory(guiHelper)
 			);
 		}
 	}
@@ -74,31 +73,31 @@ public class JEIInternalPlugin implements IModPlugin {
 		registry.addGuiScreenHandler(GuiContainer.class, GuiProperties::create);
 		registry.addGuiScreenHandler(RecipesGui.class, GuiProperties::create);
 
-		if (Config.isDebugModeEnabled()) {
+		if (ClientConfig.getInstance().isDebugModeEnabled()) {
 			registry.addIngredientInfo(Arrays.asList(
-					new ItemStack(Items.OAK_DOOR),
-					new ItemStack(Items.SPRUCE_DOOR),
-					new ItemStack(Items.BIRCH_DOOR),
-					new ItemStack(Items.JUNGLE_DOOR),
-					new ItemStack(Items.ACACIA_DOOR),
-					new ItemStack(Items.DARK_OAK_DOOR)
-					),
-					VanillaTypes.ITEM,
-					"description.jei.wooden.door.1", // actually 2 lines
-					"description.jei.wooden.door.2",
-					"description.jei.wooden.door.3"
+				new ItemStack(Blocks.OAK_DOOR),
+				new ItemStack(Blocks.SPRUCE_DOOR),
+				new ItemStack(Blocks.BIRCH_DOOR),
+				new ItemStack(Blocks.JUNGLE_DOOR),
+				new ItemStack(Blocks.ACACIA_DOOR),
+				new ItemStack(Blocks.DARK_OAK_DOOR)
+				),
+				VanillaTypes.ITEM,
+				"description.jei.wooden.door.1", // actually 2 lines
+				"description.jei.wooden.door.2",
+				"description.jei.wooden.door.3"
 			);
 
-			registry.addIngredientInfo(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), VanillaTypes.FLUID, "water");
+//			registry.addIngredientInfo(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), VanillaTypes.FLUID, "water");
 
 			registry.addRecipes(Arrays.asList(
-					new DebugRecipe(),
-					new DebugRecipe()
-			), "debug");
+				new DebugRecipe(),
+				new DebugRecipe()
+			), DebugRecipeCategory.UID);
 
-			registry.addRecipeCatalyst(new DebugIngredient(7), "debug");
-			registry.addRecipeCatalyst(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), "debug");
-			registry.addRecipeCatalyst(new ItemStack(Items.STICK), "debug");
+			registry.addRecipeCatalyst(new DebugIngredient(7), DebugRecipeCategory.UID);
+//			registry.addRecipeCatalyst(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), DebugRecipeCategory.UID);
+			registry.addRecipeCatalyst(new ItemStack(Items.STICK), DebugRecipeCategory.UID);
 
 			registry.addAdvancedGuiHandlers(new IAdvancedGuiHandler<GuiBrewingStand>() {
 				@Override
@@ -111,15 +110,15 @@ public class JEIInternalPlugin implements IModPlugin {
 					int widthMovement = (int) ((System.currentTimeMillis() / 100) % 100);
 					int size = 25 + widthMovement;
 					return Collections.singletonList(
-							new Rectangle(guiContainer.getGuiLeft() + guiContainer.getXSize(), guiContainer.getGuiTop() + 40, size, size)
+						new Rectangle(guiContainer.getGuiLeft() + guiContainer.getXSize(), guiContainer.getGuiTop() + 40, size, size)
 					);
 				}
 
 				@Nullable
 				@Override
-				public Object getIngredientUnderMouse(GuiBrewingStand guiContainer, int mouseX, int mouseY) {
+				public Object getIngredientUnderMouse(GuiBrewingStand guiContainer, double mouseX, double mouseY) {
 					if (mouseX < 10 && mouseY < 10) {
-						return new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME);
+//						return new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME);
 					}
 					return null;
 				}
@@ -133,7 +132,7 @@ public class JEIInternalPlugin implements IModPlugin {
 	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 		JEIInternalPlugin.jeiRuntime = jeiRuntime;
 
-		if (Config.isDebugModeEnabled()) {
+		if (ClientConfig.getInstance().isDebugModeEnabled()) {
 			if (ingredientRegistry != null) {
 				ingredientRegistry.addIngredientsAtRuntime(DebugIngredient.TYPE, DebugIngredientListFactory.create());
 			}

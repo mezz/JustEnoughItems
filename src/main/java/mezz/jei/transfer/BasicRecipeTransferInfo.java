@@ -3,19 +3,21 @@ package mezz.jei.transfer;
 import java.util.ArrayList;
 import java.util.List;
 
-import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
+import net.minecraft.util.ResourceLocation;
+
+import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 
 public class BasicRecipeTransferInfo<C extends Container> implements IRecipeTransferInfo<C> {
 	private final Class<C> containerClass;
-	private final String recipeCategoryUid;
+	private final ResourceLocation recipeCategoryUid;
 	private final int recipeSlotStart;
 	private final int recipeSlotCount;
 	private final int inventorySlotStart;
 	private final int inventorySlotCount;
 
-	public BasicRecipeTransferInfo(Class<C> containerClass, String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
+	public BasicRecipeTransferInfo(Class<C> containerClass, ResourceLocation recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
 		this.containerClass = containerClass;
 		this.recipeCategoryUid = recipeCategoryUid;
 		this.recipeSlotStart = recipeSlotStart;
@@ -30,7 +32,7 @@ public class BasicRecipeTransferInfo<C extends Container> implements IRecipeTran
 	}
 
 	@Override
-	public String getRecipeCategoryUid() {
+	public ResourceLocation getRecipeCategoryUid() {
 		return recipeCategoryUid;
 	}
 

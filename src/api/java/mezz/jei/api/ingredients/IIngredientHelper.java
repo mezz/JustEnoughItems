@@ -6,14 +6,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.item.ItemStack;
+
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IIngredientType;
-import net.minecraft.item.ItemStack;
 
 /**
  * An ingredient helper allows JEI to get information about ingredients for searching and other purposes.
  * An ingredient is anything used in a recipe, like ItemStacks and FluidStacks.
- * <p>
+ *
  * If you have a new type of ingredient to add to JEI, you will have to implement this in order to use
  * {@link IModIngredientRegistration#register(IIngredientType, Collection, IIngredientHelper, IIngredientRenderer)}
  *
@@ -182,25 +183,6 @@ public interface IIngredientHelper<V> {
 	 * @since JEI 3.11.0
 	 */
 	String getErrorInfo(@Nullable V ingredient);
-
-	/**
-	 * An action for when a player is in cheat mode and clicks an ingredient in the list.
-	 * <p>
-	 * This method can either:
-	 * return an ItemStack for JEI to give the player,
-	 * or
-	 * return an empty ItemStack and handle the action manually.
-	 *
-	 * @param ingredient The ingredient to cheat in. Do not edit this ingredient.
-	 * @param fullStack  Only used for manual handling, true if a full stack should be cheated in instead of a single ingredient.
-	 * @return an ItemStack for JEI to give the player, or an empty stack if this method handles it manually.
-	 * @since JEI 4.2.9
-	 * @deprecated since JEI 4.8.3, use {@link #getCheatItemStack(Object)}
-	 */
-	@Deprecated
-	default ItemStack cheatIngredient(V ingredient, boolean fullStack) {
-		return ItemStack.EMPTY;
-	}
 
 	/**
 	 * @since JEI 4.14.2

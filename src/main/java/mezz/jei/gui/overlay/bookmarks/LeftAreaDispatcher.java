@@ -1,5 +1,15 @@
 package mezz.jei.gui.overlay.bookmarks;
 
+import javax.annotation.Nullable;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+
 import mezz.jei.api.gui.IGuiProperties;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.PageNavigation;
@@ -7,15 +17,6 @@ import mezz.jei.gui.overlay.GuiProperties;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IPaged;
 import mezz.jei.input.IShowsRecipeFocuses;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-
-import javax.annotation.Nullable;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 
@@ -106,7 +107,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 
 	@Override
 	@Nullable
-	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
+	public IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (canShow && hasContent()) {
 			return contents.get(current).getIngredientUnderMouse(mouseX, mouseY);
 		}
@@ -121,7 +122,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		return false;
 	}
 
-	public boolean handleMouseScrolled(int mouseX, int mouseY, int dWheel) {
+	public boolean handleMouseScrolled(double mouseX, double mouseY, double dWheel) {
 		if (canShow && hasContent()) {
 			if (displayArea.contains(mouseX, mouseY)) {
 				return contents.get(current).handleMouseScrolled(mouseX, mouseY, dWheel);
@@ -137,12 +138,12 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		return false;
 	}
 
-	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
+	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
 		if (canShow && hasContent()) {
 			if (displayArea.contains(mouseX, mouseY)) {
 				return contents.get(current).handleMouseClicked(mouseX, mouseY, mouseButton);
 			} else if (naviArea.contains(mouseX, mouseY)) {
-				return navigation.handleMouseClickedButtons(mouseX, mouseY);
+				return navigation.handleMouseClickedButtons(mouseX, mouseY, mouseButton);
 			}
 		}
 		return false;

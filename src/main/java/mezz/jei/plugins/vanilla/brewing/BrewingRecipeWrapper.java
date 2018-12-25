@@ -5,17 +5,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.base.Objects;
-import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.util.Translator;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+
+import com.google.common.base.Objects;
+import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.util.Translator;
 
 public class BrewingRecipeWrapper implements IRecipeWrapper {
 	private static final BrewingRecipeUtil UTIL = new BrewingRecipeUtil();
@@ -44,8 +45,8 @@ public class BrewingRecipeWrapper implements IRecipeWrapper {
 		PotionType typeIn = PotionUtils.getPotionFromItem(potionInput);
 		PotionType typeOut = PotionUtils.getPotionFromItem(potionOutput);
 		this.hashCode = Objects.hashCode(potionInput.getItem(), ForgeRegistries.POTION_TYPES.getKey(typeIn),
-				potionOutput.getItem(), ForgeRegistries.POTION_TYPES.getKey(typeOut),
-				firstIngredient.getItem(), firstIngredient.getMetadata());
+			potionOutput.getItem(), ForgeRegistries.POTION_TYPES.getKey(typeOut),
+			firstIngredient.getItem());
 	}
 
 	@Override
@@ -59,10 +60,11 @@ public class BrewingRecipeWrapper implements IRecipeWrapper {
 	}
 
 	@Override
-	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
+	public void drawInfo(int recipeWidth, int recipeHeight, double mouseX, double mouseY) {
 		int brewingSteps = getBrewingSteps();
 		if (brewingSteps < Integer.MAX_VALUE) {
 			String steps = Translator.translateToLocalFormatted("gui.jei.category.brewing.steps", brewingSteps);
+			Minecraft minecraft = Minecraft.getInstance();
 			minecraft.fontRenderer.drawString(steps, 70, 28, Color.gray.getRGB());
 		}
 	}

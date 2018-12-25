@@ -1,5 +1,12 @@
 package mezz.jei.startup;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraftforge.fml.common.ProgressManager;
+import net.minecraft.util.NonNullList;
+
 import com.google.common.base.Stopwatch;
 import mezz.jei.Internal;
 import mezz.jei.api.IJeiRuntime;
@@ -9,7 +16,7 @@ import mezz.jei.api.gui.IGhostIngredientHandler;
 import mezz.jei.api.gui.IGlobalGuiHandler;
 import mezz.jei.api.gui.IGuiScreenHandler;
 import mezz.jei.bookmarks.BookmarkList;
-import mezz.jei.config.Config;
+import mezz.jei.config.ClientConfig;
 import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.ingredients.IIngredientListElement;
@@ -28,12 +35,6 @@ import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.runtime.SubtypeRegistry;
 import mezz.jei.util.Log;
-import net.minecraft.util.NonNullList;
-import net.minecraftforge.fml.common.ProgressManager;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 public class JeiStarter {
 	private boolean started;
@@ -114,7 +115,7 @@ public class JeiStarter {
 		InputHandler inputHandler = new InputHandler(jeiRuntime, ingredientRegistry, ingredientListOverlay, guiScreenHelper, leftAreaDispatcher, bookmarkList);
 		Internal.setInputHandler(inputHandler);
 
-		Config.checkForModNameFormatOverride();
+		ClientConfig.getInstance().checkForModNameFormatOverride();
 
 		started = true;
 		totalTime.stop();

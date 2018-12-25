@@ -2,7 +2,11 @@ package mezz.jei.transfer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -82,12 +86,12 @@ public final class BasicRecipeTransferHandlerServer {
 
 	@Nonnull
 	private static Map<Integer, ItemStack> removeItemsFromInventory(
-			Container container,
-			Map<Integer, ItemStack> required,
-			List<Integer> craftingSlots,
-			List<Integer> inventorySlots,
-			boolean transferAsCompleteSets,
-			boolean maxTransfer
+		Container container,
+		Map<Integer, ItemStack> required,
+		List<Integer> craftingSlots,
+		List<Integer> inventorySlots,
+		boolean transferAsCompleteSets,
+		boolean maxTransfer
 	) {
 
 		// This map becomes populated with the resulting items to transfer and is returned by this method.
@@ -195,9 +199,9 @@ public final class BasicRecipeTransferHandlerServer {
 				final ItemStack inventoryStack = slot.getStack();
 				// Check that the slot's contents are stackable with this stack
 				if (!inventoryStack.isEmpty() &&
-						inventoryStack.isStackable() &&
-						inventoryStack.isItemEqual(stack) &&
-						ItemStack.areItemStackTagsEqual(inventoryStack, stack)) {
+					inventoryStack.isStackable() &&
+					inventoryStack.isItemEqual(stack) &&
+					ItemStack.areItemStackTagsEqual(inventoryStack, stack)) {
 
 					final int remain = stack.getCount() - added;
 					final int maxStackSize = Math.min(slot.getItemStackLimit(inventoryStack), inventoryStack.getMaxStackSize());

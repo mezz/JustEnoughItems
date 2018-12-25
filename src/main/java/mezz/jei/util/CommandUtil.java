@@ -1,13 +1,10 @@
 package mezz.jei.util;
 
-import mezz.jei.JustEnoughItems;
-import mezz.jei.config.Config;
-import mezz.jei.config.ServerInfo;
-import mezz.jei.network.packets.PacketGiveItemStack;
-import mezz.jei.network.packets.PacketSetHotbarItemStack;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
+import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -15,7 +12,12 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.items.ItemHandlerHelper;
+
+import mezz.jei.config.ClientConfig;
+import mezz.jei.config.ServerInfo;
+import mezz.jei.network.Network;
+import mezz.jei.network.packets.PacketGiveItemStack;
+import mezz.jei.network.packets.PacketSetHotbarItemStack;
 import org.apache.commons.lang3.StringUtils;
 
 public final class CommandUtil {
@@ -24,27 +26,28 @@ public final class CommandUtil {
 
 	/**
 	 * /give <player> <item> [amount] [data] [dataTag]
+	 *
 	 * @implNote {@link GuiContainerCreative} has special client-side handling for itemStacks, just give the item on the client
 	 */
-	public static void giveStack(ItemStack itemStack, int mouseButton) {
-		final GiveMode giveMode = Config.getGiveMode();
-		Minecraft minecraft = Minecraft.getMinecraft();
+	public static void giveStack(ItemStack itemStack, InputMappings.Input input) {
+		final GiveMode giveMode = ClientConfig.getInstance().getGiveMode();
+		Minecraft minecraft = Minecraft.getInstance();
 		EntityPlayerSP player = minecraft.player;
 		if (player == null) {
 			Log.get().error("Can't give stack, there is no player");
 			return;
 		}
 		if (minecraft.currentScreen instanceof GuiContainerCreative && giveMode == GiveMode.MOUSE_PICKUP) {
-			final int amount = giveMode.getStackSize(itemStack, mouseButton);
+			final int amount = giveMode.getStackSize(itemStack, input);
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
 			CommandUtilServer.mousePickupItemStack(player, sendStack);
 		} else if (ServerInfo.isJeiOnServer()) {
-			final int amount = giveMode.getStackSize(itemStack, mouseButton);
+			final int amount = giveMode.getStackSize(itemStack, input);
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
 			PacketGiveItemStack packet = new PacketGiveItemStack(sendStack, giveMode);
-			JustEnoughItems.getProxy().sendPacketToServer(packet);
+			Network.sendPacketToServer(packet);
 		} else {
-			int amount = GiveMode.INVENTORY.getStackSize(itemStack, mouseButton);
+			int amount = GiveMode.INVENTORY.getStackSize(itemStack, input);
 			giveStackVanilla(itemStack, amount);
 		}
 	}
@@ -53,7 +56,7 @@ public final class CommandUtil {
 		if (ServerInfo.isJeiOnServer()) {
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, itemStack.getMaxStackSize());
 			PacketSetHotbarItemStack packet = new PacketSetHotbarItemStack(sendStack, hotbarSlot);
-			JustEnoughItems.getProxy().sendPacketToServer(packet);
+			Network.sendPacketToServer(packet);
 		}
 	}
 
@@ -72,9 +75,9 @@ public final class CommandUtil {
 		ResourceLocation itemResourceLocation = item.getRegistryName();
 		ErrorUtil.checkNotNull(itemResourceLocation, "itemStack.getItem().getRegistryName()");
 
-		EntityPlayerSP sender = Minecraft.getMinecraft().player;
+		EntityPlayerSP sender = Minecraft.getInstance().player;
 		if (sender != null) {
-			if (sender.canUseCommand(2, "give")) {
+			if (sender.getCommandSource().hasPermissionLevel(2)) {
 				sendGiveAction(sender, itemStack, amount);
 			} else if (sender.isCreative()) {
 				sendCreativeInventoryActions(sender, itemStack, amount);
@@ -132,6 +135,6 @@ public final class CommandUtil {
 			// slot ID for the message is different from the slot id used in the mainInventory
 			mainInventorySlot += 36;
 		}
-		Minecraft.getMinecraft().playerController.sendSlotPacket(stack, mainInventorySlot);
+		Minecraft.getInstance().playerController.sendSlotPacket(stack, mainInventorySlot);
 	}
 }

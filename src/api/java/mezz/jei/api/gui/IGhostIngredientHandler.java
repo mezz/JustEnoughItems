@@ -1,15 +1,16 @@
 package mezz.jei.api.gui;
 
-import net.minecraft.client.gui.GuiScreen;
-
 import java.awt.Rectangle;
 import java.util.List;
 import java.util.function.Consumer;
+
+import net.minecraft.client.gui.GuiScreen;
 
 /**
  * Lets mods accept ghost ingredients from JEI.
  * These ingredients are dragged from the ingredient list on to your gui, and are useful
  * for setting recipes or anything else that does not need the real ingredient to exist.
+ *
  * @since JEI 4.8.4
  */
 public interface IGhostIngredientHandler<T extends GuiScreen> {
@@ -31,7 +32,7 @@ public interface IGhostIngredientHandler<T extends GuiScreen> {
 
 	/**
 	 * @return true if JEI should highlight the targets for the player.
-	 *         false to handle highlighting yourself.
+	 * false to handle highlighting yourself.
 	 */
 	default boolean shouldHighlightTargets() {
 		return true;

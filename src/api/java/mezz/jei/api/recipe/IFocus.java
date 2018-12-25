@@ -6,9 +6,9 @@ import mezz.jei.api.IRecipeRegistry;
  * The current search focus.
  * Set by the player when they look up the recipe. The object being looked up is the focus.
  * This class is immutable, the value and mode do not change.
- * <p>
+ *
  * Create a focus with {@link IRecipeRegistry#createFocus(Mode, Object)}.
- * <p>
+ *
  * Use a null IFocus to signify no focus, like in the case of looking up categories of recipes.
  */
 public interface IFocus<V> {

@@ -1,5 +1,12 @@
 package mezz.jei.recipes;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.util.ResourceLocation;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
@@ -14,21 +21,16 @@ import mezz.jei.collect.ListMultiMap;
 import mezz.jei.gui.Focus;
 import mezz.jei.ingredients.IngredientInformation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 	private final RecipeRegistry recipeRegistry;
-	private final ImmutableMultimap<String, String> categoriesForRecipeCatalystKeys;
+	private final ImmutableMultimap<String, ResourceLocation> categoriesForRecipeCatalystKeys;
 	private final IIngredientRegistry ingredientRegistry;
-	private final ImmutableMap<String, IRecipeCategory> recipeCategoriesMap;
+	private final ImmutableMap<ResourceLocation, IRecipeCategory> recipeCategoriesMap;
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
 	private final ListMultiMap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories;
 
-	public InternalRecipeRegistryPlugin(RecipeRegistry recipeRegistry, ImmutableMultimap<String, String> categoriesForRecipeCatalystKeys, IIngredientRegistry ingredientRegistry, ImmutableMap<String, IRecipeCategory> recipeCategoriesMap, RecipeMap recipeInputMap, RecipeMap recipeOutputMap, ListMultiMap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories) {
+	public InternalRecipeRegistryPlugin(RecipeRegistry recipeRegistry, ImmutableMultimap<String, ResourceLocation> categoriesForRecipeCatalystKeys, IIngredientRegistry ingredientRegistry, ImmutableMap<ResourceLocation, IRecipeCategory> recipeCategoriesMap, RecipeMap recipeInputMap, RecipeMap recipeOutputMap, ListMultiMap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories) {
 		this.recipeRegistry = recipeRegistry;
 		this.categoriesForRecipeCatalystKeys = categoriesForRecipeCatalystKeys;
 		this.ingredientRegistry = ingredientRegistry;
@@ -39,7 +41,7 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 	}
 
 	@Override
-	public <V> List<String> getRecipeCategoryUids(IFocus<V> focus) {
+	public <V> List<ResourceLocation> getRecipeCategoryUids(IFocus<V> focus) {
 		focus = Focus.check(focus);
 		V ingredient = focus.getValue();
 
@@ -53,9 +55,9 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 		}
 	}
 
-	private ImmutableList<String> getRecipeCategories() {
-		ImmutableList.Builder<String> builder = ImmutableList.builder();
-		for (Map.Entry<String, IRecipeCategory> entry : recipeCategoriesMap.entrySet()) {
+	private ImmutableList<ResourceLocation> getRecipeCategories() {
+		ImmutableList.Builder<ResourceLocation> builder = ImmutableList.builder();
+		for (Map.Entry<ResourceLocation, IRecipeCategory> entry : recipeCategoriesMap.entrySet()) {
 			IRecipeCategory<?> recipeCategory = entry.getValue();
 			if (!recipeRegistry.getRecipeWrappers(recipeCategory).isEmpty()) {
 				builder.add(entry.getKey());
@@ -74,7 +76,7 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 		if (focus.getMode() == IFocus.Mode.INPUT) {
 			final ImmutableList<T> recipes = recipeInputMap.getRecipeWrappers(recipeCategory, ingredient);
 
-			String recipeCategoryUid = recipeCategory.getUid();
+			ResourceLocation recipeCategoryUid = recipeCategory.getUid();
 			for (String inputKey : IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient)) {
 				if (categoriesForRecipeCatalystKeys.get(inputKey).contains(recipeCategoryUid)) {
 					ImmutableSet<T> specificRecipes = ImmutableSet.copyOf(recipes);

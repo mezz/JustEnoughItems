@@ -1,60 +1,41 @@
 package mezz.jei.network;
 
-import mezz.jei.network.packets.IPacketJeiHandler;
-import mezz.jei.network.packets.PacketCheatPermission;
-import mezz.jei.util.Log;
+import java.util.EnumMap;
+
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.IThreadListener;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.annotation.Nullable;
-import java.io.IOException;
-import java.util.EnumMap;
+import mezz.jei.network.packets.IPacketJeiHandler;
+import mezz.jei.network.packets.PacketCheatPermission;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-@SideOnly(Side.CLIENT)
-public class PacketHandlerClient extends PacketHandler {
+@OnlyIn(Dist.CLIENT)
+public class PacketHandlerClient {
+	private static final Logger LOGGER = LogManager.getLogger();
 	public final EnumMap<PacketIdClient, IPacketJeiHandler> clientHandlers = new EnumMap<>(PacketIdClient.class);
 
 	public PacketHandlerClient() {
 		clientHandlers.put(PacketIdClient.CHEAT_PERMISSION, PacketCheatPermission::readPacketData);
 	}
 
-	@SubscribeEvent
-	@SideOnly(Side.CLIENT)
-	public void onPacket(FMLNetworkEvent.ClientCustomPacketEvent event) {
-		PacketBuffer packetBuffer = new PacketBuffer(event.getPacket().payload());
-		Minecraft minecraft = Minecraft.getMinecraft();
-
+	public void onPacket(NetworkEvent.ClientCustomPayloadEvent event) {
 		try {
-			byte packetIdOrdinal = packetBuffer.readByte();
+			PacketBuffer packetBuffer = new PacketBuffer(event.getPayload());
+			int packetIdOrdinal = event.getLoginIndex();
 			PacketIdClient packetId = PacketIdClient.VALUES[packetIdOrdinal];
 			IPacketJeiHandler packetHandler = clientHandlers.get(packetId);
-			checkThreadAndEnqueue(packetHandler, packetBuffer, minecraft);
-		} catch (Exception ex) {
-			Log.get().error("Packet error", ex);
-		}
-	}
-
-	private static void checkThreadAndEnqueue(final IPacketJeiHandler packetHandler, final PacketBuffer packetBuffer, @Nullable IThreadListener threadListener) {
-		if (threadListener != null && !threadListener.isCallingFromMinecraftThread()) {
-			packetBuffer.retain();
-			threadListener.addScheduledTask(() -> {
-				try {
-					Minecraft minecraft = Minecraft.getMinecraft();
-					EntityPlayer player = minecraft.player;
-					if (player != null) {
-						packetHandler.readPacketData(packetBuffer, player);
-					}
-					packetBuffer.release();
-				} catch (IOException e) {
-					Log.get().error("Network Error", e);
-				}
-			});
+			Minecraft minecraft = Minecraft.getInstance();
+			EntityPlayer player = minecraft.player;
+			if (player != null) {
+				packetHandler.readPacketData(packetBuffer, player);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Packet error", e);
 		}
 	}
 }

@@ -35,23 +35,4 @@ public interface IJeiHelpers {
 	 * Allows manual creation of vanilla recipes.
 	 */
 	IVanillaRecipeFactory getVanillaRecipeFactory();
-
-	// DEPRECATED BELOW
-
-	/**
-	 * Used to stop JEI from displaying a specific item in the item list.
-	 *
-	 * @deprecated since JEI 4.2.1. Use {@link #getIngredientBlacklist()}.
-	 */
-	@Deprecated
-	IItemBlacklist getItemBlacklist();
-
-	/**
-	 * Reload JEI at runtime.
-	 * Used by mods that add and remove items or recipes like MineTweaker's /mt reload.
-	 *
-	 * @deprecated since JEI 4.2.2. This has been deactivated because it takes too long and causes server disconnects.
-	 */
-	@Deprecated
-	void reload();
 }

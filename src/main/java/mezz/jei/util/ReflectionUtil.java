@@ -1,10 +1,10 @@
 package mezz.jei.util;
 
-import mezz.jei.collect.Table;
-
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Optional;
+
+import mezz.jei.collect.Table;
 
 public final class ReflectionUtil {
 

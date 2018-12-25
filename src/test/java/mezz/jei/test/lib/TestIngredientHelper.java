@@ -1,10 +1,10 @@
 package mezz.jei.test.lib;
 
-import mezz.jei.api.ingredients.IIngredientHelper;
-
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.Collections;
+
+import mezz.jei.api.ingredients.IIngredientHelper;
 
 public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 	@Nullable

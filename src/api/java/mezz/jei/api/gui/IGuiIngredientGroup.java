@@ -16,9 +16,9 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 
 /**
  * IGuiIngredientGroup displays recipe ingredients in a gui.
- * <p>
+ *
  * If multiple ingredients are set for one index, they will be displayed in rotation.
- * <p>
+ *
  * Get an instance from {@link IRecipeLayout}.
  *
  * @see IGuiItemStackGroup
@@ -68,10 +68,10 @@ public interface IGuiIngredientGroup<T> {
 	/**
 	 * Initialize a guiIngredient for the given slot.
 	 * This can handle mod ingredients registered with {@link IModIngredientRegistration}.
-	 * <p>
+	 *
 	 * Uses the default {@link IIngredientRenderer} registered for the ingredient list in {@link IModIngredientRegistration#register(IIngredientType, Collection, IIngredientHelper, IIngredientRenderer)}
 	 * Uses the same 16x16 size as the ingredient list.
-	 * <p>
+	 *
 	 * For more advanced control over rendering, use {@link #init(int, boolean, IIngredientRenderer, int, int, int, int, int, int)}
 	 *
 	 * @param slotIndex the slot index of this ingredient

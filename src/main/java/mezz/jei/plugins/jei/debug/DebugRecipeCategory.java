@@ -3,12 +3,16 @@ package mezz.jei.plugins.jei.debug;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.IIngredientListOverlay;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -19,13 +23,9 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.Constants;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
-import net.minecraft.client.Minecraft;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fluids.FluidStack;
 
 public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
+	public static final ResourceLocation UID = new ResourceLocation(Constants.MOD_ID, "debug");
 	public static final int RECIPE_WIDTH = 160;
 	public static final int RECIPE_HEIGHT = 60;
 	private final IDrawable background;
@@ -47,8 +47,8 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
-	public String getUid() {
-		return "debug";
+	public ResourceLocation getUid() {
+		return UID;
 	}
 
 	@Override
@@ -67,10 +67,11 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
-	public void drawExtras(Minecraft minecraft) {
+	public void drawExtras() {
 		IJeiRuntime runtime = JEIInternalPlugin.jeiRuntime;
 		if (runtime != null) {
 			IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
+			Minecraft minecraft = Minecraft.getInstance();
 			minecraft.fontRenderer.drawString(ingredientFilter.getFilterText(), 20, 52, 0);
 
 			IIngredientListOverlay ingredientListOverlay = runtime.getIngredientListOverlay();
@@ -107,23 +108,23 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		guiItemStacks.set(0, new ItemStack(Items.WATER_BUCKET));
 		guiItemStacks.set(1, new ItemStack(Items.LAVA_BUCKET));
 
-		IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
-		guiFluidStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
-			if (input) {
-				tooltip.add(slotIndex + " Input fluidStack");
-			} else {
-				tooltip.add(slotIndex + " Output fluidStack");
-			}
-		});
-
-		guiFluidStacks.init(0, false, 90, 0, 16, 58, 16000, false, tankOverlay);
-		guiFluidStacks.init(1, true, 24, 0, 12, 47, 2000, true, null);
-
-		guiFluidStacks.setBackground(0, tankBackground);
-
-		List<FluidStack> fluidInputs = recipeWrapper.getFluidInputs();
-		guiFluidStacks.set(0, fluidInputs.get(0));
-		guiFluidStacks.set(1, fluidInputs.get(1));
+//		IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
+//		guiFluidStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
+//			if (input) {
+//				tooltip.add(slotIndex + " Input fluidStack");
+//			} else {
+//				tooltip.add(slotIndex + " Output fluidStack");
+//			}
+//		});
+//
+//		guiFluidStacks.init(0, false, 90, 0, 16, 58, 16000, false, tankOverlay);
+//		guiFluidStacks.init(1, true, 24, 0, 12, 47, 2000, true, null);
+//
+//		guiFluidStacks.setBackground(0, tankBackground);
+//
+//		List<FluidStack> fluidInputs = recipeWrapper.getFluidInputs();
+//		guiFluidStacks.set(0, fluidInputs.get(0));
+//		guiFluidStacks.set(1, fluidInputs.get(1));
 
 		IGuiIngredientGroup<DebugIngredient> debugIngredientsGroup = recipeLayout.getIngredientsGroup(DebugIngredient.TYPE);
 		debugIngredientsGroup.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {

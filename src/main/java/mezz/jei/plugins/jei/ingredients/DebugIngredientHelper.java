@@ -4,13 +4,14 @@ import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.Collections;
 
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.config.Constants;
-import mezz.jei.util.CommandUtilServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
+
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.config.Constants;
+import mezz.jei.util.CommandUtilServer;
 
 public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient> {
 	@Nullable
@@ -56,7 +57,7 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 
 	@Override
 	public ItemStack getCheatItemStack(DebugIngredient ingredient) {
-		EntityPlayerSP player = Minecraft.getMinecraft().player;
+		EntityPlayerSP player = Minecraft.getInstance().player;
 		if (player != null) {
 			CommandUtilServer.writeChatMessage(player, "Debug ingredients cannot be cheated", TextFormatting.RED);
 		}

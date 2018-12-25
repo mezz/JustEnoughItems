@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.config.Config;
+import mezz.jei.config.ClientConfig;
 
 public abstract class AbstractModIdHelper implements IModIdHelper {
 	@Override
@@ -15,7 +15,7 @@ public abstract class AbstractModIdHelper implements IModIdHelper {
 
 	@Override
 	public <T> List<String> addModNameToIngredientTooltip(List<String> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
-		String modNameFormat = Config.getModNameFormat();
+		String modNameFormat = ClientConfig.getInstance().getModNameFormat();
 		if (modNameFormat.isEmpty()) {
 			return tooltip;
 		}

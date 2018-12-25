@@ -7,7 +7,6 @@ import java.util.List;
 
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
-import net.minecraft.client.Minecraft;
 
 /**
  * Represents one drawn ingredient that is part of a recipe.
@@ -42,5 +41,5 @@ public interface IGuiIngredient<T> {
 	 *
 	 * @see IRecipeTransferHandlerHelper#createUserErrorForSlots(String, Collection).
 	 */
-	void drawHighlight(Minecraft minecraft, Color color, int xOffset, int yOffset);
+	void drawHighlight(Color color, int xOffset, int yOffset);
 }

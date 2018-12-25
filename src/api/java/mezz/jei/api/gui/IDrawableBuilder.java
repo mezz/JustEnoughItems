@@ -1,11 +1,13 @@
 package mezz.jei.api.gui;
 
-import mezz.jei.api.IGuiHelper;
 import net.minecraft.util.ResourceLocation;
+
+import mezz.jei.api.IGuiHelper;
 
 /**
  * Builder for creating drawables from a resource location.
  * Create an instance with {@link IGuiHelper#drawableBuilder(ResourceLocation, int, int, int, int)}
+ *
  * @since JEI 4.11.0
  */
 public interface IDrawableBuilder {

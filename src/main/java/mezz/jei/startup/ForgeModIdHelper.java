@@ -3,23 +3,24 @@ package mezz.jei.startup;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.config.Config;
-import mezz.jei.config.Constants;
-import mezz.jei.util.Log;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
+
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.config.ClientConfig;
+import mezz.jei.config.Constants;
+import mezz.jei.util.Log;
 import org.apache.commons.lang3.StringUtils;
 
 public class ForgeModIdHelper extends AbstractModIdHelper {
@@ -34,24 +35,16 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 		return INSTANCE;
 	}
 
-	private final Map<String, ModContainer> modMap;
-
-	private ForgeModIdHelper() {
-		this.modMap = Loader.instance().getIndexedModList();
-	}
-
 	@Override
 	public String getModNameForModId(String modId) {
-		ModContainer modContainer = this.modMap.get(modId);
-		if (modContainer == null) {
-			return modId;
-		}
-		return modContainer.getName();
+		return ModList.get().getModContainerById(modId)
+			.map(modContainer -> modContainer.getModInfo().getDisplayName())
+			.orElse(modId);
 	}
 
 	@Override
 	public String getFormattedModNameForModId(String modId) {
-		String modNameFormat = Config.getModNameFormat();
+		String modNameFormat = ClientConfig.getInstance().getModNameFormat();
 		if (modNameFormat.isEmpty()) {
 			return null;
 		}
@@ -73,22 +66,23 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 	public String getModNameTooltipFormatting() {
 		try {
 			ItemStack itemStack = new ItemStack(Items.APPLE);
-			EntityPlayerSP player = Minecraft.getMinecraft().player;
-			List<String> tooltip = new ArrayList<>();
-			tooltip.add("JEI Tooltip Testing for mod name formatting");
+			EntityPlayerSP player = Minecraft.getInstance().player;
+			List<ITextComponent> tooltip = new ArrayList<>();
+			tooltip.add(new TextComponentString("JEI Tooltip Testing for mod name formatting"));
 			ItemTooltipEvent tooltipEvent = ForgeEventFactory.onItemTooltip(itemStack, player, tooltip, ITooltipFlag.TooltipFlags.NORMAL);
 			tooltip = tooltipEvent.getToolTip();
 
 			if (tooltip.size() > 1) {
 				for (int lineNum = 1; lineNum < tooltip.size(); lineNum++) {
-					String line = tooltip.get(lineNum);
-					if (line.contains(Constants.MINECRAFT_NAME)) {
-						String withoutFormatting = TextFormatting.getTextWithoutFormattingCodes(line);
+					ITextComponent line = tooltip.get(lineNum);
+					String lineString = line.getString();
+					if (lineString.contains(Constants.MINECRAFT_NAME)) {
+						String withoutFormatting = TextFormatting.getTextWithoutFormattingCodes(lineString);
 						if (withoutFormatting != null) {
-							if (line.equals(withoutFormatting)) {
+							if (lineString.equals(withoutFormatting)) {
 								return "";
-							} else if (line.contains(withoutFormatting)) {
-								return StringUtils.replaceOnce(line, Constants.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
+							} else if (lineString.contains(withoutFormatting)) {
+								return StringUtils.replaceOnce(lineString, Constants.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
 							}
 						}
 					}
@@ -102,13 +96,13 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 
 	@Override
 	public <T> List<String> addModNameToIngredientTooltip(List<String> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
-		if (Config.isDebugModeEnabled() && Minecraft.getMinecraft().gameSettings.advancedItemTooltips) {
+		if (ClientConfig.getInstance().isDebugModeEnabled() && Minecraft.getInstance().gameSettings.advancedItemTooltips) {
 			tooltip = new ArrayList<>(tooltip);
 			tooltip.add(TextFormatting.GRAY + "JEI Debug:");
 			tooltip.add(TextFormatting.GRAY + "info: " + ingredientHelper.getErrorInfo(ingredient));
 			tooltip.add(TextFormatting.GRAY + "uid: " + ingredientHelper.getUniqueId(ingredient));
 		}
-		if (Config.isModNameFormatOverrideActive() && (ingredient instanceof ItemStack || ingredient instanceof EnchantmentData)) {
+		if (ClientConfig.getInstance().isModNameFormatOverrideActive() && (ingredient instanceof ItemStack || ingredient instanceof EnchantmentData)) {
 			// we detected that another mod is adding the mod name already
 			return tooltip;
 		}

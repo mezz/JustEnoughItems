@@ -2,6 +2,8 @@ package mezz.jei.gui.recipes;
 
 import java.util.List;
 
+import net.minecraft.util.ResourceLocation;
+
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
@@ -36,7 +38,7 @@ public interface IRecipeGuiLogic {
 
 	boolean setCategoryFocus();
 
-	boolean setCategoryFocus(List<String> recipeCategoryUids);
+	boolean setCategoryFocus(List<ResourceLocation> recipeCategoryUids);
 
 	IRecipeCategory getSelectedRecipeCategory();
 

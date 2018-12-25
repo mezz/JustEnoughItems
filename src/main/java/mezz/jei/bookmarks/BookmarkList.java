@@ -1,23 +1,5 @@
 package mezz.jei.bookmarks;
 
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IIngredientType;
-import mezz.jei.config.Config;
-import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.gui.overlay.IIngredientGridSource;
-import mezz.jei.ingredients.IngredientListElementFactory;
-import mezz.jei.ingredients.IngredientRegistry;
-import mezz.jei.startup.ForgeModIdHelper;
-import mezz.jei.util.LegacyUtil;
-import mezz.jei.util.Log;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTException;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fluids.FluidStack;
-import org.apache.commons.io.IOUtils;
-
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileReader;
@@ -27,6 +9,24 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTTagCompound;
+
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.config.ClientConfig;
+import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.gui.overlay.IIngredientGridSource;
+import mezz.jei.ingredients.IngredientListElementFactory;
+import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.startup.ForgeModIdHelper;
+import mezz.jei.util.Log;
+import org.apache.commons.io.IOUtils;
 
 public class BookmarkList implements IIngredientGridSource {
 
@@ -56,7 +56,7 @@ public class BookmarkList implements IIngredientGridSource {
 
 	protected <T> T normalize(T ingredient) {
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-		T copy = LegacyUtil.getIngredientCopy(ingredient, ingredientHelper);
+		T copy = ingredientHelper.copyIngredient(ingredient);
 		if (copy instanceof ItemStack) {
 			((ItemStack) copy).setCount(1);
 		} else if (copy instanceof FluidStack) {
@@ -101,18 +101,16 @@ public class BookmarkList implements IIngredientGridSource {
 		for (IIngredientListElement<?> element : ingredientListElements) {
 			Object object = element.getIngredient();
 			if (object instanceof ItemStack) {
-				strings.add(MARKER_STACK + ((ItemStack) object).writeToNBT(new NBTTagCompound()).toString());
+				strings.add(MARKER_STACK + ((ItemStack) object).write(new NBTTagCompound()).toString());
 			} else {
 				strings.add(MARKER_OTHER + getUid(element));
 			}
 		}
-		File file = Config.getBookmarkFile();
-		if (file != null) {
-			try (FileWriter writer = new FileWriter(file)) {
-				IOUtils.writeLines(strings, "\n", writer);
-			} catch (IOException e) {
-				Log.get().error("Failed to save bookmarks list to file {}", file, e);
-			}
+		File file = ClientConfig.getInstance().getBookmarkFile();
+		try (FileWriter writer = new FileWriter(file)) {
+			IOUtils.writeLines(strings, "\n", writer);
+		} catch (IOException e) {
+			Log.get().error("Failed to save bookmarks list to file {}", file, e);
 		}
 	}
 
@@ -122,8 +120,8 @@ public class BookmarkList implements IIngredientGridSource {
 	}
 
 	public void loadBookmarks() {
-		File file = Config.getBookmarkFile();
-		if (file == null || !file.exists()) {
+		File file = ClientConfig.getInstance().getBookmarkFile();
+		if (!file.exists()) {
 			return;
 		}
 		List<String> ingredientJsonStrings;
@@ -144,14 +142,14 @@ public class BookmarkList implements IIngredientGridSource {
 				String itemStackAsJson = ingredientJsonString.substring(MARKER_STACK.length());
 				try {
 					NBTTagCompound itemStackAsNbt = JsonToNBT.getTagFromJson(itemStackAsJson);
-					ItemStack itemStack = new ItemStack(itemStackAsNbt);
+					ItemStack itemStack = ItemStack.read(itemStackAsNbt);
 					if (!itemStack.isEmpty()) {
 						ItemStack normalized = normalize(itemStack);
 						addToLists(normalized, false);
 					} else {
 						Log.get().warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
 					}
-				} catch (NBTException e) {
+				} catch (CommandSyntaxException e) {
 					Log.get().error("Failed to load bookmarked ItemStack from json string:\n{}", itemStackAsJson, e);
 				}
 			} else if (ingredientJsonString.startsWith(MARKER_OTHER)) {

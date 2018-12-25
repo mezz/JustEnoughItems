@@ -5,17 +5,18 @@ import java.awt.Rectangle;
 import java.util.LinkedList;
 import java.util.List;
 
-import mezz.jei.config.Config;
-import mezz.jei.config.Constants;
-import mezz.jei.config.KeyBindings;
-import mezz.jei.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.ingredients.IngredientFilter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraftforge.fml.client.config.HoverChecker;
-import org.lwjgl.input.Keyboard;
+
+import mezz.jei.config.ClientConfig;
+import mezz.jei.config.Constants;
+import mezz.jei.config.KeyBindings;
+import mezz.jei.gui.HoverChecker;
+import mezz.jei.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.ingredients.IngredientFilter;
+import org.lwjgl.glfw.GLFW;
 
 public class GuiTextFieldFilter extends GuiTextField {
 	private static final int MAX_HISTORY = 100;
@@ -29,10 +30,10 @@ public class GuiTextFieldFilter extends GuiTextField {
 	private final DrawableNineSliceTexture background;
 
 	public GuiTextFieldFilter(int componentId, IngredientFilter ingredientFilter) {
-		super(componentId, Minecraft.getMinecraft().fontRenderer, 0, 0, 0, 0);
+		super(componentId, Minecraft.getInstance().fontRenderer, 0, 0, 0, 0);
 
 		setMaxStringLength(maxSearchLength);
-		this.hoverChecker = new HoverChecker(0, 0, 0, 0, 0);
+		this.hoverChecker = new HoverChecker(0, 0, 0, 0);
 		this.ingredientFilter = ingredientFilter;
 
 		this.background = new DrawableNineSliceTexture(Constants.RECIPE_BACKGROUND, 95, 182, 95, 20, 4, 4, 4, 4);
@@ -50,7 +51,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 	}
 
 	public void update() {
-		String filterText = Config.getFilterText();
+		String filterText = ClientConfig.getInstance().getFilterText();
 		if (!filterText.equals(getText())) {
 			setText(filterText);
 		}
@@ -63,10 +64,10 @@ public class GuiTextFieldFilter extends GuiTextField {
 	}
 
 	@Override
-	public boolean textboxKeyTyped(char typedChar, int keyCode) {
-		boolean handled = super.textboxKeyTyped(typedChar, keyCode);
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		boolean handled = super.keyPressed(keyCode, scanCode, modifiers);
 		if (!handled && !history.isEmpty()) {
-			if (keyCode == Keyboard.KEY_UP) {
+			if (keyCode == GLFW.GLFW_KEY_UP) {
 				String currentText = getText();
 				int historyIndex = history.indexOf(currentText);
 				if (historyIndex < 0) {
@@ -81,7 +82,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 					setText(historyString);
 					handled = true;
 				}
-			} else if (keyCode == Keyboard.KEY_DOWN) {
+			} else if (keyCode == GLFW.GLFW_KEY_DOWN) {
 				String currentText = getText();
 				int historyIndex = history.indexOf(currentText);
 				if (historyIndex >= 0) {
@@ -101,14 +102,14 @@ public class GuiTextFieldFilter extends GuiTextField {
 		return handled;
 	}
 
-	public boolean isMouseOver(int mouseX, int mouseY) {
+	public boolean isMouseOver(double mouseX, double mouseY) {
 		return hoverChecker.checkHover(mouseX, mouseY);
 	}
 
-	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
+	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
 		if (mouseButton == 1) {
 			setText("");
-			return Config.setFilterText("");
+			return ClientConfig.getInstance().setFilterText("");
 		} else {
 			super.mouseClicked(mouseX, mouseY, mouseButton);
 		}
@@ -121,11 +122,12 @@ public class GuiTextFieldFilter extends GuiTextField {
 		super.setFocused(keyboardFocus);
 
 		if (previousFocus != keyboardFocus) {
+			Minecraft minecraft = Minecraft.getInstance();
 			if (keyboardFocus) {
-				previousKeyboardRepeatEnabled = Keyboard.areRepeatEventsEnabled();
-				Keyboard.enableRepeatEvents(true);
+				previousKeyboardRepeatEnabled = minecraft.keyboardListener.repeatEventsEnabled;
+				minecraft.keyboardListener.enableRepeatEvents(true);
 			} else {
-				Keyboard.enableRepeatEvents(previousKeyboardRepeatEnabled);
+				minecraft.keyboardListener.enableRepeatEvents(previousKeyboardRepeatEnabled);
 			}
 
 			saveHistory();
@@ -151,8 +153,8 @@ public class GuiTextFieldFilter extends GuiTextField {
 	@Override
 	public boolean getEnableBackgroundDrawing() {
 		if (this.isDrawing) {
-			GlStateManager.color(1, 1, 1, 1);
-			background.draw(Minecraft.getMinecraft(), this.x, this.y);
+			GlStateManager.color4f(1, 1, 1, 1);
+			background.draw(this.x, this.y);
 		}
 		return false;
 	}
@@ -163,9 +165,9 @@ public class GuiTextFieldFilter extends GuiTextField {
 	}
 
 	@Override
-	public void drawTextBox() {
+	public void drawTextField(int mouseX, int mouseY, float partialTicks) {
 		this.isDrawing = true;
-		super.drawTextBox();
+		super.drawTextField(mouseX, mouseY, partialTicks);
 		this.isDrawing = false;
 	}
 	// end background hack

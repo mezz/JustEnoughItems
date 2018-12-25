@@ -1,18 +1,12 @@
 package mezz.jei.render;
 
-import com.google.common.base.Joiner;
-import mezz.jei.Internal;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.color.ColorNamer;
-import mezz.jei.config.Config;
-import mezz.jei.config.Constants;
-import mezz.jei.gui.TooltipRenderer;
-import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.startup.ForgeModIdHelper;
-import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
-import mezz.jei.util.Translator;
+import java.awt.Color;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -21,13 +15,20 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.config.GuiUtils;
 
-import java.awt.Color;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import com.google.common.base.Joiner;
+import mezz.jei.Internal;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.color.ColorNamer;
+import mezz.jei.config.ClientConfig;
+import mezz.jei.config.Constants;
+import mezz.jei.gui.TooltipRenderer;
+import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.startup.ForgeModIdHelper;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
+import mezz.jei.util.Translator;
 
 public class IngredientRenderer<T> {
 	private static final int BLACKLIST_COLOR = Color.red.getRGB();
@@ -58,14 +59,14 @@ public class IngredientRenderer<T> {
 	}
 
 	public void renderSlow() {
-		if (Config.isHideModeEnabled()) {
+		if (ClientConfig.getInstance().isHideModeEnabled()) {
 			renderEditMode(element, area, padding);
 		}
 
 		try {
 			IIngredientRenderer<T> ingredientRenderer = element.getIngredientRenderer();
 			T ingredient = element.getIngredient();
-			ingredientRenderer.render(Minecraft.getMinecraft(), area.x + padding, area.y + padding, ingredient);
+			ingredientRenderer.render(area.x + padding, area.y + padding, ingredient);
 		} catch (RuntimeException | LinkageError e) {
 			throw ErrorUtil.createRenderIngredientException(e, element.getIngredient());
 		}
@@ -76,11 +77,11 @@ public class IngredientRenderer<T> {
 	 */
 	public void drawHighlight() {
 		GlStateManager.disableLighting();
-		GlStateManager.disableDepth();
+		GlStateManager.disableDepthTest();
 		GlStateManager.colorMask(true, true, true, false);
 		GuiUtils.drawGradientRect(0, area.x, area.y, area.x + area.width, area.y + area.height, 0x80FFFFFF, 0x80FFFFFF);
 		GlStateManager.colorMask(true, true, true, true);
-		GlStateManager.enableDepth();
+		GlStateManager.enableDepthTest();
 	}
 
 	public void drawTooltip(Minecraft minecraft, int mouseX, int mouseY) {
@@ -91,9 +92,9 @@ public class IngredientRenderer<T> {
 
 		if (ingredient instanceof ItemStack) {
 			ItemStack itemStack = (ItemStack) ingredient;
-			TooltipRenderer.drawHoveringText(itemStack, minecraft, tooltip, mouseX, mouseY, fontRenderer);
+			TooltipRenderer.drawHoveringText(itemStack, tooltip, mouseX, mouseY, fontRenderer);
 		} else {
-			TooltipRenderer.drawHoveringText(minecraft, tooltip, mouseX, mouseY, fontRenderer);
+			TooltipRenderer.drawHoveringText(tooltip, mouseX, mouseY, fontRenderer);
 		}
 	}
 
@@ -101,9 +102,9 @@ public class IngredientRenderer<T> {
 		V ingredient = element.getIngredient();
 		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
 
-		if (Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
+		if (ClientConfig.getInstance().isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
 			GuiScreen.drawRect(area.x + padding, area.y + padding, area.x + 16 + padding, area.y + 16 + padding, BLACKLIST_COLOR);
-			GlStateManager.color(1f, 1f, 1f, 1f);
+			GlStateManager.color4f(1f, 1f, 1f, 1f);
 		}
 	}
 
@@ -121,11 +122,11 @@ public class IngredientRenderer<T> {
 			}
 		}
 
-		if (Config.getColorSearchMode() != Config.SearchMode.DISABLED) {
+		if (ClientConfig.getInstance().getColorSearchMode() != ClientConfig.SearchMode.DISABLED) {
 			addColorSearchInfoToTooltip(minecraft, element, tooltip, maxWidth);
 		}
 
-		if (Config.isHideModeEnabled()) {
+		if (ClientConfig.getInstance().isHideModeEnabled()) {
 			addEditModeInfoToTooltip(minecraft, tooltip, maxWidth);
 		}
 
@@ -137,7 +138,7 @@ public class IngredientRenderer<T> {
 		V ingredient = element.getIngredient();
 		try {
 			ITooltipFlag.TooltipFlags tooltipFlag = minecraft.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
-			return ingredientRenderer.getTooltip(minecraft, ingredient, tooltipFlag);
+			return ingredientRenderer.getTooltip(ingredient, tooltipFlag);
 		} catch (RuntimeException | LinkageError e) {
 			Log.get().error("Tooltip crashed.", e);
 		}

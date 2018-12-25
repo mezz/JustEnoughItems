@@ -1,8 +1,8 @@
 package mezz.jei.config;
 
-import net.minecraft.util.ResourceLocation;
-
 import java.util.Locale;
+
+import net.minecraft.util.ResourceLocation;
 
 public final class Constants {
 	public static final String MINECRAFT_NAME = "Minecraft";
@@ -10,7 +10,6 @@ public final class Constants {
 	// Mod info
 	public static final String MOD_ID = "jei";
 	public static final String NAME = "Just Enough Items";
-	public static final String VERSION = "@VERSION@";
 
 	// Textures
 	public static final String RESOURCE_DOMAIN = MOD_ID.toLowerCase(Locale.ENGLISH);
@@ -23,7 +22,7 @@ public final class Constants {
 
 	public static final int MAX_TOOLTIP_WIDTH = 150;
 
-	public static final String UNIVERSAL_RECIPE_TRANSFER_UID = "universal recipe transfer handler";
+	public static final ResourceLocation UNIVERSAL_RECIPE_TRANSFER_UID = new ResourceLocation(MOD_ID, "universal_recipe_transfer_handler");
 
 	private Constants() {
 

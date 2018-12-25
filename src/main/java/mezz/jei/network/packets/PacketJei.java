@@ -1,24 +1,20 @@
 package mezz.jei.network.packets;
 
+import net.minecraft.network.PacketBuffer;
+
 import io.netty.buffer.Unpooled;
 import mezz.jei.network.IPacketId;
-import mezz.jei.network.PacketHandler;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
+import org.apache.commons.lang3.tuple.Pair;
 
 public abstract class PacketJei {
-	private final IPacketId id = getPacketId();
-
-	public final FMLProxyPacket getPacket() {
+	public final Pair<PacketBuffer, Integer> getPacketData() {
+		IPacketId id = getPacketId();
 		PacketBuffer packetBuffer = new PacketBuffer(Unpooled.buffer());
-
-		packetBuffer.writeByte(id.ordinal());
 		writePacketData(packetBuffer);
-
-		return new FMLProxyPacket(packetBuffer, PacketHandler.CHANNEL_ID);
+		return Pair.of(packetBuffer, id.ordinal());
 	}
 
-	public abstract IPacketId getPacketId();
+	protected abstract IPacketId getPacketId();
 
-	public abstract void writePacketData(PacketBuffer buf);
+	protected abstract void writePacketData(PacketBuffer buf);
 }

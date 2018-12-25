@@ -1,13 +1,13 @@
 package mezz.jei.api.recipe.transfer;
 
-import mezz.jei.api.gui.IRecipeLayout;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 
+import mezz.jei.api.gui.IRecipeLayout;
+
 /**
  * A reason that a recipe transfer couldn't happen.
- * <p>
+ *
  * Recipe transfer errors can be created with {@link IRecipeTransferHandlerHelper} or you can implement your own.
  * These errors are returned from {@link IRecipeTransferHandler#transferRecipe(Container, IRecipeLayout, EntityPlayer, boolean, boolean)}.
  */
@@ -31,5 +31,5 @@ public interface IRecipeTransferError {
 	/**
 	 * Called on {@link Type#USER_FACING} errors.
 	 */
-	void showError(Minecraft minecraft, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY);
+	void showError(int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY);
 }

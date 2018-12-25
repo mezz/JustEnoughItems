@@ -1,16 +1,17 @@
 package mezz.jei.plugins.jei.debug;
 
-import mezz.jei.Internal;
-import mezz.jei.api.gui.IGhostIngredientHandler;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.util.Log;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.List;
+import mezz.jei.Internal;
+import mezz.jei.api.gui.IGhostIngredientHandler;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.util.Log;
 
 public class DebugGhostIngredientHandler<T extends GuiContainer> implements IGhostIngredientHandler<T> {
 	@Override

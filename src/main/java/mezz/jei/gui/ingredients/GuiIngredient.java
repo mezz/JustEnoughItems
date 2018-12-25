@@ -1,5 +1,22 @@
 package mezz.jei.gui.ingredients;
 
+import javax.annotation.Nullable;
+import java.awt.Color;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
+
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiIngredient;
@@ -14,22 +31,6 @@ import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextFormatting;
-
-import javax.annotation.Nullable;
-import java.awt.Color;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	private static final String oreDictionaryIngredient = Translator.translateToLocal("jei.tooltip.recipe.ore.dict");
@@ -54,13 +55,13 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	private boolean enabled;
 
 	public GuiIngredient(
-			int slotIndex,
-			boolean input,
-			IIngredientRenderer<T> ingredientRenderer,
-			IIngredientHelper<T> ingredientHelper,
-			Rectangle rect,
-			int xPadding, int yPadding,
-			int cycleOffset
+		int slotIndex,
+		boolean input,
+		IIngredientRenderer<T> ingredientRenderer,
+		IIngredientHelper<T> ingredientHelper,
+		Rectangle rect,
+		int xPadding, int yPadding,
+		int cycleOffset
 	) {
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredientHelper = ingredientHelper;
@@ -79,7 +80,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		return rect;
 	}
 
-	public boolean isMouseOver(int xOffset, int yOffset, int mouseX, int mouseY) {
+	public boolean isMouseOver(double xOffset, double yOffset, double mouseX, double mouseY) {
 		return enabled && (mouseX >= xOffset + rect.x) && (mouseY >= yOffset + rect.y) && (mouseX < xOffset + rect.x + rect.width) && (mouseY < yOffset + rect.y + rect.height);
 	}
 
@@ -156,16 +157,16 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		this.tooltipCallback = tooltipCallback;
 	}
 
-	public void draw(Minecraft minecraft, int xOffset, int yOffset) {
+	public void draw(int xOffset, int yOffset) {
 		cycleTimer.onDraw();
 
 		if (background != null) {
-			background.draw(minecraft, xOffset + rect.x, yOffset + rect.y);
+			background.draw(xOffset + rect.x, yOffset + rect.y);
 		}
 
 		T value = getDisplayedIngredient();
 		try {
-			ingredientRenderer.render(minecraft, xOffset + rect.x + xPadding, yOffset + rect.y + yPadding, value);
+			ingredientRenderer.render(xOffset + rect.x + xPadding, yOffset + rect.y + yPadding, value);
 		} catch (RuntimeException | LinkageError e) {
 			if (value != null) {
 				throw ErrorUtil.createRenderIngredientException(e, value);
@@ -175,36 +176,37 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	}
 
 	@Override
-	public void drawHighlight(Minecraft minecraft, Color color, int xOffset, int yOffset) {
+	public void drawHighlight(Color color, int xOffset, int yOffset) {
 		int x = rect.x + xOffset + xPadding;
 		int y = rect.y + yOffset + yPadding;
 		GlStateManager.disableLighting();
-		GlStateManager.disableDepth();
+		GlStateManager.disableDepthTest();
 		drawRect(x, y, x + rect.width - xPadding * 2, y + rect.height - yPadding * 2, color.getRGB());
-		GlStateManager.color(1f, 1f, 1f, 1f);
+		GlStateManager.color4f(1f, 1f, 1f, 1f);
 	}
 
-	public void drawOverlays(Minecraft minecraft, int xOffset, int yOffset, int mouseX, int mouseY) {
+	public void drawOverlays(int xOffset, int yOffset, int mouseX, int mouseY) {
 		T value = getDisplayedIngredient();
 		if (value != null) {
-			drawTooltip(minecraft, xOffset, yOffset, mouseX, mouseY, value);
+			drawTooltip(xOffset, yOffset, mouseX, mouseY, value);
 		}
 	}
 
-	private void drawTooltip(Minecraft minecraft, int xOffset, int yOffset, int mouseX, int mouseY, T value) {
+	private void drawTooltip(int xOffset, int yOffset, int mouseX, int mouseY, T value) {
 		try {
-			GlStateManager.disableDepth();
+			GlStateManager.disableDepthTest();
 
 			RenderHelper.disableStandardItemLighting();
 			drawRect(xOffset + rect.x + xPadding,
-					yOffset + rect.y + yPadding,
-					xOffset + rect.x + rect.width - xPadding,
-					yOffset + rect.y + rect.height - yPadding,
-					0x7FFFFFFF);
-			GlStateManager.color(1f, 1f, 1f, 1f);
+				yOffset + rect.y + yPadding,
+				xOffset + rect.x + rect.width - xPadding,
+				yOffset + rect.y + rect.height - yPadding,
+				0x7FFFFFFF);
+			GlStateManager.color4f(1f, 1f, 1f, 1f);
 
+			Minecraft minecraft = Minecraft.getInstance();
 			ITooltipFlag.TooltipFlags tooltipFlag = minecraft.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
-			List<String> tooltip = ingredientRenderer.getTooltip(minecraft, value, tooltipFlag);
+			List<String> tooltip = ingredientRenderer.getTooltip(value, tooltipFlag);
 			tooltip = ForgeModIdHelper.getInstance().addModNameToIngredientTooltip(tooltip, value, ingredientHelper);
 
 			if (tooltipCallback != null) {
@@ -220,12 +222,12 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 					final String acceptsAny = String.format(oreDictionaryIngredient, oreDictEquivalent);
 					tooltip.add(TextFormatting.GRAY + acceptsAny);
 				}
-				TooltipRenderer.drawHoveringText((ItemStack) value, minecraft, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
+				TooltipRenderer.drawHoveringText((ItemStack) value, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
 			} else {
-				TooltipRenderer.drawHoveringText(minecraft, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
+				TooltipRenderer.drawHoveringText(tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
 			}
 
-			GlStateManager.enableDepth();
+			GlStateManager.enableDepthTest();
 		} catch (RuntimeException e) {
 			Log.get().error("Exception when rendering tooltip on {}.", value, e);
 		}

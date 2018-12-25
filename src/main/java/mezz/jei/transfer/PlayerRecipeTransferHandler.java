@@ -8,9 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.ContainerPlayer;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+
 import com.google.common.collect.ImmutableSet;
 import mezz.jei.Internal;
-import mezz.jei.JustEnoughItems;
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -21,14 +25,11 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.config.ServerInfo;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
+import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.startup.StackHelper;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.ContainerPlayer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
 
 public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<ContainerPlayer> {
 	private final StackHelper stackHelper;
@@ -164,7 +165,7 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Conta
 
 		if (doTransfer) {
 			PacketRecipeTransfer packet = new PacketRecipeTransfer(matchingItemsResult.matchingItems, craftingSlotIndexes, inventorySlotIndexes, maxTransfer, false);
-			JustEnoughItems.getProxy().sendPacketToServer(packet);
+			Network.sendPacketToServer(packet);
 		}
 
 		return null;

@@ -1,5 +1,12 @@
 package mezz.jei.network;
 
+import java.util.EnumMap;
+
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.config.Constants;
 import mezz.jei.network.packets.IPacketJeiHandler;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
@@ -7,21 +14,13 @@ import mezz.jei.network.packets.PacketGiveItemStack;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
 import mezz.jei.network.packets.PacketSetHotbarItemStack;
-import mezz.jei.util.Log;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.IThreadListener;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
-
-import javax.annotation.Nullable;
-import java.io.IOException;
-import java.util.EnumMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class PacketHandler {
-	public static final String CHANNEL_ID = Constants.MOD_ID;
+	private static final Logger LOGGER = LogManager.getLogger();
+
+	public static final ResourceLocation CHANNEL_ID = new ResourceLocation(Constants.MOD_ID, "channel");
 
 	public final EnumMap<PacketIdServer, IPacketJeiHandler> serverHandlers = new EnumMap<>(PacketIdServer.class);
 
@@ -33,32 +32,21 @@ public class PacketHandler {
 		serverHandlers.put(PacketIdServer.CHEAT_PERMISSION_REQUEST, PacketRequestCheatPermission::readPacketData);
 	}
 
-	@SubscribeEvent
-	public void onPacket(FMLNetworkEvent.ServerCustomPacketEvent event) {
-		PacketBuffer packetBuffer = new PacketBuffer(event.getPacket().payload());
-		EntityPlayerMP player = ((NetHandlerPlayServer) event.getHandler()).player;
-
+	public void onPacket(NetworkEvent.ServerCustomPayloadEvent event) {
+		PacketBuffer packetBuffer = new PacketBuffer(event.getPayload());
+		NetworkEvent.Context context = event.getSource().get();
+		EntityPlayerMP player = context.getSender();
+		if (player == null) {
+			LOGGER.error("Packet error, the sender player is missing for event: {}", event);
+			return;
+		}
 		try {
-			byte packetIdOrdinal = packetBuffer.readByte();
+			int packetIdOrdinal = event.getLoginIndex();
 			PacketIdServer packetId = PacketIdServer.VALUES[packetIdOrdinal];
 			IPacketJeiHandler packetHandler = serverHandlers.get(packetId);
-			checkThreadAndEnqueue(packetHandler, packetBuffer, player, player.getServer());
-		} catch (RuntimeException ex) {
-			Log.get().error("Packet error", ex);
-		}
-	}
-
-	private static void checkThreadAndEnqueue(IPacketJeiHandler packetHandler, PacketBuffer packetBuffer, EntityPlayer player, @Nullable IThreadListener threadListener) {
-		if (threadListener != null && !threadListener.isCallingFromMinecraftThread()) {
-			packetBuffer.retain();
-			threadListener.addScheduledTask(() -> {
-				try {
-					packetHandler.readPacketData(packetBuffer, player);
-					packetBuffer.release();
-				} catch (IOException e) {
-					Log.get().error("Network Error", e);
-				}
-			});
+			packetHandler.readPacketData(packetBuffer, player);
+		} catch (RuntimeException e) {
+			LOGGER.error("Packet error for event: {}", event, e);
 		}
 	}
 }

@@ -3,9 +3,10 @@ package mezz.jei.startup;
 import java.util.HashSet;
 import java.util.Set;
 
-import mezz.jei.util.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+
+import mezz.jei.util.Log;
 
 public class UniqueItemStackListBuilder {
 	private final StackHelper stackHelper;

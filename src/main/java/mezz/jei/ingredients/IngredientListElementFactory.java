@@ -1,16 +1,17 @@
 package mezz.jei.ingredients;
 
+import javax.annotation.Nullable;
+import java.util.Collection;
+
+import net.minecraftforge.fml.common.ProgressManager;
+import net.minecraft.util.NonNullList;
+
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.IModIdHelper;
-import net.minecraft.util.NonNullList;
-import net.minecraftforge.fml.common.ProgressManager;
-
-import javax.annotation.Nullable;
-import java.util.Collection;
 
 public final class IngredientListElementFactory {
 	private static IngredientOrderTracker ORDER_TRACKER = new IngredientOrderTracker();

@@ -1,27 +1,5 @@
 package mezz.jei.ingredients;
 
-import com.google.common.collect.ImmutableList;
-import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
-import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
-import mezz.jei.api.IIngredientFilter;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.config.Config;
-import mezz.jei.config.EditModeToggleEvent;
-import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.gui.overlay.IIngredientGridSource;
-import mezz.jei.startup.PlayerJoinedWorldEvent;
-import mezz.jei.suffixtree.CombinedSearchTrees;
-import mezz.jei.suffixtree.GeneralizedSuffixTree;
-import mezz.jei.suffixtree.ISearchTree;
-import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Translator;
-import net.minecraft.util.NonNullList;
-import net.minecraftforge.fml.common.ProgressManager;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +9,30 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import net.minecraftforge.fml.common.ProgressManager;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraft.util.NonNullList;
+
+import com.google.common.collect.ImmutableList;
+import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
+import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.api.IIngredientFilter;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.config.ClientConfig;
+import mezz.jei.config.EditModeToggleEvent;
+import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.gui.overlay.IIngredientGridSource;
+import mezz.jei.startup.PlayerJoinedWorldEvent;
+import mezz.jei.suffixtree.CombinedSearchTrees;
+import mezz.jei.suffixtree.GeneralizedSuffixTree;
+import mezz.jei.suffixtree.ISearchTree;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Translator;
 
 public class IngredientFilter implements IIngredientFilter, IIngredientGridSource {
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
@@ -56,22 +58,33 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		this.blacklist = blacklist;
 		this.elementList = NonNullList.create();
 		this.searchTree = new GeneralizedSuffixTree();
-		createPrefixedSearchTree('@', Config::getModNameSearchMode, IIngredientListElement::getModNameStrings);
-		createPrefixedSearchTree('#', Config::getTooltipSearchMode, IIngredientListElement::getTooltipStrings);
-		createPrefixedSearchTree('$', Config::getOreDictSearchMode, IIngredientListElement::getOreDictStrings);
-		createPrefixedSearchTree('%', Config::getCreativeTabSearchMode, IIngredientListElement::getCreativeTabsStrings);
-		createPrefixedSearchTree('^', Config::getColorSearchMode, IIngredientListElement::getColorStrings);
-		createPrefixedSearchTree('&', Config::getResourceIdSearchMode, element -> Collections.singleton(element.getResourceId()));
+		ClientConfig config = ClientConfig.getInstance();
+		createPrefixedSearchTree('@', config::getModNameSearchMode, IIngredientListElement::getModNameStrings);
+		createPrefixedSearchTree('#', config::getTooltipSearchMode, IIngredientListElement::getTooltipStrings);
+		createPrefixedSearchTree('$', config::getOreDictSearchMode, IIngredientListElement::getOreDictStrings);
+		createPrefixedSearchTree('%', config::getCreativeTabSearchMode, IIngredientListElement::getCreativeTabsStrings);
+		createPrefixedSearchTree('^', config::getColorSearchMode, IIngredientListElement::getColorStrings);
+		createPrefixedSearchTree('&', config::getResourceIdSearchMode, element -> Collections.singleton(element.getResourceId()));
 
 		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.values());
 		this.backgroundBuilder = new IngredientFilterBackgroundBuilder(prefixedSearchTrees, elementList);
+
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, EditModeToggleEvent.class, editModeToggleEvent -> {
+			this.filterCached = null;
+			updateHidden();
+		});
+
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, PlayerJoinedWorldEvent.class, playerJoinedWorldEvent -> {
+			this.filterCached = null;
+			updateHidden();
+		});
 	}
 
 	private static CombinedSearchTrees buildCombinedSearchTrees(ISearchTree searchTree, Collection<PrefixedSearchTree> prefixedSearchTrees) {
 		CombinedSearchTrees combinedSearchTrees = new CombinedSearchTrees();
 		combinedSearchTrees.addSearchTree(searchTree);
 		for (PrefixedSearchTree prefixedTree : prefixedSearchTrees) {
-			if (prefixedTree.getMode() == Config.SearchMode.ENABLED) {
+			if (prefixedTree.getMode() == ClientConfig.SearchMode.ENABLED) {
 				combinedSearchTrees.addSearchTree(prefixedTree.getTree());
 			}
 		}
@@ -100,8 +113,8 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		searchTree.put(Translator.toLowercaseWithLocale(element.getDisplayName()), index);
 
 		for (PrefixedSearchTree prefixedSearchTree : this.prefixedSearchTrees.values()) {
-			Config.SearchMode searchMode = prefixedSearchTree.getMode();
-			if (searchMode != Config.SearchMode.DISABLED) {
+			ClientConfig.SearchMode searchMode = prefixedSearchTree.getMode();
+			if (searchMode != ClientConfig.SearchMode.DISABLED) {
 				Collection<String> strings = prefixedSearchTree.getStringsGetter().getStrings(element);
 				for (String string : strings) {
 					prefixedSearchTree.getTree().put(string, index);
@@ -119,8 +132,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		final IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
 		final V ingredient = element.getIngredient();
 		final String ingredientUid = ingredientHelper.getUniqueId(ingredient);
-		@SuppressWarnings("unchecked")
-		final Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
+		@SuppressWarnings("unchecked") final Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
 
 		final List<IIngredientListElement<V>> matchingElements = new ArrayList<>();
 		final IntSet matchingIndexes = searchTree.search(Translator.toLowercaseWithLocale(element.getDisplayName()));
@@ -148,18 +160,6 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		this.filterCached = null;
 	}
 
-	@SubscribeEvent
-	public void onEditModeToggleEvent(EditModeToggleEvent event) {
-		this.filterCached = null;
-		updateHidden();
-	}
-
-	@SubscribeEvent
-	public void onPlayerJoinedWorldEvent(PlayerJoinedWorldEvent event) {
-		this.filterCached = null;
-		updateHidden();
-	}
-
 	public void updateHidden() {
 		for (IIngredientListElement<?> element : elementList) {
 			updateHiddenState(element);
@@ -171,7 +171,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
 		boolean visible = !blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper) &&
 			ingredientHelper.isIngredientOnServer(ingredient) &&
-			(Config.isHideModeEnabled() || !Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
+			(ClientConfig.getInstance().isHideModeEnabled() || !ClientConfig.getInstance().isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
 		if (element.isVisible() != visible) {
 			element.setVisible(visible);
 			this.filterCached = null;
@@ -180,7 +180,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 
 	@Override
 	public List<IIngredientListElement> getIngredientList() {
-		String filterText = Translator.toLowercaseWithLocale(Config.getFilterText());
+		String filterText = Translator.toLowercaseWithLocale(ClientConfig.getInstance().getFilterText());
 		if (!filterText.equals(filterCached)) {
 			List<IIngredientListElement> ingredientList = getIngredientListUncached(filterText);
 			ingredientList.sort(IngredientListElementComparator.INSTANCE);
@@ -203,13 +203,13 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 
 	@Override
 	public String getFilterText() {
-		return Config.getFilterText();
+		return ClientConfig.getInstance().getFilterText();
 	}
 
 	@Override
 	public void setFilterText(String filterText) {
 		ErrorUtil.checkNotNull(filterText, "filterText");
-		if (Config.setFilterText(filterText)) {
+		if (ClientConfig.getInstance().setFilterText(filterText)) {
 			notifyListenersOfChange();
 		}
 	}
@@ -273,7 +273,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 				String elementWildcardId = uidFunction.apply(element);
 				if (uid.equals(elementWildcardId)) {
 					matchingIndexes.add(i);
-					@SuppressWarnings("unchecked")
+					@SuppressWarnings({"unchecked", "CastCanBeRemovedNarrowingVariableType"})
 					IIngredientListElement<T> castElement = (IIngredientListElement<T>) element;
 					matchingElements.add(castElement);
 				} else {
@@ -285,7 +285,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 				String elementWildcardId = uidFunction.apply(element);
 				if (uid.equals(elementWildcardId)) {
 					matchingIndexes.add(i);
-					@SuppressWarnings("unchecked")
+					@SuppressWarnings({"unchecked", "CastCanBeRemovedNarrowingVariableType"})
 					IIngredientListElement<T> castElement = (IIngredientListElement<T>) element;
 					matchingElements.add(castElement);
 				} else {
@@ -348,7 +348,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		}
 		final char firstChar = token.charAt(0);
 		final PrefixedSearchTree prefixedSearchTree = this.prefixedSearchTrees.get(firstChar);
-		if (prefixedSearchTree != null && prefixedSearchTree.getMode() != Config.SearchMode.DISABLED) {
+		if (prefixedSearchTree != null && prefixedSearchTree.getMode() != ClientConfig.SearchMode.DISABLED) {
 			token = token.substring(1);
 			if (token.isEmpty()) {
 				return null;

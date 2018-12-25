@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import net.minecraft.util.ResourceLocation;
+
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.recipe.IRecipeCategory;
 
-public class RecipeCategoryComparator implements Comparator<String> {
-	private final ImmutableList<String> recipeCategories;
+public class RecipeCategoryComparator implements Comparator<ResourceLocation> {
+	private final ImmutableList<ResourceLocation> recipeCategories;
 
 	public RecipeCategoryComparator(List<IRecipeCategory> recipeCategories) {
-		List<String> recipeCategoryUids = new ArrayList<>();
+		List<ResourceLocation> recipeCategoryUids = new ArrayList<>();
 		for (IRecipeCategory recipeCategory : recipeCategories) {
 			recipeCategoryUids.add(recipeCategory.getUid());
 		}
@@ -19,7 +21,7 @@ public class RecipeCategoryComparator implements Comparator<String> {
 	}
 
 	@Override
-	public int compare(String recipeCategory1, String recipeCategory2) {
+	public int compare(ResourceLocation recipeCategory1, ResourceLocation recipeCategory2) {
 		Integer index1 = recipeCategories.indexOf(recipeCategory1);
 		Integer index2 = recipeCategories.indexOf(recipeCategory2);
 		return index1.compareTo(index2);

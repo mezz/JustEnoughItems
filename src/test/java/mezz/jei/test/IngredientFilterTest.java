@@ -1,6 +1,13 @@
 package mezz.jei.test;
 
-import mezz.jei.config.Config;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import net.minecraft.util.NonNullList;
+
+import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IngredientBlacklistType;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientBlacklist;
@@ -17,15 +24,9 @@ import mezz.jei.test.lib.TestIngredient;
 import mezz.jei.test.lib.TestIngredientHelper;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
-import net.minecraft.util.NonNullList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class IngredientFilterTest {
 	private static final int EXTRA_INGREDIENT_COUNT = 5;
@@ -140,7 +141,7 @@ public class IngredientFilterTest {
 
 		TestIngredient blacklistedIngredient = (TestIngredient) baseList.get(0).getIngredient();
 		TestIngredientHelper testIngredientHelper = new TestIngredientHelper();
-		Config.addIngredientToConfigBlacklist(ingredientFilter, ingredientRegistry, blacklistedIngredient, IngredientBlacklistType.ITEM, testIngredientHelper);
+		ClientConfig.getInstance().addIngredientToConfigBlacklist(ingredientFilter, ingredientRegistry, blacklistedIngredient, IngredientBlacklistType.ITEM, testIngredientHelper);
 
 		ingredientFilter.updateHidden();
 

@@ -1,12 +1,25 @@
 package mezz.jei.input;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.util.InputMappings;
+import net.minecraft.util.ResourceLocation;
+
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.bookmarks.BookmarkList;
-import mezz.jei.config.Config;
+import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IngredientBlacklistType;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
@@ -20,18 +33,6 @@ import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.ReflectionUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class InputHandler {
 	private final RecipeRegistry recipeRegistry;
@@ -63,60 +64,80 @@ public class InputHandler {
 	 * When we have keyboard focus, use Pre
 	 */
 	@SubscribeEvent
-	public void onGuiKeyboardEvent(GuiScreenEvent.KeyboardInputEvent.Pre event) {
-		if (hasKeyboardFocus() && handleKeyEvent()) {
+	public void onGuiKeyPressedEvent(GuiScreenEvent.KeyboardKeyPressedEvent.Pre event) {
+		if (hasKeyboardFocus() && handleKeyEvent(event.getKeyCode(), event.getScanCode(), event.getModifiers())) {
 			event.setCanceled(true);
 		}
 	}
 
 	/**
-	 * Without focus, use Post
+	 * When we have keyboard focus, use Pre
 	 */
 	@SubscribeEvent
-	public void onGuiKeyboardEvent(GuiScreenEvent.KeyboardInputEvent.Post event) {
-		if (!hasKeyboardFocus() && handleKeyEvent()) {
+	public void onGuiCharTypedEvent(GuiScreenEvent.KeyboardCharTypedEvent.Pre event) {
+		if (hasKeyboardFocus() && handleCharTyped(event.getCodePoint(), event.getModifiers())) {
+			event.setCanceled(true);
+		}
+	}
+
+	/**
+	 * Without keyboard focus, use Post
+	 */
+	@SubscribeEvent
+	public void onGuiKeyboardEvent(GuiScreenEvent.KeyboardKeyPressedEvent.Post event) {
+		if (!hasKeyboardFocus() && handleKeyEvent(event.getKeyCode(), event.getScanCode(), event.getModifiers())) {
+			event.setCanceled(true);
+		}
+	}
+
+	/**
+	 * Without keyboard focus, use Post
+	 */
+	@SubscribeEvent
+	public void onGuiCharTypedEvent(GuiScreenEvent.KeyboardCharTypedEvent.Post event) {
+		if (!hasKeyboardFocus() && handleCharTyped(event.getCodePoint(), event.getModifiers())) {
 			event.setCanceled(true);
 		}
 	}
 
 	@SubscribeEvent
-	public void onGuiMouseEvent(GuiScreenEvent.MouseInputEvent.Pre event) {
-		GuiScreen guiScreen = event.getGui();
-		int x = Mouse.getEventX() * guiScreen.width / guiScreen.mc.displayWidth;
-		int y = guiScreen.height - Mouse.getEventY() * guiScreen.height / guiScreen.mc.displayHeight - 1;
-		if (handleMouseEvent(guiScreen, x, y)) {
+	public void onGuiMouseEvent(GuiScreenEvent.MouseClickedEvent.Pre event) {
+		int mouseButton = event.getButton();
+		if (mouseButton > -1) {
+			if (!clickHandled.contains(mouseButton)) {
+				if (handleMouseClick(event.getGui(), mouseButton, event.getMouseX(), event.getMouseY())) {
+					clickHandled.add(mouseButton);
+					event.setCanceled(true);
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onGuiMouseEvent(GuiScreenEvent.MouseReleasedEvent.Pre event) {
+		int mouseButton = event.getButton();
+		if (mouseButton > -1) {
+			if (clickHandled.contains(mouseButton)) {
+				clickHandled.remove(mouseButton);
+				event.setCanceled(true);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onGuiMouseEvent(GuiScreenEvent.MouseScrollEvent.Pre event) {
+		double dWheel = event.getScrollDelta();
+		double mouseX = event.getMouseX();
+		double mouseY = event.getMouseY();
+		if (ingredientListOverlay.handleMouseScrolled(mouseX, mouseY, dWheel) ||
+			leftAreaDispatcher.handleMouseScrolled(mouseX, mouseY, dWheel)) {
 			event.setCanceled(true);
 		}
 	}
 
-	public boolean handleMouseEvent(GuiScreen guiScreen, int mouseX, int mouseY) {
-		boolean cancelEvent = false;
-		final int eventButton = Mouse.getEventButton();
-		if (eventButton > -1) {
-			if (Mouse.getEventButtonState()) {
-				if (!clickHandled.contains(eventButton)) {
-					cancelEvent = handleMouseClick(guiScreen, eventButton, mouseX, mouseY);
-					if (cancelEvent) {
-						clickHandled.add(eventButton);
-					}
-				}
-			} else if (clickHandled.contains(eventButton)) {
-				clickHandled.remove(eventButton);
-				cancelEvent = true;
-			}
-		} else if (Mouse.getEventDWheel() != 0) {
-			cancelEvent = handleMouseScroll(Mouse.getEventDWheel(), mouseX, mouseY);
-		}
-		return cancelEvent;
-	}
-
-	private boolean handleMouseScroll(int dWheel, int mouseX, int mouseY) {
-		return ingredientListOverlay.handleMouseScrolled(mouseX, mouseY, dWheel) || leftAreaDispatcher.handleMouseScrolled(mouseX, mouseY, dWheel);
-	}
-
-	private boolean handleMouseClick(GuiScreen guiScreen, int mouseButton, int mouseX, int mouseY) {
+	private boolean handleMouseClick(GuiScreen guiScreen, int mouseButton, double mouseX, double mouseY) {
 		IClickedIngredient<?> clicked = getFocusUnderMouseForClick(mouseX, mouseY);
-		if (Config.isHideModeEnabled() && clicked != null && handleClickEdit(clicked)) {
+		if (ClientConfig.getInstance().isHideModeEnabled() && clicked != null && handleClickEdit(clicked)) {
 			return true;
 		}
 		if (ingredientListOverlay.handleMouseClicked(mouseX, mouseY, mouseButton)) {
@@ -129,7 +150,8 @@ public class InputHandler {
 		if (clicked != null && handleMouseClickedFocus(mouseButton, clicked)) {
 			return true;
 		}
-		if (handleFocusKeybinds(mouseButton - 100)) {
+		InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
+		if (handleFocusKeybinds(input)) {
 			return true;
 		}
 
@@ -137,17 +159,17 @@ public class InputHandler {
 			GuiContainer guiContainer = (GuiContainer) guiScreen;
 			RecipeClickableArea clickableArea = recipeRegistry.getRecipeClickableArea(guiContainer, mouseX - guiContainer.getGuiLeft(), mouseY - guiContainer.getGuiTop());
 			if (clickableArea != null) {
-				List<String> recipeCategoryUids = clickableArea.getRecipeCategoryUids();
+				List<ResourceLocation> recipeCategoryUids = clickableArea.getRecipeCategoryUids();
 				recipesGui.showCategories(recipeCategoryUids);
 				return true;
 			}
 		}
 
-		return handleGlobalKeybinds(mouseButton - 100);
+		return handleGlobalKeybinds(input);
 	}
 
 	@Nullable
-	private IClickedIngredient<?> getFocusUnderMouseForClick(int mouseX, int mouseY) {
+	private IClickedIngredient<?> getFocusUnderMouseForClick(double mouseX, double mouseY) {
 		for (IShowsRecipeFocuses gui : showsRecipeFocuses) {
 			if (gui.canSetFocusWithMouse()) {
 				IClickedIngredient<?> clicked = gui.getIngredientUnderMouse(mouseX, mouseY);
@@ -160,7 +182,7 @@ public class InputHandler {
 	}
 
 	@Nullable
-	private IClickedIngredient<?> getIngredientUnderMouseForKey(int mouseX, int mouseY) {
+	private IClickedIngredient<?> getIngredientUnderMouseForKey(double mouseX, double mouseY) {
 		for (IShowsRecipeFocuses gui : showsRecipeFocuses) {
 			IClickedIngredient<?> clicked = gui.getIngredientUnderMouse(mouseX, mouseY);
 			if (clicked != null) {
@@ -192,10 +214,11 @@ public class InputHandler {
 
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 
-		if (Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
-			Config.removeIngredientFromConfigBlacklist(ingredientFilter, ingredientRegistry, ingredient, blacklistType, ingredientHelper);
+		ClientConfig config = ClientConfig.getInstance();
+		if (config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
+			config.removeIngredientFromConfigBlacklist(ingredientFilter, ingredientRegistry, ingredient, blacklistType, ingredientHelper);
 		} else {
-			Config.addIngredientToConfigBlacklist(ingredientFilter, ingredientRegistry, ingredient, blacklistType, ingredientHelper);
+			config.addIngredientToConfigBlacklist(ingredientFilter, ingredientRegistry, ingredient, blacklistType, ingredientHelper);
 		}
 		clicked.onClickHandled();
 		return true;
@@ -205,66 +228,63 @@ public class InputHandler {
 		return ingredientListOverlay.hasKeyboardFocus();
 	}
 
-	private boolean handleKeyEvent() {
-		char typedChar = Keyboard.getEventCharacter();
-		int eventKey = Keyboard.getEventKey();
-
-		return ((eventKey == 0 && typedChar >= 32) || Keyboard.getEventKeyState()) &&
-				handleKeyDown(typedChar, eventKey);
+	private boolean handleCharTyped(char codePoint, int modifiers) {
+		return ingredientListOverlay.onCharTyped(codePoint, modifiers);
 	}
 
-	private boolean handleKeyDown(char typedChar, int eventKey) {
+	private boolean handleKeyEvent(int keyCode, int scanCode, int modifiers) {
+		InputMappings.Input input = InputMappings.getInputByCode(keyCode, scanCode);
 		if (ingredientListOverlay.hasKeyboardFocus()) {
-			if (KeyBindings.isInventoryCloseKey(eventKey) || KeyBindings.isEnterKey(eventKey)) {
+			if (KeyBindings.isInventoryCloseKey(input) || KeyBindings.isEnterKey(keyCode)) {
 				ingredientListOverlay.setKeyboardFocus(false);
 				return true;
-			} else if (ingredientListOverlay.onKeyPressed(typedChar, eventKey)) {
+			} else if (ingredientListOverlay.onKeyPressed(keyCode, scanCode, modifiers)) {
 				return true;
 			}
 		}
 
-		if (handleGlobalKeybinds(eventKey)) {
+		if (handleGlobalKeybinds(input)) {
 			return true;
 		}
 
 		if (!isContainerTextFieldFocused()) {
-			if (handleFocusKeybinds(eventKey)) {
+			if (handleFocusKeybinds(input)) {
 				return true;
 			}
-			return ingredientListOverlay.onKeyPressed(typedChar, eventKey);
+			return ingredientListOverlay.onKeyPressed(keyCode, scanCode, modifiers);
 		}
 
 		return false;
 	}
 
-	private boolean handleGlobalKeybinds(int eventKey) {
-		if (KeyBindings.toggleOverlay.isActiveAndMatches(eventKey)) {
-			Config.toggleOverlayEnabled();
+	private boolean handleGlobalKeybinds(InputMappings.Input input) {
+		if (KeyBindings.toggleOverlay.isActiveAndMatches(input)) {
+			ClientConfig.getInstance().toggleOverlayEnabled();
 			return false;
 		}
-		if (KeyBindings.toggleBookmarkOverlay.isActiveAndMatches(eventKey)) {
-			Config.toggleBookmarkEnabled();
+		if (KeyBindings.toggleBookmarkOverlay.isActiveAndMatches(input)) {
+			ClientConfig.getInstance().toggleBookmarkEnabled();
 			return false;
 		}
-		return ingredientListOverlay.onGlobalKeyPressed(eventKey);
+		return ingredientListOverlay.onGlobalKeyPressed(input);
 	}
 
-	private boolean handleFocusKeybinds(int eventKey) {
-		final boolean showRecipe = KeyBindings.showRecipe.isActiveAndMatches(eventKey);
-		final boolean showUses = KeyBindings.showUses.isActiveAndMatches(eventKey);
-		final boolean bookmark = KeyBindings.bookmark.isActiveAndMatches(eventKey);
+	private boolean handleFocusKeybinds(InputMappings.Input input) {
+		final boolean showRecipe = KeyBindings.showRecipe.isActiveAndMatches(input);
+		final boolean showUses = KeyBindings.showUses.isActiveAndMatches(input);
+		final boolean bookmark = KeyBindings.bookmark.isActiveAndMatches(input);
 		if (showRecipe || showUses || bookmark) {
-			IClickedIngredient<?> clicked = getIngredientUnderMouseForKey(MouseHelper.getX(), MouseHelper.getY());
+			IClickedIngredient<?> clicked = getIngredientUnderMouseForKey(MouseUtil.getX(), MouseUtil.getY());
 			if (clicked != null) {
 				if (bookmark) {
 					if (bookmarkList.remove(clicked.getValue())) {
-						if (bookmarkList.isEmpty() && Config.isBookmarkOverlayEnabled()) {
-							Config.toggleBookmarkEnabled();
+						if (bookmarkList.isEmpty() && ClientConfig.getInstance().isBookmarkOverlayEnabled()) {
+							ClientConfig.getInstance().toggleBookmarkEnabled();
 						}
 						return true;
 					} else {
-						if (!Config.isBookmarkOverlayEnabled()) {
-							Config.toggleBookmarkEnabled();
+						if (!ClientConfig.getInstance().isBookmarkOverlayEnabled()) {
+							ClientConfig.getInstance().toggleBookmarkEnabled();
 						}
 						return bookmarkList.add(clicked.getValue());
 					}
@@ -280,7 +300,7 @@ public class InputHandler {
 	}
 
 	private boolean isContainerTextFieldFocused() {
-		GuiScreen gui = Minecraft.getMinecraft().currentScreen;
+		GuiScreen gui = Minecraft.getInstance().currentScreen;
 		if (gui == null) {
 			return false;
 		}

@@ -28,7 +28,7 @@ public final class ColorUtil {
 	 * http://stackoverflow.com/a/6334454
 	 * Returns 0 for equal colors, nonzero for colors that look different.
 	 * The return value is farther from 0 the more different the colors look.
-	 * <p>
+	 *
 	 * Weighs the distance from grey more heavily, to avoid matching grey and colorful colors together.
 	 */
 	public static double slowPerceptualColorDistanceSquared(int[] color1, int[] color2) {

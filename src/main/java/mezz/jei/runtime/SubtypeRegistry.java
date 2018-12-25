@@ -4,12 +4,13 @@ import javax.annotation.Nullable;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import mezz.jei.api.ISubtypeRegistry;
-import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
+import mezz.jei.api.ISubtypeRegistry;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 
 public class SubtypeRegistry implements ISubtypeRegistry {
 	private final Map<Item, ISubtypeInterpreter> interpreters = new IdentityHashMap<>();
@@ -19,11 +20,6 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 		for (Item item : items) {
 			registerSubtypeInterpreter(item, AllNbt.INSTANCE);
 		}
-	}
-
-	@Override
-	public void registerNbtInterpreter(Item item, ISubtypeInterpreter interpreter) {
-		registerSubtypeInterpreter(item, interpreter);
 	}
 
 	@Override
@@ -47,7 +43,7 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 		Item item = itemStack.getItem();
 		ISubtypeInterpreter subtypeInterpreter = interpreters.get(item);
 		if (subtypeInterpreter != null) {
-			return subtypeInterpreter.getSubtypeInfo(itemStack);
+			return subtypeInterpreter.apply(itemStack);
 		}
 
 		return null;
@@ -69,7 +65,7 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 
 		@Override
 		public String apply(ItemStack itemStack) {
-			NBTTagCompound nbtTagCompound = itemStack.getTagCompound();
+			NBTTagCompound nbtTagCompound = itemStack.getTag();
 			if (nbtTagCompound == null || nbtTagCompound.isEmpty()) {
 				return ISubtypeInterpreter.NONE;
 			}

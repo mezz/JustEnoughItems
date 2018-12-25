@@ -1,6 +1,17 @@
 package mezz.jei.ingredients;
 
-import com.google.common.collect.ImmutableList;
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionBrewing;
+import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.util.NonNullList;
+
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -8,23 +19,12 @@ import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IIngredientType;
-import mezz.jei.config.Config;
+import mezz.jei.config.ClientConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.IngredientSet;
 import mezz.jei.util.Log;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionHelper;
-import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.util.NonNullList;
-
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class IngredientRegistry implements IIngredientRegistry {
 	private final IModIdHelper modIdHelper;
@@ -38,11 +38,11 @@ public class IngredientRegistry implements IIngredientRegistry {
 	private final NonNullList<ItemStack> potionIngredients = NonNullList.create();
 
 	public IngredientRegistry(
-			IModIdHelper modIdHelper,
-			IngredientBlacklistInternal blacklist,
-			Map<IIngredientType, IngredientSet> ingredientsMap,
-			ImmutableMap<IIngredientType, IIngredientHelper> ingredientHelperMap,
-			ImmutableMap<IIngredientType, IIngredientRenderer> ingredientRendererMap
+		IModIdHelper modIdHelper,
+		IngredientBlacklistInternal blacklist,
+		Map<IIngredientType, IngredientSet> ingredientsMap,
+		ImmutableMap<IIngredientType, IIngredientHelper> ingredientHelperMap,
+		ImmutableMap<IIngredientType, IIngredientRenderer> ingredientRendererMap
 	) {
 		this.modIdHelper = modIdHelper;
 		this.blacklist = blacklist;
@@ -71,27 +71,12 @@ public class IngredientRegistry implements IIngredientRegistry {
 		}
 
 		try {
-			if (PotionHelper.isReagent(itemStack)) {
+			if (PotionBrewing.isReagent(itemStack)) {
 				potionIngredients.add(itemStack);
 			}
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
 			Log.get().error("Failed to check if item is a potion ingredient {}.", itemStackInfo, e);
-		}
-	}
-
-	@Override
-	@Deprecated
-	public <V> List<V> getIngredients(Class<V> ingredientClass) {
-		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
-		IIngredientType<V> ingredientType = getIngredientType(ingredientClass);
-
-		@SuppressWarnings("unchecked")
-		IngredientSet<V> ingredients = ingredientsMap.get(ingredientType);
-		if (ingredients == null) {
-			return ImmutableList.of();
-		} else {
-			return ImmutableList.copyOf(ingredients);
 		}
 	}
 
@@ -115,13 +100,6 @@ public class IngredientRegistry implements IIngredientRegistry {
 		} else {
 			return ingredients.getByUid(uid);
 		}
-	}
-
-	@Override
-	@Deprecated
-	public <V> Collection<V> getAllIngredients(Class<V> ingredientClass) {
-		IIngredientType<V> ingredientType = getIngredientType(ingredientClass);
-		return getAllIngredients(ingredientType);
 	}
 
 	public <V> boolean isValidIngredient(V ingredient) {
@@ -153,14 +131,6 @@ public class IngredientRegistry implements IIngredientRegistry {
 	}
 
 	@Override
-	@Deprecated
-	public <V> IIngredientHelper<V> getIngredientHelper(Class<? extends V> ingredientClass) {
-		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
-		IIngredientType<V> ingredientType = getIngredientType(ingredientClass);
-		return getIngredientHelper(ingredientType);
-	}
-
-	@Override
 	public <V> IIngredientRenderer<V> getIngredientRenderer(V ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		IIngredientType<V> ingredientType = getIngredientType(ingredient);
@@ -179,22 +149,8 @@ public class IngredientRegistry implements IIngredientRegistry {
 	}
 
 	@Override
-	@Deprecated
-	public <V> IIngredientRenderer<V> getIngredientRenderer(Class<? extends V> ingredientClass) {
-		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
-		IIngredientType<V> ingredientType = getIngredientType(ingredientClass);
-		return getIngredientRenderer(ingredientType);
-	}
-
-	@Override
 	public Collection<IIngredientType> getRegisteredIngredientTypes() {
 		return ingredientTypeMap.values();
-	}
-
-	@Override
-	@Deprecated
-	public Collection<Class> getRegisteredIngredientClasses() {
-		return ingredientTypeMap.keySet();
 	}
 
 	@Override
@@ -210,20 +166,6 @@ public class IngredientRegistry implements IIngredientRegistry {
 	@Override
 	public <V> void addIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients) {
 		addIngredientsAtRuntime(ingredientType, ingredients, Internal.getIngredientFilter());
-	}
-
-	@Override
-	@Deprecated
-	public <V> void addIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients) {
-		IIngredientType<V> ingredientType = getIngredientType(ingredientClass);
-		addIngredientsAtRuntime(ingredientType, ingredients);
-	}
-
-	@Override
-	@Deprecated
-	public <V> void addIngredientsAtRuntime(Class<V> ingredientClass, Collection<V> ingredients) {
-		IIngredientType<V> ingredientType = getIngredientType(ingredientClass);
-		addIngredientsAtRuntime(ingredientType, ingredients);
 	}
 
 	public <V> void addIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients, IngredientFilter ingredientFilter) {
@@ -251,32 +193,18 @@ public class IngredientRegistry implements IIngredientRegistry {
 					blacklist.removeIngredientFromBlacklist(matchingElement.getIngredient(), ingredientHelper);
 					ingredientFilter.updateHiddenState(matchingElement);
 				}
-				if (Config.isDebugModeEnabled()) {
+				if (ClientConfig.getInstance().isDebugModeEnabled()) {
 					Log.get().debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(element.getIngredient()));
 				}
 			} else {
 				blacklist.removeIngredientFromBlacklist(element.getIngredient(), ingredientHelper);
 				ingredientFilter.addIngredient(element);
-				if (Config.isDebugModeEnabled()) {
+				if (ClientConfig.getInstance().isDebugModeEnabled()) {
 					Log.get().debug("Added ingredient: {}", ingredientHelper.getErrorInfo(element.getIngredient()));
 				}
 			}
 		}
 		ingredientFilter.invalidateCache();
-	}
-
-	@Override
-	@Deprecated
-	public <V> void removeIngredientsAtRuntime(Class<V> ingredientClass, List<V> ingredients) {
-		IIngredientType<V> ingredientType = getIngredientType(ingredientClass);
-		removeIngredientsAtRuntime(ingredientType, ingredients, Internal.getIngredientFilter());
-	}
-
-	@Override
-	@Deprecated
-	public <V> void removeIngredientsAtRuntime(Class<V> ingredientClass, Collection<V> ingredients) {
-		IIngredientType<V> ingredientType = getIngredientType(ingredientClass);
-		removeIngredientsAtRuntime(ingredientType, ingredients, Internal.getIngredientFilter());
 	}
 
 	@Override
@@ -332,7 +260,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 				V ingredient = element.getIngredient();
 				String errorInfo = ingredientHelper.getErrorInfo(ingredient);
 				Log.get().error("Could not find any matching ingredients to remove: {}", errorInfo);
-			} else if (Config.isDebugModeEnabled()) {
+			} else if (ClientConfig.getInstance().isDebugModeEnabled()) {
 				Log.get().debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(element.getIngredient()));
 			}
 			for (IIngredientListElement<V> matchingElement : matchingElements) {

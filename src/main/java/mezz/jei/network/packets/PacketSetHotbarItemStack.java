@@ -1,18 +1,16 @@
 package mezz.jei.network.packets;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
+
 import com.google.common.base.Preconditions;
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
 import mezz.jei.util.CommandUtilServer;
 import mezz.jei.util.ErrorUtil;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
-
-import java.io.IOException;
 
 public class PacketSetHotbarItemStack extends PacketJei {
 	private final ItemStack itemStack;
@@ -32,22 +30,18 @@ public class PacketSetHotbarItemStack extends PacketJei {
 
 	@Override
 	public void writePacketData(PacketBuffer buf) {
-		NBTTagCompound nbt = itemStack.serializeNBT();
-		buf.writeCompoundTag(nbt);
+		buf.writeItemStack(itemStack);
 		buf.writeVarInt(hotbarSlot);
 	}
 
-	public static void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
+	public static void readPacketData(PacketBuffer buf, EntityPlayer player) {
 		if (player instanceof EntityPlayerMP) {
 			EntityPlayerMP sender = (EntityPlayerMP) player;
 
-			NBTTagCompound itemStackSerialized = buf.readCompoundTag();
-			if (itemStackSerialized != null) {
+			ItemStack itemStack = buf.readItemStack();
+			if (!itemStack.isEmpty()) {
 				int hotbarSlot = buf.readVarInt();
-				ItemStack itemStack = new ItemStack(itemStackSerialized);
-				if (!itemStack.isEmpty()) {
-					CommandUtilServer.setHotbarSlot(sender, itemStack, hotbarSlot);
-				}
+				CommandUtilServer.setHotbarSlot(sender, itemStack, hotbarSlot);
 			}
 		}
 	}

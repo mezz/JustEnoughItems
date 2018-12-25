@@ -1,5 +1,9 @@
 package mezz.jei.plugins.vanilla.furnace;
 
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStackGroup;
@@ -8,11 +12,8 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
-import net.minecraft.client.Minecraft;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 
-public class FurnaceSmeltingCategory extends FurnaceRecipeCategory<SmeltingRecipe> {
+public class FurnaceSmeltingCategory extends FurnaceRecipeCategory<FurnaceRecipeWrapper> {
 	private final IDrawable background;
 	private final IDrawable icon;
 	private final String localizedName;
@@ -35,9 +36,9 @@ public class FurnaceSmeltingCategory extends FurnaceRecipeCategory<SmeltingRecip
 	}
 
 	@Override
-	public void drawExtras(Minecraft minecraft) {
-		animatedFlame.draw(minecraft, 1, 20);
-		arrow.draw(minecraft, 24, 18);
+	public void drawExtras() {
+		animatedFlame.draw(1, 20);
+		arrow.draw(24, 18);
 	}
 
 	@Override
@@ -51,12 +52,12 @@ public class FurnaceSmeltingCategory extends FurnaceRecipeCategory<SmeltingRecip
 	}
 
 	@Override
-	public String getUid() {
-		return VanillaRecipeCategoryUid.SMELTING;
+	public ResourceLocation getUid() {
+		return VanillaRecipeCategoryUid.FURNACE;
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, SmeltingRecipe recipeWrapper, IIngredients ingredients) {
+	public void setRecipe(IRecipeLayout recipeLayout, FurnaceRecipeWrapper recipeWrapper, IIngredients ingredients) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		guiItemStacks.init(inputSlot, true, 0, 0);

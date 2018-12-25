@@ -3,12 +3,13 @@ package mezz.jei.input;
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
 
-import mezz.jei.gui.GuiScreenHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+
+import mezz.jei.gui.GuiScreenHelper;
 
 public class GuiContainerWrapper implements IShowsRecipeFocuses {
 	private final GuiScreenHelper guiScreenHelper;
@@ -19,8 +20,8 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 
 	@Nullable
 	@Override
-	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
-		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
+	public IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
+		GuiScreen guiScreen = Minecraft.getInstance().currentScreen;
 		if (!(guiScreen instanceof GuiContainer)) {
 			return null;
 		}

@@ -1,5 +1,16 @@
 package mezz.jei.gui.ingredients;
 
+import javax.annotation.Nullable;
+import java.awt.Color;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiIngredientGroup;
@@ -13,18 +24,6 @@ import mezz.jei.gui.Focus;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
-import net.minecraft.client.Minecraft;
-
-import javax.annotation.Nullable;
-import java.awt.Color;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	private final Map<Integer, GuiIngredient<T>> guiIngredients = new HashMap<>();
@@ -142,7 +141,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	}
 
 	@Nullable
-	public GuiIngredient<T> getHoveredIngredient(int xOffset, int yOffset, int mouseX, int mouseY) {
+	public GuiIngredient<T> getHoveredIngredient(int xOffset, int yOffset, double mouseX, double mouseY) {
 		for (GuiIngredient<T> ingredient : guiIngredients.values()) {
 			if (ingredient.isMouseOver(xOffset, yOffset, mouseX, mouseY)) {
 				return ingredient;
@@ -151,12 +150,12 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		return null;
 	}
 
-	public void draw(Minecraft minecraft, int xOffset, int yOffset, Color highlightColor, int mouseX, int mouseY) {
+	public void draw(int xOffset, int yOffset, Color highlightColor, int mouseX, int mouseY) {
 		for (GuiIngredient<T> ingredient : guiIngredients.values()) {
-			ingredient.draw(minecraft, xOffset, yOffset);
+			ingredient.draw(xOffset, yOffset);
 			if (ingredient.isMouseOver(xOffset, yOffset, mouseX, mouseY)) {
 				ingredient.setTooltipCallback(tooltipCallback);
-				ingredient.drawHighlight(minecraft, highlightColor, xOffset, yOffset);
+				ingredient.drawHighlight(highlightColor, xOffset, yOffset);
 			}
 		}
 	}

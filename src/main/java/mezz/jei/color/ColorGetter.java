@@ -7,61 +7,64 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.base.Preconditions;
-import mezz.jei.util.MathUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.client.renderer.texture.MissingTextureSprite;
+import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
+import com.google.common.base.Preconditions;
+import mezz.jei.util.MathUtil;
+
 public final class ColorGetter {
 	private static final String[] defaultColors = new String[]{
-			"White:EEEEEE",
-			"LightBlue:7492cc",
-			"Cyan:00EEEE",
-			"Blue:2222dd",
-			"LapisBlue:25418b",
-			"Teal:008080",
-			"Yellow:cacb58",
-			"GoldenYellow:EED700",
-			"Orange:d97634",
-			"Pink:D1899D",
-			"HotPink:FC0FC0",
-			"Magenta:b24bbb",
-			"Purple:813eb9",
-			"JadedPurple:43324f",
-			"EvilPurple:2e1649",
-			"Lavender:B57EDC",
-			"Indigo:480082",
-			"Sand:dbd3a0",
-			"Tan:bb9b63",
-			"LightBrown:A0522D",
-			"Brown:634b33",
-			"DarkBrown:3a2d13",
-			"LimeGreen:43b239",
-			"SlimeGreen:83cb73",
-			"Green:008000",
-			"DarkGreen:224d22",
-			"GrassGreen:548049",
-			"Red:963430",
-			"BrickRed:b0604b",
-			"NetherBrick:2a1516",
-			"Redstone:ce3e36",
-			"Black:181515",
-			"CharcoalGray:464646",
-			"IronGray:646464",
-			"Gray:808080",
-			"Silver:C0C0C0"
+		"White:EEEEEE",
+		"LightBlue:7492cc",
+		"Cyan:00EEEE",
+		"Blue:2222dd",
+		"LapisBlue:25418b",
+		"Teal:008080",
+		"Yellow:cacb58",
+		"GoldenYellow:EED700",
+		"Orange:d97634",
+		"Pink:D1899D",
+		"HotPink:FC0FC0",
+		"Magenta:b24bbb",
+		"Purple:813eb9",
+		"JadedPurple:43324f",
+		"EvilPurple:2e1649",
+		"Lavender:B57EDC",
+		"Indigo:480082",
+		"Sand:dbd3a0",
+		"Tan:bb9b63",
+		"LightBrown:A0522D",
+		"Brown:634b33",
+		"DarkBrown:3a2d13",
+		"LimeGreen:43b239",
+		"SlimeGreen:83cb73",
+		"Green:008000",
+		"DarkGreen:224d22",
+		"GrassGreen:548049",
+		"Red:963430",
+		"BrickRed:b0604b",
+		"NetherBrick:2a1516",
+		"Redstone:ce3e36",
+		"Black:181515",
+		"CharcoalGray:464646",
+		"IronGray:646464",
+		"Gray:808080",
+		"Silver:C0C0C0"
 	};
 
 	private ColorGetter() {
@@ -87,34 +90,26 @@ public final class ColorGetter {
 		} else if (item instanceof ItemBlock) {
 			final ItemBlock itemBlock = (ItemBlock) item;
 			final Block block = itemBlock.getBlock();
-			//noinspection ConstantConditions
 			if (block == null) {
 				return Collections.emptyList();
 			}
-			return getBlockColors(itemStack, block, colorCount);
+			return getBlockColors(block, colorCount);
 		} else {
 			return getItemColors(itemStack, colorCount);
 		}
 	}
 
 	private static List<Color> getItemColors(ItemStack itemStack, int colorCount) {
-		final ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
-		final int renderColor = itemColors.colorMultiplier(itemStack, 0);
+		final ItemColors itemColors = Minecraft.getInstance().getItemColors();
+		final int renderColor = itemColors.getColor(itemStack, 0);
 		final TextureAtlasSprite textureAtlasSprite = getTextureAtlasSprite(itemStack);
 		return getColors(textureAtlasSprite, renderColor, colorCount);
 	}
 
-	private static List<Color> getBlockColors(ItemStack itemStack, Block block, int colorCount) {
-		final int meta = itemStack.getMetadata();
-		IBlockState blockState;
-		try {
-			blockState = block.getStateFromMeta(meta);
-		} catch (RuntimeException | LinkageError ignored) {
-			blockState = block.getDefaultState();
-		}
-
-		final BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
-		final int renderColor = blockColors.colorMultiplier(blockState, null, null, 0);
+	private static List<Color> getBlockColors(Block block, int colorCount) {
+		IBlockState blockState = block.getDefaultState();
+		final BlockColors blockColors = Minecraft.getInstance().getBlockColors();
+		final int renderColor = blockColors.getColor(blockState, null, null, 0);
 		final TextureAtlasSprite textureAtlasSprite = getTextureAtlasSprite(blockState);
 		if (textureAtlasSprite == null) {
 			return Collections.emptyList();
@@ -146,8 +141,8 @@ public final class ColorGetter {
 
 	@Nullable
 	private static BufferedImage getBufferedImage(TextureAtlasSprite textureAtlasSprite) {
-		final int iconWidth = textureAtlasSprite.getIconWidth();
-		final int iconHeight = textureAtlasSprite.getIconHeight();
+		final int iconWidth = textureAtlasSprite.getWidth();
+		final int iconHeight = textureAtlasSprite.getHeight();
 		final int frameCount = textureAtlasSprite.getFrameCount();
 		if (iconWidth <= 0 || iconHeight <= 0 || frameCount <= 0) {
 			return null;
@@ -155,9 +150,9 @@ public final class ColorGetter {
 
 		BufferedImage bufferedImage = new BufferedImage(iconWidth, iconHeight * frameCount, BufferedImage.TYPE_4BYTE_ABGR);
 		for (int i = 0; i < frameCount; i++) {
-			int[][] frameTextureData = textureAtlasSprite.getFrameTextureData(i);
-			int[] largestMipMapTextureData = frameTextureData[0];
-			bufferedImage.setRGB(0, i * iconHeight, iconWidth, iconHeight, largestMipMapTextureData, 0, iconWidth);
+			NativeImage[] frames = textureAtlasSprite.frames;
+			NativeImage largestMipMapTextureData = frames[0];
+			bufferedImage.setRGB(0, i * iconHeight, iconWidth, iconHeight, largestMipMapTextureData.makePixelArray(), 0, iconWidth);
 		}
 
 		return bufferedImage;
@@ -165,19 +160,19 @@ public final class ColorGetter {
 
 	@Nullable
 	private static TextureAtlasSprite getTextureAtlasSprite(IBlockState blockState) {
-		Minecraft minecraft = Minecraft.getMinecraft();
+		Minecraft minecraft = Minecraft.getInstance();
 		BlockRendererDispatcher blockRendererDispatcher = minecraft.getBlockRendererDispatcher();
 		BlockModelShapes blockModelShapes = blockRendererDispatcher.getBlockModelShapes();
 		TextureAtlasSprite textureAtlasSprite = blockModelShapes.getTexture(blockState);
-		if (textureAtlasSprite == minecraft.getTextureMapBlocks().getMissingSprite()) {
+		if (textureAtlasSprite instanceof MissingTextureSprite) {
 			return null;
 		}
 		return textureAtlasSprite;
 	}
 
 	private static TextureAtlasSprite getTextureAtlasSprite(ItemStack itemStack) {
-		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-		ItemModelMesher itemModelMesher = renderItem.getItemModelMesher();
+		ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+		ItemModelMesher itemModelMesher = itemRenderer.getItemModelMesher();
 		IBakedModel itemModel = itemModelMesher.getItemModel(itemStack);
 		TextureAtlasSprite particleTexture = itemModel.getParticleTexture();
 		return Preconditions.checkNotNull(particleTexture);

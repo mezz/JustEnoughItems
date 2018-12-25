@@ -1,16 +1,18 @@
 package mezz.jei.recipes;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
+
+import net.minecraft.util.ResourceLocation;
+
 import com.google.common.base.Stopwatch;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeRegistryPlugin;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.util.Log;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 public class RecipeRegistryPluginSafeWrapper implements IRecipeRegistryPlugin {
 	private final IRecipeRegistryPlugin plugin;
@@ -21,7 +23,7 @@ public class RecipeRegistryPluginSafeWrapper implements IRecipeRegistryPlugin {
 	}
 
 	@Override
-	public <V> List<String> getRecipeCategoryUids(IFocus<V> focus) {
+	public <V> List<ResourceLocation> getRecipeCategoryUids(IFocus<V> focus) {
 		return callPluginMethod(() -> plugin.getRecipeCategoryUids(focus), Collections.emptyList());
 	}
 

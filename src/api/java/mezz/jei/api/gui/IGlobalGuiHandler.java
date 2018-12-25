@@ -1,12 +1,12 @@
 package mezz.jei.api.gui;
 
-import mezz.jei.api.IModRegistry;
-import mezz.jei.api.ingredients.IModIngredientRegistration;
-
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.Collection;
 import java.util.Collections;
+
+import mezz.jei.api.IModRegistry;
+import mezz.jei.api.ingredients.IModIngredientRegistration;
 
 /**
  * Allows plugins to change how JEI is displayed next to guis.
@@ -41,7 +41,7 @@ public interface IGlobalGuiHandler {
 	 * @param mouseY the current Y position of the mouse in screen coordinates.
 	 */
 	@Nullable
-	default Object getIngredientUnderMouse(int mouseX, int mouseY) {
+	default Object getIngredientUnderMouse(double mouseX, double mouseY) {
 		return null;
 	}
 }

@@ -2,6 +2,13 @@ package mezz.jei.plugins.vanilla.crafting;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IDrawable;
@@ -18,12 +25,6 @@ import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 import mezz.jei.config.Constants;
 import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.util.Translator;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
 
 public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 
@@ -43,11 +44,11 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 		background = guiHelper.createDrawable(location, 0, 60, width, height);
 		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.CRAFTING_TABLE));
 		localizedName = Translator.translateToLocal("gui.jei.category.craftingTable");
-		craftingGridHelper = guiHelper.createCraftingGridHelper(craftInputSlot1, craftOutputSlot);
+		craftingGridHelper = guiHelper.createCraftingGridHelper(craftInputSlot1);
 	}
 
 	@Override
-	public String getUid() {
+	public ResourceLocation getUid() {
 		return VanillaRecipeCategoryUid.CRAFTING;
 	}
 
@@ -124,7 +125,7 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 							}
 						}
 
-						boolean showAdvanced = Minecraft.getMinecraft().gameSettings.advancedItemTooltips || GuiScreen.isShiftKeyDown();
+						boolean showAdvanced = Minecraft.getInstance().gameSettings.advancedItemTooltips || GuiScreen.isShiftKeyDown();
 						if (showAdvanced) {
 							tooltip.add(TextFormatting.DARK_GRAY + Translator.translateToLocalFormatted("jei.tooltip.recipe.id", registryName.toString()));
 						}

@@ -1,9 +1,10 @@
 package mezz.jei.gui.elements;
 
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IDrawableStatic;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
+
+import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.IDrawableStatic;
 
 /**
  * Breaks a texture into 9 pieces so that it can be scaled to any size.
@@ -64,12 +65,12 @@ public class DrawableNineSliceTexture implements IDrawable {
 	}
 
 	@Override
-	public void draw(Minecraft minecraft, int xOffset, int yOffset) {
+	public void draw(int xOffset, int yOffset) {
 		// corners first
-		this.leftTop.draw(minecraft, xOffset,  yOffset);
-		this.leftBottom.draw(minecraft, xOffset, yOffset + height - this.leftBottom.getHeight());
-		this.rightTop.draw(minecraft, xOffset + width - this.rightTop.getWidth(), yOffset);
-		this.rightBottom.draw(minecraft, xOffset + width - this.rightBottom.getWidth(), yOffset + height - this.rightBottom.getHeight());
+		this.leftTop.draw(xOffset, yOffset);
+		this.leftBottom.draw(xOffset, yOffset + height - this.leftBottom.getHeight());
+		this.rightTop.draw(xOffset + width - this.rightTop.getWidth(), yOffset);
+		this.rightBottom.draw(xOffset + width - this.rightBottom.getWidth(), yOffset + height - this.rightBottom.getHeight());
 
 		// fill in the remaining areas
 		final int leftWidth = this.leftTop.getWidth();
@@ -79,25 +80,26 @@ public class DrawableNineSliceTexture implements IDrawable {
 		final int bottomHeight = this.leftBottom.getHeight();
 		final int middleHeight = height - topHeight - bottomHeight;
 		if (middleWidth > 0) {
-			drawTiled(minecraft, xOffset + leftWidth, yOffset, middleWidth, topHeight, this.middleTop);
-			drawTiled(minecraft, xOffset + leftWidth, yOffset + height - this.leftBottom.getHeight(), middleWidth, bottomHeight, this.middleBottom);
+			drawTiled(xOffset + leftWidth, yOffset, middleWidth, topHeight, this.middleTop);
+			drawTiled(xOffset + leftWidth, yOffset + height - this.leftBottom.getHeight(), middleWidth, bottomHeight, this.middleBottom);
 		}
 		if (middleHeight > 0) {
-			drawTiled(minecraft, xOffset, yOffset + topHeight, leftWidth, middleHeight, this.leftMiddle);
-			drawTiled(minecraft, xOffset + width - this.rightTop.getWidth(), yOffset + topHeight, rightWidth, middleHeight, this.rightMiddle);
+			drawTiled(xOffset, yOffset + topHeight, leftWidth, middleHeight, this.leftMiddle);
+			drawTiled(xOffset + width - this.rightTop.getWidth(), yOffset + topHeight, rightWidth, middleHeight, this.rightMiddle);
 		}
 		if (middleHeight > 0 && middleWidth > 0) {
-			drawTiled(minecraft, xOffset + leftWidth, yOffset + topHeight, middleWidth, middleHeight, this.middleMiddle);
+			drawTiled(xOffset + leftWidth, yOffset + topHeight, middleWidth, middleHeight, this.middleMiddle);
 		}
 	}
 
-	private void drawTiled(Minecraft minecraft, final int xOffset, final int yOffset, final int tiledWidth, final int tiledHeight, IDrawableStatic drawable) {
+	private void drawTiled(final int xOffset, final int yOffset, final int tiledWidth, final int tiledHeight, IDrawableStatic drawable) {
 		final int xTileCount = tiledWidth / drawable.getWidth();
 		final int xRemainder = tiledWidth - (xTileCount * drawable.getWidth());
 		final int yTileCount = tiledHeight / drawable.getHeight();
 		final int yRemainder = tiledHeight - (yTileCount * drawable.getHeight());
 
 		final int yStart = yOffset + tiledHeight;
+		Minecraft minecraft = Minecraft.getInstance();
 
 		for (int xTile = 0; xTile <= xTileCount; xTile++) {
 			for (int yTile = 0; yTile <= yTileCount; yTile++) {
@@ -109,7 +111,7 @@ public class DrawableNineSliceTexture implements IDrawable {
 					int maskTop = drawable.getHeight() - height;
 					int maskRight = drawable.getWidth() - width;
 
-					drawable.draw(minecraft, x, y, maskTop, 0, 0, maskRight);
+					drawable.draw(x, y, maskTop, 0, 0, maskRight);
 				}
 			}
 		}

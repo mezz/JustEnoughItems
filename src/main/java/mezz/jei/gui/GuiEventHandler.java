@@ -1,19 +1,21 @@
 package mezz.jei.gui;
 
-import mezz.jei.config.Config;
-import mezz.jei.config.OverlayToggleEvent;
-import mezz.jei.gui.overlay.IngredientListOverlay;
-import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
-import mezz.jei.recipes.RecipeRegistry;
-import mezz.jei.util.Translator;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.client.event.GuiContainerEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+
+import mezz.jei.config.ClientConfig;
+import mezz.jei.config.OverlayToggleEvent;
+import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
+import mezz.jei.input.MouseUtil;
+import mezz.jei.recipes.RecipeRegistry;
+import mezz.jei.util.Translator;
 
 public class GuiEventHandler {
 	private final IngredientListOverlay ingredientListOverlay;
@@ -31,7 +33,7 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onOverlayToggle(OverlayToggleEvent event) {
-		GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+		GuiScreen currentScreen = Minecraft.getInstance().currentScreen;
 		ingredientListOverlay.updateScreen(currentScreen, true);
 		leftAreaDispatcher.updateScreen(currentScreen, false);
 	}
@@ -58,8 +60,10 @@ public class GuiEventHandler {
 		leftAreaDispatcher.updateScreen(gui, exclusionAreasChanged);
 
 		drawnOnBackground = true;
-		ingredientListOverlay.drawScreen(gui.mc, event.getMouseX(), event.getMouseY(), gui.mc.getRenderPartialTicks());
-		leftAreaDispatcher.drawScreen(gui.mc, event.getMouseX(), event.getMouseY(), gui.mc.getRenderPartialTicks());
+		double mouseX = MouseUtil.getX();
+		double mouseY = MouseUtil.getY();
+		ingredientListOverlay.drawScreen(gui.mc, (int) mouseX, (int) mouseY, gui.mc.getRenderPartialTicks());
+		leftAreaDispatcher.drawScreen(gui.mc, (int) mouseX, (int) mouseY, gui.mc.getRenderPartialTicks());
 	}
 
 	/**
@@ -89,7 +93,7 @@ public class GuiEventHandler {
 			GuiContainer guiContainer = (GuiContainer) gui;
 			if (recipeRegistry.getRecipeClickableArea(guiContainer, event.getMouseX() - guiContainer.getGuiLeft(), event.getMouseY() - guiContainer.getGuiTop()) != null) {
 				String showRecipesText = Translator.translateToLocal("jei.tooltip.show.recipes");
-				TooltipRenderer.drawHoveringText(guiContainer.mc, showRecipesText, event.getMouseX(), event.getMouseY());
+				TooltipRenderer.drawHoveringText(showRecipesText, event.getMouseX(), event.getMouseY());
 			}
 		}
 
@@ -108,7 +112,7 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onPotionShiftEvent(GuiScreenEvent.PotionShiftEvent event) {
-		if (Config.isOverlayEnabled()) {
+		if (ClientConfig.getInstance().isOverlayEnabled()) {
 			event.setCanceled(true);
 		}
 	}

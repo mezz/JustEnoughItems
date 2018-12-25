@@ -1,20 +1,5 @@
 package mezz.jei.gui;
 
-import mezz.jei.api.gui.IAdvancedGuiHandler;
-import mezz.jei.api.gui.IGhostIngredientHandler;
-import mezz.jei.api.gui.IGlobalGuiHandler;
-import mezz.jei.api.gui.IGuiProperties;
-import mezz.jei.api.gui.IGuiScreenHandler;
-import mezz.jei.ingredients.IngredientRegistry;
-import mezz.jei.input.ClickedIngredient;
-import mezz.jei.input.IClickedIngredient;
-import mezz.jei.util.MathUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -24,6 +9,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+
+import mezz.jei.api.gui.IAdvancedGuiHandler;
+import mezz.jei.api.gui.IGhostIngredientHandler;
+import mezz.jei.api.gui.IGlobalGuiHandler;
+import mezz.jei.api.gui.IGuiProperties;
+import mezz.jei.api.gui.IGuiScreenHandler;
+import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.input.ClickedIngredient;
+import mezz.jei.input.IClickedIngredient;
+import mezz.jei.util.MathUtil;
 
 public class GuiScreenHelper {
 	private final IngredientRegistry ingredientRegistry;
@@ -79,12 +80,12 @@ public class GuiScreenHelper {
 		return guiExclusionAreas;
 	}
 
-	public boolean isInGuiExclusionArea(int mouseX, int mouseY) {
+	public boolean isInGuiExclusionArea(double mouseX, double mouseY) {
 		return MathUtil.contains(guiExclusionAreas, mouseX, mouseY);
 	}
 
 	private Set<Rectangle> getPluginsExclusionAreas() {
-		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
+		GuiScreen guiScreen = Minecraft.getInstance().currentScreen;
 		if (guiScreen == null) {
 			return Collections.emptySet();
 		}
@@ -108,7 +109,7 @@ public class GuiScreenHelper {
 
 
 	@Nullable
-	public <T extends GuiContainer> IClickedIngredient<?> getPluginsIngredientUnderMouse(T guiContainer, int mouseX, int mouseY) {
+	public <T extends GuiContainer> IClickedIngredient<?> getPluginsIngredientUnderMouse(T guiContainer, double mouseX, double mouseY) {
 		List<IAdvancedGuiHandler<T>> activeAdvancedGuiHandlers = getActiveAdvancedGuiHandlers(guiContainer);
 		for (IAdvancedGuiHandler<T> advancedGuiHandler : activeAdvancedGuiHandlers) {
 			Object clicked = advancedGuiHandler.getIngredientUnderMouse(guiContainer, mouseX, mouseY);

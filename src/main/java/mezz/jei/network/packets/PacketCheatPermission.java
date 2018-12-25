@@ -1,12 +1,13 @@
 package mezz.jei.network.packets;
 
-import mezz.jei.config.Config;
-import mezz.jei.network.IPacketId;
-import mezz.jei.network.PacketIdClient;
-import mezz.jei.util.CommandUtilServer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.TextFormatting;
+
+import mezz.jei.config.ClientConfig;
+import mezz.jei.network.IPacketId;
+import mezz.jei.network.PacketIdClient;
+import mezz.jei.util.CommandUtilServer;
 
 public class PacketCheatPermission extends PacketJei {
 	private final boolean hasPermission;
@@ -27,10 +28,10 @@ public class PacketCheatPermission extends PacketJei {
 
 	public static void readPacketData(PacketBuffer buf, EntityPlayer player) {
 		boolean hasPermission = buf.readBoolean();
-		if (!hasPermission && Config.isCheatItemsEnabled()) {
+		if (!hasPermission && ClientConfig.getInstance().isCheatItemsEnabled()) {
 			CommandUtilServer.writeChatMessage(player, "jei.chat.error.no.cheat.permission.1", TextFormatting.RED);
 			CommandUtilServer.writeChatMessage(player, "jei.chat.error.no.cheat.permission.2", TextFormatting.RED);
-			Config.setCheatItemsEnabled(false);
+			ClientConfig.getInstance().setCheatItemsEnabled(false);
 			player.closeScreen();
 		}
 	}

@@ -7,6 +7,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ReportedException;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredients;
@@ -16,18 +29,6 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.startup.ForgeModIdHelper;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.CrashReportCategory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ReportedException;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public final class ErrorUtil {
 	private ErrorUtil() {
@@ -103,7 +104,7 @@ public final class ErrorUtil {
 		recipeInfoBuilder.append('\n').append(ItemStack.class.getName()).append(": ").append(ingredientOutputInfo);
 
 		recipeInfoBuilder.append("\nInputs:");
-		List<List<ItemStack>> inputLists = Internal.getStackHelper().expandRecipeItemStackInputs(inputs, false);
+		List<List<ItemStack>> inputLists = Internal.getStackHelper().expandRecipeItemStackInputs(inputs);
 		List<String> ingredientInputInfo = getIngredientInfo(VanillaTypes.ITEM, inputLists);
 		recipeInfoBuilder.append('\n').append(ItemStack.class.getName()).append(": ").append(ingredientInputInfo);
 
@@ -143,7 +144,6 @@ public final class ErrorUtil {
 		} else if (item instanceof ItemBlock) {
 			final String blockName;
 			Block block = ((ItemBlock) item).getBlock();
-			//noinspection ConstantConditions
 			if (block == null) {
 				blockName = "null";
 			} else {
@@ -159,19 +159,11 @@ public final class ErrorUtil {
 			itemName = item.getClass().getName();
 		}
 
-		NBTTagCompound nbt = itemStack.getTagCompound();
+		NBTTagCompound nbt = itemStack.getTag();
 		if (nbt != null) {
 			return itemStack + " " + itemName + " nbt:" + nbt;
 		}
 		return itemStack + " " + itemName;
-	}
-
-	public static void checkNotEmpty(@Nullable String string, String name) {
-		if (string == null) {
-			throw new NullPointerException(name + " must not be null.");
-		} else if (string.isEmpty()) {
-			throw new IllegalArgumentException(name + " must not be empty.");
-		}
 	}
 
 	public static void checkNotEmpty(@Nullable ItemStack itemStack) {
@@ -236,9 +228,8 @@ public final class ErrorUtil {
 		}
 	}
 
-	@SuppressWarnings("ConstantConditions")
 	public static void assertMainThread() {
-		Minecraft minecraft = Minecraft.getMinecraft();
+		Minecraft minecraft = Minecraft.getInstance();
 		if (minecraft != null && !minecraft.isCallingFromMinecraftThread()) {
 			Thread currentThread = Thread.currentThread();
 			throw new IllegalStateException(

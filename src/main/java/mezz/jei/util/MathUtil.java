@@ -43,7 +43,7 @@ public final class MathUtil {
 		return comparisonArea;
 	}
 
-	public static boolean contains(Collection<Rectangle> areas, int x, int y) {
+	public static boolean contains(Collection<Rectangle> areas, double x, double y) {
 		for (Rectangle guiArea : areas) {
 			if (guiArea.contains(x, y)) {
 				return true;

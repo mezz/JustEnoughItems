@@ -1,9 +1,10 @@
 package mezz.jei.gui.elements;
 
-import mezz.jei.api.gui.IDrawableStatic;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.ResourceLocation;
+
+import mezz.jei.api.gui.IDrawableStatic;
 
 public class DrawableResource implements IDrawableStatic {
 
@@ -51,12 +52,13 @@ public class DrawableResource implements IDrawableStatic {
 	}
 
 	@Override
-	public void draw(Minecraft minecraft, int xOffset, int yOffset) {
-		draw(minecraft, xOffset, yOffset, 0, 0, 0, 0);
+	public void draw(int xOffset, int yOffset) {
+		draw(xOffset, yOffset, 0, 0, 0, 0);
 	}
 
 	@Override
-	public void draw(Minecraft minecraft, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
+	public void draw(int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
+		Minecraft minecraft = Minecraft.getInstance();
 		minecraft.getTextureManager().bindTexture(this.resourceLocation);
 
 		int x = xOffset + this.paddingLeft + maskLeft;

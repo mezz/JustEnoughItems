@@ -1,9 +1,9 @@
 package mezz.jei.ingredients;
 
-import mezz.jei.api.ingredients.IIngredientHelper;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import mezz.jei.api.ingredients.IIngredientHelper;
 
 public class IngredientOrderTracker {
 	private final Map<String, Integer> wildcardAddedOrder = new HashMap<>();

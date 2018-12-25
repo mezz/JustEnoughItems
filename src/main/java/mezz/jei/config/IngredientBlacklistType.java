@@ -1,7 +1,7 @@
 package mezz.jei.config;
 
 public enum IngredientBlacklistType {
-	ITEM, WILDCARD, MOD_ID;
+	ITEM, WILDCARD;
 
 	public static final IngredientBlacklistType[] VALUES = values();
 }

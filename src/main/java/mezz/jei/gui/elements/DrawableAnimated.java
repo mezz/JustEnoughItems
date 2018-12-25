@@ -4,7 +4,6 @@ import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.gui.TickTimer;
-import net.minecraft.client.Minecraft;
 
 public class DrawableAnimated implements IDrawableAnimated {
 	private final IDrawableStatic drawable;
@@ -53,7 +52,7 @@ public class DrawableAnimated implements IDrawableAnimated {
 	}
 
 	@Override
-	public void draw(Minecraft minecraft, int xOffset, int yOffset) {
+	public void draw(int xOffset, int yOffset) {
 		int maskLeft = 0;
 		int maskRight = 0;
 		int maskTop = 0;
@@ -78,6 +77,6 @@ public class DrawableAnimated implements IDrawableAnimated {
 				throw new IllegalStateException("Unknown startDirection " + startDirection);
 		}
 
-		drawable.draw(minecraft, xOffset, yOffset, maskTop, maskBottom, maskLeft, maskRight);
+		drawable.draw(xOffset, yOffset, maskTop, maskBottom, maskLeft, maskRight);
 	}
 }

@@ -4,26 +4,21 @@ import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
+
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.startup.StackHelper;
 import mezz.jei.util.ErrorUtil;
-import net.minecraft.block.Block;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.oredict.OreDictionary;
 
 public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	private final StackHelper stackHelper;
@@ -39,18 +34,18 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public IFocus<?> translateFocus(IFocus<ItemStack> focus, IFocusFactory focusFactory) {
-		ItemStack itemStack = focus.getValue();
-		Item item = itemStack.getItem();
-		// Special case for ItemBlocks containing fluid blocks.
-		// Nothing crafts those, the player probably wants to look up fluids.
-		if (item instanceof ItemBlock) {
-			Block block = ((ItemBlock) item).getBlock();
-			Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
-			if (fluid != null) {
-				FluidStack fluidStack = new FluidStack(fluid, Fluid.BUCKET_VOLUME);
-				return focusFactory.createFocus(focus.getMode(), fluidStack);
-			}
-		}
+//		ItemStack itemStack = focus.getValue();
+//		Item item = itemStack.getItem();
+//		// Special case for ItemBlocks containing fluid blocks.
+//		// Nothing crafts those, the player probably wants to look up fluids.
+//		if (item instanceof ItemBlock) {
+//			Block block = ((ItemBlock) item).getBlock();
+//			Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
+//			if (fluid != null) {
+//				FluidStack fluidStack = new FluidStack(fluid, Fluid.BUCKET_VOLUME);
+//				return focusFactory.createFocus(focus.getMode(), fluidStack);
+//			}
+//		}
 		return focus;
 	}
 
@@ -62,7 +57,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public String getDisplayName(ItemStack ingredient) {
-		return ErrorUtil.checkNotNull(ingredient.getDisplayName(), "itemStack.getDisplayName()");
+		return ErrorUtil.checkNotNull(ingredient.getDisplayName().getUnformattedComponentText(), "itemStack.getDisplayName()");
 	}
 
 	@Override
@@ -146,21 +141,17 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public Collection<String> getOreDictNames(ItemStack ingredient) {
-		Collection<String> names = new ArrayList<>();
-		for (int oreId : OreDictionary.getOreIDs(ingredient)) {
-			String oreNameLowercase = OreDictionary.getOreName(oreId).toLowerCase(Locale.ENGLISH);
-			names.add(oreNameLowercase);
-		}
-		return names;
+		// TODO 1.13 tags
+		return Collections.emptySet();
 	}
 
 	@Override
 	public Collection<String> getCreativeTabNames(ItemStack ingredient) {
 		Collection<String> creativeTabsStrings = new ArrayList<>();
 		Item item = ingredient.getItem();
-		for (CreativeTabs creativeTab : item.getCreativeTabs()) {
-			if (creativeTab != null) {
-				String creativeTabName = I18n.format(creativeTab.getTranslationKey());
+		for (ItemGroup itemGroup : item.getCreativeTabs()) {
+			if (itemGroup != null) {
+				String creativeTabName = I18n.format(itemGroup.getTranslationKey());
 				creativeTabsStrings.add(creativeTabName);
 			}
 		}

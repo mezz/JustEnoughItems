@@ -1,8 +1,8 @@
 package mezz.jei.test.lib;
 
-import mezz.jei.startup.AbstractModIdHelper;
-
 import javax.annotation.Nullable;
+
+import mezz.jei.startup.AbstractModIdHelper;
 
 public class TestModIdHelper extends AbstractModIdHelper {
 	@Override

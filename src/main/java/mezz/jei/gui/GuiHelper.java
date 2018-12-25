@@ -1,5 +1,7 @@
 package mezz.jei.gui;
 
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IDrawable;
@@ -15,7 +17,6 @@ import mezz.jei.gui.elements.DrawableBlank;
 import mezz.jei.gui.elements.DrawableBuilder;
 import mezz.jei.gui.elements.DrawableIngredient;
 import mezz.jei.util.ErrorUtil;
-import net.minecraft.util.ResourceLocation;
 
 public class GuiHelper implements IGuiHelper {
 	private final IIngredientRegistry ingredientRegistry;
@@ -84,8 +85,8 @@ public class GuiHelper implements IGuiHelper {
 	}
 
 	@Override
-	public ICraftingGridHelper createCraftingGridHelper(int craftInputSlot1, int craftOutputSlot) {
-		return new CraftingGridHelper(craftInputSlot1, craftOutputSlot);
+	public ICraftingGridHelper createCraftingGridHelper(int craftInputSlot1) {
+		return new CraftingGridHelper(craftInputSlot1);
 	}
 
 	@Override

@@ -21,10 +21,4 @@ public interface IJeiRuntime {
 	 * @since JEI 4.2.2
 	 */
 	IIngredientListOverlay getIngredientListOverlay();
-
-	/**
-	 * @deprecated since JEI 4.5.0. Use {@link #getIngredientListOverlay()}
-	 */
-	@Deprecated
-	IItemListOverlay getItemListOverlay();
 }

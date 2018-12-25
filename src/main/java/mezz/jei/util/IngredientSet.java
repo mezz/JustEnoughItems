@@ -1,12 +1,5 @@
 package mezz.jei.util;
 
-import mezz.jei.Internal;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IIngredientType;
-import mezz.jei.startup.StackHelper;
-import net.minecraft.item.ItemStack;
-
 import javax.annotation.Nullable;
 import java.util.AbstractSet;
 import java.util.Collection;
@@ -15,6 +8,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+
+import net.minecraft.item.ItemStack;
+
+import mezz.jei.Internal;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.startup.StackHelper;
 
 public class IngredientSet<V> extends AbstractSet<V> {
 	public static <V> IngredientSet<V> create(IIngredientType<V> ingredientType, IIngredientHelper<V> ingredientHelper) {

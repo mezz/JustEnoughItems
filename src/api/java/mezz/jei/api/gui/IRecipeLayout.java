@@ -32,7 +32,7 @@ public interface IRecipeLayout {
 	/**
 	 * Get all the ingredients of one type that are displayed on this recipe layout.
 	 * Init and set them in your recipe category.
-	 * <p>
+	 *
 	 * This method is for handling custom item types, registered with {@link IModIngredientRegistration}.
 	 *
 	 * @see #getItemStacks()
@@ -65,20 +65,9 @@ public interface IRecipeLayout {
 
 	/**
 	 * Adds a shapeless icon to the top right of the recipe, that shows a tooltip saying "shapeless" when hovered over.
+	 *
 	 * @since JEI 4.0.2
 	 */
 	void setShapeless();
 
-	/**
-	 * Get all the ingredients of one class that are displayed on this recipe layout.
-	 * Init and set them in your recipe category.
-	 * <p>
-	 * This method is for handling custom item types, registered with {@link IModIngredientRegistration}.
-	 *
-	 * @see #getItemStacks()
-	 * @see #getFluidStacks()
-	 * @deprecated since JEI 4.12.0. Use {@link #getIngredientsGroup(IIngredientType)}
-	 */
-	@Deprecated
-	<T> IGuiIngredientGroup<T> getIngredientsGroup(Class<T> ingredientClass);
 }

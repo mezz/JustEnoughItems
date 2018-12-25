@@ -1,10 +1,10 @@
 package mezz.jei.suffixtree;
 
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class CombinedSearchTrees implements ISearchTree {
 	private final List<ISearchTree> searchTrees = new ArrayList<>();

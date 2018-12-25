@@ -8,16 +8,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.util.StringUtils;
+import net.minecraft.util.text.TextFormatting;
+
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.color.ColorNamer;
-import mezz.jei.config.Config;
+import mezz.jei.config.ClientConfig;
 import mezz.jei.util.Translator;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.util.StringUtils;
-import net.minecraft.util.text.TextFormatting;
 
 public final class IngredientInformation {
 	private IngredientInformation() {
@@ -29,9 +29,8 @@ public final class IngredientInformation {
 	}
 
 	public static <T> List<String> getTooltipStrings(T ingredient, IIngredientRenderer<T> ingredientRenderer, Set<String> toRemove) {
-		ITooltipFlag.TooltipFlags tooltipFlag = Config.getSearchAdvancedTooltips() ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
-		Minecraft minecraft = Minecraft.getMinecraft();
-		List<String> tooltip = ingredientRenderer.getTooltip(minecraft, ingredient, tooltipFlag);
+		ITooltipFlag.TooltipFlags tooltipFlag = ClientConfig.getInstance().getSearchAdvancedTooltips() ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
+		List<String> tooltip = ingredientRenderer.getTooltip(ingredient, tooltipFlag);
 		List<String> cleanTooltip = new ArrayList<>(tooltip.size());
 		for (String line : tooltip) {
 			line = removeChatFormatting(line);

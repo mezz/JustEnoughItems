@@ -1,5 +1,8 @@
 package mezz.jei.recipes;
 
+import net.minecraft.inventory.Container;
+import net.minecraft.util.ResourceLocation;
+
 import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
@@ -11,10 +14,9 @@ import mezz.jei.startup.StackHelper;
 import mezz.jei.transfer.BasicRecipeTransferHandler;
 import mezz.jei.transfer.BasicRecipeTransferInfo;
 import mezz.jei.util.ErrorUtil;
-import net.minecraft.inventory.Container;
 
 public class RecipeTransferRegistry implements IRecipeTransferRegistry {
-	private final Table<Class, String, IRecipeTransferHandler> recipeTransferHandlers = Table.hashBasedTable();
+	private final Table<Class, ResourceLocation, IRecipeTransferHandler> recipeTransferHandlers = Table.hashBasedTable();
 	private final StackHelper stackHelper;
 	private final IRecipeTransferHandlerHelper handlerHelper;
 
@@ -24,7 +26,7 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 	}
 
 	@Override
-	public <C extends Container> void addRecipeTransferHandler(Class<C> containerClass, String recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
+	public <C extends Container> void addRecipeTransferHandler(Class<C> containerClass, ResourceLocation recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
 		ErrorUtil.checkNotNull(containerClass, "containerClass");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 
@@ -41,7 +43,7 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 	}
 
 	@Override
-	public void addRecipeTransferHandler(IRecipeTransferHandler<?> recipeTransferHandler, String recipeCategoryUid) {
+	public void addRecipeTransferHandler(IRecipeTransferHandler<?> recipeTransferHandler, ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipeTransferHandler, "recipeTransferHandler");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 
@@ -57,7 +59,7 @@ public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 		this.recipeTransferHandlers.put(containerClass, Constants.UNIVERSAL_RECIPE_TRANSFER_UID, recipeTransferHandler);
 	}
 
-	public ImmutableTable<Class, String, IRecipeTransferHandler> getRecipeTransferHandlers() {
+	public ImmutableTable<Class, ResourceLocation, IRecipeTransferHandler> getRecipeTransferHandlers() {
 		return recipeTransferHandlers.toImmutable();
 	}
 }

@@ -2,21 +2,15 @@ package mezz.jei.api.recipe;
 
 import java.util.List;
 
+import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipe;
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.wrapper.ICustomCraftingRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
-import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.item.crafting.ShapelessRecipes;
-import net.minecraft.potion.PotionHelper;
-import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraftforge.common.brewing.BrewingOreRecipe;
-import net.minecraftforge.common.brewing.BrewingRecipe;
-import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 /**
  * List of built-in recipe category UIDs, so that plugins with their own recipe handlers can use them.
@@ -24,67 +18,58 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 public final class VanillaRecipeCategoryUid {
 	/**
 	 * The crafting recipe category.
-	 * <p>
-	 * Automatically includes all {@link ShapedRecipes}, {@link ShapelessRecipes}, {@link ShapedOreRecipe}, and {@link ShapelessOreRecipe}.
-	 * <p>
+	 *
+	 * Automatically includes all vanilla and Forge recipes.
+	 *
 	 * To add a shaped recipe wrapper to this category, it must implement {@link IShapedCraftingRecipeWrapper}.
-	 * <p>
+	 *
 	 * To override the normal behavior of the crafting recipe category, you can implement {@link ICustomCraftingRecipeWrapper}
 	 */
-	public static final String CRAFTING = "minecraft.crafting";
+	public static final ResourceLocation CRAFTING = new ResourceLocation("minecraft", "crafting");
 
 	/**
-	 * The smelting recipe category.
-	 * <p>
-	 * Automatically includes everything from {@link FurnaceRecipes#getSmeltingList()}.
+	 * The furnace recipe category.
+	 *
+	 * Automatically includes every {@link FurnaceRecipe}
 	 */
-	public static final String SMELTING = "minecraft.smelting";
+	public static final ResourceLocation FURNACE = new ResourceLocation("minecraft", "furnace");
 
 	/**
 	 * The fuel recipe category.
-	 * <p>
-	 * Automatically includes everything that returns a value from {@link TileEntityFurnace#getItemBurnTime(ItemStack)}.
+	 *
+	 * Automatically includes everything that has a burn time.
 	 */
-	public static final String FUEL = "minecraft.fuel";
+	public static final ResourceLocation FUEL = new ResourceLocation("minecraft", "fuel");
 
 	/**
 	 * The brewing recipe category.
-	 * <p>
-	 * Automatically tries to generate all potion variations from the basic ingredients, determined by {@link PotionHelper#isReagent(ItemStack)}.
+	 *
+	 * Automatically tries to generate all potion variations from the basic ingredients.
 	 * You can get the list of known potion reagents from {@link IIngredientRegistry#getPotionIngredients()}.
-	 * <p>
+	 *
 	 * Also automatically adds modded potions from {@link BrewingRecipeRegistry#getRecipes()}.
-	 * JEI can only understand modded potion recipes that are {@link BrewingRecipe} or {@link BrewingOreRecipe}.
+	 * JEI can only understand modded potion recipes that are built into vanilla or Forge.
 	 */
-	public static final String BREWING = "minecraft.brewing";
+	public static final ResourceLocation BREWING = new ResourceLocation("minecraft", "brewing");
 
 	/**
 	 * The anvil recipe category.
-	 * <p>
+	 *
 	 * This is a built-in category, you can create new recipes with {@link IVanillaRecipeFactory#createAnvilRecipe(ItemStack, List, List)}
+	 *
 	 * @since JEI 4.2.6
 	 */
-	public static final String ANVIL = "minecraft.anvil";
+	public static final ResourceLocation ANVIL = new ResourceLocation("minecraft", "anvil");
 
 	/**
 	 * The JEI info recipe category shows extra information about ingredients.
-	 * <p>
+	 *
 	 * This is a built-in category, you can add new recipes with
-	 * {@link IModRegistry#addIngredientInfo(Object, Class, String...)}   or {@link IModRegistry#addIngredientInfo(List, Class, String...)}
+	 * {@link IModRegistry#addIngredientInfo(Object, IIngredientType, String...)}   or {@link IModRegistry#addIngredientInfo(List, IIngredientType, String...)}
+	 *
 	 * @since JEI 4.5.0
 	 */
-	public static final String INFORMATION = "jei.information";
-
-	/**
-	 * The JEI description recipe category shows extra information about ingredients.
-	 * <p>
-	 * This is a built-in category, you can add new recipes with
-	 * {@link IModRegistry#addIngredientInfo(Object, Class, String...)}   or {@link IModRegistry#addIngredientInfo(List, Class, String...)}
-	 *
-	 * @deprecated since JEI 4.5.0. Use {@link #INFORMATION}
-	 */
-	@Deprecated
-	public static final String DESCRIPTION = "jei.description";
+	public static final ResourceLocation INFORMATION = new ResourceLocation("jei", "information");
 
 	private VanillaRecipeCategoryUid() {
 

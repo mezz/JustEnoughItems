@@ -4,9 +4,8 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.util.Translator;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -17,8 +16,10 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
+
+import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.util.Translator;
 
 public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	private static final int TEX_WIDTH = 16;
@@ -55,26 +56,26 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	}
 
 	@Override
-	public void render(Minecraft minecraft, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
+	public void render(final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
 		GlStateManager.enableBlend();
-		GlStateManager.enableAlpha();
+		GlStateManager.enableAlphaTest();
 
-		drawFluid(minecraft, xPosition, yPosition, fluidStack);
+		drawFluid(xPosition, yPosition, fluidStack);
 
-		GlStateManager.color(1, 1, 1, 1);
+		GlStateManager.color4f(1, 1, 1, 1);
 
 		if (overlay != null) {
 			GlStateManager.pushMatrix();
-			GlStateManager.translate(0, 0, 200);
-			overlay.draw(minecraft, xPosition, yPosition);
+			GlStateManager.translatef(0, 0, 200);
+			overlay.draw(xPosition, yPosition);
 			GlStateManager.popMatrix();
 		}
 
-		GlStateManager.disableAlpha();
+		GlStateManager.disableAlphaTest();
 		GlStateManager.disableBlend();
 	}
 
-	private void drawFluid(Minecraft minecraft, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
+	private void drawFluid(final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
 		if (fluidStack == null) {
 			return;
 		}
@@ -83,7 +84,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 			return;
 		}
 
-		TextureAtlasSprite fluidStillSprite = getStillFluidSprite(minecraft, fluid);
+		TextureAtlasSprite fluidStillSprite = getStillFluidSprite(fluid);
 
 		int fluidColor = fluid.getColor(fluidStack);
 
@@ -95,11 +96,12 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 			scaledAmount = height;
 		}
 
-		drawTiledSprite(minecraft, xPosition, yPosition, width, height, fluidColor, scaledAmount, fluidStillSprite);
+		drawTiledSprite(xPosition, yPosition, width, height, fluidColor, scaledAmount, fluidStillSprite);
 	}
 
-	private void drawTiledSprite(Minecraft minecraft, final int xPosition, final int yPosition, final int tiledWidth, final int tiledHeight, int color, int scaledAmount, TextureAtlasSprite sprite) {
-		minecraft.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+	private void drawTiledSprite(final int xPosition, final int yPosition, final int tiledWidth, final int tiledHeight, int color, int scaledAmount, TextureAtlasSprite sprite) {
+		Minecraft minecraft = Minecraft.getInstance();
+		minecraft.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		setGLColorFromInt(color);
 
 		final int xTileCount = tiledWidth / TEX_WIDTH;
@@ -125,17 +127,11 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		}
 	}
 
-	private static TextureAtlasSprite getStillFluidSprite(Minecraft minecraft, Fluid fluid) {
-		TextureMap textureMapBlocks = minecraft.getTextureMapBlocks();
+	private static TextureAtlasSprite getStillFluidSprite(Fluid fluid) {
+		Minecraft minecraft = Minecraft.getInstance();
+		TextureMap textureMapBlocks = minecraft.getTextureMap();
 		ResourceLocation fluidStill = fluid.getStill();
-		TextureAtlasSprite fluidStillSprite = null;
-		if (fluidStill != null) {
-			fluidStillSprite = textureMapBlocks.getTextureExtry(fluidStill.toString());
-		}
-		if (fluidStillSprite == null) {
-			fluidStillSprite = textureMapBlocks.getMissingSprite();
-		}
-		return fluidStillSprite;
+		return textureMapBlocks.getSprite(fluidStill);
 	}
 
 	private static void setGLColorFromInt(int color) {
@@ -143,7 +139,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		float green = (color >> 8 & 0xFF) / 255.0F;
 		float blue = (color & 0xFF) / 255.0F;
 
-		GlStateManager.color(red, green, blue, 1.0F);
+		GlStateManager.color4f(red, green, blue, 1.0F);
 	}
 
 	private static void drawTextureWithMasking(double xCoord, double yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, double zLevel) {
@@ -165,7 +161,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	}
 
 	@Override
-	public List<String> getTooltip(Minecraft minecraft, FluidStack fluidStack, ITooltipFlag tooltipFlag) {
+	public List<String> getTooltip(FluidStack fluidStack, ITooltipFlag tooltipFlag) {
 		List<String> tooltip = new ArrayList<>();
 		Fluid fluidType = fluidStack.getFluid();
 		if (fluidType == null) {

@@ -1,9 +1,15 @@
 package mezz.jei.gui.recipes;
 
+import javax.annotation.Nonnegative;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.inventory.Container;
+import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.IRecipeRegistry;
@@ -16,11 +22,6 @@ import mezz.jei.gui.Focus;
 import mezz.jei.gui.ingredients.IngredientLookupState;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.util.MathUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.inventory.Container;
-
-import javax.annotation.Nonnegative;
 
 public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IRecipeRegistry recipeRegistry;
@@ -68,7 +69,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Nonnegative
 	private int getRecipeCategoryIndexToShowFirst(List<IRecipeCategory> recipeCategories) {
-		Minecraft minecraft = Minecraft.getMinecraft();
+		Minecraft minecraft = Minecraft.getInstance();
 		EntityPlayerSP player = minecraft.player;
 		if (player != null) {
 			Container openContainer = player.openContainer;
@@ -126,7 +127,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public boolean setCategoryFocus(List<String> recipeCategoryUids) {
+	public boolean setCategoryFocus(List<ResourceLocation> recipeCategoryUids) {
 		List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories(recipeCategoryUids);
 		if (recipeCategories.isEmpty()) {
 			return false;

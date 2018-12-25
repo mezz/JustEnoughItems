@@ -1,7 +1,6 @@
 package mezz.jei.api.ingredients;
 
 import mezz.jei.api.IJeiHelpers;
-import net.minecraftforge.oredict.OreDictionary;
 
 /**
  * The Ingredient Blacklist allows mods to hide ingredients from JEI's ingredient list.
@@ -15,7 +14,6 @@ import net.minecraftforge.oredict.OreDictionary;
 public interface IIngredientBlacklist {
 	/**
 	 * Stop JEI from displaying a specific ingredient in the ingredient list.
-	 * Use {@link OreDictionary#WILDCARD_VALUE} meta for wildcard.
 	 * Ingredients blacklisted with this API can't be seen in the config or in hide ingredients mode.
 	 */
 	<V> void addIngredientToBlacklist(V ingredient);

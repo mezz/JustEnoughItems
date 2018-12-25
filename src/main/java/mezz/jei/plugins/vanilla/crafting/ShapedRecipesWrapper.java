@@ -1,21 +1,22 @@
 package mezz.jei.plugins.vanilla.crafting;
 
+import net.minecraftforge.common.crafting.IShapedRecipe;
+
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
-import net.minecraft.item.crafting.ShapedRecipes;
 
-public class ShapedRecipesWrapper extends ShapelessRecipeWrapper<ShapedRecipes> implements IShapedCraftingRecipeWrapper {
-	public ShapedRecipesWrapper(IJeiHelpers jeiHelpers, ShapedRecipes recipe) {
+public class ShapedRecipesWrapper extends ShapelessRecipeWrapper<IShapedRecipe> implements IShapedCraftingRecipeWrapper {
+	public ShapedRecipesWrapper(IJeiHelpers jeiHelpers, IShapedRecipe recipe) {
 		super(jeiHelpers, recipe);
 	}
 
 	@Override
 	public int getWidth() {
-		return recipe.recipeWidth;
+		return recipe.getRecipeWidth();
 	}
 
 	@Override
 	public int getHeight() {
-		return recipe.recipeHeight;
+		return recipe.getRecipeHeight();
 	}
 }

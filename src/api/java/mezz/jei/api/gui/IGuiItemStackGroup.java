@@ -6,10 +6,10 @@ import net.minecraft.item.ItemStack;
 
 /**
  * IGuiItemStackGroup displays ItemStacks in a gui.
- * <p>
+ *
  * If multiple ItemStacks are set, they will be displayed in rotation.
  * ItemStacks with subtypes and wildcard metadata will be displayed as multiple ItemStacks.
- * <p>
+ *
  * Get an instance from {@link IRecipeLayout#getItemStacks()}.
  */
 public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {

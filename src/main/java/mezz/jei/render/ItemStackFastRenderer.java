@@ -1,13 +1,14 @@
 package mezz.jei.render;
 
-import mezz.jei.config.Config;
-import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.util.ErrorUtil;
+import javax.annotation.Nullable;
+import java.awt.Rectangle;
+
+import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -15,9 +16,11 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraft.util.Util;
 
-import java.awt.Rectangle;
+import mezz.jei.config.ClientConfig;
+import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.util.ErrorUtil;
 
 public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
 	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
@@ -34,32 +37,36 @@ public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
 		}
 	}
 
+	@Nullable
 	private IBakedModel getBakedModel() {
-		ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+		ItemModelMesher itemModelMesher = Minecraft.getInstance().getItemRenderer().getItemModelMesher();
 		ItemStack itemStack = element.getIngredient();
 		IBakedModel bakedModel = itemModelMesher.getItemModel(itemStack);
-		return bakedModel.getOverrides().handleItemState(bakedModel, itemStack, null, null);
+		return bakedModel.getOverrides().getModelWithOverrides(bakedModel, itemStack, null, null);
 	}
 
 	private void uncheckedRenderItemAndEffectIntoGUI() {
-		if (Config.isHideModeEnabled()) {
+		if (ClientConfig.getInstance().isHideModeEnabled()) {
 			renderEditMode(element, area, padding);
 			GlStateManager.enableBlend();
 		}
 
 		ItemStack itemStack = element.getIngredient();
 		IBakedModel bakedModel = getBakedModel();
+		if (bakedModel == null) {
+			return;
+		}
 
 		GlStateManager.pushMatrix();
 		{
-			GlStateManager.translate(area.x + padding + 8.0f, area.y + padding + 8.0f, 150.0F);
-			GlStateManager.scale(16F, -16F, 16F);
+			GlStateManager.translatef(area.x + padding + 8.0f, area.y + padding + 8.0f, 150.0F);
+			GlStateManager.scalef(16F, -16F, 16F);
 			bakedModel = ForgeHooksClient.handleCameraTransforms(bakedModel, ItemCameraTransforms.TransformType.GUI, false);
-			GlStateManager.translate(-0.5F, -0.5F, -0.5F);
+			GlStateManager.translatef(-0.5F, -0.5F, -0.5F);
 
-			Minecraft minecraft = Minecraft.getMinecraft();
-			RenderItem renderItem = minecraft.getRenderItem();
-			renderItem.renderModel(bakedModel, itemStack);
+			Minecraft minecraft = Minecraft.getInstance();
+			ItemRenderer itemRenderer = minecraft.getItemRenderer();
+			itemRenderer.renderModel(bakedModel, itemStack);
 
 			if (itemStack.hasEffect()) {
 				renderEffect(bakedModel);
@@ -69,34 +76,34 @@ public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
 	}
 
 	protected void renderEffect(IBakedModel model) {
-		Minecraft minecraft = Minecraft.getMinecraft();
+		Minecraft minecraft = Minecraft.getInstance();
 		TextureManager textureManager = minecraft.getTextureManager();
-		RenderItem renderItem = minecraft.getRenderItem();
+		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 
 		GlStateManager.depthMask(false);
 		GlStateManager.depthFunc(514);
-		GlStateManager.blendFunc(768, 1);
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE);
 		textureManager.bindTexture(RES_ITEM_GLINT);
 		GlStateManager.matrixMode(5890);
 
 		GlStateManager.pushMatrix();
-		GlStateManager.scale(8.0F, 8.0F, 8.0F);
-		float f = (float) (Minecraft.getSystemTime() % 3000L) / 3000.0F / 8.0F;
-		GlStateManager.translate(f, 0.0F, 0.0F);
-		GlStateManager.rotate(-50.0F, 0.0F, 0.0F, 1.0F);
-		renderItem.renderModel(model, -8372020);
+		GlStateManager.scalef(8.0F, 8.0F, 8.0F);
+		float f = (float) (Util.milliTime() % 3000L) / 3000.0F / 8.0F;
+		GlStateManager.translatef(f, 0.0F, 0.0F);
+		GlStateManager.rotatef(-50.0F, 0.0F, 0.0F, 1.0F);
+		itemRenderer.renderModel(model, -8372020);
 		GlStateManager.popMatrix();
 
 		GlStateManager.pushMatrix();
-		GlStateManager.scale(8.0F, 8.0F, 8.0F);
-		float f1 = (float) (Minecraft.getSystemTime() % 4873L) / 4873.0F / 8.0F;
-		GlStateManager.translate(-f1, 0.0F, 0.0F);
-		GlStateManager.rotate(10.0F, 0.0F, 0.0F, 1.0F);
-		renderItem.renderModel(model, -8372020);
+		GlStateManager.scalef(8.0F, 8.0F, 8.0F);
+		float f1 = (float) (Util.milliTime() % 4873L) / 4873.0F / 8.0F;
+		GlStateManager.translatef(-f1, 0.0F, 0.0F);
+		GlStateManager.rotatef(10.0F, 0.0F, 0.0F, 1.0F);
+		itemRenderer.renderModel(model, -8372020);
 		GlStateManager.popMatrix();
 
 		GlStateManager.matrixMode(5888);
-		GlStateManager.blendFunc(770, 771);
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.depthFunc(515);
 		GlStateManager.depthMask(true);
 		textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
@@ -113,15 +120,15 @@ public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
 
 	private void renderOverlay(ItemStack itemStack, Rectangle area, int padding) {
 		FontRenderer font = getFontRenderer(itemStack);
-		RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
-		renderItem.renderItemOverlayIntoGUI(font, itemStack, area.x + padding, area.y + padding, null);
+		ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+		itemRenderer.renderItemOverlayIntoGUI(font, itemStack, area.x + padding, area.y + padding, null);
 	}
 
 	public static FontRenderer getFontRenderer(ItemStack itemStack) {
 		Item item = itemStack.getItem();
 		FontRenderer fontRenderer = item.getFontRenderer(itemStack);
 		if (fontRenderer == null) {
-			fontRenderer = Minecraft.getMinecraft().fontRenderer;
+			fontRenderer = Minecraft.getInstance().fontRenderer;
 		}
 		return fontRenderer;
 	}

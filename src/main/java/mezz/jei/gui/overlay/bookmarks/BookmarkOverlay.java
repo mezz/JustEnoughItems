@@ -1,7 +1,17 @@
 package mezz.jei.gui.overlay.bookmarks;
 
+import javax.annotation.Nullable;
+import java.awt.Rectangle;
+import java.util.Set;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.util.InputMappings;
+import net.minecraft.item.ItemStack;
+
 import mezz.jei.bookmarks.BookmarkList;
-import mezz.jei.config.Config;
+import mezz.jei.config.ClientConfig;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
@@ -12,14 +22,7 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.util.CommandUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nullable;
-import java.awt.Rectangle;
-import java.util.Set;
+import org.lwjgl.glfw.GLFW;
 
 public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 	private static final int BUTTON_SIZE = 20;
@@ -46,7 +49,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 	}
 
 	public boolean isListDisplayed() {
-		return Config.isBookmarkOverlayEnabled() && hasRoom && !bookmarkList.isEmpty();
+		return ClientConfig.getInstance().isBookmarkOverlayEnabled() && hasRoom && !bookmarkList.isEmpty();
 	}
 
 	public boolean hasRoom() {
@@ -61,10 +64,10 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 
 	@Override
 	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
-		if (this.hasRoom && Config.isBookmarkOverlayEnabled()) {
+		if (this.hasRoom && ClientConfig.getInstance().isBookmarkOverlayEnabled()) {
 			this.contents.draw(minecraft, mouseX, mouseY, partialTicks);
 		}
-		this.bookmarkButton.draw(minecraft, mouseX, mouseY, partialTicks);
+		this.bookmarkButton.draw(mouseX, mouseY, partialTicks);
 	}
 
 	@Override
@@ -76,11 +79,11 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 		if (isListDisplayed()) {
 			this.contents.drawTooltips(minecraft, mouseX, mouseY);
 		}
-		bookmarkButton.drawTooltips(minecraft, mouseX, mouseY);
+		bookmarkButton.drawTooltips(mouseX, mouseY);
 	}
 
 	private static int getMinWidth() {
-		return Math.max(4 * BUTTON_SIZE, Config.smallestNumColumns * IngredientGrid.INGREDIENT_WIDTH);
+		return Math.max(4 * BUTTON_SIZE, ClientConfig.smallestNumColumns * IngredientGrid.INGREDIENT_WIDTH);
 	}
 
 	public boolean updateBounds(Set<Rectangle> guiExclusionAreas) {
@@ -118,7 +121,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 
 	@Override
 	@Nullable
-	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
+	public IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
 			return this.contents.getIngredientUnderMouse(mouseX, mouseY);
 		}
@@ -131,25 +134,27 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 	}
 
 	@Override
-	public boolean handleMouseScrolled(int mouseX, int mouseY, int scrollDelta) {
+	public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
 		return isListDisplayed() &&
 			displayArea.contains(mouseX, mouseY) &&
 			this.contents.handleMouseScrolled(mouseX, mouseY, scrollDelta);
 	}
 
 	@Override
-	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
+	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
 		if (displayArea.contains(mouseX, mouseY)) {
-			Minecraft minecraft = Minecraft.getMinecraft();
+			Minecraft minecraft = Minecraft.getInstance();
 			GuiScreen currentScreen = minecraft.currentScreen;
-			if (currentScreen != null && !(currentScreen instanceof RecipesGui)
-				&& (mouseButton == 0 || mouseButton == 1 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(mouseButton - 100))) {
+			InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
+			if (currentScreen != null &&
+				!(currentScreen instanceof RecipesGui) &&
+				(mouseButton == GLFW.GLFW_MOUSE_BUTTON_1 || mouseButton == GLFW.GLFW_MOUSE_BUTTON_2 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(input))) {
 				IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
 				if (clicked != null) {
-					if (Config.isCheatItemsEnabled()) {
+					if (ClientConfig.getInstance().isCheatItemsEnabled()) {
 						ItemStack itemStack = clicked.getCheatItemStack();
 						if (!itemStack.isEmpty()) {
-							CommandUtil.giveStack(itemStack, mouseButton);
+							CommandUtil.giveStack(itemStack, input);
 						}
 						clicked.onClickHandled();
 						return true;
@@ -158,7 +163,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 			}
 		}
 		if (bookmarkButton.isMouseOver(mouseX, mouseY)) {
-			return bookmarkButton.handleMouseClick(mouseX, mouseY);
+			return bookmarkButton.handleMouseClick(mouseX, mouseY, mouseButton);
 		}
 		return this.contents.handleMouseClicked(mouseX, mouseY, mouseButton);
 	}

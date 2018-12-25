@@ -1,5 +1,9 @@
 package mezz.jei.plugins.vanilla.furnace;
 
+import javax.annotation.Nullable;
+
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableStatic;
@@ -9,8 +13,6 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
-
-import javax.annotation.Nullable;
 
 public class FurnaceFuelCategory extends FurnaceRecipeCategory<FuelRecipe> {
 	private final IDrawableStatic background;
@@ -33,7 +35,7 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory<FuelRecipe> {
 	}
 
 	@Override
-	public String getUid() {
+	public ResourceLocation getUid() {
 		return VanillaRecipeCategoryUid.FUEL;
 	}
 

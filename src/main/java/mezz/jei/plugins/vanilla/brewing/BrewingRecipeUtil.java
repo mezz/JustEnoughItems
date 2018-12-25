@@ -1,20 +1,21 @@
 package mezz.jei.plugins.vanilla.brewing;
 
-import mezz.jei.Internal;
-import mezz.jei.collect.SetMultiMap;
-import net.minecraft.init.Items;
-import net.minecraft.init.PotionTypes;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionUtils;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import net.minecraft.init.Items;
+import net.minecraft.init.PotionTypes;
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionUtils;
+
+import mezz.jei.Internal;
+import mezz.jei.collect.SetMultiMap;
+
 public class BrewingRecipeUtil {
-	public static final ItemStack POTION = new ItemStack(Items.POTIONITEM);
+	public static final ItemStack POTION = new ItemStack(Items.POTION);
 	public static final ItemStack WATER_BOTTLE = PotionUtils.addPotionToItemStack(POTION.copy(), PotionTypes.WATER);
 
 	private final Map<String, Integer> brewingStepCache = new HashMap<>(); // output potion -> brewing steps

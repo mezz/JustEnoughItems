@@ -9,22 +9,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import mezz.jei.Internal;
-import mezz.jei.api.ingredients.IIngredientRegistry;
-import mezz.jei.config.Config;
-import mezz.jei.util.Log;
-import net.minecraft.init.PotionTypes;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionHelper;
-import net.minecraft.potion.PotionType;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.brewing.AbstractBrewingRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.brewing.IBrewingRecipe;
-import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.init.PotionTypes;
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionBrewing;
+import net.minecraft.potion.PotionType;
+import net.minecraft.potion.PotionUtils;
+import net.minecraft.util.ResourceLocation;
+
+import mezz.jei.api.ingredients.IIngredientRegistry;
 
 public class BrewingRecipeMaker {
 
@@ -73,7 +68,7 @@ public class BrewingRecipeMaker {
 		List<ItemStack> newPotions = new ArrayList<>();
 		for (ItemStack potionInput : knownPotions) {
 			for (ItemStack potionIngredient : potionIngredients) {
-				ItemStack potionOutput = PotionHelper.doReaction(potionIngredient, potionInput.copy());
+				ItemStack potionOutput = PotionBrewing.doReaction(potionIngredient, potionInput.copy());
 				if (potionOutput.equals(potionInput)) {
 					continue;
 				}
@@ -112,30 +107,31 @@ public class BrewingRecipeMaker {
 	}
 
 	private void addModdedBrewingRecipes(Collection<IBrewingRecipe> brewingRecipes, Collection<BrewingRecipeWrapper> recipes) {
-		for (IBrewingRecipe iBrewingRecipe : brewingRecipes) {
-			if (iBrewingRecipe instanceof AbstractBrewingRecipe) {
-				AbstractBrewingRecipe brewingRecipe = (AbstractBrewingRecipe) iBrewingRecipe;
-				NonNullList<ItemStack> ingredientList = Internal.getStackHelper().toItemStackList(brewingRecipe.getIngredient());
-
-				if (!ingredientList.isEmpty()) {
-					ItemStack input = brewingRecipe.getInput();
-					// AbstractBrewingRecipe.isInput treats any uncraftable potion here as a water bottle in the brewing stand
-					if (ItemStack.areItemStacksEqual(input, BrewingRecipeUtil.POTION)) {
-						input = BrewingRecipeUtil.WATER_BOTTLE;
-					}
-					ItemStack output = brewingRecipe.getOutput();
-					BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(ingredientList, input, output);
-					recipes.add(recipe);
-				}
-			} else if (!(iBrewingRecipe instanceof VanillaBrewingRecipe)) {
-				Class recipeClass = iBrewingRecipe.getClass();
-				if (!unhandledRecipeClasses.contains(recipeClass)) {
-					unhandledRecipeClasses.add(recipeClass);
-					if (Config.isDebugModeEnabled()) {
-						Log.get().debug("Can't handle brewing recipe class: {}", recipeClass);
-					}
-				}
-			}
-		}
+		// TODO 1.13
+//		for (IBrewingRecipe iBrewingRecipe : brewingRecipes) {
+//			if (iBrewingRecipe instanceof AbstractBrewingRecipe) {
+//				AbstractBrewingRecipe brewingRecipe = (AbstractBrewingRecipe) iBrewingRecipe;
+//				NonNullList<ItemStack> ingredientList = Internal.getStackHelper().toItemStackList(brewingRecipe.getIngredient());
+//
+//				if (!ingredientList.isEmpty()) {
+//					ItemStack input = brewingRecipe.getInput();
+//					// AbstractBrewingRecipe.isInput treats any uncraftable potion here as a water bottle in the brewing stand
+//					if (ItemStack.areItemStacksEqual(input, BrewingRecipeUtil.POTION)) {
+//						input = BrewingRecipeUtil.WATER_BOTTLE;
+//					}
+//					ItemStack output = brewingRecipe.getOutput();
+//					BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(ingredientList, input, output);
+//					recipes.add(recipe);
+//				}
+//			} else if (!(iBrewingRecipe instanceof VanillaBrewingRecipe)) {
+//				Class recipeClass = iBrewingRecipe.getClass();
+//				if (!unhandledRecipeClasses.contains(recipeClass)) {
+//					unhandledRecipeClasses.add(recipeClass);
+//					if (ClientConfig.getInstance().isDebugModeEnabled()) {
+//						Log.get().debug("Can't handle brewing recipe class: {}", recipeClass);
+//					}
+//				}
+//			}
+//		}
 	}
 }

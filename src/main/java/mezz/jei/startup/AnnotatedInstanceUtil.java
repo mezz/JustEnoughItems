@@ -1,35 +1,45 @@
 package mezz.jei.startup;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.language.ModFileScanData;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.util.Log;
-import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import org.objectweb.asm.Type;
 
 public final class AnnotatedInstanceUtil {
 	private AnnotatedInstanceUtil() {
 
 	}
 
-	public static List<IModPlugin> getModPlugins(ASMDataTable asmDataTable) {
-		return getInstances(asmDataTable, JEIPlugin.class, IModPlugin.class);
+	public static List<IModPlugin> getModPlugins() {
+		return getInstances(JEIPlugin.class, IModPlugin.class);
 	}
 
-	private static <T> List<T> getInstances(ASMDataTable asmDataTable, Class annotationClass, Class<T> instanceClass) {
-		String annotationClassName = annotationClass.getCanonicalName();
-		Set<ASMDataTable.ASMData> asmDatas = asmDataTable.getAll(annotationClassName);
+	@SuppressWarnings("SameParameterValue")
+	private static <T> List<T> getInstances(Class annotationClass, Class<T> instanceClass) {
+		List<ModFileScanData> scanData = ModList.get().getAllScanData();
+		final List<String> pluginClassNames = scanData.stream()
+			.map(ModFileScanData::getAnnotations).flatMap(Collection::stream)
+			.filter(a -> Objects.equals(a.getClassType(), Type.getType(annotationClass)))
+			.map(ModFileScanData.AnnotationData::getMemberName)
+			.collect(Collectors.toList());
 		List<T> instances = new ArrayList<>();
-		for (ASMDataTable.ASMData asmData : asmDatas) {
+		for (String className : pluginClassNames) {
 			try {
-				Class<?> asmClass = Class.forName(asmData.getClassName());
+				Class<?> asmClass = Class.forName(className);
 				Class<? extends T> asmInstanceClass = asmClass.asSubclass(instanceClass);
 				T instance = asmInstanceClass.newInstance();
 				instances.add(instance);
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | LinkageError e) {
-				Log.get().error("Failed to load: {}", asmData.getClassName(), e);
+				Log.get().error("Failed to load: {}", className, e);
 			}
 		}
 		return instances;

@@ -4,7 +4,6 @@ import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.LegacyUtil;
 
 public class Focus<V> implements IFocus<V> {
 	private final Mode mode;
@@ -13,7 +12,7 @@ public class Focus<V> implements IFocus<V> {
 	public Focus(Mode mode, V value) {
 		this.mode = mode;
 		IIngredientHelper<V> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(value);
-		this.value = LegacyUtil.getIngredientCopy(value, ingredientHelper);
+		this.value = ingredientHelper.copyIngredient(value);
 		checkInternal(this);
 	}
 

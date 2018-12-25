@@ -4,6 +4,9 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.gui.PageNavigation;
@@ -11,8 +14,6 @@ import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IPaged;
 import mezz.jei.util.MathUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 
 /**
  * The area drawn on top and bottom of the {@link RecipesGui} that show the recipe categories.
@@ -92,40 +93,40 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 	public void draw(Minecraft minecraft, int mouseX, int mouseY) {
 		IRecipeCategory selectedCategory = recipeGuiLogic.getSelectedRecipeCategory();
 
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 		RecipeGuiTab hovered = null;
 
-		GlStateManager.disableDepth();
-		GlStateManager.enableAlpha();
+		GlStateManager.disableDepthTest();
+		GlStateManager.enableAlphaTest();
 		{
 			for (RecipeGuiTab tab : tabs) {
 				boolean selected = tab.isSelected(selectedCategory);
-				tab.draw(minecraft, selected, mouseX, mouseY);
+				tab.draw(selected, mouseX, mouseY);
 				if (tab.isMouseOver(mouseX, mouseY)) {
 					hovered = tab;
 				}
 			}
 		}
-		GlStateManager.disableAlpha();
-		GlStateManager.enableDepth();
+		GlStateManager.disableAlphaTest();
+		GlStateManager.enableDepthTest();
 
 		pageNavigation.draw(minecraft, mouseX, mouseY, minecraft.getRenderPartialTicks());
 
 		if (hovered != null) {
 			List<String> tooltip = hovered.getTooltip();
-			TooltipRenderer.drawHoveringText(minecraft, tooltip, mouseX, mouseY);
+			TooltipRenderer.drawHoveringText(tooltip, mouseX, mouseY);
 		}
 	}
 
 	@Override
-	public boolean isMouseOver(int mouseX, int mouseY) {
+	public boolean isMouseOver(double mouseX, double mouseY) {
 		return area.contains(mouseX, mouseY) ||
-				pageNavigation.isMouseOver();
+			pageNavigation.isMouseOver();
 	}
 
 	@Override
-	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
+	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
 		if (mouseButton == 0) {
 			for (RecipeGuiTab tab : tabs) {
 				if (tab.isMouseOver(mouseX, mouseY)) {
@@ -134,14 +135,14 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 				}
 			}
 			if (pageNavigation.isMouseOver()) {
-				return pageNavigation.handleMouseClickedButtons(mouseX, mouseY);
+				return pageNavigation.handleMouseClickedButtons(mouseX, mouseY, mouseButton);
 			}
 		}
 		return false;
 	}
 
 	@Override
-	public boolean handleMouseScrolled(int mouseX, int mouseY, int scrollDelta) {
+	public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
 		return false;
 	}
 

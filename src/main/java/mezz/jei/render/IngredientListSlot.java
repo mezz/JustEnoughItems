@@ -25,7 +25,7 @@ public class IngredientListSlot {
 		this.ingredientRenderer = null;
 	}
 
-	public boolean isMouseOver(int mouseX, int mouseY) {
+	public boolean isMouseOver(double mouseX, double mouseY) {
 		return (this.ingredientRenderer != null) && area.contains(mouseX, mouseY);
 	}
 

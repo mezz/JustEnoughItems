@@ -11,7 +11,7 @@ public final class TippedArrowRecipeMaker {
 	public static List<TippedArrowRecipeWrapper> getTippedArrowRecipes() {
 		List<TippedArrowRecipeWrapper> recipes = new ArrayList<>();
 		for (ResourceLocation potionTypeResourceLocation : PotionType.REGISTRY.getKeys()) {
-			PotionType potionType = PotionType.REGISTRY.getObject(potionTypeResourceLocation);
+			PotionType potionType = PotionType.REGISTRY.get(potionTypeResourceLocation);
 			TippedArrowRecipeWrapper recipe = new TippedArrowRecipeWrapper(potionType);
 			recipes.add(recipe);
 		}

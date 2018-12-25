@@ -1,16 +1,15 @@
 package mezz.jei.network.packets;
 
-import java.io.IOException;
-
-import mezz.jei.network.IPacketId;
-import mezz.jei.network.PacketIdServer;
-import mezz.jei.util.CommandUtilServer;
-import mezz.jei.util.GiveMode;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
+
+import mezz.jei.network.IPacketId;
+import mezz.jei.network.PacketIdServer;
+import mezz.jei.util.CommandUtilServer;
+import mezz.jei.util.GiveMode;
 
 public class PacketGiveItemStack extends PacketJei {
 	private final ItemStack itemStack;
@@ -33,17 +32,14 @@ public class PacketGiveItemStack extends PacketJei {
 		buf.writeEnumValue(giveMode);
 	}
 
-	public static void readPacketData(PacketBuffer buf, EntityPlayer player) throws IOException {
+	public static void readPacketData(PacketBuffer buf, EntityPlayer player) {
 		if (player instanceof EntityPlayerMP) {
 			EntityPlayerMP sender = (EntityPlayerMP) player;
 
-			NBTTagCompound itemStackSerialized = buf.readCompoundTag();
-			if (itemStackSerialized != null) {
+			ItemStack itemStack = buf.readItemStack();
+			if (!itemStack.isEmpty()) {
 				GiveMode giveMode = buf.readEnumValue(GiveMode.class);
-				ItemStack itemStack = new ItemStack(itemStackSerialized);
-				if (!itemStack.isEmpty()) {
-					CommandUtilServer.executeGive(sender, itemStack, giveMode);
-				}
+				CommandUtilServer.executeGive(sender, itemStack, giveMode);
 			}
 		}
 	}

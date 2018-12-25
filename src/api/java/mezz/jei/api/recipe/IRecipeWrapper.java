@@ -8,7 +8,6 @@ import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.ITooltipCallback;
 import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.client.Minecraft;
 
 /**
  * A wrapper around a normal recipe with methods that allow JEI can make sense of it.
@@ -26,7 +25,7 @@ public interface IRecipeWrapper {
 	/**
 	 * Draw additional info about the recipe.
 	 * Use the mouse position for things like button highlights.
-	 * Tooltips are handled by {@link IRecipeWrapper#getTooltipStrings(int, int)}
+	 * Tooltips are handled by {@link IRecipeWrapper#getTooltipStrings(double, double)}
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
@@ -34,7 +33,7 @@ public interface IRecipeWrapper {
 	 * @see IGuiHelper for useful functions.
 	 * @since JEI 2.19.0
 	 */
-	default void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
+	default void drawInfo(int recipeWidth, int recipeHeight, double mouseX, double mouseY) {
 
 	}
 
@@ -49,7 +48,7 @@ public interface IRecipeWrapper {
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
 	 * @return tooltip strings. If there is no tooltip at this position, return an empty list.
 	 */
-	default List<String> getTooltipStrings(int mouseX, int mouseY) {
+	default List<String> getTooltipStrings(double mouseX, double mouseY) {
 		return Collections.emptyList();
 	}
 
@@ -63,7 +62,7 @@ public interface IRecipeWrapper {
 	 * @return true if the click was handled, false otherwise
 	 * @since JEI 2.19.0
 	 */
-	default boolean handleClick(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
+	default boolean handleClick(double mouseX, double mouseY, int mouseButton) {
 		return false;
 	}
 }

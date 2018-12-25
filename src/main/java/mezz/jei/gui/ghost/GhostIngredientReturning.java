@@ -1,13 +1,14 @@
 package mezz.jei.gui.ghost;
 
-import mezz.jei.api.ingredients.IIngredientRenderer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.RenderItem;
-
 import javax.annotation.Nullable;
 import java.awt.Point;
 import java.awt.Rectangle;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.ItemRenderer;
+
+import mezz.jei.api.ingredients.IIngredientRenderer;
 
 /**
  * Renders an item returning to the ingredient list after a failed ghost drag.
@@ -22,13 +23,13 @@ public class GhostIngredientReturning<T> {
 	private final long duration;
 
 	@Nullable
-	public static <T> GhostIngredientReturning<T> create(GhostIngredientDrag<T> ghostIngredientDrag, int mouseX, int mouseY) {
+	public static <T> GhostIngredientReturning<T> create(GhostIngredientDrag<T> ghostIngredientDrag, double mouseX, double mouseY) {
 		Rectangle origin = ghostIngredientDrag.getOrigin();
 		if (origin != null) {
 			IIngredientRenderer<T> ingredientRenderer = ghostIngredientDrag.getIngredientRenderer();
 			T ingredient = ghostIngredientDrag.getIngredient();
 			Point end = new Point(origin.x, origin.y);
-			Point start = new Point(mouseX - 8, mouseY - 8);
+			Point start = new Point((int) mouseX - 8, (int) mouseY - 8);
 			return new GhostIngredientReturning<>(ingredientRenderer, ingredient, start, end);
 		}
 		return null;
@@ -40,7 +41,7 @@ public class GhostIngredientReturning<T> {
 		this.start = start;
 		this.end = end;
 		this.startTime = System.currentTimeMillis();
-		GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
+		GuiScreen currentScreen = Minecraft.getInstance().currentScreen;
 		if (currentScreen != null) {
 			int width = currentScreen.width;
 			float durationPerPixel = DURATION_PER_SCREEN_WIDTH / (float) width;
@@ -59,10 +60,10 @@ public class GhostIngredientReturning<T> {
 		int dy = end.y - start.y;
 		int x = start.x + Math.round(dx * percent);
 		int y = start.y + Math.round(dy * percent);
-		RenderItem renderItem = minecraft.getRenderItem();
-		renderItem.zLevel += 150.0F;
-		ingredientRenderer.render(minecraft, x, y, ingredient);
-		renderItem.zLevel -= 150.0F;
+		ItemRenderer itemRenderer = minecraft.getItemRenderer();
+		itemRenderer.zLevel += 150.0F;
+		ingredientRenderer.render(x, y, ingredient);
+		itemRenderer.zLevel -= 150.0F;
 	}
 
 	public boolean isComplete() {

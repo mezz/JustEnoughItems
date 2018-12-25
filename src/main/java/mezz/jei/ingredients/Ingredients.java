@@ -22,14 +22,6 @@ public class Ingredients implements IIngredients {
 	}
 
 	@Override
-	@Deprecated
-	public <T> void setInput(Class<? extends T> ingredientClass, T input) {
-		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientType<T> ingredientType = ingredientRegistry.getIngredientType(ingredientClass);
-		setInput(ingredientType, input);
-	}
-
-	@Override
 	public <T> void setInputLists(IIngredientType<T> ingredientType, List<List<T>> inputs) {
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
@@ -40,14 +32,6 @@ public class Ingredients implements IIngredients {
 		}
 
 		this.inputs.put(ingredientType, expandedInputs);
-	}
-
-	@Override
-	@Deprecated
-	public <T> void setInputLists(Class<? extends T> ingredientClass, List<List<T>> inputs) {
-		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientType<T> ingredientType = ingredientRegistry.getIngredientType(ingredientClass);
-		setInputLists(ingredientType, inputs);
 	}
 
 	@Override
@@ -63,24 +47,8 @@ public class Ingredients implements IIngredients {
 	}
 
 	@Override
-	@Deprecated
-	public <T> void setInputs(Class<? extends T> ingredientClass, List<T> input) {
-		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientType<T> ingredientType = ingredientRegistry.getIngredientType(ingredientClass);
-		setInputs(ingredientType, input);
-	}
-
-	@Override
 	public <T> void setOutput(IIngredientType<T> ingredientType, T output) {
 		setOutputs(ingredientType, Collections.singletonList(output));
-	}
-
-	@Override
-	@Deprecated
-	public <T> void setOutput(Class<? extends T> ingredientClass, T output) {
-		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientType<T> ingredientType = ingredientRegistry.getIngredientType(ingredientClass);
-		setOutput(ingredientType, output);
 	}
 
 	@Override
@@ -97,14 +65,6 @@ public class Ingredients implements IIngredients {
 	}
 
 	@Override
-	@Deprecated
-	public <T> void setOutputs(Class<? extends T> ingredientClass, List<T> outputs) {
-		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientType<T> ingredientType = ingredientRegistry.getIngredientType(ingredientClass);
-		setOutputs(ingredientType, outputs);
-	}
-
-	@Override
 	public <T> void setOutputLists(IIngredientType<T> ingredientType, List<List<T>> outputs) {
 		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
@@ -118,14 +78,6 @@ public class Ingredients implements IIngredients {
 	}
 
 	@Override
-	@Deprecated
-	public <T> void setOutputLists(Class<? extends T> ingredientClass, List<List<T>> outputs) {
-		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientType<T> ingredientType = ingredientRegistry.getIngredientType(ingredientClass);
-		setOutputLists(ingredientType, outputs);
-	}
-
-	@Override
 	public <T> List<List<T>> getInputs(IIngredientType<T> ingredientType) {
 		@SuppressWarnings("unchecked")
 		List<List<T>> inputs = (List<List<T>>) (Object) this.inputs.get(ingredientType);
@@ -136,14 +88,6 @@ public class Ingredients implements IIngredients {
 	}
 
 	@Override
-	@Deprecated
-	public <T> List<List<T>> getInputs(Class<? extends T> ingredientClass) {
-		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientType<T> ingredientType = ingredientRegistry.getIngredientType(ingredientClass);
-		return getInputs(ingredientType);
-	}
-
-	@Override
 	public <T> List<List<T>> getOutputs(IIngredientType<T> ingredientType) {
 		@SuppressWarnings("unchecked")
 		List<List<T>> outputs = (List<List<T>>) (Object) this.outputs.get(ingredientType);
@@ -151,14 +95,6 @@ public class Ingredients implements IIngredients {
 			return Collections.emptyList();
 		}
 		return outputs;
-	}
-
-	@Override
-	@Deprecated
-	public <T> List<List<T>> getOutputs(Class<? extends T> ingredientClass) {
-		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientType<T> ingredientType = ingredientRegistry.getIngredientType(ingredientClass);
-		return getOutputs(ingredientType);
 	}
 
 	public Map<IIngredientType, List> getInputIngredients() {

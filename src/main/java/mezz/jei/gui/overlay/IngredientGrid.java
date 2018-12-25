@@ -1,15 +1,26 @@
 package mezz.jei.gui.overlay;
 
+import javax.annotation.Nullable;
+import java.awt.Rectangle;
+import java.util.Collection;
+
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+
 import mezz.jei.Internal;
-import mezz.jei.JustEnoughItems;
-import mezz.jei.config.Config;
+import mezz.jei.config.ClientConfig;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
-import mezz.jei.input.MouseHelper;
+import mezz.jei.input.MouseUtil;
+import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
 import mezz.jei.network.packets.PacketJei;
 import mezz.jei.render.IngredientListBatchRenderer;
@@ -19,16 +30,6 @@ import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.GiveMode;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.ItemHandlerHelper;
-
-import javax.annotation.Nullable;
-import java.awt.Rectangle;
-import java.util.Collection;
 
 /**
  * An ingredient grid displays a rectangular area of clickable recipe ingredients.
@@ -52,7 +53,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	}
 
 	public boolean updateBounds(Rectangle availableArea, int minWidth, Collection<Rectangle> exclusionAreas) {
-		final int columns = Math.min(availableArea.width / INGREDIENT_WIDTH, Config.getMaxColumns());
+		final int columns = Math.min(availableArea.width / INGREDIENT_WIDTH, ClientConfig.getInstance().getMaxColumns());
 		final int rows = availableArea.height / INGREDIENT_HEIGHT;
 
 		final int ingredientsWidth = columns * INGREDIENT_WIDTH;
@@ -70,7 +71,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		this.area = new Rectangle(x, y, width, height);
 		this.guiIngredientSlots.clear();
 
-		if (rows == 0 || columns < Config.smallestNumColumns) {
+		if (rows == 0 || columns < ClientConfig.getInstance().smallestNumColumns) {
 			return false;
 		}
 
@@ -104,14 +105,14 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 			}
 		}
 
-		GlStateManager.enableAlpha();
+		GlStateManager.enableAlphaTest();
 	}
 
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
 			if (shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				String deleteItem = Translator.translateToLocal("jei.tooltip.delete.item");
-				TooltipRenderer.drawHoveringText(minecraft, deleteItem, mouseX, mouseY);
+				TooltipRenderer.drawHoveringText(deleteItem, mouseX, mouseY);
 			} else {
 				IngredientRenderer hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
 				if (hovered != null) {
@@ -121,15 +122,16 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		}
 	}
 
-	private boolean shouldDeleteItemOnClick(Minecraft minecraft, int mouseX, int mouseY) {
-		if (Config.isDeleteItemsInCheatModeActive()) {
+	private boolean shouldDeleteItemOnClick(Minecraft minecraft, double mouseX, double mouseY) {
+		if (ClientConfig.getInstance().isDeleteItemsInCheatModeActive()) {
 			EntityPlayer player = minecraft.player;
 			if (player != null) {
 				ItemStack itemStack = player.inventory.getItemStack();
 				if (!itemStack.isEmpty()) {
+					// TODO find a better way to handle this without using Internal
 					JeiRuntime runtime = Internal.getRuntime();
 					if (runtime == null || !runtime.getRecipesGui().isOpen()) {
-						GiveMode giveMode = Config.getGiveMode();
+						GiveMode giveMode = ClientConfig.getInstance().getGiveMode();
 						if (giveMode == GiveMode.MOUSE_PICKUP) {
 							IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);
 							if (ingredientUnderMouse != null && ingredientUnderMouse.getValue() instanceof ItemStack) {
@@ -147,13 +149,13 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		return false;
 	}
 
-	public boolean isMouseOver(int mouseX, int mouseY) {
+	public boolean isMouseOver(double mouseX, double mouseY) {
 		return area.contains(mouseX, mouseY);
 	}
 
-	public boolean handleMouseClicked(int mouseX, int mouseY) {
+	public boolean handleMouseClicked(double mouseX, double mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
-			Minecraft minecraft = Minecraft.getMinecraft();
+			Minecraft minecraft = Minecraft.getInstance();
 			if (shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				EntityPlayerSP player = minecraft.player;
 				if (player != null) {
@@ -161,7 +163,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 					if (!itemStack.isEmpty()) {
 						player.inventory.setItemStack(ItemStack.EMPTY);
 						PacketJei packet = new PacketDeletePlayerItem(itemStack);
-						JustEnoughItems.getProxy().sendPacketToServer(packet);
+						Network.sendPacketToServer(packet);
 						return true;
 					}
 				}
@@ -172,7 +174,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 
 	@Nullable
 	public IIngredientListElement getElementUnderMouse() {
-		IngredientRenderer hovered = guiIngredientSlots.getHovered(MouseHelper.getX(), MouseHelper.getY());
+		IngredientRenderer hovered = guiIngredientSlots.getHovered(MouseUtil.getX(), MouseUtil.getY());
 		if (hovered != null) {
 			return hovered.getElement();
 		}
@@ -181,7 +183,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 
 	@Override
 	@Nullable
-	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
+	public IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
 			ClickedIngredient<?> clicked = guiIngredientSlots.getIngredientUnderMouse(mouseX, mouseY);
 			if (clicked != null) {

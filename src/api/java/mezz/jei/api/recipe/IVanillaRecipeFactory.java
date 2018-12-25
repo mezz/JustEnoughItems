@@ -1,18 +1,18 @@
 package mezz.jei.api.recipe;
 
-import mezz.jei.api.IJeiHelpers;
-import mezz.jei.api.IModRegistry;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
-
 import java.util.Collection;
 import java.util.List;
+
+import net.minecraft.item.ItemStack;
+
+import mezz.jei.api.IJeiHelpers;
+import mezz.jei.api.IModRegistry;
 
 /**
  * Allows creation of vanilla recipes.
  * Get the instance from {@link IJeiHelpers#getStackHelper()}.
- * <p>
- * Use {@link IModRegistry#addRecipes(Collection, String)} to add the recipe.
+ *
+ * Use {@link IModRegistry#addRecipes(Collection, net.minecraft.util.ResourceLocation)} to add the recipe.
  *
  * @since JEI 4.5.0
  */
@@ -38,16 +38,6 @@ public interface IVanillaRecipeFactory {
 	 * @since JEI 4.14.1
 	 */
 	IRecipeWrapper createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs);
-
-	/**
-	 * Create a new smelting recipe.
-	 * By default, all smelting recipes from {@link FurnaceRecipes#smeltingList} are already added by JEI.
-	 *
-	 * @param inputs the list of possible inputs to rotate through
-	 * @param output the output
-	 * @return the {@link IRecipeWrapper} for this recipe.
-	 */
-	IRecipeWrapper createSmeltingRecipe(List<ItemStack> inputs, ItemStack output);
 
 	/**
 	 * Create a new brewing recipe.

@@ -11,5 +11,5 @@ import net.minecraft.item.Item;
  *
  * @since JEI 4.7.11
  */
-public interface ISlowRenderItem  {
+public interface ISlowRenderItem {
 }

@@ -1,17 +1,19 @@
 package mezz.jei.gui.overlay.bookmarks;
 
+import java.util.List;
+
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.util.text.TextFormatting;
+
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.bookmarks.BookmarkList;
-import mezz.jei.config.Config;
+import mezz.jei.config.ClientConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.util.Translator;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.util.text.TextFormatting;
-
-import java.util.List;
+import org.lwjgl.glfw.GLFW;
 
 public class BookmarkButton extends GuiIconToggleButton {
 	public static BookmarkButton create(BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, GuiHelper guiHelper) {
@@ -33,12 +35,12 @@ public class BookmarkButton extends GuiIconToggleButton {
 	protected void getTooltips(List<String> tooltip) {
 		tooltip.add(Translator.translateToLocal("jei.tooltip.bookmarks"));
 		KeyBinding bookmarkKey = KeyBindings.bookmark;
-		if (bookmarkKey.getKeyCode() == 0) {
+		if (bookmarkKey.getKey().getKeyCode() == GLFW.GLFW_KEY_UNKNOWN) {
 			tooltip.add(TextFormatting.RED + Translator.translateToLocal("jei.tooltip.bookmarks.usage.nokey"));
 		} else if (!bookmarkOverlay.hasRoom()) {
 			tooltip.add(TextFormatting.GOLD + Translator.translateToLocal("jei.tooltip.bookmarks.not.enough.space"));
 		} else {
-			tooltip.add(TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.bookmarks.usage.key", bookmarkKey.getDisplayName()));
+			tooltip.add(TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.bookmarks.usage.key", bookmarkKey.func_197978_k()));
 		}
 	}
 
@@ -48,9 +50,9 @@ public class BookmarkButton extends GuiIconToggleButton {
 	}
 
 	@Override
-	protected boolean onMouseClicked(int mouseX, int mouseY) {
+	protected boolean onMouseClicked(double mouseX, double mouseY, int mouseButton) {
 		if (!bookmarkList.isEmpty() && bookmarkOverlay.hasRoom()) {
-			Config.toggleBookmarkEnabled();
+			ClientConfig.getInstance().toggleBookmarkEnabled();
 			return true;
 		}
 		return false;

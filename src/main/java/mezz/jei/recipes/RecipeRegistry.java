@@ -1,43 +1,5 @@
 package mezz.jei.recipes;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.ImmutableTable;
-import mezz.jei.Internal;
-import mezz.jei.api.IRecipeRegistry;
-import mezz.jei.api.gui.IRecipeLayoutDrawable;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.IIngredientType;
-import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeHandler;
-import mezz.jei.api.recipe.IRecipeRegistryPlugin;
-import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
-import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
-import mezz.jei.collect.ListMultiMap;
-import mezz.jei.collect.SetMultiMap;
-import mezz.jei.collect.Table;
-import mezz.jei.config.Constants;
-import mezz.jei.gui.Focus;
-import mezz.jei.gui.recipes.RecipeClickableArea;
-import mezz.jei.gui.recipes.RecipeLayout;
-import mezz.jei.ingredients.IngredientFilter;
-import mezz.jei.ingredients.IngredientRegistry;
-import mezz.jei.ingredients.Ingredients;
-import mezz.jei.plugins.vanilla.furnace.SmeltingRecipe;
-import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.inventory.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.ProgressManager;
-
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,34 +11,65 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.minecraftforge.fml.common.ProgressManager;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.Container;
+import net.minecraft.util.ResourceLocation;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableTable;
+import mezz.jei.Internal;
+import mezz.jei.api.IRecipeRegistry;
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.IRecipeRegistryPlugin;
+import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.collect.ListMultiMap;
+import mezz.jei.collect.SetMultiMap;
+import mezz.jei.collect.Table;
+import mezz.jei.config.Constants;
+import mezz.jei.gui.Focus;
+import mezz.jei.gui.recipes.RecipeClickableArea;
+import mezz.jei.gui.recipes.RecipeLayout;
+import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.ingredients.Ingredients;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
+
 public class RecipeRegistry implements IRecipeRegistry {
 	private final IngredientRegistry ingredientRegistry;
-	@Deprecated
-	private final ImmutableList<IRecipeHandler> unsortedRecipeHandlers;
-	private final ImmutableMultimap<String, IRecipeHandler> recipeHandlers;
+	private final ImmutableMultimap<ResourceLocation, IRecipeHandler<?>> recipeHandlers;
 	private final ImmutableList<IRecipeCategory> recipeCategories;
-	private final Set<String> hiddenRecipeCategoryUids = new HashSet<>();
+	private final Set<ResourceLocation> hiddenRecipeCategoryUids = new HashSet<>();
 	private final List<IRecipeCategory> recipeCategoriesVisibleCache = new ArrayList<>();
-	private final ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers;
+	private final ImmutableTable<Class, ResourceLocation, IRecipeTransferHandler> recipeTransferHandlers;
 	private final ImmutableMultimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap;
 	private final ImmutableListMultimap<IRecipeCategory, Object> recipeCatalysts;
-	private final ImmutableMap<String, IRecipeCategory> recipeCategoriesMap;
-	private final Table<String, Object, IRecipeWrapper> wrapperMaps = new Table<>(new HashMap<>(), IdentityHashMap::new); // used when removing recipes
+	private final ImmutableMap<ResourceLocation, IRecipeCategory> recipeCategoriesMap;
+	private final Table<ResourceLocation, Object, IRecipeWrapper> wrapperMaps = new Table<>(new HashMap<>(), IdentityHashMap::new); // used when removing recipes
 	private final ListMultiMap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories = new ListMultiMap<>();
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
 	private final List<RecipeRegistryPluginSafeWrapper> plugins = new ArrayList<>();
-	private final SetMultiMap<String, IRecipeWrapper> hiddenRecipes = new SetMultiMap<>(() -> Collections.newSetFromMap(new IdentityHashMap<>())); // recipe category uid key
+	private final SetMultiMap<ResourceLocation, IRecipeWrapper> hiddenRecipes = new SetMultiMap<>(() -> Collections.newSetFromMap(new IdentityHashMap<>())); // recipe category uid key
 
 	public RecipeRegistry(
 		List<IRecipeCategory> recipeCategories,
-		List<IRecipeHandler> unsortedRecipeHandlers,
-		ListMultiMap<String, IRecipeHandler> recipeHandlers,
-		ImmutableTable<Class, String, IRecipeTransferHandler> recipeTransferHandlers,
-		List<Object> unsortedRecipes,
-		ListMultiMap<String, Object> recipes,
+		ListMultiMap<ResourceLocation, IRecipeHandler<?>> recipeHandlers,
+		ImmutableTable<Class, ResourceLocation, IRecipeTransferHandler> recipeTransferHandlers,
+		ListMultiMap<ResourceLocation, Object> recipes,
 		ListMultiMap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap,
-		ListMultiMap<String, Object> recipeCatalysts,
+		ListMultiMap<ResourceLocation, Object> recipeCatalysts,
 		IngredientRegistry ingredientRegistry,
 		List<IRecipeRegistryPlugin> plugins
 	) {
@@ -84,20 +77,19 @@ public class RecipeRegistry implements IRecipeRegistry {
 		this.recipeCategoriesMap = buildRecipeCategoriesMap(recipeCategories);
 		this.recipeTransferHandlers = recipeTransferHandlers;
 		this.recipeHandlers = recipeHandlers.toImmutable();
-		this.unsortedRecipeHandlers = buildRecipeHandlersList(unsortedRecipeHandlers);
 		this.recipeClickableAreasMap = recipeClickableAreasMap.toImmutable();
 
 		RecipeCategoryComparator recipeCategoryComparator = new RecipeCategoryComparator(recipeCategories);
 		this.recipeInputMap = new RecipeMap(recipeCategoryComparator, ingredientRegistry);
 		this.recipeOutputMap = new RecipeMap(recipeCategoryComparator, ingredientRegistry);
 
-		addRecipes(unsortedRecipes, recipes);
+		addRecipes(recipes);
 
 		ImmutableListMultimap.Builder<IRecipeCategory, Object> recipeCatalystsBuilder = ImmutableListMultimap.builder();
-		ImmutableMultimap.Builder<String, String> categoriesForRecipeCatalystKeysBuilder = ImmutableMultimap.builder();
+		ImmutableMultimap.Builder<String, ResourceLocation> categoriesForRecipeCatalystKeysBuilder = ImmutableMultimap.builder();
 
-		for (Map.Entry<String, List<Object>> recipeCatalystEntry : recipeCatalysts.entrySet()) {
-			String recipeCategoryUid = recipeCatalystEntry.getKey();
+		for (Map.Entry<ResourceLocation, List<Object>> recipeCatalystEntry : recipeCatalysts.entrySet()) {
+			ResourceLocation recipeCategoryUid = recipeCatalystEntry.getKey();
 			IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
 			if (recipeCategory != null) {
 				Collection<Object> catalystIngredients = recipeCatalystEntry.getValue();
@@ -113,7 +105,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		}
 
 		this.recipeCatalysts = recipeCatalystsBuilder.build();
-		ImmutableMultimap<String, String> categoriesForRecipeCatalystKeys = categoriesForRecipeCatalystKeysBuilder.build();
+		ImmutableMultimap<String, ResourceLocation> categoriesForRecipeCatalystKeys = categoriesForRecipeCatalystKeysBuilder.build();
 
 		IRecipeRegistryPlugin internalRecipeRegistryPlugin = new InternalRecipeRegistryPlugin(this, categoriesForRecipeCatalystKeys, ingredientRegistry, recipeCategoriesMap, recipeInputMap, recipeOutputMap, recipeWrappersForCategories);
 		this.plugins.add(new RecipeRegistryPluginSafeWrapper(internalRecipeRegistryPlugin));
@@ -129,47 +121,23 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return ingredientHelper.getUniqueId(ingredient);
 	}
 
-	private static ImmutableMap<String, IRecipeCategory> buildRecipeCategoriesMap(List<IRecipeCategory> recipeCategories) {
-		ImmutableMap.Builder<String, IRecipeCategory> mapBuilder = ImmutableMap.builder();
+	private static ImmutableMap<ResourceLocation, IRecipeCategory> buildRecipeCategoriesMap(List<IRecipeCategory> recipeCategories) {
+		ImmutableMap.Builder<ResourceLocation, IRecipeCategory> mapBuilder = ImmutableMap.builder();
 		for (IRecipeCategory recipeCategory : recipeCategories) {
 			mapBuilder.put(recipeCategory.getUid(), recipeCategory);
 		}
 		return mapBuilder.build();
 	}
 
-	private static ImmutableList<IRecipeHandler> buildRecipeHandlersList(List<IRecipeHandler> recipeHandlers) {
-		ImmutableList.Builder<IRecipeHandler> listBuilder = ImmutableList.builder();
-		Set<Class> recipeHandlerClasses = new HashSet<>();
-		for (IRecipeHandler recipeHandler : recipeHandlers) {
-			if (recipeHandler == null) {
-				continue;
-			}
-
-			Class recipeClass = recipeHandler.getRecipeClass();
-			if (recipeHandlerClasses.contains(recipeClass)) {
-				Log.get().error("A Recipe Handler has already been registered for this recipe class: {}", recipeClass.getName());
-				continue;
-			}
-
-			recipeHandlerClasses.add(recipeClass);
-			listBuilder.add(recipeHandler);
-		}
-		return listBuilder.build();
-	}
-
-	private void addRecipes(List<Object> unsortedRecipes, ListMultiMap<String, Object> recipes) {
-		Collection<Map.Entry<String, List<Object>>> entries = recipes.entrySet();
-		ProgressManager.ProgressBar progressBar = ProgressManager.push("Loading recipes", recipes.getTotalSize() + unsortedRecipes.size());
-		for (Map.Entry<String, List<Object>> entry : entries) {
-			String recipeCategoryUid = entry.getKey();
+	private void addRecipes(ListMultiMap<ResourceLocation, Object> recipes) {
+		Collection<Map.Entry<ResourceLocation, List<Object>>> entries = recipes.entrySet();
+		ProgressManager.ProgressBar progressBar = ProgressManager.push("Loading recipes", recipes.getTotalSize());
+		for (Map.Entry<ResourceLocation, List<Object>> entry : entries) {
+			ResourceLocation recipeCategoryUid = entry.getKey();
 			for (Object recipe : entry.getValue()) {
 				progressBar.step("");
 				addRecipe(recipe, recipe.getClass(), recipeCategoryUid);
 			}
-		}
-		for (Object recipe : unsortedRecipes) {
-			progressBar.step("");
-			addRecipe(recipe, recipe.getClass(), null);
 		}
 		ProgressManager.pop(progressBar);
 	}
@@ -181,16 +149,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	@Deprecated
-	public void addRecipe(Object recipe) {
-		ErrorUtil.checkNotNull(recipe, "recipe");
-		ErrorUtil.assertMainThread();
-
-		addRecipe(recipe, recipe.getClass(), null);
-	}
-
-	@Override
-	@Deprecated
-	public void addRecipe(IRecipeWrapper recipe, String recipeCategoryUid) {
+	public void addRecipe(IRecipeWrapper recipe, ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		ErrorUtil.assertMainThread();
@@ -208,7 +167,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 		}
 	}
 
-	private <T> void addRecipe(T recipe, Class<? extends T> recipeClass, @Nullable String recipeCategoryUid) {
+	private <T> void addRecipe(T recipe, Class<? extends T> recipeClass, @Nullable ResourceLocation recipeCategoryUid) {
 		if (recipeCategoryUid == null) {
 			IRecipeHandler<T> recipeHandler = getRecipeHandler(recipeClass, null);
 			if (recipeHandler != null) {
@@ -235,7 +194,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	@Nullable
-	public IRecipeCategory getRecipeCategory(String recipeCategoryUid) {
+	public IRecipeCategory getRecipeCategory(ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		return recipeCategoriesMap.get(recipeCategoryUid);
 	}
@@ -285,74 +244,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return ingredients;
 	}
 
-	@Deprecated
-	@Override
-	public void removeRecipe(Object recipe) {
-		ErrorUtil.checkNotNull(recipe, "recipe");
-		ErrorUtil.assertMainThread();
-
-		List<IRecipeHandler<Object>> recipeHandlers1 = getRecipeHandlers(recipe.getClass());
-		for (IRecipeHandler<Object> recipeHandler : recipeHandlers1) {
-			String recipeCategoryUid = recipeHandler.getRecipeCategoryUid(recipe);
-			removeRecipe(recipe, recipeCategoryUid);
-		}
-	}
-
-	private <T> void removeRecipe(T recipe, String recipeCategoryUid) {
-		IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
-		if (recipeCategory == null) {
-			Log.get().error("No recipe category registered for recipeCategoryUid: {}", recipeCategoryUid);
-			return;
-		}
-
-		try {
-			IRecipeWrapper recipeWrapper = getRecipeWrapper(recipe, recipeCategory.getUid());
-			if (recipeWrapper != null) {
-				hideRecipe(recipeWrapper, recipeCategoryUid);
-			}
-		} catch (BrokenCraftingRecipeException e) {
-			Log.get().error("Found a broken crafting recipe.", e);
-		}
-	}
-
-	@Override
-	@Deprecated
-	public void removeRecipe(IRecipeWrapper recipe, String recipeCategoryUid) {
-		ErrorUtil.checkNotNull(recipe, "recipe");
-		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-		ErrorUtil.assertMainThread();
-
-		hideRecipe(recipe, recipeCategoryUid);
-	}
-
-	@Override
-	@Deprecated
-	public void addSmeltingRecipe(List<ItemStack> inputs, ItemStack output) {
-		ErrorUtil.checkNotEmpty(inputs, "inputs");
-		ErrorUtil.checkNotEmpty(output, "output");
-
-		SmeltingRecipe smeltingRecipe = new SmeltingRecipe(inputs, output);
-		addRecipe(smeltingRecipe);
-	}
-
-	@Override
-	@Deprecated
-	public IRecipeWrapper createSmeltingRecipe(List<ItemStack> inputs, ItemStack output) {
-		return Internal.getHelpers().getVanillaRecipeFactory().createSmeltingRecipe(inputs, output);
-	}
-
-	@Override
-	@Deprecated
-	public IRecipeWrapper createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
-		return Internal.getHelpers().getVanillaRecipeFactory().createAnvilRecipe(leftInput, rightInputs, outputs);
-	}
-
-	@Override
-	@Deprecated
-	public IRecipeWrapper createBrewingRecipe(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput) {
-		return Internal.getHelpers().getVanillaRecipeFactory().createBrewingRecipe(ingredients, potionInput, potionOutput);
-	}
-
 	@Override
 	public List<IRecipeCategory> getRecipeCategories() {
 		if (recipeCategoriesVisibleCache.isEmpty()) {
@@ -380,11 +271,11 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public ImmutableList<IRecipeCategory> getRecipeCategories(List<String> recipeCategoryUids) {
+	public ImmutableList<IRecipeCategory> getRecipeCategories(List<ResourceLocation> recipeCategoryUids) {
 		ErrorUtil.checkNotNull(recipeCategoryUids, "recipeCategoryUids");
 
 		ImmutableList.Builder<IRecipeCategory> builder = ImmutableList.builder();
-		for (String recipeCategoryUid : recipeCategoryUids) {
+		for (ResourceLocation recipeCategoryUid : recipeCategoryUids) {
 			IRecipeCategory<?> recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
 			if (recipeCategory != null && getRecipeCategories().contains(recipeCategory)) {
 				builder.add(recipeCategory);
@@ -393,23 +284,16 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return builder.build();
 	}
 
-	@Deprecated
 	@Nullable
 	@Override
-	public <T> IRecipeHandler<T> getRecipeHandler(Class<? extends T> recipeClass) {
-		return getRecipeHandler(recipeClass, null);
-	}
-
-	@Nullable
-	@Override
-	public IRecipeWrapper getRecipeWrapper(Object recipe, String recipeCategoryUid) {
+	public IRecipeWrapper getRecipeWrapper(Object recipe, ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
-		ErrorUtil.checkNotEmpty(recipeCategoryUid, "recipeCategoryUid");
+		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		return getRecipeWrapper(recipe, recipe.getClass(), recipeCategoryUid);
 	}
 
 	@Nullable
-	private <T> IRecipeWrapper getRecipeWrapper(T recipe, Class<? extends T> recipeClass, String recipeCategoryUid) {
+	private <T> IRecipeWrapper getRecipeWrapper(T recipe, Class<? extends T> recipeClass, ResourceLocation recipeCategoryUid) {
 		IRecipeWrapper recipeWrapper = wrapperMaps.get(recipeCategoryUid, recipe);
 		if (recipeWrapper != null) {
 			return recipeWrapper;
@@ -417,15 +301,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 		IRecipeHandler<T> recipeHandler = getRecipeHandler(recipeClass, recipeCategoryUid);
 		if (recipeHandler != null) {
-			try {
-				if (!recipeHandler.isRecipeValid(recipe)) {
-					return null;
-				}
-			} catch (RuntimeException | LinkageError e) {
-				Log.get().error("Recipe check crashed", e);
-				return null;
-			}
-
 			try {
 				recipeWrapper = recipeHandler.getRecipeWrapper(recipe);
 				wrapperMaps.put(recipeCategoryUid, recipe, recipeWrapper);
@@ -442,10 +317,10 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Nullable
-	private <T> IRecipeHandler<T> getRecipeHandler(Class<? extends T> recipeClass, @Nullable String recipeCategoryUid) {
+	private <T> IRecipeHandler<T> getRecipeHandler(Class<? extends T> recipeClass, @Nullable ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
 
-		ImmutableCollection<IRecipeHandler> recipeHandlers;
+		ImmutableCollection<IRecipeHandler<?>> recipeHandlers;
 
 		if (recipeCategoryUid != null) {
 			recipeHandlers = this.recipeHandlers.get(recipeCategoryUid);
@@ -453,78 +328,42 @@ public class RecipeRegistry implements IRecipeRegistry {
 			recipeHandlers = this.recipeHandlers.values();
 		}
 
-		// first try to find the exact handler for this recipeClass
-		for (IRecipeHandler<?> recipeHandler : recipeHandlers) {
-			if (recipeHandler.getRecipeClass().equals(recipeClass)) {
-				// noinspection unchecked
-				return (IRecipeHandler<T>) recipeHandler;
-			}
-		}
-		for (IRecipeHandler<?> recipeHandler : unsortedRecipeHandlers) {
-			if (recipeHandler.getRecipeClass().equals(recipeClass)) {
-				// noinspection unchecked
-				return (IRecipeHandler<T>) recipeHandler;
-			}
-		}
-
-		// fall back on any handler that can accept this recipeClass
+		// try to find an exact match. build a list of assignable handlers in case an exact match is not found
+		List<IRecipeHandler<T>> assignableHandlers = new ArrayList<>();
 		for (IRecipeHandler<?> recipeHandler : recipeHandlers) {
 			if (recipeHandler.getRecipeClass().isAssignableFrom(recipeClass)) {
-				// noinspection unchecked
-				return (IRecipeHandler<T>) recipeHandler;
+				//noinspection unchecked
+				IRecipeHandler<T> assignableRecipeHandler = (IRecipeHandler<T>) recipeHandler;
+				if (recipeHandler.getRecipeClass().equals(recipeClass)) {
+					return assignableRecipeHandler;
+				}
+				assignableHandlers.add(assignableRecipeHandler);
 			}
 		}
-		for (IRecipeHandler<?> recipeHandler : unsortedRecipeHandlers) {
-			if (recipeHandler.getRecipeClass().isAssignableFrom(recipeClass)) {
-				// noinspection unchecked
-				return (IRecipeHandler<T>) recipeHandler;
-			}
+		if (assignableHandlers.isEmpty()) {
+			return null;
+		}
+		if (assignableHandlers.size() == 1) {
+			return assignableHandlers.get(0);
 		}
 
-		return null;
-	}
-
-	@Deprecated
-	private <T> List<IRecipeHandler<T>> getRecipeHandlers(Class<? extends T> recipeClass) {
-		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
-
-		List<IRecipeHandler<T>> recipeHandlers = new ArrayList<>();
-
-		ImmutableCollection<IRecipeHandler> allRecipeHandlers = this.recipeHandlers.values();
-
-		// first try to find the exact handler for this recipeClass
-		for (IRecipeHandler<?> recipeHandler : allRecipeHandlers) {
-			if (recipeHandler.getRecipeClass().equals(recipeClass)) {
-				// noinspection unchecked
-				recipeHandlers.add((IRecipeHandler<T>) recipeHandler);
+		// try super classes to get closest match
+		while (!Object.class.equals(recipeClass)) {
+			//noinspection unchecked
+			recipeClass = (Class<? extends T>) recipeClass.getSuperclass();
+			for (IRecipeHandler<?> recipeHandler : assignableHandlers) {
+				if (recipeHandler.getRecipeClass().equals(recipeClass)) {
+					// noinspection unchecked
+					return (IRecipeHandler<T>) recipeHandler;
+				}
 			}
 		}
-		for (IRecipeHandler<?> recipeHandler : unsortedRecipeHandlers) {
-			if (recipeHandler.getRecipeClass().equals(recipeClass)) {
-				// noinspection unchecked
-				recipeHandlers.add((IRecipeHandler<T>) recipeHandler);
-			}
-		}
-
-		// fall back on any handler that can accept this recipeClass
-		for (IRecipeHandler<?> recipeHandler : allRecipeHandlers) {
-			if (recipeHandler.getRecipeClass().isAssignableFrom(recipeClass)) {
-				// noinspection unchecked
-				recipeHandlers.add((IRecipeHandler<T>) recipeHandler);
-			}
-		}
-		for (IRecipeHandler<?> recipeHandler : unsortedRecipeHandlers) {
-			if (recipeHandler.getRecipeClass().isAssignableFrom(recipeClass)) {
-				// noinspection unchecked
-				recipeHandlers.add((IRecipeHandler<T>) recipeHandler);
-			}
-		}
-
-		return recipeHandlers;
+		Log.get().warn("Unable to get matching recipe handler even though assignable ones were found.");
+		return assignableHandlers.get(0);
 	}
 
 	@Nullable
-	public RecipeClickableArea getRecipeClickableArea(GuiContainer gui, int mouseX, int mouseY) {
+	public RecipeClickableArea getRecipeClickableArea(GuiContainer gui, double mouseX, double mouseY) {
 		ImmutableCollection<RecipeClickableArea> recipeClickableAreas = recipeClickableAreasMap.get(gui.getClass());
 		for (RecipeClickableArea recipeClickableArea : recipeClickableAreas) {
 			if (recipeClickableArea.checkHover(mouseX, mouseY)) {
@@ -538,10 +377,10 @@ public class RecipeRegistry implements IRecipeRegistry {
 	public <V> List<IRecipeCategory> getRecipeCategories(IFocus<V> focus) {
 		focus = Focus.check(focus);
 
-		List<String> allRecipeCategoryUids = new ArrayList<>();
+		List<ResourceLocation> allRecipeCategoryUids = new ArrayList<>();
 		for (IRecipeRegistryPlugin plugin : this.plugins) {
-			List<String> recipeCategoryUids = plugin.getRecipeCategoryUids(focus);
-			for (String recipeCategoryUid : recipeCategoryUids) {
+			List<ResourceLocation> recipeCategoryUids = plugin.getRecipeCategoryUids(focus);
+			for (ResourceLocation recipeCategoryUid : recipeCategoryUids) {
 				if (!allRecipeCategoryUids.contains(recipeCategoryUid)) {
 					if (hiddenRecipes.containsKey(recipeCategoryUid)) {
 						IRecipeCategory<?> recipeCategory = getRecipeCategory(recipeCategoryUid);
@@ -596,42 +435,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		return allRecipeWrappers;
 	}
 
-	@Override
-	@Deprecated
-	public List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory, @Nullable IFocus focus) {
-		if (focus != null) {
-			focus = Focus.check(focus);
-		}
-		List<ItemStack> craftingItems = getCraftingItems(recipeCategory);
-
-		if (focus != null && focus.getMode() == IFocus.Mode.INPUT) {
-			Object ingredient = focus.getValue();
-			if (ingredient instanceof ItemStack) {
-				ItemStack itemStack = (ItemStack) ingredient;
-				IIngredientHelper<ItemStack> ingredientHelper = ingredientRegistry.getIngredientHelper(VanillaTypes.ITEM);
-				ItemStack matchingStack = ingredientHelper.getMatch(craftingItems, itemStack);
-				if (matchingStack != null) {
-					return Collections.singletonList(matchingStack);
-				}
-			}
-		}
-		return craftingItems;
-	}
-
-	@Override
-	@Deprecated
-	public List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory) {
-		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		List<Object> objects = getRecipeCatalysts(recipeCategory);
-		List<ItemStack> itemStacks = new ArrayList<>();
-		for (Object object : objects) {
-			if (object instanceof ItemStack) {
-				itemStacks.add((ItemStack) object);
-			}
-		}
-		return Collections.unmodifiableList(itemStacks);
-	}
-
 	public List<Object> getRecipeCatalysts(IRecipeCategory recipeCategory, boolean includeHidden) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		ImmutableList<Object> catalysts = recipeCatalysts.get(recipeCategory);
@@ -677,7 +480,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public void hideRecipe(IRecipeWrapper recipe, String recipeCategoryUid) {
+	public void hideRecipe(IRecipeWrapper recipe, ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		ErrorUtil.assertMainThread();
@@ -686,7 +489,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public void unhideRecipe(IRecipeWrapper recipe, String recipeCategoryUid) {
+	public void unhideRecipe(IRecipeWrapper recipe, ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		ErrorUtil.assertMainThread();
@@ -695,7 +498,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public void hideRecipeCategory(String recipeCategoryUid) {
+	public void hideRecipeCategory(ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		ErrorUtil.assertMainThread();
 		IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
@@ -707,7 +510,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public void unhideRecipeCategory(String recipeCategoryUid) {
+	public void unhideRecipeCategory(ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		ErrorUtil.assertMainThread();
 		if (!recipeCategoriesMap.containsKey(recipeCategoryUid)) {
@@ -715,17 +518,5 @@ public class RecipeRegistry implements IRecipeRegistry {
 		}
 		hiddenRecipeCategoryUids.remove(recipeCategoryUid);
 		recipeCategoriesVisibleCache.clear();
-	}
-
-	@Override
-	@Deprecated
-	public void hideRecipe(IRecipeWrapper recipe) {
-		hideRecipe(recipe, VanillaRecipeCategoryUid.CRAFTING);
-	}
-
-	@Override
-	@Deprecated
-	public void unhideRecipe(IRecipeWrapper recipe) {
-		unhideRecipe(recipe, VanillaRecipeCategoryUid.CRAFTING);
 	}
 }

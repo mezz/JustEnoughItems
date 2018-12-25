@@ -2,6 +2,8 @@ package mezz.jei.plugins.jei.info;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
@@ -12,7 +14,6 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
-import net.minecraft.util.ResourceLocation;
 
 public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientInfoRecipe> {
 	public static final int recipeWidth = 160;
@@ -31,7 +32,7 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 	}
 
 	@Override
-	public String getUid() {
+	public ResourceLocation getUid() {
 		return VanillaRecipeCategoryUid.INFORMATION;
 	}
 

@@ -5,16 +5,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
+
 import com.google.common.collect.Lists;
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
 
 public class AnvilRecipeWrapper implements IRecipeWrapper {
 	private final List<List<ItemStack>> inputs;
@@ -36,7 +36,7 @@ public class AnvilRecipeWrapper implements IRecipeWrapper {
 	}
 
 	@Override
-	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
+	public void drawInfo(int recipeWidth, int recipeHeight, double mouseX, double mouseY) {
 		if (currentIngredients == null) {
 			return;
 		}
@@ -49,8 +49,8 @@ public class AnvilRecipeWrapper implements IRecipeWrapper {
 		}
 
 		if (lastLeftStack == null || lastRightStack == null
-				|| !ItemStack.areItemStacksEqual(lastLeftStack, newLeftStack)
-				|| !ItemStack.areItemStacksEqual(lastRightStack, newRightStack)) {
+			|| !ItemStack.areItemStacksEqual(lastLeftStack, newLeftStack)
+			|| !ItemStack.areItemStacksEqual(lastRightStack, newRightStack)) {
 			lastLeftStack = newLeftStack;
 			lastRightStack = newRightStack;
 			lastCost = AnvilRecipeMaker.findLevelsCost(lastLeftStack, lastRightStack);
@@ -60,11 +60,12 @@ public class AnvilRecipeWrapper implements IRecipeWrapper {
 			String costText = lastCost < 0 ? "err" : Integer.toString(lastCost);
 			String text = I18n.format("container.repair.cost", costText);
 
+			Minecraft minecraft = Minecraft.getInstance();
 			int mainColor = 0xFF80FF20;
 			EntityPlayerSP player = minecraft.player;
 			if (player != null &&
 				(lastCost >= 40 || lastCost > player.experienceLevel) &&
-				!player.capabilities.isCreativeMode) {
+				!player.abilities.isCreativeMode) {
 				// Show red if the player doesn't have enough levels
 				mainColor = 0xFFFF6060;
 			}
@@ -79,14 +80,15 @@ public class AnvilRecipeWrapper implements IRecipeWrapper {
 		int x = recipeWidth - 2 - width;
 		int y = 27;
 
-		if (minecraft.fontRenderer.getUnicodeFlag()) {
-			Gui.drawRect(x - 2, y - 2, x + width + 2, y + 10, 0xFF000000);
-			Gui.drawRect(x - 1, y - 1, x + width + 1, y + 9, 0xFF3B3B3B);
-		} else {
-			minecraft.fontRenderer.drawString(text, x + 1, y, shadowColor);
-			minecraft.fontRenderer.drawString(text, x, y + 1, shadowColor);
-			minecraft.fontRenderer.drawString(text, x + 1, y + 1, shadowColor);
-		}
+		// TODO 1.13 is this still needed?
+//		if (minecraft.fontRenderer.getUnicodeFlag()) {
+//			Gui.drawRect(x - 2, y - 2, x + width + 2, y + 10, 0xFF000000);
+//			Gui.drawRect(x - 1, y - 1, x + width + 1, y + 9, 0xFF3B3B3B);
+//		} else {
+		minecraft.fontRenderer.drawString(text, x + 1, y, shadowColor);
+		minecraft.fontRenderer.drawString(text, x, y + 1, shadowColor);
+		minecraft.fontRenderer.drawString(text, x + 1, y + 1, shadowColor);
+//		}
 
 		minecraft.fontRenderer.drawString(text, x, y, mainColor);
 	}

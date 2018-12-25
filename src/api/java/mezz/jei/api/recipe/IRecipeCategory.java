@@ -4,6 +4,8 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.gui.IDrawable;
@@ -11,7 +13,6 @@ import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITooltipCallback;
 import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.client.Minecraft;
 
 /**
  * Defines a category of recipe, (i.e. Crafting Table Recipe, Furnace Recipe).
@@ -26,7 +27,7 @@ public interface IRecipeCategory<T extends IRecipeWrapper> {
 	 *
 	 * @see VanillaRecipeCategoryUid for vanilla examples
 	 */
-	String getUid();
+	ResourceLocation getUid();
 
 	/**
 	 * Returns the localized name for this recipe type.
@@ -52,7 +53,7 @@ public interface IRecipeCategory<T extends IRecipeWrapper> {
 
 	/**
 	 * Optional icon for the category tab.
-	 * If no icon is defined here, JEI will use first item registered with {@link IModRegistry#addRecipeCatalyst(Object, String...)}
+	 * If no icon is defined here, JEI will use first item registered with {@link IModRegistry#addRecipeCatalyst(Object, ResourceLocation...)}
 	 *
 	 * @return icon to draw on the category tab, max size is 16x16 pixels.
 	 * @since 3.13.1
@@ -68,7 +69,7 @@ public interface IRecipeCategory<T extends IRecipeWrapper> {
 	 * @see IDrawable for a simple class for drawing things.
 	 * @see IGuiHelper for useful functions.
 	 */
-	default void drawExtras(Minecraft minecraft) {
+	default void drawExtras() {
 
 	}
 

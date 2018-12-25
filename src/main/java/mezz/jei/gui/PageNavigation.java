@@ -3,12 +3,13 @@ package mezz.jei.gui;
 import java.awt.Color;
 import java.awt.Rectangle;
 
-import mezz.jei.Internal;
-import mezz.jei.gui.elements.GuiIconButton;
-import mezz.jei.input.IPaged;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
+
+import mezz.jei.Internal;
+import mezz.jei.gui.elements.GuiIconButton;
+import mezz.jei.input.IPaged;
 
 public class PageNavigation {
 	private final IPaged paged;
@@ -22,8 +23,26 @@ public class PageNavigation {
 	public PageNavigation(IPaged paged, boolean hideOnSinglePage) {
 		this.paged = paged;
 		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
-		this.nextButton = new GuiIconButton(0, guiHelper.getArrowNext(), (mc, mouseX, mouseY) -> paged.nextPage());
-		this.backButton = new GuiIconButton(1, guiHelper.getArrowPrevious(), (mc, mouseX, mouseY) -> paged.previousPage());
+		this.nextButton = new GuiIconButton(0, guiHelper.getArrowNext()) {
+			@Override
+			public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+				boolean result = super.mouseClicked(mouseX, mouseY, mouseButton);
+				if (result) {
+					paged.nextPage();
+				}
+				return result;
+			}
+		};
+		this.backButton = new GuiIconButton(1, guiHelper.getArrowPrevious()) {
+			@Override
+			public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+				boolean result = super.mouseClicked(mouseX, mouseY, mouseButton);
+				if (result) {
+					paged.previousPage();
+				}
+				return result;
+			}
+		};
 		this.hideOnSinglePage = hideOnSinglePage;
 	}
 
@@ -40,7 +59,7 @@ public class PageNavigation {
 	public void updatePageState() {
 		int pageNum = this.paged.getPageNumber();
 		int pageCount = this.paged.getPageCount();
-		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+		FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
 		pageNumDisplayString = (pageNum + 1) + "/" + pageCount;
 		int pageDisplayWidth = fontRenderer.getStringWidth(pageNumDisplayString);
 		pageNumDisplayX = ((backButton.x + backButton.width) + nextButton.x) / 2 - (pageDisplayWidth / 2);
@@ -49,9 +68,9 @@ public class PageNavigation {
 
 	public void draw(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
 		if (!hideOnSinglePage || this.paged.hasNext() || this.paged.hasPrevious()) {
-			minecraft.fontRenderer.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(), true);
-			nextButton.drawButton(minecraft, mouseX, mouseY, partialTicks);
-			backButton.drawButton(minecraft, mouseX, mouseY, partialTicks);
+			minecraft.fontRenderer.drawStringWithShadow(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB());
+			nextButton.render(mouseX, mouseY, partialTicks);
+			backButton.render(mouseX, mouseY, partialTicks);
 		}
 	}
 
@@ -60,9 +79,8 @@ public class PageNavigation {
 			backButton.isMouseOver();
 	}
 
-	public boolean handleMouseClickedButtons(int mouseX, int mouseY) {
-		Minecraft minecraft = Minecraft.getMinecraft();
-		return nextButton.mousePressed(minecraft, mouseX, mouseY) ||
-			backButton.mousePressed(minecraft, mouseX, mouseY);
+	public boolean handleMouseClickedButtons(double mouseX, double mouseY, int mouseButton) {
+		return nextButton.mouseClicked(mouseX, mouseY, mouseButton) ||
+			backButton.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 }

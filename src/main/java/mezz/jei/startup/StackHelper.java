@@ -13,19 +13,18 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import mezz.jei.api.ISubtypeRegistry;
-import mezz.jei.api.gui.IGuiIngredient;
-import mezz.jei.api.recipe.IStackHelper;
-import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.oredict.OreDictionary;
+
+import mezz.jei.api.ISubtypeRegistry;
+import mezz.jei.api.gui.IGuiIngredient;
+import mezz.jei.api.recipe.IStackHelper;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 
 public class StackHelper implements IStackHelper {
 	private final ISubtypeRegistry subtypeRegistry;
@@ -55,21 +54,22 @@ public class StackHelper implements IStackHelper {
 
 	@Nullable
 	public String getOreDictEquivalent(Collection<ItemStack> itemStacks) {
-		if (itemStacks.size() < 2) {
-			return null;
-		}
-
-		final ItemStack firstStack = itemStacks.iterator().next();
-		if (firstStack != null) {
-			for (final int oreId : OreDictionary.getOreIDs(firstStack)) {
-				final String oreName = OreDictionary.getOreName(oreId);
-				List<ItemStack> ores = OreDictionary.getOres(oreName);
-				ores = getAllSubtypes(ores);
-				if (containsSameStacks(itemStacks, ores)) {
-					return oreName;
-				}
-			}
-		}
+//		if (itemStacks.size() < 2) {
+//			return null;
+//		}
+//
+//		final ItemStack firstStack = itemStacks.iterator().next();
+//		if (firstStack != null) {
+//			for (final int oreId : OreDictionary.getOreIDs(firstStack)) {
+//				final String oreName = OreDictionary.getOreName(oreId);
+//				List<ItemStack> ores = OreDictionary.getOres(oreName);
+//				ores = getAllSubtypes(ores);
+//				if (containsSameStacks(itemStacks, ores)) {
+//					return oreName;
+//				}
+//			}
+//		}
+		// TODO 1.13 Tags
 		return null;
 	}
 
@@ -204,69 +204,6 @@ public class StackHelper implements IStackHelper {
 	}
 
 	@Override
-	public List<ItemStack> getSubtypes(@Nullable ItemStack itemStack) {
-		if (itemStack == null || itemStack.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		if (itemStack.getItemDamage() != OreDictionary.WILDCARD_VALUE) {
-			return Collections.singletonList(itemStack);
-		}
-
-		NonNullList<ItemStack> subtypes = NonNullList.create();
-		addSubtypesToList(subtypes, itemStack);
-		return subtypes;
-	}
-
-	private void addSubtypesToList(final List<ItemStack> subtypeList, ItemStack itemStack) {
-		final Item item = itemStack.getItem();
-		final int stackSize = itemStack.getCount();
-		for (CreativeTabs itemTab : item.getCreativeTabs()) {
-			if (itemTab == null) {
-				subtypeList.add(itemStack);
-			} else {
-				addSubtypesFromCreativeTabToList(subtypeList, item, stackSize, itemTab);
-			}
-		}
-	}
-
-	public void addSubtypesToList(final List<ItemStack> subtypeList, Item item) {
-		for (CreativeTabs itemTab : item.getCreativeTabs()) {
-			if (itemTab == null) {
-				subtypeList.add(new ItemStack(item, 1));
-			} else {
-				addSubtypesFromCreativeTabToList(subtypeList, item, 1, itemTab);
-			}
-		}
-	}
-
-	private void addSubtypesFromCreativeTabToList(List<ItemStack> subtypeList, Item item, final int stackSize, CreativeTabs itemTab) {
-		NonNullList<ItemStack> subItems = NonNullList.create();
-		try {
-			item.getSubItems(itemTab, subItems);
-		} catch (RuntimeException | LinkageError e) {
-			Log.get().warn("Caught a crash while getting sub-items of {}", item, e);
-		}
-
-		for (ItemStack subItem : subItems) {
-			if (subItem.isEmpty()) {
-				Log.get().warn("Found an empty subItem of {}", item);
-			} else if (subItem.getMetadata() == OreDictionary.WILDCARD_VALUE) {
-				String itemStackInfo = ErrorUtil.getItemStackInfo(subItem);
-				Log.get().error("Found an subItem of {} with wildcard metadata: {}", item, itemStackInfo);
-			} else {
-				if (subItem.getCount() != stackSize) {
-					ItemStack subItemCopy = subItem.copy();
-					subItemCopy.setCount(stackSize);
-					subtypeList.add(subItemCopy);
-				} else {
-					subtypeList.add(subItem);
-				}
-			}
-		}
-	}
-
-	@Override
 	public List<ItemStack> getAllSubtypes(@Nullable Iterable stacks) {
 		if (stacks == null) {
 			return Collections.emptyList();
@@ -296,11 +233,7 @@ public class StackHelper implements IStackHelper {
 			if (obj instanceof ItemStack) {
 				ItemStack itemStack = (ItemStack) obj;
 				if (!itemStack.isEmpty()) {
-					if (itemStack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
-						addSubtypesToList(subtypesList, itemStack);
-					} else {
-						subtypesList.add(itemStack);
-					}
+					subtypesList.add(itemStack);
 				}
 			} else if (obj instanceof Iterable) {
 				addSubtypesToList(subtypesList, (Iterable) obj);
@@ -318,13 +251,9 @@ public class StackHelper implements IStackHelper {
 			return Collections.emptyList();
 		}
 
-		return expandRecipeItemStackInputs(inputs, true);
-	}
-
-	public List<List<ItemStack>> expandRecipeItemStackInputs(List inputs, boolean expandSubtypes) {
 		List<List<ItemStack>> expandedInputs = new ArrayList<>();
 		for (Object input : inputs) {
-			List<ItemStack> expandedInput = toItemStackList(input, expandSubtypes);
+			List<ItemStack> expandedInput = toItemStackList(input);
 			expandedInputs.add(expandedInput);
 		}
 		return expandedInputs;
@@ -336,47 +265,36 @@ public class StackHelper implements IStackHelper {
 			return NonNullList.create();
 		}
 
-		return toItemStackList(stacks, true);
-	}
-
-	public NonNullList<ItemStack> toItemStackList(Object stacks, boolean expandSubtypes) {
 		UniqueItemStackListBuilder itemStackListBuilder = new UniqueItemStackListBuilder(this);
-		toItemStackList(itemStackListBuilder, stacks, expandSubtypes);
+		toItemStackList(itemStackListBuilder, stacks);
 		return itemStackListBuilder.build();
 	}
 
-	private void toItemStackList(UniqueItemStackListBuilder itemStackListBuilder, @Nullable Object input, boolean expandSubtypes) {
+	private void toItemStackList(UniqueItemStackListBuilder itemStackListBuilder, @Nullable Object input) {
 		if (input instanceof ItemStack) {
-			toItemStackList(itemStackListBuilder, (ItemStack) input, expandSubtypes);
-		} else if (input instanceof String) {
-			List<ItemStack> stacks = OreDictionary.getOres((String) input);
-			for (ItemStack stack : stacks) {
-				toItemStackList(itemStackListBuilder, stack, expandSubtypes);
-			}
+			itemStackListBuilder.add((ItemStack) input);
+//		} else if (input instanceof String) {
+			// TODO 1.13 tags
+//			List<ItemStack> stacks = OreDictionary.getOres((String) input);
+//			for (ItemStack stack : stacks) {
+//				if (stack != null) {
+//					itemStackListBuilder.add(stack);
+//				}
+//			}
+
 		} else if (input instanceof Ingredient) {
 			ItemStack[] stacks = ((Ingredient) input).getMatchingStacks();
 			for (ItemStack stack : stacks) {
-				toItemStackList(itemStackListBuilder, stack, expandSubtypes);
+				if (stack != null) {
+					itemStackListBuilder.add(stack);
+				}
 			}
 		} else if (input instanceof Iterable) {
 			for (Object obj : (Iterable) input) {
-				toItemStackList(itemStackListBuilder, obj, expandSubtypes);
+				toItemStackList(itemStackListBuilder, obj);
 			}
 		} else if (input != null) {
 			Log.get().error("Unknown object found: {}", input);
-		}
-	}
-
-	private void toItemStackList(UniqueItemStackListBuilder itemStackListBuilder, @Nullable ItemStack itemStack, boolean expandSubtypes) {
-		if (itemStack != null) {
-			if (expandSubtypes && itemStack.getMetadata() == OreDictionary.WILDCARD_VALUE) {
-				List<ItemStack> subtypes = getSubtypes(itemStack);
-				for (ItemStack subtype : subtypes) {
-					itemStackListBuilder.add(subtype);
-				}
-			} else {
-				itemStackListBuilder.add(itemStack);
-			}
 		}
 	}
 
@@ -402,8 +320,7 @@ public class StackHelper implements IStackHelper {
 
 		StringBuilder itemKey = new StringBuilder(itemName.toString());
 
-		int metadata = stack.getMetadata();
-		if (mode != UidMode.WILDCARD && metadata != OreDictionary.WILDCARD_VALUE) {
+		if (mode != UidMode.WILDCARD) {
 			String subtypeInfo = subtypeRegistry.getSubtypeInfo(stack);
 			if (subtypeInfo != null) {
 				if (!subtypeInfo.isEmpty()) {
@@ -411,12 +328,10 @@ public class StackHelper implements IStackHelper {
 				}
 			} else {
 				if (mode == UidMode.FULL) {
-					itemKey.append(':').append(metadata);
-
 					NBTTagCompound serializedNbt = stack.serializeNBT();
-					NBTTagCompound nbtTagCompound = serializedNbt.getCompoundTag("tag").copy();
+					NBTTagCompound nbtTagCompound = serializedNbt.getCompound("tag").copy();
 					if (serializedNbt.hasKey("ForgeCaps")) {
-						NBTTagCompound forgeCaps = serializedNbt.getCompoundTag("ForgeCaps");
+						NBTTagCompound forgeCaps = serializedNbt.getCompound("ForgeCaps");
 						if (!forgeCaps.isEmpty()) { // ForgeCaps should never be empty
 							nbtTagCompound.setTag("ForgeCaps", forgeCaps);
 						}
@@ -424,8 +339,6 @@ public class StackHelper implements IStackHelper {
 					if (!nbtTagCompound.isEmpty()) {
 						itemKey.append(':').append(nbtTagCompound);
 					}
-				} else if (stack.getHasSubtypes()) {
-					itemKey.append(':').append(metadata);
 				}
 			}
 		}

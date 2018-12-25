@@ -3,17 +3,11 @@ package mezz.jei.util;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import com.google.common.base.Throwables;
-import mezz.jei.JustEnoughItems;
-import mezz.jei.network.packets.PacketCheatPermission;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandGive;
-import net.minecraft.command.CommandResultStats;
-import net.minecraft.command.ICommand;
-import net.minecraft.command.ICommandManager;
-import net.minecraft.command.ICommandSender;
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.Commands;
+import net.minecraft.command.impl.GiveCommand;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -25,11 +19,15 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.CommandEvent;
-import net.minecraftforge.items.ItemHandlerHelper;
+
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.RootCommandNode;
+import mezz.jei.network.Network;
+import mezz.jei.network.packets.PacketCheatPermission;
 
 /**
  * Server-side-safe utilities for commands.
@@ -39,7 +37,7 @@ public final class CommandUtilServer {
 	}
 
 	public static String[] getGiveCommandParameters(EntityPlayer sender, ItemStack itemStack, int amount) {
-		String senderName = sender.getName();
+		ITextComponent senderName = sender.getName();
 		Item item = itemStack.getItem();
 		ResourceLocation itemResourceLocation = item.getRegistryName();
 		if (itemResourceLocation == null) {
@@ -48,16 +46,13 @@ public final class CommandUtilServer {
 		}
 
 		List<String> commandStrings = new ArrayList<>();
-		commandStrings.add(senderName);
+		commandStrings.add(senderName.getString());
 		commandStrings.add(itemResourceLocation.toString());
-		commandStrings.add(String.valueOf(amount));
-		commandStrings.add(String.valueOf(itemStack.getMetadata()));
-
-		NBTTagCompound tagCompound = itemStack.getTagCompound();
+		NBTTagCompound tagCompound = itemStack.getTag();
 		if (tagCompound != null) {
 			commandStrings.add(tagCompound.toString());
 		}
-
+		commandStrings.add(String.valueOf(amount));
 		return commandStrings.toArray(new String[0]);
 	}
 
@@ -67,48 +62,38 @@ public final class CommandUtilServer {
 		player.sendMessage(component);
 	}
 
-	public static boolean hasPermission(EntityPlayerMP sender, ItemStack itemStack) {
+	public static boolean hasPermission(EntityPlayerMP sender) {
 		if (sender.isCreative()) {
 			return true;
 		}
-
-		MinecraftServer minecraftServer = sender.server;
-		ICommand giveCommand = getGiveCommand(sender);
-		if (giveCommand != null && giveCommand.checkPermission(minecraftServer, sender)) {
-			String[] commandParameters = getGiveCommandParameters(sender, itemStack, itemStack.getCount());
-			CommandEvent event = new CommandEvent(giveCommand, sender, commandParameters);
-			if (MinecraftForge.EVENT_BUS.post(event)) {
-				Throwable exception = event.getException();
-				if (exception != null) {
-					Throwables.throwIfUnchecked(exception);
-				}
-				return false;
-			}
-			return true;
+		CommandNode<CommandSource> giveCommand = getGiveCommand(sender);
+		CommandSource commandSource = sender.getCommandSource();
+		if (giveCommand != null) {
+			return giveCommand.canUse(commandSource);
 		} else {
-			return sender.canUseCommand(minecraftServer.getOpPermissionLevel(), "give");
+			MinecraftServer minecraftServer = sender.server;
+			int opPermissionLevel = minecraftServer.getOpPermissionLevel();
+			return commandSource.hasPermissionLevel(opPermissionLevel);
 		}
 	}
 
 	/**
 	 * Gives a player an item.
-	 *
-	 * @see CommandGive#execute(MinecraftServer, ICommandSender, String[])
 	 */
 	public static void executeGive(EntityPlayerMP sender, ItemStack itemStack, GiveMode giveMode) {
-		if (hasPermission(sender, itemStack)) {
+		if (hasPermission(sender)) {
 			if (giveMode == GiveMode.INVENTORY) {
 				giveToInventory(sender, itemStack);
 			} else if (giveMode == GiveMode.MOUSE_PICKUP) {
 				mousePickupItemStack(sender, itemStack);
 			}
 		} else {
-			JustEnoughItems.getProxy().sendPacketToClient(new PacketCheatPermission(false), sender);
+			Network.sendPacketToClient(new PacketCheatPermission(false), sender);
 		}
 	}
 
 	public static void setHotbarSlot(EntityPlayerMP sender, ItemStack itemStack, int hotbarSlot) {
-		if (hasPermission(sender, itemStack)) {
+		if (hasPermission(sender)) {
 			if (!InventoryPlayer.isHotbar(hotbarSlot)) {
 				Log.get().error("Tried to set slot that is not in the hotbar: {}", hotbarSlot);
 				return;
@@ -117,20 +102,19 @@ public final class CommandUtilServer {
 			if (ItemStack.areItemStacksEqual(stackInSlot, itemStack)) {
 				return;
 			}
-			final int count = itemStack.getCount();
-			ItemStack originalStack = itemStack.copy();
+			ItemStack itemStackCopy = itemStack.copy();
 			sender.inventory.setInventorySlotContents(hotbarSlot, itemStack);
 			sender.world.playSound(null, sender.posX, sender.posY, sender.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((sender.getRNG().nextFloat() - sender.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			sender.inventoryContainer.detectAndSendChanges();
-			sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, count);
-			notifyGive(sender, originalStack, count);
+			notifyGive(sender, itemStackCopy);
 		} else {
-			JustEnoughItems.getProxy().sendPacketToClient(new PacketCheatPermission(false), sender);
+			Network.sendPacketToClient(new PacketCheatPermission(false), sender);
 		}
 	}
 
 	public static void mousePickupItemStack(EntityPlayer sender, ItemStack itemStack) {
 		int giveCount;
+		ItemStack itemStackCopy = itemStack.copy();
 		ItemStack existingStack = sender.inventory.getItemStack();
 		if (ItemHandlerHelper.canItemStacksStack(existingStack, itemStack)) {
 			int newCount = Math.min(existingStack.getMaxStackSize(), existingStack.getCount() + itemStack.getCount());
@@ -143,54 +127,56 @@ public final class CommandUtilServer {
 
 		if (sender instanceof EntityPlayerMP) {
 			EntityPlayerMP playerMP = (EntityPlayerMP) sender;
-			notifyGive(playerMP, itemStack, giveCount);
+			itemStackCopy.setCount(giveCount);
+			notifyGive(playerMP, itemStackCopy);
 			playerMP.updateHeldItem();
 		}
 	}
 
 	/**
-	 * Gives a player an item. Similar to vanilla but without the "fake" itemStack popping into the player's face.
-	 * (no {@link EntityItem#makeFakeItem()}
+	 * Gives a player an item.
+	 *
+	 * @see GiveCommand#giveItem(net.minecraft.command.CommandSource, net.minecraft.command.arguments.ItemInput, java.util.Collection, int)
 	 */
-	private static void giveToInventory(EntityPlayerMP sender, ItemStack itemStack) {
-		int count = itemStack.getCount();
-		ItemStack originalStack = itemStack.copy();
-		boolean addedToInventory = sender.inventory.addItemStackToInventory(itemStack);
+	@SuppressWarnings("JavadocReference")
+	private static void giveToInventory(EntityPlayerMP entityplayermp, ItemStack itemStack) {
+		ItemStack itemStackCopy = itemStack.copy();
+		boolean flag = entityplayermp.inventory.addItemStackToInventory(itemStack);
+		if (flag && itemStack.isEmpty()) {
+			itemStack.setCount(1);
+			EntityItem entityitem = entityplayermp.dropItem(itemStack, false);
+			if (entityitem != null) {
+				entityitem.makeFakeItem();
+			}
 
-		if (addedToInventory) {
-			sender.world.playSound(null, sender.posX, sender.posY, sender.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((sender.getRNG().nextFloat() - sender.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
-			sender.inventoryContainer.detectAndSendChanges();
-		}
-
-		if (addedToInventory && itemStack.isEmpty()) {
-			sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, count);
+			entityplayermp.world.playSound(null, entityplayermp.posX, entityplayermp.posY, entityplayermp.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((entityplayermp.getRNG().nextFloat() - entityplayermp.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+			entityplayermp.inventoryContainer.detectAndSendChanges();
 		} else {
-			sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, count - itemStack.getCount());
-			EntityItem entityitem = sender.dropItem(itemStack, false);
+			EntityItem entityitem = entityplayermp.dropItem(itemStack, false);
 			if (entityitem != null) {
 				entityitem.setNoPickupDelay();
-				entityitem.setOwner(sender.getName());
+				entityitem.setOwnerId(entityplayermp.getUniqueID());
 			}
 		}
 
-		notifyGive(sender, originalStack, count);
+		notifyGive(entityplayermp, itemStackCopy);
 	}
 
-	private static void notifyGive(EntityPlayerMP sender, ItemStack itemStack, int count) {
-		if (!sender.isCreative() && count > 0) {
-			ICommand giveCommand = getGiveCommand(sender);
-			if (giveCommand != null) {
-				ItemStack copy = ItemHandlerHelper.copyStackWithSize(itemStack, 1);
-				CommandBase.notifyCommandListener(sender, giveCommand, "commands.give.success", copy.getTextComponent(), count, sender.getName());
-			}
-		}
+	private static void notifyGive(EntityPlayerMP entityPlayerMP, ItemStack stack) {
+		CommandSource commandSource = entityPlayerMP.getCommandSource();
+		int count = stack.getCount();
+		ITextComponent stackTextComponent = stack.getTextComponent();
+		ITextComponent displayName = entityPlayerMP.getDisplayName();
+		TextComponentTranslation message = new TextComponentTranslation("commands.give.success.single", count, stackTextComponent, displayName);
+		commandSource.sendFeedback(message, true);
 	}
 
 	@Nullable
-	private static ICommand getGiveCommand(EntityPlayerMP sender) {
+	private static CommandNode<CommandSource> getGiveCommand(EntityPlayerMP sender) {
 		MinecraftServer minecraftServer = sender.server;
-		ICommandManager commandManager = minecraftServer.getCommandManager();
-		Map<String, ICommand> commands = commandManager.getCommands();
-		return commands.get("give");
+		Commands commandManager = minecraftServer.getCommandManager();
+		CommandDispatcher<CommandSource> dispatcher = commandManager.getDispatcher();
+		RootCommandNode<CommandSource> root = dispatcher.getRoot();
+		return root.getChild("give");
 	}
 }

@@ -164,8 +164,8 @@ public class ColorThief {
 	 */
 	private static int[][] getPixelsFast(BufferedImage sourceImage, int quality, boolean ignoreWhite) {
 		DataBufferByte imageData = (DataBufferByte) sourceImage
-				.getRaster()
-				.getDataBuffer();
+			.getRaster()
+			.getDataBuffer();
 		byte[] pixels = imageData.getData();
 		int pixelCount = sourceImage.getWidth() * sourceImage.getHeight();
 
@@ -187,8 +187,8 @@ public class ColorThief {
 		int expectedDataLength = pixelCount * colorDepth;
 		if (expectedDataLength != pixels.length) {
 			throw new IllegalArgumentException("(expectedDataLength = "
-					+ expectedDataLength + ") != (pixels.length = "
-					+ pixels.length + ")");
+				+ expectedDataLength + ") != (pixels.length = "
+				+ pixels.length + ")");
 		}
 
 		// Store the RGB values in an array format suitable for quantize

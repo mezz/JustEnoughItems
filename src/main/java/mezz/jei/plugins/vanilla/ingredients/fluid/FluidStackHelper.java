@@ -4,19 +4,18 @@ import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.Collections;
 
-import com.google.common.base.MoreObjects;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.color.ColorGetter;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
+
+import com.google.common.base.MoreObjects;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.color.ColorGetter;
+import mezz.jei.config.Constants;
 
 public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	@Override
@@ -50,21 +49,23 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Override
 	public String getModId(FluidStack ingredient) {
-		String defaultFluidName = FluidRegistry.getDefaultFluidName(ingredient.getFluid());
-		if (defaultFluidName == null) {
-			return "";
-		}
-		ResourceLocation fluidResourceName = new ResourceLocation(defaultFluidName);
-		return fluidResourceName.getNamespace();
+		// TODO 1.13
+//		String defaultFluidName = FluidRegistry.getDefaultFluidName(ingredient.getFluid());
+//		if (defaultFluidName == null) {
+//			return "";
+//		}
+//		ResourceLocation fluidResourceName = new ResourceLocation(defaultFluidName);
+//		return fluidResourceName.getNamespace();
+		return Constants.MOD_ID;
 	}
 
 	@Override
 	public Iterable<Color> getColors(FluidStack ingredient) {
 		Fluid fluid = ingredient.getFluid();
-		TextureMap textureMapBlocks = Minecraft.getMinecraft().getTextureMapBlocks();
+		TextureMap textureMapBlocks = Minecraft.getInstance().getTextureMap();
 		ResourceLocation fluidStill = fluid.getStill();
 		if (fluidStill != null) {
-			TextureAtlasSprite fluidStillSprite = textureMapBlocks.getTextureExtry(fluidStill.toString());
+			TextureAtlasSprite fluidStillSprite = textureMapBlocks.getSprite(fluidStill);
 			if (fluidStillSprite != null) {
 				int renderColor = ingredient.getFluid().getColor(ingredient);
 				return ColorGetter.getColors(fluidStillSprite, renderColor, 1);
@@ -75,30 +76,33 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Override
 	public String getResourceId(FluidStack ingredient) {
-		String defaultFluidName = FluidRegistry.getDefaultFluidName(ingredient.getFluid());
-		if (defaultFluidName == null) {
-			return "";
-		}
-		ResourceLocation fluidResourceName = new ResourceLocation(defaultFluidName);
-		return fluidResourceName.getPath();
+		// TODO 1.13
+//		String defaultFluidName = FluidRegistry.getDefaultFluidName(ingredient.getFluid());
+//		if (defaultFluidName == null) {
+//			return "";
+//		}
+//		ResourceLocation fluidResourceName = new ResourceLocation(defaultFluidName);
+//		return fluidResourceName.getPath();
+		return ingredient.getUnlocalizedName();
 	}
 
 	@Override
 	public ItemStack getCheatItemStack(FluidStack ingredient) {
-		Fluid fluid = ingredient.getFluid();
-		if (fluid == FluidRegistry.WATER) {
-			return new ItemStack(Items.WATER_BUCKET);
-		} else if (fluid == FluidRegistry.LAVA) {
-			return new ItemStack(Items.LAVA_BUCKET);
-		} else if (fluid.getName().equals("milk")) {
-			return new ItemStack(Items.MILK_BUCKET);
-		} else if (FluidRegistry.isUniversalBucketEnabled()) {
-			ItemStack filledBucket = FluidUtil.getFilledBucket(ingredient);
-			FluidStack fluidContained = FluidUtil.getFluidContained(filledBucket);
-			if (fluidContained != null && fluidContained.isFluidEqual(ingredient)) {
-				return filledBucket;
-			}
-		}
+		// TODO 1.13
+//		Fluid fluid = ingredient.getFluid();
+//		if (fluid == FluidRegistry.WATER) {
+//			return new ItemStack(Items.WATER_BUCKET);
+//		} else if (fluid == FluidRegistry.LAVA) {
+//			return new ItemStack(Items.LAVA_BUCKET);
+//		} else if (fluid.getName().equals("milk")) {
+//			return new ItemStack(Items.MILK_BUCKET);
+//		} else if (FluidRegistry.isUniversalBucketEnabled()) {
+//			ItemStack filledBucket = FluidUtil.getFilledBucket(ingredient);
+//			FluidStack fluidContained = FluidUtil.getFluidContained(filledBucket);
+//			if (fluidContained != null && fluidContained.isFluidEqual(ingredient)) {
+//				return filledBucket;
+//			}
+//		}
 		return ItemStack.EMPTY;
 	}
 

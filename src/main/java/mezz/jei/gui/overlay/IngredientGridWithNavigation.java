@@ -1,6 +1,18 @@
 package mezz.jei.gui.overlay;
 
-import mezz.jei.config.Config;
+import javax.annotation.Nullable;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import net.minecraft.client.GameSettings;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.InputMappings;
+import net.minecraft.item.ItemStack;
+
+import mezz.jei.config.ClientConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.PageNavigation;
@@ -11,22 +23,11 @@ import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IPaged;
 import mezz.jei.input.IShowsRecipeFocuses;
-import mezz.jei.input.MouseHelper;
+import mezz.jei.input.MouseUtil;
 import mezz.jei.render.IngredientListSlot;
 import mezz.jei.render.IngredientRenderer;
 import mezz.jei.util.CommandUtil;
 import mezz.jei.util.MathUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.settings.GameSettings;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nullable;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Displays a list of ingredients with navigation at the top.
@@ -102,20 +103,20 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 	}
 
 	@Override
-	public boolean isMouseOver(int mouseX, int mouseY) {
+	public boolean isMouseOver(double mouseX, double mouseY) {
 		return this.area.contains(mouseX, mouseY) &&
 			!guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
 	}
 
 	@Override
-	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
+	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
 		return !guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY) &&
 			(this.ingredientGrid.handleMouseClicked(mouseX, mouseY) ||
-			this.navigation.handleMouseClickedButtons(mouseX, mouseY));
+				this.navigation.handleMouseClickedButtons(mouseX, mouseY, mouseButton));
 	}
 
 	@Override
-	public boolean handleMouseScrolled(int mouseX, int mouseY, int scrollDelta) {
+	public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
 		if (scrollDelta < 0) {
 			this.pageDelegate.nextPage();
 			return true;
@@ -126,30 +127,31 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		return false;
 	}
 
-	public boolean onKeyPressed(char typedChar, int keyCode) {
-		if (KeyBindings.nextPage.isActiveAndMatches(keyCode)) {
+	public boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
+		InputMappings.Input input = InputMappings.getInputByCode(keyCode, scanCode);
+		if (KeyBindings.nextPage.isActiveAndMatches(input)) {
 			this.pageDelegate.nextPage();
 			return true;
-		} else if (KeyBindings.previousPage.isActiveAndMatches(keyCode)) {
+		} else if (KeyBindings.previousPage.isActiveAndMatches(input)) {
 			this.pageDelegate.previousPage();
 			return true;
 		}
-		return checkHotbarKeys(keyCode);
+		return checkHotbarKeys(input);
 	}
 
 	/**
-	 * Modeled after {@link GuiContainer#checkHotbarKeys(int)}
+	 * Modeled after GuiContainer#checkHotbarKeys(int)
 	 * Sets the stack in a hotbar slot to the one that's hovered over.
 	 */
-	protected boolean checkHotbarKeys(int keyCode) {
-		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
-		if (Config.isCheatItemsEnabled() && guiScreen != null && !(guiScreen instanceof RecipesGui)) {
-			final int mouseX = MouseHelper.getX();
-			final int mouseY = MouseHelper.getY();
+	protected boolean checkHotbarKeys(InputMappings.Input input) {
+		GuiScreen guiScreen = Minecraft.getInstance().currentScreen;
+		if (ClientConfig.getInstance().isCheatItemsEnabled() && guiScreen != null && !(guiScreen instanceof RecipesGui)) {
+			final double mouseX = MouseUtil.getX();
+			final double mouseY = MouseUtil.getY();
 			if (isMouseOver(mouseX, mouseY)) {
-				GameSettings gameSettings = Minecraft.getMinecraft().gameSettings;
+				GameSettings gameSettings = Minecraft.getInstance().gameSettings;
 				for (int hotbarSlot = 0; hotbarSlot < 9; ++hotbarSlot) {
-					if (gameSettings.keyBindsHotbar[hotbarSlot].isActiveAndMatches(keyCode)) {
+					if (gameSettings.keyBindsHotbar[hotbarSlot].isActiveAndMatches(input)) {
 						IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);
 						if (ingredientUnderMouse != null) {
 							ItemStack itemStack = ingredientUnderMouse.getCheatItemStack();
@@ -168,7 +170,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 
 	@Nullable
 	@Override
-	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
+	public IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY);
 	}
 

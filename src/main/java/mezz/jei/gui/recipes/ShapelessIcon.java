@@ -4,13 +4,13 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.client.renderer.GlStateManager;
+
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.gui.HoverChecker;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.util.Translator;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraftforge.fml.client.config.HoverChecker;
 
 public class ShapelessIcon {
 	private static final IDrawable icon = Internal.getHelpers().getGuiHelper().getShapelessIcon();
@@ -20,7 +20,7 @@ public class ShapelessIcon {
 		int iconBottom = icon.getHeight() / 2;
 		int iconLeft = CraftingRecipeCategory.width - getWidth();
 		int iconRight = iconLeft + getWidth();
-		this.hoverChecker = new HoverChecker(0, iconBottom, iconLeft, iconRight, 0);
+		this.hoverChecker = new HoverChecker(0, iconBottom, iconLeft, iconRight);
 	}
 
 	public static int getWidth() {
@@ -31,12 +31,12 @@ public class ShapelessIcon {
 		return icon.getHeight() / 2;
 	}
 
-	public void draw(Minecraft minecraft, int recipeWidth) {
+	public void draw(int recipeWidth) {
 		int shapelessIconX = recipeWidth - getWidth();
 
 		GlStateManager.pushMatrix();
-		GlStateManager.scale(0.5, 0.5, 1.0);
-		icon.draw(minecraft, shapelessIconX * 2, 0);
+		GlStateManager.scaled(0.5, 0.5, 1.0);
+		icon.draw(shapelessIconX * 2, 0);
 		GlStateManager.popMatrix();
 	}
 

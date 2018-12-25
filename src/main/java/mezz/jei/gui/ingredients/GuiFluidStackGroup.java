@@ -2,12 +2,13 @@ package mezz.jei.gui.ingredients;
 
 import javax.annotation.Nullable;
 
+import net.minecraftforge.fluids.FluidStack;
+
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackRenderer;
-import net.minecraftforge.fluids.FluidStack;
 
 public class GuiFluidStackGroup extends GuiIngredientGroup<FluidStack> implements IGuiFluidStackGroup {
 	public GuiFluidStackGroup(@Nullable IFocus<FluidStack> focus, int cycleOffset) {

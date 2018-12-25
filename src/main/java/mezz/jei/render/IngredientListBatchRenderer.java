@@ -1,25 +1,26 @@
 package mezz.jei.render;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.ItemModelMesher;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.item.ItemStack;
+
 import com.google.common.base.Preconditions;
 import mezz.jei.api.ingredients.ISlowRenderItem;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class IngredientListBatchRenderer {
 	private final List<IngredientListSlot> slots = new ArrayList<>();
@@ -83,10 +84,10 @@ public class IngredientListBatchRenderer {
 			IIngredientListElement<ItemStack> itemStackElement = (IIngredientListElement<ItemStack>) element;
 			ItemStack itemStack = itemStackElement.getIngredient();
 			IBakedModel bakedModel;
-			ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+			ItemModelMesher itemModelMesher = Minecraft.getInstance().getItemRenderer().getItemModelMesher();
 			try {
 				bakedModel = itemModelMesher.getItemModel(itemStack);
-				bakedModel = bakedModel.getOverrides().handleItemState(bakedModel, itemStack, null, null);
+				bakedModel = bakedModel.getOverrides().getModelWithOverrides(bakedModel, itemStack, null, null);
 				Preconditions.checkNotNull(bakedModel, "IBakedModel must not be null.");
 			} catch (Throwable throwable) {
 				String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
@@ -112,7 +113,7 @@ public class IngredientListBatchRenderer {
 	}
 
 	@Nullable
-	public ClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
+	public ClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
 		IngredientRenderer hovered = getHovered(mouseX, mouseY);
 		if (hovered != null) {
 			IIngredientListElement element = hovered.getElement();
@@ -122,7 +123,7 @@ public class IngredientListBatchRenderer {
 	}
 
 	@Nullable
-	public IngredientRenderer getHovered(int mouseX, int mouseY) {
+	public IngredientRenderer getHovered(double mouseX, double mouseY) {
 		for (IngredientListSlot slot : slots) {
 			if (slot.isMouseOver(mouseX, mouseY)) {
 				return slot.getIngredientRenderer();
@@ -137,18 +138,18 @@ public class IngredientListBatchRenderer {
 	public void render(Minecraft minecraft) {
 		RenderHelper.enableGUIStandardItemLighting();
 
-		RenderItem renderItem = minecraft.getRenderItem();
+		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		TextureManager textureManager = minecraft.getTextureManager();
-		renderItem.zLevel += 50.0F;
+		itemRenderer.zLevel += 50.0F;
 
 		textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
 		GlStateManager.enableRescaleNormal();
-		GlStateManager.enableAlpha();
+		GlStateManager.enableAlphaTest();
 		GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 		// 3d Items
 		GlStateManager.enableLighting();
@@ -162,7 +163,7 @@ public class IngredientListBatchRenderer {
 			slot.renderItemAndEffectIntoGUI();
 		}
 
-		GlStateManager.disableAlpha();
+		GlStateManager.disableAlphaTest();
 		GlStateManager.disableBlend();
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.disableLighting();
@@ -170,7 +171,7 @@ public class IngredientListBatchRenderer {
 		textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
 
-		renderItem.zLevel -= 50.0F;
+		itemRenderer.zLevel -= 50.0F;
 
 		// overlays
 		for (ItemStackFastRenderer slot : renderItems3d) {

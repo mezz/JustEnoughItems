@@ -1,5 +1,14 @@
 package mezz.jei.gui.recipes;
 
+import javax.annotation.Nullable;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.Internal;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
@@ -11,15 +20,6 @@ import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
-
-import javax.annotation.Nullable;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * The area drawn on left side of the {@link RecipesGui} that shows which items can craft the current recipe category.
@@ -97,34 +97,34 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 	}
 
 	@Nullable
-	public GuiIngredient draw(Minecraft minecraft, int mouseX, int mouseY) {
+	public GuiIngredient draw(int mouseX, int mouseY) {
 		int ingredientCount = ingredients.size();
 		if (ingredientCount > 0) {
-			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-			GlStateManager.disableDepth();
-			GlStateManager.enableAlpha();
+			GlStateManager.disableDepthTest();
+			GlStateManager.enableAlphaTest();
 			{
 				int top = this.top;
-				topDrawable.draw(minecraft, this.left, top);
+				topDrawable.draw(this.left, top);
 				top += topDrawable.getHeight();
 
 				while (ingredientCount-- > 0) {
-					middleDrawable.draw(minecraft, this.left, top);
+					middleDrawable.draw(this.left, top);
 					top += middleDrawable.getHeight();
 				}
 
-				bottomDrawable.draw(minecraft, this.left, top);
+				bottomDrawable.draw(this.left, top);
 			}
-			GlStateManager.disableAlpha();
-			GlStateManager.enableDepth();
+			GlStateManager.disableAlphaTest();
+			GlStateManager.enableDepthTest();
 
 			GuiIngredient hovered = null;
 			for (GuiIngredient guiIngredient : this.ingredients) {
 				if (guiIngredient.isMouseOver(0, 0, mouseX, mouseY)) {
 					hovered = guiIngredient;
 				}
-				guiIngredient.draw(minecraft, 0, 0);
+				guiIngredient.draw(0, 0);
 			}
 			return hovered;
 		}
@@ -132,7 +132,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 	}
 
 	@Nullable
-	private GuiIngredient getHovered(int mouseX, int mouseY) {
+	private GuiIngredient getHovered(double mouseX, double mouseY) {
 		for (GuiIngredient guiIngredient : this.ingredients) {
 			if (guiIngredient.isMouseOver(0, 0, mouseX, mouseY)) {
 				return guiIngredient;
@@ -143,7 +143,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 
 	@Nullable
 	@Override
-	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
+	public IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
 		GuiIngredient hovered = getHovered(mouseX, mouseY);
 		if (hovered != null) {
 			Object ingredientUnderMouse = hovered.getDisplayedIngredient();

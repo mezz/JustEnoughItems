@@ -2,9 +2,10 @@ package mezz.jei.ingredients;
 
 import java.util.Comparator;
 
+import net.minecraft.item.ItemStack;
+
 import mezz.jei.config.Constants;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import net.minecraft.item.ItemStack;
 
 public final class IngredientListElementComparator implements Comparator<IIngredientListElement> {
 	public static final IngredientListElementComparator INSTANCE = new IngredientListElementComparator();
