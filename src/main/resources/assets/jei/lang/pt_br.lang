@@ -51,7 +51,7 @@ key.jei.toggleBookmarkOverlay=Exibir/Ocultar ingredientes favoritos
 config.jei.default=Padrão
 config.jei.valid=Válida
 
-config.jei.title=Configurações do %MODNAME
+config.jei.title=Config. do %MODNAME
 
 config.jei.mode=Modo
 config.jei.mode.comment=Alterar o modo de operação do JEI.
@@ -64,7 +64,6 @@ config.jei.interface=Interface
 config.jei.interface.comment=Opções de interface.
 config.jei.interface.overlayEnabled=Mostrar lista de ingredientes
 config.jei.interface.overlayEnabled.comment=Exibe a lista de itens próxima à interface.
-
 config.jei.interface.bookmarkOverlayEnabled=Exibir favoritos
 config.jei.interface.bookmarkOverlayEnabled.comment=Mostrar a lista de favoritos próxima às interfaces abertas.
 
@@ -95,7 +94,7 @@ config.jei.advanced.centerSearchBarEnabled=Centralizar barra de busca
 config.jei.advanced.centerSearchBarEnabled.comment=Mover a barra de busca do JEI para o centro-inferior da tela.
 config.jei.advanced.modNameFormat=Formato de nome do JEI
 config.jei.advanced.modNameFormat.comment=Alterar o formato do nome em dicas nas interfaces do JEI. Deixe em branco para desativar.
-config.jei.advanced.maxColumns=Largura máxima
+config.jei.advanced.maxColumns=Largura máxima de sobreposição
 config.jei.advanced.maxColumns.comment=A largura máxima da lista de ingredientes.
 config.jei.advanced.maxRecipeGuiHeight=Altura máxima da interface de receitas
 config.jei.advanced.maxRecipeGuiHeight.comment=A altura máxima para a interface de receitas.
