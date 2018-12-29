@@ -2,10 +2,9 @@ package mezz.jei;
 
 import javax.annotation.Nullable;
 
-import net.minecraftforge.common.MinecraftForge;
-
 import com.google.common.base.Preconditions;
 import mezz.jei.color.ColorNamer;
+import mezz.jei.events.EventBusHelper;
 import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientRegistry;
@@ -95,27 +94,27 @@ public final class Internal {
 
 	public static void setIngredientFilter(IngredientFilter ingredientFilter) {
 		if (Internal.ingredientFilter != null) {
-			MinecraftForge.EVENT_BUS.unregister(Internal.ingredientFilter);
+			EventBusHelper.unregister(Internal.ingredientFilter);
 		}
 		Internal.ingredientFilter = ingredientFilter;
-		MinecraftForge.EVENT_BUS.register(ingredientFilter);
+		EventBusHelper.register(ingredientFilter);
 	}
 
 	public static void setGuiEventHandler(GuiEventHandler guiEventHandler) {
 		if (Internal.guiEventHandler != null) {
-			MinecraftForge.EVENT_BUS.unregister(Internal.guiEventHandler);
+			EventBusHelper.unregister(Internal.guiEventHandler);
 		}
 
 		Internal.guiEventHandler = guiEventHandler;
-		MinecraftForge.EVENT_BUS.register(guiEventHandler);
+		EventBusHelper.register(guiEventHandler);
 	}
 
 	public static void setInputHandler(InputHandler inputHandler) {
 		if (Internal.inputHandler != null) {
-			MinecraftForge.EVENT_BUS.unregister(Internal.inputHandler);
+			EventBusHelper.unregister(Internal.inputHandler);
 		}
 
 		Internal.inputHandler = inputHandler;
-		MinecraftForge.EVENT_BUS.register(inputHandler);
+		EventBusHelper.register(inputHandler);
 	}
 }

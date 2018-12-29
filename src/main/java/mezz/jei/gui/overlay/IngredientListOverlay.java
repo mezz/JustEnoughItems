@@ -17,6 +17,7 @@ import com.google.common.collect.ImmutableList;
 import mezz.jei.api.IIngredientListOverlay;
 import mezz.jei.api.gui.IGuiProperties;
 import mezz.jei.config.ClientConfig;
+import mezz.jei.config.IFilterTextSource;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
@@ -55,12 +56,12 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	@Nullable
 	private IGuiProperties guiProperties;
 
-	public IngredientListOverlay(IngredientFilter ingredientFilter, IngredientRegistry ingredientRegistry, GuiScreenHelper guiScreenHelper) {
+	public IngredientListOverlay(IngredientFilter ingredientFilter, IFilterTextSource filterTextSource, IngredientRegistry ingredientRegistry, GuiScreenHelper guiScreenHelper, IngredientGridWithNavigation contents) {
 		this.ingredientFilter = ingredientFilter;
 		this.guiScreenHelper = guiScreenHelper;
 
-		this.contents = new IngredientGridWithNavigation(ingredientFilter, guiScreenHelper, GridAlignment.LEFT);
-		ingredientFilter.addListener(() -> onSetFilterText(ClientConfig.getInstance().getFilterText()));
+		this.contents = contents;
+		ingredientFilter.addListener(() -> onSetFilterText(filterTextSource.getFilterText()));
 		this.searchField = new GuiTextFieldFilter(0, ingredientFilter);
 		this.configButton = ConfigButton.create(this);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, guiScreenHelper, ingredientRegistry);

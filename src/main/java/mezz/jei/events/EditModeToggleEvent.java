@@ -1,9 +1,12 @@
-package mezz.jei.config;
+package mezz.jei.events;
 
-import net.minecraftforge.eventbus.api.Event;
-
-public class EditModeToggleEvent extends Event {
+public class EditModeToggleEvent extends JeiEvent {
 	private final boolean editModeEnabled;
+
+	@SuppressWarnings("unused") // needed for event bus
+	public EditModeToggleEvent() {
+		editModeEnabled = false;
+	}
 
 	public EditModeToggleEvent(boolean editModeEnabled) {
 		this.editModeEnabled = editModeEnabled;

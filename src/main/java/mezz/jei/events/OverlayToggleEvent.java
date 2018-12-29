@@ -1,9 +1,12 @@
-package mezz.jei.config;
+package mezz.jei.events;
 
-import net.minecraftforge.eventbus.api.Event;
-
-public class OverlayToggleEvent extends Event {
+public class OverlayToggleEvent extends JeiEvent {
 	private final boolean overlayEnabled;
+
+	@SuppressWarnings("unused") // needed for event bus
+	public OverlayToggleEvent() {
+		this.overlayEnabled = false;
+	}
 
 	public OverlayToggleEvent(boolean overlayEnabled) {
 		this.overlayEnabled = overlayEnabled;

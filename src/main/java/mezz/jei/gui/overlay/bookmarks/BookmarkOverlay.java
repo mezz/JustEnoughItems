@@ -13,9 +13,7 @@ import net.minecraft.item.ItemStack;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.gui.GuiHelper;
-import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
-import mezz.jei.gui.overlay.GridAlignment;
 import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.recipes.RecipesGui;
@@ -41,10 +39,10 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 	// data
 	private final BookmarkList bookmarkList;
 
-	public BookmarkOverlay(BookmarkList bookmarkList, GuiHelper guiHelper, GuiScreenHelper guiScreenHelper) {
+	public BookmarkOverlay(BookmarkList bookmarkList, GuiHelper guiHelper, IngredientGridWithNavigation contents) {
 		this.bookmarkList = bookmarkList;
 		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, guiHelper);
-		this.contents = new IngredientGridWithNavigation(bookmarkList, guiScreenHelper, GridAlignment.RIGHT);
+		this.contents = contents;
 		bookmarkList.addListener(() -> contents.updateLayout(false));
 	}
 

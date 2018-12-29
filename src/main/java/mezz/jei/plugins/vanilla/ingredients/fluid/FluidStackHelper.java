@@ -112,6 +112,13 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	}
 
 	@Override
+	public FluidStack normalizeIngredient(FluidStack ingredient) {
+		FluidStack copy = this.copyIngredient(ingredient);
+		copy.amount = Fluid.BUCKET_VOLUME;
+		return copy;
+	}
+
+	@Override
 	public String getErrorInfo(@Nullable FluidStack ingredient) {
 		if (ingredient == null) {
 			return "null";

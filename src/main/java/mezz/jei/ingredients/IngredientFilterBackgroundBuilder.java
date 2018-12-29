@@ -5,13 +5,12 @@ import java.util.function.Consumer;
 
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.NonNullList;
 
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
-import mezz.jei.config.ClientConfig;
+import mezz.jei.config.SearchMode;
+import mezz.jei.events.EventBusHelper;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 
@@ -29,7 +28,7 @@ public class IngredientFilterBackgroundBuilder {
 	public void start() {
 		boolean finished = run(10000);
 		if (!finished) {
-			MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, TickEvent.ClientTickEvent.class, this.onTickHandler);
+			EventBusHelper.addListener(TickEvent.ClientTickEvent.class, this.onTickHandler);
 		}
 	}
 
@@ -40,14 +39,14 @@ public class IngredientFilterBackgroundBuilder {
 				return;
 			}
 		}
-		MinecraftForge.EVENT_BUS.unregister(this.onTickHandler);
+		EventBusHelper.removeListener(this.onTickHandler);
 	}
 
 	private boolean run(final int timeoutMs) {
 		final long startTime = System.currentTimeMillis();
 		for (PrefixedSearchTree prefixedTree : this.prefixedSearchTrees.values()) {
-			ClientConfig.SearchMode mode = prefixedTree.getMode();
-			if (mode != ClientConfig.SearchMode.DISABLED) {
+			SearchMode mode = prefixedTree.getMode();
+			if (mode != SearchMode.DISABLED) {
 				PrefixedSearchTree.IStringsGetter stringsGetter = prefixedTree.getStringsGetter();
 				GeneralizedSuffixTree tree = prefixedTree.getTree();
 				for (int i = tree.getHighestIndex() + 1; i < this.elementList.size(); i++) {

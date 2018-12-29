@@ -23,6 +23,8 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.config.Constants;
+import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.SearchMode;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.ForgeModIdHelper;
@@ -58,9 +60,9 @@ public class IngredientRenderer<T> {
 		return area;
 	}
 
-	public void renderSlow() {
+	public void renderSlow(IHideModeConfig hideModeConfig) {
 		if (ClientConfig.getInstance().isHideModeEnabled()) {
-			renderEditMode(element, area, padding);
+			renderEditMode(element, area, padding, hideModeConfig);
 		}
 
 		try {
@@ -73,7 +75,7 @@ public class IngredientRenderer<T> {
 	}
 
 	/**
-	 * Matches the highlight code in {@link GuiContainer#drawScreen(int, int, float)}
+	 * Matches the highlight code in {@link GuiContainer#render(int, int, float)}
 	 */
 	public void drawHighlight() {
 		GlStateManager.disableLighting();
@@ -98,11 +100,11 @@ public class IngredientRenderer<T> {
 		}
 	}
 
-	protected static <V> void renderEditMode(IIngredientListElement<V> element, Rectangle area, int padding) {
+	protected static <V> void renderEditMode(IIngredientListElement<V> element, Rectangle area, int padding, IHideModeConfig hideModeConfig) {
 		V ingredient = element.getIngredient();
 		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
 
-		if (ClientConfig.getInstance().isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
+		if (hideModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
 			GuiScreen.drawRect(area.x + padding, area.y + padding, area.x + 16 + padding, area.y + 16 + padding, BLACKLIST_COLOR);
 			GlStateManager.color4f(1f, 1f, 1f, 1f);
 		}
@@ -122,7 +124,7 @@ public class IngredientRenderer<T> {
 			}
 		}
 
-		if (ClientConfig.getInstance().getColorSearchMode() != ClientConfig.SearchMode.DISABLED) {
+		if (ClientConfig.getInstance().getColorSearchMode() != SearchMode.DISABLED) {
 			addColorSearchInfoToTooltip(minecraft, element, tooltip, maxWidth);
 		}
 

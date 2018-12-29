@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.Log;
@@ -114,12 +115,12 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	}
 
 	@Override
-	public final List<String> getTooltipStrings() {
+	public final List<String> getTooltipStrings(IIngredientFilterConfig config) {
 		String modName = this.modNames.get(0);
 		String modId = this.modIds.get(0);
 		String modNameLowercase = modName.toLowerCase(Locale.ENGLISH);
 		String displayNameLowercase = Translator.toLowercaseWithLocale(this.displayName);
-		return IngredientInformation.getTooltipStrings(ingredient, ingredientRenderer, ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceId));
+		return IngredientInformation.getTooltipStrings(ingredient, ingredientRenderer, ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceId), config);
 	}
 
 	@Override

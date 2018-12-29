@@ -3,16 +3,11 @@ package mezz.jei.config;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.io.File;
-import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.NetworkManager;
@@ -21,15 +16,13 @@ import net.minecraft.util.text.TextFormatting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRegistry;
-import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.color.ColorNamer;
-import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.events.BookmarkOverlayToggleEvent;
+import mezz.jei.events.EditModeToggleEvent;
+import mezz.jei.events.EventBusHelper;
+import mezz.jei.events.OverlayToggleEvent;
 import mezz.jei.gui.overlay.IngredientListOverlay;
-import mezz.jei.ingredients.IngredientFilter;
-import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
 import mezz.jei.runtime.JeiRuntime;
@@ -40,7 +33,7 @@ import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import org.lwjgl.glfw.GLFW;
 
-public final class ClientConfig {
+public final class ClientConfig implements IIngredientFilterConfig, IFilterTextSource {
 	@Nullable
 	private static ClientConfig instance;
 	private static final String configKeyPrefix = "config.jei";
@@ -57,7 +50,6 @@ public final class ClientConfig {
 
 	private final LocalizedConfiguration config;
 	private final Configuration worldConfig;
-	private final LocalizedConfiguration itemBlacklistConfig;
 	private final LocalizedConfiguration searchColorsConfig;
 	private final File bookmarkFile;
 
@@ -66,39 +58,21 @@ public final class ClientConfig {
 	@Nullable
 	private String modNameFormatOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
 
-	private final Set<String> itemBlacklist = new HashSet<>();
-	private final String[] defaultItemBlacklist = new String[]{};
-
-	private final IEventBus eventBus;
-
+	@Deprecated
 	public static ClientConfig getInstance() {
 		Preconditions.checkNotNull(instance);
 		return instance;
 	}
 
-	public ClientConfig(IEventBus eventBus, File jeiConfigurationDir) {
+	public ClientConfig(File jeiConfigurationDir) {
 		instance = this;
-		this.eventBus = eventBus;
-
-		if (!jeiConfigurationDir.exists()) {
-			try {
-				if (!jeiConfigurationDir.mkdir()) {
-					throw new Error("Could not create config directory " + jeiConfigurationDir);
-				}
-			} catch (SecurityException e) {
-				throw new Error("Could not create config directory " + jeiConfigurationDir, e);
-			}
-		}
-
 		final File configFile = new File(jeiConfigurationDir, "jei.cfg");
-		final File itemBlacklistConfigFile = new File(jeiConfigurationDir, "itemBlacklist.cfg");
 		final File searchColorsConfigFile = new File(jeiConfigurationDir, "searchColors.cfg");
 		// TODO move world settings into the world save folder
 		final File worldConfigFile = new File(jeiConfigurationDir, "worldSettings.cfg");
 		this.bookmarkFile = new File(jeiConfigurationDir, "bookmarks.ini");
 		this.worldConfig = new Configuration(worldConfigFile, "0.1.0");
 		this.config = new LocalizedConfiguration(configKeyPrefix, configFile, "0.4.0");
-		this.itemBlacklistConfig = new LocalizedConfiguration(configKeyPrefix, itemBlacklistConfigFile, "0.1.0");
 		this.searchColorsConfig = new LocalizedConfiguration(configKeyPrefix, searchColorsConfigFile, "0.1.0");
 	}
 
@@ -140,11 +114,12 @@ public final class ClientConfig {
 			property.set(values.overlayEnabled);
 
 			if (worldConfig.hasChanged()) {
-				worldConfig.save();
+				// TODO 1.13
+//				worldConfig.save();
 			}
 		}
 
-		eventBus.post(new OverlayToggleEvent(values.overlayEnabled));
+		EventBusHelper.post(new OverlayToggleEvent(values.overlayEnabled));
 	}
 
 	public boolean isBookmarkOverlayEnabled() {
@@ -162,11 +137,12 @@ public final class ClientConfig {
 			property.set(values.bookmarkOverlayEnabled);
 
 			if (worldConfig.hasChanged()) {
-				worldConfig.save();
+				// TODO 1.13
+//				worldConfig.save();
 			}
 		}
 
-		eventBus.post(new BookmarkOverlayToggleEvent(values.bookmarkOverlayEnabled));
+		EventBusHelper.post(new BookmarkOverlayToggleEvent(values.bookmarkOverlayEnabled));
 	}
 
 	public boolean isCheatItemsEnabled() {
@@ -189,7 +165,8 @@ public final class ClientConfig {
 				property.set(values.cheatItemsEnabled);
 
 				if (worldConfig.hasChanged()) {
-					worldConfig.save();
+					// TODO 1.13
+//					worldConfig.save();
 				}
 			}
 
@@ -245,36 +222,39 @@ public final class ClientConfig {
 		return values.maxRecipeGuiHeight;
 	}
 
+	@Override
 	public SearchMode getModNameSearchMode() {
 		return values.modNameSearchMode;
 	}
 
+	@Override
 	public SearchMode getTooltipSearchMode() {
 		return values.tooltipSearchMode;
 	}
 
+	@Override
 	public SearchMode getOreDictSearchMode() {
 		return values.oreDictSearchMode;
 	}
 
+	@Override
 	public SearchMode getCreativeTabSearchMode() {
 		return values.creativeTabSearchMode;
 	}
 
+	@Override
 	public SearchMode getColorSearchMode() {
 		return values.colorSearchMode;
 	}
 
+	@Override
 	public SearchMode getResourceIdSearchMode() {
 		return values.resourceIdSearchMode;
 	}
 
+	@Override
 	public boolean getSearchAdvancedTooltips() {
 		return values.searchAdvancedTooltips;
-	}
-
-	public enum SearchMode {
-		ENABLED, REQUIRE_PREFIX, DISABLED
 	}
 
 	public boolean setFilterText(String filterText) {
@@ -286,6 +266,7 @@ public final class ClientConfig {
 		}
 	}
 
+	@Override
 	public String getFilterText() {
 		return values.filterText;
 	}
@@ -299,7 +280,8 @@ public final class ClientConfig {
 			property.set(values.filterText);
 
 			if (worldConfig.hasChanged()) {
-				worldConfig.save();
+				// TODO 1.13
+//				worldConfig.save();
 			}
 		}
 	}
@@ -318,17 +300,12 @@ public final class ClientConfig {
 
 	public void onPreInit() {
 		syncConfig();
-		syncItemBlacklistConfig();
 		syncSearchColorsConfig();
 	}
 
 	private boolean syncAllConfig() {
 		boolean needsReload = false;
 		if (syncConfig()) {
-			needsReload = true;
-		}
-
-		if (syncItemBlacklistConfig()) {
 			needsReload = true;
 		}
 
@@ -385,7 +362,8 @@ public final class ClientConfig {
 
 		final boolean configChanged = config.hasChanged();
 		if (configChanged) {
-			config.save();
+			// TODO 1.13
+//			config.save();
 		}
 		return needsReload;
 	}
@@ -423,20 +401,6 @@ public final class ClientConfig {
 		return format.toString();
 	}
 
-	private boolean syncItemBlacklistConfig() {
-		itemBlacklistConfig.addCategory(CATEGORY_ADVANCED);
-
-		String[] itemBlacklistArray = itemBlacklistConfig.getStringList("itemBlacklist", CATEGORY_ADVANCED, defaultItemBlacklist);
-		itemBlacklist.clear();
-		Collections.addAll(itemBlacklist, itemBlacklistArray);
-
-		final boolean configChanged = itemBlacklistConfig.hasChanged();
-		if (configChanged) {
-			itemBlacklistConfig.save();
-		}
-		return configChanged;
-	}
-
 	public boolean syncWorldConfig(@Nullable NetworkManager networkManager) {
 
 		final String worldCategory = ServerInfo.getWorldUid(networkManager);
@@ -457,7 +421,7 @@ public final class ClientConfig {
 		property.setComment(Translator.translateToLocal("config.jei.mode.editEnabled.comment"));
 		values.hideModeEnabled = property.getBoolean();
 		if (property.hasChanged()) {
-			eventBus.post(new EditModeToggleEvent(values.hideModeEnabled));
+			EventBusHelper.post(new EditModeToggleEvent(values.hideModeEnabled));
 		}
 
 		property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);
@@ -472,7 +436,8 @@ public final class ClientConfig {
 
 		final boolean configChanged = worldConfig.hasChanged();
 		if (configChanged) {
-			worldConfig.save();
+			// TODO 1.13
+//			worldConfig.save();
 		}
 		return false;
 	}
@@ -504,136 +469,9 @@ public final class ClientConfig {
 
 		final boolean configChanged = searchColorsConfig.hasChanged();
 		if (configChanged) {
-			searchColorsConfig.save();
+			// TODO 1.13
+//			searchColorsConfig.save();
 		}
 		return configChanged;
-	}
-
-	private void updateBlacklist() {
-		Property property = itemBlacklistConfig.get(CATEGORY_ADVANCED, "itemBlacklist", defaultItemBlacklist);
-
-		String[] currentBlacklist = itemBlacklist.toArray(new String[0]);
-		property.set(currentBlacklist);
-
-		boolean changed = itemBlacklistConfig.hasChanged();
-		if (changed) {
-			itemBlacklistConfig.save();
-		}
-	}
-
-	public <V> void addIngredientToConfigBlacklist(IngredientFilter ingredientFilter, IIngredientRegistry ingredientRegistry, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
-		IIngredientType<V> ingredientType = ingredientRegistry.getIngredientType(ingredient);
-		IIngredientListElement<V> element = IngredientListElementFactory.createUnorderedElement(ingredientRegistry, ingredientType, ingredient, ForgeModIdHelper.getInstance());
-		Preconditions.checkNotNull(element, "Failed to create element for blacklist");
-
-		// combine item-level blacklist into wildcard-level ones
-		if (blacklistType == IngredientBlacklistType.ITEM) {
-			final String uid = getIngredientUid(ingredient, IngredientBlacklistType.ITEM, ingredientHelper);
-			List<IIngredientListElement<V>> elementsToBeBlacklisted = ingredientFilter.getMatches(element, (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD));
-			if (areAllBlacklisted(elementsToBeBlacklisted, uid)) {
-				if (addIngredientToConfigBlacklist(ingredientFilter, element, ingredient, IngredientBlacklistType.WILDCARD, ingredientHelper)) {
-					updateBlacklist();
-				}
-				return;
-			}
-		}
-		if (addIngredientToConfigBlacklist(ingredientFilter, element, ingredient, blacklistType, ingredientHelper)) {
-			updateBlacklist();
-		}
-	}
-
-	private <V> boolean addIngredientToConfigBlacklist(IngredientFilter ingredientFilter, IIngredientListElement<V> element, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
-		boolean updated = false;
-
-		// remove lower-level blacklist entries when a higher-level one is added
-		if (blacklistType == IngredientBlacklistType.WILDCARD) {
-			List<IIngredientListElement<V>> elementsToBeBlacklisted = ingredientFilter.getMatches(element, (input) -> getIngredientUid(input, blacklistType));
-			for (IIngredientListElement<V> elementToBeBlacklisted : elementsToBeBlacklisted) {
-				String uid = getIngredientUid(elementToBeBlacklisted, IngredientBlacklistType.ITEM);
-				updated |= itemBlacklist.remove(uid);
-			}
-		}
-
-		final String uid = getIngredientUid(ingredient, blacklistType, ingredientHelper);
-		updated |= itemBlacklist.add(uid);
-		return updated;
-	}
-
-	private <V> boolean areAllBlacklisted(List<IIngredientListElement<V>> elements, String newUid) {
-		for (IIngredientListElement<V> element : elements) {
-			String uid = getIngredientUid(element, IngredientBlacklistType.ITEM);
-			if (!uid.equals(newUid) && !itemBlacklist.contains(uid)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	public <V> void removeIngredientFromConfigBlacklist(IngredientFilter ingredientFilter, IIngredientRegistry ingredientRegistry, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
-		IIngredientType<V> ingredientType = ingredientRegistry.getIngredientType(ingredient);
-		IIngredientListElement<V> element = IngredientListElementFactory.createUnorderedElement(ingredientRegistry, ingredientType, ingredient, ForgeModIdHelper.getInstance());
-		Preconditions.checkNotNull(element, "Failed to create element for blacklist");
-
-		boolean updated = false;
-
-		if (blacklistType == IngredientBlacklistType.ITEM) {
-			// deconstruct any wildcard blacklist since we are removing one element from it
-			final String wildUid = getIngredientUid(ingredient, IngredientBlacklistType.WILDCARD, ingredientHelper);
-			if (itemBlacklist.contains(wildUid)) {
-				updated = true;
-				itemBlacklist.remove(wildUid);
-				List<IIngredientListElement<V>> modMatches = ingredientFilter.getMatches(element, (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD));
-				for (IIngredientListElement<V> modMatch : modMatches) {
-					addIngredientToConfigBlacklist(ingredientFilter, modMatch, modMatch.getIngredient(), IngredientBlacklistType.ITEM, ingredientHelper);
-				}
-			}
-		} else if (blacklistType == IngredientBlacklistType.WILDCARD) {
-			// remove any item-level blacklist on items that match this wildcard
-			List<IIngredientListElement<V>> modMatches = ingredientFilter.getMatches(element, (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD));
-			for (IIngredientListElement<V> modMatch : modMatches) {
-				final String uid = getIngredientUid(modMatch, IngredientBlacklistType.ITEM);
-				updated |= itemBlacklist.remove(uid);
-			}
-		}
-
-		final String uid = getIngredientUid(ingredient, blacklistType, ingredientHelper);
-		updated |= itemBlacklist.remove(uid);
-		if (updated) {
-			updateBlacklist();
-		}
-	}
-
-	public <V> boolean isIngredientOnConfigBlacklist(V ingredient, IIngredientHelper<V> ingredientHelper) {
-		for (IngredientBlacklistType ingredientBlacklistType : IngredientBlacklistType.VALUES) {
-			if (isIngredientOnConfigBlacklist(ingredient, ingredientBlacklistType, ingredientHelper)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public <V> boolean isIngredientOnConfigBlacklist(V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
-		final String uid = getIngredientUid(ingredient, blacklistType, ingredientHelper);
-		return itemBlacklist.contains(uid);
-	}
-
-	private static <V> String getIngredientUid(@Nullable IIngredientListElement<V> element, IngredientBlacklistType blacklistType) {
-		if (element == null) {
-			return "";
-		}
-		V ingredient = element.getIngredient();
-		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
-		return getIngredientUid(ingredient, blacklistType, ingredientHelper);
-	}
-
-	private static <V> String getIngredientUid(V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
-		switch (blacklistType) {
-			case ITEM:
-				return ingredientHelper.getUniqueId(ingredient);
-			case WILDCARD:
-				return ingredientHelper.getWildcardId(ingredient);
-			default:
-				throw new IllegalStateException("Unknown blacklist type: " + blacklistType);
-		}
 	}
 }

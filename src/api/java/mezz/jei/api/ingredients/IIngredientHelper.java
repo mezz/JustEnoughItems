@@ -133,6 +133,18 @@ public interface IIngredientHelper<V> {
 	V copyIngredient(V ingredient);
 
 	/**
+	 * Makes a normalized copy of the given ingredient.
+	 * Used by JEI for bookmarks.
+	 *
+	 * @param ingredient the ingredient to copy and normalize
+	 * @return a normalized copy of the ingredient
+	 * @since JEI 5.0.0
+	 */
+	default V normalizeIngredient(V ingredient) {
+		return copyIngredient(ingredient);
+	}
+
+	/**
 	 * Checks if the given ingredient is valid for lookups and recipes.
 	 *
 	 * @param ingredient the ingredient to check

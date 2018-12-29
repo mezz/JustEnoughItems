@@ -10,9 +10,6 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.minecraftforge.fml.common.ProgressManager;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraft.util.NonNullList;
 
 import com.google.common.collect.ImmutableList;
@@ -21,24 +18,26 @@ import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.config.ClientConfig;
-import mezz.jei.config.EditModeToggleEvent;
+import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.IIngredientFilterConfig;
+import mezz.jei.config.SearchMode;
+import mezz.jei.events.EditModeToggleEvent;
+import mezz.jei.events.EventBusHelper;
+import mezz.jei.events.PlayerJoinedWorldEvent;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IIngredientGridSource;
-import mezz.jei.startup.PlayerJoinedWorldEvent;
 import mezz.jei.suffixtree.CombinedSearchTrees;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 import mezz.jei.suffixtree.ISearchTree;
-import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Translator;
 
-public class IngredientFilter implements IIngredientFilter, IIngredientGridSource {
+public class IngredientFilter implements IIngredientGridSource {
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
 	private final IngredientBlacklistInternal blacklist;
+	private final IHideModeConfig hideModeConfig;
 	/**
 	 * indexed list of ingredients for use with the suffix trees
 	 * includes all elements (even hidden ones) for use when rebuilding
@@ -54,13 +53,13 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 	private List<IIngredientListElement> ingredientListCached = Collections.emptyList();
 	private final List<IIngredientGridSource.Listener> listeners = new ArrayList<>();
 
-	public IngredientFilter(IngredientBlacklistInternal blacklist) {
+	public IngredientFilter(IngredientBlacklistInternal blacklist, IIngredientFilterConfig config, IHideModeConfig hideModeConfig) {
 		this.blacklist = blacklist;
+		this.hideModeConfig = hideModeConfig;
 		this.elementList = NonNullList.create();
 		this.searchTree = new GeneralizedSuffixTree();
-		ClientConfig config = ClientConfig.getInstance();
 		createPrefixedSearchTree('@', config::getModNameSearchMode, IIngredientListElement::getModNameStrings);
-		createPrefixedSearchTree('#', config::getTooltipSearchMode, IIngredientListElement::getTooltipStrings);
+		createPrefixedSearchTree('#', config::getTooltipSearchMode, (e) -> e.getTooltipStrings(config));
 		createPrefixedSearchTree('$', config::getOreDictSearchMode, IIngredientListElement::getOreDictStrings);
 		createPrefixedSearchTree('%', config::getCreativeTabSearchMode, IIngredientListElement::getCreativeTabsStrings);
 		createPrefixedSearchTree('^', config::getColorSearchMode, IIngredientListElement::getColorStrings);
@@ -69,12 +68,12 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.values());
 		this.backgroundBuilder = new IngredientFilterBackgroundBuilder(prefixedSearchTrees, elementList);
 
-		MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, EditModeToggleEvent.class, editModeToggleEvent -> {
+		EventBusHelper.addListener(EditModeToggleEvent.class, editModeToggleEvent -> {
 			this.filterCached = null;
 			updateHidden();
 		});
 
-		MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, PlayerJoinedWorldEvent.class, playerJoinedWorldEvent -> {
+		EventBusHelper.addListener(PlayerJoinedWorldEvent.class, playerJoinedWorldEvent -> {
 			this.filterCached = null;
 			updateHidden();
 		});
@@ -84,7 +83,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		CombinedSearchTrees combinedSearchTrees = new CombinedSearchTrees();
 		combinedSearchTrees.addSearchTree(searchTree);
 		for (PrefixedSearchTree prefixedTree : prefixedSearchTrees) {
-			if (prefixedTree.getMode() == ClientConfig.SearchMode.ENABLED) {
+			if (prefixedTree.getMode() == SearchMode.ENABLED) {
 				combinedSearchTrees.addSearchTree(prefixedTree.getTree());
 			}
 		}
@@ -98,12 +97,12 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 	}
 
 	public void addIngredients(NonNullList<IIngredientListElement> ingredients) {
-		ProgressManager.ProgressBar progressBar = ProgressManager.push("Indexing ingredients", ingredients.size());
+//		ProgressManager.ProgressBar progressBar = ProgressManager.push("Indexing ingredients", ingredients.size());
 		for (IIngredientListElement<?> element : ingredients) {
-			progressBar.step(element.getDisplayName());
+//			progressBar.step(element.getDisplayName());
 			addIngredient(element);
 		}
-		ProgressManager.pop(progressBar);
+//		ProgressManager.pop(progressBar);
 	}
 
 	public <V> void addIngredient(IIngredientListElement<V> element) {
@@ -113,8 +112,8 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		searchTree.put(Translator.toLowercaseWithLocale(element.getDisplayName()), index);
 
 		for (PrefixedSearchTree prefixedSearchTree : this.prefixedSearchTrees.values()) {
-			ClientConfig.SearchMode searchMode = prefixedSearchTree.getMode();
-			if (searchMode != ClientConfig.SearchMode.DISABLED) {
+			SearchMode searchMode = prefixedSearchTree.getMode();
+			if (searchMode != SearchMode.DISABLED) {
 				Collection<String> strings = prefixedSearchTree.getStringsGetter().getStrings(element);
 				for (String string : strings) {
 					prefixedSearchTree.getTree().put(string, index);
@@ -171,7 +170,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
 		boolean visible = !blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper) &&
 			ingredientHelper.isIngredientOnServer(ingredient) &&
-			(ClientConfig.getInstance().isHideModeEnabled() || !ClientConfig.getInstance().isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
+			(hideModeConfig.isHideModeEnabled() || !hideModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
 		if (element.isVisible() != visible) {
 			element.setVisible(visible);
 			this.filterCached = null;
@@ -179,8 +178,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 	}
 
 	@Override
-	public List<IIngredientListElement> getIngredientList() {
-		String filterText = Translator.toLowercaseWithLocale(ClientConfig.getInstance().getFilterText());
+	public List<IIngredientListElement> getIngredientList(String filterText) {
 		if (!filterText.equals(filterCached)) {
 			List<IIngredientListElement> ingredientList = getIngredientListUncached(filterText);
 			ingredientList.sort(IngredientListElementComparator.INSTANCE);
@@ -190,28 +188,14 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		return ingredientListCached;
 	}
 
-	@Override
-	public ImmutableList<Object> getFilteredIngredients() {
-		List<IIngredientListElement> elements = getIngredientList();
+	public ImmutableList<Object> getFilteredIngredients(String filterText) {
+		List<IIngredientListElement> elements = getIngredientList(filterText);
 		ImmutableList.Builder<Object> builder = ImmutableList.builder();
 		for (IIngredientListElement element : elements) {
 			Object ingredient = element.getIngredient();
 			builder.add(ingredient);
 		}
 		return builder.build();
-	}
-
-	@Override
-	public String getFilterText() {
-		return ClientConfig.getInstance().getFilterText();
-	}
-
-	@Override
-	public void setFilterText(String filterText) {
-		ErrorUtil.checkNotNull(filterText, "filterText");
-		if (ClientConfig.getInstance().setFilterText(filterText)) {
-			notifyListenersOfChange();
-		}
 	}
 
 	private List<IIngredientListElement> getIngredientListUncached(String filterText) {
@@ -348,7 +332,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		}
 		final char firstChar = token.charAt(0);
 		final PrefixedSearchTree prefixedSearchTree = this.prefixedSearchTrees.get(firstChar);
-		if (prefixedSearchTree != null && prefixedSearchTree.getMode() != ClientConfig.SearchMode.DISABLED) {
+		if (prefixedSearchTree != null && prefixedSearchTree.getMode() != SearchMode.DISABLED) {
 			token = token.substring(1);
 			if (token.isEmpty()) {
 				return null;
@@ -375,16 +359,11 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 	}
 
 	@Override
-	public int size() {
-		return getIngredientList().size();
-	}
-
-	@Override
 	public void addListener(IIngredientGridSource.Listener listener) {
 		listeners.add(listener);
 	}
 
-	private void notifyListenersOfChange() {
+	public void notifyListenersOfChange() {
 		for (IIngredientGridSource.Listener listener : listeners) {
 			listener.onChange();
 		}

@@ -13,8 +13,9 @@ import net.minecraft.item.ItemStack;
 
 import mezz.jei.Internal;
 import mezz.jei.config.ClientConfig;
+import mezz.jei.config.IHideModeConfig;
 import mezz.jei.gui.TooltipRenderer;
-import mezz.jei.gui.ingredients.GuiItemStackGroup;
+import mezz.jei.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
@@ -36,16 +37,16 @@ import mezz.jei.util.Translator;
  */
 public class IngredientGrid implements IShowsRecipeFocuses {
 	private static final int INGREDIENT_PADDING = 1;
-	public static final int INGREDIENT_WIDTH = GuiItemStackGroup.getWidth(INGREDIENT_PADDING);
-	public static final int INGREDIENT_HEIGHT = GuiItemStackGroup.getHeight(INGREDIENT_PADDING);
+	public static final int INGREDIENT_WIDTH = GuiIngredientProperties.getWidth(INGREDIENT_PADDING);
+	public static final int INGREDIENT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
 	private final GridAlignment alignment;
 
 	private Rectangle area = new Rectangle();
 	protected final IngredientListBatchRenderer guiIngredientSlots;
 
-	public IngredientGrid(GridAlignment alignment) {
+	public IngredientGrid(GridAlignment alignment, IHideModeConfig hideModeConfig) {
 		this.alignment = alignment;
-		this.guiIngredientSlots = new IngredientListBatchRenderer();
+		this.guiIngredientSlots = new IngredientListBatchRenderer(hideModeConfig);
 	}
 
 	public int size() {

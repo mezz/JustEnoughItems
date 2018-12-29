@@ -19,19 +19,22 @@ import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IIngredientType;
-import mezz.jei.config.ClientConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.IngredientSet;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class IngredientRegistry implements IIngredientRegistry {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final IModIdHelper modIdHelper;
 	private final IngredientBlacklistInternal blacklist;
 	private final Map<IIngredientType, IngredientSet> ingredientsMap;
 	private final ImmutableMap<IIngredientType, IIngredientHelper> ingredientHelperMap;
 	private final ImmutableMap<IIngredientType, IIngredientRenderer> ingredientRendererMap;
+	private final boolean enableDebugLogs;
 	private final ImmutableMap<Class, IIngredientType> ingredientTypeMap;
 
 	private final NonNullList<ItemStack> fuels = NonNullList.create();
@@ -42,13 +45,15 @@ public class IngredientRegistry implements IIngredientRegistry {
 		IngredientBlacklistInternal blacklist,
 		Map<IIngredientType, IngredientSet> ingredientsMap,
 		ImmutableMap<IIngredientType, IIngredientHelper> ingredientHelperMap,
-		ImmutableMap<IIngredientType, IIngredientRenderer> ingredientRendererMap
+		ImmutableMap<IIngredientType, IIngredientRenderer> ingredientRendererMap,
+		boolean enableDebugLogs
 	) {
 		this.modIdHelper = modIdHelper;
 		this.blacklist = blacklist;
 		this.ingredientsMap = ingredientsMap;
 		this.ingredientHelperMap = ingredientHelperMap;
 		this.ingredientRendererMap = ingredientRendererMap;
+		this.enableDebugLogs = enableDebugLogs;
 		ImmutableMap.Builder<Class, IIngredientType> ingredientTypeBuilder = ImmutableMap.builder();
 		for (IIngredientType ingredientType : ingredientsMap.keySet()) {
 			ingredientTypeBuilder.put(ingredientType.getIngredientClass(), ingredientType);
@@ -67,7 +72,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 			}
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
-			Log.get().error("Failed to check if item is fuel {}.", itemStackInfo, e);
+			LOGGER.error("Failed to check if item is fuel {}.", itemStackInfo, e);
 		}
 
 		try {
@@ -76,7 +81,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 			}
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
-			Log.get().error("Failed to check if item is a potion ingredient {}.", itemStackInfo, e);
+			LOGGER.error("Failed to check if item is a potion ingredient {}.", itemStackInfo, e);
 		}
 	}
 
@@ -173,7 +178,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 
-		Log.get().info("Ingredients are being added at runtime: {} {}", ingredients.size(), ingredientType.getIngredientClass().getName());
+		LOGGER.info("Ingredients are being added at runtime: {} {}", ingredients.size(), ingredientType.getIngredientClass().getName());
 
 		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientType);
 		//noinspection unchecked
@@ -193,14 +198,14 @@ public class IngredientRegistry implements IIngredientRegistry {
 					blacklist.removeIngredientFromBlacklist(matchingElement.getIngredient(), ingredientHelper);
 					ingredientFilter.updateHiddenState(matchingElement);
 				}
-				if (ClientConfig.getInstance().isDebugModeEnabled()) {
-					Log.get().debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(element.getIngredient()));
+				if (enableDebugLogs) {
+					LOGGER.debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(element.getIngredient()));
 				}
 			} else {
 				blacklist.removeIngredientFromBlacklist(element.getIngredient(), ingredientHelper);
 				ingredientFilter.addIngredient(element);
-				if (ClientConfig.getInstance().isDebugModeEnabled()) {
-					Log.get().debug("Added ingredient: {}", ingredientHelper.getErrorInfo(element.getIngredient()));
+				if (enableDebugLogs) {
+					LOGGER.debug("Added ingredient: {}", ingredientHelper.getErrorInfo(element.getIngredient()));
 				}
 			}
 		}
@@ -243,7 +248,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 
-		Log.get().info("Ingredients are being removed at runtime: {} {}", ingredients.size(), ingredientType.getIngredientClass().getName());
+		LOGGER.info("Ingredients are being removed at runtime: {} {}", ingredients.size(), ingredientType.getIngredientClass().getName());
 
 		@SuppressWarnings("unchecked")
 		IngredientSet<V> set = ingredientsMap.get(ingredientType);
@@ -259,9 +264,9 @@ public class IngredientRegistry implements IIngredientRegistry {
 			if (matchingElements.isEmpty()) {
 				V ingredient = element.getIngredient();
 				String errorInfo = ingredientHelper.getErrorInfo(ingredient);
-				Log.get().error("Could not find any matching ingredients to remove: {}", errorInfo);
-			} else if (ClientConfig.getInstance().isDebugModeEnabled()) {
-				Log.get().debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(element.getIngredient()));
+				LOGGER.error("Could not find any matching ingredients to remove: {}", errorInfo);
+			} else if (enableDebugLogs) {
+				LOGGER.debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(element.getIngredient()));
 			}
 			for (IIngredientListElement<V> matchingElement : matchingElements) {
 				blacklist.addIngredientToBlacklist(matchingElement.getIngredient(), ingredientHelper);

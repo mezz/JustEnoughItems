@@ -3,15 +3,18 @@ package mezz.jei.ingredients;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.config.IHideModeConfig;
 import mezz.jei.util.ErrorUtil;
 
 public class IngredientBlacklist implements IIngredientBlacklist {
 	private final IIngredientRegistry ingredientRegistry;
 	private final IngredientBlacklistInternal internal;
+	private final IHideModeConfig hideModeConfig;
 
-	public IngredientBlacklist(IIngredientRegistry ingredientRegistry, IngredientBlacklistInternal internal) {
+	public IngredientBlacklist(IIngredientRegistry ingredientRegistry, IngredientBlacklistInternal internal, IHideModeConfig hideModeConfig) {
 		this.ingredientRegistry = ingredientRegistry;
 		this.internal = internal;
+		this.hideModeConfig = hideModeConfig;
 	}
 
 	@Override
@@ -35,6 +38,7 @@ public class IngredientBlacklist implements IIngredientBlacklist {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-		return internal.isIngredientBlacklisted(ingredient, ingredientHelper);
+		return internal.isIngredientBlacklistedByApi(ingredient, ingredientHelper) ||
+			hideModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper);
 	}
 }

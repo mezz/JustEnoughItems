@@ -15,7 +15,7 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.gui.overlay.IIngredientGridSource;
 import org.lwjgl.glfw.GLFW;
 
 public class GuiTextFieldFilter extends GuiTextField {
@@ -24,17 +24,17 @@ public class GuiTextFieldFilter extends GuiTextField {
 	private static final List<String> history = new LinkedList<>();
 
 	private final HoverChecker hoverChecker;
-	private final IngredientFilter ingredientFilter;
+	private final IIngredientGridSource ingredientSource;
 	private boolean previousKeyboardRepeatEnabled;
 
 	private final DrawableNineSliceTexture background;
 
-	public GuiTextFieldFilter(int componentId, IngredientFilter ingredientFilter) {
+	public GuiTextFieldFilter(int componentId, IIngredientGridSource ingredientSource) {
 		super(componentId, Minecraft.getInstance().fontRenderer, 0, 0, 0, 0);
 
 		setMaxStringLength(maxSearchLength);
 		this.hoverChecker = new HoverChecker(0, 0, 0, 0);
-		this.ingredientFilter = ingredientFilter;
+		this.ingredientSource = ingredientSource;
 
 		this.background = new DrawableNineSliceTexture(Constants.RECIPE_BACKGROUND, 95, 182, 95, 20, 4, 4, 4, 4);
 	}
@@ -55,7 +55,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 		if (!filterText.equals(getText())) {
 			setText(filterText);
 		}
-		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList();
+		List<IIngredientListElement> ingredientList = ingredientSource.getIngredientList(filterText);
 		if (ingredientList.size() == 0) {
 			setTextColor(Color.red.getRGB());
 		} else {

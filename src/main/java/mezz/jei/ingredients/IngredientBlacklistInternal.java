@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.config.ClientConfig;
 
 public class IngredientBlacklistInternal {
 	private final Set<String> ingredientBlacklist = new HashSet<>();
@@ -18,11 +17,6 @@ public class IngredientBlacklistInternal {
 	public <V> void removeIngredientFromBlacklist(V ingredient, IIngredientHelper<V> ingredientHelper) {
 		String uniqueName = ingredientHelper.getUniqueId(ingredient);
 		ingredientBlacklist.remove(uniqueName);
-	}
-
-	public <V> boolean isIngredientBlacklisted(V ingredient, IIngredientHelper<V> ingredientHelper) {
-		return isIngredientBlacklistedByApi(ingredient, ingredientHelper) ||
-			ClientConfig.getInstance().isIngredientOnConfigBlacklist(ingredient, ingredientHelper);
 	}
 
 	public <V> boolean isIngredientBlacklistedByApi(V ingredient, IIngredientHelper<V> ingredientHelper) {

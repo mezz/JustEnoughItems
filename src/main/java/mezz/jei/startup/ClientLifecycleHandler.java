@@ -5,45 +5,63 @@ import java.io.File;
 import java.util.List;
 
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.event.EventNetworkChannel;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.client.util.InputMappings;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.resources.IReloadableResourceManager;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.config.Constants;
+import mezz.jei.config.HideModeConfig;
+import mezz.jei.config.IHideModeConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.ServerInfo;
+import mezz.jei.events.EventBusHelper;
+import mezz.jei.events.PlayerJoinedWorldEvent;
 import mezz.jei.network.PacketHandler;
 import mezz.jei.network.PacketHandlerClient;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ClientLifecycleHandler {
+	private final Logger LOGGER = LogManager.getLogger();
 	private final JeiStarter starter = new JeiStarter();
+	private final ClientConfig clientConfig;
+	private final IHideModeConfig hideModeConfig;
 
 	public ClientLifecycleHandler() {
+		File jeiConfigurationDir = new File(FMLPaths.CONFIGDIR.get().toFile(), Constants.MOD_ID);
+		if (!jeiConfigurationDir.exists()) {
+			try {
+				if (!jeiConfigurationDir.mkdir()) {
+					throw new Error("Could not create config directory " + jeiConfigurationDir);
+				}
+			} catch (SecurityException e) {
+				throw new Error("Could not create config directory " + jeiConfigurationDir, e);
+			}
+		}
+		hideModeConfig = new HideModeConfig(ForgeModIdHelper.getInstance(), jeiConfigurationDir);
+		clientConfig = new ClientConfig(jeiConfigurationDir);
+
 		KeyBindings.init();
 
-		IEventBus eventBus = MinecraftForge.EVENT_BUS;
-		eventBus.addListener(EventPriority.NORMAL, false, FMLPreInitializationEvent.class, event -> this.onPreInit());
-		eventBus.addListener(EventPriority.NORMAL, false, FMLLoadCompleteEvent.class, event -> this.onLoadComplete());
-//		MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, FMLLo
+		EventBusHelper.addListener(FMLPreInitializationEvent.class, event -> this.onPreInit());
+//		eventBus.addListener(EventPriority.NORMAL, false, FMLLoadCompleteEvent.class, event -> this.onLoadComplete());
+		EventBusHelper.addListener(GuiScreenEvent.KeyboardKeyPressedEvent.Pre.class, this::onGuiKeyPressedEvent);
 
-		File jeiConfigurationDir = new File(FMLPaths.CONFIGDIR.get().toFile(), Constants.MOD_ID);
-		ClientConfig clientConfig = new ClientConfig(eventBus, jeiConfigurationDir);
-		eventBus.addListener(EventPriority.NORMAL, false, FMLPreInitializationEvent.class, event -> clientConfig.onPreInit());
-		eventBus.addListener(EventPriority.NORMAL, false, ConfigChangedEvent.OnConfigChangedEvent.class, event -> clientConfig.onConfigChanged(event.getModID()));
-		eventBus.addListener(EventPriority.NORMAL, false, WorldEvent.Save.class, event -> clientConfig.onWorldSave());
+		EventBusHelper.addListener(FMLPreInitializationEvent.class, event -> clientConfig.onPreInit());
+		EventBusHelper.addListener(ConfigChangedEvent.OnConfigChangedEvent.class, event -> clientConfig.onConfigChanged(event.getModID()));
+		EventBusHelper.addListener(WorldEvent.Save.class, event -> clientConfig.onWorldSave());
 	}
 
 	private void onPreInit() {
@@ -98,15 +116,31 @@ public class ClientLifecycleHandler {
 			// check that JEI has been started before. if not, do nothing
 			if (this.starter.hasStarted()) {
 				if (ClientConfig.getInstance().isDebugModeEnabled()) {
-					Log.get().info("Restarting JEI.", new RuntimeException("Stack trace for debugging"));
+					LOGGER.info("Restarting JEI.", new RuntimeException("Stack trace for debugging"));
 				} else {
-					Log.get().info("Restarting JEI.");
+					LOGGER.info("Restarting JEI.");
 				}
-				this.starter.start(plugins);
+				this.starter.start(plugins, clientConfig, hideModeConfig);
 			}
 		});
 
-		this.starter.start(plugins);
+		this.starter.start(plugins, clientConfig, hideModeConfig);
+	}
+
+	/**
+	 * temporary hack while waiting for recipe sync events in Forge
+	 */
+	private void onGuiKeyPressedEvent(GuiScreenEvent.KeyboardKeyPressedEvent.Pre event) {
+		InputMappings.Input input = InputMappings.getInputByCode(event.getKeyCode(), event.getScanCode());
+		if (KeyBindings.startJei.isActiveAndMatches(input)) {
+			NetHandlerPlayClient connection = Minecraft.getInstance().getConnection();
+			if (connection != null) {
+				NetworkManager networkManager = connection.getNetworkManager();
+				clientConfig.syncWorldConfig(networkManager);
+			}
+			onLoadComplete();
+			EventBusHelper.post(new PlayerJoinedWorldEvent());
+		}
 	}
 
 	// TODO

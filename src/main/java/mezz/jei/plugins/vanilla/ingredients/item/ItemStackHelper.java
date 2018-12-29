@@ -129,6 +129,13 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
+	public ItemStack normalizeIngredient(ItemStack ingredient) {
+		ItemStack copy = ingredient.copy();
+		copy.setCount(1);
+		return copy;
+	}
+
+	@Override
 	public boolean isValidIngredient(ItemStack ingredient) {
 		return !ingredient.isEmpty();
 	}

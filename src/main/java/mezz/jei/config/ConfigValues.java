@@ -12,12 +12,12 @@ public class ConfigValues {
 	public int maxRecipeGuiHeight = 350;
 
 	// search
-	public ClientConfig.SearchMode modNameSearchMode = ClientConfig.SearchMode.REQUIRE_PREFIX;
-	public ClientConfig.SearchMode tooltipSearchMode = ClientConfig.SearchMode.ENABLED;
-	public ClientConfig.SearchMode oreDictSearchMode = ClientConfig.SearchMode.DISABLED;
-	public ClientConfig.SearchMode creativeTabSearchMode = ClientConfig.SearchMode.DISABLED;
-	public ClientConfig.SearchMode colorSearchMode = ClientConfig.SearchMode.DISABLED;
-	public ClientConfig.SearchMode resourceIdSearchMode = ClientConfig.SearchMode.DISABLED;
+	public SearchMode modNameSearchMode = SearchMode.REQUIRE_PREFIX;
+	public SearchMode tooltipSearchMode = SearchMode.ENABLED;
+	public SearchMode oreDictSearchMode = SearchMode.DISABLED;
+	public SearchMode creativeTabSearchMode = SearchMode.DISABLED;
+	public SearchMode colorSearchMode = SearchMode.DISABLED;
+	public SearchMode resourceIdSearchMode = SearchMode.DISABLED;
 	public boolean searchAdvancedTooltips = false;
 
 	// per-world

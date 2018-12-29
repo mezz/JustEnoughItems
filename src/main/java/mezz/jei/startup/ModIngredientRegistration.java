@@ -31,7 +31,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 		ingredientRendererMap.put(ingredientType, ingredientRenderer);
 	}
 
-	public IngredientRegistry createIngredientRegistry(IModIdHelper modIdHelper, IngredientBlacklistInternal blacklist) {
+	public IngredientRegistry createIngredientRegistry(IModIdHelper modIdHelper, IngredientBlacklistInternal blacklist, boolean enableDebugLogs) {
 		Map<IIngredientType, IngredientSet> ingredientsMap = new IdentityHashMap<>();
 		for (Map.Entry<IIngredientType, Collection> entry : allIngredientsMap.entrySet()) {
 			IIngredientType ingredientType = entry.getKey();
@@ -45,7 +45,8 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 			blacklist,
 			ingredientsMap,
 			ImmutableMap.copyOf(ingredientHelperMap),
-			ImmutableMap.copyOf(ingredientRendererMap)
+			ImmutableMap.copyOf(ingredientRendererMap),
+			enableDebugLogs
 		);
 	}
 

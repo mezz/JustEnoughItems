@@ -3,14 +3,13 @@ package mezz.jei.startup;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.event.EventNetworkChannel;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.EventPriority;
 
+import mezz.jei.events.EventBusHelper;
 import mezz.jei.network.PacketHandler;
 
 public class ServerLifecycleHandler {
 	public ServerLifecycleHandler() {
-		MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, FMLPreInitializationEvent.class, event -> this.preInit());
+		EventBusHelper.addListener(FMLPreInitializationEvent.class, event -> this.preInit());
 	}
 
 	private void preInit() {

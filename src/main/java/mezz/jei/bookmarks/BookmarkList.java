@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTTagCompound;
@@ -56,13 +55,7 @@ public class BookmarkList implements IIngredientGridSource {
 
 	protected <T> T normalize(T ingredient) {
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-		T copy = ingredientHelper.copyIngredient(ingredient);
-		if (copy instanceof ItemStack) {
-			((ItemStack) copy).setCount(1);
-		} else if (copy instanceof FluidStack) {
-			((FluidStack) copy).amount = 1000;
-		}
-		return copy;
+		return ingredientHelper.normalizeIngredient(ingredient);
 	}
 
 	private boolean contains(Object ingredient) {
@@ -194,13 +187,8 @@ public class BookmarkList implements IIngredientGridSource {
 	}
 
 	@Override
-	public List<IIngredientListElement> getIngredientList() {
+	public List<IIngredientListElement> getIngredientList(String filterText) {
 		return ingredientListElements;
-	}
-
-	@Override
-	public int size() {
-		return ingredientListElements.size();
 	}
 
 	public boolean isEmpty() {

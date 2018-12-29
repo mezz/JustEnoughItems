@@ -1,10 +1,8 @@
 package mezz.jei.startup;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.language.ModFileScanData;
@@ -25,12 +23,18 @@ public final class AnnotatedInstanceUtil {
 
 	@SuppressWarnings("SameParameterValue")
 	private static <T> List<T> getInstances(Class annotationClass, Class<T> instanceClass) {
-		List<ModFileScanData> scanData = ModList.get().getAllScanData();
-		final List<String> pluginClassNames = scanData.stream()
-			.map(ModFileScanData::getAnnotations).flatMap(Collection::stream)
-			.filter(a -> Objects.equals(a.getClassType(), Type.getType(annotationClass)))
-			.map(ModFileScanData.AnnotationData::getMemberName)
-			.collect(Collectors.toList());
+		Type annotationType = Type.getType(annotationClass);
+		List<ModFileScanData> allScanData = ModList.get().getAllScanData();
+		List<String> pluginClassNames = new ArrayList<>();
+		for (ModFileScanData scanData : allScanData) {
+			List<ModFileScanData.AnnotationData> annotations = scanData.getAnnotations();
+			for (ModFileScanData.AnnotationData a : annotations) {
+				if (Objects.equals(a.getAnnotationType(), annotationType)) {
+					String memberName = a.getMemberName();
+					pluginClassNames.add(memberName);
+				}
+			}
+		}
 		List<T> instances = new ArrayList<>();
 		for (String className : pluginClassNames) {
 			try {

@@ -15,6 +15,8 @@ import org.lwjgl.glfw.GLFW;
 public final class KeyBindings {
 	private static final String categoryName = Constants.MOD_ID + " (" + Constants.NAME + ')';
 
+	@Deprecated // used as a hack to start JEI. waiting on proper events in Forge to start it the right way
+	public static final KeyBinding startJei;
 	public static final KeyBinding toggleOverlay;
 	public static final KeyBinding focusSearch;
 	public static final KeyBinding toggleCheatMode;
@@ -33,6 +35,7 @@ public final class KeyBindings {
 
 	static {
 		allBindings = ImmutableList.of(
+			startJei = new KeyBinding("start_jei", KeyConflictContext.UNIVERSAL, KeyModifier.CONTROL, getKey(GLFW.GLFW_KEY_J), categoryName),
 			toggleOverlay = new KeyBinding("key.jei.toggleOverlay", KeyConflictContext.GUI, KeyModifier.CONTROL, getKey(GLFW.GLFW_KEY_O), categoryName),
 			focusSearch = new KeyBinding("key.jei.focusSearch", KeyConflictContext.GUI, KeyModifier.CONTROL, getKey(GLFW.GLFW_KEY_F), categoryName),
 			toggleCheatMode = new KeyBinding("key.jei.toggleCheatMode", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), categoryName),

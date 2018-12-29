@@ -10,7 +10,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
 import mezz.jei.config.ClientConfig;
-import mezz.jei.config.OverlayToggleEvent;
+import mezz.jei.events.OverlayToggleEvent;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.input.MouseUtil;

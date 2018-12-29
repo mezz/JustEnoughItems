@@ -20,6 +20,7 @@ import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.ClientConfig;
+import mezz.jei.config.IHideModeConfig;
 import mezz.jei.config.IngredientBlacklistType;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
@@ -40,17 +41,28 @@ public class InputHandler {
 	private final IngredientFilter ingredientFilter;
 	private final RecipesGui recipesGui;
 	private final IngredientListOverlay ingredientListOverlay;
+	private final IHideModeConfig hideModeConfig;
 	private final LeftAreaDispatcher leftAreaDispatcher;
 	private final BookmarkList bookmarkList;
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<>();
 	private final IntSet clickHandled = new IntArraySet();
 
-	public InputHandler(JeiRuntime runtime, IngredientRegistry ingredientRegistry, IngredientListOverlay ingredientListOverlay, GuiScreenHelper guiScreenHelper, LeftAreaDispatcher leftAreaDispatcher, BookmarkList bookmarkList) {
+	public InputHandler(
+		JeiRuntime runtime,
+		IngredientFilter ingredientFilter,
+		IngredientRegistry ingredientRegistry,
+		IngredientListOverlay ingredientListOverlay,
+		IHideModeConfig hideModeConfig,
+		GuiScreenHelper guiScreenHelper,
+		LeftAreaDispatcher leftAreaDispatcher,
+		BookmarkList bookmarkList
+	) {
 		this.recipeRegistry = runtime.getRecipeRegistry();
 		this.ingredientRegistry = ingredientRegistry;
-		this.ingredientFilter = runtime.getIngredientFilter();
+		this.ingredientFilter = ingredientFilter;
 		this.recipesGui = runtime.getRecipesGui();
 		this.ingredientListOverlay = ingredientListOverlay;
+		this.hideModeConfig = hideModeConfig;
 		this.leftAreaDispatcher = leftAreaDispatcher;
 		this.bookmarkList = bookmarkList;
 
@@ -214,11 +226,10 @@ public class InputHandler {
 
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 
-		ClientConfig config = ClientConfig.getInstance();
-		if (config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
-			config.removeIngredientFromConfigBlacklist(ingredientFilter, ingredientRegistry, ingredient, blacklistType, ingredientHelper);
+		if (hideModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
+			hideModeConfig.removeIngredientFromConfigBlacklist(ingredientFilter, ingredientRegistry, ingredient, blacklistType, ingredientHelper);
 		} else {
-			config.addIngredientToConfigBlacklist(ingredientFilter, ingredientRegistry, ingredient, blacklistType, ingredientHelper);
+			hideModeConfig.addIngredientToConfigBlacklist(ingredientFilter, ingredientRegistry, ingredient, blacklistType, ingredientHelper);
 		}
 		clicked.onClickHandled();
 		return true;

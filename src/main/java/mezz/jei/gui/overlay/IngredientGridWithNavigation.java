@@ -13,6 +13,8 @@ import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.config.ClientConfig;
+import mezz.jei.config.IFilterTextSource;
+import mezz.jei.config.IHideModeConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.PageNavigation;
@@ -39,12 +41,20 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 	private final IPaged pageDelegate;
 	private final PageNavigation navigation;
 	private final GuiScreenHelper guiScreenHelper;
+	private final IFilterTextSource filterTextSource;
 	private final IngredientGrid ingredientGrid;
 	private final IIngredientGridSource ingredientSource;
 	private Rectangle area = new Rectangle();
 
-	public IngredientGridWithNavigation(IIngredientGridSource ingredientSource, GuiScreenHelper guiScreenHelper, GridAlignment alignment) {
-		this.ingredientGrid = new IngredientGrid(alignment);
+	public IngredientGridWithNavigation(
+		IIngredientGridSource ingredientSource,
+		IFilterTextSource filterTextSource,
+		GuiScreenHelper guiScreenHelper,
+		IHideModeConfig hideModeConfig,
+		GridAlignment alignment
+	) {
+		this.filterTextSource = filterTextSource;
+		this.ingredientGrid = new IngredientGrid(alignment, hideModeConfig);
 		this.ingredientSource = ingredientSource;
 		this.guiScreenHelper = guiScreenHelper;
 		this.pageDelegate = new IngredientGridPaged();
@@ -55,7 +65,8 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		if (resetToFirstPage) {
 			firstItemIndex = 0;
 		}
-		List<IIngredientListElement> ingredientList = ingredientSource.getIngredientList();
+		String filterText = filterTextSource.getFilterText();
+		List<IIngredientListElement> ingredientList = ingredientSource.getIngredientList(filterText);
 		if (firstItemIndex >= ingredientList.size()) {
 			firstItemIndex = 0;
 		}
@@ -199,7 +210,8 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 	private class IngredientGridPaged implements IPaged {
 		@Override
 		public boolean nextPage() {
-			final int itemsCount = ingredientSource.size();
+			String filterText = filterTextSource.getFilterText();
+			final int itemsCount = ingredientSource.getIngredientList(filterText).size();
 			if (itemsCount > 0) {
 				firstItemIndex += ingredientGrid.size();
 				if (firstItemIndex >= itemsCount) {
@@ -222,7 +234,8 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 				updateLayout(false);
 				return false;
 			}
-			final int itemsCount = ingredientSource.size();
+			String filterText = filterTextSource.getFilterText();
+			final int itemsCount = ingredientSource.getIngredientList(filterText).size();
 
 			int pageNum = firstItemIndex / itemsPerPage;
 			if (pageNum == 0) {
@@ -242,21 +255,24 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 
 		@Override
 		public boolean hasNext() {
+			String filterText = filterTextSource.getFilterText();
 			// true if there is more than one page because this wraps around
 			int itemsPerPage = ingredientGrid.size();
-			return itemsPerPage > 0 && ingredientSource.size() > itemsPerPage;
+			return itemsPerPage > 0 && ingredientSource.getIngredientList(filterText).size() > itemsPerPage;
 		}
 
 		@Override
 		public boolean hasPrevious() {
+			String filterText = filterTextSource.getFilterText();
 			// true if there is more than one page because this wraps around
 			int itemsPerPage = ingredientGrid.size();
-			return itemsPerPage > 0 && ingredientSource.size() > itemsPerPage;
+			return itemsPerPage > 0 && ingredientSource.getIngredientList(filterText).size() > itemsPerPage;
 		}
 
 		@Override
 		public int getPageCount() {
-			final int itemCount = ingredientSource.size();
+			String filterText = filterTextSource.getFilterText();
+			final int itemCount = ingredientSource.getIngredientList(filterText).size();
 			final int stacksPerPage = ingredientGrid.size();
 			if (stacksPerPage == 0) {
 				return 1;

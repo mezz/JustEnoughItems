@@ -16,7 +16,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.color.ColorNamer;
-import mezz.jei.config.ClientConfig;
+import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.util.Translator;
 
 public final class IngredientInformation {
@@ -28,8 +28,8 @@ public final class IngredientInformation {
 		return removeChatFormatting(displayName);
 	}
 
-	public static <T> List<String> getTooltipStrings(T ingredient, IIngredientRenderer<T> ingredientRenderer, Set<String> toRemove) {
-		ITooltipFlag.TooltipFlags tooltipFlag = ClientConfig.getInstance().getSearchAdvancedTooltips() ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
+	public static <T> List<String> getTooltipStrings(T ingredient, IIngredientRenderer<T> ingredientRenderer, Set<String> toRemove, IIngredientFilterConfig config) {
+		ITooltipFlag.TooltipFlags tooltipFlag = config.getSearchAdvancedTooltips() ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
 		List<String> tooltip = ingredientRenderer.getTooltip(ingredient, tooltipFlag);
 		List<String> cleanTooltip = new ArrayList<>(tooltip.size());
 		for (String line : tooltip) {
