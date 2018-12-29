@@ -72,8 +72,24 @@ public final class Config {
 	private static final Set<String> itemBlacklist = new HashSet<>();
 	private static final String[] defaultItemBlacklist = new String[]{};
 
+	private static final IngredientFilterConfig ingredientFilterConfig = new IngredientFilterConfig(values);
+	private static final HideModeConfig hideModeConfig = new HideModeConfig(values, itemBlacklist);
+	private static final FilterTextSource filterTextSource = new FilterTextSource(values);
+
 	private Config() {
 
+	}
+
+	public static IIngredientFilterConfig getIngredientFilterConfig() {
+		return ingredientFilterConfig;
+	}
+
+	public static IHideModeConfig getHideModeConfig() {
+		return hideModeConfig;
+	}
+
+	public static IFilterTextSource getFilterTextSource() {
+		return filterTextSource;
 	}
 
 	public static boolean isOverlayEnabled() {

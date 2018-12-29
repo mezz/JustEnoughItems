@@ -2,7 +2,7 @@ package mezz.jei.ingredients;
 
 import java.util.Collection;
 
-import mezz.jei.config.Config;
+import mezz.jei.config.SearchMode;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 
@@ -25,7 +25,7 @@ class PrefixedSearchTree {
 		return stringsGetter;
 	}
 
-	public Config.SearchMode getMode() {
+	public SearchMode getMode() {
 		return modeGetter.getMode();
 	}
 
@@ -36,6 +36,6 @@ class PrefixedSearchTree {
 
 	@FunctionalInterface
 	interface IModeGetter {
-		Config.SearchMode getMode();
+		SearchMode getMode();
 	}
 }

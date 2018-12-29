@@ -17,6 +17,8 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.config.Config;
+import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
@@ -159,11 +161,16 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 
 	@Override
 	public final List<String> getTooltipStrings() {
+		return getTooltipStrings(Config.getIngredientFilterConfig());
+	}
+
+	@Override
+	public List<String> getTooltipStrings(IIngredientFilterConfig config) {
 		String modName = this.modNames.get(0);
 		String modId = this.modIds.get(0);
 		String modNameLowercase = modName.toLowerCase(Locale.ENGLISH);
 		String displayNameLowercase = Translator.toLowercaseWithLocale(this.displayName);
-		return IngredientInformation.getTooltipStrings(ingredient, ingredientRenderer, ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceLocation.getPath()));
+		return IngredientInformation.getTooltipStrings(ingredient, ingredientRenderer, ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceLocation.getPath()), config.getSearchAdvancedTooltips());
 	}
 
 	@Override

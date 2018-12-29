@@ -30,7 +30,11 @@ public final class IngredientInformation {
 	}
 
 	public static <T> List<String> getTooltipStrings(T ingredient, IIngredientRenderer<T> ingredientRenderer, Set<String> toRemove) {
-		ITooltipFlag.TooltipFlags tooltipFlag = Config.getSearchAdvancedTooltips() ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
+		return getTooltipStrings(ingredient, ingredientRenderer, toRemove, Config.getSearchAdvancedTooltips());
+	}
+
+	public static <T> List<String> getTooltipStrings(T ingredient, IIngredientRenderer<T> ingredientRenderer, Set<String> toRemove, boolean advancedTooltips) {
+		ITooltipFlag.TooltipFlags tooltipFlag = advancedTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
 		Minecraft minecraft = Minecraft.getMinecraft();
 		List<String> tooltip = ingredientRenderer.getTooltip(minecraft, ingredient, tooltipFlag);
 		List<String> cleanTooltip = new ArrayList<>(tooltip.size());

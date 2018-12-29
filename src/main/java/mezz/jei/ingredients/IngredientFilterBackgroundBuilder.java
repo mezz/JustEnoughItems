@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.NonNullList;
 
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
-import mezz.jei.config.Config;
+import mezz.jei.config.SearchMode;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 
@@ -44,8 +44,8 @@ public class IngredientFilterBackgroundBuilder {
 	private boolean run(final int timeoutMs) {
 		final long startTime = System.currentTimeMillis();
 		for (PrefixedSearchTree prefixedTree : this.prefixedSearchTrees.values()) {
-			Config.SearchMode mode = prefixedTree.getMode();
-			if (mode != Config.SearchMode.DISABLED) {
+			SearchMode mode = prefixedTree.getMode();
+			if (mode != SearchMode.DISABLED) {
 				PrefixedSearchTree.IStringsGetter stringsGetter = prefixedTree.getStringsGetter();
 				GeneralizedSuffixTree tree = prefixedTree.getTree();
 				for (int i = tree.getHighestIndex() + 1; i < this.elementList.size(); i++) {

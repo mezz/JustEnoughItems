@@ -7,6 +7,7 @@ import java.util.Set;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.config.IIngredientFilterConfig;
 
 public interface IIngredientListElement<V> {
 	V getIngredient();
@@ -28,6 +29,10 @@ public interface IIngredientListElement<V> {
 	Set<String> getModNameStrings();
 
 	List<String> getTooltipStrings();
+
+	default List<String> getTooltipStrings(IIngredientFilterConfig config) {
+		return getTooltipStrings();
+	}
 
 	Collection<String> getOreDictStrings();
 
