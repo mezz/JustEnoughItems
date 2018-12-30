@@ -1,0 +1,29 @@
+archivesBaseName = 'jei-lib-' + mcversion
+
+dependencies {
+    compile "com.google.code.findbugs:jsr305:3.0.1"
+    compile "com.google.guava:guava:26.0-jre"
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from sourceSets.main.output.classesDirs
+    from sourceSets.api.output.classesDirs
+    from sourceSets.main.output.resourcesDir
+    from sourceSets.api.output.resourcesDir
+}
+
+task apiJar(type: Jar) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    classifier = "api"
+    from sourceSets.api.output
+
+    // TODO: when FG bug is fixed, remove allJava from the api jar.
+    // https://github.com/MinecraftForge/ForgeGradle/issues/369
+    // Gradle should be able to pull them from the -sources jar.
+    from sourceSets.api.allJava
+}
+
+artifacts {
+    archives apiJar
+}

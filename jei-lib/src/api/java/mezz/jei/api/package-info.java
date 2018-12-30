@@ -1,7 +1,5 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package mezz.jei.api.gui;
+package mezz.jei.api;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-
-import mezz.jei.api.MethodsReturnNonnullByDefault;

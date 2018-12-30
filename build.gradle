@@ -24,28 +24,89 @@ plugins {
 	id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.32"
 }
 apply from: "buildtools/ColoredOutput.gradle"
+apply plugin: 'idea'
 
+allprojects {
+	apply plugin: 'java'
+	
+	version = version_major + "." + version_minor + "." + version_patch
+	group = "mezz.jei" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+
+	//adds the build number to the end of the version string if on a build server
+	if (System.getenv().BUILD_NUMBER != null) {
+		version += ".${System.getenv().BUILD_NUMBER}"
+	}
+
+	sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+	compileJava {
+		sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+	}
+
+	repositories {
+		maven { url 'http://repo1.maven.org/maven2' }
+	}
+
+	sourceSets {
+		api
+		main {
+			compileClasspath += sourceSets.api.output
+			runtimeClasspath += sourceSets.api.output
+		}
+		test {
+			compileClasspath += sourceSets.api.output
+			runtimeClasspath += sourceSets.api.output
+		}
+	}
+
+	configurations {
+		apiCompile.extendsFrom(compile)
+	}
+
+	dependencies {
+		testCompile([
+			group: "junit",
+			name: "junit",
+			version: "4.12"
+		])
+	}
+
+	// prevent java 8's strict doclint for javadocs from failing builds
+	if (JavaVersion.current().isJava8Compatible()) {
+		tasks.withType(Javadoc) {
+			options.addStringOption('Xdoclint:none', '-quiet')
+		}
+	}
+}
+
+Project libProject = project(':jei-lib')
+
+List<Project> subProjects = Arrays.asList(libProject);
+for (subProject in subProjects) {
+	evaluationDependsOn(subProject.path)
+}
+List<SourceSetContainer> allSourceSets = new ArrayList<>();
+for (Project project in subProjects) {
+	allSourceSets.add(project.sourceSets);
+}
+allSourceSets.add(sourceSets);
 
 apply plugin: "net.minecraftforge.gradle"
 
-version = version_major + "." + version_minor + "." + version_patch
-group = "mezz.jei" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "jei-" + mcversion
-
-if (System.getenv().BUILD_NUMBER != null) {
-//adds the build number to the end of the version string if on a build server
-	version += ".${System.getenv().BUILD_NUMBER}"
-}
-
-sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
-compileJava {
-	sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+dependencies {
+	compile libProject
+	compile libProject.sourceSets.api.output
+	apiCompile libProject.sourceSets.api.output
+	minecraft([
+		group  : "${project.forgegroup}",
+		name   : "forge",
+		version: "${project.mcversion}-${project.forgeversion}"
+	])
 }
 
 minecraft {
 	//	runDir = "run"
 	//	replace "@VERSION@", project.version
-	mappings channel: "snapshot", version: "20180921-1.13"
+	mappings channel: "snapshot", version: "${project.mcp_mappings}".toString()
 
 	accessTransformer = file('src/main/resources/META-INF/jei_at.cfg')
 
@@ -66,61 +127,6 @@ minecraft {
 		environment "target", "fmldevserver"
 		environment "assetDirectory", downloadAssets.output.absolutePath
 	}
-}
-
-repositories {
-
-}
-
-sourceSets {
-	api
-	main {
-		compileClasspath += sourceSets.api.output
-		runtimeClasspath += sourceSets.api.output
-	}
-	test {
-		compileClasspath += sourceSets.api.output
-		runtimeClasspath += sourceSets.api.output
-	}
-}
-
-configurations {
-	apiCompile.extendsFrom(compile)
-}
-
-dependencies {
-	minecraft([
-		group: "net.minecraftforge.test",
-		name: "forge",
-		version: "${project.mcversion}-${project.forgeversion}"
-	])
-	testCompile([
-		group: "junit",
-		name: "junit",
-		version: "4.12"
-	])
-}
-
-processResources {
-	// this will ensure that this task is redone when the versions change.
-	inputs.property "version", project.version
-	inputs.property "mcversion", project.mcversion
-
-	// replace stuff in mods.toml, nothing else
-	from(sourceSets.main.resources.srcDirs) {
-		include "META_INF/mods.toml"
-		expand "version": project.version
-	}
-
-	// copy everything else
-	from(sourceSets.main.resources.srcDirs) {
-		exclude "META_INF/mods.toml"
-	}
-}
-
-// prevent java 8's strict doclint for javadocs from failing builds
-tasks.withType(Javadoc) {
-	options.addStringOption("Xdoclint:none", "-quiet")
 }
 
 task makeChangelog(type: GitChangelogTask) {
@@ -146,29 +152,44 @@ task makeChangelog(type: GitChangelogTask) {
 //}
 
 jar {
-	from sourceSets.main.output
-	from sourceSets.api.output
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	for (SourceSetContainer sourceSets in allSourceSets) {
+		from sourceSets.main.output.classesDirs
+		from sourceSets.api.output.classesDirs
+		from sourceSets.main.output.resourcesDir
+		from sourceSets.api.output.resourcesDir
+	}
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	classifier = "javadoc"
+	for (Project project in subProjects) {
+		from project.javadoc.destinationDir
+	}
 	from javadoc.destinationDir
 }
 
-task sourcesJar(type: Jar) {
+task sourcesJar(type: Jar, dependsOn: subProjects.tasks['classes']) {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	classifier = "sources"
-	from sourceSets.main.allJava
-	from sourceSets.api.allJava
+	for (SourceSetContainer sourceSets in allSourceSets) {
+		from sourceSets.main.allJava
+		from sourceSets.api.allJava
+	}
 }
 
-task apiJar(type: Jar) {
+task apiJar(type: Jar, dependsOn: subProjects.tasks['classes']) {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	classifier = "api"
-	from sourceSets.api.output
+	for (SourceSetContainer sourceSets in allSourceSets) {
+		from sourceSets.api.output
 
-	// TODO: when FG bug is fixed, remove allJava from the api jar.
-	// https://github.com/MinecraftForge/ForgeGradle/issues/369
-	// Gradle should be able to pull them from the -sources jar.
-	from sourceSets.api.allJava
+		// TODO: when FG bug is fixed, remove allJava from the api jar.
+		// https://github.com/MinecraftForge/ForgeGradle/issues/369
+		// Gradle should be able to pull them from the -sources jar.
+		from sourceSets.api.allJava
+	}
 }
 
 artifacts {
@@ -176,6 +197,12 @@ artifacts {
 	archives sourcesJar
 	archives apiJar
 }
+
+task copyJars(type: Copy) {
+	from subProjects.collect { it.tasks.withType(Jar) }
+	into "$buildDir/libs"
+}
+build.finalizedBy(copyJars)
 
 task("uploadJars", dependsOn: "build") {
 	description = "uploads JARs"
