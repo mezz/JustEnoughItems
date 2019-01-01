@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.util.NonNullList;
 
@@ -21,6 +20,7 @@ import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.startup.StartupProgress;
 import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.Config;
@@ -115,17 +115,17 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 			.map(IIngredientListElement::getModNameForSorting)
 			.distinct()
 			.count();
-		ProgressManager.ProgressBar progressBar = ProgressManager.push("Indexing ingredients", (int) modNameCount);
-		String currentModName = null;
-		for (IIngredientListElement<?> element : ingredients) {
-			String modname = element.getModNameForSorting();
-			if (!Objects.equals(currentModName, modname)) {
-				currentModName = modname;
-				progressBar.step(modname);
+		try (StartupProgress progressBar = StartupProgress.start("Indexing ingredients", (int) modNameCount)) {
+			String currentModName = null;
+			for (IIngredientListElement<?> element : ingredients) {
+				String modname = element.getModNameForSorting();
+				if (!Objects.equals(currentModName, modname)) {
+					currentModName = modname;
+					progressBar.step(modname);
+				}
+				addIngredient(element);
 			}
-			addIngredient(element);
 		}
-		ProgressManager.pop(progressBar);
 	}
 
 	public <V> void addIngredient(IIngredientListElement<V> element) {

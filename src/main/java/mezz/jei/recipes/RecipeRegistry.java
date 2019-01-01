@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
@@ -26,6 +25,7 @@ import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableTable;
+import mezz.jei.startup.StartupProgress;
 import mezz.jei.Internal;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
@@ -165,19 +165,19 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	private void addRecipes(List<Object> unsortedRecipes, ListMultiMap<String, Object> recipes) {
 		Collection<Map.Entry<String, List<Object>>> entries = recipes.entrySet();
-		ProgressManager.ProgressBar progressBar = ProgressManager.push("Loading recipes", recipes.getTotalSize() + unsortedRecipes.size());
-		for (Map.Entry<String, List<Object>> entry : entries) {
-			String recipeCategoryUid = entry.getKey();
-			for (Object recipe : entry.getValue()) {
+		try (StartupProgress progressBar = StartupProgress.start("Loading recipes", recipes.getTotalSize() + unsortedRecipes.size())) {
+			for (Map.Entry<String, List<Object>> entry : entries) {
+				String recipeCategoryUid = entry.getKey();
+				for (Object recipe : entry.getValue()) {
+					progressBar.step("");
+					addRecipe(recipe, recipe.getClass(), recipeCategoryUid);
+				}
+			}
+			for (Object recipe : unsortedRecipes) {
 				progressBar.step("");
-				addRecipe(recipe, recipe.getClass(), recipeCategoryUid);
+				addRecipe(recipe, recipe.getClass(), null);
 			}
 		}
-		for (Object recipe : unsortedRecipes) {
-			progressBar.step("");
-			addRecipe(recipe, recipe.getClass(), null);
-		}
-		ProgressManager.pop(progressBar);
 	}
 
 	@Override
