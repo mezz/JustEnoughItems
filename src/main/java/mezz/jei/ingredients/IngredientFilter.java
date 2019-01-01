@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -85,9 +86,19 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 	}
 
 	public void addIngredients(NonNullList<IIngredientListElement> ingredients) {
-		ProgressManager.ProgressBar progressBar = ProgressManager.push("Indexing ingredients", ingredients.size());
+		ingredients.sort(IngredientListElementComparator.INSTANCE);
+		long modNameCount = ingredients.stream()
+			.map(IIngredientListElement::getModNameForSorting)
+			.distinct()
+			.count();
+		ProgressManager.ProgressBar progressBar = ProgressManager.push("Indexing ingredients", (int) modNameCount);
+		String currentModName = null;
 		for (IIngredientListElement<?> element : ingredients) {
-			progressBar.step(element.getDisplayName());
+			String modname = element.getModNameForSorting();
+			if (!Objects.equals(currentModName, modname)) {
+				currentModName = modname;
+				progressBar.step(modname);
+			}
 			addIngredient(element);
 		}
 		ProgressManager.pop(progressBar);
