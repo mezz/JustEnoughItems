@@ -61,7 +61,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 
 	@Override
 	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
-		if (this.hasRoom && Config.isBookmarkOverlayEnabled()) {
+		if (this.isListDisplayed()) {
 			this.contents.draw(minecraft, mouseX, mouseY, partialTicks);
 		}
 		this.bookmarkButton.draw(minecraft, mouseX, mouseY, partialTicks);
