@@ -198,5 +198,8 @@ public class VanillaPlugin implements IModPlugin {
 		ingredientBlacklist.addIngredientToBlacklist(new ItemStack(Items.SKULL, 1, 3));
 		// hide enchanted books, we display them as special ingredients because vanilla does not properly store the enchantment data by its registry name
 		ingredientBlacklist.addIngredientToBlacklist(new ItemStack(Items.ENCHANTED_BOOK, 1, OreDictionary.WILDCARD_VALUE));
+
+		registry.addAdvancedGuiHandlers(new InventoryEffectRendererGuiHandler());
 	}
+
 }
