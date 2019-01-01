@@ -10,7 +10,7 @@ public final class Constants {
 	// Mod info
 	public static final String MOD_ID = "jei";
 	public static final String NAME = "Just Enough Items";
-	public static final String VERSION = "@VERSION@";
+	public static final String VERSION = "9.9.9";
 
 	// Textures
 	public static final String RESOURCE_DOMAIN = MOD_ID.toLowerCase(Locale.ENGLISH);

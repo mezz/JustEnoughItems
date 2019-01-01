@@ -2,6 +2,9 @@ package mezz.jei.config;
 
 import mezz.jei.util.GiveMode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ConfigValues {
 	// advanced
 	public boolean debugModeEnabled = false;
@@ -28,5 +31,5 @@ public class ConfigValues {
 	public String filterText = "";
 
 	// Sort
-	public String itemSortlist = ""; // Gets populated dynamically.
+	public List<String> ingredientSortOrder = new ArrayList<>();
 }

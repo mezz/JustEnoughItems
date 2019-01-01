@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMultimap;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -46,6 +47,10 @@ public class MultiMap<K, V, T extends Collection<V>> {
 
 	public Set<Map.Entry<K, T>> entrySet() {
 		return map.entrySet();
+	}
+
+	public Collection<T> values() {
+		return map.values();
 	}
 
 	public int getTotalSize() {

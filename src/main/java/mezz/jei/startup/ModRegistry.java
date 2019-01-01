@@ -11,6 +11,7 @@ import mezz.jei.api.gui.IGhostIngredientHandler;
 import mezz.jei.api.gui.IGlobalGuiHandler;
 import mezz.jei.api.gui.IGuiScreenHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.ISortableIngredient;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeCategory;
@@ -26,7 +27,7 @@ import mezz.jei.collect.ListMultiMap;
 import mezz.jei.collect.SetMultiMap;
 import mezz.jei.config.Config;
 import mezz.jei.gui.recipes.RecipeClickableArea;
-import mezz.jei.ingredients.IngredientListElementComparator;
+import mezz.jei.ingredients.IngredientListComparator;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.plugins.jei.info.IngredientInfoRecipe;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeWrapper;
@@ -40,6 +41,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,14 +70,16 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	private final List<Object> unsortedRecipes = new ArrayList<>();
 	private final ListMultiMap<String, Object> recipes = new ListMultiMap<>();
 	private final RecipeTransferRegistry recipeTransferRegistry;
+	private final IngredientListComparator ingredientListComparator;
 	private final ListMultiMap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreas = new ListMultiMap<>();
 	private final ListMultiMap<String, Object> recipeCatalysts = new ListMultiMap<>();
 	private final List<IRecipeRegistryPlugin> recipeRegistryPlugins = new ArrayList<>();
 
-	public ModRegistry(JeiHelpers jeiHelpers, IIngredientRegistry ingredientRegistry) {
+	public ModRegistry(JeiHelpers jeiHelpers, IIngredientRegistry ingredientRegistry, IngredientListComparator ingredientListComparator) {
 		this.jeiHelpers = jeiHelpers;
 		this.ingredientRegistry = ingredientRegistry;
 		this.recipeTransferRegistry = new RecipeTransferRegistry(jeiHelpers.getStackHelper(), jeiHelpers.recipeTransferHandlerHelper());
+		this.ingredientListComparator = ingredientListComparator;
 	}
 
 	@Override
@@ -317,25 +321,21 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	}
 	
 	@Override
-	public void addIngredientListItemStackSorter(String name, Comparator<ItemStack> comparator) {		
-		ErrorUtil.checkNotEmpty(name, "addIngredientListSorter requires a sort option name.");
-		Preconditions.checkArgument(!name.trim().isEmpty(), "addIngredientListSorter requires a sort option name.");
-		Preconditions.checkArgument(!name.contains(","), "addIngredientListSorter sort option name, '" + name + "', cannot contain commas.");
-		ErrorUtil.checkNotNull(comparator, "addIngredientListSorter sorting option, '" + name + "', requires a comparator object  (null provided).");
-		
-		IngredientListElementComparator.addItemStackComparison(name.trim(), comparator);		
-		Config.updateSortOrder();		
+	public void addUntypedComparison(ResourceLocation name, Comparator<ISortableIngredient<Object>> comparator) {
+		ErrorUtil.checkNotNull(name, "addIngredientListSorter requires a sort option name.");
+		Preconditions.checkArgument(!name.toString().contains(","), "addIngredientListSorter sort option name, '" + name + "', cannot contain commas.");
+		ErrorUtil.checkNotNull(comparator, "addIngredientListSorter sorting option, '" + name + "', requires a comparator object.");
+
+		this.ingredientListComparator.addUntypedComparison(name, comparator);
 	}
 
 	@Override
-	public void addIngredientListObjectSorter(String name, Comparator<Object> comparator) {		
-		ErrorUtil.checkNotEmpty(name, "addIngredientListSorter requires a sort option name.");
-		Preconditions.checkArgument(!name.trim().isEmpty(), "addIngredientListSorter requires a sort option name.");
-		Preconditions.checkArgument(!name.contains(","), "addIngredientListSorter sort option name, '" + name + "', cannot contain commas.");
-		ErrorUtil.checkNotNull(comparator, "addIngredientListSorter sorting option, '" + name + "', requires a comparator object  (null provided).");
-		
-		IngredientListElementComparator.addObjectComparison(name.trim(), comparator);		
-		Config.updateSortOrder();		
+	public <T> void addTypedComparison(ResourceLocation name, IIngredientType<T> ingredientType, Comparator<T> comparator) {
+		ErrorUtil.checkNotNull(name, "addTypedComparison requires a sort option name.");
+		Preconditions.checkArgument(!name.toString().contains(","), "addIngredientListSorter sort option name, '" + name + "', cannot contain commas.");
+		ErrorUtil.checkNotNull(comparator, "addIngredientListSorter sorting option, '" + name + "', requires a comparator object.");
+
+		this.ingredientListComparator.addTypedComparison(name, ingredientType, comparator);
 	}
 
 	public List<IAdvancedGuiHandler<?>> getAdvancedGuiHandlers() {

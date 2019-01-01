@@ -3,6 +3,7 @@ package mezz.jei.ingredients;
 import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.LegacyUtil;
@@ -23,6 +24,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");
 
 	private final V ingredient;
+	private final IIngredientType<V> ingredientType;
 	private final int orderIndex;
 	private final IIngredientHelper<V> ingredientHelper;
 	private final IIngredientRenderer<V> ingredientRenderer;
@@ -33,9 +35,9 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	private boolean visible = true;
 
 	@Nullable
-	public static <V> IngredientListElement<V> create(V ingredient, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer, IModIdHelper modIdHelper, int orderIndex) {
+	public static <V> IngredientListElement<V> create(V ingredient, IIngredientType<V> ingredientType, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer, IModIdHelper modIdHelper, int orderIndex) {
 		try {
-			return new IngredientListElement<>(ingredient, orderIndex, ingredientHelper, ingredientRenderer, modIdHelper);
+			return new IngredientListElement<>(ingredient, ingredientType, orderIndex, ingredientHelper, ingredientRenderer, modIdHelper);
 		} catch (RuntimeException e) {
 			try {
 				String ingredientInfo = ingredientHelper.getErrorInfo(ingredient);
@@ -47,8 +49,9 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		}
 	}
 
-	protected IngredientListElement(V ingredient, int orderIndex, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer, IModIdHelper modIdHelper) {
+	protected IngredientListElement(V ingredient, IIngredientType<V> ingredientType, int orderIndex, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer, IModIdHelper modIdHelper) {
 		this.ingredient = ingredient;
+		this.ingredientType = ingredientType;
 		this.orderIndex = orderIndex;
 		this.ingredientHelper = ingredientHelper;
 		this.ingredientRenderer = ingredientRenderer;
@@ -70,7 +73,12 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	}
 
 	@Override
-	public int getOrderIndex() {
+	public IIngredientType<V> getIngredientType() {
+		return ingredientType;
+	}
+
+	@Override
+	public int getCreativeMenuOrder() {
 		return orderIndex;
 	}
 
@@ -90,7 +98,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	}
 
 	@Override
-	public String getModNameForSorting() {
+	public String getModName() {
 		return modNames.get(0);
 	}
 

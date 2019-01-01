@@ -6,19 +6,13 @@ import java.util.Set;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.ISortableIngredient;
 
-public interface IIngredientListElement<V> {
-	V getIngredient();
+public interface IIngredientListElement<T> extends ISortableIngredient<T> {
 
-	int getOrderIndex();
+	IIngredientHelper<T> getIngredientHelper();
 
-	IIngredientHelper<V> getIngredientHelper();
-
-	IIngredientRenderer<V> getIngredientRenderer();
-
-	String getDisplayName();
-
-	String getModNameForSorting();
+	IIngredientRenderer<T> getIngredientRenderer();
 
 	Set<String> getModNameStrings();
 

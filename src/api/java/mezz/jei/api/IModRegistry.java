@@ -5,6 +5,7 @@ import mezz.jei.api.gui.IGhostIngredientHandler;
 import mezz.jei.api.gui.IGlobalGuiHandler;
 import mezz.jei.api.gui.IGuiScreenHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.ISortableIngredient;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
@@ -18,6 +19,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -165,9 +167,8 @@ public interface IModRegistry {
 	 *
 	 * @since JEI 4.?.0
 	 */
-	void addIngredientListItemStackSorter(String name, Comparator<ItemStack> comparator);
-	void addIngredientListObjectSorter(String name, Comparator<Object> comparator);
-	
+	<T> void addTypedComparison(ResourceLocation name, IIngredientType<T> ingredientType, Comparator<T> comparator);
+	void addUntypedComparison(ResourceLocation name, Comparator<ISortableIngredient<Object>> comparator);
 
 	// DEPRECATED BELOW
 

@@ -6,6 +6,7 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientBlacklist;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.ingredients.IngredientListComparator;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.runtime.JeiHelpers;
@@ -54,12 +55,14 @@ public class IngredientFilterTest {
 		this.modIdHelper = new TestModIdHelper();
 		this.ingredientRegistry = modIngredientRegistry.createIngredientRegistry(modIdHelper, blacklist);
 
-		this.baseList = IngredientListElementFactory.createBaseList(ingredientRegistry, modIdHelper);
+		IngredientListComparator ingredientListComparator = new IngredientListComparator();
+		IngredientListElementFactory ingredientListElementFactory = new IngredientListElementFactory(ingredientListComparator);
+		this.baseList = ingredientListElementFactory.createBaseList(ingredientRegistry, modIdHelper);
 
 		StackHelper stackHelper = new StackHelper(subtypeRegistry);
 		this.jeiHelpers = new JeiHelpers(ingredientRegistry, blacklist, stackHelper);
 
-		this.ingredientFilter = new IngredientFilter(blacklist);
+		this.ingredientFilter = new IngredientFilter(blacklist, ingredientListComparator);
 	}
 
 	@Test

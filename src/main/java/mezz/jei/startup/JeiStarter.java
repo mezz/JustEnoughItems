@@ -19,6 +19,7 @@ import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.ingredients.IngredientListComparator;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.input.InputHandler;
@@ -58,7 +59,8 @@ public class JeiStarter {
 		JeiHelpers jeiHelpers = new JeiHelpers(ingredientRegistry, blacklist, stackHelper);
 		Internal.setHelpers(jeiHelpers);
 
-		ModRegistry modRegistry = new ModRegistry(jeiHelpers, ingredientRegistry);
+		IngredientListComparator ingredientListComparator = new IngredientListComparator();
+		ModRegistry modRegistry = new ModRegistry(jeiHelpers, ingredientRegistry, ingredientListComparator);
 
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Registering recipe categories");
@@ -74,11 +76,14 @@ public class JeiStarter {
 		timer.stop();
 
 		timer.start("Building ingredient list");
-		NonNullList<IIngredientListElement> ingredientList = IngredientListElementFactory.createBaseList(ingredientRegistry, ForgeModIdHelper.getInstance());
+		Config.setDefaultSortOrder(ingredientListComparator.getSaveString());
+		ingredientListComparator.loadConfig(Config.getSortOrder());
+		IngredientListElementFactory ingredientListElementFactory = new IngredientListElementFactory(ingredientListComparator);
+		NonNullList<IIngredientListElement> ingredientList = ingredientListElementFactory.createBaseList(ingredientRegistry, ForgeModIdHelper.getInstance());
 		timer.stop();
 
 		timer.start("Building ingredient filter");
-		IngredientFilter ingredientFilter = new IngredientFilter(blacklist);
+		IngredientFilter ingredientFilter = new IngredientFilter(blacklist, ingredientListComparator);
 		ingredientFilter.addIngredients(ingredientList);
 		Internal.setIngredientFilter(ingredientFilter);
 		timer.stop();

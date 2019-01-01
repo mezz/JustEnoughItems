@@ -18,8 +18,8 @@ public final class IngredientListElementClassicComparator implements Comparator<
 
 	@Override
 	public int compare(IIngredientListElement o1, IIngredientListElement o2) {
-		final String modName1 = o1.getModNameForSorting();
-		final String modName2 = o2.getModNameForSorting();
+		final String modName1 = o1.getModName();
+		final String modName2 = o2.getModName();
 
 		if (modName1.equals(modName2)) {
 			boolean isItemStack1 = (o1.getIngredient() instanceof ItemStack);
@@ -30,8 +30,8 @@ public final class IngredientListElementClassicComparator implements Comparator<
 				return 1;
 			}
 
-			final int orderIndex1 = o1.getOrderIndex();
-			final int orderIndex2 = o2.getOrderIndex();
+			final int orderIndex1 = o1.getCreativeMenuOrder();
+			final int orderIndex2 = o2.getCreativeMenuOrder();
 			return Integer.compare(orderIndex1, orderIndex2);
 		} else if (modName1.equals(Constants.MINECRAFT_NAME)) {
 			return -1;

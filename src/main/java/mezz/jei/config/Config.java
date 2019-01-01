@@ -6,7 +6,6 @@ import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
-import mezz.jei.ingredients.IngredientListElementComparator;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.color.ColorNamer;
@@ -31,6 +30,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -279,37 +279,22 @@ public final class Config {
 		return worldConfig;
 	}
 
-	// Call this function after an API call for a new sort option.
-	public static void updateSortOrder() {
-		resetDefaultSortOrder();
-		setSortOrder(IngredientListElementComparator.getInclusiveSaveString());
-	}
-
-	public static void resetDefaultSortOrder() {
-		defaultValues.itemSortlist = IngredientListElementComparator.initConfig();
-		Property property = config.get(CATEGORY_ADVANCED, "itemSortList", defaultValues.itemSortlist);
-		property.setDefaultValue(defaultValues.itemSortlist);
-	}
-
-	public static boolean setSortOrder(String sortOrder) {
-		if (values.itemSortlist.equals(sortOrder)) {
-			return false;
-		} else {
-			values.itemSortlist = sortOrder;
-			// Reset the list so the user can reset the order and the comparator knows to
-			// load it. Do not load now because other mods may add options between now and
-			// when it needs to test the list.
-			Property property = config.get(CATEGORY_ADVANCED, "itemSortList", defaultValues.itemSortlist);
-			property.set(values.itemSortlist);
-
-			// This does not reset the cached filters, needsReload being true works its way
-			// back to what needs to happen, ultimately IngredientFilter.modesChanged()
-			return true;
+	public static void setDefaultSortOrder(List<String> defaultSortOrder) {
+		if (config != null) {
+			defaultValues.ingredientSortOrder = defaultSortOrder;
+			String[] defaultValuesArray = Config.defaultValues.ingredientSortOrder.toArray(new String[]{});
+			Property property = config.get(CATEGORY_ADVANCED, "ingredientSortOrder", defaultValuesArray);
+			property.setDefaultValues(defaultValuesArray);
+			property.setShowInGui(false);
+			values.ingredientSortOrder = Arrays.asList(property.getStringList());
+			if (config.hasChanged()) {
+				config.save();
+			}
 		}
 	}
 
-	public static String getSortOrder() {
-		return values.itemSortlist;
+	public static List<String> getSortOrder() {
+		return values.ingredientSortOrder;
 	}
 
 	@Nullable
@@ -444,16 +429,6 @@ public final class Config {
 			Property property = config.get(CATEGORY_ADVANCED, "debugModeEnabled", defaultValues.debugModeEnabled);
 			property.setShowInGui(false);
 			values.debugModeEnabled = property.getBoolean();
-		}
-
-		{
-			// This also initializes the built-in comparators.
-			defaultValues.itemSortlist = IngredientListElementComparator.initConfig();
-			Property property = config.get(CATEGORY_ADVANCED, "itemSortList", defaultValues.itemSortlist);
-
-			if (setSortOrder(property.getString())) {
-				needsReload = true;
-			}
 		}
 
 		final boolean configChanged = config.hasChanged();

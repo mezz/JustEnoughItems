@@ -11,11 +11,13 @@ import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.ingredients.ISortableIngredient;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
+import mezz.jei.config.Constants;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeCategory;
@@ -41,6 +43,7 @@ import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackRenderer;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackHelper;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackListFactory;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackRenderer;
+import mezz.jei.plugins.vanilla.sorting.VanillaSorting;
 import mezz.jei.startup.StackHelper;
 import mezz.jei.transfer.PlayerRecipeTransferHandler;
 import net.minecraft.client.gui.GuiRepair;
@@ -75,6 +78,7 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @JEIPlugin
@@ -198,5 +202,16 @@ public class VanillaPlugin implements IModPlugin {
 		ingredientBlacklist.addIngredientToBlacklist(new ItemStack(Items.SKULL, 1, 3));
 		// hide enchanted books, we display them as special ingredients because vanilla does not properly store the enchantment data by its registry name
 		ingredientBlacklist.addIngredientToBlacklist(new ItemStack(Items.ENCHANTED_BOOK, 1, OreDictionary.WILDCARD_VALUE));
+
+		//The order these are called sets the default order.
+		registry.addTypedComparison(new ResourceLocation(Constants.MOD_ID, "tool"), VanillaTypes.ITEM, VanillaSorting::toolSort);
+		registry.addTypedComparison(new ResourceLocation(Constants.MOD_ID, "melee_damage"), VanillaTypes.ITEM, VanillaSorting::meleeSort);
+		registry.addTypedComparison(new ResourceLocation(Constants.MOD_ID, "armor"), VanillaTypes.ITEM, VanillaSorting::armorSort);
+		registry.addTypedComparison(new ResourceLocation(Constants.MOD_ID, "oreDictionary"), VanillaTypes.ITEM, VanillaSorting::oreDictionarySort);
+		registry.addUntypedComparison(new ResourceLocation(Constants.MOD_ID, "minecraft"), VanillaSorting::minecraftSort);
+		registry.addUntypedComparison(new ResourceLocation(Constants.MOD_ID, "mod"), VanillaSorting::modNameSort);
+		registry.addUntypedComparison(new ResourceLocation(Constants.MOD_ID, "name"), VanillaSorting::nameSort);
+		registry.addTypedComparison(new ResourceLocation(Constants.MOD_ID, "damage"), VanillaTypes.ITEM, VanillaSorting::damageSort);
+		registry.addUntypedComparison(new ResourceLocation(Constants.MOD_ID, "creativeMenu"), Comparator.comparingInt(ISortableIngredient::getCreativeMenuOrder));
 	}
 }

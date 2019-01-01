@@ -38,6 +38,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
 	private final IngredientBlacklistInternal blacklist;
+	private final IngredientListComparator ingredientListComparator;
 	/**
 	 * indexed list of ingredients for use with the suffix trees
 	 * includes all elements (even hidden ones) for use when rebuilding
@@ -53,8 +54,9 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 	private List<IIngredientListElement> ingredientListCached = Collections.emptyList();
 	private final List<IIngredientGridSource.Listener> listeners = new ArrayList<>();
 
-	public IngredientFilter(IngredientBlacklistInternal blacklist) {
+	public IngredientFilter(IngredientBlacklistInternal blacklist, IngredientListComparator ingredientListComparator) {
 		this.blacklist = blacklist;
+		this.ingredientListComparator = ingredientListComparator;
 		this.elementList = NonNullList.create();
 		this.searchTree = new GeneralizedSuffixTree();
 		createPrefixedSearchTree('@', Config::getModNameSearchMode, IIngredientListElement::getModNameStrings);
@@ -185,12 +187,11 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		if (!filterText.equals(filterCached)) {
 			List<IIngredientListElement> ingredientList = getIngredientListUncached(filterText);
 			try {				
-				ingredientList.sort(new IngredientListElementComparator());
+				ingredientList.sort(ingredientListComparator);
 			} catch (Exception ex) {
 				if (Config.isDebugModeEnabled()) {
 					//If you are developing a new sorting option, you probably want it to stay stopped to see what it did.
 					Log.get().error("Item sorting failed.  Aborting sort.", ex);
-					IngredientListElementFactory.TheHuntForTheOffendingItems(ingredientList);
 				} else {
 					Log.get().error("Item sorting failed.  Using old method.", ex);
 					try {
@@ -289,7 +290,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 				String elementWildcardId = uidFunction.apply(element);
 				if (uid.equals(elementWildcardId)) {
 					matchingIndexes.add(i);
-					@SuppressWarnings("unchecked")
+					@SuppressWarnings({"unchecked", "CastCanBeRemovedNarrowingVariableType"})
 					IIngredientListElement<T> castElement = (IIngredientListElement<T>) element;
 					matchingElements.add(castElement);
 				} else {
@@ -301,7 +302,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 				String elementWildcardId = uidFunction.apply(element);
 				if (uid.equals(elementWildcardId)) {
 					matchingIndexes.add(i);
-					@SuppressWarnings("unchecked")
+					@SuppressWarnings({"unchecked", "CastCanBeRemovedNarrowingVariableType"})
 					IIngredientListElement<T> castElement = (IIngredientListElement<T>) element;
 					matchingElements.add(castElement);
 				} else {
