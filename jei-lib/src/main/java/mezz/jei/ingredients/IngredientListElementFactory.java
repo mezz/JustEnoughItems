@@ -3,6 +3,8 @@ package mezz.jei.ingredients;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
+import net.minecraftforge.fml.common.progress.ProgressBar;
+import net.minecraftforge.fml.common.progress.StartupProgressManager;
 import net.minecraft.util.NonNullList;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -58,18 +60,19 @@ public final class IngredientListElementFactory {
 		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientType);
 
 		Collection<V> ingredients = ingredientRegistry.getAllIngredients(ingredientType);
-//		ProgressManager.ProgressBar progressBar = ProgressManager.push("Registering ingredients: " + ingredientType.getIngredientClass().getSimpleName(), ingredients.size());
-		for (V ingredient : ingredients) {
-//			progressBar.step("");
-			if (ingredient != null) {
-				int orderIndex = ORDER_TRACKER.getOrderIndex(ingredient, ingredientHelper);
-				IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer, modIdHelper, orderIndex);
-				if (ingredientListElement != null) {
-					baseList.add(ingredientListElement);
+		try (ProgressBar progressBar = StartupProgressManager.start("Registering ingredients: " + ingredientType.getIngredientClass().getSimpleName(), ingredients.size())) {
+			for (V ingredient : ingredients) {
+				progressBar.step("");
+				if (ingredient != null) {
+					int orderIndex = ORDER_TRACKER.getOrderIndex(ingredient, ingredientHelper);
+					IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer, modIdHelper, orderIndex);
+					if (ingredientListElement != null) {
+						baseList.add(ingredientListElement);
+					}
 				}
 			}
 		}
-//		ProgressManager.pop(progressBar);
+
 	}
 
 }

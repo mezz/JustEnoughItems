@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.minecraftforge.fml.common.progress.ProgressBar;
+import net.minecraftforge.fml.common.progress.StartupProgressManager;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
@@ -131,15 +133,15 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	private void addRecipes(ListMultiMap<ResourceLocation, Object> recipes) {
 		Collection<Map.Entry<ResourceLocation, List<Object>>> entries = recipes.entrySet();
-//		ProgressManager.ProgressBar progressBar = ProgressManager.push("Loading recipes", recipes.getTotalSize());
-		for (Map.Entry<ResourceLocation, List<Object>> entry : entries) {
-			ResourceLocation recipeCategoryUid = entry.getKey();
-			for (Object recipe : entry.getValue()) {
-//				progressBar.step("");
-				addRecipe(recipe, recipe.getClass(), recipeCategoryUid);
+		try (ProgressBar progressBar = StartupProgressManager.start("Loading recipes", recipes.getTotalSize())) {
+			for (Map.Entry<ResourceLocation, List<Object>> entry : entries) {
+				ResourceLocation recipeCategoryUid = entry.getKey();
+				for (Object recipe : entry.getValue()) {
+					progressBar.step("");
+					addRecipe(recipe, recipe.getClass(), recipeCategoryUid);
+				}
 			}
 		}
-//		ProgressManager.pop(progressBar);
 	}
 
 	@Override
