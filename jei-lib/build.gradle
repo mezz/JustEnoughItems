@@ -1,9 +1,6 @@
-archivesBaseName = 'jei-lib-' + mcversion
+apply plugin: 'java'
 
-dependencies {
-    compile "com.google.code.findbugs:jsr305:3.0.1"
-    compile "com.google.guava:guava:26.0-jre"
-}
+archivesBaseName = 'jei-lib-' + mcversion
 
 jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

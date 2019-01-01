@@ -27,8 +27,8 @@ apply from: "buildtools/ColoredOutput.gradle"
 apply plugin: 'idea'
 
 allprojects {
-	apply plugin: 'java'
-	
+	apply plugin: "net.minecraftforge.gradle"
+
 	version = version_major + "." + version_minor + "." + version_patch
 	group = "mezz.jei" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 
@@ -63,11 +63,42 @@ allprojects {
 	}
 
 	dependencies {
+		minecraft([
+			group  : "${project.forgegroup}",
+			name   : "forge",
+			version: "${project.mcversion}-${project.forgeversion}"
+		])
 		testCompile([
 			group: "junit",
 			name: "junit",
 			version: "4.12"
 		])
+	}
+
+	minecraft {
+		//	runDir = "run"
+		//	replace "@VERSION@", project.version
+		mappings channel: "snapshot", version: "${project.mcp_mappings}".toString()
+
+		accessTransformer = file('src/main/resources/META-INF/jei_at.cfg')
+
+		runConfig {
+			name = "Minecraft Client"
+			main = "net.minecraftforge.userdev.UserdevLauncher"
+			ideaModuleName = "${project.name}_main"
+			workingDirectory = project.file("run").canonicalPath
+			environment "target", "fmldevclient"
+			environment "assetDirectory", downloadAssets.output.absolutePath
+		}
+
+		runConfig {
+			name = "Minecraft Server"
+			main = "net.minecraftforge.userdev.UserdevLauncher"
+			ideaModuleName = "${project.name}_main"
+			workingDirectory = project.file("run").canonicalPath
+			environment "target", "fmldevserver"
+			environment "assetDirectory", downloadAssets.output.absolutePath
+		}
 	}
 
 	// prevent java 8's strict doclint for javadocs from failing builds
@@ -90,43 +121,10 @@ for (Project project in subProjects) {
 }
 allSourceSets.add(sourceSets);
 
-apply plugin: "net.minecraftforge.gradle"
-
 dependencies {
 	compile libProject
 	compile libProject.sourceSets.api.output
 	apiCompile libProject.sourceSets.api.output
-	minecraft([
-		group  : "${project.forgegroup}",
-		name   : "forge",
-		version: "${project.mcversion}-${project.forgeversion}"
-	])
-}
-
-minecraft {
-	//	runDir = "run"
-	//	replace "@VERSION@", project.version
-	mappings channel: "snapshot", version: "${project.mcp_mappings}".toString()
-
-	accessTransformer = file('src/main/resources/META-INF/jei_at.cfg')
-
-	runConfig {
-		name = "Minecraft Client"
-		main = "net.minecraftforge.userdev.UserdevLauncher"
-		ideaModuleName = "${project.name}_main"
-		workingDirectory = project.file("run").canonicalPath
-		environment "target", "fmldevclient"
-		environment "assetDirectory", downloadAssets.output.absolutePath
-	}
-
-	runConfig {
-		name = "Minecraft Server"
-		main = "net.minecraftforge.userdev.UserdevLauncher"
-		ideaModuleName = "${project.name}_main"
-		workingDirectory = project.file("run").canonicalPath
-		environment "target", "fmldevserver"
-		environment "assetDirectory", downloadAssets.output.absolutePath
-	}
 }
 
 task makeChangelog(type: GitChangelogTask) {
@@ -214,6 +212,15 @@ task("uploadJars", dependsOn: "build") {
 					repository(url: "file://${local_maven}")
 				}
 			}
+		}
+	}
+}
+
+idea {
+	module {
+		for (String excludeDirName in ["run", "out", "logs", "gradle"]) {
+			File excludeDir = new File(projectDir, excludeDirName);
+			excludeDirs.add(excludeDir)
 		}
 	}
 }
