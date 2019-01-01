@@ -1,7 +1,7 @@
 # Tooltips
 jei.tooltip.config=JEI配置
-jei.tooltip.show.recipes=顯示合成配方
-jei.tooltip.show.all.recipes=顯示所有合成配方
+jei.tooltip.show.recipes=顯示配方
+jei.tooltip.show.all.recipes=顯示所有配方
 jei.tooltip.delete.item=點擊以删除
 jei.tooltip.liquid.amount.with.capacity=%,d／%,d mB
 jei.tooltip.liquid.amount=%,d mB
@@ -10,13 +10,17 @@ jei.tooltip.recipe.ore.dict=接受：%s
 jei.tooltip.item.colors=顏色：%s
 jei.tooltip.shapeless.recipe=無序合成
 jei.tooltip.cheat.mode.button.enabled=作弊模式
-jei.tooltip.cheat.mode.how.to.disable.hotkey=按％s以切換它
+jei.tooltip.cheat.mode.how.to.disable.hotkey=按下%s以切換它
 jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s—點擊此處以切換它
-jei.tooltip.recipe.by=合成配方提供者：%s
-jei.tooltip.recipe.id=合成配方編號：%s
-jei.tooltip.not.enough.space=這裡沒有足夠的空間來顯示物品列表
-jei.tooltip.ingredient.list.disabled=JEI物品列表疊層已被停用
-jei.tooltip.ingredient.list.disabled.how.to.fix=按％s以啟用
+jei.tooltip.recipe.by=配方提供者：%s
+jei.tooltip.recipe.id=配方編號：%s
+jei.tooltip.not.enough.space=這裏沒有足夠的空間來顯示JEI物品列表
+jei.tooltip.ingredient.list.disabled=JEI物品列表疊層已停用
+jei.tooltip.ingredient.list.disabled.how.to.fix=按下%s以啟用
+jei.tooltip.bookmarks=JEI書籤
+jei.tooltip.bookmarks.usage.nokey=在按鍵設置中為JEI書籤添加綁定鍵
+jei.tooltip.bookmarks.usage.key=將鼠標懸停在某個物品上，然後按下%s以將其添加為書籤
+jei.tooltip.bookmarks.not.enough.space=這裏沒有足夠的空間來顯示JEI書籤
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=遺失物品
@@ -34,33 +38,37 @@ jei.chat.error.no.cheat.permission.2=可以使用命令/give或在創造模式�
 # Key Bindings
 key.jei.toggleOverlay=開關物品列表疊層
 key.jei.focusSearch=選擇搜索框
-key.jei.showRecipe=顯示物品合成配方
+key.jei.showRecipe=顯示物品配方
 key.jei.showUses=顯示物品用途
-key.jei.recipeBack=顯示上次查看的合成配方
+key.jei.recipeBack=顯示上次查看的配方
 key.jei.toggleCheatMode=開關作弊模式
 key.jei.previousPage=顯示下一頁
 key.jei.nextPage=顯示上一頁
+key.jei.bookmark=增加／刪除書籤物品
+key.jei.toggleBookmarkOverlay=開關書籤物品列表疊層
 
 # Config
 config.jei.default=預設
 config.jei.valid=有效
 
-config.jei.title=%MODNAME設定
+config.jei.title=%MODNAME配置
 
 config.jei.mode=模式
 config.jei.mode.comment=切換JEI工作模式
-config.jei.mode.cheatItemsEnabled=開啟作弊模式
-config.jei.mode.cheatItemsEnabled.comment=給予物品而不是顯示合成配方
-config.jei.mode.editEnabled=開啟編輯物品列表模式
+config.jei.mode.cheatItemsEnabled=作弊模式
+config.jei.mode.cheatItemsEnabled.comment=給予物品而不是顯示配方
+config.jei.mode.editEnabled=編輯物品列表模式
 config.jei.mode.editEnabled.comment=在列表中點擊物品以隱藏或取消隱藏
 
-config.jei.interface=使用者介面
-config.jei.interface.comment=使用者介面的相關配置
+config.jei.interface=介面
+config.jei.interface.comment=使用者介面的相關選項
 config.jei.interface.overlayEnabled=顯示物品列表
 config.jei.interface.overlayEnabled.comment=在打開的GUI一側顯示物品列表
+config.jei.interface.bookmarkOverlayEnabled=顯示書籤物品列表
+config.jei.interface.bookmarkOverlayEnabled.comment=在打開的GUI一側顯示書籤物品列表
 
 config.jei.search=搜尋選項
-config.jei.search.comment=搜尋框的顯示設定
+config.jei.search.comment=搜尋欄的相關選項
 config.jei.search.modNameSearchMode=@ModName
 config.jei.search.modNameSearchMode.comment=依模組名稱搜尋（前綴：@）
 config.jei.search.tooltipSearchMode=#Tooltip
@@ -75,35 +83,35 @@ config.jei.search.resourceIdSearchMode=&ResourceId
 config.jei.search.resourceIdSearchMode.comment=依Resource ID搜尋（前綴：&）
 
 config.jei.advanced=進階配置
-config.jei.advanced.comment=用於更改JEI功能的進階配置
+config.jei.advanced.comment=用於變更JEI功能的進階配置
 config.jei.advanced.itemBlacklist=物品黑名單
-config.jei.advanced.itemBlacklist.comment=黑名單中物品將不會顯示於JEI物品列表，格式：modId[:name[:meta]]。使用編輯模式可自動添加或删除這裡的條目
-config.jei.advanced.colorSearchEnabled=啟用顏色搜索
-config.jei.advanced.colorSearchEnabled.comment=依顏色搜索物品，並在可以這樣搜索的物品提示中加以注明
+config.jei.advanced.itemBlacklist.comment=黑名單中的物品將不會顯示於JEI物品列表，格式：modId[:name[:meta]]。使用編輯模式可自動增加或删除這這裏的條目
+config.jei.advanced.colorSearchEnabled=啟用顏色搜尋
+config.jei.advanced.colorSearchEnabled.comment=依顏色搜尋物品，並在可以這樣搜尋的物品提示中加以注明
 config.jei.advanced.debugModeEnabled=測試模式
-config.jei.advanced.debugModeEnabled.comment=僅對JEI開發者有用，啟用後會添加數千測試物品及一些測試合成配方
-config.jei.advanced.centerSearchBarEnabled=置中搜索框
-config.jei.advanced.centerSearchBarEnabled.comment=啟用後，搜索框會被移動至底部中間的位置
+config.jei.advanced.debugModeEnabled.comment=僅對JEI開發者有用，啟用後會增加測試物品及一些測試配方
+config.jei.advanced.centerSearchBarEnabled=置中搜尋欄
+config.jei.advanced.centerSearchBarEnabled.comment=啟用後，搜尋欄會被移動至底部中間的位置
 config.jei.advanced.modNameFormat=模組名稱格式
-config.jei.advanced.modNameFormat.comment=定義JEI介面的資訊提示中的模組名稱格式，留空以禁用
+config.jei.advanced.modNameFormat.comment=定義JEI介面的資訊提示中的模組名稱格式，留空以停用
 config.jei.advanced.maxColumns=最大寬度
 config.jei.advanced.maxColumns.comment=物品列表的最大寬度
-config.jei.advanced.maxRecipeGuiHeight=最大合成配方列表介面高度
-config.jei.advanced.maxRecipeGuiHeight.comment=合成配方列表的最大高度
+config.jei.advanced.maxRecipeGuiHeight=最大配方列表介面高度
+config.jei.advanced.maxRecipeGuiHeight.comment=配方列表的最大高度
 config.jei.advanced.giveMode=物品給予方法
 config.jei.advanced.giveMode.comment=選擇JEI應該將物品直接提供給物品欄（inventory），或者是使用鼠標進行物品提取（mouse_pickup）。
 
 # Hide Ingredients Mode
 gui.jei.editMode.description=JEI物品列表編輯模式：
-gui.jei.editMode.description.hide=按住%CTRL點擊以隱藏
-gui.jei.editMode.description.hide.wild=按住%CTRL右擊以隱藏相同ID的物品
+gui.jei.editMode.description.hide=按住%CTRL並點擊以隱藏
+gui.jei.editMode.description.hide.wild=按住%CTRL並右擊以隱藏相同ID的物品
 
 # PC/Linux Control Key
 key.jei.ctrl=CTRL
 # Mac Command Key
 key.jei.ctrl.mac=CMD
 
-# Recipe Categories 合成類別
+# Recipe Categories
 gui.jei.category.craftingTable=合成
 gui.jei.category.smelting=冶煉
 gui.jei.category.smelting.experience=%s經驗
