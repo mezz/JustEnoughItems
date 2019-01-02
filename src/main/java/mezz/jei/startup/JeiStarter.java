@@ -88,8 +88,6 @@ public class JeiStarter {
 		InputHandler inputHandler = new InputHandler(jeiRuntime, ingredientFilter, ingredientRegistry, ingredientListOverlay, hideModeConfig, guiScreenHelper, leftAreaDispatcher, bookmarkList);
 		Internal.setInputHandler(inputHandler);
 
-		config.checkForModNameFormatOverride();
-
 		started = true;
 		totalTime.stop();
 	}

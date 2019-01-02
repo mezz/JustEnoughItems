@@ -38,10 +38,10 @@ class InventoryEffectRendererGuiHandler implements IAdvancedGuiHandler<Inventory
 		}
 		for (PotionEffect potioneffect : Ordering.natural().sortedCopy(activePotionEffects)) {
 			Potion potion = potioneffect.getPotion();
-			if(!potion.shouldRender(potioneffect)) continue;
-
-			areas.add(new Rectangle(x, y, 166, 140));
-			y += height;
+			if (potion.shouldRender(potioneffect)) {
+				areas.add(new Rectangle(x, y, 166, 140));
+				y += height;
+			}
 		}
 		return areas;
 	}

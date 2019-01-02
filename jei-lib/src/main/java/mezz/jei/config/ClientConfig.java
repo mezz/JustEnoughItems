@@ -3,15 +3,12 @@ package mezz.jei.config;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.io.File;
-import java.util.EnumSet;
-import java.util.Locale;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.util.text.TextFormatting;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -43,7 +40,6 @@ public final class ClientConfig implements IIngredientFilterConfig, IFilterTextS
 	public static final String CATEGORY_ADVANCED = "advanced";
 	public static final String CATEGORY_SEARCH_COLORS = "searchColors";
 
-	public static final String defaultModNameFormatFriendly = "blue italic";
 	public static final int smallestNumColumns = 4;
 	public static final int largestNumColumns = 100;
 	public static final int minRecipeGuiHeight = 175;
@@ -56,9 +52,6 @@ public final class ClientConfig implements IIngredientFilterConfig, IFilterTextS
 
 	private final ConfigValues defaultValues = new ConfigValues();
 	private final ConfigValues values = new ConfigValues();
-	// TODO move to ModIdFormattingConfig
-	@Nullable
-	private String modNameFormatOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
 
 	@Deprecated
 	public static ClientConfig getInstance() {
@@ -95,8 +88,6 @@ public final class ClientConfig implements IIngredientFilterConfig, IFilterTextS
 					ingredientListOverlay.rebuildItemFilter();
 				}
 			}
-		} else {
-			checkForModNameFormatOverride();
 		}
 	}
 
@@ -196,23 +187,6 @@ public final class ClientConfig implements IIngredientFilterConfig, IFilterTextS
 
 	public GiveMode getGiveMode() {
 		return values.giveMode;
-	}
-
-	public String getModNameFormat() {
-		String override = modNameFormatOverride;
-		if (override != null) {
-			return override;
-		}
-		return values.modNameFormat;
-	}
-
-	public boolean isModNameFormatOverrideActive() {
-		return modNameFormatOverride != null;
-	}
-
-	public void checkForModNameFormatOverride() {
-		modNameFormatOverride = ModIdFormattingConfig.detectModNameTooltipFormatting();
-		updateModNameFormat(config);
 	}
 
 	public int getMaxColumns() {
@@ -353,8 +327,6 @@ public final class ClientConfig implements IIngredientFilterConfig, IFilterTextS
 
 		values.maxRecipeGuiHeight = config.getInt("maxRecipeGuiHeight", CATEGORY_ADVANCED, defaultValues.maxRecipeGuiHeight, minRecipeGuiHeight, maxRecipeGuiHeight);
 
-		updateModNameFormat(config);
-
 		{
 			Property property = config.get(CATEGORY_ADVANCED, "debugModeEnabled", defaultValues.debugModeEnabled);
 			property.setShowInGui(false);
@@ -367,39 +339,6 @@ public final class ClientConfig implements IIngredientFilterConfig, IFilterTextS
 //			config.save();
 		}
 		return needsReload;
-	}
-
-	private void updateModNameFormat(LocalizedConfiguration config) {
-		EnumSet<TextFormatting> validFormatting = EnumSet.allOf(TextFormatting.class);
-		validFormatting.remove(TextFormatting.RESET);
-		String[] validValues = new String[validFormatting.size()];
-		int i = 0;
-		for (TextFormatting formatting : validFormatting) {
-			validValues[i] = formatting.getFriendlyName().toLowerCase(Locale.ENGLISH);
-			i++;
-		}
-		Property property = config.getString("modNameFormat", CATEGORY_ADVANCED, defaultModNameFormatFriendly, validValues);
-		boolean showInGui = !isModNameFormatOverrideActive();
-		property.setShowInGui(showInGui);
-		String modNameFormatFriendly = property.getString();
-		values.modNameFormat = parseFriendlyModNameFormat(modNameFormatFriendly);
-	}
-
-	public static String parseFriendlyModNameFormat(String formatWithEnumNames) {
-		if (formatWithEnumNames.isEmpty()) {
-			return "";
-		}
-		StringBuilder format = new StringBuilder();
-		String[] strings = formatWithEnumNames.split(" ");
-		for (String string : strings) {
-			TextFormatting valueByName = TextFormatting.getValueByName(string);
-			if (valueByName != null) {
-				format.append(valueByName.toString());
-			} else {
-				LOGGER.error("Invalid format: {}", string);
-			}
-		}
-		return format.toString();
 	}
 
 	public boolean syncWorldConfig(@Nullable NetworkManager networkManager) {

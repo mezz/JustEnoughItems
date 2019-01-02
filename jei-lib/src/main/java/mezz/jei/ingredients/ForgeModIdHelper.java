@@ -1,4 +1,4 @@
-package mezz.jei.startup;
+package mezz.jei.ingredients;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +12,15 @@ import net.minecraft.util.text.TextFormatting;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.config.ModIdFormattingConfig;
-import mezz.jei.ingredients.AbstractModIdHelper;
 import org.apache.commons.lang3.StringUtils;
 
 public class ForgeModIdHelper extends AbstractModIdHelper {
 	private final ClientConfig config;
+	private final ModIdFormattingConfig modIdFormattingConfig;
 
-	public ForgeModIdHelper(ClientConfig config) {
+	public ForgeModIdHelper(ClientConfig config, ModIdFormattingConfig modIdFormattingConfig) {
 		this.config = config;
+		this.modIdFormattingConfig = modIdFormattingConfig;
 	}
 
 	@Override
@@ -31,7 +32,7 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 
 	@Override
 	public boolean isDisplayingModNameEnabled() {
-		String modNameFormat = config.getModNameFormat();
+		String modNameFormat = modIdFormattingConfig.getModNameFormat();
 		return !modNameFormat.isEmpty();
 	}
 
@@ -39,7 +40,7 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 	public String getFormattedModNameForModId(String modId) {
 		String modName = getModNameForModId(modId);
 		modName = removeChatFormatting(modName); // some crazy mod has formatting in the name
-		String modNameFormat = config.getModNameFormat();
+		String modNameFormat = modIdFormattingConfig.getModNameFormat();
 		if (!modNameFormat.isEmpty()) {
 			if (modNameFormat.contains(ModIdFormattingConfig.MOD_NAME_FORMAT_CODE)) {
 				return StringUtils.replaceOnce(modNameFormat, ModIdFormattingConfig.MOD_NAME_FORMAT_CODE, modName);
@@ -62,11 +63,11 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 			tooltip.add(TextFormatting.GRAY + "info: " + ingredientHelper.getErrorInfo(ingredient));
 			tooltip.add(TextFormatting.GRAY + "uid: " + ingredientHelper.getUniqueId(ingredient));
 		}
-		if (config.isModNameFormatOverrideActive() && (ingredient instanceof ItemStack || ingredient instanceof EnchantmentData)) {
+		if (modIdFormattingConfig.isModNameFormatOverrideActive() && (ingredient instanceof ItemStack || ingredient instanceof EnchantmentData)) {
 			// we detected that another mod is adding the mod name already
 			return tooltip;
 		}
-		String modNameFormat = config.getModNameFormat();
+		String modNameFormat = modIdFormattingConfig.getModNameFormat();
 		if (modNameFormat.isEmpty()) {
 			return tooltip;
 		}

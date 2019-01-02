@@ -7,7 +7,6 @@ public class ConfigValues {
 	public boolean debugModeEnabled = false;
 	public boolean centerSearchBarEnabled = false;
 	public GiveMode giveMode = GiveMode.MOUSE_PICKUP;
-	public String modNameFormat = ClientConfig.parseFriendlyModNameFormat(ClientConfig.defaultModNameFormatFriendly);
 	public int maxColumns = 100;
 	public int maxRecipeGuiHeight = 350;
 

@@ -2,8 +2,12 @@ package mezz.jei.config;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
+import net.minecraftforge.common.config.Property;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraft.client.Minecraft;
@@ -22,10 +26,74 @@ import org.apache.logging.log4j.Logger;
 
 public class ModIdFormattingConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
+
 	public static final String MOD_NAME_FORMAT_CODE = "%MODNAME%";
+	public static final String defaultModNameFormatFriendly = "blue italic";
+	private final LocalizedConfiguration config;
+
+	public String modNameFormat = parseFriendlyModNameFormat(defaultModNameFormatFriendly);
+	@Nullable
+	private String modNameFormatOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
+
+	public ModIdFormattingConfig(LocalizedConfiguration config) {
+		this.config = config;
+	}
+
+	public String getModNameFormat() {
+		String override = modNameFormatOverride;
+		if (override != null) {
+			return override;
+		}
+		return modNameFormat;
+	}
+
+	public boolean isModNameFormatOverrideActive() {
+		return modNameFormatOverride != null;
+	}
+
+	public void checkForModNameFormatOverride() {
+		String modNameFormatOverride = ModIdFormattingConfig.detectModNameTooltipFormatting();
+		if (!Objects.equals(this.modNameFormatOverride, modNameFormatOverride)) {
+			this.modNameFormatOverride = modNameFormatOverride;
+			updateModNameFormat();
+		}
+	}
+
+	private void updateModNameFormat() {
+		EnumSet<TextFormatting> validFormatting = EnumSet.allOf(TextFormatting.class);
+		validFormatting.remove(TextFormatting.RESET);
+		String[] validValues = new String[validFormatting.size()];
+		int i = 0;
+		for (TextFormatting formatting : validFormatting) {
+			validValues[i] = formatting.getFriendlyName().toLowerCase(Locale.ENGLISH);
+			i++;
+		}
+		Property property = config.getString("modNameFormat", ClientConfig.CATEGORY_ADVANCED, defaultModNameFormatFriendly, validValues);
+		boolean showInGui = !isModNameFormatOverrideActive();
+		property.setShowInGui(showInGui);
+		String modNameFormatFriendly = property.getString();
+		modNameFormat = parseFriendlyModNameFormat(modNameFormatFriendly);
+	}
+
+	private static String parseFriendlyModNameFormat(String formatWithEnumNames) {
+		if (formatWithEnumNames.isEmpty()) {
+			return "";
+		}
+		StringBuilder format = new StringBuilder();
+		String[] strings = formatWithEnumNames.split(" ");
+		for (String string : strings) {
+			TextFormatting valueByName = TextFormatting.getValueByName(string);
+			if (valueByName != null) {
+				format.append(valueByName.toString());
+			} else {
+				LOGGER.error("Invalid format: {}", string);
+			}
+		}
+		return format.toString();
+	}
 
 	@Nullable
-	static String detectModNameTooltipFormatting() {
+	private static String detectModNameTooltipFormatting() {
 		try {
 			ItemStack itemStack = new ItemStack(Items.APPLE);
 			EntityPlayerSP player = Minecraft.getInstance().player;

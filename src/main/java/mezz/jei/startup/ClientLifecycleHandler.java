@@ -23,9 +23,11 @@ import mezz.jei.config.ClientConfig;
 import mezz.jei.config.HideModeConfig;
 import mezz.jei.config.IHideModeConfig;
 import mezz.jei.config.KeyBindings;
+import mezz.jei.config.ModIdFormattingConfig;
 import mezz.jei.config.ServerInfo;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.events.PlayerJoinedWorldEvent;
+import mezz.jei.ingredients.ForgeModIdHelper;
 import mezz.jei.network.PacketHandler;
 import mezz.jei.network.PacketHandlerClient;
 import mezz.jei.util.AnnotatedInstanceUtil;
@@ -37,6 +39,7 @@ public class ClientLifecycleHandler {
 	private final Logger LOGGER = LogManager.getLogger();
 	private final JeiStarter starter = new JeiStarter();
 	private final ClientConfig clientConfig;
+	private final ModIdFormattingConfig modIdFormattingConfig;
 	private final IModIdHelper modIdHelper;
 	private final IHideModeConfig hideModeConfig;
 
@@ -45,14 +48,15 @@ public class ClientLifecycleHandler {
 		if (!jeiConfigurationDir.exists()) {
 			try {
 				if (!jeiConfigurationDir.mkdir()) {
-					throw new Error("Could not create config directory " + jeiConfigurationDir);
+					throw new RuntimeException("Could not create config directory " + jeiConfigurationDir);
 				}
 			} catch (SecurityException e) {
-				throw new Error("Could not create config directory " + jeiConfigurationDir, e);
+				throw new RuntimeException("Could not create config directory " + jeiConfigurationDir, e);
 			}
 		}
 		clientConfig = new ClientConfig(jeiConfigurationDir);
-		modIdHelper = new ForgeModIdHelper(clientConfig);
+		modIdFormattingConfig = new ModIdFormattingConfig(clientConfig.getConfig());
+		modIdHelper = new ForgeModIdHelper(clientConfig, modIdFormattingConfig);
 		ErrorUtil.setModIdHelper(modIdHelper);
 		hideModeConfig = new HideModeConfig(modIdHelper, jeiConfigurationDir);
 
@@ -62,7 +66,10 @@ public class ClientLifecycleHandler {
 		EventBusHelper.addListener(GuiScreenEvent.KeyboardKeyPressedEvent.Pre.class, this::onGuiKeyPressedEvent);
 
 		EventBusHelper.addListener(FMLPreInitializationEvent.class, event -> clientConfig.onPreInit());
-		EventBusHelper.addListener(ConfigChangedEvent.OnConfigChangedEvent.class, event -> clientConfig.onConfigChanged(event.getModID()));
+		EventBusHelper.addListener(ConfigChangedEvent.OnConfigChangedEvent.class, event -> {
+			modIdFormattingConfig.checkForModNameFormatOverride();
+			clientConfig.onConfigChanged(event.getModID());
+		});
 		EventBusHelper.addListener(WorldEvent.Save.class, event -> clientConfig.onWorldSave());
 
 		PacketHandlerClient packetHandler = new PacketHandlerClient();
@@ -74,7 +81,7 @@ public class ClientLifecycleHandler {
 		channel.addListener(packetHandler::onPacket);
 	}
 
-	private void onLoadComplete() {
+	private void onRecipesLoaded() {
 		List<IModPlugin> plugins = AnnotatedInstanceUtil.getModPlugins();
 
 		// Reload when resources change
@@ -106,7 +113,9 @@ public class ClientLifecycleHandler {
 				NetworkManager networkManager = connection.getNetworkManager();
 				clientConfig.syncWorldConfig(networkManager);
 			}
-			onLoadComplete();
+			onRecipesLoaded();
+			// TODO move this to its own event handler when the event exists
+			modIdFormattingConfig.checkForModNameFormatOverride();
 			EventBusHelper.post(new PlayerJoinedWorldEvent());
 		}
 	}
