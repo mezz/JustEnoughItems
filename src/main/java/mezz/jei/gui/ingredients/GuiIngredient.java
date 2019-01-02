@@ -29,10 +29,13 @@ import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private static final String oreDictionaryIngredient = Translator.translateToLocal("jei.tooltip.recipe.ore.dict");
 
 	private final int slotIndex;
@@ -225,7 +228,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 
 			GlStateManager.enableDepth();
 		} catch (RuntimeException | LinkageError e) {
-			Log.get().error("Exception when rendering tooltip on {}.", value, e);
+			LOGGER.error("Exception when rendering tooltip on {}.", value, e);
 		}
 	}
 

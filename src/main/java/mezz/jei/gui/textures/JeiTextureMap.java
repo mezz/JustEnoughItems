@@ -22,11 +22,14 @@ import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.Maps;
 import mezz.jei.config.Constants;
-import mezz.jei.util.Log;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @SideOnly(Side.CLIENT)
 public class JeiTextureMap extends TextureMap {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final ResourceLocation location;
 
 	public JeiTextureMap(String basePathIn) {
@@ -93,7 +96,7 @@ public class JeiTextureMap extends TextureMap {
 		bar.step("Stitching");
 		stitcher.doStitch();
 
-		Log.get().info("Created: {}x{} {}-atlas", stitcher.getCurrentWidth(), stitcher.getCurrentHeight(), this.basePath);
+		LOGGER.info("Created: {}x{} {}-atlas", stitcher.getCurrentWidth(), stitcher.getCurrentHeight(), this.basePath);
 		bar.step("Allocating GL texture");
 		TextureUtil.allocateTextureImpl(this.getGlTextureId(), 0, stitcher.getCurrentWidth(), stitcher.getCurrentHeight());
 		Map<String, TextureAtlasSprite> map = Maps.newHashMap(this.mapRegisteredSprites);
@@ -145,10 +148,10 @@ public class JeiTextureMap extends TextureMap {
 				texture.loadSpriteFrames(iresource, 1);
 				break label9;
 			} catch (RuntimeException runtimeexception) {
-				Log.get().error("Unable to parse metadata from {}", resourcelocation, runtimeexception);
+				LOGGER.error("Unable to parse metadata from {}", resourcelocation, runtimeexception);
 				flag = false;
 			} catch (IOException ioexception) {
-				Log.get().error("Using missing texture, unable to load {}", resourcelocation, ioexception);
+				LOGGER.error("Using missing texture, unable to load {}", resourcelocation, ioexception);
 				flag = false;
 				return flag;
 			} finally {

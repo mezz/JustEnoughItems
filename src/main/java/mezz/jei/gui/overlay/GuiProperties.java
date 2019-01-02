@@ -7,9 +7,12 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 
 import mezz.jei.api.gui.IGuiProperties;
 import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class GuiProperties implements IGuiProperties {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private static final int MIN_GUI_POSITION = -1_000_000_000;
 	private static final int MAX_GUI_DIMENSION = 1_000_000_000;
 
@@ -76,7 +79,7 @@ public class GuiProperties implements IGuiProperties {
 	@Nullable
 	private static GuiProperties create(Class<? extends GuiScreen> guiClass, int guiLeft, int guiTop, int guiXSize, int guiYSize, int screenWidth, int screenHeight) {
 		if (!areValid(guiLeft, guiTop, guiXSize, guiYSize, screenWidth, screenHeight)) {
-			Log.get().error("Received invalid GUI properties for screen: {}", guiClass);
+			LOGGER.error("Received invalid GUI properties for screen: {}", guiClass);
 			return null;
 		}
 		return new GuiProperties(guiClass, guiLeft, guiTop, guiXSize, guiYSize, screenWidth, screenHeight);

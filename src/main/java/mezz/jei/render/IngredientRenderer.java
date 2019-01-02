@@ -27,10 +27,13 @@ import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class IngredientRenderer<T> {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private static final int BLACKLIST_COLOR = Color.red.getRGB();
 	private static final Rectangle DEFAULT_AREA = new Rectangle(0, 0, 16, 16);
 
@@ -137,7 +140,7 @@ public class IngredientRenderer<T> {
 			ITooltipFlag.TooltipFlags tooltipFlag = minecraft.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
 			return ingredientRenderer.getTooltip(minecraft, ingredient, tooltipFlag);
 		} catch (RuntimeException | LinkageError e) {
-			Log.get().error("Tooltip crashed.", e);
+			LOGGER.error("Tooltip crashed.", e);
 		}
 
 		List<String> tooltip = new ArrayList<>();

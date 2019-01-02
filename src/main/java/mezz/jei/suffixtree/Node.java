@@ -25,10 +25,11 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectCollection;
-import mezz.jei.util.Log;
 
 import java.util.Collection;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Represents a node of the generalized suffix tree graph
@@ -43,6 +44,7 @@ import java.util.Map;
  * - formatting
  */
 class Node {
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * The payload array used to store the data (indexes) associated with this node.
@@ -124,7 +126,7 @@ class Node {
 			edges.put(ch, e);
 		} catch (UnsupportedOperationException ex) {
 			// after trimToSize() call - fall back
-			Log.get().warn("Mod added a tree entry after memory optimization!", ex);
+			LOGGER.warn("Mod added a tree entry after memory optimization!", ex);
 			edges = new Char2ObjectOpenHashMap<>(edges);
 			edges.put(ch, e);
 		}

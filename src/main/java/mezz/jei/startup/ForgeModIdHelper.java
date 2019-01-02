@@ -20,10 +20,13 @@ import net.minecraft.util.text.TextFormatting;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.Config;
 import mezz.jei.config.Constants;
-import mezz.jei.util.Log;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ForgeModIdHelper extends AbstractModIdHelper {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private static final String MOD_NAME_FORMAT_CODE = "%MODNAME%";
 	@Nullable
 	private static ForgeModIdHelper INSTANCE;
@@ -96,7 +99,7 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 				}
 			}
 		} catch (LinkageError | RuntimeException e) {
-			Log.get().error("Error while Testing for mod name formatting", e);
+			LOGGER.error("Error while Testing for mod name formatting", e);
 		}
 		return null;
 	}

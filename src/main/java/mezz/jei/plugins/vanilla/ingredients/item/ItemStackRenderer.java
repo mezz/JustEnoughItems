@@ -16,11 +16,14 @@ import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 import net.minecraftforge.common.IRarity;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	@Override
 	public void render(Minecraft minecraft, int xPosition, int yPosition, @Nullable ItemStack ingredient) {
 		if (ingredient != null) {
@@ -42,7 +45,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 			list = ingredient.getTooltip(player, tooltipFlag);
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
-			Log.get().error("Failed to get tooltip: {}", itemStackInfo, e);
+			LOGGER.error("Failed to get tooltip: {}", itemStackInfo, e);
 			list = new ArrayList<>();
 			list.add(TextFormatting.RED + Translator.translateToLocal("jei.tooltip.error.crash"));
 			return list;
@@ -53,7 +56,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 			rarity = ingredient.getItem().getForgeRarity(ingredient);
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
-			Log.get().error("Failed to get rarity: {}", itemStackInfo, e);
+			LOGGER.error("Failed to get rarity: {}", itemStackInfo, e);
 			rarity = EnumRarity.COMMON;
 		}
 

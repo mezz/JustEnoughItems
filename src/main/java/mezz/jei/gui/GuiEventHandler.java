@@ -1,7 +1,6 @@
 package mezz.jei.gui;
 
 import mezz.jei.util.LimitedLogger;
-import mezz.jei.util.Log;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.client.event.GuiContainerEvent;
@@ -20,13 +19,17 @@ import mezz.jei.util.Translator;
 import org.apache.logging.log4j.Level;
 
 import java.time.Duration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class GuiEventHandler {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final IngredientListOverlay ingredientListOverlay;
 	private final GuiScreenHelper guiScreenHelper;
 	private final LeftAreaDispatcher leftAreaDispatcher;
 	private final RecipeRegistry recipeRegistry;
-	private final LimitedLogger missingBackgroundLogger = new LimitedLogger(Log.get(), Duration.ofHours(1));
+	private final LimitedLogger missingBackgroundLogger = new LimitedLogger(LOGGER, Duration.ofHours(1));
 	private boolean drawnOnBackground = false;
 
 	public GuiEventHandler(GuiScreenHelper guiScreenHelper, LeftAreaDispatcher leftAreaDispatcher, IngredientListOverlay ingredientListOverlay, RecipeRegistry recipeRegistry) {

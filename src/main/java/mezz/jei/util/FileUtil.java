@@ -7,12 +7,16 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Utility to help read and write files in a crash-safe way using a temp file and a backup.
  * If the game crashes while saving, the data saved by this utility should automatically recover.
  */
 public final class FileUtil {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private FileUtil() {
 	}
 
@@ -57,20 +61,20 @@ public final class FileUtil {
 			}
 
 			if (fileBackup.exists() && !fileBackup.delete()) {
-				Log.get().error("Could not delete old backup file {}", fileBackup.getAbsoluteFile());
+				LOGGER.error("Could not delete old backup file {}", fileBackup.getAbsoluteFile());
 			}
 
 			return true;
 		} catch (IOException e) {
-			Log.get().error("Failed to save file {}.", fileNew, e);
+			LOGGER.error("Failed to save file {}.", fileNew, e);
 			if (fileBackup.exists()) {
 				if (!fileNew.exists() || fileNew.delete()) {
 					if (fileBackup.renameTo(fileNew)) {
-						Log.get().info("Restored file from backup.");
+						LOGGER.info("Restored file from backup.");
 						return false;
 					}
 				}
-				Log.get().error("Failed to restore file from backup file {}", fileBackup.getAbsoluteFile());
+				LOGGER.error("Failed to restore file from backup file {}", fileBackup.getAbsoluteFile());
 			}
 			return false;
 		}
@@ -81,7 +85,7 @@ public final class FileUtil {
 			final File fileBackup = new File(file.getAbsolutePath() + ".bak");
 			if (fileBackup.exists()) {
 				if (fileBackup.renameTo(file)) {
-					Log.get().info("Restored file from backup.");
+					LOGGER.info("Restored file from backup.");
 				}
 			}
 		}
@@ -90,7 +94,7 @@ public final class FileUtil {
 			try {
 				fileOperation.handle(file);
 			} catch (IOException e) {
-				Log.get().error("Failed to read file {}.", file, e);
+				LOGGER.error("Failed to read file {}.", file, e);
 			}
 		}
 	}

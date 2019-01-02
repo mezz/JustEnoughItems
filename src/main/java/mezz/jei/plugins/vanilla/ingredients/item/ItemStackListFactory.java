@@ -24,9 +24,12 @@ import com.google.common.base.Joiner;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.startup.StackHelper;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class ItemStackListFactory {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final ISubtypeRegistry subtypeRegistry;
 
 	public ItemStackListFactory(ISubtypeRegistry subtypeRegistry) {
@@ -45,14 +48,14 @@ public final class ItemStackListFactory {
 			try {
 				creativeTab.displayAllRelevantItems(creativeTabItemStacks);
 			} catch (RuntimeException | LinkageError e) {
-				Log.get().error("Creative tab crashed while getting items. Some items from this tab will be missing from the item list. {}", creativeTab, e);
+				LOGGER.error("Creative tab crashed while getting items. Some items from this tab will be missing from the item list. {}", creativeTab, e);
 			}
 			for (ItemStack itemStack : creativeTabItemStacks) {
 				if (itemStack.isEmpty()) {
 					continue;
 				} else if (itemStack.getMetadata() == OreDictionary.WILDCARD_VALUE) {
 					String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
-					Log.get().error("Found an itemStack with wildcard metadata from creative tab: {}. {}", creativeTab, itemStackInfo);
+					LOGGER.error("Found an itemStack with wildcard metadata from creative tab: {}. {}", creativeTab, itemStackInfo);
 				} else {
 					addItemStack(stackHelper, itemStack, itemList, itemNameSet);
 				}
@@ -133,14 +136,14 @@ public final class ItemStackListFactory {
 				block.getSubBlocks(itemTab, subBlocks);
 			} catch (RuntimeException | LinkageError e) {
 				String itemStackInfo = ErrorUtil.getItemStackInfo(new ItemStack(item));
-				Log.get().error("Failed to getSubBlocks {}", itemStackInfo, e);
+				LOGGER.error("Failed to getSubBlocks {}", itemStackInfo, e);
 			}
 
 			for (ItemStack subBlock : subBlocks) {
 				if (subBlock == null) {
-					Log.get().error("Found null subBlock of {}", block);
+					LOGGER.error("Found null subBlock of {}", block);
 				} else if (subBlock.isEmpty()) {
-					Log.get().error("Found empty subBlock of {}", block);
+					LOGGER.error("Found empty subBlock of {}", block);
 				} else {
 					addItemStack(stackHelper, subBlock, itemList, itemNameSet);
 				}
@@ -171,7 +174,7 @@ public final class ItemStackListFactory {
 			return stackHelper.getUniqueIdentifierForStack(stack, StackHelper.UidMode.FULL);
 		} catch (RuntimeException | LinkageError e) {
 			String stackInfo = ErrorUtil.getItemStackInfo(stack);
-			Log.get().error("Couldn't get unique name for itemStack {}", stackInfo, e);
+			LOGGER.error("Couldn't get unique name for itemStack {}", stackInfo, e);
 			return null;
 		}
 	}
@@ -185,7 +188,7 @@ public final class ItemStackListFactory {
 				}
 			} catch (RuntimeException | LinkageError e) {
 				String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
-				Log.get().error("Failed to apply FluidSubtypeInterpreter to ItemStack: {}", itemStackInfo, e);
+				LOGGER.error("Failed to apply FluidSubtypeInterpreter to ItemStack: {}", itemStackInfo, e);
 			}
 		}
 	}

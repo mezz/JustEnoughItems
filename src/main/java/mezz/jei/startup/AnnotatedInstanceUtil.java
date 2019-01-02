@@ -9,9 +9,12 @@ import net.minecraftforge.fml.common.discovery.ASMDataTable;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JEIPlugin;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class AnnotatedInstanceUtil {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private AnnotatedInstanceUtil() {
 
 	}
@@ -39,7 +42,7 @@ public final class AnnotatedInstanceUtil {
 				T instance = asmInstanceClass.newInstance();
 				instances.add(instance);
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | RuntimeException | LinkageError e) {
-				Log.get().error("Failed to load: {}", className, e);
+				LOGGER.error("Failed to load: {}", className, e);
 			}
 		}
 		return instances;

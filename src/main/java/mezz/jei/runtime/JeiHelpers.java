@@ -10,9 +10,12 @@ import mezz.jei.ingredients.ItemBlacklist;
 import mezz.jei.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.startup.StackHelper;
 import mezz.jei.transfer.RecipeTransferHandlerHelper;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class JeiHelpers implements IJeiHelpers {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final GuiHelper guiHelper;
 	private final StackHelper stackHelper;
 	private final IngredientBlacklist ingredientBlacklist;
@@ -61,6 +64,6 @@ public class JeiHelpers implements IJeiHelpers {
 
 	@Override
 	public void reload() {
-		Log.get().error("A mod tried to reload JEI, this is no longer supported. See the javadocs for more information", new RuntimeException());
+		LOGGER.error("A mod tried to reload JEI, this is no longer supported. See the javadocs for more information", new RuntimeException());
 	}
 }

@@ -7,8 +7,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.Language;
 import net.minecraft.client.resources.LanguageManager;
 import net.minecraft.util.text.translation.I18n;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class Translator {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private Translator() {
 	}
 
@@ -25,7 +29,7 @@ public final class Translator {
 		try {
 			return String.format(s, format);
 		} catch (IllegalFormatException e) {
-			Log.get().error("Format error: {}", s, e);
+			LOGGER.error("Format error: {}", s, e);
 			return "Format error: " + s;
 		}
 	}

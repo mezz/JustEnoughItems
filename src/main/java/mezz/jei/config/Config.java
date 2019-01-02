@@ -36,10 +36,13 @@ import mezz.jei.network.packets.PacketRequestCheatPermission;
 import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.GiveMode;
-import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class Config {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private static final String configKeyPrefix = "config.jei";
 
 	public static final String CATEGORY_SEARCH = "search";
@@ -328,11 +331,11 @@ public final class Config {
 		if (!jeiConfigurationDir.exists()) {
 			try {
 				if (!jeiConfigurationDir.mkdir()) {
-					Log.get().error("Could not create config directory {}", jeiConfigurationDir);
+					LOGGER.error("Could not create config directory {}", jeiConfigurationDir);
 					return;
 				}
 			} catch (SecurityException e) {
-				Log.get().error("Could not create config directory {}", jeiConfigurationDir, e);
+				LOGGER.error("Could not create config directory {}", jeiConfigurationDir, e);
 				return;
 			}
 		}
@@ -343,11 +346,11 @@ public final class Config {
 		if (!bookmarkFile.exists() && oldBookmarkFile.exists()) {
 			try {
 				if (!oldBookmarkFile.renameTo(bookmarkFile)) {
-					Log.get().error("Could not move the old bookmark file from {} to {}", jeiConfigurationDir, "./");
+					LOGGER.error("Could not move the old bookmark file from {} to {}", jeiConfigurationDir, "./");
 					return;
 				}
 			} catch (SecurityException e) {
-				Log.get().error("Could not move the old bookmark file from {} to {}", jeiConfigurationDir, "./", e);
+				LOGGER.error("Could not move the old bookmark file from {} to {}", jeiConfigurationDir, "./", e);
 				return;
 			}
 		}
@@ -526,7 +529,7 @@ public final class Config {
 			if (valueByName != null) {
 				format.append(valueByName.toString());
 			} else {
-				Log.get().error("Invalid format: {}", string);
+				LOGGER.error("Invalid format: {}", string);
 			}
 		}
 		return format.toString();
@@ -605,7 +608,7 @@ public final class Config {
 		for (String entry : searchColors) {
 			final String[] values = entry.split(":");
 			if (values.length != 2) {
-				Log.get().error("Invalid format for searchColor entry: {}", entry);
+				LOGGER.error("Invalid format for searchColor entry: {}", entry);
 			} else {
 				try {
 					final String name = values[0];
@@ -613,7 +616,7 @@ public final class Config {
 					final Color color = new Color(colorValue);
 					searchColorsMapBuilder.put(color, name);
 				} catch (NumberFormatException e) {
-					Log.get().error("Invalid number format for searchColor entry: {}", entry, e);
+					LOGGER.error("Invalid number format for searchColor entry: {}", entry, e);
 				}
 			}
 		}

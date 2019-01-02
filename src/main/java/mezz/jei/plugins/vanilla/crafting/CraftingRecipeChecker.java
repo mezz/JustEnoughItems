@@ -22,11 +22,14 @@ import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.IRecipeWrapperFactory;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class CraftingRecipeChecker {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private CraftingRecipeChecker() {
 	}
 
@@ -79,38 +82,38 @@ public final class CraftingRecipeChecker {
 			ItemStack recipeOutput = recipe.getRecipeOutput();
 			//noinspection ConstantConditions
 			if (recipeOutput == null || recipeOutput.isEmpty()) {
-				if (!recipe.isDynamic() && Log.get().isDebugEnabled()) {
+				if (!recipe.isDynamic() && LOGGER.isDebugEnabled()) {
 					String recipeInfo = getInfo(recipe);
-					Log.get().debug("Skipping Recipe because it has no output. {}", recipeInfo);
+					LOGGER.debug("Skipping Recipe because it has no output. {}", recipeInfo);
 				}
 				return false;
 			}
 			List<Ingredient> ingredients = recipe.getIngredients();
 			//noinspection ConstantConditions
 			if (ingredients == null) {
-				if (Log.get().isDebugEnabled()) {
+				if (LOGGER.isDebugEnabled()) {
 					String recipeInfo = getInfo(recipe);
-					Log.get().debug("Skipping Recipe because it has no input Ingredients. {}", recipeInfo);
+					LOGGER.debug("Skipping Recipe because it has no input Ingredients. {}", recipeInfo);
 				}
 				return false;
 			}
 			int inputCount = getInputCount(ingredients, stackHelper);
 			if (inputCount == CANT_DISPLAY) {
 				String recipeInfo = getInfo(recipe);
-				Log.get().warn("Recipe contains ingredients that can't be understood or displayed by JEI: {}", recipeInfo);
+				LOGGER.warn("Recipe contains ingredients that can't be understood or displayed by JEI: {}", recipeInfo);
 				return false;
 			} else if (inputCount == INVALID_COUNT) {
 				return false;
 			} else if (inputCount > 9) {
-				if (Log.get().isDebugEnabled()) {
+				if (LOGGER.isDebugEnabled()) {
 					String recipeInfo = getInfo(recipe);
-					Log.get().debug("Skipping Recipe because it has too many inputs. {}", recipeInfo);
+					LOGGER.debug("Skipping Recipe because it has too many inputs. {}", recipeInfo);
 				}
 				return false;
 			} else if (inputCount == 0) {
-				if (Log.get().isDebugEnabled()) {
+				if (LOGGER.isDebugEnabled()) {
 					String recipeInfo = getInfo(recipe);
-					Log.get().debug("Skipping Recipe because it has no inputs. {}", recipeInfo);
+					LOGGER.debug("Skipping Recipe because it has no inputs. {}", recipeInfo);
 				}
 				return false;
 			}

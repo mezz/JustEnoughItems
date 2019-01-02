@@ -31,8 +31,12 @@ import mezz.jei.config.Config;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.startup.IModIdHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class ErrorUtil {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	@Nullable
 	private static IModIdHelper modIdHelper;
 
@@ -100,7 +104,7 @@ public final class ErrorUtil {
 		try {
 			return recipe.toString();
 		} catch (RuntimeException e) {
-			Log.get().error("Failed recipe.toString", e);
+			LOGGER.error("Failed recipe.toString", e);
 			return recipe.getClass().toString();
 		}
 	}

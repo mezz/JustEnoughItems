@@ -30,9 +30,11 @@ import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.config.Config;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.IngredientSet;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class BrewingRecipeMaker {
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final Set<Class> unhandledRecipeClasses = new HashSet<>();
 	private final Set<BrewingRecipeWrapper> disabledRecipes = new HashSet<>();
@@ -172,7 +174,7 @@ public class BrewingRecipeMaker {
 		} catch (RuntimeException | LinkageError e) {
 			String potionInfo = ErrorUtil.getItemStackInfo(potion);
 			String reagentInfo = ErrorUtil.getItemStackInfo(reagent);
-			Log.get().error(
+			LOGGER.error(
 				"A modded potion mix crashed:\nPotion: {}\nItemStack: {}",
 				potionInfo,
 				reagentInfo,
@@ -215,7 +217,7 @@ public class BrewingRecipeMaker {
 				if (!unhandledRecipeClasses.contains(recipeClass)) {
 					unhandledRecipeClasses.add(recipeClass);
 					if (Config.isDebugModeEnabled()) {
-						Log.get().debug("Can't handle brewing recipe class: {}", recipeClass);
+						LOGGER.debug("Can't handle brewing recipe class: {}", recipeClass);
 					}
 				}
 			}

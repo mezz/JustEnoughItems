@@ -18,9 +18,12 @@ import mezz.jei.network.packets.PacketGiveItemStack;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
 import mezz.jei.network.packets.PacketSetHotbarItemStack;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class PacketHandler {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	public static final String CHANNEL_ID = Constants.MOD_ID;
 
 	public final EnumMap<PacketIdServer, IPacketJeiHandler> serverHandlers = new EnumMap<>(PacketIdServer.class);
@@ -44,7 +47,7 @@ public class PacketHandler {
 			IPacketJeiHandler packetHandler = serverHandlers.get(packetId);
 			checkThreadAndEnqueue(packetHandler, packetBuffer, player, player.getServer());
 		} catch (Throwable ex) {
-			Log.get().error("Packet error", ex);
+			LOGGER.error("Packet error", ex);
 		}
 	}
 
@@ -67,7 +70,7 @@ public class PacketHandler {
 		try {
 			packetHandler.readPacketData(packetBuffer, player);
 		} catch (Throwable e) {
-			Log.get().error("Network Error", e);
+			LOGGER.error("Network Error", e);
 		}
 	}
 }

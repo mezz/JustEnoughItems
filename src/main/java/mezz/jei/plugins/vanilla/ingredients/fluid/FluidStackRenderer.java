@@ -20,10 +20,13 @@ import net.minecraft.util.text.TextFormatting;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private static final int TEX_WIDTH = 16;
 	private static final int TEX_HEIGHT = 16;
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
@@ -102,7 +105,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 			drawTiledSprite(minecraft, xPosition, yPosition, width, height, fluidColor, scaledAmount, fluidStillSprite);
 		} catch (RuntimeException e) {
 			String info = ErrorUtil.getIngredientInfo(fluidStack);
-			Log.get().error("Failed to render fluid: " + info, e);
+			LOGGER.error("Failed to render fluid: " + info, e);
 		}
 	}
 
@@ -193,7 +196,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 			}
 		} catch (RuntimeException e) {
 			String info = ErrorUtil.getIngredientInfo(fluidStack);
-			Log.get().error("Failed to get tooltip for fluid: " + info, e);
+			LOGGER.error("Failed to get tooltip for fluid: " + info, e);
 		}
 
 		return tooltip;

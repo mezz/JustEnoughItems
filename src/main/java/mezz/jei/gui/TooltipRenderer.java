@@ -15,11 +15,14 @@ import net.minecraft.item.ItemStack;
 
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.LimitedLogger;
-import mezz.jei.util.Log;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class TooltipRenderer {
-	private static final LimitedLogger LIMITED_LOGGER = new LimitedLogger(Log.get(), Duration.ofSeconds(30));
+	private static final Logger LOGGER = LogManager.getLogger();
+
+	private static final LimitedLogger LIMITED_LOGGER = new LimitedLogger(LOGGER, Duration.ofSeconds(30));
 
 	private TooltipRenderer() {
 	}

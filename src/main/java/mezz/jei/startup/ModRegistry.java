@@ -48,9 +48,12 @@ import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.recipes.RecipeTransferRegistry;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final IJeiHelpers jeiHelpers;
 	private final IIngredientRegistry ingredientRegistry;
 	private final List<IRecipeCategory> recipeCategories = new ArrayList<>();
@@ -134,7 +137,7 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 //		Preconditions.checkArgument(this.recipeCategoryUids.contains(recipeCategoryUid), "No recipe category has been registered for recipeCategoryUid %s", recipeCategoryUid);
 		if (!this.recipeCategoryUids.contains(recipeCategoryUid)) {
-			Log.get().warn("No recipe category has been registered for recipeCategoryUid {}", recipeCategoryUid);
+			LOGGER.warn("No recipe category has been registered for recipeCategoryUid {}", recipeCategoryUid);
 		}
 
 		for (Object recipe : recipes) {
@@ -174,7 +177,7 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 
 		if (this.recipeHandlerClasses.contains(recipeCategoryUid, recipeClass)) {
 			// TODO 1.13: throw exception
-			Log.get().error("A Recipe Handler has already been registered for '{}': {}", recipeCategoryUid, recipeClass.getName());
+			LOGGER.error("A Recipe Handler has already been registered for '{}': {}", recipeCategoryUid, recipeClass.getName());
 		} else {
 			this.recipeHandlerClasses.put(recipeCategoryUid, recipeClass);
 			this.recipeHandlers.put(recipeCategoryUid, recipeHandler);
@@ -201,11 +204,11 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 		try {
 			IIngredientHelper<Object> helper = ingredientRegistry.getIngredientHelper(catalystIngredient);
 			if (!helper.isValidIngredient(catalystIngredient) || !helper.isIngredientOnServer(catalystIngredient)) {
-				Log.get().warn("Skipping unavailable recipe catalyst of type {}", catalystIngredient.getClass().getName());
+				LOGGER.warn("Skipping unavailable recipe catalyst of type {}", catalystIngredient.getClass().getName());
 				return;
 			}
 		} catch (RuntimeException | LinkageError e) {
-			Log.get().warn("Skipping broken recipe catalyst of type {}", catalystIngredient.getClass().getName(), e);
+			LOGGER.warn("Skipping broken recipe catalyst of type {}", catalystIngredient.getClass().getName(), e);
 			return;
 		}
 
@@ -324,7 +327,7 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	public void addRecipeRegistryPlugin(IRecipeRegistryPlugin recipeRegistryPlugin) {
 		ErrorUtil.checkNotNull(recipeRegistryPlugin, "recipeRegistryPlugin");
 
-		Log.get().info("Added recipe registry plugin: {}", recipeRegistryPlugin.getClass());
+		LOGGER.info("Added recipe registry plugin: {}", recipeRegistryPlugin.getClass());
 		recipeRegistryPlugins.add(recipeRegistryPlugin);
 	}
 

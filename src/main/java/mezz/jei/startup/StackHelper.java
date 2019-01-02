@@ -27,9 +27,12 @@ import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class StackHelper implements IStackHelper {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final ISubtypeRegistry subtypeRegistry;
 	/**
 	 * Uids are cached during loading to improve startup performance.
@@ -371,15 +374,15 @@ public class StackHelper implements IStackHelper {
 		try {
 			item.getSubItems(itemTab, subItems);
 		} catch (RuntimeException | LinkageError e) {
-			Log.get().warn("Caught a crash while getting sub-items of {}", item, e);
+			LOGGER.warn("Caught a crash while getting sub-items of {}", item, e);
 		}
 
 		for (ItemStack subItem : subItems) {
 			if (subItem.isEmpty()) {
-				Log.get().warn("Found an empty subItem of {}", item);
+				LOGGER.warn("Found an empty subItem of {}", item);
 			} else if (subItem.getMetadata() == OreDictionary.WILDCARD_VALUE) {
 				String itemStackInfo = ErrorUtil.getItemStackInfo(subItem);
-				Log.get().error("Found an subItem of {} with wildcard metadata: {}", item, itemStackInfo);
+				LOGGER.error("Found an subItem of {} with wildcard metadata: {}", item, itemStackInfo);
 			} else {
 				if (subItem.getCount() != stackSize) {
 					ItemStack subItemCopy = subItem.copy();
@@ -431,7 +434,7 @@ public class StackHelper implements IStackHelper {
 			} else if (obj instanceof Iterable) {
 				addSubtypesToList(subtypesList, (Iterable) obj);
 			} else if (obj != null) {
-				Log.get().error("Unknown object found: {}", obj);
+				LOGGER.error("Unknown object found: {}", obj);
 			} else {
 				subtypesList.add(null);
 			}
@@ -489,7 +492,7 @@ public class StackHelper implements IStackHelper {
 				toItemStackList(itemStackListBuilder, obj, expandSubtypes);
 			}
 		} else if (input != null) {
-			Log.get().error("Unknown object found: {}", input);
+			LOGGER.error("Unknown object found: {}", input);
 		}
 	}
 

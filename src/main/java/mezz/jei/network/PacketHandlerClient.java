@@ -14,10 +14,13 @@ import net.minecraft.util.IThreadListener;
 
 import mezz.jei.network.packets.IPacketJeiHandler;
 import mezz.jei.network.packets.PacketCheatPermission;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @SideOnly(Side.CLIENT)
 public class PacketHandlerClient extends PacketHandler {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	public final EnumMap<PacketIdClient, IPacketJeiHandler> clientHandlers = new EnumMap<>(PacketIdClient.class);
 
 	public PacketHandlerClient() {
@@ -36,7 +39,7 @@ public class PacketHandlerClient extends PacketHandler {
 			IPacketJeiHandler packetHandler = clientHandlers.get(packetId);
 			checkThreadAndEnqueue(packetHandler, packetBuffer, minecraft);
 		} catch (Throwable ex) {
-			Log.get().error("Packet error", ex);
+			LOGGER.error("Packet error", ex);
 		}
 	}
 
@@ -51,7 +54,7 @@ public class PacketHandlerClient extends PacketHandler {
 						packetHandler.readPacketData(packetBuffer, player);
 					}
 				} catch (Throwable e) {
-					Log.get().error("Network Error", e);
+					LOGGER.error("Network Error", e);
 				} finally {
 					packetBuffer.release();
 				}

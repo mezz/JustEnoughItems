@@ -5,10 +5,13 @@ import java.util.Set;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import mezz.jei.util.Log;
 
 public class UniqueItemStackListBuilder {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final StackHelper stackHelper;
 	private final NonNullList<ItemStack> ingredients = NonNullList.create();
 	private final Set<String> ingredientUids = new HashSet<>();
@@ -28,7 +31,7 @@ public class UniqueItemStackListBuilder {
 				ingredients.add(itemStack);
 			}
 		} catch (RuntimeException | LinkageError e) {
-			Log.get().error("Failed to get unique identifier for stack.", e);
+			LOGGER.error("Failed to get unique identifier for stack.", e);
 		}
 	}
 

@@ -11,9 +11,12 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.runtime.JeiRuntime;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class RecipeTransferUtil {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private RecipeTransferUtil() {
 	}
 
@@ -38,7 +41,7 @@ public final class RecipeTransferUtil {
 		final IRecipeTransferHandler transferHandler = recipeRegistry.getRecipeTransferHandler(container, recipeLayout.getRecipeCategory());
 		if (transferHandler == null) {
 			if (doTransfer) {
-				Log.get().error("No Recipe Transfer handler for container {}", container.getClass());
+				LOGGER.error("No Recipe Transfer handler for container {}", container.getClass());
 			}
 			return RecipeTransferErrorInternal.INSTANCE;
 		}
@@ -47,7 +50,7 @@ public final class RecipeTransferUtil {
 			//noinspection unchecked
 			return transferHandler.transferRecipe(container, recipeLayout, player, maxTransfer, doTransfer);
 		} catch (RuntimeException e) {
-			Log.get().error(
+			LOGGER.error(
 				"Recipe transfer handler '{}' for container '{}' and recipe category '{}' threw an error: ",
 				transferHandler.getClass(), container.getClass(), recipeLayout.getRecipeCategory().getUid(), e
 			);

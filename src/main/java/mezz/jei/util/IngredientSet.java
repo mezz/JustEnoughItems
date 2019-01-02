@@ -16,8 +16,12 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.startup.StackHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class IngredientSet<V> extends AbstractSet<V> {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	public static <V> IngredientSet<V> create(IIngredientType<V> ingredientType, IIngredientHelper<V> ingredientHelper) {
 		final Function<V, String> uidGenerator;
 		if (ingredientType == VanillaTypes.ITEM) {
@@ -75,7 +79,7 @@ public class IngredientSet<V> extends AbstractSet<V> {
 		try {
 			return uidGenerator.apply(ingredient);
 		} catch (RuntimeException | LinkageError e) {
-			Log.get().warn("Found a broken ingredient while getting its unique id.", e);
+			LOGGER.warn("Found a broken ingredient while getting its unique id.", e);
 			return null;
 		}
 	}

@@ -11,16 +11,19 @@ import net.minecraft.item.ItemStack;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DebugGhostIngredientHandler<T extends GuiContainer> implements IGhostIngredientHandler<T> {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	@Override
 	public <I> List<Target<I>> getTargets(T gui, I ingredient, boolean doStart) {
 		List<Target<I>> targets = new ArrayList<>();
 		targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rectangle(0, 0, 20, 20)));
 		if (doStart) {
 			IIngredientHelper<I> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredient);
-			Log.get().info("Ghost Ingredient Handling Starting with {}", ingredientHelper.getErrorInfo(ingredient));
+			LOGGER.info("Ghost Ingredient Handling Starting with {}", ingredientHelper.getErrorInfo(ingredient));
 			targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rectangle(20, 20, 20, 20)));
 		}
 		if (ingredient instanceof ItemStack) {
@@ -38,7 +41,7 @@ public class DebugGhostIngredientHandler<T extends GuiContainer> implements IGho
 
 	@Override
 	public void onComplete() {
-		Log.get().info("Ghost Ingredient Handling Complete");
+		LOGGER.info("Ghost Ingredient Handling Complete");
 	}
 
 	private static class DebugInfoTarget<I> implements IGhostIngredientHandler.Target<I> {
@@ -58,7 +61,7 @@ public class DebugGhostIngredientHandler<T extends GuiContainer> implements IGho
 		@Override
 		public void accept(I ingredient) {
 			IIngredientHelper<I> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredient);
-			Log.get().info("{}: {}", message, ingredientHelper.getErrorInfo(ingredient));
+			LOGGER.info("{}: {}", message, ingredientHelper.getErrorInfo(ingredient));
 		}
 	}
 }

@@ -13,10 +13,13 @@ import mezz.jei.startup.ModIngredientRegistration;
 import mezz.jei.startup.ModInfoRegistration;
 import mezz.jei.startup.ModRegistry;
 import mezz.jei.startup.StartupProgress;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /** Runs plugin registration phases independently of the client GUI lifecycle. */
 public final class PluginLoader {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private PluginLoader() {
 	}
 
@@ -35,7 +38,7 @@ public final class PluginLoader {
 					if (plugin instanceof VanillaPlugin) {
 						throw e;
 					}
-					Log.get().error("Failed to register mod info for mod plugin: {}", plugin.getClass(), e);
+					LOGGER.error("Failed to register mod info for mod plugin: {}", plugin.getClass(), e);
 				}
 			}
 		}
@@ -51,7 +54,7 @@ public final class PluginLoader {
 					progressBar.step(plugin.getClass().getName());
 					plugin.registerItemSubtypes(subtypeRegistry);
 				} catch (RuntimeException | LinkageError e) {
-					Log.get().error("Failed to register item subtypes for mod plugin: {}", plugin.getClass(), e);
+					LOGGER.error("Failed to register item subtypes for mod plugin: {}", plugin.getClass(), e);
 					iterator.remove();
 				}
 			}
@@ -72,7 +75,7 @@ public final class PluginLoader {
 					if (plugin instanceof VanillaPlugin) {
 						throw e;
 					} else {
-						Log.get().error("Failed to register Ingredients for mod plugin: {}", plugin.getClass(), e);
+						LOGGER.error("Failed to register Ingredients for mod plugin: {}", plugin.getClass(), e);
 						iterator.remove();
 					}
 				}
@@ -92,7 +95,7 @@ public final class PluginLoader {
 					if (plugin instanceof VanillaPlugin) {
 						throw e;
 					}
-					Log.get().error("Failed to register ingredient aliases for mod plugin: {}", plugin.getClass(), e);
+					LOGGER.error("Failed to register ingredient aliases for mod plugin: {}", plugin.getClass(), e);
 				}
 			}
 		}
@@ -106,14 +109,14 @@ public final class PluginLoader {
 				try {
 					progressBar.step(plugin.getClass().getName());
 					long start_time = System.currentTimeMillis();
-					Log.get().debug("Registering categories: {} ...", plugin.getClass().getName());
+					LOGGER.debug("Registering categories: {} ...", plugin.getClass().getName());
 					plugin.registerCategories(modRegistry);
 					long timeElapsedMs = System.currentTimeMillis() - start_time;
-					Log.get().debug("Registered  categories: {} in {} ms", plugin.getClass().getName(), timeElapsedMs);
+					LOGGER.debug("Registered  categories: {} in {} ms", plugin.getClass().getName(), timeElapsedMs);
 				} catch (AbstractMethodError ignored) {
 					// legacy plugins do not implement registerCategories
 				} catch (RuntimeException | LinkageError e) {
-					Log.get().error("Failed to register mod categories: {}", plugin.getClass(), e);
+					LOGGER.error("Failed to register mod categories: {}", plugin.getClass(), e);
 					iterator.remove();
 				}
 			}
@@ -128,12 +131,12 @@ public final class PluginLoader {
 				try {
 					progressBar.step(plugin.getClass().getName());
 					long start_time = System.currentTimeMillis();
-					Log.get().debug("Registering plugin: {} ...", plugin.getClass().getName());
+					LOGGER.debug("Registering plugin: {} ...", plugin.getClass().getName());
 					plugin.register(modRegistry);
 					long timeElapsedMs = System.currentTimeMillis() - start_time;
-					Log.get().debug("Registered  plugin: {} in {} ms", plugin.getClass().getName(), timeElapsedMs);
+					LOGGER.debug("Registered  plugin: {} in {} ms", plugin.getClass().getName(), timeElapsedMs);
 				} catch (RuntimeException | LinkageError e) {
-					Log.get().error("Failed to register mod plugin: {}", plugin.getClass(), e);
+					LOGGER.error("Failed to register mod plugin: {}", plugin.getClass(), e);
 					iterator.remove();
 				}
 			}
@@ -148,14 +151,14 @@ public final class PluginLoader {
 				try {
 					progressBar.step(plugin.getClass().getName());
 					long start_time = System.currentTimeMillis();
-					Log.get().debug("Sending runtime to plugin: {} ...", plugin.getClass().getName());
+					LOGGER.debug("Sending runtime to plugin: {} ...", plugin.getClass().getName());
 					plugin.onRuntimeAvailable(jeiRuntime);
 					long timeElapsedMs = System.currentTimeMillis() - start_time;
 					if (timeElapsedMs > 100) {
-						Log.get().warn("Sending runtime to plugin: {} took {} ms", plugin.getClass().getName(), timeElapsedMs);
+						LOGGER.warn("Sending runtime to plugin: {} took {} ms", plugin.getClass().getName(), timeElapsedMs);
 					}
 				} catch (RuntimeException | LinkageError e) {
-					Log.get().error("Sending runtime to plugin failed: {}", plugin.getClass(), e);
+					LOGGER.error("Sending runtime to plugin failed: {}", plugin.getClass(), e);
 					iterator.remove();
 				}
 			}

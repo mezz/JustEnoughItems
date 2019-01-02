@@ -42,10 +42,13 @@ import mezz.jei.network.packets.PacketJei;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.runtime.JeiRuntime;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @SuppressWarnings("unused")
 public class ProxyCommonClient extends ProxyCommon {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private List<IModPlugin> plugins = new ArrayList<>();
 	private final JeiStarter starter = new JeiStarter();
 	private final JeiTextureMap textureMap = new JeiTextureMap("textures");
@@ -123,9 +126,9 @@ public class ProxyCommonClient extends ProxyCommon {
 			// check that JEI has been started before. if not, do nothing
 			if (this.starter.hasStarted()) {
 				if (Config.isDebugModeEnabled()) {
-					Log.get().info("Restarting JEI.", new RuntimeException("Stack trace for debugging"));
+					LOGGER.info("Restarting JEI.", new RuntimeException("Stack trace for debugging"));
 				} else {
-					Log.get().info("Restarting JEI.");
+					LOGGER.info("Restarting JEI.");
 				}
 				Preconditions.checkNotNull(textures);
 				this.starter.start(this.plugins, textures);
@@ -180,7 +183,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		try {
 			Config.saveFilterText();
 		} catch (RuntimeException e) {
-			Log.get().error("Failed to save filter text.", e);
+			LOGGER.error("Failed to save filter text.", e);
 		}
 	}
 

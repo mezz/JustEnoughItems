@@ -11,9 +11,12 @@ import net.minecraft.entity.player.EntityPlayerMP;
 
 import mezz.jei.network.PacketHandler;
 import mezz.jei.network.packets.PacketJei;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ProxyCommon {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	@Nullable
 	protected FMLEventChannel channel;
 
@@ -32,7 +35,7 @@ public class ProxyCommon {
 	}
 
 	public void sendPacketToServer(PacketJei packet) {
-		Log.get().error("Tried to send packet to the server from the server: {}", packet);
+		LOGGER.error("Tried to send packet to the server from the server: {}", packet);
 	}
 
 	public void sendPacketToClient(PacketJei packet, EntityPlayerMP player) {

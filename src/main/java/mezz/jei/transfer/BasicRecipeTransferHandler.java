@@ -23,10 +23,13 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.config.ServerInfo;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.startup.StackHelper;
-import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class BasicRecipeTransferHandler<C extends Container> implements IRecipeTransferHandler<C> {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final StackHelper stackHelper;
 	private final IRecipeTransferHandlerHelper handlerHelper;
 	private final IRecipeTransferInfo<C> transferHelper;
@@ -77,7 +80,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 		}
 
 		if (inputCount > craftingSlots.size()) {
-			Log.get().error("Recipe Transfer helper {} does not work for container {}. " +
+			LOGGER.error("Recipe Transfer helper {} does not work for container {}. " +
 				"{} ingredients are marked as inputs in IRecipeCategory#setRecipe, but there are only {} crafting slots defined for the recipe transfer helper.",
 				transferHelper.getClass(), container.getClass(), inputCount, craftingSlots.size()
 			);
@@ -92,7 +95,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 			final ItemStack stack = slot.getStack();
 			if (!stack.isEmpty()) {
 				if (!slot.canTakeStack(player)) {
-					Log.get().error("Recipe Transfer helper {} does not work for container {}. Player can't move item out of Crafting Slot number {}", transferHelper.getClass(), container.getClass(), slot.slotNumber);
+					LOGGER.error("Recipe Transfer helper {} does not work for container {}. Player can't move item out of Crafting Slot number {}", transferHelper.getClass(), container.getClass(), slot.slotNumber);
 					return handlerHelper.createInternalError();
 				}
 				filledCraftSlotCount++;
@@ -133,7 +136,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 			int craftNumber = entry.getKey();
 			int slotNumber = craftingSlotIndexes.get(craftNumber);
 			if (slotNumber < 0 || slotNumber >= container.inventorySlots.size()) {
-				Log.get().error("Recipes Transfer Helper {} references slot {} outside of the inventory's size {}", transferHelper.getClass(), slotNumber, container.inventorySlots.size());
+				LOGGER.error("Recipes Transfer Helper {} references slot {} outside of the inventory's size {}", transferHelper.getClass(), slotNumber, container.inventorySlots.size());
 				return handlerHelper.createInternalError();
 			}
 		}
