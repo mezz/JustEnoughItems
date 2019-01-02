@@ -18,7 +18,7 @@ jei.tooltip.not.enough.space=屏幕空间不足，无法显示 JEI 界面。
 jei.tooltip.ingredient.list.disabled=JEI 悬浮界面已禁用。
 jei.tooltip.ingredient.list.disabled.how.to.fix=按 %s 以启用。
 jei.tooltip.bookmarks=JEI 书签
-jei.tooltip.bookmarks.usage.nokey=在按键设置中为 JEI 书签添加按键设置。
+jei.tooltip.bookmarks.usage.nokey=在按键设置中为 JEI 书签添加快捷键。
 jei.tooltip.bookmarks.usage.key=将鼠标悬停在某个成分上，然后按 %s 将其添加为书签。
 jei.tooltip.bookmarks.not.enough.space=这里没有足够的空间来显示书签。
 
