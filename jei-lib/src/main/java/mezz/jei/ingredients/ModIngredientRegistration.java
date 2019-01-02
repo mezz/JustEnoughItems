@@ -52,7 +52,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 	private <T> IngredientSet<T> createIngredientSet(IIngredientType<T> ingredientType, Collection<T> ingredients) {
 		@SuppressWarnings("unchecked")
 		IIngredientHelper<T> ingredientHelper = ingredientHelperMap.get(ingredientType);
-		IngredientSet<T> ingredientSet = IngredientSet.create(ingredientType, ingredientHelper);
+		IngredientSet<T> ingredientSet = IngredientSet.create(ingredientHelper);
 		ingredientSet.addAll(ingredients);
 		return ingredientSet;
 	}

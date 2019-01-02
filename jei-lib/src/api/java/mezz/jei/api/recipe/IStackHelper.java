@@ -4,6 +4,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.NonNullList;
 
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.ISubtypeRegistry;
@@ -14,29 +16,14 @@ import mezz.jei.api.ISubtypeRegistry;
  */
 public interface IStackHelper {
 	/**
-	 * Expands an Iterable, which may contain ItemStacks or more Iterables, and
-	 * returns all the subtypes of itemStacks if they have wildcard meta value.
+	 * Expands an Ingredient into a list of ItemStacks.
 	 */
-	List<ItemStack> getAllSubtypes(Iterable stacks);
+	List<ItemStack> toItemStackList(Ingredient ingredient);
 
 	/**
-	 * Flattens ItemStacks, OreDict Strings, and Iterables into a list of ItemStacks.
+	 * Expands Ingredients, into a list of lists of ItemStacks.
 	 */
-	List<ItemStack> toItemStackList(@Nullable Object stacks);
-
-	/**
-	 * Expands ItemStacks, Ingredients, and Iterables into a list of lists of ItemStacks.
-	 */
-	List<List<ItemStack>> expandRecipeItemStackInputs(@Nullable List inputs);
-
-	/**
-	 * Returns an ItemStack from 'stacks' that matches any of the ItemStacks in 'contains'.
-	 * Returns null if there is no match.
-	 *
-	 * @since JEI 3.13.4
-	 */
-	@Nullable
-	ItemStack containsAnyStack(Iterable<ItemStack> stacks, Iterable<ItemStack> contains);
+	List<List<ItemStack>> expandRecipeIngredients(NonNullList<Ingredient> inputs);
 
 	/**
 	 * Similar to ItemStack.areItemStacksEqual but ignores NBT on items without subtypes, and uses the {@link ISubtypeRegistry}

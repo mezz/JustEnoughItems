@@ -20,37 +20,42 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.recipe.IBrewingRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.IVanillaRecipeFactory;
 
 public class BrewingRecipeMaker {
 
 	private final Set<Class> unhandledRecipeClasses = new HashSet<>();
-	private final Set<BrewingRecipeWrapper> disabledRecipes = new HashSet<>();
+	private final Set<IRecipeWrapper> disabledRecipes = new HashSet<>();
 	private final IIngredientRegistry ingredientRegistry;
+	private final IVanillaRecipeFactory vanillaRecipeFactory;
 
-	public static List<BrewingRecipeWrapper> getBrewingRecipes(IIngredientRegistry ingredientRegistry) {
-		BrewingRecipeMaker brewingRecipeMaker = new BrewingRecipeMaker(ingredientRegistry);
+	public static List<IBrewingRecipeWrapper> getBrewingRecipes(IIngredientRegistry ingredientRegistry, IVanillaRecipeFactory vanillaRecipeFactory) {
+		BrewingRecipeMaker brewingRecipeMaker = new BrewingRecipeMaker(ingredientRegistry, vanillaRecipeFactory);
 		return brewingRecipeMaker.getBrewingRecipes();
 	}
 
-	private BrewingRecipeMaker(IIngredientRegistry ingredientRegistry) {
+	private BrewingRecipeMaker(IIngredientRegistry ingredientRegistry, IVanillaRecipeFactory vanillaRecipeFactory) {
 		this.ingredientRegistry = ingredientRegistry;
+		this.vanillaRecipeFactory = vanillaRecipeFactory;
 	}
 
-	private List<BrewingRecipeWrapper> getBrewingRecipes() {
+	private List<IBrewingRecipeWrapper> getBrewingRecipes() {
 		unhandledRecipeClasses.clear();
 
-		Set<BrewingRecipeWrapper> recipes = new HashSet<>();
+		Set<IBrewingRecipeWrapper> recipes = new HashSet<>();
 
 		addVanillaBrewingRecipes(recipes);
 		addModdedBrewingRecipes(recipes);
 
-		List<BrewingRecipeWrapper> recipeList = new ArrayList<>(recipes);
-		recipeList.sort(Comparator.comparingInt(BrewingRecipeWrapper::getBrewingSteps));
+		List<IBrewingRecipeWrapper> recipeList = new ArrayList<>(recipes);
+		recipeList.sort(Comparator.comparingInt(IBrewingRecipeWrapper::getBrewingSteps));
 
 		return recipeList;
 	}
 
-	private void addVanillaBrewingRecipes(Collection<BrewingRecipeWrapper> recipes) {
+	private void addVanillaBrewingRecipes(Collection<IBrewingRecipeWrapper> recipes) {
 		List<ItemStack> potionIngredients = ingredientRegistry.getPotionIngredients();
 		List<ItemStack> knownPotions = new ArrayList<>();
 
@@ -64,7 +69,7 @@ public class BrewingRecipeMaker {
 		} while (foundNewPotions);
 	}
 
-	private List<ItemStack> getNewPotions(List<ItemStack> knownPotions, List<ItemStack> potionIngredients, Collection<BrewingRecipeWrapper> recipes) {
+	private List<ItemStack> getNewPotions(List<ItemStack> knownPotions, List<ItemStack> potionIngredients, Collection<IBrewingRecipeWrapper> recipes) {
 		List<ItemStack> newPotions = new ArrayList<>();
 		for (ItemStack potionInput : knownPotions) {
 			for (ItemStack potionIngredient : potionIngredients) {
@@ -87,7 +92,7 @@ public class BrewingRecipeMaker {
 					}
 				}
 
-				BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(Collections.singletonList(potionIngredient), potionInput.copy(), potionOutput);
+				IBrewingRecipeWrapper recipe = vanillaRecipeFactory.createBrewingRecipe(Collections.singletonList(potionIngredient), potionInput.copy(), potionOutput);
 				if (!recipes.contains(recipe) && !disabledRecipes.contains(recipe)) {
 					if (BrewingRecipeRegistry.hasOutput(potionInput, potionIngredient)) {
 						recipes.add(recipe);
@@ -101,12 +106,12 @@ public class BrewingRecipeMaker {
 		return newPotions;
 	}
 
-	private void addModdedBrewingRecipes(Collection<BrewingRecipeWrapper> recipes) {
+	private void addModdedBrewingRecipes(Collection<IBrewingRecipeWrapper> recipes) {
 		Collection<IBrewingRecipe> brewingRecipes = BrewingRecipeRegistry.getRecipes();
 		addModdedBrewingRecipes(brewingRecipes, recipes);
 	}
 
-	private void addModdedBrewingRecipes(Collection<IBrewingRecipe> brewingRecipes, Collection<BrewingRecipeWrapper> recipes) {
+	private void addModdedBrewingRecipes(Collection<IBrewingRecipe> brewingRecipes, Collection<IBrewingRecipeWrapper> recipes) {
 		// TODO 1.13
 //		for (IBrewingRecipe iBrewingRecipe : brewingRecipes) {
 //			if (iBrewingRecipe instanceof AbstractBrewingRecipe) {

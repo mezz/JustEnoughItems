@@ -11,7 +11,7 @@ import net.minecraft.init.PotionTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionUtils;
 
-import mezz.jei.Internal;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.collect.SetMultiMap;
 
 public class BrewingRecipeUtil {
@@ -20,27 +20,29 @@ public class BrewingRecipeUtil {
 
 	private final Map<String, Integer> brewingStepCache = new HashMap<>(); // output potion -> brewing steps
 	private final SetMultiMap<String, String> potionMap = new SetMultiMap<>(); // output potion -> input potions
+	private final IIngredientHelper<ItemStack> itemStackHelper;
 
-	public BrewingRecipeUtil() {
+	public BrewingRecipeUtil(IIngredientHelper<ItemStack> itemStackHelper) {
+		this.itemStackHelper = itemStackHelper;
 		clearCache();
 	}
 
 	public void addRecipe(ItemStack inputPotion, ItemStack outputPotion) {
-		String potionInputUid = Internal.getStackHelper().getUniqueIdentifierForStack(inputPotion);
-		String potionOutputUid = Internal.getStackHelper().getUniqueIdentifierForStack(outputPotion);
+		String potionInputUid = itemStackHelper.getUniqueId(inputPotion);
+		String potionOutputUid = itemStackHelper.getUniqueId(outputPotion);
 		potionMap.put(potionOutputUid, potionInputUid);
 		clearCache();
 	}
 
 	public int getBrewingSteps(ItemStack outputPotion) {
-		String potionInputUid = Internal.getStackHelper().getUniqueIdentifierForStack(outputPotion);
+		String potionInputUid = itemStackHelper.getUniqueId(outputPotion);
 		return getBrewingSteps(potionInputUid, new HashSet<>());
 	}
 
 	private void clearCache() {
 		if (brewingStepCache.size() != 1) {
 			brewingStepCache.clear();
-			String waterBottleUid = Internal.getStackHelper().getUniqueIdentifierForStack(WATER_BOTTLE);
+			String waterBottleUid = itemStackHelper.getUniqueId(WATER_BOTTLE);
 			brewingStepCache.put(waterBottleUid, 0);
 		}
 	}

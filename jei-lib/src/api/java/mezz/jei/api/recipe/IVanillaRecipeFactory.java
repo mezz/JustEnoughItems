@@ -47,7 +47,7 @@ public interface IVanillaRecipeFactory {
 	 *                     Normally one ingredient, but a list will display several in rotation.
 	 * @param potionInput  the input potion for the brewing recipe.
 	 * @param potionOutput the output potion for the brewing recipe.
-	 * @return the {@link IRecipeWrapper} for this recipe.
+	 * @return the {@link IBrewingRecipeWrapper} for this recipe.
 	 */
-	IRecipeWrapper createBrewingRecipe(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput);
+	IBrewingRecipeWrapper createBrewingRecipe(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput);
 }

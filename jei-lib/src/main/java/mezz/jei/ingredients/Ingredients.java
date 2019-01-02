@@ -6,9 +6,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-import mezz.jei.Internal;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IIngredientType;
 
@@ -23,24 +20,15 @@ public class Ingredients implements IIngredients {
 
 	@Override
 	public <T> void setInputLists(IIngredientType<T> ingredientType, List<List<T>> inputs) {
-		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
-		List<List> expandedInputs = new ArrayList<>();
-		for (List<T> input : inputs) {
-			List<T> itemStacks = ingredientHelper.expandSubtypes(input);
-			expandedInputs.add(itemStacks);
-		}
-
+		List<List> expandedInputs = new ArrayList<>(inputs);
 		this.inputs.put(ingredientType, expandedInputs);
 	}
 
 	@Override
 	public <T> void setInputs(IIngredientType<T> ingredientType, List<T> inputs) {
-		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
 		List<List> expandedInputs = new ArrayList<>();
 		for (T input : inputs) {
-			List<T> expandedInput = ingredientHelper.expandSubtypes(Collections.singletonList(input));
+			List<T> expandedInput = Collections.singletonList(input);
 			expandedInputs.add(expandedInput);
 		}
 		this.inputs.put(ingredientType, expandedInputs);
@@ -53,11 +41,9 @@ public class Ingredients implements IIngredients {
 
 	@Override
 	public <T> void setOutputs(IIngredientType<T> ingredientType, List<T> outputs) {
-		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
 		List<List> expandedOutputs = new ArrayList<>();
 		for (T output : outputs) {
-			List<T> expandedOutput = ingredientHelper.expandSubtypes(Collections.singletonList(output));
+			List<T> expandedOutput = Collections.singletonList(output);
 			expandedOutputs.add(expandedOutput);
 		}
 
@@ -66,14 +52,7 @@ public class Ingredients implements IIngredients {
 
 	@Override
 	public <T> void setOutputLists(IIngredientType<T> ingredientType, List<List<T>> outputs) {
-		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
-		List<List> expandedOutputs = new ArrayList<>();
-		for (List<T> output : outputs) {
-			List<T> itemStacks = ingredientHelper.expandSubtypes(output);
-			expandedOutputs.add(itemStacks);
-		}
-
+		List<List> expandedOutputs = new ArrayList<>(outputs);
 		this.outputs.put(ingredientType, expandedOutputs);
 	}
 

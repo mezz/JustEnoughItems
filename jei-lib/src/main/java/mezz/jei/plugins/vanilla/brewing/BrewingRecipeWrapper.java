@@ -15,24 +15,24 @@ import net.minecraft.util.ResourceLocation;
 import com.google.common.base.Objects;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.IBrewingRecipeWrapper;
 import mezz.jei.util.Translator;
 
-public class BrewingRecipeWrapper implements IRecipeWrapper {
-	private static final BrewingRecipeUtil UTIL = new BrewingRecipeUtil();
-
+public class BrewingRecipeWrapper implements IBrewingRecipeWrapper {
 	private final List<ItemStack> ingredients;
 	private final ItemStack potionInput;
 	private final ItemStack potionOutput;
+	private final BrewingRecipeUtil brewingRecipeUtil;
 	private final List<List<ItemStack>> inputs;
 	private final int hashCode;
 
-	public BrewingRecipeWrapper(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput) {
+	public BrewingRecipeWrapper(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput, BrewingRecipeUtil brewingRecipeUtil) {
 		this.ingredients = ingredients;
 		this.potionInput = potionInput;
 		this.potionOutput = potionOutput;
+		this.brewingRecipeUtil = brewingRecipeUtil;
 
-		UTIL.addRecipe(potionInput, potionOutput);
+		brewingRecipeUtil.addRecipe(potionInput, potionOutput);
 
 		this.inputs = new ArrayList<>();
 		this.inputs.add(Collections.singletonList(potionInput));
@@ -103,13 +103,14 @@ public class BrewingRecipeWrapper implements IRecipeWrapper {
 		}
 		PotionType type1 = PotionUtils.getPotionFromItem(potion1);
 		PotionType type2 = PotionUtils.getPotionFromItem(potion2);
-		ResourceLocation key1 = ForgeRegistries.POTION_TYPES.getKey(type1);
-		ResourceLocation key2 = ForgeRegistries.POTION_TYPES.getKey(type2);
+		ResourceLocation key1 = type1.getRegistryName();
+		ResourceLocation key2 = type2.getRegistryName();
 		return java.util.Objects.equals(key1, key2);
 	}
 
+	@Override
 	public int getBrewingSteps() {
-		return UTIL.getBrewingSteps(potionOutput);
+		return brewingRecipeUtil.getBrewingSteps(potionOutput);
 	}
 
 	@Override

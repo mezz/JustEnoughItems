@@ -80,15 +80,10 @@ public class AnvilRecipeWrapper implements IRecipeWrapper {
 		int x = recipeWidth - 2 - width;
 		int y = 27;
 
-		// TODO 1.13 is this still needed?
-//		if (minecraft.fontRenderer.getUnicodeFlag()) {
-//			Gui.drawRect(x - 2, y - 2, x + width + 2, y + 10, 0xFF000000);
-//			Gui.drawRect(x - 1, y - 1, x + width + 1, y + 9, 0xFF3B3B3B);
-//		} else {
+		// TODO 1.13 match the new GuiRepair style
 		minecraft.fontRenderer.drawString(text, x + 1, y, shadowColor);
 		minecraft.fontRenderer.drawString(text, x, y + 1, shadowColor);
 		minecraft.fontRenderer.drawString(text, x + 1, y + 1, shadowColor);
-//		}
 
 		minecraft.fontRenderer.drawString(text, x, y, mainColor);
 	}

@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import net.minecraft.util.ResourceLocation;
+
 import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -124,10 +126,10 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	}
 
 	@Override
-	public Collection<String> getOreDictStrings() {
-		Collection<String> oreDictNames = ingredientHelper.getOreDictNames(ingredient);
-		return oreDictNames.stream()
-			.map(s -> s.toLowerCase(Locale.ENGLISH))
+	public Collection<String> getTagStrings() {
+		Collection<ResourceLocation> tags = ingredientHelper.getTags(ingredient);
+		return tags.stream()
+			.map(ResourceLocation::getPath)
 			.collect(Collectors.toList());
 	}
 

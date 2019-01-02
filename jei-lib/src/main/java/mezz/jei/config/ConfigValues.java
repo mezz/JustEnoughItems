@@ -14,7 +14,7 @@ public class ConfigValues {
 	// search
 	public SearchMode modNameSearchMode = SearchMode.REQUIRE_PREFIX;
 	public SearchMode tooltipSearchMode = SearchMode.ENABLED;
-	public SearchMode oreDictSearchMode = SearchMode.DISABLED;
+	public SearchMode tagSearchMode = SearchMode.DISABLED;
 	public SearchMode creativeTabSearchMode = SearchMode.DISABLED;
 	public SearchMode colorSearchMode = SearchMode.DISABLED;
 	public SearchMode resourceIdSearchMode = SearchMode.DISABLED;

@@ -7,13 +7,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagCollection;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.Internal;
@@ -29,11 +36,12 @@ import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.render.IngredientRenderHelper;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
-	private static final String oreDictionaryIngredient = Translator.translateToLocal("jei.tooltip.recipe.ore.dict");
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final int slotIndex;
 	private final boolean input;
@@ -102,7 +110,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		if (ingredients == null) {
 			displayIngredients = Collections.emptyList();
 		} else {
-			displayIngredients = this.ingredientHelper.expandSubtypes(ingredients);
+			displayIngredients = ingredients;
 		}
 
 		T match = getMatch(displayIngredients, focus);
@@ -215,20 +223,38 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 			if (value instanceof ItemStack) {
 				//noinspection unchecked
 				Collection<ItemStack> itemStacks = (Collection<ItemStack>) this.allIngredients;
-				String oreDictEquivalent = Internal.getStackHelper().getOreDictEquivalent(itemStacks);
-				if (oreDictEquivalent != null) {
-					final String acceptsAny = String.format(oreDictionaryIngredient, oreDictEquivalent);
+				ResourceLocation tagEquivalent = getTagEquivalent(itemStacks);
+				if (tagEquivalent != null) {
+					final String acceptsAny = Translator.translateToLocalFormatted("jei.tooltip.recipe.tag", tagEquivalent);
 					tooltip.add(TextFormatting.GRAY + acceptsAny);
 				}
-				TooltipRenderer.drawHoveringText((ItemStack) value, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
-			} else {
-				TooltipRenderer.drawHoveringText(tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
 			}
+			TooltipRenderer.drawHoveringText(value, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
 
 			GlStateManager.enableDepthTest();
 		} catch (RuntimeException e) {
-			Log.get().error("Exception when rendering tooltip on {}.", value, e);
+			LOGGER.error("Exception when rendering tooltip on {}.", value, e);
 		}
+	}
+
+	@Nullable
+	private static ResourceLocation getTagEquivalent(Collection<ItemStack> itemStacks) {
+		if (itemStacks.size() < 2) {
+			return null;
+		}
+
+		Set<Item> items = itemStacks.stream()
+			.map(ItemStack::getItem)
+			.collect(Collectors.toSet());
+
+		TagCollection<Item> collection = ItemTags.getCollection();
+		Collection<Tag<Item>> tags = collection.getTagMap().values();
+		for (Tag<Item> tag : tags) {
+			if (tag.getAllElements().equals(items)) {
+				return tag.getId();
+			}
+		}
+		return null;
 	}
 
 	@Override

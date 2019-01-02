@@ -25,7 +25,7 @@ public interface IIngredientListElement<V> {
 
 	List<String> getTooltipStrings(IIngredientFilterConfig config);
 
-	Collection<String> getOreDictStrings();
+	Collection<String> getTagStrings();
 
 	Collection<String> getCreativeTabsStrings();
 

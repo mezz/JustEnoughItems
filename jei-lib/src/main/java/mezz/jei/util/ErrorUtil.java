@@ -16,6 +16,7 @@ import net.minecraft.crash.ReportedException;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
@@ -107,7 +108,7 @@ public final class ErrorUtil {
 		}
 	}
 
-	public static <T> String getInfoFromBrokenCraftingRecipe(T recipe, List inputs, ItemStack output, IStackHelper stackHelper) {
+	public static <T> String getInfoFromBrokenCraftingRecipe(T recipe, NonNullList<Ingredient> inputs, ItemStack output, IStackHelper stackHelper) {
 		StringBuilder recipeInfoBuilder = new StringBuilder();
 		String recipeName = getNameForRecipe(recipe);
 		recipeInfoBuilder.append(recipeName);
@@ -118,7 +119,7 @@ public final class ErrorUtil {
 		recipeInfoBuilder.append('\n').append(ItemStack.class.getName()).append(": ").append(ingredientOutputInfo);
 
 		recipeInfoBuilder.append("\nInputs:");
-		List<List<ItemStack>> inputLists = stackHelper.expandRecipeItemStackInputs(inputs);
+		List<List<ItemStack>> inputLists = stackHelper.expandRecipeIngredients(inputs);
 		List<String> ingredientInputInfo = getIngredientInfo(VanillaTypes.ITEM, inputLists);
 		recipeInfoBuilder.append('\n').append(ItemStack.class.getName()).append(": ").append(ingredientInputInfo);
 

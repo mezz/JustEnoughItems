@@ -4,14 +4,14 @@ import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagCollection;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -25,11 +25,6 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	public ItemStackHelper(StackHelper stackHelper) {
 		this.stackHelper = stackHelper;
-	}
-
-	@Override
-	public List<ItemStack> expandSubtypes(List<ItemStack> contained) {
-		return stackHelper.getAllSubtypes(contained);
 	}
 
 	@Override
@@ -52,7 +47,12 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	@Nullable
 	public ItemStack getMatch(Iterable<ItemStack> ingredients, ItemStack toMatch) {
-		return stackHelper.containsAnyStack(ingredients, Collections.singletonList(toMatch));
+		for (ItemStack stack : ingredients) {
+			if (stackHelper.isEquivalent(toMatch, stack)) {
+				return stack;
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -147,9 +147,9 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
-	public Collection<String> getOreDictNames(ItemStack ingredient) {
-		// TODO 1.13 tags
-		return Collections.emptySet();
+	public Collection<ResourceLocation> getTags(ItemStack ingredient) {
+		TagCollection<Item> collection = ItemTags.getCollection();
+		return collection.getOwningTags(ingredient.getItem());
 	}
 
 	@Override

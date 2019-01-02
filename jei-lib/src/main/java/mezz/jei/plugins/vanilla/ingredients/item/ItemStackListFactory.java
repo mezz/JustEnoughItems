@@ -59,7 +59,7 @@ public final class ItemStackListFactory {
 
 		try {
 			addFallbackSubtypeInterpreter(stack);
-			itemKey = stackHelper.getUniqueIdentifierForStack(stack, StackHelper.UidMode.FULL);
+			itemKey = stackHelper.getUniqueIdentifierForStack(stack);
 		} catch (RuntimeException | LinkageError e) {
 			String stackInfo = ErrorUtil.getItemStackInfo(stack);
 			LOGGER.error("Couldn't get unique name for itemStack {}", stackInfo, e);

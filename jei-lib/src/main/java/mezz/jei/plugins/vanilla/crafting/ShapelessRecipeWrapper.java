@@ -30,7 +30,7 @@ public class ShapelessRecipeWrapper<T extends IRecipe> implements ICraftingRecip
 		IStackHelper stackHelper = jeiHelpers.getStackHelper();
 
 		try {
-			List<List<ItemStack>> inputLists = stackHelper.expandRecipeItemStackInputs(recipe.getIngredients());
+			List<List<ItemStack>> inputLists = stackHelper.expandRecipeIngredients(recipe.getIngredients());
 			ingredients.setInputLists(VanillaTypes.ITEM, inputLists);
 			ingredients.setOutput(VanillaTypes.ITEM, recipeOutput);
 		} catch (RuntimeException e) {

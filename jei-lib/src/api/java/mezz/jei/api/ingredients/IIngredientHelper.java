@@ -4,9 +4,9 @@ import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IIngredientType;
@@ -21,17 +21,6 @@ import mezz.jei.api.recipe.IIngredientType;
  * @since JEI 3.11.0
  */
 public interface IIngredientHelper<V> {
-	/**
-	 * Expands any wildcard ingredients into all its subtypes.
-	 * Ingredients like FluidStack that have no wildcard ingredients should simply return the collection without editing it.
-	 *
-	 * @since JEI 3.11.0
-	 * Has a default implementation since JEI 4.14.2
-	 */
-	default List<V> expandSubtypes(List<V> ingredients) {
-		return ingredients;
-	}
-
 	/**
 	 * Change one focus into a different focus.
 	 * This can be used to treat lookups of one focus as if it were something else.
@@ -169,12 +158,10 @@ public interface IIngredientHelper<V> {
 	}
 
 	/**
-	 * Get a list of ore dictionary names that include this ingredient.
-	 * Used for searching by ore dictionary name.
-	 *
-	 * @since JEI 4.14.2
+	 * Get a list of tags that include this ingredient.
+	 * Used for searching by tags.
 	 */
-	default Collection<String> getOreDictNames(V ingredient) {
+	default Collection<ResourceLocation> getTags(V ingredient) {
 		return Collections.emptyList();
 	}
 

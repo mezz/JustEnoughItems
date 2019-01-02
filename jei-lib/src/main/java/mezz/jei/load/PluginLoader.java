@@ -42,7 +42,6 @@ public class PluginLoader {
 	private final ClientConfig config;
 	private final IHideModeConfig hideModeConfig;
 	private final JeiHelpers jeiHelpers;
-	private final StackHelper stackHelper;
 	@Nullable
 	private RecipeRegistry recipeRegistry;
 	@Nullable
@@ -62,8 +61,7 @@ public class PluginLoader {
 		SubtypeRegistry subtypeRegistry = new SubtypeRegistry();
 		registerItemSubtypes(plugins, subtypeRegistry);
 
-		stackHelper = new StackHelper(subtypeRegistry);
-		stackHelper.enableUidCache();
+		StackHelper stackHelper = new StackHelper(subtypeRegistry);
 		Internal.setStackHelper(stackHelper);
 
 		ModIngredientRegistration modIngredientRegistry = registerIngredients(plugins);
@@ -82,10 +80,6 @@ public class PluginLoader {
 		timer.start("Registering mod plugins");
 		registerPlugins(plugins, modRegistry);
 		timer.stop();
-	}
-
-	public StackHelper getStackHelper() {
-		return stackHelper;
 	}
 
 	public ModRegistry getModRegistry() {

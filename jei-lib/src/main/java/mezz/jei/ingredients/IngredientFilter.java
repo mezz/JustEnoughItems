@@ -63,7 +63,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		this.searchTree = new GeneralizedSuffixTree();
 		createPrefixedSearchTree('@', config::getModNameSearchMode, IIngredientListElement::getModNameStrings);
 		createPrefixedSearchTree('#', config::getTooltipSearchMode, (e) -> e.getTooltipStrings(config));
-		createPrefixedSearchTree('$', config::getOreDictSearchMode, IIngredientListElement::getOreDictStrings);
+		createPrefixedSearchTree('$', config::getTagSearchMode, IIngredientListElement::getTagStrings);
 		createPrefixedSearchTree('%', config::getCreativeTabSearchMode, IIngredientListElement::getCreativeTabsStrings);
 		createPrefixedSearchTree('^', config::getColorSearchMode, IIngredientListElement::getColorStrings);
 		createPrefixedSearchTree('&', config::getResourceIdSearchMode, element -> Collections.singleton(element.getResourceId()));

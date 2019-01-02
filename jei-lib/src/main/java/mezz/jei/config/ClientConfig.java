@@ -232,8 +232,8 @@ public final class ClientConfig implements IIngredientFilterConfig, IFilterTextS
 	}
 
 	@Override
-	public SearchMode getOreDictSearchMode() {
-		return values.oreDictSearchMode;
+	public SearchMode getTagSearchMode() {
+		return values.tagSearchMode;
 	}
 
 	@Override
@@ -333,7 +333,7 @@ public final class ClientConfig implements IIngredientFilterConfig, IFilterTextS
 
 		values.modNameSearchMode = config.getEnum("modNameSearchMode", CATEGORY_SEARCH, defaultValues.modNameSearchMode, searchModes);
 		values.tooltipSearchMode = config.getEnum("tooltipSearchMode", CATEGORY_SEARCH, defaultValues.tooltipSearchMode, searchModes);
-		values.oreDictSearchMode = config.getEnum("oreDictSearchMode", CATEGORY_SEARCH, defaultValues.oreDictSearchMode, searchModes);
+		values.tagSearchMode = config.getEnum("tagSearchMode", CATEGORY_SEARCH, defaultValues.tagSearchMode, searchModes);
 		values.creativeTabSearchMode = config.getEnum("creativeTabSearchMode", CATEGORY_SEARCH, defaultValues.creativeTabSearchMode, searchModes);
 		values.colorSearchMode = config.getEnum("colorSearchMode", CATEGORY_SEARCH, defaultValues.colorSearchMode, searchModes);
 		values.resourceIdSearchMode = config.getEnum("resourceIdSearchMode", CATEGORY_SEARCH, defaultValues.resourceIdSearchMode, searchModes);

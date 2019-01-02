@@ -39,7 +39,6 @@ import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.LoggedTimer;
-import mezz.jei.util.StackHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -60,7 +59,6 @@ public class JeiStarter {
 		JeiHelpers jeiHelpers = pluginLoader.getJeiHelpers();
 		BookmarkList bookmarkList = pluginLoader.getBookmarkList();
 		RecipeRegistry recipeRegistry = pluginLoader.getRecipeRegistry();
-		StackHelper stackHelper = pluginLoader.getStackHelper();
 
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building runtime");
@@ -79,8 +77,6 @@ public class JeiStarter {
 		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, ingredientListOverlay, recipesGui, ingredientFilterApi);
 		Internal.setRuntime(jeiRuntime);
 		timer.stop();
-
-		stackHelper.disableUidCache();
 
 		sendRuntime(plugins, jeiRuntime);
 

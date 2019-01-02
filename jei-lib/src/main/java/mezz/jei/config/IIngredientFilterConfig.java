@@ -5,7 +5,7 @@ public interface IIngredientFilterConfig {
 
 	SearchMode getTooltipSearchMode();
 
-	SearchMode getOreDictSearchMode();
+	SearchMode getTagSearchMode();
 
 	SearchMode getCreativeTabSearchMode();
 

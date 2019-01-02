@@ -15,7 +15,7 @@ public class TestIngredientFilterConfig implements IIngredientFilterConfig {
 	}
 
 	@Override
-	public SearchMode getOreDictSearchMode() {
+	public SearchMode getTagSearchMode() {
 		return SearchMode.ENABLED;
 	}
 

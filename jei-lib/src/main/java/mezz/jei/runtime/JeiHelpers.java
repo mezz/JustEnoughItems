@@ -18,7 +18,7 @@ public class JeiHelpers implements IJeiHelpers {
 	private final IModIdHelper modIdHelper;
 	private final IngredientBlacklist ingredientBlacklist;
 	private final RecipeTransferHandlerHelper recipeTransferHandlerHelper;
-	private final IVanillaRecipeFactory vanillaRecipeFactory = new VanillaRecipeFactory();
+	private final IVanillaRecipeFactory vanillaRecipeFactory;
 
 	public JeiHelpers(
 		IIngredientRegistry ingredientRegistry,
@@ -32,6 +32,7 @@ public class JeiHelpers implements IJeiHelpers {
 		this.modIdHelper = modIdHelper;
 		this.ingredientBlacklist = new IngredientBlacklist(ingredientRegistry, ingredientBlacklistInternal, hideModeConfig);
 		this.recipeTransferHandlerHelper = new RecipeTransferHandlerHelper();
+		this.vanillaRecipeFactory = new VanillaRecipeFactory(ingredientRegistry);
 	}
 
 	@Override
