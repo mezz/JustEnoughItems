@@ -7,27 +7,18 @@ import java.util.Map;
 
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.EnchantmentData;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.Config;
-import mezz.jei.config.Constants;
+import mezz.jei.config.ModIdFormattingConfig;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class ForgeModIdHelper extends AbstractModIdHelper {
-	private static final Logger LOGGER = LogManager.getLogger();
-
-	private static final String MOD_NAME_FORMAT_CODE = "%MODNAME%";
+	private static final String MOD_NAME_FORMAT_CODE = ModIdFormattingConfig.MOD_NAME_FORMAT_CODE;
 	@Nullable
 	private static ForgeModIdHelper INSTANCE;
 
@@ -75,33 +66,7 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 	@Nullable
 	@Override
 	public String getModNameTooltipFormatting() {
-		try {
-			ItemStack itemStack = new ItemStack(Items.APPLE);
-			EntityPlayerSP player = Minecraft.getMinecraft().player;
-			List<String> tooltip = new ArrayList<>();
-			tooltip.add("JEI Tooltip Testing for mod name formatting");
-			ItemTooltipEvent tooltipEvent = ForgeEventFactory.onItemTooltip(itemStack, player, tooltip, ITooltipFlag.TooltipFlags.NORMAL);
-			tooltip = tooltipEvent.getToolTip();
-
-			if (tooltip.size() > 1) {
-				for (int lineNum = 1; lineNum < tooltip.size(); lineNum++) {
-					String line = tooltip.get(lineNum);
-					if (line.contains(Constants.MINECRAFT_NAME)) {
-						String withoutFormatting = TextFormatting.getTextWithoutFormattingCodes(line);
-						if (withoutFormatting != null) {
-							if (line.equals(withoutFormatting)) {
-								return "";
-							} else if (line.contains(withoutFormatting)) {
-								return StringUtils.replaceOnce(line, Constants.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
-							}
-						}
-					}
-				}
-			}
-		} catch (LinkageError | RuntimeException e) {
-			LOGGER.error("Error while Testing for mod name formatting", e);
-		}
-		return null;
+		return ModIdFormattingConfig.detectModNameTooltipFormatting();
 	}
 
 	@Override

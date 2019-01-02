@@ -4,10 +4,8 @@ import javax.annotation.Nullable;
 import java.awt.Color;
 import java.io.File;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -18,7 +16,6 @@ import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.util.text.TextFormatting;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -34,7 +31,6 @@ import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
 import mezz.jei.startup.ForgeModIdHelper;
-import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.GiveMode;
 import mezz.jei.util.Translator;
 import org.apache.logging.log4j.LogManager;
@@ -49,7 +45,7 @@ public final class Config {
 	public static final String CATEGORY_ADVANCED = "advanced";
 	public static final String CATEGORY_SEARCH_COLORS = "searchColors";
 
-	public static final String defaultModNameFormatFriendly = "blue italic";
+	public static final String defaultModNameFormatFriendly = ModIdFormattingConfig.defaultModNameFormatFriendly;
 	public static final int smallestNumColumns = 2;
 	public static final int largestNumColumns = 100;
 	public static final int minRecipeGuiHeight = 175;
@@ -68,8 +64,7 @@ public final class Config {
 
 	private static final ConfigValues defaultValues = new ConfigValues();
 	private static final ConfigValues values = new ConfigValues();
-	@Nullable
-	private static String modNameFormatOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
+	private static final ModIdFormattingConfig modIdFormattingConfig = new ModIdFormattingConfig();
 
 	// item blacklist
 	private static final Set<String> itemBlacklist = new HashSet<>();
@@ -212,23 +207,15 @@ public final class Config {
 	}
 
 	public static String getModNameFormat() {
-		String override = Config.modNameFormatOverride;
-		if (override != null) {
-			return override;
-		}
-		return values.modNameFormat;
+		return modIdFormattingConfig.getModNameFormat();
 	}
 
 	public static boolean isModNameFormatOverrideActive() {
-		return Config.modNameFormatOverride != null;
+		return modIdFormattingConfig.isModNameFormatOverrideActive();
 	}
 
 	public static void checkForModNameFormatOverride() {
-		IModIdHelper modIdHelper = ForgeModIdHelper.getInstance();
-		Config.modNameFormatOverride = modIdHelper.getModNameTooltipFormatting();
-		if (config != null) {
-			updateModNameFormat(config);
-		}
+		modIdFormattingConfig.checkForModNameFormatOverride();
 	}
 
 	public static boolean isHideIngredientsWhenNotSearchingEnabled() {
@@ -466,7 +453,7 @@ public final class Config {
 
 		values.maxRecipeGuiHeight = config.getInt("maxRecipeGuiHeight", CATEGORY_ADVANCED, defaultValues.maxRecipeGuiHeight, minRecipeGuiHeight, maxRecipeGuiHeight);
 
-		updateModNameFormat(config);
+		modIdFormattingConfig.sync(config);
 
 		{
 			Property property = config.get(CATEGORY_ADVANCED, "debugModeEnabled", defaultValues.debugModeEnabled);
@@ -502,37 +489,8 @@ public final class Config {
 		}
 	}
 
-	private static void updateModNameFormat(LocalizedConfiguration config) {
-		EnumSet<TextFormatting> validFormatting = EnumSet.allOf(TextFormatting.class);
-		validFormatting.remove(TextFormatting.RESET);
-		String[] validValues = new String[validFormatting.size()];
-		int i = 0;
-		for (TextFormatting formatting : validFormatting) {
-			validValues[i] = formatting.getFriendlyName().toLowerCase(Locale.ENGLISH);
-			i++;
-		}
-		Property property = config.getString("modNameFormat", CATEGORY_ADVANCED, defaultModNameFormatFriendly, validValues);
-		boolean showInGui = !isModNameFormatOverrideActive();
-		property.setShowInGui(showInGui);
-		String modNameFormatFriendly = property.getString();
-		values.modNameFormat = parseFriendlyModNameFormat(modNameFormatFriendly);
-	}
-
 	public static String parseFriendlyModNameFormat(String formatWithEnumNames) {
-		if (formatWithEnumNames.isEmpty()) {
-			return "";
-		}
-		StringBuilder format = new StringBuilder();
-		String[] strings = formatWithEnumNames.split(" ");
-		for (String string : strings) {
-			TextFormatting valueByName = TextFormatting.getValueByName(string);
-			if (valueByName != null) {
-				format.append(valueByName.toString());
-			} else {
-				LOGGER.error("Invalid format: {}", string);
-			}
-		}
-		return format.toString();
+		return ModIdFormattingConfig.parseFriendlyModNameFormat(formatWithEnumNames);
 	}
 
 	private static boolean syncItemBlacklistConfig() {
