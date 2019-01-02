@@ -2,7 +2,7 @@ package mezz.jei.config;
 
 import mezz.jei.util.GiveMode;
 
-public class ConfigValues {
+public class ConfigValues extends IngredientFilterConfigValues {
 	// advanced
 	public boolean debugModeEnabled = false;
 	public boolean centerSearchBarEnabled = false;
@@ -13,15 +13,6 @@ public class ConfigValues {
 	public String modNameFormat = ModIdFormattingConfig.parseFriendlyModNameFormat(ModIdFormattingConfig.defaultModNameFormatFriendly);
 	public int maxColumns = 9;
 	public int maxRecipeGuiHeight = 350;
-
-	// search
-	public Config.SearchMode modNameSearchMode = Config.SearchMode.REQUIRE_PREFIX;
-	public Config.SearchMode tooltipSearchMode = Config.SearchMode.ENABLED;
-	public Config.SearchMode oreDictSearchMode = Config.SearchMode.DISABLED;
-	public Config.SearchMode creativeTabSearchMode = Config.SearchMode.DISABLED;
-	public Config.SearchMode colorSearchMode = Config.SearchMode.DISABLED;
-	public Config.SearchMode resourceIdSearchMode = Config.SearchMode.DISABLED;
-	public boolean searchAdvancedTooltips = false;
 
 	// per-world
 	public boolean overlayEnabled = true;

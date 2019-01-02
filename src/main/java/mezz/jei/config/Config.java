@@ -11,7 +11,6 @@ import java.util.Set;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -20,7 +19,6 @@ import net.minecraft.network.NetworkManager;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
-import mezz.jei.JustEnoughItems;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IIngredientType;
@@ -29,7 +27,6 @@ import mezz.jei.color.ColorNamer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientListElementFactory;
-import mezz.jei.network.packets.PacketRequestCheatPermission;
 import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.util.GiveMode;
 import mezz.jei.util.Translator;
@@ -53,8 +50,7 @@ public final class Config {
 
 	@Nullable
 	private static LocalizedConfiguration config;
-	@Nullable
-	private static Configuration worldConfig;
+	private static final WorldConfig worldConfigState = new WorldConfig();
 	@Nullable
 	private static LocalizedConfiguration itemBlacklistConfig;
 	@Nullable
@@ -70,9 +66,8 @@ public final class Config {
 	private static final Set<String> itemBlacklist = new HashSet<>();
 	private static final String[] defaultItemBlacklist = new String[]{};
 
-	private static final IngredientFilterConfig ingredientFilterConfig = new IngredientFilterConfig(values);
-	private static final HideModeConfig hideModeConfig = new HideModeConfig(values, itemBlacklist);
-	private static final FilterTextSource filterTextSource = new FilterTextSource(values);
+	private static final IngredientFilterConfig ingredientFilterConfig = new IngredientFilterConfig(new IngredientFilterConfigValues());
+	private static final HideModeConfig hideModeConfig = new HideModeConfig(worldConfigState::isEditModeEnabled, itemBlacklist);
 
 	private Config() {
 
@@ -87,99 +82,43 @@ public final class Config {
 	}
 
 	public static IFilterTextSource getFilterTextSource() {
-		return filterTextSource;
+		return worldConfigState;
 	}
 
 	public static boolean isOverlayEnabled() {
-		return values.overlayEnabled ||
-			KeyBindings.toggleOverlay.getKeyCode() == 0; // if there is no key binding to enable it, don't allow the overlay to be disabled
+		return worldConfigState.isOverlayEnabled();
 	}
 
 	public static void toggleOverlayEnabled() {
-		values.overlayEnabled = !values.overlayEnabled;
-
-		if (worldConfig != null) {
-			NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
-			final String worldCategory = ServerInfo.getWorldUid(networkManager);
-			Property property = worldConfig.get(worldCategory, "overlayEnabled", defaultValues.overlayEnabled);
-			property.set(values.overlayEnabled);
-
-			if (worldConfig.hasChanged()) {
-				worldConfig.save();
-			}
-		}
-
-		MinecraftForge.EVENT_BUS.post(new OverlayToggleEvent(values.overlayEnabled));
+		worldConfigState.toggleOverlayEnabled();
 	}
 
 	public static boolean isBookmarkOverlayEnabled() {
-		return isOverlayEnabled() && values.bookmarkOverlayEnabled;
+		return worldConfigState.isBookmarkOverlayEnabled();
 	}
 
 	public static void toggleBookmarkEnabled() {
-		values.bookmarkOverlayEnabled = !values.bookmarkOverlayEnabled;
-
-		if (worldConfig != null) {
-			NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
-			final String worldCategory = ServerInfo.getWorldUid(networkManager);
-			Property property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);
-			property.set(values.bookmarkOverlayEnabled);
-
-			if (worldConfig.hasChanged()) {
-				worldConfig.save();
-			}
-		}
-
-		MinecraftForge.EVENT_BUS.post(new BookmarkOverlayToggleEvent(values.bookmarkOverlayEnabled));
+		worldConfigState.toggleBookmarkEnabled();
 	}
 
 	public static boolean isCheatItemsEnabled() {
-		return values.cheatItemsEnabled;
+		return worldConfigState.isCheatItemsEnabled();
 	}
 
 	public static void toggleCheatItemsEnabled() {
-		setCheatItemsEnabled(!values.cheatItemsEnabled);
+		worldConfigState.toggleCheatItemsEnabled();
 	}
 
 	public static void setCheatItemsEnabled(boolean value) {
-		if (values.cheatItemsEnabled != value) {
-			values.cheatItemsEnabled = value;
-
-			if (worldConfig != null) {
-				NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
-				final String worldCategory = ServerInfo.getWorldUid(networkManager);
-				Property property = worldConfig.get(worldCategory, "cheatItemsEnabled", defaultValues.cheatItemsEnabled);
-				property.set(values.cheatItemsEnabled);
-
-				if (worldConfig.hasChanged()) {
-					worldConfig.save();
-				}
-			}
-
-			if (values.cheatItemsEnabled && ServerInfo.isJeiOnServer()) {
-				JustEnoughItems.getProxy().sendPacketToServer(new PacketRequestCheatPermission());
-			}
-		}
+		worldConfigState.setCheatItemsEnabled(value);
 	}
 
 	public static boolean isEditModeEnabled() {
-		return values.editModeEnabled;
+		return worldConfigState.isEditModeEnabled();
 	}
 
 	public static void toggleEditModeEnabled() {
-		values.editModeEnabled = !values.editModeEnabled;
-		if (worldConfig != null) {
-			NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
-			final String worldCategory = ServerInfo.getWorldUid(networkManager);
-			Property property = worldConfig.get(worldCategory, "editEnabled", defaultValues.editModeEnabled);
-			property.set(values.editModeEnabled);
-
-			if (worldConfig.hasChanged()) {
-				worldConfig.save();
-			}
-		}
-
-		MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.editModeEnabled));
+		worldConfigState.toggleEditModeEnabled();
 	}
 
 	public static boolean isDebugModeEnabled() {
@@ -187,7 +126,7 @@ public final class Config {
 	}
 
 	public static boolean isDeleteItemsInCheatModeActive() {
-		return values.cheatItemsEnabled && ServerInfo.isJeiOnServer();
+		return worldConfigState.isDeleteItemsInCheatModeActive();
 	}
 
 	public static boolean isCenterSearchBarEnabled() {
@@ -240,31 +179,31 @@ public final class Config {
 	}
 
 	public static SearchMode getModNameSearchMode() {
-		return values.modNameSearchMode;
+		return SearchMode.valueOf(ingredientFilterConfig.getModNameSearchMode().name());
 	}
 
 	public static SearchMode getTooltipSearchMode() {
-		return values.tooltipSearchMode;
+		return SearchMode.valueOf(ingredientFilterConfig.getTooltipSearchMode().name());
 	}
 
 	public static SearchMode getOreDictSearchMode() {
-		return values.oreDictSearchMode;
+		return SearchMode.valueOf(ingredientFilterConfig.getOreDictSearchMode().name());
 	}
 
 	public static SearchMode getCreativeTabSearchMode() {
-		return values.creativeTabSearchMode;
+		return SearchMode.valueOf(ingredientFilterConfig.getCreativeTabSearchMode().name());
 	}
 
 	public static SearchMode getColorSearchMode() {
-		return values.colorSearchMode;
+		return SearchMode.valueOf(ingredientFilterConfig.getColorSearchMode().name());
 	}
 
 	public static SearchMode getResourceIdSearchMode() {
-		return values.resourceIdSearchMode;
+		return SearchMode.valueOf(ingredientFilterConfig.getResourceIdSearchMode().name());
 	}
 
 	public static boolean getSearchAdvancedTooltips() {
-		return values.searchAdvancedTooltips;
+		return ingredientFilterConfig.getSearchAdvancedTooltips();
 	}
 
 	public enum SearchMode {
@@ -272,29 +211,15 @@ public final class Config {
 	}
 
 	public static boolean setFilterText(String filterText) {
-		if (values.filterText.equals(filterText)) {
-			return false;
-		} else {
-			values.filterText = filterText;
-			return true;
-		}
+		return worldConfigState.setFilterText(filterText);
 	}
 
 	public static String getFilterText() {
-		return values.filterText;
+		return worldConfigState.getFilterText();
 	}
 
 	public static void saveFilterText() {
-		if (worldConfig != null) {
-			NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
-			final String worldCategory = ServerInfo.getWorldUid(networkManager);
-			Property property = worldConfig.get(worldCategory, "filterText", defaultValues.filterText);
-			property.set(values.filterText);
-
-			if (worldConfig.hasChanged()) {
-				worldConfig.save();
-			}
-		}
+		worldConfigState.saveFilterText();
 	}
 
 	@Nullable
@@ -304,7 +229,7 @@ public final class Config {
 
 	@Nullable
 	public static Configuration getWorldConfig() {
-		return worldConfig;
+		return worldConfigState.getConfig();
 	}
 
 	@Nullable
@@ -346,7 +271,7 @@ public final class Config {
 		final File itemBlacklistConfigFile = new File(jeiConfigurationDir, "itemBlacklist.cfg");
 		final File searchColorsConfigFile = new File(jeiConfigurationDir, "searchColors.cfg");
 		final File worldConfigFile = new File(jeiConfigurationDir, "worldSettings.cfg");
-		worldConfig = new Configuration(worldConfigFile, "0.1.0");
+		worldConfigState.setConfiguration(new Configuration(worldConfigFile, "0.1.0"));
 		config = new LocalizedConfiguration(configKeyPrefix, configFile, "0.4.0");
 		itemBlacklistConfig = new LocalizedConfiguration(configKeyPrefix, itemBlacklistConfigFile, "0.1.0");
 		searchColorsConfig = new LocalizedConfiguration(configKeyPrefix, searchColorsConfigFile, "0.1.0");
@@ -384,9 +309,7 @@ public final class Config {
 		}
 		boolean needsReload = false;
 
-		config.addCategory(CATEGORY_SEARCH);
 		config.addCategory(CATEGORY_ADVANCED);
-		migrateSearchAdvancedTooltipsConfig(config);
 
 		ConfigCategory modeCategory = config.getCategory("mode");
 		if (modeCategory != null) {
@@ -403,33 +326,7 @@ public final class Config {
 			config.removeCategory(interfaceCategory);
 		}
 
-		ConfigCategory searchCategory = config.getCategory(CATEGORY_SEARCH);
-		searchCategory.remove("atPrefixRequiredForModName");
-		searchCategory.remove("prefixRequiredForTooltipSearch");
-		searchCategory.remove("prefixRequiredForOreDictSearch");
-		searchCategory.remove("prefixRequiredForCreativeTabSearch");
-		searchCategory.remove("prefixRequiredForColorSearch");
-
-		SearchMode[] searchModes = SearchMode.values();
-
-		String loadedConfigVersion = config.getLoadedConfigVersion();
-		// set new defaults moving to config version 0.3.0
-		if (loadedConfigVersion != null && versionCompare(loadedConfigVersion, "0.3.0") < 0) {
-			config.setEnum("creativeTabSearchMode", CATEGORY_SEARCH, defaultValues.creativeTabSearchMode, searchModes);
-			config.setEnum("oreDictSearchMode", CATEGORY_SEARCH, defaultValues.oreDictSearchMode, searchModes);
-		}
-
-		values.modNameSearchMode = config.getEnum("modNameSearchMode", CATEGORY_SEARCH, defaultValues.modNameSearchMode, searchModes);
-		values.tooltipSearchMode = config.getEnum("tooltipSearchMode", CATEGORY_SEARCH, defaultValues.tooltipSearchMode, searchModes);
-		values.oreDictSearchMode = config.getEnum("oreDictSearchMode", CATEGORY_SEARCH, defaultValues.oreDictSearchMode, searchModes);
-		values.creativeTabSearchMode = config.getEnum("creativeTabSearchMode", CATEGORY_SEARCH, defaultValues.creativeTabSearchMode, searchModes);
-		values.colorSearchMode = config.getEnum("colorSearchMode", CATEGORY_SEARCH, defaultValues.colorSearchMode, searchModes);
-		values.resourceIdSearchMode = config.getEnum("resourceIdSearchMode", CATEGORY_SEARCH, defaultValues.resourceIdSearchMode, searchModes);
-		if (config.getCategory(CATEGORY_SEARCH).hasChanged()) {
-			needsReload = true;
-		}
-
-		values.searchAdvancedTooltips = config.getBoolean(CATEGORY_SEARCH, "searchAdvancedTooltips", defaultValues.searchAdvancedTooltips);
+		needsReload |= ingredientFilterConfig.syncConfig(config);
 
 		ConfigCategory categoryAdvanced = config.getCategory(CATEGORY_ADVANCED);
 		categoryAdvanced.remove("nbtKeyIgnoreList");
@@ -511,46 +408,7 @@ public final class Config {
 	}
 
 	public static boolean syncWorldConfig(@Nullable NetworkManager networkManager) {
-		if (worldConfig == null) {
-			return false;
-		}
-
-		final String worldCategory = ServerInfo.getWorldUid(networkManager);
-
-		Property property = worldConfig.get(worldCategory, "overlayEnabled", defaultValues.overlayEnabled);
-		property.setLanguageKey("config.jei.interface.overlayEnabled");
-		property.setComment(Translator.translateToLocal("config.jei.interface.overlayEnabled.comment"));
-		property.setShowInGui(false);
-		values.overlayEnabled = property.getBoolean();
-
-		property = worldConfig.get(worldCategory, "cheatItemsEnabled", defaultValues.cheatItemsEnabled);
-		property.setLanguageKey("config.jei.mode.cheatItemsEnabled");
-		property.setComment(Translator.translateToLocal("config.jei.mode.cheatItemsEnabled.comment"));
-		values.cheatItemsEnabled = property.getBoolean();
-
-		property = worldConfig.get(worldCategory, "editEnabled", defaultValues.editModeEnabled);
-		property.setLanguageKey("config.jei.mode.editEnabled");
-		property.setComment(Translator.translateToLocal("config.jei.mode.editEnabled.comment"));
-		values.editModeEnabled = property.getBoolean();
-		if (property.hasChanged()) {
-			MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.editModeEnabled));
-		}
-
-		property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);
-		property.setLanguageKey("config.jei.interface.bookmarkOverlayEnabled");
-		property.setComment(Translator.translateToLocal("config.jei.interface.bookmarkOverlayEnabled.comment"));
-		property.setShowInGui(false);
-		values.bookmarkOverlayEnabled = property.getBoolean();
-
-		property = worldConfig.get(worldCategory, "filterText", defaultValues.filterText);
-		property.setShowInGui(false);
-		values.filterText = property.getString();
-
-		final boolean configChanged = worldConfig.hasChanged();
-		if (configChanged) {
-			worldConfig.save();
-		}
-		return false;
+		return worldConfigState.syncWorldConfig(networkManager);
 	}
 
 	private static boolean syncSearchColorsConfig() {
@@ -749,7 +607,7 @@ public final class Config {
 	 * The result is a positive integer if str1 is _numerically_ greater than str2.
 	 * The result is zero if the strings are _numerically_ equal.
 	 */
-	private static int versionCompare(String str1, String str2) {
+	static int versionCompare(String str1, String str2) {
 		String[] vals1 = str1.split("\\.");
 		String[] vals2 = str2.split("\\.");
 		int i = 0;
