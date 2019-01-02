@@ -12,6 +12,7 @@ import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.IIngredientListOverlay;
 import mezz.jei.api.IJeiRuntime;
+import mezz.jei.api.ModIds;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
@@ -25,7 +26,7 @@ import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 
 public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
-	public static final ResourceLocation UID = new ResourceLocation(Constants.MOD_ID, "debug");
+	public static final ResourceLocation UID = new ResourceLocation(ModIds.JEI_ID, "debug");
 	public static final int RECIPE_WIDTH = 160;
 	public static final int RECIPE_HEIGHT = 60;
 	private final IDrawable background;
@@ -54,11 +55,6 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	@Override
 	public String getTitle() {
 		return localizedName;
-	}
-
-	@Override
-	public String getModName() {
-		return Constants.NAME;
 	}
 
 	@Override

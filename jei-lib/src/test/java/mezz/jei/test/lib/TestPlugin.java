@@ -7,15 +7,22 @@ import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.ModIds;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 
 @JEIPlugin
 public class TestPlugin implements IModPlugin {
 	public static final int BASE_INGREDIENT_COUNT = 2;
+
+	@Override
+	public ResourceLocation getPluginUid() {
+		return new ResourceLocation(ModIds.JEI_ID, "test");
+	}
 
 	@Override
 	public void registerIngredients(IModIngredientRegistration ingredientRegistry) {

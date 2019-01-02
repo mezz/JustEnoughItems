@@ -17,12 +17,12 @@ import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.collect.IngredientSet;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.IngredientSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

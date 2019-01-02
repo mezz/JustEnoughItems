@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import net.minecraft.item.ItemStack;
 
-import mezz.jei.config.Constants;
+import mezz.jei.api.ModIds;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 
 public final class IngredientListElementComparator implements Comparator<IIngredientListElement> {
@@ -31,9 +31,9 @@ public final class IngredientListElementComparator implements Comparator<IIngred
 			final int orderIndex1 = o1.getOrderIndex();
 			final int orderIndex2 = o2.getOrderIndex();
 			return Integer.compare(orderIndex1, orderIndex2);
-		} else if (modName1.equals(Constants.MINECRAFT_NAME)) {
+		} else if (modName1.equals(ModIds.MINECRAFT_NAME)) {
 			return -1;
-		} else if (modName2.equals(Constants.MINECRAFT_NAME)) {
+		} else if (modName2.equals(ModIds.MINECRAFT_NAME)) {
 			return 1;
 		} else {
 			return modName1.compareTo(modName2);

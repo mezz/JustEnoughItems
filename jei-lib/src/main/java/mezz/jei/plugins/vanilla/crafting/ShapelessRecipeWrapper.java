@@ -34,7 +34,7 @@ public class ShapelessRecipeWrapper<T extends IRecipe> implements ICraftingRecip
 			ingredients.setInputLists(VanillaTypes.ITEM, inputLists);
 			ingredients.setOutput(VanillaTypes.ITEM, recipeOutput);
 		} catch (RuntimeException e) {
-			String info = ErrorUtil.getInfoFromBrokenCraftingRecipe(recipe, recipe.getIngredients(), recipeOutput);
+			String info = ErrorUtil.getInfoFromBrokenCraftingRecipe(recipe, recipe.getIngredients(), recipeOutput, stackHelper);
 			throw new BrokenCraftingRecipeException(info, e);
 		}
 	}

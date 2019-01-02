@@ -14,10 +14,10 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 import com.google.common.collect.ImmutableSet;
-import mezz.jei.Internal;
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
@@ -27,17 +27,19 @@ import mezz.jei.config.ServerInfo;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketRecipeTransfer;
-import mezz.jei.startup.StackHelper;
-import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<ContainerPlayer> {
-	private final StackHelper stackHelper;
+	private static final Logger LOGGER = LogManager.getLogger();
+
+	private final IStackHelper stackHelper;
 	private final IRecipeTransferHandlerHelper handlerHelper;
 	private final IRecipeTransferInfo<ContainerPlayer> transferHelper;
 
-	public PlayerRecipeTransferHandler(IRecipeTransferHandlerHelper handlerHelper) {
-		this.stackHelper = Internal.getStackHelper();
+	public PlayerRecipeTransferHandler(IStackHelper stackhelper, IRecipeTransferHandlerHelper handlerHelper) {
+		this.stackHelper = stackhelper;
 		this.handlerHelper = handlerHelper;
 		this.transferHelper = new BasicRecipeTransferInfo<>(ContainerPlayer.class, VanillaRecipeCategoryUid.CRAFTING, 1, 4, 9, 36);
 	}
@@ -116,7 +118,7 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Conta
 			final ItemStack stack = slot.getStack();
 			if (!stack.isEmpty()) {
 				if (!slot.canTakeStack(player)) {
-					Log.get().error("Recipe Transfer helper {} does not work for container {}. Player can't move item out of Crafting Slot number {}", transferHelper.getClass(), container.getClass(), slot.slotNumber);
+					LOGGER.error("Recipe Transfer helper {} does not work for container {}. Player can't move item out of Crafting Slot number {}", transferHelper.getClass(), container.getClass(), slot.slotNumber);
 					return handlerHelper.createInternalError();
 				}
 				filledCraftSlotCount++;
@@ -139,11 +141,11 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Conta
 			return handlerHelper.createUserErrorWithTooltip(message);
 		}
 
-		StackHelper.MatchingItemsResult matchingItemsResult = stackHelper.getMatchingItems(availableItemStacks, playerInvItemStackGroup.getGuiIngredients());
+		RecipeTransferUtil.MatchingItemsResult matchingItemsResult = RecipeTransferUtil.getMatchingItems(stackHelper, availableItemStacks, playerInvItemStackGroup.getGuiIngredients());
 
 		if (matchingItemsResult.missingItems.size() > 0) {
 			String message = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.missing");
-			matchingItemsResult = stackHelper.getMatchingItems(availableItemStacks, itemStackGroup.getGuiIngredients());
+			matchingItemsResult = RecipeTransferUtil.getMatchingItems(stackHelper, availableItemStacks, itemStackGroup.getGuiIngredients());
 			return handlerHelper.createUserErrorForSlots(message, matchingItemsResult.missingItems);
 		}
 
@@ -158,7 +160,7 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Conta
 			int craftNumber = entry.getKey();
 			int slotNumber = craftingSlotIndexes.get(craftNumber);
 			if (slotNumber < 0 || slotNumber >= container.inventorySlots.size()) {
-				Log.get().error("Recipes Transfer Helper {} references slot {} outside of the inventory's size {}", transferHelper.getClass(), slotNumber, container.inventorySlots.size());
+				LOGGER.error("Recipes Transfer Helper {} references slot {} outside of the inventory's size {}", transferHelper.getClass(), slotNumber, container.inventorySlots.size());
 				return handlerHelper.createInternalError();
 			}
 		}

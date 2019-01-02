@@ -47,11 +47,6 @@ public class FurnaceSmeltingCategory extends FurnaceRecipeCategory<FurnaceRecipe
 	}
 
 	@Override
-	public String getModName() {
-		return Constants.MINECRAFT_NAME;
-	}
-
-	@Override
 	public ResourceLocation getUid() {
 		return VanillaRecipeCategoryUid.FURNACE;
 	}

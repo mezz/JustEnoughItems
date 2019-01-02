@@ -2,7 +2,6 @@ package mezz.jei.render;
 
 import java.awt.Color;
 import java.awt.Rectangle;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -12,14 +11,13 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
 import com.google.common.base.Joiner;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.config.Constants;
@@ -27,12 +25,10 @@ import mezz.jei.config.IHideModeConfig;
 import mezz.jei.config.SearchMode;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 
-public class IngredientRenderer<T> {
+public class IngredientListElementRenderer<T> {
 	private static final int BLACKLIST_COLOR = Color.red.getRGB();
 	private static final Rectangle DEFAULT_AREA = new Rectangle(0, 0, 16, 16);
 
@@ -40,7 +36,7 @@ public class IngredientRenderer<T> {
 	protected Rectangle area = DEFAULT_AREA;
 	protected int padding;
 
-	public IngredientRenderer(IIngredientListElement<T> element) {
+	public IngredientListElementRenderer(IIngredientListElement<T> element) {
 		this.element = element;
 	}
 
@@ -91,13 +87,7 @@ public class IngredientRenderer<T> {
 		IIngredientRenderer<T> ingredientRenderer = element.getIngredientRenderer();
 		List<String> tooltip = getTooltip(minecraft, element);
 		FontRenderer fontRenderer = ingredientRenderer.getFontRenderer(minecraft, ingredient);
-
-		if (ingredient instanceof ItemStack) {
-			ItemStack itemStack = (ItemStack) ingredient;
-			TooltipRenderer.drawHoveringText(itemStack, tooltip, mouseX, mouseY, fontRenderer);
-		} else {
-			TooltipRenderer.drawHoveringText(tooltip, mouseX, mouseY, fontRenderer);
-		}
+		TooltipRenderer.drawHoveringText(ingredient, tooltip, mouseX, mouseY, fontRenderer);
 	}
 
 	protected static <V> void renderEditMode(IIngredientListElement<V> element, Rectangle area, int padding, IHideModeConfig hideModeConfig) {
@@ -111,10 +101,11 @@ public class IngredientRenderer<T> {
 	}
 
 	private static <V> List<String> getTooltip(Minecraft minecraft, IIngredientListElement<V> element) {
-		List<String> tooltip = getIngredientTooltipSafe(minecraft, element);
 		V ingredient = element.getIngredient();
+		IIngredientRenderer<V> ingredientRenderer = element.getIngredientRenderer();
 		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
-		tooltip = ForgeModIdHelper.getInstance().addModNameToIngredientTooltip(tooltip, ingredient, ingredientHelper);
+		IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
+		List<String> tooltip = IngredientRenderHelper.getIngredientTooltipSafe(ingredient, ingredientRenderer, ingredientHelper, modIdHelper);
 
 		int maxWidth = Constants.MAX_TOOLTIP_WIDTH;
 		for (String tooltipLine : tooltip) {
@@ -132,21 +123,6 @@ public class IngredientRenderer<T> {
 			addEditModeInfoToTooltip(minecraft, tooltip, maxWidth);
 		}
 
-		return tooltip;
-	}
-
-	private static <V> List<String> getIngredientTooltipSafe(Minecraft minecraft, IIngredientListElement<V> element) {
-		IIngredientRenderer<V> ingredientRenderer = element.getIngredientRenderer();
-		V ingredient = element.getIngredient();
-		try {
-			ITooltipFlag.TooltipFlags tooltipFlag = minecraft.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
-			return ingredientRenderer.getTooltip(ingredient, tooltipFlag);
-		} catch (RuntimeException | LinkageError e) {
-			Log.get().error("Tooltip crashed.", e);
-		}
-
-		List<String> tooltip = new ArrayList<>();
-		tooltip.add(TextFormatting.RED + Translator.translateToLocal("jei.tooltip.error.crash"));
 		return tooltip;
 	}
 

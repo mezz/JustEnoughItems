@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 

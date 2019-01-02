@@ -15,6 +15,7 @@ import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
@@ -23,7 +24,6 @@ import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.ICustomCraftingRecipeWrapper;
 import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 import mezz.jei.config.Constants;
-import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.util.Translator;
 
 public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
@@ -38,8 +38,10 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 	private final IDrawable icon;
 	private final String localizedName;
 	private final ICraftingGridHelper craftingGridHelper;
+	private final IModIdHelper modIdHelper;
 
-	public CraftingRecipeCategory(IGuiHelper guiHelper) {
+	public CraftingRecipeCategory(IGuiHelper guiHelper, IModIdHelper modIdHelper) {
+		this.modIdHelper = modIdHelper;
 		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
 		background = guiHelper.createDrawable(location, 0, 60, width, height);
 		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.CRAFTING_TABLE));
@@ -55,11 +57,6 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 	@Override
 	public String getTitle() {
 		return localizedName;
-	}
-
-	@Override
-	public String getModName() {
-		return Constants.MINECRAFT_NAME;
 	}
 
 	@Override
@@ -109,18 +106,17 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 			if (registryName != null) {
 				guiItemStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
 					if (slotIndex == craftOutputSlot) {
-						String recipeModId = registryName.getNamespace();
+						if (modIdHelper.isDisplayingModNameEnabled()) {
+							String recipeModId = registryName.getNamespace();
+							boolean modIdDifferent = false;
+							ResourceLocation itemRegistryName = ingredient.getItem().getRegistryName();
+							if (itemRegistryName != null) {
+								String itemModId = itemRegistryName.getNamespace();
+								modIdDifferent = !recipeModId.equals(itemModId);
+							}
 
-						boolean modIdDifferent = false;
-						ResourceLocation itemRegistryName = ingredient.getItem().getRegistryName();
-						if (itemRegistryName != null) {
-							String itemModId = itemRegistryName.getNamespace();
-							modIdDifferent = !recipeModId.equals(itemModId);
-						}
-
-						if (modIdDifferent) {
-							String modName = ForgeModIdHelper.getInstance().getFormattedModNameForModId(recipeModId);
-							if (modName != null) {
+							if (modIdDifferent) {
+								String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
 								tooltip.add(TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.recipe.by", modName));
 							}
 						}

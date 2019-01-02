@@ -64,11 +64,6 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipeWrapp
 	}
 
 	@Override
-	public String getModName() {
-		return Constants.MINECRAFT_NAME;
-	}
-
-	@Override
 	public IDrawable getBackground() {
 		return background;
 	}

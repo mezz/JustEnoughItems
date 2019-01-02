@@ -13,9 +13,9 @@ import net.minecraft.init.SoundEvents;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.ingredients.IngredientRegistry;
-import mezz.jei.startup.ForgeModIdHelper;
 
 public class RecipeCategoryTab extends RecipeGuiTab {
 	private final IRecipeGuiLogic logic;
@@ -88,10 +88,11 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 			tooltip.add(title);
 		}
 
-		String modName = category.getModName();
-		if (modName != null) {
-			modName = ForgeModIdHelper.getInstance().getFormattedModNameForModId(modName);
-			if (modName != null) {
+		String modId = category.getUid().getNamespace();
+		if (modId != null) {
+			IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
+			if (modIdHelper.isDisplayingModNameEnabled()) {
+				String modName = modIdHelper.getFormattedModNameForModId(modId);
 				tooltip.add(modName);
 			}
 		}

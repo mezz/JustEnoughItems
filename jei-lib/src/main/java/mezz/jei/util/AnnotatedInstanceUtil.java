@@ -1,4 +1,4 @@
-package mezz.jei.startup;
+package mezz.jei.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +9,13 @@ import net.minecraftforge.fml.language.ModFileScanData;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JEIPlugin;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Type;
 
 public final class AnnotatedInstanceUtil {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private AnnotatedInstanceUtil() {
 
 	}
@@ -43,7 +46,7 @@ public final class AnnotatedInstanceUtil {
 				T instance = asmInstanceClass.newInstance();
 				instances.add(instance);
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | LinkageError e) {
-				Log.get().error("Failed to load: {}", className, e);
+				LOGGER.error("Failed to load: {}", className, e);
 			}
 		}
 		return instances;

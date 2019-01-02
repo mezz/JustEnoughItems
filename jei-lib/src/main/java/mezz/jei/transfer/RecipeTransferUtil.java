@@ -1,19 +1,34 @@
 package mezz.jei.transfer;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.item.ItemStack;
 
 import mezz.jei.Internal;
+import mezz.jei.api.gui.IGuiIngredient;
+import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.runtime.JeiRuntime;
-import mezz.jei.util.Log;
+import mezz.jei.util.ItemStackMatchable;
+import mezz.jei.util.MatchingIterable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class RecipeTransferUtil {
+	private static Logger LOGGER = LogManager.getLogger();
+
 	private RecipeTransferUtil() {
 	}
 
@@ -38,12 +53,114 @@ public final class RecipeTransferUtil {
 		final IRecipeTransferHandler transferHandler = recipeRegistry.getRecipeTransferHandler(container, recipeLayout.getRecipeCategory());
 		if (transferHandler == null) {
 			if (doTransfer) {
-				Log.get().error("No Recipe Transfer handler for container {}", container.getClass());
+				LOGGER.error("No Recipe Transfer handler for container {}", container.getClass());
 			}
 			return RecipeTransferErrorInternal.INSTANCE;
 		}
 
 		//noinspection unchecked
 		return transferHandler.transferRecipe(container, recipeLayout, player, maxTransfer, doTransfer);
+	}
+
+	public static class MatchingItemsResult {
+		public final Map<Integer, Integer> matchingItems = new HashMap<>();
+		public final List<Integer> missingItems = new ArrayList<>();
+	}
+
+	/**
+	 * Returns a list of items in slots that complete the recipe defined by requiredStacksList.
+	 * Returns a result that contains missingItems if there are not enough items in availableItemStacks.
+	 */
+	public static MatchingItemsResult getMatchingItems(IStackHelper stackhelper, Map<Integer, ItemStack> availableItemStacks, Map<Integer, ? extends IGuiIngredient<ItemStack>> ingredientsMap) {
+		MatchingItemsResult matchingItemResult = new MatchingItemsResult();
+
+		int recipeSlotNumber = -1;
+		SortedSet<Integer> keys = new TreeSet<>(ingredientsMap.keySet());
+		for (Integer key : keys) {
+			IGuiIngredient<ItemStack> ingredient = ingredientsMap.get(key);
+			if (!ingredient.isInput()) {
+				continue;
+			}
+			recipeSlotNumber++;
+
+			List<ItemStack> requiredStacks = ingredient.getAllIngredients();
+			if (requiredStacks.isEmpty()) {
+				continue;
+			}
+
+			Integer matching = containsAnyStackIndexed(stackhelper, availableItemStacks, requiredStacks);
+			if (matching == null) {
+				matchingItemResult.missingItems.add(key);
+			} else {
+				ItemStack matchingStack = availableItemStacks.get(matching);
+				matchingStack.shrink(1);
+				if (matchingStack.getCount() == 0) {
+					availableItemStacks.remove(matching);
+				}
+				matchingItemResult.matchingItems.put(recipeSlotNumber, matching);
+			}
+		}
+
+		return matchingItemResult;
+	}
+
+	@Nullable
+	public static Integer containsAnyStackIndexed(IStackHelper stackhelper, Map<Integer, ItemStack> stacks, Iterable<ItemStack> contains) {
+		MatchingIndexed matchingStacks = new MatchingIndexed(stacks);
+		MatchingIterable matchingContains = new MatchingIterable(contains);
+		return containsStackMatchable(stackhelper, matchingStacks, matchingContains);
+	}
+
+	/* Returns an ItemStack from "stacks" if it isEquivalent to an ItemStack from "contains" */
+	@Nullable
+	public static <R, T> R containsStackMatchable(IStackHelper stackhelper, Iterable<ItemStackMatchable<R>> stacks, Iterable<ItemStackMatchable<T>> contains) {
+		for (ItemStackMatchable<?> containStack : contains) {
+			R matchingStack = containsStack(stackhelper, stacks, containStack);
+			if (matchingStack != null) {
+				return matchingStack;
+			}
+		}
+
+		return null;
+	}
+
+	/* Returns an ItemStack from "stacks" if it isEquivalent to "contains" */
+	@Nullable
+	public static <R> R containsStack(IStackHelper stackHelper, Iterable<ItemStackMatchable<R>> stacks, ItemStackMatchable<?> contains) {
+		for (ItemStackMatchable<R> stack : stacks) {
+			if (stackHelper.isEquivalent(contains.getStack(), stack.getStack())) {
+				return stack.getResult();
+			}
+		}
+		return null;
+	}
+
+	private static class MatchingIndexed implements Iterable<ItemStackMatchable<Integer>> {
+		private final Map<Integer, ItemStack> map;
+
+		public MatchingIndexed(Map<Integer, ItemStack> map) {
+			this.map = map;
+		}
+
+		@Override
+		public Iterator<ItemStackMatchable<Integer>> iterator() {
+			return new MatchingIterable.DelegateIterator<Map.Entry<Integer, ItemStack>, ItemStackMatchable<Integer>>(map.entrySet().iterator()) {
+				@Override
+				public ItemStackMatchable<Integer> next() {
+					final Map.Entry<Integer, ItemStack> entry = delegate.next();
+					return new ItemStackMatchable<Integer>() {
+						@Override
+						public ItemStack getStack() {
+							return entry.getValue();
+						}
+
+						@Override
+						public Integer getResult() {
+							return entry.getKey();
+						}
+					};
+				}
+			};
+		}
 	}
 }

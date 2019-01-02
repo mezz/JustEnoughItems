@@ -15,8 +15,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
 import mezz.jei.api.ISubtypeRegistry;
-import mezz.jei.startup.StackHelper;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.StackHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

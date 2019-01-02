@@ -35,14 +35,15 @@ public final class TooltipRenderer {
 		drawHoveringText(ItemStack.EMPTY, textLines, x, y, maxWidth, font);
 	}
 
-	public static void drawHoveringText(ItemStack itemStack, List<String> textLines, int x, int y, FontRenderer font) {
-		drawHoveringText(itemStack, textLines, x, y, -1, font);
+	public static void drawHoveringText(Object ingredient, List<String> textLines, int x, int y, FontRenderer font) {
+		drawHoveringText(ingredient, textLines, x, y, -1, font);
 	}
 
-	public static void drawHoveringText(ItemStack itemStack, List<String> textLines, int x, int y, int maxWidth, FontRenderer font) {
+	public static void drawHoveringText(Object ingredient, List<String> textLines, int x, int y, int maxWidth, FontRenderer font) {
 		Minecraft minecraft = Minecraft.getInstance();
 		int scaledWidth = minecraft.mainWindow.getScaledWidth();
 		int scaledHeight = minecraft.mainWindow.getScaledHeight();
+		ItemStack itemStack = ingredient instanceof ItemStack ? (ItemStack) ingredient : ItemStack.EMPTY;
 		GuiUtils.drawHoveringText(itemStack, textLines, x, y, scaledWidth, scaledHeight, maxWidth, font);
 	}
 }

@@ -16,6 +16,7 @@ import net.minecraft.util.text.TextFormatting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
+import mezz.jei.api.ModIds;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.events.BookmarkOverlayToggleEvent;
@@ -26,8 +27,6 @@ import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
 import mezz.jei.runtime.JeiRuntime;
-import mezz.jei.startup.ForgeModIdHelper;
-import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.GiveMode;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
@@ -55,6 +54,7 @@ public final class ClientConfig implements IIngredientFilterConfig, IFilterTextS
 
 	private final ConfigValues defaultValues = new ConfigValues();
 	private final ConfigValues values = new ConfigValues();
+	// TODO move to ModIdFormattingConfig
 	@Nullable
 	private String modNameFormatOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
 
@@ -85,7 +85,7 @@ public final class ClientConfig implements IIngredientFilterConfig, IFilterTextS
 	}
 
 	public void onConfigChanged(String modId) {
-		if (Constants.MOD_ID.equals(modId)) {
+		if (ModIds.JEI_ID.equals(modId)) {
 			if (syncAllConfig()) {
 				JeiRuntime runtime = Internal.getRuntime();
 				if (runtime != null) {
@@ -209,8 +209,7 @@ public final class ClientConfig implements IIngredientFilterConfig, IFilterTextS
 	}
 
 	public void checkForModNameFormatOverride() {
-		IModIdHelper modIdHelper = ForgeModIdHelper.getInstance();
-		modNameFormatOverride = modIdHelper.getModNameTooltipFormatting();
+		modNameFormatOverride = ModIdFormattingConfig.detectModNameTooltipFormatting();
 		updateModNameFormat(config);
 	}
 

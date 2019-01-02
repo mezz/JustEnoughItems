@@ -17,8 +17,8 @@ import net.minecraft.util.ResourceLocation;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.color.ColorGetter;
-import mezz.jei.startup.StackHelper;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.StackHelper;
 
 public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	private final StackHelper stackHelper;
@@ -52,7 +52,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	@Nullable
 	public ItemStack getMatch(Iterable<ItemStack> ingredients, ItemStack toMatch) {
-		return stackHelper.containsStack(ingredients, toMatch);
+		return stackHelper.containsAnyStack(ingredients, Collections.singletonList(toMatch));
 	}
 
 	@Override

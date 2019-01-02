@@ -10,30 +10,28 @@ import net.minecraft.util.NonNullList;
 import mezz.jei.config.HideModeConfig;
 import mezz.jei.config.IHideModeConfig;
 import mezz.jei.config.IngredientBlacklistType;
+import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientBlacklist;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.ingredients.ModIngredientRegistration;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.SubtypeRegistry;
-import mezz.jei.startup.IModIdHelper;
-import mezz.jei.startup.ModIngredientRegistration;
-import mezz.jei.startup.StackHelper;
 import mezz.jei.test.lib.TestIngredient;
 import mezz.jei.test.lib.TestIngredientFilterConfig;
 import mezz.jei.test.lib.TestIngredientHelper;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
+import mezz.jei.util.StackHelper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 public class IngredientFilterTest {
 	private static final int EXTRA_INGREDIENT_COUNT = 5;
-	@Nullable
-	private IModIdHelper modIdHelper;
 	@Nullable
 	private JeiHelpers jeiHelpers;
 	@Nullable
@@ -56,7 +54,7 @@ public class IngredientFilterTest {
 		testPlugin.registerIngredients(modIngredientRegistry);
 
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
-		this.modIdHelper = new TestModIdHelper();
+		IModIdHelper modIdHelper = new TestModIdHelper();
 		this.ingredientRegistry = modIngredientRegistry.createIngredientRegistry(modIdHelper, blacklist, true);
 
 		this.baseList = IngredientListElementFactory.createBaseList(ingredientRegistry, modIdHelper);
@@ -64,7 +62,7 @@ public class IngredientFilterTest {
 		this.hideModeConfig = new HideModeConfig(modIdHelper, null);
 
 		StackHelper stackHelper = new StackHelper(subtypeRegistry);
-		this.jeiHelpers = new JeiHelpers(ingredientRegistry, blacklist, stackHelper, hideModeConfig);
+		this.jeiHelpers = new JeiHelpers(ingredientRegistry, blacklist, stackHelper, hideModeConfig, modIdHelper);
 
 		TestIngredientFilterConfig ingredientFilterConfig = new TestIngredientFilterConfig();
 		this.ingredientFilter = new IngredientFilter(blacklist, ingredientFilterConfig, hideModeConfig);
@@ -165,7 +163,7 @@ public class IngredientFilterTest {
 
 	private void addIngredients(IngredientFilter ingredientFilter) {
 		Assert.assertNotNull(ingredientRegistry);
-		Assert.assertNotNull(modIdHelper);
+		Assert.assertNotNull(jeiHelpers);
 
 		List<TestIngredient> ingredientsToAdd = new ArrayList<>();
 		for (int i = TestPlugin.BASE_INGREDIENT_COUNT; i < TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT; i++) {
@@ -173,6 +171,7 @@ public class IngredientFilterTest {
 		}
 		Assert.assertEquals(EXTRA_INGREDIENT_COUNT, ingredientsToAdd.size());
 
+		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
 		List<IIngredientListElement<TestIngredient>> listToAdd = IngredientListElementFactory.createList(ingredientRegistry, TestIngredient.TYPE, ingredientsToAdd, modIdHelper);
 		Assert.assertEquals(EXTRA_INGREDIENT_COUNT, listToAdd.size());
 
@@ -187,7 +186,7 @@ public class IngredientFilterTest {
 
 	private void removeIngredients(IngredientFilter ingredientFilter) {
 		Assert.assertNotNull(ingredientRegistry);
-		Assert.assertNotNull(modIdHelper);
+		Assert.assertNotNull(jeiHelpers);
 
 		List<TestIngredient> ingredientsToRemove = new ArrayList<>();
 		for (int i = TestPlugin.BASE_INGREDIENT_COUNT; i < TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT; i++) {
@@ -195,6 +194,7 @@ public class IngredientFilterTest {
 		}
 		Assert.assertEquals(EXTRA_INGREDIENT_COUNT, ingredientsToRemove.size());
 
+		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
 		List<IIngredientListElement<TestIngredient>> listToRemove = IngredientListElementFactory.createList(ingredientRegistry, TestIngredient.TYPE, ingredientsToRemove, modIdHelper);
 		Assert.assertEquals(EXTRA_INGREDIENT_COUNT, listToRemove.size());
 

@@ -1,5 +1,7 @@
 package mezz.jei.api;
 
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 
@@ -8,6 +10,8 @@ import mezz.jei.api.recipe.IRecipeCategoryRegistration;
  * IModPlugins must have the {@link JEIPlugin} annotation to get loaded by JEI.
  */
 public interface IModPlugin {
+
+	ResourceLocation getPluginUid();
 
 	/**
 	 * If your item has subtypes that depend on NBT or capabilities, use this to help JEI identify those subtypes correctly.

@@ -11,7 +11,7 @@ import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.input.InputHandler;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
-import mezz.jei.startup.StackHelper;
+import mezz.jei.util.StackHelper;
 
 /**
  * For JEI internal use only, these are normally accessed from the API.

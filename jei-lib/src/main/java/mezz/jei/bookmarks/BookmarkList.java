@@ -16,6 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.config.ClientConfig;
@@ -23,7 +24,6 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientRegistry;
-import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.util.Log;
 import org.apache.commons.io.IOUtils;
 
@@ -35,10 +35,12 @@ public class BookmarkList implements IIngredientGridSource {
 	private final List<Object> list = new LinkedList<>();
 	private final List<IIngredientListElement> ingredientListElements = new LinkedList<>();
 	private final IngredientRegistry ingredientRegistry;
+	private final IModIdHelper modIdHelper;
 	private final List<IIngredientGridSource.Listener> listeners = new ArrayList<>();
 
-	public BookmarkList(IngredientRegistry ingredientRegistry) {
+	public BookmarkList(IngredientRegistry ingredientRegistry, IModIdHelper modIdHelper) {
 		this.ingredientRegistry = ingredientRegistry;
+		this.modIdHelper = modIdHelper;
 	}
 
 	public <T> boolean add(T ingredient) {
@@ -172,7 +174,7 @@ public class BookmarkList implements IIngredientGridSource {
 
 	private <T> boolean addToLists(T ingredient, boolean addToFront) {
 		IIngredientType<T> ingredientType = ingredientRegistry.getIngredientType(ingredient);
-		IIngredientListElement<T> element = IngredientListElementFactory.createUnorderedElement(ingredientRegistry, ingredientType, ingredient, ForgeModIdHelper.getInstance());
+		IIngredientListElement<T> element = IngredientListElementFactory.createUnorderedElement(ingredientRegistry, ingredientType, ingredient, modIdHelper);
 		if (element != null) {
 			if (addToFront) {
 				list.add(0, ingredient);

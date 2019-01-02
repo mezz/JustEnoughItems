@@ -11,6 +11,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
@@ -18,6 +19,7 @@ import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.ModIds;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
@@ -41,6 +43,11 @@ public class JEIInternalPlugin implements IModPlugin {
 	public static IIngredientRegistry ingredientRegistry;
 	@Nullable
 	public static IJeiRuntime jeiRuntime;
+
+	@Override
+	public ResourceLocation getPluginUid() {
+		return new ResourceLocation(ModIds.JEI_ID, "internal");
+	}
 
 	@Override
 	public void registerIngredients(IModIngredientRegistration ingredientRegistration) {

@@ -4,23 +4,23 @@ import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableTable;
+import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.collect.Table;
 import mezz.jei.config.Constants;
-import mezz.jei.startup.StackHelper;
 import mezz.jei.transfer.BasicRecipeTransferHandler;
 import mezz.jei.transfer.BasicRecipeTransferInfo;
 import mezz.jei.util.ErrorUtil;
 
 public class RecipeTransferRegistry implements IRecipeTransferRegistry {
 	private final Table<Class, ResourceLocation, IRecipeTransferHandler> recipeTransferHandlers = Table.hashBasedTable();
-	private final StackHelper stackHelper;
+	private final IStackHelper stackHelper;
 	private final IRecipeTransferHandlerHelper handlerHelper;
 
-	public RecipeTransferRegistry(StackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper) {
+	public RecipeTransferRegistry(IStackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper) {
 		this.stackHelper = stackHelper;
 		this.handlerHelper = handlerHelper;
 	}

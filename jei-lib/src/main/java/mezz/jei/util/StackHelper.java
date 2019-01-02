@@ -1,17 +1,13 @@
-package mezz.jei.startup;
+package mezz.jei.util;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -21,10 +17,8 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.ISubtypeRegistry;
-import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.recipe.IStackHelper;
-import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
+import mezz.jei.collect.UniqueItemStackListBuilder;
 
 public class StackHelper implements IStackHelper {
 	private final ISubtypeRegistry subtypeRegistry;
@@ -71,79 +65,6 @@ public class StackHelper implements IStackHelper {
 //		}
 		// TODO 1.13 Tags
 		return null;
-	}
-
-	/**
-	 * Returns a list of items in slots that complete the recipe defined by requiredStacksList.
-	 * Returns a result that contains missingItems if there are not enough items in availableItemStacks.
-	 */
-	public MatchingItemsResult getMatchingItems(Map<Integer, ItemStack> availableItemStacks, Map<Integer, ? extends IGuiIngredient<ItemStack>> ingredientsMap) {
-		MatchingItemsResult matchingItemResult = new MatchingItemsResult();
-
-		int recipeSlotNumber = -1;
-		SortedSet<Integer> keys = new TreeSet<>(ingredientsMap.keySet());
-		for (Integer key : keys) {
-			IGuiIngredient<ItemStack> ingredient = ingredientsMap.get(key);
-			if (!ingredient.isInput()) {
-				continue;
-			}
-			recipeSlotNumber++;
-
-			List<ItemStack> requiredStacks = ingredient.getAllIngredients();
-			if (requiredStacks.isEmpty()) {
-				continue;
-			}
-
-			Integer matching = containsAnyStackIndexed(availableItemStacks, requiredStacks);
-			if (matching == null) {
-				matchingItemResult.missingItems.add(key);
-			} else {
-				ItemStack matchingStack = availableItemStacks.get(matching);
-				matchingStack.shrink(1);
-				if (matchingStack.getCount() == 0) {
-					availableItemStacks.remove(matching);
-				}
-				matchingItemResult.matchingItems.put(recipeSlotNumber, matching);
-			}
-		}
-
-		return matchingItemResult;
-	}
-
-	public boolean containsSameStacks(Collection<ItemStack> stacks, Collection<ItemStack> contains) {
-		return containsSameStacks(new MatchingIterable(stacks), new MatchingIterable(contains));
-	}
-
-	/**
-	 * Returns true if all stacks from "contains" are found in "stacks" and the opposite is true as well.
-	 */
-	public <R> boolean containsSameStacks(Iterable<ItemStackMatchable<R>> stacks, Iterable<ItemStackMatchable<R>> contains) {
-		for (ItemStackMatchable stack : contains) {
-			if (containsStack(stacks, stack) == null) {
-				return false;
-			}
-		}
-
-		for (ItemStackMatchable stack : stacks) {
-			if (containsStack(contains, stack) == null) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	@Nullable
-	public Integer containsAnyStackIndexed(Map<Integer, ItemStack> stacks, Iterable<ItemStack> contains) {
-		MatchingIndexed matchingStacks = new MatchingIndexed(stacks);
-		MatchingIterable matchingContains = new MatchingIterable(contains);
-		return containsStackMatchable(matchingStacks, matchingContains);
-	}
-
-	@Nullable
-	public ItemStack containsStack(Iterable<ItemStack> stacks, ItemStack contains) {
-		List<ItemStack> containsList = Collections.singletonList(contains);
-		return containsAnyStack(stacks, containsList);
 	}
 
 	@Override
@@ -352,97 +273,5 @@ public class StackHelper implements IStackHelper {
 
 	public enum UidMode {
 		NORMAL, WILDCARD, FULL
-	}
-
-	public static class MatchingItemsResult {
-		public final Map<Integer, Integer> matchingItems = new HashMap<>();
-		public final List<Integer> missingItems = new ArrayList<>();
-	}
-
-	private interface ItemStackMatchable<R> {
-		@Nullable
-		ItemStack getStack();
-
-		@Nullable
-		R getResult();
-	}
-
-	private static abstract class DelegateIterator<T, R> implements Iterator<R> {
-		protected final Iterator<T> delegate;
-
-		public DelegateIterator(Iterator<T> delegate) {
-			this.delegate = delegate;
-		}
-
-		@Override
-		public boolean hasNext() {
-			return delegate.hasNext();
-		}
-
-		@Override
-		public void remove() {
-			delegate.remove();
-		}
-	}
-
-	private static class MatchingIterable implements Iterable<ItemStackMatchable<ItemStack>> {
-		private final Iterable<ItemStack> list;
-
-		public MatchingIterable(Iterable<ItemStack> list) {
-			this.list = list;
-		}
-
-		@Override
-		public Iterator<ItemStackMatchable<ItemStack>> iterator() {
-			Iterator<ItemStack> stacks = list.iterator();
-			return new DelegateIterator<ItemStack, ItemStackMatchable<ItemStack>>(stacks) {
-				@Override
-				public ItemStackMatchable<ItemStack> next() {
-					final ItemStack stack = delegate.next();
-					return new ItemStackMatchable<ItemStack>() {
-						@Nullable
-						@Override
-						public ItemStack getStack() {
-							return stack;
-						}
-
-						@Nullable
-						@Override
-						public ItemStack getResult() {
-							return stack;
-						}
-					};
-				}
-			};
-		}
-	}
-
-	private static class MatchingIndexed implements Iterable<ItemStackMatchable<Integer>> {
-		private final Map<Integer, ItemStack> map;
-
-		public MatchingIndexed(Map<Integer, ItemStack> map) {
-			this.map = map;
-		}
-
-		@Override
-		public Iterator<ItemStackMatchable<Integer>> iterator() {
-			return new DelegateIterator<Map.Entry<Integer, ItemStack>, ItemStackMatchable<Integer>>(map.entrySet().iterator()) {
-				@Override
-				public ItemStackMatchable<Integer> next() {
-					final Map.Entry<Integer, ItemStack> entry = delegate.next();
-					return new ItemStackMatchable<Integer>() {
-						@Override
-						public ItemStack getStack() {
-							return entry.getValue();
-						}
-
-						@Override
-						public Integer getResult() {
-							return entry.getKey();
-						}
-					};
-				}
-			};
-		}
 	}
 }

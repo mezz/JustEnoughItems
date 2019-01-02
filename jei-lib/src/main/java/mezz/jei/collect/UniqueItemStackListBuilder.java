@@ -1,4 +1,4 @@
-package mezz.jei.startup;
+package mezz.jei.collect;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
 import mezz.jei.util.Log;
+import mezz.jei.util.StackHelper;
 
 public class UniqueItemStackListBuilder {
 	private final StackHelper stackHelper;

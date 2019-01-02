@@ -26,8 +26,8 @@ import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IPaged;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.MouseUtil;
+import mezz.jei.render.IngredientListElementRenderer;
 import mezz.jei.render.IngredientListSlot;
-import mezz.jei.render.IngredientRenderer;
 import mezz.jei.util.CommandUtil;
 import mezz.jei.util.MathUtil;
 
@@ -199,7 +199,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 	public List<IIngredientListElement> getVisibleElements() {
 		List<IIngredientListElement> visibleElements = new ArrayList<>();
 		for (IngredientListSlot slot : this.ingredientGrid.guiIngredientSlots.getAllGuiIngredientSlots()) {
-			IngredientRenderer renderer = slot.getIngredientRenderer();
+			IngredientListElementRenderer renderer = slot.getIngredientRenderer();
 			if (renderer != null) {
 				visibleElements.add(renderer.getElement());
 			}

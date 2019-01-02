@@ -25,20 +25,23 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.INBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.ResourceLocation;
 
 import com.google.common.base.Preconditions;
-import mezz.jei.Internal;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.ModIds;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
+import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
@@ -65,13 +68,18 @@ import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackRenderer;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackHelper;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackListFactory;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackRenderer;
-import mezz.jei.startup.StackHelper;
 import mezz.jei.transfer.PlayerRecipeTransferHandler;
+import mezz.jei.util.StackHelper;
 
 @JEIPlugin
 public class VanillaPlugin implements IModPlugin {
 	@Nullable
 	private ISubtypeRegistry subtypeRegistry;
+
+	@Override
+	public ResourceLocation getPluginUid() {
+		return new ResourceLocation(ModIds.JEI_ID, "minecraft");
+	}
 
 	@Override
 	public void registerItemSubtypes(ISubtypeRegistry subtypeRegistry) {
@@ -103,7 +111,7 @@ public class VanillaPlugin implements IModPlugin {
 	@Override
 	public void registerIngredients(IModIngredientRegistration ingredientRegistration) {
 		Preconditions.checkState(this.subtypeRegistry != null);
-		StackHelper stackHelper = Internal.getStackHelper();
+		StackHelper stackHelper = new StackHelper(subtypeRegistry);
 		ItemStackListFactory itemStackListFactory = new ItemStackListFactory(this.subtypeRegistry);
 
 		List<ItemStack> itemStacks = itemStackListFactory.create(stackHelper);
@@ -125,10 +133,11 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void registerCategories(IRecipeCategoryRegistration registry) {
-		final IJeiHelpers jeiHelpers = registry.getJeiHelpers();
-		final IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
+		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
 		registry.addRecipeCategories(
-			new CraftingRecipeCategory(guiHelper),
+			new CraftingRecipeCategory(guiHelper, modIdHelper),
 			new FurnaceFuelCategory(guiHelper),
 			new FurnaceSmeltingCategory(guiHelper),
 			new BrewingRecipeCategory(guiHelper),
@@ -140,6 +149,7 @@ public class VanillaPlugin implements IModPlugin {
 	public void register(IModRegistry registry) {
 		IIngredientRegistry ingredientRegistry = registry.getIngredientRegistry();
 		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
+		IStackHelper stackHelper = jeiHelpers.getStackHelper();
 		IVanillaRecipeFactory vanillaRecipeFactory = jeiHelpers.getVanillaRecipeFactory();
 
 		RecipeValidator.Results recipes = RecipeValidator.getValidRecipes(jeiHelpers);
@@ -162,7 +172,7 @@ public class VanillaPlugin implements IModPlugin {
 		IRecipeTransferRegistry recipeTransferRegistry = registry.getRecipeTransferRegistry();
 
 		recipeTransferRegistry.addRecipeTransferHandler(ContainerWorkbench.class, VanillaRecipeCategoryUid.CRAFTING, 1, 9, 10, 36);
-		recipeTransferRegistry.addRecipeTransferHandler(new PlayerRecipeTransferHandler(jeiHelpers.recipeTransferHandlerHelper()), VanillaRecipeCategoryUid.CRAFTING);
+		recipeTransferRegistry.addRecipeTransferHandler(new PlayerRecipeTransferHandler(stackHelper, jeiHelpers.recipeTransferHandlerHelper()), VanillaRecipeCategoryUid.CRAFTING);
 		recipeTransferRegistry.addRecipeTransferHandler(ContainerFurnace.class, VanillaRecipeCategoryUid.FURNACE, 0, 1, 3, 36);
 		recipeTransferRegistry.addRecipeTransferHandler(ContainerFurnace.class, VanillaRecipeCategoryUid.FUEL, 1, 1, 3, 36);
 		recipeTransferRegistry.addRecipeTransferHandler(ContainerBrewingStand.class, VanillaRecipeCategoryUid.BREWING, 0, 4, 5, 36);

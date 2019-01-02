@@ -10,9 +10,9 @@ import net.minecraft.util.NonNullList;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.startup.IModIdHelper;
 
 public final class IngredientListElementFactory {
 	private static IngredientOrderTracker ORDER_TRACKER = new IngredientOrderTracker();

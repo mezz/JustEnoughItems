@@ -1,4 +1,4 @@
-package mezz.jei.startup;
+package mezz.jei.ingredients;
 
 import java.util.Collection;
 import java.util.IdentityHashMap;
@@ -7,12 +7,11 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IIngredientType;
-import mezz.jei.ingredients.IngredientBlacklistInternal;
-import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.collect.IngredientSet;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.IngredientSet;
 
 public class ModIngredientRegistration implements IModIngredientRegistration {
 	private final Map<IIngredientType, Collection> allIngredientsMap = new IdentityHashMap<>();

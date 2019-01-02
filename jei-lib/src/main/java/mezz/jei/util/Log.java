@@ -1,6 +1,6 @@
 package mezz.jei.util;
 
-import mezz.jei.config.Constants;
+import mezz.jei.api.ModIds;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
  */
 @Deprecated
 public final class Log {
-	private static final Logger LOGGER = LogManager.getLogger(Constants.MOD_ID);
+	private static final Logger LOGGER = LogManager.getLogger(ModIds.JEI_ID);
 
 	@Deprecated
 	public static Logger get() {

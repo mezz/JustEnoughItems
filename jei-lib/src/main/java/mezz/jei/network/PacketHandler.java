@@ -7,7 +7,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.config.Constants;
+import mezz.jei.api.ModIds;
 import mezz.jei.network.packets.IPacketJeiHandler;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
 import mezz.jei.network.packets.PacketGiveItemStack;
@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 public class PacketHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public static final ResourceLocation CHANNEL_ID = new ResourceLocation(Constants.MOD_ID, "channel");
+	public static final ResourceLocation CHANNEL_ID = new ResourceLocation(ModIds.JEI_ID, "channel");
 
 	public final EnumMap<PacketIdServer, IPacketJeiHandler> serverHandlers = new EnumMap<>(PacketIdServer.class);
 

@@ -28,7 +28,7 @@ public class IngredientListBatchRenderer {
 
 	private final List<ItemStackFastRenderer> renderItems2d = new ArrayList<>();
 	private final List<ItemStackFastRenderer> renderItems3d = new ArrayList<>();
-	private final List<IngredientRenderer> renderOther = new ArrayList<>();
+	private final List<IngredientListElementRenderer> renderOther = new ArrayList<>();
 	private final IHideModeConfig hideModeConfig;
 
 	private int blocked = 0;
@@ -113,14 +113,14 @@ public class IngredientListBatchRenderer {
 			}
 		}
 
-		IngredientRenderer<V> renderer = new IngredientRenderer<>(element);
+		IngredientListElementRenderer<V> renderer = new IngredientListElementRenderer<>(element);
 		ingredientListSlot.setIngredientRenderer(renderer);
 		renderOther.add(renderer);
 	}
 
 	@Nullable
 	public ClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
-		IngredientRenderer hovered = getHovered(mouseX, mouseY);
+		IngredientListElementRenderer hovered = getHovered(mouseX, mouseY);
 		if (hovered != null) {
 			IIngredientListElement element = hovered.getElement();
 			return ClickedIngredient.create(element.getIngredient(), hovered.getArea());
@@ -129,7 +129,7 @@ public class IngredientListBatchRenderer {
 	}
 
 	@Nullable
-	public IngredientRenderer getHovered(double mouseX, double mouseY) {
+	public IngredientListElementRenderer getHovered(double mouseX, double mouseY) {
 		for (IngredientListSlot slot : slots) {
 			if (slot.isMouseOver(mouseX, mouseY)) {
 				return slot.getIngredientRenderer();
@@ -191,7 +191,7 @@ public class IngredientListBatchRenderer {
 		GlStateManager.disableLighting();
 
 		// other rendering
-		for (IngredientRenderer slot : renderOther) {
+		for (IngredientListElementRenderer slot : renderOther) {
 			slot.renderSlow(hideModeConfig);
 		}
 

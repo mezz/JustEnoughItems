@@ -1,4 +1,4 @@
-package mezz.jei.util;
+package mezz.jei.collect;
 
 import javax.annotation.Nullable;
 import java.util.AbstractSet;
@@ -15,7 +15,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IIngredientType;
-import mezz.jei.startup.StackHelper;
+import mezz.jei.util.StackHelper;
 
 public class IngredientSet<V> extends AbstractSet<V> {
 	public static <V> IngredientSet<V> create(IIngredientType<V> ingredientType, IIngredientHelper<V> ingredientHelper) {

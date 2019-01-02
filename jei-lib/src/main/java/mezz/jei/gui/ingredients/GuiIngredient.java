@@ -13,7 +13,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
@@ -23,11 +22,12 @@ import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.gui.ITooltipCallback;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientRegistry;
-import mezz.jei.startup.ForgeModIdHelper;
+import mezz.jei.render.IngredientRenderHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
@@ -204,15 +204,13 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 				0x7FFFFFFF);
 			GlStateManager.color4f(1f, 1f, 1f, 1f);
 
-			Minecraft minecraft = Minecraft.getInstance();
-			ITooltipFlag.TooltipFlags tooltipFlag = minecraft.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
-			List<String> tooltip = ingredientRenderer.getTooltip(value, tooltipFlag);
-			tooltip = ForgeModIdHelper.getInstance().addModNameToIngredientTooltip(tooltip, value, ingredientHelper);
-
+			IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
+			List<String> tooltip = IngredientRenderHelper.getIngredientTooltipSafe(value, ingredientRenderer, ingredientHelper, modIdHelper);
 			if (tooltipCallback != null) {
 				tooltipCallback.onTooltip(slotIndex, input, value, tooltip);
 			}
 
+			Minecraft minecraft = Minecraft.getInstance();
 			FontRenderer fontRenderer = ingredientRenderer.getFontRenderer(minecraft, value);
 			if (value instanceof ItemStack) {
 				//noinspection unchecked

@@ -36,14 +36,6 @@ public interface IRecipeCategory<T extends IRecipeWrapper> {
 	String getTitle();
 
 	/**
-	 * Return the mod name or id associated with this recipe category.
-	 * Used for the recipe category tab's tooltip.
-	 *
-	 * @since JEI 4.5.0
-	 */
-	String getModName();
-
-	/**
 	 * Returns the drawable background for a single recipe in this category.
 	 *
 	 * The size of the background determines how recipes are laid out by JEI,

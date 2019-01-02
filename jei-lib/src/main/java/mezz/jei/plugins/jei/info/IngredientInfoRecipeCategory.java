@@ -41,11 +41,6 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 		return localizedName;
 	}
 
-	@Override
-	public String getModName() {
-		return Constants.NAME;
-	}
-
 	@Nullable
 	@Override
 	public IDrawable getIcon() {

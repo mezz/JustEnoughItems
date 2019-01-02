@@ -25,8 +25,8 @@ import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
 import mezz.jei.network.packets.PacketJei;
 import mezz.jei.render.IngredientListBatchRenderer;
+import mezz.jei.render.IngredientListElementRenderer;
 import mezz.jei.render.IngredientListSlot;
-import mezz.jei.render.IngredientRenderer;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.GiveMode;
 import mezz.jei.util.MathUtil;
@@ -100,7 +100,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		guiIngredientSlots.render(minecraft);
 
 		if (!shouldDeleteItemOnClick(minecraft, mouseX, mouseY) && isMouseOver(mouseX, mouseY)) {
-			IngredientRenderer hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
+			IngredientListElementRenderer hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
 			if (hovered != null) {
 				hovered.drawHighlight();
 			}
@@ -115,7 +115,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 				String deleteItem = Translator.translateToLocal("jei.tooltip.delete.item");
 				TooltipRenderer.drawHoveringText(deleteItem, mouseX, mouseY);
 			} else {
-				IngredientRenderer hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
+				IngredientListElementRenderer hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
 				if (hovered != null) {
 					hovered.drawTooltip(minecraft, mouseX, mouseY);
 				}
@@ -175,7 +175,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 
 	@Nullable
 	public IIngredientListElement getElementUnderMouse() {
-		IngredientRenderer hovered = guiIngredientSlots.getHovered(MouseUtil.getX(), MouseUtil.getY());
+		IngredientListElementRenderer hovered = guiIngredientSlots.getHovered(MouseUtil.getX(), MouseUtil.getY());
 		if (hovered != null) {
 			return hovered.getElement();
 		}

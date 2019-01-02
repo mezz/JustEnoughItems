@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
@@ -22,16 +23,18 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.config.ServerInfo;
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketRecipeTransfer;
-import mezz.jei.startup.StackHelper;
-import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class BasicRecipeTransferHandler<C extends Container> implements IRecipeTransferHandler<C> {
-	private final StackHelper stackHelper;
+	private static final Logger LOGGER = LogManager.getLogger();
+
+	private final IStackHelper stackHelper;
 	private final IRecipeTransferHandlerHelper handlerHelper;
 	private final IRecipeTransferInfo<C> transferHelper;
 
-	public BasicRecipeTransferHandler(StackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper, IRecipeTransferInfo<C> transferHelper) {
+	public BasicRecipeTransferHandler(IStackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper, IRecipeTransferInfo<C> transferHelper) {
 		this.stackHelper = stackHelper;
 		this.handlerHelper = handlerHelper;
 		this.transferHelper = transferHelper;
@@ -73,7 +76,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 		}
 
 		if (inputCount > craftingSlots.size()) {
-			Log.get().error("Recipe Transfer helper {} does not work for container {}", transferHelper.getClass(), container.getClass());
+			LOGGER.error("Recipe Transfer helper {} does not work for container {}", transferHelper.getClass(), container.getClass());
 			return handlerHelper.createInternalError();
 		}
 
@@ -85,7 +88,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 			final ItemStack stack = slot.getStack();
 			if (!stack.isEmpty()) {
 				if (!slot.canTakeStack(player)) {
-					Log.get().error("Recipe Transfer helper {} does not work for container {}. Player can't move item out of Crafting Slot number {}", transferHelper.getClass(), container.getClass(), slot.slotNumber);
+					LOGGER.error("Recipe Transfer helper {} does not work for container {}. Player can't move item out of Crafting Slot number {}", transferHelper.getClass(), container.getClass(), slot.slotNumber);
 					return handlerHelper.createInternalError();
 				}
 				filledCraftSlotCount++;
@@ -108,7 +111,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 			return handlerHelper.createUserErrorWithTooltip(message);
 		}
 
-		StackHelper.MatchingItemsResult matchingItemsResult = stackHelper.getMatchingItems(availableItemStacks, itemStackGroup.getGuiIngredients());
+		RecipeTransferUtil.MatchingItemsResult matchingItemsResult = RecipeTransferUtil.getMatchingItems(stackHelper, availableItemStacks, itemStackGroup.getGuiIngredients());
 
 		if (matchingItemsResult.missingItems.size() > 0) {
 			String message = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.missing");
@@ -126,7 +129,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 			int craftNumber = entry.getKey();
 			int slotNumber = craftingSlotIndexes.get(craftNumber);
 			if (slotNumber < 0 || slotNumber >= container.inventorySlots.size()) {
-				Log.get().error("Recipes Transfer Helper {} references slot {} outside of the inventory's size {}", transferHelper.getClass(), slotNumber, container.inventorySlots.size());
+				LOGGER.error("Recipes Transfer Helper {} references slot {} outside of the inventory's size {}", transferHelper.getClass(), slotNumber, container.inventorySlots.size());
 				return handlerHelper.createInternalError();
 			}
 		}

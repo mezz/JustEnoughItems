@@ -24,7 +24,7 @@
 //public class JEIModConfigGui extends GuiConfig {
 //
 //	public JEIModConfigGui(GuiScreen parent) {
-//		super(getParent(parent), getConfigElements(), Constants.MOD_ID, false, false, getTitle(parent));
+//		super(getParent(parent), getConfigElements(), Constants.JEI_ID, false, false, getTitle(parent));
 //	}
 //
 //	/**

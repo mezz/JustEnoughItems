@@ -1,6 +1,7 @@
 package mezz.jei.api;
 
 import mezz.jei.api.ingredients.IIngredientBlacklist;
+import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
@@ -35,4 +36,6 @@ public interface IJeiHelpers {
 	 * Allows manual creation of vanilla recipes.
 	 */
 	IVanillaRecipeFactory getVanillaRecipeFactory();
+
+	IModIdHelper getModIdHelper();
 }

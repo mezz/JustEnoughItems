@@ -23,15 +23,26 @@ import net.minecraft.util.ResourceLocation;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.ingredients.Ingredients;
-import mezz.jei.startup.ForgeModIdHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class ErrorUtil {
+	private static Logger LOGGER = LogManager.getLogger();
+	@Nullable
+	private static IModIdHelper modIdHelper;
+
 	private ErrorUtil() {
+	}
+
+	public static void setModIdHelper(IModIdHelper modIdHelper) {
+		ErrorUtil.modIdHelper = modIdHelper;
 	}
 
 	public static <T> String getInfoFromRecipe(T recipe, IRecipeWrapper recipeWrapper) {
@@ -81,19 +92,22 @@ public final class ErrorUtil {
 			ResourceLocation registryName = registryEntry.getRegistryName();
 			if (registryName != null) {
 				String modId = registryName.getNamespace();
-				String modName = ForgeModIdHelper.getInstance().getModNameForModId(modId);
-				return modName + " " + registryName;
+				if (modIdHelper != null) {
+					String modName = modIdHelper.getModNameForModId(modId);
+					return modName + " " + registryName;
+				}
+				return registryName.toString();
 			}
 		}
 		try {
 			return recipe.toString();
 		} catch (RuntimeException e) {
-			Log.get().error("Failed recipe.toString", e);
+			LOGGER.error("Failed recipe.toString", e);
 			return recipe.getClass().toString();
 		}
 	}
 
-	public static <T> String getInfoFromBrokenCraftingRecipe(T recipe, List inputs, ItemStack output) {
+	public static <T> String getInfoFromBrokenCraftingRecipe(T recipe, List inputs, ItemStack output, IStackHelper stackHelper) {
 		StringBuilder recipeInfoBuilder = new StringBuilder();
 		String recipeName = getNameForRecipe(recipe);
 		recipeInfoBuilder.append(recipeName);
@@ -104,7 +118,7 @@ public final class ErrorUtil {
 		recipeInfoBuilder.append('\n').append(ItemStack.class.getName()).append(": ").append(ingredientOutputInfo);
 
 		recipeInfoBuilder.append("\nInputs:");
-		List<List<ItemStack>> inputLists = Internal.getStackHelper().expandRecipeItemStackInputs(inputs);
+		List<List<ItemStack>> inputLists = stackHelper.expandRecipeItemStackInputs(inputs);
 		List<String> ingredientInputInfo = getIngredientInfo(VanillaTypes.ITEM, inputLists);
 		recipeInfoBuilder.append('\n').append(ItemStack.class.getName()).append(": ").append(ingredientInputInfo);
 
@@ -244,7 +258,12 @@ public final class ErrorUtil {
 		final IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredient);
 		CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering ingredient");
 		CrashReportCategory crashreportcategory = crashreport.makeCategory("Ingredient being rendered");
-		crashreportcategory.addDetail("Ingredient Mod", () -> ForgeModIdHelper.getInstance().getModNameForIngredient(ingredient, ingredientHelper));
+		if (modIdHelper != null) {
+			crashreportcategory.addDetail("Ingredient Mod", () -> {
+				String modId = ingredientHelper.getModId(ingredient);
+				return modIdHelper.getModNameForModId(modId);
+			});
+		}
 		crashreportcategory.addDetail("Ingredient Info", () -> ingredientHelper.getErrorInfo(ingredient));
 		throw new ReportedException(crashreport);
 	}

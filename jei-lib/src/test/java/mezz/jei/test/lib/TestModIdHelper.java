@@ -1,8 +1,6 @@
 package mezz.jei.test.lib;
 
-import javax.annotation.Nullable;
-
-import mezz.jei.startup.AbstractModIdHelper;
+import mezz.jei.ingredients.AbstractModIdHelper;
 
 public class TestModIdHelper extends AbstractModIdHelper {
 	@Override
@@ -15,9 +13,8 @@ public class TestModIdHelper extends AbstractModIdHelper {
 		return getModNameForModId(modId);
 	}
 
-	@Nullable
 	@Override
-	public String getModNameTooltipFormatting() {
-		return null;
+	public boolean isDisplayingModNameEnabled() {
+		return true;
 	}
 }

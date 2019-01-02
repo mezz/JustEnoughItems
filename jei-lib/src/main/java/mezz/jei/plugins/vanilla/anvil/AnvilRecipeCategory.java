@@ -36,11 +36,6 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipeWrapper> 
 	}
 
 	@Override
-	public String getModName() {
-		return Constants.MINECRAFT_NAME;
-	}
-
-	@Override
 	public IDrawable getBackground() {
 		return background;
 	}

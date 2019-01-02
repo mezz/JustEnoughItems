@@ -13,9 +13,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.base.MoreObjects;
+import mezz.jei.api.ModIds;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.color.ColorGetter;
-import mezz.jei.config.Constants;
 
 public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	@Override
@@ -56,7 +56,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 //		}
 //		ResourceLocation fluidResourceName = new ResourceLocation(defaultFluidName);
 //		return fluidResourceName.getNamespace();
-		return Constants.MOD_ID;
+		return ModIds.JEI_ID;
 	}
 
 	@Override

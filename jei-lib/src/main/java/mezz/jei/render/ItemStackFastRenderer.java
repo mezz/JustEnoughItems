@@ -23,7 +23,7 @@ import mezz.jei.config.IHideModeConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.util.ErrorUtil;
 
-public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
+public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemStack> {
 	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
 
 	public ItemStackFastRenderer(IIngredientListElement<ItemStack> itemStackElement) {
