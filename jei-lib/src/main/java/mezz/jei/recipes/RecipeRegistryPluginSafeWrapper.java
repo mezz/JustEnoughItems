@@ -12,9 +12,12 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeRegistryPlugin;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class RecipeRegistryPluginSafeWrapper implements IRecipeRegistryPlugin {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final IRecipeRegistryPlugin plugin;
 	private final Stopwatch stopWatch = Stopwatch.createUnstarted();
 
@@ -44,11 +47,11 @@ public class RecipeRegistryPluginSafeWrapper implements IRecipeRegistryPlugin {
 			T result = supplier.get();
 			stopWatch.stop();
 			if (stopWatch.elapsed(TimeUnit.MILLISECONDS) > 10) {
-				Log.get().warn("Recipe registry plugin is slow, took {}. {}", stopWatch, plugin.getClass());
+				LOGGER.warn("Recipe registry plugin is slow, took {}. {}", stopWatch, plugin.getClass());
 			}
 			return result;
 		} catch (RuntimeException | LinkageError e) {
-			Log.get().error("Recipe registry plugin crashed: {}", plugin.getClass(), e);
+			LOGGER.error("Recipe registry plugin crashed: {}", plugin.getClass(), e);
 			return defaultValue;
 		}
 	}

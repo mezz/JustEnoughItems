@@ -31,9 +31,11 @@ import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.util.CommandUtil;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class IngredientListOverlay implements IIngredientListOverlay, IMouseHandler, IShowsRecipeFocuses {
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int BORDER_PADDING = 2;
 	private static final int BUTTON_SIZE = 20;
 	private static final int SEARCH_HEIGHT = 20;
@@ -69,10 +71,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	}
 
 	public void rebuildItemFilter() {
-		Log.get().info("Updating ingredient filter...");
+		LOGGER.info("Updating ingredient filter...");
 		long start_time = System.currentTimeMillis();
 		this.ingredientFilter.modesChanged();
-		Log.get().info("Updated  ingredient filter in {} ms", System.currentTimeMillis() - start_time);
+		LOGGER.info("Updated  ingredient filter in {} ms", System.currentTimeMillis() - start_time);
 		updateLayout(true);
 	}
 

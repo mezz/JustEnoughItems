@@ -18,10 +18,12 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class IngredientListElement<V> implements IIngredientListElement<V> {
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");
 
 	private final V ingredient;
@@ -41,9 +43,9 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		} catch (RuntimeException e) {
 			try {
 				String ingredientInfo = ingredientHelper.getErrorInfo(ingredient);
-				Log.get().warn("Found a broken ingredient {}", ingredientInfo, e);
+				LOGGER.warn("Found a broken ingredient {}", ingredientInfo, e);
 			} catch (RuntimeException e2) {
-				Log.get().warn("Found a broken ingredient.", e2);
+				LOGGER.warn("Found a broken ingredient.", e2);
 			}
 			return null;
 		}

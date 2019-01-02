@@ -34,9 +34,11 @@ import mezz.jei.gui.ingredients.GuiIngredientGroup;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class RecipeLayout implements IRecipeLayoutDrawable {
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int RECIPE_BUTTON_SIZE = 13;
 	private static final int RECIPE_BORDER_PADDING = 4;
 	public static final int recipeTransferButtonIndex = 100;
@@ -68,7 +70,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			recipeCategory.setRecipe(recipeLayout, recipeWrapper, ingredients);
 			return recipeLayout;
 		} catch (RuntimeException | LinkageError e) {
-			Log.get().error("Error caught from Recipe Category: {}", recipeCategory.getClass().getCanonicalName(), e);
+			LOGGER.error("Error caught from Recipe Category: {}", recipeCategory.getClass().getCanonicalName(), e);
 		}
 		return null;
 	}

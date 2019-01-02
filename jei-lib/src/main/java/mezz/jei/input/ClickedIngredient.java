@@ -10,9 +10,12 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ClickedIngredient<V> implements IClickedIngredient<V> {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final V value;
 	@Nullable
 	private final Rectangle area;
@@ -30,10 +33,10 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 				return new ClickedIngredient<>(value, area);
 			}
 			String ingredientInfo = ingredientHelper.getErrorInfo(value);
-			Log.get().error("Clicked invalid ingredient. Ingredient Info: {}", ingredientInfo);
+			LOGGER.error("Clicked invalid ingredient. Ingredient Info: {}", ingredientInfo);
 		} catch (RuntimeException e) {
 			String ingredientInfo = ingredientHelper.getErrorInfo(value);
-			Log.get().error("Clicked invalid ingredient. Ingredient Info: {}", ingredientInfo, e);
+			LOGGER.error("Clicked invalid ingredient. Ingredient Info: {}", ingredientInfo, e);
 		}
 		return null;
 	}

@@ -19,8 +19,12 @@ import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketGiveItemStack;
 import mezz.jei.network.packets.PacketSetHotbarItemStack;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class CommandUtil {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private CommandUtil() {
 	}
 
@@ -34,7 +38,7 @@ public final class CommandUtil {
 		Minecraft minecraft = Minecraft.getInstance();
 		EntityPlayerSP player = minecraft.player;
 		if (player == null) {
-			Log.get().error("Can't give stack, there is no player");
+			LOGGER.error("Can't give stack, there is no player");
 			return;
 		}
 		if (minecraft.currentScreen instanceof GuiContainerCreative && giveMode == GiveMode.MOUSE_PICKUP) {
@@ -67,7 +71,7 @@ public final class CommandUtil {
 	private static void giveStackVanilla(ItemStack itemStack, int amount) {
 		if (itemStack.isEmpty()) {
 			String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
-			Log.get().error("Empty itemStack: {}", stackInfo, new IllegalArgumentException());
+			LOGGER.error("Empty itemStack: {}", stackInfo, new IllegalArgumentException());
 			return;
 		}
 

@@ -28,11 +28,15 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketCheatPermission;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Server-side-safe utilities for commands.
  */
 public final class CommandUtilServer {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private CommandUtilServer() {
 	}
 
@@ -95,7 +99,7 @@ public final class CommandUtilServer {
 	public static void setHotbarSlot(EntityPlayerMP sender, ItemStack itemStack, int hotbarSlot) {
 		if (hasPermission(sender)) {
 			if (!InventoryPlayer.isHotbar(hotbarSlot)) {
-				Log.get().error("Tried to set slot that is not in the hotbar: {}", hotbarSlot);
+				LOGGER.error("Tried to set slot that is not in the hotbar: {}", hotbarSlot);
 				return;
 			}
 			ItemStack stackInSlot = sender.inventory.getStackInSlot(hotbarSlot);

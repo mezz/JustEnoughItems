@@ -10,9 +10,12 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SubtypeRegistry implements ISubtypeRegistry {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final Map<Item, ISubtypeInterpreter> interpreters = new IdentityHashMap<>();
 
 	@Override
@@ -28,7 +31,7 @@ public class SubtypeRegistry implements ISubtypeRegistry {
 		ErrorUtil.checkNotNull(interpreter, "interpreter");
 
 		if (interpreters.containsKey(item)) {
-			Log.get().error("An interpreter is already registered for this item: {}", item, new IllegalArgumentException());
+			LOGGER.error("An interpreter is already registered for this item: {}", item, new IllegalArgumentException());
 			return;
 		}
 

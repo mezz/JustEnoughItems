@@ -23,9 +23,12 @@ import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.gui.Focus;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final Map<Integer, GuiIngredient<T>> guiIngredients = new HashMap<>();
 	private final Set<Integer> inputSlots = new HashSet<>();
 	private final IIngredientHelper<T> ingredientHelper;
@@ -104,7 +107,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 			for (T ingredient : ingredients) {
 				Class<? extends T> ingredientClass = ingredientType.getIngredientClass();
 				if (!ingredientClass.isInstance(ingredient) && ingredient != null) {
-					Log.get().error("Received wrong type of ingredient. Expected {}, got {}", ingredientClass, ingredient.getClass(), new IllegalArgumentException());
+					LOGGER.error("Received wrong type of ingredient. Expected {}, got {}", ingredientClass, ingredient.getClass(), new IllegalArgumentException());
 					return;
 				}
 			}

@@ -17,9 +17,11 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.IRecipeWrapperFactory;
 import mezz.jei.plugins.vanilla.furnace.FurnaceRecipeWrapper;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class RecipeValidator {
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static class Results {
 		private final List<IRecipe> craftingRecipes = new ArrayList<>();
@@ -75,13 +77,13 @@ public final class RecipeValidator {
 			ItemStack recipeOutput = recipe.getRecipeOutput();
 			if (recipeOutput == null || recipeOutput.isEmpty()) {
 				String recipeInfo = getInfo(recipe);
-				Log.get().error("Recipe has no output. {}", recipeInfo);
+				LOGGER.error("Recipe has no output. {}", recipeInfo);
 				return false;
 			}
 			List<Ingredient> ingredients = recipe.getIngredients();
 			if (ingredients == null) {
 				String recipeInfo = getInfo(recipe);
-				Log.get().error("Recipe has no input Ingredients. {}", recipeInfo);
+				LOGGER.error("Recipe has no input Ingredients. {}", recipeInfo);
 				return false;
 			}
 			int inputCount = getInputCount(ingredients);
@@ -89,11 +91,11 @@ public final class RecipeValidator {
 				return false;
 			} else if (inputCount > 9) {
 				String recipeInfo = getInfo(recipe);
-				Log.get().error("Recipe has too many inputs. {}", recipeInfo);
+				LOGGER.error("Recipe has too many inputs. {}", recipeInfo);
 				return false;
 			} else if (inputCount == 0) {
 				String recipeInfo = getInfo(recipe);
-				Log.get().error("Recipe has no inputs. {}", recipeInfo);
+				LOGGER.error("Recipe has no inputs. {}", recipeInfo);
 				return false;
 			}
 			return true;

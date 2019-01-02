@@ -26,7 +26,6 @@ import mezz.jei.api.gui.IGhostIngredientHandler;
 import mezz.jei.api.gui.IGlobalGuiHandler;
 import mezz.jei.api.gui.IGuiScreenHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
-import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
@@ -46,9 +45,12 @@ import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.recipes.RecipeTransferRegistry;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final IJeiHelpers jeiHelpers;
 	private final IIngredientRegistry ingredientRegistry;
 	private final List<IRecipeCategory> recipeCategories = new ArrayList<>();
@@ -102,7 +104,7 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		Preconditions.checkArgument(this.recipeCategoryUids.contains(recipeCategoryUid), "No recipe category has been registered for recipeCategoryUid %s", recipeCategoryUid);
 		if (!this.recipeCategoryUids.contains(recipeCategoryUid)) {
-			Log.get().warn("No recipe category has been registered for recipeCategoryUid {}", recipeCategoryUid);
+			LOGGER.warn("No recipe category has been registered for recipeCategoryUid {}", recipeCategoryUid);
 		}
 
 		for (Object recipe : recipes) {
@@ -229,7 +231,7 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	public void addRecipeRegistryPlugin(IRecipeRegistryPlugin recipeRegistryPlugin) {
 		ErrorUtil.checkNotNull(recipeRegistryPlugin, "recipeRegistryPlugin");
 
-		Log.get().info("Added recipe registry plugin: {}", recipeRegistryPlugin.getClass());
+		LOGGER.info("Added recipe registry plugin: {}", recipeRegistryPlugin.getClass());
 		recipeRegistryPlugins.add(recipeRegistryPlugin);
 	}
 

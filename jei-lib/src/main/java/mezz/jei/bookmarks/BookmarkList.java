@@ -24,11 +24,12 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientRegistry;
-import mezz.jei.util.Log;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class BookmarkList implements IIngredientGridSource {
-
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final String MARKER_OTHER = "O:";
 	private static final String MARKER_STACK = "T:";
 
@@ -105,7 +106,7 @@ public class BookmarkList implements IIngredientGridSource {
 		try (FileWriter writer = new FileWriter(file)) {
 			IOUtils.writeLines(strings, "\n", writer);
 		} catch (IOException e) {
-			Log.get().error("Failed to save bookmarks list to file {}", file, e);
+			LOGGER.error("Failed to save bookmarks list to file {}", file, e);
 		}
 	}
 
@@ -123,7 +124,7 @@ public class BookmarkList implements IIngredientGridSource {
 		try (FileReader reader = new FileReader(file)) {
 			ingredientJsonStrings = IOUtils.readLines(reader);
 		} catch (IOException e) {
-			Log.get().error("Failed to load bookmarks from file {}", file, e);
+			LOGGER.error("Failed to load bookmarks from file {}", file, e);
 			return;
 		}
 
@@ -142,10 +143,10 @@ public class BookmarkList implements IIngredientGridSource {
 						ItemStack normalized = normalize(itemStack);
 						addToLists(normalized, false);
 					} else {
-						Log.get().warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
+						LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
 					}
 				} catch (CommandSyntaxException e) {
-					Log.get().error("Failed to load bookmarked ItemStack from json string:\n{}", itemStackAsJson, e);
+					LOGGER.error("Failed to load bookmarked ItemStack from json string:\n{}", itemStackAsJson, e);
 				}
 			} else if (ingredientJsonString.startsWith(MARKER_OTHER)) {
 				String uid = ingredientJsonString.substring(MARKER_OTHER.length());
@@ -155,7 +156,7 @@ public class BookmarkList implements IIngredientGridSource {
 					addToLists(normalized, false);
 				}
 			} else {
-				Log.get().error("Failed to load unknown bookmarked ingredient:\n{}", ingredientJsonString);
+				LOGGER.error("Failed to load unknown bookmarked ingredient:\n{}", ingredientJsonString);
 			}
 		}
 		notifyListenersOfChange();

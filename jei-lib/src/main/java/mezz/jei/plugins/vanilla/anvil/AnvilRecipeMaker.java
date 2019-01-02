@@ -28,9 +28,11 @@ import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class AnvilRecipeMaker {
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final ItemStack ENCHANTED_BOOK = new ItemStack(Items.ENCHANTED_BOOK);
 
 	private AnvilRecipeMaker() {
@@ -42,19 +44,19 @@ public final class AnvilRecipeMaker {
 		try {
 			getRepairRecipes(recipes, vanillaRecipeFactory);
 		} catch (RuntimeException e) {
-			Log.get().error("Failed to create repair recipes.", e);
+			LOGGER.error("Failed to create repair recipes.", e);
 		}
 		sw.stop();
-		Log.get().debug("Registered vanilla repair recipes in {}", sw);
+		LOGGER.debug("Registered vanilla repair recipes in {}", sw);
 		sw.reset();
 		sw.start();
 		try {
 			getBookEnchantmentRecipes(recipes, vanillaRecipeFactory, ingredientRegistry);
 		} catch (RuntimeException e) {
-			Log.get().error("Failed to create enchantment recipes.", e);
+			LOGGER.error("Failed to create enchantment recipes.", e);
 		}
 		sw.stop();
-		Log.get().debug("Registered enchantment recipes in {}", sw);
+		LOGGER.debug("Registered enchantment recipes in {}", sw);
 		return recipes;
 	}
 
@@ -69,7 +71,7 @@ public final class AnvilRecipeMaker {
 							getBookEnchantmentRecipes(recipes, vanillaRecipeFactory, enchantment, ingredient);
 						} catch (RuntimeException e) {
 							String ingredientInfo = ErrorUtil.getIngredientInfo(ingredient);
-							Log.get().error("Failed to register book enchantment recipes for ingredient: {}", ingredientInfo, e);
+							LOGGER.error("Failed to register book enchantment recipes for ingredient: {}", ingredientInfo, e);
 						}
 					}
 				}
@@ -211,7 +213,7 @@ public final class AnvilRecipeMaker {
 		} catch (RuntimeException e) {
 			String left = ErrorUtil.getItemStackInfo(leftStack);
 			String right = ErrorUtil.getItemStackInfo(rightStack);
-			Log.get().error("Could not get anvil level cost for: ({} and {}).", left, right, e);
+			LOGGER.error("Could not get anvil level cost for: ({} and {}).", left, right, e);
 			return -1;
 		}
 	}

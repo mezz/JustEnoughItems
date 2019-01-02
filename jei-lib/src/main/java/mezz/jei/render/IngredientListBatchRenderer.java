@@ -20,10 +20,13 @@ import mezz.jei.config.IHideModeConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
 public class IngredientListBatchRenderer {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final List<IngredientListSlot> slots = new ArrayList<>();
 
 	private final List<ItemStackFastRenderer> renderItems2d = new ArrayList<>();
@@ -97,7 +100,7 @@ public class IngredientListBatchRenderer {
 				Preconditions.checkNotNull(bakedModel, "IBakedModel must not be null.");
 			} catch (Throwable throwable) {
 				String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
-				Log.get().error("ItemStack crashed getting IBakedModel. {}", stackInfo, throwable);
+				LOGGER.error("ItemStack crashed getting IBakedModel. {}", stackInfo, throwable);
 				return;
 			}
 
