@@ -18,6 +18,10 @@
   "jei.tooltip.not.enough.space": "Hier ist nicht genug Platz zum Anzeigen der Zutaten-Liste.",
   "jei.tooltip.ingredient.list.disabled": "Die JEI-Oberfläche ist deaktiviert.",
   "jei.tooltip.ingredient.list.disabled.how.to.fix": "Klicke auf %s zum Aktivieren.",
+  "jei.tooltip.bookmarks": "JEI Lesezeichen",
+  "jei.tooltip.bookmarks.usage.nokey": "Füge eine Tastenkombination für JEI-Lesezeichen in der Steuerungs-Einstellung hinzu.",
+  "jei.tooltip.bookmarks.usage.key": "Gehe mit den Mauszeiger auf einen Gegenstand und drücke \"%s\" um es als Lesezeichen zu speichern.",
+  "jei.tooltip.bookmarks.not.enough.space": "Dort ist nicht genug Platz, um den Lesezeichen hier anzeigen zukönnen.",
 
   "_comment": "Error Tooltips",
   "jei.tooltip.error.recipe.transfer.missing": "Fehlende Items",
@@ -41,6 +45,8 @@
   "key.jei.toggleCheatMode": "Item-Cheating (de-)aktivieren",
   "key.jei.previousPage": "Vorherige Seite anzeigen",
   "key.jei.nextPage": "Nächste Seite anzeigen",
+  "key.jei.bookmark": "Hinzufügen/Entfernen den mit Lesezeichen versehener Gegenstand",
+  "key.jei.toggleBookmarkOverlay": "Zeige/Verstecke den mit Lesezeichen versehener Gegenstand",
 
   "_comment": "Config",
   "config.jei.default": "Standard",
@@ -56,6 +62,8 @@
   "config.jei.interface.comment": "Die Benutzeroberfläche betreffende Optionen",
   "config.jei.interface.overlayEnabled": "Aktiviere die Item-Liste",
   "config.jei.interface.overlayEnabled.comment": "Zeige die Liste der Items neben einer geöffneten Benutzeroberfläche.",
+  "config.jei.interface.bookmarkOverlayEnabled": "Zeige Lesezeichen",
+  "config.jei.interface.bookmarkOverlayEnabled.comment": "Zeige die Lesezeichen-Liste neben der Benutzeroberfläche.",
   "config.jei.search": "Suche",
   "config.jei.search.comment": "Suchleisteneinstellungen",
   "config.jei.search.modNameSearchMode": "@ModName",
@@ -84,6 +92,8 @@
   "config.jei.advanced.modNameFormat.comment": "Wie der Mod-Name in dem Tooltip für die JEI-Oberfläche formatiert werden soll. Zum Deaktivieren einfach leer lassen.",
   "config.jei.advanced.maxColumns": "Maximale Breite",
   "config.jei.advanced.maxColumns.comment": "Die maximale Breite der Zutaten-Liste.",
+  "config.jei.advanced.maxRecipeGuiHeight": "Max. Rezepthöhe der Benutzeroberfläche",
+  "config.jei.advanced.maxRecipeGuiHeight.comment": "Die maximale höhe der Rezepten-Benutzeroberfläche.",
   "config.jei.advanced.giveMode": "Item-Aufnahmemodus",
   "config.jei.advanced.giveMode.comment": "Wähle, ob JEI die Items direkt in das Inventar geben soll oder du sie mit der Maus aufnimmst.",
 
