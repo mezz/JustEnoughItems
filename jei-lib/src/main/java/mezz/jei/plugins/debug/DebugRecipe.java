@@ -1,4 +1,4 @@
-package mezz.jei.plugins.jei.debug;
+package mezz.jei.plugins.debug;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +22,6 @@ import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.gui.HoverChecker;
-import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 
 public class DebugRecipe implements IRecipeWrapper {
@@ -88,7 +87,7 @@ public class DebugRecipe implements IRecipeWrapper {
 				GuiScreen screen = new GuiInventory(player);
 				minecraft.displayGuiScreen(screen);
 			}
-			IJeiRuntime runtime = JEIInternalPlugin.jeiRuntime;
+			IJeiRuntime runtime = JeiDebugPlugin.jeiRuntime;
 			if (runtime != null) {
 				IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
 				String filterText = ingredientFilter.getFilterText();

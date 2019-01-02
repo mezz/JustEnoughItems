@@ -1,4 +1,4 @@
-package mezz.jei.plugins.jei;
+package mezz.jei.plugins.debug;
 
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.client.gui.inventory.GuiBrewingStand;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -26,19 +25,13 @@ import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.config.ClientConfig;
-import mezz.jei.gui.overlay.GuiProperties;
-import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.plugins.jei.debug.DebugGhostIngredientHandler;
-import mezz.jei.plugins.jei.debug.DebugRecipe;
-import mezz.jei.plugins.jei.debug.DebugRecipeCategory;
-import mezz.jei.plugins.jei.info.IngredientInfoRecipeCategory;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientHelper;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientListFactory;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientRenderer;
 
 @JEIPlugin
-public class JEIInternalPlugin implements IModPlugin {
+public class JeiDebugPlugin implements IModPlugin {
 	@Nullable
 	public static IIngredientRegistry ingredientRegistry;
 	@Nullable
@@ -46,7 +39,7 @@ public class JEIInternalPlugin implements IModPlugin {
 
 	@Override
 	public ResourceLocation getPluginUid() {
-		return new ResourceLocation(ModIds.JEI_ID, "internal");
+		return new ResourceLocation(ModIds.JEI_ID, "debug");
 	}
 
 	@Override
@@ -60,14 +53,9 @@ public class JEIInternalPlugin implements IModPlugin {
 
 	@Override
 	public void registerCategories(IRecipeCategoryRegistration registry) {
-		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
-		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
-
-		registry.addRecipeCategories(
-			new IngredientInfoRecipeCategory(guiHelper)
-		);
-
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
+			IJeiHelpers jeiHelpers = registry.getJeiHelpers();
+			IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 			registry.addRecipeCategories(
 				new DebugRecipeCategory(guiHelper)
 			);
@@ -77,8 +65,6 @@ public class JEIInternalPlugin implements IModPlugin {
 	@Override
 	public void register(IModRegistry registry) {
 		ingredientRegistry = registry.getIngredientRegistry();
-		registry.addGuiScreenHandler(GuiContainer.class, GuiProperties::create);
-		registry.addGuiScreenHandler(RecipesGui.class, GuiProperties::create);
 
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
 			registry.addIngredientInfo(Arrays.asList(
@@ -137,7 +123,7 @@ public class JEIInternalPlugin implements IModPlugin {
 
 	@Override
 	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
-		JEIInternalPlugin.jeiRuntime = jeiRuntime;
+		JeiDebugPlugin.jeiRuntime = jeiRuntime;
 
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
 			if (ingredientRegistry != null) {

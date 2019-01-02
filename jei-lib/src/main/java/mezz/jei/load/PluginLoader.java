@@ -21,7 +21,7 @@ import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.ingredients.ModIngredientRegistration;
-import mezz.jei.plugins.jei.JEIInternalPlugin;
+import mezz.jei.plugins.jei.JeiInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.runtime.JeiHelpers;
@@ -154,7 +154,7 @@ public class PluginLoader {
 	@Nullable
 	private static IModPlugin getJeiInternalPlugin(List<IModPlugin> modPlugins) {
 		for (IModPlugin modPlugin : modPlugins) {
-			if (modPlugin instanceof JEIInternalPlugin) {
+			if (modPlugin instanceof JeiInternalPlugin) {
 				return modPlugin;
 			}
 		}

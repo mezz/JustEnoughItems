@@ -132,7 +132,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 		if (ingredientHelper != null) {
 			return ingredientHelper;
 		}
-		throw new IllegalArgumentException("Unknown ingredient type: " + ingredientType);
+		throw new IllegalArgumentException("Unknown ingredient type: " + ingredientType.getIngredientClass());
 	}
 
 	@Override

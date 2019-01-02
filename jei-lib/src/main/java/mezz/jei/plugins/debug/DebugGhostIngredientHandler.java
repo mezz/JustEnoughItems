@@ -1,4 +1,4 @@
-package mezz.jei.plugins.jei.debug;
+package mezz.jei.plugins.debug;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
