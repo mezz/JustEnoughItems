@@ -8,7 +8,7 @@ import net.minecraft.util.text.TextFormatting;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.bookmarks.BookmarkList;
-import mezz.jei.config.ClientConfig;
+import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
@@ -16,19 +16,21 @@ import mezz.jei.util.Translator;
 import org.lwjgl.glfw.GLFW;
 
 public class BookmarkButton extends GuiIconToggleButton {
-	public static BookmarkButton create(BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, GuiHelper guiHelper) {
+	public static BookmarkButton create(BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, GuiHelper guiHelper, IWorldConfig worldConfig) {
 		IDrawableStatic offIcon = guiHelper.getBookmarkButtonDisabledIcon();
 		IDrawableStatic onIcon = guiHelper.getBookmarkButtonEnabledIcon();
-		return new BookmarkButton(offIcon, onIcon, bookmarkOverlay, bookmarkList);
+		return new BookmarkButton(offIcon, onIcon, bookmarkOverlay, bookmarkList, worldConfig);
 	}
 
 	private final BookmarkOverlay bookmarkOverlay;
 	private final BookmarkList bookmarkList;
+	private final IWorldConfig worldConfig;
 
-	private BookmarkButton(IDrawable offIcon, IDrawable onIcon, BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList) {
+	private BookmarkButton(IDrawable offIcon, IDrawable onIcon, BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, IWorldConfig worldConfig) {
 		super(offIcon, onIcon);
 		this.bookmarkOverlay = bookmarkOverlay;
 		this.bookmarkList = bookmarkList;
+		this.worldConfig = worldConfig;
 	}
 
 	@Override
@@ -52,7 +54,7 @@ public class BookmarkButton extends GuiIconToggleButton {
 	@Override
 	protected boolean onMouseClicked(double mouseX, double mouseY, int mouseButton) {
 		if (!bookmarkList.isEmpty() && bookmarkOverlay.hasRoom()) {
-			ClientConfig.getInstance().toggleBookmarkEnabled();
+			worldConfig.toggleBookmarkEnabled();
 			return true;
 		}
 		return false;

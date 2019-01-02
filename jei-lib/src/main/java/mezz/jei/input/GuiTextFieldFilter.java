@@ -9,8 +9,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
 
-import mezz.jei.config.ClientConfig;
 import mezz.jei.config.Constants;
+import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
@@ -25,12 +25,14 @@ public class GuiTextFieldFilter extends GuiTextField {
 
 	private final HoverChecker hoverChecker;
 	private final IIngredientGridSource ingredientSource;
+	private final IWorldConfig worldConfig;
 	private boolean previousKeyboardRepeatEnabled;
 
 	private final DrawableNineSliceTexture background;
 
-	public GuiTextFieldFilter(int componentId, IIngredientGridSource ingredientSource) {
+	public GuiTextFieldFilter(int componentId, IIngredientGridSource ingredientSource, IWorldConfig worldConfig) {
 		super(componentId, Minecraft.getInstance().fontRenderer, 0, 0, 0, 0);
+		this.worldConfig = worldConfig;
 
 		setMaxStringLength(maxSearchLength);
 		this.hoverChecker = new HoverChecker(0, 0, 0, 0);
@@ -51,7 +53,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 	}
 
 	public void update() {
-		String filterText = ClientConfig.getInstance().getFilterText();
+		String filterText = worldConfig.getFilterText();
 		if (!filterText.equals(getText())) {
 			setText(filterText);
 		}
@@ -109,7 +111,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
 		if (mouseButton == 1) {
 			setText("");
-			return ClientConfig.getInstance().setFilterText("");
+			return worldConfig.setFilterText("");
 		} else {
 			super.mouseClicked(mouseX, mouseY, mouseButton);
 		}

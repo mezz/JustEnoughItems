@@ -12,7 +12,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 
 import mezz.jei.api.gui.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.config.ClientConfig;
+import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientRegistry;
@@ -22,6 +22,7 @@ public class GhostIngredientDragManager {
 	private final IGhostIngredientDragSource source;
 	private final GuiScreenHelper guiScreenHelper;
 	private final IngredientRegistry ingredientRegistry;
+	private final IWorldConfig worldConfig;
 	private final List<GhostIngredientReturning> ghostIngredientsReturning = new ArrayList<>();
 	@Nullable
 	private GhostIngredientDrag<?> ghostIngredientDrag;
@@ -30,10 +31,11 @@ public class GhostIngredientDragManager {
 	@Nullable
 	private List<IGhostIngredientHandler.Target<Object>> hoveredIngredientTargets;
 
-	public GhostIngredientDragManager(IGhostIngredientDragSource source, GuiScreenHelper guiScreenHelper, IngredientRegistry ingredientRegistry) {
+	public GhostIngredientDragManager(IGhostIngredientDragSource source, GuiScreenHelper guiScreenHelper, IngredientRegistry ingredientRegistry, IWorldConfig worldConfig) {
 		this.source = source;
 		this.guiScreenHelper = guiScreenHelper;
 		this.ingredientRegistry = ingredientRegistry;
+		this.worldConfig = worldConfig;
 	}
 
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
@@ -68,7 +70,7 @@ public class GhostIngredientDragManager {
 					}
 				}
 			}
-			if (this.hoveredIngredientTargets != null && !ClientConfig.getInstance().isCheatItemsEnabled()) {
+			if (this.hoveredIngredientTargets != null && !worldConfig.isCheatItemsEnabled()) {
 				GhostIngredientDrag.drawTargets(mouseX, mouseY, this.hoveredIngredientTargets);
 			}
 		}

@@ -12,9 +12,10 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
 
-import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IFilterTextSource;
 import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.IIngredientFilterConfig;
+import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.PageNavigation;
@@ -42,6 +43,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 	private final PageNavigation navigation;
 	private final GuiScreenHelper guiScreenHelper;
 	private final IFilterTextSource filterTextSource;
+	private final IWorldConfig worldConfig;
 	private final IngredientGrid ingredientGrid;
 	private final IIngredientGridSource ingredientSource;
 	private Rectangle area = new Rectangle();
@@ -51,10 +53,13 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		IFilterTextSource filterTextSource,
 		GuiScreenHelper guiScreenHelper,
 		IHideModeConfig hideModeConfig,
+		IIngredientFilterConfig ingredientFilterConfig,
+		IWorldConfig worldConfig,
 		GridAlignment alignment
 	) {
 		this.filterTextSource = filterTextSource;
-		this.ingredientGrid = new IngredientGrid(alignment, hideModeConfig);
+		this.worldConfig = worldConfig;
+		this.ingredientGrid = new IngredientGrid(alignment, hideModeConfig, ingredientFilterConfig, worldConfig);
 		this.ingredientSource = ingredientSource;
 		this.guiScreenHelper = guiScreenHelper;
 		this.pageDelegate = new IngredientGridPaged();
@@ -156,7 +161,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 	 */
 	protected boolean checkHotbarKeys(InputMappings.Input input) {
 		GuiScreen guiScreen = Minecraft.getInstance().currentScreen;
-		if (ClientConfig.getInstance().isCheatItemsEnabled() && guiScreen != null && !(guiScreen instanceof RecipesGui)) {
+		if (worldConfig.isCheatItemsEnabled() && guiScreen != null && !(guiScreen instanceof RecipesGui)) {
 			final double mouseX = MouseUtil.getX();
 			final double mouseY = MouseUtil.getY();
 			if (isMouseOver(mouseX, mouseY)) {

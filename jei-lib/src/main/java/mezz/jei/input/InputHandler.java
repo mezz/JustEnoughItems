@@ -19,8 +19,8 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.bookmarks.BookmarkList;
-import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.IngredientBlacklistType;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
@@ -42,6 +42,7 @@ public class InputHandler {
 	private final RecipesGui recipesGui;
 	private final IngredientListOverlay ingredientListOverlay;
 	private final IHideModeConfig hideModeConfig;
+	private final IWorldConfig worldConfig;
 	private final LeftAreaDispatcher leftAreaDispatcher;
 	private final BookmarkList bookmarkList;
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<>();
@@ -53,6 +54,7 @@ public class InputHandler {
 		IngredientRegistry ingredientRegistry,
 		IngredientListOverlay ingredientListOverlay,
 		IHideModeConfig hideModeConfig,
+		IWorldConfig worldConfig,
 		GuiScreenHelper guiScreenHelper,
 		LeftAreaDispatcher leftAreaDispatcher,
 		BookmarkList bookmarkList
@@ -63,6 +65,7 @@ public class InputHandler {
 		this.recipesGui = runtime.getRecipesGui();
 		this.ingredientListOverlay = ingredientListOverlay;
 		this.hideModeConfig = hideModeConfig;
+		this.worldConfig = worldConfig;
 		this.leftAreaDispatcher = leftAreaDispatcher;
 		this.bookmarkList = bookmarkList;
 
@@ -149,7 +152,7 @@ public class InputHandler {
 
 	private boolean handleMouseClick(GuiScreen guiScreen, int mouseButton, double mouseX, double mouseY) {
 		IClickedIngredient<?> clicked = getFocusUnderMouseForClick(mouseX, mouseY);
-		if (ClientConfig.getInstance().isHideModeEnabled() && clicked != null && handleClickEdit(clicked)) {
+		if (worldConfig.isHideModeEnabled() && clicked != null && handleClickEdit(clicked)) {
 			return true;
 		}
 		if (ingredientListOverlay.handleMouseClicked(mouseX, mouseY, mouseButton)) {
@@ -270,11 +273,11 @@ public class InputHandler {
 
 	private boolean handleGlobalKeybinds(InputMappings.Input input) {
 		if (KeyBindings.toggleOverlay.isActiveAndMatches(input)) {
-			ClientConfig.getInstance().toggleOverlayEnabled();
+			worldConfig.toggleOverlayEnabled();
 			return false;
 		}
 		if (KeyBindings.toggleBookmarkOverlay.isActiveAndMatches(input)) {
-			ClientConfig.getInstance().toggleBookmarkEnabled();
+			worldConfig.toggleBookmarkEnabled();
 			return false;
 		}
 		return ingredientListOverlay.onGlobalKeyPressed(input);
@@ -289,14 +292,12 @@ public class InputHandler {
 			if (clicked != null) {
 				if (bookmark) {
 					if (bookmarkList.remove(clicked.getValue())) {
-						if (bookmarkList.isEmpty() && ClientConfig.getInstance().isBookmarkOverlayEnabled()) {
-							ClientConfig.getInstance().toggleBookmarkEnabled();
+						if (bookmarkList.isEmpty()) {
+							worldConfig.setBookmarkEnabled(false);
 						}
 						return true;
 					} else {
-						if (!ClientConfig.getInstance().isBookmarkOverlayEnabled()) {
-							ClientConfig.getInstance().toggleBookmarkEnabled();
-						}
+						worldConfig.setBookmarkEnabled(true);
 						return bookmarkList.add(clicked.getValue());
 					}
 				} else {

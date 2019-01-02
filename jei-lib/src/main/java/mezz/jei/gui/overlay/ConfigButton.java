@@ -9,7 +9,7 @@ import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.config.ClientConfig;
+import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
@@ -17,28 +17,30 @@ import mezz.jei.util.Translator;
 import org.lwjgl.glfw.GLFW;
 
 public class ConfigButton extends GuiIconToggleButton {
-	public static ConfigButton create(IngredientListOverlay parent) {
+	public static ConfigButton create(IngredientListOverlay parent, IWorldConfig worldConfig) {
 		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
-		return new ConfigButton(guiHelper.getConfigButtonIcon(), guiHelper.getConfigButtonCheatIcon(), parent);
+		return new ConfigButton(guiHelper.getConfigButtonIcon(), guiHelper.getConfigButtonCheatIcon(), parent, worldConfig);
 	}
 
 	private final IngredientListOverlay parent;
+	private final IWorldConfig worldConfig;
 
-	private ConfigButton(IDrawable disabledIcon, IDrawable enabledIcon, IngredientListOverlay parent) {
+	private ConfigButton(IDrawable disabledIcon, IDrawable enabledIcon, IngredientListOverlay parent, IWorldConfig worldConfig) {
 		super(disabledIcon, enabledIcon);
 		this.parent = parent;
+		this.worldConfig = worldConfig;
 	}
 
 	@Override
 	protected void getTooltips(List<String> tooltip) {
 		tooltip.add(Translator.translateToLocal("jei.tooltip.config"));
-		if (!ClientConfig.getInstance().isOverlayEnabled()) {
+		if (!worldConfig.isOverlayEnabled()) {
 			tooltip.add(TextFormatting.GOLD + Translator.translateToLocal("jei.tooltip.ingredient.list.disabled"));
 			tooltip.add(TextFormatting.GOLD + Translator.translateToLocalFormatted("jei.tooltip.ingredient.list.disabled.how.to.fix", KeyBindings.toggleOverlay.func_197978_k()));
 		} else if (!parent.isListDisplayed()) {
 			tooltip.add(TextFormatting.GOLD + Translator.translateToLocal("jei.tooltip.not.enough.space"));
 		}
-		if (ClientConfig.getInstance().isCheatItemsEnabled()) {
+		if (worldConfig.isCheatItemsEnabled()) {
 			tooltip.add(TextFormatting.RED + Translator.translateToLocal("jei.tooltip.cheat.mode.button.enabled"));
 			KeyBinding toggleCheatMode = KeyBindings.toggleCheatMode;
 			if (toggleCheatMode.getKey().getKeyCode() != 0) {
@@ -52,15 +54,15 @@ public class ConfigButton extends GuiIconToggleButton {
 
 	@Override
 	protected boolean isIconToggledOn() {
-		return ClientConfig.getInstance().isCheatItemsEnabled();
+		return worldConfig.isCheatItemsEnabled();
 	}
 
 	@Override
 	protected boolean onMouseClicked(double mouseX, double mouseY, int mouseButton) {
-		if (ClientConfig.getInstance().isOverlayEnabled()) {
+		if (worldConfig.isOverlayEnabled()) {
 
 			if (InputMappings.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL) || InputMappings.isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL)) {
-				ClientConfig.getInstance().toggleCheatItemsEnabled();
+				worldConfig.toggleCheatItemsEnabled();
 			} else {
 				Minecraft minecraft = Minecraft.getInstance();
 				if (minecraft.currentScreen != null) {

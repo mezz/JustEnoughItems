@@ -9,7 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
-import mezz.jei.config.ClientConfig;
 import mezz.jei.events.OverlayToggleEvent;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
@@ -24,7 +23,12 @@ public class GuiEventHandler {
 	private final RecipeRegistry recipeRegistry;
 	private boolean drawnOnBackground = false;
 
-	public GuiEventHandler(GuiScreenHelper guiScreenHelper, LeftAreaDispatcher leftAreaDispatcher, IngredientListOverlay ingredientListOverlay, RecipeRegistry recipeRegistry) {
+	public GuiEventHandler(
+		GuiScreenHelper guiScreenHelper,
+		LeftAreaDispatcher leftAreaDispatcher,
+		IngredientListOverlay ingredientListOverlay,
+		RecipeRegistry recipeRegistry
+	) {
 		this.guiScreenHelper = guiScreenHelper;
 		this.leftAreaDispatcher = leftAreaDispatcher;
 		this.ingredientListOverlay = ingredientListOverlay;
@@ -112,7 +116,7 @@ public class GuiEventHandler {
 
 	@SubscribeEvent
 	public void onPotionShiftEvent(GuiScreenEvent.PotionShiftEvent event) {
-		if (ClientConfig.getInstance().isOverlayEnabled()) {
+		if (ingredientListOverlay.isListDisplayed()) {
 			event.setCanceled(true);
 		}
 	}

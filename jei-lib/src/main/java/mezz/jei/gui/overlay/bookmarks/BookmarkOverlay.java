@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.ClientConfig;
+import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.overlay.IngredientGrid;
@@ -38,16 +39,18 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 
 	// data
 	private final BookmarkList bookmarkList;
+	private final IWorldConfig worldConfig;
 
-	public BookmarkOverlay(BookmarkList bookmarkList, GuiHelper guiHelper, IngredientGridWithNavigation contents) {
+	public BookmarkOverlay(BookmarkList bookmarkList, GuiHelper guiHelper, IngredientGridWithNavigation contents, IWorldConfig worldConfig) {
 		this.bookmarkList = bookmarkList;
-		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, guiHelper);
+		this.worldConfig = worldConfig;
+		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, guiHelper, worldConfig);
 		this.contents = contents;
 		bookmarkList.addListener(() -> contents.updateLayout(false));
 	}
 
 	public boolean isListDisplayed() {
-		return ClientConfig.getInstance().isBookmarkOverlayEnabled() && hasRoom && !bookmarkList.isEmpty();
+		return worldConfig.isBookmarkOverlayEnabled() && hasRoom && !bookmarkList.isEmpty();
 	}
 
 	public boolean hasRoom() {
@@ -149,7 +152,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 				(mouseButton == GLFW.GLFW_MOUSE_BUTTON_1 || mouseButton == GLFW.GLFW_MOUSE_BUTTON_2 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(input))) {
 				IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
 				if (clicked != null) {
-					if (ClientConfig.getInstance().isCheatItemsEnabled()) {
+					if (worldConfig.isCheatItemsEnabled()) {
 						ItemStack itemStack = clicked.getCheatItemStack();
 						if (!itemStack.isEmpty()) {
 							CommandUtil.giveStack(itemStack, input);

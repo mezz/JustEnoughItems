@@ -13,8 +13,8 @@ import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.bookmarks.BookmarkList;
-import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
@@ -39,7 +39,7 @@ public class PluginLoader {
 	private final IngredientBlacklistInternal blacklist;
 	private final ModRegistry modRegistry;
 	private final IngredientRegistry ingredientRegistry;
-	private final ClientConfig config;
+	private final IIngredientFilterConfig ingredientFilterConfig;
 	private final IHideModeConfig hideModeConfig;
 	private final JeiHelpers jeiHelpers;
 	@Nullable
@@ -49,8 +49,8 @@ public class PluginLoader {
 	@Nullable
 	private BookmarkList bookmarkList;
 
-	public PluginLoader(List<IModPlugin> plugins, ClientConfig config, IHideModeConfig hideModeConfig, IModIdHelper modIdHelper) {
-		this.config = config;
+	public PluginLoader(List<IModPlugin> plugins, IHideModeConfig hideModeConfig, IIngredientFilterConfig ingredientFilterConfig, IModIdHelper modIdHelper, boolean debugMode) {
+		this.ingredientFilterConfig = ingredientFilterConfig;
 		this.hideModeConfig = hideModeConfig;
 		this.timer = new LoggedTimer();
 		this.modIdHelper = modIdHelper;
@@ -65,7 +65,7 @@ public class PluginLoader {
 		Internal.setStackHelper(stackHelper);
 
 		ModIngredientRegistration modIngredientRegistry = registerIngredients(plugins);
-		ingredientRegistry = modIngredientRegistry.createIngredientRegistry(modIdHelper, blacklist, config.isDebugModeEnabled());
+		ingredientRegistry = modIngredientRegistry.createIngredientRegistry(modIdHelper, blacklist, debugMode);
 		Internal.setIngredientRegistry(ingredientRegistry);
 
 		jeiHelpers = new JeiHelpers(ingredientRegistry, blacklist, stackHelper, hideModeConfig, modIdHelper);
@@ -105,7 +105,7 @@ public class PluginLoader {
 			NonNullList<IIngredientListElement> ingredientList = IngredientListElementFactory.createBaseList(ingredientRegistry, modIdHelper);
 			timer.stop();
 			timer.start("Building ingredient filter");
-			ingredientFilter = new IngredientFilter(blacklist, config, hideModeConfig);
+			ingredientFilter = new IngredientFilter(blacklist, ingredientFilterConfig, hideModeConfig);
 			ingredientFilter.addIngredients(ingredientList);
 			Internal.setIngredientFilter(ingredientFilter);
 			timer.stop();

@@ -14,6 +14,8 @@ import net.minecraft.item.ItemStack;
 import mezz.jei.Internal;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.IIngredientFilterConfig;
+import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.gui.ingredients.IIngredientListElement;
@@ -43,10 +45,14 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 
 	private Rectangle area = new Rectangle();
 	protected final IngredientListBatchRenderer guiIngredientSlots;
+	private final IIngredientFilterConfig ingredientFilterConfig;
+	private final IWorldConfig worldConfig;
 
-	public IngredientGrid(GridAlignment alignment, IHideModeConfig hideModeConfig) {
+	public IngredientGrid(GridAlignment alignment, IHideModeConfig hideModeConfig, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig) {
 		this.alignment = alignment;
-		this.guiIngredientSlots = new IngredientListBatchRenderer(hideModeConfig);
+		this.guiIngredientSlots = new IngredientListBatchRenderer(hideModeConfig, worldConfig);
+		this.ingredientFilterConfig = ingredientFilterConfig;
+		this.worldConfig = worldConfig;
 	}
 
 	public int size() {
@@ -72,7 +78,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		this.area = new Rectangle(x, y, width, height);
 		this.guiIngredientSlots.clear();
 
-		if (rows == 0 || columns < ClientConfig.getInstance().smallestNumColumns) {
+		if (rows == 0 || columns < ClientConfig.smallestNumColumns) {
 			return false;
 		}
 
@@ -117,14 +123,14 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 			} else {
 				IngredientListElementRenderer hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
 				if (hovered != null) {
-					hovered.drawTooltip(minecraft, mouseX, mouseY);
+					hovered.drawTooltip(mouseX, mouseY, ingredientFilterConfig, worldConfig);
 				}
 			}
 		}
 	}
 
 	private boolean shouldDeleteItemOnClick(Minecraft minecraft, double mouseX, double mouseY) {
-		if (ClientConfig.getInstance().isDeleteItemsInCheatModeActive()) {
+		if (worldConfig.isDeleteItemsInCheatModeActive()) {
 			EntityPlayer player = minecraft.player;
 			if (player != null) {
 				ItemStack itemStack = player.inventory.getItemStack();

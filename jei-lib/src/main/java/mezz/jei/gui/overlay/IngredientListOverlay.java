@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 import mezz.jei.api.IIngredientListOverlay;
 import mezz.jei.api.gui.IGuiProperties;
 import mezz.jei.config.ClientConfig;
-import mezz.jei.config.IFilterTextSource;
+import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
@@ -49,6 +49,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	private final IngredientFilter ingredientFilter;
 	private final GuiIconToggleButton configButton;
 	private final IngredientGridWithNavigation contents;
+	private final IWorldConfig worldConfig;
 	private final GuiScreenHelper guiScreenHelper;
 	private final GuiTextFieldFilter searchField;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
@@ -58,19 +59,25 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	@Nullable
 	private IGuiProperties guiProperties;
 
-	public IngredientListOverlay(IngredientFilter ingredientFilter, IFilterTextSource filterTextSource, IngredientRegistry ingredientRegistry, GuiScreenHelper guiScreenHelper, IngredientGridWithNavigation contents) {
+	public IngredientListOverlay(
+		IngredientFilter ingredientFilter,
+		IngredientRegistry ingredientRegistry,
+		GuiScreenHelper guiScreenHelper,
+		IngredientGridWithNavigation contents,
+		IWorldConfig worldConfig
+	) {
 		this.ingredientFilter = ingredientFilter;
 		this.guiScreenHelper = guiScreenHelper;
-
 		this.contents = contents;
-		ingredientFilter.addListener(() -> onSetFilterText(filterTextSource.getFilterText()));
-		this.searchField = new GuiTextFieldFilter(0, ingredientFilter);
-		this.configButton = ConfigButton.create(this);
-		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, guiScreenHelper, ingredientRegistry);
+		this.worldConfig = worldConfig;
+		ingredientFilter.addListener(() -> onSetFilterText(worldConfig.getFilterText()));
+		this.searchField = new GuiTextFieldFilter(0, ingredientFilter, worldConfig);
+		this.configButton = ConfigButton.create(this, worldConfig);
+		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, guiScreenHelper, ingredientRegistry, worldConfig);
 		this.setKeyboardFocus(false);
 	}
 
-	public void rebuildItemFilter() {
+	public void rebuildIngredientFilter() {
 		LOGGER.info("Updating ingredient filter...");
 		long start_time = System.currentTimeMillis();
 		this.ingredientFilter.modesChanged();
@@ -79,7 +86,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	}
 
 	public boolean isListDisplayed() {
-		return ClientConfig.getInstance().isOverlayEnabled() && this.guiProperties != null && this.hasRoom;
+		return worldConfig.isOverlayEnabled() && this.guiProperties != null && this.hasRoom;
 	}
 
 	private static Rectangle getDisplayArea(IGuiProperties guiProperties) {
@@ -148,7 +155,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 			}
 		}
 		if (wasDisplayed && !isListDisplayed()) {
-			ClientConfig.getInstance().saveFilterText();
+			worldConfig.saveFilterText();
 		}
 	}
 
@@ -264,7 +271,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 				(mouseButton == 0 || mouseButton == 1 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(input))) {
 				IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
 				if (clicked != null) {
-					if (ClientConfig.getInstance().isCheatItemsEnabled()) {
+					if (worldConfig.isCheatItemsEnabled()) {
 						ItemStack itemStack = clicked.getCheatItemStack();
 						if (!itemStack.isEmpty()) {
 							CommandUtil.giveStack(itemStack, input);
@@ -306,7 +313,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	public boolean onGlobalKeyPressed(InputMappings.Input input) {
 		if (isListDisplayed()) {
 			if (KeyBindings.toggleCheatMode.isActiveAndMatches(input)) {
-				ClientConfig.getInstance().toggleCheatItemsEnabled();
+				worldConfig.toggleCheatItemsEnabled();
 				return true;
 			}
 			if (KeyBindings.focusSearch.isActiveAndMatches(input)) {
@@ -321,7 +328,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		if (isListDisplayed() &&
 			hasKeyboardFocus() &&
 			searchField.charTyped(codePoint, modifiers)) {
-			boolean changed = ClientConfig.getInstance().setFilterText(searchField.getText());
+			boolean changed = worldConfig.setFilterText(searchField.getText());
 			if (changed) {
 				updateLayout(true);
 			}
@@ -334,7 +341,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		if (isListDisplayed()) {
 			if (hasKeyboardFocus() &&
 				searchField.keyPressed(keyCode, scanCode, modifiers)) {
-				boolean changed = ClientConfig.getInstance().setFilterText(searchField.getText());
+				boolean changed = worldConfig.setFilterText(searchField.getText());
 				if (changed) {
 					updateLayout(true);
 				}

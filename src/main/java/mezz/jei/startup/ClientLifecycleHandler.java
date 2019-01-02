@@ -16,20 +16,25 @@ import net.minecraft.client.util.InputMappings;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.resources.IReloadableResourceManager;
 
+import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.ModIds;
 import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.config.HideModeConfig;
 import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.IngredientFilterConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.ModIdFormattingConfig;
 import mezz.jei.config.ServerInfo;
+import mezz.jei.config.WorldConfig;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.events.PlayerJoinedWorldEvent;
+import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.ingredients.ForgeModIdHelper;
 import mezz.jei.network.PacketHandler;
 import mezz.jei.network.PacketHandlerClient;
+import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.AnnotatedInstanceUtil;
 import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
@@ -40,6 +45,8 @@ public class ClientLifecycleHandler {
 	private final JeiStarter starter = new JeiStarter();
 	private final ClientConfig clientConfig;
 	private final ModIdFormattingConfig modIdFormattingConfig;
+	private final IngredientFilterConfig ingredientFilterConfig;
+	private final WorldConfig worldConfig;
 	private final IModIdHelper modIdHelper;
 	private final IHideModeConfig hideModeConfig;
 
@@ -55,6 +62,8 @@ public class ClientLifecycleHandler {
 			}
 		}
 		clientConfig = new ClientConfig(jeiConfigurationDir);
+		worldConfig = new WorldConfig(jeiConfigurationDir);
+		ingredientFilterConfig = new IngredientFilterConfig(clientConfig.getConfig());
 		modIdFormattingConfig = new ModIdFormattingConfig(clientConfig.getConfig());
 		modIdHelper = new ForgeModIdHelper(clientConfig, modIdFormattingConfig);
 		ErrorUtil.setModIdHelper(modIdHelper);
@@ -68,11 +77,25 @@ public class ClientLifecycleHandler {
 		EventBusHelper.addListener(FMLPreInitializationEvent.class, event -> clientConfig.onPreInit());
 		EventBusHelper.addListener(ConfigChangedEvent.OnConfigChangedEvent.class, event -> {
 			modIdFormattingConfig.checkForModNameFormatOverride();
-			clientConfig.onConfigChanged(event.getModID());
+			if (ModIds.JEI_ID.equals(event.getModID())) {
+				if (clientConfig.syncAllConfig()) {
+					// todo
+				}
+				if (ingredientFilterConfig.syncConfig()) {
+					JeiRuntime runtime = Internal.getRuntime();
+					if (runtime != null) {
+						IngredientListOverlay ingredientListOverlay = runtime.getIngredientListOverlay();
+						ingredientListOverlay.rebuildIngredientFilter();
+					}
+				}
+				if (worldConfig.syncConfig()) {
+					// todo
+				}
+			}
 		});
-		EventBusHelper.addListener(WorldEvent.Save.class, event -> clientConfig.onWorldSave());
+		EventBusHelper.addListener(WorldEvent.Save.class, event -> worldConfig.onWorldSave());
 
-		PacketHandlerClient packetHandler = new PacketHandlerClient();
+		PacketHandlerClient packetHandler = new PacketHandlerClient(worldConfig);
 		EventNetworkChannel channel = NetworkRegistry.newEventChannel(PacketHandler.CHANNEL_ID, () -> "1.0.0", s -> {
 			boolean jeiOnServer = !NetworkRegistry.ABSENT.equals(s);
 			ServerInfo.onConnectedToServer(jeiOnServer);
@@ -95,11 +118,11 @@ public class ClientLifecycleHandler {
 				} else {
 					LOGGER.info("Restarting JEI.");
 				}
-				this.starter.start(plugins, clientConfig, hideModeConfig, modIdHelper);
+				this.starter.start(plugins, clientConfig, hideModeConfig, ingredientFilterConfig, worldConfig, modIdHelper);
 			}
 		});
 
-		this.starter.start(plugins, clientConfig, hideModeConfig, modIdHelper);
+		this.starter.start(plugins, clientConfig, hideModeConfig, ingredientFilterConfig, worldConfig, modIdHelper);
 	}
 
 	/**
@@ -111,7 +134,7 @@ public class ClientLifecycleHandler {
 			NetHandlerPlayClient connection = Minecraft.getInstance().getConnection();
 			if (connection != null) {
 				NetworkManager networkManager = connection.getNetworkManager();
-				clientConfig.syncWorldConfig(networkManager);
+				worldConfig.syncWorldConfig(networkManager);
 			}
 			onRecipesLoaded();
 			// TODO move this to its own event handler when the event exists

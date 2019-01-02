@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import com.google.common.base.Preconditions;
 import mezz.jei.api.ingredients.ISlowRenderItem;
 import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.util.ErrorUtil;
@@ -33,11 +34,13 @@ public class IngredientListBatchRenderer {
 	private final List<ItemStackFastRenderer> renderItems3d = new ArrayList<>();
 	private final List<IngredientListElementRenderer> renderOther = new ArrayList<>();
 	private final IHideModeConfig hideModeConfig;
+	private final IWorldConfig worldConfig;
 
 	private int blocked = 0;
 
-	public IngredientListBatchRenderer(IHideModeConfig hideModeConfig) {
+	public IngredientListBatchRenderer(IHideModeConfig hideModeConfig, IWorldConfig worldConfig) {
 		this.hideModeConfig = hideModeConfig;
+		this.worldConfig = worldConfig;
 	}
 
 	public void clear() {
@@ -163,13 +166,13 @@ public class IngredientListBatchRenderer {
 		// 3d Items
 		GlStateManager.enableLighting();
 		for (ItemStackFastRenderer slot : renderItems3d) {
-			slot.renderItemAndEffectIntoGUI(hideModeConfig);
+			slot.renderItemAndEffectIntoGUI(hideModeConfig, worldConfig);
 		}
 
 		// 2d Items
 		GlStateManager.disableLighting();
 		for (ItemStackFastRenderer slot : renderItems2d) {
-			slot.renderItemAndEffectIntoGUI(hideModeConfig);
+			slot.renderItemAndEffectIntoGUI(hideModeConfig, worldConfig);
 		}
 
 		GlStateManager.disableAlphaTest();
@@ -195,7 +198,7 @@ public class IngredientListBatchRenderer {
 
 		// other rendering
 		for (IngredientListElementRenderer slot : renderOther) {
-			slot.renderSlow(hideModeConfig);
+			slot.renderSlow(hideModeConfig, worldConfig);
 		}
 
 		RenderHelper.disableStandardItemLighting();
