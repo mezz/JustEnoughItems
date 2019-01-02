@@ -23,7 +23,7 @@ import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.Constants;
-import mezz.jei.plugins.jei.JEIInternalPlugin;
+import mezz.jei.plugins.debug.JeiDebugPlugin;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 
 public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
@@ -69,7 +69,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 
 	@Override
 	public void drawExtras(Minecraft minecraft) {
-		IJeiRuntime runtime = JEIInternalPlugin.jeiRuntime;
+		IJeiRuntime runtime = JeiDebugPlugin.jeiRuntime;
 		if (runtime != null) {
 			IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
 			minecraft.fontRenderer.drawString(ingredientFilter.getFilterText(), 20, 52, 0);
@@ -83,7 +83,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	}
 
 	private <T> void drawIngredientName(Minecraft minecraft, T ingredient) {
-		IIngredientRegistry ingredientRegistry = JEIInternalPlugin.ingredientRegistry;
+		IIngredientRegistry ingredientRegistry = JeiDebugPlugin.ingredientRegistry;
 		if (ingredientRegistry != null) {
 			IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 			String jeiUid = ingredientHelper.getUniqueId(ingredient);
