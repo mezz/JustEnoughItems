@@ -65,8 +65,14 @@ allprojects {
 	dependencies {
 		minecraft([
 			group  : "${project.forgegroup}",
-			name   : "forge",
+			name   : "userdev",
 			version: "${project.mcversion}-${project.forgeversion}"
+		])
+		compile([
+			group  : "${project.forgegroup}",
+			name   : "forge",
+			version: "${project.mcversion}-${project.forgeversion}",
+			classifier: "launcher"
 		])
 		testCompile([
 			group: "junit",
@@ -87,8 +93,13 @@ allprojects {
 			main = "net.minecraftforge.userdev.UserdevLauncher"
 			ideaModuleName = "${project.name}_main"
 			workingDirectory = project.file("run").canonicalPath
-			environment "target", "fmldevclient"
+			environment "target", "fmluserdevclient"
 			environment "assetDirectory", downloadAssets.output.absolutePath
+			environment "FORGE_VERSION", "${project.forgeversion}"
+			environment "FORGE_GROUP", "${project.forgegroup}"
+			environment "MCP_VERSION", "${project.mcp_mappings}"
+			environment "MC_VERSION", "${project.mcversion}"
+			environment "MOD_CLASSES", "${sourceSets.main.output.resourcesDir}${File.pathSeparator}${sourceSets.main.output.classesDirs.join(File.pathSeparator)}"
 		}
 
 		runConfig {
@@ -98,6 +109,11 @@ allprojects {
 			workingDirectory = project.file("run").canonicalPath
 			environment "target", "fmldevserver"
 			environment "assetDirectory", downloadAssets.output.absolutePath
+			environment "FORGE_VERSION", "${project.forgeversion}"
+			environment "FORGE_GROUP", "${project.forgegroup}"
+			environment "MCP_VERSION", "${project.mcp_mappings}"
+			environment "MC_VERSION", "${project.mcversion}"
+			environment "MOD_CLASSES", "${sourceSets.main.output.resourcesDir}${File.pathSeparator}${sourceSets.main.output.classesDirs.join(File.pathSeparator)}"
 		}
 	}
 
