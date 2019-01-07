@@ -74,7 +74,7 @@ public class ClientLifecycleHandler {
 //		eventBus.addListener(EventPriority.NORMAL, false, FMLLoadCompleteEvent.class, event -> this.onLoadComplete());
 		EventBusHelper.addListener(GuiScreenEvent.KeyboardKeyPressedEvent.Pre.class, this::onGuiKeyPressedEvent);
 
-		EventBusHelper.addListener(FMLPreInitializationEvent.class, event -> clientConfig.onPreInit());
+		clientConfig.onPreInit();
 		EventBusHelper.addListener(ConfigChangedEvent.OnConfigChangedEvent.class, event -> {
 			modIdFormattingConfig.checkForModNameFormatOverride();
 			if (ModIds.JEI_ID.equals(event.getModID())) {

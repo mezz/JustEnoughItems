@@ -2,6 +2,7 @@ package mezz.jei.events;
 
 import java.util.function.Consumer;
 
+import net.minecraftforge.fml.common.event.ModLifecycleEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -20,6 +21,10 @@ public class EventBusHelper {
 	public static <T extends Event> void removeListener(Consumer<T> listener) {
 		IEventBus eventBus = getInstance();
 		eventBus.unregister(listener);
+	}
+
+	public static <T extends ModLifecycleEvent> void addLifecycleListener(IEventBus eventBus, Class<T> eventType, Consumer<T> listener) {
+		eventBus.addListener(EventPriority.NORMAL, false, eventType, listener);
 	}
 
 	public static void register(Object object) {
