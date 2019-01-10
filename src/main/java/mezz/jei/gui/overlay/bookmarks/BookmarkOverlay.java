@@ -139,28 +139,33 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 
 	@Override
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
-		if (displayArea.contains(mouseX, mouseY)) {
-			Minecraft minecraft = Minecraft.getMinecraft();
-			GuiScreen currentScreen = minecraft.currentScreen;
-			if (currentScreen != null && !(currentScreen instanceof RecipesGui)
-				&& (mouseButton == 0 || mouseButton == 1 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(mouseButton - 100))) {
-				IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
-				if (clicked != null) {
-					if (Config.isCheatItemsEnabled()) {
-						ItemStack itemStack = clicked.getCheatItemStack();
-						if (!itemStack.isEmpty()) {
-							CommandUtil.giveStack(itemStack, mouseButton);
+		if (isListDisplayed()) {
+			if (displayArea.contains(mouseX, mouseY)) {
+				Minecraft minecraft = Minecraft.getMinecraft();
+				GuiScreen currentScreen = minecraft.currentScreen;
+				if (currentScreen != null && !(currentScreen instanceof RecipesGui)
+					&& (mouseButton == 0 || mouseButton == 1 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(mouseButton - 100))) {
+					IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
+					if (clicked != null) {
+						if (Config.isCheatItemsEnabled()) {
+							ItemStack itemStack = clicked.getCheatItemStack();
+							if (!itemStack.isEmpty()) {
+								CommandUtil.giveStack(itemStack, mouseButton);
+							}
+							clicked.onClickHandled();
+							return true;
 						}
-						clicked.onClickHandled();
-						return true;
 					}
 				}
+			}
+			if (contents.isMouseOver(mouseX, mouseY)) {
+				this.contents.handleMouseClicked(mouseX, mouseY, mouseButton);
 			}
 		}
 		if (bookmarkButton.isMouseOver(mouseX, mouseY)) {
 			return bookmarkButton.handleMouseClick(mouseX, mouseY);
 		}
-		return this.contents.handleMouseClicked(mouseX, mouseY, mouseButton);
+		return false;
 	}
 
 }
