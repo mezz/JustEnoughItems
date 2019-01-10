@@ -143,30 +143,35 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 
 	@Override
 	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
-		if (displayArea.contains(mouseX, mouseY)) {
-			Minecraft minecraft = Minecraft.getInstance();
-			GuiScreen currentScreen = minecraft.currentScreen;
-			InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
-			if (currentScreen != null &&
-				!(currentScreen instanceof RecipesGui) &&
-				(mouseButton == GLFW.GLFW_MOUSE_BUTTON_1 || mouseButton == GLFW.GLFW_MOUSE_BUTTON_2 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(input))) {
-				IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
-				if (clicked != null) {
-					if (worldConfig.isCheatItemsEnabled()) {
-						ItemStack itemStack = clicked.getCheatItemStack();
-						if (!itemStack.isEmpty()) {
-							CommandUtil.giveStack(itemStack, input);
+		if (isListDisplayed()) {
+			if (displayArea.contains(mouseX, mouseY)) {
+				Minecraft minecraft = Minecraft.getInstance();
+				GuiScreen currentScreen = minecraft.currentScreen;
+				InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
+				if (currentScreen != null &&
+					!(currentScreen instanceof RecipesGui) &&
+					(mouseButton == GLFW.GLFW_MOUSE_BUTTON_1 || mouseButton == GLFW.GLFW_MOUSE_BUTTON_2 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(input))) {
+					IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
+					if (clicked != null) {
+						if (worldConfig.isCheatItemsEnabled()) {
+							ItemStack itemStack = clicked.getCheatItemStack();
+							if (!itemStack.isEmpty()) {
+								CommandUtil.giveStack(itemStack, input);
+							}
+							clicked.onClickHandled();
+							return true;
 						}
-						clicked.onClickHandled();
-						return true;
 					}
 				}
+			}
+			if (contents.isMouseOver(mouseX, mouseY)) {
+				this.contents.handleMouseClicked(mouseX, mouseY, mouseButton);
 			}
 		}
 		if (bookmarkButton.isMouseOver(mouseX, mouseY)) {
 			return bookmarkButton.handleMouseClick(mouseX, mouseY, mouseButton);
 		}
-		return this.contents.handleMouseClicked(mouseX, mouseY, mouseButton);
+		return false;
 	}
 
 }
