@@ -20,6 +20,13 @@ public interface IDrawableBuilder {
 	IDrawableBuilder addPadding(int paddingTop, int paddingBottom, int paddingLeft, int paddingRight);
 
 	/**
+	 * Remove blank space around the texture by trimming it.
+	 *
+	 * @since JEI 4.14.4
+	 */
+	IDrawableBuilder trim(int trimTop, int trimBottom, int trimLeft, int trimRight);
+
+	/**
 	 * Creates a normal, non-animated drawable.
 	 */
 	IDrawableStatic build();

@@ -12,7 +12,6 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.config.Constants;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
@@ -112,10 +111,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		setPosition(posX, posY);
 
 		this.recipeWrapper = recipeWrapper;
-		this.recipeBorder = new DrawableNineSliceTexture(Constants.RECIPE_BACKGROUND, 64, 0, 64, 64, 4, 4, 4, 4);
-		IDrawable categoryBackground = recipeCategory.getBackground();
-		this.recipeBorder.setWidth(categoryBackground.getWidth() + (2 * RECIPE_BORDER_PADDING));
-		this.recipeBorder.setHeight(categoryBackground.getHeight() + (2 * RECIPE_BORDER_PADDING));
+		this.recipeBorder = Internal.getHelpers().getGuiHelper().getRecipeBackground();
 	}
 
 	@Override
@@ -152,7 +148,10 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(posX, posY, 0.0F);
 		{
-			recipeBorder.draw(minecraft, -RECIPE_BORDER_PADDING, -RECIPE_BORDER_PADDING);
+			IDrawable categoryBackground = recipeCategory.getBackground();
+			int width = categoryBackground.getWidth() + (2 * RECIPE_BORDER_PADDING);
+			int height = categoryBackground.getHeight() + (2 * RECIPE_BORDER_PADDING);
+			recipeBorder.draw(minecraft, -RECIPE_BORDER_PADDING, -RECIPE_BORDER_PADDING, width, height);
 			background.draw(minecraft);
 			recipeCategory.drawExtras(minecraft);
 			recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight(), recipeMouseX, recipeMouseY);

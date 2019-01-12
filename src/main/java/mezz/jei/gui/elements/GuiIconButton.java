@@ -1,7 +1,9 @@
 package mezz.jei.gui.elements;
 
+import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.config.Constants;
+import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.TooltipRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -42,30 +44,37 @@ public class GuiIconButton extends GuiButton {
 	@Override
 	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
 		if (this.visible) {
-			mc.getTextureManager().bindTexture(BUTTON_TEXTURES);
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 			int i = this.getHoverState(this.hovered);
 			GlStateManager.enableBlend();
 			GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			int firstHalfWidth = this.width / 2;
-			int secondHalfWidth = (int) Math.ceil(this.width / 2.0f);
-			this.drawTexturedModalRect(this.x, this.y, 0, 46 + i * 20, firstHalfWidth, this.height);
-			this.drawTexturedModalRect(this.x + firstHalfWidth, this.y, 200 - secondHalfWidth, 46 + i * 20, secondHalfWidth, this.height);
+			GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
+			DrawableNineSliceTexture texture = guiHelper.getButtonForState(i);
+			texture.draw(mc, this.x, this.y, this.width, this.height);
 			this.mouseDragged(mc, mouseX, mouseY);
 
+			int color = 14737632;
+			if (!this.enabled) {
+				color = 10526880;
+			} else if (this.hovered) {
+				color = 16777120;
+			}
+			color |= -16777216;
+
+			float red = (float) (color >> 16 & 255) / 255.0F;
+			float blue = (float) (color >> 8 & 255) / 255.0F;
+			float green = (float) (color & 255) / 255.0F;
+			float alpha = (float) (color >> 24 & 255) / 255.0F;
+			GlStateManager.color(red, blue, green, alpha);
+
 			IDrawable icon = iconSupplier.get();
-			int xOffset = x + (width - icon.getWidth()) / 2;
-			int yOffset = y + (height - icon.getHeight()) / 2;
+			double xOffset = x + (width - icon.getWidth()) / 2.0;
+			double yOffset = y + (height - icon.getHeight()) / 2.0;
 			GlStateManager.pushMatrix();
-			if (width % 2 == 1) {
-				GlStateManager.translate(0.5, 0, 0);
-			}
-			if (height % 2 == 1) {
-				GlStateManager.translate(0, 0.5, 0);
-			}
-			icon.draw(mc, xOffset, yOffset);
+			GlStateManager.translate(xOffset, yOffset, 0);
+			icon.draw(mc);
 			GlStateManager.popMatrix();
 		}
 	}

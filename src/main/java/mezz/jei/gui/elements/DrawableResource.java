@@ -20,10 +20,6 @@ public class DrawableResource implements IDrawableStatic {
 	private final int paddingLeft;
 	private final int paddingRight;
 
-	public DrawableResource(ResourceLocation resourceLocation, int u, int v, int width, int height) {
-		this(resourceLocation, u, v, width, height, 0, 0, 0, 0, 256, 256);
-	}
-
 	public DrawableResource(ResourceLocation resourceLocation, int u, int v, int width, int height, int paddingTop, int paddingBottom, int paddingLeft, int paddingRight, int textureWidth, int textureHeight) {
 		this.resourceLocation = resourceLocation;
 		this.textureWidth = textureWidth;

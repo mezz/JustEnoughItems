@@ -13,30 +13,25 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.client.config.HoverChecker;
 
 public class ShapelessIcon {
-	private static final IDrawable icon = Internal.getHelpers().getGuiHelper().getShapelessIcon();
+	private static final int scale = 4;
+	private final IDrawable icon;
 	private final HoverChecker hoverChecker;
 
 	public ShapelessIcon() {
-		int iconBottom = icon.getHeight() / 2;
-		int iconLeft = CraftingRecipeCategory.width - getWidth();
-		int iconRight = iconLeft + getWidth();
+		this.icon = Internal.getHelpers().getGuiHelper().getShapelessIcon();
+		int iconBottom = icon.getHeight() / scale;
+		int iconLeft = CraftingRecipeCategory.width - (icon.getWidth() / scale);
+		int iconRight = iconLeft + icon.getWidth() / scale;
 		this.hoverChecker = new HoverChecker(0, iconBottom, iconLeft, iconRight, 0);
 	}
 
-	public static int getWidth() {
-		return icon.getWidth() / 2;
-	}
-
-	public static int getHeight() {
-		return icon.getHeight() / 2;
-	}
-
 	public void draw(Minecraft minecraft, int recipeWidth) {
-		int shapelessIconX = recipeWidth - getWidth();
+		int shapelessIconX = recipeWidth - (icon.getWidth() / scale);
 
 		GlStateManager.pushMatrix();
-		GlStateManager.scale(0.5, 0.5, 1.0);
-		icon.draw(minecraft, shapelessIconX * 2, 0);
+		GlStateManager.translate(shapelessIconX, 0, 0);
+		GlStateManager.scale(1.0 / scale, 1.0 / scale, 1.0);
+		icon.draw(minecraft);
 		GlStateManager.popMatrix();
 	}
 

@@ -1,13 +1,6 @@
 package mezz.jei.plugins.jei;
 
-import javax.annotation.Nullable;
-import java.awt.Rectangle;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.IJeiHelpers;
+import mezz.jei.Internal;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
@@ -18,6 +11,7 @@ import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.config.Config;
+import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.overlay.GuiProperties;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.plugins.jei.debug.DebugGhostIngredientHandler;
@@ -28,6 +22,7 @@ import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientHelper;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientListFactory;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientRenderer;
+import mezz.jei.runtime.JeiHelpers;
 import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.init.Items;
@@ -35,6 +30,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+
+import javax.annotation.Nullable;
+import java.awt.Rectangle;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @JEIPlugin
 public class JEIInternalPlugin implements IModPlugin {
@@ -54,8 +55,8 @@ public class JEIInternalPlugin implements IModPlugin {
 
 	@Override
 	public void registerCategories(IRecipeCategoryRegistration registry) {
-		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
-		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+		JeiHelpers jeiHelpers = Internal.getHelpers();
+		GuiHelper guiHelper = jeiHelpers.getGuiHelper();
 
 		registry.addRecipeCategories(
 				new IngredientInfoRecipeCategory(guiHelper)

@@ -20,8 +20,8 @@ public class JeiHelpers implements IJeiHelpers {
 	private final RecipeTransferHandlerHelper recipeTransferHandlerHelper;
 	private final IVanillaRecipeFactory vanillaRecipeFactory = new VanillaRecipeFactory();
 
-	public JeiHelpers(IIngredientRegistry ingredientRegistry, IngredientBlacklistInternal ingredientBlacklistInternal, StackHelper stackHelper) {
-		this.guiHelper = new GuiHelper(ingredientRegistry);
+	public JeiHelpers(GuiHelper guiHelper, IIngredientRegistry ingredientRegistry, IngredientBlacklistInternal ingredientBlacklistInternal, StackHelper stackHelper) {
+		this.guiHelper = guiHelper;
 		this.stackHelper = stackHelper;
 		this.ingredientBlacklist = new IngredientBlacklist(ingredientRegistry, ingredientBlacklistInternal);
 		this.itemBlacklist = new ItemBlacklist(this.ingredientBlacklist);

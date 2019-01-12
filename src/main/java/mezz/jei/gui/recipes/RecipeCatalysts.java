@@ -1,11 +1,10 @@
 package mezz.jei.gui.recipes;
 
 import mezz.jei.Internal;
-import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.config.Constants;
+import mezz.jei.gui.GuiHelper;
+import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.input.ClickedIngredient;
@@ -13,7 +12,6 @@ import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
@@ -25,9 +23,7 @@ import java.util.List;
  * The area drawn on left side of the {@link RecipesGui} that shows which items can craft the current recipe category.
  */
 public class RecipeCatalysts implements IShowsRecipeFocuses {
-	private final IDrawable topDrawable;
-	private final IDrawable middleDrawable;
-	private final IDrawable bottomDrawable;
+	private final DrawableNineSliceTexture drawable;
 
 	private final List<GuiIngredient<Object>> ingredients;
 	private int left = 0;
@@ -36,12 +32,8 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 	public RecipeCatalysts() {
 		ingredients = new ArrayList<>();
 
-		ResourceLocation recipeBackgroundResource = Constants.RECIPE_BACKGROUND;
-
-		IGuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
-		topDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 65, 26, 6);
-		middleDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 71, 26, 16);
-		bottomDrawable = guiHelper.createDrawable(recipeBackgroundResource, 196, 87, 26, 6);
+		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
+		drawable = guiHelper.getCatalystTab();
 	}
 
 	public boolean isEmpty() {
@@ -56,10 +48,10 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 		this.ingredients.clear();
 
 		if (!ingredients.isEmpty()) {
-			int totalHeight = topDrawable.getHeight() + middleDrawable.getHeight() + bottomDrawable.getHeight();
+			int totalHeight = drawable.getHeight();
 			int ingredientCount = 1;
 
-			final int extraBoxHeight = middleDrawable.getHeight();
+			final int extraBoxHeight = drawable.getMiddleHeight();
 			for (int i = 1; i < ingredients.size(); i++) {
 				if (totalHeight + extraBoxHeight <= (recipesGui.getYSize() - 8)) {
 					totalHeight += extraBoxHeight;
@@ -70,7 +62,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 			}
 
 			top = recipesGui.getGuiTop();
-			left = recipesGui.getGuiLeft() - topDrawable.getWidth() + 4; // overlaps the recipe gui slightly
+			left = recipesGui.getGuiLeft() - drawable.getWidth() + 6; // overlaps the recipe gui slightly
 
 			List<Object> ingredientsForSlots = new ArrayList<>();
 			for (int i = 0; i < ingredients.size() && i < ingredientCount; i++) {
@@ -90,7 +82,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientRenderer<T> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-		Rectangle rect = new Rectangle(left + 6, top + 6 + (index * middleDrawable.getHeight()), 16, 16);
+		Rectangle rect = new Rectangle(left + 6, top + 6 + (index * drawable.getMiddleHeight()), 16, 16);
 		GuiIngredient<T> guiIngredient = new GuiIngredient<>(index, true, ingredientRenderer, ingredientHelper, rect, 0, 0, 0);
 		guiIngredient.set(Collections.singletonList(ingredient), null);
 		return guiIngredient;
@@ -105,16 +97,8 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 			GlStateManager.disableDepth();
 			GlStateManager.enableAlpha();
 			{
-				int top = this.top;
-				topDrawable.draw(minecraft, this.left, top);
-				top += topDrawable.getHeight();
-
-				while (ingredientCount-- > 0) {
-					middleDrawable.draw(minecraft, this.left, top);
-					top += middleDrawable.getHeight();
-				}
-
-				bottomDrawable.draw(minecraft, this.left, top);
+				int height = drawable.getBottomHeight() + drawable.getTopHeight() + (16 * ingredientCount);
+				drawable.draw(minecraft, this.left, this.top, drawable.getWidth(), height);
 			}
 			GlStateManager.disableAlpha();
 			GlStateManager.enableDepth();

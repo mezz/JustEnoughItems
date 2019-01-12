@@ -1,115 +1,161 @@
 package mezz.jei.gui.elements;
 
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IDrawableStatic;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
 /**
  * Breaks a texture into 9 pieces so that it can be scaled to any size.
  * Draws the corners and then repeats any middle textures to fill the remaining area.
  */
-public class DrawableNineSliceTexture implements IDrawable {
-	private final IDrawableStatic leftTop;
-	private final IDrawableStatic leftMiddle;
-	private final IDrawableStatic leftBottom;
-	private final IDrawableStatic middleTop;
-	private final IDrawableStatic middleMiddle;
-	private final IDrawableStatic middleBottom;
-	private final IDrawableStatic rightTop;
-	private final IDrawableStatic rightMiddle;
-	private final IDrawableStatic rightBottom;
-	private int width;
-	private int height;
+public class DrawableNineSliceTexture {
+	private final ResourceLocation resourceLocation;
+	private final int u;
+	private final int v;
+	private final int width;
+	private final int height;
+	private final int leftWidth;
+	private final int rightWidth;
+	private final int topHeight;
+	private final int bottomHeight;
+	private final int textureWidth;
+	private final int textureHeight;
 
-	public DrawableNineSliceTexture(ResourceLocation resourceLocation, int u, int v, int width, int height, int leftWidth, int rightWidth, int topHeight, int bottomHeight) {
-		final int uMiddle = u + leftWidth;
-		final int uRight = u + width - rightWidth;
-		final int vMiddle = v + topHeight;
-		final int vBottom = v + height - bottomHeight;
-
-		final int middleWidth = uRight - uMiddle;
-		final int middleHeight = vBottom - vMiddle;
-
-		this.leftTop = new DrawableResource(resourceLocation, u, v, leftWidth, topHeight);
-		this.leftMiddle = new DrawableResource(resourceLocation, u, vMiddle, leftWidth, middleHeight);
-		this.leftBottom = new DrawableResource(resourceLocation, u, vBottom, leftWidth, bottomHeight);
-		this.middleTop = new DrawableResource(resourceLocation, uMiddle, v, middleWidth, topHeight);
-		this.middleMiddle = new DrawableResource(resourceLocation, uMiddle, vMiddle, middleWidth, middleHeight);
-		this.middleBottom = new DrawableResource(resourceLocation, uMiddle, vBottom, middleWidth, bottomHeight);
-		this.rightTop = new DrawableResource(resourceLocation, uRight, v, rightWidth, topHeight);
-		this.rightMiddle = new DrawableResource(resourceLocation, uRight, vMiddle, rightWidth, middleHeight);
-		this.rightBottom = new DrawableResource(resourceLocation, uRight, vBottom, rightWidth, bottomHeight);
-
+	public DrawableNineSliceTexture(ResourceLocation resourceLocation, int u, int v, int width, int height, int leftWidth, int rightWidth, int topHeight, int bottomHeight, int textureWidth, int textureHeight) {
+		this.resourceLocation = resourceLocation;
+		this.u = u;
+		this.v = v;
 		this.width = width;
 		this.height = height;
+		this.leftWidth = leftWidth;
+		this.rightWidth = rightWidth;
+		this.topHeight = topHeight;
+		this.bottomHeight = bottomHeight;
+		this.textureWidth = textureWidth;
+		this.textureHeight = textureHeight;
 	}
 
-	public void setWidth(int width) {
-		this.width = width;
-	}
-
-	public void setHeight(int height) {
-		this.height = height;
-	}
-
-	@Override
-	public int getWidth() {
-		return width;
-	}
-
-	@Override
 	public int getHeight() {
 		return height;
 	}
 
-	@Override
-	public void draw(Minecraft minecraft, int xOffset, int yOffset) {
-		// corners first
-		this.leftTop.draw(minecraft, xOffset,  yOffset);
-		this.leftBottom.draw(minecraft, xOffset, yOffset + height - this.leftBottom.getHeight());
-		this.rightTop.draw(minecraft, xOffset + width - this.rightTop.getWidth(), yOffset);
-		this.rightBottom.draw(minecraft, xOffset + width - this.rightBottom.getWidth(), yOffset + height - this.rightBottom.getHeight());
-
-		// fill in the remaining areas
-		final int leftWidth = this.leftTop.getWidth();
-		final int rightWidth = this.rightTop.getWidth();
-		final int middleWidth = width - leftWidth - rightWidth;
-		final int topHeight = this.leftTop.getHeight();
-		final int bottomHeight = this.leftBottom.getHeight();
-		final int middleHeight = height - topHeight - bottomHeight;
-		if (middleWidth > 0) {
-			drawTiled(minecraft, xOffset + leftWidth, yOffset, middleWidth, topHeight, this.middleTop);
-			drawTiled(minecraft, xOffset + leftWidth, yOffset + height - this.leftBottom.getHeight(), middleWidth, bottomHeight, this.middleBottom);
-		}
-		if (middleHeight > 0) {
-			drawTiled(minecraft, xOffset, yOffset + topHeight, leftWidth, middleHeight, this.leftMiddle);
-			drawTiled(minecraft, xOffset + width - this.rightTop.getWidth(), yOffset + topHeight, rightWidth, middleHeight, this.rightMiddle);
-		}
-		if (middleHeight > 0 && middleWidth > 0) {
-			drawTiled(minecraft, xOffset + leftWidth, yOffset + topHeight, middleWidth, middleHeight, this.middleMiddle);
-		}
+	public int getWidth() {
+		return width;
 	}
 
-	private void drawTiled(Minecraft minecraft, final int xOffset, final int yOffset, final int tiledWidth, final int tiledHeight, IDrawableStatic drawable) {
-		final int xTileCount = tiledWidth / drawable.getWidth();
-		final int xRemainder = tiledWidth - (xTileCount * drawable.getWidth());
-		final int yTileCount = tiledHeight / drawable.getHeight();
-		final int yRemainder = tiledHeight - (yTileCount * drawable.getHeight());
+	public int getTopHeight() {
+		return topHeight;
+	}
+
+	public int getMiddleHeight() {
+		return height - bottomHeight - topHeight;
+	}
+
+	public int getBottomHeight() {
+		return bottomHeight;
+	}
+
+	public int getLeftWidth() {
+		return leftWidth;
+	}
+
+	public int getMiddleWidth() {
+		return width - rightWidth - leftWidth;
+	}
+
+	public int getRightWidth() {
+		return rightWidth;
+	}
+
+	public void draw(Minecraft minecraft, int xOffset, int yOffset, int width, int height) {
+		TextureManager textureManager = minecraft.getTextureManager();
+		textureManager.bindTexture(resourceLocation);
+
+		final int uMiddle = u + leftWidth;
+		final int uRight = u + this.width - rightWidth;
+		final int vMiddle = v + topHeight;
+		final int vBottom = v + this.height - bottomHeight;
+		final int middleWidth = uRight - uMiddle;
+		final int middleHeight = vBottom - vMiddle;
+
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+
+		// left top
+		draw(bufferBuilder, u, v, leftWidth, topHeight, xOffset, yOffset);
+		// left bottom
+		draw(bufferBuilder, u, vBottom, leftWidth, bottomHeight, xOffset, yOffset + height - bottomHeight);
+		// right top
+		draw(bufferBuilder, uRight, v, rightWidth, topHeight, xOffset + width - rightWidth, yOffset);
+		// right bottom
+		draw(bufferBuilder, uRight, vBottom, rightWidth, bottomHeight, xOffset + width - rightWidth, yOffset + height - bottomHeight);
+
+		final int tiledMiddleWidth = width - leftWidth - rightWidth;
+		final int tiledMiddleHeight = height - topHeight - bottomHeight;
+		if (tiledMiddleWidth > 0) {
+			// top edge
+			drawTiled(bufferBuilder, uMiddle, v, middleWidth, topHeight, xOffset + leftWidth, yOffset, tiledMiddleWidth, topHeight);
+			// bottom edge
+			drawTiled(bufferBuilder, uMiddle, vBottom, middleWidth, bottomHeight, xOffset + leftWidth, yOffset + height - bottomHeight, tiledMiddleWidth, bottomHeight);
+		}
+		if (tiledMiddleHeight > 0) {
+			// left side
+			drawTiled(bufferBuilder, u, vMiddle, leftWidth, middleHeight, xOffset, yOffset + topHeight, leftWidth, tiledMiddleHeight);
+			// right side
+			drawTiled(bufferBuilder, uRight, vMiddle, rightWidth, middleHeight, xOffset + width - rightWidth, yOffset + topHeight, rightWidth, tiledMiddleHeight);
+		}
+		if (tiledMiddleHeight > 0 && tiledMiddleWidth > 0) {
+			// middle area
+			drawTiled(bufferBuilder, uMiddle, vMiddle, middleWidth, middleHeight, xOffset + leftWidth, yOffset + topHeight, tiledMiddleWidth, tiledMiddleHeight);
+		}
+
+		tessellator.draw();
+	}
+
+	private void draw(BufferBuilder bufferBuilder, int u, int v, int width, int height, int xOffset, int yOffset) {
+		double widthScale = 1.0 / textureWidth;
+		double heightScale = 1.0 / textureHeight;
+		double u1 = u * widthScale;
+		double v1 = (v + height) * heightScale;
+		double u2 = (u + width) * widthScale;
+		double v2 = v * heightScale;
+
+		bufferBuilder.pos(xOffset, yOffset + height, 0)
+			.tex(u1, v1)
+			.endVertex();
+		bufferBuilder.pos(xOffset + width, yOffset + height, 0)
+			.tex(u2, v1)
+			.endVertex();
+		bufferBuilder.pos(xOffset + width, yOffset, 0)
+			.tex(u2, v2)
+			.endVertex();
+		bufferBuilder.pos(xOffset, yOffset, 0)
+			.tex(u1, v2)
+			.endVertex();
+	}
+
+	private void drawTiled(BufferBuilder bufferBuilder, int u, int v, int width, int height, int xOffset, int yOffset, int tiledWidth, int tiledHeight) {
+		final int xTileCount = tiledWidth / width;
+		final int xRemainder = tiledWidth - (xTileCount * width);
+		final int yTileCount = tiledHeight / height;
+		final int yRemainder = tiledHeight - (yTileCount * height);
 
 		final int yStart = yOffset + tiledHeight;
 
 		for (int xTile = 0; xTile <= xTileCount; xTile++) {
 			for (int yTile = 0; yTile <= yTileCount; yTile++) {
-				int width = (xTile == xTileCount) ? xRemainder : drawable.getWidth();
-				int height = (yTile == yTileCount) ? yRemainder : drawable.getHeight();
-				int x = xOffset + (xTile * drawable.getWidth());
-				int y = yStart - ((yTile + 1) * drawable.getHeight());
-				if (width > 0 && height > 0) {
-					int maskTop = drawable.getHeight() - height;
-					int maskRight = drawable.getWidth() - width;
-
-					drawable.draw(minecraft, x, y, maskTop, 0, 0, maskRight);
+				int tileWidth = (xTile == xTileCount) ? xRemainder : width;
+				int tileHeight = (yTile == yTileCount) ? yRemainder : height;
+				int x = xOffset + (xTile * width);
+				int y = yStart - ((yTile + 1) * height);
+				if (tileWidth > 0 && tileHeight > 0) {
+					int maskTop = height - tileHeight;
+					int maskRight = width - tileWidth;
+					draw(bufferBuilder, u, v + maskTop, width - maskRight, height - maskTop, x, y + maskTop);
 				}
 			}
 		}

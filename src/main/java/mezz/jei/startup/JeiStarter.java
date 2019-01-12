@@ -11,12 +11,14 @@ import mezz.jei.api.gui.IGuiScreenHandler;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.Config;
 import mezz.jei.gui.GuiEventHandler;
+import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientListElementFactory;
@@ -38,7 +40,7 @@ import java.util.Map;
 public class JeiStarter {
 	private boolean started;
 
-	public void start(List<IModPlugin> plugins) {
+	public void start(List<IModPlugin> plugins, Textures textures) {
 		LoggedTimer totalTime = new LoggedTimer();
 		totalTime.start("Starting JEI");
 
@@ -55,7 +57,8 @@ public class JeiStarter {
 		IngredientRegistry ingredientRegistry = modIngredientRegistry.createIngredientRegistry(ForgeModIdHelper.getInstance(), blacklist);
 		Internal.setIngredientRegistry(ingredientRegistry);
 
-		JeiHelpers jeiHelpers = new JeiHelpers(ingredientRegistry, blacklist, stackHelper);
+		GuiHelper guiHelper = new GuiHelper(ingredientRegistry, textures);
+		JeiHelpers jeiHelpers = new JeiHelpers(guiHelper, ingredientRegistry, blacklist, stackHelper);
 		Internal.setHelpers(jeiHelpers);
 
 		ModRegistry modRegistry = new ModRegistry(jeiHelpers, ingredientRegistry);

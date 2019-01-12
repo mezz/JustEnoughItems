@@ -9,10 +9,10 @@ import net.minecraft.util.ResourceLocation;
 
 public class DrawableBuilder implements IDrawableBuilder {
 	private final ResourceLocation resourceLocation;
-	private final int u;
-	private final int v;
-	private final int width;
-	private final int height;
+	private int u;
+	private int v;
+	private int width;
+	private int height;
 	private int textureWidth = 256;
 	private int textureHeight = 256;
 	private int paddingTop = 0;
@@ -42,6 +42,15 @@ public class DrawableBuilder implements IDrawableBuilder {
 		this.paddingBottom = paddingBottom;
 		this.paddingLeft = paddingLeft;
 		this.paddingRight = paddingRight;
+		return this;
+	}
+
+	@Override
+	public IDrawableBuilder trim(int trimTop, int trimBottom, int trimLeft, int trimRight) {
+		this.u += trimLeft;
+		this.v += trimTop;
+		this.width -= trimLeft + trimRight;
+		this.height -= trimTop + trimBottom;
 		return this;
 	}
 

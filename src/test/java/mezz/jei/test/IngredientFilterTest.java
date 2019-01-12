@@ -2,7 +2,10 @@ package mezz.jei.test;
 
 import mezz.jei.config.Config;
 import mezz.jei.config.IngredientBlacklistType;
+import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.gui.textures.JeiTextureMap;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientBlacklist;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
@@ -57,7 +60,9 @@ public class IngredientFilterTest {
 		this.baseList = IngredientListElementFactory.createBaseList(ingredientRegistry, modIdHelper);
 
 		StackHelper stackHelper = new StackHelper(subtypeRegistry);
-		this.jeiHelpers = new JeiHelpers(ingredientRegistry, blacklist, stackHelper);
+		Textures textures = new Textures(new JeiTextureMap("textures"));
+		GuiHelper guiHelper = new GuiHelper(ingredientRegistry, textures);
+		this.jeiHelpers = new JeiHelpers(guiHelper, ingredientRegistry, blacklist, stackHelper);
 
 		this.ingredientFilter = new IngredientFilter(blacklist);
 	}
