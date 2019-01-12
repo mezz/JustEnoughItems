@@ -1,11 +1,13 @@
 package mezz.jei.startup;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.List;
 
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -13,6 +15,7 @@ import net.minecraft.client.util.InputMappings;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.resources.IReloadableResourceManager;
 
+import com.google.common.base.Preconditions;
 import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.ModIds;
@@ -27,6 +30,8 @@ import mezz.jei.config.WorldConfig;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.events.PlayerJoinedWorldEvent;
 import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.gui.textures.JeiTextureMap;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.ForgeModIdHelper;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.AnnotatedInstanceUtil;
@@ -37,6 +42,9 @@ import org.apache.logging.log4j.Logger;
 public class ClientLifecycleHandler {
 	private final Logger LOGGER = LogManager.getLogger();
 	private final JeiStarter starter = new JeiStarter();
+	private final JeiTextureMap textureMap = new JeiTextureMap("textures");
+	@Nullable
+	private Textures textures;
 	private final ClientConfig clientConfig;
 	private final ModIdFormattingConfig modIdFormattingConfig;
 	private final IngredientFilterConfig ingredientFilterConfig;
@@ -88,8 +96,18 @@ public class ClientLifecycleHandler {
 			}
 		});
 		EventBusHelper.addListener(WorldEvent.Save.class, event -> worldConfig.onWorldSave());
+		EventBusHelper.addListener(TextureStitchEvent.Pre.class, event -> {
+			textures = new Textures(textureMap);
+		});
 
 		networkHandler.createClientPacketHandler(worldConfig);
+	}
+
+	public void onLoadComplete() {
+		Minecraft minecraft = Minecraft.getInstance();
+		minecraft.addScheduledTask(() -> {
+			minecraft.textureManager.loadTickableTexture(textureMap.getLocation(), textureMap);
+		});
 	}
 
 	private void onRecipesLoaded() {
@@ -106,11 +124,13 @@ public class ClientLifecycleHandler {
 				} else {
 					LOGGER.info("Restarting JEI.");
 				}
-				this.starter.start(plugins, clientConfig, hideModeConfig, ingredientFilterConfig, worldConfig, modIdHelper);
+				Preconditions.checkNotNull(textures);
+				this.starter.start(plugins, textures, clientConfig, hideModeConfig, ingredientFilterConfig, worldConfig, modIdHelper);
 			}
 		});
 
-		this.starter.start(plugins, clientConfig, hideModeConfig, ingredientFilterConfig, worldConfig, modIdHelper);
+		Preconditions.checkNotNull(textures);
+		this.starter.start(plugins, textures, clientConfig, hideModeConfig, ingredientFilterConfig, worldConfig, modIdHelper);
 	}
 
 	/**

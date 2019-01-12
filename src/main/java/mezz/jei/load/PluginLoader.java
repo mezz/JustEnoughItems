@@ -15,7 +15,9 @@ import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.IHideModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
+import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientListElementFactory;
@@ -49,7 +51,14 @@ public class PluginLoader {
 	@Nullable
 	private BookmarkList bookmarkList;
 
-	public PluginLoader(List<IModPlugin> plugins, IHideModeConfig hideModeConfig, IIngredientFilterConfig ingredientFilterConfig, IModIdHelper modIdHelper, boolean debugMode) {
+	public PluginLoader(
+		List<IModPlugin> plugins,
+		Textures textures,
+		IHideModeConfig hideModeConfig,
+		IIngredientFilterConfig ingredientFilterConfig,
+		IModIdHelper modIdHelper,
+		boolean debugMode)
+	{
 		this.ingredientFilterConfig = ingredientFilterConfig;
 		this.hideModeConfig = hideModeConfig;
 		this.timer = new LoggedTimer();
@@ -68,7 +77,8 @@ public class PluginLoader {
 		ingredientRegistry = modIngredientRegistry.createIngredientRegistry(modIdHelper, blacklist, debugMode);
 		Internal.setIngredientRegistry(ingredientRegistry);
 
-		jeiHelpers = new JeiHelpers(ingredientRegistry, blacklist, stackHelper, hideModeConfig, modIdHelper);
+		GuiHelper guiHelper = new GuiHelper(ingredientRegistry, textures);
+		jeiHelpers = new JeiHelpers(guiHelper, ingredientRegistry, blacklist, stackHelper, hideModeConfig, modIdHelper);
 		Internal.setHelpers(jeiHelpers);
 
 		modRegistry = new ModRegistry(jeiHelpers, ingredientRegistry);

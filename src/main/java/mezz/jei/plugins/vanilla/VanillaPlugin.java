@@ -28,7 +28,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.base.Preconditions;
-import mezz.jei.api.IGuiHelper;
+import mezz.jei.Internal;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
@@ -45,6 +45,7 @@ import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
+import mezz.jei.gui.GuiHelper;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeCategory;
@@ -68,6 +69,7 @@ import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackRenderer;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackHelper;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackListFactory;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackRenderer;
+import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.transfer.PlayerRecipeTransferHandler;
 import mezz.jei.util.StackHelper;
 
@@ -133,8 +135,8 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void registerCategories(IRecipeCategoryRegistration registry) {
-		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
-		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+		JeiHelpers jeiHelpers = Internal.getHelpers();
+		GuiHelper guiHelper = jeiHelpers.getGuiHelper();
 		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
 		registry.addRecipeCategories(
 			new CraftingRecipeCategory(guiHelper, modIdHelper),

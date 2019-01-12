@@ -25,7 +25,6 @@ import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.ClientConfig;
-import mezz.jei.config.Constants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.GuiHelper;
@@ -120,7 +119,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			}
 		};
 
-		background = new DrawableNineSliceTexture(Constants.RECIPE_BACKGROUND, 0, 0, 64, 64, 16, 16, 16, 16);
+		background = guiHelper.getGuiBackground();
 	}
 
 	private static void drawCenteredStringWithShadow(FontRenderer fontRenderer, String string, int guiWidth, int xOffset, int yPos, int color) {
@@ -171,9 +170,6 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		this.guiLeft = (width - this.xSize) / 2;
 		this.guiTop = RecipeGuiTab.TAB_HEIGHT + 21 + (extraSpace / 2);
 
-		this.background.setWidth(this.xSize);
-		this.background.setHeight(this.ySize);
-
 		final int rightButtonX = guiLeft + xSize - borderPadding - buttonWidth;
 		final int leftButtonX = guiLeft + borderPadding;
 
@@ -211,7 +207,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		drawDefaultBackground();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.zLevel = 0;
-		this.background.draw(guiLeft, guiTop);
+		this.background.draw(guiLeft, guiTop, xSize, ySize);
 
 		GlStateManager.disableBlend();
 

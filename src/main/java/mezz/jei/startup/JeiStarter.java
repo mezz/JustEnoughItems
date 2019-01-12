@@ -30,6 +30,7 @@ import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientFilterApi;
 import mezz.jei.ingredients.IngredientRegistry;
@@ -51,6 +52,7 @@ public class JeiStarter {
 
 	public void start(
 		List<IModPlugin> plugins,
+		Textures textures,
 		ClientConfig config,
 		IHideModeConfig hideModeConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
@@ -62,7 +64,7 @@ public class JeiStarter {
 		totalTime.start("Starting JEI");
 
 		boolean debugMode = config.isDebugModeEnabled();
-		PluginLoader pluginLoader = new PluginLoader(plugins, hideModeConfig, ingredientFilterConfig, modIdHelper, debugMode);
+		PluginLoader pluginLoader = new PluginLoader(plugins, textures, hideModeConfig, ingredientFilterConfig, modIdHelper, debugMode);
 		ModRegistry modRegistry = pluginLoader.getModRegistry();
 		IngredientRegistry ingredientRegistry = pluginLoader.getIngredientRegistry();
 		IngredientFilter ingredientFilter = pluginLoader.getIngredientFilter();

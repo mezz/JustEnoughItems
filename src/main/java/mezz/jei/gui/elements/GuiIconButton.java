@@ -10,8 +10,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 
+import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.config.Constants;
+import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.TooltipRenderer;
 
 /**
@@ -42,31 +44,42 @@ public class GuiIconButton extends GuiButton {
 	@Override
 	public void render(int mouseX, int mouseY, float partialTicks) {
 		if (this.visible) {
-			Minecraft minecraft = Minecraft.getInstance();
-			minecraft.getTextureManager().bindTexture(BUTTON_TEXTURES);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 			int i = this.getHoverState(this.hovered);
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			int firstHalfWidth = this.width / 2;
-			int secondHalfWidth = (int) Math.ceil(this.width / 2.0f);
-			this.drawTexturedModalRect(this.x, this.y, 0, 46 + i * 20, firstHalfWidth, this.height);
-			this.drawTexturedModalRect(this.x + firstHalfWidth, this.y, 200 - secondHalfWidth, 46 + i * 20, secondHalfWidth, this.height);
+			GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
+			Minecraft minecraft = Minecraft.getInstance();
+			DrawableNineSliceTexture texture = guiHelper.getButtonForState(i);
+			texture.draw(this.x, this.y, this.width, this.height);
 			this.renderBg(minecraft, mouseX, mouseY);
 
+			int color = 14737632;
+			if (packedFGColor != 0) {
+				color = packedFGColor;
+			} else if (!this.enabled) {
+				color = 10526880;
+			} else if (this.hovered) {
+				color = 16777120;
+			}
+			if ((color & -67108864) == 0) {
+				color |= -16777216;
+			}
+
+			float red = (float) (color >> 16 & 255) / 255.0F;
+			float blue = (float) (color >> 8 & 255) / 255.0F;
+			float green = (float) (color & 255) / 255.0F;
+			float alpha = (float) (color >> 24 & 255) / 255.0F;
+			GlStateManager.color4f(red, blue, green, alpha);
+
 			IDrawable icon = iconSupplier.get();
-			int xOffset = x + (width - icon.getWidth()) / 2;
-			int yOffset = y + (height - icon.getHeight()) / 2;
+			double xOffset = x + (width - icon.getWidth()) / 2.0;
+			double yOffset = y + (height - icon.getHeight()) / 2.0;
 			GlStateManager.pushMatrix();
-			if (width % 2 == 1) {
-				GlStateManager.translated(0.5, 0, 0);
-			}
-			if (height % 2 == 1) {
-				GlStateManager.translated(0, 0.5, 0);
-			}
-			icon.draw(xOffset, yOffset);
+			GlStateManager.translated(xOffset, yOffset, 0);
+			icon.draw();
 			GlStateManager.popMatrix();
 		}
 	}

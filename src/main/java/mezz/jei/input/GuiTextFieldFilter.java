@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
 
-import mezz.jei.config.Constants;
+import mezz.jei.Internal;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.HoverChecker;
@@ -38,7 +38,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 		this.hoverChecker = new HoverChecker(0, 0, 0, 0);
 		this.ingredientSource = ingredientSource;
 
-		this.background = new DrawableNineSliceTexture(Constants.RECIPE_BACKGROUND, 95, 182, 95, 20, 4, 4, 4, 4);
+		this.background = Internal.getHelpers().getGuiHelper().getSearchBackground();
 	}
 
 	public void updateBounds(Rectangle area) {
@@ -46,8 +46,6 @@ public class GuiTextFieldFilter extends GuiTextField {
 		this.y = area.y;
 		this.width = area.width;
 		this.height = area.height;
-		this.background.setWidth(area.width);
-		this.background.setHeight(area.height);
 		this.hoverChecker.updateBounds(area.y, area.y + area.height, area.x, area.x + area.width);
 		setSelectionPos(getCursorPosition());
 	}
@@ -156,7 +154,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 	public boolean getEnableBackgroundDrawing() {
 		if (this.isDrawing) {
 			GlStateManager.color4f(1, 1, 1, 1);
-			background.draw(this.x, this.y);
+			background.draw(this.x, this.y, this.width, this.height);
 		}
 		return false;
 	}

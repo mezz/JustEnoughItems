@@ -1,5 +1,6 @@
 package mezz.jei.gui;
 
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.IGuiHelper;
@@ -11,11 +12,14 @@ import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.config.Constants;
 import mezz.jei.gui.elements.DrawableAnimated;
 import mezz.jei.gui.elements.DrawableBlank;
 import mezz.jei.gui.elements.DrawableBuilder;
 import mezz.jei.gui.elements.DrawableIngredient;
+import mezz.jei.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.gui.textures.JeiTextureMap;
+import mezz.jei.gui.textures.TextureInfo;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.util.ErrorUtil;
 
 public class GuiHelper implements IGuiHelper {
@@ -31,29 +35,51 @@ public class GuiHelper implements IGuiHelper {
 	private final IDrawableStatic configButtonCheatIcon;
 	private final IDrawableStatic bookmarkButtonDisabledIcon;
 	private final IDrawableStatic bookmarkButtonEnabledIcon;
+	private final DrawableNineSliceTexture buttonDisabled;
+	private final DrawableNineSliceTexture buttonEnabled;
+	private final DrawableNineSliceTexture buttonHighlight;
+	private final DrawableNineSliceTexture guiBackground;
+	private final DrawableNineSliceTexture recipeBackground;
+	private final DrawableNineSliceTexture searchBackground;
+	private final DrawableNineSliceTexture catalystTab;
+	private final DrawableNineSliceTexture nineSliceSlot;
+	private final IDrawableStatic infoIcon;
+	private final IDrawableStatic flameIcon;
 
-	public GuiHelper(IIngredientRegistry ingredientRegistry) {
+	public GuiHelper(IIngredientRegistry ingredientRegistry, Textures textures) {
 		this.ingredientRegistry = ingredientRegistry;
-		slotDrawable = createDrawable(Constants.RECIPE_BACKGROUND, 196, 93, 18, 18);
+		this.slotDrawable = createDrawable(textures.slot);
+		this.nineSliceSlot = createNineSliceDrawable(textures.slot, 4, 4, 4, 4);
 
-		tabSelected = createDrawable(Constants.RECIPE_BACKGROUND, 196, 15, 24, 24);
-		tabUnselected = createDrawable(Constants.RECIPE_BACKGROUND, 220, 15, 24, 22);
+		this.tabSelected = createDrawable(textures.tabSelected);
+		this.tabUnselected = createDrawable(textures.tabUnselected);
 
-		shapelessIcon = createDrawable(Constants.RECIPE_BACKGROUND, 196, 128, 16, 15);
+		this.buttonDisabled = createNineSliceDrawable(textures.buttonDisabled, 2, 2, 2, 2);
+		this.buttonEnabled = createNineSliceDrawable(textures.buttonEnabled, 2, 2, 2, 2);
+		this.buttonHighlight = createNineSliceDrawable(textures.buttonHighlight, 2, 2, 2, 2);
+		this.guiBackground = createNineSliceDrawable(textures.guiBackground, 16, 16, 16, 16);
+		this.recipeBackground = createNineSliceDrawable(textures.recipeBackground, 16, 16, 16, 16);
+		this.searchBackground = createNineSliceDrawable(textures.searchBackground, 4, 4, 4, 4);
+		this.catalystTab = createNineSliceDrawable(textures.catalystTab, 8, 9, 8, 8);
 
-		arrowPrevious = drawableBuilder(Constants.RECIPE_BACKGROUND, 196, 55, 5, 8)
-			.addPadding(1, 0, 0, 0)
+		this.shapelessIcon = drawableBuilder(textures.shapelessIcon)
+			.trim(1, 2, 1, 1)
 			.build();
-		arrowNext = drawableBuilder(Constants.RECIPE_BACKGROUND, 204, 55, 5, 8)
-			.addPadding(1, 0, 1, 0)
+		this.arrowPrevious = drawableBuilder(textures.arrowPrevious)
+			.trim(0, 0, 1, 1)
 			.build();
-		recipeTransfer = drawableBuilder(Constants.RECIPE_BACKGROUND, 212, 55, 6, 6)
-			.addPadding(1, 0, 1, 0)
+		this.arrowNext = drawableBuilder(textures.arrowNext)
+			.trim(0, 0, 1, 1)
 			.build();
-		configButtonIcon = createDrawable(Constants.RECIPE_BACKGROUND, 0, 166, 16, 16);
-		configButtonCheatIcon = createDrawable(Constants.RECIPE_BACKGROUND, 16, 166, 16, 16);
-		bookmarkButtonDisabledIcon = createDrawable(Constants.RECIPE_BACKGROUND, 32, 166, 16, 16);
-		bookmarkButtonEnabledIcon = createDrawable(Constants.RECIPE_BACKGROUND, 48, 166, 16, 16);
+		this.recipeTransfer = createDrawable(textures.recipeTransfer);
+
+		this.configButtonIcon = createDrawable(textures.configButtonIcon);
+		this.configButtonCheatIcon = createDrawable(textures.configButtonCheatIcon);
+		this.bookmarkButtonDisabledIcon = createDrawable(textures.bookmarkButtonDisabledIcon);
+		this.bookmarkButtonEnabledIcon = createDrawable(textures.bookmarkButtonEnabledIcon);
+
+		this.infoIcon = createDrawable(textures.infoIcon);
+		this.flameIcon = createDrawable(textures.flameIcon);
 	}
 
 	@Override
@@ -94,6 +120,25 @@ public class GuiHelper implements IGuiHelper {
 		return new TickTimer(ticksPerCycle, maxValue, countDown);
 	}
 
+	private IDrawableStatic createDrawable(TextureInfo textureInfo) {
+		return drawableBuilder(textureInfo).build();
+	}
+
+	private DrawableNineSliceTexture createNineSliceDrawable(TextureInfo textureInfo, int leftWidth, int rightWidth, int topHeight, int bottomHeight) {
+		JeiTextureMap textureMap = textureInfo.getTextureMap();
+		TextureAtlasSprite sprite = textureInfo.getSprite();
+		int scale = textureInfo.getScale();
+		return new DrawableNineSliceTexture(textureMap.getLocation(), sprite.x / scale, sprite.y / scale, sprite.getWidth() / scale, sprite.getHeight() / scale, leftWidth, rightWidth, topHeight, bottomHeight, textureMap.getWidth() / scale, textureMap.getHeight() / scale);
+	}
+
+	private IDrawableBuilder drawableBuilder(TextureInfo textureInfo) {
+		JeiTextureMap textureMap = textureInfo.getTextureMap();
+		TextureAtlasSprite sprite = textureInfo.getSprite();
+		int scale = textureInfo.getScale();
+		return drawableBuilder(textureMap.getLocation(), sprite.x / scale, sprite.y / scale, sprite.getWidth() / scale, sprite.getHeight() / scale)
+			.setTextureSize(textureMap.getWidth() / scale, textureMap.getHeight() / scale);
+	}
+
 	public IDrawableStatic getTabSelected() {
 		return tabSelected;
 	}
@@ -132,5 +177,55 @@ public class GuiHelper implements IGuiHelper {
 
 	public IDrawableStatic getBookmarkButtonEnabledIcon() {
 		return bookmarkButtonEnabledIcon;
+	}
+
+	public DrawableNineSliceTexture getButtonDisabled() {
+		return buttonDisabled;
+	}
+
+	public DrawableNineSliceTexture getButtonEnabled() {
+		return buttonEnabled;
+	}
+
+	public DrawableNineSliceTexture getButtonHighlight() {
+		return buttonHighlight;
+	}
+
+	public DrawableNineSliceTexture getButtonForState(int state) {
+		if (state == 0) {
+			return getButtonDisabled();
+		} else if (state == 2) {
+			return getButtonHighlight();
+		} else {
+			return getButtonEnabled();
+		}
+	}
+
+	public DrawableNineSliceTexture getGuiBackground() {
+		return guiBackground;
+	}
+
+	public DrawableNineSliceTexture getRecipeBackground() {
+		return recipeBackground;
+	}
+
+	public DrawableNineSliceTexture getSearchBackground() {
+		return searchBackground;
+	}
+
+	public IDrawableStatic getInfoIcon() {
+		return infoIcon;
+	}
+
+	public DrawableNineSliceTexture getCatalystTab() {
+		return catalystTab;
+	}
+
+	public DrawableNineSliceTexture getNineSliceSlot() {
+		return nineSliceSlot;
+	}
+
+	public IDrawableStatic getFlameIcon() {
+		return flameIcon;
 	}
 }

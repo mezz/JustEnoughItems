@@ -12,8 +12,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.IJeiHelpers;
+import mezz.jei.Internal;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
@@ -25,10 +24,12 @@ import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.config.ClientConfig;
+import mezz.jei.gui.GuiHelper;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientHelper;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientListFactory;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientRenderer;
+import mezz.jei.runtime.JeiHelpers;
 
 @JEIPlugin
 public class JeiDebugPlugin implements IModPlugin {
@@ -54,8 +55,8 @@ public class JeiDebugPlugin implements IModPlugin {
 	@Override
 	public void registerCategories(IRecipeCategoryRegistration registry) {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
-			IJeiHelpers jeiHelpers = registry.getJeiHelpers();
-			IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+			JeiHelpers jeiHelpers = Internal.getHelpers();
+			GuiHelper guiHelper = jeiHelpers.getGuiHelper();
 			registry.addRecipeCategories(
 				new DebugRecipeCategory(guiHelper)
 			);

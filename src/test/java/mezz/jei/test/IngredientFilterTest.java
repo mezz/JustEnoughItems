@@ -7,11 +7,14 @@ import java.util.List;
 
 import net.minecraft.util.NonNullList;
 
+import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.config.HideModeConfig;
 import mezz.jei.config.IHideModeConfig;
 import mezz.jei.config.IngredientBlacklistType;
-import mezz.jei.api.ingredients.IModIdHelper;
+import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.gui.textures.JeiTextureMap;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientBlacklist;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
@@ -62,7 +65,9 @@ public class IngredientFilterTest {
 		this.hideModeConfig = new HideModeConfig(modIdHelper, null);
 
 		StackHelper stackHelper = new StackHelper(subtypeRegistry);
-		this.jeiHelpers = new JeiHelpers(ingredientRegistry, blacklist, stackHelper, hideModeConfig, modIdHelper);
+		Textures textures = new Textures(new JeiTextureMap("textures"));
+		GuiHelper guiHelper = new GuiHelper(ingredientRegistry, textures);
+		this.jeiHelpers = new JeiHelpers(guiHelper, ingredientRegistry, blacklist, stackHelper, hideModeConfig, modIdHelper);
 
 		TestIngredientFilterConfig ingredientFilterConfig = new TestIngredientFilterConfig();
 		this.ingredientFilter = new IngredientFilter(blacklist, ingredientFilterConfig, hideModeConfig);

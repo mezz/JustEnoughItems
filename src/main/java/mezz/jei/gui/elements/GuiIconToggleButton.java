@@ -4,9 +4,6 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.HoverChecker;
@@ -15,15 +12,13 @@ import mezz.jei.gui.TooltipRenderer;
 public abstract class GuiIconToggleButton {
 	private final IDrawable offIcon;
 	private final IDrawable onIcon;
-	private final GuiButton button;
+	private final GuiIconButton button;
 	private final HoverChecker hoverChecker;
 
 	public GuiIconToggleButton(IDrawable offIcon, IDrawable onIcon) {
 		this.offIcon = offIcon;
 		this.onIcon = onIcon;
-		this.button = new GuiButton(2, 0, 0, 0, 0, "") {
-
-		};
+		this.button = new GuiIconButton(2, new DrawableBlank(0, 0));
 		this.hoverChecker = new HoverChecker(this.button);
 	}
 
@@ -45,12 +40,8 @@ public abstract class GuiIconToggleButton {
 	}
 
 	public final boolean handleMouseClick(double mouseX, double mouseY, int mouseButton) {
-		Minecraft minecraft = Minecraft.getInstance();
-		if (button.mouseClicked(mouseX, mouseY, mouseButton) && onMouseClicked(mouseX, mouseY, mouseButton)) {
-			button.playPressSound(minecraft.getSoundHandler());
-			return true;
-		}
-		return false;
+		return button.mouseClicked(mouseX, mouseY, mouseButton) &&
+			onMouseClicked(mouseX, mouseY, mouseButton);
 	}
 
 	public final void drawTooltips(int mouseX, int mouseY) {

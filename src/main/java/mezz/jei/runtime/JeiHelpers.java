@@ -21,13 +21,14 @@ public class JeiHelpers implements IJeiHelpers {
 	private final IVanillaRecipeFactory vanillaRecipeFactory;
 
 	public JeiHelpers(
+		GuiHelper guiHelper,
 		IIngredientRegistry ingredientRegistry,
 		IngredientBlacklistInternal ingredientBlacklistInternal,
 		IStackHelper stackHelper,
 		IHideModeConfig hideModeConfig,
 		IModIdHelper modIdHelper
 	) {
-		this.guiHelper = new GuiHelper(ingredientRegistry);
+		this.guiHelper = guiHelper;
 		this.stackHelper = stackHelper;
 		this.modIdHelper = modIdHelper;
 		this.ingredientBlacklist = new IngredientBlacklist(ingredientRegistry, ingredientBlacklistInternal, hideModeConfig);

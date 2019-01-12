@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
@@ -12,7 +11,7 @@ import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
-import mezz.jei.config.Constants;
+import mezz.jei.gui.GuiHelper;
 import mezz.jei.util.Translator;
 
 public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientInfoRecipe> {
@@ -23,10 +22,9 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 	private final IDrawable slotBackground;
 	private final String localizedName;
 
-	public IngredientInfoRecipeCategory(IGuiHelper guiHelper) {
+	public IngredientInfoRecipeCategory(GuiHelper guiHelper) {
 		background = guiHelper.createBlankDrawable(recipeWidth, recipeHeight);
-		ResourceLocation recipeBackgroundResource = Constants.RECIPE_BACKGROUND;
-		icon = guiHelper.createDrawable(recipeBackgroundResource, 196, 39, 16, 16);
+		icon = guiHelper.getInfoIcon();
 		slotBackground = guiHelper.getSlotDrawable();
 		localizedName = Translator.translateToLocal("gui.jei.category.itemInformation");
 	}
