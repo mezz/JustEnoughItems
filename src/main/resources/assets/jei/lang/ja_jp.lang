@@ -57,7 +57,7 @@ config.jei.mode=モード
 config.jei.mode.comment=JEIのモードを変更します。
 config.jei.mode.cheatItemsEnabled=チートモード
 config.jei.mode.cheatItemsEnabled.comment=レシピを見せるのではなくアイテムを与えます。
-config.jei.mode.editEnabled=アイテム隠蔽
+config.jei.mode.editEnabled=アイテム隠蔽モード
 config.jei.mode.editEnabled.comment=クリックでアイテムリストでの要素の表示/非表示を切り替えられます。
 
 config.jei.interface=インターフェース
@@ -94,7 +94,7 @@ config.jei.advanced.centerSearchBarEnabled=検索バーの中央配置
 config.jei.advanced.centerSearchBarEnabled.comment=JEI検索バーを中央下に移動します。
 config.jei.advanced.modNameFormat=Mod名の書式
 config.jei.advanced.modNameFormat.comment=JEIのGUIやツールチップにおいてどのようにMod名を表示するか指定します。空欄で無効。
-config.jei.advanced.maxColumns=最大幅
+config.jei.advanced.maxColumns=最大JEIオーバーレイ幅
 config.jei.advanced.maxColumns.comment=アイテムリストの最大幅
 config.jei.advanced.maxRecipeGuiHeight=最大レシピGUI高さ
 config.jei.advanced.maxRecipeGuiHeight.comment=レシピGUIの最大の高さ
@@ -114,7 +114,7 @@ key.jei.ctrl.mac=CMD
 # Recipe Categories
 gui.jei.category.craftingTable=クラフト
 gui.jei.category.smelting=精錬
-gui.jei.category.smelting.experience=経験値: %s
+gui.jei.category.smelting.experience=%s EXP
 gui.jei.category.fuel=燃料
 gui.jei.category.fuel.smeltCount.single=1回精錬分
 gui.jei.category.fuel.smeltCount=%s回精錬分
