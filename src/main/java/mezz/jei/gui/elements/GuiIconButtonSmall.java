@@ -47,6 +47,7 @@ public class GuiIconButtonSmall extends GuiButton {
 			double yOffset = y + (width - this.icon.getHeight()) / 2.0;
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(xOffset, yOffset, 0);
+			GlStateManager.enableAlpha();
 			this.icon.draw(mc);
 			GlStateManager.popMatrix();
 		}
