@@ -69,7 +69,7 @@ public final class BasicRecipeTransferHandlerServer {
 			ItemStack stack = entry.getValue();
 			if (slot.isItemValid(stack)) {
 				if (stack.getCount() > minSlotStackLimit) {
-					ItemStack remainder = stack.splitStack(stack.getCount() - minSlotStackLimit);
+					ItemStack remainder = stack.split(stack.getCount() - minSlotStackLimit);
 					clearedCraftingItems.add(remainder);
 				}
 				slot.putStack(stack);
