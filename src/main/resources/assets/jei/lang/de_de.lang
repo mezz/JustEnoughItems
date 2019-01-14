@@ -20,7 +20,7 @@ jei.tooltip.ingredient.list.disabled.how.to.fix=Klicke auf %s zum Aktivieren.
 jei.tooltip.bookmarks=JEI Lesezeichen
 jei.tooltip.bookmarks.usage.nokey=Füge eine Tastenkombination für JEI-Lesezeichen in der Steuerungs-Einstellung hinzu.
 jei.tooltip.bookmarks.usage.key=Gehe mit den Mauszeiger auf einen Gegenstand und drücke "%s" um es als Lesezeichen zu speichern.
-jei.tooltip.bookmarks.not.enough.space=Dort ist nicht genug Platz, um den Lesezeichen hier anzeigen zukönnen.
+jei.tooltip.bookmarks.not.enough.space=Dort ist nicht genug Platz, um das Lesezeichen hier anzeigen zukönnen.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Fehlende Items
@@ -45,7 +45,7 @@ key.jei.toggleCheatMode=Item-Cheating (de-)aktivieren
 key.jei.previousPage=Vorherige Seite anzeigen
 key.jei.nextPage=Nächste Seite anzeigen
 key.jei.bookmark=Hinzufügen/Entfernen den mit Lesezeichen versehener Gegenstand
-key.jei.toggleBookmarkOverlay=Zeige/Verstecke den mit Lesezeichen versehener Gegenstand
+key.jei.toggleBookmarkOverlay=Zeige/Verstecke den mit Lesezeichen versehenen Gegenstand
 
 # Config
 config.jei.default=Standard
@@ -114,7 +114,7 @@ key.jei.ctrl.mac=CMD
 # Recipe Categories
 gui.jei.category.craftingTable=Fertigungsrezepte
 gui.jei.category.smelting=Schmelzrezepte
-gui.jei.category.smelting.experience=%s XP
+gui.jei.category.smelting.experience=%s EP
 gui.jei.category.fuel=Kraftstoffrezepte
 gui.jei.category.fuel.smeltCount.single=Schmilzt 1 Item
 gui.jei.category.fuel.smeltCount=Schmilzt %s Items
