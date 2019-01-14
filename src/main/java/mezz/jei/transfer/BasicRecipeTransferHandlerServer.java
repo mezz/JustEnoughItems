@@ -42,6 +42,7 @@ public final class BasicRecipeTransferHandlerServer {
 			return;
 		}
 
+		int minSlotStackLimit = Integer.MAX_VALUE;
 		// clear the crafting grid
 		List<ItemStack> clearedCraftingItems = new ArrayList<>();
 		for (Integer craftingSlotNumber : craftingSlots) {
@@ -50,6 +51,9 @@ public final class BasicRecipeTransferHandlerServer {
 				ItemStack craftingItem = craftingSlot.decrStackSize(Integer.MAX_VALUE);
 				clearedCraftingItems.add(craftingItem);
 			}
+			ItemStack transferItem = toTransfer.get(craftingSlotNumber);
+			int slotStackLimit = craftingSlot.getItemStackLimit(transferItem);
+			minSlotStackLimit = Math.min(slotStackLimit, minSlotStackLimit);
 		}
 
 		// put items into the crafting grid
@@ -59,8 +63,11 @@ public final class BasicRecipeTransferHandlerServer {
 			Slot slot = container.getSlot(slotNumber);
 
 			ItemStack stack = entry.getValue();
-			stack.setCount(stack.getCount());
 			if (slot.isItemValid(stack)) {
+				if (stack.getCount() > minSlotStackLimit) {
+					ItemStack remainder = stack.splitStack(stack.getCount() - minSlotStackLimit);
+					clearedCraftingItems.add(remainder);
+				}
 				slot.putStack(stack);
 			} else {
 				clearedCraftingItems.add(stack);
