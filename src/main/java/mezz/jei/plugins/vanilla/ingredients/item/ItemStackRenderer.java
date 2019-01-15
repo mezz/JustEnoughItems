@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
@@ -42,9 +43,11 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 
 	@Override
 	public List<String> getTooltip(ItemStack ingredient, ITooltipFlag tooltipFlag) {
+		Minecraft minecraft = Minecraft.getInstance();
+		EntityPlayer player = minecraft.player;
 		List<String> list;
 		try {
-			list = ingredient.getTooltip(null, tooltipFlag).stream()
+			list = ingredient.getTooltip(player, tooltipFlag).stream()
 				.map(ITextComponent::getFormattedText)
 				.collect(Collectors.toList());
 		} catch (RuntimeException | LinkageError e) {
