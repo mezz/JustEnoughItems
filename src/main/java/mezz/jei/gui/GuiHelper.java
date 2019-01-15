@@ -126,7 +126,8 @@ public class GuiHelper implements IGuiHelper {
 	private DrawableNineSliceTexture createNineSliceDrawable(TextureInfo textureInfo, int leftWidth, int rightWidth, int topHeight, int bottomHeight) {
 		JeiTextureMap textureMap = textureInfo.getTextureMap();
 		TextureAtlasSprite sprite = textureInfo.getSprite();
-		return new DrawableNineSliceTexture(textureMap.getLocation(), sprite.getOriginX(), sprite.getOriginY(), sprite.getIconWidth(), sprite.getIconHeight(), textureInfo.getScale(), leftWidth, rightWidth, topHeight, bottomHeight, textureMap.getWidth(), textureMap.getHeight());
+		int scale = textureInfo.getScale();
+		return new DrawableNineSliceTexture(textureMap.getLocation(), sprite.getOriginX() / scale, sprite.getOriginY() / scale, sprite.getIconWidth() / scale, sprite.getIconHeight() / scale, leftWidth, rightWidth, topHeight, bottomHeight, textureMap.getWidth() / scale, textureMap.getHeight() / scale);
 	}
 
 	private IDrawableBuilder drawableBuilder(TextureInfo textureInfo) {
