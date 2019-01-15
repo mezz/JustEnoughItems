@@ -25,122 +25,77 @@ plugins {
 }
 apply from: "buildtools/ColoredOutput.gradle"
 apply plugin: 'idea'
+apply plugin: "net.minecraftforge.gradle"
 
-allprojects {
-	apply plugin: "net.minecraftforge.gradle"
+version = version_major + "." + version_minor + "." + version_patch
+group = "mezz.jei" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 
-	version = version_major + "." + version_minor + "." + version_patch
-	group = "mezz.jei" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+//adds the build number to the end of the version string if on a build server
+if (System.getenv().BUILD_NUMBER != null) {
+	version += ".${System.getenv().BUILD_NUMBER}"
+}
 
-	//adds the build number to the end of the version string if on a build server
-	if (System.getenv().BUILD_NUMBER != null) {
-		version += ".${System.getenv().BUILD_NUMBER}"
-	}
-
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+compileJava {
 	sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
-	compileJava {
-		sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+repositories {
+	maven { url 'http://repo1.maven.org/maven2' }
+}
+
+sourceSets {
+	api
+	main {
+		compileClasspath += sourceSets.api.output
+		runtimeClasspath += sourceSets.api.output
 	}
-
-	repositories {
-		maven { url 'http://repo1.maven.org/maven2' }
-	}
-
-	sourceSets {
-		api
-		main {
-			compileClasspath += sourceSets.api.output
-			runtimeClasspath += sourceSets.api.output
-		}
-		test {
-			compileClasspath += sourceSets.api.output
-			runtimeClasspath += sourceSets.api.output
-		}
-	}
-
-	configurations {
-		apiCompile.extendsFrom(compile)
-	}
-
-	dependencies {
-		minecraft([
-			group  : "${project.forgegroup}",
-			name   : "userdev",
-			version: "${project.mcversion}-${project.forgeversion}"
-		])
-		compile([
-			group  : "${project.forgegroup}",
-			name   : "forge",
-			version: "${project.mcversion}-${project.forgeversion}",
-			classifier: "launcher"
-		])
-		testCompile([
-			group: "junit",
-			name: "junit",
-			version: "4.12"
-		])
-	}
-
-	minecraft {
-		//	runDir = "run"
-		//	replace "@VERSION@", project.version
-		mappings channel: "snapshot", version: "${project.mcp_mappings}".toString()
-
-		accessTransformer = file('src/main/resources/META-INF/jei_at.cfg')
-
-		runConfig {
-			name = "Minecraft Client"
-			main = "net.minecraftforge.userdev.UserdevLauncher"
-			ideaModuleName = "${project.name}_main"
-			workingDirectory = project.file("run").canonicalPath
-			environment "target", "fmluserdevclient"
-			environment "assetDirectory", downloadAssets.output.absolutePath
-			environment "FORGE_VERSION", "${project.forgeversion}"
-			environment "FORGE_GROUP", "${project.forgegroup}"
-			environment "MCP_VERSION", "${project.mcp_mappings}"
-			environment "MC_VERSION", "${project.mcversion}"
-			environment "MOD_CLASSES", "${sourceSets.main.output.resourcesDir}${File.pathSeparator}${sourceSets.main.output.classesDirs.join(File.pathSeparator)}"
-		}
-
-		runConfig {
-			name = "Minecraft Server"
-			main = "net.minecraftforge.userdev.UserdevLauncher"
-			ideaModuleName = "${project.name}_main"
-			workingDirectory = project.file("run").canonicalPath
-			environment "target", "fmldevserver"
-			environment "assetDirectory", downloadAssets.output.absolutePath
-			environment "FORGE_VERSION", "${project.forgeversion}"
-			environment "FORGE_GROUP", "${project.forgegroup}"
-			environment "MCP_VERSION", "${project.mcp_mappings}"
-			environment "MC_VERSION", "${project.mcversion}"
-			environment "MOD_CLASSES", "${sourceSets.main.output.resourcesDir}${File.pathSeparator}${sourceSets.main.output.classesDirs.join(File.pathSeparator)}"
-		}
-	}
-
-	// prevent java 8's strict doclint for javadocs from failing builds
-	if (JavaVersion.current().isJava8Compatible()) {
-		tasks.withType(Javadoc) {
-			options.addStringOption('Xdoclint:none', '-quiet')
-		}
+	test {
+		compileClasspath += sourceSets.api.output
+		runtimeClasspath += sourceSets.api.output
 	}
 }
 
-Project libProject = project(':jei-lib')
-
-List<Project> subProjects = Arrays.asList(libProject);
-for (subProject in subProjects) {
-	evaluationDependsOn(subProject.path)
+configurations {
+	apiCompile.extendsFrom(compile)
 }
-List<SourceSetContainer> allSourceSets = new ArrayList<>();
-for (Project project in subProjects) {
-	allSourceSets.add(project.sourceSets);
-}
-allSourceSets.add(sourceSets);
 
 dependencies {
-	compile libProject
-	compile libProject.sourceSets.api.output
-	apiCompile libProject.sourceSets.api.output
+	minecraft([
+		group  : "${project.forgegroup}",
+		name   : "forge",
+		version: "${project.mcversion}-${project.forgeversion}"
+	])
+	testCompile([
+		group: "junit",
+		name: "junit",
+		version: "4.12"
+	])
+}
+
+minecraft {
+	//	runDir = "run"
+	//	replace "@VERSION@", project.version
+	mappings channel: "snapshot", version: "${project.mcp_mappings}".toString()
+
+	accessTransformer = file('src/main/resources/META-INF/jei_at.cfg')
+
+	runs {
+		client = {
+			workingDirectory project.file('run').canonicalPath
+			source sourceSets.main
+		}
+		server = {
+			workingDirectory project.file('run').canonicalPath
+		}
+	}
+}
+
+// prevent java 8's strict doclint for javadocs from failing builds
+if (JavaVersion.current().isJava8Compatible()) {
+	tasks.withType(Javadoc) {
+		options.addStringOption('Xdoclint:none', '-quiet')
+	}
 }
 
 task makeChangelog(type: GitChangelogTask) {
@@ -166,44 +121,35 @@ task makeChangelog(type: GitChangelogTask) {
 //}
 
 jar {
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-	for (SourceSetContainer sourceSets in allSourceSets) {
-		from sourceSets.main.output.classesDirs
-		from sourceSets.api.output.classesDirs
-		from sourceSets.main.output.resourcesDir
-		from sourceSets.api.output.resourcesDir
-	}
+	duplicatesStrategy = DuplicatesStrategy.FAIL
+	from sourceSets.main.output.classesDirs
+	from sourceSets.api.output.classesDirs
+	from sourceSets.main.output.resourcesDir
+	from sourceSets.api.output.resourcesDir
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	duplicatesStrategy = DuplicatesStrategy.FAIL
 	classifier = "javadoc"
-	for (Project project in subProjects) {
-		from project.javadoc.destinationDir
-	}
 	from javadoc.destinationDir
 }
 
-task sourcesJar(type: Jar, dependsOn: subProjects.tasks['classes']) {
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+task sourcesJar(type: Jar) {
+	duplicatesStrategy = DuplicatesStrategy.FAIL
 	classifier = "sources"
-	for (SourceSetContainer sourceSets in allSourceSets) {
-		from sourceSets.main.allJava
-		from sourceSets.api.allJava
-	}
+	from sourceSets.main.allJava
+	from sourceSets.api.allJava
 }
 
-task apiJar(type: Jar, dependsOn: subProjects.tasks['classes']) {
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+task apiJar(type: Jar) {
+	duplicatesStrategy = DuplicatesStrategy.FAIL
 	classifier = "api"
-	for (SourceSetContainer sourceSets in allSourceSets) {
-		from sourceSets.api.output
+	from sourceSets.api.output
 
-		// TODO: when FG bug is fixed, remove allJava from the api jar.
-		// https://github.com/MinecraftForge/ForgeGradle/issues/369
-		// Gradle should be able to pull them from the -sources jar.
-		from sourceSets.api.allJava
-	}
+	// TODO: when FG bug is fixed, remove allJava from the api jar.
+	// https://github.com/MinecraftForge/ForgeGradle/issues/369
+	// Gradle should be able to pull them from the -sources jar.
+	from sourceSets.api.allJava
 }
 
 artifacts {
@@ -211,12 +157,6 @@ artifacts {
 	archives sourcesJar
 	archives apiJar
 }
-
-task copyJars(type: Copy) {
-	from subProjects.collect { it.tasks.withType(Jar) }
-	into "$buildDir/libs"
-}
-build.finalizedBy(copyJars)
 
 task("uploadJars", dependsOn: "build") {
 	description = "uploads JARs"

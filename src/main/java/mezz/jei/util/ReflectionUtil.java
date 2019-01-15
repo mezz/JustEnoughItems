@@ -14,7 +14,7 @@ public final class ReflectionUtil {
 	}
 
 	@Nullable
-	public static <T> T getFieldWithClass(final Object object, final Class<T> fieldClass) {
+	public static <T> T getFieldWithClass(final Object object, final Class<? extends T> fieldClass) {
 		Field field = getField(object, fieldClass);
 		if (field != null) {
 			try {

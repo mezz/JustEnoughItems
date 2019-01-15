@@ -1,7 +1,5 @@
 package mezz.jei.plugins.jei;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.util.ResourceLocation;
 

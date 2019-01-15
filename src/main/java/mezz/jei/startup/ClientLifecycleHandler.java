@@ -4,10 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.event.EventNetworkChannel;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraft.client.Minecraft;
@@ -26,14 +23,11 @@ import mezz.jei.config.IHideModeConfig;
 import mezz.jei.config.IngredientFilterConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.ModIdFormattingConfig;
-import mezz.jei.config.ServerInfo;
 import mezz.jei.config.WorldConfig;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.events.PlayerJoinedWorldEvent;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.ingredients.ForgeModIdHelper;
-import mezz.jei.network.PacketHandler;
-import mezz.jei.network.PacketHandlerClient;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.AnnotatedInstanceUtil;
 import mezz.jei.util.ErrorUtil;
@@ -50,7 +44,7 @@ public class ClientLifecycleHandler {
 	private final IModIdHelper modIdHelper;
 	private final IHideModeConfig hideModeConfig;
 
-	public ClientLifecycleHandler() {
+	public ClientLifecycleHandler(NetworkHandler networkHandler) {
 		File jeiConfigurationDir = new File(FMLPaths.CONFIGDIR.get().toFile(), ModIds.JEI_ID);
 		if (!jeiConfigurationDir.exists()) {
 			try {
@@ -95,13 +89,7 @@ public class ClientLifecycleHandler {
 		});
 		EventBusHelper.addListener(WorldEvent.Save.class, event -> worldConfig.onWorldSave());
 
-		PacketHandlerClient packetHandler = new PacketHandlerClient(worldConfig);
-		EventNetworkChannel channel = NetworkRegistry.newEventChannel(PacketHandler.CHANNEL_ID, () -> "1.0.0", s -> {
-			boolean jeiOnServer = !NetworkRegistry.ABSENT.equals(s);
-			ServerInfo.onConnectedToServer(jeiOnServer);
-			return true;
-		}, s -> true);
-		channel.addListener(packetHandler::onPacket);
+		networkHandler.createClientPacketHandler(worldConfig);
 	}
 
 	private void onRecipesLoaded() {

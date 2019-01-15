@@ -23,6 +23,7 @@ public final class Translator {
 		return string.toLowerCase(getLocale());
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	private static Locale getLocale() {
 		Minecraft minecraft = Minecraft.getInstance();
 		if (minecraft != null) {
