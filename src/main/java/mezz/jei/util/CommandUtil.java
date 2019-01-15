@@ -31,7 +31,7 @@ public final class CommandUtil {
 	/**
 	 * /give <player> <item> [amount] [data] [dataTag]
 	 *
-	 * @implNote {@link GuiContainerCreative} has special client-side handling for itemStacks, just give the item on the client
+	 * {@link GuiContainerCreative} has special client-side handling for itemStacks, just give the item on the client
 	 */
 	public static void giveStack(ItemStack itemStack, InputMappings.Input input) {
 		final GiveMode giveMode = ClientConfig.getInstance().getGiveMode();

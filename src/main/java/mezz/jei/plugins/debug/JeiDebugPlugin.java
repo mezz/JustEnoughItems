@@ -6,9 +6,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -92,6 +94,17 @@ public class JeiDebugPlugin implements IModPlugin {
 			registry.addRecipeCatalyst(new DebugIngredient(7), DebugRecipeCategory.UID);
 //			registry.addRecipeCatalyst(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), DebugRecipeCategory.UID);
 			registry.addRecipeCatalyst(new ItemStack(Items.STICK), DebugRecipeCategory.UID);
+			int i = 0;
+			for (Item item : ForgeRegistries.ITEMS.getValues()) {
+				ItemStack catalystIngredient = new ItemStack(item);
+				if (!catalystIngredient.isEmpty()) {
+					registry.addRecipeCatalyst(catalystIngredient, DebugRecipeCategory.UID);
+				}
+				i++;
+				if (i > 30) {
+					break;
+				}
+			}
 
 			registry.addAdvancedGuiHandlers(new IAdvancedGuiHandler<GuiBrewingStand>() {
 				@Override
