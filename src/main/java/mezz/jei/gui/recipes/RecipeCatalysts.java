@@ -23,9 +23,14 @@ import java.util.List;
  * The area drawn on left side of the {@link RecipesGui} that shows which items can craft the current recipe category.
  */
 public class RecipeCatalysts implements IShowsRecipeFocuses {
-	private final DrawableNineSliceTexture drawable;
+	private static final int ingredientSize = 16;
+	private static final int borderSize = 6;
+	private static final int overlapSize = 6;
+
+	private final DrawableNineSliceTexture backgroundTab;
 
 	private final List<GuiIngredient<Object>> ingredients;
+	private final DrawableNineSliceTexture slotBackground;
 	private int left = 0;
 	private int top = 0;
 
@@ -33,7 +38,8 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 		ingredients = new ArrayList<>();
 
 		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
-		drawable = guiHelper.getCatalystTab();
+		backgroundTab = guiHelper.getCatalystTab();
+		slotBackground = guiHelper.getNineSliceSlot();
 	}
 
 	public boolean isEmpty() {
@@ -41,17 +47,17 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 	}
 
 	public int getWidth() {
-		return 22; // hard-coded for now, may be dynamic in the future if we have multiple columns
+		return ingredientSize + borderSize; // hard-coded for now, may be dynamic in the future if we have multiple columns
 	}
 
 	public void updateLayout(List<Object> ingredients, RecipesGui recipesGui) {
 		this.ingredients.clear();
 
 		if (!ingredients.isEmpty()) {
-			int totalHeight = drawable.getHeight();
+			int totalHeight = (2 * borderSize) + ingredientSize;
 			int ingredientCount = 1;
 
-			final int extraBoxHeight = drawable.getMiddleHeight();
+			final int extraBoxHeight = ingredientSize;
 			for (int i = 1; i < ingredients.size(); i++) {
 				if (totalHeight + extraBoxHeight <= (recipesGui.getYSize() - 8)) {
 					totalHeight += extraBoxHeight;
@@ -62,7 +68,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 			}
 
 			top = recipesGui.getGuiTop();
-			left = recipesGui.getGuiLeft() - drawable.getWidth() + 6; // overlaps the recipe gui slightly
+			left = recipesGui.getGuiLeft() - (ingredientSize + (borderSize * 2)) + overlapSize; // overlaps the recipe gui slightly
 
 			List<Object> ingredientsForSlots = new ArrayList<>();
 			for (int i = 0; i < ingredients.size() && i < ingredientCount; i++) {
@@ -82,7 +88,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientRenderer<T> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-		Rectangle rect = new Rectangle(left + 6, top + 6 + (index * drawable.getMiddleHeight()), 16, 16);
+		Rectangle rect = new Rectangle(left + borderSize, top + borderSize + (index * ingredientSize), ingredientSize, ingredientSize);
 		GuiIngredient<T> guiIngredient = new GuiIngredient<>(index, true, ingredientRenderer, ingredientHelper, rect, 0, 0, 0);
 		guiIngredient.set(Collections.singletonList(ingredient), null);
 		return guiIngredient;
@@ -97,8 +103,11 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 			GlStateManager.disableDepth();
 			GlStateManager.enableAlpha();
 			{
-				int height = drawable.getBottomHeight() + drawable.getTopHeight() + (16 * ingredientCount);
-				drawable.draw(minecraft, this.left, this.top, drawable.getWidth(), height);
+				int width = (2 * borderSize) + ingredientSize;
+				int height = (2 * borderSize) + (ingredientSize * ingredientCount);
+				backgroundTab.draw(minecraft, this.left, this.top, width, height);
+				int slotBorderSize = borderSize - 1;
+				slotBackground.draw(minecraft, this.left + slotBorderSize, this.top + slotBorderSize, width - (2 * slotBorderSize), height - (2 * slotBorderSize));
 			}
 			GlStateManager.disableAlpha();
 			GlStateManager.enableDepth();

@@ -17,6 +17,7 @@ public class DrawableNineSliceTexture {
 	private final int v;
 	private final int width;
 	private final int height;
+	private final int scale;
 	private final int leftWidth;
 	private final int rightWidth;
 	private final int topHeight;
@@ -24,50 +25,19 @@ public class DrawableNineSliceTexture {
 	private final int textureWidth;
 	private final int textureHeight;
 
-	public DrawableNineSliceTexture(ResourceLocation resourceLocation, int u, int v, int width, int height, int leftWidth, int rightWidth, int topHeight, int bottomHeight, int textureWidth, int textureHeight) {
+	public DrawableNineSliceTexture(ResourceLocation resourceLocation, int u, int v, int width, int height, int scale, int leftWidth, int rightWidth, int topHeight, int bottomHeight, int textureWidth, int textureHeight) {
 		this.resourceLocation = resourceLocation;
-		this.u = u;
-		this.v = v;
-		this.width = width;
-		this.height = height;
+		this.u = u / scale;
+		this.v = v / scale;
+		this.width = width / scale;
+		this.height = height / scale;
+		this.scale = scale;
 		this.leftWidth = leftWidth;
 		this.rightWidth = rightWidth;
 		this.topHeight = topHeight;
 		this.bottomHeight = bottomHeight;
 		this.textureWidth = textureWidth;
 		this.textureHeight = textureHeight;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public int getTopHeight() {
-		return topHeight;
-	}
-
-	public int getMiddleHeight() {
-		return height - bottomHeight - topHeight;
-	}
-
-	public int getBottomHeight() {
-		return bottomHeight;
-	}
-
-	public int getLeftWidth() {
-		return leftWidth;
-	}
-
-	public int getMiddleWidth() {
-		return width - rightWidth - leftWidth;
-	}
-
-	public int getRightWidth() {
-		return rightWidth;
 	}
 
 	public void draw(Minecraft minecraft, int xOffset, int yOffset, int width, int height) {
@@ -117,8 +87,8 @@ public class DrawableNineSliceTexture {
 	}
 
 	private void draw(BufferBuilder bufferBuilder, int u, int v, int width, int height, int xOffset, int yOffset) {
-		double widthScale = 1.0 / textureWidth;
-		double heightScale = 1.0 / textureHeight;
+		double widthScale = scale / (double) (textureWidth);
+		double heightScale = scale / (double) (textureHeight);
 		double u1 = u * widthScale;
 		double v1 = (v + height) * heightScale;
 		double u2 = (u + width) * widthScale;
