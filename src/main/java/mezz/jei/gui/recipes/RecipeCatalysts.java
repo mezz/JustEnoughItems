@@ -10,6 +10,7 @@ import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
+import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 
@@ -24,7 +25,8 @@ import java.util.List;
  */
 public class RecipeCatalysts implements IShowsRecipeFocuses {
 	private static final int ingredientSize = 16;
-	private static final int borderSize = 6;
+	private static final int ingredientBorderSize = 1;
+	private static final int borderSize = 5;
 	private static final int overlapSize = 6;
 
 	private final DrawableNineSliceTexture backgroundTab;
@@ -33,6 +35,8 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 	private final DrawableNineSliceTexture slotBackground;
 	private int left = 0;
 	private int top = 0;
+	private int width = 0;
+	private int height = 0;
 
 	public RecipeCatalysts() {
 		ingredients = new ArrayList<>();
@@ -47,48 +51,44 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 	}
 
 	public int getWidth() {
-		return ingredientSize + borderSize; // hard-coded for now, may be dynamic in the future if we have multiple columns
+		return width - overlapSize;
 	}
 
 	public void updateLayout(List<Object> ingredients, RecipesGui recipesGui) {
 		this.ingredients.clear();
 
 		if (!ingredients.isEmpty()) {
-			int totalHeight = (2 * borderSize) + ingredientSize;
-			int ingredientCount = 1;
+			int availableHeight = recipesGui.getYSize() - 8;
+			int borderHeight = (2 * borderSize) + (2 * ingredientBorderSize);
+			int maxIngredientsPerColumn = (availableHeight - borderHeight) / ingredientSize;
+			int columnCount = MathUtil.divideCeil(ingredients.size(), maxIngredientsPerColumn);
+			maxIngredientsPerColumn = MathUtil.divideCeil(ingredients.size(), columnCount);
 
-			final int extraBoxHeight = ingredientSize;
-			for (int i = 1; i < ingredients.size(); i++) {
-				if (totalHeight + extraBoxHeight <= (recipesGui.getYSize() - 8)) {
-					totalHeight += extraBoxHeight;
-					ingredientCount++;
-				} else {
-					break;
-				}
-			}
-
+			width = (2 * ingredientBorderSize) + (borderSize * 2) + (columnCount * ingredientSize);
+			height = (2 * ingredientBorderSize) + (borderSize * 2) + (maxIngredientsPerColumn * ingredientSize);
 			top = recipesGui.getGuiTop();
-			left = recipesGui.getGuiLeft() - (ingredientSize + (borderSize * 2)) + overlapSize; // overlaps the recipe gui slightly
+			left = recipesGui.getGuiLeft() - width + overlapSize; // overlaps the recipe gui slightly
 
-			List<Object> ingredientsForSlots = new ArrayList<>();
-			for (int i = 0; i < ingredients.size() && i < ingredientCount; i++) {
-				Object ingredient = ingredients.get(i);
-				ingredientsForSlots.add(ingredient);
-			}
-
-			for (int i = 0; i < ingredientCount; i++) {
-				Object ingredientForSlot = ingredientsForSlots.get(i);
-				GuiIngredient<Object> guiIngredient = createGuiIngredient(ingredientForSlot, i);
+			for (int i = 0; i < ingredients.size(); i++) {
+				Object ingredientForSlot = ingredients.get(i);
+				GuiIngredient<Object> guiIngredient = createGuiIngredient(ingredientForSlot, i, maxIngredientsPerColumn);
 				this.ingredients.add(guiIngredient);
 			}
 		}
 	}
 
-	private <T> GuiIngredient<T> createGuiIngredient(T ingredient, int index) {
+	private <T> GuiIngredient<T> createGuiIngredient(T ingredient, int index, int maxIngredientsPerColumn) {
 		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		IIngredientRenderer<T> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
 		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-		Rectangle rect = new Rectangle(left + borderSize, top + borderSize + (index * ingredientSize), ingredientSize, ingredientSize);
+		int column = index / maxIngredientsPerColumn;
+		int row = index % maxIngredientsPerColumn;
+		Rectangle rect = new Rectangle(
+			left + borderSize + (column * ingredientSize) + ingredientBorderSize,
+			top + borderSize + (row * ingredientSize) + ingredientBorderSize,
+			ingredientSize,
+			ingredientSize
+		);
 		GuiIngredient<T> guiIngredient = new GuiIngredient<>(index, true, ingredientRenderer, ingredientHelper, rect, 0, 0, 0);
 		guiIngredient.set(Collections.singletonList(ingredient), null);
 		return guiIngredient;
@@ -103,11 +103,10 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 			GlStateManager.disableDepth();
 			GlStateManager.enableAlpha();
 			{
-				int width = (2 * borderSize) + ingredientSize;
-				int height = (2 * borderSize) + (ingredientSize * ingredientCount);
+				int slotWidth = width - (2 * borderSize);
+				int slotHeight = height - (2 * borderSize);
 				backgroundTab.draw(minecraft, this.left, this.top, width, height);
-				int slotBorderSize = borderSize - 1;
-				slotBackground.draw(minecraft, this.left + slotBorderSize, this.top + slotBorderSize, width - (2 * slotBorderSize), height - (2 * slotBorderSize));
+				slotBackground.draw(minecraft, this.left + borderSize, this.top + borderSize, slotWidth, slotHeight);
 			}
 			GlStateManager.disableAlpha();
 			GlStateManager.enableDepth();

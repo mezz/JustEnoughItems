@@ -26,10 +26,12 @@ import mezz.jei.runtime.JeiHelpers;
 import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
@@ -100,6 +102,17 @@ public class JEIInternalPlugin implements IModPlugin {
 			registry.addRecipeCatalyst(new DebugIngredient(7), "debug");
 			registry.addRecipeCatalyst(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), "debug");
 			registry.addRecipeCatalyst(new ItemStack(Items.STICK), "debug");
+			int i = 0;
+			for (Item item : ForgeRegistries.ITEMS.getValuesCollection()) {
+				ItemStack catalystIngredient = new ItemStack(item);
+				if (!catalystIngredient.isEmpty()) {
+					registry.addRecipeCatalyst(catalystIngredient, "debug");
+				}
+				i++;
+				if (i > 30) {
+					break;
+				}
+			}
 
 			registry.addAdvancedGuiHandlers(new IAdvancedGuiHandler<GuiBrewingStand>() {
 				@Override

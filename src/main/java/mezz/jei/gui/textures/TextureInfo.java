@@ -28,7 +28,7 @@ public class TextureInfo {
 	public int getScale() {
 		int xScale = sprite.getIconWidth() / width;
 		int yScale = sprite.getIconHeight() / height;
-		if (xScale != yScale || xScale * width != sprite.getIconWidth()) {
+		if (xScale != yScale || xScale * width != sprite.getIconWidth() || xScale == 0) {
 			Log.get().error("Texture has the wrong dimensions. Expected a multiple of: ({}x{}) {}", width, height, sprite);
 			return 1;
 		}
