@@ -1,5 +1,16 @@
 package mezz.jei.gui.overlay;
 
+import javax.annotation.Nullable;
+import java.awt.Rectangle;
+import java.util.Collection;
+
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+
 import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.config.Config;
@@ -19,16 +30,6 @@ import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.GiveMode;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.ItemHandlerHelper;
-
-import javax.annotation.Nullable;
-import java.awt.Rectangle;
-import java.util.Collection;
 
 /**
  * An ingredient grid displays a rectangular area of clickable recipe ingredients.

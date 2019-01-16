@@ -1,12 +1,13 @@
 package mezz.jei.input;
 
-import mezz.jei.config.Constants;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
+
+import mezz.jei.config.Constants;
 import org.lwjgl.input.Mouse;
 
 @Mod.EventBusSubscriber(modid = Constants.MOD_ID, value = {Side.CLIENT})

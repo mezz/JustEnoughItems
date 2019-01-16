@@ -1,13 +1,13 @@
 package mezz.jei.collect;
 
-import com.google.common.collect.ImmutableMultimap;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import com.google.common.collect.ImmutableMultimap;
 
 public class MultiMap<K, V, T extends Collection<V>> {
 	protected final Map<K, T> map;

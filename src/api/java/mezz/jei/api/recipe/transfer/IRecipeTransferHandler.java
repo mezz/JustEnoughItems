@@ -2,9 +2,10 @@ package mezz.jei.api.recipe.transfer;
 
 import javax.annotation.Nullable;
 
-import mezz.jei.api.gui.IRecipeLayout;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+
+import mezz.jei.api.gui.IRecipeLayout;
 
 /**
  * A recipe transfer handler moves items into a crafting area, based on the items in a recipe.

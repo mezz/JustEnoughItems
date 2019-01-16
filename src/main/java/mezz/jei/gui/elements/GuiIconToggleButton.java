@@ -1,14 +1,15 @@
 package mezz.jei.gui.elements;
 
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.config.Constants;
-import mezz.jei.gui.TooltipRenderer;
-import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.client.config.HoverChecker;
-
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
+
+import net.minecraftforge.fml.client.config.HoverChecker;
+import net.minecraft.client.Minecraft;
+
+import mezz.jei.api.gui.IDrawable;
+import mezz.jei.config.Constants;
+import mezz.jei.gui.TooltipRenderer;
 
 public abstract class GuiIconToggleButton {
 	private final IDrawable offIcon;

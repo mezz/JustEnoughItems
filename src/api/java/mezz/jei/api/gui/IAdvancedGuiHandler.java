@@ -4,9 +4,10 @@ import javax.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.List;
 
+import net.minecraft.client.gui.inventory.GuiContainer;
+
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
-import net.minecraft.client.gui.inventory.GuiContainer;
 
 /**
  * Allows plugins to change how JEI is displayed next to their mod's guis.

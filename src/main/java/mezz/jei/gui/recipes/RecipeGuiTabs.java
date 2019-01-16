@@ -4,6 +4,9 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.gui.PageNavigation;
@@ -11,8 +14,6 @@ import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IPaged;
 import mezz.jei.util.MathUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 
 /**
  * The area drawn on top and bottom of the {@link RecipesGui} that show the recipe categories.
@@ -121,7 +122,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 	@Override
 	public boolean isMouseOver(int mouseX, int mouseY) {
 		return area.contains(mouseX, mouseY) ||
-				pageNavigation.isMouseOver();
+			pageNavigation.isMouseOver();
 	}
 
 	@Override

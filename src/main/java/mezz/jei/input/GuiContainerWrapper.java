@@ -3,12 +3,13 @@ package mezz.jei.input;
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
 
-import mezz.jei.gui.GuiScreenHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+
+import mezz.jei.gui.GuiScreenHelper;
 
 public class GuiContainerWrapper implements IShowsRecipeFocuses {
 	private final GuiScreenHelper guiScreenHelper;

@@ -1,5 +1,12 @@
 package mezz.jei.startup;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraftforge.fml.common.ProgressManager;
+import net.minecraft.util.NonNullList;
+
 import com.google.common.base.Stopwatch;
 import mezz.jei.Internal;
 import mezz.jei.api.IJeiRuntime;
@@ -30,12 +37,6 @@ import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.runtime.SubtypeRegistry;
 import mezz.jei.util.Log;
-import net.minecraft.util.NonNullList;
-import net.minecraftforge.fml.common.ProgressManager;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 public class JeiStarter {
 	private boolean started;

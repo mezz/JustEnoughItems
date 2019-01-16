@@ -1,11 +1,9 @@
 package mezz.jei.render;
 
-import com.google.common.base.Preconditions;
-import mezz.jei.api.ingredients.ISlowRenderItem;
-import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.input.ClickedIngredient;
-import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemModelMesher;
@@ -15,11 +13,14 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
-import org.lwjgl.opengl.GL11;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Preconditions;
+import mezz.jei.api.ingredients.ISlowRenderItem;
+import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.input.ClickedIngredient;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
+import org.lwjgl.opengl.GL11;
 
 public class IngredientListBatchRenderer {
 	private final List<IngredientListSlot> slots = new ArrayList<>();

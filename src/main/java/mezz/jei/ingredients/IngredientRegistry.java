@@ -1,5 +1,17 @@
 package mezz.jei.ingredients;
 
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionHelper;
+import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.util.NonNullList;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
@@ -14,17 +26,6 @@ import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.IngredientSet;
 import mezz.jei.util.Log;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionHelper;
-import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.util.NonNullList;
-
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class IngredientRegistry implements IIngredientRegistry {
 	private final IModIdHelper modIdHelper;
@@ -38,11 +39,11 @@ public class IngredientRegistry implements IIngredientRegistry {
 	private final NonNullList<ItemStack> potionIngredients = NonNullList.create();
 
 	public IngredientRegistry(
-			IModIdHelper modIdHelper,
-			IngredientBlacklistInternal blacklist,
-			Map<IIngredientType, IngredientSet> ingredientsMap,
-			ImmutableMap<IIngredientType, IIngredientHelper> ingredientHelperMap,
-			ImmutableMap<IIngredientType, IIngredientRenderer> ingredientRendererMap
+		IModIdHelper modIdHelper,
+		IngredientBlacklistInternal blacklist,
+		Map<IIngredientType, IngredientSet> ingredientsMap,
+		ImmutableMap<IIngredientType, IIngredientHelper> ingredientHelperMap,
+		ImmutableMap<IIngredientType, IIngredientRenderer> ingredientRendererMap
 	) {
 		this.modIdHelper = modIdHelper;
 		this.blacklist = blacklist;

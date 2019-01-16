@@ -1,9 +1,10 @@
 package mezz.jei.api.recipe.transfer;
 
+import net.minecraft.inventory.Container;
+
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
-import net.minecraft.inventory.Container;
 
 /**
  * Register recipe transfer handlers here to give JEI the information it needs to transfer recipes into the crafting area.

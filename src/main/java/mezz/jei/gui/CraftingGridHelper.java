@@ -2,10 +2,11 @@ package mezz.jei.gui;
 
 import java.util.List;
 
+import net.minecraft.item.ItemStack;
+
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
-import net.minecraft.item.ItemStack;
 
 public class CraftingGridHelper implements ICraftingGridHelper {
 	private final int craftInputSlot1;

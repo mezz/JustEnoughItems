@@ -42,9 +42,9 @@ public interface IModIngredientRegistration {
 	 */
 	@Deprecated
 	<V> void register(
-			Class<V> ingredientClass,
-			Collection<V> allIngredients,
-			IIngredientHelper<V> ingredientHelper,
-			IIngredientRenderer<V> ingredientRenderer
+		Class<V> ingredientClass,
+		Collection<V> allIngredients,
+		IIngredientHelper<V> ingredientHelper,
+		IIngredientRenderer<V> ingredientRenderer
 	);
 }

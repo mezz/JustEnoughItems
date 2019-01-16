@@ -1,9 +1,14 @@
 package mezz.jei.gui.recipes;
 
+import javax.annotation.Nonnegative;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.inventory.Container;
 
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.IRecipeRegistry;
@@ -16,11 +21,6 @@ import mezz.jei.gui.Focus;
 import mezz.jei.gui.ingredients.IngredientLookupState;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.util.MathUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.inventory.Container;
-
-import javax.annotation.Nonnegative;
 
 public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IRecipeRegistry recipeRegistry;

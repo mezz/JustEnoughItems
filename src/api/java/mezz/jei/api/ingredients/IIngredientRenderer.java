@@ -4,10 +4,11 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
-import mezz.jei.api.recipe.IIngredientType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.util.ITooltipFlag;
+
+import mezz.jei.api.recipe.IIngredientType;
 
 /**
  * Renders a type of ingredient in JEI's item list and recipes.
@@ -36,7 +37,6 @@ public interface IIngredientRenderer<T> {
 	 * @param ingredient  The ingredient to get the tooltip for.
 	 * @param tooltipFlag Whether to show advanced information on item tooltips, toggled by F3+H
 	 * @return The tooltip text for the ingredient.
-	 *
 	 * @since JEI 4.6.0
 	 */
 	default List<String> getTooltip(Minecraft minecraft, T ingredient, ITooltipFlag tooltipFlag) {
@@ -64,7 +64,6 @@ public interface IIngredientRenderer<T> {
 	 * @param ingredient The ingredient to get the tooltip for.
 	 * @param advanced   Whether to show advanced information on item tooltips, toggled by F3+H
 	 * @return The tooltip text for the ingredient.
-	 *
 	 * @since JEI 4.3.6
 	 * @deprecated since JEI 4.6.0.
 	 */
@@ -79,7 +78,6 @@ public interface IIngredientRenderer<T> {
 	 * @param minecraft  The minecraft instance.
 	 * @param ingredient The ingredient to get the tooltip for.
 	 * @return The tooltip text for the ingredient.
-	 *
 	 * @deprecated since JEI 4.3.6, use {@link #getTooltip(Minecraft, T, ITooltipFlag)}
 	 */
 	@Deprecated

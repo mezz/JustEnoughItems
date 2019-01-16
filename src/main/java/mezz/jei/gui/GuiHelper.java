@@ -1,5 +1,8 @@
 package mezz.jei.gui;
 
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IDrawable;
@@ -18,8 +21,6 @@ import mezz.jei.gui.textures.JeiTextureMap;
 import mezz.jei.gui.textures.TextureInfo;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.util.ErrorUtil;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.ResourceLocation;
 
 public class GuiHelper implements IGuiHelper {
 	private final IIngredientRegistry ingredientRegistry;

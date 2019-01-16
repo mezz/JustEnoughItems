@@ -3,12 +3,13 @@ package mezz.jei.api.recipe;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.ITooltipCallback;
 import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.client.Minecraft;
 
 /**
  * A wrapper around a normal recipe with methods that allow JEI can make sense of it.

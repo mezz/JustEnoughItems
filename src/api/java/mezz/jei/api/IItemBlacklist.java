@@ -1,8 +1,9 @@
 package mezz.jei.api;
 
-import mezz.jei.api.ingredients.IIngredientBlacklist;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraft.item.ItemStack;
+
+import mezz.jei.api.ingredients.IIngredientBlacklist;
 
 /**
  * The Item Blacklist allows mods to hide their items from JEI's item list.

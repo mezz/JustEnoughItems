@@ -2,13 +2,14 @@ package mezz.jei.gui.recipes;
 
 import java.util.List;
 
+import net.minecraftforge.fml.client.config.HoverChecker;
+import net.minecraft.client.Minecraft;
+
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.input.IMouseHandler;
-import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.client.config.HoverChecker;
 
 public abstract class RecipeGuiTab implements IMouseHandler {
 	public static final int TAB_HEIGHT = 24;

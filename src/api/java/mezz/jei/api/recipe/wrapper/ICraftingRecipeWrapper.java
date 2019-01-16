@@ -1,10 +1,11 @@
 package mezz.jei.api.recipe.wrapper;
 
-import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
+import javax.annotation.Nullable;
+
 import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nullable;
+import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 
 /**
  * Implement this interface instead of just {@link IRecipeWrapper} to have your recipe wrapper work as part of the

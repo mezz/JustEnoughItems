@@ -1,16 +1,17 @@
 package mezz.jei.plugins.vanilla;
 
-import com.google.common.collect.Ordering;
-import mezz.jei.api.gui.IAdvancedGuiHandler;
-import net.minecraft.client.renderer.InventoryEffectRenderer;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import net.minecraft.client.renderer.InventoryEffectRenderer;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+
+import com.google.common.collect.Ordering;
+import mezz.jei.api.gui.IAdvancedGuiHandler;
 
 class InventoryEffectRendererGuiHandler implements IAdvancedGuiHandler<InventoryEffectRenderer> {
 	@Override

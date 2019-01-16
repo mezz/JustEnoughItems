@@ -1,20 +1,5 @@
 package mezz.jei.gui;
 
-import mezz.jei.api.gui.IAdvancedGuiHandler;
-import mezz.jei.api.gui.IGhostIngredientHandler;
-import mezz.jei.api.gui.IGlobalGuiHandler;
-import mezz.jei.api.gui.IGuiProperties;
-import mezz.jei.api.gui.IGuiScreenHandler;
-import mezz.jei.ingredients.IngredientRegistry;
-import mezz.jei.input.ClickedIngredient;
-import mezz.jei.input.IClickedIngredient;
-import mezz.jei.util.MathUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -24,6 +9,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+
+import mezz.jei.api.gui.IAdvancedGuiHandler;
+import mezz.jei.api.gui.IGhostIngredientHandler;
+import mezz.jei.api.gui.IGlobalGuiHandler;
+import mezz.jei.api.gui.IGuiProperties;
+import mezz.jei.api.gui.IGuiScreenHandler;
+import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.input.ClickedIngredient;
+import mezz.jei.input.IClickedIngredient;
+import mezz.jei.util.MathUtil;
 
 public class GuiScreenHelper {
 	private final IngredientRegistry ingredientRegistry;

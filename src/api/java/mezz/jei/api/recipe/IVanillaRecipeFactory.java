@@ -1,12 +1,13 @@
 package mezz.jei.api.recipe;
 
-import mezz.jei.api.IJeiHelpers;
-import mezz.jei.api.IModRegistry;
+import java.util.Collection;
+import java.util.List;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 
-import java.util.Collection;
-import java.util.List;
+import mezz.jei.api.IJeiHelpers;
+import mezz.jei.api.IModRegistry;
 
 /**
  * Allows creation of vanilla recipes.

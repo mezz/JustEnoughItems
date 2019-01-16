@@ -1,8 +1,9 @@
 package mezz.jei.ingredients;
 
+import net.minecraft.item.ItemStack;
+
 import mezz.jei.api.IItemBlacklist;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
-import net.minecraft.item.ItemStack;
 
 @Deprecated
 public class ItemBlacklist implements IItemBlacklist {

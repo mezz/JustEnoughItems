@@ -13,11 +13,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import mezz.jei.api.ISubtypeRegistry;
-import mezz.jei.api.gui.IGuiIngredient;
-import mezz.jei.api.recipe.IStackHelper;
-import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -25,7 +21,12 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.oredict.OreDictionary;
+
+import mezz.jei.api.ISubtypeRegistry;
+import mezz.jei.api.gui.IGuiIngredient;
+import mezz.jei.api.recipe.IStackHelper;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 
 public class StackHelper implements IStackHelper {
 	private final ISubtypeRegistry subtypeRegistry;

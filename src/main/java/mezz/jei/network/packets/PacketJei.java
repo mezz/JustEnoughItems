@@ -1,10 +1,11 @@
 package mezz.jei.network.packets;
 
+import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
+import net.minecraft.network.PacketBuffer;
+
 import io.netty.buffer.Unpooled;
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketHandler;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 
 public abstract class PacketJei {
 	private final IPacketId id = getPacketId();

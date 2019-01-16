@@ -1,19 +1,20 @@
 package mezz.jei.gui.elements;
 
-import mezz.jei.Internal;
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.config.Constants;
-import mezz.jei.gui.GuiHelper;
-import mezz.jei.gui.TooltipRenderer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
-
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.GlStateManager;
+
+import mezz.jei.Internal;
+import mezz.jei.api.gui.IDrawable;
+import mezz.jei.config.Constants;
+import mezz.jei.gui.GuiHelper;
+import mezz.jei.gui.TooltipRenderer;
 
 /**
  * A gui button that has an {@link IDrawable} instead of a string label.
@@ -24,7 +25,8 @@ public class GuiIconButton extends GuiButton {
 	private final IMouseClickedButtonCallback mouseClickCallback;
 
 	public GuiIconButton(int buttonId, IDrawable icon, IMouseClickedButtonCallback mouseClickCallback) {
-		this(buttonId, (tooltip) -> {}, () -> icon, mouseClickCallback);
+		this(buttonId, (tooltip) -> {
+		}, () -> icon, mouseClickCallback);
 	}
 
 	public GuiIconButton(int buttonId, Consumer<List<String>> tooltipCallback, Supplier<IDrawable> iconSupplier, IMouseClickedButtonCallback mouseClickCallback) {

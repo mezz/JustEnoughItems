@@ -1,11 +1,12 @@
 package mezz.jei.gui.elements;
 
-import mezz.jei.Internal;
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.gui.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
+
+import mezz.jei.Internal;
+import mezz.jei.api.gui.IDrawable;
+import mezz.jei.gui.GuiHelper;
 
 /**
  * A small gui button that has an {@link IDrawable} instead of a string label.

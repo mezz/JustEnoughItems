@@ -157,6 +157,7 @@ public interface IIngredients {
 	/**
 	 * Get all the inputs that have been set for the ingredientClass.
 	 * Each list element represents one slot. The inner list represents the ingredient(s) in the slot.
+	 *
 	 * @deprecated since JEI 4.12.0. Use {@link #getInputs(IIngredientType)}
 	 */
 	@Deprecated

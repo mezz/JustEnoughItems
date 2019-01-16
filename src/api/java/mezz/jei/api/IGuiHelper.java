@@ -1,12 +1,13 @@
 package mezz.jei.api;
 
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableBuilder;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.gui.ITickTimer;
-import net.minecraft.util.ResourceLocation;
 
 /**
  * Helps with the implementation of GUIs.
@@ -50,6 +51,7 @@ public interface IGuiHelper {
 
 	/**
 	 * Returns a 16x16 drawable for the given ingredient, matching the one JEI draws in the ingredient list.
+	 *
 	 * @since JEI 4.9.1
 	 */
 	<V> IDrawable createDrawableIngredient(V ingredient);
@@ -71,6 +73,7 @@ public interface IGuiHelper {
 
 	/**
 	 * Create a drawable from part of an arbitrary sized texture.
+	 *
 	 * @since JEI 4.0.1
 	 * @deprecated since JEI 4.11.0. Use {@link #drawableBuilder(ResourceLocation, int, int, int, int)}
 	 */
@@ -84,6 +87,7 @@ public interface IGuiHelper {
 	/**
 	 * Create a drawable from part of a 256x256 texture.
 	 * Padding arguments create extra space around the texture.
+	 *
 	 * @deprecated since JEI 4.11.0. Use {@link #drawableBuilder(ResourceLocation, int, int, int, int)}
 	 */
 	@Deprecated

@@ -2,11 +2,11 @@ package mezz.jei.config;
 
 import javax.annotation.Nullable;
 
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.fml.client.FMLClientHandler;
 
 public final class ServerInfo {
 	private static boolean jeiOnServer = false;

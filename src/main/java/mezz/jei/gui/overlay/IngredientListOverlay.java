@@ -1,5 +1,17 @@
 package mezz.jei.gui.overlay;
 
+import javax.annotation.Nullable;
+import java.awt.Rectangle;
+import java.util.List;
+import java.util.Set;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.item.ItemStack;
+
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.IIngredientListOverlay;
 import mezz.jei.api.gui.IGuiProperties;
@@ -18,17 +30,6 @@ import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.util.CommandUtil;
 import mezz.jei.util.Log;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nullable;
-import java.awt.Rectangle;
-import java.util.List;
-import java.util.Set;
 
 public class IngredientListOverlay implements IIngredientListOverlay, IMouseHandler, IShowsRecipeFocuses {
 	private static final int BORDER_PADDING = 2;
@@ -38,7 +39,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 
 	private static boolean isSearchBarCentered(IGuiProperties guiProperties) {
 		return Config.isCenterSearchBarEnabled() &&
-				guiProperties.getGuiTop() + guiProperties.getGuiYSize() + SEARCH_HEIGHT < guiProperties.getScreenHeight();
+			guiProperties.getGuiTop() + guiProperties.getGuiYSize() + SEARCH_HEIGHT < guiProperties.getScreenHeight();
 	}
 
 	private final IngredientFilter ingredientFilter;
@@ -314,7 +315,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	public boolean onKeyPressed(char typedChar, int eventKey) {
 		if (isListDisplayed()) {
 			if (hasKeyboardFocus() &&
-					searchField.textboxKeyTyped(typedChar, eventKey)) {
+				searchField.textboxKeyTyped(typedChar, eventKey)) {
 				boolean changed = Config.setFilterText(searchField.getText());
 				if (changed) {
 					updateLayout(true);

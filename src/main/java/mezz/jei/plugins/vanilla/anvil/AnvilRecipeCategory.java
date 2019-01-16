@@ -1,5 +1,8 @@
 package mezz.jei.plugins.vanilla.anvil;
 
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStackGroup;
@@ -8,8 +11,6 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.config.Constants;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 
 public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipeWrapper> {
 

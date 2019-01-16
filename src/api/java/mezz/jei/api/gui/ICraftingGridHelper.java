@@ -2,8 +2,9 @@ package mezz.jei.api.gui;
 
 import java.util.List;
 
-import mezz.jei.api.IGuiHelper;
 import net.minecraft.item.ItemStack;
+
+import mezz.jei.api.IGuiHelper;
 
 /**
  * Helps set crafting-grid-style {@link IGuiIngredientGroup}.
@@ -46,6 +47,7 @@ public interface ICraftingGridHelper {
 
 	/**
 	 * Place output ingredients onto the crafting grid in a consistent way.
+	 *
 	 * @deprecated since JEI 4.0.2, use {@link IGuiItemStackGroup#set(int, Object)}
 	 */
 	@Deprecated

@@ -1,10 +1,7 @@
 package mezz.jei.network.packets;
 
-import com.google.common.base.Preconditions;
-import mezz.jei.network.IPacketId;
-import mezz.jei.network.PacketIdServer;
-import mezz.jei.util.CommandUtilServer;
-import mezz.jei.util.ErrorUtil;
+import java.io.IOException;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -12,7 +9,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 
-import java.io.IOException;
+import com.google.common.base.Preconditions;
+import mezz.jei.network.IPacketId;
+import mezz.jei.network.PacketIdServer;
+import mezz.jei.util.CommandUtilServer;
+import mezz.jei.util.ErrorUtil;
 
 public class PacketSetHotbarItemStack extends PacketJei {
 	private final ItemStack itemStack;

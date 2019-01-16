@@ -1,5 +1,14 @@
 package mezz.jei.gui.overlay.bookmarks;
 
+import javax.annotation.Nullable;
+import java.awt.Rectangle;
+import java.util.Set;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.item.ItemStack;
+
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.Config;
 import mezz.jei.gui.GuiHelper;
@@ -12,14 +21,6 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.util.CommandUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nullable;
-import java.awt.Rectangle;
-import java.util.Set;
 
 public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 	private static final int BUTTON_SIZE = 20;

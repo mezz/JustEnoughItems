@@ -2,9 +2,6 @@ package mezz.jei;
 
 import java.util.Map;
 
-import mezz.jei.config.Constants;
-import mezz.jei.config.ServerInfo;
-import mezz.jei.startup.ProxyCommon;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -13,12 +10,16 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
+import mezz.jei.config.Constants;
+import mezz.jei.config.ServerInfo;
+import mezz.jei.startup.ProxyCommon;
+
 @Mod(modid = Constants.MOD_ID,
-		name = Constants.NAME,
-		version = Constants.VERSION,
-		guiFactory = "mezz.jei.config.JEIModGuiFactory",
-		acceptedMinecraftVersions = "[1.12.2,1.13)",
-		dependencies = "required-after:forge@[14.23.1.2594,);")
+	name = Constants.NAME,
+	version = Constants.VERSION,
+	guiFactory = "mezz.jei.config.JEIModGuiFactory",
+	acceptedMinecraftVersions = "[1.12.2,1.13)",
+	dependencies = "required-after:forge@[14.23.1.2594,);")
 public class JustEnoughItems {
 
 	@SuppressWarnings("NullableProblems")

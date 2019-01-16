@@ -2,21 +2,22 @@ package mezz.jei.api.recipe;
 
 import java.util.List;
 
-import mezz.jei.api.IModRegistry;
-import mezz.jei.api.ingredients.IIngredientRegistry;
-import mezz.jei.api.recipe.wrapper.ICustomCraftingRecipeWrapper;
-import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
+import net.minecraftforge.common.brewing.BrewingOreRecipe;
+import net.minecraftforge.common.brewing.BrewingRecipe;
+import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
+import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.potion.PotionHelper;
 import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraftforge.common.brewing.BrewingOreRecipe;
-import net.minecraftforge.common.brewing.BrewingRecipe;
-import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import net.minecraftforge.oredict.ShapelessOreRecipe;
+
+import mezz.jei.api.IModRegistry;
+import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.recipe.wrapper.ICustomCraftingRecipeWrapper;
+import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
 
 /**
  * List of built-in recipe category UIDs, so that plugins with their own recipe handlers can use them.
@@ -62,6 +63,7 @@ public final class VanillaRecipeCategoryUid {
 	 * The anvil recipe category.
 	 * <p>
 	 * This is a built-in category, you can create new recipes with {@link IVanillaRecipeFactory#createAnvilRecipe(ItemStack, List, List)}
+	 *
 	 * @since JEI 4.2.6
 	 */
 	public static final String ANVIL = "minecraft.anvil";
@@ -71,6 +73,7 @@ public final class VanillaRecipeCategoryUid {
 	 * <p>
 	 * This is a built-in category, you can add new recipes with
 	 * {@link IModRegistry#addIngredientInfo(Object, Class, String...)}   or {@link IModRegistry#addIngredientInfo(List, Class, String...)}
+	 *
 	 * @since JEI 4.5.0
 	 */
 	public static final String INFORMATION = "jei.information";

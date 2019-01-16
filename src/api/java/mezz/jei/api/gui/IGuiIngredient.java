@@ -5,9 +5,10 @@ import java.awt.Color;
 import java.util.Collection;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
-import net.minecraft.client.Minecraft;
 
 /**
  * Represents one drawn ingredient that is part of a recipe.

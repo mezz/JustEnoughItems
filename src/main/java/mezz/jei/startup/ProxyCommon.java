@@ -2,15 +2,16 @@ package mezz.jei.startup;
 
 import javax.annotation.Nullable;
 
-import mezz.jei.network.PacketHandler;
-import mezz.jei.network.packets.PacketJei;
-import mezz.jei.util.Log;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.FMLEventChannel;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraft.entity.player.EntityPlayerMP;
+
+import mezz.jei.network.PacketHandler;
+import mezz.jei.network.packets.PacketJei;
+import mezz.jei.util.Log;
 
 public class ProxyCommon {
 	@Nullable

@@ -1,20 +1,21 @@
 package mezz.jei.network;
 
-import mezz.jei.network.packets.IPacketJeiHandler;
-import mezz.jei.network.packets.PacketCheatPermission;
-import mezz.jei.util.Log;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.IThreadListener;
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.util.EnumMap;
+
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.IThreadListener;
 
-import javax.annotation.Nullable;
-import java.io.IOException;
-import java.util.EnumMap;
+import mezz.jei.network.packets.IPacketJeiHandler;
+import mezz.jei.network.packets.PacketCheatPermission;
+import mezz.jei.util.Log;
 
 @SideOnly(Side.CLIENT)
 public class PacketHandlerClient extends PacketHandler {

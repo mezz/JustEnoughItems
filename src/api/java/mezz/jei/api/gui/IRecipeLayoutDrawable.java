@@ -2,11 +2,12 @@ package mezz.jei.api.gui;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.client.Minecraft;
+
 import mezz.jei.api.IRecipeRegistry;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import net.minecraft.client.Minecraft;
 
 /**
  * An extension of {@link IRecipeLayout} for addons that want to draw the layouts themselves somewhere.
@@ -22,12 +23,14 @@ public interface IRecipeLayoutDrawable extends IRecipeLayout {
 
 	/**
 	 * Draw the recipe without overlays such as item tool tips.
+	 *
 	 * @since JEI 4.7.4
 	 */
 	void drawRecipe(Minecraft minecraft, int mouseX, int mouseY);
 
 	/**
 	 * Draw the recipe overlays such as item tool tips.
+	 *
 	 * @since JEI 4.7.4
 	 */
 	void drawOverlays(Minecraft minecraft, int mouseX, int mouseY);
@@ -49,6 +52,7 @@ public interface IRecipeLayoutDrawable extends IRecipeLayout {
 
 	/**
 	 * Draw the recipe layout.
+	 *
 	 * @deprecated since JEI 4.7.4, use {@link #drawRecipe(Minecraft, int, int)} and {@link #drawOverlays(Minecraft, int, int)}
 	 */
 	@Deprecated

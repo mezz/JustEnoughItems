@@ -1,5 +1,11 @@
 package mezz.jei.recipes;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -10,12 +16,6 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.collect.ListMultiMap;
 import mezz.jei.collect.Table;
 import mezz.jei.ingredients.IngredientInformation;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * A RecipeMap efficiently links IRecipeWrappers, IRecipeCategory, and Ingredients.

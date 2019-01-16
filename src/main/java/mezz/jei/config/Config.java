@@ -1,5 +1,24 @@
 package mezz.jei.config;
 
+import javax.annotation.Nullable;
+import java.awt.Color;
+import java.io.File;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.ConfigCategory;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.util.text.TextFormatting;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
@@ -18,24 +37,6 @@ import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.GiveMode;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.ConfigCategory;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-
-import javax.annotation.Nullable;
-import java.awt.Color;
-import java.io.File;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 public final class Config {
 	private static final String configKeyPrefix = "config.jei";
@@ -705,8 +706,8 @@ public final class Config {
 	 * @param str1 a string of ordinal numbers separated by decimal points.
 	 * @param str2 a string of ordinal numbers separated by decimal points.
 	 * @return The result is a negative integer if str1 is _numerically_ less than str2.
-	 *         The result is a positive integer if str1 is _numerically_ greater than str2.
-	 *         The result is zero if the strings are _numerically_ equal.
+	 * The result is a positive integer if str1 is _numerically_ greater than str2.
+	 * The result is zero if the strings are _numerically_ equal.
 	 */
 	private static int versionCompare(String str1, String str2) {
 		String[] vals1 = str1.split("\\.");

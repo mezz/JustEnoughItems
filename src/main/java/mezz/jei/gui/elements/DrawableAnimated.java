@@ -1,10 +1,11 @@
 package mezz.jei.gui.elements;
 
+import net.minecraft.client.Minecraft;
+
 import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.gui.TickTimer;
-import net.minecraft.client.Minecraft;
 
 public class DrawableAnimated implements IDrawableAnimated {
 	private final IDrawableStatic drawable;

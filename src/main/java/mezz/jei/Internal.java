@@ -2,8 +2,9 @@ package mezz.jei;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Preconditions;
+import net.minecraftforge.common.MinecraftForge;
 
+import com.google.common.base.Preconditions;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.ingredients.IngredientFilter;
@@ -12,7 +13,6 @@ import mezz.jei.input.InputHandler;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.startup.StackHelper;
-import net.minecraftforge.common.MinecraftForge;
 
 /**
  * For JEI internal use only, these are normally accessed from the API.

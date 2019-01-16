@@ -4,12 +4,13 @@ import javax.annotation.Nullable;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import mezz.jei.api.ISubtypeRegistry;
-import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
+import mezz.jei.api.ISubtypeRegistry;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 
 public class SubtypeRegistry implements ISubtypeRegistry {
 	private final Map<Item, ISubtypeInterpreter> interpreters = new IdentityHashMap<>();

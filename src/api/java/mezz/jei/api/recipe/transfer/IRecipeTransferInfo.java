@@ -25,6 +25,7 @@ public interface IRecipeTransferInfo<C extends Container> {
 
 	/**
 	 * Return true if this recipe transfer info can handle the given container instance.
+	 *
 	 * @since JEI 4.0.2
 	 */
 	boolean canHandle(C container);

@@ -1,8 +1,9 @@
 package mezz.jei.transfer;
 
+import net.minecraft.client.Minecraft;
+
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
-import net.minecraft.client.Minecraft;
 
 public class RecipeTransferErrorInternal implements IRecipeTransferError {
 	public static final RecipeTransferErrorInternal INSTANCE = new RecipeTransferErrorInternal();

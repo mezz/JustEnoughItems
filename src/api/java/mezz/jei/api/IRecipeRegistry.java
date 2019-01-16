@@ -1,5 +1,12 @@
 package mezz.jei.api;
 
+import javax.annotation.Nullable;
+import java.util.List;
+
+import net.minecraft.inventory.Container;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
+
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
@@ -9,12 +16,6 @@ import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
-import net.minecraft.inventory.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
-
-import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * The IRecipeManager offers several functions for retrieving and handling recipes.
@@ -35,6 +36,7 @@ public interface IRecipeRegistry {
 	/**
 	 * Returns the recipe category for the given UID.
 	 * Returns null if the recipe category does not exist.
+	 *
 	 * @since JEI 4.7.7
 	 */
 	@Nullable
@@ -114,9 +116,9 @@ public interface IRecipeRegistry {
 	 * Hides a recipe so that it will not be displayed.
 	 * This can be used by mods that create recipe progression.
 	 *
-	 * @param recipe the recipe to hide.
-	 *               Get an instance using {@link #getRecipeWrapper(Object, String)}
-	 *               or {@link #getRecipeWrappers(IRecipeCategory)}
+	 * @param recipe            the recipe to hide.
+	 *                          Get an instance using {@link #getRecipeWrapper(Object, String)}
+	 *                          or {@link #getRecipeWrappers(IRecipeCategory)}
 	 * @param recipeCategoryUid the unique ID for the recipe category this recipe is a part of.
 	 *                          See {@link VanillaRecipeCategoryUid} for vanilla recipe category UIDs.
 	 * @see #unhideRecipe(IRecipeWrapper, String)
@@ -128,9 +130,9 @@ public interface IRecipeRegistry {
 	 * Unhides a recipe that was hidden by {@link #hideRecipe(IRecipeWrapper, String)}
 	 * This can be used by mods that create recipe progression.
 	 *
-	 * @param recipe the recipe to unhide.
-	 *               Get an instance using {@link #getRecipeWrapper(Object, String)}
-	 *               or {@link #getRecipeWrappers(IRecipeCategory)}
+	 * @param recipe            the recipe to unhide.
+	 *                          Get an instance using {@link #getRecipeWrapper(Object, String)}
+	 *                          or {@link #getRecipeWrappers(IRecipeCategory)}
 	 * @param recipeCategoryUid the unique ID for the recipe category this recipe is a part of.
 	 *                          See {@link VanillaRecipeCategoryUid} for vanilla recipe category UIDs.
 	 * @see #hideRecipe(IRecipeWrapper, String)
@@ -243,7 +245,6 @@ public interface IRecipeRegistry {
 	 * @param leftInput   the left input
 	 * @param rightInputs the list of possible right inputs to rotate through
 	 * @param outputs     the list of possible outputs to rotate through
-	 *
 	 * @return the {@link IRecipeWrapper} for this recipe.
 	 * @since JEI 4.3.3
 	 * @deprecated since JEI 4.5.0. Use {@link IVanillaRecipeFactory#createAnvilRecipe(ItemStack, List, List)}

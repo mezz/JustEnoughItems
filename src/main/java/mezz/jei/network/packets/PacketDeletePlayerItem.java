@@ -1,11 +1,12 @@
 package mezz.jei.network.packets;
 
-import mezz.jei.network.IPacketId;
-import mezz.jei.network.PacketIdServer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
+
+import mezz.jei.network.IPacketId;
+import mezz.jei.network.PacketIdServer;
 
 public class PacketDeletePlayerItem extends PacketJei {
 	private final ItemStack itemStack;

@@ -1,15 +1,16 @@
 package mezz.jei.gui.overlay;
 
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.List;
+
+import net.minecraft.item.ItemStack;
+
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.IItemListOverlay;
 import mezz.jei.config.Config;
 import mezz.jei.util.ErrorUtil;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.List;
 
 @Deprecated
 public class ItemListOverlay implements IItemListOverlay {

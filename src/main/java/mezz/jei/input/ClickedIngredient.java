@@ -1,15 +1,16 @@
 package mezz.jei.input;
 
+import javax.annotation.Nullable;
+import java.awt.Rectangle;
+
+import net.minecraft.item.ItemStack;
+
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nullable;
-import java.awt.Rectangle;
 
 public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	private final V value;

@@ -1,5 +1,39 @@
 package mezz.jei.plugins.vanilla;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
+import net.minecraft.client.gui.GuiRepair;
+import net.minecraft.client.gui.inventory.GuiBrewingStand;
+import net.minecraft.client.gui.inventory.GuiCrafting;
+import net.minecraft.client.gui.inventory.GuiFurnace;
+import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentData;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.inventory.ContainerBrewingStand;
+import net.minecraft.inventory.ContainerFurnace;
+import net.minecraft.inventory.ContainerRepair;
+import net.minecraft.inventory.ContainerWorkbench;
+import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.ItemBanner;
+import net.minecraft.item.ItemEnchantedBook;
+import net.minecraft.item.ItemMonsterPlacer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.ResourceLocation;
+
 import com.google.common.base.Preconditions;
 import mezz.jei.Internal;
 import mezz.jei.api.IJeiHelpers;
@@ -44,39 +78,6 @@ import mezz.jei.plugins.vanilla.ingredients.item.ItemStackRenderer;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.startup.StackHelper;
 import mezz.jei.transfer.PlayerRecipeTransferHandler;
-import net.minecraft.client.gui.GuiRepair;
-import net.minecraft.client.gui.inventory.GuiBrewingStand;
-import net.minecraft.client.gui.inventory.GuiCrafting;
-import net.minecraft.client.gui.inventory.GuiFurnace;
-import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentData;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.ContainerBrewingStand;
-import net.minecraft.inventory.ContainerFurnace;
-import net.minecraft.inventory.ContainerRepair;
-import net.minecraft.inventory.ContainerWorkbench;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemBanner;
-import net.minecraft.item.ItemEnchantedBook;
-import net.minecraft.item.ItemMonsterPlacer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.item.crafting.ShapelessRecipes;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.oredict.OreDictionary;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import net.minecraftforge.oredict.ShapelessOreRecipe;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 @JEIPlugin
 public class VanillaPlugin implements IModPlugin {
@@ -107,8 +108,7 @@ public class VanillaPlugin implements IModPlugin {
 					NBTTagCompound nbttagcompound = (NBTTagCompound) nbt;
 					int j = nbttagcompound.getShort("id");
 					Enchantment enchantment = Enchantment.getEnchantmentByID(j);
-					if (enchantment != null)
-					{
+					if (enchantment != null) {
 						String enchantmentUid = enchantment.getName() + ".lvl" + nbttagcompound.getShort("lvl");
 						enchantmentNames.add(enchantmentUid);
 					}
@@ -148,11 +148,11 @@ public class VanillaPlugin implements IModPlugin {
 		JeiHelpers jeiHelpers = Internal.getHelpers();
 		GuiHelper guiHelper = jeiHelpers.getGuiHelper();
 		registry.addRecipeCategories(
-				new CraftingRecipeCategory(guiHelper),
-				new FurnaceFuelCategory(guiHelper),
-				new FurnaceSmeltingCategory(guiHelper),
-				new BrewingRecipeCategory(guiHelper),
-				new AnvilRecipeCategory(guiHelper)
+			new CraftingRecipeCategory(guiHelper),
+			new FurnaceFuelCategory(guiHelper),
+			new FurnaceSmeltingCategory(guiHelper),
+			new BrewingRecipeCategory(guiHelper),
+			new AnvilRecipeCategory(guiHelper)
 		);
 	}
 

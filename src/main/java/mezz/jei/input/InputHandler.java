@@ -1,5 +1,16 @@
 package mezz.jei.input;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.inventory.GuiContainer;
+
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -20,18 +31,8 @@ import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.ReflectionUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class InputHandler {
 	private final RecipeRegistry recipeRegistry;
@@ -210,7 +211,7 @@ public class InputHandler {
 		int eventKey = Keyboard.getEventKey();
 
 		return ((eventKey == 0 && typedChar >= 32) || Keyboard.getEventKeyState()) &&
-				handleKeyDown(typedChar, eventKey);
+			handleKeyDown(typedChar, eventKey);
 	}
 
 	private boolean handleKeyDown(char typedChar, int eventKey) {

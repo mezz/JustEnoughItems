@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.IIngredients;
@@ -12,7 +14,6 @@ import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
-import net.minecraft.client.Minecraft;
 
 public class IngredientInfoRecipe<T> implements IRecipeWrapper {
 	private static final int lineSpacing = 2;

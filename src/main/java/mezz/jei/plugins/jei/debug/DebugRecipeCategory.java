@@ -3,6 +3,12 @@ package mezz.jei.plugins.jei.debug;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.IIngredientListOverlay;
@@ -19,11 +25,6 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.config.Constants;
 import mezz.jei.plugins.jei.JEIInternalPlugin;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
-import net.minecraft.client.Minecraft;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fluids.FluidStack;
 
 public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	public static final int RECIPE_WIDTH = 160;

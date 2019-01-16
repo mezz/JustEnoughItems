@@ -3,11 +3,11 @@ package mezz.jei.gui;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.client.config.GuiUtils;
 
 public final class TooltipRenderer {
 	private TooltipRenderer() {

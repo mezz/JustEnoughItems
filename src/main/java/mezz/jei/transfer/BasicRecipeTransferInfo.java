@@ -3,9 +3,10 @@ package mezz.jei.transfer;
 import java.util.ArrayList;
 import java.util.List;
 
-import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
+
+import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 
 public class BasicRecipeTransferInfo<C extends Container> implements IRecipeTransferInfo<C> {
 	private final Class<C> containerClass;

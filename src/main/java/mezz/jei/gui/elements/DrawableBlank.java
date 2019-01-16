@@ -1,8 +1,9 @@
 package mezz.jei.gui.elements;
 
+import net.minecraft.client.Minecraft;
+
 import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
-import net.minecraft.client.Minecraft;
 
 public class DrawableBlank implements IDrawableStatic, IDrawableAnimated {
 	private final int width;

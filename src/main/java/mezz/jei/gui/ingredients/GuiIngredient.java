@@ -1,5 +1,22 @@
 package mezz.jei.gui.ingredients;
 
+import javax.annotation.Nullable;
+import java.awt.Color;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
+
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiIngredient;
@@ -14,22 +31,6 @@ import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextFormatting;
-
-import javax.annotation.Nullable;
-import java.awt.Color;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	private static final String oreDictionaryIngredient = Translator.translateToLocal("jei.tooltip.recipe.ore.dict");
@@ -54,13 +55,13 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	private boolean enabled;
 
 	public GuiIngredient(
-			int slotIndex,
-			boolean input,
-			IIngredientRenderer<T> ingredientRenderer,
-			IIngredientHelper<T> ingredientHelper,
-			Rectangle rect,
-			int xPadding, int yPadding,
-			int cycleOffset
+		int slotIndex,
+		boolean input,
+		IIngredientRenderer<T> ingredientRenderer,
+		IIngredientHelper<T> ingredientHelper,
+		Rectangle rect,
+		int xPadding, int yPadding,
+		int cycleOffset
 	) {
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredientHelper = ingredientHelper;
@@ -197,10 +198,10 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 
 			RenderHelper.disableStandardItemLighting();
 			drawRect(xOffset + rect.x + xPadding,
-					yOffset + rect.y + yPadding,
-					xOffset + rect.x + rect.width - xPadding,
-					yOffset + rect.y + rect.height - yPadding,
-					0x7FFFFFFF);
+				yOffset + rect.y + yPadding,
+				xOffset + rect.x + rect.width - xPadding,
+				yOffset + rect.y + rect.height - yPadding,
+				0x7FFFFFFF);
 			GlStateManager.color(1f, 1f, 1f, 1f);
 
 			ITooltipFlag.TooltipFlags tooltipFlag = minecraft.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;

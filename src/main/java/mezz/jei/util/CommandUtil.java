@@ -1,10 +1,6 @@
 package mezz.jei.util;
 
-import mezz.jei.JustEnoughItems;
-import mezz.jei.config.Config;
-import mezz.jei.config.ServerInfo;
-import mezz.jei.network.packets.PacketGiveItemStack;
-import mezz.jei.network.packets.PacketSetHotbarItemStack;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
@@ -15,7 +11,12 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.items.ItemHandlerHelper;
+
+import mezz.jei.JustEnoughItems;
+import mezz.jei.config.Config;
+import mezz.jei.config.ServerInfo;
+import mezz.jei.network.packets.PacketGiveItemStack;
+import mezz.jei.network.packets.PacketSetHotbarItemStack;
 import org.apache.commons.lang3.StringUtils;
 
 public final class CommandUtil {

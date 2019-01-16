@@ -3,12 +3,13 @@ package mezz.jei.gui;
 import java.awt.Color;
 import java.awt.Rectangle;
 
-import mezz.jei.Internal;
-import mezz.jei.gui.elements.GuiIconButton;
-import mezz.jei.input.IPaged;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
+
+import mezz.jei.Internal;
+import mezz.jei.gui.elements.GuiIconButton;
+import mezz.jei.input.IPaged;
 
 public class PageNavigation {
 	private final IPaged paged;

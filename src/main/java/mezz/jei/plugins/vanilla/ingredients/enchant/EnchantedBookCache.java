@@ -1,13 +1,14 @@
 package mezz.jei.plugins.vanilla.ingredients.enchant;
 
-import mezz.jei.collect.Table;
-import mezz.jei.startup.PlayerJoinedWorldEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import mezz.jei.collect.Table;
+import mezz.jei.startup.PlayerJoinedWorldEvent;
 
 public class EnchantedBookCache {
 	private final Table<ResourceLocation, Integer, ItemStack> cache = Table.hashBasedTable();

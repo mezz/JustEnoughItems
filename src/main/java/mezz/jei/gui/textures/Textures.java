@@ -1,8 +1,9 @@
 package mezz.jei.gui.textures;
 
-import mezz.jei.config.Constants;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ResourceLocation;
+
+import mezz.jei.config.Constants;
 
 public class Textures {
 	private final JeiTextureMap textureMap;

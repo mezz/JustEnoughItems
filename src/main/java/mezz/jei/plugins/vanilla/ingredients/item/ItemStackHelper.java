@@ -7,11 +7,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.recipe.IFocus;
-import mezz.jei.color.ColorGetter;
-import mezz.jei.startup.StackHelper;
-import mezz.jei.util.ErrorUtil;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraft.block.Block;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
@@ -19,11 +19,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.oredict.OreDictionary;
+
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.color.ColorGetter;
+import mezz.jei.startup.StackHelper;
+import mezz.jei.util.ErrorUtil;
 
 public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	private final StackHelper stackHelper;

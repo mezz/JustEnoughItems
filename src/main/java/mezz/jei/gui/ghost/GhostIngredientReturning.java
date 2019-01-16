@@ -1,13 +1,14 @@
 package mezz.jei.gui.ghost;
 
-import mezz.jei.api.ingredients.IIngredientRenderer;
+import javax.annotation.Nullable;
+import java.awt.Point;
+import java.awt.Rectangle;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderItem;
 
-import javax.annotation.Nullable;
-import java.awt.Point;
-import java.awt.Rectangle;
+import mezz.jei.api.ingredients.IIngredientRenderer;
 
 /**
  * Renders an item returning to the ingredient list after a failed ghost drag.

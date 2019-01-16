@@ -3,12 +3,13 @@ package mezz.jei.plugins.vanilla.ingredients.enchant;
 import javax.annotation.Nullable;
 import java.awt.Color;
 
-import com.google.common.base.MoreObjects;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.recipe.IFocus;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+
+import com.google.common.base.MoreObjects;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.recipe.IFocus;
 
 public class EnchantDataHelper implements IIngredientHelper<EnchantmentData> {
 	private final EnchantedBookCache cache;
@@ -24,7 +25,7 @@ public class EnchantDataHelper implements IIngredientHelper<EnchantmentData> {
 	public EnchantmentData getMatch(Iterable<EnchantmentData> ingredients, EnchantmentData toMatch) {
 		for (EnchantmentData enchantData : ingredients) {
 			if (enchantData.enchantment.getRegistryName() == toMatch.enchantment.getRegistryName()
-					&& enchantData.enchantmentLevel == toMatch.enchantmentLevel) {
+				&& enchantData.enchantmentLevel == toMatch.enchantmentLevel) {
 				return enchantData;
 			}
 		}

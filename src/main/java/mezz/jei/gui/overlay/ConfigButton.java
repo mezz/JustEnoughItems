@@ -1,5 +1,12 @@
 package mezz.jei.gui.overlay;
 
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.util.text.TextFormatting;
+
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.config.Config;
@@ -8,13 +15,7 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.util.Translator;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
-
-import java.util.List;
 
 public class ConfigButton extends GuiIconToggleButton {
 	public static ConfigButton create(IngredientListOverlay parent) {

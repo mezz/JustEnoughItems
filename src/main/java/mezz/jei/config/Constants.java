@@ -1,8 +1,8 @@
 package mezz.jei.config;
 
-import net.minecraft.util.ResourceLocation;
-
 import java.util.Locale;
+
+import net.minecraft.util.ResourceLocation;
 
 public final class Constants {
 	public static final String MINECRAFT_NAME = "Minecraft";

@@ -5,16 +5,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
-import mezz.jei.api.gui.IGuiIngredient;
-import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
+
+import com.google.common.collect.Lists;
+import mezz.jei.api.gui.IGuiIngredient;
+import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.api.recipe.IRecipeWrapper;
 
 public class AnvilRecipeWrapper implements IRecipeWrapper {
 	private final List<List<ItemStack>> inputs;
@@ -49,8 +50,8 @@ public class AnvilRecipeWrapper implements IRecipeWrapper {
 		}
 
 		if (lastLeftStack == null || lastRightStack == null
-				|| !ItemStack.areItemStacksEqual(lastLeftStack, newLeftStack)
-				|| !ItemStack.areItemStacksEqual(lastRightStack, newRightStack)) {
+			|| !ItemStack.areItemStacksEqual(lastLeftStack, newLeftStack)
+			|| !ItemStack.areItemStacksEqual(lastRightStack, newRightStack)) {
 			lastLeftStack = newLeftStack;
 			lastRightStack = newRightStack;
 			lastCost = AnvilRecipeMaker.findLevelsCost(lastLeftStack, lastRightStack);

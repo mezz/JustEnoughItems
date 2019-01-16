@@ -3,9 +3,9 @@ package mezz.jei.config;
 import javax.annotation.Nullable;
 import java.util.Set;
 
+import net.minecraftforge.fml.client.IModGuiFactory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraftforge.fml.client.IModGuiFactory;
 
 public class JEIModGuiFactory implements IModGuiFactory {
 	@Override

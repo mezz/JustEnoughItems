@@ -1,11 +1,12 @@
 package mezz.jei.api.ingredients;
 
-import mezz.jei.api.IModRegistry;
-import mezz.jei.api.recipe.IIngredientType;
-import net.minecraft.item.ItemStack;
-
 import java.util.Collection;
 import java.util.List;
+
+import net.minecraft.item.ItemStack;
+
+import mezz.jei.api.IModRegistry;
+import mezz.jei.api.recipe.IIngredientType;
 
 /**
  * The IIngredientRegistry is provided by JEI and has some useful functions related to recipe ingredients.
@@ -16,6 +17,7 @@ import java.util.List;
 public interface IIngredientRegistry {
 	/**
 	 * Returns an unmodifiable collection of all the ingredients known to JEI, of the specified type.
+	 *
 	 * @since JEI 4.12.0
 	 */
 	<V> Collection<V> getAllIngredients(IIngredientType<V> ingredientType);
@@ -39,6 +41,7 @@ public interface IIngredientRegistry {
 
 	/**
 	 * Returns the ingredient renderer for this ingredient class.
+	 *
 	 * @since JEI 4.12.0
 	 */
 	<V> IIngredientRenderer<V> getIngredientRenderer(IIngredientType<V> ingredientType);
@@ -93,6 +96,7 @@ public interface IIngredientRegistry {
 
 	/**
 	 * Returns an unmodifiable collection of all the ingredients known to JEI, of the specified class.
+	 *
 	 * @since JEI 4.7.3
 	 * @deprecated since JEI 4.12.0. Use {@link #getAllIngredients(IIngredientType)}
 	 */
@@ -101,6 +105,7 @@ public interface IIngredientRegistry {
 
 	/**
 	 * Returns the appropriate ingredient helper for this ingredient class.
+	 *
 	 * @deprecated since JEI 4.12.0. Use {@link #getIngredientHelper(IIngredientType)}
 	 */
 	@Deprecated
@@ -108,6 +113,7 @@ public interface IIngredientRegistry {
 
 	/**
 	 * Returns the ingredient renderer for this ingredient class.
+	 *
 	 * @deprecated since JEI 4.12.0. Use {@link #getIngredientRenderer(IIngredientType)}
 	 */
 	@Deprecated

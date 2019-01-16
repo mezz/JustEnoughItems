@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import net.minecraftforge.fml.common.discovery.ASMDataTable;
+
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.util.Log;
-import net.minecraftforge.fml.common.discovery.ASMDataTable;
 
 public final class AnnotatedInstanceUtil {
 	private AnnotatedInstanceUtil() {

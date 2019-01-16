@@ -1,9 +1,10 @@
 package mezz.jei.gui.elements;
 
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+
+import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.ingredients.IIngredientRenderer;
 
 public class DrawableIngredient<V> implements IDrawable {
 	private final V ingredient;

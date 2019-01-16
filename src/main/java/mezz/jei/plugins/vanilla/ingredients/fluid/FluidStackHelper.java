@@ -4,19 +4,20 @@ import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.Collections;
 
-import com.google.common.base.MoreObjects;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.color.ColorGetter;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
+
+import com.google.common.base.MoreObjects;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.color.ColorGetter;
 
 public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	@Override

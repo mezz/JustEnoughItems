@@ -1,14 +1,15 @@
 package mezz.jei.transfer;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.text.TextFormatting;
+
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.util.Translator;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.TextFormatting;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class RecipeTransferErrorTooltip implements IRecipeTransferError {
 	private final List<String> message = new ArrayList<>();

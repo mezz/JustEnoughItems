@@ -1,15 +1,16 @@
 package mezz.jei.plugins.vanilla;
 
-import mezz.jei.api.gui.IAdvancedGuiHandler;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.recipebook.GuiButtonRecipeTab;
 import net.minecraft.client.gui.recipebook.GuiRecipeBook;
 import net.minecraft.client.gui.recipebook.IRecipeShownListener;
 
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import mezz.jei.api.gui.IAdvancedGuiHandler;
 
 class RecipeBookGuiHandler<T extends GuiContainer & IRecipeShownListener> implements IAdvancedGuiHandler<T> {
 	private final Class<T> guiContainerClass;

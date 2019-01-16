@@ -1,8 +1,12 @@
 package mezz.jei.gui.textures;
 
-import com.google.common.collect.Maps;
-import mezz.jei.config.Constants;
-import mezz.jei.util.Log;
+import java.io.IOException;
+import java.util.Map;
+
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.ProgressManager;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.PngSizeInfo;
 import net.minecraft.client.renderer.texture.Stitcher;
@@ -15,14 +19,11 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.ProgressManager;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.apache.commons.io.IOUtils;
 
-import java.io.IOException;
-import java.util.Map;
+import com.google.common.collect.Maps;
+import mezz.jei.config.Constants;
+import mezz.jei.util.Log;
+import org.apache.commons.io.IOUtils;
 
 @SideOnly(Side.CLIENT)
 public class JeiTextureMap extends TextureMap {

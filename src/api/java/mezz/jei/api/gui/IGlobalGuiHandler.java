@@ -1,12 +1,12 @@
 package mezz.jei.api.gui;
 
-import mezz.jei.api.IModRegistry;
-import mezz.jei.api.ingredients.IModIngredientRegistration;
-
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.Collection;
 import java.util.Collections;
+
+import mezz.jei.api.IModRegistry;
+import mezz.jei.api.ingredients.IModIngredientRegistration;
 
 /**
  * Allows plugins to change how JEI is displayed next to guis.

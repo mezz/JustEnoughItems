@@ -1,9 +1,10 @@
 package mezz.jei.api.recipe.transfer;
 
-import mezz.jei.api.gui.IRecipeLayout;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+
+import mezz.jei.api.gui.IRecipeLayout;
 
 /**
  * A reason that a recipe transfer couldn't happen.

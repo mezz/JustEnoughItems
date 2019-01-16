@@ -7,15 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import mezz.jei.Internal;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IIngredientType;
-import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.ingredients.IngredientRegistry;
-import mezz.jei.ingredients.Ingredients;
-import mezz.jei.startup.ForgeModIdHelper;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
@@ -27,7 +19,16 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.IForgeRegistryEntry;
+
+import mezz.jei.Internal;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.ingredients.Ingredients;
+import mezz.jei.startup.ForgeModIdHelper;
 
 public final class ErrorUtil {
 	private ErrorUtil() {

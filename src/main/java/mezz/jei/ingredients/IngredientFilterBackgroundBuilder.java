@@ -1,17 +1,18 @@
 package mezz.jei.ingredients;
 
+import java.util.Collection;
+
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.NonNullList;
+
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.NonNullList;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-
-import java.util.Collection;
 
 public class IngredientFilterBackgroundBuilder {
 	private final Char2ObjectMap<PrefixedSearchTree> prefixedSearchTrees;

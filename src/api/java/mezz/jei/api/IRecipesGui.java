@@ -1,9 +1,9 @@
 package mezz.jei.api;
 
-import mezz.jei.api.recipe.IFocus;
-
 import javax.annotation.Nullable;
 import java.util.List;
+
+import mezz.jei.api.recipe.IFocus;
 
 /**
  * JEI's gui for displaying recipes. Use this interface to open recipes.

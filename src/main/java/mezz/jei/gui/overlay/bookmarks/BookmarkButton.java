@@ -1,5 +1,10 @@
 package mezz.jei.gui.overlay.bookmarks;
 
+import java.util.List;
+
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.util.text.TextFormatting;
+
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.bookmarks.BookmarkList;
@@ -8,10 +13,6 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.util.Translator;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.util.text.TextFormatting;
-
-import java.util.List;
 
 public class BookmarkButton extends GuiIconToggleButton {
 	public static BookmarkButton create(BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, GuiHelper guiHelper) {

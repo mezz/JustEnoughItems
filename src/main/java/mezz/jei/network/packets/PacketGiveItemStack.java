@@ -2,15 +2,16 @@ package mezz.jei.network.packets;
 
 import java.io.IOException;
 
-import mezz.jei.network.IPacketId;
-import mezz.jei.network.PacketIdServer;
-import mezz.jei.util.CommandUtilServer;
-import mezz.jei.util.GiveMode;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
+
+import mezz.jei.network.IPacketId;
+import mezz.jei.network.PacketIdServer;
+import mezz.jei.util.CommandUtilServer;
+import mezz.jei.util.GiveMode;
 
 public class PacketGiveItemStack extends PacketJei {
 	private final ItemStack itemStack;

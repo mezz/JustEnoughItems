@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.base.Preconditions;
-import mezz.jei.util.MathUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -24,44 +22,47 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
+import com.google.common.base.Preconditions;
+import mezz.jei.util.MathUtil;
+
 public final class ColorGetter {
 	private static final String[] defaultColors = new String[]{
-			"White:EEEEEE",
-			"LightBlue:7492cc",
-			"Cyan:00EEEE",
-			"Blue:2222dd",
-			"LapisBlue:25418b",
-			"Teal:008080",
-			"Yellow:cacb58",
-			"GoldenYellow:EED700",
-			"Orange:d97634",
-			"Pink:D1899D",
-			"HotPink:FC0FC0",
-			"Magenta:b24bbb",
-			"Purple:813eb9",
-			"JadedPurple:43324f",
-			"EvilPurple:2e1649",
-			"Lavender:B57EDC",
-			"Indigo:480082",
-			"Sand:dbd3a0",
-			"Tan:bb9b63",
-			"LightBrown:A0522D",
-			"Brown:634b33",
-			"DarkBrown:3a2d13",
-			"LimeGreen:43b239",
-			"SlimeGreen:83cb73",
-			"Green:008000",
-			"DarkGreen:224d22",
-			"GrassGreen:548049",
-			"Red:963430",
-			"BrickRed:b0604b",
-			"NetherBrick:2a1516",
-			"Redstone:ce3e36",
-			"Black:181515",
-			"CharcoalGray:464646",
-			"IronGray:646464",
-			"Gray:808080",
-			"Silver:C0C0C0"
+		"White:EEEEEE",
+		"LightBlue:7492cc",
+		"Cyan:00EEEE",
+		"Blue:2222dd",
+		"LapisBlue:25418b",
+		"Teal:008080",
+		"Yellow:cacb58",
+		"GoldenYellow:EED700",
+		"Orange:d97634",
+		"Pink:D1899D",
+		"HotPink:FC0FC0",
+		"Magenta:b24bbb",
+		"Purple:813eb9",
+		"JadedPurple:43324f",
+		"EvilPurple:2e1649",
+		"Lavender:B57EDC",
+		"Indigo:480082",
+		"Sand:dbd3a0",
+		"Tan:bb9b63",
+		"LightBrown:A0522D",
+		"Brown:634b33",
+		"DarkBrown:3a2d13",
+		"LimeGreen:43b239",
+		"SlimeGreen:83cb73",
+		"Green:008000",
+		"DarkGreen:224d22",
+		"GrassGreen:548049",
+		"Red:963430",
+		"BrickRed:b0604b",
+		"NetherBrick:2a1516",
+		"Redstone:ce3e36",
+		"Black:181515",
+		"CharcoalGray:464646",
+		"IronGray:646464",
+		"Gray:808080",
+		"Silver:C0C0C0"
 	};
 
 	private ColorGetter() {

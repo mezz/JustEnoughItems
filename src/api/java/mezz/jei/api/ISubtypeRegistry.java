@@ -1,11 +1,10 @@
 package mezz.jei.api;
 
 import javax.annotation.Nullable;
+import java.util.function.Function;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-
-import java.util.function.Function;
 
 /**
  * Tell JEI how to interpret NBT tags and capabilities when comparing and looking up items.
@@ -63,7 +62,7 @@ public interface ISubtypeRegistry {
 	@FunctionalInterface
 	interface ISubtypeInterpreter extends Function<ItemStack, String> {
 		String NONE = "";
-		
+
 		/**
 		 * Get the data from an itemStack that is relevant to telling subtypes apart.
 		 * This should account for meta, nbt, and anything else that's relevant.

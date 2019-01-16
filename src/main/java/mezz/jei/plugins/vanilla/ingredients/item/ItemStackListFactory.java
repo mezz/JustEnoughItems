@@ -6,23 +6,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import mezz.jei.api.ISubtypeRegistry;
-import mezz.jei.startup.StackHelper;
-import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.oredict.OreDictionary;
+
+import mezz.jei.api.ISubtypeRegistry;
+import mezz.jei.startup.StackHelper;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 
 public final class ItemStackListFactory {
 	private final ISubtypeRegistry subtypeRegistry;

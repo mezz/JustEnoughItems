@@ -1,21 +1,22 @@
 package mezz.jei.input;
 
+import java.awt.Color;
+import java.awt.Rectangle;
+import java.util.LinkedList;
+import java.util.List;
+
+import net.minecraftforge.fml.client.config.HoverChecker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.renderer.GlStateManager;
+
 import mezz.jei.Internal;
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientFilter;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraftforge.fml.client.config.HoverChecker;
 import org.lwjgl.input.Keyboard;
-
-import java.awt.Color;
-import java.awt.Rectangle;
-import java.util.LinkedList;
-import java.util.List;
 
 public class GuiTextFieldFilter extends GuiTextField {
 	private static final int MAX_HISTORY = 100;

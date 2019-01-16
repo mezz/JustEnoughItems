@@ -1,9 +1,10 @@
 package mezz.jei.api.gui;
 
+import net.minecraft.client.Minecraft;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import net.minecraft.client.Minecraft;
 
 /**
  * An animated {@link IDrawable}, useful for showing a gui animation like furnace flames or progress arrows.

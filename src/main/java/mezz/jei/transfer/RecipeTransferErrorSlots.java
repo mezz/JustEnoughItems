@@ -4,11 +4,12 @@ import java.awt.Color;
 import java.util.Collection;
 import java.util.Map;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
 
 public class RecipeTransferErrorSlots extends RecipeTransferErrorTooltip {
 	private static final Color highlightColor = new Color(1.0f, 0.0f, 0.0f, 0.4f);

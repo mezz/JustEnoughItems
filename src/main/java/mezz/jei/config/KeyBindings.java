@@ -1,14 +1,15 @@
 package mezz.jei.config;
 
-import com.google.common.collect.ImmutableList;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.KeyBinding;
+import java.util.List;
+
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import org.lwjgl.input.Keyboard;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.KeyBinding;
 
-import java.util.List;
+import com.google.common.collect.ImmutableList;
+import org.lwjgl.input.Keyboard;
 
 public final class KeyBindings {
 	private static final String categoryName = Constants.MOD_ID + " (" + Constants.NAME + ')';

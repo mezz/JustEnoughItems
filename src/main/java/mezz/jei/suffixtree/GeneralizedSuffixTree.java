@@ -15,11 +15,11 @@
  */
 package mezz.jei.suffixtree;
 
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
-
 import javax.annotation.Nullable;
 import java.util.Objects;
+
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A Generalized Suffix Tree, based on the Ukkonen's paper "On-line construction of suffix trees"
@@ -100,9 +100,9 @@ public class GeneralizedSuffixTree implements ISearchTree {
 	private Node searchNode(String word) {
 		/*
 		 * Verifies if exists a path from the root to a node such that the concatenation
-         * of all the labels on the path is a superstring of the given word.
-         * If such a path is found, the last node on it is returned.
-         */
+		 * of all the labels on the path is a superstring of the given word.
+		 * If such a path is found, the last node on it is returned.
+		 */
 		Node currentNode = root;
 		Edge currentEdge;
 

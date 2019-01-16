@@ -6,9 +6,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.item.ItemStack;
+
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IIngredientType;
-import net.minecraft.item.ItemStack;
 
 /**
  * An ingredient helper allows JEI to get information about ingredients for searching and other purposes.

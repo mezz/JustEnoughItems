@@ -1,12 +1,13 @@
 package mezz.jei.api;
 
+import javax.annotation.Nullable;
+import java.util.Collection;
+
+import net.minecraft.item.ItemStack;
+
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IIngredientType;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nullable;
-import java.util.Collection;
 
 /**
  * The IItemListOverlay is JEI's gui that displays all the items next to an open container gui.
@@ -36,6 +37,7 @@ public interface IItemListOverlay {
 
 	/**
 	 * Set the search filter string for the item list.
+	 *
 	 * @deprecated since JEI 4.5.0. Use {@link IIngredientFilter#setFilterText(String)}
 	 */
 	@Deprecated
@@ -65,6 +67,7 @@ public interface IItemListOverlay {
 
 	/**
 	 * Tells JEI which stacks to highlight
+	 *
 	 * @deprecated Since JEI 4.5.0. This is rarely used and being removed.
 	 */
 	@Deprecated

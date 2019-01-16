@@ -1,14 +1,5 @@
 package mezz.jei.ingredients;
 
-import com.google.common.collect.ImmutableSet;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.startup.IModIdHelper;
-import mezz.jei.util.LegacyUtil;
-import mezz.jei.util.Log;
-import mezz.jei.util.Translator;
-
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,6 +9,15 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import com.google.common.collect.ImmutableSet;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.startup.IModIdHelper;
+import mezz.jei.util.LegacyUtil;
+import mezz.jei.util.Log;
+import mezz.jei.util.Translator;
 
 public class IngredientListElement<V> implements IIngredientListElement<V> {
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");

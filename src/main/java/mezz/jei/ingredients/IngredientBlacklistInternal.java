@@ -1,11 +1,11 @@
 package mezz.jei.ingredients;
 
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.config.Config;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.config.Config;
 
 public class IngredientBlacklistInternal {
 	private final Set<String> ingredientBlacklist = new HashSet<>();

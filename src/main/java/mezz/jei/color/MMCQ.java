@@ -79,7 +79,7 @@ public class MMCQ {
 		@Override
 		public String toString() {
 			return "r1: " + r1 + " / r2: " + r2 + " / g1: " + g1 + " / g2: "
-					+ g2 + " / b1: " + b1 + " / b2: " + b2;
+				+ g2 + " / b1: " + b1 + " / b2: " + b2;
 		}
 
 		public int volume(boolean force) {
@@ -140,11 +140,11 @@ public class MMCQ {
 
 				if (ntot > 0) {
 					_avg = new int[]{~~(rsum / ntot), ~~(gsum / ntot),
-							~~(bsum / ntot)};
+						~~(bsum / ntot)};
 				} else {
 					_avg = new int[]{~~(MULT * (r1 + r2 + 1) / 2),
-							~~(MULT * (g1 + g2 + 1) / 2),
-							~~(MULT * (b1 + b2 + 1) / 2)};
+						~~(MULT * (g1 + g2 + 1) / 2),
+						~~(MULT * (b1 + b2 + 1) / 2)};
 				}
 			}
 
@@ -157,7 +157,7 @@ public class MMCQ {
 			int bval = pixel[2] >> RSHIFT;
 
 			return (rval >= r1 && rval <= r2 && gval >= g1 && gval <= g2
-					&& bval >= b1 && bval <= b2);
+				&& bval >= b1 && bval <= b2);
 		}
 
 	}
@@ -323,7 +323,7 @@ public class MMCQ {
 				partialsum[i] = total;
 			}
 		} else
-		/* maxw == bw */ {
+			/* maxw == bw */ {
 			for (i = vbox.b1; i <= vbox.b2; i++) {
 				sum = 0;
 				for (j = vbox.r1; j <= vbox.r2; j++) {
@@ -345,8 +345,8 @@ public class MMCQ {
 
 		// determine the cut planes
 		return maxw == rw ? doCut('r', vbox, partialsum, lookaheadsum, total)
-				: maxw == gw ? doCut('g', vbox, partialsum, lookaheadsum, total)
-				: doCut('b', vbox, partialsum, lookaheadsum, total);
+			: maxw == gw ? doCut('g', vbox, partialsum, lookaheadsum, total)
+			: doCut('b', vbox, partialsum, lookaheadsum, total);
 	}
 
 	private static VBox[] doCut(char color, VBox vbox, int[] partialsum, int[] lookaheadsum, int total) {
@@ -360,7 +360,7 @@ public class MMCQ {
 			vbox_dim1 = vbox.g1;
 			vbox_dim2 = vbox.g2;
 		} else
-		/* color == 'b' */ {
+			/* color == 'b' */ {
 			vbox_dim1 = vbox.b1;
 			vbox_dim2 = vbox.b2;
 		}
@@ -402,7 +402,7 @@ public class MMCQ {
 					vbox1.g2 = d2;
 					vbox2.g1 = d2 + 1;
 				} else
-				/* color == 'b' */ {
+					/* color == 'b' */ {
 					vbox1.b2 = d2;
 					vbox2.b1 = d2 + 1;
 				}
@@ -477,7 +477,7 @@ public class MMCQ {
 
 			if (vbox1 == null) {
 				throw new RuntimeException(
-						"vbox1 not defined; shouldn't happen!");
+					"vbox1 not defined; shouldn't happen!");
 			}
 
 			lh.add(vbox1);

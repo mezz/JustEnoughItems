@@ -1,10 +1,9 @@
 package mezz.jei.startup;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
-
-import javax.annotation.Nullable;
 
 public interface IModIdHelper {
 	String getModNameForModId(String modId);

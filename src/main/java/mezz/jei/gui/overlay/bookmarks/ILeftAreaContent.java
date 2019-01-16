@@ -1,11 +1,12 @@
 package mezz.jei.gui.overlay.bookmarks;
 
-import mezz.jei.input.IShowsRecipeFocuses;
+import java.awt.Rectangle;
+import java.util.Set;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
-import java.awt.Rectangle;
-import java.util.Set;
+import mezz.jei.input.IShowsRecipeFocuses;
 
 public interface ILeftAreaContent extends IShowsRecipeFocuses {
 

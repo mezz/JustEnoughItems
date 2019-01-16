@@ -1,9 +1,9 @@
 package mezz.jei.input;
 
-import net.minecraft.item.ItemStack;
-
 import javax.annotation.Nullable;
 import java.awt.Rectangle;
+
+import net.minecraft.item.ItemStack;
 
 public interface IClickedIngredient<V> {
 

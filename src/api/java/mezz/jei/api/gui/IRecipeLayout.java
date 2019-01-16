@@ -65,6 +65,7 @@ public interface IRecipeLayout {
 
 	/**
 	 * Adds a shapeless icon to the top right of the recipe, that shows a tooltip saying "shapeless" when hovered over.
+	 *
 	 * @since JEI 4.0.2
 	 */
 	void setShapeless();

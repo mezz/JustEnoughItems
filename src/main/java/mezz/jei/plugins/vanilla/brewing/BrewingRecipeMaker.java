@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import mezz.jei.Internal;
-import mezz.jei.api.ingredients.IIngredientRegistry;
-import mezz.jei.config.Config;
-import mezz.jei.util.Log;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.common.brewing.AbstractBrewingRecipe;
+import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
+import net.minecraftforge.common.brewing.IBrewingRecipe;
+import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionHelper;
@@ -20,11 +21,11 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.brewing.AbstractBrewingRecipe;
-import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
-import net.minecraftforge.common.brewing.IBrewingRecipe;
-import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+
+import mezz.jei.Internal;
+import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.config.Config;
+import mezz.jei.util.Log;
 
 public class BrewingRecipeMaker {
 

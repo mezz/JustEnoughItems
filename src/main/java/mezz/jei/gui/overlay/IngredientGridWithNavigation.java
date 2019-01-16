@@ -1,5 +1,17 @@
 package mezz.jei.gui.overlay;
 
+import javax.annotation.Nullable;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.settings.GameSettings;
+import net.minecraft.item.ItemStack;
+
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiScreenHelper;
@@ -16,17 +28,6 @@ import mezz.jei.render.IngredientListSlot;
 import mezz.jei.render.IngredientRenderer;
 import mezz.jei.util.CommandUtil;
 import mezz.jei.util.MathUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.settings.GameSettings;
-import net.minecraft.item.ItemStack;
-
-import javax.annotation.Nullable;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Displays a list of ingredients with navigation at the top.
@@ -111,7 +112,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
 		return !guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY) &&
 			(this.ingredientGrid.handleMouseClicked(mouseX, mouseY) ||
-			this.navigation.handleMouseClickedButtons(mouseX, mouseY));
+				this.navigation.handleMouseClickedButtons(mouseX, mouseY));
 	}
 
 	@Override

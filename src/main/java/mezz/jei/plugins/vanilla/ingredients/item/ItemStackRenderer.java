@@ -4,10 +4,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Log;
-import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -17,6 +13,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
+
+import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
+import mezz.jei.util.Translator;
 
 public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	@Override
