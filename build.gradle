@@ -83,9 +83,12 @@ minecraft {
 		client = {
 			workingDirectory project.file('run').canonicalPath
 			source sourceSets.main
+			source sourceSets.api
 		}
 		server = {
 			workingDirectory project.file('run').canonicalPath
+			source sourceSets.main
+			source sourceSets.api
 		}
 	}
 }
@@ -120,7 +123,7 @@ task makeChangelog(type: GitChangelogTask) {
 //}
 
 jar {
-	duplicatesStrategy = DuplicatesStrategy.FAIL
+//	duplicatesStrategy = DuplicatesStrategy.FAIL
 	from sourceSets.main.output.classesDirs
 	from sourceSets.api.output.classesDirs
 	from sourceSets.main.output.resourcesDir
@@ -128,20 +131,20 @@ jar {
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-	duplicatesStrategy = DuplicatesStrategy.FAIL
+//	duplicatesStrategy = DuplicatesStrategy.FAIL
 	classifier = "javadoc"
 	from javadoc.destinationDir
 }
 
 task sourcesJar(type: Jar) {
-	duplicatesStrategy = DuplicatesStrategy.FAIL
+//	duplicatesStrategy = DuplicatesStrategy.FAIL
 	classifier = "sources"
 	from sourceSets.main.allJava
 	from sourceSets.api.allJava
 }
 
 task apiJar(type: Jar) {
-	duplicatesStrategy = DuplicatesStrategy.FAIL
+//	duplicatesStrategy = DuplicatesStrategy.FAIL
 	classifier = "api"
 	from sourceSets.api.output
 
