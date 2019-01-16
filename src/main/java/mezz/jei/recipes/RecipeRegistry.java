@@ -11,6 +11,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -450,7 +451,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Nullable
-	private <T> IRecipeHandler<T> getRecipeHandler(Class<? extends T> recipeClass, @Nullable String recipeCategoryUid) {
+	private <T> IRecipeHandler<T> getRecipeHandler(final Class<? extends T> recipeClass, @Nullable String recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
 
 		ImmutableCollection<IRecipeHandler> recipeHandlers;
@@ -461,34 +462,64 @@ public class RecipeRegistry implements IRecipeRegistry {
 			recipeHandlers = this.recipeHandlers.values();
 		}
 
-		// first try to find the exact handler for this recipeClass
-		for (IRecipeHandler<?> recipeHandler : recipeHandlers) {
-			if (recipeHandler.getRecipeClass().equals(recipeClass)) {
-				// noinspection unchecked
-				return (IRecipeHandler<T>) recipeHandler;
-			}
+		List<IRecipeHandler<T>> assignableHandlers = new ArrayList<>();
+		IRecipeHandler<T> exactRecipeHandler = getAssignableRecipeHandler(recipeClass, recipeHandlers, assignableHandlers);
+		if (exactRecipeHandler != null) {
+			return exactRecipeHandler;
 		}
-		for (IRecipeHandler<?> recipeHandler : unsortedRecipeHandlers) {
-			if (recipeHandler.getRecipeClass().equals(recipeClass)) {
-				// noinspection unchecked
-				return (IRecipeHandler<T>) recipeHandler;
+		exactRecipeHandler = getAssignableRecipeHandler(recipeClass, unsortedRecipeHandlers, assignableHandlers);
+		if (exactRecipeHandler != null) {
+			return exactRecipeHandler;
+		}
+
+		if (assignableHandlers.isEmpty()) {
+			return null;
+		}
+		if (assignableHandlers.size() == 1) {
+			return assignableHandlers.get(0);
+		}
+
+		// try super classes to get closest match
+		Class<?> superClass = recipeClass;
+		while (!Object.class.equals(superClass)) {
+			superClass = superClass.getSuperclass();
+			for (IRecipeHandler<?> recipeHandler : assignableHandlers) {
+				if (recipeHandler.getRecipeClass().equals(superClass)) {
+					// noinspection unchecked
+					return (IRecipeHandler<T>) recipeHandler;
+				}
 			}
 		}
 
-		// fall back on any handler that can accept this recipeClass
-		for (IRecipeHandler<?> recipeHandler : recipeHandlers) {
-			if (recipeHandler.getRecipeClass().isAssignableFrom(recipeClass)) {
-				// noinspection unchecked
-				return (IRecipeHandler<T>) recipeHandler;
-			}
-		}
-		for (IRecipeHandler<?> recipeHandler : unsortedRecipeHandlers) {
-			if (recipeHandler.getRecipeClass().isAssignableFrom(recipeClass)) {
-				// noinspection unchecked
-				return (IRecipeHandler<T>) recipeHandler;
-			}
-		}
+		List<Class<?>> assignableClasses = assignableHandlers.stream()
+			.map(IRecipeHandler::getRecipeClass)
+			.collect(Collectors.toList());
+		Log.get().warn("Found multiple matching recipe handlers for {}: {}", recipeClass, assignableClasses);
+		return assignableHandlers.get(0);
+	}
 
+	@Nullable
+	private static <T> IRecipeHandler<T> getAssignableRecipeHandler(
+		Class<? extends T> recipeClass,
+		Iterable<IRecipeHandler> recipeHandlers,
+		List<IRecipeHandler<T>> assignableHandlers
+	) {
+		for (IRecipeHandler<?> recipeHandler : recipeHandlers) {
+			Class<?> handlerRecipeClass = recipeHandler.getRecipeClass();
+			if (handlerRecipeClass.isAssignableFrom(recipeClass)) {
+				// noinspection unchecked
+				IRecipeHandler<T> assignableRecipeHandler = (IRecipeHandler<T>) recipeHandler;
+				if (handlerRecipeClass.equals(recipeClass)) {
+					return assignableRecipeHandler;
+				}
+				// remove any handlers that are super of this one
+				assignableHandlers.removeIf(handler -> handler.getRecipeClass().isAssignableFrom(handlerRecipeClass));
+				// only add this if it's not a super class of an another assignable handler
+				if (assignableHandlers.stream().noneMatch(handler -> handlerRecipeClass.isAssignableFrom(handler.getRecipeClass()))) {
+					assignableHandlers.add(assignableRecipeHandler);
+				}
+			}
+		}
 		return null;
 	}
 
