@@ -7,9 +7,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import net.minecraftforge.fml.common.progress.ProgressBar;
 import net.minecraftforge.fml.common.progress.StartupProgressManager;
@@ -322,7 +324,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Nullable
-	private <T> IRecipeHandler<T> getRecipeHandler(Class<? extends T> recipeClass, @Nullable ResourceLocation recipeCategoryUid) {
+	private <T> IRecipeHandler<T> getRecipeHandler(final Class<? extends T> recipeClass, @Nullable ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
 
 		ImmutableCollection<IRecipeHandler<?>> recipeHandlers;
@@ -336,13 +338,19 @@ public class RecipeRegistry implements IRecipeRegistry {
 		// try to find an exact match. build a list of assignable handlers in case an exact match is not found
 		List<IRecipeHandler<T>> assignableHandlers = new ArrayList<>();
 		for (IRecipeHandler<?> recipeHandler : recipeHandlers) {
-			if (recipeHandler.getRecipeClass().isAssignableFrom(recipeClass)) {
+			Class<?> handlerRecipeClass = recipeHandler.getRecipeClass();
+			if (handlerRecipeClass.isAssignableFrom(recipeClass)) {
 				//noinspection unchecked
 				IRecipeHandler<T> assignableRecipeHandler = (IRecipeHandler<T>) recipeHandler;
-				if (recipeHandler.getRecipeClass().equals(recipeClass)) {
+				if (handlerRecipeClass.equals(recipeClass)) {
 					return assignableRecipeHandler;
 				}
-				assignableHandlers.add(assignableRecipeHandler);
+				// remove any handlers that are super of this one
+				assignableHandlers.removeIf(handler -> handler.getRecipeClass().isAssignableFrom(handlerRecipeClass));
+				// only add this if it's not a super class of an another assignable handler
+				if (assignableHandlers.stream().noneMatch(handler -> handlerRecipeClass.isAssignableFrom(handler.getRecipeClass()))) {
+					assignableHandlers.add(assignableRecipeHandler);
+				}
 			}
 		}
 		if (assignableHandlers.isEmpty()) {
@@ -353,17 +361,19 @@ public class RecipeRegistry implements IRecipeRegistry {
 		}
 
 		// try super classes to get closest match
-		while (!Object.class.equals(recipeClass)) {
-			//noinspection unchecked
-			recipeClass = (Class<? extends T>) recipeClass.getSuperclass();
+		Class<?> superClass = recipeClass;
+		while (!Object.class.equals(superClass)) {
+			superClass = superClass.getSuperclass();
 			for (IRecipeHandler<?> recipeHandler : assignableHandlers) {
-				if (recipeHandler.getRecipeClass().equals(recipeClass)) {
+				if (recipeHandler.getRecipeClass().equals(superClass)) {
 					// noinspection unchecked
 					return (IRecipeHandler<T>) recipeHandler;
 				}
 			}
 		}
-		LOGGER.warn("Unable to get matching recipe handler even though assignable ones were found.");
+
+		List<Class<T>> assignableClasses = assignableHandlers.stream().map(IRecipeHandler::getRecipeClass).collect(Collectors.toList());
+		LOGGER.warn("Found multiple matching recipe handlers for {}: {}", recipeClass, assignableClasses);
 		return assignableHandlers.get(0);
 	}
 
