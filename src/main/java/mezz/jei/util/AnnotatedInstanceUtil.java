@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Objects;
 
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.language.ModFileScanData;
+
+import net.minecraftforge.forgespi.language.ModFileScanData;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JEIPlugin;

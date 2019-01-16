@@ -2,7 +2,7 @@ package mezz.jei.events;
 
 import java.util.function.Consumer;
 
-import net.minecraftforge.fml.common.event.ModLifecycleEvent;
+import net.minecraftforge.fml.event.lifecycle.ModLifecycleEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;

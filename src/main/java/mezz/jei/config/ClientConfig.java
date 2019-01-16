@@ -4,13 +4,12 @@ import javax.annotation.Nullable;
 import java.awt.Color;
 import java.io.File;
 
-import net.minecraftforge.common.config.Property;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.color.ColorNamer;
+import mezz.jei.config.forge.Property;
 import mezz.jei.util.GiveMode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

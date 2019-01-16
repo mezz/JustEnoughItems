@@ -4,9 +4,9 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Locale;
 
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
+import mezz.jei.config.forge.Configuration;
 
+import mezz.jei.config.forge.Property;
 import mezz.jei.util.Translator;
 
 public class LocalizedConfiguration extends Configuration {

@@ -1,15 +1,14 @@
 package mezz.jei.config;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.NetworkManager;
 
+import mezz.jei.config.forge.Configuration;
+import mezz.jei.config.forge.Property;
 import mezz.jei.events.BookmarkOverlayToggleEvent;
 import mezz.jei.events.EditModeToggleEvent;
 import mezz.jei.events.EventBusHelper;
