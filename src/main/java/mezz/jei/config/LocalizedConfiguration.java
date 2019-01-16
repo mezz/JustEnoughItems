@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Locale;
 
 import mezz.jei.config.forge.Configuration;
-
 import mezz.jei.config.forge.Property;
 import mezz.jei.util.Translator;
 

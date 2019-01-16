@@ -46,7 +46,7 @@ import org.apache.logging.log4j.Logger;
 
 public class JeiStarter {
 	private static final Logger LOGGER = LogManager.getLogger();
-	
+
 	private boolean started;
 
 	public void start(

@@ -395,6 +395,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		mc.displayGuiScreen(this);
 	}
 
+	@Override
 	public void close() {
 		if (isOpen()) {
 			if (parentScreen != null) {
