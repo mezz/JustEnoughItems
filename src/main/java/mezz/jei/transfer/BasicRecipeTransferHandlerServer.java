@@ -49,14 +49,15 @@ public final class BasicRecipeTransferHandlerServer {
 		int minSlotStackLimit = Integer.MAX_VALUE;
 		// clear the crafting grid
 		List<ItemStack> clearedCraftingItems = new ArrayList<>();
-		for (Integer craftingSlotNumber : craftingSlots) {
+		for (int craftingSlotNumberIndex = 0; craftingSlotNumberIndex < craftingSlots.size(); craftingSlotNumberIndex++) {
+			int craftingSlotNumber = craftingSlots.get(craftingSlotNumberIndex);
 			Slot craftingSlot = container.getSlot(craftingSlotNumber);
 			if (craftingSlot.getHasStack()) {
 				ItemStack craftingItem = craftingSlot.decrStackSize(Integer.MAX_VALUE);
 				clearedCraftingItems.add(craftingItem);
 			}
 			if (requireCompleteSets) {
-				ItemStack transferItem = toTransfer.get(craftingSlots.indexOf(craftingSlotNumber));
+				ItemStack transferItem = toTransfer.get(craftingSlotNumberIndex);
 				int slotStackLimit = craftingSlot.getItemStackLimit(transferItem);
 				minSlotStackLimit = Math.min(slotStackLimit, minSlotStackLimit);
 			}
