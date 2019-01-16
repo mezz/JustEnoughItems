@@ -74,6 +74,9 @@ public final class RecipeValidator {
 		}
 
 		public boolean isRecipeValid(T recipe) {
+			if (recipe.isDynamic()) {
+				return false;
+			}
 			ItemStack recipeOutput = recipe.getRecipeOutput();
 			if (recipeOutput == null || recipeOutput.isEmpty()) {
 				String recipeInfo = getInfo(recipe);
