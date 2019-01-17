@@ -20,7 +20,8 @@ public abstract class RecipeGuiTab implements IMouseHandler {
 	public RecipeGuiTab(int x, int y) {
 		this.x = x;
 		this.y = y;
-		this.hoverChecker = new HoverChecker(y, y + TAB_HEIGHT, x, x + TAB_WIDTH);
+		this.hoverChecker = new HoverChecker();
+		this.hoverChecker.updateBounds(y, y + TAB_HEIGHT, x, x + TAB_WIDTH);
 	}
 
 	@Override

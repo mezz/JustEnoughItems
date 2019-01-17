@@ -66,7 +66,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	private final RecipeCatalysts recipeCatalysts;
 	private final RecipeGuiTabs recipeGuiTabs;
 
-	private HoverChecker titleHoverChecker = new HoverChecker(0, 0, 0, 0);
+	private final HoverChecker titleHoverChecker = new HoverChecker();
 
 	private final GuiButton nextRecipeCategory;
 	private final GuiButton previousRecipeCategory;
@@ -469,7 +469,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		}
 		final int titleX = guiLeft + (xSize - titleWidth) / 2;
 		final int titleY = guiTop + borderPadding;
-		titleHoverChecker = new HoverChecker(titleY, titleY + fontRenderer.FONT_HEIGHT, titleX, titleX + titleWidth);
+		titleHoverChecker.updateBounds(titleY, titleY + fontRenderer.FONT_HEIGHT, titleX, titleX + titleWidth);
 
 		int spacingY = recipeBackground.getHeight() + recipeSpacing;
 

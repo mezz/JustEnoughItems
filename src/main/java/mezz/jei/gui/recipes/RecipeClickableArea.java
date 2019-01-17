@@ -11,8 +11,8 @@ public class RecipeClickableArea extends HoverChecker {
 	private final List<ResourceLocation> recipeCategoryUids;
 
 	public RecipeClickableArea(int top, int bottom, int left, int right, ResourceLocation... recipeCategoryUids) {
-		super(top, bottom, left, right);
 		this.recipeCategoryUids = Arrays.asList(recipeCategoryUids);
+		this.updateBounds(top, bottom, left, right);
 	}
 
 	public List<ResourceLocation> getRecipeCategoryUids() {

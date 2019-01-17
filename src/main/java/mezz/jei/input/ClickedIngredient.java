@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 
 import net.minecraft.item.ItemStack;
 
+import com.google.common.base.MoreObjects;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
@@ -81,5 +82,16 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 		if (this.onClickHandler != null) {
 			this.onClickHandler.onClick();
 		}
+	}
+
+	@Override
+	public String toString() {
+		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(value);
+		return MoreObjects.toStringHelper(ClickedIngredient.class)
+			.add("value", ingredientHelper.getUniqueId(value))
+			.add("area", area)
+			.add("allowsCheating", allowsCheating)
+			.toString();
 	}
 }

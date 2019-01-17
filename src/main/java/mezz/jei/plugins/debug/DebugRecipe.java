@@ -32,7 +32,8 @@ public class DebugRecipe implements IRecipeWrapper {
 	public DebugRecipe() {
 		this.button = new GuiButtonExt(0, 110, 30, "test");
 		this.button.setWidth(40);
-		this.buttonHoverChecker = new HoverChecker(this.button);
+		this.buttonHoverChecker = new HoverChecker();
+		this.buttonHoverChecker.updateBounds(this.button);
 	}
 
 	@Override

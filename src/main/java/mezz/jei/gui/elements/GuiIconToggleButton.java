@@ -19,7 +19,8 @@ public abstract class GuiIconToggleButton {
 		this.offIcon = offIcon;
 		this.onIcon = onIcon;
 		this.button = new GuiIconButton(2, new DrawableBlank(0, 0));
-		this.hoverChecker = new HoverChecker(this.button);
+		this.hoverChecker = new HoverChecker();
+		this.hoverChecker.updateBounds(this.button);
 	}
 
 	public void updateBounds(Rectangle area) {
@@ -27,6 +28,7 @@ public abstract class GuiIconToggleButton {
 		this.button.height = area.height;
 		this.button.x = area.x;
 		this.button.y = area.y;
+		this.hoverChecker.updateBounds(this.button);
 	}
 
 	public void draw(int mouseX, int mouseY, float partialTicks) {

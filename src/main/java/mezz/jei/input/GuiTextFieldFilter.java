@@ -35,7 +35,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 		this.worldConfig = worldConfig;
 
 		setMaxStringLength(maxSearchLength);
-		this.hoverChecker = new HoverChecker(0, 0, 0, 0);
+		this.hoverChecker = new HoverChecker();
 		this.ingredientSource = ingredientSource;
 
 		this.background = Internal.getHelpers().getGuiHelper().getSearchBackground();
