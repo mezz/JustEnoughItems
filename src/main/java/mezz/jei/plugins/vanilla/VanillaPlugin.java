@@ -192,5 +192,7 @@ public class VanillaPlugin implements IModPlugin {
 		ingredientBlacklist.addIngredientToBlacklist(new ItemStack(Items.ENCHANTED_BOOK));
 
 		registry.addAdvancedGuiHandlers(new InventoryEffectRendererGuiHandler());
+		registry.addAdvancedGuiHandlers(new RecipeBookGuiHandler<>(GuiInventory.class));
+		registry.addAdvancedGuiHandlers(new RecipeBookGuiHandler<>(GuiCrafting.class));
 	}
 }
