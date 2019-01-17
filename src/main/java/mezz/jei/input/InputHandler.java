@@ -239,7 +239,10 @@ public class InputHandler {
 	}
 
 	private boolean hasKeyboardFocus() {
-		return ingredientListOverlay.hasKeyboardFocus();
+		// TODO 1.13 when GuiContainer returns the right value so Post events get fired
+		// https://github.com/MinecraftForge/MinecraftForge/pull/5367
+		return true;
+//		return ingredientListOverlay.hasKeyboardFocus();
 	}
 
 	private boolean handleCharTyped(char codePoint, int modifiers) {
