@@ -18,34 +18,34 @@ jei.tooltip.not.enough.space=Não há espaço suficiente para exibir o JEI aqui.
 jei.tooltip.ingredient.list.disabled=A sobreposição do JEI está desativada.
 jei.tooltip.ingredient.list.disabled.how.to.fix=Pressione %s para ativá-la.
 jei.tooltip.bookmarks=Favoritos
-jei.tooltip.bookmarks.usage.nokey=Adicionar tecla de atalho para itens favoritos do JEI em Controles.
+jei.tooltip.bookmarks.usage.nokey=Definir tecla de atalho para itens favoritos do JEI em Controles.
 jei.tooltip.bookmarks.usage.key=Passe o cursor sobre um ingrediente e pressione "%s" para adicioná-lo aos favoritos.
 jei.tooltip.bookmarks.not.enough.space=Não há espaço suficiente para exibir os favoritos aqui.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Itens ausentes
 jei.tooltip.error.recipe.transfer.inventory.full=O inventário está muito cheio
-jei.tooltip.error.recipe.transfer.unknown=Erro desconhecido, ver registros
+jei.tooltip.error.recipe.transfer.unknown=Erro desconhecido, ver registro
 jei.tooltip.error.recipe.transfer.no.server=O servidor deve ter o JEI instalado
-jei.tooltip.error.recipe.transfer.too.large.player.inventory=Não é possível fabricar isto em uma grade 2x2.
-jei.tooltip.error.crash=Descrição do erro, ver registros
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=Não é possível fabricar isso em uma grade 2x2.
+jei.tooltip.error.crash=Descrição do erro, ver registro
 
 # Error Messages
-jei.chat.error.command.too.long=O JEI deve ser instalado no servidor para a utilização deste comando de bate-papo, que é longo demais para o Minecraft enviar.
+jei.chat.error.command.too.long=O JEI deve ser instalado no servidor para o uso desse comando de bate-papo, que é longo demais para o Minecraft enviar.
 jei.chat.error.no.cheat.permission.1=Você não tem permissão para usar o modo trapaça do JEI.
 jei.chat.error.no.cheat.permission.2=A permissão é concedida apenas para jogadores que podem usar o comando /give ou que estão no modo Criativo.
 
 # Key Bindings
-key.jei.toggleOverlay=Exibir/Ocultar JEI
+key.jei.toggleOverlay=Exibir/ocultar JEI
 key.jei.focusSearch=Selecionar barra de busca
 key.jei.showRecipe=Mostrar receita
 key.jei.showUses=Mostrar usos
 key.jei.recipeBack=Mostrar receita anterior
-key.jei.toggleCheatMode=Ativar/Desativar modo trapaça
+key.jei.toggleCheatMode=Ativar/desativar modo trapaça
 key.jei.previousPage=Voltar
 key.jei.nextPage=Avançar
-key.jei.bookmark=Adic./Remov. ingrediente favorito
-key.jei.toggleBookmarkOverlay=Exibir/Ocultar ingredientes favoritos
+key.jei.bookmark=Adic./remov. ingrediente favorito
+key.jei.toggleBookmarkOverlay=Exibir/ocultar ingredientes favoritos
 
 # Config
 config.jei.default=Padrão
@@ -93,7 +93,7 @@ config.jei.advanced.debugModeEnabled.comment=Recomendado apenas para desenvolved
 config.jei.advanced.centerSearchBarEnabled=Centralizar barra de busca
 config.jei.advanced.centerSearchBarEnabled.comment=Mover a barra de busca do JEI para o centro-inferior da tela.
 config.jei.advanced.modNameFormat=Formato de nome do JEI
-config.jei.advanced.modNameFormat.comment=Alterar o formato do nome em dicas nas interfaces do JEI. Deixe em branco para desativar.
+config.jei.advanced.modNameFormat.comment=Alterar o formato do nome em descrições nas interfaces do JEI. Deixe em branco para desativar.
 config.jei.advanced.maxColumns=Largura máxima de sobreposição
 config.jei.advanced.maxColumns.comment=A largura máxima da lista de ingredientes.
 config.jei.advanced.maxRecipeGuiHeight=Altura máxima da interface de receitas
