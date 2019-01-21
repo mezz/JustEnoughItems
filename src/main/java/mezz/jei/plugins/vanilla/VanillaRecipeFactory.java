@@ -5,7 +5,6 @@ import java.util.List;
 
 import net.minecraft.item.ItemStack;
 
-import com.google.common.base.Preconditions;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeWrapper;
@@ -19,7 +18,6 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 		ErrorUtil.checkNotEmpty(leftInput, "leftInput");
 		ErrorUtil.checkNotEmpty(rightInputs, "rightInputs");
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
-		Preconditions.checkArgument(rightInputs.size() == outputs.size(), "Input and output sizes must match.");
 
 		return new AnvilRecipeWrapper(Collections.singletonList(leftInput), rightInputs, outputs);
 	}
@@ -29,8 +27,6 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 		ErrorUtil.checkNotEmpty(leftInputs, "leftInput");
 		ErrorUtil.checkNotEmpty(rightInputs, "rightInputs");
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
-		Preconditions.checkArgument(leftInputs.size() == rightInputs.size(), "Both input sizes must match.");
-		Preconditions.checkArgument(rightInputs.size() == outputs.size(), "Input and output sizes must match.");
 
 		return new AnvilRecipeWrapper(leftInputs, rightInputs, outputs);
 	}
