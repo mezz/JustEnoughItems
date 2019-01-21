@@ -12,7 +12,6 @@ import net.minecraft.client.gui.inventory.GuiCrafting;
 import net.minecraft.client.gui.inventory.GuiFurnace;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerBrewingStand;
@@ -32,21 +31,21 @@ import mezz.jei.Internal;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
-import mezz.jei.api.ingredients.ISubtypeRegistry;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.ModIds;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.ingredients.ISubtypeRegistry;
 import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
-import mezz.jei.api.recipe.category.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
-import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
+import mezz.jei.api.recipe.category.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.category.extensions.ICraftingRecipeWrapper;
+import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
+import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeMaker;
@@ -54,17 +53,13 @@ import mezz.jei.plugins.vanilla.brewing.BrewingRecipeCategory;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeMaker;
 import mezz.jei.plugins.vanilla.brewing.PotionSubtypeInterpreter;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
-import mezz.jei.plugins.vanilla.crafting.VanillaRecipeValidator;
 import mezz.jei.plugins.vanilla.crafting.ShapedRecipesWrapper;
 import mezz.jei.plugins.vanilla.crafting.ShapelessRecipeWrapper;
 import mezz.jei.plugins.vanilla.crafting.TippedArrowRecipeMaker;
+import mezz.jei.plugins.vanilla.crafting.VanillaRecipeValidator;
 import mezz.jei.plugins.vanilla.furnace.FuelRecipeMaker;
 import mezz.jei.plugins.vanilla.furnace.FurnaceFuelCategory;
 import mezz.jei.plugins.vanilla.furnace.FurnaceSmeltingCategory;
-import mezz.jei.plugins.vanilla.ingredients.enchant.EnchantDataHelper;
-import mezz.jei.plugins.vanilla.ingredients.enchant.EnchantDataListFactory;
-import mezz.jei.plugins.vanilla.ingredients.enchant.EnchantDataRenderer;
-import mezz.jei.plugins.vanilla.ingredients.enchant.EnchantedBookCache;
 import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackHelper;
 import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackListFactory;
 import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackRenderer;
@@ -132,12 +127,6 @@ public class VanillaPlugin implements IModPlugin {
 		FluidStackHelper fluidStackHelper = new FluidStackHelper();
 		FluidStackRenderer fluidStackRenderer = new FluidStackRenderer();
 		ingredientRegistration.register(VanillaTypes.FLUID, fluidStacks, fluidStackHelper, fluidStackRenderer);
-
-		List<EnchantmentData> enchantments = EnchantDataListFactory.create();
-		EnchantedBookCache enchantedBookCache = new EnchantedBookCache();
-		EnchantDataHelper enchantmentHelper = new EnchantDataHelper(enchantedBookCache, itemStackHelper);
-		EnchantDataRenderer enchantmentRenderer = new EnchantDataRenderer(itemStackRenderer, enchantedBookCache);
-		ingredientRegistration.register(() -> EnchantmentData.class, enchantments, enchantmentHelper, enchantmentRenderer);
 	}
 
 	@Override
@@ -207,8 +196,6 @@ public class VanillaPlugin implements IModPlugin {
 		IIngredientBlacklist ingredientBlacklist = registry.getJeiHelpers().getIngredientBlacklist();
 		// Game freezes when loading player skulls, see https://bugs.mojang.com/browse/MC-65587
 		ingredientBlacklist.addIngredientToBlacklist(new ItemStack(Blocks.PLAYER_HEAD));
-		// hide enchanted books, we display them as special ingredients because vanilla does not properly store the enchantment data by its registry name
-		ingredientBlacklist.addIngredientToBlacklist(new ItemStack(Items.ENCHANTED_BOOK));
 
 		registry.addAdvancedGuiHandlers(new InventoryEffectRendererGuiHandler());
 		registry.addAdvancedGuiHandlers(new RecipeBookGuiHandler<>(GuiInventory.class));
