@@ -409,9 +409,8 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	@Override
 	public <V> void show(IFocus<V> focus) {
-		focus = Focus.check(focus);
-
-		if (logic.setFocus(focus)) {
+		Focus<V> checkedFocus = Focus.check(focus);
+		if (logic.setFocus(checkedFocus)) {
 			open();
 		}
 	}

@@ -5,15 +5,16 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.util.ErrorUtil;
 
-public class Focus<V> implements IFocus<V> {
+public final class Focus<V> implements IFocus<V> {
 	private final Mode mode;
 	private final V value;
 
 	public Focus(Mode mode, V value) {
+		ErrorUtil.checkNotNull(mode, "focus mode");
+		ErrorUtil.checkIsValidIngredient(value, "focus value");
 		this.mode = mode;
 		IIngredientHelper<V> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(value);
 		this.value = ingredientHelper.copyIngredient(value);
-		checkInternal(this);
 	}
 
 	@Override
@@ -30,17 +31,10 @@ public class Focus<V> implements IFocus<V> {
 	 * Make sure any IFocus coming in through API calls is validated and turned into JEI's Focus.
 	 */
 	public static <V> Focus<V> check(IFocus<V> focus) {
-		ErrorUtil.checkNotNull(focus, "focus");
 		if (focus instanceof Focus) {
-			checkInternal(focus);
 			return (Focus<V>) focus;
 		}
+		ErrorUtil.checkNotNull(focus, "focus");
 		return new Focus<>(focus.getMode(), focus.getValue());
-	}
-
-	private static void checkInternal(IFocus<?> focus) {
-		ErrorUtil.checkNotNull(focus.getMode(), "focus mode");
-		Object value = focus.getValue();
-		ErrorUtil.checkIsValidIngredient(value, "focus value");
 	}
 }

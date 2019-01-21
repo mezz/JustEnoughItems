@@ -31,6 +31,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.gui.Focus;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientRegistry;
@@ -103,7 +104,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		return allIngredients;
 	}
 
-	public void set(@Nullable List<T> ingredients, @Nullable IFocus<T> focus) {
+	public void set(@Nullable List<T> ingredients, @Nullable Focus<T> focus) {
 		this.displayIngredients.clear();
 		this.allIngredients.clear();
 		List<T> displayIngredients;
@@ -153,7 +154,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	}
 
 	@Nullable
-	private T getMatch(Collection<T> ingredients, @Nullable IFocus<T> focus) {
+	private T getMatch(Collection<T> ingredients, @Nullable Focus<T> focus) {
 		if (focus != null && isMode(focus.getMode())) {
 			T focusValue = focus.getValue();
 			return ingredientHelper.getMatch(ingredients, focusValue);

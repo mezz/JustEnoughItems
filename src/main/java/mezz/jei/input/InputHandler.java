@@ -209,12 +209,12 @@ public class InputHandler {
 
 	private <V> boolean handleMouseClickedFocus(int mouseButton, IClickedIngredient<V> clicked) {
 		if (mouseButton == 0) {
-			IFocus<?> focus = new Focus<>(IFocus.Mode.OUTPUT, clicked.getValue());
+			Focus<?> focus = new Focus<>(IFocus.Mode.OUTPUT, clicked.getValue());
 			recipesGui.show(focus);
 			clicked.onClickHandled();
 			return true;
 		} else if (mouseButton == 1) {
-			IFocus<?> focus = new Focus<>(IFocus.Mode.INPUT, clicked.getValue());
+			Focus<?> focus = new Focus<>(IFocus.Mode.INPUT, clicked.getValue());
 			recipesGui.show(focus);
 			clicked.onClickHandled();
 			return true;

@@ -45,10 +45,10 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public <V> boolean setFocus(IFocus<V> focus) {
-		focus = Focus.check(focus);
+	public <V> boolean setFocus(Focus<V> focus) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(focus.getValue());
 		IFocus<?> translatedFocus = ingredientHelper.translateFocus(focus, Focus::new);
+		Focus<?> checkedTranslatedFocus = Focus.check(translatedFocus);
 
 		final List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories(translatedFocus);
 		if (recipeCategories.isEmpty()) {
@@ -60,7 +60,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 
 		int recipeCategoryIndex = getRecipeCategoryIndexToShowFirst(recipeCategories);
-		IngredientLookupState state = new IngredientLookupState(translatedFocus, recipeCategories, recipeCategoryIndex, 0);
+		IngredientLookupState state = new IngredientLookupState(checkedTranslatedFocus, recipeCategories, recipeCategoryIndex, 0);
 		setState(state);
 
 		return true;
@@ -163,7 +163,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	private void updateRecipes() {
 		final IRecipeCategory recipeCategory = getSelectedRecipeCategory();
-		IFocus<?> focus = state.getFocus();
+		Focus<?> focus = state.getFocus();
 		if (focus != null) {
 			//noinspection unchecked
 			this.recipes = recipeRegistry.getRecipes(recipeCategory, focus);

@@ -325,8 +325,8 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	public <T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocus<?> focus) {
-		focus = Focus.check(focus);
-		RecipeLayout recipeLayout = RecipeLayout.create(-1, recipeCategory, recipe, focus, 0, 0);
+		Focus<?> checkedFocus = Focus.check(focus);
+		RecipeLayout recipeLayout = RecipeLayout.create(-1, recipeCategory, recipe, checkedFocus, 0, 0);
 		Preconditions.checkNotNull(recipeLayout, "Recipe layout crashed during creation, see log.");
 		return recipeLayout;
 	}

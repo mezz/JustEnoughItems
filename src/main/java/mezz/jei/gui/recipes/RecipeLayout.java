@@ -19,7 +19,6 @@ import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.Focus;
@@ -49,7 +48,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	private final RecipeTransferButton recipeTransferButton;
 	private final Object recipe;
 	@Nullable
-	private final IFocus<?> focus;
+	private final Focus<?> focus;
 	private final Color highlightColor = new Color(0x7FFFFFFF, true);
 	@Nullable
 	private ShapelessIcon shapelessIcon;
@@ -59,7 +58,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	private int posY;
 
 	@Nullable
-	public static <T> RecipeLayout create(int index, IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus focus, int posX, int posY) {
+	public static <T> RecipeLayout create(int index, IRecipeCategory<T> recipeCategory, T recipe, @Nullable Focus focus, int posX, int posY) {
 		RecipeLayout recipeLayout = new RecipeLayout(index, recipeCategory, recipe, focus, posX, posY);
 		try {
 			IIngredients ingredients = new Ingredients();
@@ -72,25 +71,22 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		return null;
 	}
 
-	private <T> RecipeLayout(int index, IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus, int posX, int posY) {
+	private <T> RecipeLayout(int index, IRecipeCategory<T> recipeCategory, T recipe, @Nullable Focus<?> focus, int posX, int posY) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		ErrorUtil.checkNotNull(recipe, "recipe");
-		if (focus != null) {
-			focus = Focus.check(focus);
-		}
 		this.recipeCategory = recipeCategory;
 		this.focus = focus;
 
-		IFocus<ItemStack> itemStackFocus = null;
-		IFocus<FluidStack> fluidStackFocus = null;
+		Focus<ItemStack> itemStackFocus = null;
+		Focus<FluidStack> fluidStackFocus = null;
 		if (focus != null) {
 			Object focusValue = focus.getValue();
 			if (focusValue instanceof ItemStack) {
 				//noinspection unchecked
-				itemStackFocus = (IFocus<ItemStack>) focus;
+				itemStackFocus = (Focus<ItemStack>) focus;
 			} else if (focusValue instanceof FluidStack) {
 				//noinspection unchecked
-				fluidStackFocus = (IFocus<FluidStack>) focus;
+				fluidStackFocus = (Focus<FluidStack>) focus;
 			}
 		}
 		this.guiItemStackGroup = new GuiItemStackGroup(itemStackFocus, ingredientCycleOffset);
@@ -256,12 +252,12 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		@SuppressWarnings("unchecked")
 		GuiIngredientGroup<T> guiIngredientGroup = guiIngredientGroups.get(ingredientType);
 		if (guiIngredientGroup == null) {
-			IFocus<T> focus = null;
+			Focus<T> focus = null;
 			if (this.focus != null) {
 				Object focusValue = this.focus.getValue();
 				if (ingredientType.getIngredientClass().isInstance(focusValue)) {
 					//noinspection unchecked
-					focus = (IFocus<T>) this.focus;
+					focus = (Focus<T>) this.focus;
 				}
 			}
 			guiIngredientGroup = new GuiIngredientGroup<>(ingredientType, focus, ingredientCycleOffset);
@@ -285,7 +281,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 
 	@Override
 	@Nullable
-	public IFocus<?> getFocus() {
+	public Focus<?> getFocus() {
 		return focus;
 	}
 

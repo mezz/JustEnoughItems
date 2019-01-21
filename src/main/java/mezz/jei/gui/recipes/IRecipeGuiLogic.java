@@ -5,8 +5,8 @@ import java.util.List;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableList;
-import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.gui.Focus;
 
 public interface IRecipeGuiLogic {
 
@@ -30,7 +30,7 @@ public interface IRecipeGuiLogic {
 
 	void nextPage();
 
-	<V> boolean setFocus(IFocus<V> focus);
+	<V> boolean setFocus(Focus<V> focus);
 
 	boolean back();
 

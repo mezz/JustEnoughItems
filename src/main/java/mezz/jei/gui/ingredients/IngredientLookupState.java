@@ -5,27 +5,23 @@ import java.util.List;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.Focus;
 import mezz.jei.util.ErrorUtil;
 
 public class IngredientLookupState {
 	@Nullable
-	private final IFocus<?> focus;
+	private final Focus<?> focus;
 	private final ImmutableList<IRecipeCategory> recipeCategories;
 
 	private int recipeCategoryIndex;
 	private int recipeIndex;
 	private int recipesPerPage;
 
-	public IngredientLookupState(@Nullable IFocus<?> focus, List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int recipeIndex) {
+	public IngredientLookupState(@Nullable Focus<?> focus, List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int recipeIndex) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 		Preconditions.checkArgument(recipeCategoryIndex >= 0, "Recipe category index cannot be negative.");
 		Preconditions.checkArgument(recipeIndex >= 0, "Recipe index cannot be negative.");
-		if (focus != null) {
-			focus = Focus.check(focus);
-		}
 		this.focus = focus;
 		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
 		this.setRecipeCategoryIndex(recipeCategoryIndex);
@@ -33,7 +29,7 @@ public class IngredientLookupState {
 	}
 
 	@Nullable
-	public IFocus<?> getFocus() {
+	public Focus<?> getFocus() {
 		return focus;
 	}
 

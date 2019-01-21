@@ -40,19 +40,15 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	 * they will only display focus instead of rotating through all their values.
 	 */
 	@Nullable
-	private IFocus<T> focus;
+	private Focus<T> focus;
 
 	@Nullable
 	private ITooltipCallback<T> tooltipCallback;
 
-	public GuiIngredientGroup(IIngredientType<T> ingredientType, @Nullable IFocus<T> focus, int cycleOffset) {
+	public GuiIngredientGroup(IIngredientType<T> ingredientType, @Nullable Focus<T> focus, int cycleOffset) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		this.ingredientType = ingredientType;
-		if (focus == null) {
-			this.focus = null;
-		} else {
-			this.focus = Focus.check(focus);
-		}
+		this.focus = focus;
 		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
 		this.ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
 		this.ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientType);
