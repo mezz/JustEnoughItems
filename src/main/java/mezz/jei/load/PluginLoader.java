@@ -126,11 +126,11 @@ public class PluginLoader {
 	public IngredientFilter getIngredientFilter() {
 		if (ingredientFilter == null) {
 			timer.start("Building ingredient list");
-			NonNullList<IIngredientListElement> ingredientList = IngredientListElementFactory.createBaseList(ingredientRegistry, modIdHelper);
+			NonNullList<IIngredientListElement<?>> ingredientList = IngredientListElementFactory.createBaseList(ingredientRegistry);
 			timer.stop();
 			timer.start("Building ingredient filter");
-			ingredientFilter = new IngredientFilter(blacklist, ingredientFilterConfig, hideModeConfig);
-			ingredientFilter.addIngredients(ingredientList);
+			ingredientFilter = new IngredientFilter(blacklist, ingredientFilterConfig, hideModeConfig, ingredientRegistry, modIdHelper);
+			ingredientFilter.addIngredients(ingredientList, ingredientRegistry, modIdHelper);
 			Internal.setIngredientFilter(ingredientFilter);
 			timer.stop();
 		}
@@ -144,7 +144,7 @@ public class PluginLoader {
 	public BookmarkList getBookmarkList() {
 		if (bookmarkList == null) {
 			timer.start("Building bookmarks");
-			bookmarkList = new BookmarkList(ingredientRegistry, modIdHelper);
+			bookmarkList = new BookmarkList(ingredientRegistry);
 			bookmarkList.loadBookmarks();
 			timer.stop();
 		}

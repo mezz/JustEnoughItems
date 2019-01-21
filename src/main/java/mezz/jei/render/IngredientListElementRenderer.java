@@ -18,6 +18,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IModIdHelper;
+import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.config.Constants;
 import mezz.jei.config.IHideModeConfig;
@@ -26,6 +27,7 @@ import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.SearchMode;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Translator;
 
@@ -34,11 +36,18 @@ public class IngredientListElementRenderer<T> {
 	private static final Rectangle DEFAULT_AREA = new Rectangle(0, 0, 16, 16);
 
 	protected final IIngredientListElement<T> element;
+	protected final IIngredientRenderer<T> ingredientRenderer;
+	protected final IIngredientHelper<T> ingredientHelper;
 	protected Rectangle area = DEFAULT_AREA;
 	protected int padding;
 
 	public IngredientListElementRenderer(IIngredientListElement<T> element) {
 		this.element = element;
+		T ingredient = element.getIngredient();
+		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+		IIngredientType<T> ingredientType = ingredientRegistry.getIngredientType(ingredient);
+		this.ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientType);
+		this.ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
 	}
 
 	public void setArea(Rectangle area) {
@@ -59,11 +68,10 @@ public class IngredientListElementRenderer<T> {
 
 	public void renderSlow(IHideModeConfig hideModeConfig, IWorldConfig worldConfig) {
 		if (worldConfig.isHideModeEnabled()) {
-			renderEditMode(element, area, padding, hideModeConfig);
+			renderEditMode(area, padding, hideModeConfig);
 		}
 
 		try {
-			IIngredientRenderer<T> ingredientRenderer = element.getIngredientRenderer();
 			T ingredient = element.getIngredient();
 			ingredientRenderer.render(area.x + padding, area.y + padding, ingredient);
 		} catch (RuntimeException | LinkageError e) {
@@ -85,16 +93,14 @@ public class IngredientListElementRenderer<T> {
 
 	public void drawTooltip(int mouseX, int mouseY, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig) {
 		T ingredient = element.getIngredient();
-		IIngredientRenderer<T> ingredientRenderer = element.getIngredientRenderer();
-		List<String> tooltip = getTooltip(element, ingredientFilterConfig, worldConfig);
+		List<String> tooltip = getTooltip(ingredientFilterConfig, worldConfig);
 		Minecraft minecraft = Minecraft.getInstance();
 		FontRenderer fontRenderer = ingredientRenderer.getFontRenderer(minecraft, ingredient);
 		TooltipRenderer.drawHoveringText(ingredient, tooltip, mouseX, mouseY, fontRenderer);
 	}
 
-	protected static <V> void renderEditMode(IIngredientListElement<V> element, Rectangle area, int padding, IHideModeConfig hideModeConfig) {
-		V ingredient = element.getIngredient();
-		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
+	protected void renderEditMode(Rectangle area, int padding, IHideModeConfig hideModeConfig) {
+		T ingredient = element.getIngredient();
 
 		if (hideModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
 			GuiScreen.drawRect(area.x + padding, area.y + padding, area.x + 16 + padding, area.y + 16 + padding, BLACKLIST_COLOR);
@@ -102,10 +108,8 @@ public class IngredientListElementRenderer<T> {
 		}
 	}
 
-	private static <V> List<String> getTooltip(IIngredientListElement<V> element, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig) {
-		V ingredient = element.getIngredient();
-		IIngredientRenderer<V> ingredientRenderer = element.getIngredientRenderer();
-		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
+	private List<String> getTooltip(IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig) {
+		T ingredient = element.getIngredient();
 		IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
 		List<String> tooltip = IngredientRenderHelper.getIngredientTooltipSafe(ingredient, ingredientRenderer, ingredientHelper, modIdHelper);
 
@@ -119,7 +123,7 @@ public class IngredientListElementRenderer<T> {
 		}
 
 		if (ingredientFilterConfig.getColorSearchMode() != SearchMode.DISABLED) {
-			addColorSearchInfoToTooltip(minecraft, element, tooltip, maxWidth);
+			addColorSearchInfoToTooltip(minecraft, tooltip, maxWidth);
 		}
 
 		if (worldConfig.isHideModeEnabled()) {
@@ -129,11 +133,10 @@ public class IngredientListElementRenderer<T> {
 		return tooltip;
 	}
 
-	private static <V> void addColorSearchInfoToTooltip(Minecraft minecraft, IIngredientListElement<V> element, List<String> tooltip, int maxWidth) {
+	private void addColorSearchInfoToTooltip(Minecraft minecraft, List<String> tooltip, int maxWidth) {
 		ColorNamer colorNamer = Internal.getColorNamer();
 
-		V ingredient = element.getIngredient();
-		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
+		T ingredient = element.getIngredient();
 		Iterable<Color> colors = ingredientHelper.getColors(ingredient);
 		Collection<String> colorNames = colorNamer.getColorNames(colors, false);
 		if (!colorNames.isEmpty()) {

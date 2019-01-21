@@ -16,7 +16,6 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.config.ClientConfig;
@@ -36,12 +35,10 @@ public class BookmarkList implements IIngredientGridSource {
 	private final List<Object> list = new LinkedList<>();
 	private final List<IIngredientListElement> ingredientListElements = new LinkedList<>();
 	private final IngredientRegistry ingredientRegistry;
-	private final IModIdHelper modIdHelper;
 	private final List<IIngredientGridSource.Listener> listeners = new ArrayList<>();
 
-	public BookmarkList(IngredientRegistry ingredientRegistry, IModIdHelper modIdHelper) {
+	public BookmarkList(IngredientRegistry ingredientRegistry) {
 		this.ingredientRegistry = ingredientRegistry;
-		this.modIdHelper = modIdHelper;
 	}
 
 	public <T> boolean add(T ingredient) {
@@ -110,9 +107,10 @@ public class BookmarkList implements IIngredientGridSource {
 		}
 	}
 
-	private static <T> String getUid(IIngredientListElement<T> element) {
-		IIngredientHelper<T> ingredientHelper = element.getIngredientHelper();
-		return ingredientHelper.getUniqueId(element.getIngredient());
+	private <T> String getUid(IIngredientListElement<T> element) {
+		T ingredient = element.getIngredient();
+		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		return ingredientHelper.getUniqueId(ingredient);
 	}
 
 	public void loadBookmarks() {
@@ -174,19 +172,15 @@ public class BookmarkList implements IIngredientGridSource {
 	}
 
 	private <T> boolean addToLists(T ingredient, boolean addToFront) {
-		IIngredientType<T> ingredientType = ingredientRegistry.getIngredientType(ingredient);
-		IIngredientListElement<T> element = IngredientListElementFactory.createUnorderedElement(ingredientRegistry, ingredientType, ingredient, modIdHelper);
-		if (element != null) {
-			if (addToFront) {
-				list.add(0, ingredient);
-				ingredientListElements.add(0, element);
-			} else {
-				list.add(ingredient);
-				ingredientListElements.add(element);
-			}
-			return true;
+		IIngredientListElement<T> element = IngredientListElementFactory.createUnorderedElement(ingredient);
+		if (addToFront) {
+			list.add(0, ingredient);
+			ingredientListElements.add(0, element);
+		} else {
+			list.add(ingredient);
+			ingredientListElements.add(element);
 		}
-		return false;
+		return true;
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import mezz.jei.config.SearchMode;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.gui.ingredients.IIngredientListElementInfo;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 
 class PrefixedSearchTree {
@@ -31,7 +32,7 @@ class PrefixedSearchTree {
 
 	@FunctionalInterface
 	interface IStringsGetter {
-		Collection<String> getStrings(IIngredientListElement<?> element);
+		Collection<String> getStrings(IIngredientListElementInfo<?> element);
 	}
 
 	@FunctionalInterface

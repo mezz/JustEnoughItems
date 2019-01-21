@@ -10,14 +10,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.Preconditions;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
-import mezz.jei.api.ingredients.IModIdHelper;
-import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientFilter;
-import mezz.jei.ingredients.IngredientListElementFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +22,6 @@ public class HideModeConfig implements IHideModeConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final boolean defaultHideModeEnabled = false;
 	private static final String[] defaultBlacklist = new String[]{};
-	private final IModIdHelper modIdHelper;
 
 	private boolean hideModeEnabled = defaultHideModeEnabled;
 	private final Set<String> blacklist = new LinkedHashSet<>();
@@ -34,8 +29,7 @@ public class HideModeConfig implements IHideModeConfig {
 	@Nullable
 	private final File blacklistConfigFile;
 
-	public HideModeConfig(IModIdHelper modIdHelper, @Nullable File jeiConfigurationDir) {
-		this.modIdHelper = modIdHelper;
+	public HideModeConfig(@Nullable File jeiConfigurationDir) {
 		Collections.addAll(blacklist, defaultBlacklist);
 		if (jeiConfigurationDir != null) {
 			blacklistConfigFile = new File(jeiConfigurationDir, "blacklist.cfg");
@@ -77,37 +71,33 @@ public class HideModeConfig implements IHideModeConfig {
 		}
 	}
 
-
 	@Override
 	public <V> void addIngredientToConfigBlacklist(IngredientFilter ingredientFilter, IIngredientRegistry ingredientRegistry, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
-		IIngredientType<V> ingredientType = ingredientRegistry.getIngredientType(ingredient);
-		IIngredientListElement<V> element = IngredientListElementFactory.createUnorderedElement(ingredientRegistry, ingredientType, ingredient, modIdHelper);
-		Preconditions.checkNotNull(element, "Failed to create element for blacklist");
-
 		// combine item-level blacklist into wildcard-level ones
 		if (blacklistType == IngredientBlacklistType.ITEM) {
 			final String uid = getIngredientUid(ingredient, IngredientBlacklistType.ITEM, ingredientHelper);
-			List<IIngredientListElement<V>> elementsToBeBlacklisted = ingredientFilter.getMatches(element, (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD));
-			if (areAllBlacklisted(elementsToBeBlacklisted, uid)) {
-				if (addIngredientToConfigBlacklist(ingredientFilter, element, ingredient, IngredientBlacklistType.WILDCARD, ingredientHelper)) {
+			List<IIngredientListElement<V>> elementsToBeBlacklisted = ingredientFilter.getMatches(ingredient, ingredientHelper, (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD, ingredientHelper));
+			if (areAllBlacklisted(elementsToBeBlacklisted, ingredientHelper, uid)) {
+				if (addIngredientToConfigBlacklist(ingredientFilter, ingredient, IngredientBlacklistType.WILDCARD, ingredientHelper)) {
 					saveBlacklist();
 				}
 				return;
 			}
 		}
-		if (addIngredientToConfigBlacklist(ingredientFilter, element, ingredient, blacklistType, ingredientHelper)) {
+		if (addIngredientToConfigBlacklist(ingredientFilter, ingredient, blacklistType, ingredientHelper)) {
 			saveBlacklist();
 		}
 	}
 
-	private <V> boolean addIngredientToConfigBlacklist(IngredientFilter ingredientFilter, IIngredientListElement<V> element, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
+	private <V> boolean addIngredientToConfigBlacklist(IngredientFilter ingredientFilter, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
 		boolean updated = false;
 
 		// remove lower-level blacklist entries when a higher-level one is added
 		if (blacklistType == IngredientBlacklistType.WILDCARD) {
-			List<IIngredientListElement<V>> elementsToBeBlacklisted = ingredientFilter.getMatches(element, (input) -> getIngredientUid(input, blacklistType));
+			List<IIngredientListElement<V>> elementsToBeBlacklisted = ingredientFilter.getMatches(ingredient, ingredientHelper, (input) -> getIngredientUid(input, blacklistType, ingredientHelper));
 			for (IIngredientListElement<V> elementToBeBlacklisted : elementsToBeBlacklisted) {
-				String uid = getIngredientUid(elementToBeBlacklisted, IngredientBlacklistType.ITEM);
+				V ingredientToBeBlacklisted = elementToBeBlacklisted.getIngredient();
+				String uid = getIngredientUid(ingredientToBeBlacklisted, IngredientBlacklistType.ITEM, ingredientHelper);
 				updated |= blacklist.remove(uid);
 			}
 		}
@@ -117,9 +107,10 @@ public class HideModeConfig implements IHideModeConfig {
 		return updated;
 	}
 
-	private <V> boolean areAllBlacklisted(List<IIngredientListElement<V>> elements, String newUid) {
+	private <V> boolean areAllBlacklisted(List<IIngredientListElement<V>> elements, IIngredientHelper<V> ingredientHelper, String newUid) {
 		for (IIngredientListElement<V> element : elements) {
-			String uid = getIngredientUid(element, IngredientBlacklistType.ITEM);
+			V ingredient = element.getIngredient();
+			String uid = getIngredientUid(ingredient, IngredientBlacklistType.ITEM, ingredientHelper);
 			if (!uid.equals(newUid) && !blacklist.contains(uid)) {
 				return false;
 			}
@@ -129,10 +120,6 @@ public class HideModeConfig implements IHideModeConfig {
 
 	@Override
 	public <V> void removeIngredientFromConfigBlacklist(IngredientFilter ingredientFilter, IIngredientRegistry ingredientRegistry, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
-		IIngredientType<V> ingredientType = ingredientRegistry.getIngredientType(ingredient);
-		IIngredientListElement<V> element = IngredientListElementFactory.createUnorderedElement(ingredientRegistry, ingredientType, ingredient, modIdHelper);
-		Preconditions.checkNotNull(element, "Failed to create element for blacklist");
-
 		boolean updated = false;
 
 		if (blacklistType == IngredientBlacklistType.ITEM) {
@@ -141,16 +128,17 @@ public class HideModeConfig implements IHideModeConfig {
 			if (blacklist.contains(wildUid)) {
 				updated = true;
 				blacklist.remove(wildUid);
-				List<IIngredientListElement<V>> modMatches = ingredientFilter.getMatches(element, (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD));
+				List<IIngredientListElement<V>> modMatches = ingredientFilter.getMatches(ingredient, ingredientHelper, (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD, ingredientHelper));
 				for (IIngredientListElement<V> modMatch : modMatches) {
-					addIngredientToConfigBlacklist(ingredientFilter, modMatch, modMatch.getIngredient(), IngredientBlacklistType.ITEM, ingredientHelper);
+					addIngredientToConfigBlacklist(ingredientFilter, modMatch.getIngredient(), IngredientBlacklistType.ITEM, ingredientHelper);
 				}
 			}
 		} else if (blacklistType == IngredientBlacklistType.WILDCARD) {
 			// remove any item-level blacklist on items that match this wildcard
-			List<IIngredientListElement<V>> modMatches = ingredientFilter.getMatches(element, (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD));
+			List<IIngredientListElement<V>> modMatches = ingredientFilter.getMatches(ingredient, ingredientHelper, (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD, ingredientHelper));
 			for (IIngredientListElement<V> modMatch : modMatches) {
-				final String uid = getIngredientUid(modMatch, IngredientBlacklistType.ITEM);
+				V matchIngredient = modMatch.getIngredient();
+				final String uid = getIngredientUid(matchIngredient, IngredientBlacklistType.ITEM, ingredientHelper);
 				updated |= blacklist.remove(uid);
 			}
 		}
@@ -175,15 +163,6 @@ public class HideModeConfig implements IHideModeConfig {
 	public <V> boolean isIngredientOnConfigBlacklist(V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
 		final String uid = getIngredientUid(ingredient, blacklistType, ingredientHelper);
 		return blacklist.contains(uid);
-	}
-
-	private static <V> String getIngredientUid(@Nullable IIngredientListElement<V> element, IngredientBlacklistType blacklistType) {
-		if (element == null) {
-			return "";
-		}
-		V ingredient = element.getIngredient();
-		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
-		return getIngredientUid(ingredient, blacklistType, ingredientHelper);
 	}
 
 	private static <V> String getIngredientUid(V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {

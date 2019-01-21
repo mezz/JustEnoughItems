@@ -190,22 +190,25 @@ public class IngredientRegistry implements IIngredientRegistry {
 			}
 		}
 
-		NonNullList<IIngredientListElement<V>> ingredientListElements = IngredientListElementFactory.createList(this, ingredientType, ingredients, modIdHelper);
-		for (IIngredientListElement<V> element : ingredientListElements) {
-			List<IIngredientListElement<V>> matchingElements = ingredientFilter.findMatchingElements(element);
+		for (V ingredient : ingredients) {
+			List<IIngredientListElement<V>> matchingElements = ingredientFilter.findMatchingElements(ingredientHelper, ingredient);
 			if (!matchingElements.isEmpty()) {
 				for (IIngredientListElement<V> matchingElement : matchingElements) {
 					blacklist.removeIngredientFromBlacklist(matchingElement.getIngredient(), ingredientHelper);
 					ingredientFilter.updateHiddenState(matchingElement);
 				}
 				if (enableDebugLogs) {
-					LOGGER.debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(element.getIngredient()));
+					LOGGER.debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(ingredient));
 				}
 			} else {
-				blacklist.removeIngredientFromBlacklist(element.getIngredient(), ingredientHelper);
-				ingredientFilter.addIngredient(element);
-				if (enableDebugLogs) {
-					LOGGER.debug("Added ingredient: {}", ingredientHelper.getErrorInfo(element.getIngredient()));
+				IIngredientListElement<V> element = IngredientListElementFactory.createOrderedElement(this, ingredientType, ingredient);
+				IngredientListElementInfo<V> info = IngredientListElementInfo.create(element, this, modIdHelper);
+				if (info != null) {
+					blacklist.removeIngredientFromBlacklist(ingredient, ingredientHelper);
+					ingredientFilter.addIngredient(info);
+					if (enableDebugLogs) {
+						LOGGER.debug("Added ingredient: {}", ingredientHelper.getErrorInfo(ingredient));
+					}
 				}
 			}
 		}
@@ -258,15 +261,14 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientType);
 
-		NonNullList<IIngredientListElement<V>> ingredientListElements = IngredientListElementFactory.createList(this, ingredientType, ingredients, modIdHelper);
-		for (IIngredientListElement<V> element : ingredientListElements) {
-			List<IIngredientListElement<V>> matchingElements = ingredientFilter.findMatchingElements(element);
+		for (V ingredient : ingredients) {
+			List<IIngredientListElement<V>> matchingElements = ingredientFilter.findMatchingElements(ingredientHelper, ingredient);
 			if (matchingElements.isEmpty()) {
-				V ingredient = element.getIngredient();
+
 				String errorInfo = ingredientHelper.getErrorInfo(ingredient);
 				LOGGER.error("Could not find any matching ingredients to remove: {}", errorInfo);
 			} else if (enableDebugLogs) {
-				LOGGER.debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(element.getIngredient()));
+				LOGGER.debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(ingredient));
 			}
 			for (IIngredientListElement<V> matchingElement : matchingElements) {
 				blacklist.addIngredientToBlacklist(matchingElement.getIngredient(), ingredientHelper);
@@ -278,11 +280,8 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	public <V> boolean isIngredientVisible(V ingredient, IngredientFilter ingredientFilter) {
 		IIngredientType<V> ingredientType = getIngredientType(ingredient);
-		IIngredientListElement<V> element = IngredientListElementFactory.createUnorderedElement(this, ingredientType, ingredient, modIdHelper);
-		if (element == null) {
-			return false;
-		}
-		List<IIngredientListElement<V>> matchingElements = ingredientFilter.findMatchingElements(element);
+		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientType);
+		List<IIngredientListElement<V>> matchingElements = ingredientFilter.findMatchingElements(ingredientHelper, ingredient);
 		if (matchingElements.isEmpty()) {
 			return true;
 		}
