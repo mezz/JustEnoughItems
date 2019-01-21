@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.gui.IRecipeLayout;
 
@@ -15,7 +16,7 @@ import mezz.jei.api.gui.IRecipeLayout;
  *
  * Useful functions for implementing a recipe transfer handler can be found in {@link IRecipeTransferHandlerHelper}.
  *
- * To register your recipe transfer handler, use {@link IRecipeTransferRegistry#addRecipeTransferHandler(IRecipeTransferHandler, String)}.
+ * To register your recipe transfer handler, use {@link IRecipeTransferRegistry#addRecipeTransferHandler(IRecipeTransferHandler, ResourceLocation)}
  */
 public interface IRecipeTransferHandler<C extends Container> {
 	/**
@@ -30,7 +31,6 @@ public interface IRecipeTransferHandler<C extends Container> {
 	 * @param maxTransfer  if true, transfer as many items as possible. if false, transfer one set
 	 * @param doTransfer   if true, do the transfer. if false, check for errors but do not actually transfer the items
 	 * @return a recipe transfer error if the recipe can't be transferred. Return null on success.
-	 * @since JEI 2.20.0
 	 */
 	@Nullable
 	IRecipeTransferError transferRecipe(C container, IRecipeLayout recipeLayout, EntityPlayer player, boolean maxTransfer, boolean doTransfer);

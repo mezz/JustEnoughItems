@@ -6,7 +6,7 @@ import java.util.List;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.Focus;
 import mezz.jei.util.ErrorUtil;
 

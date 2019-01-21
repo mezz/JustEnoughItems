@@ -1,14 +1,11 @@
 package mezz.jei.api.gui;
 
-import net.minecraft.client.Minecraft;
-
 import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**
  * Represents something to be drawn on screen.
- * Useful for drawing miscellaneous things in {@link IRecipeCategory#drawExtras(Minecraft)} and {@link IRecipeWrapper#drawInfo(Minecraft, int, int, int, int)}.
+ * Useful for drawing miscellaneous things in {@link IRecipeCategory#draw(Object, double, double)}.
  * {@link IGuiHelper} has many functions to create IDrawables.
  *
  * @see IDrawableAnimated

@@ -1,13 +1,17 @@
 package mezz.jei.api;
 
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.ingredients.IModIngredientRegistration;
-import mezz.jei.api.recipe.IRecipeCategoryRegistration;
+import mezz.jei.api.ingredients.ISubtypeRegistry;
+import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
+import mezz.jei.api.recipe.category.IRecipeCategoryRegistration;
+import mezz.jei.api.recipe.category.extensions.ICraftingRecipeWrapper;
 
 /**
  * The main class to implement to create a JEI plugin. Everything communicated between a mod and JEI is through this class.
- * IModPlugins must have the {@link JEIPlugin} annotation to get loaded by JEI.
+ * IModPlugins must have the {@link JeiPlugin} annotation to get loaded by JEI.
  */
 public interface IModPlugin {
 
@@ -15,8 +19,6 @@ public interface IModPlugin {
 
 	/**
 	 * If your item has subtypes that depend on NBT or capabilities, use this to help JEI identify those subtypes correctly.
-	 *
-	 * @since JEI 3.12.1
 	 */
 	default void registerItemSubtypes(ISubtypeRegistry subtypeRegistry) {
 
@@ -24,8 +26,6 @@ public interface IModPlugin {
 
 	/**
 	 * Register special ingredients, beyond the basic ItemStack and FluidStack.
-	 *
-	 * @since JEI 3.11.0
 	 */
 	default void registerIngredients(IModIngredientRegistration registry) {
 
@@ -34,10 +34,12 @@ public interface IModPlugin {
 	/**
 	 * Register the categories handled by this plugin.
 	 * These are registered before recipes so they can be checked for validity.
-	 *
-	 * @since JEI 4.5.0
 	 */
 	default void registerCategories(IRecipeCategoryRegistration registry) {
+
+	}
+
+	default void registerVanillaCategoryExtensions(IExtendableRecipeCategory<IRecipe, ICraftingRecipeWrapper> craftingCategory) {
 
 	}
 
@@ -50,8 +52,6 @@ public interface IModPlugin {
 
 	/**
 	 * Called when jei's runtime features are available, after all mods have registered.
-	 *
-	 * @since JEI 2.23.0
 	 */
 	default void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 

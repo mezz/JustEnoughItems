@@ -1,5 +1,8 @@
 package mezz.jei.api;
 
+import mezz.jei.api.gui.IRecipesGui;
+import mezz.jei.api.recipe.IRecipeRegistry;
+
 /**
  * Gives access to JEI functions that are available once everything has loaded.
  * The IJeiRuntime instance is passed to your mod plugin in {@link IModPlugin#onRuntimeAvailable(IJeiRuntime)}.
@@ -7,18 +10,9 @@ package mezz.jei.api;
 public interface IJeiRuntime {
 	IRecipeRegistry getRecipeRegistry();
 
-	/**
-	 * @since JEI 3.2.12
-	 */
 	IRecipesGui getRecipesGui();
 
-	/**
-	 * @since JEI 4.2.2
-	 */
 	IIngredientFilter getIngredientFilter();
 
-	/**
-	 * @since JEI 4.2.2
-	 */
 	IIngredientListOverlay getIngredientListOverlay();
 }

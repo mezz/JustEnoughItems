@@ -11,8 +11,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IIngredientType;
-import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**
  * IGuiIngredientGroup displays recipe ingredients in a gui.
@@ -28,16 +27,12 @@ public interface IGuiIngredientGroup<T> {
 
 	/**
 	 * Set all the ingredients in the group, based on the {@link IIngredients}
-	 * passed to {@link IRecipeCategory#setRecipe(IRecipeLayout, IRecipeWrapper, IIngredients)}.
-	 *
-	 * @since JEI 3.11.0
+	 * passed to {@link IRecipeCategory#setRecipe(IRecipeLayout, Object, IIngredients)}.
 	 */
 	void set(IIngredients ingredients);
 
 	/**
 	 * Set the ingredient at slotIndex to a rotating collection of ingredients.
-	 *
-	 * @since JEI 3.11.0
 	 */
 	void set(int slotIndex, @Nullable List<T> ingredients);
 
@@ -49,8 +44,6 @@ public interface IGuiIngredientGroup<T> {
 	/**
 	 * Set a background image to draw behind the ingredient.
 	 * Some examples are slot background or tank background.
-	 *
-	 * @since JEI 4.3.1
 	 */
 	void setBackground(int slotIndex, IDrawable background);
 
@@ -80,7 +73,6 @@ public interface IGuiIngredientGroup<T> {
 	 * @param yPosition y position relative to the recipe background
 	 * @see IGuiItemStackGroup#init(int, boolean, int, int)
 	 * @see IGuiFluidStackGroup#init(int, boolean, int, int, int, int, int, boolean, IDrawable)
-	 * @since JEI 4.0.2
 	 */
 	void init(int slotIndex, boolean input, int xPosition, int yPosition);
 
@@ -113,8 +105,6 @@ public interface IGuiIngredientGroup<T> {
 	 * This must be set before any ingredients are set.
 	 *
 	 * Useful for recipes that display things in a custom way depending on what the overall recipe focus is.
-	 *
-	 * @since JEI 3.13.6
 	 */
 	void setOverrideDisplayFocus(@Nullable IFocus<T> focus);
 }

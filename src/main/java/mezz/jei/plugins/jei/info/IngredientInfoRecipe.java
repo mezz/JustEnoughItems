@@ -1,28 +1,22 @@
 package mezz.jei.plugins.jei.info;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
 
-import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IIngredientType;
-import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
 
-public class IngredientInfoRecipe<T> implements IRecipeWrapper {
+public class IngredientInfoRecipe<T> {
 	private static final int lineSpacing = 2;
 	private final List<String> description;
 	private final List<T> ingredients;
 	private final IIngredientType<T> ingredientType;
-	private final IDrawable slotDrawable;
 
-	public static <T> List<IngredientInfoRecipe<T>> create(IGuiHelper guiHelper, List<T> ingredients, IIngredientType<T> ingredientType, String... descriptionKeys) {
+	public static <T> List<IngredientInfoRecipe<T>> create(List<T> ingredients, IIngredientType<T> ingredientType, String... descriptionKeys) {
 		List<IngredientInfoRecipe<T>> recipes = new ArrayList<>();
 
 		List<String> descriptionLines = translateDescriptionLines(descriptionKeys);
@@ -37,7 +31,7 @@ public class IngredientInfoRecipe<T> implements IRecipeWrapper {
 			int startLine = i * maxLinesPerPage;
 			int endLine = Math.min((i + 1) * maxLinesPerPage, lineCount);
 			List<String> description = descriptionLines.subList(startLine, endLine);
-			IngredientInfoRecipe<T> recipe = new IngredientInfoRecipe<>(guiHelper, ingredients, ingredientType, description);
+			IngredientInfoRecipe<T> recipe = new IngredientInfoRecipe<>(ingredients, ingredientType, description);
 			recipes.add(recipe);
 		}
 
@@ -72,32 +66,21 @@ public class IngredientInfoRecipe<T> implements IRecipeWrapper {
 		return descriptionLinesWrapped;
 	}
 
-	private IngredientInfoRecipe(IGuiHelper guiHelper, List<T> ingredients, IIngredientType<T> ingredientType, List<String> description) {
+	private IngredientInfoRecipe(List<T> ingredients, IIngredientType<T> ingredientType, List<String> description) {
 		this.description = description;
 		this.ingredients = ingredients;
 		this.ingredientType = ingredientType;
-		this.slotDrawable = guiHelper.getSlotDrawable();
-	}
-
-	@Override
-	public void getIngredients(IIngredients ingredients) {
-		ingredients.setInputLists(this.ingredientType, Collections.singletonList(this.ingredients));
-		ingredients.setOutputs(this.ingredientType, this.ingredients);
-	}
-
-	@Override
-	public void drawInfo(int recipeWidth, int recipeHeight, double mouseX, double mouseY) {
-		int xPos = 0;
-		int yPos = slotDrawable.getHeight() + 4;
-
-		Minecraft minecraft = Minecraft.getInstance();
-		for (String descriptionLine : description) {
-			minecraft.fontRenderer.drawString(descriptionLine, xPos, yPos, Color.black.getRGB());
-			yPos += minecraft.fontRenderer.FONT_HEIGHT + lineSpacing;
-		}
 	}
 
 	public List<String> getDescription() {
 		return description;
+	}
+
+	public IIngredientType<T> getIngredientType() {
+		return ingredientType;
+	}
+
+	public List<T> getIngredients() {
+		return ingredients;
 	}
 }

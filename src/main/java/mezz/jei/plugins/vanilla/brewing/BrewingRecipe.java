@@ -1,24 +1,19 @@
 package mezz.jei.plugins.vanilla.brewing;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.base.Objects;
-import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IBrewingRecipeWrapper;
-import mezz.jei.util.Translator;
+import mezz.jei.api.recipe.IJeiBrewingRecipe;
 
-public class BrewingRecipeWrapper implements IBrewingRecipeWrapper {
+public class BrewingRecipe implements IJeiBrewingRecipe {
 	private final List<ItemStack> ingredients;
 	private final ItemStack potionInput;
 	private final ItemStack potionOutput;
@@ -26,7 +21,7 @@ public class BrewingRecipeWrapper implements IBrewingRecipeWrapper {
 	private final List<List<ItemStack>> inputs;
 	private final int hashCode;
 
-	public BrewingRecipeWrapper(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput, BrewingRecipeUtil brewingRecipeUtil) {
+	public BrewingRecipe(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput, BrewingRecipeUtil brewingRecipeUtil) {
 		this.ingredients = ingredients;
 		this.potionInput = potionInput;
 		this.potionOutput = potionOutput;
@@ -49,32 +44,20 @@ public class BrewingRecipeWrapper implements IBrewingRecipeWrapper {
 			firstIngredient.getItem());
 	}
 
-	@Override
-	public void getIngredients(IIngredients ingredients) {
-		ingredients.setInputLists(VanillaTypes.ITEM, inputs);
-		ingredients.setOutput(VanillaTypes.ITEM, potionOutput);
-	}
-
-	public List getInputs() {
+	public List<List<ItemStack>> getInputs() {
 		return inputs;
 	}
 
-	@Override
-	public void drawInfo(int recipeWidth, int recipeHeight, double mouseX, double mouseY) {
-		int brewingSteps = getBrewingSteps();
-		if (brewingSteps < Integer.MAX_VALUE) {
-			String steps = Translator.translateToLocalFormatted("gui.jei.category.brewing.steps", brewingSteps);
-			Minecraft minecraft = Minecraft.getInstance();
-			minecraft.fontRenderer.drawString(steps, 70, 28, Color.gray.getRGB());
-		}
+	public ItemStack getPotionOutput() {
+		return potionOutput;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof BrewingRecipeWrapper)) {
+		if (!(obj instanceof BrewingRecipe)) {
 			return false;
 		}
-		BrewingRecipeWrapper other = (BrewingRecipeWrapper) obj;
+		BrewingRecipe other = (BrewingRecipe) obj;
 
 		if (!arePotionsEqual(other.potionInput, potionInput)) {
 			return false;

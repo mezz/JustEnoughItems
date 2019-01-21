@@ -12,7 +12,6 @@ import net.minecraft.util.text.TextFormatting;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.config.ModIdFormattingConfig;
-import mezz.jei.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 
 public class ForgeModIdHelper extends AbstractModIdHelper {

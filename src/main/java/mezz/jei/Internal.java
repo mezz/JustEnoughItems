@@ -18,8 +18,6 @@ import mezz.jei.util.StackHelper;
  */
 public final class Internal {
 	@Nullable
-	private static StackHelper stackHelper;
-	@Nullable
 	private static JeiHelpers helpers;
 	@Nullable
 	private static JeiRuntime runtime;
@@ -36,15 +34,6 @@ public final class Internal {
 
 	private Internal() {
 
-	}
-
-	public static StackHelper getStackHelper() {
-		Preconditions.checkState(stackHelper != null, "StackHelper has not been created yet.");
-		return stackHelper;
-	}
-
-	public static void setStackHelper(StackHelper stackHelper) {
-		Internal.stackHelper = stackHelper;
 	}
 
 	public static JeiHelpers getHelpers() {

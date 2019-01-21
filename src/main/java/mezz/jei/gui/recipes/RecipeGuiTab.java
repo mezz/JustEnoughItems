@@ -4,7 +4,7 @@ import java.util.List;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.HoverChecker;
 import mezz.jei.input.IMouseHandler;

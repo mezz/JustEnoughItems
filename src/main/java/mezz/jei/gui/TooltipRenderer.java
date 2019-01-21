@@ -27,14 +27,6 @@ public final class TooltipRenderer {
 		drawHoveringText(ItemStack.EMPTY, textLines, x, y, maxWidth, minecraft.fontRenderer);
 	}
 
-	public static void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {
-		drawHoveringText(ItemStack.EMPTY, textLines, x, y, -1, font);
-	}
-
-	public static void drawHoveringText(List<String> textLines, int x, int y, int maxWidth, FontRenderer font) {
-		drawHoveringText(ItemStack.EMPTY, textLines, x, y, maxWidth, font);
-	}
-
 	public static void drawHoveringText(Object ingredient, List<String> textLines, int x, int y, FontRenderer font) {
 		drawHoveringText(ingredient, textLines, x, y, -1, font);
 	}

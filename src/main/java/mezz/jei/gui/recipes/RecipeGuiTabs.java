@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 
 import com.google.common.collect.ImmutableList;
-import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.input.IMouseHandler;

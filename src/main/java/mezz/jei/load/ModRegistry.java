@@ -18,7 +18,6 @@ import net.minecraft.util.ResourceLocation;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableTable;
-import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
@@ -27,20 +26,16 @@ import mezz.jei.api.gui.IGlobalGuiHandler;
 import mezz.jei.api.gui.IGuiScreenHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IIngredientType;
-import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeCategoryRegistration;
+import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.IRecipeRegistryPlugin;
-import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.api.recipe.IRecipeWrapperFactory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 import mezz.jei.collect.ListMultiMap;
-import mezz.jei.collect.SetMultiMap;
 import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.plugins.jei.info.IngredientInfoRecipe;
-import mezz.jei.recipes.IRecipeHandler;
 import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.recipes.RecipeTransferRegistry;
 import mezz.jei.runtime.JeiHelpers;
@@ -54,9 +49,8 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	private final IJeiHelpers jeiHelpers;
 	private final IIngredientRegistry ingredientRegistry;
 	private final List<IRecipeCategory> recipeCategories = new ArrayList<>();
-	private final Set<ResourceLocation> recipeCategoryUids = new HashSet<>();
-	private final ListMultiMap<ResourceLocation, IRecipeHandler<?>> recipeHandlers = new ListMultiMap<>();
-	private final SetMultiMap<ResourceLocation, Class> recipeHandlerClasses = new SetMultiMap<>();
+	private final Map<ResourceLocation, IRecipeCategory> recipeCategoriesByUid = new HashMap<>();
+	private final Set<Class<?>> recipeClasses = new HashSet<>();
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers = new ArrayList<>();
 	private final List<IGlobalGuiHandler> globalGuiHandlers = new ArrayList<>();
 	private final Map<Class, IGuiScreenHandler> guiScreenHandlers = new HashMap<>();
@@ -90,8 +84,15 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 		for (IRecipeCategory recipeCategory : recipeCategories) {
 			ResourceLocation uid = recipeCategory.getUid();
 			Preconditions.checkNotNull(uid, "Recipe category UID cannot be null %s", recipeCategory);
-			if (!recipeCategoryUids.add(uid)) {
+			Class<?> recipeClass = recipeCategory.getRecipeClass();
+			Preconditions.checkNotNull(recipeClass, "Recipe class cannot be null %s", recipeCategory);
+			if (!recipeClasses.add(recipeClass)) {
+				throw new IllegalArgumentException("A RecipeCategory for recipe class \"" + recipeClass + "\" has already been registered.");
+			}
+			if (recipeCategoriesByUid.containsKey(uid)) {
 				throw new IllegalArgumentException("A RecipeCategory with UID \"" + uid + "\" has already been registered.");
+			} else {
+				recipeCategoriesByUid.put(uid, recipeCategory);
 			}
 		}
 
@@ -102,46 +103,19 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	public void addRecipes(Collection<?> recipes, ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipes, "recipes");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-		Preconditions.checkArgument(this.recipeCategoryUids.contains(recipeCategoryUid), "No recipe category has been registered for recipeCategoryUid %s", recipeCategoryUid);
-		if (!this.recipeCategoryUids.contains(recipeCategoryUid)) {
-			LOGGER.warn("No recipe category has been registered for recipeCategoryUid {}", recipeCategoryUid);
+
+		IRecipeCategory recipeCategory = this.recipeCategoriesByUid.get(recipeCategoryUid);
+		if (recipeCategory == null) {
+		  throw new NullPointerException("No recipe category has been registered for recipeCategoryUid " + recipeCategoryUid);
 		}
+		Class<?> recipeClass = recipeCategory.getRecipeClass();
 
 		for (Object recipe : recipes) {
 			ErrorUtil.checkNotNull(recipe, "recipe");
+			if (!recipeClass.isInstance(recipe)) {
+			  throw new IllegalArgumentException(recipeCategory.getUid() + " recipes must be an instance of " + recipeClass + ". Instead got: " + recipe.getClass());
+			}
 			this.recipes.put(recipeCategoryUid, recipe);
-		}
-	}
-
-	@Override
-	public <T> void handleRecipes(final Class<T> recipeClass, final IRecipeWrapperFactory<T> recipeWrapperFactory, final ResourceLocation recipeCategoryUid) {
-		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
-		Preconditions.checkArgument(!recipeClass.equals(Object.class), "Recipe handlers must handle a specific class, not Object.class");
-		ErrorUtil.checkNotNull(recipeWrapperFactory, "recipeWrapperFactory");
-		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-
-		IRecipeHandler<T> recipeHandler = new IRecipeHandler<T>() {
-			@Override
-			public Class<T> getRecipeClass() {
-				return recipeClass;
-			}
-
-			@Override
-			public ResourceLocation getRecipeCategoryUid(T recipe) {
-				return recipeCategoryUid;
-			}
-
-			@Override
-			public IRecipeWrapper getRecipeWrapper(T recipe) {
-				return recipeWrapperFactory.getRecipeWrapper(recipe);
-			}
-		};
-
-		if (this.recipeHandlerClasses.contains(recipeCategoryUid, recipeClass)) {
-			throw new IllegalArgumentException("A Recipe Handler has already been registered for '" + recipeCategoryUid + "': " + recipeClass.getName());
-		} else {
-			this.recipeHandlerClasses.put(recipeCategoryUid, recipeClass);
-			this.recipeHandlers.put(recipeCategoryUid, recipeHandler);
 		}
 	}
 
@@ -217,8 +191,7 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 		}
 		ErrorUtil.checkNotEmpty(descriptionKeys, "descriptionKeys");
 
-		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
-		List<IngredientInfoRecipe<T>> recipes = IngredientInfoRecipe.create(guiHelper, ingredients, ingredientType, descriptionKeys);
+		List<IngredientInfoRecipe<T>> recipes = IngredientInfoRecipe.create(ingredients, ingredientType, descriptionKeys);
 		addRecipes(recipes, VanillaRecipeCategoryUid.INFORMATION);
 	}
 
@@ -253,6 +226,6 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 
 	public RecipeRegistry createRecipeRegistry(IngredientRegistry ingredientRegistry) {
 		ImmutableTable<Class, ResourceLocation, IRecipeTransferHandler> recipeTransferHandlers = recipeTransferRegistry.getRecipeTransferHandlers();
-		return new RecipeRegistry(recipeCategories, recipeHandlers, recipeTransferHandlers, recipes, recipeClickableAreas, recipeCatalysts, ingredientRegistry, recipeRegistryPlugins);
+		return new RecipeRegistry(recipeCategories, recipeTransferHandlers, recipes, recipeClickableAreas, recipeCatalysts, ingredientRegistry, recipeRegistryPlugins);
 	}
 }

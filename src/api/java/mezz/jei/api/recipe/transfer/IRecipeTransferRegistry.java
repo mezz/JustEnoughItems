@@ -4,8 +4,8 @@ import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.IModRegistry;
-import mezz.jei.api.IRecipeRegistry;
-import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.IRecipeRegistry;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**
  * Register recipe transfer handlers here to give JEI the information it needs to transfer recipes into the crafting area.
@@ -36,16 +36,12 @@ public interface IRecipeTransferRegistry {
 	/**
 	 * Complete control over recipe transfer.
 	 * Use this when the container has a non-standard inventory or crafting area.
-	 *
-	 * @since JEI 3.12.4
 	 */
 	void addRecipeTransferHandler(IRecipeTransferHandler<?> recipeTransferHandler, ResourceLocation recipeCategoryUid);
 
 	/**
 	 * Add a universal handler that can handle any category of recipe.
 	 * Useful for mods with recipe pattern encoding, for automated recipe systems.
-	 *
-	 * @since JEI 3.12.4
 	 */
 	void addUniversalRecipeTransferHandler(IRecipeTransferHandler<?> recipeTransferHandler);
 }

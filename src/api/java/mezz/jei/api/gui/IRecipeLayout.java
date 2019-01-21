@@ -6,13 +6,12 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IIngredientType;
-import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**
  * Represents the layout of one recipe on-screen.
  * Plugins interpret a recipe wrapper to set the properties here.
- * It is passed to plugins in {@link IRecipeCategory#setRecipe(IRecipeLayout, IRecipeWrapper, IIngredients)}.
+ * It is passed to plugins in {@link IRecipeCategory#setRecipe(IRecipeLayout, Object, IIngredients)}.
  *
  * @see IRecipeLayoutDrawable
  */
@@ -37,22 +36,17 @@ public interface IRecipeLayout {
 	 *
 	 * @see #getItemStacks()
 	 * @see #getFluidStacks()
-	 * @since JEI 4.12.0
 	 */
 	<T> IGuiIngredientGroup<T> getIngredientsGroup(IIngredientType<T> ingredientType);
 
 	/**
 	 * The current search focus. Set by the player when they look up the recipe. The object being looked up is the focus.
-	 *
-	 * @since JEI 3.11.0
 	 */
 	@Nullable
 	IFocus<?> getFocus();
 
 	/**
 	 * The current recipe category.
-	 *
-	 * @since JEI 4.7.6
 	 */
 	IRecipeCategory<?> getRecipeCategory();
 
@@ -65,8 +59,6 @@ public interface IRecipeLayout {
 
 	/**
 	 * Adds a shapeless icon to the top right of the recipe, that shows a tooltip saying "shapeless" when hovered over.
-	 *
-	 * @since JEI 4.0.2
 	 */
 	void setShapeless();
 

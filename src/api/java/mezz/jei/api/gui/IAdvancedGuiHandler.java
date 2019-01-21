@@ -40,7 +40,6 @@ public interface IAdvancedGuiHandler<T extends GuiContainer> {
 	 *
 	 * @param mouseX the current X position of the mouse in screen coordinates.
 	 * @param mouseY the current Y position of the mouse in screen coordinates.
-	 * @since JEI 3.13.2
 	 */
 	@Nullable
 	default Object getIngredientUnderMouse(T guiContainer, double mouseX, double mouseY) {

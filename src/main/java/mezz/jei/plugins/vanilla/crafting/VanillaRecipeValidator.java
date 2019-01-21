@@ -3,7 +3,6 @@ package mezz.jei.plugins.vanilla.crafting;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraftforge.common.crafting.IShapedRecipe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.item.ItemStack;
@@ -12,52 +11,45 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.RecipeManager;
 
-import mezz.jei.api.IJeiHelpers;
-import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.api.recipe.IRecipeWrapperFactory;
-import mezz.jei.plugins.vanilla.furnace.FurnaceRecipeWrapper;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public final class RecipeValidator {
+public final class VanillaRecipeValidator {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static class Results {
 		private final List<IRecipe> craftingRecipes = new ArrayList<>();
-		private final List<IRecipe> furnaceRecipes = new ArrayList<>();
+		private final List<FurnaceRecipe> furnaceRecipes = new ArrayList<>();
 
 		public List<IRecipe> getCraftingRecipes() {
 			return craftingRecipes;
 		}
 
-		public List<IRecipe> getFurnaceRecipes() {
+		public List<FurnaceRecipe> getFurnaceRecipes() {
 			return furnaceRecipes;
 		}
 	}
 
-	private RecipeValidator() {
+	private VanillaRecipeValidator() {
 	}
 
-	public static Results getValidRecipes(final IJeiHelpers jeiHelpers) {
-		CraftingRecipeValidator<IShapedRecipe> shapedRecipesValidator = new CraftingRecipeValidator<>(recipe -> new ShapedRecipesWrapper(jeiHelpers, recipe));
-		CraftingRecipeValidator<IRecipe> shapelessRecipesValidator = new CraftingRecipeValidator<>(recipe -> new ShapelessRecipeWrapper<>(jeiHelpers, recipe));
-		CraftingRecipeValidator<FurnaceRecipe> furnaceRecipesValidator = new CraftingRecipeValidator<>(recipe -> new FurnaceRecipeWrapper(jeiHelpers, recipe));
+	public static Results getValidRecipes(IRecipeCategory<IRecipe> craftingCategory, IRecipeCategory<FurnaceRecipe> furnaceCategory) {
+		CategoryRecipeValidator<IRecipe> craftingRecipesValidator = new CategoryRecipeValidator<>(craftingCategory, 9);
+		CategoryRecipeValidator<FurnaceRecipe> furnaceRecipesValidator = new CategoryRecipeValidator<>(furnaceCategory, 1);
 
 		Results results = new Results();
 		WorldClient world = Minecraft.getInstance().world;
 		RecipeManager recipeManager = world.getRecipeManager();
 		for (IRecipe recipe : recipeManager.getRecipes()) {
 			if (recipe instanceof FurnaceRecipe) {
-				if (furnaceRecipesValidator.isRecipeValid((FurnaceRecipe) recipe)) {
-					results.furnaceRecipes.add(recipe);
-				}
-			} else if (recipe instanceof IShapedRecipe) {
-				if (shapedRecipesValidator.isRecipeValid((IShapedRecipe) recipe)) {
-					results.craftingRecipes.add(recipe);
+				FurnaceRecipe furnaceRecipe = (FurnaceRecipe) recipe;
+				if (furnaceRecipesValidator.isRecipeValid(furnaceRecipe)) {
+					results.furnaceRecipes.add(furnaceRecipe);
 				}
 			} else {
-				if (shapelessRecipesValidator.isRecipeValid(recipe)) {
+				if (craftingRecipesValidator.isRecipeValid(recipe)) {
 					results.craftingRecipes.add(recipe);
 				}
 			}
@@ -65,12 +57,14 @@ public final class RecipeValidator {
 		return results;
 	}
 
-	private static final class CraftingRecipeValidator<T extends IRecipe> {
+	private static final class CategoryRecipeValidator<T extends IRecipe> {
 		private static final int INVALID_COUNT = -1;
-		private final IRecipeWrapperFactory<T> recipeWrapperFactory;
+		private final IRecipeCategory<T> recipeCategory;
+		private final int maxInputs;
 
-		public CraftingRecipeValidator(IRecipeWrapperFactory<T> recipeWrapperFactory) {
-			this.recipeWrapperFactory = recipeWrapperFactory;
+		public CategoryRecipeValidator(IRecipeCategory<T> recipeCategory, int maxInputs) {
+			this.recipeCategory = recipeCategory;
+			this.maxInputs = maxInputs;
 		}
 
 		public boolean isRecipeValid(T recipe) {
@@ -92,7 +86,7 @@ public final class RecipeValidator {
 			int inputCount = getInputCount(ingredients);
 			if (inputCount == INVALID_COUNT) {
 				return false;
-			} else if (inputCount > 9) {
+			} else if (inputCount > maxInputs) {
 				String recipeInfo = getInfo(recipe);
 				LOGGER.error("Recipe has too many inputs. {}", recipeInfo);
 				return false;
@@ -105,8 +99,7 @@ public final class RecipeValidator {
 		}
 
 		private String getInfo(T recipe) {
-			IRecipeWrapper recipeWrapper = recipeWrapperFactory.getRecipeWrapper(recipe);
-			return ErrorUtil.getInfoFromRecipe(recipe, recipeWrapper);
+			return ErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
 		}
 
 		protected static int getInputCount(List<Ingredient> ingredientList) {

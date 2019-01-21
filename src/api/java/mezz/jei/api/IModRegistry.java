@@ -14,9 +14,6 @@ import mezz.jei.api.gui.IGuiScreenHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeRegistryPlugin;
-import mezz.jei.api.recipe.IRecipeWrapper;
-import mezz.jei.api.recipe.IRecipeWrapperFactory;
-import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 
 /**
@@ -27,37 +24,18 @@ public interface IModRegistry {
 
 	/**
 	 * Get helpers and tools for implementing JEI plugins.
-	 *
-	 * @since JEI 2.27.0
 	 */
 	IJeiHelpers getJeiHelpers();
 
 	/**
 	 * Get useful functions relating to recipe ingredients.
-	 *
-	 * @since JEI 3.11.0
 	 */
 	IIngredientRegistry getIngredientRegistry();
 
 	/**
 	 * Add the recipes provided by your plugin.
-	 * Handle them with {@link #handleRecipes(Class, IRecipeWrapperFactory, ResourceLocation)}.
-	 * Recipes added here that already implement {@link IRecipeWrapper} do not need to add a handler.
-	 *
-	 * @since JEI 4.3.0
 	 */
 	void addRecipes(Collection<?> recipes, ResourceLocation recipeCategoryUid);
-
-	/**
-	 * Add a handler for recipes provided by your plugin.
-	 * Recipes that already implement {@link IRecipeWrapper} do not need to add a handler here.
-	 *
-	 * @param recipeClass          the recipe class being handled.
-	 * @param recipeWrapperFactory turns recipes into recipe wrappers.
-	 * @param recipeCategoryUid    a unique category id. For vanilla category IDs, see {@link VanillaRecipeCategoryUid}.
-	 * @since JEI 4.3.0
-	 */
-	<T> void handleRecipes(Class<T> recipeClass, IRecipeWrapperFactory<T> recipeWrapperFactory, ResourceLocation recipeCategoryUid);
 
 	/**
 	 * Add a clickable area on a gui to jump to specific categories of recipes in JEI.
@@ -77,7 +55,6 @@ public interface IModRegistry {
 	 *
 	 * @param catalystIngredient the ingredient that can craft recipes (like a furnace or crafting table)
 	 * @param recipeCategoryUids the recipe categories handled by the ingredient
-	 * @since JEI 4.5.0
 	 */
 	void addRecipeCatalyst(Object catalystIngredient, ResourceLocation... recipeCategoryUids);
 
@@ -90,16 +67,12 @@ public interface IModRegistry {
 	/**
 	 * Add a handler to give JEI extra information about how to layout the item list.
 	 * Used for guis that display next to GUIs and would normally intersect with JEI.
-	 *
-	 * @since JEI 4.14.0
 	 */
 	void addGlobalGuiHandlers(IGlobalGuiHandler... globalGuiHandlers);
 
 	/**
 	 * Add a handler to let JEI draw next to a specific class (or subclass) of {@link GuiScreen}.
 	 * By default, JEI can only draw next to {@link GuiContainer}.
-	 *
-	 * @since JEI 4.8.4
 	 */
 	<T extends GuiScreen> void addGuiScreenHandler(Class<T> guiClass, IGuiScreenHandler<T> handler);
 
@@ -107,8 +80,6 @@ public interface IModRegistry {
 	 * Lets mods accept ghost ingredients from JEI.
 	 * These ingredients are dragged from the ingredient list on to your gui, and are useful
 	 * for setting recipes or anything else that does not need the real ingredient to exist.
-	 *
-	 * @since JEI 4.8.4
 	 */
 	<T extends GuiScreen> void addGhostIngredientHandler(Class<T> guiClass, IGhostIngredientHandler<T> handler);
 
@@ -122,7 +93,6 @@ public interface IModRegistry {
 	 *                        New lines can be added with "\n" or by giving multiple descriptionKeys.
 	 *                        Long lines are wrapped automatically.
 	 *                        Very long entries will span multiple pages automatically.
-	 * @since JEI 4.12.0
 	 */
 	<T> void addIngredientInfo(T ingredient, IIngredientType<T> ingredientType, String... descriptionKeys);
 
@@ -136,7 +106,6 @@ public interface IModRegistry {
 	 *                        New lines can be added with "\n" or by giving multiple descriptionKeys.
 	 *                        Long lines are wrapped automatically.
 	 *                        Very long entries will span multiple pages automatically.
-	 * @since JEI 4.12.0
 	 */
 	<T> void addIngredientInfo(List<T> ingredients, IIngredientType<T> ingredientType, String... descriptionKeys);
 
@@ -149,7 +118,6 @@ public interface IModRegistry {
 	 * Register your own Recipe Registry Plugin here.
 	 *
 	 * @see IRecipeRegistryPlugin
-	 * @since JEI 3.12.0
 	 */
 	void addRecipeRegistryPlugin(IRecipeRegistryPlugin recipeRegistryPlugin);
 }

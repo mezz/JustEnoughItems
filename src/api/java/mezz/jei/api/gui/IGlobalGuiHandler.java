@@ -16,7 +16,6 @@ import mezz.jei.api.ingredients.IModIngredientRegistration;
  * Register your implementation with {@link IModRegistry#addGlobalGuiHandlers(IGlobalGuiHandler...)}.
  *
  * @see IAdvancedGuiHandler
- * @since JEI 4.14.0
  */
 public interface IGlobalGuiHandler {
 	/**

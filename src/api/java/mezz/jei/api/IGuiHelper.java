@@ -25,7 +25,6 @@ public interface IGuiHelper {
 	 * Create a {@link IDrawableBuilder} which gives more control over drawable creation.
 	 *
 	 * @return a new {@link IDrawableBuilder} with the given resource location
-	 * @since JEI 4.11.0
 	 */
 	IDrawableBuilder drawableBuilder(ResourceLocation resourceLocation, int u, int v, int width, int height);
 
@@ -51,8 +50,6 @@ public interface IGuiHelper {
 
 	/**
 	 * Returns a 16x16 drawable for the given ingredient, matching the one JEI draws in the ingredient list.
-	 *
-	 * @since JEI 4.9.1
 	 */
 	<V> IDrawable createDrawableIngredient(V ingredient);
 

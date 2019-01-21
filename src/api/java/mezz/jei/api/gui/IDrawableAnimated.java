@@ -1,14 +1,11 @@
 package mezz.jei.api.gui;
 
-import net.minecraft.client.Minecraft;
-
 import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**
  * An animated {@link IDrawable}, useful for showing a gui animation like furnace flames or progress arrows.
- * Useful for drawing miscellaneous things in {@link IRecipeCategory#drawExtras(Minecraft)} and {@link IRecipeWrapper#drawInfo(Minecraft, int, int, int, int)}.
+ * Useful for drawing miscellaneous things in {@link IRecipeCategory#draw(Object, double, double)}.
  *
  * To create an instance, use {@link IGuiHelper#createAnimatedDrawable(IDrawableStatic, int, StartDirection, boolean)}.
  * Internally, these use an {@link ITickTimer} to simulate tick-driven animations.

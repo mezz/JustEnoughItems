@@ -1,0 +1,112 @@
+package mezz.jei.recipes;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import mezz.jei.api.recipe.category.extensions.IRecipeWrapper;
+import mezz.jei.util.ErrorUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class ExtendableRecipeCategoryHelper<T, W extends IRecipeWrapper> {
+	private static final Logger LOGGER = LogManager.getLogger();
+
+	private final List<RecipeHandler<? extends T, ? extends W>> recipeHandlers = new ArrayList<>();
+	private final Set<Class<? extends T>> handledClasses = new HashSet<>();
+	private final Map<T, W> cache = new IdentityHashMap<>();
+	private final Class<? extends T> expectedRecipeClass;
+
+	public ExtendableRecipeCategoryHelper(Class<? extends T> expectedRecipeClass) {
+		this.expectedRecipeClass = expectedRecipeClass;
+	}
+
+	public <R extends T> void addRecipeWrapperFactory(Class<? extends R> recipeClass, Function<R, ? extends W> recipeWrapperFactory) {
+		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
+		if (!expectedRecipeClass.isAssignableFrom(recipeClass)) {
+		  throw new IllegalArgumentException("Recipe handlers must handle a specific class. Needed: " + expectedRecipeClass + " Got: " + recipeClass);
+		}
+		ErrorUtil.checkNotNull(recipeWrapperFactory, "recipeWrapperFactory");
+		if (this.handledClasses.contains(recipeClass)) {
+			throw new IllegalArgumentException("A Recipe Wrapper Factory has already been registered for '" + recipeClass.getName());
+		}
+		this.handledClasses.add(recipeClass);
+		this.recipeHandlers.add(new RecipeHandler<>(recipeClass, recipeWrapperFactory));
+	}
+
+	public <R extends T> W getRecipeWrapper(R recipe) {
+		ErrorUtil.checkNotNull(recipe, "recipe");
+		return cache.computeIfAbsent(recipe, this::getRecipeWrapperUncached);
+	}
+
+	private <R extends T> W getRecipeWrapperUncached(R recipe) {
+		Class<?> recipeClass = recipe.getClass();
+
+		List<RecipeHandler<R, W>> assignableHandlers = new ArrayList<>();
+		// try to find an exact match
+		for (RecipeHandler<? extends T, ? extends W> recipeHandler : recipeHandlers) {
+			Class<?> handlerRecipeClass = recipeHandler.getRecipeClass();
+			if (handlerRecipeClass.isAssignableFrom(recipeClass)) {
+				@SuppressWarnings("unchecked")
+				RecipeHandler<R, W> assignableRecipeHandler = (RecipeHandler<R, W>) recipeHandler;
+				if (handlerRecipeClass.equals(recipeClass)) {
+					return assignableRecipeHandler.apply(recipe);
+				}
+				// remove any handlers that are super of this one
+				assignableHandlers.removeIf(handler -> handler.getRecipeClass().isAssignableFrom(handlerRecipeClass));
+				// only add this if it's not a super class of an another assignable handler
+				if (assignableHandlers.stream().noneMatch(handler -> handlerRecipeClass.isAssignableFrom(handler.getRecipeClass()))) {
+					assignableHandlers.add(assignableRecipeHandler);
+				}
+			}
+		}
+		if (assignableHandlers.isEmpty()) {
+			String recipeName = ErrorUtil.getNameForRecipe(recipe);
+			throw new RuntimeException("Failed to create recipe wrapper for recipe: " + recipeName);
+		}
+		if (assignableHandlers.size() == 1) {
+			RecipeHandler<R, W> recipeHandler = assignableHandlers.get(0);
+			return recipeHandler.apply(recipe);
+		}
+
+		// try super classes to get closest match
+		Class<?> superClass = recipeClass;
+		while (!Object.class.equals(superClass)) {
+			superClass = superClass.getSuperclass();
+			for (RecipeHandler<R, W> recipeHandler : assignableHandlers) {
+				if (recipeHandler.getRecipeClass().equals(superClass)) {
+					return recipeHandler.apply(recipe);
+				}
+			}
+		}
+
+		List<Class<? extends T>> assignableClasses = assignableHandlers.stream().map(RecipeHandler::getRecipeClass).collect(Collectors.toList());
+		LOGGER.warn("Found multiple matching recipe handlers for {}: {}", recipeClass, assignableClasses);
+		RecipeHandler<R, W> recipeHandler = assignableHandlers.get(0);
+		return recipeHandler.apply(recipe);
+	}
+
+	public static class RecipeHandler<T, W extends IRecipeWrapper> {
+		private final Class<? extends T> recipeClass;
+		private final Function<T, W> factory;
+
+		public RecipeHandler(Class<? extends T> recipeClass, Function<T, W> factory) {
+			this.recipeClass = recipeClass;
+			this.factory = factory;
+		}
+
+		public Class<? extends T> getRecipeClass() {
+			return recipeClass;
+		}
+
+		public W apply(T t) {
+			return factory.apply(t);
+		}
+	}
+
+}

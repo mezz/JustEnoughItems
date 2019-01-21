@@ -1,4 +1,4 @@
-package mezz.jei.api.recipe;
+package mezz.jei.api.recipe.category.extensions;
 
 import java.util.Collections;
 import java.util.List;
@@ -8,6 +8,7 @@ import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.ITooltipCallback;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**
  * A wrapper around a normal recipe with methods that allow JEI can make sense of it.
@@ -17,10 +18,8 @@ public interface IRecipeWrapper {
 
 	/**
 	 * Gets all the recipe's ingredients by filling out an instance of {@link IIngredients}.
-	 *
-	 * @since JEI 3.11.0
 	 */
-	void getIngredients(IIngredients ingredients);
+	void setIngredients(IIngredients ingredients);
 
 	/**
 	 * Draw additional info about the recipe.
@@ -31,7 +30,6 @@ public interface IRecipeWrapper {
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
 	 * @see IDrawable for a simple class for drawing things.
 	 * @see IGuiHelper for useful functions.
-	 * @since JEI 2.19.0
 	 */
 	default void drawInfo(int recipeWidth, int recipeHeight, double mouseX, double mouseY) {
 
@@ -42,7 +40,7 @@ public interface IRecipeWrapper {
 	 * ItemStack and fluid tooltips are already handled by JEI, this is for anything else.
 	 *
 	 * To add to ingredient tooltips, see {@link IGuiIngredientGroup#addTooltipCallback(ITooltipCallback)}
-	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltipStrings(int, int)}
+	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltipStrings(Object, double, double)}
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
@@ -60,7 +58,6 @@ public interface IRecipeWrapper {
 	 * @param mouseY      the Y position of the mouse, relative to the recipe.
 	 * @param mouseButton the current mouse event button.
 	 * @return true if the click was handled, false otherwise
-	 * @since JEI 2.19.0
 	 */
 	default boolean handleClick(double mouseX, double mouseY, int mouseButton) {
 		return false;

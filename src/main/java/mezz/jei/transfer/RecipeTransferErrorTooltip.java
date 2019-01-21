@@ -7,6 +7,7 @@ import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
+import mezz.jei.config.Constants;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.util.Translator;
 
@@ -25,6 +26,6 @@ public class RecipeTransferErrorTooltip implements IRecipeTransferError {
 
 	@Override
 	public void showError(int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY) {
-		TooltipRenderer.drawHoveringText(message, mouseX, mouseY, 150);
+		TooltipRenderer.drawHoveringText(message, mouseX, mouseY, Constants.MAX_TOOLTIP_WIDTH);
 	}
 }

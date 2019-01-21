@@ -34,6 +34,7 @@ public final class ReflectionUtil {
 	private static Field getField(final Object object, final Class<?> fieldClass) {
 		Class<?> objectClass = object.getClass();
 		Optional<Field> cachedField = CACHE.get(fieldClass, objectClass);
+		//noinspection OptionalAssignedToNull
 		if (cachedField != null) {
 			return cachedField.orElse(null);
 		}

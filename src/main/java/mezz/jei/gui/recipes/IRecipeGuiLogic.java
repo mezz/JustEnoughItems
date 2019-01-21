@@ -6,7 +6,7 @@ import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 
 public interface IRecipeGuiLogic {
 

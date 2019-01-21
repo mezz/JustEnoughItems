@@ -14,7 +14,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IModIdHelper;
-import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.ingredients.IngredientRegistry;
 
 public class RecipeCategoryTab extends RecipeGuiTab {
@@ -43,6 +43,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 		int iconY = y + 4;
 
 		IDrawable icon = category.getIcon();
+		//noinspection ConstantConditions
 		if (icon != null) {
 			iconX += (16 - icon.getWidth()) / 2;
 			iconY += (16 - icon.getHeight()) / 2;
@@ -58,7 +59,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 				FontRenderer fontRenderer = minecraft.fontRenderer;
 				float textCenterX = x + (TAB_WIDTH / 2f);
 				float textCenterY = y + (TAB_HEIGHT / 2f) - 3;
-				int color = isMouseOver(mouseX, mouseY) ? 16777120 : 14737632;
+				int color = isMouseOver(mouseX, mouseY) ? 0xFFFFA0 : 0xE0E0E0;
 				fontRenderer.drawStringWithShadow(text, textCenterX - fontRenderer.getStringWidth(text) / 2f, textCenterY, color);
 				GlStateManager.color4f(1, 1, 1, 1);
 			}

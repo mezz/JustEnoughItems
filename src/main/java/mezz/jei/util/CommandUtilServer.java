@@ -142,7 +142,6 @@ public final class CommandUtilServer {
 	 *
 	 * @see GiveCommand#giveItem(net.minecraft.command.CommandSource, net.minecraft.command.arguments.ItemInput, java.util.Collection, int)
 	 */
-	@SuppressWarnings("JavadocReference")
 	private static void giveToInventory(EntityPlayerMP entityplayermp, ItemStack itemStack) {
 		ItemStack itemStackCopy = itemStack.copy();
 		boolean flag = entityplayermp.inventory.addItemStackToInventory(itemStack);

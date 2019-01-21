@@ -10,7 +10,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
-import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.item.ItemStack;
@@ -20,18 +19,17 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.ingredients.IIngredientRegistry;
-import mezz.jei.api.recipe.IBrewingRecipeWrapper;
-import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
 
 public class BrewingRecipeMaker {
 
 	private final Set<Class> unhandledRecipeClasses = new HashSet<>();
-	private final Set<IRecipeWrapper> disabledRecipes = new HashSet<>();
+	private final Set<IJeiBrewingRecipe> disabledRecipes = new HashSet<>();
 	private final IIngredientRegistry ingredientRegistry;
 	private final IVanillaRecipeFactory vanillaRecipeFactory;
 
-	public static List<IBrewingRecipeWrapper> getBrewingRecipes(IIngredientRegistry ingredientRegistry, IVanillaRecipeFactory vanillaRecipeFactory) {
+	public static List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientRegistry ingredientRegistry, IVanillaRecipeFactory vanillaRecipeFactory) {
 		BrewingRecipeMaker brewingRecipeMaker = new BrewingRecipeMaker(ingredientRegistry, vanillaRecipeFactory);
 		return brewingRecipeMaker.getBrewingRecipes();
 	}
@@ -41,21 +39,21 @@ public class BrewingRecipeMaker {
 		this.vanillaRecipeFactory = vanillaRecipeFactory;
 	}
 
-	private List<IBrewingRecipeWrapper> getBrewingRecipes() {
+	private List<IJeiBrewingRecipe> getBrewingRecipes() {
 		unhandledRecipeClasses.clear();
 
-		Set<IBrewingRecipeWrapper> recipes = new HashSet<>();
+		Set<IJeiBrewingRecipe> recipes = new HashSet<>();
 
 		addVanillaBrewingRecipes(recipes);
 		addModdedBrewingRecipes(recipes);
 
-		List<IBrewingRecipeWrapper> recipeList = new ArrayList<>(recipes);
-		recipeList.sort(Comparator.comparingInt(IBrewingRecipeWrapper::getBrewingSteps));
+		List<IJeiBrewingRecipe> recipeList = new ArrayList<>(recipes);
+		recipeList.sort(Comparator.comparingInt(IJeiBrewingRecipe::getBrewingSteps));
 
 		return recipeList;
 	}
 
-	private void addVanillaBrewingRecipes(Collection<IBrewingRecipeWrapper> recipes) {
+	private void addVanillaBrewingRecipes(Collection<IJeiBrewingRecipe> recipes) {
 		List<ItemStack> potionIngredients = ingredientRegistry.getPotionIngredients();
 		List<ItemStack> knownPotions = new ArrayList<>();
 
@@ -69,7 +67,7 @@ public class BrewingRecipeMaker {
 		} while (foundNewPotions);
 	}
 
-	private List<ItemStack> getNewPotions(List<ItemStack> knownPotions, List<ItemStack> potionIngredients, Collection<IBrewingRecipeWrapper> recipes) {
+	private List<ItemStack> getNewPotions(List<ItemStack> knownPotions, List<ItemStack> potionIngredients, Collection<IJeiBrewingRecipe> recipes) {
 		List<ItemStack> newPotions = new ArrayList<>();
 		for (ItemStack potionInput : knownPotions) {
 			for (ItemStack potionIngredient : potionIngredients) {
@@ -92,7 +90,7 @@ public class BrewingRecipeMaker {
 					}
 				}
 
-				IBrewingRecipeWrapper recipe = vanillaRecipeFactory.createBrewingRecipe(Collections.singletonList(potionIngredient), potionInput.copy(), potionOutput);
+				IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(Collections.singletonList(potionIngredient), potionInput.copy(), potionOutput);
 				if (!recipes.contains(recipe) && !disabledRecipes.contains(recipe)) {
 					if (BrewingRecipeRegistry.hasOutput(potionInput, potionIngredient)) {
 						recipes.add(recipe);
@@ -106,12 +104,12 @@ public class BrewingRecipeMaker {
 		return newPotions;
 	}
 
-	private void addModdedBrewingRecipes(Collection<IBrewingRecipeWrapper> recipes) {
-		Collection<IBrewingRecipe> brewingRecipes = BrewingRecipeRegistry.getRecipes();
+	private void addModdedBrewingRecipes(Collection<IJeiBrewingRecipe> recipes) {
+		Collection<net.minecraftforge.common.brewing.IBrewingRecipe> brewingRecipes = BrewingRecipeRegistry.getRecipes();
 		addModdedBrewingRecipes(brewingRecipes, recipes);
 	}
 
-	private void addModdedBrewingRecipes(Collection<IBrewingRecipe> brewingRecipes, Collection<IBrewingRecipeWrapper> recipes) {
+	private void addModdedBrewingRecipes(Collection<net.minecraftforge.common.brewing.IBrewingRecipe> brewingRecipes, Collection<IJeiBrewingRecipe> recipes) {
 		// TODO 1.13
 //		for (IBrewingRecipe iBrewingRecipe : brewingRecipes) {
 //			if (iBrewingRecipe instanceof AbstractBrewingRecipe) {

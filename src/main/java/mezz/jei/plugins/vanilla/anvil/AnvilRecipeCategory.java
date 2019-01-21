@@ -1,33 +1,57 @@
 package mezz.jei.plugins.vanilla.anvil;
 
+import java.util.Map;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.config.Constants;
 
-public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipeWrapper> {
+public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 
 	private final IDrawable background;
 	private final IDrawable icon;
+	private final LoadingCache<AnvilRecipe, AnvilRecipeDisplayData> cachedDisplayData;
 
 	public AnvilRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 168, 125, 18)
 			.addPadding(0, 20, 0, 0)
 			.build();
 		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.ANVIL));
+		cachedDisplayData = CacheBuilder.newBuilder()
+			.maximumSize(25)
+			.build(new CacheLoader<AnvilRecipe, AnvilRecipeDisplayData>() {
+				@Override
+				public AnvilRecipeDisplayData load(AnvilRecipe key) {
+					return new AnvilRecipeDisplayData();
+				}
+			});
 	}
 
 	@Override
 	public ResourceLocation getUid() {
 		return VanillaRecipeCategoryUid.ANVIL;
+	}
+
+	@Override
+	public Class<? extends AnvilRecipe> getRecipeClass() {
+		return AnvilRecipe.class;
 	}
 
 	@Override
@@ -46,7 +70,13 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipeWrapper> 
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, AnvilRecipeWrapper recipeWrapper, IIngredients ingredients) {
+	public void setIngredients(AnvilRecipe recipe, IIngredients ingredients) {
+		ingredients.setInputLists(VanillaTypes.ITEM, recipe.getInputs());
+		ingredients.setOutputLists(VanillaTypes.ITEM, recipe.getOutputs());
+	}
+
+	@Override
+	public void setRecipe(IRecipeLayout recipeLayout, AnvilRecipe recipe, IIngredients ingredients) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		guiItemStacks.init(0, true, 0, 0);
@@ -55,6 +85,64 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipeWrapper> 
 
 		guiItemStacks.set(ingredients);
 
-		recipeWrapper.setCurrentIngredients(guiItemStacks.getGuiIngredients());
+		AnvilRecipeDisplayData displayData = cachedDisplayData.getUnchecked(recipe);
+		displayData.setCurrentIngredients(guiItemStacks.getGuiIngredients());
+	}
+
+	@Override
+	public void draw(AnvilRecipe recipe, double mouseX, double mouseY) {
+		AnvilRecipeDisplayData displayData = cachedDisplayData.getUnchecked(recipe);
+		Map<Integer, ? extends IGuiIngredient<ItemStack>> currentIngredients = displayData.getCurrentIngredients();
+		if (currentIngredients == null) {
+			return;
+		}
+
+		ItemStack newLeftStack = currentIngredients.get(0).getDisplayedIngredient();
+		ItemStack newRightStack = currentIngredients.get(1).getDisplayedIngredient();
+
+		if (newLeftStack == null || newRightStack == null) {
+			return;
+		}
+
+		ItemStack lastLeftStack = displayData.getLastLeftStack();
+		ItemStack lastRightStack = displayData.getLastRightStack();
+		int lastCost = displayData.getLastCost();
+		if (lastLeftStack == null || lastRightStack == null
+			|| !ItemStack.areItemStacksEqual(lastLeftStack, newLeftStack)
+			|| !ItemStack.areItemStacksEqual(lastRightStack, newRightStack)) {
+			lastCost = AnvilRecipeMaker.findLevelsCost(newLeftStack, newRightStack);
+			displayData.setLast(newLeftStack, newRightStack, lastCost);
+		}
+
+		if (lastCost != 0) {
+			String costText = lastCost < 0 ? "err" : Integer.toString(lastCost);
+			String text = I18n.format("container.repair.cost", costText);
+
+			Minecraft minecraft = Minecraft.getInstance();
+			int mainColor = 0xFF80FF20;
+			EntityPlayerSP player = minecraft.player;
+			if (player != null &&
+				(lastCost >= 40 || lastCost > player.experienceLevel) &&
+				!player.abilities.isCreativeMode) {
+				// Show red if the player doesn't have enough levels
+				mainColor = 0xFFFF6060;
+			}
+
+			drawRepairCost(minecraft, text, mainColor);
+		}
+	}
+
+	private void drawRepairCost(Minecraft minecraft, String text, int mainColor) {
+		int shadowColor = 0xFF000000 | (mainColor & 0xFCFCFC) >> 2;
+		int width = minecraft.fontRenderer.getStringWidth(text);
+		int x = background.getWidth() - 2 - width;
+		int y = 27;
+
+		// TODO 1.13 match the new GuiRepair style
+		minecraft.fontRenderer.drawString(text, x + 1, y, shadowColor);
+		minecraft.fontRenderer.drawString(text, x, y + 1, shadowColor);
+		minecraft.fontRenderer.drawString(text, x + 1, y + 1, shadowColor);
+
+		minecraft.fontRenderer.drawString(text, x, y, mainColor);
 	}
 }

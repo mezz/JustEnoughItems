@@ -1,17 +1,12 @@
 package mezz.jei.util;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.ISubtypeRegistry;
+import mezz.jei.api.ingredients.ISubtypeRegistry;
 import mezz.jei.api.recipe.IStackHelper;
 
 public class StackHelper implements IStackHelper {
@@ -41,22 +36,6 @@ public class StackHelper implements IStackHelper {
 		String keyLhs = getUniqueIdentifierForStack(lhs, UidMode.NORMAL);
 		String keyRhs = getUniqueIdentifierForStack(rhs, UidMode.NORMAL);
 		return keyLhs.equals(keyRhs);
-	}
-
-	@Override
-	public List<List<ItemStack>> expandRecipeIngredients(NonNullList<Ingredient> inputs) {
-		List<List<ItemStack>> expandedInputs = new ArrayList<>();
-		for (Ingredient input : inputs) {
-			List<ItemStack> expandedInput = toItemStackList(input);
-			expandedInputs.add(expandedInput);
-		}
-		return expandedInputs;
-	}
-
-	@Override
-	public List<ItemStack> toItemStackList(Ingredient ingredient) {
-		ItemStack[] stacks = ingredient.getMatchingStacks();
-		return Arrays.asList(stacks);
 	}
 
 	public String getUniqueIdentifierForStack(ItemStack stack) {

@@ -17,8 +17,6 @@ import mezz.jei.api.recipe.IIngredientType;
  *
  * If you have a new type of ingredient to add to JEI, you will have to implement this in order to use
  * {@link IModIngredientRegistration#register(IIngredientType, Collection, IIngredientHelper, IIngredientRenderer)}
- *
- * @since JEI 3.11.0
  */
 public interface IIngredientHelper<V> {
 	/**
@@ -26,8 +24,6 @@ public interface IIngredientHelper<V> {
 	 * This can be used to treat lookups of one focus as if it were something else.
 	 *
 	 * On example is looking up fluid blocks, which get translated here into looking up the fluid itself.
-	 *
-	 * @since JEI 4.14.2
 	 */
 	default IFocus<?> translateFocus(IFocus<V> focus, IFocusFactory focusFactory) {
 		return focus;
@@ -37,23 +33,17 @@ public interface IIngredientHelper<V> {
 	 * Find a matching ingredient from a group of them.
 	 * Used for finding a specific focused ingredient in a recipe.
 	 * Return null if there is no match.
-	 *
-	 * @since JEI 3.11.0
 	 */
 	@Nullable
 	V getMatch(Iterable<V> ingredients, V ingredientToMatch);
 
 	/**
 	 * Display name used for searching. Normally this is the first line of the tooltip.
-	 *
-	 * @since JEI 3.11.0
 	 */
 	String getDisplayName(V ingredient);
 
 	/**
 	 * Unique ID for use in comparing, blacklisting, and looking up ingredients.
-	 *
-	 * @since JEI 3.11.0
 	 */
 	String getUniqueId(V ingredient);
 
@@ -61,22 +51,16 @@ public interface IIngredientHelper<V> {
 	 * Wildcard ID for use in comparing, blacklisting, and looking up ingredients.
 	 * For an example, ItemStack's wildcardId does not include NBT or meta.
 	 * For ingredients like FluidStacks which do not have a wildcardId, just return the uniqueId here.
-	 *
-	 * @since JEI 3.11.0
 	 */
 	String getWildcardId(V ingredient);
 
 	/**
 	 * Return the modId of the mod that created this ingredient.
-	 *
-	 * @since JEI 3.11.0
 	 */
 	String getModId(V ingredient);
 
 	/**
 	 * Return the modId of the mod that should be displayed.
-	 *
-	 * @since JEI 4.8.0
 	 */
 	default String getDisplayModId(V ingredient) {
 		return getModId(ingredient);
@@ -85,9 +69,6 @@ public interface IIngredientHelper<V> {
 	/**
 	 * Get the main colors of this ingredient. Used for the color search.
 	 * If this is too difficult to implement for your ingredient, just return an empty collection.
-	 *
-	 * @since JEI 3.11.0
-	 * Has a default implementation since JEI 4.14.2
 	 */
 	default Iterable<Color> getColors(V ingredient) {
 		return Collections.emptyList();
@@ -95,8 +76,6 @@ public interface IIngredientHelper<V> {
 
 	/**
 	 * Return the resource id of the given ingredient.
-	 *
-	 * @since JEI 4.3.2
 	 */
 	String getResourceId(V ingredient);
 
@@ -105,7 +84,6 @@ public interface IIngredientHelper<V> {
 	 *
 	 * @param ingredient The ingredient to cheat in. Do not edit this ingredient.
 	 * @return an ItemStack for JEI to give the player, or an empty stack if there is nothing that can be given.
-	 * @since JEI 4.8.3
 	 */
 	default ItemStack getCheatItemStack(V ingredient) {
 		return ItemStack.EMPTY;
@@ -117,7 +95,6 @@ public interface IIngredientHelper<V> {
 	 *
 	 * @param ingredient the ingredient to copy
 	 * @return a copy of the ingredient
-	 * @since JEI 4.2.10
 	 */
 	V copyIngredient(V ingredient);
 
@@ -127,7 +104,6 @@ public interface IIngredientHelper<V> {
 	 *
 	 * @param ingredient the ingredient to copy and normalize
 	 * @return a normalized copy of the ingredient
-	 * @since JEI 5.0.0
 	 */
 	default V normalizeIngredient(V ingredient) {
 		return copyIngredient(ingredient);
@@ -138,7 +114,6 @@ public interface IIngredientHelper<V> {
 	 *
 	 * @param ingredient the ingredient to check
 	 * @return whether the ingredient is valid for lookups and recipes.
-	 * @since JEI 4.7.2
 	 */
 	default boolean isValidIngredient(V ingredient) {
 		return true;
@@ -151,7 +126,6 @@ public interface IIngredientHelper<V> {
 	 *
 	 * @param ingredient the ingredient to check
 	 * @return true if the ingredient is on the server as well as the client
-	 * @since JEI 4.8.5
 	 */
 	default boolean isIngredientOnServer(V ingredient) {
 		return true;
@@ -168,8 +142,6 @@ public interface IIngredientHelper<V> {
 	/**
 	 * Get a list of creative tab names that include this ingredient.
 	 * Used for searching by creative tab name.
-	 *
-	 * @since JEI 4.14.2
 	 */
 	default Collection<String> getCreativeTabNames(V ingredient) {
 		return Collections.emptyList();
@@ -178,14 +150,9 @@ public interface IIngredientHelper<V> {
 	/**
 	 * Get information for error messages involving this ingredient.
 	 * Be extremely careful not to crash here, get as much useful info as possible.
-	 *
-	 * @since JEI 3.11.0
 	 */
 	String getErrorInfo(@Nullable V ingredient);
 
-	/**
-	 * @since JEI 4.14.2
-	 */
 	interface IFocusFactory {
 		/**
 		 * Returns a new focus.

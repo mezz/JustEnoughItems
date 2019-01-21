@@ -14,9 +14,8 @@ import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeRegistryPlugin;
-import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.collect.ListMultiMap;
 import mezz.jei.gui.Focus;
 import mezz.jei.ingredients.IngredientInformation;
@@ -28,16 +27,16 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 	private final ImmutableMap<ResourceLocation, IRecipeCategory> recipeCategoriesMap;
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
-	private final ListMultiMap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories;
+	private final ListMultiMap<IRecipeCategory, Object> recipesForCategories;
 
-	public InternalRecipeRegistryPlugin(RecipeRegistry recipeRegistry, ImmutableMultimap<String, ResourceLocation> categoriesForRecipeCatalystKeys, IIngredientRegistry ingredientRegistry, ImmutableMap<ResourceLocation, IRecipeCategory> recipeCategoriesMap, RecipeMap recipeInputMap, RecipeMap recipeOutputMap, ListMultiMap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories) {
+	public InternalRecipeRegistryPlugin(RecipeRegistry recipeRegistry, ImmutableMultimap<String, ResourceLocation> categoriesForRecipeCatalystKeys, IIngredientRegistry ingredientRegistry, ImmutableMap<ResourceLocation, IRecipeCategory> recipeCategoriesMap, RecipeMap recipeInputMap, RecipeMap recipeOutputMap, ListMultiMap<IRecipeCategory, Object> recipesForCategories) {
 		this.recipeRegistry = recipeRegistry;
 		this.categoriesForRecipeCatalystKeys = categoriesForRecipeCatalystKeys;
 		this.ingredientRegistry = ingredientRegistry;
 		this.recipeCategoriesMap = recipeCategoriesMap;
 		this.recipeInputMap = recipeInputMap;
 		this.recipeOutputMap = recipeOutputMap;
-		this.recipeWrappersForCategories = recipeWrappersForCategories;
+		this.recipesForCategories = recipesForCategories;
 	}
 
 	@Override
@@ -59,7 +58,7 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 		ImmutableList.Builder<ResourceLocation> builder = ImmutableList.builder();
 		for (Map.Entry<ResourceLocation, IRecipeCategory> entry : recipeCategoriesMap.entrySet()) {
 			IRecipeCategory<?> recipeCategory = entry.getValue();
-			if (!recipeRegistry.getRecipeWrappers(recipeCategory).isEmpty()) {
+			if (!recipeRegistry.getRecipes(recipeCategory).isEmpty()) {
 				builder.add(entry.getKey());
 			}
 		}
@@ -67,7 +66,7 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 	}
 
 	@Override
-	public <T extends IRecipeWrapper, V> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
+	public <T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
 		focus = Focus.check(focus);
 		V ingredient = focus.getValue();
 
@@ -81,7 +80,7 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 				if (categoriesForRecipeCatalystKeys.get(inputKey).contains(recipeCategoryUid)) {
 					ImmutableSet<T> specificRecipes = ImmutableSet.copyOf(recipes);
 					//noinspection unchecked
-					List<T> recipesForCategory = (List<T>) recipeWrappersForCategories.get(recipeCategory);
+					List<T> recipesForCategory = (List<T>) recipesForCategories.get(recipeCategory);
 					List<T> allRecipes = new ArrayList<>(recipes);
 					for (T recipe : recipesForCategory) {
 						if (!specificRecipes.contains(recipe)) {
@@ -99,9 +98,9 @@ public class InternalRecipeRegistryPlugin implements IRecipeRegistryPlugin {
 	}
 
 	@Override
-	public <T extends IRecipeWrapper> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory) {
+	public <T> List<T> getRecipes(IRecipeCategory<T> recipeCategory) {
 		//noinspection unchecked
-		List<T> recipeWrappers = (List<T>) recipeWrappersForCategories.get(recipeCategory);
+		List<T> recipeWrappers = (List<T>) recipesForCategories.get(recipeCategory);
 		return Collections.unmodifiableList(recipeWrappers);
 	}
 }

@@ -7,8 +7,6 @@ import mezz.jei.api.recipe.IIngredientType;
 
 /**
  * Built-in {@link IIngredientType} for vanilla Minecraft.
- *
- * @since JEI 4.12.0
  */
 public final class VanillaTypes {
 	public static final IIngredientType<ItemStack> ITEM = () -> ItemStack.class;

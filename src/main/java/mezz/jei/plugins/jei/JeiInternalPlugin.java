@@ -6,16 +6,16 @@ import net.minecraft.util.ResourceLocation;
 import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
-import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.ModIds;
-import mezz.jei.api.recipe.IRecipeCategoryRegistration;
+import mezz.jei.api.recipe.category.IRecipeCategoryRegistration;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.overlay.GuiProperties;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.plugins.jei.info.IngredientInfoRecipeCategory;
 import mezz.jei.runtime.JeiHelpers;
 
-@JEIPlugin
+@JeiPlugin
 public class JeiInternalPlugin implements IModPlugin {
 	@Override
 	public ResourceLocation getPluginUid() {

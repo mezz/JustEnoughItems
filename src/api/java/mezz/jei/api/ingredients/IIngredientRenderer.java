@@ -15,8 +15,6 @@ import mezz.jei.api.recipe.IIngredientType;
  *
  * If you have a new type of ingredient to add to JEI, you will have to implement this in order to use
  * {@link IModIngredientRegistration#register(IIngredientType, Collection, IIngredientHelper, IIngredientRenderer)}
- *
- * @since JEI 3.11.0
  */
 public interface IIngredientRenderer<T> {
 	/**
@@ -34,7 +32,6 @@ public interface IIngredientRenderer<T> {
 	 * @param ingredient  The ingredient to get the tooltip for.
 	 * @param tooltipFlag Whether to show advanced information on item tooltips, toggled by F3+H
 	 * @return The tooltip text for the ingredient.
-	 * @since JEI 4.6.0
 	 */
 	List<String> getTooltip(T ingredient, ITooltipFlag tooltipFlag);
 

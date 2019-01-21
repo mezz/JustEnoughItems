@@ -23,7 +23,6 @@ public interface IJeiHelpers {
 
 	/*
 	 * Used to stop JEI from displaying a specific ingredient in the ingredient list
-	 * @since JEI 4.2.1
 	 */
 	IIngredientBlacklist getIngredientBlacklist();
 

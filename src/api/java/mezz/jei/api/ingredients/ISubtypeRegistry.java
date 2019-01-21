@@ -1,10 +1,12 @@
-package mezz.jei.api;
+package mezz.jei.api.ingredients;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
+import mezz.jei.api.IModPlugin;
 
 /**
  * Tell JEI how to interpret NBT tags and capabilities when comparing and looking up items.
@@ -16,8 +18,6 @@ import net.minecraft.item.ItemStack;
  * adding a subtype interpreter here will override that functionality.
  *
  * Get the instance by implementing {@link IModPlugin#registerItemSubtypes(ISubtypeRegistry)}.
- *
- * @since 3.6.4
  */
 public interface ISubtypeRegistry {
 	/**
@@ -31,7 +31,6 @@ public interface ISubtypeRegistry {
 	 *
 	 * @param item        the item that has subtypes.
 	 * @param interpreter the interpreter for the item.
-	 * @since JEI 3.13.5
 	 */
 	void registerSubtypeInterpreter(Item item, ISubtypeInterpreter interpreter);
 
@@ -44,8 +43,6 @@ public interface ISubtypeRegistry {
 
 	/**
 	 * Returns whether an {@link ISubtypeInterpreter} has been registered for this item.
-	 *
-	 * @since JEI 4.1.1
 	 */
 	boolean hasSubtypeInterpreter(ItemStack itemStack);
 
@@ -55,10 +52,8 @@ public interface ISubtypeRegistry {
 
 		/**
 		 * Get the data from an itemStack that is relevant to telling subtypes apart.
-		 * This should account for meta, nbt, and anything else that's relevant.
+		 * This should account for nbt, and anything else that's relevant.
 		 * Return {@link #NONE} if there is no data used for subtypes.
-		 *
-		 * @since JEI 4.7.8
 		 */
 		@Override
 		String apply(ItemStack itemStack);

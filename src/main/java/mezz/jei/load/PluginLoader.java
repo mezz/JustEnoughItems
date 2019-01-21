@@ -1,17 +1,22 @@
 package mezz.jei.load;
 
 import javax.annotation.Nullable;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import net.minecraftforge.fml.common.progress.ProgressBar;
 import net.minecraftforge.fml.common.progress.StartupProgressManager;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
+import com.google.common.base.Stopwatch;
 import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.ingredients.IModIdHelper;
+import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
+import mezz.jei.api.recipe.category.extensions.ICraftingRecipeWrapper;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.IHideModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
@@ -25,9 +30,11 @@ import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.ingredients.ModIngredientRegistration;
 import mezz.jei.plugins.jei.JeiInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
+import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.SubtypeRegistry;
+import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.LoggedTimer;
 import mezz.jei.util.StackHelper;
 import org.apache.logging.log4j.LogManager;
@@ -65,18 +72,19 @@ public class PluginLoader {
 		this.modIdHelper = modIdHelper;
 		this.blacklist = new IngredientBlacklistInternal();
 
-		sortPlugins(plugins);
+		VanillaPlugin vanillaPlugin = getVanillaPlugin(plugins);
+		ErrorUtil.checkNotNull(vanillaPlugin, "vanilla plugin");
+		JeiInternalPlugin jeiInternalPlugin = getJeiInternalPlugin(plugins);
+		sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
 
 		SubtypeRegistry subtypeRegistry = new SubtypeRegistry();
 		registerItemSubtypes(plugins, subtypeRegistry);
-
-		StackHelper stackHelper = new StackHelper(subtypeRegistry);
-		Internal.setStackHelper(stackHelper);
 
 		ModIngredientRegistration modIngredientRegistry = registerIngredients(plugins);
 		ingredientRegistry = modIngredientRegistry.createIngredientRegistry(modIdHelper, blacklist, debugMode);
 		Internal.setIngredientRegistry(ingredientRegistry);
 
+		StackHelper stackHelper = new StackHelper(subtypeRegistry);
 		GuiHelper guiHelper = new GuiHelper(ingredientRegistry, textures);
 		jeiHelpers = new JeiHelpers(guiHelper, ingredientRegistry, blacklist, stackHelper, hideModeConfig, modIdHelper);
 		Internal.setHelpers(jeiHelpers);
@@ -85,6 +93,12 @@ public class PluginLoader {
 
 		timer.start("Registering recipe categories");
 		registerCategories(plugins, modRegistry);
+		timer.stop();
+
+		timer.start("Registering vanilla category extensions");
+		CraftingRecipeCategory craftingCategory = vanillaPlugin.getCraftingCategory();
+		ErrorUtil.checkNotNull(craftingCategory, "vanilla crafting category");
+		registerVanillaExtensions(plugins, craftingCategory);
 		timer.stop();
 
 		timer.start("Registering mod plugins");
@@ -137,14 +151,12 @@ public class PluginLoader {
 		return bookmarkList;
 	}
 
-	private static void sortPlugins(List<IModPlugin> plugins) {
-		IModPlugin vanillaPlugin = getVanillaPlugin(plugins);
+	private static void sortPlugins(List<IModPlugin> plugins, @Nullable IModPlugin vanillaPlugin, @Nullable IModPlugin jeiInternalPlugin) {
 		if (vanillaPlugin != null) {
 			plugins.remove(vanillaPlugin);
 			plugins.add(0, vanillaPlugin);
 		}
 
-		IModPlugin jeiInternalPlugin = getJeiInternalPlugin(plugins);
 		if (jeiInternalPlugin != null) {
 			plugins.remove(jeiInternalPlugin);
 			plugins.add(jeiInternalPlugin);
@@ -152,105 +164,68 @@ public class PluginLoader {
 	}
 
 	@Nullable
-	private static IModPlugin getVanillaPlugin(List<IModPlugin> modPlugins) {
+	private static VanillaPlugin getVanillaPlugin(List<IModPlugin> modPlugins) {
 		for (IModPlugin modPlugin : modPlugins) {
 			if (modPlugin instanceof VanillaPlugin) {
-				return modPlugin;
+				return (VanillaPlugin) modPlugin;
 			}
 		}
 		return null;
 	}
 
 	@Nullable
-	private static IModPlugin getJeiInternalPlugin(List<IModPlugin> modPlugins) {
+	private static JeiInternalPlugin getJeiInternalPlugin(List<IModPlugin> modPlugins) {
 		for (IModPlugin modPlugin : modPlugins) {
 			if (modPlugin instanceof JeiInternalPlugin) {
-				return modPlugin;
+				return (JeiInternalPlugin) modPlugin;
 			}
 		}
 		return null;
 	}
 
 	private static void registerItemSubtypes(List<IModPlugin> plugins, SubtypeRegistry subtypeRegistry) {
-		try (ProgressBar progressBar = StartupProgressManager.start("Registering item subtypes", plugins.size())) {
-			Iterator<IModPlugin> iterator = plugins.iterator();
-			while (iterator.hasNext()) {
-				IModPlugin plugin = iterator.next();
-				try {
-					ResourceLocation pluginUid = plugin.getPluginUid();
-					progressBar.step(pluginUid.toString());
-					plugin.registerItemSubtypes(subtypeRegistry);
-				} catch (RuntimeException | LinkageError e) {
-					LOGGER.error("Failed to register item subtypes for mod plugin: {}", plugin.getClass(), e);
-					iterator.remove();
-				}
-			}
-		}
+		callOnPlugins("Registering item subtypes", plugins, p -> p.registerItemSubtypes(subtypeRegistry));
 	}
 
 	private static ModIngredientRegistration registerIngredients(List<IModPlugin> plugins) {
 		ModIngredientRegistration modIngredientRegistry = new ModIngredientRegistration();
-		try (ProgressBar progressBar = StartupProgressManager.start("Registering ingredients", plugins.size())) {
-			Iterator<IModPlugin> iterator = plugins.iterator();
-			while (iterator.hasNext()) {
-				IModPlugin plugin = iterator.next();
-				try {
-					ResourceLocation pluginUid = plugin.getPluginUid();
-					progressBar.step(pluginUid.toString());
-					plugin.registerIngredients(modIngredientRegistry);
-				} catch (RuntimeException | LinkageError e) {
-					if (plugin instanceof VanillaPlugin) {
-						throw e;
-					} else {
-						LOGGER.error("Failed to register Ingredients for mod plugin: {}", plugin.getClass(), e);
-						iterator.remove();
-					}
-				}
-			}
-		}
+		callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(modIngredientRegistry));
 		return modIngredientRegistry;
 	}
 
 	private static void registerCategories(List<IModPlugin> plugins, ModRegistry modRegistry) {
-		try (ProgressBar progressBar = StartupProgressManager.start("Registering categories", plugins.size())) {
-			Iterator<IModPlugin> iterator = plugins.iterator();
-			while (iterator.hasNext()) {
-				IModPlugin plugin = iterator.next();
-				try {
-					ResourceLocation pluginUid = plugin.getPluginUid();
-					progressBar.step(pluginUid.toString());
-					long start_time = System.currentTimeMillis();
-					LOGGER.debug("Registering categories: {} ...", pluginUid);
-					plugin.registerCategories(modRegistry);
-					long timeElapsedMs = System.currentTimeMillis() - start_time;
-					LOGGER.debug("Registered  categories: {} in {} ms", pluginUid, timeElapsedMs);
-				} catch (RuntimeException | LinkageError e) {
-					LOGGER.error("Failed to register mod categories: {}", plugin.getClass(), e);
-					iterator.remove();
-				}
-			}
-		}
+		callOnPlugins("Registering categories", plugins, p -> p.registerCategories(modRegistry));
+	}
+
+	private static void registerVanillaExtensions(List<IModPlugin> plugins, IExtendableRecipeCategory<IRecipe, ICraftingRecipeWrapper> craftingCategory) {
+		callOnPlugins("Registering vanilla category extensions", plugins, p -> p.registerVanillaCategoryExtensions(craftingCategory));
 	}
 
 	private static void registerPlugins(List<IModPlugin> plugins, ModRegistry modRegistry) {
-		try (ProgressBar progressBar = StartupProgressManager.start("Registering plugins", plugins.size())) {
-			Iterator<IModPlugin> iterator = plugins.iterator();
-			while (iterator.hasNext()) {
-				IModPlugin plugin = iterator.next();
+		callOnPlugins("Registering plugins", plugins, p -> p.register(modRegistry));
+	}
+
+	private static void callOnPlugins(String title, List<IModPlugin> plugins, Consumer<IModPlugin> func) {
+		List<IModPlugin> erroredPlugins = new ArrayList<>();
+		try (ProgressBar progressBar = StartupProgressManager.start(title, plugins.size())) {
+			for (IModPlugin plugin : plugins) {
 				try {
 					ResourceLocation pluginUid = plugin.getPluginUid();
 					progressBar.step(pluginUid.toString());
-					long start_time = System.currentTimeMillis();
-					LOGGER.debug("Registering plugin: {} ...", pluginUid);
-					plugin.register(modRegistry);
-					long timeElapsedMs = System.currentTimeMillis() - start_time;
-					LOGGER.debug("Registered  plugin: {} in {} ms", pluginUid, timeElapsedMs);
+					LOGGER.debug("{}: {} ...", title, pluginUid);
+					Stopwatch stopwatch = Stopwatch.createStarted();
+					func.accept(plugin);
+					LOGGER.debug("{}: {} took {}", title, pluginUid, stopwatch);
 				} catch (RuntimeException | LinkageError e) {
-					LOGGER.error("Failed to register mod plugin: {}", plugin.getClass(), e);
-					iterator.remove();
+					if (plugin instanceof VanillaPlugin) {
+						throw e;
+					}
+					LOGGER.error("Caught an error from mod plugin: {} {}", plugin.getClass(), plugin.getPluginUid(), e);
+					erroredPlugins.add(plugin);
 				}
 			}
 		}
+		plugins.removeAll(erroredPlugins);
 	}
 
 }

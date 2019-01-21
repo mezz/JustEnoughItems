@@ -7,7 +7,7 @@ import java.util.List;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableList;
-import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 
 public class RecipeCategoryComparator implements Comparator<ResourceLocation> {
 	private final ImmutableList<ResourceLocation> recipeCategories;

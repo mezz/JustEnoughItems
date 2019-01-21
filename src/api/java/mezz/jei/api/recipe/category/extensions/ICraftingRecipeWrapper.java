@@ -1,10 +1,9 @@
-package mezz.jei.api.recipe.wrapper;
+package mezz.jei.api.recipe.category.extensions;
 
 import javax.annotation.Nullable;
 
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 
 /**
@@ -23,7 +22,6 @@ public interface ICraftingRecipeWrapper extends IRecipeWrapper {
 	 * This lets the player know where the recipe came from.
 	 *
 	 * @return the registry name of the recipe, or null if there is none
-	 * @since JEI 4.7.10
 	 */
 	@Nullable
 	default ResourceLocation getRegistryName() {

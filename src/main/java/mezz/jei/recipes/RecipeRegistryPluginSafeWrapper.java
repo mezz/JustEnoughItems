@@ -9,9 +9,8 @@ import net.minecraft.util.ResourceLocation;
 
 import com.google.common.base.Stopwatch;
 import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeRegistryPlugin;
-import mezz.jei.api.recipe.IRecipeWrapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,13 +30,13 @@ public class RecipeRegistryPluginSafeWrapper implements IRecipeRegistryPlugin {
 	}
 
 	@Override
-	public <T extends IRecipeWrapper, V> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
-		return callPluginMethod(() -> plugin.getRecipeWrappers(recipeCategory, focus), Collections.emptyList());
+	public <T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
+		return callPluginMethod(() -> plugin.getRecipes(recipeCategory, focus), Collections.emptyList());
 	}
 
 	@Override
-	public <T extends IRecipeWrapper> List<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory) {
-		return callPluginMethod(() -> plugin.getRecipeWrappers(recipeCategory), Collections.emptyList());
+	public <T> List<T> getRecipes(IRecipeCategory<T> recipeCategory) {
+		return callPluginMethod(() -> plugin.getRecipes(recipeCategory), Collections.emptyList());
 	}
 
 	private <T> T callPluginMethod(Supplier<T> supplier, T defaultValue) {

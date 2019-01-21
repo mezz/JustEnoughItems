@@ -10,12 +10,12 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.ModIds;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 
-@JEIPlugin
+@JeiPlugin
 public class TestPlugin implements IModPlugin {
 	public static final int BASE_INGREDIENT_COUNT = 2;
 

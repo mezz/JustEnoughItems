@@ -18,13 +18,13 @@ import mezz.jei.Internal;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
-import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.ModIds;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IRecipeCategoryRegistration;
+import mezz.jei.api.recipe.category.IRecipeCategoryRegistration;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
@@ -33,7 +33,7 @@ import mezz.jei.plugins.jei.ingredients.DebugIngredientListFactory;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientRenderer;
 import mezz.jei.runtime.JeiHelpers;
 
-@JEIPlugin
+@JeiPlugin
 public class JeiDebugPlugin implements IModPlugin {
 	@Nullable
 	public static IIngredientRegistry ingredientRegistry;
@@ -124,9 +124,9 @@ public class JeiDebugPlugin implements IModPlugin {
 				@Nullable
 				@Override
 				public Object getIngredientUnderMouse(GuiBrewingStand guiContainer, double mouseX, double mouseY) {
-					if (mouseX < 10 && mouseY < 10) {
+//					if (mouseX < 10 && mouseY < 10) {
 //						return new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME);
-					}
+//					}
 					return null;
 				}
 			});

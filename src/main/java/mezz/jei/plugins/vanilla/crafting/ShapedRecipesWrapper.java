@@ -2,12 +2,11 @@ package mezz.jei.plugins.vanilla.crafting;
 
 import net.minecraftforge.common.crafting.IShapedRecipe;
 
-import mezz.jei.api.IJeiHelpers;
-import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
+import mezz.jei.api.recipe.category.extensions.IShapedCraftingRecipeWrapper;
 
 public class ShapedRecipesWrapper extends ShapelessRecipeWrapper<IShapedRecipe> implements IShapedCraftingRecipeWrapper {
-	public ShapedRecipesWrapper(IJeiHelpers jeiHelpers, IShapedRecipe recipe) {
-		super(jeiHelpers, recipe);
+	public ShapedRecipesWrapper(IShapedRecipe recipe) {
+		super(recipe);
 	}
 
 	@Override

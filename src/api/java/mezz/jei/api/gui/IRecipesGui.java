@@ -1,17 +1,17 @@
-package mezz.jei.api;
+package mezz.jei.api.gui;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 import net.minecraft.util.ResourceLocation;
 
+import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IRecipeRegistry;
 
 /**
  * JEI's gui for displaying recipes. Use this interface to open recipes.
  * Get the instance from {@link IJeiRuntime#getRecipesGui()}.
- *
- * @since JEI 3.2.12
  */
 public interface IRecipesGui {
 	/**
@@ -19,7 +19,6 @@ public interface IRecipesGui {
 	 * Opens the {@link IRecipesGui} if it is closed.
 	 *
 	 * @see IRecipeRegistry#createFocus(IFocus.Mode, Object)
-	 * @since JEI 3.11.0
 	 */
 	<V> void show(IFocus<V> focus);
 
@@ -32,7 +31,6 @@ public interface IRecipesGui {
 
 	/**
 	 * @return the ingredient that's currently under the mouse in this gui, or null if there is none.
-	 * @since JEI 4.13.1
 	 */
 	@Nullable
 	Object getIngredientUnderMouse();

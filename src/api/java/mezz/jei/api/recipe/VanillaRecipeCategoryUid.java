@@ -10,8 +10,8 @@ import net.minecraft.util.ResourceLocation;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.ModIds;
 import mezz.jei.api.ingredients.IIngredientRegistry;
-import mezz.jei.api.recipe.wrapper.ICustomCraftingRecipeWrapper;
-import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
+import mezz.jei.api.recipe.category.extensions.ICustomCraftingRecipeWrapper;
+import mezz.jei.api.recipe.category.extensions.IShapedCraftingRecipeWrapper;
 
 /**
  * List of built-in recipe category UIDs, so that plugins with their own recipe handlers can use them.
@@ -57,8 +57,6 @@ public final class VanillaRecipeCategoryUid {
 	 * The anvil recipe category.
 	 *
 	 * This is a built-in category, you can create new recipes with {@link IVanillaRecipeFactory#createAnvilRecipe(ItemStack, List, List)}
-	 *
-	 * @since JEI 4.2.6
 	 */
 	public static final ResourceLocation ANVIL = new ResourceLocation(ModIds.MINECRAFT_ID, "anvil");
 
@@ -67,8 +65,6 @@ public final class VanillaRecipeCategoryUid {
 	 *
 	 * This is a built-in category, you can add new recipes with
 	 * {@link IModRegistry#addIngredientInfo(Object, IIngredientType, String...)}   or {@link IModRegistry#addIngredientInfo(List, IIngredientType, String...)}
-	 *
-	 * @since JEI 4.5.0
 	 */
 	public static final ResourceLocation INFORMATION = new ResourceLocation(ModIds.JEI_ID, "information");
 

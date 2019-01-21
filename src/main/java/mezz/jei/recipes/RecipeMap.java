@@ -13,8 +13,7 @@ import com.google.common.collect.Ordering;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IIngredientType;
-import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.collect.ListMultiMap;
 import mezz.jei.collect.Table;
 import mezz.jei.ingredients.IngredientInformation;
@@ -23,7 +22,7 @@ import mezz.jei.ingredients.IngredientInformation;
  * A RecipeMap efficiently links IRecipeWrappers, IRecipeCategory, and Ingredients.
  */
 public class RecipeMap {
-	private final Table<IRecipeCategory, String, List<IRecipeWrapper>> recipeWrapperTable = Table.hashBasedTable();
+	private final Table<IRecipeCategory, String, List<Object>> recipeTable = Table.hashBasedTable();
 	private final ListMultiMap<String, ResourceLocation> categoryUidMap = new ListMultiMap<>();
 	private final Ordering<ResourceLocation> recipeCategoryOrdering;
 	private final IIngredientRegistry ingredientRegistry;
@@ -54,10 +53,10 @@ public class RecipeMap {
 		}
 	}
 
-	public <T extends IRecipeWrapper, V> ImmutableList<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, V ingredient) {
+	public <T, V> ImmutableList<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, V ingredient) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 
-		Map<String, List<IRecipeWrapper>> recipesForType = recipeWrapperTable.getRow(recipeCategory);
+		Map<String, List<Object>> recipesForType = recipeTable.getRow(recipeCategory);
 
 		ImmutableList.Builder<T> listBuilder = ImmutableList.builder();
 		for (String key : IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient)) {
@@ -70,18 +69,18 @@ public class RecipeMap {
 		return listBuilder.build();
 	}
 
-	public <T extends IRecipeWrapper> void addRecipe(T recipeWrapper, IRecipeCategory<T> recipeCategory, Map<IIngredientType, List> ingredientsByType) {
+	public <T> void addRecipe(T recipe, IRecipeCategory<T> recipeCategory, Map<IIngredientType, List> ingredientsByType) {
 		for (Map.Entry<IIngredientType, List> entry : ingredientsByType.entrySet()) {
 			if (entry != null) {
-				addRecipe(recipeWrapper, recipeCategory, entry.getKey(), entry.getValue());
+				addRecipe(recipe, recipeCategory, entry.getKey(), entry.getValue());
 			}
 		}
 	}
 
-	private <T extends IRecipeWrapper, V> void addRecipe(T recipeWrapper, IRecipeCategory<T> recipeCategory, IIngredientType<V> ingredientType, List<V> ingredients) {
+	private <T, V> void addRecipe(T recipe, IRecipeCategory<T> recipeCategory, IIngredientType<V> ingredientType, List<V> ingredients) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
 
-		Map<String, List<IRecipeWrapper>> recipesWrappersForType = recipeWrapperTable.getRow(recipeCategory);
+		Map<String, List<Object>> recipesWrappersForType = recipeTable.getRow(recipeCategory);
 
 		Set<String> uniqueIds = new HashSet<>();
 
@@ -100,7 +99,7 @@ public class RecipeMap {
 			@SuppressWarnings("unchecked")
 			List<T> recipeWrappers = (List<T>) recipesWrappersForType.computeIfAbsent(key, k -> new ArrayList<>());
 
-			recipeWrappers.add(recipeWrapper);
+			recipeWrappers.add(recipe);
 
 			addRecipeCategory(recipeCategory, ingredient, ingredientHelper);
 		}

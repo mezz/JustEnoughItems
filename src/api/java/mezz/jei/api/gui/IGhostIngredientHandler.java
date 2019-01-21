@@ -10,8 +10,6 @@ import net.minecraft.client.gui.GuiScreen;
  * Lets mods accept ghost ingredients from JEI.
  * These ingredients are dragged from the ingredient list on to your gui, and are useful
  * for setting recipes or anything else that does not need the real ingredient to exist.
- *
- * @since JEI 4.8.4
  */
 public interface IGhostIngredientHandler<T extends GuiScreen> {
 	/**

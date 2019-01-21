@@ -7,7 +7,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 
-import mezz.jei.api.ISubtypeRegistry;
+import mezz.jei.api.ingredients.ISubtypeRegistry;
 
 public class PotionSubtypeInterpreter implements ISubtypeRegistry.ISubtypeInterpreter {
 	public static final PotionSubtypeInterpreter INSTANCE = new PotionSubtypeInterpreter();

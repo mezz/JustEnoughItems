@@ -32,19 +32,21 @@ import mezz.jei.Internal;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
-import mezz.jei.api.ISubtypeRegistry;
-import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.ingredients.ISubtypeRegistry;
+import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.ModIds;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IRecipeCategoryRegistration;
+import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
+import mezz.jei.api.recipe.category.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
+import mezz.jei.api.recipe.category.extensions.ICraftingRecipeWrapper;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeMaker;
@@ -52,7 +54,7 @@ import mezz.jei.plugins.vanilla.brewing.BrewingRecipeCategory;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeMaker;
 import mezz.jei.plugins.vanilla.brewing.PotionSubtypeInterpreter;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
-import mezz.jei.plugins.vanilla.crafting.RecipeValidator;
+import mezz.jei.plugins.vanilla.crafting.VanillaRecipeValidator;
 import mezz.jei.plugins.vanilla.crafting.ShapedRecipesWrapper;
 import mezz.jei.plugins.vanilla.crafting.ShapelessRecipeWrapper;
 import mezz.jei.plugins.vanilla.crafting.TippedArrowRecipeMaker;
@@ -71,12 +73,17 @@ import mezz.jei.plugins.vanilla.ingredients.item.ItemStackListFactory;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackRenderer;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.transfer.PlayerRecipeTransferHandler;
+import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.StackHelper;
 
-@JEIPlugin
+@JeiPlugin
 public class VanillaPlugin implements IModPlugin {
 	@Nullable
 	private ISubtypeRegistry subtypeRegistry;
+	@Nullable
+	private CraftingRecipeCategory craftingCategory;
+	@Nullable
+	private FurnaceSmeltingCategory furnaceCategory;
 
 	@Override
 	public ResourceLocation getPluginUid() {
@@ -138,13 +145,26 @@ public class VanillaPlugin implements IModPlugin {
 		JeiHelpers jeiHelpers = Internal.getHelpers();
 		GuiHelper guiHelper = jeiHelpers.getGuiHelper();
 		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
+		craftingCategory = new CraftingRecipeCategory(guiHelper, modIdHelper);
+		furnaceCategory = new FurnaceSmeltingCategory(guiHelper);
 		registry.addRecipeCategories(
-			new CraftingRecipeCategory(guiHelper, modIdHelper),
+			craftingCategory,
+			furnaceCategory,
 			new FurnaceFuelCategory(guiHelper),
-			new FurnaceSmeltingCategory(guiHelper),
 			new BrewingRecipeCategory(guiHelper),
 			new AnvilRecipeCategory(guiHelper)
 		);
+	}
+
+	@Nullable
+	public CraftingRecipeCategory getCraftingCategory() {
+		return craftingCategory;
+	}
+
+	@Override
+	public void registerVanillaCategoryExtensions(IExtendableRecipeCategory<IRecipe, ICraftingRecipeWrapper> craftingCategory) {
+		craftingCategory.addRecipeWrapperFactory(IShapedRecipe.class, ShapedRecipesWrapper::new);
+		craftingCategory.addRecipeWrapperFactory(IRecipe.class, ShapelessRecipeWrapper::new);
 	}
 
 	@Override
@@ -154,16 +174,16 @@ public class VanillaPlugin implements IModPlugin {
 		IStackHelper stackHelper = jeiHelpers.getStackHelper();
 		IVanillaRecipeFactory vanillaRecipeFactory = jeiHelpers.getVanillaRecipeFactory();
 
-		RecipeValidator.Results recipes = RecipeValidator.getValidRecipes(jeiHelpers);
+		ErrorUtil.checkNotNull(craftingCategory, "craftingCategory");
+		ErrorUtil.checkNotNull(furnaceCategory, "furnaceCategory");
+
+		VanillaRecipeValidator.Results recipes = VanillaRecipeValidator.getValidRecipes(craftingCategory, furnaceCategory);
 		registry.addRecipes(recipes.getCraftingRecipes(), VanillaRecipeCategoryUid.CRAFTING);
 		registry.addRecipes(recipes.getFurnaceRecipes(), VanillaRecipeCategoryUid.FURNACE);
 		registry.addRecipes(FuelRecipeMaker.getFuelRecipes(ingredientRegistry, jeiHelpers), VanillaRecipeCategoryUid.FUEL);
 		registry.addRecipes(BrewingRecipeMaker.getBrewingRecipes(ingredientRegistry, vanillaRecipeFactory), VanillaRecipeCategoryUid.BREWING);
-		registry.addRecipes(TippedArrowRecipeMaker.getTippedArrowRecipes(), VanillaRecipeCategoryUid.CRAFTING);
+		registry.addRecipes(TippedArrowRecipeMaker.createTippedArrowRecipes(), VanillaRecipeCategoryUid.CRAFTING);
 		registry.addRecipes(AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientRegistry), VanillaRecipeCategoryUid.ANVIL);
-
-		registry.handleRecipes(IShapedRecipe.class, recipe -> new ShapedRecipesWrapper(jeiHelpers, recipe), VanillaRecipeCategoryUid.CRAFTING);
-		registry.handleRecipes(IRecipe.class, recipe -> new ShapelessRecipeWrapper<>(jeiHelpers, recipe), VanillaRecipeCategoryUid.CRAFTING);
 
 		registry.addRecipeClickArea(GuiCrafting.class, 88, 32, 28, 23, VanillaRecipeCategoryUid.CRAFTING);
 		registry.addRecipeClickArea(GuiInventory.class, 137, 29, 10, 13, VanillaRecipeCategoryUid.CRAFTING);
@@ -172,7 +192,6 @@ public class VanillaPlugin implements IModPlugin {
 		registry.addRecipeClickArea(GuiRepair.class, 102, 48, 22, 15, VanillaRecipeCategoryUid.ANVIL);
 
 		IRecipeTransferRegistry recipeTransferRegistry = registry.getRecipeTransferRegistry();
-
 		recipeTransferRegistry.addRecipeTransferHandler(ContainerWorkbench.class, VanillaRecipeCategoryUid.CRAFTING, 1, 9, 10, 36);
 		recipeTransferRegistry.addRecipeTransferHandler(new PlayerRecipeTransferHandler(stackHelper, jeiHelpers.recipeTransferHandlerHelper()), VanillaRecipeCategoryUid.CRAFTING);
 		recipeTransferRegistry.addRecipeTransferHandler(ContainerFurnace.class, VanillaRecipeCategoryUid.FURNACE, 0, 1, 3, 36);

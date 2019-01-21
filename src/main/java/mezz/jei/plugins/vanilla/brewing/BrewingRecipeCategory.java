@@ -1,5 +1,8 @@
 package mezz.jei.plugins.vanilla.brewing;
 
+import java.awt.Color;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -12,12 +15,13 @@ import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
 
-public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipeWrapper> {
+public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipe> {
 
 	private static final int brewPotionSlot1 = 0;
 	private static final int brewPotionSlot2 = 1;
@@ -59,6 +63,11 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipeWrapp
 	}
 
 	@Override
+	public Class<? extends BrewingRecipe> getRecipeClass() {
+		return BrewingRecipe.class;
+	}
+
+	@Override
 	public String getTitle() {
 		return localizedName;
 	}
@@ -74,14 +83,27 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipeWrapp
 	}
 
 	@Override
-	public void drawExtras() {
-		blazeHeat.draw(5, 30);
-		bubbles.draw(8, 0);
-		arrow.draw(42, 2);
+	public void setIngredients(BrewingRecipe recipe, IIngredients ingredients) {
+		ingredients.setInputLists(VanillaTypes.ITEM, recipe.getInputs());
+		ingredients.setOutput(VanillaTypes.ITEM, recipe.getPotionOutput());
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, BrewingRecipeWrapper recipeWrapper, IIngredients ingredients) {
+	public void draw(BrewingRecipe recipe, double mouseX, double mouseY) {
+		blazeHeat.draw(5, 30);
+		bubbles.draw(8, 0);
+		arrow.draw(42, 2);
+
+		int brewingSteps = recipe.getBrewingSteps();
+		if (brewingSteps < Integer.MAX_VALUE) {
+			String steps = Translator.translateToLocalFormatted("gui.jei.category.brewing.steps", brewingSteps);
+			Minecraft minecraft = Minecraft.getInstance();
+			minecraft.fontRenderer.drawString(steps, 70, 28, Color.gray.getRGB());
+		}
+	}
+
+	@Override
+	public void setRecipe(IRecipeLayout recipeLayout, BrewingRecipe recipeWrapper, IIngredients ingredients) {
 		IGuiItemStackGroup itemStacks = recipeLayout.getItemStacks();
 
 		itemStacks.init(brewPotionSlot1, true, 0, 36);

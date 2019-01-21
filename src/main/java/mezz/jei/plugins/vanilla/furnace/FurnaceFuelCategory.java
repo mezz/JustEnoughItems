@@ -1,14 +1,17 @@
 package mezz.jei.plugins.vanilla.furnace;
 
-import javax.annotation.Nullable;
+import java.awt.Color;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.GuiHelper;
@@ -40,14 +43,23 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory<FuelRecipe> {
 	}
 
 	@Override
+	public Class<? extends FuelRecipe> getRecipeClass() {
+		return FuelRecipe.class;
+	}
+
+	@Override
 	public String getTitle() {
 		return localizedName;
 	}
 
-	@Nullable
 	@Override
 	public IDrawable getIcon() {
 		return flameTransparentBackground;
+	}
+
+	@Override
+	public void setIngredients(FuelRecipe recipe, IIngredients ingredients) {
+		ingredients.setInputs(VanillaTypes.ITEM, recipe.getInputs());
 	}
 
 	@Override
@@ -56,5 +68,14 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory<FuelRecipe> {
 
 		guiItemStacks.init(fuelSlot, true, 0, 16);
 		guiItemStacks.set(ingredients);
+	}
+
+	@Override
+	public void draw(FuelRecipe recipe, double mouseX, double mouseY) {
+		IDrawableAnimated flame = recipe.getFlame();
+		flame.draw(1, 0);
+		Minecraft minecraft = Minecraft.getInstance();
+		String smeltCountString = recipe.getSmeltCountString();
+		minecraft.fontRenderer.drawString(smeltCountString, 24, 13, Color.gray.getRGB());
 	}
 }

@@ -12,7 +12,6 @@ import mezz.jei.api.ingredients.VanillaTypes;
  * Register new types with {@link IModIngredientRegistration#register(IIngredientType, Collection, IIngredientHelper, IIngredientRenderer)}
  *
  * @see VanillaTypes for the built-in vanilla types {@link VanillaTypes#ITEM} and {@link VanillaTypes#FLUID}
- * @since JEI 4.12.0
  */
 public interface IIngredientType<T> {
 	/**

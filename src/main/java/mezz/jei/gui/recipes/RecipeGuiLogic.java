@@ -12,11 +12,10 @@ import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableList;
-import mezz.jei.api.IRecipeRegistry;
+import mezz.jei.api.recipe.IRecipeRegistry;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.ingredients.IngredientLookupState;
@@ -35,7 +34,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	/**
 	 * List of recipes for the currently selected recipeClass
 	 */
-	private List<IRecipeWrapper> recipes = Collections.emptyList();
+	private List<Object> recipes = Collections.emptyList();
 
 	public RecipeGuiLogic(IRecipeRegistry recipeRegistry, IRecipeLogicStateListener stateListener, IngredientRegistry ingredientRegistry) {
 		this.recipeRegistry = recipeRegistry;
@@ -167,10 +166,10 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		IFocus<?> focus = state.getFocus();
 		if (focus != null) {
 			//noinspection unchecked
-			this.recipes = recipeRegistry.getRecipeWrappers(recipeCategory, focus);
+			this.recipes = recipeRegistry.getRecipes(recipeCategory, focus);
 		} else {
 			//noinspection unchecked
-			this.recipes = recipeRegistry.getRecipeWrappers(recipeCategory);
+			this.recipes = recipeRegistry.getRecipes(recipeCategory);
 		}
 	}
 
@@ -194,12 +193,12 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		int recipePosY = posY;
 		final int firstRecipeIndex = state.getRecipeIndex() - (state.getRecipeIndex() % state.getRecipesPerPage());
 		for (int recipeIndex = firstRecipeIndex; recipeIndex < recipes.size() && recipeLayouts.size() < state.getRecipesPerPage(); recipeIndex++) {
-			IRecipeWrapper recipeWrapper = recipes.get(recipeIndex);
+			Object recipe = recipes.get(recipeIndex);
 			@SuppressWarnings("unchecked")
-			RecipeLayout recipeLayout = RecipeLayout.create(recipeWidgetIndex++, recipeCategory, recipeWrapper, state.getFocus(), posX, recipePosY);
+			RecipeLayout recipeLayout = RecipeLayout.create(recipeWidgetIndex++, recipeCategory, recipe, state.getFocus(), posX, recipePosY);
 			if (recipeLayout == null) {
 				recipes.remove(recipeIndex);
-				recipeRegistry.hideRecipe(recipeWrapper, recipeCategory.getUid());
+				recipeRegistry.hideRecipe(recipe, recipeCategory.getUid());
 				recipeIndex--;
 			} else {
 				recipeLayouts.add(recipeLayout);

@@ -1,33 +1,26 @@
 package mezz.jei.plugins.vanilla.furnace;
 
-import java.awt.Color;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawableAnimated;
-import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
 
-public class FuelRecipe implements IRecipeWrapper {
-	private final List<List<ItemStack>> inputs;
+public class FuelRecipe {
+	private final List<ItemStack> inputs;
 	private final String smeltCountString;
 	private final IDrawableAnimated flame;
 
 	public FuelRecipe(IGuiHelper guiHelper, Collection<ItemStack> input, int burnTime) {
 		Preconditions.checkArgument(burnTime > 0, "burn time must be greater than 0");
-		List<ItemStack> inputList = new ArrayList<>(input);
-		this.inputs = Collections.singletonList(inputList);
+		this.inputs = new ArrayList<>(input);
 
 		if (burnTime == 200) {
 			this.smeltCountString = Translator.translateToLocal("gui.jei.category.fuel.smeltCount.single");
@@ -42,15 +35,15 @@ public class FuelRecipe implements IRecipeWrapper {
 			.buildAnimated(burnTime, IDrawableAnimated.StartDirection.TOP, true);
 	}
 
-	@Override
-	public void getIngredients(IIngredients ingredients) {
-		ingredients.setInputLists(VanillaTypes.ITEM, inputs);
+	public List<ItemStack> getInputs() {
+		return inputs;
 	}
 
-	@Override
-	public void drawInfo(int recipeWidth, int recipeHeight, double mouseX, double mouseY) {
-		flame.draw(1, 0);
-		Minecraft minecraft = Minecraft.getInstance();
-		minecraft.fontRenderer.drawString(smeltCountString, 24, 13, Color.gray.getRGB());
+	public String getSmeltCountString() {
+		return smeltCountString;
+	}
+
+	public IDrawableAnimated getFlame() {
+		return flame;
 	}
 }

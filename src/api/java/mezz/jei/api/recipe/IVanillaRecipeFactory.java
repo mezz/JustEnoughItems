@@ -13,8 +13,6 @@ import mezz.jei.api.IModRegistry;
  * Get the instance from {@link IJeiHelpers#getStackHelper()}.
  *
  * Use {@link IModRegistry#addRecipes(Collection, net.minecraft.util.ResourceLocation)} to add the recipe.
- *
- * @since JEI 4.5.0
  */
 public interface IVanillaRecipeFactory {
 	/**
@@ -23,9 +21,8 @@ public interface IVanillaRecipeFactory {
 	 * @param leftInput   The itemStack placed on the left slot.
 	 * @param rightInputs The itemStack(s) placed on the right slot.
 	 * @param outputs     The resulting itemStack(s).
-	 * @return the {@link IRecipeWrapper} for this recipe.
 	 */
-	IRecipeWrapper createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs);
+	Object createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs);
 
 	/**
 	 * Create an anvil recipe for the given inputs and output.
@@ -34,10 +31,8 @@ public interface IVanillaRecipeFactory {
 	 * @param leftInputs  The itemStack(s) placed on the left slot.
 	 * @param rightInputs The itemStack(s) placed on the right slot.
 	 * @param outputs     The resulting itemStack(s).
-	 * @return the {@link IRecipeWrapper} for this recipe.
-	 * @since JEI 4.14.1
 	 */
-	IRecipeWrapper createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs);
+	Object createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs);
 
 	/**
 	 * Create a new brewing recipe.
@@ -47,7 +42,6 @@ public interface IVanillaRecipeFactory {
 	 *                     Normally one ingredient, but a list will display several in rotation.
 	 * @param potionInput  the input potion for the brewing recipe.
 	 * @param potionOutput the output potion for the brewing recipe.
-	 * @return the {@link IBrewingRecipeWrapper} for this recipe.
 	 */
-	IBrewingRecipeWrapper createBrewingRecipe(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput);
+	IJeiBrewingRecipe createBrewingRecipe(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput);
 }

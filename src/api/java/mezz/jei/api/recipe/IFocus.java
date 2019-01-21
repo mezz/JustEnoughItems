@@ -1,7 +1,5 @@
 package mezz.jei.api.recipe;
 
-import mezz.jei.api.IRecipeRegistry;
-
 /**
  * The current search focus.
  * Set by the player when they look up the recipe. The object being looked up is the focus.

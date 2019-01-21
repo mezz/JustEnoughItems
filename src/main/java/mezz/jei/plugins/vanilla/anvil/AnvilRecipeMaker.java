@@ -25,7 +25,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
@@ -38,8 +37,8 @@ public final class AnvilRecipeMaker {
 	private AnvilRecipeMaker() {
 	}
 
-	public static List<IRecipeWrapper> getAnvilRecipes(IVanillaRecipeFactory vanillaRecipeFactory, IIngredientRegistry ingredientRegistry) {
-		List<IRecipeWrapper> recipes = new ArrayList<>();
+	public static List<Object> getAnvilRecipes(IVanillaRecipeFactory vanillaRecipeFactory, IIngredientRegistry ingredientRegistry) {
+		List<Object> recipes = new ArrayList<>();
 		Stopwatch sw = Stopwatch.createStarted();
 		try {
 			getRepairRecipes(recipes, vanillaRecipeFactory);
@@ -60,7 +59,7 @@ public final class AnvilRecipeMaker {
 		return recipes;
 	}
 
-	private static void getBookEnchantmentRecipes(List<IRecipeWrapper> recipes, IVanillaRecipeFactory vanillaRecipeFactory, IIngredientRegistry ingredientRegistry) {
+	private static void getBookEnchantmentRecipes(List<Object> recipes, IVanillaRecipeFactory vanillaRecipeFactory, IIngredientRegistry ingredientRegistry) {
 		Collection<ItemStack> ingredients = ingredientRegistry.getAllIngredients(VanillaTypes.ITEM);
 		Collection<Enchantment> enchantments = ForgeRegistries.ENCHANTMENTS.getValues();
 		for (ItemStack ingredient : ingredients) {
@@ -79,7 +78,7 @@ public final class AnvilRecipeMaker {
 		}
 	}
 
-	private static void getBookEnchantmentRecipes(List<IRecipeWrapper> recipes, IVanillaRecipeFactory vanillaRecipeFactory, Enchantment enchantment, ItemStack ingredient) {
+	private static void getBookEnchantmentRecipes(List<Object> recipes, IVanillaRecipeFactory vanillaRecipeFactory, Enchantment enchantment, ItemStack ingredient) {
 		Item item = ingredient.getItem();
 		List<ItemStack> perLevelBooks = Lists.newArrayList();
 		List<ItemStack> perLevelOutputs = Lists.newArrayList();
@@ -97,12 +96,12 @@ public final class AnvilRecipeMaker {
 			}
 		}
 		if (!perLevelBooks.isEmpty() && !perLevelOutputs.isEmpty()) {
-			IRecipeWrapper anvilRecipe = vanillaRecipeFactory.createAnvilRecipe(ingredient, perLevelBooks, perLevelOutputs);
+			Object anvilRecipe = vanillaRecipeFactory.createAnvilRecipe(ingredient, perLevelBooks, perLevelOutputs);
 			recipes.add(anvilRecipe);
 		}
 	}
 
-	private static void getRepairRecipes(List<IRecipeWrapper> recipes, IVanillaRecipeFactory vanillaRecipeFactory) {
+	private static void getRepairRecipes(List<Object> recipes, IVanillaRecipeFactory vanillaRecipeFactory) {
 		Map<List<ItemStack>, List<ItemStack>> items = Maps.newHashMap();
 
 		List<ItemStack> repairWoods = ItemTags.PLANKS.getAllElements().stream()
@@ -191,8 +190,8 @@ public final class AnvilRecipeMaker {
 				ItemStack damaged3 = ingredient.copy();
 				damaged3.setDamage(damaged3.getMaxDamage() * 2 / 4);
 
-				IRecipeWrapper repairWithMaterial = vanillaRecipeFactory.createAnvilRecipe(damaged1, repairMaterials, Collections.singletonList(damaged2));
-				IRecipeWrapper repairWithSame = vanillaRecipeFactory.createAnvilRecipe(damaged2, Collections.singletonList(damaged2), Collections.singletonList(damaged3));
+				Object repairWithMaterial = vanillaRecipeFactory.createAnvilRecipe(damaged1, repairMaterials, Collections.singletonList(damaged2));
+				Object repairWithSame = vanillaRecipeFactory.createAnvilRecipe(damaged2, Collections.singletonList(damaged2), Collections.singletonList(damaged3));
 				recipes.add(repairWithMaterial);
 				recipes.add(repairWithSame);
 			}

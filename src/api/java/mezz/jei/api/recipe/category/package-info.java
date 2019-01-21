@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package mezz.jei.api.recipe.wrapper;
+package mezz.jei.api.recipe.category;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 

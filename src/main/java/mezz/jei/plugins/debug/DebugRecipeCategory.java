@@ -1,17 +1,26 @@
 package mezz.jei.plugins.debug;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 
+import mezz.jei.Internal;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.IIngredientListOverlay;
 import mezz.jei.api.IJeiRuntime;
+import mezz.jei.api.recipe.IRecipeRegistry;
 import mezz.jei.api.ModIds;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiIngredientGroup;
@@ -20,9 +29,13 @@ import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.config.Constants;
+import mezz.jei.gui.GuiHelper;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
+import mezz.jei.runtime.JeiHelpers;
 
 public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	public static final ResourceLocation UID = new ResourceLocation(ModIds.JEI_ID, "debug");
@@ -32,6 +45,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	private final String localizedName;
 	private final IDrawable tankBackground;
 	private final IDrawable tankOverlay;
+	private boolean hiddenRecipes;
 
 	public DebugRecipeCategory(IGuiHelper guiHelper) {
 		this.background = guiHelper.createBlankDrawable(RECIPE_WIDTH, RECIPE_HEIGHT);
@@ -52,6 +66,11 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
+	public Class<? extends DebugRecipe> getRecipeClass() {
+		return DebugRecipe.class;
+	}
+
+	@Override
 	public String getTitle() {
 		return localizedName;
 	}
@@ -62,7 +81,40 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
-	public void drawExtras() {
+	public IDrawable getIcon() {
+		JeiHelpers helpers = Internal.getHelpers();
+		GuiHelper guiHelper = helpers.getGuiHelper();
+		return guiHelper.getConfigButtonIcon();
+	}
+
+	@Override
+	public void setIngredients(DebugRecipe recipe, IIngredients ingredients) {
+		//		FluidStack water = new FluidStack(FluidRegistry.WATER, 1000 + (int) (Math.random() * 1000));
+//		FluidStack lava = new FluidStack(FluidRegistry.LAVA, 1000 + (int) (Math.random() * 1000));
+//
+//		ingredients.setInputs(VanillaTypes.FLUID, Arrays.asList(water, lava));
+
+		ingredients.setInput(VanillaTypes.ITEM, new ItemStack(Items.STICK));
+
+		ingredients.setInputLists(DebugIngredient.TYPE, Collections.singletonList(
+			Arrays.asList(new DebugIngredient(0), new DebugIngredient(1))
+		));
+
+		ingredients.setOutputs(DebugIngredient.TYPE, Arrays.asList(
+			new DebugIngredient(2),
+			new DebugIngredient(3)
+		));
+	}
+
+//	public List<FluidStack> getFluidInputs() {
+//		return Arrays.asList(
+//				new FluidStack(FluidRegistry.WATER, 1000 + (int) (Math.random() * 1000)),
+//				new FluidStack(FluidRegistry.LAVA, 1000 + (int) (Math.random() * 1000))
+//		);
+//	}
+
+	@Override
+	public void draw(DebugRecipe recipe, double mouseX, double mouseY) {
 		IJeiRuntime runtime = JeiDebugPlugin.jeiRuntime;
 		if (runtime != null) {
 			IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
@@ -75,6 +127,9 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 				drawIngredientName(minecraft, ingredientUnderMouse);
 			}
 		}
+
+		GuiButtonExt button = recipe.getButton();
+		button.render((int) mouseX, (int) mouseY, 0);
 	}
 
 	private <T> void drawIngredientName(Minecraft minecraft, T ingredient) {
@@ -138,7 +193,46 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
-	public List<String> getTooltipStrings(int mouseX, int mouseY) {
-		return Collections.singletonList("Debug Recipe Category Tooltip");
+	public List<String> getTooltipStrings(DebugRecipe recipe, double mouseX, double mouseY) {
+		List<String> tooltipStrings = new ArrayList<>();
+		tooltipStrings.add("Debug Recipe Category Tooltip");
+
+		if (recipe.checkHover(mouseX, mouseY)) {
+			tooltipStrings.add("button tooltip!");
+		} else {
+			tooltipStrings.add(TextFormatting.BOLD + "tooltip debug");
+		}
+		tooltipStrings.add(mouseX + ", " + mouseY);
+		return tooltipStrings;
+	}
+
+	@Override
+	public boolean handleClick(DebugRecipe recipe, double mouseX, double mouseY, int mouseButton) {
+		GuiButtonExt button = recipe.getButton();
+		if (mouseButton == 0 && button.mouseClicked(mouseX, mouseY, mouseButton)) {
+			Minecraft minecraft = Minecraft.getInstance();
+			EntityPlayerSP player = minecraft.player;
+			if (player != null) {
+				GuiScreen screen = new GuiInventory(player);
+				minecraft.displayGuiScreen(screen);
+			}
+			IJeiRuntime runtime = JeiDebugPlugin.jeiRuntime;
+			if (runtime != null) {
+				IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
+				String filterText = ingredientFilter.getFilterText();
+				ingredientFilter.setFilterText(filterText + " test");
+
+				IRecipeRegistry recipeRegistry = runtime.getRecipeRegistry();
+				if (!hiddenRecipes) {
+					recipeRegistry.hideRecipeCategory(VanillaRecipeCategoryUid.CRAFTING);
+					hiddenRecipes = true;
+				} else {
+					recipeRegistry.unhideRecipeCategory(VanillaRecipeCategoryUid.CRAFTING);
+					hiddenRecipes = false;
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 }

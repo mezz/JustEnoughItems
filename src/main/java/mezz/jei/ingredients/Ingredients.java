@@ -1,12 +1,17 @@
 package mezz.jei.ingredients;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
+
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IIngredientType;
 
 public class Ingredients implements IIngredients {
@@ -22,6 +27,17 @@ public class Ingredients implements IIngredients {
 	public <T> void setInputLists(IIngredientType<T> ingredientType, List<List<T>> inputs) {
 		List<List> expandedInputs = new ArrayList<>(inputs);
 		this.inputs.put(ingredientType, expandedInputs);
+	}
+
+	@Override
+	public void setInputIngredients(List<Ingredient> inputs) {
+		List<List<ItemStack>> inputLists = new ArrayList<>();
+		for (Ingredient input : inputs) {
+			ItemStack[] stacks = input.getMatchingStacks();
+			List<ItemStack> expandedInput = Arrays.asList(stacks);
+			inputLists.add(expandedInput);
+		}
+		setInputLists(VanillaTypes.ITEM, inputLists);
 	}
 
 	@Override

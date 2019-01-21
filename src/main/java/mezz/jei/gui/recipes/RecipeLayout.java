@@ -3,7 +3,6 @@ package mezz.jei.gui.recipes;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.awt.Rectangle;
-import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +21,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IIngredientType;
-import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
@@ -49,7 +47,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	private final Map<IIngredientType, GuiIngredientGroup> guiIngredientGroups;
 	@Nullable
 	private final RecipeTransferButton recipeTransferButton;
-	private final IRecipeWrapper recipeWrapper;
+	private final Object recipe;
 	@Nullable
 	private final IFocus<?> focus;
 	private final Color highlightColor = new Color(0x7FFFFFFF, true);
@@ -61,12 +59,12 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	private int posY;
 
 	@Nullable
-	public static <T extends IRecipeWrapper> RecipeLayout create(int index, IRecipeCategory<T> recipeCategory, T recipeWrapper, @Nullable IFocus focus, int posX, int posY) {
-		RecipeLayout recipeLayout = new RecipeLayout(index, recipeCategory, recipeWrapper, focus, posX, posY);
+	public static <T> RecipeLayout create(int index, IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus focus, int posX, int posY) {
+		RecipeLayout recipeLayout = new RecipeLayout(index, recipeCategory, recipe, focus, posX, posY);
 		try {
 			IIngredients ingredients = new Ingredients();
-			recipeWrapper.getIngredients(ingredients);
-			recipeCategory.setRecipe(recipeLayout, recipeWrapper, ingredients);
+			recipeCategory.setIngredients(recipe, ingredients);
+			recipeCategory.setRecipe(recipeLayout, recipe, ingredients);
 			return recipeLayout;
 		} catch (RuntimeException | LinkageError e) {
 			LOGGER.error("Error caught from Recipe Category: {}", recipeCategory.getClass().getCanonicalName(), e);
@@ -74,9 +72,9 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		return null;
 	}
 
-	private <T extends IRecipeWrapper> RecipeLayout(int index, IRecipeCategory<T> recipeCategory, T recipeWrapper, @Nullable IFocus<?> focus, int posX, int posY) {
+	private <T> RecipeLayout(int index, IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus, int posX, int posY) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		ErrorUtil.checkNotNull(recipeWrapper, "recipeWrapper");
+		ErrorUtil.checkNotNull(recipe, "recipe");
 		if (focus != null) {
 			focus = Focus.check(focus);
 		}
@@ -111,7 +109,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 
 		setPosition(posX, posY);
 
-		this.recipeWrapper = recipeWrapper;
+		this.recipe = recipe;
 		this.recipeBorder = Internal.getHelpers().getGuiHelper().getRecipeBackground();
 	}
 
@@ -147,8 +145,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			int height = categoryBackground.getHeight() + (2 * RECIPE_BORDER_PADDING);
 			recipeBorder.draw(-RECIPE_BORDER_PADDING, -RECIPE_BORDER_PADDING, width, height);
 			background.draw();
-			recipeCategory.drawExtras();
-			recipeWrapper.drawInfo(background.getWidth(), background.getHeight(), recipeMouseX, recipeMouseY);
+			//noinspection unchecked
+			recipeCategory.draw(recipe, recipeMouseX, recipeMouseY);
 			// drawExtras and drawInfo often render text which messes with the color, this clears it
 			GlStateManager.color4f(1, 1, 1, 1);
 			if (shapelessIcon != null) {
@@ -195,13 +193,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		if (hoveredIngredient != null) {
 			hoveredIngredient.drawOverlays(posX, posY, recipeMouseX, recipeMouseY);
 		} else if (isMouseOver(mouseX, mouseY)) {
-			List<String> categoryTooltipStrings = ((IRecipeCategory<?>) recipeCategory).getTooltipStrings(recipeMouseX, recipeMouseY);
-			List<String> tooltipStrings = new ArrayList<>(categoryTooltipStrings);
-			List<String> wrapperTooltips = recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY);
-			//noinspection ConstantConditions
-			if (wrapperTooltips != null) {
-				tooltipStrings.addAll(wrapperTooltips);
-			}
+			@SuppressWarnings("unchecked")
+			List<String> tooltipStrings = recipeCategory.getTooltipStrings(recipe, recipeMouseX, recipeMouseY);
 			if (tooltipStrings.isEmpty() && shapelessIcon != null) {
 				tooltipStrings = shapelessIcon.getTooltipStrings(recipeMouseX, recipeMouseY);
 			}
@@ -244,7 +237,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	}
 
 	public boolean handleClick(double mouseX, double mouseY, int mouseButton) {
-		return recipeWrapper.handleClick(mouseX - posX, mouseY - posY, mouseButton);
+		//noinspection unchecked
+		return recipeCategory.handleClick(recipe, mouseX - posX, mouseY - posY, mouseButton);
 	}
 
 	@Override

@@ -48,12 +48,8 @@ public class MultiMap<K, V, T extends Collection<V>> {
 		return map.entrySet();
 	}
 
-	public int getTotalSize() {
-		int size = 0;
-		for (T value : map.values()) {
-			size += value.size();
-		}
-		return size;
+	public Set<K> keySet() {
+		return map.keySet();
 	}
 
 	public ImmutableMultimap<K, V> toImmutable() {

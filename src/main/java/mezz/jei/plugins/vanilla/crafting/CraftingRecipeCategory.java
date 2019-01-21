@@ -1,11 +1,13 @@
 package mezz.jei.plugins.vanilla.crafting;
 
 import java.util.List;
+import java.util.function.Function;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 
@@ -17,17 +19,16 @@ import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IRecipeCategory;
-import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
-import mezz.jei.api.recipe.wrapper.ICraftingRecipeWrapper;
-import mezz.jei.api.recipe.wrapper.ICustomCraftingRecipeWrapper;
-import mezz.jei.api.recipe.wrapper.IShapedCraftingRecipeWrapper;
+import mezz.jei.api.recipe.category.extensions.ICraftingRecipeWrapper;
+import mezz.jei.api.recipe.category.extensions.ICustomCraftingRecipeWrapper;
+import mezz.jei.api.recipe.category.extensions.IShapedCraftingRecipeWrapper;
 import mezz.jei.config.Constants;
+import mezz.jei.recipes.ExtendableRecipeCategoryHelper;
 import mezz.jei.util.Translator;
 
-public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
-
+public class CraftingRecipeCategory implements IExtendableRecipeCategory<IRecipe, ICraftingRecipeWrapper> {
 	private static final int craftOutputSlot = 0;
 	private static final int craftInputSlot1 = 1;
 
@@ -39,6 +40,7 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 	private final String localizedName;
 	private final ICraftingGridHelper craftingGridHelper;
 	private final IModIdHelper modIdHelper;
+	private final ExtendableRecipeCategoryHelper<IRecipe, ICraftingRecipeWrapper> extendableHelper = new ExtendableRecipeCategoryHelper<>(IRecipe.class);
 
 	public CraftingRecipeCategory(IGuiHelper guiHelper, IModIdHelper modIdHelper) {
 		this.modIdHelper = modIdHelper;
@@ -52,6 +54,11 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 	@Override
 	public ResourceLocation getUid() {
 		return VanillaRecipeCategoryUid.CRAFTING;
+	}
+
+	@Override
+	public Class<? extends IRecipe> getRecipeClass() {
+		return IRecipe.class;
 	}
 
 	@Override
@@ -70,7 +77,7 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, IRecipeWrapper recipeWrapper, IIngredients ingredients) {
+	public void setRecipe(IRecipeLayout recipeLayout, IRecipe recipe, IIngredients ingredients) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		guiItemStacks.init(craftOutputSlot, false, 94, 18);
@@ -81,6 +88,8 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 				guiItemStacks.init(index, true, x * 18, y * 18);
 			}
 		}
+
+		ICraftingRecipeWrapper recipeWrapper = this.extendableHelper.getRecipeWrapper(recipe);
 
 		if (recipeWrapper instanceof ICustomCraftingRecipeWrapper) {
 			ICustomCraftingRecipeWrapper customWrapper = (ICustomCraftingRecipeWrapper) recipeWrapper;
@@ -100,35 +109,62 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 		}
 		guiItemStacks.set(craftOutputSlot, outputs.get(0));
 
-		if (recipeWrapper instanceof ICraftingRecipeWrapper) {
-			ICraftingRecipeWrapper craftingRecipeWrapper = (ICraftingRecipeWrapper) recipeWrapper;
-			ResourceLocation registryName = craftingRecipeWrapper.getRegistryName();
-			if (registryName != null) {
-				guiItemStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
-					if (slotIndex == craftOutputSlot) {
-						if (modIdHelper.isDisplayingModNameEnabled()) {
-							String recipeModId = registryName.getNamespace();
-							boolean modIdDifferent = false;
-							ResourceLocation itemRegistryName = ingredient.getItem().getRegistryName();
-							if (itemRegistryName != null) {
-								String itemModId = itemRegistryName.getNamespace();
-								modIdDifferent = !recipeModId.equals(itemModId);
-							}
-
-							if (modIdDifferent) {
-								String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
-								tooltip.add(TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.recipe.by", modName));
-							}
+		ResourceLocation registryName = recipeWrapper.getRegistryName();
+		if (registryName != null) {
+			guiItemStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
+				if (slotIndex == craftOutputSlot) {
+					if (modIdHelper.isDisplayingModNameEnabled()) {
+						String recipeModId = registryName.getNamespace();
+						boolean modIdDifferent = false;
+						ResourceLocation itemRegistryName = ingredient.getItem().getRegistryName();
+						if (itemRegistryName != null) {
+							String itemModId = itemRegistryName.getNamespace();
+							modIdDifferent = !recipeModId.equals(itemModId);
 						}
 
-						boolean showAdvanced = Minecraft.getInstance().gameSettings.advancedItemTooltips || GuiScreen.isShiftKeyDown();
-						if (showAdvanced) {
-							tooltip.add(TextFormatting.DARK_GRAY + Translator.translateToLocalFormatted("jei.tooltip.recipe.id", registryName.toString()));
+						if (modIdDifferent) {
+							String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
+							tooltip.add(TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.recipe.by", modName));
 						}
 					}
-				});
-			}
+
+					boolean showAdvanced = Minecraft.getInstance().gameSettings.advancedItemTooltips || GuiScreen.isShiftKeyDown();
+					if (showAdvanced) {
+						tooltip.add(TextFormatting.DARK_GRAY + Translator.translateToLocalFormatted("jei.tooltip.recipe.id", registryName.toString()));
+					}
+				}
+			});
 		}
 	}
 
+	@Override
+	public void setIngredients(IRecipe recipe, IIngredients ingredients) {
+		ICraftingRecipeWrapper recipeWrapper = this.extendableHelper.getRecipeWrapper(recipe);
+		recipeWrapper.setIngredients(ingredients);
+	}
+
+	@Override
+	public void draw(IRecipe recipe, double mouseX, double mouseY) {
+		ICraftingRecipeWrapper recipeWrapper = this.extendableHelper.getRecipeWrapper(recipe);
+		int recipeWidth = this.background.getWidth();
+		int recipeHeight = this.background.getHeight();
+		recipeWrapper.drawInfo(recipeWidth, recipeHeight, mouseX, mouseY);
+	}
+
+	@Override
+	public List<String> getTooltipStrings(IRecipe recipe, double mouseX, double mouseY) {
+		ICraftingRecipeWrapper recipeWrapper = this.extendableHelper.getRecipeWrapper(recipe);
+		return recipeWrapper.getTooltipStrings(mouseX, mouseY);
+	}
+
+	@Override
+	public boolean handleClick(IRecipe recipe, double mouseX, double mouseY, int mouseButton) {
+		ICraftingRecipeWrapper recipeWrapper = this.extendableHelper.getRecipeWrapper(recipe);
+		return recipeWrapper.handleClick(mouseX, mouseY, mouseButton);
+	}
+
+	@Override
+	public <R extends IRecipe> void addRecipeWrapperFactory(Class<? extends R> recipeClass, Function<R, ? extends ICraftingRecipeWrapper> recipeWrapperFactory) {
+		extendableHelper.addRecipeWrapperFactory(recipeClass, recipeWrapperFactory);
+	}
 }

@@ -10,8 +10,6 @@ import mezz.jei.api.recipe.IIngredientType;
  * After every mod has registered its ingredients, the {@link IIngredientRegistry} is created from this information.
  *
  * This is given to your {@link IModPlugin#registerIngredients(IModIngredientRegistration)}.
- *
- * @since JEI 3.11.0
  */
 public interface IModIngredientRegistration {
 	/**

@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import net.minecraftforge.fml.client.config.IArrayEntry;
-import net.minecraftforge.fml.client.config.IConfigElement;
 import net.minecraftforge.fml.client.config.IConfigEntry;
 
 public class Property
