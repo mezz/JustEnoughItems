@@ -2,9 +2,7 @@ package mezz.jei.recipes;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -18,18 +16,16 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableTable;
 import mezz.jei.Internal;
-import mezz.jei.api.recipe.IRecipeRegistry;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.IRecipeRegistry;
 import mezz.jei.api.recipe.IRecipeRegistryPlugin;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.collect.ListMultiMap;
-import mezz.jei.collect.SetMultiMap;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.RecipeClickableArea;
@@ -50,13 +46,10 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final List<IRecipeCategory> recipeCategoriesVisibleCache = new ArrayList<>();
 	private final ImmutableTable<Class, ResourceLocation, IRecipeTransferHandler> recipeTransferHandlers;
 	private final ImmutableMultimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap;
-	private final ImmutableListMultimap<IRecipeCategory, Object> recipeCatalysts;
-	private final ImmutableMap<ResourceLocation, IRecipeCategory> recipeCategoriesMap;
-	private final ListMultiMap<IRecipeCategory, Object> recipesForCategories = new ListMultiMap<>();
+	private final RecipeCategoryDataMap recipeCategoriesDataMap;
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
 	private final List<RecipeRegistryPluginSafeWrapper> plugins = new ArrayList<>();
-	private final SetMultiMap<ResourceLocation, Object> hiddenRecipes = new SetMultiMap<>(() -> Collections.newSetFromMap(new IdentityHashMap<>())); // recipe category uid key
 
 	public RecipeRegistry(
 		List<IRecipeCategory> recipeCategories,
@@ -69,7 +62,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 		this.ingredientRegistry = ingredientRegistry;
-		this.recipeCategoriesMap = buildRecipeCategoriesMap(recipeCategories);
+
 		this.recipeTransferHandlers = recipeTransferHandlers;
 		this.recipeClickableAreasMap = recipeClickableAreasMap.toImmutable();
 
@@ -77,29 +70,27 @@ public class RecipeRegistry implements IRecipeRegistry {
 		this.recipeInputMap = new RecipeMap(recipeCategoryComparator, ingredientRegistry);
 		this.recipeOutputMap = new RecipeMap(recipeCategoryComparator, ingredientRegistry);
 
-		addRecipes(recipes);
+		RecipeCatalystBuilder recipeCatalystBuilder = new RecipeCatalystBuilder(ingredientRegistry);
+		for (IRecipeCategory recipeCategory : recipeCategories) {
+			ResourceLocation recipeCategoryUid = recipeCategory.getUid();
+			if (recipeCatalysts.containsKey(recipeCategoryUid)) {
+				List<Object> catalysts = recipeCatalysts.get(recipeCategoryUid);
+				recipeCatalystBuilder.addCatalysts(recipeCategory, catalysts, recipeInputMap);
+			}
+		}
+		ImmutableListMultimap<IRecipeCategory, Object> recipeCatalystsMap = recipeCatalystBuilder.buildRecipeCatalysts();
+		this.recipeCategoriesDataMap = new RecipeCategoryDataMap(recipeCategories, recipeCatalystsMap);
 
-		RecipeCatalystBuilder recipeCatalystBuilder = new RecipeCatalystBuilder(recipeCategoriesMap, ingredientRegistry);
-		recipeCatalystBuilder.addCatalysts(recipeCatalysts, recipeInputMap);
-
-		this.recipeCatalysts = recipeCatalystBuilder.buildRecipeCatalysts();
 		ImmutableMultimap<String, ResourceLocation> categoriesForRecipeCatalystKeys = recipeCatalystBuilder.buildCategoriesForRecipeCatalystKeys();
-
-		IRecipeRegistryPlugin internalRecipeRegistryPlugin = new InternalRecipeRegistryPlugin(this, categoriesForRecipeCatalystKeys, ingredientRegistry, recipeCategoriesMap, recipeInputMap, recipeOutputMap, recipesForCategories);
+		IRecipeRegistryPlugin internalRecipeRegistryPlugin = new InternalRecipeRegistryPlugin(this, categoriesForRecipeCatalystKeys, ingredientRegistry, recipeCategoriesDataMap, recipeInputMap, recipeOutputMap);
 		this.plugins.add(new RecipeRegistryPluginSafeWrapper(internalRecipeRegistryPlugin));
 		for (IRecipeRegistryPlugin plugin : plugins) {
 			this.plugins.add(new RecipeRegistryPluginSafeWrapper(plugin));
 		}
 
 		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
-	}
 
-	private static ImmutableMap<ResourceLocation, IRecipeCategory> buildRecipeCategoriesMap(List<IRecipeCategory> recipeCategories) {
-		ImmutableMap.Builder<ResourceLocation, IRecipeCategory> mapBuilder = ImmutableMap.builder();
-		for (IRecipeCategory recipeCategory : recipeCategories) {
-			mapBuilder.put(recipeCategory.getUid(), recipeCategory);
-		}
-		return mapBuilder.build();
+		addRecipes(recipes);
 	}
 
 	private void addRecipes(ListMultiMap<ResourceLocation, Object> recipes) {
@@ -108,15 +99,15 @@ public class RecipeRegistry implements IRecipeRegistry {
 			for (ResourceLocation recipeCategoryUid : recipeCategoryUids) {
 				progressBar.step(recipeCategoryUid.toString());
 				for (Object recipe : recipes.get(recipeCategoryUid)) {
-					IRecipeCategory recipeCategory = getRecipeCategory(recipeCategoryUid);
-					if (recipeCategory == null) {
-						LOGGER.error("No recipe category registered for recipeCategoryUid: {}", recipeCategoryUid);
-						continue;
-					}
-					addRecipe(recipe, recipeCategory);
+					addRecipeTyped(recipe, recipeCategoryUid);
 				}
 			}
 		}
+	}
+
+	private <T> void addRecipeTyped(T recipe, ResourceLocation recipeCategoryUid) {
+		RecipeCategoryData<T> recipeCategoryData = recipeCategoriesDataMap.get(recipe, recipeCategoryUid);
+		addRecipe(recipe, recipeCategoryData);
 	}
 
 	@Override
@@ -126,25 +117,17 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 	@Override
 	@Deprecated
-	public void addRecipe(Object recipe, ResourceLocation recipeCategoryUid) {
+	public <T> void addRecipe(T recipe, ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		ErrorUtil.assertMainThread();
 
-		IRecipeCategory recipeCategory = getRecipeCategory(recipeCategoryUid);
-		if (recipeCategory == null) {
-			LOGGER.error("No recipe category registered for recipeCategoryUid: {}", recipeCategoryUid);
-			return;
-		}
-		Class recipeClass = recipeCategory.getRecipeClass();
-		if (!recipeClass.isInstance(recipe)) {
-			throw new IllegalArgumentException(recipeCategory.getUid() + " recipes must be an instance of " + recipeClass + ". Instead got: " + recipe.getClass());
-		}
-
-		if (hiddenRecipes.contains(recipeCategoryUid, recipe)) {
+		RecipeCategoryData<T> recipeCategoryData = recipeCategoriesDataMap.get(recipe, recipeCategoryUid);
+		Set<T> hiddenRecipes = recipeCategoryData.getHiddenRecipes();
+		if (hiddenRecipes.contains(recipe)) {
 			unhideRecipe(recipe, recipeCategoryUid);
 		} else {
-			addRecipe(recipe, recipeCategory);
+			addRecipe(recipe, recipeCategoryData);
 		}
 	}
 
@@ -152,10 +135,12 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Nullable
 	public IRecipeCategory getRecipeCategory(ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-		return recipeCategoriesMap.get(recipeCategoryUid);
+		RecipeCategoryData recipeCategoryData = recipeCategoriesDataMap.get(recipeCategoryUid);
+		return recipeCategoryData.getRecipeCategory();
 	}
 
-	private <T> void addRecipe(T recipe, IRecipeCategory<T> recipeCategory) {
+	private <T> void addRecipe(T recipe, RecipeCategoryData<T> recipeCategoryData) {
+		IRecipeCategory<T> recipeCategory = recipeCategoryData.getRecipeCategory();
 		try {
 			Ingredients ingredients = new Ingredients();
 			recipeCategory.setIngredients(recipe, ingredients);
@@ -163,7 +148,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 			recipeInputMap.addRecipe(recipe, recipeCategory, ingredients.getInputIngredients());
 			recipeOutputMap.addRecipe(recipe, recipeCategory, ingredients.getOutputIngredients());
 
-			recipesForCategories.put(recipeCategory, recipe);
+			recipeCategoryData.getRecipes().add(recipe);
 
 			unhideRecipe(recipe, recipeCategory.getUid());
 
@@ -206,8 +191,9 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 		ImmutableList.Builder<IRecipeCategory> builder = ImmutableList.builder();
 		for (ResourceLocation recipeCategoryUid : recipeCategoryUids) {
-			IRecipeCategory<?> recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
-			if (recipeCategory != null && getRecipeCategories().contains(recipeCategory)) {
+			RecipeCategoryData<?> recipeCategoryData = recipeCategoriesDataMap.get(recipeCategoryUid);
+			IRecipeCategory<?> recipeCategory = recipeCategoryData.getRecipeCategory();
+			if (getRecipeCategories().contains(recipeCategory)) {
 				builder.add(recipeCategory);
 			}
 		}
@@ -234,7 +220,9 @@ public class RecipeRegistry implements IRecipeRegistry {
 			List<ResourceLocation> recipeCategoryUids = plugin.getRecipeCategoryUids(focus);
 			for (ResourceLocation recipeCategoryUid : recipeCategoryUids) {
 				if (!allRecipeCategoryUids.contains(recipeCategoryUid)) {
-					if (hiddenRecipes.containsKey(recipeCategoryUid)) {
+					RecipeCategoryData<?> recipeCategoryData = recipeCategoriesDataMap.get(recipeCategoryUid);
+					Set<?> hiddenRecipes = recipeCategoryData.getHiddenRecipes();
+					if (!hiddenRecipes.isEmpty()) {
 						IRecipeCategory<?> recipeCategory = getRecipeCategory(recipeCategoryUid);
 						if (recipeCategory != null) {
 							List<?> recipes = getRecipes(recipeCategory, focus);
@@ -263,9 +251,9 @@ public class RecipeRegistry implements IRecipeRegistry {
 			allRecipeWrappers.addAll(recipeWrappers);
 		}
 
-		@SuppressWarnings("unchecked")
-		Set<T> hidden = (Set<T>) hiddenRecipes.get(recipeCategory.getUid());
-		allRecipeWrappers.removeAll(hidden);
+		RecipeCategoryData<T> recipeCategoryData = recipeCategoriesDataMap.get(recipeCategory);
+		Set<T> hiddenRecipes = recipeCategoryData.getHiddenRecipes();
+		allRecipeWrappers.removeAll(hiddenRecipes);
 
 		return allRecipeWrappers;
 	}
@@ -280,16 +268,17 @@ public class RecipeRegistry implements IRecipeRegistry {
 			allRecipes.addAll(recipes);
 		}
 
-		@SuppressWarnings("unchecked")
-		Set<T> hidden = (Set<T>) hiddenRecipes.get(recipeCategory.getUid());
-		allRecipes.removeAll(hidden);
+		RecipeCategoryData<T> recipeCategoryData = recipeCategoriesDataMap.get(recipeCategory);
+		Set<T> hiddenRecipes = recipeCategoryData.getHiddenRecipes();
+		allRecipes.removeAll(hiddenRecipes);
 
 		return allRecipes;
 	}
 
-	public List<Object> getRecipeCatalysts(IRecipeCategory recipeCategory, boolean includeHidden) {
+	private <T> List<Object> getRecipeCatalysts(IRecipeCategory<T> recipeCategory, boolean includeHidden) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		ImmutableList<Object> catalysts = recipeCatalysts.get(recipeCategory);
+		RecipeCategoryData<T> recipeCategoryData = recipeCategoriesDataMap.get(recipeCategory);
+		ImmutableList<Object> catalysts = recipeCategoryData.getRecipeCatalysts();
 		if (includeHidden) {
 			return catalysts;
 		}
@@ -304,7 +293,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public List<Object> getRecipeCatalysts(IRecipeCategory recipeCategory) {
+	public List<Object> getRecipeCatalysts(IRecipeCategory<?> recipeCategory) {
 		return getRecipeCatalysts(recipeCategory, false);
 	}
 
@@ -332,20 +321,24 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public void hideRecipe(Object recipe, ResourceLocation recipeCategoryUid) {
+	public <T>void hideRecipe(T recipe, ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		ErrorUtil.assertMainThread();
-		hiddenRecipes.put(recipeCategoryUid, recipe);
+		RecipeCategoryData<T> recipeCategoryData = recipeCategoriesDataMap.get(recipe, recipeCategoryUid);
+		Set<T> hiddenRecipes = recipeCategoryData.getHiddenRecipes();
+		hiddenRecipes.add(recipe);
 		recipeCategoriesVisibleCache.clear();
 	}
 
 	@Override
-	public void unhideRecipe(Object recipe, ResourceLocation recipeCategoryUid) {
+	public <T> void unhideRecipe(T recipe, ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		ErrorUtil.assertMainThread();
-		hiddenRecipes.remove(recipeCategoryUid, recipe);
+		RecipeCategoryData<T> recipeCategoryData = recipeCategoriesDataMap.get(recipe, recipeCategoryUid);
+		Set<T> hiddenRecipes = recipeCategoryData.getHiddenRecipes();
+		hiddenRecipes.remove(recipe);
 		recipeCategoriesVisibleCache.clear();
 	}
 
@@ -353,10 +346,8 @@ public class RecipeRegistry implements IRecipeRegistry {
 	public void hideRecipeCategory(ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		ErrorUtil.assertMainThread();
-		IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
-		if (recipeCategory == null) {
-			throw new IllegalArgumentException("Unknown recipe category: " + recipeCategoryUid);
-		}
+		RecipeCategoryData recipeCategoryData = recipeCategoriesDataMap.get(recipeCategoryUid);
+		IRecipeCategory recipeCategory = recipeCategoryData.getRecipeCategory();
 		hiddenRecipeCategoryUids.add(recipeCategoryUid);
 		recipeCategoriesVisibleCache.remove(recipeCategory);
 	}
@@ -365,9 +356,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	public void unhideRecipeCategory(ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		ErrorUtil.assertMainThread();
-		if (!recipeCategoriesMap.containsKey(recipeCategoryUid)) {
-			throw new IllegalArgumentException("Unknown recipe category: " + recipeCategoryUid);
-		}
+		recipeCategoriesDataMap.validate(recipeCategoryUid);
 		hiddenRecipeCategoryUids.remove(recipeCategoryUid);
 		recipeCategoriesVisibleCache.clear();
 	}

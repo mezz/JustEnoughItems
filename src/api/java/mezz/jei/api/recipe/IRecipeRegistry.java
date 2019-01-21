@@ -9,9 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
-import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 
@@ -63,7 +61,7 @@ public interface IRecipeRegistry {
 	 * For instance, the crafting table ItemStack is returned here for Crafting recipe category.
 	 * These are registered with {@link IModRegistry#addRecipeCatalyst(Object, ResourceLocation...)}.
 	 */
-	List<Object> getRecipeCatalysts(IRecipeCategory recipeCategory);
+	List<Object> getRecipeCatalysts(IRecipeCategory<?> recipeCategory);
 
 	/**
 	 * Returns the recipe transfer handler for the given container and category, if one exists.
@@ -95,7 +93,7 @@ public interface IRecipeRegistry {
 	 *                          See {@link VanillaRecipeCategoryUid} for vanilla recipe category UIDs.
 	 * @see #unhideRecipe(Object, ResourceLocation)
 	 */
-	void hideRecipe(Object recipe, ResourceLocation recipeCategoryUid);
+	<T> void hideRecipe(T recipe, ResourceLocation recipeCategoryUid);
 
 	/**
 	 * Unhides a recipe that was hidden by {@link #hideRecipe(Object, ResourceLocation)}
@@ -106,7 +104,7 @@ public interface IRecipeRegistry {
 	 *                          See {@link VanillaRecipeCategoryUid} for vanilla recipe category UIDs.
 	 * @see #hideRecipe(Object, ResourceLocation)
 	 */
-	void unhideRecipe(Object recipe, ResourceLocation recipeCategoryUid);
+	<T> void unhideRecipe(T recipe, ResourceLocation recipeCategoryUid);
 
 	/**
 	 * Hide an entire recipe category of recipes from JEI.
@@ -130,5 +128,5 @@ public interface IRecipeRegistry {
 	 * Add a new recipe while the game is running.
 	 */
 	@Deprecated
-	void addRecipe(Object recipe, ResourceLocation recipeCategoryUid);
+	<T> void addRecipe(T recipe, ResourceLocation recipeCategoryUid);
 }

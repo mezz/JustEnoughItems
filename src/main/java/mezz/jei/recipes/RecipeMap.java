@@ -19,7 +19,7 @@ import mezz.jei.collect.Table;
 import mezz.jei.ingredients.IngredientInformation;
 
 /**
- * A RecipeMap efficiently links IRecipeWrappers, IRecipeCategory, and Ingredients.
+ * A RecipeMap efficiently links recipes, IRecipeCategory, and Ingredients.
  */
 public class RecipeMap {
 	private final Table<IRecipeCategory, String, List<Object>> recipeTable = Table.hashBasedTable();
@@ -53,7 +53,7 @@ public class RecipeMap {
 		}
 	}
 
-	public <T, V> ImmutableList<T> getRecipeWrappers(IRecipeCategory<T> recipeCategory, V ingredient) {
+	public <T, V> ImmutableList<T> getRecipes(IRecipeCategory<T> recipeCategory, V ingredient) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 
 		Map<String, List<Object>> recipesForType = recipeTable.getRow(recipeCategory);
@@ -80,7 +80,7 @@ public class RecipeMap {
 	private <T, V> void addRecipe(T recipe, IRecipeCategory<T> recipeCategory, IIngredientType<V> ingredientType, List<V> ingredients) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
 
-		Map<String, List<Object>> recipesWrappersForType = recipeTable.getRow(recipeCategory);
+		Map<String, List<Object>> recipesForType = recipeTable.getRow(recipeCategory);
 
 		Set<String> uniqueIds = new HashSet<>();
 
@@ -97,9 +97,9 @@ public class RecipeMap {
 			}
 
 			@SuppressWarnings("unchecked")
-			List<T> recipeWrappers = (List<T>) recipesWrappersForType.computeIfAbsent(key, k -> new ArrayList<>());
+			List<T> recipes = (List<T>) recipesForType.computeIfAbsent(key, k -> new ArrayList<>());
 
-			recipeWrappers.add(recipe);
+			recipes.add(recipe);
 
 			addRecipeCategory(recipeCategory, ingredient, ingredientHelper);
 		}

@@ -1,46 +1,30 @@
 package mezz.jei.recipes;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.collect.ListMultiMap;
 import mezz.jei.ingredients.IngredientRegistry;
 
 public class RecipeCatalystBuilder {
 	private final ImmutableListMultimap.Builder<IRecipeCategory, Object> recipeCatalystsBuilder = ImmutableListMultimap.builder();
 	private final ImmutableMultimap.Builder<String, ResourceLocation> categoriesForRecipeCatalystKeysBuilder = ImmutableMultimap.builder();
-	private final ImmutableMap<ResourceLocation, IRecipeCategory> recipeCategoriesMap;
 	private final IngredientRegistry ingredientRegistry;
 
-	public RecipeCatalystBuilder(
-		ImmutableMap<ResourceLocation, IRecipeCategory> recipeCategoriesMap,
-		IngredientRegistry ingredientRegistry
-	) {
-		this.recipeCategoriesMap = recipeCategoriesMap;
+	public RecipeCatalystBuilder(IngredientRegistry ingredientRegistry) {
 		this.ingredientRegistry = ingredientRegistry;
 	}
 
-	public void addCatalysts(ListMultiMap<ResourceLocation, Object> recipeCatalysts, RecipeMap recipeInputMap) {
-		for (Map.Entry<ResourceLocation, List<Object>> recipeCatalystEntry : recipeCatalysts.entrySet()) {
-			ResourceLocation recipeCategoryUid = recipeCatalystEntry.getKey();
-			IRecipeCategory recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
-			if (recipeCategory != null) {
-				Collection<Object> catalystIngredients = recipeCatalystEntry.getValue();
-				recipeCatalystsBuilder.putAll(recipeCategory, catalystIngredients);
-				for (Object catalystIngredient : catalystIngredients) {
-					addCatalyst(catalystIngredient, recipeCategory, recipeInputMap);
-				}
-			}
+	public void addCatalysts(IRecipeCategory recipeCategory, List<Object> catalystIngredients, RecipeMap recipeInputMap) {
+		recipeCatalystsBuilder.putAll(recipeCategory, catalystIngredients);
+		for (Object catalystIngredient : catalystIngredients) {
+			addCatalyst(catalystIngredient, recipeCategory, recipeInputMap);
 		}
 	}
 
