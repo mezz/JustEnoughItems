@@ -33,20 +33,31 @@ public class Textures {
 	public Textures(JeiTextureMap textureMap) {
 		this.textureMap = textureMap;
 
-		this.slot = registerGuiSprite("slot", 18, 18);
+		this.slot = registerGuiSprite("slot", 18, 18)
+			.slice(4, 4, 4, 4);
 		this.tabSelected = registerGuiSprite("tab_selected", 24, 24);
 		this.tabUnselected = registerGuiSprite("tab_unselected", 24, 24);
-		this.buttonDisabled = registerGuiSprite("button_disabled", 20, 20);
-		this.buttonEnabled = registerGuiSprite("button_enabled", 20, 20);
-		this.buttonHighlight = registerGuiSprite("button_highlight", 20, 20);
-		this.guiBackground = registerGuiSprite("gui_background", 64, 64);
-		this.recipeBackground = registerGuiSprite("recipe_background", 64, 64);
-		this.searchBackground = registerGuiSprite("search_background", 20, 20);
-		this.catalystTab = registerGuiSprite("catalyst_tab", 28, 28);
+		this.buttonDisabled = registerGuiSprite("button_disabled", 20, 20)
+			.slice(2, 2, 2, 2);
+		this.buttonEnabled = registerGuiSprite("button_enabled", 20, 20)
+			.slice(2, 2, 2, 2);
+		this.buttonHighlight = registerGuiSprite("button_highlight", 20, 20)
+			.slice(2, 2, 2, 2);
+		this.guiBackground = registerGuiSprite("gui_background", 64, 64)
+			.slice(16, 16, 16, 16);
+		this.recipeBackground = registerGuiSprite("recipe_background", 64, 64)
+			.slice(16, 16, 16, 16);
+		this.searchBackground = registerGuiSprite("search_background", 20, 20)
+			.slice(4, 4, 4, 4);
+		this.catalystTab = registerGuiSprite("catalyst_tab", 28, 28)
+			.slice(8, 9, 8, 8);
 
-		this.shapelessIcon = registerGuiSprite("icons/shapeless_icon", 36, 36);
-		this.arrowPrevious = registerGuiSprite("icons/arrow_previous", 9, 9);
-		this.arrowNext = registerGuiSprite("icons/arrow_next", 9, 9);
+		this.shapelessIcon = registerGuiSprite("icons/shapeless_icon", 36, 36)
+			.trim(1, 2, 1, 1);
+		this.arrowPrevious = registerGuiSprite("icons/arrow_previous", 9, 9)
+			.trim(0, 0, 1, 1);
+		this.arrowNext = registerGuiSprite("icons/arrow_next", 9, 9)
+			.trim(0, 0, 1, 1);
 		this.recipeTransfer = registerGuiSprite("icons/recipe_transfer", 7, 7);
 		this.configButtonIcon = registerGuiSprite("icons/config_button", 16, 16);
 		this.configButtonCheatIcon = registerGuiSprite("icons/config_button_cheat", 16, 16);
@@ -58,10 +69,7 @@ public class Textures {
 
 	private TextureInfo registerGuiSprite(String name, int width, int height) {
 		TextureAtlasSprite textureAtlasSprite = textureMap.registerSprite(new ResourceLocation(Constants.MOD_ID, "gui/" + name));
-		return new TextureInfo(textureMap, textureAtlasSprite, width, height);
-	}
-
-	public JeiTextureMap getTextureMap() {
-		return textureMap;
+		ResourceLocation location = textureMap.getLocation();
+		return new TextureInfo(location, textureAtlasSprite, width, height);
 	}
 }
