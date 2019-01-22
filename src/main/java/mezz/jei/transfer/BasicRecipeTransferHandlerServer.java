@@ -58,8 +58,10 @@ public final class BasicRecipeTransferHandlerServer {
 			}
 			if (requireCompleteSets) {
 				ItemStack transferItem = toTransfer.get(craftingSlotNumberIndex);
-				int slotStackLimit = craftingSlot.getItemStackLimit(transferItem);
-				minSlotStackLimit = Math.min(slotStackLimit, minSlotStackLimit);
+				if (transferItem != null) {
+					int slotStackLimit = craftingSlot.getItemStackLimit(transferItem);
+					minSlotStackLimit = Math.min(slotStackLimit, minSlotStackLimit);
+				}
 			}
 		}
 
