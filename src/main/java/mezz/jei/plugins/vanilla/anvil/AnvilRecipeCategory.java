@@ -59,6 +59,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipeWrapper> 
 
 		guiItemStacks.set(ingredients);
 
-		recipeWrapper.setCurrentIngredients(guiItemStacks.getGuiIngredients());
+		AnvilRecipeDisplayData displayData = AnvilRecipeDataCache.getDisplayData(recipeWrapper);
+		displayData.setCurrentIngredients(guiItemStacks.getGuiIngredients());
 	}
 }
