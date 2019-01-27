@@ -6,12 +6,11 @@ import java.util.List;
 
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.client.util.InputMappings;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.resources.IReloadableResourceManager;
 
@@ -73,9 +72,6 @@ public class ClientLifecycleHandler {
 
 		KeyBindings.init();
 
-//		eventBus.addListener(EventPriority.NORMAL, false, FMLLoadCompleteEvent.class, event -> this.onLoadComplete());
-		EventBusHelper.addListener(GuiScreenEvent.KeyboardKeyPressedEvent.Pre.class, this::onGuiKeyPressedEvent);
-
 		clientConfig.onPreInit();
 		EventBusHelper.addListener(ConfigChangedEvent.OnConfigChangedEvent.class, event -> {
 			modIdFormattingConfig.checkForModNameFormatOverride();
@@ -99,6 +95,15 @@ public class ClientLifecycleHandler {
 		EventBusHelper.addListener(TextureStitchEvent.Pre.class, event -> {
 			textures = new Textures(textureMap);
 		});
+		EventBusHelper.addListener(RecipesUpdatedEvent.class, event -> {
+			NetHandlerPlayClient connection = Minecraft.getInstance().getConnection();
+			if (connection != null) {
+				NetworkManager networkManager = connection.getNetworkManager();
+				worldConfig.syncWorldConfig(networkManager);
+			}
+			onRecipesLoaded();
+			EventBusHelper.post(new PlayerJoinedWorldEvent());
+		});
 
 		networkHandler.createClientPacketHandler(worldConfig);
 	}
@@ -111,6 +116,8 @@ public class ClientLifecycleHandler {
 	}
 
 	private void onRecipesLoaded() {
+		modIdFormattingConfig.checkForModNameFormatOverride();
+
 		List<IModPlugin> plugins = AnnotatedInstanceUtil.getModPlugins();
 
 		// Reload when resources change
@@ -119,11 +126,7 @@ public class ClientLifecycleHandler {
 		reloadableResourceManager.addReloadListener(resourceManager -> {
 			// check that JEI has been started before. if not, do nothing
 			if (this.starter.hasStarted()) {
-				if (clientConfig.isDebugModeEnabled()) {
-					LOGGER.info("Restarting JEI.", new RuntimeException("Stack trace for debugging"));
-				} else {
-					LOGGER.info("Restarting JEI.");
-				}
+				LOGGER.info("Restarting JEI.");
 				Preconditions.checkNotNull(textures);
 				this.starter.start(plugins, textures, clientConfig, hideModeConfig, ingredientFilterConfig, worldConfig, modIdHelper);
 			}
@@ -132,34 +135,4 @@ public class ClientLifecycleHandler {
 		Preconditions.checkNotNull(textures);
 		this.starter.start(plugins, textures, clientConfig, hideModeConfig, ingredientFilterConfig, worldConfig, modIdHelper);
 	}
-
-	/**
-	 * temporary hack while waiting for recipe sync events in Forge
-	 */
-	private void onGuiKeyPressedEvent(GuiScreenEvent.KeyboardKeyPressedEvent.Pre event) {
-		InputMappings.Input input = InputMappings.getInputByCode(event.getKeyCode(), event.getScanCode());
-		if (KeyBindings.startJei.isActiveAndMatches(input)) {
-			NetHandlerPlayClient connection = Minecraft.getInstance().getConnection();
-			if (connection != null) {
-				NetworkManager networkManager = connection.getNetworkManager();
-				worldConfig.syncWorldConfig(networkManager);
-			}
-			onRecipesLoaded();
-			// TODO move this to its own event handler when the event exists
-			modIdFormattingConfig.checkForModNameFormatOverride();
-			EventBusHelper.post(new PlayerJoinedWorldEvent());
-		}
-	}
-
-	// TODO
-//	@SubscribeEvent
-//	public void onClientConnectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
-//		if (!event.isLocal() && !event.getConnectionType().equals("MODDED")) {
-//			ServerInfo.onConnectedToServer(false);
-//		}
-//		NetworkManager networkManager = event.getManager();
-//		ClientConfig.getInstance().syncWorldConfig(networkManager);
-//		MinecraftForge.EVENT_BUS.post(new PlayerJoinedWorldEvent());
-//	}
-
 }
