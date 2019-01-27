@@ -1,5 +1,7 @@
 package mezz.jei.plugins.vanilla.ingredients.item;
 
+import com.google.common.base.Joiner;
+
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -97,17 +99,17 @@ public final class ItemStackListFactory {
 		public String apply(ItemStack itemStack) {
 			return itemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(capability -> {
 				IFluidTankProperties[] tankPropertiesList = capability.getTankProperties();
-				StringBuilder info = new StringBuilder();
+				List<String> contentsNames = new ArrayList<>();
 				for (IFluidTankProperties tankProperties : tankPropertiesList) {
 					String contentsName = getContentsName(tankProperties);
 					if (contentsName != null) {
-						info.append(contentsName).append(";");
+						contentsNames.add(contentsName);
 					} else {
-						info.append("empty").append(";");
+						contentsNames.add("empty");
 					}
 				}
-				if (info.length() > 0) {
-					return info.toString();
+				if (!contentsNames.isEmpty()) {
+					return Joiner.on(';').join(contentsNames);
 				}
 				return ISubtypeRegistry.ISubtypeInterpreter.NONE;
 			}).orElse(ISubtypeRegistry.ISubtypeInterpreter.NONE);
