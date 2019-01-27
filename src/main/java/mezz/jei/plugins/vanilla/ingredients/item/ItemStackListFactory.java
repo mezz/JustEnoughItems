@@ -20,6 +20,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
+import com.google.common.base.Joiner;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.startup.StackHelper;
 import mezz.jei.util.ErrorUtil;
@@ -156,20 +157,21 @@ public final class ItemStackListFactory {
 				IFluidHandler capability = itemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
 				if (capability != null) {
 					IFluidTankProperties[] tankPropertiesList = capability.getTankProperties();
-					StringBuilder info = new StringBuilder();
+					List<String> contentsNames = new ArrayList<>();
 					for (IFluidTankProperties tankProperties : tankPropertiesList) {
 						String contentsName = getContentsName(tankProperties);
 						if (contentsName != null) {
-							info.append(contentsName).append(";");
+							contentsNames.add(contentsName);
 						} else {
-							info.append("empty").append(";");
+							contentsNames.add("empty");
 						}
 					}
-					if (info.length() > 0) {
+					if (!contentsNames.isEmpty()) {
+						String info = Joiner.on(';').join(contentsNames);
 						if (itemStack.getHasSubtypes()) {
-							info.append("m=").append(itemStack.getMetadata());
+							info += ";m=" + itemStack.getMetadata();
 						}
-						return info.toString();
+						return info;
 					}
 				}
 			}
