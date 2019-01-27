@@ -58,7 +58,7 @@ public class IngredientFilter implements IIngredientGridSource {
 
 	@Nullable
 	private String filterCached;
-	private List<IIngredientListElement> ingredientListCached = Collections.emptyList();
+	private List<IIngredientListElement<?>> ingredientListCached = Collections.emptyList();
 	private final List<IIngredientGridSource.Listener> listeners = new ArrayList<>();
 
 	public IngredientFilter(
@@ -206,9 +206,9 @@ public class IngredientFilter implements IIngredientGridSource {
 	}
 
 	@Override
-	public List<IIngredientListElement> getIngredientList(String filterText) {
+	public List<IIngredientListElement<?>> getIngredientList(String filterText) {
 		if (!filterText.equals(filterCached)) {
-			List<IIngredientListElement> ingredientList = getIngredientListUncached(filterText);
+			List<IIngredientListElement<?>> ingredientList = getIngredientListUncached(filterText);
 			ingredientListCached = Collections.unmodifiableList(ingredientList);
 			filterCached = filterText;
 		}
@@ -216,7 +216,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	}
 
 	public ImmutableList<Object> getFilteredIngredients(String filterText) {
-		List<IIngredientListElement> elements = getIngredientList(filterText);
+		List<IIngredientListElement<?>> elements = getIngredientList(filterText);
 		ImmutableList.Builder<Object> builder = ImmutableList.builder();
 		for (IIngredientListElement element : elements) {
 			Object ingredient = element.getIngredient();
@@ -225,7 +225,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		return builder.build();
 	}
 
-	private List<IIngredientListElement> getIngredientListUncached(String filterText) {
+	private List<IIngredientListElement<?>> getIngredientListUncached(String filterText) {
 		String[] filters = filterText.split("\\|");
 
 		IntSet matches = null;
@@ -241,7 +241,7 @@ public class IngredientFilter implements IIngredientGridSource {
 			}
 		}
 
-		List<IIngredientListElement> matchingIngredients = new ArrayList<>();
+		List<IIngredientListElement<?>> matchingIngredients = new ArrayList<>();
 
 		if (matches == null) {
 			for (IIngredientListElement element : elementList) {

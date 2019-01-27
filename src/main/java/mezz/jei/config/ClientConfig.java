@@ -30,7 +30,6 @@ public final class ClientConfig {
 
 	private final LocalizedConfiguration config;
 	private final LocalizedConfiguration searchColorsConfig;
-	private final File bookmarkFile;
 
 	private final ConfigValues defaultValues = new ConfigValues();
 	private final ConfigValues values = new ConfigValues();
@@ -45,7 +44,6 @@ public final class ClientConfig {
 		instance = this;
 		final File configFile = new File(jeiConfigurationDir, "jei.cfg");
 		final File searchColorsConfigFile = new File(jeiConfigurationDir, "searchColors.cfg");
-		this.bookmarkFile = new File(jeiConfigurationDir, "bookmarks.ini");
 		this.config = new LocalizedConfiguration(configKeyPrefix, configFile, "0.4.0");
 		this.searchColorsConfig = new LocalizedConfiguration(configKeyPrefix, searchColorsConfigFile, "0.1.0");
 	}
@@ -72,10 +70,6 @@ public final class ClientConfig {
 
 	public LocalizedConfiguration getConfig() {
 		return config;
-	}
-
-	public File getBookmarkFile() {
-		return bookmarkFile;
 	}
 
 	public void onPreInit() {

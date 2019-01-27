@@ -71,7 +71,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 			firstItemIndex = 0;
 		}
 		String filterText = filterTextSource.getFilterText();
-		List<IIngredientListElement> ingredientList = ingredientSource.getIngredientList(filterText);
+		List<IIngredientListElement<?>> ingredientList = ingredientSource.getIngredientList(filterText);
 		if (firstItemIndex >= ingredientList.size()) {
 			firstItemIndex = 0;
 		}

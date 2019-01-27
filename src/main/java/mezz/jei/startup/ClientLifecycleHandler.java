@@ -19,6 +19,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.ModIds;
 import mezz.jei.api.ingredients.IModIdHelper;
+import mezz.jei.config.BookmarkConfig;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.config.HideModeConfig;
 import mezz.jei.config.IHideModeConfig;
@@ -45,6 +46,7 @@ public class ClientLifecycleHandler {
 	@Nullable
 	private Textures textures;
 	private final ClientConfig clientConfig;
+	private final BookmarkConfig bookmarkConfig;
 	private final ModIdFormattingConfig modIdFormattingConfig;
 	private final IngredientFilterConfig ingredientFilterConfig;
 	private final WorldConfig worldConfig;
@@ -63,6 +65,7 @@ public class ClientLifecycleHandler {
 			}
 		}
 		clientConfig = new ClientConfig(jeiConfigurationDir);
+		bookmarkConfig = new BookmarkConfig(jeiConfigurationDir);
 		worldConfig = new WorldConfig(jeiConfigurationDir);
 		ingredientFilterConfig = new IngredientFilterConfig(clientConfig.getConfig());
 		modIdFormattingConfig = new ModIdFormattingConfig(clientConfig.getConfig());
@@ -128,11 +131,11 @@ public class ClientLifecycleHandler {
 			if (this.starter.hasStarted()) {
 				LOGGER.info("Restarting JEI.");
 				Preconditions.checkNotNull(textures);
-				this.starter.start(plugins, textures, clientConfig, hideModeConfig, ingredientFilterConfig, worldConfig, modIdHelper);
+				this.starter.start(plugins, textures, clientConfig, hideModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
 			}
 		});
 
 		Preconditions.checkNotNull(textures);
-		this.starter.start(plugins, textures, clientConfig, hideModeConfig, ingredientFilterConfig, worldConfig, modIdHelper);
+		this.starter.start(plugins, textures, clientConfig, hideModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
 	}
 }

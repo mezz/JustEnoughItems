@@ -18,6 +18,7 @@ import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.ICraftingRecipeWrapper;
 import mezz.jei.bookmarks.BookmarkList;
+import mezz.jei.config.BookmarkConfig;
 import mezz.jei.config.IHideModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.gui.GuiHelper;
@@ -50,6 +51,7 @@ public class PluginLoader {
 	private final IngredientRegistry ingredientRegistry;
 	private final IIngredientFilterConfig ingredientFilterConfig;
 	private final IHideModeConfig hideModeConfig;
+	private final BookmarkConfig bookmarkConfig;
 	private final JeiHelpers jeiHelpers;
 	@Nullable
 	private RecipeRegistry recipeRegistry;
@@ -63,11 +65,13 @@ public class PluginLoader {
 		Textures textures,
 		IHideModeConfig hideModeConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
+		BookmarkConfig bookmarkConfig,
 		IModIdHelper modIdHelper,
 		boolean debugMode)
 	{
 		this.ingredientFilterConfig = ingredientFilterConfig;
 		this.hideModeConfig = hideModeConfig;
+		this.bookmarkConfig = bookmarkConfig;
 		this.timer = new LoggedTimer();
 		this.modIdHelper = modIdHelper;
 		this.blacklist = new IngredientBlacklistInternal();
@@ -144,8 +148,8 @@ public class PluginLoader {
 	public BookmarkList getBookmarkList() {
 		if (bookmarkList == null) {
 			timer.start("Building bookmarks");
-			bookmarkList = new BookmarkList(ingredientRegistry);
-			bookmarkList.loadBookmarks();
+			bookmarkList = new BookmarkList(ingredientRegistry, bookmarkConfig);
+			bookmarkConfig.loadBookmarks(ingredientRegistry, bookmarkList);
 			timer.stop();
 		}
 		return bookmarkList;

@@ -75,7 +75,7 @@ public class IngredientFilterTest {
 		Assert.assertNotNull(modIdHelper);
 
 		ingredientFilter.addIngredients(baseList, ingredientRegistry, modIdHelper);
-		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList("");
+		List<IIngredientListElement<?>> ingredientList = ingredientFilter.getIngredientList("");
 		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientList.size());
 	}
 
@@ -102,7 +102,7 @@ public class IngredientFilterTest {
 
 		ingredientFilter.modesChanged();
 
-		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList("");
+		List<IIngredientListElement<?>> ingredientList = ingredientFilter.getIngredientList("");
 		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientList.size());
 
 		addIngredients(ingredientFilter);
@@ -132,7 +132,7 @@ public class IngredientFilterTest {
 		ingredientBlacklist.addIngredientToBlacklist(blacklistedIngredient);
 
 		ingredientFilter.addIngredients(baseList, ingredientRegistry, modIdHelper);
-		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList("");
+		List<IIngredientListElement<?>> ingredientList = ingredientFilter.getIngredientList("");
 		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT - 1, ingredientList.size());
 
 		// test after reloading the ingredient filter
@@ -159,7 +159,7 @@ public class IngredientFilterTest {
 
 		ingredientFilter.updateHidden();
 
-		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList("");
+		List<IIngredientListElement<?>> ingredientList = ingredientFilter.getIngredientList("");
 		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT - 1, ingredientList.size());
 
 		// test after reloading the ingredient filter
@@ -186,7 +186,7 @@ public class IngredientFilterTest {
 		Collection<TestIngredient> testIngredients = ingredientRegistry.getAllIngredients(TestIngredient.TYPE);
 		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT, testIngredients.size());
 
-		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList("");
+		List<IIngredientListElement<?>> ingredientList = ingredientFilter.getIngredientList("");
 		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT, ingredientList.size());
 	}
 
@@ -204,7 +204,7 @@ public class IngredientFilterTest {
 
 		ingredientRegistry.removeIngredientsAtRuntime(TestIngredient.TYPE, ingredientsToRemove, ingredientFilter);
 
-		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList("");
+		List<IIngredientListElement<?>> ingredientList = ingredientFilter.getIngredientList("");
 		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientList.size());
 
 		Collection<TestIngredient> testIngredients = ingredientRegistry.getAllIngredients(TestIngredient.TYPE);

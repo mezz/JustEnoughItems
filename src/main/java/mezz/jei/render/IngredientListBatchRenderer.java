@@ -64,7 +64,7 @@ public class IngredientListBatchRenderer {
 		return slots;
 	}
 
-	public void set(final int startIndex, List<IIngredientListElement> ingredientList) {
+	public void set(final int startIndex, List<IIngredientListElement<?>> ingredientList) {
 		renderItems2d.clear();
 		renderItems3d.clear();
 		renderOther.clear();

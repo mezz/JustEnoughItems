@@ -18,6 +18,7 @@ import mezz.jei.api.gui.IGlobalGuiHandler;
 import mezz.jei.api.gui.IGuiScreenHandler;
 import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.bookmarks.BookmarkList;
+import mezz.jei.config.BookmarkConfig;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IHideModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
@@ -57,6 +58,7 @@ public class JeiStarter {
 		IHideModeConfig hideModeConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IWorldConfig worldConfig,
+		BookmarkConfig bookmarkConfig,
 		IModIdHelper modIdHelper
 	) {
 		ErrorUtil.checkNotEmpty(plugins, "plugins");
@@ -64,7 +66,7 @@ public class JeiStarter {
 		totalTime.start("Starting JEI");
 
 		boolean debugMode = config.isDebugModeEnabled();
-		PluginLoader pluginLoader = new PluginLoader(plugins, textures, hideModeConfig, ingredientFilterConfig, modIdHelper, debugMode);
+		PluginLoader pluginLoader = new PluginLoader(plugins, textures, hideModeConfig, ingredientFilterConfig, bookmarkConfig, modIdHelper, debugMode);
 		ModRegistry modRegistry = pluginLoader.getModRegistry();
 		IngredientRegistry ingredientRegistry = pluginLoader.getIngredientRegistry();
 		IngredientFilter ingredientFilter = pluginLoader.getIngredientFilter();
