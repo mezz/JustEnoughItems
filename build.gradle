@@ -81,11 +81,15 @@ minecraft {
 
 	runs {
 		client = {
+			properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
+			properties 'forge.logging.console.level': 'debug'
 			workingDirectory project.file('run').canonicalPath
 			source sourceSets.main
 			source sourceSets.api
 		}
 		server = {
+			properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
+			properties 'forge.logging.console.level': 'debug'
 			workingDirectory project.file('run').canonicalPath
 			source sourceSets.main
 			source sourceSets.api
