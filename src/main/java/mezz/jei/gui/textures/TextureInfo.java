@@ -8,6 +8,14 @@ public class TextureInfo {
 	private final ResourceLocation spriteLocation;
 	private final int width;
 	private final int height;
+	private int sliceLeft;
+	private int sliceRight;
+	private int sliceTop;
+	private int sliceBottom;
+	private int trimLeft;
+	private int trimRight;
+	private int trimTop;
+	private int trimBottom;
 
 	public TextureInfo(JeiTextureMap textureMap, ResourceLocation spriteLocation, int width, int height) {
 		this.textureMap = textureMap;
@@ -17,21 +25,67 @@ public class TextureInfo {
 		this.height = height;
 	}
 
-	public JeiTextureMap getTextureMap() {
-		return textureMap;
+	public TextureInfo slice(int left, int right, int top, int bottom) {
+		this.sliceLeft = left;
+		this.sliceRight = right;
+		this.sliceTop = top;
+		this.sliceBottom = bottom;
+		return this;
+	}
+
+	public TextureInfo trim(int left, int right, int top, int bottom) {
+		this.trimLeft = left;
+		this.trimRight = right;
+		this.trimTop = top;
+		this.trimBottom = bottom;
+		return this;
+	}
+
+	public ResourceLocation getLocation() {
+		return textureMap.getLocation();
 	}
 
 	public TextureAtlasSprite getSprite() {
 		return this.textureMap.getSprite(spriteLocation);
 	}
 
-	public int getScale() {
-		TextureAtlasSprite sprite = getSprite();
-		int xScale = sprite.getWidth() / width;
-		int yScale = sprite.getHeight() / height;
-		if (xScale != yScale || xScale * width != sprite.getWidth()) {
-			throw new IllegalArgumentException("Texture has the wrong dimensions. Expected a multiple of: (" + width + "x" + height + ") " + sprite);
-		}
-		return xScale;
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public int getSliceLeft() {
+		return sliceLeft;
+	}
+
+	public int getSliceRight() {
+		return sliceRight;
+	}
+
+	public int getSliceTop() {
+		return sliceTop;
+	}
+
+	public int getSliceBottom() {
+		return sliceBottom;
+	}
+
+	public int getTrimLeft() {
+		return trimLeft;
+	}
+
+	public int getTrimRight() {
+		return trimRight;
+	}
+
+	public int getTrimTop() {
+		return trimTop;
+	}
+
+	public int getTrimBottom() {
+		return trimBottom;
 	}
 }

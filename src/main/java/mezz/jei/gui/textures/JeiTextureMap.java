@@ -1,7 +1,9 @@
 package mezz.jei.gui.textures;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.Set;
 
 import net.minecraftforge.fml.client.ClientHooks;
@@ -33,10 +35,8 @@ public class JeiTextureMap extends TextureMap {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final ResourceLocation location;
-	private int width;
-	private int height;
-	private final Deque<ResourceLocation> loadingSprites = new java.util.ArrayDeque<>();
-	private final Set<ResourceLocation> loadedSprites = new java.util.HashSet<>();
+	private final Deque<ResourceLocation> loadingSprites = new ArrayDeque<>();
+	private final Set<ResourceLocation> loadedSprites = new HashSet<>();
 
 	public JeiTextureMap(String basePathIn) {
 		super(basePathIn);
@@ -81,8 +81,6 @@ public class JeiTextureMap extends TextureMap {
 		stitcher.doStitch();
 
 		LOGGER.info("Created: {}x{} {}-atlas", stitcher.getCurrentWidth(), stitcher.getCurrentHeight(), this.basePath);
-		this.width = stitcher.getCurrentWidth();
-		this.height = stitcher.getCurrentHeight();
 
 		TextureUtil.allocateTextureImpl(this.getGlTextureId(), 0, stitcher.getCurrentWidth(), stitcher.getCurrentHeight());
 
@@ -160,13 +158,5 @@ public class JeiTextureMap extends TextureMap {
 
 	private ResourceLocation getSpritePath(ResourceLocation location) {
 		return new ResourceLocation(location.getNamespace(), String.format("%s/%s%s", this.basePath, location.getPath(), ".png"));
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public int getHeight() {
-		return height;
 	}
 }

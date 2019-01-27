@@ -1,6 +1,5 @@
 package mezz.jei.gui;
 
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.IGuiHelper;
@@ -17,7 +16,7 @@ import mezz.jei.gui.elements.DrawableBlank;
 import mezz.jei.gui.elements.DrawableBuilder;
 import mezz.jei.gui.elements.DrawableIngredient;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.gui.textures.JeiTextureMap;
+import mezz.jei.gui.elements.DrawableSprite;
 import mezz.jei.gui.textures.TextureInfo;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.util.ErrorUtil;
@@ -49,28 +48,22 @@ public class GuiHelper implements IGuiHelper {
 	public GuiHelper(IIngredientRegistry ingredientRegistry, Textures textures) {
 		this.ingredientRegistry = ingredientRegistry;
 		this.slotDrawable = createDrawable(textures.slot);
-		this.nineSliceSlot = createNineSliceDrawable(textures.slot, 4, 4, 4, 4);
+		this.nineSliceSlot = createNineSliceDrawable(textures.slot);
 
 		this.tabSelected = createDrawable(textures.tabSelected);
 		this.tabUnselected = createDrawable(textures.tabUnselected);
 
-		this.buttonDisabled = createNineSliceDrawable(textures.buttonDisabled, 2, 2, 2, 2);
-		this.buttonEnabled = createNineSliceDrawable(textures.buttonEnabled, 2, 2, 2, 2);
-		this.buttonHighlight = createNineSliceDrawable(textures.buttonHighlight, 2, 2, 2, 2);
-		this.guiBackground = createNineSliceDrawable(textures.guiBackground, 16, 16, 16, 16);
-		this.recipeBackground = createNineSliceDrawable(textures.recipeBackground, 16, 16, 16, 16);
-		this.searchBackground = createNineSliceDrawable(textures.searchBackground, 4, 4, 4, 4);
-		this.catalystTab = createNineSliceDrawable(textures.catalystTab, 8, 9, 8, 8);
+		this.buttonDisabled = createNineSliceDrawable(textures.buttonDisabled);
+		this.buttonEnabled = createNineSliceDrawable(textures.buttonEnabled);
+		this.buttonHighlight = createNineSliceDrawable(textures.buttonHighlight);
+		this.guiBackground = createNineSliceDrawable(textures.guiBackground);
+		this.recipeBackground = createNineSliceDrawable(textures.recipeBackground);
+		this.searchBackground = createNineSliceDrawable(textures.searchBackground);
+		this.catalystTab = createNineSliceDrawable(textures.catalystTab);
 
-		this.shapelessIcon = drawableBuilder(textures.shapelessIcon)
-			.trim(1, 2, 1, 1)
-			.build();
-		this.arrowPrevious = drawableBuilder(textures.arrowPrevious)
-			.trim(0, 0, 1, 1)
-			.build();
-		this.arrowNext = drawableBuilder(textures.arrowNext)
-			.trim(0, 0, 1, 1)
-			.build();
+		this.shapelessIcon = createDrawable(textures.shapelessIcon);
+		this.arrowPrevious = createDrawable(textures.arrowPrevious);
+		this.arrowNext = createDrawable(textures.arrowNext);
 		this.recipeTransfer = createDrawable(textures.recipeTransfer);
 
 		this.configButtonIcon = createDrawable(textures.configButtonIcon);
@@ -121,22 +114,11 @@ public class GuiHelper implements IGuiHelper {
 	}
 
 	private IDrawableStatic createDrawable(TextureInfo textureInfo) {
-		return drawableBuilder(textureInfo).build();
+		return new DrawableSprite(textureInfo);
 	}
 
-	private DrawableNineSliceTexture createNineSliceDrawable(TextureInfo textureInfo, int leftWidth, int rightWidth, int topHeight, int bottomHeight) {
-		JeiTextureMap textureMap = textureInfo.getTextureMap();
-		TextureAtlasSprite sprite = textureInfo.getSprite();
-		int scale = textureInfo.getScale();
-		return new DrawableNineSliceTexture(textureMap.getLocation(), sprite.x / scale, sprite.y / scale, sprite.getWidth() / scale, sprite.getHeight() / scale, leftWidth, rightWidth, topHeight, bottomHeight, textureMap.getWidth() / scale, textureMap.getHeight() / scale);
-	}
-
-	private IDrawableBuilder drawableBuilder(TextureInfo textureInfo) {
-		JeiTextureMap textureMap = textureInfo.getTextureMap();
-		TextureAtlasSprite sprite = textureInfo.getSprite();
-		int scale = textureInfo.getScale();
-		return drawableBuilder(textureMap.getLocation(), sprite.x / scale, sprite.y / scale, sprite.getWidth() / scale, sprite.getHeight() / scale)
-			.setTextureSize(textureMap.getWidth() / scale, textureMap.getHeight() / scale);
+	private DrawableNineSliceTexture createNineSliceDrawable(TextureInfo textureInfo) {
+		return new DrawableNineSliceTexture(textureInfo);
 	}
 
 	public IDrawableStatic getTabSelected() {
