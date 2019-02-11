@@ -72,6 +72,7 @@ public class RecipeMap {
 	public <T> void addRecipe(T recipe, IRecipeCategory<T> recipeCategory, Map<IIngredientType, List> ingredientsByType) {
 		for (Map.Entry<IIngredientType, List> entry : ingredientsByType.entrySet()) {
 			if (entry != null) {
+				//noinspection unchecked
 				addRecipe(recipe, recipeCategory, entry.getKey(), entry.getValue());
 			}
 		}

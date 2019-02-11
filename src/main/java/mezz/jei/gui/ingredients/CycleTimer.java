@@ -23,8 +23,8 @@ public class CycleTimer {
 		if (list.isEmpty()) {
 			return null;
 		}
-		Long index = ((drawTime - startTime) / cycleTime) % list.size();
-		return list.get(index.intValue());
+		long index = ((drawTime - startTime) / cycleTime) % list.size();
+		return list.get((int) index);
 	}
 
 	public void onDraw() {

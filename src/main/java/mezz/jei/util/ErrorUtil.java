@@ -129,6 +129,7 @@ public final class ErrorUtil {
 		return allInfos;
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	public static String getItemStackInfo(@Nullable ItemStack itemStack) {
 		if (itemStack == null) {
 			return "null";
@@ -208,11 +209,10 @@ public final class ErrorUtil {
 		}
 	}
 
-	public static <T> T checkNotNull(@Nullable T object, String name) {
+	public static <T> void checkNotNull(@Nullable T object, String name) {
 		if (object == null) {
 			throw new NullPointerException(name + " must not be null.");
 		}
-		return object;
 	}
 
 	public static <T> void checkIsValidIngredient(@Nullable T ingredient, String name) {
@@ -225,6 +225,7 @@ public final class ErrorUtil {
 		}
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	public static void assertMainThread() {
 		Minecraft minecraft = Minecraft.getInstance();
 		if (minecraft != null && !minecraft.isCallingFromMinecraftThread()) {

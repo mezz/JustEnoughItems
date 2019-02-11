@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagCollection;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
@@ -57,7 +58,10 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public String getDisplayName(ItemStack ingredient) {
-		return ErrorUtil.checkNotNull(ingredient.getDisplayName().getUnformattedComponentText(), "itemStack.getDisplayName()");
+		ITextComponent displayNameTextComponent = ingredient.getDisplayName();
+		String displayName = displayNameTextComponent.getUnformattedComponentText();
+		ErrorUtil.checkNotNull(displayName, "itemStack.getDisplayName()");
+		return displayName;
 	}
 
 	@Override

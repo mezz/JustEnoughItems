@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableSet;
-import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;

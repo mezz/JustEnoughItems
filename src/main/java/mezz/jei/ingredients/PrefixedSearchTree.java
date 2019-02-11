@@ -3,7 +3,6 @@ package mezz.jei.ingredients;
 import java.util.Collection;
 
 import mezz.jei.config.SearchMode;
-import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.ingredients.IIngredientListElementInfo;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 

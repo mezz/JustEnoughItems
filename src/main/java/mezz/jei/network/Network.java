@@ -18,6 +18,7 @@ public class Network {
 	@OnlyIn(Dist.CLIENT)
 	public static void sendPacketToServer(PacketJei packet) {
 		Minecraft minecraft = Minecraft.getInstance();
+		//noinspection ConstantConditions
 		if (minecraft != null) {
 			NetHandlerPlayClient netHandler = minecraft.getConnection();
 			if (netHandler != null && ServerInfo.isJeiOnServer()) {

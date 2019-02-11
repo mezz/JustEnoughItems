@@ -67,6 +67,7 @@ public final class VanillaRecipeValidator {
 			this.maxInputs = maxInputs;
 		}
 
+		@SuppressWarnings("ConstantConditions")
 		public boolean isRecipeValid(T recipe) {
 			if (recipe.isDynamic()) {
 				return false;
@@ -102,6 +103,7 @@ public final class VanillaRecipeValidator {
 			return ErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
 		}
 
+		@SuppressWarnings("ConstantConditions")
 		protected static int getInputCount(List<Ingredient> ingredientList) {
 			int inputCount = 0;
 			for (Ingredient ingredient : ingredientList) {

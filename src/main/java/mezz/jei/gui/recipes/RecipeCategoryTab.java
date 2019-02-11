@@ -9,6 +9,7 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
@@ -89,13 +90,12 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 			tooltip.add(title);
 		}
 
-		String modId = category.getUid().getNamespace();
-		if (modId != null) {
-			IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
-			if (modIdHelper.isDisplayingModNameEnabled()) {
-				String modName = modIdHelper.getFormattedModNameForModId(modId);
-				tooltip.add(modName);
-			}
+		ResourceLocation uid = category.getUid();
+		String modId = uid.getNamespace();
+		IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
+		if (modIdHelper.isDisplayingModNameEnabled()) {
+			String modName = modIdHelper.getFormattedModNameForModId(modId);
+			tooltip.add(modName);
 		}
 		return tooltip;
 	}
