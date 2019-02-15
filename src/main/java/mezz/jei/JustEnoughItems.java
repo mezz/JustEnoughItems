@@ -5,7 +5,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.javafmlmod.FMLModLoadingContext;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.IEventBus;
 
@@ -17,7 +17,7 @@ import mezz.jei.startup.NetworkHandler;
 @Mod(ModIds.JEI_ID)
 public class JustEnoughItems {
 	public JustEnoughItems() {
-		IEventBus modEventBus = FMLModLoadingContext.get().getModEventBus();
+		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		NetworkHandler networkHandler = new NetworkHandler();
 		DistExecutor.runWhenOn(Dist.CLIENT, ()->()-> {
 			EventBusHelper.addLifecycleListener(modEventBus, FMLClientSetupEvent.class, setupEvent -> {

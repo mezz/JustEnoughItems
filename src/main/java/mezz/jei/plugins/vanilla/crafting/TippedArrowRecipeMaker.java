@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraftforge.common.crafting.IShapedRecipe;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
@@ -20,8 +21,7 @@ public final class TippedArrowRecipeMaker {
 	public static List<IShapedRecipe> createTippedArrowRecipes() {
 		List<IShapedRecipe> recipes = new ArrayList<>();
 		String group = "jei.tipped.arrow";
-		for (ResourceLocation potionTypeResourceLocation : PotionType.REGISTRY.getKeys()) {
-			PotionType potionType = PotionType.REGISTRY.get(potionTypeResourceLocation);
+		for (PotionType potionType : ForgeRegistries.POTION_TYPES.getValues()) {
 			ItemStack arrowStack = new ItemStack(Items.ARROW);
 			ItemStack lingeringPotion = PotionUtils.addPotionToItemStack(new ItemStack(Items.LINGERING_POTION), potionType);
 			Ingredient arrowIngredient = Ingredient.fromStacks(arrowStack);

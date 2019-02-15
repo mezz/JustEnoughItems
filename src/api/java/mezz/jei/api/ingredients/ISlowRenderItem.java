@@ -1,6 +1,6 @@
 package mezz.jei.api.ingredients;
 
-import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.item.Item;
 
 /**

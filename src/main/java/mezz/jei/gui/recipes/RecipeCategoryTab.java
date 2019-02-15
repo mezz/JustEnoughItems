@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -32,7 +32,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
 		logic.setRecipeCategory(category);
 		SoundHandler soundHandler = Minecraft.getInstance().getSoundHandler();
-		soundHandler.play(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+		soundHandler.play(SimpleSound.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 		return true;
 	}
 
