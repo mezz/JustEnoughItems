@@ -33,7 +33,7 @@
 
   "_comment": "Error Messages",
   "jei.chat.error.command.too.long": "JEI musi być na serwerze, żeby obsłużyć tę komendę czatu. Jest ona zbyt długa dla Minecrafta, aby ją wysłać.",
-  "jei.chat.error.no.cheat.permission.1": "You Nie masz uprawnień do używania trybu cheatów JEI.",
+  "jei.chat.error.no.cheat.permission.1": "Nie masz uprawnień do używania trybu cheatów JEI.",
   "jei.chat.error.no.cheat.permission.2": "Uprawnienia są nadawane graczom, którzy mogą używać komendy /give lub są w trybie kreatywnym.",
 
   "_comment": "Key Bindings",
@@ -71,7 +71,7 @@
   "config.jei.search.tooltipSearchMode": "#Tooltip",
   "config.jei.search.tooltipSearchMode.comment": "Tryb wyszukiwania po tooltipach (prefiks: #)",
   "config.jei.search.tagSearchMode": "$Tag",
-  "config.jei.search.tagSearchMode.comment": "Search mode for Tag Names (prefix: $)",
+  "config.jei.search.tagSearchMode.comment": "Tryb wyszukiwania po tagach (prefiks: $)",
   "config.jei.search.creativeTabSearchMode": "%%KartaTrybuKreatywnego",
   "config.jei.search.creativeTabSearchMode.comment": "Tryb wyszukiwania po nazwach kart znajdujących się w ekwipunku trybu kreatywnego (prefiks: %)",
   "config.jei.search.colorSearchMode": "^Kolor",

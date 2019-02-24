@@ -77,7 +77,7 @@
   "config.jei.search.colorSearchMode": "^Color",
   "config.jei.search.colorSearchMode.comment": "Search mode for Colors (prefix: ^)",
   "config.jei.search.resourceIdSearchMode": "&ResourceId",
-  "config.jei.search.resourceIdSearchMode.comment": "Search mode for resources ids (prefix: &)",
+  "config.jei.search.resourceIdSearchMode.comment": "Search mode for resources IDs (prefix: &)",
   "config.jei.advanced": "Advanced",
   "config.jei.advanced.comment": "Advanced config options to change the way JEI functions.",
   "config.jei.advanced.itemBlacklist": "Ingredient Blacklist",
