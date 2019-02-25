@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import mezz.jei.api.recipe.IIngredientType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -140,7 +141,7 @@ public class VanillaPlugin implements IModPlugin {
 		MinecraftForge.EVENT_BUS.register(enchantedBookCache);
 		EnchantDataHelper enchantmentHelper = new EnchantDataHelper(enchantedBookCache, itemStackHelper);
 		EnchantDataRenderer enchantmentRenderer = new EnchantDataRenderer(itemStackRenderer, enchantedBookCache);
-		ingredientRegistration.register(() -> EnchantmentData.class, enchantments, enchantmentHelper, enchantmentRenderer);
+		ingredientRegistration.register(VanillaTypes.ENCHANT, enchantments, enchantmentHelper, enchantmentRenderer);
 	}
 
 	@Override
