@@ -23,7 +23,7 @@ import net.minecraft.tags.ItemTags;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.IIngredientManager;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
 import mezz.jei.util.ErrorUtil;
@@ -37,7 +37,7 @@ public final class AnvilRecipeMaker {
 	private AnvilRecipeMaker() {
 	}
 
-	public static List<Object> getAnvilRecipes(IVanillaRecipeFactory vanillaRecipeFactory, IIngredientRegistry ingredientRegistry) {
+	public static List<Object> getAnvilRecipes(IVanillaRecipeFactory vanillaRecipeFactory, IIngredientManager ingredientManager) {
 		List<Object> recipes = new ArrayList<>();
 		Stopwatch sw = Stopwatch.createStarted();
 		try {
@@ -50,7 +50,7 @@ public final class AnvilRecipeMaker {
 		sw.reset();
 		sw.start();
 		try {
-			getBookEnchantmentRecipes(recipes, vanillaRecipeFactory, ingredientRegistry);
+			getBookEnchantmentRecipes(recipes, vanillaRecipeFactory, ingredientManager);
 		} catch (RuntimeException e) {
 			LOGGER.error("Failed to create enchantment recipes.", e);
 		}
@@ -59,8 +59,8 @@ public final class AnvilRecipeMaker {
 		return recipes;
 	}
 
-	private static void getBookEnchantmentRecipes(List<Object> recipes, IVanillaRecipeFactory vanillaRecipeFactory, IIngredientRegistry ingredientRegistry) {
-		Collection<ItemStack> ingredients = ingredientRegistry.getAllIngredients(VanillaTypes.ITEM);
+	private static void getBookEnchantmentRecipes(List<Object> recipes, IVanillaRecipeFactory vanillaRecipeFactory, IIngredientManager ingredientManager) {
+		Collection<ItemStack> ingredients = ingredientManager.getAllIngredients(VanillaTypes.ITEM);
 		Collection<Enchantment> enchantments = ForgeRegistries.ENCHANTMENTS.getValues();
 		for (ItemStack ingredient : ingredients) {
 			if (ingredient.isEnchantable()) {

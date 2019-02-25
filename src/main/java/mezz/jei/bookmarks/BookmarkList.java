@@ -9,27 +9,27 @@ import mezz.jei.config.BookmarkConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.ingredients.IngredientListElementFactory;
-import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.ingredients.IngredientManager;
 
 public class BookmarkList implements IIngredientGridSource {
 	private final List<Object> list = new LinkedList<>();
 	private final List<IIngredientListElement<?>> ingredientListElements = new LinkedList<>();
-	private final IngredientRegistry ingredientRegistry;
+	private final IngredientManager ingredientManager;
 	private final BookmarkConfig bookmarkConfig;
 	private final List<IIngredientGridSource.Listener> listeners = new ArrayList<>();
 
-	public BookmarkList(IngredientRegistry ingredientRegistry, BookmarkConfig bookmarkConfig) {
-		this.ingredientRegistry = ingredientRegistry;
+	public BookmarkList(IngredientManager ingredientManager, BookmarkConfig bookmarkConfig) {
+		this.ingredientManager = ingredientManager;
 		this.bookmarkConfig = bookmarkConfig;
 	}
 
 	public <T> boolean add(T ingredient) {
-		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		Object normalized = ingredientHelper.normalizeIngredient(ingredient);
 		if (!contains(normalized)) {
 			if (addToLists(normalized, true)) {
 				notifyListenersOfChange();
-				bookmarkConfig.saveBookmarks(ingredientRegistry, ingredientListElements);
+				bookmarkConfig.saveBookmarks(ingredientManager, ingredientListElements);
 				return true;
 			}
 		}
@@ -38,7 +38,7 @@ public class BookmarkList implements IIngredientGridSource {
 
 	private boolean contains(Object ingredient) {
 		// We cannot assume that ingredients have a working equals() implementation. Even ItemStack doesn't have one...
-		IIngredientHelper<Object> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		IIngredientHelper<Object> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		for (Object existing : list) {
 			if (ingredient == existing) {
 				return true;
@@ -59,7 +59,7 @@ public class BookmarkList implements IIngredientGridSource {
 				list.remove(index);
 				ingredientListElements.remove(index);
 				notifyListenersOfChange();
-				bookmarkConfig.saveBookmarks(ingredientRegistry, ingredientListElements);
+				bookmarkConfig.saveBookmarks(ingredientManager, ingredientListElements);
 				return true;
 			}
 			index++;

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import com.google.common.collect.ImmutableListMultimap;
+
 public class ListMultiMap<K, V> extends MultiMap<K, V, List<V>> {
 	public ListMultiMap() {
 		this(ArrayList::new);
@@ -16,5 +18,17 @@ public class ListMultiMap<K, V> extends MultiMap<K, V, List<V>> {
 
 	public ListMultiMap(Map<K, List<V>> map, Supplier<List<V>> collectionSupplier) {
 		super(map, collectionSupplier);
+	}
+
+	@Override
+	public ImmutableListMultimap<K, V> toImmutable() {
+		ImmutableListMultimap.Builder<K, V> builder = ImmutableListMultimap.builder();
+		for (Map.Entry<K, List<V>> entry : map.entrySet()) {
+			K key = entry.getKey();
+			for (V value : entry.getValue()) {
+				builder.put(key, value);
+			}
+		}
+		return builder.build();
 	}
 }

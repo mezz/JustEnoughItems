@@ -7,6 +7,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.registration.IRecipeTransferRegistration;
 
 /**
  * A recipe transfer handler moves items into a crafting area, based on the items in a recipe.
@@ -16,7 +17,7 @@ import mezz.jei.api.gui.IRecipeLayout;
  *
  * Useful functions for implementing a recipe transfer handler can be found in {@link IRecipeTransferHandlerHelper}.
  *
- * To register your recipe transfer handler, use {@link IRecipeTransferRegistry#addRecipeTransferHandler(IRecipeTransferHandler, ResourceLocation)}
+ * To register your recipe transfer handler, use {@link IRecipeTransferRegistration#addRecipeTransferHandler(IRecipeTransferHandler, ResourceLocation)}
  */
 public interface IRecipeTransferHandler<C extends Container> {
 	/**

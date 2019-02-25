@@ -30,7 +30,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 		ingredientRendererMap.put(ingredientType, ingredientRenderer);
 	}
 
-	public IngredientRegistry createIngredientRegistry(IModIdHelper modIdHelper, IngredientBlacklistInternal blacklist, boolean enableDebugLogs) {
+	public IngredientManager createIngredientManager(IModIdHelper modIdHelper, IngredientBlacklistInternal blacklist, boolean enableDebugLogs) {
 		Map<IIngredientType, IngredientSet> ingredientsMap = new IdentityHashMap<>();
 		for (Map.Entry<IIngredientType, Collection> entry : allIngredientsMap.entrySet()) {
 			IIngredientType ingredientType = entry.getKey();
@@ -39,7 +39,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 			ingredientsMap.put(ingredientType, ingredientSet);
 		}
 
-		return new IngredientRegistry(
+		return new IngredientManager(
 			modIdHelper,
 			blacklist,
 			ingredientsMap,

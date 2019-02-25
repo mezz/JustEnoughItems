@@ -4,11 +4,12 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.Internal;
+import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.ModIds;
-import mezz.jei.api.recipe.category.IRecipeCategoryRegistration;
+import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.overlay.GuiProperties;
 import mezz.jei.gui.recipes.RecipesGui;
@@ -23,18 +24,18 @@ public class JeiInternalPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerCategories(IRecipeCategoryRegistration registry) {
-		JeiHelpers jeiHelpers = Internal.getHelpers();
-		GuiHelper guiHelper = jeiHelpers.getGuiHelper();
+	public void registerCategories(IRecipeCategoryRegistration registration, IJeiHelpers jeiHelpers) {
+		JeiHelpers internalJeiHelpers = Internal.getHelpers();
+		GuiHelper guiHelper = internalJeiHelpers.getGuiHelper();
 
-		registry.addRecipeCategories(
+		registration.addRecipeCategories(
 			new IngredientInfoRecipeCategory(guiHelper)
 		);
 	}
 
 	@Override
-	public void register(IModRegistry registry) {
-		registry.addGuiScreenHandler(GuiContainer.class, GuiProperties::create);
-		registry.addGuiScreenHandler(RecipesGui.class, GuiProperties::create);
+	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+		registration.addGuiScreenHandler(GuiContainer.class, GuiProperties::create);
+		registration.addGuiScreenHandler(RecipesGui.class, GuiProperties::create);
 	}
 }

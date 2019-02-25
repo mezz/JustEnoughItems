@@ -11,12 +11,12 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.util.InputMappings;
-import net.minecraft.util.ResourceLocation;
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.api.gui.IGuiClickableArea;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.IIngredientManager;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.IHideModeConfig;
@@ -27,31 +27,28 @@ import mezz.jei.gui.Focus;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
-import mezz.jei.gui.recipes.RecipeClickableArea;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientFilter;
-import mezz.jei.ingredients.IngredientRegistry;
-import mezz.jei.recipes.RecipeRegistry;
-import mezz.jei.runtime.JeiRuntime;
+import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.util.ReflectionUtil;
 
 public class InputHandler {
-	private final RecipeRegistry recipeRegistry;
-	private final IIngredientRegistry ingredientRegistry;
+	private final IIngredientManager ingredientManager;
 	private final IngredientFilter ingredientFilter;
 	private final RecipesGui recipesGui;
 	private final IngredientListOverlay ingredientListOverlay;
 	private final IHideModeConfig hideModeConfig;
 	private final IWorldConfig worldConfig;
+	private final GuiScreenHelper guiScreenHelper;
 	private final LeftAreaDispatcher leftAreaDispatcher;
 	private final BookmarkList bookmarkList;
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<>();
 	private final IntSet clickHandled = new IntArraySet();
 
 	public InputHandler(
-		JeiRuntime runtime,
+		RecipesGui recipesGui,
 		IngredientFilter ingredientFilter,
-		IngredientRegistry ingredientRegistry,
+		IngredientManager ingredientManager,
 		IngredientListOverlay ingredientListOverlay,
 		IHideModeConfig hideModeConfig,
 		IWorldConfig worldConfig,
@@ -59,13 +56,13 @@ public class InputHandler {
 		LeftAreaDispatcher leftAreaDispatcher,
 		BookmarkList bookmarkList
 	) {
-		this.recipeRegistry = runtime.getRecipeRegistry();
-		this.ingredientRegistry = ingredientRegistry;
+		this.ingredientManager = ingredientManager;
 		this.ingredientFilter = ingredientFilter;
-		this.recipesGui = runtime.getRecipesGui();
+		this.recipesGui = recipesGui;
 		this.ingredientListOverlay = ingredientListOverlay;
 		this.hideModeConfig = hideModeConfig;
 		this.worldConfig = worldConfig;
+		this.guiScreenHelper = guiScreenHelper;
 		this.leftAreaDispatcher = leftAreaDispatcher;
 		this.bookmarkList = bookmarkList;
 
@@ -172,10 +169,9 @@ public class InputHandler {
 
 		if (guiScreen instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) guiScreen;
-			RecipeClickableArea clickableArea = recipeRegistry.getRecipeClickableArea(guiContainer, mouseX - guiContainer.getGuiLeft(), mouseY - guiContainer.getGuiTop());
+			IGuiClickableArea clickableArea = guiScreenHelper.getGuiClickableArea(guiContainer, mouseX - guiContainer.getGuiLeft(), mouseY - guiContainer.getGuiTop());
 			if (clickableArea != null) {
-				List<ResourceLocation> recipeCategoryUids = clickableArea.getRecipeCategoryUids();
-				recipesGui.showCategories(recipeCategoryUids);
+				clickableArea.onClick(Focus::new, recipesGui);
 				return true;
 			}
 		}
@@ -227,12 +223,12 @@ public class InputHandler {
 		V ingredient = clicked.getValue();
 		IngredientBlacklistType blacklistType = GuiScreen.isCtrlKeyDown() ? IngredientBlacklistType.WILDCARD : IngredientBlacklistType.ITEM;
 
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 
 		if (hideModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
-			hideModeConfig.removeIngredientFromConfigBlacklist(ingredientFilter, ingredientRegistry, ingredient, blacklistType, ingredientHelper);
+			hideModeConfig.removeIngredientFromConfigBlacklist(ingredientFilter, ingredientManager, ingredient, blacklistType, ingredientHelper);
 		} else {
-			hideModeConfig.addIngredientToConfigBlacklist(ingredientFilter, ingredientRegistry, ingredient, blacklistType, ingredientHelper);
+			hideModeConfig.addIngredientToConfigBlacklist(ingredientFilter, ingredientManager, ingredient, blacklistType, ingredientHelper);
 		}
 		clicked.onClickHandled();
 		return true;

@@ -27,7 +27,7 @@ import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.SearchMode;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Translator;
 
@@ -44,10 +44,10 @@ public class IngredientListElementRenderer<T> {
 	public IngredientListElementRenderer(IIngredientListElement<T> element) {
 		this.element = element;
 		T ingredient = element.getIngredient();
-		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientType<T> ingredientType = ingredientRegistry.getIngredientType(ingredient);
-		this.ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientType);
-		this.ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
+		IngredientManager ingredientManager = Internal.getIngredientManager();
+		IIngredientType<T> ingredientType = ingredientManager.getIngredientType(ingredient);
+		this.ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
+		this.ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 	}
 
 	public void setArea(Rectangle area) {

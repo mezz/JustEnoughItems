@@ -19,6 +19,11 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
  */
 public interface IIngredients {
 	/**
+	 * Sets the recipe's inputs. Each input ingredient represents one slot.
+	 */
+	void setInputIngredients(List<Ingredient> inputs);
+
+	/**
 	 * Sets a single recipe input. For recipes with only one input slot.
 	 *
 	 * @param ingredientType The type of ingredient: {@link VanillaTypes#ITEM}, {@link VanillaTypes#FLUID}, etc
@@ -42,11 +47,6 @@ public interface IIngredients {
 	 * @param inputs         The outer list represents the slot, the inner list is a rotating list of ingredients in that slot.
 	 */
 	<T> void setInputLists(IIngredientType<T> ingredientType, List<List<T>> inputs);
-
-	/**
-	 * Sets the recipe's inputs. Each input list represents one slot.
-	 */
-	void setInputIngredients(List<Ingredient> inputs);
 
 	/**
 	 * Sets a single recipe output.

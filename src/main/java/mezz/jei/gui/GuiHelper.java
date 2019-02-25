@@ -9,7 +9,7 @@ import mezz.jei.api.gui.IDrawableAnimated;
 import mezz.jei.api.gui.IDrawableBuilder;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.gui.ITickTimer;
-import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.IIngredientManager;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.gui.elements.DrawableAnimated;
 import mezz.jei.gui.elements.DrawableBlank;
@@ -22,7 +22,7 @@ import mezz.jei.gui.textures.Textures;
 import mezz.jei.util.ErrorUtil;
 
 public class GuiHelper implements IGuiHelper {
-	private final IIngredientRegistry ingredientRegistry;
+	private final IIngredientManager ingredientManager;
 	private final IDrawableStatic slotDrawable;
 	private final IDrawableStatic tabSelected;
 	private final IDrawableStatic tabUnselected;
@@ -45,8 +45,8 @@ public class GuiHelper implements IGuiHelper {
 	private final IDrawableStatic infoIcon;
 	private final IDrawableStatic flameIcon;
 
-	public GuiHelper(IIngredientRegistry ingredientRegistry, Textures textures) {
-		this.ingredientRegistry = ingredientRegistry;
+	public GuiHelper(IIngredientManager ingredientManager, Textures textures) {
+		this.ingredientManager = ingredientManager;
 		this.slotDrawable = createDrawable(textures.slot);
 		this.nineSliceSlot = createNineSliceDrawable(textures.slot);
 
@@ -99,7 +99,7 @@ public class GuiHelper implements IGuiHelper {
 
 	@Override
 	public <V> IDrawable createDrawableIngredient(V ingredient) {
-		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
+		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
 		return new DrawableIngredient<>(ingredient, ingredientRenderer);
 	}
 

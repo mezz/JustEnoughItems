@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.api.IJeiHelpers;
-import mezz.jei.api.ingredients.ISubtypeRegistry;
+import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 
 /**
  * Helps get ItemStacks from common formats used in recipes.
@@ -13,7 +13,7 @@ import mezz.jei.api.ingredients.ISubtypeRegistry;
  */
 public interface IStackHelper {
 	/**
-	 * Similar to ItemStack.areItemStacksEqual but ignores NBT on items without subtypes, and uses the {@link ISubtypeRegistry}
+	 * Similar to ItemStack.areItemStacksEqual but ignores NBT on items without subtypes, and uses the {@link ISubtypeManager}
 	 */
 	boolean isEquivalent(@Nullable ItemStack lhs, @Nullable ItemStack rhs);
 }

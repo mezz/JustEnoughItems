@@ -1,14 +1,11 @@
 package mezz.jei.api;
 
-import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.recipe.IStackHelper;
-import mezz.jei.api.recipe.IVanillaRecipeFactory;
-import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 
 /**
  * IJeiHelpers provides helpers and tools for addon mods.
- * Get the instance from {@link IModRegistry#getJeiHelpers()}.
+ * An instance is passed to your {@link IModPlugin}'s registration methods.
  */
 public interface IJeiHelpers {
 	/**
@@ -21,20 +18,8 @@ public interface IJeiHelpers {
 	 */
 	IStackHelper getStackHelper();
 
-	/*
-	 * Used to stop JEI from displaying a specific ingredient in the ingredient list
-	 */
-	IIngredientBlacklist getIngredientBlacklist();
-
 	/**
-	 * Helps with the implementation of Recipe Transfer Handlers
+	 * Helps with getting the mod name from a mod ID.
 	 */
-	IRecipeTransferHandlerHelper recipeTransferHandlerHelper();
-
-	/**
-	 * Allows manual creation of vanilla recipes.
-	 */
-	IVanillaRecipeFactory getVanillaRecipeFactory();
-
 	IModIdHelper getModIdHelper();
 }

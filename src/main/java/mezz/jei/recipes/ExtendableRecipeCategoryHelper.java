@@ -9,12 +9,12 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import mezz.jei.api.recipe.category.extensions.IRecipeWrapper;
+import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
 import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ExtendableRecipeCategoryHelper<T, W extends IRecipeWrapper> {
+public class ExtendableRecipeCategoryHelper<T, W extends IRecipeCategoryExtension> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final List<RecipeHandler<? extends T, ? extends W>> recipeHandlers = new ArrayList<>();
@@ -91,7 +91,7 @@ public class ExtendableRecipeCategoryHelper<T, W extends IRecipeWrapper> {
 		return recipeHandler.apply(recipe);
 	}
 
-	public static class RecipeHandler<T, W extends IRecipeWrapper> {
+	public static class RecipeHandler<T, W extends IRecipeCategoryExtension> {
 		private final Class<? extends T> recipeClass;
 		private final Function<T, W> factory;
 

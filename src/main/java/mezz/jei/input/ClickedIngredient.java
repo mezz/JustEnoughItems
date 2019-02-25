@@ -8,8 +8,8 @@ import net.minecraft.item.ItemStack;
 import com.google.common.base.MoreObjects;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRegistry;
-import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.api.ingredients.IIngredientManager;
+import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,8 +27,8 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	@Nullable
 	public static <V> ClickedIngredient<V> create(V value, @Nullable Rectangle area) {
 		ErrorUtil.checkNotNull(value, "value");
-		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(value);
+		IngredientManager ingredientManager = Internal.getIngredientManager();
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value);
 		try {
 			if (ingredientHelper.isValidIngredient(value)) {
 				return new ClickedIngredient<>(value, area);
@@ -70,8 +70,8 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	@Override
 	public ItemStack getCheatItemStack() {
 		if (allowsCheating) {
-			IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-			IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(value);
+			IIngredientManager ingredientManager = Internal.getIngredientManager();
+			IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value);
 			return ingredientHelper.getCheatItemStack(value);
 		}
 		return ItemStack.EMPTY;
@@ -86,8 +86,8 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 
 	@Override
 	public String toString() {
-		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(value);
+		IIngredientManager ingredientManager = Internal.getIngredientManager();
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value);
 		return MoreObjects.toStringHelper(ClickedIngredient.class)
 			.add("value", ingredientHelper.getUniqueId(value))
 			.add("area", area)

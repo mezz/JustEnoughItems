@@ -13,7 +13,7 @@ public final class Focus<V> implements IFocus<V> {
 		ErrorUtil.checkNotNull(mode, "focus mode");
 		ErrorUtil.checkIsValidIngredient(value, "focus value");
 		this.mode = mode;
-		IIngredientHelper<V> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(value);
+		IIngredientHelper<V> ingredientHelper = Internal.getIngredientManager().getIngredientHelper(value);
 		this.value = ingredientHelper.copyIngredient(value);
 	}
 

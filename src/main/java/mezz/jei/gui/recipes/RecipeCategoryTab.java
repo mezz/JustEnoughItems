@@ -16,7 +16,7 @@ import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.ingredients.IngredientManager;
 
 public class RecipeCategoryTab extends RecipeGuiTab {
 	private final IRecipeGuiLogic logic;
@@ -68,8 +68,8 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	}
 
 	private static <T> void renderIngredient(int iconX, int iconY, T ingredient) {
-		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientRenderer<T> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
+		IngredientManager ingredientManager = Internal.getIngredientManager();
+		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
 		GlStateManager.enableDepthTest();
 		ingredientRenderer.render(iconX, iconY, ingredient);
 		GlStateManager.enableAlphaTest();

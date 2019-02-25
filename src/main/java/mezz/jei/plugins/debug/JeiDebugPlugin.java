@@ -15,16 +15,21 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.Internal;
+import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.ModIds;
-import mezz.jei.api.gui.IAdvancedGuiHandler;
-import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.gui.IGuiContainerHandler;
+import mezz.jei.api.ingredients.IIngredientManager;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.category.IRecipeCategoryRegistration;
+import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
+import mezz.jei.api.recipe.IVanillaRecipeFactory;
+import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.registration.IRecipeCatalystRegistration;
+import mezz.jei.api.registration.IRecipeCategoryRegistration;
+import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
@@ -36,7 +41,7 @@ import mezz.jei.runtime.JeiHelpers;
 @JeiPlugin
 public class JeiDebugPlugin implements IModPlugin {
 	@Nullable
-	public static IIngredientRegistry ingredientRegistry;
+	public static IIngredientManager ingredientManager;
 	@Nullable
 	public static IJeiRuntime jeiRuntime;
 
@@ -46,31 +51,31 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerIngredients(IModIngredientRegistration ingredientRegistration) {
+	public void registerIngredients(IModIngredientRegistration registration, ISubtypeManager subtypeManager) {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
 			DebugIngredientHelper ingredientHelper = new DebugIngredientHelper();
 			DebugIngredientRenderer ingredientRenderer = new DebugIngredientRenderer(ingredientHelper);
-			ingredientRegistration.register(DebugIngredient.TYPE, Collections.emptyList(), ingredientHelper, ingredientRenderer);
+			registration.register(DebugIngredient.TYPE, Collections.emptyList(), ingredientHelper, ingredientRenderer);
 		}
 	}
 
 	@Override
-	public void registerCategories(IRecipeCategoryRegistration registry) {
+	public void registerCategories(IRecipeCategoryRegistration registration, IJeiHelpers jeiHelpers) {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
-			JeiHelpers jeiHelpers = Internal.getHelpers();
-			GuiHelper guiHelper = jeiHelpers.getGuiHelper();
-			registry.addRecipeCategories(
+			JeiHelpers internalJeiHelpers = Internal.getHelpers();
+			GuiHelper guiHelper = internalJeiHelpers.getGuiHelper();
+			registration.addRecipeCategories(
 				new DebugRecipeCategory(guiHelper)
 			);
 		}
 	}
 
 	@Override
-	public void register(IModRegistry registry) {
-		ingredientRegistry = registry.getIngredientRegistry();
+	public void registerRecipes(IRecipeRegistration registration, IJeiHelpers jeiHelpers, IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory) {
+		JeiDebugPlugin.ingredientManager = ingredientManager;
 
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
-			registry.addIngredientInfo(Arrays.asList(
+			registration.addIngredientInfo(Arrays.asList(
 				new ItemStack(Blocks.OAK_DOOR),
 				new ItemStack(Blocks.SPRUCE_DOOR),
 				new ItemStack(Blocks.BIRCH_DOOR),
@@ -86,32 +91,17 @@ public class JeiDebugPlugin implements IModPlugin {
 
 //			registry.addIngredientInfo(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), VanillaTypes.FLUID, "water");
 
-			registry.addRecipes(Arrays.asList(
+			registration.addRecipes(Arrays.asList(
 				new DebugRecipe(),
 				new DebugRecipe()
 			), DebugRecipeCategory.UID);
+		}
+	}
 
-			registry.addRecipeCatalyst(new DebugIngredient(7), DebugRecipeCategory.UID);
-//			registry.addRecipeCatalyst(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), DebugRecipeCategory.UID);
-			registry.addRecipeCatalyst(new ItemStack(Items.STICK), DebugRecipeCategory.UID);
-			int i = 0;
-			for (Item item : ForgeRegistries.ITEMS.getValues()) {
-				ItemStack catalystIngredient = new ItemStack(item);
-				if (!catalystIngredient.isEmpty()) {
-					registry.addRecipeCatalyst(catalystIngredient, DebugRecipeCategory.UID);
-				}
-				i++;
-				if (i > 30) {
-					break;
-				}
-			}
-
-			registry.addAdvancedGuiHandlers(new IAdvancedGuiHandler<GuiBrewingStand>() {
-				@Override
-				public Class<GuiBrewingStand> getGuiContainerClass() {
-					return GuiBrewingStand.class;
-				}
-
+	@Override
+	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+		if (ClientConfig.getInstance().isDebugModeEnabled()) {
+			registration.addGuiContainerHandler(GuiBrewingStand.class, new IGuiContainerHandler<GuiBrewingStand>() {
 				@Override
 				public List<Rectangle> getGuiExtraAreas(GuiBrewingStand guiContainer) {
 					int widthMovement = (int) ((System.currentTimeMillis() / 100) % 100);
@@ -131,7 +121,27 @@ public class JeiDebugPlugin implements IModPlugin {
 				}
 			});
 
-			registry.addGhostIngredientHandler(GuiBrewingStand.class, new DebugGhostIngredientHandler<>());
+			registration.addGhostIngredientHandler(GuiBrewingStand.class, new DebugGhostIngredientHandler<>());
+		}
+	}
+
+	@Override
+	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
+		if (ClientConfig.getInstance().isDebugModeEnabled()) {
+			registration.addRecipeCatalyst(new DebugIngredient(7), DebugRecipeCategory.UID);
+//			registry.addRecipeCatalyst(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), DebugRecipeCategory.UID);
+			registration.addRecipeCatalyst(new ItemStack(Items.STICK), DebugRecipeCategory.UID);
+			int i = 0;
+			for (Item item : ForgeRegistries.ITEMS.getValues()) {
+				ItemStack catalystIngredient = new ItemStack(item);
+				if (!catalystIngredient.isEmpty()) {
+					registration.addRecipeCatalyst(catalystIngredient, DebugRecipeCategory.UID);
+				}
+				i++;
+				if (i > 30) {
+					break;
+				}
+			}
 		}
 	}
 
@@ -140,9 +150,8 @@ public class JeiDebugPlugin implements IModPlugin {
 		JeiDebugPlugin.jeiRuntime = jeiRuntime;
 
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
-			if (ingredientRegistry != null) {
-				ingredientRegistry.addIngredientsAtRuntime(DebugIngredient.TYPE, DebugIngredientListFactory.create());
-			}
+			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
+			ingredientManager.addIngredientsAtRuntime(DebugIngredient.TYPE, DebugIngredientListFactory.create());
 		}
 	}
 }

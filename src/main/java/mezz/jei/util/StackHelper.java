@@ -6,18 +6,18 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.ingredients.ISubtypeRegistry;
+import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.recipe.IStackHelper;
 
 public class StackHelper implements IStackHelper {
-	private final ISubtypeRegistry subtypeRegistry;
+	private final ISubtypeManager subtypeManager;
 
-	public StackHelper(ISubtypeRegistry subtypeRegistry) {
-		this.subtypeRegistry = subtypeRegistry;
+	public StackHelper(ISubtypeManager subtypeManager) {
+		this.subtypeManager = subtypeManager;
 	}
 
 	/**
-	 * Similar to ItemStack.areItemStacksEqual but ignores NBT on items without subtypes, and uses the {@link ISubtypeRegistry}
+	 * Similar to ItemStack.areItemStacksEqual but ignores NBT on items without subtypes, and uses the {@link ISubtypeManager}
 	 */
 	@Override
 	public boolean isEquivalent(@Nullable ItemStack lhs, @Nullable ItemStack rhs) {
@@ -54,7 +54,7 @@ public class StackHelper implements IStackHelper {
 
 		String result = registryName.toString();
 		if (mode == UidMode.NORMAL) {
-			String subtypeInfo = subtypeRegistry.getSubtypeInfo(stack);
+			String subtypeInfo = subtypeManager.getSubtypeInfo(stack);
 			if (subtypeInfo != null && !subtypeInfo.isEmpty()) {
 				result = result + ':' + subtypeInfo;
 			}

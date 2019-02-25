@@ -5,17 +5,17 @@ import java.awt.Rectangle;
 import java.util.Collection;
 import java.util.Collections;
 
-import mezz.jei.api.IModRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.registration.IGuiHandlerRegistration;
 
 /**
  * Allows plugins to change how JEI is displayed next to guis.
  * This is for mods that display next to all GUIs, like JEI does, so they can draw together correctly.
- * For handling modded GUIs, you should use {@link IAdvancedGuiHandler} instead.
+ * For handling modded GUIs, you should use {@link IGuiContainerHandler} instead.
  *
- * Register your implementation with {@link IModRegistry#addGlobalGuiHandlers(IGlobalGuiHandler...)}.
+ * Register your implementation with {@link IGuiHandlerRegistration#addGlobalGuiHandler(IGlobalGuiHandler)}.
  *
- * @see IAdvancedGuiHandler
+ * @see IGuiContainerHandler
  */
 public interface IGlobalGuiHandler {
 	/**

@@ -14,7 +14,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.ingredients.GuiIngredient;
-import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
@@ -78,9 +78,9 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 	}
 
 	private <T> GuiIngredient<T> createGuiIngredient(T ingredient, int index, int maxIngredientsPerColumn) {
-		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientRenderer<T> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
-		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		IngredientManager ingredientManager = Internal.getIngredientManager();
+		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		int column = index / maxIngredientsPerColumn;
 		int row = index % maxIngredientsPerColumn;
 		Rectangle rect = new Rectangle(

@@ -7,11 +7,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipe;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.IModRegistry;
 import mezz.jei.api.ModIds;
-import mezz.jei.api.ingredients.IIngredientRegistry;
-import mezz.jei.api.recipe.category.extensions.ICustomCraftingRecipeWrapper;
-import mezz.jei.api.recipe.category.extensions.IShapedCraftingRecipeWrapper;
+import mezz.jei.api.ingredients.IIngredientManager;
+import mezz.jei.api.recipe.category.extensions.ICustomCraftingCategoryExtension;
+import mezz.jei.api.recipe.category.extensions.IShapedCraftingCategoryExtension;
+import mezz.jei.api.registration.IRecipeRegistration;
 
 /**
  * List of built-in recipe category UIDs, so that plugins with their own recipe handlers can use them.
@@ -22,9 +22,9 @@ public final class VanillaRecipeCategoryUid {
 	 *
 	 * Automatically includes all vanilla and Forge recipes.
 	 *
-	 * To add a shaped recipe wrapper to this category, it must implement {@link IShapedCraftingRecipeWrapper}.
+	 * To add a shaped recipe extension to this category, it must implement {@link IShapedCraftingCategoryExtension}.
 	 *
-	 * To override the normal behavior of the crafting recipe category, you can implement {@link ICustomCraftingRecipeWrapper}
+	 * To override the normal behavior of the crafting recipe category, you can implement {@link ICustomCraftingCategoryExtension}
 	 */
 	public static final ResourceLocation CRAFTING = new ResourceLocation(ModIds.MINECRAFT_ID, "crafting");
 
@@ -46,7 +46,7 @@ public final class VanillaRecipeCategoryUid {
 	 * The brewing recipe category.
 	 *
 	 * Automatically tries to generate all potion variations from the basic ingredients.
-	 * You can get the list of known potion reagents from {@link IIngredientRegistry#getPotionIngredients()}.
+	 * You can get the list of known potion reagents from {@link IIngredientManager#getPotionIngredients()}.
 	 *
 	 * Also automatically adds modded potions from {@link BrewingRecipeRegistry#getRecipes()}.
 	 * JEI can only understand modded potion recipes that are built into vanilla or Forge.
@@ -64,7 +64,7 @@ public final class VanillaRecipeCategoryUid {
 	 * The JEI info recipe category shows extra information about ingredients.
 	 *
 	 * This is a built-in category, you can add new recipes with
-	 * {@link IModRegistry#addIngredientInfo(Object, IIngredientType, String...)}   or {@link IModRegistry#addIngredientInfo(List, IIngredientType, String...)}
+	 * {@link IRecipeRegistration#addIngredientInfo(Object, IIngredientType, String...)}   or {@link IRecipeRegistration#addIngredientInfo(List, IIngredientType, String...)}
 	 */
 	public static final ResourceLocation INFORMATION = new ResourceLocation(ModIds.JEI_ID, "information");
 

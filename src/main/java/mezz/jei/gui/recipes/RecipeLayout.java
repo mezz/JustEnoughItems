@@ -267,7 +267,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	}
 
 	@Override
-	public void setRecipeTransferButton(int posX, int posY) {
+	public void moveRecipeTransferButton(int posX, int posY) {
 		if (recipeTransferButton != null) {
 			recipeTransferButton.x = posX + this.posX;
 			recipeTransferButton.y = posY + this.posY;

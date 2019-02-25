@@ -18,7 +18,7 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.IIngredientManager;
 import mezz.jei.api.recipe.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
 
@@ -26,16 +26,16 @@ public class BrewingRecipeMaker {
 
 	private final Set<Class> unhandledRecipeClasses = new HashSet<>();
 	private final Set<IJeiBrewingRecipe> disabledRecipes = new HashSet<>();
-	private final IIngredientRegistry ingredientRegistry;
+	private final IIngredientManager ingredientManager;
 	private final IVanillaRecipeFactory vanillaRecipeFactory;
 
-	public static List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientRegistry ingredientRegistry, IVanillaRecipeFactory vanillaRecipeFactory) {
-		BrewingRecipeMaker brewingRecipeMaker = new BrewingRecipeMaker(ingredientRegistry, vanillaRecipeFactory);
+	public static List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory) {
+		BrewingRecipeMaker brewingRecipeMaker = new BrewingRecipeMaker(ingredientManager, vanillaRecipeFactory);
 		return brewingRecipeMaker.getBrewingRecipes();
 	}
 
-	private BrewingRecipeMaker(IIngredientRegistry ingredientRegistry, IVanillaRecipeFactory vanillaRecipeFactory) {
-		this.ingredientRegistry = ingredientRegistry;
+	private BrewingRecipeMaker(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory) {
+		this.ingredientManager = ingredientManager;
 		this.vanillaRecipeFactory = vanillaRecipeFactory;
 	}
 
@@ -54,7 +54,7 @@ public class BrewingRecipeMaker {
 	}
 
 	private void addVanillaBrewingRecipes(Collection<IJeiBrewingRecipe> recipes) {
-		List<ItemStack> potionIngredients = ingredientRegistry.getPotionIngredients();
+		List<ItemStack> potionIngredients = ingredientManager.getPotionIngredients();
 		List<ItemStack> knownPotions = new ArrayList<>();
 
 		knownPotions.add(BrewingRecipeUtil.WATER_BOTTLE);

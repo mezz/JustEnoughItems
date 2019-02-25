@@ -12,20 +12,22 @@ import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableList;
-import mezz.jei.api.recipe.IRecipeRegistry;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.ingredients.IngredientLookupState;
-import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.util.MathUtil;
 
 public class RecipeGuiLogic implements IRecipeGuiLogic {
-	private final IRecipeRegistry recipeRegistry;
+	private final IRecipeManager recipeManager;
+	private final RecipeTransferManager recipeTransferManager;
 	private final IRecipeLogicStateListener stateListener;
-	private final IngredientRegistry ingredientRegistry;
+	private final IngredientManager ingredientManager;
 
 	private boolean initialState = true;
 	private IngredientLookupState state;
@@ -36,21 +38,22 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	 */
 	private List<Object> recipes = Collections.emptyList();
 
-	public RecipeGuiLogic(IRecipeRegistry recipeRegistry, IRecipeLogicStateListener stateListener, IngredientRegistry ingredientRegistry) {
-		this.recipeRegistry = recipeRegistry;
+	public RecipeGuiLogic(IRecipeManager recipeManager, RecipeTransferManager recipeTransferManager, IRecipeLogicStateListener stateListener, IngredientManager ingredientManager) {
+		this.recipeManager = recipeManager;
+		this.recipeTransferManager = recipeTransferManager;
 		this.stateListener = stateListener;
-		this.ingredientRegistry = ingredientRegistry;
-		List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories();
+		this.ingredientManager = ingredientManager;
+		List<IRecipeCategory> recipeCategories = recipeManager.getRecipeCategories();
 		this.state = new IngredientLookupState(null, recipeCategories, 0, 0);
 	}
 
 	@Override
 	public <V> boolean setFocus(Focus<V> focus) {
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(focus.getValue());
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(focus.getValue());
 		IFocus<?> translatedFocus = ingredientHelper.translateFocus(focus, Focus::new);
 		Focus<?> checkedTranslatedFocus = Focus.check(translatedFocus);
 
-		final List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories(translatedFocus);
+		final List<IRecipeCategory> recipeCategories = recipeManager.getRecipeCategories(translatedFocus);
 		if (recipeCategories.isEmpty()) {
 			return false;
 		}
@@ -75,7 +78,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			if (openContainer != null) {
 				for (int i = 0; i < recipeCategories.size(); i++) {
 					IRecipeCategory recipeCategory = recipeCategories.get(i);
-					IRecipeTransferHandler recipeTransferHandler = recipeRegistry.getRecipeTransferHandler(openContainer, recipeCategory);
+					IRecipeTransferHandler recipeTransferHandler = recipeTransferManager.getRecipeTransferHandler(openContainer, recipeCategory);
 					if (recipeTransferHandler != null) {
 						return i;
 					}
@@ -117,7 +120,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			history.push(this.state);
 		}
 
-		final List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories();
+		final List<IRecipeCategory> recipeCategories = recipeManager.getRecipeCategories();
 		final int recipeCategoryIndex = recipeCategories.indexOf(recipeCategory);
 		final IngredientLookupState state = new IngredientLookupState(null, recipeCategories, recipeCategoryIndex, 0);
 		setState(state);
@@ -127,7 +130,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public boolean setCategoryFocus(List<ResourceLocation> recipeCategoryUids) {
-		List<IRecipeCategory> recipeCategories = recipeRegistry.getRecipeCategories(recipeCategoryUids);
+		List<IRecipeCategory> recipeCategories = recipeManager.getRecipeCategories(recipeCategoryUids);
 		if (recipeCategories.isEmpty()) {
 			return false;
 		}
@@ -150,7 +153,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public List<Object> getRecipeCatalysts(IRecipeCategory recipeCategory) {
-		return recipeRegistry.getRecipeCatalysts(recipeCategory);
+		return recipeManager.getRecipeCatalysts(recipeCategory);
 	}
 
 	@Override
@@ -166,10 +169,10 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		Focus<?> focus = state.getFocus();
 		if (focus != null) {
 			//noinspection unchecked
-			this.recipes = recipeRegistry.getRecipes(recipeCategory, focus);
+			this.recipes = recipeManager.getRecipes(recipeCategory, focus);
 		} else {
 			//noinspection unchecked
-			this.recipes = recipeRegistry.getRecipes(recipeCategory);
+			this.recipes = recipeManager.getRecipes(recipeCategory);
 		}
 	}
 
@@ -198,7 +201,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			RecipeLayout recipeLayout = RecipeLayout.create(recipeWidgetIndex++, recipeCategory, recipe, state.getFocus(), posX, recipePosY);
 			if (recipeLayout == null) {
 				recipes.remove(recipeIndex);
-				recipeRegistry.hideRecipe(recipe, recipeCategory.getUid());
+				recipeManager.hideRecipe(recipe, recipeCategory.getUid());
 				recipeIndex--;
 			} else {
 				recipeLayouts.add(recipeLayout);
@@ -285,7 +288,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public boolean hasAllCategories() {
-		return state.getRecipeCategories().size() == recipeRegistry.getRecipeCategories().size();
+		return state.getRecipeCategories().size() == recipeManager.getRecipeCategories().size();
 	}
 
 }

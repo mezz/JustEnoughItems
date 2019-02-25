@@ -11,7 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.NonNullList;
 
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
-import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.IIngredientManager;
 import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.config.SearchMode;
 import mezz.jei.events.EventBusHelper;
@@ -21,19 +21,19 @@ import mezz.jei.suffixtree.GeneralizedSuffixTree;
 public class IngredientFilterBackgroundBuilder {
 	private final Char2ObjectMap<PrefixedSearchTree> prefixedSearchTrees;
 	private final NonNullList<IIngredientListElement> elementList;
-	private final IIngredientRegistry ingredientRegistry;
+	private final IIngredientManager ingredientManager;
 	private final IModIdHelper modIdHelper;
 	private final Consumer<TickEvent.ClientTickEvent> onTickHandler;
 
 	public IngredientFilterBackgroundBuilder(
 		Char2ObjectMap<PrefixedSearchTree> prefixedSearchTrees,
 		NonNullList<IIngredientListElement> elementList,
-		IIngredientRegistry ingredientRegistry,
+		IIngredientManager ingredientManager,
 		IModIdHelper modIdHelper
 	) {
 		this.prefixedSearchTrees = prefixedSearchTrees;
 		this.elementList = elementList;
-		this.ingredientRegistry = ingredientRegistry;
+		this.ingredientManager = ingredientManager;
 		this.modIdHelper = modIdHelper;
 		this.onTickHandler = this::onClientTick;
 	}
@@ -77,7 +77,7 @@ public class IngredientFilterBackgroundBuilder {
 
 		for (int i = startIndex; i < elementList.size(); i++) {
 			IIngredientListElement<?> element = elementList.get(i);
-			IngredientListElementInfo<?> info = IngredientListElementInfo.create(element, ingredientRegistry, modIdHelper);
+			IngredientListElementInfo<?> info = IngredientListElementInfo.create(element, ingredientManager, modIdHelper);
 			if (info == null) {
 				continue;
 			}

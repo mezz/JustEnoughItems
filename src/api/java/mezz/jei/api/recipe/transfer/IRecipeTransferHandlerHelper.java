@@ -3,12 +3,14 @@ package mezz.jei.api.recipe.transfer;
 import java.util.Collection;
 
 import mezz.jei.api.IJeiHelpers;
+import mezz.jei.api.IModPlugin;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError.Type;
+import mezz.jei.api.registration.IRecipeTransferRegistration;
 
 /**
  * Helper functions for implementing an {@link IRecipeTransferHandler}.
- * Get the instance from {@link IJeiHelpers#recipeTransferHandlerHelper()}.
+ * An instance is passed to your plugin's {@link IModPlugin#registerRecipeTransferHandlers(IRecipeTransferRegistration, IJeiHelpers, IRecipeTransferHandlerHelper)}.
  */
 public interface IRecipeTransferHandlerHelper {
 	/**

@@ -18,7 +18,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.Internal;
-import mezz.jei.api.recipe.IRecipeRegistry;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.gui.IRecipesGui;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableStatic;
@@ -34,11 +34,12 @@ import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.elements.GuiIconButtonSmall;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.overlay.IngredientListOverlay;
-import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.MouseUtil;
+import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.transfer.RecipeTransferUtil;
 import mezz.jei.util.ErrorUtil;
@@ -50,6 +51,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	private static final int innerPadding = 14;
 	private static final int buttonWidth = 13;
 	private static final int buttonHeight = 13;
+	private final RecipeTransferManager recipeTransferManager;
 
 	private int headerHeight;
 
@@ -82,8 +84,9 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	private boolean init = false;
 
-	public RecipesGui(IRecipeRegistry recipeRegistry, IngredientRegistry ingredientRegistry) {
-		this.logic = new RecipeGuiLogic(recipeRegistry, this, ingredientRegistry);
+	public RecipesGui(IRecipeManager recipeManager, RecipeTransferManager recipeTransferManager, IngredientManager ingredientManager) {
+		this.recipeTransferManager = recipeTransferManager;
+		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, ingredientManager);
 		this.recipeCatalysts = new RecipeCatalysts();
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
 		this.mc = Minecraft.getInstance();
@@ -497,10 +500,10 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			for (RecipeLayout recipeLayout : recipeLayouts) {
 				RecipeTransferButton button = recipeLayout.getRecipeTransferButton();
 				if (button != null) {
-					button.init(container, player);
+					button.init(recipeTransferManager, container, player);
 					button.setOnClickHandler((mouseX, mouseY) -> {
 						boolean maxTransfer = GuiScreen.isShiftKeyDown();
-						if (container != null && RecipeTransferUtil.transferRecipe(container, recipeLayout, player, maxTransfer)) {
+						if (container != null && RecipeTransferUtil.transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer)) {
 							close();
 						}
 					});

@@ -7,7 +7,7 @@ import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.IRecipeRegistry;
+import mezz.jei.api.recipe.IRecipeManager;
 
 /**
  * JEI's gui for displaying recipes. Use this interface to open recipes.
@@ -18,7 +18,7 @@ public interface IRecipesGui {
 	 * Show recipes for an {@link IFocus}.
 	 * Opens the {@link IRecipesGui} if it is closed.
 	 *
-	 * @see IRecipeRegistry#createFocus(IFocus.Mode, Object)
+	 * @see IRecipeManager#createFocus(IFocus.Mode, Object)
 	 */
 	<V> void show(IFocus<V> focus);
 

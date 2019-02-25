@@ -14,7 +14,7 @@ import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.IIngredientManager;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.recipe.IIngredientType;
@@ -38,11 +38,11 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	private final String resourceId;
 
 	@Nullable
-	public static <V> IngredientListElementInfo<V> create(IIngredientListElement<V> element, IIngredientRegistry ingredientRegistry, IModIdHelper modIdHelper) {
+	public static <V> IngredientListElementInfo<V> create(IIngredientListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		V ingredient = element.getIngredient();
-		IIngredientType<V> ingredientType = ingredientRegistry.getIngredientType(ingredient);
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
-		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientType);
+		IIngredientType<V> ingredientType = ingredientManager.getIngredientType(ingredient);
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
 		try {
 			return new IngredientListElementInfo<>(element, ingredientHelper, ingredientRenderer, modIdHelper);
 		} catch (RuntimeException e) {

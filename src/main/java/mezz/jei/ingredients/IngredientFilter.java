@@ -23,7 +23,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.IIngredientManager;
 import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.config.IHideModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
@@ -45,7 +45,7 @@ public class IngredientFilter implements IIngredientGridSource {
 
 	private final IngredientBlacklistInternal blacklist;
 	private final IHideModeConfig hideModeConfig;
-	private final IIngredientRegistry ingredientRegistry;
+	private final IIngredientManager ingredientManager;
 	/**
 	 * indexed list of ingredients for use with the suffix trees
 	 * includes all elements (even hidden ones) for use when rebuilding
@@ -65,12 +65,12 @@ public class IngredientFilter implements IIngredientGridSource {
 		IngredientBlacklistInternal blacklist,
 		IIngredientFilterConfig config,
 		IHideModeConfig hideModeConfig,
-		IIngredientRegistry ingredientRegistry,
+		IIngredientManager ingredientManager,
 		IModIdHelper modIdHelper
 	) {
 		this.blacklist = blacklist;
 		this.hideModeConfig = hideModeConfig;
-		this.ingredientRegistry = ingredientRegistry;
+		this.ingredientManager = ingredientManager;
 		this.elementList = NonNullList.create();
 		this.searchTree = new GeneralizedSuffixTree();
 		createPrefixedSearchTree('@', config::getModNameSearchMode, IIngredientListElementInfo::getModNameStrings);
@@ -81,7 +81,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		createPrefixedSearchTree('&', config::getResourceIdSearchMode, element -> Collections.singleton(element.getResourceId()));
 
 		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.values());
-		this.backgroundBuilder = new IngredientFilterBackgroundBuilder(prefixedSearchTrees, elementList, ingredientRegistry, modIdHelper);
+		this.backgroundBuilder = new IngredientFilterBackgroundBuilder(prefixedSearchTrees, elementList, ingredientManager, modIdHelper);
 
 		EventBusHelper.addListener(EditModeToggleEvent.class, editModeToggleEvent -> {
 			this.filterCached = null;
@@ -111,9 +111,9 @@ public class IngredientFilter implements IIngredientGridSource {
 		this.prefixedSearchTrees.put(prefix, prefixedTree);
 	}
 
-	public void addIngredients(NonNullList<IIngredientListElement<?>> ingredients, IIngredientRegistry ingredientRegistry, IModIdHelper modIdHelper) {
+	public void addIngredients(NonNullList<IIngredientListElement<?>> ingredients, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		List<IIngredientListElementInfo<?>> ingredientInfo = ingredients.stream()
-			.map(i -> IngredientListElementInfo.create(i, ingredientRegistry, modIdHelper))
+			.map(i -> IngredientListElementInfo.create(i, ingredientManager, modIdHelper))
 			.sorted(IngredientListElementComparator.INSTANCE)
 			.collect(Collectors.toList());
 		long modNameCount = ingredientInfo.stream()
@@ -195,7 +195,7 @@ public class IngredientFilter implements IIngredientGridSource {
 
 	public <V> void updateHiddenState(IIngredientListElement<V> element) {
 		V ingredient = element.getIngredient();
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		boolean visible = !blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper) &&
 			ingredientHelper.isIngredientOnServer(ingredient) &&
 			(hideModeConfig.isHideModeEnabled() || !hideModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper));

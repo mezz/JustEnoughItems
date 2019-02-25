@@ -7,7 +7,7 @@ import mezz.jei.api.recipe.IIngredientType;
 
 /**
  * Allows registration of new types of ingredients, beyond the basic ItemStack and FluidStack.
- * After every mod has registered its ingredients, the {@link IIngredientRegistry} is created from this information.
+ * After every mod has registered its ingredients, the {@link IIngredientManager} is created from this information.
  *
  * This is given to your {@link IModPlugin#registerIngredients(IModIngredientRegistration)}.
  */

@@ -26,7 +26,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.ingredients.Ingredients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -109,12 +109,12 @@ public final class ErrorUtil {
 	}
 
 	public static <T> String getIngredientInfo(T ingredient) {
-		IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredient);
+		IIngredientHelper<T> ingredientHelper = Internal.getIngredientManager().getIngredientHelper(ingredient);
 		return ingredientHelper.getErrorInfo(ingredient);
 	}
 
 	public static <T> List<String> getIngredientInfo(IIngredientType<T> ingredientType, List<? extends List<T>> ingredients) {
-		IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredientType);
+		IIngredientHelper<T> ingredientHelper = Internal.getIngredientManager().getIngredientHelper(ingredientType);
 		List<String> allInfos = new ArrayList<>(ingredients.size());
 
 		for (List<T> inputList : ingredients) {
@@ -217,8 +217,8 @@ public final class ErrorUtil {
 
 	public static <T> void checkIsValidIngredient(@Nullable T ingredient, String name) {
 		checkNotNull(ingredient, name);
-		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		IngredientManager ingredientManager = Internal.getIngredientManager();
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		if (!ingredientHelper.isValidIngredient(ingredient)) {
 			String ingredientInfo = ingredientHelper.getErrorInfo(ingredient);
 			throw new IllegalArgumentException("Invalid ingredient found. Parameter Name: " + name + " Ingredient Info: " + ingredientInfo);
@@ -239,7 +239,7 @@ public final class ErrorUtil {
 	}
 
 	public static <T> ReportedException createRenderIngredientException(Throwable throwable, final T ingredient) {
-		final IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredient);
+		final IIngredientHelper<T> ingredientHelper = Internal.getIngredientManager().getIngredientHelper(ingredient);
 		CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering ingredient");
 		CrashReportCategory crashreportcategory = crashreport.makeCategory("Ingredient being rendered");
 		if (modIdHelper != null) {

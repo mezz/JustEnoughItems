@@ -14,6 +14,7 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.ModIds;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 
 @JeiPlugin
 public class TestPlugin implements IModPlugin {
@@ -25,13 +26,13 @@ public class TestPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerIngredients(IModIngredientRegistration ingredientRegistry) {
+	public void registerIngredients(IModIngredientRegistration registration, ISubtypeManager subtypeManager) {
 		Collection<TestIngredient> baseTestIngredients = new ArrayList<>();
 		for (int i = 0; i < BASE_INGREDIENT_COUNT; i++) {
 			baseTestIngredients.add(new TestIngredient(i));
 		}
 
-		ingredientRegistry.register(TestIngredient.TYPE, baseTestIngredients, new TestIngredientHelper(), new TestIngredientRenderer());
+		registration.register(TestIngredient.TYPE, baseTestIngredients, new TestIngredientHelper(), new TestIngredientRenderer());
 	}
 
 	private static class TestIngredientRenderer implements IIngredientRenderer<TestIngredient> {

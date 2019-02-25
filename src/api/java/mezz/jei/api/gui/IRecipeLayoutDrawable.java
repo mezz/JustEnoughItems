@@ -2,14 +2,14 @@ package mezz.jei.api.gui;
 
 import javax.annotation.Nullable;
 
-import mezz.jei.api.recipe.IRecipeRegistry;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**
  * An extension of {@link IRecipeLayout} for addons that want to draw the layouts themselves somewhere.
  *
- * Create an instance with {@link IRecipeRegistry#createRecipeLayoutDrawable(IRecipeCategory, Object, IFocus)}.
+ * Create an instance with {@link IRecipeManager#createRecipeLayoutDrawable(IRecipeCategory, Object, IFocus)}.
  */
 public interface IRecipeLayoutDrawable extends IRecipeLayout {
 	/**

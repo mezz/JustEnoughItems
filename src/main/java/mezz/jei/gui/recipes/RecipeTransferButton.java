@@ -9,6 +9,7 @@ import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.elements.GuiIconButtonSmall;
+import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.transfer.RecipeTransferErrorInternal;
 import mezz.jei.transfer.RecipeTransferUtil;
 import mezz.jei.util.Translator;
@@ -25,9 +26,9 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 		this.recipeLayout = recipeLayout;
 	}
 
-	public void init(@Nullable Container container, EntityPlayer player) {
+	public void init(RecipeTransferManager recipeTransferManager, @Nullable Container container, EntityPlayer player) {
 		if (container != null) {
-			this.recipeTransferError = RecipeTransferUtil.getTransferRecipeError(container, recipeLayout, player);
+			this.recipeTransferError = RecipeTransferUtil.getTransferRecipeError(recipeTransferManager, container, recipeLayout, player);
 		} else {
 			this.recipeTransferError = RecipeTransferErrorInternal.INSTANCE;
 		}

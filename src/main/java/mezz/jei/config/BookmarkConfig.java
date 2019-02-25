@@ -15,12 +15,12 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.IIngredientManager;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.ingredients.IngredientManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,14 +35,14 @@ public class BookmarkConfig {
 		this.bookmarkFile = new File(jeiConfigurationDir, "bookmarks.ini");
 	}
 
-	public void saveBookmarks(IIngredientRegistry ingredientRegistry, List<IIngredientListElement<?>> ingredientListElements) {
+	public void saveBookmarks(IIngredientManager ingredientManager, List<IIngredientListElement<?>> ingredientListElements) {
 		List<String> strings = new ArrayList<>();
 		for (IIngredientListElement<?> element : ingredientListElements) {
 			Object object = element.getIngredient();
 			if (object instanceof ItemStack) {
 				strings.add(MARKER_STACK + ((ItemStack) object).write(new NBTTagCompound()).toString());
 			} else {
-				strings.add(MARKER_OTHER + getUid(ingredientRegistry, element));
+				strings.add(MARKER_OTHER + getUid(ingredientManager, element));
 			}
 		}
 		File file = bookmarkFile;
@@ -53,7 +53,7 @@ public class BookmarkConfig {
 		}
 	}
 
-	public void loadBookmarks(IngredientRegistry ingredientRegistry, BookmarkList bookmarkList) {
+	public void loadBookmarks(IngredientManager ingredientManager, BookmarkList bookmarkList) {
 		File file = bookmarkFile;
 		if (!file.exists()) {
 			return;
@@ -66,10 +66,10 @@ public class BookmarkConfig {
 			return;
 		}
 
-		Collection<IIngredientType> otherIngredientTypes = new ArrayList<>(ingredientRegistry.getRegisteredIngredientTypes());
+		Collection<IIngredientType> otherIngredientTypes = new ArrayList<>(ingredientManager.getRegisteredIngredientTypes());
 		otherIngredientTypes.remove(VanillaTypes.ITEM);
 
-		IIngredientHelper<ItemStack> itemStackHelper = ingredientRegistry.getIngredientHelper(VanillaTypes.ITEM);
+		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM);
 
 		for (String ingredientJsonString : ingredientJsonStrings) {
 			if (ingredientJsonString.startsWith(MARKER_STACK)) {
@@ -88,9 +88,9 @@ public class BookmarkConfig {
 				}
 			} else if (ingredientJsonString.startsWith(MARKER_OTHER)) {
 				String uid = ingredientJsonString.substring(MARKER_OTHER.length());
-				Object ingredient = getUnknownIngredientByUid(ingredientRegistry, otherIngredientTypes, uid);
+				Object ingredient = getUnknownIngredientByUid(ingredientManager, otherIngredientTypes, uid);
 				if (ingredient != null) {
-					IIngredientHelper<Object> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+					IIngredientHelper<Object> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 					Object normalized = ingredientHelper.normalizeIngredient(ingredient);
 					bookmarkList.addToLists(normalized, false);
 				}
@@ -101,16 +101,16 @@ public class BookmarkConfig {
 		bookmarkList.notifyListenersOfChange();
 	}
 
-	private <T> String getUid(IIngredientRegistry ingredientRegistry, IIngredientListElement<T> element) {
+	private <T> String getUid(IIngredientManager ingredientManager, IIngredientListElement<T> element) {
 		T ingredient = element.getIngredient();
-		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		return ingredientHelper.getUniqueId(ingredient);
 	}
 
 	@Nullable
-	private Object getUnknownIngredientByUid(IngredientRegistry ingredientRegistry, Collection<IIngredientType> ingredientTypes, String uid) {
+	private Object getUnknownIngredientByUid(IngredientManager ingredientManager, Collection<IIngredientType> ingredientTypes, String uid) {
 		for (IIngredientType<?> ingredientType : ingredientTypes) {
-			Object ingredient = ingredientRegistry.getIngredientByUid(ingredientType, uid);
+			Object ingredient = ingredientManager.getIngredientByUid(ingredientType, uid);
 			if (ingredient != null) {
 				return ingredient;
 			}

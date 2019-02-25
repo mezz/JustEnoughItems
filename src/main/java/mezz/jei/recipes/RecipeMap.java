@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.IIngredientManager;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.collect.ListMultiMap;
@@ -25,15 +25,15 @@ public class RecipeMap {
 	private final Table<IRecipeCategory, String, List<Object>> recipeTable = Table.hashBasedTable();
 	private final ListMultiMap<String, ResourceLocation> categoryUidMap = new ListMultiMap<>();
 	private final Ordering<ResourceLocation> recipeCategoryOrdering;
-	private final IIngredientRegistry ingredientRegistry;
+	private final IIngredientManager ingredientManager;
 
-	public RecipeMap(final RecipeCategoryComparator recipeCategoryComparator, IIngredientRegistry ingredientRegistry) {
+	public RecipeMap(final RecipeCategoryComparator recipeCategoryComparator, IIngredientManager ingredientManager) {
 		this.recipeCategoryOrdering = Ordering.from(recipeCategoryComparator);
-		this.ingredientRegistry = ingredientRegistry;
+		this.ingredientManager = ingredientManager;
 	}
 
 	public <V> List<ResourceLocation> getRecipeCategories(V ingredient) {
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 
 		Set<ResourceLocation> recipeCategories = new HashSet<>();
 
@@ -54,7 +54,7 @@ public class RecipeMap {
 	}
 
 	public <T, V> ImmutableList<T> getRecipes(IRecipeCategory<T> recipeCategory, V ingredient) {
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 
 		Map<String, List<Object>> recipesForType = recipeTable.getRow(recipeCategory);
 
@@ -79,7 +79,7 @@ public class RecipeMap {
 	}
 
 	private <T, V> void addRecipe(T recipe, IRecipeCategory<T> recipeCategory, IIngredientType<V> ingredientType, List<V> ingredients) {
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
 		Map<String, List<Object>> recipesForType = recipeTable.getRow(recipeCategory);
 

@@ -34,7 +34,7 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.ingredients.IngredientFilter;
-import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.render.IngredientRenderHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Translator;
@@ -132,11 +132,11 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		if (ingredients.isEmpty()) {
 			return ingredients;
 		}
-		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+		IngredientManager ingredientManager = Internal.getIngredientManager();
 		IngredientFilter ingredientFilter = Internal.getIngredientFilter();
 		List<T> visible = new ArrayList<>();
 		for (T ingredient : ingredients) {
-			if (ingredient == null || ingredientRegistry.isIngredientVisible(ingredient, ingredientFilter)) {
+			if (ingredient == null || ingredientManager.isIngredientVisible(ingredient, ingredientFilter)) {
 				visible.add(ingredient);
 			}
 			if (visible.size() > 100) {

@@ -10,7 +10,6 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**
  * Represents the layout of one recipe on-screen.
- * Plugins interpret a recipe wrapper to set the properties here.
  * It is passed to plugins in {@link IRecipeCategory#setRecipe(IRecipeLayout, Object, IIngredients)}.
  *
  * @see IRecipeLayoutDrawable
@@ -55,7 +54,7 @@ public interface IRecipeLayout {
 	 * By default the recipe transfer button is at the bottom, to the right of the recipe.
 	 * If it doesn't fit there, you can use this to move it when you init the recipe layout.
 	 */
-	void setRecipeTransferButton(int posX, int posY);
+	void moveRecipeTransferButton(int posX, int posY);
 
 	/**
 	 * Adds a shapeless icon to the top right of the recipe, that shows a tooltip saying "shapeless" when hovered over.

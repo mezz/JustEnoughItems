@@ -21,7 +21,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.gui.Focus;
-import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,9 +49,9 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		this.ingredientType = ingredientType;
 		this.focus = focus;
-		IngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
-		this.ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
-		this.ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientType);
+		IngredientManager ingredientManager = Internal.getIngredientManager();
+		this.ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		this.ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
 		this.cycleOffset = cycleOffset;
 	}
 

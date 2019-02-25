@@ -22,7 +22,7 @@ public class DebugGhostIngredientHandler<T extends GuiContainer> implements IGho
 		List<Target<I>> targets = new ArrayList<>();
 		targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rectangle(0, 0, 20, 20)));
 		if (doStart) {
-			IIngredientHelper<I> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredient);
+			IIngredientHelper<I> ingredientHelper = Internal.getIngredientManager().getIngredientHelper(ingredient);
 			LOGGER.info("Ghost Ingredient Handling Starting with {}", ingredientHelper.getErrorInfo(ingredient));
 			targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rectangle(20, 20, 20, 20)));
 		}
@@ -60,7 +60,7 @@ public class DebugGhostIngredientHandler<T extends GuiContainer> implements IGho
 
 		@Override
 		public void accept(I ingredient) {
-			IIngredientHelper<I> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredient);
+			IIngredientHelper<I> ingredientHelper = Internal.getIngredientManager().getIngredientHelper(ingredient);
 			LOGGER.info("{}: {}", message, ingredientHelper.getErrorInfo(ingredient));
 		}
 	}

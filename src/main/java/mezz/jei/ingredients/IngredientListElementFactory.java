@@ -7,7 +7,7 @@ import net.minecraftforge.fml.common.progress.StartupProgressManager;
 import net.minecraft.util.NonNullList;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.IIngredientManager;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 
@@ -17,18 +17,18 @@ public final class IngredientListElementFactory {
 	private IngredientListElementFactory() {
 	}
 
-	public static NonNullList<IIngredientListElement<?>> createBaseList(IIngredientRegistry ingredientRegistry) {
+	public static NonNullList<IIngredientListElement<?>> createBaseList(IIngredientManager ingredientManager) {
 		NonNullList<IIngredientListElement<?>> ingredientListElements = NonNullList.create();
 
-		for (IIngredientType<?> ingredientType : ingredientRegistry.getRegisteredIngredientTypes()) {
-			addToBaseList(ingredientListElements, ingredientRegistry, ingredientType);
+		for (IIngredientType<?> ingredientType : ingredientManager.getRegisteredIngredientTypes()) {
+			addToBaseList(ingredientListElements, ingredientManager, ingredientType);
 		}
 
 		return ingredientListElements;
 	}
 
-	public static <V> NonNullList<IIngredientListElement<V>> createList(IIngredientRegistry ingredientRegistry, IIngredientType<V> ingredientType, Collection<V> ingredients) {
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
+	public static <V> NonNullList<IIngredientListElement<V>> createList(IIngredientManager ingredientManager, IIngredientType<V> ingredientType, Collection<V> ingredients) {
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
 		NonNullList<IIngredientListElement<V>> list = NonNullList.create();
 		for (V ingredient : ingredients) {
@@ -45,16 +45,16 @@ public final class IngredientListElementFactory {
 		return new IngredientListElement<>(ingredient, 0);
 	}
 
-	public static <V> IIngredientListElement<V> createOrderedElement(IIngredientRegistry ingredientRegistry, IIngredientType<V> ingredientType, V ingredient) {
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
+	public static <V> IIngredientListElement<V> createOrderedElement(IIngredientManager ingredientManager, IIngredientType<V> ingredientType, V ingredient) {
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		int orderIndex = ORDER_TRACKER.getOrderIndex(ingredient, ingredientHelper);
 		return new IngredientListElement<>(ingredient, orderIndex);
 	}
 
-	private static <V> void addToBaseList(NonNullList<IIngredientListElement<?>> baseList, IIngredientRegistry ingredientRegistry, IIngredientType<V> ingredientType) {
-		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
+	private static <V> void addToBaseList(NonNullList<IIngredientListElement<?>> baseList, IIngredientManager ingredientManager, IIngredientType<V> ingredientType) {
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
-		Collection<V> ingredients = ingredientRegistry.getAllIngredients(ingredientType);
+		Collection<V> ingredients = ingredientManager.getAllIngredients(ingredientType);
 		try (ProgressBar progressBar = StartupProgressManager.start("Registering ingredients: " + ingredientType.getIngredientClass().getSimpleName(), ingredients.size())) {
 			for (V ingredient : ingredients) {
 				progressBar.step("");

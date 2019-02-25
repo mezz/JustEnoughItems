@@ -25,7 +25,7 @@ import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientFilter;
-import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IMouseHandler;
@@ -61,7 +61,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 
 	public IngredientListOverlay(
 		IngredientFilter ingredientFilter,
-		IngredientRegistry ingredientRegistry,
+		IngredientManager ingredientManager,
 		GuiScreenHelper guiScreenHelper,
 		IngredientGridWithNavigation contents,
 		IWorldConfig worldConfig
@@ -73,7 +73,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		ingredientFilter.addListener(() -> onSetFilterText(worldConfig.getFilterText()));
 		this.searchField = new GuiTextFieldFilter(0, ingredientFilter, worldConfig);
 		this.configButton = ConfigButton.create(this, worldConfig);
-		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, guiScreenHelper, ingredientRegistry, worldConfig);
+		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, guiScreenHelper, ingredientManager, worldConfig);
 		this.setKeyboardFocus(false);
 	}
 

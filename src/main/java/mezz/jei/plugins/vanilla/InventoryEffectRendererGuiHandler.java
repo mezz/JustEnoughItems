@@ -11,14 +11,9 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 
 import com.google.common.collect.Ordering;
-import mezz.jei.api.gui.IAdvancedGuiHandler;
+import mezz.jei.api.gui.IGuiContainerHandler;
 
-class InventoryEffectRendererGuiHandler implements IAdvancedGuiHandler<InventoryEffectRenderer> {
-	@Override
-	public Class<InventoryEffectRenderer> getGuiContainerClass() {
-		return InventoryEffectRenderer.class;
-	}
-
+class InventoryEffectRendererGuiHandler implements IGuiContainerHandler<InventoryEffectRenderer> {
 	/**
 	 * Modeled after {@link InventoryEffectRenderer#drawActivePotionEffects()}
 	 */

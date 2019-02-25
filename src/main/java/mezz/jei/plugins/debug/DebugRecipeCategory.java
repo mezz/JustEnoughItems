@@ -20,14 +20,14 @@ import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IIngredientFilter;
 import mezz.jei.api.IIngredientListOverlay;
 import mezz.jei.api.IJeiRuntime;
-import mezz.jei.api.recipe.IRecipeRegistry;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.ModIds;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.IIngredientManager;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -133,9 +133,9 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	}
 
 	private <T> void drawIngredientName(Minecraft minecraft, T ingredient) {
-		IIngredientRegistry ingredientRegistry = JeiDebugPlugin.ingredientRegistry;
-		if (ingredientRegistry != null) {
-			IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		IIngredientManager ingredientManager = JeiDebugPlugin.ingredientManager;
+		if (ingredientManager != null) {
+			IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 			String jeiUid = ingredientHelper.getUniqueId(ingredient);
 			minecraft.fontRenderer.drawString(jeiUid, 50, 52, 0);
 		}
@@ -222,12 +222,12 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 				String filterText = ingredientFilter.getFilterText();
 				ingredientFilter.setFilterText(filterText + " test");
 
-				IRecipeRegistry recipeRegistry = runtime.getRecipeRegistry();
+				IRecipeManager recipeManager = runtime.getRecipeManager();
 				if (!hiddenRecipes) {
-					recipeRegistry.hideRecipeCategory(VanillaRecipeCategoryUid.CRAFTING);
+					recipeManager.hideRecipeCategory(VanillaRecipeCategoryUid.CRAFTING);
 					hiddenRecipes = true;
 				} else {
-					recipeRegistry.unhideRecipeCategory(VanillaRecipeCategoryUid.CRAFTING);
+					recipeManager.unhideRecipeCategory(VanillaRecipeCategoryUid.CRAFTING);
 					hiddenRecipes = false;
 				}
 			}

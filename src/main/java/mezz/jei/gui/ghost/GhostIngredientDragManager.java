@@ -15,13 +15,13 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.IClickedIngredient;
 
 public class GhostIngredientDragManager {
 	private final IGhostIngredientDragSource source;
 	private final GuiScreenHelper guiScreenHelper;
-	private final IngredientRegistry ingredientRegistry;
+	private final IngredientManager ingredientManager;
 	private final IWorldConfig worldConfig;
 	private final List<GhostIngredientReturning> ghostIngredientsReturning = new ArrayList<>();
 	@Nullable
@@ -31,10 +31,10 @@ public class GhostIngredientDragManager {
 	@Nullable
 	private List<IGhostIngredientHandler.Target<Object>> hoveredIngredientTargets;
 
-	public GhostIngredientDragManager(IGhostIngredientDragSource source, GuiScreenHelper guiScreenHelper, IngredientRegistry ingredientRegistry, IWorldConfig worldConfig) {
+	public GhostIngredientDragManager(IGhostIngredientDragSource source, GuiScreenHelper guiScreenHelper, IngredientManager ingredientManager, IWorldConfig worldConfig) {
 		this.source = source;
 		this.guiScreenHelper = guiScreenHelper;
-		this.ingredientRegistry = ingredientRegistry;
+		this.ingredientManager = ingredientManager;
 		this.worldConfig = worldConfig;
 	}
 
@@ -102,7 +102,7 @@ public class GhostIngredientDragManager {
 			V ingredient = clicked.getValue();
 			List<IGhostIngredientHandler.Target<V>> targets = handler.getTargets(currentScreen, ingredient, true);
 			if (!targets.isEmpty()) {
-				IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
+				IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
 				Rectangle clickedArea = clicked.getArea();
 				this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, clickedArea);
 				clicked.onClickHandled();

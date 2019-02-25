@@ -6,7 +6,7 @@ import java.util.List;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.IIngredientManager;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.IVanillaRecipeFactory;
@@ -18,8 +18,8 @@ import mezz.jei.util.ErrorUtil;
 public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 	private final BrewingRecipeUtil brewingRecipeUtil;
 
-	public VanillaRecipeFactory(IIngredientRegistry ingredientRegistry) {
-		IIngredientHelper<ItemStack> ingredientHelper = ingredientRegistry.getIngredientHelper(VanillaTypes.ITEM);
+	public VanillaRecipeFactory(IIngredientManager ingredientManager) {
+		IIngredientHelper<ItemStack> ingredientHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM);
 		this.brewingRecipeUtil = new BrewingRecipeUtil(ingredientHelper);
 	}
 

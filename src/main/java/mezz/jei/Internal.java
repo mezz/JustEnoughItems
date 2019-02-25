@@ -7,7 +7,7 @@ import mezz.jei.color.ColorNamer;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.ingredients.IngredientFilter;
-import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.InputHandler;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
@@ -21,7 +21,7 @@ public final class Internal {
 	@Nullable
 	private static JeiRuntime runtime;
 	@Nullable
-	private static IngredientRegistry ingredientRegistry;
+	private static IngredientManager ingredientManager;
 	@Nullable
 	private static ColorNamer colorNamer;
 	@Nullable
@@ -57,13 +57,13 @@ public final class Internal {
 		Internal.runtime = runtime;
 	}
 
-	public static IngredientRegistry getIngredientRegistry() {
-		Preconditions.checkState(ingredientRegistry != null, "Ingredient Registry has not been created yet.");
-		return ingredientRegistry;
+	public static IngredientManager getIngredientManager() {
+		Preconditions.checkState(ingredientManager != null, "Ingredient Manager has not been created yet.");
+		return ingredientManager;
 	}
 
-	public static void setIngredientRegistry(IngredientRegistry ingredientRegistry) {
-		Internal.ingredientRegistry = ingredientRegistry;
+	public static void setIngredientManager(IngredientManager ingredientManager) {
+		Internal.ingredientManager = ingredientManager;
 	}
 
 	public static ColorNamer getColorNamer() {

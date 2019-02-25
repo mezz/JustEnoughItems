@@ -1,5 +1,8 @@
 package mezz.jei.gui;
 
+import java.util.Collections;
+import java.util.List;
+
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.client.event.GuiContainerEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
@@ -9,30 +12,28 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
+import mezz.jei.api.gui.IGuiClickableArea;
+import mezz.jei.config.Constants;
 import mezz.jei.events.OverlayToggleEvent;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.input.MouseUtil;
-import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.util.Translator;
 
 public class GuiEventHandler {
 	private final IngredientListOverlay ingredientListOverlay;
 	private final GuiScreenHelper guiScreenHelper;
 	private final LeftAreaDispatcher leftAreaDispatcher;
-	private final RecipeRegistry recipeRegistry;
 	private boolean drawnOnBackground = false;
 
 	public GuiEventHandler(
 		GuiScreenHelper guiScreenHelper,
 		LeftAreaDispatcher leftAreaDispatcher,
-		IngredientListOverlay ingredientListOverlay,
-		RecipeRegistry recipeRegistry
+		IngredientListOverlay ingredientListOverlay
 	) {
 		this.guiScreenHelper = guiScreenHelper;
 		this.leftAreaDispatcher = leftAreaDispatcher;
 		this.ingredientListOverlay = ingredientListOverlay;
-		this.recipeRegistry = recipeRegistry;
 	}
 
 	@SubscribeEvent
@@ -95,9 +96,13 @@ public class GuiEventHandler {
 
 		if (gui instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) gui;
-			if (recipeRegistry.getRecipeClickableArea(guiContainer, event.getMouseX() - guiContainer.getGuiLeft(), event.getMouseY() - guiContainer.getGuiTop()) != null) {
-				String showRecipesText = Translator.translateToLocal("jei.tooltip.show.recipes");
-				TooltipRenderer.drawHoveringText(showRecipesText, event.getMouseX(), event.getMouseY());
+			IGuiClickableArea guiClickableArea = guiScreenHelper.getGuiClickableArea(guiContainer, event.getMouseX() - guiContainer.getGuiLeft(), event.getMouseY() - guiContainer.getGuiTop());
+			if (guiClickableArea != null) {
+				List<String> tooltipStrings = guiClickableArea.getTooltipStrings();
+				if (tooltipStrings.isEmpty()) {
+					tooltipStrings = Collections.singletonList(Translator.translateToLocal("jei.tooltip.show.recipes"));
+				}
+				TooltipRenderer.drawHoveringText(tooltipStrings, event.getMouseX(), event.getMouseY(), Constants.MAX_TOOLTIP_WIDTH);
 			}
 		}
 

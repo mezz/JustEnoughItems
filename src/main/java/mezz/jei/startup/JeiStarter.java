@@ -1,23 +1,20 @@
 package mezz.jei.startup;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraftforge.fml.common.progress.ProgressBar;
-import net.minecraftforge.fml.common.progress.StartupProgressManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.gui.inventory.GuiContainer;
 
 import mezz.jei.Internal;
 import mezz.jei.api.IIngredientFilter;
-import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.gui.IAdvancedGuiHandler;
 import mezz.jei.api.gui.IGhostIngredientHandler;
 import mezz.jei.api.gui.IGlobalGuiHandler;
+import mezz.jei.api.gui.IGuiContainerHandler;
 import mezz.jei.api.gui.IGuiScreenHandler;
 import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.bookmarks.BookmarkList;
+import mezz.jei.collect.ListMultiMap;
 import mezz.jei.config.BookmarkConfig;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IHideModeConfig;
@@ -34,11 +31,17 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientFilterApi;
-import mezz.jei.ingredients.IngredientRegistry;
+import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.InputHandler;
-import mezz.jei.load.ModRegistry;
+import mezz.jei.load.PluginCaller;
 import mezz.jei.load.PluginLoader;
-import mezz.jei.recipes.RecipeRegistry;
+import mezz.jei.load.PluginHelper;
+import mezz.jei.load.registration.GuiHandlerRegistration;
+import mezz.jei.load.registration.RecipeTransferRegistration;
+import mezz.jei.plugins.jei.JeiInternalPlugin;
+import mezz.jei.plugins.vanilla.VanillaPlugin;
+import mezz.jei.recipes.RecipeManager;
+import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.ErrorUtil;
@@ -66,40 +69,46 @@ public class JeiStarter {
 		totalTime.start("Starting JEI");
 
 		boolean debugMode = config.isDebugModeEnabled();
-		PluginLoader pluginLoader = new PluginLoader(plugins, textures, hideModeConfig, ingredientFilterConfig, bookmarkConfig, modIdHelper, debugMode);
-		ModRegistry modRegistry = pluginLoader.getModRegistry();
-		IngredientRegistry ingredientRegistry = pluginLoader.getIngredientRegistry();
+		VanillaPlugin vanillaPlugin = PluginHelper.getPluginWithClass(VanillaPlugin.class, plugins);
+		JeiInternalPlugin jeiInternalPlugin = PluginHelper.getPluginWithClass(JeiInternalPlugin.class, plugins);
+		ErrorUtil.checkNotNull(vanillaPlugin, "vanilla plugin");
+		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
+		PluginLoader pluginLoader = new PluginLoader(plugins, vanillaPlugin, textures, hideModeConfig, ingredientFilterConfig, bookmarkConfig, modIdHelper, debugMode);
+		GuiHandlerRegistration guiHandlerRegistration = pluginLoader.getGuiHandlerRegistration();
+		IngredientManager ingredientManager = pluginLoader.getIngredientManager();
 		IngredientFilter ingredientFilter = pluginLoader.getIngredientFilter();
 		JeiHelpers jeiHelpers = pluginLoader.getJeiHelpers();
 		BookmarkList bookmarkList = pluginLoader.getBookmarkList();
-		RecipeRegistry recipeRegistry = pluginLoader.getRecipeRegistry();
+		RecipeManager recipeManager = pluginLoader.getRecipeManager();
+		RecipeTransferRegistration recipeTransferRegistration = pluginLoader.getRecipeTransferRegistration();
+		RecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferRegistration.getRecipeTransferHandlers());
 
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building runtime");
-		List<IAdvancedGuiHandler<?>> advancedGuiHandlers = modRegistry.getAdvancedGuiHandlers();
-		List<IGlobalGuiHandler> globalGuiHandlers = modRegistry.getGlobalGuiHandlers();
-		Map<Class, IGuiScreenHandler> guiScreenHandlers = modRegistry.getGuiScreenHandlers();
-		Map<Class, IGhostIngredientHandler> ghostIngredientHandlers = modRegistry.getGhostIngredientHandlers();
-		GuiScreenHelper guiScreenHelper = new GuiScreenHelper(ingredientRegistry, globalGuiHandlers, advancedGuiHandlers, ghostIngredientHandlers, guiScreenHandlers);
+		ListMultiMap<Class<? extends GuiContainer>, IGuiContainerHandler<?>> guiHandlers = guiHandlerRegistration.getGuiHandlers();
+		List<IGlobalGuiHandler> globalGuiHandlers = guiHandlerRegistration.getGlobalGuiHandlers();
+		Map<Class, IGuiScreenHandler> guiScreenHandlers = guiHandlerRegistration.getGuiScreenHandlers();
+		Map<Class, IGhostIngredientHandler> ghostIngredientHandlers = guiHandlerRegistration.getGhostIngredientHandlers();
+		GuiScreenHelper guiScreenHelper = new GuiScreenHelper(ingredientManager, globalGuiHandlers, guiHandlers, ghostIngredientHandlers, guiScreenHandlers);
 		IngredientGridWithNavigation ingredientListGrid = new IngredientGridWithNavigation(ingredientFilter, worldConfig, guiScreenHelper, hideModeConfig, ingredientFilterConfig, worldConfig, GridAlignment.LEFT);
-		IngredientListOverlay ingredientListOverlay = new IngredientListOverlay(ingredientFilter, ingredientRegistry, guiScreenHelper, ingredientListGrid, worldConfig);
+		IngredientListOverlay ingredientListOverlay = new IngredientListOverlay(ingredientFilter, ingredientManager, guiScreenHelper, ingredientListGrid, worldConfig);
 
 		IngredientGridWithNavigation bookmarkListGrid = new IngredientGridWithNavigation(bookmarkList, () -> "", guiScreenHelper, hideModeConfig, ingredientFilterConfig, worldConfig, GridAlignment.RIGHT);
 		BookmarkOverlay bookmarkOverlay = new BookmarkOverlay(bookmarkList, jeiHelpers.getGuiHelper(), bookmarkListGrid, worldConfig);
-		RecipesGui recipesGui = new RecipesGui(recipeRegistry, ingredientRegistry);
+		RecipesGui recipesGui = new RecipesGui(recipeManager, recipeTransferManager, ingredientManager);
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, worldConfig);
-		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, ingredientListOverlay, recipesGui, ingredientFilterApi);
+		JeiRuntime jeiRuntime = new JeiRuntime(recipeManager, ingredientListOverlay, recipesGui, ingredientFilterApi, ingredientManager);
 		Internal.setRuntime(jeiRuntime);
 		timer.stop();
 
-		sendRuntime(plugins, jeiRuntime);
+		PluginCaller.callOnPlugins("Sending Runtime", plugins, p -> p.onRuntimeAvailable(jeiRuntime));
 
 		LeftAreaDispatcher leftAreaDispatcher = new LeftAreaDispatcher(guiScreenHelper);
 		leftAreaDispatcher.addContent(bookmarkOverlay);
 
-		GuiEventHandler guiEventHandler = new GuiEventHandler(guiScreenHelper, leftAreaDispatcher, ingredientListOverlay, recipeRegistry);
+		GuiEventHandler guiEventHandler = new GuiEventHandler(guiScreenHelper, leftAreaDispatcher, ingredientListOverlay);
 		Internal.setGuiEventHandler(guiEventHandler);
-		InputHandler inputHandler = new InputHandler(jeiRuntime, ingredientFilter, ingredientRegistry, ingredientListOverlay, hideModeConfig, worldConfig, guiScreenHelper, leftAreaDispatcher, bookmarkList);
+		InputHandler inputHandler = new InputHandler(recipesGui, ingredientFilter, ingredientManager, ingredientListOverlay, hideModeConfig, worldConfig, guiScreenHelper, leftAreaDispatcher, bookmarkList);
 		Internal.setInputHandler(inputHandler);
 
 		started = true;
@@ -109,28 +118,4 @@ public class JeiStarter {
 	public boolean hasStarted() {
 		return started;
 	}
-
-	private static void sendRuntime(List<IModPlugin> plugins, IJeiRuntime jeiRuntime) {
-		try (ProgressBar progressBar = StartupProgressManager.start("Sending Runtime", plugins.size())) {
-			Iterator<IModPlugin> iterator = plugins.iterator();
-			while (iterator.hasNext()) {
-				IModPlugin plugin = iterator.next();
-				try {
-					ResourceLocation pluginUid = plugin.getPluginUid();
-					progressBar.step(pluginUid.toString());
-					long start_time = System.currentTimeMillis();
-					LOGGER.debug("Sending runtime to plugin: {} ...", pluginUid);
-					plugin.onRuntimeAvailable(jeiRuntime);
-					long timeElapsedMs = System.currentTimeMillis() - start_time;
-					if (timeElapsedMs > 100) {
-						LOGGER.warn("Sending runtime to plugin: {} took {} ms", pluginUid, timeElapsedMs);
-					}
-				} catch (RuntimeException | LinkageError e) {
-					LOGGER.error("Sending runtime to plugin failed: {}", plugin.getClass(), e);
-					iterator.remove();
-				}
-			}
-		}
-	}
-
 }

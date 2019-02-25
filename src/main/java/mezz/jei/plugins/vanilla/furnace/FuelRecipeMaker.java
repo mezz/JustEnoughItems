@@ -12,16 +12,16 @@ import net.minecraft.tileentity.TileEntityFurnace;
 
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
-import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.IIngredientManager;
 
 public final class FuelRecipeMaker {
 
 	private FuelRecipeMaker() {
 	}
 
-	public static List<FuelRecipe> getFuelRecipes(IIngredientRegistry ingredientRegistry, IJeiHelpers helpers) {
+	public static List<FuelRecipe> getFuelRecipes(IIngredientManager ingredientManager, IJeiHelpers helpers) {
 		IGuiHelper guiHelper = helpers.getGuiHelper();
-		List<ItemStack> fuelStacks = ingredientRegistry.getFuels();
+		List<ItemStack> fuelStacks = ingredientManager.getFuels();
 		List<FuelRecipe> fuelRecipes = new ArrayList<>(fuelStacks.size());
 		Map<Item, Integer> burnTimes = TileEntityFurnace.getBurnTimes();
 		for (ItemStack fuelStack : fuelStacks) {

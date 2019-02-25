@@ -21,14 +21,14 @@ import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
-import mezz.jei.api.recipe.category.extensions.ICraftingRecipeWrapper;
-import mezz.jei.api.recipe.category.extensions.ICustomCraftingRecipeWrapper;
-import mezz.jei.api.recipe.category.extensions.IShapedCraftingRecipeWrapper;
+import mezz.jei.api.recipe.category.extensions.ICraftingCategoryExtension;
+import mezz.jei.api.recipe.category.extensions.ICustomCraftingCategoryExtension;
+import mezz.jei.api.recipe.category.extensions.IShapedCraftingCategoryExtension;
 import mezz.jei.config.Constants;
 import mezz.jei.recipes.ExtendableRecipeCategoryHelper;
 import mezz.jei.util.Translator;
 
-public class CraftingRecipeCategory implements IExtendableRecipeCategory<IRecipe, ICraftingRecipeWrapper> {
+public class CraftingRecipeCategory implements IExtendableRecipeCategory<IRecipe, ICraftingCategoryExtension> {
 	private static final int craftOutputSlot = 0;
 	private static final int craftInputSlot1 = 1;
 
@@ -40,7 +40,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<IRecipe
 	private final String localizedName;
 	private final ICraftingGridHelper craftingGridHelper;
 	private final IModIdHelper modIdHelper;
-	private final ExtendableRecipeCategoryHelper<IRecipe, ICraftingRecipeWrapper> extendableHelper = new ExtendableRecipeCategoryHelper<>(IRecipe.class);
+	private final ExtendableRecipeCategoryHelper<IRecipe, ICraftingCategoryExtension> extendableHelper = new ExtendableRecipeCategoryHelper<>(IRecipe.class);
 
 	public CraftingRecipeCategory(IGuiHelper guiHelper, IModIdHelper modIdHelper) {
 		this.modIdHelper = modIdHelper;
@@ -89,10 +89,10 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<IRecipe
 			}
 		}
 
-		ICraftingRecipeWrapper recipeWrapper = this.extendableHelper.getRecipeWrapper(recipe);
+		ICraftingCategoryExtension recipeWrapper = this.extendableHelper.getRecipeWrapper(recipe);
 
-		if (recipeWrapper instanceof ICustomCraftingRecipeWrapper) {
-			ICustomCraftingRecipeWrapper customWrapper = (ICustomCraftingRecipeWrapper) recipeWrapper;
+		if (recipeWrapper instanceof ICustomCraftingCategoryExtension) {
+			ICustomCraftingCategoryExtension customWrapper = (ICustomCraftingCategoryExtension) recipeWrapper;
 			customWrapper.setRecipe(recipeLayout, ingredients);
 			return;
 		}
@@ -100,8 +100,8 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<IRecipe
 		List<List<ItemStack>> inputs = ingredients.getInputs(VanillaTypes.ITEM);
 		List<List<ItemStack>> outputs = ingredients.getOutputs(VanillaTypes.ITEM);
 
-		if (recipeWrapper instanceof IShapedCraftingRecipeWrapper) {
-			IShapedCraftingRecipeWrapper wrapper = (IShapedCraftingRecipeWrapper) recipeWrapper;
+		if (recipeWrapper instanceof IShapedCraftingCategoryExtension) {
+			IShapedCraftingCategoryExtension wrapper = (IShapedCraftingCategoryExtension) recipeWrapper;
 			craftingGridHelper.setInputs(guiItemStacks, inputs, wrapper.getWidth(), wrapper.getHeight());
 		} else {
 			craftingGridHelper.setInputs(guiItemStacks, inputs);
@@ -139,13 +139,13 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<IRecipe
 
 	@Override
 	public void setIngredients(IRecipe recipe, IIngredients ingredients) {
-		ICraftingRecipeWrapper recipeWrapper = this.extendableHelper.getRecipeWrapper(recipe);
+		ICraftingCategoryExtension recipeWrapper = this.extendableHelper.getRecipeWrapper(recipe);
 		recipeWrapper.setIngredients(ingredients);
 	}
 
 	@Override
 	public void draw(IRecipe recipe, double mouseX, double mouseY) {
-		ICraftingRecipeWrapper recipeWrapper = this.extendableHelper.getRecipeWrapper(recipe);
+		ICraftingCategoryExtension recipeWrapper = this.extendableHelper.getRecipeWrapper(recipe);
 		int recipeWidth = this.background.getWidth();
 		int recipeHeight = this.background.getHeight();
 		recipeWrapper.drawInfo(recipeWidth, recipeHeight, mouseX, mouseY);
@@ -153,18 +153,18 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<IRecipe
 
 	@Override
 	public List<String> getTooltipStrings(IRecipe recipe, double mouseX, double mouseY) {
-		ICraftingRecipeWrapper recipeWrapper = this.extendableHelper.getRecipeWrapper(recipe);
+		ICraftingCategoryExtension recipeWrapper = this.extendableHelper.getRecipeWrapper(recipe);
 		return recipeWrapper.getTooltipStrings(mouseX, mouseY);
 	}
 
 	@Override
 	public boolean handleClick(IRecipe recipe, double mouseX, double mouseY, int mouseButton) {
-		ICraftingRecipeWrapper recipeWrapper = this.extendableHelper.getRecipeWrapper(recipe);
+		ICraftingCategoryExtension recipeWrapper = this.extendableHelper.getRecipeWrapper(recipe);
 		return recipeWrapper.handleClick(mouseX, mouseY, mouseButton);
 	}
 
 	@Override
-	public <R extends IRecipe> void addRecipeWrapperFactory(Class<? extends R> recipeClass, Function<R, ? extends ICraftingRecipeWrapper> recipeWrapperFactory) {
-		extendableHelper.addRecipeWrapperFactory(recipeClass, recipeWrapperFactory);
+	public <R extends IRecipe> void addCategoryExtension(Class<? extends R> recipeClass, Function<R, ? extends ICraftingCategoryExtension> extensionFactory) {
+		extendableHelper.addRecipeWrapperFactory(recipeClass, extensionFactory);
 	}
 }

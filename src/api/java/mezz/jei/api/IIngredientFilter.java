@@ -1,7 +1,7 @@
 package mezz.jei.api;
 
 import com.google.common.collect.ImmutableList;
-import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.IIngredientManager;
 import mezz.jei.api.recipe.IIngredientType;
 
 /**
@@ -22,7 +22,7 @@ public interface IIngredientFilter {
 
 	/**
 	 * @return a list containing all ingredients that match the current filter.
-	 * To get all the ingredients known to JEI, see {@link IIngredientRegistry#getAllIngredients(IIngredientType)}.
+	 * To get all the ingredients known to JEI, see {@link IIngredientManager#getAllIngredients(IIngredientType)}.
 	 */
 	ImmutableList<Object> getFilteredIngredients();
 }

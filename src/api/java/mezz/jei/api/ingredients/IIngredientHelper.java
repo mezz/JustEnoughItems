@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IIngredientType;
 
 /**
@@ -153,10 +154,4 @@ public interface IIngredientHelper<V> {
 	 */
 	String getErrorInfo(@Nullable V ingredient);
 
-	interface IFocusFactory {
-		/**
-		 * Returns a new focus.
-		 */
-		<V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient);
-	}
 }

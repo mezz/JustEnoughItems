@@ -6,13 +6,13 @@ import java.util.List;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.api.IJeiHelpers;
-import mezz.jei.api.IModRegistry;
+import mezz.jei.api.registration.IRecipeRegistration;
 
 /**
  * Allows creation of vanilla recipes.
  * Get the instance from {@link IJeiHelpers#getStackHelper()}.
  *
- * Use {@link IModRegistry#addRecipes(Collection, net.minecraft.util.ResourceLocation)} to add the recipe.
+ * Use {@link IRecipeRegistration#addRecipes(Collection, net.minecraft.util.ResourceLocation)} to add the recipe.
  */
 public interface IVanillaRecipeFactory {
 	/**
