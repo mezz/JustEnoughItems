@@ -45,7 +45,7 @@ public class Textures {
 			.slice(2, 2, 2, 2);
 		this.guiBackground = registerGuiSprite("gui_background", 64, 64)
 			.slice(16, 16, 16, 16);
-		this.recipeBackground = registerGuiSprite("recipe_background", 64, 64)
+		this.recipeBackground = registerGuiSprite("single_recipe_background", 64, 64)
 			.slice(16, 16, 16, 16);
 		this.searchBackground = registerGuiSprite("search_background", 20, 20)
 			.slice(4, 4, 4, 4);
