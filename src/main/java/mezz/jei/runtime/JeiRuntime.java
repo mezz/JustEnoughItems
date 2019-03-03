@@ -1,5 +1,6 @@
 package mezz.jei.runtime;
 
+import mezz.jei.api.IBookmarkOverlay;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.ItemListOverlay;
@@ -11,13 +12,15 @@ public class JeiRuntime implements IJeiRuntime {
 
 	private final RecipeRegistry recipeRegistry;
 	private final IngredientListOverlay ingredientListOverlay;
+	private final IBookmarkOverlay bookmarkOverlay;
 	private final ItemListOverlay itemListOverlay;
 	private final RecipesGui recipesGui;
 	private final IngredientFilter ingredientFilter;
 
-	public JeiRuntime(RecipeRegistry recipeRegistry, IngredientListOverlay ingredientListOverlay, RecipesGui recipesGui, IngredientFilter ingredientFilter) {
+	public JeiRuntime(RecipeRegistry recipeRegistry, IngredientListOverlay ingredientListOverlay, IBookmarkOverlay bookmarkOverlay, RecipesGui recipesGui, IngredientFilter ingredientFilter) {
 		this.recipeRegistry = recipeRegistry;
 		this.ingredientListOverlay = ingredientListOverlay;
+		this.bookmarkOverlay = bookmarkOverlay;
 		this.recipesGui = recipesGui;
 		this.ingredientFilter = ingredientFilter;
 		this.itemListOverlay = new ItemListOverlay(ingredientListOverlay, ingredientFilter);
@@ -45,6 +48,11 @@ public class JeiRuntime implements IJeiRuntime {
 	@Override
 	public IngredientListOverlay getIngredientListOverlay() {
 		return ingredientListOverlay;
+	}
+
+	@Override
+	public IBookmarkOverlay getBookmarkOverlay() {
+		return bookmarkOverlay;
 	}
 
 	@Override

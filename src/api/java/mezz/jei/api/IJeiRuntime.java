@@ -23,6 +23,11 @@ public interface IJeiRuntime {
 	IIngredientListOverlay getIngredientListOverlay();
 
 	/**
+	 * @since JEI 4.15.0
+	 */
+	IBookmarkOverlay getBookmarkOverlay();
+
+	/**
 	 * @deprecated since JEI 4.5.0. Use {@link #getIngredientListOverlay()}
 	 */
 	@Deprecated

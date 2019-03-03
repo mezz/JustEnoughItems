@@ -102,7 +102,7 @@ public class JeiStarter {
 
 		BookmarkOverlay bookmarkOverlay = new BookmarkOverlay(bookmarkList, jeiHelpers.getGuiHelper(), guiScreenHelper);
 		RecipesGui recipesGui = new RecipesGui(recipeRegistry, ingredientRegistry);
-		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, ingredientListOverlay, recipesGui, ingredientFilter);
+		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, ingredientListOverlay, bookmarkOverlay, recipesGui, ingredientFilter);
 		Internal.setRuntime(jeiRuntime);
 		timer.stop();
 
