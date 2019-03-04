@@ -10,11 +10,13 @@ import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
 
+import mezz.jei.api.IBookmarkOverlay;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
+import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.recipes.RecipesGui;
@@ -24,7 +26,7 @@ import mezz.jei.util.CommandUtil;
 import mezz.jei.util.MathUtil;
 import org.lwjgl.glfw.GLFW;
 
-public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
+public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, IBookmarkOverlay {
 	private static final int BUTTON_SIZE = 20;
 
 	// areas
@@ -179,4 +181,15 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 		return false;
 	}
 
+	@Nullable
+	@Override
+	public Object getIngredientUnderMouse() {
+		if (isListDisplayed()) {
+			IIngredientListElement elementUnderMouse = this.contents.getElementUnderMouse();
+			if (elementUnderMouse != null) {
+				return elementUnderMouse.getIngredient();
+			}
+		}
+		return null;
+	}
 }

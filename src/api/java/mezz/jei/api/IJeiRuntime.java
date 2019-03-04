@@ -17,5 +17,7 @@ public interface IJeiRuntime {
 
 	IIngredientListOverlay getIngredientListOverlay();
 
+	IBookmarkOverlay getBookmarkOverlay();
+
 	IIngredientManager getIngredientManager();
 }
