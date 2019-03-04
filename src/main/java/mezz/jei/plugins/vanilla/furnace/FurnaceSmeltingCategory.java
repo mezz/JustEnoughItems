@@ -1,7 +1,5 @@
 package mezz.jei.plugins.vanilla.furnace;
 
-import java.awt.Color;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.init.Blocks;
@@ -58,7 +56,7 @@ public class FurnaceSmeltingCategory extends FurnaceRecipeCategory<FurnaceRecipe
 			Minecraft minecraft = Minecraft.getInstance();
 			FontRenderer fontRenderer = minecraft.fontRenderer;
 			int stringWidth = fontRenderer.getStringWidth(experienceString);
-			fontRenderer.drawString(experienceString, background.getWidth() - stringWidth, 0, Color.gray.getRGB());
+			fontRenderer.drawString(experienceString, background.getWidth() - stringWidth, 0, 0xFFC0C0C0);
 		}
 	}
 

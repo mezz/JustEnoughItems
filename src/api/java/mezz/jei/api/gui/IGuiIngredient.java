@@ -1,7 +1,6 @@
 package mezz.jei.api.gui;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
 import java.util.Collection;
 import java.util.List;
 
@@ -39,5 +38,5 @@ public interface IGuiIngredient<T> {
 	 *
 	 * @see IRecipeTransferHandlerHelper#createUserErrorForSlots(String, Collection).
 	 */
-	void drawHighlight(Color color, int xOffset, int yOffset);
+	void drawHighlight(int color, int xOffset, int yOffset);
 }

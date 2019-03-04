@@ -3,16 +3,12 @@ package mezz.jei.api.recipe;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.IJeiRuntime;
-import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
-import mezz.jei.api.registration.IRecipeTransferRegistration;
 
 /**
  * The IRecipeManager offers several functions for retrieving and handling recipes.

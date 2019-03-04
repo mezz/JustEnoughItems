@@ -1,7 +1,6 @@
 package mezz.jei.color;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -11,15 +10,15 @@ import com.google.common.collect.ImmutableMap;
 import mezz.jei.util.Translator;
 
 public class ColorNamer {
-	private final ImmutableMap<Color, String> colorNames;
+	private final ImmutableMap<Integer, String> colorNames;
 
-	public ColorNamer(ImmutableMap<Color, String> colorNames) {
+	public ColorNamer(ImmutableMap<Integer, String> colorNames) {
 		this.colorNames = colorNames;
 	}
 
-	public Collection<String> getColorNames(Iterable<Color> colors, boolean lowercase) {
+	public Collection<String> getColorNames(Iterable<Integer> colors, boolean lowercase) {
 		final Set<String> allColorNames = new LinkedHashSet<>();
-		for (Color color : colors) {
+		for (Integer color : colors) {
 			final String colorName = getClosestColorName(color);
 			if (colorName != null) {
 				if (lowercase) {
@@ -33,19 +32,20 @@ public class ColorNamer {
 	}
 
 	@Nullable
-	private String getClosestColorName(Color color) {
+	private String getClosestColorName(Integer color) {
 		if (colorNames.isEmpty()) {
 			return null;
 		}
 
 		String closestColorName = null;
-		Double closestColorDistance = Double.MAX_VALUE;
+		double closestColorDistance = Double.MAX_VALUE;
 
-		for (Map.Entry<Color, String> entry : colorNames.entrySet()) {
-			final Color namedColor = entry.getKey();
-			final Double distance = ColorUtil.slowPerceptualColorDistanceSquared(namedColor, color);
-			if (distance < closestColorDistance) {
-				closestColorDistance = distance;
+		for (Map.Entry<Integer, String> entry : colorNames.entrySet()) {
+			final Integer namedColor = entry.getKey();
+			final double distance = ColorUtil.slowPerceptualColorDistanceSquared(namedColor, color);
+			final double absDistance = Math.abs(distance);
+			if (absDistance < closestColorDistance) {
+				closestColorDistance = absDistance;
 				closestColorName = entry.getValue();
 			}
 		}

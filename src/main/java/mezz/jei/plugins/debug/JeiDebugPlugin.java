@@ -1,13 +1,13 @@
 package mezz.jei.plugins.debug;
 
 import javax.annotation.Nullable;
-import java.awt.Rectangle;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.client.gui.inventory.GuiBrewingStand;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -103,11 +103,11 @@ public class JeiDebugPlugin implements IModPlugin {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
 			registration.addGuiContainerHandler(GuiBrewingStand.class, new IGuiContainerHandler<GuiBrewingStand>() {
 				@Override
-				public List<Rectangle> getGuiExtraAreas(GuiBrewingStand guiContainer) {
+				public List<Rectangle2d> getGuiExtraAreas(GuiBrewingStand guiContainer) {
 					int widthMovement = (int) ((System.currentTimeMillis() / 100) % 100);
 					int size = 25 + widthMovement;
 					return Collections.singletonList(
-						new Rectangle(guiContainer.getGuiLeft() + guiContainer.getXSize(), guiContainer.getGuiTop() + 40, size, size)
+						new Rectangle2d(guiContainer.getGuiLeft() + guiContainer.getXSize(), guiContainer.getGuiTop() + 40, size, size)
 					);
 				}
 

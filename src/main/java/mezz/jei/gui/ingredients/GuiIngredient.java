@@ -1,8 +1,6 @@
 package mezz.jei.gui.ingredients;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -47,7 +46,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	private final int slotIndex;
 	private final boolean input;
 
-	private final Rectangle rect;
+	private final Rectangle2d rect;
 	private final int xPadding;
 	private final int yPadding;
 
@@ -68,7 +67,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		boolean input,
 		IIngredientRenderer<T> ingredientRenderer,
 		IIngredientHelper<T> ingredientHelper,
-		Rectangle rect,
+		Rectangle2d rect,
 		int xPadding, int yPadding,
 		int cycleOffset
 	) {
@@ -85,12 +84,12 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		this.cycleTimer = new CycleTimer(cycleOffset);
 	}
 
-	public Rectangle getRect() {
+	public Rectangle2d getRect() {
 		return rect;
 	}
 
 	public boolean isMouseOver(double xOffset, double yOffset, double mouseX, double mouseY) {
-		return enabled && (mouseX >= xOffset + rect.x) && (mouseY >= yOffset + rect.y) && (mouseX < xOffset + rect.x + rect.width) && (mouseY < yOffset + rect.y + rect.height);
+		return enabled && (mouseX >= xOffset + rect.getX()) && (mouseY >= yOffset + rect.getY()) && (mouseX < xOffset + rect.getX() + rect.getWidth()) && (mouseY < yOffset + rect.getY() + rect.getHeight());
 	}
 
 	@Nullable
@@ -170,12 +169,12 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		cycleTimer.onDraw();
 
 		if (background != null) {
-			background.draw(xOffset + rect.x, yOffset + rect.y);
+			background.draw(xOffset + rect.getX(), yOffset + rect.getY());
 		}
 
 		T value = getDisplayedIngredient();
 		try {
-			ingredientRenderer.render(xOffset + rect.x + xPadding, yOffset + rect.y + yPadding, value);
+			ingredientRenderer.render(xOffset + rect.getX() + xPadding, yOffset + rect.getY() + yPadding, value);
 		} catch (RuntimeException | LinkageError e) {
 			if (value != null) {
 				throw ErrorUtil.createRenderIngredientException(e, value);
@@ -185,12 +184,12 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	}
 
 	@Override
-	public void drawHighlight(Color color, int xOffset, int yOffset) {
-		int x = rect.x + xOffset + xPadding;
-		int y = rect.y + yOffset + yPadding;
+	public void drawHighlight(int color, int xOffset, int yOffset) {
+		int x = rect.getX() + xOffset + xPadding;
+		int y = rect.getY() + yOffset + yPadding;
 		GlStateManager.disableLighting();
 		GlStateManager.disableDepthTest();
-		drawRect(x, y, x + rect.width - xPadding * 2, y + rect.height - yPadding * 2, color.getRGB());
+		drawRect(x, y, x + rect.getWidth() - xPadding * 2, y + rect.getHeight() - yPadding * 2, color);
 		GlStateManager.color4f(1f, 1f, 1f, 1f);
 	}
 
@@ -206,10 +205,10 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 			GlStateManager.disableDepthTest();
 
 			RenderHelper.disableStandardItemLighting();
-			drawRect(xOffset + rect.x + xPadding,
-				yOffset + rect.y + yPadding,
-				xOffset + rect.x + rect.width - xPadding,
-				yOffset + rect.y + rect.height - yPadding,
+			drawRect(xOffset + rect.getX() + xPadding,
+				yOffset + rect.getY() + yPadding,
+				xOffset + rect.getX() + rect.getWidth() - xPadding,
+				yOffset + rect.getY() + rect.getHeight() - yPadding,
 				0x7FFFFFFF);
 			GlStateManager.color4f(1f, 1f, 1f, 1f);
 

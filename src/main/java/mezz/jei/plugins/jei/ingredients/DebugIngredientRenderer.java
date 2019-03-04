@@ -1,7 +1,6 @@
 package mezz.jei.plugins.jei.ingredients;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +25,8 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 		if (ingredient != null) {
 			Minecraft minecraft = Minecraft.getInstance();
 			FontRenderer font = getFontRenderer(minecraft, ingredient);
-			font.drawString("JEI", xPosition, yPosition, Color.RED.getRGB());
-			font.drawString("#" + ingredient.getNumber(), xPosition, yPosition + 8, Color.RED.getRGB());
+			font.drawString("JEI", xPosition, yPosition, 0xFFFF0000);
+			font.drawString("#" + ingredient.getNumber(), xPosition, yPosition + 8, 0xFFFF0000);
 			GlStateManager.color4f(1, 1, 1, 1);
 		}
 	}

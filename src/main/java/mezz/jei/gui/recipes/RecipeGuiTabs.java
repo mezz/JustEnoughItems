@@ -1,11 +1,11 @@
 package mezz.jei.gui.recipes;
 
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Rectangle2d;
 
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -22,7 +22,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 	private final IRecipeGuiLogic recipeGuiLogic;
 	private final List<RecipeGuiTab> tabs = new ArrayList<>();
 	private final PageNavigation pageNavigation;
-	private final Rectangle area = new Rectangle();
+	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
 
 	private int pageCount = 1;
 	private int pageNumber = 0;
@@ -48,10 +48,12 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 				}
 			}
 
-			area.width = totalWidth;
-			area.height = RecipeGuiTab.TAB_HEIGHT;
-			area.x = recipesGui.getGuiLeft() + 2;
-			area.y = recipesGui.getGuiTop() - RecipeGuiTab.TAB_HEIGHT + 3; // overlaps the recipe gui slightly
+			area = new Rectangle2d(
+				recipesGui.getGuiLeft() + 2,
+				recipesGui.getGuiTop() - RecipeGuiTab.TAB_HEIGHT + 3, // overlaps the recipe gui slightly
+				totalWidth,
+				RecipeGuiTab.TAB_HEIGHT
+			);
 
 			pageCount = MathUtil.divideCeil(categories.size(), categoriesPerPage);
 
@@ -59,9 +61,13 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 			int categoryIndex = categories.indexOf(currentCategory);
 			pageNumber = categoryIndex / categoriesPerPage;
 
-			Rectangle navigationArea = new Rectangle(area);
-			navigationArea.height = 20;
-			navigationArea.translate(0, -(2 + navigationArea.height));
+			int navHeight = 20;
+			Rectangle2d navigationArea = new Rectangle2d(
+				area.getX(),
+				area.getY() -(2 + navHeight),
+				area.getWidth(),
+				navHeight
+			);
 			pageNavigation.updateBounds(navigationArea);
 
 			updateLayout();
@@ -73,7 +79,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 
 		ImmutableList<IRecipeCategory> categories = recipeGuiLogic.getRecipeCategories();
 
-		int tabX = area.x;
+		int tabX = area.getX();
 
 		final int startIndex = pageNumber * categoriesPerPage;
 		for (int i = 0; i < categoriesPerPage; i++) {
@@ -82,7 +88,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 				break;
 			}
 			IRecipeCategory category = categories.get(index);
-			RecipeGuiTab tab = new RecipeCategoryTab(recipeGuiLogic, category, tabX, area.y);
+			RecipeGuiTab tab = new RecipeCategoryTab(recipeGuiLogic, category, tabX, area.getY());
 			this.tabs.add(tab);
 			tabX += RecipeGuiTab.TAB_WIDTH;
 		}
@@ -121,7 +127,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return area.contains(mouseX, mouseY) ||
+		return MathUtil.contains(area, mouseX, mouseY) ||
 			pageNavigation.isMouseOver();
 	}
 

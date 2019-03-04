@@ -1,7 +1,6 @@
 package mezz.jei.gui.ghost;
 
 import javax.annotation.Nullable;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -9,6 +8,7 @@ import java.util.Objects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.api.gui.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -103,7 +103,7 @@ public class GhostIngredientDragManager {
 			List<IGhostIngredientHandler.Target<V>> targets = handler.getTargets(currentScreen, ingredient, true);
 			if (!targets.isEmpty()) {
 				IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
-				Rectangle clickedArea = clicked.getArea();
+				Rectangle2d clickedArea = clicked.getArea();
 				this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, clickedArea);
 				clicked.onClickHandled();
 				return true;

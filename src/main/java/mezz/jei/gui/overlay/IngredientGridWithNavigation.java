@@ -1,7 +1,6 @@
 package mezz.jei.gui.overlay;
 
 import javax.annotation.Nullable;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -9,6 +8,7 @@ import java.util.Set;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
 
@@ -46,7 +46,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 	private final IWorldConfig worldConfig;
 	private final IngredientGrid ingredientGrid;
 	private final IIngredientGridSource ingredientSource;
-	private Rectangle area = new Rectangle();
+	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
 
 	public IngredientGridWithNavigation(
 		IIngredientGridSource ingredientSource,
@@ -79,33 +79,33 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		this.navigation.updatePageState();
 	}
 
-	public boolean updateBounds(Rectangle availableArea, Set<Rectangle> guiExclusionAreas, int minWidth) {
-		Rectangle estimatedNavigationArea = new Rectangle(
-			availableArea.x,
-			availableArea.y,
-			availableArea.width,
+	public boolean updateBounds(Rectangle2d availableArea, Set<Rectangle2d> guiExclusionAreas, int minWidth) {
+		Rectangle2d estimatedNavigationArea = new Rectangle2d(
+			availableArea.getX(),
+			availableArea.getY(),
+			availableArea.getWidth(),
 			NAVIGATION_HEIGHT
 		);
-		Rectangle movedNavigationArea = MathUtil.moveDownToAvoidIntersection(guiExclusionAreas, estimatedNavigationArea);
-		int navigationMaxY = movedNavigationArea.y + movedNavigationArea.height;
-		Rectangle boundsWithoutNavigation = new Rectangle(
-			availableArea.x,
+		Rectangle2d movedNavigationArea = MathUtil.moveDownToAvoidIntersection(guiExclusionAreas, estimatedNavigationArea);
+		int navigationMaxY = movedNavigationArea.getY() + movedNavigationArea.getHeight();
+		Rectangle2d boundsWithoutNavigation = new Rectangle2d(
+			availableArea.getX(),
 			navigationMaxY,
-			availableArea.width,
-			availableArea.height - navigationMaxY
+			availableArea.getWidth(),
+			availableArea.getHeight() - navigationMaxY
 		);
 		boolean gridHasRoom = this.ingredientGrid.updateBounds(boundsWithoutNavigation, minWidth, guiExclusionAreas);
 		if (!gridHasRoom) {
 			return false;
 		}
-		Rectangle displayArea = this.ingredientGrid.getArea();
-		Rectangle navigationArea = new Rectangle(displayArea.x, movedNavigationArea.y, displayArea.width, NAVIGATION_HEIGHT);
+		Rectangle2d displayArea = this.ingredientGrid.getArea();
+		Rectangle2d navigationArea = new Rectangle2d(displayArea.getX(), movedNavigationArea.getY(), displayArea.getWidth(), NAVIGATION_HEIGHT);
 		this.navigation.updateBounds(navigationArea);
-		this.area = displayArea.union(navigationArea);
+		this.area = MathUtil.union(displayArea, navigationArea);
 		return true;
 	}
 
-	public Rectangle getArea() {
+	public Rectangle2d getArea() {
 		return this.area;
 	}
 
@@ -120,7 +120,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return this.area.contains(mouseX, mouseY) &&
+		return MathUtil.contains(this.area, mouseX, mouseY) &&
 			!guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
 	}
 

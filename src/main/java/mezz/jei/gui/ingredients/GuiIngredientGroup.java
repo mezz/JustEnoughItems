@@ -1,8 +1,6 @@
 package mezz.jei.gui.ingredients;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,6 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
@@ -62,7 +62,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 
 	@Override
 	public void init(int slotIndex, boolean input, IIngredientRenderer<T> ingredientRenderer, int xPosition, int yPosition, int width, int height, int xPadding, int yPadding) {
-		Rectangle rect = new Rectangle(xPosition, yPosition, width, height);
+		Rectangle2d rect = new Rectangle2d(xPosition, yPosition, width, height);
 		GuiIngredient<T> guiIngredient = new GuiIngredient<>(slotIndex, input, ingredientRenderer, ingredientHelper, rect, xPadding, yPadding, cycleOffset);
 		guiIngredients.put(slotIndex, guiIngredient);
 		if (input) {
@@ -149,7 +149,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		return null;
 	}
 
-	public void draw(int xOffset, int yOffset, Color highlightColor, int mouseX, int mouseY) {
+	public void draw(int xOffset, int yOffset, int highlightColor, int mouseX, int mouseY) {
 		for (GuiIngredient<T> ingredient : guiIngredients.values()) {
 			ingredient.draw(xOffset, yOffset);
 			if (ingredient.isMouseOver(xOffset, yOffset, mouseX, mouseY)) {

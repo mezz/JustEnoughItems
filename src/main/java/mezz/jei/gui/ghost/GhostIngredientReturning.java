@@ -1,12 +1,12 @@
 package mezz.jei.gui.ghost;
 
 import javax.annotation.Nullable;
-import java.awt.Point;
-import java.awt.Rectangle;
+import javax.vecmath.Point2d;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.api.ingredients.IIngredientRenderer;
 
@@ -17,25 +17,25 @@ public class GhostIngredientReturning<T> {
 	private static final long DURATION_PER_SCREEN_WIDTH = 500; // milliseconds to move across a full screen
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final T ingredient;
-	private final Point start;
-	private final Point end;
+	private final Point2d start;
+	private final Point2d end;
 	private final long startTime;
 	private final long duration;
 
 	@Nullable
 	public static <T> GhostIngredientReturning<T> create(GhostIngredientDrag<T> ghostIngredientDrag, double mouseX, double mouseY) {
-		Rectangle origin = ghostIngredientDrag.getOrigin();
+		Rectangle2d origin = ghostIngredientDrag.getOrigin();
 		if (origin != null) {
 			IIngredientRenderer<T> ingredientRenderer = ghostIngredientDrag.getIngredientRenderer();
 			T ingredient = ghostIngredientDrag.getIngredient();
-			Point end = new Point(origin.x, origin.y);
-			Point start = new Point((int) mouseX - 8, (int) mouseY - 8);
+			Point2d end = new Point2d(origin.getX(), origin.getY());
+			Point2d start = new Point2d(mouseX - 8, mouseY - 8);
 			return new GhostIngredientReturning<>(ingredientRenderer, ingredient, start, end);
 		}
 		return null;
 	}
 
-	private GhostIngredientReturning(IIngredientRenderer<T> ingredientRenderer, T ingredient, Point start, Point end) {
+	private GhostIngredientReturning(IIngredientRenderer<T> ingredientRenderer, T ingredient, Point2d start, Point2d end) {
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredient = ingredient;
 		this.start = start;
@@ -55,14 +55,14 @@ public class GhostIngredientReturning<T> {
 	public void drawItem(Minecraft minecraft) {
 		long time = System.currentTimeMillis();
 		long elapsed = time - startTime;
-		float percent = Math.min(elapsed / (float) this.duration, 1);
-		int dx = end.x - start.x;
-		int dy = end.y - start.y;
-		int x = start.x + Math.round(dx * percent);
-		int y = start.y + Math.round(dy * percent);
+		double percent = Math.min(elapsed / (double) this.duration, 1);
+		double dx = end.x - start.x;
+		double dy = end.y - start.y;
+		double x = start.x + Math.round(dx * percent);
+		double y = start.y + Math.round(dy * percent);
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		itemRenderer.zLevel += 150.0F;
-		ingredientRenderer.render(x, y, ingredient);
+		ingredientRenderer.render((int) x, (int) y, ingredient);
 		itemRenderer.zLevel -= 150.0F;
 	}
 

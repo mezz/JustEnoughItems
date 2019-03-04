@@ -1,7 +1,6 @@
 package mezz.jei.gui.overlay.bookmarks;
 
 import javax.annotation.Nullable;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -9,6 +8,7 @@ import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.api.gui.IGuiProperties;
 import mezz.jei.gui.GuiScreenHelper;
@@ -17,6 +17,7 @@ import mezz.jei.gui.overlay.GuiProperties;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IPaged;
 import mezz.jei.input.IShowsRecipeFocuses;
+import mezz.jei.util.MathUtil;
 
 public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 
@@ -28,8 +29,8 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 	private int current = 0;
 	@Nullable
 	private IGuiProperties guiProperties;
-	private Rectangle naviArea = new Rectangle();
-	private Rectangle displayArea = new Rectangle();
+	private Rectangle2d naviArea = new Rectangle2d(0, 0, 0, 0);
+	private Rectangle2d displayArea = new Rectangle2d(0, 0, 0, 0);
 	private final PageNavigation navigation;
 	private boolean canShow = false;
 
@@ -49,7 +50,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
 		if (canShow && hasContent()) {
 			contents.get(current).drawScreen(minecraft, mouseX, mouseY, partialTicks);
-			if (naviArea.height > 0) {
+			if (naviArea.getHeight() > 0) {
 				navigation.draw(minecraft, mouseX, mouseY, partialTicks);
 			}
 		}
@@ -76,7 +77,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 			} else {
 				ILeftAreaContent content = contents.get(current);
 				if (forceUpdate || !GuiProperties.areEqual(guiProperties, currentGuiProperties)) {
-					Set<Rectangle> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
+					Set<Rectangle2d> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
 					guiProperties = currentGuiProperties;
 					makeDisplayArea(guiProperties);
 					content.updateBounds(displayArea, guiExclusionAreas);
@@ -93,15 +94,23 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		final int y = BORDER_PADDING;
 		int width = guiProperties.getGuiLeft() - x - BORDER_PADDING;
 		final int height = guiProperties.getScreenHeight() - y - BORDER_PADDING;
-		displayArea = new Rectangle(x, y, width, height);
+		displayArea = new Rectangle2d(x, y, width, height);
 		if (contents.size() > 1) {
-			naviArea = new Rectangle(displayArea);
-			naviArea.height = NAVIGATION_HEIGHT;
-			displayArea.y += NAVIGATION_HEIGHT + BORDER_PADDING;
-			displayArea.height -= NAVIGATION_HEIGHT + BORDER_PADDING;
+			naviArea = new Rectangle2d(
+				displayArea.getX(),
+				displayArea.getY(),
+				displayArea.getWidth(),
+				NAVIGATION_HEIGHT
+			);
+			displayArea = new Rectangle2d(
+				displayArea.getX(),
+				displayArea.getY() + NAVIGATION_HEIGHT + BORDER_PADDING,
+				displayArea.getWidth(),
+				displayArea.getHeight() - NAVIGATION_HEIGHT + BORDER_PADDING
+			);
 			navigation.updateBounds(naviArea);
 		} else {
-			naviArea = new Rectangle();
+			naviArea = new Rectangle2d(0, 0, 0, 0);
 		}
 	}
 
@@ -124,9 +133,9 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 
 	public boolean handleMouseScrolled(double mouseX, double mouseY, double dWheel) {
 		if (canShow && hasContent()) {
-			if (displayArea.contains(mouseX, mouseY)) {
+			if (MathUtil.contains(displayArea, mouseX, mouseY)) {
 				return contents.get(current).handleMouseScrolled(mouseX, mouseY, dWheel);
-			} else if (naviArea.contains(mouseX, mouseY)) {
+			} else if (MathUtil.contains(naviArea, mouseX, mouseY)) {
 				if (dWheel < 0) {
 					nextPage();
 				} else {
@@ -140,9 +149,9 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 
 	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
 		if (canShow && hasContent()) {
-			if (displayArea.contains(mouseX, mouseY)) {
+			if (MathUtil.contains(displayArea, mouseX, mouseY)) {
 				return contents.get(current).handleMouseClicked(mouseX, mouseY, mouseButton);
-			} else if (naviArea.contains(mouseX, mouseY)) {
+			} else if (MathUtil.contains(naviArea, mouseX, mouseY)) {
 				return navigation.handleMouseClickedButtons(mouseX, mouseY, mouseButton);
 			}
 		}

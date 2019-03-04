@@ -1,7 +1,6 @@
 package mezz.jei.config;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
 import java.io.File;
 
 import com.google.common.base.Preconditions;
@@ -123,7 +122,7 @@ public final class ClientConfig {
 		final String[] searchColorDefaults = ColorGetter.getColorDefaults();
 		final String[] searchColors = searchColorsConfig.getStringList("searchColors", CATEGORY_SEARCH_COLORS, searchColorDefaults);
 
-		final ImmutableMap.Builder<Color, String> searchColorsMapBuilder = ImmutableMap.builder();
+		final ImmutableMap.Builder<Integer, String> searchColorsMapBuilder = ImmutableMap.builder();
 		for (String entry : searchColors) {
 			final String[] values = entry.split(":");
 			if (values.length != 2) {
@@ -131,9 +130,8 @@ public final class ClientConfig {
 			} else {
 				try {
 					final String name = values[0];
-					final int colorValue = Integer.decode("0x" + values[1]);
-					final Color color = new Color(colorValue);
-					searchColorsMapBuilder.put(color, name);
+					final Integer colorValue = Integer.decode("0x" + values[1]);
+					searchColorsMapBuilder.put(colorValue, name);
 				} catch (NumberFormatException e) {
 					LOGGER.error("Invalid number format for searchColor entry: {}", entry, e);
 				}

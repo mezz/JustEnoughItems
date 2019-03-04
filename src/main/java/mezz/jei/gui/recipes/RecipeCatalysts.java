@@ -1,12 +1,12 @@
 package mezz.jei.gui.recipes;
 
 import javax.annotation.Nullable;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -83,7 +83,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		int column = index / maxIngredientsPerColumn;
 		int row = index % maxIngredientsPerColumn;
-		Rectangle rect = new Rectangle(
+		Rectangle2d rect = new Rectangle2d(
 			left + borderSize + (column * ingredientSize) + ingredientBorderSize,
 			top + borderSize + (row * ingredientSize) + ingredientBorderSize,
 			ingredientSize,

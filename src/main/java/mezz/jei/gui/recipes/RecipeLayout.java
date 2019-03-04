@@ -1,8 +1,6 @@
 package mezz.jei.gui.recipes;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
-import java.awt.Rectangle;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +8,7 @@ import java.util.Map;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.Internal;
@@ -30,11 +29,13 @@ import mezz.jei.gui.ingredients.GuiIngredientGroup;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.MathUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class RecipeLayout implements IRecipeLayoutDrawable {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int HIGHLIGHT_COLOR = 0x7FFFFFFF;
 	private static final int RECIPE_BUTTON_SIZE = 13;
 	private static final int RECIPE_BORDER_PADDING = 4;
 	public static final int recipeTransferButtonIndex = 100;
@@ -49,7 +50,6 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	private final Object recipe;
 	@Nullable
 	private final Focus<?> focus;
-	private final Color highlightColor = new Color(0x7FFFFFFF, true);
 	@Nullable
 	private ShapelessIcon shapelessIcon;
 	private final DrawableNineSliceTexture recipeBorder;
@@ -152,7 +152,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		GlStateManager.popMatrix();
 
 		for (GuiIngredientGroup guiIngredientGroup : guiIngredientGroups.values()) {
-			guiIngredientGroup.draw(posX, posY, highlightColor, mouseX, mouseY);
+			guiIngredientGroup.draw(posX, posY, HIGHLIGHT_COLOR, mouseX, mouseY);
 		}
 		if (recipeTransferButton != null) {
 			Minecraft minecraft = Minecraft.getInstance();
@@ -205,8 +205,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		final IDrawable background = recipeCategory.getBackground();
-		final Rectangle backgroundRect = new Rectangle(posX, posY, background.getWidth(), background.getHeight());
-		return backgroundRect.contains(mouseX, mouseY) ||
+		final Rectangle2d backgroundRect = new Rectangle2d(posX, posY, background.getWidth(), background.getHeight());
+		return MathUtil.contains(backgroundRect, mouseX, mouseY) ||
 			(recipeTransferButton != null && recipeTransferButton.isMouseOver());
 	}
 

@@ -176,10 +176,17 @@ public class MMCQ {
 		public int[][] palette() {
 			int numVBoxes = vboxes.size();
 			int[][] palette = new int[numVBoxes][];
+			int numChosen = 0;
+			int maxCount = 0;
 			for (int i = 0; i < numVBoxes; i++) {
-				palette[i] = vboxes.get(i).avg(false);
+				VBox vBox = vboxes.get(i);
+				if (vBox.count(false) >= (maxCount * 0.25)) {
+					palette[numChosen] = vBox.avg(false);
+					numChosen++;
+					maxCount = vBox.count(false);
+				}
 			}
-			return palette;
+			return Arrays.copyOfRange(palette, 0, numChosen);
 		}
 
 		public int size() {

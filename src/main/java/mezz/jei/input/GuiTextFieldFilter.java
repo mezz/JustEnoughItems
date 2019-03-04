@@ -1,13 +1,12 @@
 package mezz.jei.input;
 
-import java.awt.Color;
-import java.awt.Rectangle;
 import java.util.LinkedList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.Internal;
 import mezz.jei.config.IWorldConfig;
@@ -41,12 +40,12 @@ public class GuiTextFieldFilter extends GuiTextField {
 		this.background = Internal.getHelpers().getGuiHelper().getSearchBackground();
 	}
 
-	public void updateBounds(Rectangle area) {
-		this.x = area.x;
-		this.y = area.y;
-		this.width = area.width;
-		this.height = area.height;
-		this.hoverChecker.updateBounds(area.y, area.y + area.height, area.x, area.x + area.width);
+	public void updateBounds(Rectangle2d area) {
+		this.x = area.getX();
+		this.y = area.getY();
+		this.width = area.getWidth();
+		this.height = area.getHeight();
+		this.hoverChecker.updateBounds(area.getY(), area.getY() + area.getHeight(), area.getX(), area.getX() + area.getWidth());
 		setSelectionPos(getCursorPosition());
 	}
 
@@ -57,9 +56,9 @@ public class GuiTextFieldFilter extends GuiTextField {
 		}
 		List<IIngredientListElement<?>> ingredientList = ingredientSource.getIngredientList(filterText);
 		if (ingredientList.size() == 0) {
-			setTextColor(Color.red.getRGB());
+			setTextColor(0xFFFF0000);
 		} else {
-			setTextColor(Color.white.getRGB());
+			setTextColor(0xFFFFFFFF);
 		}
 	}
 

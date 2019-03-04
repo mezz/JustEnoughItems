@@ -1,7 +1,6 @@
 package mezz.jei.gui.recipes;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -228,8 +227,8 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 		int textPadding = (buttonHeight - fontRenderer.FONT_HEIGHT) / 2;
-		drawCenteredStringWithShadow(fontRenderer, title, xSize, guiLeft, nextRecipeCategory.y + textPadding, Color.WHITE.getRGB());
-		drawCenteredStringWithShadow(fontRenderer, pageString, xSize, guiLeft, nextPage.y + textPadding, Color.WHITE.getRGB());
+		drawCenteredStringWithShadow(fontRenderer, title, xSize, guiLeft, nextRecipeCategory.y + textPadding, 0xFFFFFFFF);
+		drawCenteredStringWithShadow(fontRenderer, pageString, xSize, guiLeft, nextPage.y + textPadding, 0xFFFFFFFF);
 
 		nextRecipeCategory.render(mouseX, mouseY, partialTicks);
 		previousRecipeCategory.render(mouseX, mouseY, partialTicks);

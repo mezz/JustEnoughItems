@@ -1,7 +1,5 @@
 package mezz.jei.plugins.vanilla.furnace;
 
-import java.awt.Color;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
@@ -76,6 +74,6 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory<FuelRecipe> {
 		flame.draw(1, 0);
 		Minecraft minecraft = Minecraft.getInstance();
 		String smeltCountString = recipe.getSmeltCountString();
-		minecraft.fontRenderer.drawString(smeltCountString, 24, 13, Color.gray.getRGB());
+		minecraft.fontRenderer.drawString(smeltCountString, 24, 13, 0xFFC0C0C0);
 	}
 }

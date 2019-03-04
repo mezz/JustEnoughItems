@@ -1,7 +1,6 @@
 package mezz.jei.plugins.vanilla.ingredients.fluid;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
 import java.util.Collections;
 
 import net.minecraftforge.fluids.Fluid;
@@ -60,7 +59,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	}
 
 	@Override
-	public Iterable<Color> getColors(FluidStack ingredient) {
+	public Iterable<Integer> getColors(FluidStack ingredient) {
 		Fluid fluid = ingredient.getFluid();
 		TextureMap textureMapBlocks = Minecraft.getInstance().getTextureMap();
 		ResourceLocation fluidStill = fluid.getStill();

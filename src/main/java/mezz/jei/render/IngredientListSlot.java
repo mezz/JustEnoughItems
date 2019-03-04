@@ -1,10 +1,13 @@
 package mezz.jei.render;
 
 import javax.annotation.Nullable;
-import java.awt.Rectangle;
+
+import net.minecraft.client.renderer.Rectangle2d;
+
+import mezz.jei.util.MathUtil;
 
 public class IngredientListSlot {
-	private final Rectangle area;
+	private final Rectangle2d area;
 	private final int padding;
 	private boolean blocked = false;
 	@Nullable
@@ -13,7 +16,7 @@ public class IngredientListSlot {
 	public IngredientListSlot(int xPosition, int yPosition, int padding) {
 		this.padding = padding;
 		final int size = 16 + (2 * padding);
-		this.area = new Rectangle(xPosition, yPosition, size, size);
+		this.area = new Rectangle2d(xPosition, yPosition, size, size);
 	}
 
 	@Nullable
@@ -26,7 +29,7 @@ public class IngredientListSlot {
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return (this.ingredientRenderer != null) && area.contains(mouseX, mouseY);
+		return (this.ingredientRenderer != null) && MathUtil.contains(area, mouseX, mouseY);
 	}
 
 	public void setIngredientRenderer(IngredientListElementRenderer ingredientRenderer) {
@@ -35,7 +38,7 @@ public class IngredientListSlot {
 		ingredientRenderer.setPadding(padding);
 	}
 
-	public Rectangle getArea() {
+	public Rectangle2d getArea() {
 		return area;
 	}
 

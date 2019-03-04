@@ -1,8 +1,9 @@
 package mezz.jei.gui.elements;
 
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
+
+import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.config.Constants;
@@ -23,11 +24,11 @@ public abstract class GuiIconToggleButton {
 		this.hoverChecker.updateBounds(this.button);
 	}
 
-	public void updateBounds(Rectangle area) {
-		this.button.width = area.width;
-		this.button.height = area.height;
-		this.button.x = area.x;
-		this.button.y = area.y;
+	public void updateBounds(Rectangle2d area) {
+		this.button.width = area.getWidth();
+		this.button.height = area.getHeight();
+		this.button.x = area.getX();
+		this.button.y = area.getY();
 		this.hoverChecker.updateBounds(this.button);
 	}
 

@@ -1,12 +1,12 @@
 package mezz.jei.api.gui;
 
 import javax.annotation.Nullable;
-import java.awt.Rectangle;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
@@ -22,7 +22,7 @@ public interface IGuiContainerHandler<T extends GuiContainer> {
 	 *
 	 * @return the space that the gui takes up besides the normal rectangle defined by GuiContainer.
 	 */
-	default List<Rectangle> getGuiExtraAreas(T guiContainer) {
+	default List<Rectangle2d> getGuiExtraAreas(T guiContainer) {
 		return Collections.emptyList();
 	}
 

@@ -1,7 +1,5 @@
 package mezz.jei.color;
 
-import java.awt.Color;
-
 public final class ColorUtil {
 	private ColorUtil() {
 
@@ -31,21 +29,26 @@ public final class ColorUtil {
 	 *
 	 * Weighs the distance from grey more heavily, to avoid matching grey and colorful colors together.
 	 */
-	public static double slowPerceptualColorDistanceSquared(int[] color1, int[] color2) {
-		final double colorDistance = fastPerceptualColorDistanceSquared(color1, color2);
+	public static double slowPerceptualColorDistanceSquared(int color1, int color2) {
+		final int red1 = color1 >> 16 & 255;
+		final int green1 = color1 >> 8 & 255;
+		final int blue1 = color1 & 255;
+		final int red2 = color2 >> 16 & 255;
+		final int green2 = color2 >> 8 & 255;
+		final int blue2 = color2 & 255;
+		final int redMean = (red1 + red2) >> 1;
+		final int r = red1 - red2;
+		final int g = green1 - green2;
+		final int b = blue1 - blue2;
+		final double colorDistanceSquared = (((512 + redMean) * r * r) >> 8) + 4 * g * g + (((767 - redMean) * b * b) >> 8);
 
-		final double grey1 = (color1[0] + color1[1] + color1[2]) / 3.0;
-		final double grey2 = (color2[0] + color2[1] + color2[2]) / 3.0;
-		final double greyDistance1 = Math.abs(grey1 - color1[0]) + Math.abs(grey1 - color1[1]) + Math.abs(grey1 - color1[2]);
-		final double greyDistance2 = Math.abs(grey2 - color2[0]) + Math.abs(grey2 - color2[1]) + Math.abs(grey2 - color2[2]);
+		final double grey1 = (red1 + green1 + blue1) / 3.0;
+		final double grey2 = (red2 + green2 + blue2) / 3.0;
+		final double greyDistance1 = Math.abs(grey1 - red1) + Math.abs(grey1 - green1) + Math.abs(grey1 - blue1);
+		final double greyDistance2 = Math.abs(grey2 - red2) + Math.abs(grey2 - green2) + Math.abs(grey2 - blue2);
 		final double greyDistance = greyDistance1 - greyDistance2;
 
-		return colorDistance + (greyDistance * greyDistance / 10.0);
+		return colorDistanceSquared + (greyDistance * greyDistance / 10.0);
 	}
 
-	public static double slowPerceptualColorDistanceSquared(Color color1, Color color2) {
-		final int[] colorInts1 = {color1.getRed(), color1.getGreen(), color1.getBlue()};
-		final int[] colorInts2 = {color2.getRed(), color2.getGreen(), color2.getBlue()};
-		return slowPerceptualColorDistanceSquared(colorInts1, colorInts2);
-	}
 }

@@ -1,6 +1,5 @@
 package mezz.jei.transfer;
 
-import java.awt.Color;
 import java.util.Collection;
 import java.util.Map;
 
@@ -11,7 +10,8 @@ import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 
 public class RecipeTransferErrorSlots extends RecipeTransferErrorTooltip {
-	private static final Color highlightColor = new Color(1.0f, 0.0f, 0.0f, 0.4f);
+	private static final int HIGHLIGHT_COLOR = 0x66FF0000;
+
 	private final Collection<Integer> slots;
 
 	public RecipeTransferErrorSlots(String message, Collection<Integer> slots) {
@@ -25,7 +25,7 @@ public class RecipeTransferErrorSlots extends RecipeTransferErrorTooltip {
 		Map<Integer, ? extends IGuiIngredient<ItemStack>> ingredients = itemStackGroup.getGuiIngredients();
 		for (Integer slotIndex : slots) {
 			IGuiIngredient<ItemStack> ingredient = ingredients.get(slotIndex);
-			ingredient.drawHighlight(highlightColor, recipeX, recipeY);
+			ingredient.drawHighlight(HIGHLIGHT_COLOR, recipeX, recipeY);
 		}
 
 		super.showError(mouseX, mouseY, recipeLayout, recipeX, recipeY);

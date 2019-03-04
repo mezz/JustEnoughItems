@@ -1,7 +1,6 @@
 package mezz.jei.render;
 
 import javax.annotation.Nullable;
-import java.awt.Rectangle;
 
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraft.client.Minecraft;
@@ -9,6 +8,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -60,7 +60,7 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 
 		GlStateManager.pushMatrix();
 		{
-			GlStateManager.translatef(area.x + padding + 8.0f, area.y + padding + 8.0f, 150.0F);
+			GlStateManager.translatef(area.getX() + padding + 8.0f, area.getY() + padding + 8.0f, 150.0F);
 			GlStateManager.scalef(16F, -16F, 16F);
 			bakedModel = ForgeHooksClient.handleCameraTransforms(bakedModel, ItemCameraTransforms.TransformType.GUI, false);
 			GlStateManager.translatef(-0.5F, -0.5F, -0.5F);
@@ -119,10 +119,10 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		}
 	}
 
-	private void renderOverlay(ItemStack itemStack, Rectangle area, int padding) {
+	private void renderOverlay(ItemStack itemStack, Rectangle2d area, int padding) {
 		FontRenderer font = getFontRenderer(itemStack);
 		ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-		itemRenderer.renderItemOverlayIntoGUI(font, itemStack, area.x + padding, area.y + padding, null);
+		itemRenderer.renderItemOverlayIntoGUI(font, itemStack, area.getX() + padding, area.getY() + padding, null);
 	}
 
 	public static FontRenderer getFontRenderer(ItemStack itemStack) {

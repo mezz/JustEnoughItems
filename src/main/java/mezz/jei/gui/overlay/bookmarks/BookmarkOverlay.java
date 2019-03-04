@@ -1,12 +1,12 @@
 package mezz.jei.gui.overlay.bookmarks;
 
 import javax.annotation.Nullable;
-import java.awt.Rectangle;
 import java.util.Set;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
 
@@ -21,14 +21,15 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.util.CommandUtil;
+import mezz.jei.util.MathUtil;
 import org.lwjgl.glfw.GLFW;
 
 public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 	private static final int BUTTON_SIZE = 20;
 
 	// areas
-	private Rectangle parentArea = new Rectangle();
-	private Rectangle displayArea = new Rectangle();
+	private Rectangle2d parentArea = new Rectangle2d(0, 0, 0, 0);
+	private Rectangle2d displayArea = new Rectangle2d(0, 0, 0, 0);
 
 	// display elements
 	private final IngredientGridWithNavigation contents;
@@ -58,7 +59,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 	}
 
 	@Override
-	public void updateBounds(Rectangle area, Set<Rectangle> guiExclusionAreas) {
+	public void updateBounds(Rectangle2d area, Set<Rectangle2d> guiExclusionAreas) {
 		this.parentArea = area;
 		hasRoom = updateBounds(guiExclusionAreas);
 	}
@@ -87,30 +88,34 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 		return Math.max(4 * BUTTON_SIZE, ClientConfig.smallestNumColumns * IngredientGrid.INGREDIENT_WIDTH);
 	}
 
-	public boolean updateBounds(Set<Rectangle> guiExclusionAreas) {
-		displayArea = new Rectangle(parentArea);
+	public boolean updateBounds(Set<Rectangle2d> guiExclusionAreas) {
+		displayArea = parentArea;
 
 		final int minWidth = getMinWidth();
-		if (displayArea.width < minWidth) {
+		if (displayArea.getWidth() < minWidth) {
 			return false;
 		}
 
-		Rectangle availableContentsArea = new Rectangle(
-			displayArea.x,
-			displayArea.y,
-			displayArea.width,
-			displayArea.height - (BUTTON_SIZE + 4)
+		Rectangle2d availableContentsArea = new Rectangle2d(
+			displayArea.getX(),
+			displayArea.getY(),
+			displayArea.getWidth(),
+			displayArea.getHeight() - (BUTTON_SIZE + 4)
 		);
 		boolean contentsHasRoom = this.contents.updateBounds(availableContentsArea, guiExclusionAreas, minWidth);
 
 		// update area to match contents size
-		Rectangle contentsArea = this.contents.getArea();
-		displayArea.x = contentsArea.x;
-		displayArea.width = contentsArea.width;
+		Rectangle2d contentsArea = this.contents.getArea();
+		displayArea = new Rectangle2d(
+			contentsArea.getX(),
+			displayArea.getY(),
+			contentsArea.getWidth(),
+			displayArea.getHeight()
+		);
 
-		this.bookmarkButton.updateBounds(new Rectangle(
-			displayArea.x,
-			(int) Math.floor(displayArea.getMaxY()) - BUTTON_SIZE - 2,
+		this.bookmarkButton.updateBounds(new Rectangle2d(
+			displayArea.getX(),
+			(int) Math.floor(displayArea.getY() + displayArea.getHeight()) - BUTTON_SIZE - 2,
 			BUTTON_SIZE,
 			BUTTON_SIZE
 		));
@@ -137,14 +142,14 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent {
 	@Override
 	public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
 		return isListDisplayed() &&
-			displayArea.contains(mouseX, mouseY) &&
+			MathUtil.contains(displayArea, mouseX, mouseY) &&
 			this.contents.handleMouseScrolled(mouseX, mouseY, scrollDelta);
 	}
 
 	@Override
 	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
 		if (isListDisplayed()) {
-			if (displayArea.contains(mouseX, mouseY)) {
+			if (MathUtil.contains(displayArea, mouseX, mouseY)) {
 				Minecraft minecraft = Minecraft.getInstance();
 				GuiScreen currentScreen = minecraft.currentScreen;
 				InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);

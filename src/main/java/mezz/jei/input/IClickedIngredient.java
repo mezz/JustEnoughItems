@@ -1,8 +1,8 @@
 package mezz.jei.input;
 
 import javax.annotation.Nullable;
-import java.awt.Rectangle;
 
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.item.ItemStack;
 
 public interface IClickedIngredient<V> {
@@ -10,7 +10,7 @@ public interface IClickedIngredient<V> {
 	V getValue();
 
 	@Nullable
-	Rectangle getArea();
+	Rectangle2d getArea();
 
 	ItemStack getCheatItemStack();
 

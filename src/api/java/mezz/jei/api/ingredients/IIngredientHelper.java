@@ -1,7 +1,6 @@
 package mezz.jei.api.ingredients;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -71,7 +70,7 @@ public interface IIngredientHelper<V> {
 	 * Get the main colors of this ingredient. Used for the color search.
 	 * If this is too difficult to implement for your ingredient, just return an empty collection.
 	 */
-	default Iterable<Color> getColors(V ingredient) {
+	default Iterable<Integer> getColors(V ingredient) {
 		return Collections.emptyList();
 	}
 

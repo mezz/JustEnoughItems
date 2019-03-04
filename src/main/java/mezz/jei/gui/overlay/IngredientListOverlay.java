@@ -1,7 +1,6 @@
 package mezz.jei.gui.overlay;
 
 import javax.annotation.Nullable;
-import java.awt.Rectangle;
 import java.util.List;
 import java.util.Set;
 
@@ -10,6 +9,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
 
@@ -31,6 +31,7 @@ import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.util.CommandUtil;
+import mezz.jei.util.MathUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -53,7 +54,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	private final GuiScreenHelper guiScreenHelper;
 	private final GuiTextFieldFilter searchField;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
-	private Rectangle displayArea = new Rectangle();
+	private Rectangle2d displayArea = new Rectangle2d(0, 0, 0, 0);
 
 	// properties of the gui we're beside
 	@Nullable
@@ -89,12 +90,12 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		return worldConfig.isOverlayEnabled() && this.guiProperties != null && this.hasRoom;
 	}
 
-	private static Rectangle getDisplayArea(IGuiProperties guiProperties) {
+	private static Rectangle2d getDisplayArea(IGuiProperties guiProperties) {
 		final int x = guiProperties.getGuiLeft() + guiProperties.getGuiXSize() + BORDER_PADDING;
 		final int y = BORDER_PADDING;
 		final int width = guiProperties.getScreenWidth() - x - BORDER_PADDING;
 		final int height = guiProperties.getScreenHeight() - y - BORDER_PADDING;
-		return new Rectangle(x, y, width, height);
+		return new Rectangle2d(x, y, width, height);
 	}
 
 	public void updateScreen(@Nullable GuiScreen guiScreen, boolean forceUpdate) {
@@ -114,37 +115,41 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 				final boolean searchBarCentered = isSearchBarCentered(guiProperties);
 				final int searchHeight = searchBarCentered ? 0 : SEARCH_HEIGHT + BORDER_PADDING;
 
-				Set<Rectangle> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
-				Rectangle availableContentsArea = new Rectangle(
-					displayArea.x,
-					displayArea.y,
-					displayArea.width,
-					displayArea.height - searchHeight
+				Set<Rectangle2d> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
+				Rectangle2d availableContentsArea = new Rectangle2d(
+					displayArea.getX(),
+					displayArea.getY(),
+					displayArea.getWidth(),
+					displayArea.getHeight() - searchHeight
 				);
 				hasRoom = this.contents.updateBounds(availableContentsArea, guiExclusionAreas, 4 * BUTTON_SIZE);
 
 				// update area to match contents size
-				Rectangle contentsArea = this.contents.getArea();
-				displayArea.x = contentsArea.x;
-				displayArea.width = contentsArea.width;
+				Rectangle2d contentsArea = this.contents.getArea();
+				displayArea = new Rectangle2d(
+					contentsArea.getX(),
+					displayArea.getY(),
+					contentsArea.getWidth(),
+					displayArea.getHeight()
+				);
 
 				if (searchBarCentered && isListDisplayed()) {
-					searchField.updateBounds(new Rectangle(
+					searchField.updateBounds(new Rectangle2d(
 						guiProperties.getGuiLeft(),
 						guiProperties.getScreenHeight() - SEARCH_HEIGHT - BORDER_PADDING,
 						guiProperties.getGuiXSize() - BUTTON_SIZE + 1,
 						SEARCH_HEIGHT
 					));
 				} else {
-					searchField.updateBounds(new Rectangle(
-						displayArea.x,
-						displayArea.y + displayArea.height - SEARCH_HEIGHT - BORDER_PADDING,
-						displayArea.width - BUTTON_SIZE + 1,
+					searchField.updateBounds(new Rectangle2d(
+						displayArea.getX(),
+						displayArea.getY() + displayArea.getHeight() - SEARCH_HEIGHT - BORDER_PADDING,
+						displayArea.getWidth() - BUTTON_SIZE + 1,
 						SEARCH_HEIGHT
 					));
 				}
 
-				this.configButton.updateBounds(new Rectangle(
+				this.configButton.updateBounds(new Rectangle2d(
 					searchField.x + searchField.width - 1,
 					searchField.y,
 					BUTTON_SIZE,
@@ -208,7 +213,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 			if (ClientConfig.getInstance().isCenterSearchBarEnabled() && searchField.isMouseOver(mouseX, mouseY)) {
 				return true;
 			}
-			return displayArea.contains(mouseX, mouseY);
+			return MathUtil.contains(displayArea, mouseX, mouseY);
 		} else if (this.guiProperties != null) {
 			return this.configButton.isMouseOver(mouseX, mouseY);
 		}

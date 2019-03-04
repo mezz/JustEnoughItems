@@ -1,32 +1,32 @@
 package mezz.jei.gui.ghost;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
-import java.awt.Rectangle;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.api.gui.IGhostIngredientHandler;
 import mezz.jei.api.gui.IGhostIngredientHandler.Target;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.util.MathUtil;
 import org.lwjgl.opengl.GL11;
 
 public class GhostIngredientDrag<T> {
-	private static final Color targetColor = new Color(19, 201, 10, 64);
-	private static final Color hoverColor = new Color(76, 201, 25, 128);
+	private static final int targetColor = 0x13C90A;
+	private static final int hoverColor = 0x4CC919;
 
 	private final IGhostIngredientHandler<?> handler;
 	private final List<Target<T>> targets;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final T ingredient;
 	@Nullable
-	private final Rectangle origin;
+	private final Rectangle2d origin;
 
-	public GhostIngredientDrag(IGhostIngredientHandler<?> handler, List<Target<T>> targets, IIngredientRenderer<T> ingredientRenderer, T ingredient, @Nullable Rectangle origin) {
+	public GhostIngredientDrag(IGhostIngredientHandler<?> handler, List<Target<T>> targets, IIngredientRenderer<T> ingredientRenderer, T ingredient, @Nullable Rectangle2d origin) {
 		this.handler = handler;
 		this.targets = targets;
 		this.ingredientRenderer = ingredientRenderer;
@@ -44,8 +44,8 @@ public class GhostIngredientDrag<T> {
 
 	public void drawItem(Minecraft minecraft, int mouseX, int mouseY) {
 		if (origin != null) {
-			int originX = origin.x + (origin.width / 2);
-			int originY = origin.y + (origin.height / 2);
+			int originX = origin.getX() + (origin.getWidth() / 2);
+			int originY = origin.getY() + (origin.getHeight() / 2);
 			int xDist = originX - mouseX;
 			int yDist = originY - mouseY;
 			float lineWidth = 2;
@@ -61,7 +61,11 @@ public class GhostIngredientDrag<T> {
 			GL11.glEnable(GL11.GL_LINE_SMOOTH);
 			GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
 			GL11.glBegin(GL11.GL_LINES);
-			GL11.glColor4f(targetColor.getRed() / 255f, targetColor.getGreen() / 255f, targetColor.getBlue() / 255f, targetColor.getAlpha() / 255f);
+			float red = (float)(targetColor >> 24 & 255) / 255.0F;
+			float green = (float)(targetColor >> 16 & 255) / 255.0F;
+			float blue = (float)(targetColor >> 8 & 255) / 255.0F;
+			float alpha = (float)(targetColor & 255) / 255.0F;
+			GlStateManager.color4f(red, green, blue, alpha);
 			GL11.glVertex3f(mouseX, mouseY, 150);
 			GL11.glVertex3f(originX, originY, 150);
 			GL11.glEnd();
@@ -79,22 +83,22 @@ public class GhostIngredientDrag<T> {
 		GlStateManager.disableLighting();
 		GlStateManager.disableDepthTest();
 		for (Target target : targets) {
-			Rectangle area = target.getArea();
-			Color color;
-			if (area.contains(mouseX, mouseY)) {
+			Rectangle2d area = target.getArea();
+			int color;
+			if (MathUtil.contains(area, mouseX, mouseY)) {
 				color = hoverColor;
 			} else {
 				color = targetColor;
 			}
-			Gui.drawRect(area.x, area.y, area.x + area.width, area.y + area.height, color.getRGB());
+			Gui.drawRect(area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), color);
 		}
 		GlStateManager.color4f(1f, 1f, 1f, 1f);
 	}
 
 	public boolean onClick(double mouseX, double mouseY) {
 		for (Target<T> target : targets) {
-			Rectangle area = target.getArea();
-			if (area.contains(mouseX, mouseY)) {
+			Rectangle2d area = target.getArea();
+			if (MathUtil.contains(area, mouseX, mouseY)) {
 				target.accept(ingredient);
 				handler.onComplete();
 				return true;
@@ -117,7 +121,7 @@ public class GhostIngredientDrag<T> {
 	}
 
 	@Nullable
-	public Rectangle getOrigin() {
+	public Rectangle2d getOrigin() {
 		return origin;
 	}
 }

@@ -1,7 +1,6 @@
 package mezz.jei.plugins.vanilla.ingredients.item;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -105,7 +104,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
-	public Iterable<Color> getColors(ItemStack ingredient) {
+	public Iterable<Integer> getColors(ItemStack ingredient) {
 		return ColorGetter.getColors(ingredient, 2);
 	}
 

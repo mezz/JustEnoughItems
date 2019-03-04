@@ -1,8 +1,6 @@
 package mezz.jei.plugins.jei.ingredients;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
-import java.util.Collections;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -43,11 +41,6 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 	@Override
 	public String getModId(DebugIngredient ingredient) {
 		return ModIds.JEI_ID;
-	}
-
-	@Override
-	public Iterable<Color> getColors(DebugIngredient ingredient) {
-		return Collections.emptyList();
 	}
 
 	@Override

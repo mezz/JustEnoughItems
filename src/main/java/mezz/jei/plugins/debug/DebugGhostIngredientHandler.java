@@ -1,10 +1,10 @@
 package mezz.jei.plugins.debug;
 
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
@@ -20,17 +20,17 @@ public class DebugGhostIngredientHandler<T extends GuiContainer> implements IGho
 	@Override
 	public <I> List<Target<I>> getTargets(T gui, I ingredient, boolean doStart) {
 		List<Target<I>> targets = new ArrayList<>();
-		targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rectangle(0, 0, 20, 20)));
+		targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rectangle2d(0, 0, 20, 20)));
 		if (doStart) {
 			IIngredientHelper<I> ingredientHelper = Internal.getIngredientManager().getIngredientHelper(ingredient);
 			LOGGER.info("Ghost Ingredient Handling Starting with {}", ingredientHelper.getErrorInfo(ingredient));
-			targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rectangle(20, 20, 20, 20)));
+			targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rectangle2d(20, 20, 20, 20)));
 		}
 		if (ingredient instanceof ItemStack) {
 			boolean even = true;
 			for (Slot slot : gui.inventorySlots.inventorySlots) {
 				if (even) {
-					Rectangle area = new Rectangle(gui.getGuiLeft() + slot.xPos, gui.getGuiTop() + slot.yPos, 16, 16);
+					Rectangle2d area = new Rectangle2d(gui.getGuiLeft() + slot.xPos, gui.getGuiTop() + slot.yPos, 16, 16);
 					targets.add(new DebugInfoTarget<>("Got an Ingredient in Gui", area));
 				}
 				even = !even;
@@ -46,15 +46,15 @@ public class DebugGhostIngredientHandler<T extends GuiContainer> implements IGho
 
 	private static class DebugInfoTarget<I> implements IGhostIngredientHandler.Target<I> {
 		private final String message;
-		private final Rectangle rectangle;
+		private final Rectangle2d rectangle;
 
-		public DebugInfoTarget(String message, Rectangle rectangle) {
+		public DebugInfoTarget(String message, Rectangle2d rectangle) {
 			this.message = message;
 			this.rectangle = rectangle;
 		}
 
 		@Override
-		public Rectangle getArea() {
+		public Rectangle2d getArea() {
 			return rectangle;
 		}
 

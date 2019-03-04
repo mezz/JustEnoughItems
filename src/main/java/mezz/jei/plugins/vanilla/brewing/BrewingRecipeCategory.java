@@ -1,7 +1,5 @@
 package mezz.jei.plugins.vanilla.brewing;
 
-import java.awt.Color;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -98,7 +96,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipe> {
 		if (brewingSteps < Integer.MAX_VALUE) {
 			String steps = Translator.translateToLocalFormatted("gui.jei.category.brewing.steps", brewingSteps);
 			Minecraft minecraft = Minecraft.getInstance();
-			minecraft.fontRenderer.drawString(steps, 70, 28, Color.gray.getRGB());
+			minecraft.fontRenderer.drawString(steps, 70, 28, 0xFFC0C0C0);
 		}
 	}
 

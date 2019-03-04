@@ -1,7 +1,6 @@
 package mezz.jei.gui;
 
 import javax.annotation.Nullable;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,6 +12,7 @@ import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
@@ -34,7 +34,7 @@ public class GuiScreenHelper {
 	private final ListMultiMap<Class<? extends GuiContainer>, IGuiContainerHandler<?>> guiHandlers;
 	private final Map<Class, IGhostIngredientHandler> ghostIngredientHandlers;
 	private final Map<Class, IGuiScreenHandler> guiScreenHandlers;
-	private Set<Rectangle> guiExclusionAreas = Collections.emptySet();
+	private Set<Rectangle2d> guiExclusionAreas = Collections.emptySet();
 
 	public GuiScreenHelper(IngredientManager ingredientManager, List<IGlobalGuiHandler> globalGuiHandlers, ListMultiMap<Class<? extends GuiContainer>, IGuiContainerHandler<?>> guiHandlers, Map<Class, IGhostIngredientHandler> ghostIngredientHandlers, Map<Class, IGuiScreenHandler> guiScreenHandlers) {
 		this.ingredientManager = ingredientManager;
@@ -70,7 +70,7 @@ public class GuiScreenHelper {
 	}
 
 	public boolean updateGuiExclusionAreas() {
-		Set<Rectangle> guiAreas = getPluginsExclusionAreas();
+		Set<Rectangle2d> guiAreas = getPluginsExclusionAreas();
 		if (!guiAreas.equals(this.guiExclusionAreas)) {
 			this.guiExclusionAreas = guiAreas;
 			return true;
@@ -78,7 +78,7 @@ public class GuiScreenHelper {
 		return false;
 	}
 
-	public Set<Rectangle> getGuiExclusionAreas() {
+	public Set<Rectangle2d> getGuiExclusionAreas() {
 		return guiExclusionAreas;
 	}
 
@@ -86,22 +86,22 @@ public class GuiScreenHelper {
 		return MathUtil.contains(guiExclusionAreas, mouseX, mouseY);
 	}
 
-	private Set<Rectangle> getPluginsExclusionAreas() {
+	private Set<Rectangle2d> getPluginsExclusionAreas() {
 		GuiScreen guiScreen = Minecraft.getInstance().currentScreen;
 		if (guiScreen == null) {
 			return Collections.emptySet();
 		}
-		Set<Rectangle> allGuiExtraAreas = new HashSet<>();
+		Set<Rectangle2d> allGuiExtraAreas = new HashSet<>();
 		if (guiScreen instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) guiScreen;
 			List<IGuiContainerHandler<GuiContainer>> activeAdvancedGuiHandlers = getActiveAdvancedGuiHandlers(guiContainer);
 			for (IGuiContainerHandler<GuiContainer> advancedGuiHandler : activeAdvancedGuiHandlers) {
-				List<Rectangle> guiExtraAreas = advancedGuiHandler.getGuiExtraAreas(guiContainer);
+				List<Rectangle2d> guiExtraAreas = advancedGuiHandler.getGuiExtraAreas(guiContainer);
 				allGuiExtraAreas.addAll(guiExtraAreas);
 			}
 		}
 		for (IGlobalGuiHandler globalGuiHandler : globalGuiHandlers) {
-			Collection<Rectangle> guiExtraAreas = globalGuiHandler.getGuiExtraAreas();
+			Collection<Rectangle2d> guiExtraAreas = globalGuiHandler.getGuiExtraAreas();
 			allGuiExtraAreas.addAll(guiExtraAreas);
 		}
 		return allGuiExtraAreas;
@@ -153,10 +153,10 @@ public class GuiScreenHelper {
 	@Nullable
 	private <T> IClickedIngredient<T> createClickedIngredient(@Nullable T ingredient, GuiContainer guiContainer) {
 		if (ingredient != null && ingredientManager.isValidIngredient(ingredient)) {
-			Rectangle area = null;
+			Rectangle2d area = null;
 			Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
 			if (ingredient instanceof ItemStack && slotUnderMouse != null && ItemStack.areItemStacksEqual(slotUnderMouse.getStack(), (ItemStack) ingredient)) {
-				area = new Rectangle(slotUnderMouse.xPos, slotUnderMouse.yPos, 16, 16);
+				area = new Rectangle2d(slotUnderMouse.xPos, slotUnderMouse.yPos, 16, 16);
 			}
 			return ClickedIngredient.create(ingredient, area);
 		}
@@ -201,7 +201,7 @@ public class GuiScreenHelper {
 			T castContainer = handlerClass.cast(guiContainer);
 			Collection<IGuiClickableArea> guiClickableAreas = handler.getGuiClickableAreas(castContainer);
 			for (IGuiClickableArea guiClickableArea : guiClickableAreas) {
-				if (guiClickableArea.getArea().contains(mouseX, mouseY)) {
+				if (MathUtil.contains(guiClickableArea.getArea(), mouseX, mouseY)) {
 					return guiClickableArea;
 				}
 			}

@@ -1,11 +1,9 @@
 package mezz.jei.gui;
 
-import java.awt.Color;
-import java.awt.Rectangle;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.Internal;
 import mezz.jei.gui.elements.GuiIconButton;
@@ -46,13 +44,13 @@ public class PageNavigation {
 		this.hideOnSinglePage = hideOnSinglePage;
 	}
 
-	public void updateBounds(Rectangle area) {
-		int buttonSize = area.height;
-		this.nextButton.x = area.x + area.width - buttonSize;
-		this.nextButton.y = area.y;
+	public void updateBounds(Rectangle2d area) {
+		int buttonSize = area.getHeight();
+		this.nextButton.x = area.getX() + area.getWidth() - buttonSize;
+		this.nextButton.y = area.getY();
 		this.nextButton.width = this.nextButton.height = buttonSize;
-		this.backButton.x = area.x;
-		this.backButton.y = area.y;
+		this.backButton.x = area.getX();
+		this.backButton.y = area.getY();
 		this.backButton.width = this.backButton.height = buttonSize;
 	}
 
@@ -68,7 +66,7 @@ public class PageNavigation {
 
 	public void draw(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
 		if (!hideOnSinglePage || this.paged.hasNext() || this.paged.hasPrevious()) {
-			minecraft.fontRenderer.drawStringWithShadow(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB());
+			minecraft.fontRenderer.drawStringWithShadow(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, 0xFFFFFFFF);
 			nextButton.render(mouseX, mouseY, partialTicks);
 			backButton.render(mouseX, mouseY, partialTicks);
 		}

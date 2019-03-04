@@ -1,13 +1,13 @@
 package mezz.jei.gui.overlay;
 
 import javax.annotation.Nullable;
-import java.awt.Rectangle;
 import java.util.Collection;
 
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
@@ -43,7 +43,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	public static final int INGREDIENT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
 	private final GridAlignment alignment;
 
-	private Rectangle area = new Rectangle();
+	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
 	protected final IngredientListBatchRenderer guiIngredientSlots;
 	private final IIngredientFilterConfig ingredientFilterConfig;
 	private final IWorldConfig worldConfig;
@@ -59,23 +59,23 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		return this.guiIngredientSlots.size();
 	}
 
-	public boolean updateBounds(Rectangle availableArea, int minWidth, Collection<Rectangle> exclusionAreas) {
-		final int columns = Math.min(availableArea.width / INGREDIENT_WIDTH, ClientConfig.getInstance().getMaxColumns());
-		final int rows = availableArea.height / INGREDIENT_HEIGHT;
+	public boolean updateBounds(Rectangle2d availableArea, int minWidth, Collection<Rectangle2d> exclusionAreas) {
+		final int columns = Math.min(availableArea.getWidth() / INGREDIENT_WIDTH, ClientConfig.getInstance().getMaxColumns());
+		final int rows = availableArea.getHeight() / INGREDIENT_HEIGHT;
 
 		final int ingredientsWidth = columns * INGREDIENT_WIDTH;
 		final int width = Math.max(ingredientsWidth, minWidth);
 		final int height = rows * INGREDIENT_HEIGHT;
 		final int x;
 		if (alignment == GridAlignment.LEFT) {
-			x = availableArea.x + (availableArea.width - width);
+			x = availableArea.getX() + (availableArea.getWidth() - width);
 		} else {
-			x = availableArea.x;
+			x = availableArea.getX();
 		}
-		final int y = availableArea.y + (availableArea.height - height) / 2;
+		final int y = availableArea.getY() + (availableArea.getHeight() - height) / 2;
 		final int xOffset = x + Math.max(0, (width - ingredientsWidth) / 2);
 
-		this.area = new Rectangle(x, y, width, height);
+		this.area = new Rectangle2d(x, y, width, height);
 		this.guiIngredientSlots.clear();
 
 		if (rows == 0 || columns < ClientConfig.smallestNumColumns) {
@@ -87,7 +87,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 			for (int column = 0; column < columns; column++) {
 				int x1 = xOffset + (column * INGREDIENT_WIDTH);
 				IngredientListSlot ingredientListSlot = new IngredientListSlot(x1, y1, INGREDIENT_PADDING);
-				Rectangle stackArea = ingredientListSlot.getArea();
+				Rectangle2d stackArea = ingredientListSlot.getArea();
 				final boolean blocked = MathUtil.intersects(exclusionAreas, stackArea);
 				ingredientListSlot.setBlocked(blocked);
 				this.guiIngredientSlots.add(ingredientListSlot);
@@ -96,7 +96,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		return true;
 	}
 
-	public Rectangle getArea() {
+	public Rectangle2d getArea() {
 		return area;
 	}
 
@@ -157,7 +157,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return area.contains(mouseX, mouseY);
+		return MathUtil.contains(area, mouseX, mouseY);
 	}
 
 	public boolean handleMouseClicked(double mouseX, double mouseY) {

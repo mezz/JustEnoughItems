@@ -1,10 +1,10 @@
 package mezz.jei.gui.overlay.bookmarks;
 
-import java.awt.Rectangle;
 import java.util.Set;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.input.IShowsRecipeFocuses;
 
@@ -16,7 +16,7 @@ public interface ILeftAreaContent extends IShowsRecipeFocuses {
 
 	void drawTooltips(Minecraft minecraft, int mouseX, int mouseY);
 
-	void updateBounds(Rectangle area, Set<Rectangle> guiExclusionAreas);
+	void updateBounds(Rectangle2d area, Set<Rectangle2d> guiExclusionAreas);
 
 	boolean handleMouseScrolled(double mouseX, double mouseY, double dWheel);
 

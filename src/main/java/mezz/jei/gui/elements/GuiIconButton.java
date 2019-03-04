@@ -1,6 +1,5 @@
 package mezz.jei.gui.elements;
 
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -9,6 +8,7 @@ import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
@@ -34,11 +34,11 @@ public class GuiIconButton extends GuiButton {
 		this.iconSupplier = iconSupplier;
 	}
 
-	public void updateBounds(Rectangle area) {
-		this.x = area.x;
-		this.y = area.y;
-		this.width = area.width;
-		this.height = area.height;
+	public void updateBounds(Rectangle2d area) {
+		this.x = area.getX();
+		this.y = area.getY();
+		this.width = area.getWidth();
+		this.height = area.getHeight();
 	}
 
 	@Override

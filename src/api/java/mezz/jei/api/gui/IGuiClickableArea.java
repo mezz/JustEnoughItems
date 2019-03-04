@@ -1,10 +1,10 @@
 package mezz.jei.api.gui;
 
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.recipe.IFocusFactory;
@@ -15,7 +15,7 @@ public interface IGuiClickableArea {
 	 * When hovered, the message from {@link #getTooltipStrings()} will be displayed.
 	 * When clicked, {@link #onClick(IFocusFactory, IRecipesGui)} will be called.
 	 */
-	Rectangle getArea();
+	Rectangle2d getArea();
 
 	/**
 	 * Returns the strings to be shown on the tooltip when this area is hovered over.
@@ -37,12 +37,12 @@ public interface IGuiClickableArea {
 	 * which displays a recipe category on click.
 	 */
 	static IGuiClickableArea createBasic(int xPos, int yPos, int width, int height, ResourceLocation... recipeCategoryUids) {
-		Rectangle area = new Rectangle(xPos, yPos, width, height);
+		Rectangle2d area = new Rectangle2d(xPos, yPos, width, height);
 		List<ResourceLocation> recipeCategoryUidList = new ArrayList<>();
 		Collections.addAll(recipeCategoryUidList, recipeCategoryUids);
 		return new IGuiClickableArea() {
 			@Override
-			public Rectangle getArea() {
+			public Rectangle2d getArea() {
 				return area;
 			}
 

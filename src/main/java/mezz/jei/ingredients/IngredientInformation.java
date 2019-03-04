@@ -1,6 +1,5 @@
 package mezz.jei.ingredients;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,7 +50,7 @@ public final class IngredientInformation {
 	}
 
 	public static <V> Collection<String> getColorStrings(V ingredient, IIngredientHelper<V> ingredientHelper) {
-		Iterable<Color> colors = ingredientHelper.getColors(ingredient);
+		Iterable<Integer> colors = ingredientHelper.getColors(ingredient);
 		ColorNamer colorNamer = Internal.getColorNamer();
 		return colorNamer.getColorNames(colors, true);
 	}

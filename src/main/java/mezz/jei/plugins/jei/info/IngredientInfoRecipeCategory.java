@@ -1,6 +1,5 @@
 package mezz.jei.plugins.jei.info;
 
-import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 
@@ -83,7 +82,7 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 
 		Minecraft minecraft = Minecraft.getInstance();
 		for (String descriptionLine : recipe.getDescription()) {
-			minecraft.fontRenderer.drawString(descriptionLine, xPos, yPos, Color.black.getRGB());
+			minecraft.fontRenderer.drawString(descriptionLine, xPos, yPos, 0xFF000000);
 			yPos += minecraft.fontRenderer.FONT_HEIGHT + lineSpacing;
 		}
 	}

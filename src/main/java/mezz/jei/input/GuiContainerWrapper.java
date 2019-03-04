@@ -1,11 +1,11 @@
 package mezz.jei.input;
 
 import javax.annotation.Nullable;
-import java.awt.Rectangle;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
@@ -30,7 +30,7 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 		if (slotUnderMouse != null) {
 			ItemStack stack = slotUnderMouse.getStack();
 			if (!stack.isEmpty()) {
-				Rectangle slotArea = new Rectangle(slotUnderMouse.xPos, slotUnderMouse.yPos, 16, 16);
+				Rectangle2d slotArea = new Rectangle2d(slotUnderMouse.xPos, slotUnderMouse.yPos, 16, 16);
 				return ClickedIngredient.create(stack, slotArea);
 			}
 		}

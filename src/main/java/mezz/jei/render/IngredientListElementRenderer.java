@@ -1,7 +1,5 @@
 package mezz.jei.render;
 
-import java.awt.Color;
-import java.awt.Rectangle;
 import java.util.Collection;
 import java.util.List;
 
@@ -11,6 +9,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.util.text.TextFormatting;
 
 import com.google.common.base.Joiner;
@@ -32,13 +31,13 @@ import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Translator;
 
 public class IngredientListElementRenderer<T> {
-	private static final int BLACKLIST_COLOR = Color.red.getRGB();
-	private static final Rectangle DEFAULT_AREA = new Rectangle(0, 0, 16, 16);
+	private static final int BLACKLIST_COLOR = 0xFFFF0000;
+	private static final Rectangle2d DEFAULT_AREA = new Rectangle2d(0, 0, 16, 16);
 
 	protected final IIngredientListElement<T> element;
 	protected final IIngredientRenderer<T> ingredientRenderer;
 	protected final IIngredientHelper<T> ingredientHelper;
-	protected Rectangle area = DEFAULT_AREA;
+	protected Rectangle2d area = DEFAULT_AREA;
 	protected int padding;
 
 	public IngredientListElementRenderer(IIngredientListElement<T> element) {
@@ -50,7 +49,7 @@ public class IngredientListElementRenderer<T> {
 		this.ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 	}
 
-	public void setArea(Rectangle area) {
+	public void setArea(Rectangle2d area) {
 		this.area = area;
 	}
 
@@ -62,7 +61,7 @@ public class IngredientListElementRenderer<T> {
 		return element;
 	}
 
-	public Rectangle getArea() {
+	public Rectangle2d getArea() {
 		return area;
 	}
 
@@ -73,7 +72,7 @@ public class IngredientListElementRenderer<T> {
 
 		try {
 			T ingredient = element.getIngredient();
-			ingredientRenderer.render(area.x + padding, area.y + padding, ingredient);
+			ingredientRenderer.render(area.getX() + padding, area.getY() + padding, ingredient);
 		} catch (RuntimeException | LinkageError e) {
 			throw ErrorUtil.createRenderIngredientException(e, element.getIngredient());
 		}
@@ -86,7 +85,7 @@ public class IngredientListElementRenderer<T> {
 		GlStateManager.disableLighting();
 		GlStateManager.disableDepthTest();
 		GlStateManager.colorMask(true, true, true, false);
-		GuiUtils.drawGradientRect(0, area.x, area.y, area.x + area.width, area.y + area.height, 0x80FFFFFF, 0x80FFFFFF);
+		GuiUtils.drawGradientRect(0, area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), 0x80FFFFFF, 0x80FFFFFF);
 		GlStateManager.colorMask(true, true, true, true);
 		GlStateManager.enableDepthTest();
 	}
@@ -99,11 +98,11 @@ public class IngredientListElementRenderer<T> {
 		TooltipRenderer.drawHoveringText(ingredient, tooltip, mouseX, mouseY, fontRenderer);
 	}
 
-	protected void renderEditMode(Rectangle area, int padding, IHideModeConfig hideModeConfig) {
+	protected void renderEditMode(Rectangle2d area, int padding, IHideModeConfig hideModeConfig) {
 		T ingredient = element.getIngredient();
 
 		if (hideModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
-			GuiScreen.drawRect(area.x + padding, area.y + padding, area.x + 16 + padding, area.y + 16 + padding, BLACKLIST_COLOR);
+			GuiScreen.drawRect(area.getX() + padding, area.getY() + padding, area.getX() + 16 + padding, area.getY() + 16 + padding, BLACKLIST_COLOR);
 			GlStateManager.color4f(1f, 1f, 1f, 1f);
 		}
 	}
@@ -137,7 +136,7 @@ public class IngredientListElementRenderer<T> {
 		ColorNamer colorNamer = Internal.getColorNamer();
 
 		T ingredient = element.getIngredient();
-		Iterable<Color> colors = ingredientHelper.getColors(ingredient);
+		Iterable<Integer> colors = ingredientHelper.getColors(ingredient);
 		Collection<String> colorNames = colorNamer.getColorNames(colors, false);
 		if (!colorNames.isEmpty()) {
 			String colorNamesString = Joiner.on(", ").join(colorNames);

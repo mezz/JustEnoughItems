@@ -1,10 +1,10 @@
 package mezz.jei.api.gui;
 
-import java.awt.Rectangle;
 import java.util.List;
 import java.util.function.Consumer;
 
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.Rectangle2d;
 
 /**
  * Lets mods accept ghost ingredients from JEI.
@@ -40,7 +40,7 @@ public interface IGhostIngredientHandler<T extends GuiScreen> {
 		/**
 		 * @return the area (in screen coordinates) where the ingredient can be dropped.
 		 */
-		Rectangle getArea();
+		Rectangle2d getArea();
 
 		/**
 		 * Called with the ingredient when it is dropped on the target.
