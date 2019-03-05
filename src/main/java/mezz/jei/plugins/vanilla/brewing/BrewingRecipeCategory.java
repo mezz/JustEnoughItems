@@ -97,7 +97,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipe> {
 		if (brewingSteps < Integer.MAX_VALUE) {
 			String steps = Translator.translateToLocalFormatted("gui.jei.category.brewing.steps", brewingSteps);
 			Minecraft minecraft = Minecraft.getInstance();
-			minecraft.fontRenderer.drawString(steps, 70, 28, 0xFFC0C0C0);
+			minecraft.fontRenderer.drawString(steps, 70, 28, 0xFF808080);
 		}
 	}
 

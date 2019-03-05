@@ -75,6 +75,6 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory<FuelRecipe> {
 		flame.draw(1, 0);
 		Minecraft minecraft = Minecraft.getInstance();
 		String smeltCountString = recipe.getSmeltCountString();
-		minecraft.fontRenderer.drawString(smeltCountString, 24, 13, 0xFFC0C0C0);
+		minecraft.fontRenderer.drawString(smeltCountString, 24, 13, 0xFF808080);
 	}
 }

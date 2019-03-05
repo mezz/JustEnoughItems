@@ -57,7 +57,7 @@ public class FurnaceSmeltingCategory extends FurnaceRecipeCategory<FurnaceRecipe
 			Minecraft minecraft = Minecraft.getInstance();
 			FontRenderer fontRenderer = minecraft.fontRenderer;
 			int stringWidth = fontRenderer.getStringWidth(experienceString);
-			fontRenderer.drawString(experienceString, background.getWidth() - stringWidth, 0, 0xFFC0C0C0);
+			fontRenderer.drawString(experienceString, background.getWidth() - stringWidth, 0, 0xFF808080);
 		}
 	}
 
