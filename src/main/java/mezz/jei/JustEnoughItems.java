@@ -9,7 +9,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.IEventBus;
 
-import mezz.jei.api.ModIds;
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.startup.ClientLifecycleHandler;
 import mezz.jei.startup.NetworkHandler;

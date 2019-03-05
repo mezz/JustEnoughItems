@@ -1,7 +1,7 @@
 package mezz.jei.gui.elements;
 
-import mezz.jei.api.gui.IDrawableAnimated;
-import mezz.jei.api.gui.IDrawableStatic;
+import mezz.jei.api.gui.drawable.IDrawableAnimated;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
 
 public class DrawableBlank implements IDrawableStatic, IDrawableAnimated {
 	private final int width;

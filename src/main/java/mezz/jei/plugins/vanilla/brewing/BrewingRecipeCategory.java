@@ -5,17 +5,18 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IDrawableAnimated;
-import mezz.jei.api.gui.IDrawableStatic;
-import mezz.jei.api.gui.IGuiItemStackGroup;
+import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITickTimer;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawableAnimated;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.api.ingredients.IMutableIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
 
@@ -81,7 +82,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipe> {
 	}
 
 	@Override
-	public void setIngredients(BrewingRecipe recipe, IIngredients ingredients) {
+	public void setIngredients(BrewingRecipe recipe, IMutableIngredients ingredients) {
 		ingredients.setInputLists(VanillaTypes.ITEM, recipe.getInputs());
 		ingredients.setOutput(VanillaTypes.ITEM, recipe.getPotionOutput());
 	}
@@ -101,7 +102,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipe> {
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, BrewingRecipe recipeWrapper, IIngredients ingredients) {
+	public void setRecipe(IRecipeLayout recipeLayout, BrewingRecipe recipe, IIngredients ingredients) {
 		IGuiItemStackGroup itemStacks = recipeLayout.getItemStacks();
 
 		itemStacks.init(brewPotionSlot1, true, 0, 36);

@@ -3,7 +3,7 @@ package mezz.jei.gui.recipes;
 import java.util.List;
 
 import mezz.jei.Internal;
-import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.HoverChecker;

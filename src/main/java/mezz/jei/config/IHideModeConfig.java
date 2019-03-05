@@ -1,7 +1,7 @@
 package mezz.jei.config;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientManager;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.ingredients.IngredientFilter;
 
 public interface IHideModeConfig {

@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
-import mezz.jei.api.gui.IGuiProperties;
+import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.gui.recipes.RecipesGui;
 
 public class GuiProperties implements IGuiProperties {

@@ -8,7 +8,7 @@ import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.Internal;
-import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiHelper;

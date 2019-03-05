@@ -7,13 +7,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipe;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IGuiItemStackGroup;
+import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
+import mezz.jei.api.ingredients.IMutableIngredients;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
 
@@ -40,7 +41,7 @@ public class FurnaceSmeltingCategory extends FurnaceRecipeCategory<FurnaceRecipe
 	}
 
 	@Override
-	public void setIngredients(FurnaceRecipe recipe, IIngredients ingredients) {
+	public void setIngredients(FurnaceRecipe recipe, IMutableIngredients ingredients) {
 		ingredients.setInputIngredients(recipe.getIngredients());
 		ingredients.setOutput(VanillaTypes.ITEM, recipe.getRecipeOutput());
 	}

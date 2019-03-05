@@ -4,8 +4,8 @@ import javax.annotation.Nullable;
 
 import net.minecraft.item.ItemStack;
 
-import mezz.jei.api.gui.IGuiItemStackGroup;
-import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.gui.Focus;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackRenderer;
 

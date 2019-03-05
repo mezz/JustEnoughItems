@@ -6,7 +6,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 
-import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
 

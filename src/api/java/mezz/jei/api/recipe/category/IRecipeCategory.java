@@ -5,13 +5,14 @@ import java.util.List;
 
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IGuiIngredientGroup;
+import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.gui.ITooltipCallback;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
+import mezz.jei.api.gui.ingredient.ITooltipCallback;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
+import mezz.jei.api.ingredients.IMutableIngredients;
 
 /**
  * Defines a category of recipe, (i.e. Crafting Table Recipe, Furnace Recipe).
@@ -53,16 +54,17 @@ public interface IRecipeCategory<T> {
 	IDrawable getIcon();
 
 	/**
-	 * Gets all the recipe's ingredients by filling out an instance of {@link IIngredients}.
+	 * Sets all the recipe's ingredients by filling out an instance of {@link IMutableIngredients}.
+	 * This is used by JEI for lookups, to figure out what ingredients are inputs and outputs for a recipe.
 	 */
-	void setIngredients(T recipe, IIngredients ingredients);
+	void setIngredients(T recipe, IMutableIngredients ingredients);
 
 	/**
 	 * Set the {@link IRecipeLayout} properties from the recipe.
 	 *
 	 * @param recipeLayout  the layout that needs its properties set.
 	 * @param recipe        the recipe, for extra information.
-	 * @param ingredients   the ingredients, already set by the recipeWrapper
+	 * @param ingredients   the ingredients, already set earlier by {@link IRecipeCategory#setIngredients}
 	 */
 	void setRecipe(IRecipeLayout recipeLayout, T recipe, IIngredients ingredients);
 

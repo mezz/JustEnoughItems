@@ -5,9 +5,10 @@ import javax.annotation.Nullable;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.category.extensions.ICraftingCategoryExtension;
+import mezz.jei.api.ingredients.IMutableIngredients;
+import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 
 public class ShapelessCraftingCategoryExtension<T extends IRecipe> implements ICraftingCategoryExtension {
 	protected final T recipe;
@@ -17,7 +18,7 @@ public class ShapelessCraftingCategoryExtension<T extends IRecipe> implements IC
 	}
 
 	@Override
-	public void setIngredients(IIngredients ingredients) {
+	public void setIngredients(IMutableIngredients ingredients) {
 		ingredients.setInputIngredients(recipe.getIngredients());
 		ingredients.setOutput(VanillaTypes.ITEM, recipe.getRecipeOutput());
 	}

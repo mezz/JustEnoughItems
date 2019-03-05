@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import com.google.common.base.MoreObjects;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientManager;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;

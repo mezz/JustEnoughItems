@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.util.ITooltipFlag;
 
-import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.api.registration.IModIngredientRegistration;
 
 /**
  * Renders a type of ingredient in JEI's item list and recipes.

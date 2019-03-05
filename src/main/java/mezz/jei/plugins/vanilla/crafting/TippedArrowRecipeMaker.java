@@ -14,7 +14,7 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.ModIds;
+import mezz.jei.api.constants.ModIds;
 
 public final class TippedArrowRecipeMaker {
 

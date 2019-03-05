@@ -2,7 +2,7 @@ package mezz.jei.config;
 
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.ModIds;
+import mezz.jei.api.constants.ModIds;
 
 public final class Constants {
 	public static final String TEXTURE_GUI_PATH = "textures/gui/";

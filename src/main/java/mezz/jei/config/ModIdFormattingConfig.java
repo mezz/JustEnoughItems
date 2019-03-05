@@ -18,7 +18,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 
-import mezz.jei.api.ModIds;
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.config.forge.Property;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;

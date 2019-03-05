@@ -14,8 +14,8 @@ import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
 
 import com.google.common.collect.ImmutableList;
-import mezz.jei.api.IIngredientListOverlay;
-import mezz.jei.api.gui.IGuiProperties;
+import mezz.jei.api.gui.handlers.IGuiProperties;
+import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;

@@ -5,11 +5,11 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.ingredients.IModIdHelper;
-import mezz.jei.api.ingredients.IModIngredientRegistration;
-import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.collect.IngredientSet;
 import mezz.jei.util.ErrorUtil;
 

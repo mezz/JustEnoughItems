@@ -1,7 +1,7 @@
 package mezz.jei.ingredients;
 
 import com.google.common.collect.ImmutableList;
-import mezz.jei.api.IIngredientFilter;
+import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.util.ErrorUtil;
 

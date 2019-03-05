@@ -1,7 +1,7 @@
 package mezz.jei.api.registration;
 
-import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**

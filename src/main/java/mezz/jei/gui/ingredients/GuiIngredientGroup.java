@@ -12,14 +12,14 @@ import java.util.Set;
 import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.Internal;
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IGuiIngredientGroup;
-import mezz.jei.api.gui.ITooltipCallback;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
+import mezz.jei.api.gui.ingredient.ITooltipCallback;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.gui.Focus;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.util.ErrorUtil;

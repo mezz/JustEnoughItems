@@ -26,7 +26,7 @@ import net.minecraft.util.math.MathHelper;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
-import mezz.jei.api.ModIds;
+import mezz.jei.api.constants.ModIds;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

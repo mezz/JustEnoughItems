@@ -5,9 +5,9 @@ import java.util.Map;
 
 import net.minecraft.item.ItemStack;
 
-import mezz.jei.api.gui.IGuiIngredient;
-import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.ingredient.IGuiIngredient;
+import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 
 public class RecipeTransferErrorSlots extends RecipeTransferErrorTooltip {
 	private static final int HIGHLIGHT_COLOR = 0x66FF0000;

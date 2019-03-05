@@ -1,9 +1,9 @@
 package mezz.jei.runtime;
 
-import mezz.jei.api.IIngredientFilter;
-import mezz.jei.api.IBookmarkOverlay;
-import mezz.jei.api.IJeiRuntime;
-import mezz.jei.api.ingredients.IIngredientManager;
+import mezz.jei.api.runtime.IBookmarkOverlay;
+import mezz.jei.api.runtime.IIngredientFilter;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.recipes.RecipeManager;

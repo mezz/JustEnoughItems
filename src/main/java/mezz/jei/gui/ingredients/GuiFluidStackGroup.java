@@ -4,9 +4,9 @@ import javax.annotation.Nullable;
 
 import net.minecraftforge.fluids.FluidStack;
 
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IGuiFluidStackGroup;
-import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IGuiFluidStackGroup;
 import mezz.jei.gui.Focus;
 import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackRenderer;
 

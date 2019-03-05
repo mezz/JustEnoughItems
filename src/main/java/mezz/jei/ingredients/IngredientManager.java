@@ -14,12 +14,12 @@ import net.minecraft.util.NonNullList;
 
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientManager;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.ingredients.IModIdHelper;
-import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.collect.IngredientSet;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.util.ErrorUtil;

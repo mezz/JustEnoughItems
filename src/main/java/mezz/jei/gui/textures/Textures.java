@@ -2,7 +2,7 @@ package mezz.jei.gui.textures;
 
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.ModIds;
+import mezz.jei.api.constants.ModIds;
 
 public class Textures {
 	private final JeiTextureMap textureMap;

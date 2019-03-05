@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
 
-import mezz.jei.api.IBookmarkOverlay;
+import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IWorldConfig;

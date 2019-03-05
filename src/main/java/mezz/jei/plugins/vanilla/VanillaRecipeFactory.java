@@ -5,11 +5,11 @@ import java.util.List;
 
 import net.minecraft.item.ItemStack;
 
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientManager;
-import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IJeiBrewingRecipe;
-import mezz.jei.api.recipe.IVanillaRecipeFactory;
+import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
+import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipe;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipe;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeUtil;

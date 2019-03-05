@@ -11,9 +11,9 @@ import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
-import mezz.jei.api.ModIds;
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 
 @JeiPlugin

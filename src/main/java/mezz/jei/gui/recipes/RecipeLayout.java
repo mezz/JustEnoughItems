@@ -12,13 +12,13 @@ import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.Internal;
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IGuiFluidStackGroup;
-import mezz.jei.api.gui.IGuiIngredientGroup;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
-import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IGuiFluidStackGroup;
+import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IMutableIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.TooltipRenderer;
@@ -61,7 +61,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	public static <T> RecipeLayout create(int index, IRecipeCategory<T> recipeCategory, T recipe, @Nullable Focus focus, int posX, int posY) {
 		RecipeLayout recipeLayout = new RecipeLayout(index, recipeCategory, recipe, focus, posX, posY);
 		try {
-			IIngredients ingredients = new Ingredients();
+			IMutableIngredients ingredients = new Ingredients();
 			recipeCategory.setIngredients(recipe, ingredients);
 			recipeCategory.setRecipe(recipeLayout, recipe, ingredients);
 			return recipeLayout;

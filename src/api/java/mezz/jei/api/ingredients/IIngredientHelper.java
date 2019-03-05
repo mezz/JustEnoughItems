@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusFactory;
-import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.api.registration.IModIngredientRegistration;
 
 /**
  * An ingredient helper allows JEI to get information about ingredients for searching and other purposes.

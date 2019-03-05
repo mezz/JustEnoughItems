@@ -7,7 +7,7 @@ import java.util.List;
 
 import net.minecraft.util.NonNullList;
 
-import mezz.jei.api.ingredients.IModIdHelper;
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.config.HideModeConfig;
 import mezz.jei.config.IHideModeConfig;
 import mezz.jei.config.IngredientBlacklistType;

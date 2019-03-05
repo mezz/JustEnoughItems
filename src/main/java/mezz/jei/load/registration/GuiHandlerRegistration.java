@@ -12,10 +12,10 @@ import net.minecraft.client.gui.inventory.GuiInventory;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import mezz.jei.api.gui.IGhostIngredientHandler;
-import mezz.jei.api.gui.IGlobalGuiHandler;
-import mezz.jei.api.gui.IGuiContainerHandler;
-import mezz.jei.api.gui.IGuiScreenHandler;
+import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
+import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
+import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import mezz.jei.api.gui.handlers.IGuiScreenHandler;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.collect.ListMultiMap;
 import mezz.jei.util.ErrorUtil;

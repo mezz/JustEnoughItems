@@ -219,17 +219,17 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		focus = Focus.check(focus);
 
-		List<T> allRecipeWrappers = new ArrayList<>();
+		List<T> allRecipes = new ArrayList<>();
 		for (IRecipeManagerPlugin plugin : this.plugins) {
-			List<T> recipeWrappers = plugin.getRecipes(recipeCategory, focus);
-			allRecipeWrappers.addAll(recipeWrappers);
+			List<T> recipes = plugin.getRecipes(recipeCategory, focus);
+			allRecipes.addAll(recipes);
 		}
 
 		RecipeCategoryData<T> recipeCategoryData = recipeCategoriesDataMap.get(recipeCategory);
 		Set<T> hiddenRecipes = recipeCategoryData.getHiddenRecipes();
-		allRecipeWrappers.removeAll(hiddenRecipes);
+		allRecipes.removeAll(hiddenRecipes);
 
-		return allRecipeWrappers;
+		return allRecipes;
 	}
 
 	@Override

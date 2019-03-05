@@ -8,8 +8,8 @@ import java.util.List;
 import net.minecraft.item.ItemStack;
 
 import com.google.common.base.Preconditions;
-import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.gui.IDrawableAnimated;
+import mezz.jei.api.gui.drawable.IDrawableAnimated;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
 

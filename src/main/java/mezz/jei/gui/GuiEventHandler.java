@@ -12,7 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
-import mezz.jei.api.gui.IGuiClickableArea;
+import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.config.Constants;
 import mezz.jei.events.OverlayToggleEvent;
 import mezz.jei.gui.overlay.IngredientListOverlay;

@@ -3,11 +3,11 @@ package mezz.jei.api.recipe.category.extensions;
 import java.util.Collections;
 import java.util.List;
 
-import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IGuiIngredientGroup;
-import mezz.jei.api.gui.ITooltipCallback;
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
+import mezz.jei.api.gui.ingredient.ITooltipCallback;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.ingredients.IMutableIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**
@@ -17,9 +17,9 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 public interface IRecipeCategoryExtension {
 
 	/**
-	 * Gets all the recipe's ingredients by filling out an instance of {@link IIngredients}.
+	 * Gets all the recipe's ingredients by filling out an instance of {@link IMutableIngredients}.
 	 */
-	void setIngredients(IIngredients ingredients);
+	void setIngredients(IMutableIngredients ingredients);
 
 	/**
 	 * Draw additional info about the recipe.

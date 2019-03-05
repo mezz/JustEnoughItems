@@ -2,7 +2,7 @@ package mezz.jei.plugins.vanilla.crafting;
 
 import net.minecraftforge.common.crafting.IShapedRecipe;
 
-import mezz.jei.api.recipe.category.extensions.IShapedCraftingCategoryExtension;
+import mezz.jei.api.recipe.category.extensions.vanilla.crafting.IShapedCraftingCategoryExtension;
 
 public class ShapedCraftingRecipeExtension extends ShapelessCraftingCategoryExtension<IShapedRecipe> implements IShapedCraftingCategoryExtension {
 	public ShapedCraftingRecipeExtension(IShapedRecipe recipe) {

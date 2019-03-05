@@ -7,8 +7,8 @@ import net.minecraftforge.fml.common.progress.StartupProgressManager;
 import net.minecraft.util.NonNullList;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientManager;
-import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 
 public final class IngredientListElementFactory {

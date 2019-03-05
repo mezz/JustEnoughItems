@@ -9,8 +9,8 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
 
-import mezz.jei.api.gui.IGhostIngredientHandler;
-import mezz.jei.api.gui.IGhostIngredientHandler.Target;
+import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
+import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.util.MathUtil;
 import org.lwjgl.opengl.GL11;

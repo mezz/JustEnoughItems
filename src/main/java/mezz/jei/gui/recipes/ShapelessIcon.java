@@ -8,7 +8,7 @@ import net.minecraftforge.fml.client.config.HoverChecker;
 import net.minecraft.client.renderer.GlStateManager;
 
 import mezz.jei.Internal;
-import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.util.Translator;
 

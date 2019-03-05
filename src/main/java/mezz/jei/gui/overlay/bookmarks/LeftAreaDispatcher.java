@@ -10,7 +10,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.Rectangle2d;
 
-import mezz.jei.api.gui.IGuiProperties;
+import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.overlay.GuiProperties;

@@ -3,14 +3,15 @@ package mezz.jei.plugins.vanilla.furnace;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IDrawableAnimated;
-import mezz.jei.api.gui.IDrawableStatic;
-import mezz.jei.api.gui.IGuiItemStackGroup;
+import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawableAnimated;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
+import mezz.jei.api.ingredients.IMutableIngredients;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.util.Translator;
@@ -56,12 +57,12 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory<FuelRecipe> {
 	}
 
 	@Override
-	public void setIngredients(FuelRecipe recipe, IIngredients ingredients) {
+	public void setIngredients(FuelRecipe recipe, IMutableIngredients ingredients) {
 		ingredients.setInputs(VanillaTypes.ITEM, recipe.getInputs());
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, FuelRecipe recipeWrapper, IIngredients ingredients) {
+	public void setRecipe(IRecipeLayout recipeLayout, FuelRecipe recipe, IIngredients ingredients) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		guiItemStacks.init(fuelSlot, true, 0, 16);

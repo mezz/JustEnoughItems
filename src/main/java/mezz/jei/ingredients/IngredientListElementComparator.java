@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import net.minecraft.item.ItemStack;
 
-import mezz.jei.api.ModIds;
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.ingredients.IIngredientListElementInfo;
 

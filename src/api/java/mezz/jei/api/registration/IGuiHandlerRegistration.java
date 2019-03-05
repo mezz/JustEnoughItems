@@ -7,11 +7,11 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.gui.IGhostIngredientHandler;
-import mezz.jei.api.gui.IGlobalGuiHandler;
-import mezz.jei.api.gui.IGuiClickableArea;
-import mezz.jei.api.gui.IGuiContainerHandler;
-import mezz.jei.api.gui.IGuiScreenHandler;
+import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
+import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
+import mezz.jei.api.gui.handlers.IGuiClickableArea;
+import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import mezz.jei.api.gui.handlers.IGuiScreenHandler;
 
 public interface IGuiHandlerRegistration {
 	/**

@@ -1,7 +1,7 @@
 package mezz.jei.runtime;
 
-import mezz.jei.api.IJeiHelpers;
-import mezz.jei.api.ingredients.IModIdHelper;
+import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.gui.GuiHelper;
 

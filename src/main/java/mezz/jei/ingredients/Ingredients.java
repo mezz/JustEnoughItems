@@ -10,11 +10,11 @@ import java.util.Map;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 
-import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.VanillaTypes;
-import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IMutableIngredients;
 
-public class Ingredients implements IIngredients {
+public class Ingredients implements IMutableIngredients {
 	private final Map<IIngredientType, List<List>> inputs = new IdentityHashMap<>();
 	private final Map<IIngredientType, List<List>> outputs = new IdentityHashMap<>();
 

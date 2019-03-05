@@ -2,9 +2,9 @@ package mezz.jei.api.recipe.transfer;
 
 import java.util.Collection;
 
-import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.gui.IGuiItemStackGroup;
+import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError.Type;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 

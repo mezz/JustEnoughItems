@@ -14,10 +14,10 @@ import net.minecraft.util.text.TextFormatting;
 
 import com.google.common.base.Joiner;
 import mezz.jei.Internal;
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.ingredients.IModIdHelper;
-import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.config.Constants;
 import mezz.jei.config.IHideModeConfig;

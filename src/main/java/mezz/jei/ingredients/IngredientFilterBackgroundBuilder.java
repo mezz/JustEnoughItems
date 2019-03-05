@@ -11,8 +11,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.NonNullList;
 
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
-import mezz.jei.api.ingredients.IIngredientManager;
-import mezz.jei.api.ingredients.IModIdHelper;
+import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.SearchMode;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.gui.ingredients.IIngredientListElement;

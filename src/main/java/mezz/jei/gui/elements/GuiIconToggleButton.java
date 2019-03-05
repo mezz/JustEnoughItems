@@ -5,7 +5,7 @@ import java.util.List;
 
 import net.minecraft.client.renderer.Rectangle2d;
 
-import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.TooltipRenderer;

@@ -11,7 +11,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 
 import com.google.common.collect.Ordering;
-import mezz.jei.api.gui.IGuiContainerHandler;
+import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 
 class InventoryEffectRendererGuiHandler implements IGuiContainerHandler<InventoryEffectRenderer> {
 	/**

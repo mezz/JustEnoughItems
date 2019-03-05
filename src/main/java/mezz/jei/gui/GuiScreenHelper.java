@@ -16,12 +16,12 @@ import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-import mezz.jei.api.gui.IGuiClickableArea;
-import mezz.jei.api.gui.IGuiContainerHandler;
-import mezz.jei.api.gui.IGhostIngredientHandler;
-import mezz.jei.api.gui.IGlobalGuiHandler;
-import mezz.jei.api.gui.IGuiProperties;
-import mezz.jei.api.gui.IGuiScreenHandler;
+import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
+import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
+import mezz.jei.api.gui.handlers.IGuiClickableArea;
+import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import mezz.jei.api.gui.handlers.IGuiProperties;
+import mezz.jei.api.gui.handlers.IGuiScreenHandler;
 import mezz.jei.collect.ListMultiMap;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.ClickedIngredient;

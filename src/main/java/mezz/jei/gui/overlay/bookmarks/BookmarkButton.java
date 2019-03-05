@@ -5,8 +5,8 @@ import java.util.List;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.text.TextFormatting;
 
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IDrawableStatic;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;

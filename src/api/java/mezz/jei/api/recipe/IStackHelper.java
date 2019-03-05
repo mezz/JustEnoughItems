@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.item.ItemStack;
 
-import mezz.jei.api.IJeiHelpers;
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 
 /**

@@ -2,8 +2,8 @@ package mezz.jei.gui;
 
 import java.util.List;
 
-import mezz.jei.api.gui.ICraftingGridHelper;
-import mezz.jei.api.gui.IGuiIngredientGroup;
+import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 
 public class CraftingGridHelper implements ICraftingGridHelper {
 	private final int craftInputSlot1;

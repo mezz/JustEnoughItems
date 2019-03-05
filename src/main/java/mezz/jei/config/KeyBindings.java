@@ -10,7 +10,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 
 import com.google.common.collect.ImmutableList;
-import mezz.jei.api.ModIds;
+import mezz.jei.api.constants.ModIds;
 import org.lwjgl.glfw.GLFW;
 
 public final class KeyBindings {

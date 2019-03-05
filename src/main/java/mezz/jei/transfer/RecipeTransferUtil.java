@@ -14,7 +14,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.Internal;
-import mezz.jei.api.gui.IGuiIngredient;
+import mezz.jei.api.gui.ingredient.IGuiIngredient;
 import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;

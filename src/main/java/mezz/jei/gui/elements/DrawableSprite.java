@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.gui.IDrawableStatic;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.gui.textures.TextureInfo;
 
 public class DrawableSprite implements IDrawableStatic {

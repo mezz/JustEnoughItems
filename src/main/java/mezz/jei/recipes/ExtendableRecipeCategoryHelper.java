@@ -26,25 +26,25 @@ public class ExtendableRecipeCategoryHelper<T, W extends IRecipeCategoryExtensio
 		this.expectedRecipeClass = expectedRecipeClass;
 	}
 
-	public <R extends T> void addRecipeWrapperFactory(Class<? extends R> recipeClass, Function<R, ? extends W> recipeWrapperFactory) {
+	public <R extends T> void addRecipeExtensionFactory(Class<? extends R> recipeClass, Function<R, ? extends W> recipeExtensionFactory) {
 		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
 		if (!expectedRecipeClass.isAssignableFrom(recipeClass)) {
 		  throw new IllegalArgumentException("Recipe handlers must handle a specific class. Needed: " + expectedRecipeClass + " Got: " + recipeClass);
 		}
-		ErrorUtil.checkNotNull(recipeWrapperFactory, "recipeWrapperFactory");
+		ErrorUtil.checkNotNull(recipeExtensionFactory, "recipeExtensionFactory");
 		if (this.handledClasses.contains(recipeClass)) {
-			throw new IllegalArgumentException("A Recipe Wrapper Factory has already been registered for '" + recipeClass.getName());
+			throw new IllegalArgumentException("A Recipe Extension Factory has already been registered for '" + recipeClass.getName());
 		}
 		this.handledClasses.add(recipeClass);
-		this.recipeHandlers.add(new RecipeHandler<>(recipeClass, recipeWrapperFactory));
+		this.recipeHandlers.add(new RecipeHandler<>(recipeClass, recipeExtensionFactory));
 	}
 
-	public <R extends T> W getRecipeWrapper(R recipe) {
+	public <R extends T> W getRecipeExtension(R recipe) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
-		return cache.computeIfAbsent(recipe, this::getRecipeWrapperUncached);
+		return cache.computeIfAbsent(recipe, this::getRecipeExtensionUncached);
 	}
 
-	private <R extends T> W getRecipeWrapperUncached(R recipe) {
+	private <R extends T> W getRecipeExtensionUncached(R recipe) {
 		Class<?> recipeClass = recipe.getClass();
 
 		List<RecipeHandler<R, W>> assignableHandlers = new ArrayList<>();

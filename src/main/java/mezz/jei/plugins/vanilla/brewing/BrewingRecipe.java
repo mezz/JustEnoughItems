@@ -11,7 +11,7 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.base.Objects;
-import mezz.jei.api.recipe.IJeiBrewingRecipe;
+import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 
 public class BrewingRecipe implements IJeiBrewingRecipe {
 	private final List<ItemStack> ingredients;

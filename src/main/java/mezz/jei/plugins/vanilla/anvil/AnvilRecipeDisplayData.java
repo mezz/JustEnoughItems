@@ -5,7 +5,7 @@ import java.util.Map;
 
 import net.minecraft.item.ItemStack;
 
-import mezz.jei.api.gui.IGuiIngredient;
+import mezz.jei.api.gui.ingredient.IGuiIngredient;
 
 public class AnvilRecipeDisplayData {
 	@Nullable

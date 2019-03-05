@@ -8,8 +8,8 @@ import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
-import mezz.jei.api.recipe.IIngredientType;
-import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
+import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.collect.ListMultiMap;

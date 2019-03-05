@@ -1,6 +1,6 @@
 package mezz.jei.test.lib;
 
-import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientType;
 
 public class TestIngredient {
 	public static final IIngredientType<TestIngredient> TYPE = () -> TestIngredient.class;

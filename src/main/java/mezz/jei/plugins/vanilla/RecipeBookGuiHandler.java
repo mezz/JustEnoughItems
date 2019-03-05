@@ -1,6 +1,8 @@
 package mezz.jei.plugins.vanilla;
 
-import mezz.jei.api.gui.IGuiContainerHandler;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.recipebook.GuiButtonRecipeTab;
@@ -8,9 +10,7 @@ import net.minecraft.client.gui.recipebook.GuiRecipeBook;
 import net.minecraft.client.gui.recipebook.IRecipeShownListener;
 import net.minecraft.client.renderer.Rectangle2d;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 
 class RecipeBookGuiHandler<T extends GuiContainer & IRecipeShownListener> implements IGuiContainerHandler<T> {
 	/**

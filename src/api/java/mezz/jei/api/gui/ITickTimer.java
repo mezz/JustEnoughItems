@@ -1,6 +1,7 @@
 package mezz.jei.api.gui;
 
-import mezz.jei.api.IGuiHelper;
+import mezz.jei.api.gui.drawable.IDrawableAnimated;
+import mezz.jei.api.helpers.IGuiHelper;
 
 /**
  * A timer to help render things that normally depend on ticks.

@@ -18,9 +18,9 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.ingredients.IIngredientManager;
-import mezz.jei.api.recipe.IJeiBrewingRecipe;
-import mezz.jei.api.recipe.IVanillaRecipeFactory;
+import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
+import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
+import mezz.jei.api.runtime.IIngredientManager;
 
 public class BrewingRecipeMaker {
 

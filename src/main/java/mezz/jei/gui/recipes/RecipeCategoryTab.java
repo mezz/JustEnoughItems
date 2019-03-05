@@ -12,9 +12,9 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.Internal;
-import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.ingredients.IModIdHelper;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.ingredients.IngredientManager;
 

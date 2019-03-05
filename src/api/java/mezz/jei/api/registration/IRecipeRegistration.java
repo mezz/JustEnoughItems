@@ -5,7 +5,7 @@ import java.util.List;
 
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientType;
 
 public interface IRecipeRegistration {
 	/**

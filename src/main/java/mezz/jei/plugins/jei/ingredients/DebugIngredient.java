@@ -1,6 +1,6 @@
 package mezz.jei.plugins.jei.ingredients;
 
-import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientType;
 
 public class DebugIngredient {
 	public static final IIngredientType<DebugIngredient> TYPE = () -> DebugIngredient.class;

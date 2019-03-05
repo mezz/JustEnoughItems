@@ -5,10 +5,11 @@ import java.util.List;
 
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.IJeiRuntime;
+import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
+import mezz.jei.api.runtime.IJeiRuntime;
 
 /**
  * The IRecipeManager offers several functions for retrieving and handling recipes.

@@ -6,14 +6,15 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.gui.IDrawable;
-import mezz.jei.api.gui.IGuiFluidStackGroup;
-import mezz.jei.api.gui.IGuiItemStackGroup;
+import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IGuiFluidStackGroup;
+import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.api.ingredients.IMutableIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.util.Translator;
 
@@ -60,11 +61,11 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 	}
 
 	@Override
-	public void setIngredients(IngredientInfoRecipe recipe, IIngredients ingredients) {
+	public void setIngredients(IngredientInfoRecipe recipe, IMutableIngredients ingredients) {
 		setIngredientsTyped((IngredientInfoRecipe<?>) recipe, ingredients);
 	}
 
-	private <T> void setIngredientsTyped(IngredientInfoRecipe<T> recipe, IIngredients ingredients) {
+	private <T> void setIngredientsTyped(IngredientInfoRecipe<T> recipe, IMutableIngredients ingredients) {
 		IIngredientType<T> ingredientType = recipe.getIngredientType();
 		List<List<T>> recipeIngredients = Collections.singletonList(recipe.getIngredients());
 		ingredients.setInputLists(ingredientType, recipeIngredients);
@@ -88,7 +89,7 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, IngredientInfoRecipe recipeWrapper, IIngredients ingredients) {
+	public void setRecipe(IRecipeLayout recipeLayout, IngredientInfoRecipe recipe, IIngredients ingredients) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		int xPos = (recipeWidth - 18) / 2;

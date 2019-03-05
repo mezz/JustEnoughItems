@@ -2,8 +2,8 @@ package mezz.jei.api.gui;
 
 import javax.annotation.Nullable;
 
-import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**

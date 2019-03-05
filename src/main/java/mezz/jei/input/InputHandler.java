@@ -14,10 +14,10 @@ import net.minecraft.client.util.InputMappings;
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import mezz.jei.api.gui.IGuiClickableArea;
+import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientManager;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.IHideModeConfig;
 import mezz.jei.config.IWorldConfig;

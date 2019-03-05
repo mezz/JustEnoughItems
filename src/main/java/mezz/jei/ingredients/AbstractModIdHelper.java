@@ -3,8 +3,8 @@ package mezz.jei.ingredients;
 import java.util.ArrayList;
 import java.util.List;
 
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IModIdHelper;
 
 public abstract class AbstractModIdHelper implements IModIdHelper {
 	@Override
