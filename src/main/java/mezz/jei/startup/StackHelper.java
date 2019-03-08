@@ -49,7 +49,7 @@ public class StackHelper implements IStackHelper {
 
 	public void disableUidCache() {
 		for (UidMode mode : UidMode.values()) {
-			uidCache.get(mode).clear();
+			uidCache.put(mode, new IdentityHashMap<>());
 		}
 		uidCacheEnabled = false;
 	}
