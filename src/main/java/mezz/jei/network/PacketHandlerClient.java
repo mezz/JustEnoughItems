@@ -38,5 +38,6 @@ public class PacketHandlerClient {
 		} catch (Exception e) {
 			LOGGER.error("Packet error", e);
 		}
+		event.getSource().get().setPacketHandled(true);
 	}
 }

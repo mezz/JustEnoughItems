@@ -48,5 +48,6 @@ public class PacketHandler {
 		} catch (RuntimeException e) {
 			LOGGER.error("Packet error for event: {}", event, e);
 		}
+		event.getSource().get().setPacketHandled(true);
 	}
 }
