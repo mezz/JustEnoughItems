@@ -19,20 +19,22 @@ buildscript {
 }
 
 plugins {
-//	id "com.matthewprenger.cursegradle" version "1.0.9"
+	id "com.matthewprenger.cursegradle" version "1.2.0"
 	id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.32"
 }
 apply from: "buildtools/ColoredOutput.gradle"
 apply plugin: 'idea'
 apply plugin: "net.minecraftforge.gradle"
 
-version = version_major + "." + version_minor + "." + version_patch
-group = "mezz.jei" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-
 //adds the build number to the end of the version string if on a build server
-if (System.getenv().BUILD_NUMBER != null) {
-	version += ".${System.getenv().BUILD_NUMBER}"
+String build_number = System.getenv().BUILD_NUMBER
+if (build_number == null) {
+	build_number = "9999"
 }
+
+String semver = "${version_major}.${version_minor}.${version_patch}"
+version = "${semver}.${build_number}"
+group = "mezz.jei" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 compileJava {
@@ -73,22 +75,18 @@ dependencies {
 }
 
 minecraft {
-	//	runDir = "run"
-	//	replace "@VERSION@", project.version
 	mappings channel: "snapshot", version: "${project.mcp_mappings}".toString()
 
 	accessTransformer = file('src/main/resources/META-INF/jei_at.cfg')
 
 	runs {
 		client = {
-			properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
 			properties 'forge.logging.console.level': 'debug'
 			workingDirectory project.file('run').canonicalPath
 			source sourceSets.main
 			source sourceSets.api
 		}
 		server = {
-			properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
 			properties 'forge.logging.console.level': 'debug'
 			workingDirectory project.file('run').canonicalPath
 			source sourceSets.main
@@ -112,19 +110,19 @@ task makeChangelog(type: GitChangelogTask) {
 	templateContent = file("changelog.mustache").getText("UTF-8")
 }
 
-//curseforge {
-//	apiKey = project.hasProperty("curseforge_apikey") ? project.curseforge_apikey : "0"
-//	project {
-//		id = curse_project_id
-//		changelog = file("changelog.html")
-//		changelogType = "html"
-//		releaseType = "beta"
-//	}
-//}
+curseforge {
+	apiKey = project.hasProperty("curseforge_apikey") ? project.curseforge_apikey : "0"
+	project {
+		id = curse_project_id
+		changelog = file("changelog.html")
+		changelogType = "html"
+		releaseType = "beta"
+	}
+}
 
-//afterEvaluate {
-//	tasks.curseforge238222.dependsOn.add(makeChangelog)
-//}
+afterEvaluate {
+	tasks.curseforge238222.dependsOn.add(makeChangelog)
+}
 
 jar {
 //	duplicatesStrategy = DuplicatesStrategy.FAIL
@@ -132,6 +130,18 @@ jar {
 	from sourceSets.api.output.classesDirs
 	from sourceSets.main.output.resourcesDir
 	from sourceSets.api.output.resourcesDir
+	
+	manifest {
+		attributes([
+				"Specification-Title": "Just Enough Items",
+				"Specification-Vendor": "mezz",
+				"Specification-Version": "${semver}",
+				"Implementation-Title": project.name,
+				"Implementation-Version": "${project.version}",
+				"Implementation-Vendor" :"mezz",
+				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+		])
+	}
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {

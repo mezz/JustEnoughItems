@@ -34,7 +34,7 @@ authors="mezz" #optional
 modId="jei" #mandatory
 
 # The version number of the mod
-version="${version}" #mandatory
+version="${file.jarVersion}" #mandatory
 
 # A display name for the mod
 displayName="Just Enough Items" #mandatory
