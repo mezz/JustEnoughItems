@@ -181,7 +181,7 @@ task("uploadJars", dependsOn: "build") {
 idea {
 	module {
 		for (String excludeDirName in ["run", "out", "logs", "gradle"]) {
-			File excludeDir = new File(projectDir, excludeDirName);
+			File excludeDir = new File(projectDir, excludeDirName)
 			excludeDirs.add(excludeDir)
 		}
 	}

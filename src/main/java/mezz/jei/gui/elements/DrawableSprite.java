@@ -9,23 +9,41 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.gui.drawable.IDrawableStatic;
-import mezz.jei.gui.textures.TextureInfo;
+import mezz.jei.gui.textures.JeiTextureMap;
 
 public class DrawableSprite implements IDrawableStatic {
-	private final TextureInfo info;
+	private final JeiTextureMap textureMap;
+	private final ResourceLocation location;
+	private final int width;
+	private final int height;
+	private int trimLeft;
+	private int trimRight;
+	private int trimTop;
+	private int trimBottom;
 
-	public DrawableSprite(TextureInfo info) {
-		this.info = info;
+	public DrawableSprite(JeiTextureMap textureMap, ResourceLocation location, int width, int height) {
+		this.textureMap = textureMap;
+		this.location = location;
+		this.width = width;
+		this.height = height;
+	}
+
+	public DrawableSprite trim(int left, int right, int top, int bottom) {
+		this.trimLeft = left;
+		this.trimRight = right;
+		this.trimTop = top;
+		this.trimBottom = bottom;
+		return this;
 	}
 
 	@Override
 	public int getWidth() {
-		return info.getWidth();
+		return width;
 	}
 
 	@Override
 	public int getHeight() {
-		return info.getHeight();
+		return height;
 	}
 
 	@Override
@@ -35,19 +53,18 @@ public class DrawableSprite implements IDrawableStatic {
 
 	@Override
 	public void draw(int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
-		ResourceLocation location = info.getLocation();
-		TextureAtlasSprite sprite = info.getSprite();
-		int textureWidth = info.getWidth();
-		int textureHeight = info.getHeight();
+		TextureAtlasSprite sprite = textureMap.getSprite(location);
+		int textureWidth = this.width;
+		int textureHeight = this.height;
 
 		Minecraft minecraft = Minecraft.getInstance();
 		TextureManager textureManager = minecraft.getTextureManager();
-		textureManager.bindTexture(location);
+		textureManager.bindTexture(textureMap.getLocation());
 
-		maskTop += info.getTrimTop();
-		maskBottom += info.getTrimBottom();
-		maskLeft += info.getTrimLeft();
-		maskRight += info.getTrimRight();
+		maskTop += trimTop;
+		maskBottom += trimBottom;
+		maskLeft += trimLeft;
+		maskRight += trimRight;
 
 		int x = xOffset + maskLeft;
 		int y = yOffset + maskTop;

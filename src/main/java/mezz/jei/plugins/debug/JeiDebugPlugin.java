@@ -14,15 +14,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
-import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
@@ -31,12 +29,10 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.config.ClientConfig;
-import mezz.jei.gui.GuiHelper;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientHelper;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientListFactory;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientRenderer;
-import mezz.jei.runtime.JeiHelpers;
 
 @JeiPlugin
 public class JeiDebugPlugin implements IModPlugin {
@@ -51,7 +47,7 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerIngredients(IModIngredientRegistration registration, ISubtypeManager subtypeManager) {
+	public void registerIngredients(IModIngredientRegistration registration) {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
 			DebugIngredientHelper ingredientHelper = new DebugIngredientHelper();
 			DebugIngredientRenderer ingredientRenderer = new DebugIngredientRenderer(ingredientHelper);
@@ -60,10 +56,10 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerCategories(IRecipeCategoryRegistration registration, IJeiHelpers jeiHelpers) {
+	public void registerCategories(IRecipeCategoryRegistration registration) {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
-			JeiHelpers internalJeiHelpers = Internal.getHelpers();
-			GuiHelper guiHelper = internalJeiHelpers.getGuiHelper();
+			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+			IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 			registration.addRecipeCategories(
 				new DebugRecipeCategory(guiHelper)
 			);
@@ -71,8 +67,8 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerRecipes(IRecipeRegistration registration, IJeiHelpers jeiHelpers, IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory) {
-		JeiDebugPlugin.ingredientManager = ingredientManager;
+	public void registerRecipes(IRecipeRegistration registration) {
+		JeiDebugPlugin.ingredientManager = registration.getIngredientManager();
 
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
 			registration.addIngredientInfo(Arrays.asList(

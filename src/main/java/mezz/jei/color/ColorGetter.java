@@ -107,6 +107,9 @@ public final class ColorGetter {
 		final ItemColors itemColors = Minecraft.getInstance().getItemColors();
 		final int renderColor = itemColors.getColor(itemStack, 0);
 		final TextureAtlasSprite textureAtlasSprite = getTextureAtlasSprite(itemStack);
+		if (textureAtlasSprite == null) {
+			return Collections.emptyList();
+		}
 		return getColors(textureAtlasSprite, renderColor, colorCount);
 	}
 
@@ -170,11 +173,15 @@ public final class ColorGetter {
 		return textureAtlasSprite;
 	}
 
+	@Nullable
 	private static TextureAtlasSprite getTextureAtlasSprite(ItemStack itemStack) {
 		ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
 		ItemModelMesher itemModelMesher = itemRenderer.getItemModelMesher();
 		IBakedModel itemModel = itemModelMesher.getItemModel(itemStack);
 		TextureAtlasSprite particleTexture = itemModel.getParticleTexture();
-		return Preconditions.checkNotNull(particleTexture);
+		if (particleTexture instanceof MissingTextureSprite) {
+			return null;
+		}
+		return particleTexture;
 	}
 }

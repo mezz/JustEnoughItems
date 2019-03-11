@@ -6,6 +6,7 @@ import com.google.common.base.Preconditions;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.gui.GuiEventHandler;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.InputHandler;
@@ -30,6 +31,8 @@ public final class Internal {
 	private static GuiEventHandler guiEventHandler;
 	@Nullable
 	private static InputHandler inputHandler;
+	@Nullable
+	private static Textures textures;
 
 	private Internal() {
 
@@ -42,6 +45,15 @@ public final class Internal {
 
 	public static void setHelpers(JeiHelpers helpers) {
 		Internal.helpers = helpers;
+	}
+
+	public static Textures getTextures() {
+		Preconditions.checkState(textures != null, "Textures has not been created yet.");
+		return textures;
+	}
+
+	public static void setTextures(Textures textures) {
+		Internal.textures = textures;
 	}
 
 	@Nullable

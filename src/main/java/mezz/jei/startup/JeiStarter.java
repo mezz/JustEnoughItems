@@ -42,16 +42,11 @@ import mezz.jei.plugins.jei.JeiInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.recipes.RecipeManager;
 import mezz.jei.recipes.RecipeTransferManager;
-import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.LoggedTimer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class JeiStarter {
-	private static final Logger LOGGER = LogManager.getLogger();
-
 	private boolean started;
 
 	public void start(
@@ -77,7 +72,6 @@ public class JeiStarter {
 		GuiHandlerRegistration guiHandlerRegistration = pluginLoader.getGuiHandlerRegistration();
 		IngredientManager ingredientManager = pluginLoader.getIngredientManager();
 		IngredientFilter ingredientFilter = pluginLoader.getIngredientFilter();
-		JeiHelpers jeiHelpers = pluginLoader.getJeiHelpers();
 		BookmarkList bookmarkList = pluginLoader.getBookmarkList();
 		RecipeManager recipeManager = pluginLoader.getRecipeManager();
 		RecipeTransferRegistration recipeTransferRegistration = pluginLoader.getRecipeTransferRegistration();
@@ -94,7 +88,7 @@ public class JeiStarter {
 		IngredientListOverlay ingredientListOverlay = new IngredientListOverlay(ingredientFilter, ingredientManager, guiScreenHelper, ingredientListGrid, worldConfig);
 
 		IngredientGridWithNavigation bookmarkListGrid = new IngredientGridWithNavigation(bookmarkList, () -> "", guiScreenHelper, hideModeConfig, ingredientFilterConfig, worldConfig, GridAlignment.RIGHT);
-		BookmarkOverlay bookmarkOverlay = new BookmarkOverlay(bookmarkList, jeiHelpers.getGuiHelper(), bookmarkListGrid, worldConfig);
+		BookmarkOverlay bookmarkOverlay = new BookmarkOverlay(bookmarkList, textures, bookmarkListGrid, worldConfig);
 		RecipesGui recipesGui = new RecipesGui(recipeManager, recipeTransferManager, ingredientManager);
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, worldConfig);
 		JeiRuntime jeiRuntime = new JeiRuntime(recipeManager, ingredientListOverlay, bookmarkOverlay, recipesGui, ingredientFilterApi, ingredientManager);

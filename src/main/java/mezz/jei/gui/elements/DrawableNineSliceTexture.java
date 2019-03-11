@@ -8,32 +8,46 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.gui.textures.TextureInfo;
+import mezz.jei.gui.textures.JeiTextureMap;
 
 /**
  * Breaks a texture into 9 pieces so that it can be scaled to any size.
  * Draws the corners and then repeats any middle textures to fill the remaining area.
  */
 public class DrawableNineSliceTexture {
-	private final TextureInfo info;
+	private final JeiTextureMap textureMap;
+	private final ResourceLocation location;
+	private final int width;
+	private final int height;
+	private final int sliceLeft;
+	private final int sliceRight;
+	private final int sliceTop;
+	private final int sliceBottom;
 
-	public DrawableNineSliceTexture(TextureInfo info) {
-		this.info = info;
+	public DrawableNineSliceTexture(JeiTextureMap textureMap, ResourceLocation location, int width, int height, int left, int right, int top, int bottom) {
+		this.textureMap = textureMap;
+		this.location = location;
+
+		this.width = width;
+		this.height = height;
+		this.sliceLeft = left;
+		this.sliceRight = right;
+		this.sliceTop = top;
+		this.sliceBottom = bottom;
 	}
 
 	public void draw(int xOffset, int yOffset, int width, int height) {
-		ResourceLocation location = info.getLocation();
-		TextureAtlasSprite sprite = info.getSprite();
-		int leftWidth = info.getSliceLeft();
-		int rightWidth = info.getSliceRight();
-		int topHeight = info.getSliceTop();
-		int bottomHeight = info.getSliceBottom();
-		int textureWidth = info.getWidth();
-		int textureHeight = info.getHeight();
+		TextureAtlasSprite sprite = textureMap.getSprite(location);
+		int leftWidth = sliceLeft;
+		int rightWidth = sliceRight;
+		int topHeight = sliceTop;
+		int bottomHeight = sliceBottom;
+		int textureWidth = this.width;
+		int textureHeight = this.height;
 
 		Minecraft minecraft = Minecraft.getInstance();
 		TextureManager textureManager = minecraft.getTextureManager();
-		textureManager.bindTexture(location);
+		textureManager.bindTexture(textureMap.getLocation());
 
 		float uMin = sprite.getMinU();
 		float uMax = sprite.getMaxU();

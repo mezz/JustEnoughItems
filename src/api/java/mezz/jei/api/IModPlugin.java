@@ -1,14 +1,7 @@
 package mezz.jei.api;
 
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
-import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
-import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
-import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
-import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
@@ -17,7 +10,7 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
-import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 
 /**
@@ -42,7 +35,7 @@ public interface IModPlugin {
 	/**
 	 * Register special ingredients, beyond the basic ItemStack and FluidStack.
 	 */
-	default void registerIngredients(IModIngredientRegistration registration, ISubtypeManager subtypeManager) {
+	default void registerIngredients(IModIngredientRegistration registration) {
 
 	}
 
@@ -50,7 +43,7 @@ public interface IModPlugin {
 	 * Register the categories handled by this plugin.
 	 * These are registered before recipes so they can be checked for validity.
 	 */
-	default void registerCategories(IRecipeCategoryRegistration registration, IJeiHelpers jeiHelpers) {
+	default void registerCategories(IRecipeCategoryRegistration registration) {
 
 	}
 
@@ -58,21 +51,21 @@ public interface IModPlugin {
 	 * Register modded extensions to the vanilla crafting recipe category.
 	 * Custom crafting recipes for your mod should use this to tell JEI how they work.
 	 */
-	default void registerVanillaCategoryExtensions(IExtendableRecipeCategory<IRecipe, ICraftingCategoryExtension> craftingCategory) {
+	default void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
 
 	}
 
 	/**
 	 * Register modded recipes.
 	 */
-	default void registerRecipes(IRecipeRegistration registration, IJeiHelpers jeiHelpers, IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory) {
+	default void registerRecipes(IRecipeRegistration registration) {
 
 	}
 
 	/**
 	 * Register recipe transfer handlers (move ingredients from the inventory into crafting GUIs).
 	 */
-	default void registerRecipeTransferHandlers(IRecipeTransferRegistration registration, IJeiHelpers jeiHelpers, IRecipeTransferHandlerHelper transferHelper) {
+	default void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
 
 	}
 
@@ -97,7 +90,7 @@ public interface IModPlugin {
 	/**
 	 * Register advanced features for your mod plugin.
 	 */
-	default void registerAdvanced(IAdvancedRegistration registration, IJeiHelpers jeiHelpers) {
+	default void registerAdvanced(IAdvancedRegistration registration) {
 
 	}
 

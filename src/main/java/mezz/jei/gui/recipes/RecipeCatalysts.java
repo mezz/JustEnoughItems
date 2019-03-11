@@ -11,9 +11,9 @@ import net.minecraft.client.renderer.Rectangle2d;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.ingredients.GuiIngredient;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
@@ -41,9 +41,9 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 	public RecipeCatalysts() {
 		ingredients = new ArrayList<>();
 
-		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
-		backgroundTab = guiHelper.getCatalystTab();
-		slotBackground = guiHelper.getNineSliceSlot();
+		Textures textures = Internal.getTextures();
+		backgroundTab = textures.getCatalystTab();
+		slotBackground = textures.getNineSliceSlot();
 	}
 
 	public boolean isEmpty() {

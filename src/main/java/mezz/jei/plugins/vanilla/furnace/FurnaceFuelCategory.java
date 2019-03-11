@@ -10,10 +10,11 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.IMutableIngredients;
 import mezz.jei.config.Constants;
-import mezz.jei.gui.GuiHelper;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.util.Translator;
 
 public class FurnaceFuelCategory extends FurnaceRecipeCategory<FuelRecipe> {
@@ -21,13 +22,13 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory<FuelRecipe> {
 	private final IDrawableStatic flameTransparentBackground;
 	private final String localizedName;
 
-	public FurnaceFuelCategory(GuiHelper guiHelper) {
+	public FurnaceFuelCategory(IGuiHelper guiHelper, Textures textures) {
 		super(guiHelper);
 		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 134, 18, 34)
 			.addPadding(0, 0, 0, 88)
 			.build();
 
-		flameTransparentBackground = guiHelper.getFlameIcon();
+		flameTransparentBackground = textures.getFlameIcon();
 		localizedName = Translator.translateToLocal("gui.jei.category.fuel");
 	}
 

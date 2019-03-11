@@ -5,9 +5,18 @@ import java.util.List;
 
 import net.minecraft.util.ResourceLocation;
 
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
+import mezz.jei.api.runtime.IIngredientManager;
 
 public interface IRecipeRegistration {
+	IJeiHelpers getJeiHelpers();
+
+	IIngredientManager getIngredientManager();
+
+	IVanillaRecipeFactory getVanillaRecipeFactory();
+
 	/**
 	 * Add the recipes provided by your plugin.
 	 */

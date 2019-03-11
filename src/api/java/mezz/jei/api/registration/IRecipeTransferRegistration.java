@@ -4,7 +4,9 @@ import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 
 /**
@@ -12,6 +14,10 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
  * Get the instance passed in to your plugin's {@link IModPlugin#registerRecipeTransferHandlers}.
  */
 public interface IRecipeTransferRegistration {
+	IJeiHelpers getJeiHelpers();
+
+	IRecipeTransferHandlerHelper getTransferHelper();
+
 	/**
 	 * Basic method for adding a recipe transfer handler.
 	 *

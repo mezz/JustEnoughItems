@@ -49,8 +49,8 @@ public class IngredientFilterTest {
 		testPlugin.registerItemSubtypes(subtypeRegistration);
 		SubtypeManager subtypeManager = new SubtypeManager(subtypeRegistration);
 
-		ModIngredientRegistration modIngredientRegistration = new ModIngredientRegistration();
-		testPlugin.registerIngredients(modIngredientRegistration, subtypeManager);
+		ModIngredientRegistration modIngredientRegistration = new ModIngredientRegistration(subtypeManager);
+		testPlugin.registerIngredients(modIngredientRegistration);
 
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
 		this.modIdHelper = new TestModIdHelper();

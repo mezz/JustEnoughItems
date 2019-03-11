@@ -5,8 +5,8 @@ import java.util.List;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.HoverChecker;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.input.IMouseHandler;
 
 public abstract class RecipeGuiTab implements IMouseHandler {
@@ -37,8 +37,8 @@ public abstract class RecipeGuiTab implements IMouseHandler {
 	public abstract boolean isSelected(IRecipeCategory selectedCategory);
 
 	public void draw(boolean selected, int mouseX, int mouseY) {
-		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
-		IDrawable tab = selected ? guiHelper.getTabSelected() : guiHelper.getTabUnselected();
+		Textures textures = Internal.getTextures();
+		IDrawable tab = selected ? textures.getTabSelected() : textures.getTabUnselected();
 
 		tab.draw(x, y);
 	}

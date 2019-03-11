@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.GlStateManager;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.gui.GuiHelper;
+import mezz.jei.gui.textures.Textures;
 
 /**
  * A small gui button that has an {@link IDrawable} instead of a string label.
@@ -26,8 +26,8 @@ public class GuiIconButtonSmall extends GuiButton {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 			int k = this.getHoverState(this.hovered);
-			GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
-			DrawableNineSliceTexture texture = guiHelper.getButtonForState(k);
+			Textures textures = Internal.getTextures();
+			DrawableNineSliceTexture texture = textures.getButtonForState(k);
 			texture.draw(this.x, this.y, this.width, this.height);
 			this.renderBg(minecraft, mouseX, mouseY);
 

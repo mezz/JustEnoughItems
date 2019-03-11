@@ -37,7 +37,7 @@ public class GuiTextFieldFilter extends GuiTextField {
 		this.hoverChecker = new HoverChecker();
 		this.ingredientSource = ingredientSource;
 
-		this.background = Internal.getHelpers().getGuiHelper().getSearchBackground();
+		this.background = Internal.getTextures().getSearchBackground();
 	}
 
 	public void updateBounds(Rectangle2d area) {

@@ -13,6 +13,7 @@ import net.minecraft.util.ResourceLocation;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.util.ErrorUtil;
@@ -21,6 +22,11 @@ public class RecipeCategoryRegistration implements IRecipeCategoryRegistration {
 	private final List<IRecipeCategory> recipeCategories = new ArrayList<>();
 	private final Map<ResourceLocation, IRecipeCategory> recipeCategoriesByUid = new HashMap<>();
 	private final Set<Class<?>> recipeClasses = new HashSet<>();
+	private final IJeiHelpers jeiHelpers;
+
+	public RecipeCategoryRegistration(IJeiHelpers jeiHelpers) {
+		this.jeiHelpers = jeiHelpers;
+	}
 
 	@Override
 	public void addRecipeCategories(IRecipeCategory... recipeCategories) {
@@ -42,6 +48,11 @@ public class RecipeCategoryRegistration implements IRecipeCategoryRegistration {
 		}
 
 		Collections.addAll(this.recipeCategories, recipeCategories);
+	}
+
+	@Override
+	public IJeiHelpers getJeiHelpers() {
+		return jeiHelpers;
 	}
 
 	public ImmutableList<IRecipeCategory> getRecipeCategories() {

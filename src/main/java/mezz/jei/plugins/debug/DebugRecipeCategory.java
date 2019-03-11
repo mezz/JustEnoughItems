@@ -34,9 +34,8 @@ import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.config.Constants;
-import mezz.jei.gui.GuiHelper;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
-import mezz.jei.runtime.JeiHelpers;
 
 public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	public static final ResourceLocation UID = new ResourceLocation(ModIds.JEI_ID, "debug");
@@ -83,9 +82,8 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 
 	@Override
 	public IDrawable getIcon() {
-		JeiHelpers helpers = Internal.getHelpers();
-		GuiHelper guiHelper = helpers.getGuiHelper();
-		return guiHelper.getConfigButtonIcon();
+		Textures textures = Internal.getTextures();
+		return textures.getConfigButtonIcon();
 	}
 
 	@Override

@@ -11,11 +11,12 @@ import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IGuiFluidStackGroup;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.IMutableIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.gui.GuiHelper;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.util.Translator;
 
 public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientInfoRecipe> {
@@ -28,9 +29,9 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 	private final IDrawable slotBackground;
 	private final String localizedName;
 
-	public IngredientInfoRecipeCategory(GuiHelper guiHelper) {
+	public IngredientInfoRecipeCategory(IGuiHelper guiHelper, Textures textures) {
 		background = guiHelper.createBlankDrawable(recipeWidth, recipeHeight);
-		icon = guiHelper.getInfoIcon();
+		icon = textures.getInfoIcon();
 		slotBackground = guiHelper.getSlotDrawable();
 		localizedName = Translator.translateToLocal("gui.jei.category.itemInformation");
 	}

@@ -9,6 +9,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.collect.IngredientSet;
 import mezz.jei.util.ErrorUtil;
@@ -17,6 +18,11 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 	private final Map<IIngredientType, Collection> allIngredientsMap = new IdentityHashMap<>();
 	private final Map<IIngredientType, IIngredientHelper> ingredientHelperMap = new IdentityHashMap<>();
 	private final Map<IIngredientType, IIngredientRenderer> ingredientRendererMap = new IdentityHashMap<>();
+	private final ISubtypeManager subtypeManager;
+
+	public ModIngredientRegistration(ISubtypeManager subtypeManager) {
+		this.subtypeManager = subtypeManager;
+	}
 
 	@Override
 	public <V> void register(IIngredientType<V> ingredientType, Collection<V> allIngredients, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer) {
@@ -28,6 +34,11 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 		allIngredientsMap.put(ingredientType, allIngredients);
 		ingredientHelperMap.put(ingredientType, ingredientHelper);
 		ingredientRendererMap.put(ingredientType, ingredientRenderer);
+	}
+
+	@Override
+	public ISubtypeManager getSubtypeManager() {
+		return subtypeManager;
 	}
 
 	public IngredientManager createIngredientManager(IModIdHelper modIdHelper, IngredientBlacklistInternal blacklist, boolean enableDebugLogs) {

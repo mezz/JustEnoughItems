@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.Internal;
 import mezz.jei.gui.elements.GuiIconButton;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.input.IPaged;
 
 public class PageNavigation {
@@ -20,8 +21,8 @@ public class PageNavigation {
 
 	public PageNavigation(IPaged paged, boolean hideOnSinglePage) {
 		this.paged = paged;
-		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
-		this.nextButton = new GuiIconButton(0, guiHelper.getArrowNext()) {
+		Textures textures = Internal.getTextures();
+		this.nextButton = new GuiIconButton(0, textures.getArrowNext()) {
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
 				boolean result = super.mouseClicked(mouseX, mouseY, mouseButton);
@@ -31,7 +32,7 @@ public class PageNavigation {
 				return result;
 			}
 		};
-		this.backButton = new GuiIconButton(1, guiHelper.getArrowPrevious()) {
+		this.backButton = new GuiIconButton(1, textures.getArrowPrevious()) {
 			@Override
 			public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
 				boolean result = super.mouseClicked(mouseX, mouseY, mouseButton);

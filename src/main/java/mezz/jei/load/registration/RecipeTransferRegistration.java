@@ -4,6 +4,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableTable;
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.IStackHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
@@ -19,10 +20,22 @@ public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 	private final Table<Class, ResourceLocation, IRecipeTransferHandler> recipeTransferHandlers = Table.hashBasedTable();
 	private final IStackHelper stackHelper;
 	private final IRecipeTransferHandlerHelper handlerHelper;
+	private final IJeiHelpers jeiHelpers;
 
-	public RecipeTransferRegistration(IStackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper) {
+	public RecipeTransferRegistration(IStackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper, IJeiHelpers jeiHelpers) {
 		this.stackHelper = stackHelper;
 		this.handlerHelper = handlerHelper;
+		this.jeiHelpers = jeiHelpers;
+	}
+
+	@Override
+	public IJeiHelpers getJeiHelpers() {
+		return jeiHelpers;
+	}
+
+	@Override
+	public IRecipeTransferHandlerHelper getTransferHelper() {
+		return handlerHelper;
 	}
 
 	@Override

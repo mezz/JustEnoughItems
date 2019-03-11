@@ -7,14 +7,14 @@ import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
-import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.overlay.GuiProperties;
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.plugins.jei.info.IngredientInfoRecipeCategory;
-import mezz.jei.runtime.JeiHelpers;
 
 @JeiPlugin
 public class JeiInternalPlugin implements IModPlugin {
@@ -24,12 +24,13 @@ public class JeiInternalPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerCategories(IRecipeCategoryRegistration registration, IJeiHelpers jeiHelpers) {
-		JeiHelpers internalJeiHelpers = Internal.getHelpers();
-		GuiHelper guiHelper = internalJeiHelpers.getGuiHelper();
+	public void registerCategories(IRecipeCategoryRegistration registration) {
+		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+		Textures textures = Internal.getTextures();
 
 		registration.addRecipeCategories(
-			new IngredientInfoRecipeCategory(guiHelper)
+			new IngredientInfoRecipeCategory(guiHelper, textures)
 		);
 	}
 

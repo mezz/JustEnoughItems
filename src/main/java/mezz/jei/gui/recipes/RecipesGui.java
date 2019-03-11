@@ -26,13 +26,13 @@ import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
-import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.elements.GuiIconButtonSmall;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
@@ -90,9 +90,9 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
 		this.mc = Minecraft.getInstance();
 
-		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
-		IDrawableStatic arrowNext = guiHelper.getArrowNext();
-		IDrawableStatic arrowPrevious = guiHelper.getArrowPrevious();
+		Textures textures = Internal.getTextures();
+		IDrawableStatic arrowNext = textures.getArrowNext();
+		IDrawableStatic arrowPrevious = textures.getArrowPrevious();
 
 		nextRecipeCategory = new GuiIconButtonSmall(2, 0, 0, buttonWidth, buttonHeight, arrowNext) {
 			@Override
@@ -121,7 +121,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			}
 		};
 
-		background = guiHelper.getGuiBackground();
+		background = textures.getGuiBackground();
 	}
 
 	private static void drawCenteredStringWithShadow(FontRenderer fontRenderer, String string, int guiWidth, int xOffset, int yPos, int color) {

@@ -1,5 +1,6 @@
 package mezz.jei.runtime;
 
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IStackHelper;
@@ -21,7 +22,7 @@ public class JeiHelpers implements IJeiHelpers {
 	}
 
 	@Override
-	public GuiHelper getGuiHelper() {
+	public IGuiHelper getGuiHelper() {
 		return guiHelper;
 	}
 

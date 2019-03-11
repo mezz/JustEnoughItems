@@ -11,15 +11,15 @@ import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
-import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.util.Translator;
 import org.lwjgl.glfw.GLFW;
 
 public class ConfigButton extends GuiIconToggleButton {
 	public static ConfigButton create(IngredientListOverlay parent, IWorldConfig worldConfig) {
-		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
-		return new ConfigButton(guiHelper.getConfigButtonIcon(), guiHelper.getConfigButtonCheatIcon(), parent, worldConfig);
+		Textures textures = Internal.getTextures();
+		return new ConfigButton(textures.getConfigButtonIcon(), textures.getConfigButtonCheatIcon(), parent, worldConfig);
 	}
 
 	private final IngredientListOverlay parent;

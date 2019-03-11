@@ -97,7 +97,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		this.guiIngredientGroups.put(VanillaTypes.FLUID, this.guiFluidStackGroup);
 
 		if (index >= 0) {
-			IDrawable icon = Internal.getHelpers().getGuiHelper().getRecipeTransfer();
+			IDrawable icon = Internal.getTextures().getRecipeTransfer();
 			this.recipeTransferButton = new RecipeTransferButton(recipeTransferButtonIndex + index, 0, 0, RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, icon, this);
 		} else {
 			this.recipeTransferButton = null;
@@ -106,7 +106,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		setPosition(posX, posY);
 
 		this.recipe = recipe;
-		this.recipeBorder = Internal.getHelpers().getGuiHelper().getRecipeBackground();
+		this.recipeBorder = Internal.getTextures().getRecipeBackground();
 	}
 
 	@Override

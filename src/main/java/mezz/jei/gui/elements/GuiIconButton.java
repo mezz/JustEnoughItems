@@ -13,8 +13,8 @@ import net.minecraft.client.renderer.Rectangle2d;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.config.Constants;
-import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.TooltipRenderer;
+import mezz.jei.gui.textures.Textures;
 
 /**
  * A gui button that has an {@link IDrawable} instead of a string label.
@@ -50,9 +50,9 @@ public class GuiIconButton extends GuiButton {
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
+			Textures textures = Internal.getTextures();
 			Minecraft minecraft = Minecraft.getInstance();
-			DrawableNineSliceTexture texture = guiHelper.getButtonForState(i);
+			DrawableNineSliceTexture texture = textures.getButtonForState(i);
 			texture.draw(this.x, this.y, this.width, this.height);
 			this.renderBg(minecraft, mouseX, mouseY);
 

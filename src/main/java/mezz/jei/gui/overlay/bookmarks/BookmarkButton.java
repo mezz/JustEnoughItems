@@ -10,15 +10,15 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
-import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.util.Translator;
 import org.lwjgl.glfw.GLFW;
 
 public class BookmarkButton extends GuiIconToggleButton {
-	public static BookmarkButton create(BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, GuiHelper guiHelper, IWorldConfig worldConfig) {
-		IDrawableStatic offIcon = guiHelper.getBookmarkButtonDisabledIcon();
-		IDrawableStatic onIcon = guiHelper.getBookmarkButtonEnabledIcon();
+	public static BookmarkButton create(BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, Textures textures, IWorldConfig worldConfig) {
+		IDrawableStatic offIcon = textures.getBookmarkButtonDisabledIcon();
+		IDrawableStatic onIcon = textures.getBookmarkButtonEnabledIcon();
 		return new BookmarkButton(offIcon, onIcon, bookmarkOverlay, bookmarkList, worldConfig);
 	}
 

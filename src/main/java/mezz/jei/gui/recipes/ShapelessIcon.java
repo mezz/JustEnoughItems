@@ -18,7 +18,7 @@ public class ShapelessIcon {
 	private final HoverChecker hoverChecker;
 
 	public ShapelessIcon() {
-		this.icon = Internal.getHelpers().getGuiHelper().getShapelessIcon();
+		this.icon = Internal.getTextures().getShapelessIcon();
 		int iconBottom = icon.getHeight() / scale;
 		int iconLeft = CraftingRecipeCategory.width - (icon.getWidth() / scale);
 		int iconRight = iconLeft + icon.getWidth() / scale;

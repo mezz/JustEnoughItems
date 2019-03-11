@@ -14,12 +14,12 @@ import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IWorldConfig;
-import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.util.CommandUtil;
@@ -44,10 +44,10 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 	private final BookmarkList bookmarkList;
 	private final IWorldConfig worldConfig;
 
-	public BookmarkOverlay(BookmarkList bookmarkList, GuiHelper guiHelper, IngredientGridWithNavigation contents, IWorldConfig worldConfig) {
+	public BookmarkOverlay(BookmarkList bookmarkList, Textures textures, IngredientGridWithNavigation contents, IWorldConfig worldConfig) {
 		this.bookmarkList = bookmarkList;
 		this.worldConfig = worldConfig;
-		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, guiHelper, worldConfig);
+		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, textures, worldConfig);
 		this.contents = contents;
 		bookmarkList.addListener(() -> contents.updateLayout(false));
 	}
