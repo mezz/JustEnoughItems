@@ -12,9 +12,9 @@ import net.minecraft.item.crafting.Ingredient;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IMutableIngredients;
+import mezz.jei.api.ingredients.IIngredients;
 
-public class Ingredients implements IMutableIngredients {
+public class Ingredients implements IIngredients {
 	private final Map<IIngredientType, List<List>> inputs = new IdentityHashMap<>();
 	private final Map<IIngredientType, List<List>> outputs = new IdentityHashMap<>();
 

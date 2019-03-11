@@ -15,7 +15,6 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.IMutableIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
@@ -82,7 +81,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipe> {
 	}
 
 	@Override
-	public void setIngredients(BrewingRecipe recipe, IMutableIngredients ingredients) {
+	public void setIngredients(BrewingRecipe recipe, IIngredients ingredients) {
 		ingredients.setInputLists(VanillaTypes.ITEM, recipe.getInputs());
 		ingredients.setOutput(VanillaTypes.ITEM, recipe.getPotionOutput());
 	}

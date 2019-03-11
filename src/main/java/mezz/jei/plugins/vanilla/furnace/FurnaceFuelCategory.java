@@ -12,7 +12,6 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.IMutableIngredients;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.util.Translator;
@@ -58,7 +57,7 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory<FuelRecipe> {
 	}
 
 	@Override
-	public void setIngredients(FuelRecipe recipe, IMutableIngredients ingredients) {
+	public void setIngredients(FuelRecipe recipe, IIngredients ingredients) {
 		ingredients.setInputs(VanillaTypes.ITEM, recipe.getInputs());
 	}
 

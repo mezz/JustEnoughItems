@@ -20,7 +20,6 @@ import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.IMutableIngredients;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICustomCraftingCategoryExtension;
@@ -139,7 +138,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<IRecipe
 	}
 
 	@Override
-	public void setIngredients(IRecipe recipe, IMutableIngredients ingredients) {
+	public void setIngredients(IRecipe recipe, IIngredients ingredients) {
 		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
 		extension.setIngredients(ingredients);
 	}

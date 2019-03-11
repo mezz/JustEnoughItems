@@ -14,7 +14,6 @@ import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.IMutableIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.util.Translator;
@@ -62,11 +61,11 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 	}
 
 	@Override
-	public void setIngredients(IngredientInfoRecipe recipe, IMutableIngredients ingredients) {
+	public void setIngredients(IngredientInfoRecipe recipe, IIngredients ingredients) {
 		setIngredientsTyped((IngredientInfoRecipe<?>) recipe, ingredients);
 	}
 
-	private <T> void setIngredientsTyped(IngredientInfoRecipe<T> recipe, IMutableIngredients ingredients) {
+	private <T> void setIngredientsTyped(IngredientInfoRecipe<T> recipe, IIngredients ingredients) {
 		IIngredientType<T> ingredientType = recipe.getIngredientType();
 		List<List<T>> recipeIngredients = Collections.singletonList(recipe.getIngredients());
 		ingredients.setInputLists(ingredientType, recipeIngredients);

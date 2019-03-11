@@ -12,7 +12,6 @@ import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.gui.ingredient.ITooltipCallback;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.IMutableIngredients;
 
 /**
  * Defines a category of recipe, (i.e. Crafting Table Recipe, Furnace Recipe).
@@ -54,10 +53,10 @@ public interface IRecipeCategory<T> {
 	IDrawable getIcon();
 
 	/**
-	 * Sets all the recipe's ingredients by filling out an instance of {@link IMutableIngredients}.
+	 * Sets all the recipe's ingredients by filling out an instance of {@link IIngredients}.
 	 * This is used by JEI for lookups, to figure out what ingredients are inputs and outputs for a recipe.
 	 */
-	void setIngredients(T recipe, IMutableIngredients ingredients);
+	void setIngredients(T recipe, IIngredients ingredients);
 
 	/**
 	 * Set the {@link IRecipeLayout} properties from the recipe.

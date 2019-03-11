@@ -7,7 +7,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.gui.ingredient.ITooltipCallback;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.ingredients.IMutableIngredients;
+import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**
@@ -17,9 +17,9 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 public interface IRecipeCategoryExtension {
 
 	/**
-	 * Gets all the recipe's ingredients by filling out an instance of {@link IMutableIngredients}.
+	 * Gets all the recipe's ingredients by filling out an instance of {@link IIngredients}.
 	 */
-	void setIngredients(IMutableIngredients ingredients);
+	void setIngredients(IIngredients ingredients);
 
 	/**
 	 * Draw additional info about the recipe.

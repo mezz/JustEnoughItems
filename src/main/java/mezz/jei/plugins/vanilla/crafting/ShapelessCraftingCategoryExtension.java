@@ -7,7 +7,6 @@ import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.ingredients.IMutableIngredients;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 
 public class ShapelessCraftingCategoryExtension<T extends IRecipe> implements ICraftingCategoryExtension {
@@ -18,7 +17,7 @@ public class ShapelessCraftingCategoryExtension<T extends IRecipe> implements IC
 	}
 
 	@Override
-	public void setIngredients(IMutableIngredients ingredients) {
+	public void setIngredients(IIngredients ingredients) {
 		ingredients.setInputIngredients(recipe.getIngredients());
 		ingredients.setOutput(VanillaTypes.ITEM, recipe.getRecipeOutput());
 	}
