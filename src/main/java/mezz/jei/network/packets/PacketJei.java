@@ -8,10 +8,12 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public abstract class PacketJei {
 	public final Pair<PacketBuffer, Integer> getPacketData() {
-		IPacketId id = getPacketId();
+		IPacketId packetId = getPacketId();
+		int packetIdOrdinal = packetId.ordinal();
 		PacketBuffer packetBuffer = new PacketBuffer(Unpooled.buffer());
+		packetBuffer.writeByte(packetIdOrdinal);
 		writePacketData(packetBuffer);
-		return Pair.of(packetBuffer, id.ordinal());
+		return Pair.of(packetBuffer, packetIdOrdinal);
 	}
 
 	protected abstract IPacketId getPacketId();

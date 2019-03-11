@@ -24,10 +24,10 @@ public class PacketHandlerClient {
 		clientHandlers.put(PacketIdClient.CHEAT_PERMISSION, (buf, player) -> PacketCheatPermission.readPacketData(buf, player, worldConfig));
 	}
 
-	public void onPacket(NetworkEvent.ClientCustomPayloadEvent event) {
+	public void onPacket(NetworkEvent.ServerCustomPayloadEvent event) {
 		try {
 			PacketBuffer packetBuffer = new PacketBuffer(event.getPayload());
-			int packetIdOrdinal = event.getLoginIndex();
+			int packetIdOrdinal = packetBuffer.readByte();
 			PacketIdClient packetId = PacketIdClient.VALUES[packetIdOrdinal];
 			IPacketJeiHandler packetHandler = clientHandlers.get(packetId);
 			Minecraft minecraft = Minecraft.getInstance();

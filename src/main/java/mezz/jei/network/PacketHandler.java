@@ -32,7 +32,7 @@ public class PacketHandler {
 		serverHandlers.put(PacketIdServer.CHEAT_PERMISSION_REQUEST, PacketRequestCheatPermission::readPacketData);
 	}
 
-	public void onPacket(NetworkEvent.ServerCustomPayloadEvent event) {
+	public void onPacket(NetworkEvent.ClientCustomPayloadEvent event) {
 		PacketBuffer packetBuffer = new PacketBuffer(event.getPayload());
 		NetworkEvent.Context context = event.getSource().get();
 		EntityPlayerMP player = context.getSender();
@@ -41,7 +41,7 @@ public class PacketHandler {
 			return;
 		}
 		try {
-			int packetIdOrdinal = event.getLoginIndex();
+			int packetIdOrdinal = packetBuffer.readByte();
 			PacketIdServer packetId = PacketIdServer.VALUES[packetIdOrdinal];
 			IPacketJeiHandler packetHandler = serverHandlers.get(packetId);
 			packetHandler.readPacketData(packetBuffer, player);
