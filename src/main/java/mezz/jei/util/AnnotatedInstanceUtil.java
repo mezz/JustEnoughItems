@@ -30,7 +30,7 @@ public final class AnnotatedInstanceUtil {
 		List<ModFileScanData> allScanData = ModList.get().getAllScanData();
 		List<String> pluginClassNames = new ArrayList<>();
 		for (ModFileScanData scanData : allScanData) {
-			List<ModFileScanData.AnnotationData> annotations = scanData.getAnnotations();
+			Iterable<ModFileScanData.AnnotationData> annotations = scanData.getAnnotations();
 			for (ModFileScanData.AnnotationData a : annotations) {
 				if (Objects.equals(a.getAnnotationType(), annotationType)) {
 					String memberName = a.getMemberName();
