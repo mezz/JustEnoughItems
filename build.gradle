@@ -20,7 +20,7 @@ buildscript {
 
 plugins {
 	id "com.matthewprenger.cursegradle" version "1.2.0"
-	id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.32"
+	id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.60"
 }
 apply from: "buildtools/ColoredOutput.gradle"
 apply plugin: 'idea'
@@ -103,7 +103,7 @@ if (JavaVersion.current().isJava8Compatible()) {
 }
 
 task makeChangelog(type: GitChangelogTask) {
-	filePath = "changelog.html"
+	file = new File("changelog.html")
 	untaggedName = "Current release ${project.version}"
 	fromCommit = "2fe051cf727adce1be210a46f778aa8fe031331e"
 	toRef = "HEAD"
