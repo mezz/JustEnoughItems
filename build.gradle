@@ -116,7 +116,7 @@ curseforge {
 		id = curse_project_id
 		changelog = file("changelog.html")
 		changelogType = "html"
-		releaseType = "beta"
+		releaseType = "alpha"
 	}
 }
 
