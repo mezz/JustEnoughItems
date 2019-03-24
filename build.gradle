@@ -77,7 +77,7 @@ dependencies {
 minecraft {
 	mappings channel: "snapshot", version: "${project.mcp_mappings}".toString()
 
-	accessTransformer = file('src/main/resources/META-INF/jei_at.cfg')
+	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
 	runs {
 		client = {
@@ -125,7 +125,6 @@ afterEvaluate {
 }
 
 jar {
-//	duplicatesStrategy = DuplicatesStrategy.FAIL
 	from sourceSets.main.output.classesDirs
 	from sourceSets.api.output.classesDirs
 	from sourceSets.main.output.resourcesDir
@@ -145,20 +144,17 @@ jar {
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-//	duplicatesStrategy = DuplicatesStrategy.FAIL
 	classifier = "javadoc"
 	from javadoc.destinationDir
 }
 
 task sourcesJar(type: Jar) {
-//	duplicatesStrategy = DuplicatesStrategy.FAIL
 	classifier = "sources"
 	from sourceSets.main.allJava
 	from sourceSets.api.allJava
 }
 
 task apiJar(type: Jar) {
-//	duplicatesStrategy = DuplicatesStrategy.FAIL
 	classifier = "api"
 	from sourceSets.api.output
 
