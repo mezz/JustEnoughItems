@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -62,6 +63,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	private final ImmutableMultimap<Class<? extends GuiContainer>, RecipeClickableArea> recipeClickableAreasMap;
 	private final ImmutableListMultimap<IRecipeCategory, Object> recipeCatalysts;
 	private final ImmutableMap<String, IRecipeCategory> recipeCategoriesMap;
+	private final RecipeCategoryComparator recipeCategoryComparator;
 	private final Table<String, Object, IRecipeWrapper> wrapperMaps = new Table<>(new HashMap<>(), IdentityHashMap::new); // used when removing recipes
 	private final ListMultiMap<IRecipeCategory, IRecipeWrapper> recipeWrappersForCategories = new ListMultiMap<>();
 	private final RecipeMap recipeInputMap;
@@ -82,13 +84,14 @@ public class RecipeRegistry implements IRecipeRegistry {
 		List<IRecipeRegistryPlugin> plugins
 	) {
 		this.ingredientRegistry = ingredientRegistry;
-		this.recipeCategoriesMap = buildRecipeCategoriesMap(recipeCategories);
 		this.recipeTransferHandlers = recipeTransferHandlers;
 		this.recipeHandlers = recipeHandlers.toImmutable();
 		this.unsortedRecipeHandlers = buildRecipeHandlersList(unsortedRecipeHandlers);
 		this.recipeClickableAreasMap = recipeClickableAreasMap.toImmutable();
 
-		RecipeCategoryComparator recipeCategoryComparator = new RecipeCategoryComparator(recipeCategories);
+		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
+		this.recipeCategoryComparator = new RecipeCategoryComparator(recipeCategories);
+		this.recipeCategoriesMap = buildRecipeCategoriesMap(recipeCategories);
 		this.recipeInputMap = new RecipeMap(recipeCategoryComparator, ingredientRegistry);
 		this.recipeOutputMap = new RecipeMap(recipeCategoryComparator, ingredientRegistry);
 
@@ -121,8 +124,6 @@ public class RecipeRegistry implements IRecipeRegistry {
 		for (IRecipeRegistryPlugin plugin : plugins) {
 			this.plugins.add(new RecipeRegistryPluginSafeWrapper(plugin));
 		}
-
-		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
 	}
 
 	private <T> String getUniqueId(T ingredient) {
@@ -381,17 +382,19 @@ public class RecipeRegistry implements IRecipeRegistry {
 	}
 
 	@Override
-	public ImmutableList<IRecipeCategory> getRecipeCategories(List<String> recipeCategoryUids) {
+	public List<IRecipeCategory> getRecipeCategories(List<String> recipeCategoryUids) {
 		ErrorUtil.checkNotNull(recipeCategoryUids, "recipeCategoryUids");
 
-		ImmutableList.Builder<IRecipeCategory> builder = ImmutableList.builder();
+		List<IRecipeCategory> categories = new ArrayList<>();
 		for (String recipeCategoryUid : recipeCategoryUids) {
 			IRecipeCategory<?> recipeCategory = recipeCategoriesMap.get(recipeCategoryUid);
 			if (recipeCategory != null && getRecipeCategories().contains(recipeCategory)) {
-				builder.add(recipeCategory);
+				categories.add(recipeCategory);
 			}
 		}
-		return builder.build();
+		Comparator<IRecipeCategory> comparator = Comparator.comparing(IRecipeCategory::getUid, recipeCategoryComparator);
+		categories.sort(comparator);
+		return Collections.unmodifiableList(categories);
 	}
 
 	@Deprecated
