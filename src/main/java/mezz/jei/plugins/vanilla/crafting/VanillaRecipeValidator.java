@@ -3,6 +3,7 @@ package mezz.jei.plugins.vanilla.crafting;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraftforge.common.crafting.VanillaRecipeTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.item.ItemStack;
@@ -42,16 +43,14 @@ public final class VanillaRecipeValidator {
 		Results results = new Results();
 		WorldClient world = Minecraft.getInstance().world;
 		RecipeManager recipeManager = world.getRecipeManager();
-		for (IRecipe recipe : recipeManager.getRecipes()) {
-			if (recipe instanceof FurnaceRecipe) {
-				FurnaceRecipe furnaceRecipe = (FurnaceRecipe) recipe;
-				if (furnaceRecipesValidator.isRecipeValid(furnaceRecipe)) {
-					results.furnaceRecipes.add(furnaceRecipe);
-				}
-			} else {
-				if (craftingRecipesValidator.isRecipeValid(recipe)) {
-					results.craftingRecipes.add(recipe);
-				}
+		for (IRecipe recipe : recipeManager.getRecipes(VanillaRecipeTypes.CRAFTING)) {
+			if (craftingRecipesValidator.isRecipeValid(recipe)) {
+				results.craftingRecipes.add(recipe);
+			}
+		}
+		for (FurnaceRecipe recipe : recipeManager.getRecipes(VanillaRecipeTypes.SMELTING)) {
+			if (furnaceRecipesValidator.isRecipeValid(recipe)) {
+				results.furnaceRecipes.add(recipe);
 			}
 		}
 		return results;
