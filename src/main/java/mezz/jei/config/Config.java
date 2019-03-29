@@ -147,24 +147,24 @@ public final class Config {
 		}
 	}
 
-	public static boolean isHideModeEnabled() {
-		return values.hideModeEnabled;
+	public static boolean isEditModeEnabled() {
+		return values.editModeEnabled;
 	}
 
-	public static void toggleHideModeEnabled() {
-		values.hideModeEnabled = !values.hideModeEnabled;
+	public static void toggleEditModeEnabled() {
+		values.editModeEnabled = !values.editModeEnabled;
 		if (worldConfig != null) {
 			NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
 			final String worldCategory = ServerInfo.getWorldUid(networkManager);
-			Property property = worldConfig.get(worldCategory, "editEnabled", defaultValues.hideModeEnabled);
-			property.set(values.hideModeEnabled);
+			Property property = worldConfig.get(worldCategory, "editEnabled", defaultValues.editModeEnabled);
+			property.set(values.editModeEnabled);
 
 			if (worldConfig.hasChanged()) {
 				worldConfig.save();
 			}
 		}
 
-		MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.hideModeEnabled));
+		MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.editModeEnabled));
 	}
 
 	public static boolean isDebugModeEnabled() {
@@ -488,12 +488,12 @@ public final class Config {
 		property.setComment(Translator.translateToLocal("config.jei.mode.cheatItemsEnabled.comment"));
 		values.cheatItemsEnabled = property.getBoolean();
 
-		property = worldConfig.get(worldCategory, "editEnabled", defaultValues.hideModeEnabled);
+		property = worldConfig.get(worldCategory, "editEnabled", defaultValues.editModeEnabled);
 		property.setLanguageKey("config.jei.mode.editEnabled");
 		property.setComment(Translator.translateToLocal("config.jei.mode.editEnabled.comment"));
-		values.hideModeEnabled = property.getBoolean();
+		values.editModeEnabled = property.getBoolean();
 		if (property.hasChanged()) {
-			MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.hideModeEnabled));
+			MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.editModeEnabled));
 		}
 
 		property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);

@@ -43,7 +43,7 @@ public class ItemStackFastRenderer extends IngredientRenderer<ItemStack> {
 	}
 
 	private void uncheckedRenderItemAndEffectIntoGUI() {
-		if (Config.isHideModeEnabled()) {
+		if (Config.isEditModeEnabled()) {
 			renderEditMode(element, area, padding);
 			GlStateManager.enableBlend();
 		}

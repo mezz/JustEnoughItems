@@ -59,7 +59,7 @@ public class IngredientRenderer<T> {
 	}
 
 	public void renderSlow() {
-		if (Config.isHideModeEnabled()) {
+		if (Config.isEditModeEnabled()) {
 			renderEditMode(element, area, padding);
 		}
 
@@ -126,7 +126,7 @@ public class IngredientRenderer<T> {
 			addColorSearchInfoToTooltip(minecraft, element, tooltip, maxWidth);
 		}
 
-		if (Config.isHideModeEnabled()) {
+		if (Config.isEditModeEnabled()) {
 			addEditModeInfoToTooltip(minecraft, tooltip, maxWidth);
 		}
 
