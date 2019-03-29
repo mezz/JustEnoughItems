@@ -2,6 +2,8 @@ package mezz.jei.recipes;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +39,7 @@ public class RecipeManager implements IRecipeManager {
 	private final Set<ResourceLocation> hiddenRecipeCategoryUids = new HashSet<>();
 	private final List<IRecipeCategory> recipeCategoriesVisibleCache = new ArrayList<>();
 	private final RecipeCategoryDataMap recipeCategoriesDataMap;
+	private final RecipeCategoryComparator recipeCategoryComparator;
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
 	private final List<RecipeManagerPluginSafeWrapper> plugins = new ArrayList<>();
@@ -51,7 +54,8 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 		this.ingredientManager = ingredientManager;
 
-		RecipeCategoryComparator recipeCategoryComparator = new RecipeCategoryComparator(recipeCategories);
+		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
+		this.recipeCategoryComparator = new RecipeCategoryComparator(recipeCategories);
 		this.recipeInputMap = new RecipeMap(recipeCategoryComparator, ingredientManager);
 		this.recipeOutputMap = new RecipeMap(recipeCategoryComparator, ingredientManager);
 
@@ -72,8 +76,6 @@ public class RecipeManager implements IRecipeManager {
 		for (IRecipeManagerPlugin plugin : plugins) {
 			this.plugins.add(new RecipeManagerPluginSafeWrapper(plugin));
 		}
-
-		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
 
 		addRecipes(recipes);
 	}
@@ -171,18 +173,20 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public ImmutableList<IRecipeCategory> getRecipeCategories(List<ResourceLocation> recipeCategoryUids) {
+	public List<IRecipeCategory> getRecipeCategories(List<ResourceLocation> recipeCategoryUids) {
 		ErrorUtil.checkNotNull(recipeCategoryUids, "recipeCategoryUids");
 
-		ImmutableList.Builder<IRecipeCategory> builder = ImmutableList.builder();
+		List<IRecipeCategory> categories = new ArrayList<>();
 		for (ResourceLocation recipeCategoryUid : recipeCategoryUids) {
 			RecipeCategoryData<?> recipeCategoryData = recipeCategoriesDataMap.get(recipeCategoryUid);
 			IRecipeCategory<?> recipeCategory = recipeCategoryData.getRecipeCategory();
 			if (getRecipeCategories().contains(recipeCategory)) {
-				builder.add(recipeCategory);
+				categories.add(recipeCategory);
 			}
 		}
-		return builder.build();
+		Comparator<IRecipeCategory> comparator = Comparator.comparing(IRecipeCategory::getUid, recipeCategoryComparator);
+		categories.sort(comparator);
+		return Collections.unmodifiableList(categories);
 	}
 
 	@Override

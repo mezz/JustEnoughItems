@@ -24,6 +24,7 @@ public class GuiIconButtonSmall extends GuiButton {
 		if (this.visible) {
 			Minecraft minecraft = Minecraft.getInstance();
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GlStateManager.enableAlphaTest();
 			this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 			int k = this.getHoverState(this.hovered);
 			Textures textures = Internal.getTextures();
@@ -53,7 +54,6 @@ public class GuiIconButtonSmall extends GuiButton {
 			double yOffset = y + (width - this.icon.getHeight()) / 2.0;
 			GlStateManager.pushMatrix();
 			GlStateManager.translated(xOffset, yOffset, 0);
-			GlStateManager.enableAlphaTest();
 			this.icon.draw();
 			GlStateManager.popMatrix();
 		}
