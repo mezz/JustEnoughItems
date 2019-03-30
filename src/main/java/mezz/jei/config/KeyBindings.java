@@ -17,6 +17,7 @@ public final class KeyBindings {
 	public static final KeyBinding toggleOverlay;
 	public static final KeyBinding focusSearch;
 	public static final KeyBinding toggleCheatMode;
+	public static final KeyBinding toggleEditMode;
 	public static final KeyBinding showRecipe;
 	public static final KeyBinding showUses;
 	public static final KeyBinding recipeBack;
@@ -31,6 +32,7 @@ public final class KeyBindings {
 			toggleOverlay = new KeyBinding("key.jei.toggleOverlay", KeyConflictContext.GUI, KeyModifier.CONTROL, Keyboard.KEY_O, categoryName),
 			focusSearch = new KeyBinding("key.jei.focusSearch", KeyConflictContext.GUI, KeyModifier.CONTROL, Keyboard.KEY_F, categoryName),
 			toggleCheatMode = new KeyBinding("key.jei.toggleCheatMode", KeyConflictContext.GUI, Keyboard.KEY_NONE, categoryName),
+			toggleEditMode = new KeyBinding("key.jei.toggleEditMode", KeyConflictContext.GUI, Keyboard.KEY_NONE, categoryName),
 			showRecipe = new KeyBinding("key.jei.showRecipe", KeyConflictContext.GUI, Keyboard.KEY_R, categoryName),
 			showUses = new KeyBinding("key.jei.showUses", KeyConflictContext.GUI, Keyboard.KEY_U, categoryName),
 			recipeBack = new KeyBinding("key.jei.recipeBack", KeyConflictContext.GUI, Keyboard.KEY_BACK, categoryName),

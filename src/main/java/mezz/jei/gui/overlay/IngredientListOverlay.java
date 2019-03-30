@@ -304,6 +304,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 				Config.toggleCheatItemsEnabled();
 				return true;
 			}
+			if (KeyBindings.toggleEditMode.isActiveAndMatches(eventKey)) {
+				Config.toggleEditModeEnabled();
+				return true;
+			}
 			if (KeyBindings.focusSearch.isActiveAndMatches(eventKey)) {
 				setKeyboardFocus(true);
 				return true;

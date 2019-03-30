@@ -117,7 +117,7 @@ public class InputHandler {
 
 	private boolean handleMouseClick(GuiScreen guiScreen, int mouseButton, int mouseX, int mouseY) {
 		IClickedIngredient<?> clicked = getFocusUnderMouseForClick(mouseX, mouseY);
-		if (Config.isHideModeEnabled() && clicked != null && handleClickEdit(clicked)) {
+		if (Config.isEditModeEnabled() && clicked != null && handleClickEdit(clicked)) {
 			return true;
 		}
 		if (ingredientListOverlay.handleMouseClicked(mouseX, mouseY, mouseButton)) {
