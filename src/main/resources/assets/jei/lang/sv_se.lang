@@ -45,7 +45,7 @@ key.jei.toggleCheatMode=Slå på/av fuskläge
 key.jei.toggleEditMode=Slå på/av redigeringsläge
 key.jei.previousPage=Visa föregående sida
 key.jei.nextPage=Visa nästa sida
-key.jei.bookmark=Lägg till/ta bort en bokmärkt ingrediens
+key.jei.bookmark=Lägg till/ta bort bokmärkt ingrediens
 key.jei.toggleBookmarkOverlay=Visa/dölj bokmärkta ingredienser
 
 # Config
