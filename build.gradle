@@ -67,11 +67,8 @@ dependencies {
 		name   : "forge",
 		version: "${project.mcversion}-${project.forgeversion}"
 	])
-	testCompile([
-		group: "junit",
-		name: "junit",
-		version: "4.12"
-	])
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 }
 
 minecraft {
@@ -191,4 +188,10 @@ idea {
 			excludeDirs.add(excludeDir)
 		}
 	}
+}
+
+test {
+	useJUnitPlatform()
+	include 'mezz/jei/**'
+	exclude 'mezz/jei/lib/**'
 }

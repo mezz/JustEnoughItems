@@ -16,9 +16,9 @@ cache:
 
 before_install: chmod +x gradlew
 install:
-  - ./gradlew setupCIWorkspace -S
+  - ./gradlew build
 script:
-  - ./gradlew build test
+  - ./gradlew test
 
 notifications:
   email: false
