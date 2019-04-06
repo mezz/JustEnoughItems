@@ -153,6 +153,11 @@ task sourcesJar(type: Jar) {
 
 task apiJar(type: Jar) {
 	classifier = "api"
+	from sourceSets.api.output
+
+	// TODO: when FG bug is fixed, remove allJava from the api jar.
+	// https://github.com/MinecraftForge/ForgeGradle/issues/369
+	// Gradle should be able to pull them from the -sources jar.
 	from sourceSets.api.allJava
 }
 
