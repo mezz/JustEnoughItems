@@ -5,7 +5,7 @@ import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.recipe.IStackHelper;
+import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;

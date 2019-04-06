@@ -1,10 +1,9 @@
-package mezz.jei.api.recipe;
+package mezz.jei.api.helpers;
 
 import javax.annotation.Nullable;
 
 import net.minecraft.item.ItemStack;
 
-import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 
 /**

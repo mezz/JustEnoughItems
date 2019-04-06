@@ -37,7 +37,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
-import mezz.jei.api.recipe.IStackHelper;
+import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;

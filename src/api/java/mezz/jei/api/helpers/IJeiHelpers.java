@@ -1,7 +1,6 @@
 package mezz.jei.api.helpers;
 
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.recipe.IStackHelper;
 
 /**
  * IJeiHelpers provides helpers and tools for addon mods.
