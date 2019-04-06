@@ -1,8 +1,8 @@
 package mezz.jei.test;
 
 import mezz.jei.gui.TickTimer;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TickTimerTest {
 	@Test
@@ -12,11 +12,11 @@ public class TickTimerTest {
 		for (int i = 0; i < 1000; i++) {
 			int expectedValue = (i % msPerCycle) * 50;
 			int value = TickTimer.getValue(0, i, maxValue, msPerCycle, false);
-			Assert.assertEquals(expectedValue, value);
+			Assertions.assertEquals(expectedValue, value);
 
 			int expectedDownValue = maxValue - expectedValue;
 			int downValue = TickTimer.getValue(0, i, maxValue, msPerCycle, true);
-			Assert.assertEquals(expectedDownValue, downValue);
+			Assertions.assertEquals(expectedDownValue, downValue);
 		}
 	}
 
@@ -28,11 +28,11 @@ public class TickTimerTest {
 		for (int i = 0; i < 1000; i++) {
 			int expectedValue = expectedValues[i % msPerCycle];
 			int value = TickTimer.getValue(0, i, maxValue, msPerCycle, false);
-			Assert.assertEquals(expectedValue, value);
+			Assertions.assertEquals(expectedValue, value);
 
 			int expectedDownValue = maxValue - expectedValue;
 			int downValue = TickTimer.getValue(0, i, maxValue, msPerCycle, true);
-			Assert.assertEquals(expectedDownValue, downValue);
+			Assertions.assertEquals(expectedDownValue, downValue);
 		}
 	}
 
@@ -44,11 +44,11 @@ public class TickTimerTest {
 		for (int i = 0; i < 1000; i++) {
 			int expectedValue = expectedValues[i % msPerCycle];
 			int value = TickTimer.getValue(0, i, maxValue, msPerCycle, false);
-			Assert.assertEquals(expectedValue, value);
+			Assertions.assertEquals(expectedValue, value);
 
 			int expectedDownValue = maxValue - expectedValue;
 			int downValue = TickTimer.getValue(0, i, maxValue, msPerCycle, true);
-			Assert.assertEquals(expectedDownValue, downValue);
+			Assertions.assertEquals(expectedDownValue, downValue);
 		}
 	}
 }
