@@ -16,7 +16,6 @@ import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionHelper;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.NonNullList;
@@ -47,8 +46,13 @@ public class BrewingRecipeMaker {
 
 		Set<BrewingRecipeWrapper> recipes = new HashSet<>();
 
-		addVanillaBrewingRecipes(recipes);
-		addModdedBrewingRecipes(recipes);
+		Collection<IBrewingRecipe> brewingRecipes = BrewingRecipeRegistry.getRecipes();
+		brewingRecipes.stream()
+			.filter(r -> r instanceof VanillaBrewingRecipe)
+			.map(r -> (VanillaBrewingRecipe) r)
+			.findFirst()
+			.ifPresent(vanillaBrewingRecipe -> addVanillaBrewingRecipes(recipes, vanillaBrewingRecipe));
+		addModdedBrewingRecipes(brewingRecipes, recipes);
 
 		List<BrewingRecipeWrapper> recipeList = new ArrayList<>(recipes);
 		recipeList.sort(Comparator.comparingInt(BrewingRecipeWrapper::getBrewingSteps));
@@ -56,7 +60,7 @@ public class BrewingRecipeMaker {
 		return recipeList;
 	}
 
-	private void addVanillaBrewingRecipes(Collection<BrewingRecipeWrapper> recipes) {
+	private void addVanillaBrewingRecipes(Collection<BrewingRecipeWrapper> recipes, VanillaBrewingRecipe vanillaBrewingRecipe) {
 		List<ItemStack> potionIngredients = ingredientRegistry.getPotionIngredients();
 		List<ItemStack> knownPotions = new ArrayList<>();
 
@@ -64,18 +68,18 @@ public class BrewingRecipeMaker {
 
 		boolean foundNewPotions;
 		do {
-			List<ItemStack> newPotions = getNewPotions(knownPotions, potionIngredients, recipes);
+			List<ItemStack> newPotions = getNewPotions(knownPotions, potionIngredients, recipes, vanillaBrewingRecipe);
 			foundNewPotions = !newPotions.isEmpty();
 			knownPotions.addAll(newPotions);
 		} while (foundNewPotions);
 	}
 
-	private List<ItemStack> getNewPotions(List<ItemStack> knownPotions, List<ItemStack> potionIngredients, Collection<BrewingRecipeWrapper> recipes) {
+	private List<ItemStack> getNewPotions(List<ItemStack> knownPotions, List<ItemStack> potionIngredients, Collection<BrewingRecipeWrapper> recipes, VanillaBrewingRecipe vanillaBrewingRecipe) {
 		List<ItemStack> newPotions = new ArrayList<>();
 		for (ItemStack potionInput : knownPotions) {
 			for (ItemStack potionIngredient : potionIngredients) {
-				ItemStack potionOutput = PotionHelper.doReaction(potionIngredient, potionInput.copy());
-				if (potionOutput.equals(potionInput)) {
+				ItemStack potionOutput = vanillaBrewingRecipe.getOutput(potionInput.copy(), potionIngredient);
+				if (potionOutput.isEmpty()) {
 					continue;
 				}
 
@@ -105,11 +109,6 @@ public class BrewingRecipeMaker {
 			}
 		}
 		return newPotions;
-	}
-
-	private void addModdedBrewingRecipes(Collection<BrewingRecipeWrapper> recipes) {
-		Collection<IBrewingRecipe> brewingRecipes = BrewingRecipeRegistry.getRecipes();
-		addModdedBrewingRecipes(brewingRecipes, recipes);
 	}
 
 	private void addModdedBrewingRecipes(Collection<IBrewingRecipe> brewingRecipes, Collection<BrewingRecipeWrapper> recipes) {
