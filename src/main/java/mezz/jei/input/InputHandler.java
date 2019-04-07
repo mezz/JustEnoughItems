@@ -19,7 +19,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.bookmarks.BookmarkList;
-import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.IngredientBlacklistType;
 import mezz.jei.config.KeyBindings;
@@ -37,7 +37,7 @@ public class InputHandler {
 	private final IngredientFilter ingredientFilter;
 	private final RecipesGui recipesGui;
 	private final IngredientListOverlay ingredientListOverlay;
-	private final IHideModeConfig hideModeConfig;
+	private final IEditModeConfig editModeConfig;
 	private final IWorldConfig worldConfig;
 	private final GuiScreenHelper guiScreenHelper;
 	private final LeftAreaDispatcher leftAreaDispatcher;
@@ -50,7 +50,7 @@ public class InputHandler {
 		IngredientFilter ingredientFilter,
 		IngredientManager ingredientManager,
 		IngredientListOverlay ingredientListOverlay,
-		IHideModeConfig hideModeConfig,
+		IEditModeConfig editModeConfig,
 		IWorldConfig worldConfig,
 		GuiScreenHelper guiScreenHelper,
 		LeftAreaDispatcher leftAreaDispatcher,
@@ -60,7 +60,7 @@ public class InputHandler {
 		this.ingredientFilter = ingredientFilter;
 		this.recipesGui = recipesGui;
 		this.ingredientListOverlay = ingredientListOverlay;
-		this.hideModeConfig = hideModeConfig;
+		this.editModeConfig = editModeConfig;
 		this.worldConfig = worldConfig;
 		this.guiScreenHelper = guiScreenHelper;
 		this.leftAreaDispatcher = leftAreaDispatcher;
@@ -149,7 +149,7 @@ public class InputHandler {
 
 	private boolean handleMouseClick(GuiScreen guiScreen, int mouseButton, double mouseX, double mouseY) {
 		IClickedIngredient<?> clicked = getFocusUnderMouseForClick(mouseX, mouseY);
-		if (worldConfig.isHideModeEnabled() && clicked != null && handleClickEdit(clicked)) {
+		if (worldConfig.isEditModeEnabled() && clicked != null && handleClickEdit(clicked)) {
 			return true;
 		}
 		if (ingredientListOverlay.handleMouseClicked(mouseX, mouseY, mouseButton)) {
@@ -225,10 +225,10 @@ public class InputHandler {
 
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 
-		if (hideModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
-			hideModeConfig.removeIngredientFromConfigBlacklist(ingredientFilter, ingredientManager, ingredient, blacklistType, ingredientHelper);
+		if (editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
+			editModeConfig.removeIngredientFromConfigBlacklist(ingredientFilter, ingredientManager, ingredient, blacklistType, ingredientHelper);
 		} else {
-			hideModeConfig.addIngredientToConfigBlacklist(ingredientFilter, ingredientManager, ingredient, blacklistType, ingredientHelper);
+			editModeConfig.addIngredientToConfigBlacklist(ingredientFilter, ingredientManager, ingredient, blacklistType, ingredientHelper);
 		}
 		clicked.onClickHandled();
 		return true;

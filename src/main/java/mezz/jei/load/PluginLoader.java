@@ -17,7 +17,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.BookmarkConfig;
-import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.ingredients.IIngredientListElement;
@@ -53,7 +53,7 @@ public class PluginLoader {
 	private final AdvancedRegistration advancedRegistration;
 	private final IngredientManager ingredientManager;
 	private final IIngredientFilterConfig ingredientFilterConfig;
-	private final IHideModeConfig hideModeConfig;
+	private final IEditModeConfig editModeConfig;
 	private final BookmarkConfig bookmarkConfig;
 	private final RecipeTransferRegistration recipeTransferRegistration;
 	private final GuiHandlerRegistration guiHandlerRegistration;
@@ -72,14 +72,14 @@ public class PluginLoader {
 		List<IModPlugin> plugins,
 		VanillaPlugin vanillaPlugin,
 		Textures textures,
-		IHideModeConfig hideModeConfig,
+		IEditModeConfig editModeConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
 		BookmarkConfig bookmarkConfig,
 		IModIdHelper modIdHelper,
 		boolean debugMode)
 	{
 		this.ingredientFilterConfig = ingredientFilterConfig;
-		this.hideModeConfig = hideModeConfig;
+		this.editModeConfig = editModeConfig;
 		this.bookmarkConfig = bookmarkConfig;
 		this.timer = new LoggedTimer();
 		this.modIdHelper = modIdHelper;
@@ -153,7 +153,7 @@ public class PluginLoader {
 			NonNullList<IIngredientListElement<?>> ingredientList = IngredientListElementFactory.createBaseList(ingredientManager);
 			timer.stop();
 			timer.start("Building ingredient filter");
-			ingredientFilter = new IngredientFilter(blacklist, ingredientFilterConfig, hideModeConfig, ingredientManager, modIdHelper);
+			ingredientFilter = new IngredientFilter(blacklist, ingredientFilterConfig, editModeConfig, ingredientManager, modIdHelper);
 			ingredientFilter.addIngredients(ingredientList, ingredientManager, modIdHelper);
 			Internal.setIngredientFilter(ingredientFilter);
 			timer.stop();

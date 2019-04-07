@@ -17,7 +17,7 @@ import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.collect.ListMultiMap;
 import mezz.jei.config.BookmarkConfig;
 import mezz.jei.config.ClientConfig;
-import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.GuiEventHandler;
@@ -53,7 +53,7 @@ public class JeiStarter {
 		List<IModPlugin> plugins,
 		Textures textures,
 		ClientConfig config,
-		IHideModeConfig hideModeConfig,
+		IEditModeConfig editModeConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IWorldConfig worldConfig,
 		BookmarkConfig bookmarkConfig,
@@ -68,7 +68,7 @@ public class JeiStarter {
 		JeiInternalPlugin jeiInternalPlugin = PluginHelper.getPluginWithClass(JeiInternalPlugin.class, plugins);
 		ErrorUtil.checkNotNull(vanillaPlugin, "vanilla plugin");
 		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
-		PluginLoader pluginLoader = new PluginLoader(plugins, vanillaPlugin, textures, hideModeConfig, ingredientFilterConfig, bookmarkConfig, modIdHelper, debugMode);
+		PluginLoader pluginLoader = new PluginLoader(plugins, vanillaPlugin, textures, editModeConfig, ingredientFilterConfig, bookmarkConfig, modIdHelper, debugMode);
 		GuiHandlerRegistration guiHandlerRegistration = pluginLoader.getGuiHandlerRegistration();
 		IngredientManager ingredientManager = pluginLoader.getIngredientManager();
 		IngredientFilter ingredientFilter = pluginLoader.getIngredientFilter();
@@ -84,10 +84,10 @@ public class JeiStarter {
 		Map<Class, IGuiScreenHandler> guiScreenHandlers = guiHandlerRegistration.getGuiScreenHandlers();
 		Map<Class, IGhostIngredientHandler> ghostIngredientHandlers = guiHandlerRegistration.getGhostIngredientHandlers();
 		GuiScreenHelper guiScreenHelper = new GuiScreenHelper(ingredientManager, globalGuiHandlers, guiHandlers, ghostIngredientHandlers, guiScreenHandlers);
-		IngredientGridWithNavigation ingredientListGrid = new IngredientGridWithNavigation(ingredientFilter, worldConfig, guiScreenHelper, hideModeConfig, ingredientFilterConfig, worldConfig, GridAlignment.LEFT);
+		IngredientGridWithNavigation ingredientListGrid = new IngredientGridWithNavigation(ingredientFilter, worldConfig, guiScreenHelper, editModeConfig, ingredientFilterConfig, worldConfig, GridAlignment.LEFT);
 		IngredientListOverlay ingredientListOverlay = new IngredientListOverlay(ingredientFilter, ingredientManager, guiScreenHelper, ingredientListGrid, worldConfig);
 
-		IngredientGridWithNavigation bookmarkListGrid = new IngredientGridWithNavigation(bookmarkList, () -> "", guiScreenHelper, hideModeConfig, ingredientFilterConfig, worldConfig, GridAlignment.RIGHT);
+		IngredientGridWithNavigation bookmarkListGrid = new IngredientGridWithNavigation(bookmarkList, () -> "", guiScreenHelper, editModeConfig, ingredientFilterConfig, worldConfig, GridAlignment.RIGHT);
 		BookmarkOverlay bookmarkOverlay = new BookmarkOverlay(bookmarkList, textures, bookmarkListGrid, worldConfig);
 		RecipesGui recipesGui = new RecipesGui(recipeManager, recipeTransferManager, ingredientManager);
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, worldConfig);
@@ -102,7 +102,7 @@ public class JeiStarter {
 
 		GuiEventHandler guiEventHandler = new GuiEventHandler(guiScreenHelper, leftAreaDispatcher, ingredientListOverlay);
 		Internal.setGuiEventHandler(guiEventHandler);
-		InputHandler inputHandler = new InputHandler(recipesGui, ingredientFilter, ingredientManager, ingredientListOverlay, hideModeConfig, worldConfig, guiScreenHelper, leftAreaDispatcher, bookmarkList);
+		InputHandler inputHandler = new InputHandler(recipesGui, ingredientFilter, ingredientManager, ingredientListOverlay, editModeConfig, worldConfig, guiScreenHelper, leftAreaDispatcher, bookmarkList);
 		Internal.setInputHandler(inputHandler);
 
 		started = true;

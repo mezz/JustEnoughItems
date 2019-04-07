@@ -4,9 +4,9 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.ingredients.IngredientFilter;
 
-public interface IHideModeConfig {
+public interface IEditModeConfig {
 	@Deprecated // goes in world config
-	boolean isHideModeEnabled();
+	boolean isEditModeEnabled();
 
 	<V> boolean isIngredientOnConfigBlacklist(V ingredient, IIngredientHelper<V> ingredientHelper);
 

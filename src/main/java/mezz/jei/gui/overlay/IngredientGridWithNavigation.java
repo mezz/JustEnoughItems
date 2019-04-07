@@ -13,7 +13,7 @@ import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.config.IFilterTextSource;
-import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
@@ -52,14 +52,14 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		IIngredientGridSource ingredientSource,
 		IFilterTextSource filterTextSource,
 		GuiScreenHelper guiScreenHelper,
-		IHideModeConfig hideModeConfig,
+		IEditModeConfig editModeConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IWorldConfig worldConfig,
 		GridAlignment alignment
 	) {
 		this.filterTextSource = filterTextSource;
 		this.worldConfig = worldConfig;
-		this.ingredientGrid = new IngredientGrid(alignment, hideModeConfig, ingredientFilterConfig, worldConfig);
+		this.ingredientGrid = new IngredientGrid(alignment, editModeConfig, ingredientFilterConfig, worldConfig);
 		this.ingredientSource = ingredientSource;
 		this.guiScreenHelper = guiScreenHelper;
 		this.pageDelegate = new IngredientGridPaged();

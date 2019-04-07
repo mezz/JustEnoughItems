@@ -18,18 +18,18 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class HideModeConfig implements IHideModeConfig {
+public class EditModeConfig implements IEditModeConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final boolean defaultHideModeEnabled = false;
+	private static final boolean defaultEditModeEnabled = false;
 	private static final String[] defaultBlacklist = new String[]{};
 
-	private boolean hideModeEnabled = defaultHideModeEnabled;
+	private boolean editModeEnabled = defaultEditModeEnabled;
 	private final Set<String> blacklist = new LinkedHashSet<>();
 
 	@Nullable
 	private final File blacklistConfigFile;
 
-	public HideModeConfig(@Nullable File jeiConfigurationDir) {
+	public EditModeConfig(@Nullable File jeiConfigurationDir) {
 		Collections.addAll(blacklist, defaultBlacklist);
 		if (jeiConfigurationDir != null) {
 			blacklistConfigFile = new File(jeiConfigurationDir, "blacklist.cfg");
@@ -40,8 +40,8 @@ public class HideModeConfig implements IHideModeConfig {
 	}
 
 	@Override
-	public boolean isHideModeEnabled() {
-		return hideModeEnabled;
+	public boolean isEditModeEnabled() {
+		return editModeEnabled;
 	}
 
 	private void loadBlacklistConfig() {

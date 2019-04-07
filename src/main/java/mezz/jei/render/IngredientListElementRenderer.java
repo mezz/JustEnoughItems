@@ -20,7 +20,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.config.Constants;
-import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.SearchMode;
@@ -65,9 +65,9 @@ public class IngredientListElementRenderer<T> {
 		return area;
 	}
 
-	public void renderSlow(IHideModeConfig hideModeConfig, IWorldConfig worldConfig) {
-		if (worldConfig.isHideModeEnabled()) {
-			renderEditMode(area, padding, hideModeConfig);
+	public void renderSlow(IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
+		if (worldConfig.isEditModeEnabled()) {
+			renderEditMode(area, padding, editModeConfig);
 		}
 
 		try {
@@ -98,10 +98,10 @@ public class IngredientListElementRenderer<T> {
 		TooltipRenderer.drawHoveringText(ingredient, tooltip, mouseX, mouseY, fontRenderer);
 	}
 
-	protected void renderEditMode(Rectangle2d area, int padding, IHideModeConfig hideModeConfig) {
+	protected void renderEditMode(Rectangle2d area, int padding, IEditModeConfig editModeConfig) {
 		T ingredient = element.getIngredient();
 
-		if (hideModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
+		if (editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
 			GuiScreen.drawRect(area.getX() + padding, area.getY() + padding, area.getX() + 16 + padding, area.getY() + 16 + padding, BLACKLIST_COLOR);
 			GlStateManager.color4f(1f, 1f, 1f, 1f);
 		}
@@ -125,7 +125,7 @@ public class IngredientListElementRenderer<T> {
 			addColorSearchInfoToTooltip(minecraft, tooltip, maxWidth);
 		}
 
-		if (worldConfig.isHideModeEnabled()) {
+		if (worldConfig.isEditModeEnabled()) {
 			addEditModeInfoToTooltip(minecraft, tooltip, maxWidth);
 		}
 

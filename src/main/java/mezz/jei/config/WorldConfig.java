@@ -162,8 +162,26 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 	}
 
 	@Override
-	public boolean isHideModeEnabled() {
-		return values.hideModeEnabled;
+	public boolean isEditModeEnabled() {
+		return values.editModeEnabled;
+	}
+
+	@Override
+	public void toggleEditModeEnabled() {
+		values.editModeEnabled = !values.editModeEnabled;
+
+		NetHandlerPlayClient connection = Minecraft.getInstance().getConnection();
+		if (connection != null) {
+			NetworkManager networkManager = connection.getNetworkManager();
+			final String worldCategory = ServerInfo.getWorldUid(networkManager);
+			Property property = worldConfig.get(worldCategory, "editModeEnabled", defaultValues.editModeEnabled);
+			property.set(values.editModeEnabled);
+
+			if (worldConfig.hasChanged()) {
+				// TODO 1.13
+//					worldConfig.save();
+			}
+		}
 	}
 
 	public void onWorldSave() {
@@ -197,12 +215,12 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 		property.setComment(Translator.translateToLocal("config.jei.mode.cheatItemsEnabled.comment"));
 		values.cheatItemsEnabled = property.getBoolean();
 
-		property = worldConfig.get(worldCategory, "editEnabled", defaultValues.hideModeEnabled);
+		property = worldConfig.get(worldCategory, "editEnabled", defaultValues.editModeEnabled);
 		property.setLanguageKey("config.jei.mode.editEnabled");
 		property.setComment(Translator.translateToLocal("config.jei.mode.editEnabled.comment"));
-		values.hideModeEnabled = property.getBoolean();
+		values.editModeEnabled = property.getBoolean();
 		if (property.hasChanged()) {
-			EventBusHelper.post(new EditModeToggleEvent(values.hideModeEnabled));
+			EventBusHelper.post(new EditModeToggleEvent(values.editModeEnabled));
 		}
 
 		property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);

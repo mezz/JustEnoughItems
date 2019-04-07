@@ -21,8 +21,8 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.config.BookmarkConfig;
 import mezz.jei.config.ClientConfig;
-import mezz.jei.config.HideModeConfig;
-import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.EditModeConfig;
+import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IngredientFilterConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.ModIdFormattingConfig;
@@ -51,7 +51,7 @@ public class ClientLifecycleHandler {
 	private final IngredientFilterConfig ingredientFilterConfig;
 	private final WorldConfig worldConfig;
 	private final IModIdHelper modIdHelper;
-	private final IHideModeConfig hideModeConfig;
+	private final IEditModeConfig editModeConfig;
 
 	public ClientLifecycleHandler(NetworkHandler networkHandler) {
 		File jeiConfigurationDir = new File(FMLPaths.CONFIGDIR.get().toFile(), ModIds.JEI_ID);
@@ -71,7 +71,7 @@ public class ClientLifecycleHandler {
 		modIdFormattingConfig = new ModIdFormattingConfig(clientConfig.getConfig());
 		modIdHelper = new ForgeModIdHelper(clientConfig, modIdFormattingConfig);
 		ErrorUtil.setModIdHelper(modIdHelper);
-		hideModeConfig = new HideModeConfig(jeiConfigurationDir);
+		editModeConfig = new EditModeConfig(jeiConfigurationDir);
 
 		KeyBindings.init();
 
@@ -131,11 +131,11 @@ public class ClientLifecycleHandler {
 			if (this.starter.hasStarted()) {
 				LOGGER.info("Restarting JEI.");
 				Preconditions.checkNotNull(textures);
-				this.starter.start(plugins, textures, clientConfig, hideModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
+				this.starter.start(plugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
 			}
 		});
 
 		Preconditions.checkNotNull(textures);
-		this.starter.start(plugins, textures, clientConfig, hideModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
+		this.starter.start(plugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
 	}
 }

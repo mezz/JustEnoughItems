@@ -13,7 +13,7 @@ import net.minecraft.item.ItemStack;
 
 import mezz.jei.Internal;
 import mezz.jei.config.ClientConfig;
-import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.TooltipRenderer;
@@ -48,9 +48,9 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	private final IIngredientFilterConfig ingredientFilterConfig;
 	private final IWorldConfig worldConfig;
 
-	public IngredientGrid(GridAlignment alignment, IHideModeConfig hideModeConfig, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig) {
+	public IngredientGrid(GridAlignment alignment, IEditModeConfig editModeConfig, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig) {
 		this.alignment = alignment;
-		this.guiIngredientSlots = new IngredientListBatchRenderer(hideModeConfig, worldConfig);
+		this.guiIngredientSlots = new IngredientListBatchRenderer(editModeConfig, worldConfig);
 		this.ingredientFilterConfig = ingredientFilterConfig;
 		this.worldConfig = worldConfig;
 	}

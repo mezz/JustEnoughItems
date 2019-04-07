@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.ingredients.ISlowRenderItem;
-import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.input.ClickedIngredient;
@@ -33,13 +33,13 @@ public class IngredientListBatchRenderer {
 	private final List<ItemStackFastRenderer> renderItems2d = new ArrayList<>();
 	private final List<ItemStackFastRenderer> renderItems3d = new ArrayList<>();
 	private final List<IngredientListElementRenderer> renderOther = new ArrayList<>();
-	private final IHideModeConfig hideModeConfig;
+	private final IEditModeConfig editModeConfig;
 	private final IWorldConfig worldConfig;
 
 	private int blocked = 0;
 
-	public IngredientListBatchRenderer(IHideModeConfig hideModeConfig, IWorldConfig worldConfig) {
-		this.hideModeConfig = hideModeConfig;
+	public IngredientListBatchRenderer(IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
+		this.editModeConfig = editModeConfig;
 		this.worldConfig = worldConfig;
 	}
 
@@ -166,13 +166,13 @@ public class IngredientListBatchRenderer {
 		// 3d Items
 		GlStateManager.enableLighting();
 		for (ItemStackFastRenderer slot : renderItems3d) {
-			slot.renderItemAndEffectIntoGUI(hideModeConfig, worldConfig);
+			slot.renderItemAndEffectIntoGUI(editModeConfig, worldConfig);
 		}
 
 		// 2d Items
 		GlStateManager.disableLighting();
 		for (ItemStackFastRenderer slot : renderItems2d) {
-			slot.renderItemAndEffectIntoGUI(hideModeConfig, worldConfig);
+			slot.renderItemAndEffectIntoGUI(editModeConfig, worldConfig);
 		}
 
 		GlStateManager.disableAlphaTest();
@@ -198,7 +198,7 @@ public class IngredientListBatchRenderer {
 
 		// other rendering
 		for (IngredientListElementRenderer slot : renderOther) {
-			slot.renderSlow(hideModeConfig, worldConfig);
+			slot.renderSlow(editModeConfig, worldConfig);
 		}
 
 		RenderHelper.disableStandardItemLighting();

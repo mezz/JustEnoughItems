@@ -5,7 +5,9 @@ public interface IWorldConfig extends IFilterTextSource {
 
 	void toggleOverlayEnabled();
 
-	boolean isHideModeEnabled();
+	boolean isEditModeEnabled();
+
+	void toggleEditModeEnabled();
 
 	boolean isCheatItemsEnabled();
 

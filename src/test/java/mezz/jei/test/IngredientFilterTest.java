@@ -8,8 +8,8 @@ import java.util.List;
 import net.minecraft.util.NonNullList;
 
 import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.config.HideModeConfig;
-import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.EditModeConfig;
+import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IngredientBlacklistType;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
@@ -37,7 +37,7 @@ public class IngredientFilterTest {
 	@Nullable
 	private NonNullList<IIngredientListElement<?>> baseList;
 	@Nullable
-	private IHideModeConfig hideModeConfig;
+	private IEditModeConfig editModeConfig;
 	@Nullable
 	private IModIdHelper modIdHelper;
 
@@ -58,10 +58,10 @@ public class IngredientFilterTest {
 
 		this.baseList = IngredientListElementFactory.createBaseList(ingredientManager);
 
-		this.hideModeConfig = new HideModeConfig(null);
+		this.editModeConfig = new EditModeConfig(null);
 
 		TestIngredientFilterConfig ingredientFilterConfig = new TestIngredientFilterConfig();
-		this.ingredientFilter = new IngredientFilter(blacklist, ingredientFilterConfig, hideModeConfig, ingredientManager, modIdHelper);
+		this.ingredientFilter = new IngredientFilter(blacklist, ingredientFilterConfig, editModeConfig, ingredientManager, modIdHelper);
 	}
 
 	@Test
@@ -123,14 +123,14 @@ public class IngredientFilterTest {
 		Assertions.assertNotNull(ingredientManager);
 		Assertions.assertNotNull(baseList);
 		Assertions.assertNotNull(ingredientManager);
-		Assertions.assertNotNull(hideModeConfig);
+		Assertions.assertNotNull(editModeConfig);
 		Assertions.assertNotNull(modIdHelper);
 
 		ingredientFilter.addIngredients(baseList, ingredientManager, modIdHelper);
 
 		TestIngredient blacklistedIngredient = (TestIngredient) baseList.get(0).getIngredient();
 		TestIngredientHelper testIngredientHelper = new TestIngredientHelper();
-		hideModeConfig.addIngredientToConfigBlacklist(ingredientFilter, ingredientManager, blacklistedIngredient, IngredientBlacklistType.ITEM, testIngredientHelper);
+		editModeConfig.addIngredientToConfigBlacklist(ingredientFilter, ingredientManager, blacklistedIngredient, IngredientBlacklistType.ITEM, testIngredientHelper);
 
 		ingredientFilter.updateHidden();
 

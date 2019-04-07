@@ -25,7 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.config.SearchMode;
 import mezz.jei.events.EditModeToggleEvent;
@@ -44,7 +44,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
 	private final IngredientBlacklistInternal blacklist;
-	private final IHideModeConfig hideModeConfig;
+	private final IEditModeConfig editModeConfig;
 	private final IIngredientManager ingredientManager;
 	/**
 	 * indexed list of ingredients for use with the suffix trees
@@ -64,12 +64,12 @@ public class IngredientFilter implements IIngredientGridSource {
 	public IngredientFilter(
 		IngredientBlacklistInternal blacklist,
 		IIngredientFilterConfig config,
-		IHideModeConfig hideModeConfig,
+		IEditModeConfig editModeConfig,
 		IIngredientManager ingredientManager,
 		IModIdHelper modIdHelper
 	) {
 		this.blacklist = blacklist;
-		this.hideModeConfig = hideModeConfig;
+		this.editModeConfig = editModeConfig;
 		this.ingredientManager = ingredientManager;
 		this.elementList = NonNullList.create();
 		this.searchTree = new GeneralizedSuffixTree();
@@ -198,7 +198,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		boolean visible = !blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper) &&
 			ingredientHelper.isIngredientOnServer(ingredient) &&
-			(hideModeConfig.isHideModeEnabled() || !hideModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
+			(editModeConfig.isEditModeEnabled() || !editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
 		if (element.isVisible() != visible) {
 			element.setVisible(visible);
 			this.filterCached = null;

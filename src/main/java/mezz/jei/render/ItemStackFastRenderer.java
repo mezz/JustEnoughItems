@@ -18,7 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 
-import mezz.jei.config.IHideModeConfig;
+import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.util.ErrorUtil;
@@ -30,9 +30,9 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		super(itemStackElement);
 	}
 
-	public void renderItemAndEffectIntoGUI(IHideModeConfig hideModeConfig, IWorldConfig worldConfig) {
+	public void renderItemAndEffectIntoGUI(IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
 		try {
-			uncheckedRenderItemAndEffectIntoGUI(hideModeConfig, worldConfig);
+			uncheckedRenderItemAndEffectIntoGUI(editModeConfig, worldConfig);
 		} catch (RuntimeException | LinkageError e) {
 			throw ErrorUtil.createRenderIngredientException(e, element.getIngredient());
 		}
@@ -46,9 +46,9 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		return bakedModel.getOverrides().getModelWithOverrides(bakedModel, itemStack, null, null);
 	}
 
-	private void uncheckedRenderItemAndEffectIntoGUI(IHideModeConfig hideModeConfig, IWorldConfig worldConfig) {
-		if (worldConfig.isHideModeEnabled()) {
-			renderEditMode(area, padding, hideModeConfig);
+	private void uncheckedRenderItemAndEffectIntoGUI(IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
+		if (worldConfig.isEditModeEnabled()) {
+			renderEditMode(area, padding, editModeConfig);
 			GlStateManager.enableBlend();
 		}
 
