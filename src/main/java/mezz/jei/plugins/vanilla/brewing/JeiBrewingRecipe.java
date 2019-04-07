@@ -13,7 +13,7 @@ import net.minecraft.util.ResourceLocation;
 import com.google.common.base.Objects;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 
-public class BrewingRecipe implements IJeiBrewingRecipe {
+public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 	private final List<ItemStack> ingredients;
 	private final ItemStack potionInput;
 	private final ItemStack potionOutput;
@@ -21,7 +21,7 @@ public class BrewingRecipe implements IJeiBrewingRecipe {
 	private final List<List<ItemStack>> inputs;
 	private final int hashCode;
 
-	public BrewingRecipe(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput, BrewingRecipeUtil brewingRecipeUtil) {
+	public JeiBrewingRecipe(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput, BrewingRecipeUtil brewingRecipeUtil) {
 		this.ingredients = ingredients;
 		this.potionInput = potionInput;
 		this.potionOutput = potionOutput;
@@ -54,10 +54,10 @@ public class BrewingRecipe implements IJeiBrewingRecipe {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof BrewingRecipe)) {
+		if (!(obj instanceof JeiBrewingRecipe)) {
 			return false;
 		}
-		BrewingRecipe other = (BrewingRecipe) obj;
+		JeiBrewingRecipe other = (JeiBrewingRecipe) obj;
 
 		if (!arePotionsEqual(other.potionInput, potionInput)) {
 			return false;

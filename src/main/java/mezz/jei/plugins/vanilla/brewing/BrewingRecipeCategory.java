@@ -19,7 +19,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
 
-public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipe> {
+public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> {
 
 	private static final int brewPotionSlot1 = 0;
 	private static final int brewPotionSlot2 = 1;
@@ -61,8 +61,8 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipe> {
 	}
 
 	@Override
-	public Class<? extends BrewingRecipe> getRecipeClass() {
-		return BrewingRecipe.class;
+	public Class<? extends JeiBrewingRecipe> getRecipeClass() {
+		return JeiBrewingRecipe.class;
 	}
 
 	@Override
@@ -81,13 +81,13 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipe> {
 	}
 
 	@Override
-	public void setIngredients(BrewingRecipe recipe, IIngredients ingredients) {
+	public void setIngredients(JeiBrewingRecipe recipe, IIngredients ingredients) {
 		ingredients.setInputLists(VanillaTypes.ITEM, recipe.getInputs());
 		ingredients.setOutput(VanillaTypes.ITEM, recipe.getPotionOutput());
 	}
 
 	@Override
-	public void draw(BrewingRecipe recipe, double mouseX, double mouseY) {
+	public void draw(JeiBrewingRecipe recipe, double mouseX, double mouseY) {
 		blazeHeat.draw(5, 30);
 		bubbles.draw(8, 0);
 		arrow.draw(42, 2);
@@ -101,7 +101,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<BrewingRecipe> {
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, BrewingRecipe recipe, IIngredients ingredients) {
+	public void setRecipe(IRecipeLayout recipeLayout, JeiBrewingRecipe recipe, IIngredients ingredients) {
 		IGuiItemStackGroup itemStacks = recipeLayout.getItemStacks();
 
 		itemStacks.init(brewPotionSlot1, true, 0, 36);
