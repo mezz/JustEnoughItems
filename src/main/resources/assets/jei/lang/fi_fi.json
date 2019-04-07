@@ -89,8 +89,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI:n tavaralistan muokkaustila:",
-  "gui.jei.editMode.description.hide": "Piilota %CTRL-klikkaamalla.",
-  "gui.jei.editMode.description.hide.wild": "Piilota jokerimerkin perusteella %CTRL-klikkaamalla hiiren oikealla painikkeella.",
+  "gui.jei.editMode.description.hide": "Piilota %s-klikkaamalla.",
+  "gui.jei.editMode.description.hide.wild": "Piilota jokerimerkin perusteella %s-klikkaamalla hiiren oikealla painikkeella.",
 
   "_comment": "PC/Linux Control Key",
   "key.jei.ctrl": "CTRL",

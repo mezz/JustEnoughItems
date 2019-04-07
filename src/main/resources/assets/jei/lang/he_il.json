@@ -89,8 +89,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI מצב עריכת רשימת חפצים:",
-  "gui.jei.editMode.description.hide": "%CTRL-לחץ כדי להחביא.",
-  "gui.jei.editMode.description.hide.wild": "%CTRL-right-click כדי להחביא עם wildcard.",
+  "gui.jei.editMode.description.hide": "%s-לחץ כדי להחביא.",
+  "gui.jei.editMode.description.hide.wild": "%s-right-click כדי להחביא עם wildcard.",
 
   "_comment": "PC/Linux Control Key",
   "key.jei.ctrl": "CTRL",

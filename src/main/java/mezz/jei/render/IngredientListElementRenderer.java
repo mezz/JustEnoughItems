@@ -151,10 +151,10 @@ public class IngredientListElementRenderer<T> {
 
 		String controlKeyLocalization = Translator.translateToLocal(Minecraft.IS_RUNNING_ON_MAC ? "key.jei.ctrl.mac" : "key.jei.ctrl");
 
-		String hideMessage = TextFormatting.GRAY + Translator.translateToLocal("gui.jei.editMode.description.hide").replace("%CTRL", controlKeyLocalization);
+		String hideMessage = TextFormatting.GRAY + Translator.translateToLocalFormatted("gui.jei.editMode.description.hide", controlKeyLocalization);
 		tooltip.addAll(minecraft.fontRenderer.listFormattedStringToWidth(hideMessage, maxWidth));
 
-		String hideWildMessage = TextFormatting.GRAY + Translator.translateToLocal("gui.jei.editMode.description.hide.wild").replace("%CTRL", controlKeyLocalization);
+		String hideWildMessage = TextFormatting.GRAY + Translator.translateToLocalFormatted("gui.jei.editMode.description.hide.wild", controlKeyLocalization);
 		tooltip.addAll(minecraft.fontRenderer.listFormattedStringToWidth(hideWildMessage, maxWidth));
 	}
 

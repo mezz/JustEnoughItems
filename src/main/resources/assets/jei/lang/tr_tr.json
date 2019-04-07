@@ -89,8 +89,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Eşya Listesi Düzenleme Modu:",
-  "gui.jei.editMode.description.hide": "Gizle (%CTRL-click).",
-  "gui.jei.editMode.description.hide.wild": "Joker ile Gizle (%CTRL-right-click).",
+  "gui.jei.editMode.description.hide": "Gizle (%s-click).",
+  "gui.jei.editMode.description.hide.wild": "Joker ile Gizle (%s-right-click).",
 
   "_comment": "PC/Linux Control Key",
   "key.jei.ctrl": "CTRL",

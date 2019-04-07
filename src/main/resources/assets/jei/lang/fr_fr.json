@@ -99,8 +99,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Mode édition de la liste d'objets :",
-  "gui.jei.editMode.description.hide": "Cacher (%CTRL-clic).",
-  "gui.jei.editMode.description.hide.wild": "Cacher par caractères génériques (%CTRL-clic-droit).",
+  "gui.jei.editMode.description.hide": "Cacher (%s-clic).",
+  "gui.jei.editMode.description.hide.wild": "Cacher par caractères génériques (%s-clic-droit).",
 
   "_comment": "PC/Linux Control Key",
   "key.jei.ctrl": "CTRL",

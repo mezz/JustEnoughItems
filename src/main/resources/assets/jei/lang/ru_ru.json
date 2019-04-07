@@ -99,8 +99,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "Режим редактирования списка JEI:",
-  "gui.jei.editMode.description.hide": "%CTRL+ЛКМ, чтобы скрыть.",
-  "gui.jei.editMode.description.hide.wild": "%CTRL+ПКМ, чтобы скрыть по шаблону.",
+  "gui.jei.editMode.description.hide": "%s+ЛКМ, чтобы скрыть.",
+  "gui.jei.editMode.description.hide.wild": "%s+ПКМ, чтобы скрыть по шаблону.",
 
   "_comment": "PC/Linux Control Key",
   "key.jei.ctrl": "CTRL",

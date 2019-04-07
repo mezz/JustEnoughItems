@@ -89,8 +89,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI 아이템 목록 수정 모드",
-  "gui.jei.editMode.description.hide": "숨기려면 %CTRL-클릭하세요",
-  "gui.jei.editMode.description.hide.wild": "와일드카드로 숨기려면 %CTRL-우클릭하세요",
+  "gui.jei.editMode.description.hide": "숨기려면 %s-클릭하세요",
+  "gui.jei.editMode.description.hide.wild": "와일드카드로 숨기려면 %s-우클릭하세요",
 
   "_comment": "PC/Linux Control Key",
   "key.jei.ctrl": "CTRL",
