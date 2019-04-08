@@ -6,6 +6,7 @@ import java.util.List;
 
 import net.minecraftforge.common.crafting.IShapedRecipe;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.client.gui.GuiRepair;
 import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.client.gui.inventory.GuiCrafting;
@@ -36,8 +37,8 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.helpers.IStackHelper;
+import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
@@ -99,8 +100,8 @@ public class VanillaPlugin implements IModPlugin {
 			for (INBTBase nbt : enchantments) {
 				if (nbt instanceof NBTTagCompound) {
 					NBTTagCompound nbttagcompound = (NBTTagCompound) nbt;
-					int j = nbttagcompound.getShort("id");
-					Enchantment enchantment = Enchantment.getEnchantmentByID(j);
+					String id = nbttagcompound.getString("id");
+					Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(ResourceLocation.makeResourceLocation(id));
 					if (enchantment != null) {
 						String enchantmentUid = enchantment.getName() + ".lvl" + nbttagcompound.getShort("lvl");
 						enchantmentNames.add(enchantmentUid);
