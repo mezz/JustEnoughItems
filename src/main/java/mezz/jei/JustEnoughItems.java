@@ -19,7 +19,7 @@ import mezz.jei.startup.ProxyCommon;
 	version = Constants.VERSION,
 	guiFactory = "mezz.jei.config.JEIModGuiFactory",
 	acceptedMinecraftVersions = "[1.12.2,1.13)",
-	dependencies = "required-after:forge@[14.23.1.2594,);")
+	dependencies = "required-after:forge@[14.23.5.2816,);")
 public class JustEnoughItems {
 
 	@SuppressWarnings("NullableProblems")

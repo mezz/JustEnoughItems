@@ -18,6 +18,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
+import net.minecraftforge.common.IRarity;
 
 public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	@Override
@@ -47,9 +48,9 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 			return list;
 		}
 
-		EnumRarity rarity;
+		IRarity rarity;
 		try {
-			rarity = ingredient.getRarity();
+			rarity = ingredient.getItem().getForgeRarity(ingredient);
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
 			Log.get().error("Failed to get rarity: {}", itemStackInfo, e);
@@ -58,7 +59,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 
 		for (int k = 0; k < list.size(); ++k) {
 			if (k == 0) {
-				list.set(k, rarity.color + list.get(k));
+				list.set(k, rarity.getColor() + list.get(k));
 			} else {
 				list.set(k, TextFormatting.GRAY + list.get(k));
 			}
