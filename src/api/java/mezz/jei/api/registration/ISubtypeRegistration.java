@@ -13,7 +13,7 @@ import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 public interface ISubtypeRegistration {
 	/**
 	 * Add an interpreter to compare item subtypes.
-	 * This interpreter should account for meta, nbt, and anything else that's relevant to differentiating the item's subtypes.
+	 * This interpreter should account for nbt and anything else that's relevant to differentiating the item's subtypes.
 	 *
 	 * @param item        the item that has subtypes.
 	 * @param interpreter the interpreter for the item.

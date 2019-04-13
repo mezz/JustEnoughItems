@@ -11,7 +11,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**
- * An extension to a recipe category with methods that allow JEI can make sense of it.
+ * An extension to a recipe category with methods that allow JEI to make sense of it.
  * Plugins implement these for recipe categories that support it, for each type of recipe they have.
  */
 public interface IRecipeCategoryExtension {

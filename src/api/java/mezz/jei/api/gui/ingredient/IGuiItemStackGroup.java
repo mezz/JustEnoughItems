@@ -10,7 +10,6 @@ import mezz.jei.api.gui.IRecipeLayout;
  * IGuiItemStackGroup displays ItemStacks in a gui.
  *
  * If multiple ItemStacks are set, they will be displayed in rotation.
- * ItemStacks with subtypes and wildcard metadata will be displayed as multiple ItemStacks.
  *
  * Get an instance from {@link IRecipeLayout#getItemStacks()}.
  */
