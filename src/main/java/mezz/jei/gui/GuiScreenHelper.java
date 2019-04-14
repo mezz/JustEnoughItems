@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -70,7 +71,10 @@ public class GuiScreenHelper {
 	public boolean updateGuiExclusionAreas() {
 		Set<Rectangle> guiAreas = getPluginsExclusionAreas();
 		if (!guiAreas.equals(this.guiExclusionAreas)) {
-			this.guiExclusionAreas = guiAreas;
+			// make a defensive copy because Rectangle is mutable
+			this.guiExclusionAreas = guiAreas.stream()
+				.map(Rectangle::new)
+				.collect(Collectors.toSet());
 			return true;
 		}
 		return false;
