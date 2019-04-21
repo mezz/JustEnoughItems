@@ -1,5 +1,6 @@
 package mezz.jei.gui;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,9 +19,16 @@ import mezz.jei.events.OverlayToggleEvent;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.input.MouseUtil;
+import mezz.jei.util.LimitedLogger;
 import mezz.jei.util.Translator;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class GuiEventHandler {
+	private static final Logger LOGGER = LogManager.getLogger();
+	private static final LimitedLogger missingBackgroundLogger = new LimitedLogger(LOGGER, Duration.ofHours(1));
+
 	private final IngredientListOverlay ingredientListOverlay;
 	private final GuiScreenHelper guiScreenHelper;
 	private final LeftAreaDispatcher leftAreaDispatcher;
@@ -89,6 +97,10 @@ public class GuiEventHandler {
 		leftAreaDispatcher.updateScreen(gui, false);
 
 		if (!drawnOnBackground) {
+			if (gui instanceof GuiContainer) {
+				String guiName = gui.getClass().getName();
+				missingBackgroundLogger.log(Level.WARN, guiName, "GUI did not draw the dark background layer behind itself, this may result in display issues: {}", guiName);
+			}
 			ingredientListOverlay.drawScreen(gui.mc, event.getMouseX(), event.getMouseY(), gui.mc.getRenderPartialTicks());
 			leftAreaDispatcher.drawScreen(gui.mc, event.getMouseX(), event.getMouseY(), gui.mc.getRenderPartialTicks());
 		}
