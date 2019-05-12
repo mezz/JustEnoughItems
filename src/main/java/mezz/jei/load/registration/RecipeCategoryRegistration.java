@@ -3,10 +3,8 @@ package mezz.jei.load.registration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import net.minecraft.util.ResourceLocation;
 
@@ -21,7 +19,6 @@ import mezz.jei.util.ErrorUtil;
 public class RecipeCategoryRegistration implements IRecipeCategoryRegistration {
 	private final List<IRecipeCategory> recipeCategories = new ArrayList<>();
 	private final Map<ResourceLocation, IRecipeCategory> recipeCategoriesByUid = new HashMap<>();
-	private final Set<Class<?>> recipeClasses = new HashSet<>();
 	private final IJeiHelpers jeiHelpers;
 
 	public RecipeCategoryRegistration(IJeiHelpers jeiHelpers) {
@@ -37,9 +34,6 @@ public class RecipeCategoryRegistration implements IRecipeCategoryRegistration {
 			Preconditions.checkNotNull(uid, "Recipe category UID cannot be null %s", recipeCategory);
 			Class<?> recipeClass = recipeCategory.getRecipeClass();
 			Preconditions.checkNotNull(recipeClass, "Recipe class cannot be null %s", recipeCategory);
-			if (!recipeClasses.add(recipeClass)) {
-				throw new IllegalArgumentException("A RecipeCategory for recipe class \"" + recipeClass + "\" has already been registered.");
-			}
 			if (recipeCategoriesByUid.containsKey(uid)) {
 				throw new IllegalArgumentException("A RecipeCategory with UID \"" + uid + "\" has already been registered.");
 			} else {
