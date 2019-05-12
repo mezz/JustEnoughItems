@@ -75,7 +75,7 @@ public class GuiScreenHelper {
 		if (!guiAreas.equals(this.guiExclusionAreas)) {
 			// make a defensive copy because Rectangle is mutable
 			this.guiExclusionAreas = guiAreas.stream()
-				.map(Rectangle::new)
+				.map(r -> new Rectangle2d(r.getX(), r.getY(), r.getWidth(), r.getHeight()))
 				.collect(Collectors.toSet());
 			return true;
 		}
