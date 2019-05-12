@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import mezz.jei.Internal;
+import mezz.jei.startup.StackHelper;
 import net.minecraftforge.oredict.OreIngredient;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
@@ -30,24 +32,25 @@ public final class CraftingRecipeChecker {
 		CraftingRecipeValidator<ShapelessOreRecipe> shapelessOreRecipeValidator = new CraftingRecipeValidator<>(recipe -> new ShapelessRecipeWrapper<>(jeiHelpers, recipe));
 		CraftingRecipeValidator<ShapelessRecipes> shapelessRecipesValidator = new CraftingRecipeValidator<>(recipe -> new ShapelessRecipeWrapper<>(jeiHelpers, recipe));
 
+		StackHelper stackHelper = Internal.getStackHelper();
 		Iterator<IRecipe> recipeIterator = CraftingManager.REGISTRY.iterator();
 		List<IRecipe> validRecipes = new ArrayList<>();
 		while (recipeIterator.hasNext()) {
 			IRecipe recipe = recipeIterator.next();
 			if (recipe instanceof ShapedOreRecipe) {
-				if (shapedOreRecipeValidator.isRecipeValid((ShapedOreRecipe) recipe)) {
+				if (shapedOreRecipeValidator.isRecipeValid((ShapedOreRecipe) recipe, stackHelper)) {
 					validRecipes.add(recipe);
 				}
 			} else if (recipe instanceof ShapedRecipes) {
-				if (shapedRecipesValidator.isRecipeValid((ShapedRecipes) recipe)) {
+				if (shapedRecipesValidator.isRecipeValid((ShapedRecipes) recipe, stackHelper)) {
 					validRecipes.add(recipe);
 				}
 			} else if (recipe instanceof ShapelessOreRecipe) {
-				if (shapelessOreRecipeValidator.isRecipeValid((ShapelessOreRecipe) recipe)) {
+				if (shapelessOreRecipeValidator.isRecipeValid((ShapelessOreRecipe) recipe, stackHelper)) {
 					validRecipes.add(recipe);
 				}
 			} else if (recipe instanceof ShapelessRecipes) {
-				if (shapelessRecipesValidator.isRecipeValid((ShapelessRecipes) recipe)) {
+				if (shapelessRecipesValidator.isRecipeValid((ShapelessRecipes) recipe, stackHelper)) {
 					validRecipes.add(recipe);
 				}
 			} else {
@@ -59,13 +62,14 @@ public final class CraftingRecipeChecker {
 
 	private static final class CraftingRecipeValidator<T extends IRecipe> {
 		private static final int INVALID_COUNT = -1;
+		private static final int CANT_DISPLAY = -2;
 		private final IRecipeWrapperFactory<T> recipeWrapperFactory;
 
 		public CraftingRecipeValidator(IRecipeWrapperFactory<T> recipeWrapperFactory) {
 			this.recipeWrapperFactory = recipeWrapperFactory;
 		}
 
-		public boolean isRecipeValid(T recipe) {
+		public boolean isRecipeValid(T recipe, StackHelper stackHelper) {
 			ItemStack recipeOutput = recipe.getRecipeOutput();
 			//noinspection ConstantConditions
 			if (recipeOutput == null || recipeOutput.isEmpty()) {
@@ -80,8 +84,12 @@ public final class CraftingRecipeChecker {
 				Log.get().error("Recipe has no input Ingredients. {}", recipeInfo);
 				return false;
 			}
-			int inputCount = getInputCount(ingredients);
-			if (inputCount == INVALID_COUNT) {
+			int inputCount = getInputCount(ingredients, stackHelper);
+			if (inputCount == CANT_DISPLAY) {
+				String recipeInfo = getInfo(recipe);
+				Log.get().warn("Recipe contains ingredients that can't be understood or displayed by JEI: {}", recipeInfo);
+				return false;
+			} else if (inputCount == INVALID_COUNT) {
 				return false;
 			} else if (inputCount > 9) {
 				String recipeInfo = getInfo(recipe);
@@ -100,15 +108,17 @@ public final class CraftingRecipeChecker {
 			return ErrorUtil.getInfoFromRecipe(recipe, recipeWrapper);
 		}
 
-		protected static int getInputCount(List<Ingredient> ingredientList) {
+		protected static int getInputCount(List<Ingredient> ingredientList, StackHelper stackHelper) {
 			int inputCount = 0;
 			for (Ingredient ingredient : ingredientList) {
-				ItemStack[] input = ingredient.getMatchingStacks();
+				List<ItemStack> input = stackHelper.getMatchingStacks(ingredient);
 				//noinspection ConstantConditions
 				if (input == null) {
 					return INVALID_COUNT;
-				} else if (ingredient instanceof OreIngredient && input.length == 0) {
+				} else if (ingredient instanceof OreIngredient && input.isEmpty()) {
 					return INVALID_COUNT;
+				} else if (!ingredient.isSimple() && input.isEmpty()) {
+					return CANT_DISPLAY;
 				} else {
 					inputCount++;
 				}

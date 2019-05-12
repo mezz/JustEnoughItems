@@ -2,6 +2,7 @@ package mezz.jei.startup;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -204,6 +205,21 @@ public class StackHelper implements IStackHelper {
 		return keyLhs.equals(keyRhs);
 	}
 
+	public List<ItemStack> getMatchingStacks(Ingredient ingredient) {
+		if (ingredient == Ingredient.EMPTY) {
+			return Collections.emptyList();
+		}
+		ItemStack[] matchingStacks = ingredient.getMatchingStacks();
+		//noinspection ConstantConditions
+		if (matchingStacks == null) {
+			return Collections.emptyList();
+		}
+		if (matchingStacks.length > 0) {
+			return Arrays.asList(matchingStacks);
+		}
+		return getAllSubtypes(Arrays.asList(ingredient.matchingStacks));
+	}
+
 	@Override
 	public List<ItemStack> getSubtypes(@Nullable ItemStack itemStack) {
 		if (itemStack == null || itemStack.isEmpty()) {
@@ -224,7 +240,9 @@ public class StackHelper implements IStackHelper {
 		final int stackSize = itemStack.getCount();
 		for (CreativeTabs itemTab : item.getCreativeTabs()) {
 			if (itemTab == null) {
-				subtypeList.add(itemStack);
+				ItemStack copy = itemStack.copy();
+				copy.setItemDamage(0);
+				subtypeList.add(copy);
 			} else {
 				addSubtypesFromCreativeTabToList(subtypeList, item, stackSize, itemTab);
 			}
@@ -247,6 +265,10 @@ public class StackHelper implements IStackHelper {
 			item.getSubItems(itemTab, subItems);
 		} catch (RuntimeException | LinkageError e) {
 			Log.get().warn("Caught a crash while getting sub-items of {}", item, e);
+		}
+		if (subItems.isEmpty()) {
+			subtypeList.add(new ItemStack(item, stackSize));
+			return;
 		}
 
 		for (ItemStack subItem : subItems) {
@@ -355,7 +377,7 @@ public class StackHelper implements IStackHelper {
 				toItemStackList(itemStackListBuilder, stack, expandSubtypes);
 			}
 		} else if (input instanceof Ingredient) {
-			ItemStack[] stacks = ((Ingredient) input).getMatchingStacks();
+			List<ItemStack> stacks = getMatchingStacks((Ingredient) input);
 			for (ItemStack stack : stacks) {
 				toItemStackList(itemStackListBuilder, stack, expandSubtypes);
 			}
