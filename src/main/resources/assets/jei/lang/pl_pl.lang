@@ -32,7 +32,7 @@ jei.tooltip.error.crash=Błąd z tooltipem, sprawdź log
 
 # Error Messages
 jei.chat.error.command.too.long=JEI musi być na serwerze, żeby obsłużyć tę komendę czatu. Jest ona zbyt długa dla Minecrafta, aby ją wysłać.
-jei.chat.error.no.cheat.permission.1=You Nie masz uprawnień do używania trybu cheatów JEI.
+jei.chat.error.no.cheat.permission.1=Nie masz uprawnień do używania trybu cheatów JEI.
 jei.chat.error.no.cheat.permission.2=Uprawnienia są nadawane graczom, którzy mogą używać komendy /give lub są w trybie kreatywnym.
 
 # Key Bindings
@@ -117,8 +117,8 @@ gui.jei.category.craftingTable=Konstruowanie
 gui.jei.category.smelting=Przetapianie
 gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=Paliwo
-gui.jei.category.fuel.smeltCount.single=Przetapia 1 przedmiot
-gui.jei.category.fuel.smeltCount=Przetapia %s przedmiotów
+gui.jei.category.fuel.smeltCount.single=Przetapia przedmiotów: 1
+gui.jei.category.fuel.smeltCount=Przetapia przedmiotów: %s
 gui.jei.category.brewing=Warzenie
 gui.jei.category.brewing.steps=Kroki: %s
 gui.jei.category.itemInformation=Informacja
