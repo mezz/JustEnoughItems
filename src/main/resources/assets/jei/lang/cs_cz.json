@@ -111,6 +111,6 @@
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Dřevěné dveře ti umožní blokovat příšery před vstupem do budovy.\\nTestovací věty.",
-  "description.jei.wooden.door.2": "Kliknutí na dveře změní jejich status a jejich visa versa.",
+  "description.jei.wooden.door.2": "Kliknutí na dveře změní jejich status a jejich vice versa.",
   "description.jei.wooden.door.3": "Dřevěné dveře mohou být otevřeny/zavřeny pomocí Redstone Obvodů."
 }
