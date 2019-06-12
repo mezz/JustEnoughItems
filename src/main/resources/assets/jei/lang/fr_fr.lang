@@ -18,7 +18,7 @@ jei.tooltip.not.enough.space=Il n'y a pas assez de place pour afficher la liste 
 jei.tooltip.ingredient.list.disabled=L'overlay JEI a été désactivé.
 jei.tooltip.ingredient.list.disabled.how.to.fix=Pressez %s pour l'activer.
 jei.tooltip.bookmarks=Marque-pages JEI
-jei.tooltip.bookmarks.usage.nokey=Ajoutez un raccourci pour les marque-page JEI dans vos paramètres de raccourcis.
+jei.tooltip.bookmarks.usage.nokey=Ajoutez un raccourci pour les marque-pages JEI dans vos paramètres de raccourcis.
 jei.tooltip.bookmarks.usage.key=Survolez un objet avec votre souris et pressez "%s" pour l'épingler.
 jei.tooltip.bookmarks.not.enough.space=Il n'y a pas assez de place pour afficher les marque-pages ici.
 
