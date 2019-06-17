@@ -15,7 +15,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.AbstractCookingRecipe;
 
-public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> extends FurnaceTypeCategory<T> {
+public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> extends FurnaceVariantCategory<T> {
     private final IDrawable background;
     private final IDrawable icon;
     private final String localizedName;

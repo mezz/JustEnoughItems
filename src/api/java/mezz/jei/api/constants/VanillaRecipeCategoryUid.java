@@ -30,7 +30,7 @@ public final class VanillaRecipeCategoryUid {
 	public static final ResourceLocation CRAFTING = new ResourceLocation(ModIds.MINECRAFT_ID, "crafting");
 
 	/**
-	 * The cooking recipe category.
+	 * The furnace recipe category.
 	 *
 	 * Automatically includes every {@link FurnaceRecipe}
 	 */
@@ -51,7 +51,7 @@ public final class VanillaRecipeCategoryUid {
 	public static final ResourceLocation BLASTING = new ResourceLocation(ModIds.MINECRAFT_ID, "blasting");
 
 	/**
-	 * The campfire cooking recipe category.
+	 * The campfire furnace recipe category.
 	 *
 	 * Automatically includes every {@link FurnaceRecipe}
 	 */
