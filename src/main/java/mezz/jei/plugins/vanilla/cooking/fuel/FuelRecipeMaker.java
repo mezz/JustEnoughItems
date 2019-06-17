@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.furnace;
+package mezz.jei.plugins.vanilla.cooking.fuel;
 
 import java.util.ArrayList;
 import java.util.Collections;

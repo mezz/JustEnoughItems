@@ -1,5 +1,6 @@
-package mezz.jei.plugins.vanilla.furnace;
+package mezz.jei.plugins.vanilla.cooking.fuel;
 
+import mezz.jei.plugins.vanilla.cooking.FurnaceTypeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
@@ -16,7 +17,7 @@ import mezz.jei.config.Constants;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.util.Translator;
 
-public class FurnaceFuelCategory extends FurnaceRecipeCategory<FuelRecipe> {
+public class FurnaceFuelCategory extends FurnaceTypeCategory<FuelRecipe> {
 	private final IDrawableStatic background;
 	private final IDrawableStatic flameTransparentBackground;
 	private final String localizedName;

@@ -49,7 +49,7 @@ public interface IIngredientManager {
 	Collection<IIngredientType> getRegisteredIngredientTypes();
 
 	/**
-	 * Returns an unmodifiable list of all the ItemStacks that can be used as fuel in a vanilla furnace.
+	 * Returns an unmodifiable list of all the ItemStacks that can be used as fuel in a vanilla cooking.
 	 */
 	List<ItemStack> getFuels();
 
