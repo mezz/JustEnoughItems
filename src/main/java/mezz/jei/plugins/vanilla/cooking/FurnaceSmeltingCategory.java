@@ -8,7 +8,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class FurnaceSmeltingCategory extends AbstractCookingCategory<FurnaceRecipe> {
     public FurnaceSmeltingCategory(IGuiHelper guiHelper) {
-        super(guiHelper, Blocks.FURNACE, "smelting", 200);
+        super(guiHelper, Blocks.FURNACE, "gui.jei.category.smelting", 200);
     }
 
     @Override

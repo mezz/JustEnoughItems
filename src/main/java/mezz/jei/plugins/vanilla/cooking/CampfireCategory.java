@@ -15,7 +15,7 @@ public class CampfireCategory extends AbstractCookingCategory<CampfireCookingRec
     private final IDrawable background;
 
     public CampfireCategory(IGuiHelper guiHelper) {
-        super(guiHelper, Blocks.CAMPFIRE, "campfire", 400);
+        super(guiHelper, Blocks.CAMPFIRE, "gui.jei.category.campfire", 400);
         background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 186, 82, 34);
     }
 

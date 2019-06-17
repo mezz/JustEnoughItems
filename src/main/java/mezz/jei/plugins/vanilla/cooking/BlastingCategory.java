@@ -8,7 +8,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class BlastingCategory extends AbstractCookingCategory<BlastingRecipe> {
     public BlastingCategory(IGuiHelper guiHelper) {
-        super(guiHelper, Blocks.BLAST_FURNACE, "blasting", 100);
+        super(guiHelper, Blocks.BLAST_FURNACE, "gui.jei.category.blasting", 100);
     }
 
     @Override

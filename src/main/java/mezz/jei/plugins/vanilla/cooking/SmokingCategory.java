@@ -8,7 +8,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class SmokingCategory extends AbstractCookingCategory<SmokingRecipe> {
     public SmokingCategory(IGuiHelper guiHelper) {
-        super(guiHelper, Blocks.SMOKER, "smoking", 100);
+        super(guiHelper, Blocks.SMOKER, "gui.jei.category.smoking", 100);
     }
 
     @Override
