@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.Rectangle2d;
 
 import com.google.common.collect.ImmutableList;
@@ -128,7 +128,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return MathUtil.contains(area, mouseX, mouseY) ||
-			pageNavigation.isMouseOver();
+			pageNavigation.isMouseOver(mouseX, mouseY);
 	}
 
 	@Override
@@ -140,7 +140,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 					return true;
 				}
 			}
-			if (pageNavigation.isMouseOver()) {
+			if (pageNavigation.isMouseOver(mouseX, mouseY)) {
 				return pageNavigation.handleMouseClickedButtons(mouseX, mouseY, mouseButton);
 			}
 		}

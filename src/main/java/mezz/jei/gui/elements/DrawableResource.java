@@ -1,7 +1,9 @@
 package mezz.jei.gui.elements;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.gui.drawable.IDrawableStatic;
@@ -63,6 +65,15 @@ public class DrawableResource implements IDrawableStatic {
 		int v = this.v + maskTop;
 		int width = this.width - maskRight - maskLeft;
 		int height = this.height - maskBottom - maskTop;
-		Gui.drawModalRectWithCustomSizedTexture(x, y, u, v, width, height, textureWidth, textureHeight);
+		float f = 1.0F / this.textureWidth;
+		float f1 = 1.0F / this.textureHeight;
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferbuilder = tessellator.getBuffer();
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+		bufferbuilder.pos(x, y + height, 0.0D).tex(u * f, (v + (float)height) * f1).endVertex();
+		bufferbuilder.pos(x + width, y + height, 0.0D).tex((u + (float)width) * f, (v + (float)height) * f1).endVertex();
+		bufferbuilder.pos(x + width, y, 0.0D).tex((u + (float)width) * f, v * f1).endVertex();
+		bufferbuilder.pos(x, y, 0.0D).tex(u * f, v * f1).endVertex();
+		tessellator.draw();
 	}
 }

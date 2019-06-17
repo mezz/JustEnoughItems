@@ -1,18 +1,20 @@
 package mezz.jei.startup;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.List;
+import java.util.function.Predicate;
 
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.resource.IResourceType;
+import net.minecraftforge.resource.ISelectiveResourceReloadListener;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.client.network.play.ClientPlayNetHandler;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.resources.IReloadableResourceManager;
+import net.minecraft.resources.IResourceManager;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.Internal;
@@ -30,7 +32,7 @@ import mezz.jei.config.WorldConfig;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.events.PlayerJoinedWorldEvent;
 import mezz.jei.gui.overlay.IngredientListOverlay;
-import mezz.jei.gui.textures.JeiTextureMap;
+import mezz.jei.gui.textures.JeiSpriteUploader;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.ForgeModIdHelper;
 import mezz.jei.runtime.JeiRuntime;
@@ -42,9 +44,7 @@ import org.apache.logging.log4j.Logger;
 public class ClientLifecycleHandler {
 	private final Logger LOGGER = LogManager.getLogger();
 	private final JeiStarter starter = new JeiStarter();
-	private final JeiTextureMap textureMap = new JeiTextureMap("textures");
-	@Nullable
-	private Textures textures;
+	private final Textures textures;
 	private final ClientConfig clientConfig;
 	private final BookmarkConfig bookmarkConfig;
 	private final ModIdFormattingConfig modIdFormattingConfig;
@@ -95,11 +95,8 @@ public class ClientLifecycleHandler {
 			}
 		});
 		EventBusHelper.addListener(WorldEvent.Save.class, event -> worldConfig.onWorldSave());
-		EventBusHelper.addListener(TextureStitchEvent.Pre.class, event -> {
-			textures = new Textures(textureMap);
-		});
 		EventBusHelper.addListener(RecipesUpdatedEvent.class, event -> {
-			NetHandlerPlayClient connection = Minecraft.getInstance().getConnection();
+			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
 			if (connection != null) {
 				NetworkManager networkManager = connection.getNetworkManager();
 				worldConfig.syncWorldConfig(networkManager);
@@ -109,13 +106,15 @@ public class ClientLifecycleHandler {
 		});
 
 		networkHandler.createClientPacketHandler(worldConfig);
-	}
 
-	public void onLoadComplete() {
 		Minecraft minecraft = Minecraft.getInstance();
-		minecraft.addScheduledTask(() -> {
-			minecraft.textureManager.loadTickableTexture(textureMap.getLocation(), textureMap);
-		});
+		JeiSpriteUploader spriteUploader = new JeiSpriteUploader(minecraft.textureManager);
+		this.textures = new Textures(spriteUploader);
+		IResourceManager resourceManager = minecraft.getResourceManager();
+		if (resourceManager instanceof IReloadableResourceManager) {
+			IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
+			reloadableResourceManager.addReloadListener(spriteUploader);
+		}
 	}
 
 	private void onRecipesLoaded() {
@@ -125,17 +124,30 @@ public class ClientLifecycleHandler {
 
 		// Reload when resources change
 		Minecraft minecraft = Minecraft.getInstance();
-		IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) minecraft.getResourceManager();
-		reloadableResourceManager.addReloadListener(resourceManager -> {
-			// check that JEI has been started before. if not, do nothing
-			if (this.starter.hasStarted()) {
-				LOGGER.info("Restarting JEI.");
-				Preconditions.checkNotNull(textures);
-				this.starter.start(plugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
-			}
-		});
-
+		IResourceManager resourceManager = minecraft.getResourceManager();
+		if (resourceManager instanceof IReloadableResourceManager) {
+			IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
+			reloadableResourceManager.addReloadListener(new JeiReloadListener(plugins));
+		}
 		Preconditions.checkNotNull(textures);
 		this.starter.start(plugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
+	}
+
+	private final class JeiReloadListener implements ISelectiveResourceReloadListener {
+		private final List<IModPlugin> plugins;
+
+		private JeiReloadListener(List<IModPlugin> plugins) {
+			this.plugins = plugins;
+		}
+
+		@Override
+		public void onResourceManagerReload(IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
+			// check that JEI has been started before. if not, do nothing
+			if (starter.hasStarted()) {
+				LOGGER.info("Restarting JEI.");
+				Preconditions.checkNotNull(textures);
+				starter.start(plugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
+			}
+		}
 	}
 }

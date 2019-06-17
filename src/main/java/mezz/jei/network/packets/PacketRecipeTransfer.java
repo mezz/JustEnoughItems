@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 
 import mezz.jei.network.IPacketId;
@@ -54,7 +54,7 @@ public class PacketRecipeTransfer extends PacketJei {
 		buf.writeBoolean(requireCompleteSets);
 	}
 
-	public static void readPacketData(PacketBuffer buf, EntityPlayer player) {
+	public static void readPacketData(PacketBuffer buf, PlayerEntity player) {
 		int recipeMapSize = buf.readVarInt();
 		Map<Integer, Integer> recipeMap = new HashMap<>(recipeMapSize);
 		for (int i = 0; i < recipeMapSize; i++) {

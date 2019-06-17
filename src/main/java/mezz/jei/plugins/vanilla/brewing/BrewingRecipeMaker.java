@@ -15,10 +15,10 @@ import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraft.init.PotionTypes;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionType;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.potion.Potions;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
@@ -89,12 +89,12 @@ public class BrewingRecipeMaker {
 				}
 
 				if (potionInput.getItem() == potionOutput.getItem()) {
-					PotionType potionOutputType = PotionUtils.getPotionFromItem(potionOutput);
-					if (potionOutputType == PotionTypes.WATER) {
+					Potion potionOutputType = PotionUtils.getPotionFromItem(potionOutput);
+					if (potionOutputType == Potions.WATER) {
 						continue;
 					}
 
-					PotionType potionInputType = PotionUtils.getPotionFromItem(potionInput);
+					Potion potionInputType = PotionUtils.getPotionFromItem(potionInput);
 					ResourceLocation inputId = ForgeRegistries.POTION_TYPES.getKey(potionInputType);
 					ResourceLocation outputId = ForgeRegistries.POTION_TYPES.getKey(potionOutputType);
 					if (Objects.equals(inputId, outputId)) {

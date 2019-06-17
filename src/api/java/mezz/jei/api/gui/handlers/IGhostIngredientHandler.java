@@ -3,7 +3,7 @@ package mezz.jei.api.gui.handlers;
 import java.util.List;
 import java.util.function.Consumer;
 
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.Rectangle2d;
 
 /**
@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.Rectangle2d;
  * These ingredients are dragged from the ingredient list on to your gui, and are useful
  * for setting recipes or anything else that does not need the real ingredient to exist.
  */
-public interface IGhostIngredientHandler<T extends GuiScreen> {
+public interface IGhostIngredientHandler<T extends Screen> {
 	/**
 	 * Called when a player wants to drag an ingredient on to your gui.
 	 * Return the targets that can accept the ingredient.

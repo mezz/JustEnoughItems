@@ -8,14 +8,15 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.gui.textures.JeiTextureMap;
+import mezz.jei.config.Constants;
+import mezz.jei.gui.textures.JeiSpriteUploader;
 
 /**
  * Breaks a texture into 9 pieces so that it can be scaled to any size.
  * Draws the corners and then repeats any middle textures to fill the remaining area.
  */
 public class DrawableNineSliceTexture {
-	private final JeiTextureMap textureMap;
+	private final JeiSpriteUploader spriteUploader;
 	private final ResourceLocation location;
 	private final int width;
 	private final int height;
@@ -24,8 +25,8 @@ public class DrawableNineSliceTexture {
 	private final int sliceTop;
 	private final int sliceBottom;
 
-	public DrawableNineSliceTexture(JeiTextureMap textureMap, ResourceLocation location, int width, int height, int left, int right, int top, int bottom) {
-		this.textureMap = textureMap;
+	public DrawableNineSliceTexture(JeiSpriteUploader spriteUploader, ResourceLocation location, int width, int height, int left, int right, int top, int bottom) {
+		this.spriteUploader = spriteUploader;
 		this.location = location;
 
 		this.width = width;
@@ -37,7 +38,7 @@ public class DrawableNineSliceTexture {
 	}
 
 	public void draw(int xOffset, int yOffset, int width, int height) {
-		TextureAtlasSprite sprite = textureMap.getSprite(location);
+		TextureAtlasSprite sprite = spriteUploader.getSprite(location);
 		int leftWidth = sliceLeft;
 		int rightWidth = sliceRight;
 		int topHeight = sliceTop;
@@ -47,7 +48,7 @@ public class DrawableNineSliceTexture {
 
 		Minecraft minecraft = Minecraft.getInstance();
 		TextureManager textureManager = minecraft.getTextureManager();
-		textureManager.bindTexture(textureMap.getLocation());
+		textureManager.bindTexture(Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
 
 		float uMin = sprite.getMinU();
 		float uMax = sprite.getMaxU();

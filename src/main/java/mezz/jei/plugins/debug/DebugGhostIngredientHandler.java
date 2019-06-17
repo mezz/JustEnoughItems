@@ -3,9 +3,9 @@ package mezz.jei.plugins.debug;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.Internal;
@@ -14,7 +14,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DebugGhostIngredientHandler<T extends GuiContainer> implements IGhostIngredientHandler<T> {
+public class DebugGhostIngredientHandler<T extends ContainerScreen> implements IGhostIngredientHandler<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	@Override
@@ -28,7 +28,7 @@ public class DebugGhostIngredientHandler<T extends GuiContainer> implements IGho
 		}
 		if (ingredient instanceof ItemStack) {
 			boolean even = true;
-			for (Slot slot : gui.inventorySlots.inventorySlots) {
+			for (Slot slot : gui.getContainer().inventorySlots) {
 				if (even) {
 					Rectangle2d area = new Rectangle2d(gui.getGuiLeft() + slot.xPos, gui.getGuiTop() + slot.yPos, 16, 16);
 					targets.add(new DebugInfoTarget<>("Got an Ingredient in Gui", area));

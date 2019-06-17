@@ -10,12 +10,12 @@ import java.util.Objects;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.api.constants.ModIds;
@@ -96,9 +96,9 @@ public class ModIdFormattingConfig {
 	private static String detectModNameTooltipFormatting() {
 		try {
 			ItemStack itemStack = new ItemStack(Items.APPLE);
-			EntityPlayerSP player = Minecraft.getInstance().player;
+			ClientPlayerEntity player = Minecraft.getInstance().player;
 			List<ITextComponent> tooltip = new ArrayList<>();
-			tooltip.add(new TextComponentString("JEI Tooltip Testing for mod name formatting"));
+			tooltip.add(new StringTextComponent("JEI Tooltip Testing for mod name formatting"));
 			ItemTooltipEvent tooltipEvent = ForgeEventFactory.onItemTooltip(itemStack, player, tooltip, ITooltipFlag.TooltipFlags.NORMAL);
 			tooltip = tooltipEvent.getToolTip();
 

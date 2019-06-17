@@ -1,6 +1,6 @@
 package mezz.jei.api.registration;
 
-import net.minecraft.inventory.Container;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.IModPlugin;

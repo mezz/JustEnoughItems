@@ -1,6 +1,6 @@
 package mezz.jei.plugins.jei;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.Internal;
@@ -36,7 +36,7 @@ public class JeiInternalPlugin implements IModPlugin {
 
 	@Override
 	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-		registration.addGuiScreenHandler(GuiContainer.class, GuiProperties::create);
+		registration.addGuiScreenHandler(ContainerScreen.class, GuiProperties::create);
 		registration.addGuiScreenHandler(RecipesGui.class, GuiProperties::create);
 	}
 }

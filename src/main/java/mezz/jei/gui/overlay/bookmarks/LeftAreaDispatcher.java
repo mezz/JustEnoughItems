@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.api.gui.handlers.IGuiProperties;
@@ -56,7 +56,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		}
 	}
 
-	public void drawOnForeground(GuiContainer gui, int mouseX, int mouseY) {
+	public void drawOnForeground(ContainerScreen gui, int mouseX, int mouseY) {
 		if (canShow && hasContent()) {
 			contents.get(current).drawOnForeground(gui, mouseX, mouseY);
 		}
@@ -68,7 +68,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		}
 	}
 
-	public void updateScreen(@Nullable GuiScreen guiScreen, boolean forceUpdate) {
+	public void updateScreen(@Nullable Screen guiScreen, boolean forceUpdate) {
 		canShow = false;
 		if (hasContent()) {
 			IGuiProperties currentGuiProperties = guiScreenHelper.getGuiProperties(guiScreen);

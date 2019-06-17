@@ -4,17 +4,17 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.util.InputMappings;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -45,7 +45,7 @@ import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.StringUtil;
 import mezz.jei.util.Translator;
 
-public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFocuses, IRecipeLogicStateListener {
+public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocuses, IRecipeLogicStateListener {
 	private static final int borderPadding = 6;
 	private static final int innerPadding = 14;
 	private static final int buttonWidth = 13;
@@ -69,13 +69,13 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	private final HoverChecker titleHoverChecker = new HoverChecker();
 
-	private final GuiButton nextRecipeCategory;
-	private final GuiButton previousRecipeCategory;
-	private final GuiButton nextPage;
-	private final GuiButton previousPage;
+	private final GuiIconButtonSmall nextRecipeCategory;
+	private final GuiIconButtonSmall previousRecipeCategory;
+	private final GuiIconButtonSmall nextPage;
+	private final GuiIconButtonSmall previousPage;
 
 	@Nullable
-	private GuiScreen parentScreen;
+	private Screen parentScreen;
 	private int xSize;
 	private int ySize;
 	private int guiLeft;
@@ -84,48 +84,27 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	private boolean init = false;
 
 	public RecipesGui(IRecipeManager recipeManager, RecipeTransferManager recipeTransferManager, IngredientManager ingredientManager) {
+		super(new StringTextComponent("Recipes"));
 		this.recipeTransferManager = recipeTransferManager;
 		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, ingredientManager);
 		this.recipeCatalysts = new RecipeCatalysts();
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
-		this.mc = Minecraft.getInstance();
+		this.minecraft = Minecraft.getInstance();
 
 		Textures textures = Internal.getTextures();
 		IDrawableStatic arrowNext = textures.getArrowNext();
 		IDrawableStatic arrowPrevious = textures.getArrowPrevious();
 
-		nextRecipeCategory = new GuiIconButtonSmall(2, 0, 0, buttonWidth, buttonHeight, arrowNext) {
-			@Override
-			public void onClick(double mouseX, double mouseY) {
-				logic.nextRecipeCategory();
-			}
-		};
-		previousRecipeCategory = new GuiIconButtonSmall(3, 0, 0, buttonWidth, buttonHeight, arrowPrevious) {
-			@Override
-			public void onClick(double mouseX, double mouseY) {
-				logic.previousRecipeCategory();
-			}
-		};
-
-		nextPage = new GuiIconButtonSmall(4, 0, 0, buttonWidth, buttonHeight, arrowNext) {
-			@Override
-			public void onClick(double mouseX, double mouseY) {
-				logic.nextPage();
-			}
-		};
-
-		previousPage = new GuiIconButtonSmall(5, 0, 0, buttonWidth, buttonHeight, arrowPrevious) {
-			@Override
-			public void onClick(double mouseX, double mouseY) {
-				logic.previousPage();
-			}
-		};
+		nextRecipeCategory = new GuiIconButtonSmall(0, 0, buttonWidth, buttonHeight, arrowNext, b -> logic.nextRecipeCategory());
+		previousRecipeCategory = new GuiIconButtonSmall(0, 0, buttonWidth, buttonHeight, arrowPrevious, b -> logic.previousRecipeCategory());
+		nextPage = new GuiIconButtonSmall(0, 0, buttonWidth, buttonHeight, arrowNext, b -> logic.nextPage());
+		previousPage = new GuiIconButtonSmall(0, 0, buttonWidth, buttonHeight, arrowPrevious, b -> logic.previousPage());
 
 		background = textures.getGuiBackground();
 	}
 
-	private static void drawCenteredStringWithShadow(FontRenderer fontRenderer, String string, int guiWidth, int xOffset, int yPos, int color) {
-		fontRenderer.drawStringWithShadow(string, (guiWidth - fontRenderer.getStringWidth(string)) / 2.0f + xOffset, yPos, color);
+	private static void drawCenteredStringWithShadow(FontRenderer font, String string, int guiWidth, int xOffset, int yPos, int color) {
+		font.drawStringWithShadow(string, (guiWidth - font.getStringWidth(string)) / 2.0f + xOffset, yPos, color);
 	}
 
 	public int getGuiLeft() {
@@ -152,13 +131,13 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	}
 
 	@Override
-	public boolean doesGuiPauseGame() {
+	public boolean isPauseScreen() {
 		return false;
 	}
 
 	@Override
-	public void initGui() {
-		super.initGui();
+	public void init(Minecraft minecraft, int width, int height) {
+		super.init(minecraft, width, height);
 
 		this.xSize = 198;
 		this.ySize = this.height - 68;
@@ -175,7 +154,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		final int rightButtonX = guiLeft + xSize - borderPadding - buttonWidth;
 		final int leftButtonX = guiLeft + borderPadding;
 
-		int titleHeight = fontRenderer.FONT_HEIGHT + borderPadding;
+		int titleHeight = font.FONT_HEIGHT + borderPadding;
 		int recipeClassButtonTop = guiTop + titleHeight - buttonHeight + 2;
 		nextRecipeCategory.x = rightButtonX;
 		nextRecipeCategory.y = recipeClassButtonTop;
@@ -206,19 +185,21 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	@Override
 	public void render(int mouseX, int mouseY, float partialTicks) {
-		drawDefaultBackground();
+		if (minecraft == null) {
+			return;
+		}
+		renderBackground();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.zLevel = 0;
 		this.background.draw(guiLeft, guiTop, xSize, ySize);
 
 		GlStateManager.disableBlend();
 
-		drawRect(guiLeft + borderPadding + buttonWidth,
+		fill(guiLeft + borderPadding + buttonWidth,
 			nextRecipeCategory.y,
 			guiLeft + xSize - borderPadding - buttonWidth,
 			nextRecipeCategory.y + buttonHeight,
 			0x30000000);
-		drawRect(guiLeft + borderPadding + buttonWidth,
+		fill(guiLeft + borderPadding + buttonWidth,
 			nextPage.y,
 			guiLeft + xSize - borderPadding - buttonWidth,
 			nextPage.y + buttonHeight,
@@ -226,9 +207,9 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-		int textPadding = (buttonHeight - fontRenderer.FONT_HEIGHT) / 2;
-		drawCenteredStringWithShadow(fontRenderer, title, xSize, guiLeft, nextRecipeCategory.y + textPadding, 0xFFFFFFFF);
-		drawCenteredStringWithShadow(fontRenderer, pageString, xSize, guiLeft, nextPage.y + textPadding, 0xFFFFFFFF);
+		int textPadding = (buttonHeight - font.FONT_HEIGHT) / 2;
+		drawCenteredStringWithShadow(font, title, xSize, guiLeft, nextRecipeCategory.y + textPadding, 0xFFFFFFFF);
+		drawCenteredStringWithShadow(font, pageString, xSize, guiLeft, nextPage.y + textPadding, 0xFFFFFFFF);
 
 		nextRecipeCategory.render(mouseX, mouseY, partialTicks);
 		previousRecipeCategory.render(mouseX, mouseY, partialTicks);
@@ -245,7 +226,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 		GuiIngredient hoveredRecipeCatalyst = recipeCatalysts.draw(mouseX, mouseY);
 
-		recipeGuiTabs.draw(mc, mouseX, mouseY);
+		recipeGuiTabs.draw(minecraft, mouseX, mouseY);
 
 		if (hoveredLayout != null) {
 			hoveredLayout.drawOverlays(mouseX, mouseY);
@@ -261,7 +242,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		if (mc.currentScreen == this) {
+		if (minecraft != null && minecraft.currentScreen == this) {
 			if ((mouseX >= guiLeft) && (mouseY >= guiTop) && (mouseX < guiLeft + xSize) && (mouseY < guiTop + ySize)) {
 				return true;
 			}
@@ -306,7 +287,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	}
 
 	@Override
-	public boolean mouseScrolled(double scrollDelta) {
+	public boolean mouseScrolled(double scrollX, double scrollY, double scrollDelta) {
 		final double x = MouseUtil.getX();
 		final double y = MouseUtil.getY();
 		if (isMouseOver(x, y)) {
@@ -318,7 +299,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 				return true;
 			}
 		}
-		return super.mouseScrolled(scrollDelta);
+		return super.mouseScrolled(scrollX, scrollY, scrollDelta);
 	}
 
 	@Override
@@ -344,7 +325,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		}
 
 		InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
-		if (handleKeybinds(input)) {
+		if (handleKeybindings(input)) {
 			return true;
 		}
 
@@ -354,12 +335,12 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		InputMappings.Input input = InputMappings.getInputByCode(keyCode, scanCode);
-		return handleKeybinds(input);
+		return handleKeybindings(input);
 	}
 
-	private boolean handleKeybinds(InputMappings.Input input) {
+	private boolean handleKeybindings(InputMappings.Input input) {
 		if (KeyBindings.isInventoryCloseKey(input) || KeyBindings.isInventoryToggleKey(input)) {
-			close();
+			onClose();
 			return true;
 		} else if (KeyBindings.recipeBack.isActiveAndMatches(input)) {
 			back();
@@ -383,24 +364,26 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	}
 
 	public boolean isOpen() {
-		return mc.currentScreen == this;
+		return minecraft != null && minecraft.currentScreen == this;
 	}
 
 	private void open() {
-		if (!isOpen()) {
-			parentScreen = mc.currentScreen;
+		if (minecraft != null) {
+			if (!isOpen()) {
+				parentScreen = minecraft.currentScreen;
+			}
+			minecraft.displayGuiScreen(this);
 		}
-		mc.displayGuiScreen(this);
 	}
 
 	@Override
-	public void close() {
-		if (isOpen()) {
+	public void onClose() {
+		if (isOpen() && minecraft != null) {
 			if (parentScreen != null) {
-				mc.displayGuiScreen(parentScreen);
+				minecraft.displayGuiScreen(parentScreen);
 				parentScreen = null;
 			} else {
-				EntityPlayerSP player = mc.player;
+				ClientPlayerEntity player = minecraft.player;
 				if (player != null) {
 					player.closeScreen();
 				}
@@ -462,15 +445,15 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		logic.setRecipesPerPage(recipesPerPage);
 
 		title = recipeCategory.getTitle();
-		int titleWidth = fontRenderer.getStringWidth(title);
-		final int availableTitleWidth = (nextPage.x - (previousPage.x + previousPage.width)) - (2 * innerPadding);
+		int titleWidth = font.getStringWidth(title);
+		final int availableTitleWidth = (nextPage.x - (previousPage.x + previousPage.getWidth())) - (2 * innerPadding);
 		if (titleWidth > availableTitleWidth) {
-			title = StringUtil.truncateStringToWidth(title, availableTitleWidth, fontRenderer);
-			titleWidth = fontRenderer.getStringWidth(title);
+			title = StringUtil.truncateStringToWidth(title, availableTitleWidth, font);
+			titleWidth = font.getStringWidth(title);
 		}
 		final int titleX = guiLeft + (xSize - titleWidth) / 2;
 		final int titleY = guiTop + borderPadding;
-		titleHoverChecker.updateBounds(titleY, titleY + fontRenderer.FONT_HEIGHT, titleX, titleX + titleWidth);
+		titleHoverChecker.updateBounds(titleY, titleY + font.FONT_HEIGHT, titleX, titleX + titleWidth);
 
 		int spacingY = recipeBackground.getHeight() + recipeSpacing;
 
@@ -478,8 +461,8 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		recipeLayouts.addAll(logic.getRecipeLayouts(recipeXOffset, guiTop + headerHeight + recipeSpacing, spacingY));
 		addRecipeTransferButtons(recipeLayouts);
 
-		nextPage.enabled = previousPage.enabled = logic.hasMultiplePages();
-		nextRecipeCategory.enabled = previousRecipeCategory.enabled = logic.hasMultipleCategories();
+		nextPage.active = previousPage.active = logic.hasMultiplePages();
+		nextRecipeCategory.active = previousRecipeCategory.active = logic.hasMultipleCategories();
 
 		pageString = logic.getPageString();
 
@@ -492,35 +475,39 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		buttons.clear();
 		addButtons();
 
-		EntityPlayer player = mc.player;
-		if (player != null) {
-			Container container = getParentContainer();
+		if (minecraft == null) {
+			return;
+		}
+		PlayerEntity player = minecraft.player;
+		if (player == null) {
+			return;
+		}
+		Container container = getParentContainer();
 
-			for (RecipeLayout recipeLayout : recipeLayouts) {
-				RecipeTransferButton button = recipeLayout.getRecipeTransferButton();
-				if (button != null) {
-					button.init(recipeTransferManager, container, player);
-					button.setOnClickHandler((mouseX, mouseY) -> {
-						boolean maxTransfer = GuiScreen.isShiftKeyDown();
-						if (container != null && RecipeTransferUtil.transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer)) {
-							close();
-						}
-					});
-					addButton(button);
-				}
+		for (RecipeLayout recipeLayout : recipeLayouts) {
+			RecipeTransferButton button = recipeLayout.getRecipeTransferButton();
+			if (button != null) {
+				button.init(recipeTransferManager, container, player);
+				button.setOnClickHandler((mouseX, mouseY) -> {
+					boolean maxTransfer = Screen.hasShiftDown();
+					if (container != null && RecipeTransferUtil.transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer)) {
+						onClose();
+					}
+				});
+				addButton(button);
 			}
 		}
 	}
 
 	@Nullable
-	public GuiScreen getParentScreen() {
+	public Screen getParentScreen() {
 		return parentScreen;
 	}
 
 	@Nullable
 	private Container getParentContainer() {
-		if (parentScreen instanceof GuiContainer) {
-			return ((GuiContainer) parentScreen).inventorySlots;
+		if (parentScreen instanceof ContainerScreen) {
+			return ((ContainerScreen) parentScreen).getContainer();
 		}
 		return null;
 	}

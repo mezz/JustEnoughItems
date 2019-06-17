@@ -5,10 +5,11 @@ import java.util.List;
 import java.util.Set;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
+import com.mojang.blaze3d.platform.GlStateManager;
+
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
@@ -72,7 +73,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		this.contents = contents;
 		this.worldConfig = worldConfig;
 		ingredientFilter.addListener(() -> onSetFilterText(worldConfig.getFilterText()));
-		this.searchField = new GuiTextFieldFilter(0, ingredientFilter, worldConfig);
+		this.searchField = new GuiTextFieldFilter(ingredientFilter, worldConfig);
 		this.configButton = ConfigButton.create(this, worldConfig);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, guiScreenHelper, ingredientManager, worldConfig);
 		this.setKeyboardFocus(false);
@@ -98,7 +99,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		return new Rectangle2d(x, y, width, height);
 	}
 
-	public void updateScreen(@Nullable GuiScreen guiScreen, boolean forceUpdate) {
+	public void updateScreen(@Nullable Screen guiScreen, boolean forceUpdate) {
 		final boolean wasDisplayed = isListDisplayed();
 		IGuiProperties guiProperties = guiScreenHelper.getGuiProperties(guiScreen);
 		if (guiProperties == null) {
@@ -150,7 +151,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 				}
 
 				this.configButton.updateBounds(new Rectangle2d(
-					searchField.x + searchField.width - 1,
+					searchField.x + searchField.getWidth() - 1,
 					searchField.y,
 					BUTTON_SIZE,
 					BUTTON_SIZE
@@ -173,7 +174,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		if (this.guiProperties != null) {
 			if (isListDisplayed()) {
 				GlStateManager.disableLighting();
-				this.searchField.drawTextField(mouseX, mouseY, partialTicks);
+				this.searchField.renderButton(mouseX, mouseY, partialTicks);
 				this.contents.draw(minecraft, mouseX, mouseY, partialTicks);
 				this.configButton.draw(mouseX, mouseY, partialTicks);
 			} else {
@@ -192,11 +193,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		}
 	}
 
-	public void drawOnForeground(GuiContainer gui, int mouseX, int mouseY) {
+	public void drawOnForeground(ContainerScreen gui, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
-			this.ghostIngredientDragManager.drawOnForeground(gui.mc, mouseX, mouseY);
+			this.ghostIngredientDragManager.drawOnForeground(gui.getMinecraft(), mouseX, mouseY);
 			GlStateManager.popMatrix();
 		}
 	}
@@ -270,7 +271,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 			}
 
 			Minecraft minecraft = Minecraft.getInstance();
-			GuiScreen currentScreen = minecraft.currentScreen;
+			Screen currentScreen = minecraft.currentScreen;
 			InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
 			if (currentScreen != null && !(currentScreen instanceof RecipesGui) &&
 				(mouseButton == 0 || mouseButton == 1 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(input))) {
@@ -284,7 +285,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 						clicked.onClickHandled();
 						return true;
 					}
-					EntityPlayerSP player = minecraft.player;
+					ClientPlayerEntity player = minecraft.player;
 					if (player != null) {
 						ItemStack mouseItem = player.inventory.getItemStack();
 						if (mouseItem.isEmpty() && this.ghostIngredientDragManager.handleClickGhostIngredient(currentScreen, clicked)) {

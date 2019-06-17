@@ -7,7 +7,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -61,7 +61,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	@Override
 	public Iterable<Integer> getColors(FluidStack ingredient) {
 		Fluid fluid = ingredient.getFluid();
-		TextureMap textureMapBlocks = Minecraft.getInstance().getTextureMap();
+		AtlasTexture textureMapBlocks = Minecraft.getInstance().getTextureMap();
 		ResourceLocation fluidStill = fluid.getStill();
 		if (fluidStill != null) {
 			TextureAtlasSprite fluidStillSprite = textureMapBlocks.getSprite(fluidStill);

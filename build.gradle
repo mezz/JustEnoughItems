@@ -72,22 +72,30 @@ dependencies {
 }
 
 minecraft {
-	mappings channel: "snapshot", version: "${project.mcp_mappings}".toString()
+	mappings channel: "snapshot", version: project.mcp_mappings
 
 	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
 	runs {
-		client = {
+		client {
 			properties 'forge.logging.console.level': 'debug'
-			workingDirectory project.file('run').canonicalPath
-			source sourceSets.main
-			source sourceSets.api
+			workingDirectory project.file('run')
+			mods {
+				jei {
+					source sourceSets.main
+					source sourceSets.api
+				}
+			}
 		}
-		server = {
+		server {
 			properties 'forge.logging.console.level': 'debug'
-			workingDirectory project.file('run').canonicalPath
-			source sourceSets.main
-			source sourceSets.api
+			workingDirectory project.file('run')
+			mods {
+				jei {
+					source sourceSets.main
+					source sourceSets.api
+				}
+			}
 		}
 	}
 }

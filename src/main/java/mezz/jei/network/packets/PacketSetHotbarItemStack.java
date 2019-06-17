@@ -1,8 +1,8 @@
 package mezz.jei.network.packets;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 
@@ -18,7 +18,7 @@ public class PacketSetHotbarItemStack extends PacketJei {
 
 	public PacketSetHotbarItemStack(ItemStack itemStack, int hotbarSlot) {
 		ErrorUtil.checkNotNull(itemStack, "itemStack");
-		Preconditions.checkArgument(InventoryPlayer.isHotbar(hotbarSlot), "hotbar slot must be in the hotbar. got: " + hotbarSlot);
+		Preconditions.checkArgument(PlayerInventory.isHotbar(hotbarSlot), "hotbar slot must be in the hotbar. got: " + hotbarSlot);
 		this.itemStack = itemStack;
 		this.hotbarSlot = hotbarSlot;
 	}
@@ -34,9 +34,9 @@ public class PacketSetHotbarItemStack extends PacketJei {
 		buf.writeVarInt(hotbarSlot);
 	}
 
-	public static void readPacketData(PacketBuffer buf, EntityPlayer player) {
-		if (player instanceof EntityPlayerMP) {
-			EntityPlayerMP sender = (EntityPlayerMP) player;
+	public static void readPacketData(PacketBuffer buf, PlayerEntity player) {
+		if (player instanceof ServerPlayerEntity) {
+			ServerPlayerEntity sender = (ServerPlayerEntity) player;
 
 			ItemStack itemStack = buf.readItemStack();
 			if (!itemStack.isEmpty()) {

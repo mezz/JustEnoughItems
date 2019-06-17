@@ -11,10 +11,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
@@ -22,7 +22,7 @@ import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.gui.handlers.IGuiProperties;
-import mezz.jei.api.gui.handlers.IGuiScreenHandler;
+import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.collect.ListMultiMap;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.ClickedIngredient;
@@ -32,12 +32,18 @@ import mezz.jei.util.MathUtil;
 public class GuiScreenHelper {
 	private final IngredientManager ingredientManager;
 	private final List<IGlobalGuiHandler> globalGuiHandlers;
-	private final ListMultiMap<Class<? extends GuiContainer>, IGuiContainerHandler<?>> guiHandlers;
+	private final ListMultiMap<Class<? extends ContainerScreen>, IGuiContainerHandler<?>> guiHandlers;
 	private final Map<Class, IGhostIngredientHandler> ghostIngredientHandlers;
-	private final Map<Class, IGuiScreenHandler> guiScreenHandlers;
+	private final Map<Class, IScreenHandler> guiScreenHandlers;
 	private Set<Rectangle2d> guiExclusionAreas = Collections.emptySet();
 
-	public GuiScreenHelper(IngredientManager ingredientManager, List<IGlobalGuiHandler> globalGuiHandlers, ListMultiMap<Class<? extends GuiContainer>, IGuiContainerHandler<?>> guiHandlers, Map<Class, IGhostIngredientHandler> ghostIngredientHandlers, Map<Class, IGuiScreenHandler> guiScreenHandlers) {
+	public GuiScreenHelper(
+		IngredientManager ingredientManager,
+		List<IGlobalGuiHandler> globalGuiHandlers,
+		ListMultiMap<Class<? extends ContainerScreen>, IGuiContainerHandler<?>> guiHandlers,
+		Map<Class, IGhostIngredientHandler> ghostIngredientHandlers,
+		Map<Class, IScreenHandler> guiScreenHandlers
+	) {
 		this.ingredientManager = ingredientManager;
 		this.globalGuiHandlers = globalGuiHandlers;
 		this.guiHandlers = guiHandlers;
@@ -46,24 +52,24 @@ public class GuiScreenHelper {
 	}
 
 	@Nullable
-	public <T extends GuiScreen> IGuiProperties getGuiProperties(@Nullable T guiScreen) {
-		if (guiScreen == null) {
+	public <T extends Screen> IGuiProperties getGuiProperties(@Nullable T screen) {
+		if (screen == null) {
 			return null;
 		}
 		{
 			@SuppressWarnings("unchecked")
-			IGuiScreenHandler<T> handler = (IGuiScreenHandler<T>) guiScreenHandlers.get(guiScreen.getClass());
+			IScreenHandler<T> handler = (IScreenHandler<T>) guiScreenHandlers.get(screen.getClass());
 			if (handler != null) {
-				return handler.apply(guiScreen);
+				return handler.apply(screen);
 			}
 		}
-		for (Map.Entry<Class, IGuiScreenHandler> entry : guiScreenHandlers.entrySet()) {
+		for (Map.Entry<Class, IScreenHandler> entry : guiScreenHandlers.entrySet()) {
 			Class guiScreenClass = entry.getKey();
-			if (guiScreenClass.isInstance(guiScreen)) {
+			if (guiScreenClass.isInstance(screen)) {
 				@SuppressWarnings("unchecked")
-				IGuiScreenHandler<T> handler = entry.getValue();
+				IScreenHandler<T> handler = entry.getValue();
 				if (handler != null) {
-					return handler.apply(guiScreen);
+					return handler.apply(screen);
 				}
 			}
 		}
@@ -91,15 +97,15 @@ public class GuiScreenHelper {
 	}
 
 	private Set<Rectangle2d> getPluginsExclusionAreas() {
-		GuiScreen guiScreen = Minecraft.getInstance().currentScreen;
-		if (guiScreen == null) {
+		Screen screen = Minecraft.getInstance().currentScreen;
+		if (screen == null) {
 			return Collections.emptySet();
 		}
 		Set<Rectangle2d> allGuiExtraAreas = new HashSet<>();
-		if (guiScreen instanceof GuiContainer) {
-			GuiContainer guiContainer = (GuiContainer) guiScreen;
-			List<IGuiContainerHandler<GuiContainer>> activeAdvancedGuiHandlers = getActiveAdvancedGuiHandlers(guiContainer);
-			for (IGuiContainerHandler<GuiContainer> advancedGuiHandler : activeAdvancedGuiHandlers) {
+		if (screen instanceof ContainerScreen) {
+			ContainerScreen guiContainer = (ContainerScreen) screen;
+			List<IGuiContainerHandler<ContainerScreen>> activeAdvancedGuiHandlers = getActiveAdvancedGuiHandlers(guiContainer);
+			for (IGuiContainerHandler<ContainerScreen> advancedGuiHandler : activeAdvancedGuiHandlers) {
 				List<Rectangle2d> guiExtraAreas = advancedGuiHandler.getGuiExtraAreas(guiContainer);
 				allGuiExtraAreas.addAll(guiExtraAreas);
 			}
@@ -113,7 +119,7 @@ public class GuiScreenHelper {
 
 
 	@Nullable
-	public <T extends GuiContainer> IClickedIngredient<?> getPluginsIngredientUnderMouse(T guiContainer, double mouseX, double mouseY) {
+	public <T extends ContainerScreen> IClickedIngredient<?> getPluginsIngredientUnderMouse(T guiContainer, double mouseX, double mouseY) {
 		List<IGuiContainerHandler<T>> activeAdvancedGuiHandlers = getActiveAdvancedGuiHandlers(guiContainer);
 		for (IGuiContainerHandler<T> advancedGuiHandler : activeAdvancedGuiHandlers) {
 			Object clicked = advancedGuiHandler.getIngredientUnderMouse(guiContainer, mouseX, mouseY);
@@ -133,7 +139,7 @@ public class GuiScreenHelper {
 	}
 
 	@Nullable
-	public <T extends GuiScreen> IGhostIngredientHandler<T> getGhostIngredientHandler(T guiScreen) {
+	public <T extends Screen> IGhostIngredientHandler<T> getGhostIngredientHandler(T guiScreen) {
 		{
 			@SuppressWarnings("unchecked")
 			IGhostIngredientHandler<T> handler = (IGhostIngredientHandler<T>) ghostIngredientHandlers.get(guiScreen.getClass());
@@ -155,7 +161,7 @@ public class GuiScreenHelper {
 	}
 
 	@Nullable
-	private <T> IClickedIngredient<T> createClickedIngredient(@Nullable T ingredient, GuiContainer guiContainer) {
+	private <T> IClickedIngredient<T> createClickedIngredient(@Nullable T ingredient, ContainerScreen guiContainer) {
 		if (ingredient != null && ingredientManager.isValidIngredient(ingredient)) {
 			Rectangle2d area = null;
 			Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
@@ -168,10 +174,10 @@ public class GuiScreenHelper {
 	}
 
 
-	private <T extends GuiContainer> List<IGuiContainerHandler<T>> getActiveAdvancedGuiHandlers(T guiContainer) {
+	private <T extends ContainerScreen> List<IGuiContainerHandler<T>> getActiveAdvancedGuiHandlers(T guiContainer) {
 		List<IGuiContainerHandler<T>> activeAdvancedGuiHandler = new ArrayList<>();
-		for (Map.Entry<Class<? extends GuiContainer>, List<IGuiContainerHandler<?>>> entry : guiHandlers.entrySet()) {
-			Class<?> guiContainerClass = entry.getKey();
+		for (Map.Entry<Class<? extends ContainerScreen>, List<IGuiContainerHandler<?>>> entry : guiHandlers.entrySet()) {
+			Class<? extends ContainerScreen> guiContainerClass = entry.getKey();
 			if (guiContainerClass.isInstance(guiContainer)) {
 				for (IGuiContainerHandler<?> guiContainerHandler : entry.getValue()) {
 					@SuppressWarnings("unchecked")
@@ -184,8 +190,8 @@ public class GuiScreenHelper {
 	}
 
 	@Nullable
-	public IGuiClickableArea getGuiClickableArea(GuiContainer guiContainer, double mouseX, double mouseY) {
-		for (Map.Entry<Class<? extends GuiContainer>, List<IGuiContainerHandler<?>>> entry : guiHandlers.entrySet()) {
+	public IGuiClickableArea getGuiClickableArea(ContainerScreen guiContainer, double mouseX, double mouseY) {
+		for (Map.Entry<Class<? extends ContainerScreen>, List<IGuiContainerHandler<?>>> entry : guiHandlers.entrySet()) {
 			Class guiHandlerClass = entry.getKey();
 			List<IGuiContainerHandler<?>> guiHandlers = entry.getValue();
 			for (IGuiContainerHandler<?> guiHandler : guiHandlers) {
@@ -200,9 +206,9 @@ public class GuiScreenHelper {
 	}
 
 	@Nullable
-	private static <T extends GuiContainer> IGuiClickableArea getGuiClickableArea(Class<? extends T> handlerClass, IGuiContainerHandler<T> handler, GuiContainer guiContainer, double mouseX, double mouseY) {
-		if (handlerClass.isInstance(guiContainer)) {
-			T castContainer = handlerClass.cast(guiContainer);
+	private static <T extends ContainerScreen> IGuiClickableArea getGuiClickableArea(Class<? extends T> handlerClass, IGuiContainerHandler<T> handler, ContainerScreen containerScreen, double mouseX, double mouseY) {
+		if (handlerClass.isInstance(containerScreen)) {
+			T castContainer = handlerClass.cast(containerScreen);
 			Collection<IGuiClickableArea> guiClickableAreas = handler.getGuiClickableAreas(castContainer);
 			for (IGuiClickableArea guiClickableArea : guiClickableAreas) {
 				if (MathUtil.contains(guiClickableArea.getArea(), mouseX, mouseY)) {

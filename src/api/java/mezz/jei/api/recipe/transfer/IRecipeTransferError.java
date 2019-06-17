@@ -1,7 +1,7 @@
 package mezz.jei.api.recipe.transfer;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Container;
 
 import mezz.jei.api.gui.IRecipeLayout;
 
@@ -9,7 +9,7 @@ import mezz.jei.api.gui.IRecipeLayout;
  * A reason that a recipe transfer couldn't happen.
  *
  * Recipe transfer errors can be created with {@link IRecipeTransferHandlerHelper} or you can implement your own.
- * These errors are returned from {@link IRecipeTransferHandler#transferRecipe(Container, IRecipeLayout, EntityPlayer, boolean, boolean)}.
+ * These errors are returned from {@link IRecipeTransferHandler#transferRecipe(Container, IRecipeLayout, PlayerEntity, boolean, boolean)}.
  */
 public interface IRecipeTransferError {
 	enum Type {

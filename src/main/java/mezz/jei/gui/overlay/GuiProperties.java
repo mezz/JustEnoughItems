@@ -2,14 +2,14 @@ package mezz.jei.gui.overlay;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.gui.recipes.RecipesGui;
 
 public class GuiProperties implements IGuiProperties {
-	private final Class<? extends GuiScreen> guiClass;
+	private final Class<? extends Screen> screenClass;
 	private final int guiLeft;
 	private final int guiTop;
 	private final int guiXSize;
@@ -18,18 +18,18 @@ public class GuiProperties implements IGuiProperties {
 	private final int screenHeight;
 
 	@Nullable
-	public static GuiProperties create(GuiContainer guiContainer) {
-		if (guiContainer.width == 0 || guiContainer.height == 0) {
+	public static GuiProperties create(ContainerScreen containerScreen) {
+		if (containerScreen.width == 0 || containerScreen.height == 0) {
 			return null;
 		}
 		return new GuiProperties(
-			guiContainer.getClass(),
-			guiContainer.getGuiLeft(),
-			guiContainer.getGuiTop(),
-			guiContainer.getXSize(),
-			guiContainer.getYSize(),
-			guiContainer.width,
-			guiContainer.height
+			containerScreen.getClass(),
+			containerScreen.getGuiLeft(),
+			containerScreen.getGuiTop(),
+			containerScreen.getXSize(),
+			containerScreen.getYSize(),
+			containerScreen.width,
+			containerScreen.height
 		);
 	}
 
@@ -51,15 +51,15 @@ public class GuiProperties implements IGuiProperties {
 			return true;
 		}
 		return a != null && b != null &&
-			a.getGuiClass().equals(b.getGuiClass()) &&
+			a.getScreenClass().equals(b.getScreenClass()) &&
 			a.getGuiLeft() == b.getGuiLeft() &&
 			a.getGuiXSize() == b.getGuiXSize() &&
 			a.getScreenWidth() == b.getScreenWidth() &&
 			a.getScreenHeight() == b.getScreenHeight();
 	}
 
-	private GuiProperties(Class<? extends GuiScreen> guiClass, int guiLeft, int guiTop, int guiXSize, int guiYSize, int screenWidth, int screenHeight) {
-		this.guiClass = guiClass;
+	private GuiProperties(Class<? extends Screen> screenClass, int guiLeft, int guiTop, int guiXSize, int guiYSize, int screenWidth, int screenHeight) {
+		this.screenClass = screenClass;
 		this.guiLeft = guiLeft;
 		this.guiTop = guiTop;
 		this.guiXSize = guiXSize;
@@ -69,8 +69,8 @@ public class GuiProperties implements IGuiProperties {
 	}
 
 	@Override
-	public Class<? extends GuiScreen> getGuiClass() {
-		return guiClass;
+	public Class<? extends Screen> getScreenClass() {
+		return screenClass;
 	}
 
 	@Override

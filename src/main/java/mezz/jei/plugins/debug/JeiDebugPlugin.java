@@ -6,12 +6,12 @@ import java.util.Collections;
 import java.util.List;
 
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraft.client.gui.inventory.GuiBrewingStand;
+import net.minecraft.block.Blocks;
+import net.minecraft.client.gui.screen.inventory.BrewingStandScreen;
 import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.IModPlugin;
@@ -97,19 +97,19 @@ public class JeiDebugPlugin implements IModPlugin {
 	@Override
 	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
-			registration.addGuiContainerHandler(GuiBrewingStand.class, new IGuiContainerHandler<GuiBrewingStand>() {
+			registration.addGuiContainerHandler(BrewingStandScreen.class, new IGuiContainerHandler<BrewingStandScreen>() {
 				@Override
-				public List<Rectangle2d> getGuiExtraAreas(GuiBrewingStand guiContainer) {
+				public List<Rectangle2d> getGuiExtraAreas(BrewingStandScreen containerScreen) {
 					int widthMovement = (int) ((System.currentTimeMillis() / 100) % 100);
 					int size = 25 + widthMovement;
 					return Collections.singletonList(
-						new Rectangle2d(guiContainer.getGuiLeft() + guiContainer.getXSize(), guiContainer.getGuiTop() + 40, size, size)
+						new Rectangle2d(containerScreen.getGuiLeft() + containerScreen.getXSize(), containerScreen.getGuiTop() + 40, size, size)
 					);
 				}
 
 				@Nullable
 				@Override
-				public Object getIngredientUnderMouse(GuiBrewingStand guiContainer, double mouseX, double mouseY) {
+				public Object getIngredientUnderMouse(BrewingStandScreen containerScreen, double mouseX, double mouseY) {
 //					if (mouseX < 10 && mouseY < 10) {
 //						return new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME);
 //					}
@@ -117,7 +117,7 @@ public class JeiDebugPlugin implements IModPlugin {
 				}
 			});
 
-			registration.addGhostIngredientHandler(GuiBrewingStand.class, new DebugGhostIngredientHandler<>());
+			registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandler<>());
 		}
 	}
 

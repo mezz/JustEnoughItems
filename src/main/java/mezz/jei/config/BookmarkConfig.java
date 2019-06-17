@@ -11,7 +11,7 @@ import java.util.List;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mezz.jei.api.constants.VanillaTypes;
@@ -40,7 +40,7 @@ public class BookmarkConfig {
 		for (IIngredientListElement<?> element : ingredientListElements) {
 			Object object = element.getIngredient();
 			if (object instanceof ItemStack) {
-				strings.add(MARKER_STACK + ((ItemStack) object).write(new NBTTagCompound()).toString());
+				strings.add(MARKER_STACK + ((ItemStack) object).write(new CompoundNBT()).toString());
 			} else {
 				strings.add(MARKER_OTHER + getUid(ingredientManager, element));
 			}
@@ -75,7 +75,7 @@ public class BookmarkConfig {
 			if (ingredientJsonString.startsWith(MARKER_STACK)) {
 				String itemStackAsJson = ingredientJsonString.substring(MARKER_STACK.length());
 				try {
-					NBTTagCompound itemStackAsNbt = JsonToNBT.getTagFromJson(itemStackAsJson);
+					CompoundNBT itemStackAsNbt = JsonToNBT.getTagFromJson(itemStackAsJson);
 					ItemStack itemStack = ItemStack.read(itemStackAsNbt);
 					if (!itemStack.isEmpty()) {
 						ItemStack normalized = itemStackHelper.normalizeIngredient(itemStack);

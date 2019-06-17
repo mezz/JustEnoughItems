@@ -13,10 +13,10 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.crash.ReportedException;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
@@ -139,9 +139,9 @@ public final class ErrorUtil {
 		ResourceLocation registryName = item.getRegistryName();
 		if (registryName != null) {
 			itemName = registryName.toString();
-		} else if (item instanceof ItemBlock) {
+		} else if (item instanceof BlockItem) {
 			final String blockName;
-			Block block = ((ItemBlock) item).getBlock();
+			Block block = ((BlockItem) item).getBlock();
 			if (block == null) {
 				blockName = "null";
 			} else {
@@ -152,12 +152,12 @@ public final class ErrorUtil {
 					blockName = block.getClass().getName();
 				}
 			}
-			itemName = "ItemBlock(" + blockName + ")";
+			itemName = "BlockItem(" + blockName + ")";
 		} else {
 			itemName = item.getClass().getName();
 		}
 
-		NBTTagCompound nbt = itemStack.getTag();
+		CompoundNBT nbt = itemStack.getTag();
 		if (nbt != null) {
 			return itemStack + " " + itemName + " nbt:" + nbt;
 		}
@@ -228,7 +228,7 @@ public final class ErrorUtil {
 	@SuppressWarnings("ConstantConditions")
 	public static void assertMainThread() {
 		Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft != null && !minecraft.isCallingFromMinecraftThread()) {
+		if (minecraft != null && !minecraft.isOnExecutionThread()) {
 			Thread currentThread = Thread.currentThread();
 			throw new IllegalStateException(
 				"A JEI API method is being called by another mod from the wrong thread:\n" +

@@ -7,11 +7,11 @@ import java.util.List;
 
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.init.Items;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 
@@ -209,9 +209,9 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		GuiButtonExt button = recipe.getButton();
 		if (mouseButton == 0 && button.mouseClicked(mouseX, mouseY, mouseButton)) {
 			Minecraft minecraft = Minecraft.getInstance();
-			EntityPlayerSP player = minecraft.player;
+			ClientPlayerEntity player = minecraft.player;
 			if (player != null) {
-				GuiScreen screen = new GuiInventory(player);
+				Screen screen = new InventoryScreen(player);
 				minecraft.displayGuiScreen(screen);
 			}
 			IJeiRuntime runtime = JeiDebugPlugin.jeiRuntime;

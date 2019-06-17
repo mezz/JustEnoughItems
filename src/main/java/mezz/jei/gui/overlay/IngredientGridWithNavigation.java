@@ -7,13 +7,13 @@ import java.util.Set;
 
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
 
-import mezz.jei.config.IFilterTextSource;
 import mezz.jei.config.IEditModeConfig;
+import mezz.jei.config.IFilterTextSource;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
@@ -156,11 +156,11 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 	}
 
 	/**
-	 * Modeled after GuiContainer#checkHotbarKeys(int)
+	 * Modeled after ContainerScreen#checkHotbarKeys(int)
 	 * Sets the stack in a hotbar slot to the one that's hovered over.
 	 */
 	protected boolean checkHotbarKeys(InputMappings.Input input) {
-		GuiScreen guiScreen = Minecraft.getInstance().currentScreen;
+		Screen guiScreen = Minecraft.getInstance().currentScreen;
 		if (worldConfig.isCheatItemsEnabled() && guiScreen != null && !(guiScreen instanceof RecipesGui)) {
 			final double mouseX = MouseUtil.getX();
 			final double mouseY = MouseUtil.getY();

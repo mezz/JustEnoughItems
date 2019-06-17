@@ -8,16 +8,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.ContainerRepair;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.RepairContainer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.tags.ItemTags;
 
 import com.google.common.base.Stopwatch;
@@ -199,16 +199,16 @@ public final class AnvilRecipeMaker {
 	}
 
 	public static int findLevelsCost(ItemStack leftStack, ItemStack rightStack) {
-		EntityPlayer player = Minecraft.getInstance().player;
+		PlayerEntity player = Minecraft.getInstance().player;
 		if (player == null) {
 			return -1;
 		}
-		InventoryPlayer fakeInventory = new InventoryPlayer(player);
+		PlayerInventory fakeInventory = new PlayerInventory(player);
 		try {
-			ContainerRepair repair = new ContainerRepair(fakeInventory, player.world, player);
+			RepairContainer repair = new RepairContainer(0, fakeInventory);
 			repair.inventorySlots.get(0).putStack(leftStack);
 			repair.inventorySlots.get(1).putStack(rightStack);
-			return repair.maximumCost;
+			return repair.func_216976_f();
 		} catch (RuntimeException e) {
 			String left = ErrorUtil.getItemStackInfo(leftStack);
 			String right = ErrorUtil.getItemStackInfo(rightStack);

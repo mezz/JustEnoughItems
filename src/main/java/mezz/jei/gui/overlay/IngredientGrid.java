@@ -4,11 +4,11 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 
 import net.minecraftforge.items.ItemHandlerHelper;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.Internal;
@@ -131,7 +131,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 
 	private boolean shouldDeleteItemOnClick(Minecraft minecraft, double mouseX, double mouseY) {
 		if (worldConfig.isDeleteItemsInCheatModeActive()) {
-			EntityPlayer player = minecraft.player;
+			PlayerEntity player = minecraft.player;
 			if (player != null) {
 				ItemStack itemStack = player.inventory.getItemStack();
 				if (!itemStack.isEmpty()) {
@@ -164,7 +164,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		if (isMouseOver(mouseX, mouseY)) {
 			Minecraft minecraft = Minecraft.getInstance();
 			if (shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
-				EntityPlayerSP player = minecraft.player;
+				ClientPlayerEntity player = minecraft.player;
 				if (player != null) {
 					ItemStack itemStack = player.inventory.getItemStack();
 					if (!itemStack.isEmpty()) {

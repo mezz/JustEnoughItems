@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.client.network.play.ClientPlayNetHandler;
 import net.minecraft.network.NetworkManager;
 
 import mezz.jei.config.forge.Configuration;
@@ -50,7 +50,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 
 	@Override
 	public void saveFilterText() {
-		NetHandlerPlayClient connection = Minecraft.getInstance().getConnection();
+		ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
 		if (connection != null) {
 			NetworkManager networkManager = connection.getNetworkManager();
 			final String worldCategory = ServerInfo.getWorldUid(networkManager);
@@ -74,7 +74,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 	public void toggleOverlayEnabled() {
 		values.overlayEnabled = !values.overlayEnabled;
 
-		NetHandlerPlayClient connection = Minecraft.getInstance().getConnection();
+		ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
 		if (connection != null) {
 			NetworkManager networkManager = connection.getNetworkManager();
 			final String worldCategory = ServerInfo.getWorldUid(networkManager);
@@ -104,7 +104,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 	public void setBookmarkEnabled(boolean value) {
 		if (values.bookmarkOverlayEnabled != value) {
 			values.bookmarkOverlayEnabled = value;
-			NetHandlerPlayClient connection = Minecraft.getInstance().getConnection();
+			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
 			if (connection != null) {
 				NetworkManager networkManager = connection.getNetworkManager();
 				final String worldCategory = ServerInfo.getWorldUid(networkManager);
@@ -142,7 +142,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 		if (values.cheatItemsEnabled != value) {
 			values.cheatItemsEnabled = value;
 
-			NetHandlerPlayClient connection = Minecraft.getInstance().getConnection();
+			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
 			if (connection != null) {
 				NetworkManager networkManager = connection.getNetworkManager();
 				final String worldCategory = ServerInfo.getWorldUid(networkManager);
@@ -170,7 +170,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 	public void toggleEditModeEnabled() {
 		values.editModeEnabled = !values.editModeEnabled;
 
-		NetHandlerPlayClient connection = Minecraft.getInstance().getConnection();
+		ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
 		if (connection != null) {
 			NetworkManager networkManager = connection.getNetworkManager();
 			final String worldCategory = ServerInfo.getWorldUid(networkManager);
@@ -193,7 +193,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 	}
 
 	public boolean syncConfig() {
-		NetHandlerPlayClient connection = Minecraft.getInstance().getConnection();
+		ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
 		if (connection != null) {
 			NetworkManager networkManager = connection.getNetworkManager();
 			return syncWorldConfig(networkManager);

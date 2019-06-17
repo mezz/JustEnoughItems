@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.Internal;
@@ -33,17 +33,17 @@ public final class RecipeTransferUtil {
 	}
 
 	@Nullable
-	public static IRecipeTransferError getTransferRecipeError(RecipeTransferManager recipeTransferManager, Container container, RecipeLayout recipeLayout, EntityPlayer player) {
+	public static IRecipeTransferError getTransferRecipeError(RecipeTransferManager recipeTransferManager, Container container, RecipeLayout recipeLayout, PlayerEntity player) {
 		return transferRecipe(recipeTransferManager, container, recipeLayout, player, false, false);
 	}
 
-	public static boolean transferRecipe(RecipeTransferManager recipeTransferManager, Container container, RecipeLayout recipeLayout, EntityPlayer player, boolean maxTransfer) {
+	public static boolean transferRecipe(RecipeTransferManager recipeTransferManager, Container container, RecipeLayout recipeLayout, PlayerEntity player, boolean maxTransfer) {
 		IRecipeTransferError error = transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer, true);
 		return error == null;
 	}
 
 	@Nullable
-	private static IRecipeTransferError transferRecipe(RecipeTransferManager recipeTransferManager, Container container, RecipeLayout recipeLayout, EntityPlayer player, boolean maxTransfer, boolean doTransfer) {
+	private static IRecipeTransferError transferRecipe(RecipeTransferManager recipeTransferManager, Container container, RecipeLayout recipeLayout, PlayerEntity player, boolean maxTransfer, boolean doTransfer) {
 		final JeiRuntime runtime = Internal.getRuntime();
 		if (runtime == null) {
 			return RecipeTransferErrorInternal.INSTANCE;

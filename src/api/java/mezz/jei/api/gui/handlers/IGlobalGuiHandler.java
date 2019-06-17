@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.api.registration.IGuiHandlerRegistration;
@@ -23,7 +24,7 @@ public interface IGlobalGuiHandler {
 	 * Give JEI information about extra space that your mod takes up.
 	 * Used for moving JEI out of the way of extra things like gui buttons.
 	 *
-	 * @return the space that the gui takes up besides the normal rectangle defined by GuiContainer.
+	 * @return the space that the gui takes up besides the normal rectangle defined by {@link ContainerScreen}.
 	 */
 	default Collection<Rectangle2d> getGuiExtraAreas() {
 		return Collections.emptyList();

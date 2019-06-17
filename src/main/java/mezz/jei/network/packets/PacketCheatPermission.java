@@ -1,6 +1,6 @@
 package mezz.jei.network.packets;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.TextFormatting;
 
@@ -26,7 +26,7 @@ public class PacketCheatPermission extends PacketJei {
 		buf.writeBoolean(hasPermission);
 	}
 
-	public static void readPacketData(PacketBuffer buf, EntityPlayer player, IWorldConfig worldConfig) {
+	public static void readPacketData(PacketBuffer buf, PlayerEntity player, IWorldConfig worldConfig) {
 		boolean hasPermission = buf.readBoolean();
 		if (!hasPermission && worldConfig.isCheatItemsEnabled()) {
 			CommandUtilServer.writeChatMessage(player, "jei.chat.error.no.cheat.permission.1", TextFormatting.RED);

@@ -8,9 +8,9 @@
 //import mezz.jei.network.packets.PacketRequestCheatPermission;
 //import mezz.jei.util.Translator;
 //import net.minecraft.client.Minecraft;
-//import net.minecraft.client.entity.EntityPlayerSP;
+//import net.minecraft.client.entity.ClientPlayerEntity;
 //import net.minecraft.client.gui.GuiButton;
-//import net.minecraft.client.gui.GuiScreen;
+//import net.minecraft.client.gui.Screen;
 //import net.minecraft.client.gui.inventory.GuiInventory;
 //import net.minecraft.network.NetworkManager;
 //import net.minecraftforge.common.config.ConfigCategory;
@@ -23,21 +23,21 @@
 //
 //public class JEIModConfigGui extends GuiConfig {
 //
-//	public JEIModConfigGui(GuiScreen parent) {
+//	public JEIModConfigGui(Screen parent) {
 //		super(getParent(parent), getConfigElements(), Constants.JEI_ID, false, false, getTitle(parent));
 //	}
 //
 //	/**
 //	 * Don't return to a RecipesGui, it will not be valid after configs are changed.
 //	 */
-//	private static GuiScreen getParent(GuiScreen parent) {
+//	private static Screen getParent(Screen parent) {
 //		if (parent instanceof RecipesGui) {
-//			GuiScreen parentScreen = ((RecipesGui) parent).getParentScreen();
+//			Screen parentScreen = ((RecipesGui) parent).getParentScreen();
 //			if (parentScreen != null) {
 //				return parentScreen;
 //			} else {
-//				Minecraft minecraft = parent.mc;
-//				EntityPlayerSP player = minecraft.player;
+//				Minecraft minecraft = parent.minecraft;
+//				ClientPlayerEntity player = minecraft.player;
 //				if (player != null) {
 //					return new GuiInventory(player);
 //				}
@@ -70,7 +70,7 @@
 //		return configElements;
 //	}
 //
-//	private static String getTitle(GuiScreen parent) {
+//	private static String getTitle(Screen parent) {
 //		if (parent instanceof GuiModList) {
 //			LocalizedConfiguration config = ClientConfig.getConfig();
 //			if (config != null) {

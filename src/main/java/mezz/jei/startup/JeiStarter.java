@@ -3,14 +3,15 @@ package mezz.jei.startup;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.inventory.container.Container;
 
 import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
-import mezz.jei.api.gui.handlers.IGuiScreenHandler;
+import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.bookmarks.BookmarkList;
@@ -79,9 +80,9 @@ public class JeiStarter {
 
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building runtime");
-		ListMultiMap<Class<? extends GuiContainer>, IGuiContainerHandler<?>> guiHandlers = guiHandlerRegistration.getGuiHandlers();
+		ListMultiMap<Class<? extends ContainerScreen>, IGuiContainerHandler<?>> guiHandlers = guiHandlerRegistration.getGuiHandlers();
 		List<IGlobalGuiHandler> globalGuiHandlers = guiHandlerRegistration.getGlobalGuiHandlers();
-		Map<Class, IGuiScreenHandler> guiScreenHandlers = guiHandlerRegistration.getGuiScreenHandlers();
+		Map<Class, IScreenHandler> guiScreenHandlers = guiHandlerRegistration.getGuiScreenHandlers();
 		Map<Class, IGhostIngredientHandler> ghostIngredientHandlers = guiHandlerRegistration.getGhostIngredientHandlers();
 		GuiScreenHelper guiScreenHelper = new GuiScreenHelper(ingredientManager, globalGuiHandlers, guiHandlers, ghostIngredientHandlers, guiScreenHandlers);
 		IngredientGridWithNavigation ingredientListGrid = new IngredientGridWithNavigation(ingredientFilter, worldConfig, guiScreenHelper, editModeConfig, ingredientFilterConfig, worldConfig, GridAlignment.LEFT);

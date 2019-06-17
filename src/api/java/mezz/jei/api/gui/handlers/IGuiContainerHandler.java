@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.api.registration.IGuiHandlerRegistration;
@@ -15,14 +15,14 @@ import mezz.jei.api.registration.IModIngredientRegistration;
  * Allows plugins to change how JEI is displayed next to their mod's guis.
  * Register your implementation with {@link IGuiHandlerRegistration#addGuiContainerHandler(Class, IGuiContainerHandler)}.
  */
-public interface IGuiContainerHandler<T extends GuiContainer> {
+public interface IGuiContainerHandler<T extends ContainerScreen> {
 	/**
-	 * Give JEI information about extra space that the GuiContainer takes up.
+	 * Give JEI information about extra space that the {@link ContainerScreen} takes up.
 	 * Used for moving JEI out of the way of extra things like gui tabs.
 	 *
-	 * @return the space that the gui takes up besides the normal rectangle defined by GuiContainer.
+	 * @return the space that the gui takes up besides the normal rectangle defined by {@link ContainerScreen}.
 	 */
-	default List<Rectangle2d> getGuiExtraAreas(T guiContainer) {
+	default List<Rectangle2d> getGuiExtraAreas(T containerScreen) {
 		return Collections.emptyList();
 	}
 
@@ -38,7 +38,7 @@ public interface IGuiContainerHandler<T extends GuiContainer> {
 	 * @param mouseY the current Y position of the mouse in screen coordinates.
 	 */
 	@Nullable
-	default Object getIngredientUnderMouse(T guiContainer, double mouseX, double mouseY) {
+	default Object getIngredientUnderMouse(T containerScreen, double mouseX, double mouseY) {
 		return null;
 	}
 
@@ -46,7 +46,7 @@ public interface IGuiContainerHandler<T extends GuiContainer> {
 	 * Return the JEI-controlled clickable areas for this GUI.
 	 * This is useful when you want to add a spot on your GUI that opens JEI and shows recipes.
 	 */
-	default Collection<IGuiClickableArea> getGuiClickableAreas(T guiContainer) {
+	default Collection<IGuiClickableArea> getGuiClickableAreas(T containerScreen) {
 		return Collections.emptyList();
 	}
 }

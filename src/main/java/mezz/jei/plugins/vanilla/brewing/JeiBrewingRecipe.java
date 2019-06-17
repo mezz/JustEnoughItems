@@ -6,7 +6,7 @@ import java.util.List;
 
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionType;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
 
@@ -37,8 +37,8 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 
 		ItemStack firstIngredient = ingredients.get(0);
 
-		PotionType typeIn = PotionUtils.getPotionFromItem(potionInput);
-		PotionType typeOut = PotionUtils.getPotionFromItem(potionOutput);
+		Potion typeIn = PotionUtils.getPotionFromItem(potionInput);
+		Potion typeOut = PotionUtils.getPotionFromItem(potionOutput);
 		this.hashCode = Objects.hashCode(potionInput.getItem(), ForgeRegistries.POTION_TYPES.getKey(typeIn),
 			potionOutput.getItem(), ForgeRegistries.POTION_TYPES.getKey(typeOut),
 			firstIngredient.getItem());
@@ -84,8 +84,8 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 		if (potion1.getItem() != potion2.getItem()) {
 			return false;
 		}
-		PotionType type1 = PotionUtils.getPotionFromItem(potion1);
-		PotionType type2 = PotionUtils.getPotionFromItem(potion2);
+		Potion type1 = PotionUtils.getPotionFromItem(potion1);
+		Potion type2 = PotionUtils.getPotionFromItem(potion2);
 		ResourceLocation key1 = type1.getRegistryName();
 		ResourceLocation key2 = type2.getRegistryName();
 		return java.util.Objects.equals(key1, key2);
@@ -103,8 +103,8 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 
 	@Override
 	public String toString() {
-		PotionType inputType = PotionUtils.getPotionFromItem(potionInput);
-		PotionType outputType = PotionUtils.getPotionFromItem(potionOutput);
+		Potion inputType = PotionUtils.getPotionFromItem(potionInput);
+		Potion outputType = PotionUtils.getPotionFromItem(potionOutput);
 		return ingredients + " + [" + potionInput.getItem() + " " + inputType.getNamePrefixed("") + "] = [" + potionOutput + " " + outputType.getNamePrefixed("") + "]";
 	}
 }

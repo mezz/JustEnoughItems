@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import javax.vecmath.Point2d;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
 
@@ -41,7 +41,7 @@ public class GhostIngredientReturning<T> {
 		this.start = start;
 		this.end = end;
 		this.startTime = System.currentTimeMillis();
-		GuiScreen currentScreen = Minecraft.getInstance().currentScreen;
+		Screen currentScreen = Minecraft.getInstance().currentScreen;
 		if (currentScreen != null) {
 			int width = currentScreen.width;
 			float durationPerPixel = DURATION_PER_SCREEN_WIDTH / (float) width;

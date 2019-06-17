@@ -3,7 +3,7 @@ package mezz.jei.network;
 import java.util.EnumMap;
 
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 
@@ -35,7 +35,7 @@ public class PacketHandler {
 	public void onPacket(NetworkEvent.ClientCustomPayloadEvent event) {
 		PacketBuffer packetBuffer = new PacketBuffer(event.getPayload());
 		NetworkEvent.Context context = event.getSource().get();
-		EntityPlayerMP player = context.getSender();
+		ServerPlayerEntity player = context.getSender();
 		if (player == null) {
 			LOGGER.error("Packet error, the sender player is missing for event: {}", event);
 			return;

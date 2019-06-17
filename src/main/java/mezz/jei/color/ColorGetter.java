@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
@@ -18,11 +18,10 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
-import com.google.common.base.Preconditions;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.MathUtil;
 import org.apache.logging.log4j.LogManager;
@@ -91,9 +90,10 @@ public final class ColorGetter {
 		final Item item = itemStack.getItem();
 		if (itemStack.isEmpty()) {
 			return Collections.emptyList();
-		} else if (item instanceof ItemBlock) {
-			final ItemBlock itemBlock = (ItemBlock) item;
+		} else if (item instanceof BlockItem) {
+			final BlockItem itemBlock = (BlockItem) item;
 			final Block block = itemBlock.getBlock();
+			//noinspection ConstantConditions
 			if (block == null) {
 				return Collections.emptyList();
 			}
@@ -114,9 +114,10 @@ public final class ColorGetter {
 	}
 
 	private static List<Integer> getBlockColors(Block block, int colorCount) {
-		IBlockState blockState = block.getDefaultState();
+		BlockState blockState = block.getDefaultState();
 		final BlockColors blockColors = Minecraft.getInstance().getBlockColors();
-		final int renderColor = blockColors.getColor(blockState, null, null, 0);
+		@SuppressWarnings("ConstantConditions")
+		final int renderColor = blockColors.getColor(blockState, null, null);
 		final TextureAtlasSprite textureAtlasSprite = getTextureAtlasSprite(blockState);
 		if (textureAtlasSprite == null) {
 			return Collections.emptyList();
@@ -162,7 +163,7 @@ public final class ColorGetter {
 	}
 
 	@Nullable
-	private static TextureAtlasSprite getTextureAtlasSprite(IBlockState blockState) {
+	private static TextureAtlasSprite getTextureAtlasSprite(BlockState blockState) {
 		Minecraft minecraft = Minecraft.getInstance();
 		BlockRendererDispatcher blockRendererDispatcher = minecraft.getBlockRendererDispatcher();
 		BlockModelShapes blockModelShapes = blockRendererDispatcher.getBlockModelShapes();

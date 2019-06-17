@@ -4,8 +4,8 @@ import javax.annotation.Nullable;
 import java.util.Set;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
@@ -75,7 +75,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 	}
 
 	@Override
-	public void drawOnForeground(GuiContainer gui, int mouseX, int mouseY) {
+	public void drawOnForeground(ContainerScreen gui, int mouseX, int mouseY) {
 	}
 
 	@Override
@@ -153,7 +153,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 		if (isListDisplayed()) {
 			if (MathUtil.contains(displayArea, mouseX, mouseY)) {
 				Minecraft minecraft = Minecraft.getInstance();
-				GuiScreen currentScreen = minecraft.currentScreen;
+				Screen currentScreen = minecraft.currentScreen;
 				InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
 				if (currentScreen != null &&
 					!(currentScreen instanceof RecipesGui) &&

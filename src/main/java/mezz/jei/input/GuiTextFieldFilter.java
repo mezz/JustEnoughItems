@@ -4,10 +4,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.renderer.Rectangle2d;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mezz.jei.Internal;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
@@ -17,7 +17,7 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IIngredientGridSource;
 import org.lwjgl.glfw.GLFW;
 
-public class GuiTextFieldFilter extends GuiTextField {
+public class GuiTextFieldFilter extends TextFieldWidget {
 	private static final int MAX_HISTORY = 100;
 	private static final int maxSearchLength = 128;
 	private static final List<String> history = new LinkedList<>();
@@ -29,8 +29,9 @@ public class GuiTextFieldFilter extends GuiTextField {
 
 	private final DrawableNineSliceTexture background;
 
-	public GuiTextFieldFilter(int componentId, IIngredientGridSource ingredientSource, IWorldConfig worldConfig) {
-		super(componentId, Minecraft.getInstance().fontRenderer, 0, 0, 0, 0);
+	public GuiTextFieldFilter(IIngredientGridSource ingredientSource, IWorldConfig worldConfig) {
+		// TODO narrator string
+		super(Minecraft.getInstance().fontRenderer, 0, 0, 0, 0, "");
 		this.worldConfig = worldConfig;
 
 		setMaxStringLength(maxSearchLength);
@@ -146,27 +147,25 @@ public class GuiTextFieldFilter extends GuiTextField {
 		return false;
 	}
 
-	// begin hack to draw our own background texture instead of the ugly default one
+	// begin hack to draw our own background texture instead of the default one
 	private boolean isDrawing = false;
 
 	@Override
-	public boolean getEnableBackgroundDrawing() {
+	protected boolean getEnableBackgroundDrawing() {
 		if (this.isDrawing) {
+			return false;
+		}
+		return super.getEnableBackgroundDrawing();
+	}
+
+	@Override
+	public void renderButton(int mouseX, int mouseY, float partialTicks) {
+		this.isDrawing = true;
+		if (this.getVisible()) {
 			GlStateManager.color4f(1, 1, 1, 1);
 			background.draw(this.x, this.y, this.width, this.height);
 		}
-		return false;
-	}
-
-	@Override
-	public int getWidth() {
-		return this.width - 8;
-	}
-
-	@Override
-	public void drawTextField(int mouseX, int mouseY, float partialTicks) {
-		this.isDrawing = true;
-		super.drawTextField(mouseX, mouseY, partialTicks);
+		super.renderButton(mouseX, mouseY, partialTicks);
 		this.isDrawing = false;
 	}
 	// end background hack

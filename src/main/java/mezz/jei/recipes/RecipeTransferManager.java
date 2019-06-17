@@ -2,7 +2,7 @@ package mezz.jei.recipes;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.inventory.Container;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableTable;

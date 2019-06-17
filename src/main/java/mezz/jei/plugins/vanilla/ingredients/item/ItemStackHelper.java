@@ -34,8 +34,8 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 //		Item item = itemStack.getItem();
 //		// Special case for ItemBlocks containing fluid blocks.
 //		// Nothing crafts those, the player probably wants to look up fluids.
-//		if (item instanceof ItemBlock) {
-//			Block block = ((ItemBlock) item).getBlock();
+//		if (item instanceof BlockItem) {
+//			Block block = ((BlockItem) item).getBlock();
 //			Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
 //			if (fluid != null) {
 //				FluidStack fluidStack = new FluidStack(fluid, Fluid.BUCKET_VOLUME);

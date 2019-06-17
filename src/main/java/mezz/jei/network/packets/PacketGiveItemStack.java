@@ -1,9 +1,9 @@
 package mezz.jei.network.packets;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 
 import mezz.jei.network.IPacketId;
@@ -27,14 +27,14 @@ public class PacketGiveItemStack extends PacketJei {
 
 	@Override
 	public void writePacketData(PacketBuffer buf) {
-		NBTTagCompound nbt = itemStack.serializeNBT();
+		CompoundNBT nbt = itemStack.serializeNBT();
 		buf.writeCompoundTag(nbt);
 		buf.writeEnumValue(giveMode);
 	}
 
-	public static void readPacketData(PacketBuffer buf, EntityPlayer player) {
-		if (player instanceof EntityPlayerMP) {
-			EntityPlayerMP sender = (EntityPlayerMP) player;
+	public static void readPacketData(PacketBuffer buf, PlayerEntity player) {
+		if (player instanceof ServerPlayerEntity) {
+			ServerPlayerEntity sender = (ServerPlayerEntity) player;
 
 			ItemStack itemStack = buf.readItemStack();
 			if (!itemStack.isEmpty()) {

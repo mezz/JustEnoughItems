@@ -5,15 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumRarity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Rarity;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
@@ -44,7 +44,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	@Override
 	public List<String> getTooltip(ItemStack ingredient, ITooltipFlag tooltipFlag) {
 		Minecraft minecraft = Minecraft.getInstance();
-		EntityPlayer player = minecraft.player;
+		PlayerEntity player = minecraft.player;
 		List<String> list;
 		try {
 			list = ingredient.getTooltip(player, tooltipFlag).stream()
@@ -58,13 +58,13 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 			return list;
 		}
 
-		EnumRarity rarity;
+		Rarity rarity;
 		try {
 			rarity = ingredient.getRarity();
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
 			LOGGER.error("Failed to get rarity: {}", itemStackInfo, e);
-			rarity = EnumRarity.COMMON;
+			rarity = Rarity.COMMON;
 		}
 
 		for (int k = 0; k < list.size(); ++k) {

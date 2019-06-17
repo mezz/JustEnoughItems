@@ -8,7 +8,7 @@ import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.elements.DrawableSprite;
 
 public class Textures {
-	private final JeiTextureMap textureMap;
+	private final JeiSpriteUploader spriteUploader;
 
 	private final IDrawableStatic slot;
 	private final DrawableNineSliceTexture nineSliceSlot;
@@ -33,12 +33,12 @@ public class Textures {
 	private final DrawableNineSliceTexture catalystTab;
 	private final IDrawableStatic flameIcon;
 
-	public Textures(JeiTextureMap textureMap) {
-		this.textureMap = textureMap;
+	public Textures(JeiSpriteUploader spriteUploader) {
+		this.spriteUploader = spriteUploader;
 
 		ResourceLocation slotSpriteLocation = registerSprite("slot");
-		this.slot = new DrawableSprite(this.textureMap, slotSpriteLocation, 18, 18);
-		this.nineSliceSlot = new DrawableNineSliceTexture(this.textureMap, slotSpriteLocation, 18, 18, 4, 4, 4, 4);
+		this.slot = new DrawableSprite(this.spriteUploader, slotSpriteLocation, 18, 18);
+		this.nineSliceSlot = new DrawableNineSliceTexture(this.spriteUploader, slotSpriteLocation, 18, 18, 4, 4, 4, 4);
 		
 		this.tabSelected = registerGuiSprite("tab_selected", 24, 24);
 		this.tabUnselected = registerGuiSprite("tab_unselected", 24, 24);
@@ -67,18 +67,18 @@ public class Textures {
 
 	private ResourceLocation registerSprite(String name) {
 		ResourceLocation location = new ResourceLocation(ModIds.JEI_ID, "gui/" + name);
-		textureMap.registerSprite(location);
+		spriteUploader.registerSprite(location);
 		return location;
 	}
 	
 	private DrawableSprite registerGuiSprite(String name, int width, int height) {
 		ResourceLocation location = registerSprite(name);
-		return new DrawableSprite(textureMap, location, width, height);
+		return new DrawableSprite(spriteUploader, location, width, height);
 	}
 
 	private DrawableNineSliceTexture registerNineSliceGuiSprite(String name, int width, int height, int left, int right, int top, int bottom) {
 		ResourceLocation location = registerSprite(name);
-		return new DrawableNineSliceTexture(textureMap, location, width, height, left, right, top, bottom);
+		return new DrawableNineSliceTexture(spriteUploader, location, width, height, left, right, top, bottom);
 	}
 
 	public IDrawableStatic getSlotDrawable() {
@@ -125,10 +125,10 @@ public class Textures {
 		return bookmarkButtonEnabledIcon;
 	}
 
-	public DrawableNineSliceTexture getButtonForState(int state) {
-		if (state == 0) {
+	public DrawableNineSliceTexture getButtonForState(boolean enabled, boolean hovered) {
+		if (!enabled) {
 			return buttonDisabled;
-		} else if (state == 2) {
+		} else if (hovered) {
 			return buttonHighlight;
 		} else {
 			return buttonEnabled;

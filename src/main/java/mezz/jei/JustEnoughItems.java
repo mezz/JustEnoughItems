@@ -20,11 +20,8 @@ public class JustEnoughItems {
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		NetworkHandler networkHandler = new NetworkHandler();
 		DistExecutor.runWhenOn(Dist.CLIENT, ()->()-> {
-			EventBusHelper.addLifecycleListener(modEventBus, FMLClientSetupEvent.class, setupEvent -> {
+			EventBusHelper.addLifecycleListener(modEventBus, FMLLoadCompleteEvent.class, setupEvent -> {
 				ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(networkHandler);
-				EventBusHelper.addLifecycleListener(modEventBus, FMLLoadCompleteEvent.class, loadCompleteEvent -> {
-					clientLifecycleHandler.onLoadComplete();
-				});
 			});
 		});
 		EventBusHelper.addLifecycleListener(modEventBus, FMLCommonSetupEvent.class, event -> {

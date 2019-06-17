@@ -9,10 +9,11 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.gui.drawable.IDrawableStatic;
-import mezz.jei.gui.textures.JeiTextureMap;
+import mezz.jei.config.Constants;
+import mezz.jei.gui.textures.JeiSpriteUploader;
 
 public class DrawableSprite implements IDrawableStatic {
-	private final JeiTextureMap textureMap;
+	private final JeiSpriteUploader spriteUploader;
 	private final ResourceLocation location;
 	private final int width;
 	private final int height;
@@ -21,8 +22,8 @@ public class DrawableSprite implements IDrawableStatic {
 	private int trimTop;
 	private int trimBottom;
 
-	public DrawableSprite(JeiTextureMap textureMap, ResourceLocation location, int width, int height) {
-		this.textureMap = textureMap;
+	public DrawableSprite(JeiSpriteUploader spriteUploader, ResourceLocation location, int width, int height) {
+		this.spriteUploader = spriteUploader;
 		this.location = location;
 		this.width = width;
 		this.height = height;
@@ -53,13 +54,13 @@ public class DrawableSprite implements IDrawableStatic {
 
 	@Override
 	public void draw(int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
-		TextureAtlasSprite sprite = textureMap.getSprite(location);
+		TextureAtlasSprite sprite = spriteUploader.getSprite(location);
 		int textureWidth = this.width;
 		int textureHeight = this.height;
 
 		Minecraft minecraft = Minecraft.getInstance();
 		TextureManager textureManager = minecraft.getTextureManager();
-		textureManager.bindTexture(textureMap.getLocation());
+		textureManager.bindTexture(Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
 
 		maskTop += trimTop;
 		maskBottom += trimBottom;

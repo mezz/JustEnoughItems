@@ -2,16 +2,16 @@ package mezz.jei.util;
 
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.inventory.GuiContainerCreative;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import mezz.jei.config.ClientConfig;
 import mezz.jei.config.ServerInfo;
@@ -31,17 +31,17 @@ public final class CommandUtil {
 	/**
 	 * /give <player> <item> [amount] [data] [dataTag]
 	 *
-	 * {@link GuiContainerCreative} has special client-side handling for itemStacks, just give the item on the client
+	 * {@link CreativeScreen} has special client-side handling for itemStacks, just give the item on the client
 	 */
 	public static void giveStack(ItemStack itemStack, InputMappings.Input input) {
 		final GiveMode giveMode = ClientConfig.getInstance().getGiveMode();
 		Minecraft minecraft = Minecraft.getInstance();
-		EntityPlayerSP player = minecraft.player;
+		ClientPlayerEntity player = minecraft.player;
 		if (player == null) {
 			LOGGER.error("Can't give stack, there is no player");
 			return;
 		}
-		if (minecraft.currentScreen instanceof GuiContainerCreative && giveMode == GiveMode.MOUSE_PICKUP) {
+		if (minecraft.currentScreen instanceof CreativeScreen && giveMode == GiveMode.MOUSE_PICKUP) {
 			final int amount = giveMode.getStackSize(itemStack, input);
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
 			CommandUtilServer.mousePickupItemStack(player, sendStack);
@@ -79,7 +79,7 @@ public final class CommandUtil {
 		ResourceLocation itemResourceLocation = item.getRegistryName();
 		ErrorUtil.checkNotNull(itemResourceLocation, "itemStack.getItem().getRegistryName()");
 
-		EntityPlayerSP sender = Minecraft.getInstance().player;
+		ClientPlayerEntity sender = Minecraft.getInstance().player;
 		if (sender != null) {
 			if (sender.getCommandSource().hasPermissionLevel(2)) {
 				sendGiveAction(sender, itemStack, amount);
@@ -92,27 +92,27 @@ public final class CommandUtil {
 		}
 	}
 
-	private static void sendGiveAction(EntityPlayerSP sender, ItemStack itemStack, int amount) {
+	private static void sendGiveAction(ClientPlayerEntity sender, ItemStack itemStack, int amount) {
 		String[] commandParameters = CommandUtilServer.getGiveCommandParameters(sender, itemStack, amount);
 		String fullCommand = "/give " + StringUtils.join(commandParameters, " ");
 		sendChatMessage(sender, fullCommand);
 	}
 
-	private static void sendChatMessage(EntityPlayerSP sender, String chatMessage) {
+	private static void sendChatMessage(ClientPlayerEntity sender, String chatMessage) {
 		if (chatMessage.length() <= 256) {
 			sender.sendChatMessage(chatMessage);
 		} else {
-			ITextComponent errorMessage = new TextComponentTranslation("jei.chat.error.command.too.long");
+			ITextComponent errorMessage = new TranslationTextComponent("jei.chat.error.command.too.long");
 			errorMessage.getStyle().setColor(TextFormatting.RED);
 			sender.sendStatusMessage(errorMessage, false);
 
-			ITextComponent chatMessageComponent = new TextComponentString(chatMessage);
+			ITextComponent chatMessageComponent = new StringTextComponent(chatMessage);
 			chatMessageComponent.getStyle().setColor(TextFormatting.RED);
 			sender.sendStatusMessage(chatMessageComponent, false);
 		}
 	}
 
-	private static void sendCreativeInventoryActions(EntityPlayerSP sender, ItemStack stack, int amount) {
+	private static void sendCreativeInventoryActions(ClientPlayerEntity sender, ItemStack stack, int amount) {
 		int i = 0; // starting in the inventory, not armour or crafting slots
 		while (i < sender.inventory.mainInventory.size() && amount > 0) {
 			ItemStack currentStack = sender.inventory.mainInventory.get(i);

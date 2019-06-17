@@ -2,8 +2,8 @@ package mezz.jei.api.recipe.transfer;
 
 import java.util.List;
 
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.registration.IRecipeTransferRegistration;

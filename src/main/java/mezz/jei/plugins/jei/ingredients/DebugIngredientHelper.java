@@ -3,7 +3,7 @@ package mezz.jei.plugins.jei.ingredients;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
@@ -50,7 +50,7 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 
 	@Override
 	public ItemStack getCheatItemStack(DebugIngredient ingredient) {
-		EntityPlayerSP player = Minecraft.getInstance().player;
+		ClientPlayerEntity player = Minecraft.getInstance().player;
 		if (player != null) {
 			CommandUtilServer.writeChatMessage(player, "Debug ingredients cannot be cheated", TextFormatting.RED);
 		}

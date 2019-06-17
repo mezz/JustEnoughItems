@@ -7,9 +7,9 @@ import java.util.List;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.InputMappings;
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
@@ -147,7 +147,7 @@ public class InputHandler {
 		}
 	}
 
-	private boolean handleMouseClick(GuiScreen guiScreen, int mouseButton, double mouseX, double mouseY) {
+	private boolean handleMouseClick(Screen guiScreen, int mouseButton, double mouseX, double mouseY) {
 		IClickedIngredient<?> clicked = getFocusUnderMouseForClick(mouseX, mouseY);
 		if (worldConfig.isEditModeEnabled() && clicked != null && handleClickEdit(clicked)) {
 			return true;
@@ -167,8 +167,8 @@ public class InputHandler {
 			return true;
 		}
 
-		if (guiScreen instanceof GuiContainer) {
-			GuiContainer guiContainer = (GuiContainer) guiScreen;
+		if (guiScreen instanceof ContainerScreen) {
+			ContainerScreen guiContainer = (ContainerScreen) guiScreen;
 			IGuiClickableArea clickableArea = guiScreenHelper.getGuiClickableArea(guiContainer, mouseX - guiContainer.getGuiLeft(), mouseY - guiContainer.getGuiTop());
 			if (clickableArea != null) {
 				clickableArea.onClick(Focus::new, recipesGui);
@@ -221,7 +221,7 @@ public class InputHandler {
 
 	private <V> boolean handleClickEdit(IClickedIngredient<V> clicked) {
 		V ingredient = clicked.getValue();
-		IngredientBlacklistType blacklistType = GuiScreen.isCtrlKeyDown() ? IngredientBlacklistType.WILDCARD : IngredientBlacklistType.ITEM;
+		IngredientBlacklistType blacklistType = Screen.hasControlDown() ? IngredientBlacklistType.WILDCARD : IngredientBlacklistType.ITEM;
 
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 
@@ -235,10 +235,7 @@ public class InputHandler {
 	}
 
 	private boolean hasKeyboardFocus() {
-		// TODO 1.13 when GuiContainer returns the right value so Post events get fired
-		// https://github.com/MinecraftForge/MinecraftForge/pull/5367
-		return true;
-//		return ingredientListOverlay.hasKeyboardFocus();
+		return ingredientListOverlay.hasKeyboardFocus();
 	}
 
 	private boolean handleCharTyped(char codePoint, int modifiers) {
@@ -311,11 +308,12 @@ public class InputHandler {
 	}
 
 	private boolean isContainerTextFieldFocused() {
-		GuiScreen gui = Minecraft.getInstance().currentScreen;
-		if (gui == null) {
+		Minecraft minecraft = Minecraft.getInstance();
+		Screen screen = minecraft.currentScreen;
+		if (screen == null) {
 			return false;
 		}
-		GuiTextField textField = ReflectionUtil.getFieldWithClass(gui, GuiTextField.class);
+		TextFieldWidget textField = ReflectionUtil.getFieldWithClass(screen, TextFieldWidget.class);
 		return textField != null && textField.getVisible() && textField.isFocused();
 	}
 

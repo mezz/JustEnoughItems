@@ -9,7 +9,7 @@ import java.util.Set;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionBrewing;
-import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.tileentity.FurnaceTileEntity;
 import net.minecraft.util.NonNullList;
 
 import com.google.common.collect.ImmutableMap;
@@ -67,7 +67,7 @@ public class IngredientManager implements IIngredientManager {
 
 	private void getStackProperties(ItemStack itemStack) {
 		try {
-			if (TileEntityFurnace.isItemFuel(itemStack)) {
+			if (FurnaceTileEntity.isFuel(itemStack)) {
 				fuels.add(itemStack);
 			}
 		} catch (RuntimeException | LinkageError e) {

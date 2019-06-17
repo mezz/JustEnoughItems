@@ -2,8 +2,8 @@ package mezz.jei.api.recipe.transfer;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.gui.IRecipeLayout;
@@ -34,5 +34,5 @@ public interface IRecipeTransferHandler<C extends Container> {
 	 * @return a recipe transfer error if the recipe can't be transferred. Return null on success.
 	 */
 	@Nullable
-	IRecipeTransferError transferRecipe(C container, IRecipeLayout recipeLayout, EntityPlayer player, boolean maxTransfer, boolean doTransfer);
+	IRecipeTransferError transferRecipe(C container, IRecipeLayout recipeLayout, PlayerEntity player, boolean maxTransfer, boolean doTransfer);
 }

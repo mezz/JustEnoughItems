@@ -2,8 +2,8 @@ package mezz.jei.gui.recipes;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Container;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
@@ -21,12 +21,12 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 	@Nullable
 	private IOnClickHandler onClickHandler;
 
-	public RecipeTransferButton(int id, int xPos, int yPos, int width, int height, IDrawable icon, RecipeLayout recipeLayout) {
-		super(id, xPos, yPos, width, height, icon);
+	public RecipeTransferButton(int xPos, int yPos, int width, int height, IDrawable icon, RecipeLayout recipeLayout) {
+		super(xPos, yPos, width, height, icon, b -> {});
 		this.recipeLayout = recipeLayout;
 	}
 
-	public void init(RecipeTransferManager recipeTransferManager, @Nullable Container container, EntityPlayer player) {
+	public void init(RecipeTransferManager recipeTransferManager, @Nullable Container container, PlayerEntity player) {
 		if (container != null) {
 			this.recipeTransferError = RecipeTransferUtil.getTransferRecipeError(recipeTransferManager, container, recipeLayout, player);
 		} else {
@@ -34,17 +34,17 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 		}
 
 		if (this.recipeTransferError == null) {
-			this.enabled = true;
+			this.active = true;
 			this.visible = true;
 		} else {
-			this.enabled = false;
+			this.active = false;
 			IRecipeTransferError.Type type = this.recipeTransferError.getType();
 			this.visible = (type == IRecipeTransferError.Type.USER_FACING);
 		}
 	}
 
 	public void drawToolTip(int mouseX, int mouseY) {
-		if (hovered && visible) {
+		if (isMouseOver(mouseX, mouseY)) {
 			if (recipeTransferError != null) {
 				recipeTransferError.showError(mouseX, mouseY, recipeLayout, recipeLayout.getPosX(), recipeLayout.getPosY());
 			} else {

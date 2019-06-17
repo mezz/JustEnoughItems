@@ -2,10 +2,10 @@ package mezz.jei.plugins.vanilla.anvil;
 
 import java.util.Map;
 
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -120,10 +120,10 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 
 			Minecraft minecraft = Minecraft.getInstance();
 			int mainColor = 0xFF80FF20;
-			EntityPlayerSP player = minecraft.player;
+			ClientPlayerEntity player = minecraft.player;
 			if (player != null &&
 				(lastCost >= 40 || lastCost > player.experienceLevel) &&
-				!player.abilities.isCreativeMode) {
+				!player.isCreative()) {
 				// Show red if the player doesn't have enough levels
 				mainColor = 0xFFFF6060;
 			}

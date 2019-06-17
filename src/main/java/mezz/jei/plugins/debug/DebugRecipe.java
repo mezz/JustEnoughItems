@@ -9,8 +9,7 @@ public class DebugRecipe {
 	private final HoverChecker buttonHoverChecker;
 
 	public DebugRecipe() {
-		this.button = new GuiButtonExt(0, 110, 30, "test");
-		this.button.setWidth(40);
+		this.button = new GuiButtonExt(0, 0, 40, 20, "test", b -> {});
 		this.buttonHoverChecker = new HoverChecker();
 		this.buttonHoverChecker.updateBounds(this.button);
 	}

@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
@@ -40,7 +40,7 @@ import mezz.jei.util.Translator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
+public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final int slotIndex;
@@ -189,7 +189,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		int y = rect.getY() + yOffset + yPadding;
 		GlStateManager.disableLighting();
 		GlStateManager.disableDepthTest();
-		drawRect(x, y, x + rect.getWidth() - xPadding * 2, y + rect.getHeight() - yPadding * 2, color);
+		fill(x, y, x + rect.getWidth() - xPadding * 2, y + rect.getHeight() - yPadding * 2, color);
 		GlStateManager.color4f(1f, 1f, 1f, 1f);
 	}
 
@@ -205,7 +205,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 			GlStateManager.disableDepthTest();
 
 			RenderHelper.disableStandardItemLighting();
-			drawRect(xOffset + rect.getX() + xPadding,
+			fill(xOffset + rect.getX() + xPadding,
 				yOffset + rect.getY() + yPadding,
 				xOffset + rect.getX() + rect.getWidth() - xPadding,
 				yOffset + rect.getY() + rect.getHeight() - yPadding,

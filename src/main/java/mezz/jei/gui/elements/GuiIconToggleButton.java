@@ -19,14 +19,14 @@ public abstract class GuiIconToggleButton {
 	public GuiIconToggleButton(IDrawable offIcon, IDrawable onIcon) {
 		this.offIcon = offIcon;
 		this.onIcon = onIcon;
-		this.button = new GuiIconButton(2, new DrawableBlank(0, 0));
+		this.button = new GuiIconButton(new DrawableBlank(0, 0), b -> {});
 		this.hoverChecker = new HoverChecker();
 		this.hoverChecker.updateBounds(this.button);
 	}
 
 	public void updateBounds(Rectangle2d area) {
-		this.button.width = area.getWidth();
-		this.button.height = area.getHeight();
+		this.button.setWidth(area.getWidth());
+		this.button.setHeight(area.getHeight());
 		this.button.x = area.getX();
 		this.button.y = area.getY();
 		this.hoverChecker.updateBounds(this.button);

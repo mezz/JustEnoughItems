@@ -1,6 +1,6 @@
 package mezz.jei.network.packets;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -26,7 +26,7 @@ public class PacketDeletePlayerItem extends PacketJei {
 		buf.writeShort(itemId);
 	}
 
-	public static void readPacketData(PacketBuffer buf, EntityPlayer player) {
+	public static void readPacketData(PacketBuffer buf, PlayerEntity player) {
 		int itemId = buf.readShort();
 		Item item = Item.getItemById(itemId);
 		ItemStack playerItem = player.inventory.getItemStack();

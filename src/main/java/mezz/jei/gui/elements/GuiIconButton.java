@@ -1,37 +1,23 @@
 package mezz.jei.gui.elements;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.Rectangle2d;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.config.Constants;
-import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.textures.Textures;
 
 /**
  * A gui button that has an {@link IDrawable} instead of a string label.
  */
-public class GuiIconButton extends GuiButton {
-	private final Consumer<List<String>> tooltipCallback;
-	private final Supplier<IDrawable> iconSupplier;
+public class GuiIconButton extends Button {
+	private final IDrawable icon;
 
-	public GuiIconButton(int buttonId, IDrawable icon) {
-		this(buttonId, (tooltip) -> {
-		}, () -> icon);
-	}
-
-	public GuiIconButton(int buttonId, Consumer<List<String>> tooltipCallback, Supplier<IDrawable> iconSupplier) {
-		super(buttonId, 0, 0, 0, 0, "");
-		this.tooltipCallback = tooltipCallback;
-		this.iconSupplier = iconSupplier;
+	public GuiIconButton(IDrawable icon, IPressable pressable) {
+		super(0, 0, 0, 0, "", pressable);
+		this.icon = icon;
 	}
 
 	public void updateBounds(Rectangle2d area) {
@@ -45,23 +31,22 @@ public class GuiIconButton extends GuiButton {
 	public void render(int mouseX, int mouseY, float partialTicks) {
 		if (this.visible) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
-			int i = this.getHoverState(this.hovered);
+			boolean hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			Textures textures = Internal.getTextures();
 			Minecraft minecraft = Minecraft.getInstance();
-			DrawableNineSliceTexture texture = textures.getButtonForState(i);
+			DrawableNineSliceTexture texture = textures.getButtonForState(this.active, hovered);
 			texture.draw(this.x, this.y, this.width, this.height);
 			this.renderBg(minecraft, mouseX, mouseY);
 
 			int color = 14737632;
 			if (packedFGColor != 0) {
 				color = packedFGColor;
-			} else if (!this.enabled) {
+			} else if (!this.active) {
 				color = 10526880;
-			} else if (this.hovered) {
+			} else if (hovered) {
 				color = 16777120;
 			}
 			if ((color & -67108864) == 0) {
@@ -74,7 +59,6 @@ public class GuiIconButton extends GuiButton {
 			float alpha = (float) (color >> 24 & 255) / 255.0F;
 			GlStateManager.color4f(red, blue, green, alpha);
 
-			IDrawable icon = iconSupplier.get();
 			double xOffset = x + (width - icon.getWidth()) / 2.0;
 			double yOffset = y + (height - icon.getHeight()) / 2.0;
 			GlStateManager.pushMatrix();
@@ -84,11 +68,4 @@ public class GuiIconButton extends GuiButton {
 		}
 	}
 
-	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
-		if (isMouseOver()) {
-			List<String> tooltip = new ArrayList<>();
-			this.tooltipCallback.accept(tooltip);
-			TooltipRenderer.drawHoveringText(tooltip, mouseX, mouseY, Constants.MAX_TOOLTIP_WIDTH);
-		}
-	}
 }

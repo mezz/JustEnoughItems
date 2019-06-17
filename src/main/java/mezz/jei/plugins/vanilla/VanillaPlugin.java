@@ -4,28 +4,26 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraftforge.common.crafting.IShapedRecipe;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraft.client.gui.GuiRepair;
-import net.minecraft.client.gui.inventory.GuiBrewingStand;
-import net.minecraft.client.gui.inventory.GuiCrafting;
-import net.minecraft.client.gui.inventory.GuiFurnace;
-import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.client.renderer.InventoryEffectRenderer;
+import net.minecraft.block.Blocks;
+import net.minecraft.client.gui.DisplayEffectsScreen;
+import net.minecraft.client.gui.screen.inventory.AnvilScreen;
+import net.minecraft.client.gui.screen.inventory.BrewingStandScreen;
+import net.minecraft.client.gui.screen.inventory.CraftingScreen;
+import net.minecraft.client.gui.screen.inventory.FurnaceScreen;
+import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.ContainerBrewingStand;
-import net.minecraft.inventory.ContainerFurnace;
-import net.minecraft.inventory.ContainerRepair;
-import net.minecraft.inventory.ContainerWorkbench;
-import net.minecraft.item.ItemEnchantedBook;
+import net.minecraft.inventory.container.BrewingStandContainer;
+import net.minecraft.inventory.container.FurnaceContainer;
+import net.minecraft.inventory.container.RepairContainer;
+import net.minecraft.inventory.container.WorkbenchContainer;
+import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.INBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.item.Items;
+import net.minecraft.item.crafting.ICraftingRecipe;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.Internal;
@@ -58,9 +56,8 @@ import mezz.jei.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeCategory;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeMaker;
 import mezz.jei.plugins.vanilla.brewing.PotionSubtypeInterpreter;
+import mezz.jei.plugins.vanilla.crafting.CraftingCategoryExtension;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
-import mezz.jei.plugins.vanilla.crafting.ShapedCraftingRecipeExtension;
-import mezz.jei.plugins.vanilla.crafting.ShapelessCraftingCategoryExtension;
 import mezz.jei.plugins.vanilla.crafting.TippedArrowRecipeMaker;
 import mezz.jei.plugins.vanilla.crafting.VanillaRecipeValidator;
 import mezz.jei.plugins.vanilla.furnace.FuelRecipeMaker;
@@ -96,16 +93,14 @@ public class VanillaPlugin implements IModPlugin {
 		registration.registerSubtypeInterpreter(Items.LINGERING_POTION, PotionSubtypeInterpreter.INSTANCE);
 		registration.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, itemStack -> {
 			List<String> enchantmentNames = new ArrayList<>();
-			NBTTagList enchantments = ItemEnchantedBook.getEnchantments(itemStack);
-			for (INBTBase nbt : enchantments) {
-				if (nbt instanceof NBTTagCompound) {
-					NBTTagCompound nbttagcompound = (NBTTagCompound) nbt;
-					String id = nbttagcompound.getString("id");
-					Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(ResourceLocation.makeResourceLocation(id));
-					if (enchantment != null) {
-						String enchantmentUid = enchantment.getName() + ".lvl" + nbttagcompound.getShort("lvl");
-						enchantmentNames.add(enchantmentUid);
-					}
+			ListNBT enchantments = EnchantedBookItem.getEnchantments(itemStack);
+			for (int i = 0; i < enchantments.size(); ++i) {
+				CompoundNBT compoundnbt = enchantments.getCompound(i);
+				String id = compoundnbt.getString("id");
+				Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(ResourceLocation.tryCreate(id));
+				if (enchantment != null) {
+					String enchantmentUid = enchantment.getName() + ".lvl" + compoundnbt.getShort("lvl");
+					enchantmentNames.add(enchantmentUid);
 				}
 			}
 			enchantmentNames.sort(null);
@@ -149,9 +144,8 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
-		IExtendableRecipeCategory<IRecipe, ICraftingCategoryExtension> craftingCategory = registration.getCraftingCategory();
-		craftingCategory.addCategoryExtension(IShapedRecipe.class, ShapedCraftingRecipeExtension::new);
-		craftingCategory.addCategoryExtension(IRecipe.class, ShapelessCraftingCategoryExtension::new);
+		IExtendableRecipeCategory<ICraftingRecipe, ICraftingCategoryExtension> craftingCategory = registration.getCraftingCategory();
+		craftingCategory.addCategoryExtension(ICraftingRecipe.class, CraftingCategoryExtension::new);
 	}
 
 	@Override
@@ -173,15 +167,15 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-		registration.addRecipeClickArea(GuiCrafting.class, 88, 32, 28, 23, VanillaRecipeCategoryUid.CRAFTING);
-		registration.addRecipeClickArea(GuiInventory.class, 137, 29, 10, 13, VanillaRecipeCategoryUid.CRAFTING);
-		registration.addRecipeClickArea(GuiBrewingStand.class, 97, 16, 14, 30, VanillaRecipeCategoryUid.BREWING);
-		registration.addRecipeClickArea(GuiFurnace.class, 78, 32, 28, 23, VanillaRecipeCategoryUid.FURNACE, VanillaRecipeCategoryUid.FUEL);
-		registration.addRecipeClickArea(GuiRepair.class, 102, 48, 22, 15, VanillaRecipeCategoryUid.ANVIL);
+		registration.addRecipeClickArea(CraftingScreen.class, 88, 32, 28, 23, VanillaRecipeCategoryUid.CRAFTING);
+		registration.addRecipeClickArea(InventoryScreen.class, 137, 29, 10, 13, VanillaRecipeCategoryUid.CRAFTING);
+		registration.addRecipeClickArea(BrewingStandScreen.class, 97, 16, 14, 30, VanillaRecipeCategoryUid.BREWING);
+		registration.addRecipeClickArea(FurnaceScreen.class, 78, 32, 28, 23, VanillaRecipeCategoryUid.FURNACE, VanillaRecipeCategoryUid.FUEL);
+		registration.addRecipeClickArea(AnvilScreen.class, 102, 48, 22, 15, VanillaRecipeCategoryUid.ANVIL);
 
-		registration.addGuiContainerHandler(InventoryEffectRenderer.class, new InventoryEffectRendererGuiHandler());
-		registration.addGuiContainerHandler(GuiInventory.class, new RecipeBookGuiHandler<>());
-		registration.addGuiContainerHandler(GuiCrafting.class, new RecipeBookGuiHandler<>());
+		registration.addGuiContainerHandler(DisplayEffectsScreen.class, new InventoryEffectRendererGuiHandler());
+		registration.addGuiContainerHandler(CraftingScreen.class, new RecipeBookGuiHandler<>());
+		registration.addGuiContainerHandler(InventoryScreen.class, new RecipeBookGuiHandler<>());
 	}
 
 	@Override
@@ -189,12 +183,12 @@ public class VanillaPlugin implements IModPlugin {
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IRecipeTransferHandlerHelper transferHelper = registration.getTransferHelper();
 		IStackHelper stackHelper = jeiHelpers.getStackHelper();
-		registration.addRecipeTransferHandler(ContainerWorkbench.class, VanillaRecipeCategoryUid.CRAFTING, 1, 9, 10, 36);
+		registration.addRecipeTransferHandler(WorkbenchContainer.class, VanillaRecipeCategoryUid.CRAFTING, 1, 9, 10, 36);
 		registration.addRecipeTransferHandler(new PlayerRecipeTransferHandler(stackHelper, transferHelper), VanillaRecipeCategoryUid.CRAFTING);
-		registration.addRecipeTransferHandler(ContainerFurnace.class, VanillaRecipeCategoryUid.FURNACE, 0, 1, 3, 36);
-		registration.addRecipeTransferHandler(ContainerFurnace.class, VanillaRecipeCategoryUid.FUEL, 1, 1, 3, 36);
-		registration.addRecipeTransferHandler(ContainerBrewingStand.class, VanillaRecipeCategoryUid.BREWING, 0, 4, 5, 36);
-		registration.addRecipeTransferHandler(ContainerRepair.class, VanillaRecipeCategoryUid.ANVIL, 0, 2, 3, 36);
+		registration.addRecipeTransferHandler(FurnaceContainer.class, VanillaRecipeCategoryUid.FURNACE, 0, 1, 3, 36);
+		registration.addRecipeTransferHandler(FurnaceContainer.class, VanillaRecipeCategoryUid.FUEL, 1, 1, 3, 36);
+		registration.addRecipeTransferHandler(BrewingStandContainer.class, VanillaRecipeCategoryUid.BREWING, 0, 4, 5, 36);
+		registration.addRecipeTransferHandler(RepairContainer.class, VanillaRecipeCategoryUid.ANVIL, 0, 2, 3, 36);
 	}
 
 	@Override

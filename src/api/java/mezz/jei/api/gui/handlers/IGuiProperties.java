@@ -1,13 +1,13 @@
 package mezz.jei.api.gui.handlers;
 
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 
 /**
  * Defines the properties of a gui so that JEI can draw next to it.
- * Created by {@link IGuiScreenHandler#apply(GuiScreen)}
+ * Created by {@link IScreenHandler#apply(Screen)}
  */
 public interface IGuiProperties {
-	Class<? extends GuiScreen> getGuiClass();
+	Class<? extends Screen> getScreenClass();
 
 	int getGuiLeft();
 

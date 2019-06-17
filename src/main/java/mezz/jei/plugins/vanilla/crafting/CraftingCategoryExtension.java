@@ -2,17 +2,19 @@ package mezz.jei.plugins.vanilla.crafting;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.item.crafting.IRecipe;
+import net.minecraftforge.common.crafting.IShapedRecipe;
+import net.minecraftforge.common.util.Size2i;
+import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 
-public class ShapelessCraftingCategoryExtension<T extends IRecipe> implements ICraftingCategoryExtension {
+public class CraftingCategoryExtension<T extends ICraftingRecipe> implements ICraftingCategoryExtension {
 	protected final T recipe;
 
-	public ShapelessCraftingCategoryExtension(T recipe) {
+	public CraftingCategoryExtension(T recipe) {
 		this.recipe = recipe;
 	}
 
@@ -26,5 +28,15 @@ public class ShapelessCraftingCategoryExtension<T extends IRecipe> implements IC
 	@Override
 	public ResourceLocation getRegistryName() {
 		return recipe.getId();
+	}
+
+	@Nullable
+	@Override
+	public Size2i getSize() {
+		if (recipe instanceof IShapedRecipe) {
+			IShapedRecipe shapedRecipe = (IShapedRecipe) this.recipe;
+			return new Size2i(shapedRecipe.getRecipeWidth(), shapedRecipe.getRecipeHeight());
+		}
+		return null;
 	}
 }

@@ -4,8 +4,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GlStateManager;
+import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
 
@@ -90,7 +90,7 @@ public class GhostIngredientDrag<T> {
 			} else {
 				color = targetColor;
 			}
-			Gui.drawRect(area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), color);
+			Screen.fill(area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), color);
 		}
 		GlStateManager.color4f(1f, 1f, 1f, 1f);
 	}

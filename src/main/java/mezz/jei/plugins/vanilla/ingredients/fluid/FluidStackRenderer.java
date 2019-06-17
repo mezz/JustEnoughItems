@@ -8,10 +8,10 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.util.ResourceLocation;
@@ -101,7 +101,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 
 	private void drawTiledSprite(final int xPosition, final int yPosition, final int tiledWidth, final int tiledHeight, int color, int scaledAmount, TextureAtlasSprite sprite) {
 		Minecraft minecraft = Minecraft.getInstance();
-		minecraft.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		minecraft.getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
 		setGLColorFromInt(color);
 
 		final int xTileCount = tiledWidth / TEX_WIDTH;
@@ -129,7 +129,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 
 	private static TextureAtlasSprite getStillFluidSprite(Fluid fluid) {
 		Minecraft minecraft = Minecraft.getInstance();
-		TextureMap textureMapBlocks = minecraft.getTextureMap();
+		AtlasTexture textureMapBlocks = minecraft.getTextureMap();
 		ResourceLocation fluidStill = fluid.getStill();
 		return textureMapBlocks.getSprite(fluidStill);
 	}

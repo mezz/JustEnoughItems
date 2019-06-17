@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Stack;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.inventory.Container;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableList;
@@ -72,7 +72,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	@Nonnegative
 	private int getRecipeCategoryIndexToShowFirst(List<IRecipeCategory> recipeCategories) {
 		Minecraft minecraft = Minecraft.getInstance();
-		EntityPlayerSP player = minecraft.player;
+		ClientPlayerEntity player = minecraft.player;
 		if (player != null) {
 			Container openContainer = player.openContainer;
 			if (openContainer != null) {

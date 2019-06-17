@@ -3,7 +3,7 @@ package mezz.jei.gui.ingredients;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 
 public class CycleTimer {
 	/* the amount of time in ms to display one thing before cycling to the next one */
@@ -28,7 +28,7 @@ public class CycleTimer {
 	}
 
 	public void onDraw() {
-		if (!GuiScreen.isShiftKeyDown()) {
+		if (!Screen.hasShiftDown()) {
 			if (pausedDuration > 0) {
 				startTime += pausedDuration;
 				pausedDuration = 0;

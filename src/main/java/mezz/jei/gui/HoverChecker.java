@@ -1,6 +1,6 @@
 package mezz.jei.gui;
 
-import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.widget.button.Button;
 
 public class HoverChecker {
 	private int top;
@@ -8,11 +8,11 @@ public class HoverChecker {
 	private int left;
 	private int right;
 
-	public void updateBounds(GuiButton button) {
+	public void updateBounds(Button button) {
 		this.top = button.y;
-		this.bottom = button.y + button.height;
+		this.bottom = button.y + button.getHeight();
 		this.left = button.x;
-		this.right = button.x + button.width;
+		this.right = button.x + button.getWidth();
 	}
 
 	public void updateBounds(int top, int bottom, int left, int right) {

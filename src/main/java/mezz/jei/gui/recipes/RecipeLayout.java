@@ -7,7 +7,7 @@ import java.util.Map;
 
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.item.ItemStack;
 
@@ -38,7 +38,6 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	private static final int HIGHLIGHT_COLOR = 0x7FFFFFFF;
 	private static final int RECIPE_BUTTON_SIZE = 13;
 	private static final int RECIPE_BORDER_PADDING = 4;
-	public static final int recipeTransferButtonIndex = 100;
 
 	private final int ingredientCycleOffset = (int) (Math.random() * 10000);
 	private final IRecipeCategory recipeCategory;
@@ -98,7 +97,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 
 		if (index >= 0) {
 			IDrawable icon = Internal.getTextures().getRecipeTransfer();
-			this.recipeTransferButton = new RecipeTransferButton(recipeTransferButtonIndex + index, 0, 0, RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, icon, this);
+			this.recipeTransferButton = new RecipeTransferButton(0, 0, RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, icon, this);
 		} else {
 			this.recipeTransferButton = null;
 		}
@@ -207,7 +206,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		final IDrawable background = recipeCategory.getBackground();
 		final Rectangle2d backgroundRect = new Rectangle2d(posX, posY, background.getWidth(), background.getHeight());
 		return MathUtil.contains(backgroundRect, mouseX, mouseY) ||
-			(recipeTransferButton != null && recipeTransferButton.isMouseOver());
+			(recipeTransferButton != null && recipeTransferButton.isMouseOver(mouseX, mouseY));
 	}
 
 	@Override

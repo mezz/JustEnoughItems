@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Objects;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
@@ -39,7 +39,7 @@ public class GhostIngredientDragManager {
 	}
 
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
-		if (!(minecraft.currentScreen instanceof GuiContainer)) { // guiContainer uses drawOnForeground
+		if (!(minecraft.currentScreen instanceof ContainerScreen)) { // guiContainer uses drawOnForeground
 			drawGhostIngredientHighlights(minecraft, mouseX, mouseY);
 		}
 		if (ghostIngredientDrag != null) {
@@ -62,9 +62,9 @@ public class GhostIngredientDragManager {
 			if (!Objects.equals(hovered, this.hoveredIngredient)) {
 				this.hoveredIngredient = hovered;
 				this.hoveredIngredientTargets = null;
-				GuiScreen currentScreen = minecraft.currentScreen;
+				Screen currentScreen = minecraft.currentScreen;
 				if (currentScreen != null && hovered != null) {
-					IGhostIngredientHandler<GuiScreen> handler = guiScreenHelper.getGhostIngredientHandler(currentScreen);
+					IGhostIngredientHandler<Screen> handler = guiScreenHelper.getGhostIngredientHandler(currentScreen);
 					if (handler != null && handler.shouldHighlightTargets()) {
 						this.hoveredIngredientTargets = handler.getTargets(currentScreen, hovered, false);
 					}
@@ -96,7 +96,7 @@ public class GhostIngredientDragManager {
 		}
 	}
 
-	public <T extends GuiScreen, V> boolean handleClickGhostIngredient(T currentScreen, IClickedIngredient<V> clicked) {
+	public <T extends Screen, V> boolean handleClickGhostIngredient(T currentScreen, IClickedIngredient<V> clicked) {
 		IGhostIngredientHandler<T> handler = guiScreenHelper.getGhostIngredientHandler(currentScreen);
 		if (handler != null) {
 			V ingredient = clicked.getValue();

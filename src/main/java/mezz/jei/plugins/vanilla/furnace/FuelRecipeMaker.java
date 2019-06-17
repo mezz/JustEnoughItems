@@ -8,7 +8,7 @@ import java.util.Map;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.tileentity.FurnaceTileEntity;
 
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
@@ -23,7 +23,7 @@ public final class FuelRecipeMaker {
 		IGuiHelper guiHelper = helpers.getGuiHelper();
 		List<ItemStack> fuelStacks = ingredientManager.getFuels();
 		List<FuelRecipe> fuelRecipes = new ArrayList<>(fuelStacks.size());
-		Map<Item, Integer> burnTimes = TileEntityFurnace.getBurnTimes();
+		Map<Item, Integer> burnTimes = FurnaceTileEntity.getBurnTimes();
 		for (ItemStack fuelStack : fuelStacks) {
 			int burnTime = getItemBurnTime(fuelStack, burnTimes);
 			fuelRecipes.add(new FuelRecipe(guiHelper, Collections.singleton(fuelStack), burnTime));

@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.List;
 
 import net.minecraftforge.fml.client.config.GuiUtils;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.util.text.TextFormatting;
 
@@ -79,7 +79,7 @@ public class IngredientListElementRenderer<T> {
 	}
 
 	/**
-	 * Matches the highlight code in {@link GuiContainer#render(int, int, float)}
+	 * Matches the highlight code in {@link ContainerScreen#render(int, int, float)}
 	 */
 	public void drawHighlight() {
 		GlStateManager.disableLighting();
@@ -102,7 +102,7 @@ public class IngredientListElementRenderer<T> {
 		T ingredient = element.getIngredient();
 
 		if (editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
-			GuiScreen.drawRect(area.getX() + padding, area.getY() + padding, area.getX() + 16 + padding, area.getY() + 16 + padding, BLACKLIST_COLOR);
+			Screen.fill(area.getX() + padding, area.getY() + padding, area.getX() + 16 + padding, area.getY() + 16 + padding, BLACKLIST_COLOR);
 			GlStateManager.color4f(1f, 1f, 1f, 1f);
 		}
 	}

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
@@ -59,7 +59,7 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 
 		@Override
 		public String apply(ItemStack itemStack) {
-			NBTTagCompound nbtTagCompound = itemStack.getTag();
+			CompoundNBT nbtTagCompound = itemStack.getTag();
 			if (nbtTagCompound == null || nbtTagCompound.isEmpty()) {
 				return ISubtypeInterpreter.NONE;
 			}

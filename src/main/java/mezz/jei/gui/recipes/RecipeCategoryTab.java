@@ -3,13 +3,13 @@ package mezz.jei.gui.recipes;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -32,7 +32,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
 		logic.setRecipeCategory(category);
 		SoundHandler soundHandler = Minecraft.getInstance().getSoundHandler();
-		soundHandler.play(SimpleSound.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+		soundHandler.play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 		return true;
 	}
 

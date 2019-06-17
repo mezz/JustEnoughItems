@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.ContainerPlayer;
-import net.minecraft.inventory.Slot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.PlayerContainer;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 
 import com.google.common.collect.ImmutableSet;
@@ -31,27 +31,27 @@ import mezz.jei.util.Translator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<ContainerPlayer> {
+public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<PlayerContainer> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final IStackHelper stackHelper;
 	private final IRecipeTransferHandlerHelper handlerHelper;
-	private final IRecipeTransferInfo<ContainerPlayer> transferHelper;
+	private final IRecipeTransferInfo<PlayerContainer> transferHelper;
 
 	public PlayerRecipeTransferHandler(IStackHelper stackhelper, IRecipeTransferHandlerHelper handlerHelper) {
 		this.stackHelper = stackhelper;
 		this.handlerHelper = handlerHelper;
-		this.transferHelper = new BasicRecipeTransferInfo<>(ContainerPlayer.class, VanillaRecipeCategoryUid.CRAFTING, 1, 4, 9, 36);
+		this.transferHelper = new BasicRecipeTransferInfo<>(PlayerContainer.class, VanillaRecipeCategoryUid.CRAFTING, 1, 4, 9, 36);
 	}
 
 	@Override
-	public Class<ContainerPlayer> getContainerClass() {
+	public Class<PlayerContainer> getContainerClass() {
 		return transferHelper.getContainerClass();
 	}
 
 	@Nullable
 	@Override
-	public IRecipeTransferError transferRecipe(ContainerPlayer container, IRecipeLayout recipeLayout, EntityPlayer player, boolean maxTransfer, boolean doTransfer) {
+	public IRecipeTransferError transferRecipe(PlayerContainer container, IRecipeLayout recipeLayout, PlayerEntity player, boolean maxTransfer, boolean doTransfer) {
 		if (!ServerInfo.isJeiOnServer()) {
 			String tooltipMessage = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.no.server");
 			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);

@@ -6,17 +6,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.init.Items;
-import net.minecraft.init.PotionTypes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.potion.Potions;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.collect.SetMultiMap;
 
 public class BrewingRecipeUtil {
 	public static final ItemStack POTION = new ItemStack(Items.POTION);
-	public static final ItemStack WATER_BOTTLE = PotionUtils.addPotionToItemStack(POTION.copy(), PotionTypes.WATER);
+	public static final ItemStack WATER_BOTTLE = PotionUtils.addPotionToItemStack(POTION.copy(), Potions.WATER);
 
 	private final Map<String, Integer> brewingStepCache = new HashMap<>(); // output potion -> brewing steps
 	private final SetMultiMap<String, String> potionMap = new SetMultiMap<>(); // output potion -> input potions

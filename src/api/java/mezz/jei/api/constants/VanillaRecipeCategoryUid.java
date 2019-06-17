@@ -8,8 +8,8 @@ import net.minecraft.item.crafting.FurnaceRecipe;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICustomCraftingCategoryExtension;
-import mezz.jei.api.recipe.category.extensions.vanilla.crafting.IShapedCraftingCategoryExtension;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -23,7 +23,7 @@ public final class VanillaRecipeCategoryUid {
 	 *
 	 * Automatically includes all vanilla and Forge recipes.
 	 *
-	 * To add a shaped recipe extension to this category, it must implement {@link IShapedCraftingCategoryExtension}.
+	 * To add a shaped recipe extension to this category, it must implement {@link ICraftingCategoryExtension#getSize()}.
 	 *
 	 * To override the normal behavior of the crafting recipe category, you can implement {@link ICustomCraftingCategoryExtension}
 	 */

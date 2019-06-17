@@ -2,6 +2,7 @@ package mezz.jei.api.recipe.category.extensions.vanilla.crafting;
 
 import javax.annotation.Nullable;
 
+import net.minecraftforge.common.util.Size2i;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
@@ -11,7 +12,7 @@ import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
  * Implement this interface instead of just {@link IRecipeCategoryExtension} to have your recipe extension work as part of the
  * {@link VanillaRecipeCategoryUid#CRAFTING} recipe category as a shapeless recipe.
  *
- * For shaped recipes, use {@link IShapedCraftingCategoryExtension}.
+ * For shaped recipes, override {@link #getSize()}.
  * To override the category's behavior and set the recipe layout yourself, use {@link ICustomCraftingCategoryExtension}.
  */
 public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
@@ -26,6 +27,14 @@ public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 	 */
 	@Nullable
 	default ResourceLocation getRegistryName() {
+		return null;
+	}
+
+	/**
+	 * @return the size of a shaped recipe, or null for a shapeless recipe
+	 */
+	@Nullable
+	default Size2i getSize() {
 		return null;
 	}
 }

@@ -42,7 +42,7 @@ public class BookmarkButton extends GuiIconToggleButton {
 		} else if (!bookmarkOverlay.hasRoom()) {
 			tooltip.add(TextFormatting.GOLD + Translator.translateToLocal("jei.tooltip.bookmarks.not.enough.space"));
 		} else {
-			tooltip.add(TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.bookmarks.usage.key", bookmarkKey.func_197978_k()));
+			tooltip.add(TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.bookmarks.usage.key", bookmarkKey.getLocalizedName()));
 		}
 	}
 

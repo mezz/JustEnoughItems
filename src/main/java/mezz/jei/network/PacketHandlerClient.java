@@ -6,7 +6,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 
 import mezz.jei.config.IWorldConfig;
@@ -31,7 +31,7 @@ public class PacketHandlerClient {
 			PacketIdClient packetId = PacketIdClient.VALUES[packetIdOrdinal];
 			IPacketJeiHandler packetHandler = clientHandlers.get(packetId);
 			Minecraft minecraft = Minecraft.getInstance();
-			EntityPlayer player = minecraft.player;
+			PlayerEntity player = minecraft.player;
 			if (player != null) {
 				packetHandler.readPacketData(packetBuffer, player);
 			}
