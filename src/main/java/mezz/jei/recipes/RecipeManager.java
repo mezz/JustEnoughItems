@@ -284,7 +284,7 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public <T>void hideRecipe(T recipe, ResourceLocation recipeCategoryUid) {
+	public <T> void hideRecipe(T recipe, ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		ErrorUtil.assertMainThread();

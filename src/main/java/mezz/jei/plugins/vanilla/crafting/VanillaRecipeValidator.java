@@ -95,7 +95,6 @@ public final class VanillaRecipeValidator {
 				results.campfireRecipes.add(recipe);
 			}
 		}
-		// TODO other recipe types: BLASTING, SMOKING, CAMPFIRE_COOKING, STONECUTTING
 		return results;
 	}
 

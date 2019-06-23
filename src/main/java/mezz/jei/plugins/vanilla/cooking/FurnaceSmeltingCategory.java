@@ -8,17 +8,17 @@ import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.helpers.IGuiHelper;
 
 public class FurnaceSmeltingCategory extends AbstractCookingCategory<FurnaceRecipe> {
-    public FurnaceSmeltingCategory(IGuiHelper guiHelper) {
-        super(guiHelper, Blocks.FURNACE, "gui.jei.category.smelting", 200);
-    }
+	public FurnaceSmeltingCategory(IGuiHelper guiHelper) {
+		super(guiHelper, Blocks.FURNACE, "gui.jei.category.smelting", 200);
+	}
 
-    @Override
-    public ResourceLocation getUid() {
-        return VanillaRecipeCategoryUid.FURNACE;
-    }
+	@Override
+	public ResourceLocation getUid() {
+		return VanillaRecipeCategoryUid.FURNACE;
+	}
 
-    @Override
-    public Class<? extends FurnaceRecipe> getRecipeClass() {
-        return FurnaceRecipe.class;
-    }
+	@Override
+	public Class<? extends FurnaceRecipe> getRecipeClass() {
+		return FurnaceRecipe.class;
+	}
 }

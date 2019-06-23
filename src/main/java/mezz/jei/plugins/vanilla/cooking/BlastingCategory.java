@@ -8,17 +8,17 @@ import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.helpers.IGuiHelper;
 
 public class BlastingCategory extends AbstractCookingCategory<BlastingRecipe> {
-    public BlastingCategory(IGuiHelper guiHelper) {
-        super(guiHelper, Blocks.BLAST_FURNACE, "gui.jei.category.blasting", 100);
-    }
+	public BlastingCategory(IGuiHelper guiHelper) {
+		super(guiHelper, Blocks.BLAST_FURNACE, "gui.jei.category.blasting", 100);
+	}
 
-    @Override
-    public ResourceLocation getUid() {
-        return VanillaRecipeCategoryUid.BLASTING;
-    }
+	@Override
+	public ResourceLocation getUid() {
+		return VanillaRecipeCategoryUid.BLASTING;
+	}
 
-    @Override
-    public Class<? extends BlastingRecipe> getRecipeClass() {
-        return BlastingRecipe.class;
-    }
+	@Override
+	public Class<? extends BlastingRecipe> getRecipeClass() {
+		return BlastingRecipe.class;
+	}
 }

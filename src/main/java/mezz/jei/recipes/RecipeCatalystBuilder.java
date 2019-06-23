@@ -36,7 +36,7 @@ public class RecipeCatalystBuilder {
 		categoriesForRecipeCatalystKeysBuilder.put(catalystIngredientKey, recipeCategory.getUid());
 	}
 
-	private static  <T> String getUniqueId(T ingredient, IIngredientManager ingredientManager) {
+	private static <T> String getUniqueId(T ingredient, IIngredientManager ingredientManager) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		return ingredientHelper.getUniqueId(ingredient);
 	}

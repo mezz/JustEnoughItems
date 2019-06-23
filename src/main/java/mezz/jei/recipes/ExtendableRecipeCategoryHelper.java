@@ -29,7 +29,7 @@ public class ExtendableRecipeCategoryHelper<T, W extends IRecipeCategoryExtensio
 	public <R extends T> void addRecipeExtensionFactory(Class<? extends R> recipeClass, Function<R, ? extends W> recipeExtensionFactory) {
 		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
 		if (!expectedRecipeClass.isAssignableFrom(recipeClass)) {
-		  throw new IllegalArgumentException("Recipe handlers must handle a specific class. Needed: " + expectedRecipeClass + " Got: " + recipeClass);
+			throw new IllegalArgumentException("Recipe handlers must handle a specific class. Needed: " + expectedRecipeClass + " Got: " + recipeClass);
 		}
 		ErrorUtil.checkNotNull(recipeExtensionFactory, "recipeExtensionFactory");
 		if (this.handledClasses.contains(recipeClass)) {
