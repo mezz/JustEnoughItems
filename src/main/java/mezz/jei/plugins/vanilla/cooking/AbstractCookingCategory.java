@@ -27,7 +27,8 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 114, 82, 54);
 		this.icon = guiHelper.createDrawableIngredient(new ItemStack(icon));
 		localizedName = Translator.translateToLocal(translationKey);
-		arrow = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 82, 128, 24, 17).buildAnimated(regularCookTime, IDrawableAnimated.StartDirection.LEFT, false);
+		arrow = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 82, 128, 24, 17)
+			.buildAnimated(regularCookTime, IDrawableAnimated.StartDirection.LEFT, false);
 	}
 
 	@Override
