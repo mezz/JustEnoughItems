@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.item.ItemStack;
 

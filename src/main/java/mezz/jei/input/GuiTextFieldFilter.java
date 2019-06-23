@@ -3,11 +3,11 @@ package mezz.jei.input;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.renderer.Rectangle2d;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import mezz.jei.Internal;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;

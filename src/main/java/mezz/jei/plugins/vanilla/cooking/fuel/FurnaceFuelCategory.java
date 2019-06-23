@@ -1,6 +1,5 @@
 package mezz.jei.plugins.vanilla.cooking.fuel;
 
-import mezz.jei.plugins.vanilla.cooking.FurnaceVariantCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
@@ -15,6 +14,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.textures.Textures;
+import mezz.jei.plugins.vanilla.cooking.FurnaceVariantCategory;
 import mezz.jei.util.Translator;
 
 public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {

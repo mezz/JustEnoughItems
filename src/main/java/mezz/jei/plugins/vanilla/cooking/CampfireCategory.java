@@ -1,5 +1,9 @@
 package mezz.jei.plugins.vanilla.cooking;
 
+import net.minecraft.block.Blocks;
+import net.minecraft.item.crafting.CampfireCookingRecipe;
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -7,9 +11,6 @@ import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.config.Constants;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.crafting.CampfireCookingRecipe;
-import net.minecraft.util.ResourceLocation;
 
 public class CampfireCategory extends AbstractCookingCategory<CampfireCookingRecipe> {
     private final IDrawable background;

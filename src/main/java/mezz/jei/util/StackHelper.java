@@ -6,8 +6,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.helpers.IStackHelper;
+import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 
 public class StackHelper implements IStackHelper {
 	private final ISubtypeManager subtypeManager;

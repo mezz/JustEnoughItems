@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.inventory.container.Container;
 
 import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;

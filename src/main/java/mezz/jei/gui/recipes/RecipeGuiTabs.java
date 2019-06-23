@@ -3,8 +3,8 @@ package mezz.jei.gui.recipes;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rectangle2d;
 
 import com.google.common.collect.ImmutableList;

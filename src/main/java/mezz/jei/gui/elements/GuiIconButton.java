@@ -1,10 +1,10 @@
 package mezz.jei.gui.elements;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.Rectangle2d;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.gui.textures.Textures;

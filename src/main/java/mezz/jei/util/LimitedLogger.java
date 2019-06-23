@@ -1,11 +1,11 @@
 package mezz.jei.util;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
-
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 
 public class LimitedLogger {
 	private final Map<String, Long> logTimes = new HashMap<>();

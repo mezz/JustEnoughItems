@@ -11,8 +11,8 @@ import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipe;
-import mezz.jei.plugins.vanilla.brewing.JeiBrewingRecipe;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeUtil;
+import mezz.jei.plugins.vanilla.brewing.JeiBrewingRecipe;
 import mezz.jei.util.ErrorUtil;
 
 public class VanillaRecipeFactory implements IVanillaRecipeFactory {
