@@ -266,10 +266,6 @@ public class StackHelper implements IStackHelper {
 		} catch (RuntimeException | LinkageError e) {
 			Log.get().warn("Caught a crash while getting sub-items of {}", item, e);
 		}
-		if (subItems.isEmpty()) {
-			subtypeList.add(new ItemStack(item, stackSize));
-			return;
-		}
 
 		for (ItemStack subItem : subItems) {
 			if (subItem.isEmpty()) {
