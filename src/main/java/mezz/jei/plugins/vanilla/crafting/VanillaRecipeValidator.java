@@ -9,12 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipe;
-import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.RecipeManager;
+import net.minecraft.item.crafting.*;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -28,6 +23,9 @@ public final class VanillaRecipeValidator {
 	public static class Results {
 		private final List<IRecipe> craftingRecipes = new ArrayList<>();
 		private final List<FurnaceRecipe> furnaceRecipes = new ArrayList<>();
+		private final List<SmokingRecipe> smokingRecipes = new ArrayList<>();
+		private final List<BlastingRecipe> blastingRecipes = new ArrayList<>();
+		private final List<CampfireCookingRecipe> campfireRecipes = new ArrayList<>();
 
 		public List<IRecipe> getCraftingRecipes() {
 			return craftingRecipes;
@@ -36,14 +34,29 @@ public final class VanillaRecipeValidator {
 		public List<FurnaceRecipe> getFurnaceRecipes() {
 			return furnaceRecipes;
 		}
+
+		public List<SmokingRecipe> getSmokingRecipes() {
+			return smokingRecipes;
+		}
+
+		public List<BlastingRecipe> getBlastingRecipes() {
+			return blastingRecipes;
+		}
+
+		public List<CampfireCookingRecipe> getCampfireRecipes() {
+			return campfireRecipes;
+		}
 	}
 
 	private VanillaRecipeValidator() {
 	}
 
-	public static Results getValidRecipes(IRecipeCategory<ICraftingRecipe> craftingCategory, IRecipeCategory<FurnaceRecipe> furnaceCategory) {
+	public static Results getValidRecipes(IRecipeCategory<ICraftingRecipe> craftingCategory, IRecipeCategory<FurnaceRecipe> furnaceCategory, IRecipeCategory<SmokingRecipe> smokingCategory, IRecipeCategory<BlastingRecipe> blastingCategory, IRecipeCategory<CampfireCookingRecipe> campfireCategory) {
 		CategoryRecipeValidator<ICraftingRecipe> craftingRecipesValidator = new CategoryRecipeValidator<>(craftingCategory, 9);
 		CategoryRecipeValidator<FurnaceRecipe> furnaceRecipesValidator = new CategoryRecipeValidator<>(furnaceCategory, 1);
+		CategoryRecipeValidator<SmokingRecipe> smokingRecipesValidator = new CategoryRecipeValidator<>(smokingCategory, 1);
+		CategoryRecipeValidator<BlastingRecipe> blastingRecipesValidator = new CategoryRecipeValidator<>(blastingCategory, 1);
+		CategoryRecipeValidator<CampfireCookingRecipe> campfireRecipesValidator = new CategoryRecipeValidator<>(campfireCategory, 1);
 
 		Results results = new Results();
 		ClientWorld world = Minecraft.getInstance().world;
@@ -56,6 +69,22 @@ public final class VanillaRecipeValidator {
 		for (FurnaceRecipe recipe : getRecipes(recipeManager, IRecipeType.SMELTING)) {
 			if (furnaceRecipesValidator.isRecipeValid(recipe)) {
 				results.furnaceRecipes.add(recipe);
+			}
+
+		}
+		for (SmokingRecipe recipe : getRecipes(recipeManager, IRecipeType.SMOKING)) {
+			if (smokingRecipesValidator.isRecipeValid(recipe)) {
+				results.smokingRecipes.add(recipe);
+			}
+		}
+		for (BlastingRecipe recipe : getRecipes(recipeManager, IRecipeType.BLASTING)) {
+			if (blastingRecipesValidator.isRecipeValid(recipe)) {
+				results.blastingRecipes.add(recipe);
+			}
+		}
+		for (CampfireCookingRecipe recipe : getRecipes(recipeManager, IRecipeType.CAMPFIRE_COOKING)) {
+			if (campfireRecipesValidator.isRecipeValid(recipe)) {
+				results.campfireRecipes.add(recipe);
 			}
 		}
 		// TODO other recipe types: BLASTING, SMOKING, CAMPFIRE_COOKING, STONECUTTING
