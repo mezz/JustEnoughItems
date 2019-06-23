@@ -65,7 +65,8 @@ public class InputHandler {
 	 */
 	@SubscribeEvent
 	public void onGuiKeyboardEvent(GuiScreenEvent.KeyboardInputEvent.Pre event) {
-		if (hasKeyboardFocus() && handleKeyEvent()) {
+		if (hasKeyboardFocus()) {
+			handleKeyEvent();
 			event.setCanceled(true);
 		}
 	}
