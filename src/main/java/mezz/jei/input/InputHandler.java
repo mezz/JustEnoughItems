@@ -77,7 +77,8 @@ public class InputHandler {
 	 */
 	@SubscribeEvent
 	public void onGuiKeyPressedEvent(GuiScreenEvent.KeyboardKeyPressedEvent.Pre event) {
-		if (hasKeyboardFocus() && handleKeyEvent(event.getKeyCode(), event.getScanCode(), event.getModifiers())) {
+		if (hasKeyboardFocus()) {
+			handleKeyEvent(event.getKeyCode(), event.getScanCode(), event.getModifiers());
 			event.setCanceled(true);
 		}
 	}
