@@ -6,10 +6,17 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.IReloadableResourceManager;
+import net.minecraft.resources.IResourceManager;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.events.EventBusHelper;
+import mezz.jei.gui.textures.JeiSpriteUploader;
+import mezz.jei.gui.textures.Textures;
 import mezz.jei.startup.ClientLifecycleHandler;
 import mezz.jei.startup.NetworkHandler;
 
@@ -19,8 +26,18 @@ public class JustEnoughItems {
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		NetworkHandler networkHandler = new NetworkHandler();
 		DistExecutor.runWhenOn(Dist.CLIENT, ()->()-> {
-			EventBusHelper.addLifecycleListener(modEventBus, FMLLoadCompleteEvent.class, setupEvent -> {
-				ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(networkHandler);
+			EventBusHelper.addListener(modEventBus, ColorHandlerEvent.Block.class, setupEvent -> {
+				Minecraft minecraft = Minecraft.getInstance();
+				JeiSpriteUploader spriteUploader = new JeiSpriteUploader(minecraft.textureManager);
+				Textures textures = new Textures(spriteUploader);
+				IResourceManager resourceManager = minecraft.getResourceManager();
+				if (resourceManager instanceof IReloadableResourceManager) {
+					IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
+					reloadableResourceManager.addReloadListener(spriteUploader);
+				}
+				EventBusHelper.addLifecycleListener(modEventBus, FMLLoadCompleteEvent.class, loadCompleteEvent -> {
+					new ClientLifecycleHandler(networkHandler, textures);
+				});
 			});
 		});
 		EventBusHelper.addLifecycleListener(modEventBus, FMLCommonSetupEvent.class, event -> {

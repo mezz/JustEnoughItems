@@ -32,7 +32,6 @@ import mezz.jei.config.WorldConfig;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.events.PlayerJoinedWorldEvent;
 import mezz.jei.gui.overlay.IngredientListOverlay;
-import mezz.jei.gui.textures.JeiSpriteUploader;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.ForgeModIdHelper;
 import mezz.jei.runtime.JeiRuntime;
@@ -53,7 +52,7 @@ public class ClientLifecycleHandler {
 	private final IModIdHelper modIdHelper;
 	private final IEditModeConfig editModeConfig;
 
-	public ClientLifecycleHandler(NetworkHandler networkHandler) {
+	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures) {
 		File jeiConfigurationDir = new File(FMLPaths.CONFIGDIR.get().toFile(), ModIds.JEI_ID);
 		if (!jeiConfigurationDir.exists()) {
 			try {
@@ -107,14 +106,7 @@ public class ClientLifecycleHandler {
 
 		networkHandler.createClientPacketHandler(worldConfig);
 
-		Minecraft minecraft = Minecraft.getInstance();
-		JeiSpriteUploader spriteUploader = new JeiSpriteUploader(minecraft.textureManager);
-		this.textures = new Textures(spriteUploader);
-		IResourceManager resourceManager = minecraft.getResourceManager();
-		if (resourceManager instanceof IReloadableResourceManager) {
-			IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
-			reloadableResourceManager.addReloadListener(spriteUploader);
-		}
+		this.textures = textures;
 	}
 
 	private void onRecipesLoaded() {

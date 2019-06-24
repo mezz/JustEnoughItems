@@ -48,7 +48,7 @@ JEI is an item and recipe viewing mod for Minecraft, built from the ground up fo
 [[dependencies.jei]]
     modId="forge" #mandatory
     mandatory=false #mandatory
-    versionRange="[26.0.2,)" #mandatory
+    versionRange="[26.0.47,)" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER

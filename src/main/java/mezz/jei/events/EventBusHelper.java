@@ -18,6 +18,10 @@ public class EventBusHelper {
 		eventBus.addListener(EventPriority.NORMAL, false, eventType, listener);
 	}
 
+	public static <T extends Event> void addListener(IEventBus eventBus, Class<T> eventType, Consumer<T> listener) {
+		eventBus.addListener(EventPriority.NORMAL, false, eventType, listener);
+	}
+
 	public static <T extends Event> void removeListener(Consumer<T> listener) {
 		IEventBus eventBus = getInstance();
 		eventBus.unregister(listener);
