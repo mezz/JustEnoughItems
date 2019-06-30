@@ -24,7 +24,7 @@ public class CycleTimer {
 			return null;
 		}
 		long index = ((drawTime - startTime) / cycleTime) % list.size();
-		return list.get((int) index);
+		return list.get(Math.toIntExact(index));
 	}
 
 	public void onDraw() {
