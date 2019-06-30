@@ -5,7 +5,6 @@ import java.io.IOException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 
 import mezz.jei.network.IPacketId;
@@ -29,8 +28,7 @@ public class PacketGiveItemStack extends PacketJei {
 
 	@Override
 	public void writePacketData(PacketBuffer buf) {
-		NBTTagCompound nbt = itemStack.serializeNBT();
-		buf.writeCompoundTag(nbt);
+		buf.writeItemStack(itemStack);
 		buf.writeEnumValue(giveMode);
 	}
 
@@ -38,13 +36,10 @@ public class PacketGiveItemStack extends PacketJei {
 		if (player instanceof EntityPlayerMP) {
 			EntityPlayerMP sender = (EntityPlayerMP) player;
 
-			NBTTagCompound itemStackSerialized = buf.readCompoundTag();
-			if (itemStackSerialized != null) {
+			ItemStack itemStack = buf.readItemStack();
+			if (!itemStack.isEmpty()) {
 				GiveMode giveMode = buf.readEnumValue(GiveMode.class);
-				ItemStack itemStack = new ItemStack(itemStackSerialized);
-				if (!itemStack.isEmpty()) {
-					CommandUtilServer.executeGive(sender, itemStack, giveMode);
-				}
+				CommandUtilServer.executeGive(sender, itemStack, giveMode);
 			}
 		}
 	}
