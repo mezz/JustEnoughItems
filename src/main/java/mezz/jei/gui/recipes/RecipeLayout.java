@@ -42,7 +42,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	private static final int RECIPE_BORDER_PADDING = 4;
 	public static final int recipeTransferButtonIndex = 100;
 
-	private final int ingredientCycleOffset = (int) (Math.random() * 10000);
+	private final int ingredientCycleOffset = (int) ((Math.random() * 10000) % Integer.MAX_VALUE);
 	private final IRecipeCategory recipeCategory;
 	private final GuiItemStackGroup guiItemStackGroup;
 	private final GuiFluidStackGroup guiFluidStackGroup;
