@@ -472,6 +472,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	}
 
 	private void addRecipeTransferButtons(List<RecipeLayout> recipeLayouts) {
+		children.removeAll(buttons);
 		buttons.clear();
 		addButtons();
 
