@@ -14,13 +14,13 @@ jei.tooltip.cheat.mode.how.to.disable.hotkey=Naciśnij %s, aby go wyłączyć/w�
 jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s + klik tutaj, aby go wyłączyć/włączyć.
 jei.tooltip.recipe.by=Receptura z: %s
 jei.tooltip.recipe.id=ID receptury: %s
-jei.tooltip.not.enough.space=Nie ma wystarczająco dużo miejsca, żeby wyświetlić tutaj JEI.
+jei.tooltip.not.enough.space=Nie ma wystarczająco dużo miejsca, żeby wyświetlić tutaj nakładkę z listą składników JEI.
 jei.tooltip.ingredient.list.disabled=Nakładka JEI jest wyłączona.
 jei.tooltip.ingredient.list.disabled.how.to.fix=Naciśnij %s, aby ją włączyć.
 jei.tooltip.bookmarks=Zakładki JEI
 jei.tooltip.bookmarks.usage.nokey=Przypisz klawisz dla zakładek JEI w ustawieniach sterowania.
 jei.tooltip.bookmarks.usage.key=Najedź kursorem na składnik i naciśnij "%s", aby dodać go do zakładek.
-jei.tooltip.bookmarks.not.enough.space=Nie ma wystarczająco dużo miejsca, żeby wyświetlić tutaj nakładkę z listą zakładek.
+jei.tooltip.bookmarks.not.enough.space=Nie ma wystarczająco dużo miejsca, żeby wyświetlić tutaj nakładkę z listą zakładek JEI.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Brakuje przedmiotów
@@ -57,9 +57,9 @@ config.jei.title=Konfiguracja %MODNAME
 config.jei.mode=Tryb
 config.jei.mode.comment=Zmień tryb, w jakim działa JEI.
 config.jei.mode.cheatItemsEnabled=Tryb cheatów
-config.jei.mode.cheatItemsEnabled.comment=Dawaj przedmioty zamiast pokazywać ich receptury.
+config.jei.mode.cheatItemsEnabled.comment=Dawaj przedmioty, zamiast pokazywać ich receptury.
 config.jei.mode.editEnabled=Tryb ukrywania składników
-config.jei.mode.editEnabled.comment=Ukrywaj lub pokazuj składniki po kliknięciu na nie na nakładce z listą składników.
+config.jei.mode.editEnabled.comment=Ukrywaj lub pokazuj składniki po kliknięciu ich na nakładce z listą składników.
 
 config.jei.interface=Interfejs
 config.jei.interface.comment=Opcje dotyczące interfejsu użytkownika.
@@ -85,7 +85,7 @@ config.jei.search.resourceIdSearchMode.comment=Tryb wyszukiwania po ID zasobów 
 
 config.jei.advanced=Zaawansowane
 config.jei.advanced.comment=Zaawansowane opcje konfiguracyjne do zmiany sposobu, w jaki funkcjonuje JEI.
-config.jei.advanced.itemBlacklist=Blacklista składników
+config.jei.advanced.itemBlacklist=Czarna lista składników
 config.jei.advanced.itemBlacklist.comment=Lista składników, które nie powinny być wyświetlane na nakładce z listą składników. Format: idModa[:nazwa[:meta]]. Tryb ukrywania składników automatycznie doda tutaj wpisy lub je usunie.
 config.jei.advanced.colorSearchEnabled=Włącz wyszukiwanie po kolorach
 config.jei.advanced.colorSearchEnabled.comment=Wyszukuj składniki po kolorach oraz pokazuj te kolory w tooltipach na nakładce z listą składników.
@@ -120,7 +120,7 @@ gui.jei.category.fuel=Paliwo
 gui.jei.category.fuel.smeltCount.single=Przetapia przedmiotów: 1
 gui.jei.category.fuel.smeltCount=Przetapia przedmiotów: %s
 gui.jei.category.brewing=Warzenie
-gui.jei.category.brewing.steps=Kroki: %s
+gui.jei.category.brewing.steps=Kroków: %s
 gui.jei.category.itemInformation=Informacja
 
 # DEBUG (for debug mode, do not need translation)
