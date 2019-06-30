@@ -3,7 +3,6 @@ package mezz.jei.network.packets;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 
 import mezz.jei.network.IPacketId;
@@ -27,8 +26,7 @@ public class PacketGiveItemStack extends PacketJei {
 
 	@Override
 	public void writePacketData(PacketBuffer buf) {
-		CompoundNBT nbt = itemStack.serializeNBT();
-		buf.writeCompoundTag(nbt);
+		buf.writeItemStack(itemStack);
 		buf.writeEnumValue(giveMode);
 	}
 
