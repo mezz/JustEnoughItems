@@ -12,8 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import net.minecraftforge.fml.common.progress.ProgressBar;
-import net.minecraftforge.fml.common.progress.StartupProgressManager;
 import net.minecraft.util.NonNullList;
 
 import com.google.common.collect.ImmutableList;
@@ -38,8 +36,11 @@ import mezz.jei.suffixtree.CombinedSearchTrees;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 import mezz.jei.suffixtree.ISearchTree;
 import mezz.jei.util.Translator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class IngredientFilter implements IIngredientGridSource {
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
@@ -116,20 +117,14 @@ public class IngredientFilter implements IIngredientGridSource {
 			.map(i -> IngredientListElementInfo.create(i, ingredientManager, modIdHelper))
 			.sorted(IngredientListElementComparator.INSTANCE)
 			.collect(Collectors.toList());
-		long modNameCount = ingredientInfo.stream()
-			.map(IIngredientListElementInfo::getModNameForSorting)
-			.distinct()
-			.count();
-		try (ProgressBar progressBar = StartupProgressManager.start("Indexing ingredients", (int) modNameCount)) {
-			String currentModName = null;
-			for (IIngredientListElementInfo<?> element : ingredientInfo) {
-				String modname = element.getModNameForSorting();
-				if (!Objects.equals(currentModName, modname)) {
-					currentModName = modname;
-					progressBar.step(modname);
-				}
-				addIngredient(element);
+		String currentModName = null;
+		for (IIngredientListElementInfo<?> element : ingredientInfo) {
+			String modname = element.getModNameForSorting();
+			if (!Objects.equals(currentModName, modname)) {
+				currentModName = modname;
+				LOGGER.debug("Indexing ingredients: " + modname);
 			}
+			addIngredient(element);
 		}
 	}
 

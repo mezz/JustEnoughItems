@@ -2,17 +2,18 @@ package mezz.jei.ingredients;
 
 import java.util.Collection;
 
-import net.minecraftforge.fml.common.progress.ProgressBar;
-import net.minecraftforge.fml.common.progress.StartupProgressManager;
 import net.minecraft.util.NonNullList;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class IngredientListElementFactory {
-	private static IngredientOrderTracker ORDER_TRACKER = new IngredientOrderTracker();
+	private static final Logger LOGGER = LogManager.getLogger();
+	private static final IngredientOrderTracker ORDER_TRACKER = new IngredientOrderTracker();
 
 	private IngredientListElementFactory() {
 	}
@@ -55,14 +56,12 @@ public final class IngredientListElementFactory {
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
 		Collection<V> ingredients = ingredientManager.getAllIngredients(ingredientType);
-		try (ProgressBar progressBar = StartupProgressManager.start("Registering ingredients: " + ingredientType.getIngredientClass().getSimpleName(), ingredients.size())) {
-			for (V ingredient : ingredients) {
-				progressBar.step("");
-				if (ingredient != null) {
-					int orderIndex = ORDER_TRACKER.getOrderIndex(ingredient, ingredientHelper);
-					IngredientListElement<V> ingredientListElement = new IngredientListElement<>(ingredient, orderIndex);
-					baseList.add(ingredientListElement);
-				}
+		LOGGER.debug("Registering ingredients: " + ingredientType.getIngredientClass().getSimpleName());
+		for (V ingredient : ingredients) {
+			if (ingredient != null) {
+				int orderIndex = ORDER_TRACKER.getOrderIndex(ingredient, ingredientHelper);
+				IngredientListElement<V> ingredientListElement = new IngredientListElement<>(ingredient, orderIndex);
+				baseList.add(ingredientListElement);
 			}
 		}
 

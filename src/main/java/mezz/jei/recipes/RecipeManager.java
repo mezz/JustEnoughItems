@@ -8,8 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.minecraftforge.fml.common.progress.ProgressBar;
-import net.minecraftforge.fml.common.progress.StartupProgressManager;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.base.Preconditions;
@@ -82,12 +80,10 @@ public class RecipeManager implements IRecipeManager {
 
 	private void addRecipes(ImmutableListMultimap<ResourceLocation, Object> recipes) {
 		Set<ResourceLocation> recipeCategoryUids = recipes.keySet();
-		try (ProgressBar progressBar = StartupProgressManager.start("Loading recipes", recipeCategoryUids.size())) {
-			for (ResourceLocation recipeCategoryUid : recipeCategoryUids) {
-				progressBar.step(recipeCategoryUid.toString());
-				for (Object recipe : recipes.get(recipeCategoryUid)) {
-					addRecipeTyped(recipe, recipeCategoryUid);
-				}
+		for (ResourceLocation recipeCategoryUid : recipeCategoryUids) {
+			LOGGER.debug("Loading recipes: " + recipeCategoryUid.toString());
+			for (Object recipe : recipes.get(recipeCategoryUid)) {
+				addRecipeTyped(recipe, recipeCategoryUid);
 			}
 		}
 	}
