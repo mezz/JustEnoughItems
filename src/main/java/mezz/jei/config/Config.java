@@ -486,7 +486,7 @@ public final class Config {
 		StringBuilder format = new StringBuilder();
 		String[] strings = formatWithEnumNames.split(" ");
 		for (String string : strings) {
-			try {
+			try { 
 				TextFormatting valueByName = TextFormatting.getValueByName(string);
 				if (valueByName != null) {
 					format.append(valueByName.toString());
