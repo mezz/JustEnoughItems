@@ -70,14 +70,15 @@ public final class Config {
 
 	// item blacklist
 	private static final Set<String> itemBlacklist = new HashSet<>();
-	private static final String[] defaultItemBlacklist = new String[] {};
+	private static final String[] defaultItemBlacklist = new String[]{};
 
 	private Config() {
 
 	}
 
 	public static boolean isOverlayEnabled() {
-		return values.overlayEnabled || KeyBindings.toggleOverlay.getKeyCode() == 0; // if there is no key binding to enable it, don't allow the overlay to be disabled
+		return values.overlayEnabled || 
+				KeyBindings.toggleOverlay.getKeyCode() == 0; // if there is no key binding to enable it, don't allow the overlay to be disabled
 	}
 
 	public static void toggleOverlayEnabled() {
@@ -731,14 +732,14 @@ public final class Config {
 
 	private static <V> String getIngredientUid(V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
 		switch (blacklistType) {
-		case ITEM:
-			return ingredientHelper.getUniqueId(ingredient);
-		case WILDCARD:
-			return ingredientHelper.getWildcardId(ingredient);
-		case MOD_ID:
-			return ingredientHelper.getModId(ingredient);
-		default:
-			throw new IllegalStateException("Unknown blacklist type: " + blacklistType);
+			case ITEM:
+				return ingredientHelper.getUniqueId(ingredient);
+			case WILDCARD:
+				return ingredientHelper.getWildcardId(ingredient);
+			case MOD_ID:
+				return ingredientHelper.getModId(ingredient);
+			default:
+				throw new IllegalStateException("Unknown blacklist type: " + blacklistType);
 		}
 	}
 
