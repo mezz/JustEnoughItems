@@ -279,7 +279,7 @@ public final class Config {
 	public static Configuration getWorldConfig() {
 		return worldConfig;
 	}
-
+	
 	// Call this function after an API call for a new sort option.
 	public static void updateSortOrder() {
 		resetDefaultSortOrder();
@@ -446,7 +446,7 @@ public final class Config {
 			property.setShowInGui(false);
 			values.debugModeEnabled = property.getBoolean();
 		}
-
+		
 		{
 			// This also initializes the built-in comparators.
 			defaultValues.itemSortlist = IngredientListElementComparator.initConfig();
