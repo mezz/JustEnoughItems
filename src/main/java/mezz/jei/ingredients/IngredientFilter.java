@@ -185,7 +185,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
 		boolean visible = !blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper) &&
 			ingredientHelper.isIngredientOnServer(ingredient) &&
-			(Config.isHideModeEnabled() || !Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
+			(Config.isEditModeEnabled() || !Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
 		if (element.isVisible() != visible) {
 			element.setVisible(visible);
 			this.filterCached = null;
