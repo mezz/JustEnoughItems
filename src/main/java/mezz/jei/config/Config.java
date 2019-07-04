@@ -25,6 +25,7 @@ import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.ingredients.IngredientListElementComparator;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.color.ColorNamer;
@@ -147,24 +148,24 @@ public final class Config {
 		}
 	}
 
-	public static boolean isEditModeEnabled() {
-		return values.editModeEnabled;
+	public static boolean isHideModeEnabled() {
+		return values.hideModeEnabled;
 	}
 
-	public static void toggleEditModeEnabled() {
-		values.editModeEnabled = !values.editModeEnabled;
+	public static void toggleHideModeEnabled() {
+		values.hideModeEnabled = !values.hideModeEnabled;
 		if (worldConfig != null) {
 			NetworkManager networkManager = FMLClientHandler.instance().getClientToServerNetworkManager();
 			final String worldCategory = ServerInfo.getWorldUid(networkManager);
-			Property property = worldConfig.get(worldCategory, "editEnabled", defaultValues.editModeEnabled);
-			property.set(values.editModeEnabled);
+			Property property = worldConfig.get(worldCategory, "editEnabled", defaultValues.hideModeEnabled);
+			property.set(values.hideModeEnabled);
 
 			if (worldConfig.hasChanged()) {
 				worldConfig.save();
 			}
 		}
 
-		MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.editModeEnabled));
+		MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.hideModeEnabled));
 	}
 
 	public static boolean isDebugModeEnabled() {
@@ -277,6 +278,39 @@ public final class Config {
 	@Nullable
 	public static Configuration getWorldConfig() {
 		return worldConfig;
+	}
+
+	// Call this function after an API call for a new sort option.
+	public static void updateSortOrder() {
+		resetDefaultSortOrder();
+		setSortOrder(IngredientListElementComparator.getInclusiveSaveString());
+	}
+
+	public static void resetDefaultSortOrder() {
+		defaultValues.itemSortlist = IngredientListElementComparator.initConfig();
+		Property property = config.get(CATEGORY_ADVANCED, "itemSortList", defaultValues.itemSortlist);
+		property.setDefaultValue(defaultValues.itemSortlist);
+	}
+
+	public static boolean setSortOrder(String sortOrder) {
+		if (values.itemSortlist.equals(sortOrder)) {
+			return false;
+		} else {
+			values.itemSortlist = sortOrder;
+			// Reset the list so the user can reset the order and the comparator knows to
+			// load it. Do not load now because other mods may add options between now and
+			// when it needs to test the list.
+			Property property = config.get(CATEGORY_ADVANCED, "itemSortList", defaultValues.itemSortlist);
+			property.set(values.itemSortlist);
+
+			// This does not reset the cached filters, needsReload being true works its way
+			// back to what needs to happen, ultimately IngredientFilter.modesChanged()
+			return true;
+		}
+	}
+
+	public static String getSortOrder() {
+		return values.itemSortlist;
 	}
 
 	@Nullable
@@ -413,6 +447,16 @@ public final class Config {
 			values.debugModeEnabled = property.getBoolean();
 		}
 
+		{
+			// This also initializes the built-in comparators.
+			defaultValues.itemSortlist = IngredientListElementComparator.initConfig();
+			Property property = config.get(CATEGORY_ADVANCED, "itemSortList", defaultValues.itemSortlist);
+
+			if (setSortOrder(property.getString())) {
+				needsReload = true;
+			}
+		}
+
 		final boolean configChanged = config.hasChanged();
 		if (configChanged) {
 			config.save();
@@ -443,11 +487,16 @@ public final class Config {
 		StringBuilder format = new StringBuilder();
 		String[] strings = formatWithEnumNames.split(" ");
 		for (String string : strings) {
-			TextFormatting valueByName = TextFormatting.getValueByName(string);
-			if (valueByName != null) {
-				format.append(valueByName.toString());
-			} else {
-				Log.get().error("Invalid format: {}", string);
+			try {
+				TextFormatting valueByName = TextFormatting.getValueByName(string);
+				if (valueByName != null) {
+					format.append(valueByName.toString());
+				} else {
+					Log.get().error("Invalid format: {}", string);
+				}
+			} catch (Exception ex) {
+				Log.get().error("Exceptionally Invalid format: ", string);
+				Log.get().error("Exception: ", ex);
 			}
 		}
 		return format.toString();
@@ -488,12 +537,12 @@ public final class Config {
 		property.setComment(Translator.translateToLocal("config.jei.mode.cheatItemsEnabled.comment"));
 		values.cheatItemsEnabled = property.getBoolean();
 
-		property = worldConfig.get(worldCategory, "editEnabled", defaultValues.editModeEnabled);
+		property = worldConfig.get(worldCategory, "editEnabled", defaultValues.hideModeEnabled);
 		property.setLanguageKey("config.jei.mode.editEnabled");
 		property.setComment(Translator.translateToLocal("config.jei.mode.editEnabled.comment"));
-		values.editModeEnabled = property.getBoolean();
+		values.hideModeEnabled = property.getBoolean();
 		if (property.hasChanged()) {
-			MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.editModeEnabled));
+			MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.hideModeEnabled));
 		}
 
 		property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);

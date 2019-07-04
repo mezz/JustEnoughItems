@@ -146,7 +146,7 @@ public class ProxyCommonClient extends ProxyCommon {
 		MinecraftForge.EVENT_BUS.post(new PlayerJoinedWorldEvent());
 	}
 
-	private static void reloadItemList() {
+	public static void reloadItemList() {
 		JeiRuntime runtime = Internal.getRuntime();
 		if (runtime != null) {
 			IngredientListOverlay ingredientListOverlay = runtime.getIngredientListOverlay();

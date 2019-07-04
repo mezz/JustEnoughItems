@@ -32,6 +32,7 @@ import mezz.jei.suffixtree.CombinedSearchTrees;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
 import mezz.jei.suffixtree.ISearchTree;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 
 public class IngredientFilter implements IIngredientFilter, IIngredientGridSource {
@@ -87,7 +88,9 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 	}
 
 	public void addIngredients(NonNullList<IIngredientListElement> ingredients) {
-		ingredients.sort(IngredientListElementComparator.INSTANCE);
+		//Don't use the default because that mixes up the mod names, which blows
+		//the progress bar limit.
+		ingredients.sort(new IngredientListElementComparator("mod,name"));
 		long modNameCount = ingredients.stream()
 			.map(IIngredientListElement::getModNameForSorting)
 			.distinct()
@@ -182,7 +185,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		IIngredientHelper<V> ingredientHelper = element.getIngredientHelper();
 		boolean visible = !blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper) &&
 			ingredientHelper.isIngredientOnServer(ingredient) &&
-			(Config.isEditModeEnabled() || !Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
+			(Config.isHideModeEnabled() || !Config.isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
 		if (element.isVisible() != visible) {
 			element.setVisible(visible);
 			this.filterCached = null;
@@ -194,7 +197,22 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		String filterText = Translator.toLowercaseWithLocale(Config.getFilterText());
 		if (!filterText.equals(filterCached)) {
 			List<IIngredientListElement> ingredientList = getIngredientListUncached(filterText);
-			ingredientList.sort(IngredientListElementComparator.INSTANCE);
+			try {				
+				ingredientList.sort(new IngredientListElementComparator());
+			} catch (Exception ex) {
+				if (Config.isDebugModeEnabled()) {
+					//If you are developing a new sorting option, you probably want it to stay stopped to see what it did.
+					Log.get().error("Item sorting failed.  Aborting sort.", ex);
+					IngredientListElementFactory.TheHuntForTheOffendingItems(ingredientList);
+				} else {
+					Log.get().error("Item sorting failed.  Using old method.", ex);
+					try {
+						ingredientList.sort(IngredientListElementClassicComparator.INSTANCE);
+					} catch (Exception ex2) {
+						Log.get().error("Classic Item sorting failed.  Aborting sort.", ex2);
+					}					
+				}
+			}
 			ingredientListCached = Collections.unmodifiableList(ingredientList);
 			filterCached = filterText;
 		}
