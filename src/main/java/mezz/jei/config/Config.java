@@ -25,7 +25,6 @@ import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
-import mezz.jei.ingredients.IngredientListElementComparator;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.color.ColorNamer;
@@ -279,39 +278,6 @@ public final class Config {
 	public static Configuration getWorldConfig() {
 		return worldConfig;
 	}
-	
-	// Call this function after an API call for a new sort option.
-	public static void updateSortOrder() {
-		resetDefaultSortOrder();
-		setSortOrder(IngredientListElementComparator.getInclusiveSaveString());
-	}
-
-	public static void resetDefaultSortOrder() {
-		defaultValues.itemSortlist = IngredientListElementComparator.initConfig();
-		Property property = config.get(CATEGORY_ADVANCED, "itemSortList", defaultValues.itemSortlist);
-		property.setDefaultValue(defaultValues.itemSortlist);
-	}
-
-	public static boolean setSortOrder(String sortOrder) {
-		if (values.itemSortlist.equals(sortOrder)) {
-			return false;
-		} else {
-			values.itemSortlist = sortOrder;
-			// Reset the list so the user can reset the order and the comparator knows to
-			// load it. Do not load now because other mods may add options between now and
-			// when it needs to test the list.
-			Property property = config.get(CATEGORY_ADVANCED, "itemSortList", defaultValues.itemSortlist);
-			property.set(values.itemSortlist);
-
-			// This does not reset the cached filters, needsReload being true works its way
-			// back to what needs to happen, ultimately IngredientFilter.modesChanged()
-			return true;
-		}
-	}
-
-	public static String getSortOrder() {
-		return values.itemSortlist;
-	}
 
 	@Nullable
 	public static File getBookmarkFile() {
@@ -446,16 +412,6 @@ public final class Config {
 			property.setShowInGui(false);
 			values.debugModeEnabled = property.getBoolean();
 		}
-		
-		{
-			// This also initializes the built-in comparators.
-			defaultValues.itemSortlist = IngredientListElementComparator.initConfig();
-			Property property = config.get(CATEGORY_ADVANCED, "itemSortList", defaultValues.itemSortlist);
-
-			if (setSortOrder(property.getString())) {
-				needsReload = true;
-			}
-		}
 
 		final boolean configChanged = config.hasChanged();
 		if (configChanged) {
@@ -487,16 +443,11 @@ public final class Config {
 		StringBuilder format = new StringBuilder();
 		String[] strings = formatWithEnumNames.split(" ");
 		for (String string : strings) {
-			try {
-				TextFormatting valueByName = TextFormatting.getValueByName(string);
-				if (valueByName != null) {
-					format.append(valueByName.toString());
-				} else {
-					Log.get().error("Invalid format: {}", string);
-				}
-			} catch (Exception ex) {
-				Log.get().error("Exceptionally Invalid format: ", string);
-				Log.get().error("Exception: ", ex);
+			TextFormatting valueByName = TextFormatting.getValueByName(string);
+			if (valueByName != null) {
+				format.append(valueByName.toString());
+			} else {
+				Log.get().error("Invalid format: {}", string);
 			}
 		}
 		return format.toString();
