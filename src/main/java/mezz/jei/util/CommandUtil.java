@@ -42,16 +42,16 @@ public final class CommandUtil {
 			return;
 		}
 		if (minecraft.currentScreen instanceof CreativeScreen && giveMode == GiveMode.MOUSE_PICKUP) {
-			final int amount = giveMode.getStackSize(itemStack, input);
+			final int amount = GiveMode.getStackSize(giveMode, itemStack, input);
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
 			CommandUtilServer.mousePickupItemStack(player, sendStack);
 		} else if (ServerInfo.isJeiOnServer()) {
-			final int amount = giveMode.getStackSize(itemStack, input);
+			final int amount = GiveMode.getStackSize(giveMode, itemStack, input);
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
 			PacketGiveItemStack packet = new PacketGiveItemStack(sendStack, giveMode);
 			Network.sendPacketToServer(packet);
 		} else {
-			int amount = GiveMode.INVENTORY.getStackSize(itemStack, input);
+			int amount = GiveMode.getStackSize(GiveMode.INVENTORY, itemStack, input);
 			giveStackVanilla(itemStack, amount);
 		}
 	}

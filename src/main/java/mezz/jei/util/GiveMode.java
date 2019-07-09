@@ -1,27 +1,30 @@
 package mezz.jei.util;
 
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
 
 public enum GiveMode {
-	INVENTORY {
-		@Override
-		public int getStackSize(ItemStack itemStack, InputMappings.Input input) {
-			if (input.getType() == InputMappings.Type.MOUSE && input.getKeyCode() == 0) {
-				return itemStack.getMaxStackSize();
-			}
-			return 1;
-		}
-	},
-	MOUSE_PICKUP {
-		@Override
-		public int getStackSize(ItemStack itemStack, InputMappings.Input input) {
-			boolean modifierActive = Screen.hasShiftDown() || Minecraft.getInstance().gameSettings.keyBindPickBlock.isActiveAndMatches(input);
-			return modifierActive ? itemStack.getMaxStackSize() : 1;
-		}
-	};
+	INVENTORY, MOUSE_PICKUP;
 
-	public abstract int getStackSize(ItemStack itemStack, InputMappings.Input input);
+	@OnlyIn(Dist.CLIENT)
+	public static int getStackSize(GiveMode giveMode, ItemStack itemStack, InputMappings.Input input) {
+		switch (giveMode) {
+			case INVENTORY: {
+				if (input.getType() == InputMappings.Type.MOUSE && input.getKeyCode() == 0) {
+					return itemStack.getMaxStackSize();
+				}
+				return 1;
+			}
+			case MOUSE_PICKUP: {
+				boolean modifierActive = Screen.hasShiftDown() || Minecraft.getInstance().gameSettings.keyBindPickBlock.isActiveAndMatches(input);
+				return modifierActive ? itemStack.getMaxStackSize() : 1;
+			}
+			default:
+				throw new IllegalArgumentException("Unknown give mode: " + giveMode);
+		}
+	}
 }
