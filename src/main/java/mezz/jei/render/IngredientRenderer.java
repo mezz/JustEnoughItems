@@ -90,12 +90,9 @@ public class IngredientRenderer<T> {
 		List<String> tooltip = getTooltip(minecraft, element);
 		FontRenderer fontRenderer = ingredientRenderer.getFontRenderer(minecraft, ingredient);
 
-		if (ingredient instanceof ItemStack) {
-			ItemStack itemStack = (ItemStack) ingredient;
-			TooltipRenderer.drawHoveringText(itemStack, minecraft, tooltip, mouseX, mouseY, fontRenderer);
-		} else {
-			TooltipRenderer.drawHoveringText(minecraft, tooltip, mouseX, mouseY, fontRenderer);
-		}
+		IIngredientHelper<T> ingredientHelper = element.getIngredientHelper();
+		ItemStack itemStack = ingredientHelper.getCheatItemStack(ingredient);
+		TooltipRenderer.drawHoveringText(itemStack, minecraft, tooltip, mouseX, mouseY, fontRenderer);
 	}
 
 	protected static <V> void renderEditMode(IIngredientListElement<V> element, Rectangle area, int padding) {
