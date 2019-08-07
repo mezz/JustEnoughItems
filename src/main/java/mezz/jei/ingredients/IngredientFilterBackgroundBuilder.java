@@ -5,11 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.NonNullList;
-
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -17,6 +12,10 @@ import mezz.jei.config.SearchMode;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.suffixtree.GeneralizedSuffixTree;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.NonNullList;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.fml.LogicalSide;
 
 public class IngredientFilterBackgroundBuilder {
 	private final Char2ObjectMap<PrefixedSearchTree> prefixedSearchTrees;
