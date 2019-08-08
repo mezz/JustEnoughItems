@@ -3,6 +3,7 @@ package mezz.jei.plugins.vanilla.brewing;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,10 +28,12 @@ public class BrewingRecipeUtil {
 		clearCache();
 	}
 
-	public void addRecipe(ItemStack inputPotion, ItemStack outputPotion) {
-		String potionInputUid = itemStackHelper.getUniqueId(inputPotion);
+	public void addRecipe(List<ItemStack> inputPotions, ItemStack outputPotion) {
 		String potionOutputUid = itemStackHelper.getUniqueId(outputPotion);
-		potionMap.put(potionOutputUid, potionInputUid);
+		for (ItemStack inputPotion : inputPotions) {
+			String potionInputUid = itemStackHelper.getUniqueId(inputPotion);
+			potionMap.put(potionOutputUid, potionInputUid);
+		}
 		clearCache();
 	}
 

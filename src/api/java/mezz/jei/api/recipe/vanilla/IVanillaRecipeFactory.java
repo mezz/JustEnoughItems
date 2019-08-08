@@ -44,4 +44,15 @@ public interface IVanillaRecipeFactory {
 	 * @param potionOutput the output potion for the brewing recipe.
 	 */
 	IJeiBrewingRecipe createBrewingRecipe(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput);
+
+	/**
+	 * Create a new brewing recipe.
+	 * By default, all brewing recipes are already detected and added by JEI.
+	 *
+	 * @param ingredients  the ingredients added to a potion to create a new one.
+	 *                     Normally one ingredient, but a list will display several in rotation.
+	 * @param potionInputs the input potions for the brewing recipe.
+	 * @param potionOutput the output potion for the brewing recipe.
+	 */
+	IJeiBrewingRecipe createBrewingRecipe(List<ItemStack> ingredients, List<ItemStack> potionInputs, ItemStack potionOutput);
 }
