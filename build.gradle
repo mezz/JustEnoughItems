@@ -170,6 +170,12 @@ task sourcesJar(type: Jar) {
 	from sourceSets.api.allJava
 }
 
+task deobfJar(type: Jar) {
+	classifier = "deobf"
+	from sourceSets.main.output
+	from sourceSets.api.output
+}
+
 task apiJar(type: Jar) {
 	classifier = "api"
 	from sourceSets.api.output
@@ -183,6 +189,7 @@ task apiJar(type: Jar) {
 artifacts {
 	archives javadocJar
 	archives sourcesJar
+	archives deobfJar
 	archives apiJar
 }
 
