@@ -83,10 +83,13 @@ public class InputHandler {
 	@SubscribeEvent
 	public void onGuiMouseEvent(GuiScreenEvent.MouseInputEvent.Pre event) {
 		GuiScreen guiScreen = event.getGui();
-		int x = Mouse.getEventX() * guiScreen.width / guiScreen.mc.displayWidth;
-		int y = guiScreen.height - Mouse.getEventY() * guiScreen.height / guiScreen.mc.displayHeight - 1;
-		if (handleMouseEvent(guiScreen, x, y)) {
-			event.setCanceled(true);
+		Minecraft minecraft = guiScreen.mc;
+		if (minecraft != null) {
+			int x = Mouse.getEventX() * guiScreen.width / minecraft.displayWidth;
+			int y = guiScreen.height - Mouse.getEventY() * guiScreen.height / minecraft.displayHeight - 1;
+			if (handleMouseEvent(guiScreen, x, y)) {
+				event.setCanceled(true);
+			}
 		}
 	}
 
