@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -26,7 +28,15 @@ class InventoryEffectRendererGuiHandler implements IAdvancedGuiHandler<Inventory
 	public List<Rectangle> getGuiExtraAreas(InventoryEffectRenderer guiContainer) {
 		int x = guiContainer.getGuiLeft() - 124;
 		int y = guiContainer.getGuiTop();
-		Collection<PotionEffect> activePotionEffects = guiContainer.mc.player.getActivePotionEffects();
+		Minecraft minecraft = guiContainer.mc;
+		if (minecraft == null) {
+			return Collections.emptyList();
+		}
+		EntityPlayerSP player = minecraft.player;
+		if (player == null) {
+			return Collections.emptyList();
+		}
+		Collection<PotionEffect> activePotionEffects = player.getActivePotionEffects();
 		if (activePotionEffects.isEmpty()) {
 			return Collections.emptyList();
 		}

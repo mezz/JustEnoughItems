@@ -38,9 +38,11 @@ public class JEIModConfigGui extends GuiConfig {
 				return parentScreen;
 			} else {
 				Minecraft minecraft = parent.mc;
-				EntityPlayerSP player = minecraft.player;
-				if (player != null) {
-					return new GuiInventory(player);
+				if (minecraft != null) {
+					EntityPlayerSP player = minecraft.player;
+					if (player != null) {
+						return new GuiInventory(player);
+					}
 				}
 			}
 		}

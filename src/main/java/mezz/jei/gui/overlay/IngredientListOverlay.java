@@ -176,11 +176,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		}
 	}
 
-	public void drawOnForeground(GuiContainer gui, int mouseX, int mouseY) {
+	public void drawOnForeground(Minecraft minecraft, GuiContainer gui, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
-			this.ghostIngredientDragManager.drawOnForeground(gui.mc, mouseX, mouseY);
+			this.ghostIngredientDragManager.drawOnForeground(minecraft, mouseX, mouseY);
 			GlStateManager.popMatrix();
 		}
 	}

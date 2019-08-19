@@ -182,6 +182,9 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		if (mc == null) {
+			return;
+		}
 		drawDefaultBackground();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		this.zLevel = 0;
@@ -237,7 +240,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	}
 
 	public boolean isMouseOver(int mouseX, int mouseY) {
-		if (mc.currentScreen == this) {
+		if (mc != null && mc.currentScreen == this) {
 			if ((mouseX >= guiLeft) && (mouseY >= guiTop) && (mouseX < guiLeft + xSize) && (mouseY < guiTop + ySize)) {
 				return true;
 			}
@@ -283,6 +286,9 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	@Override
 	public void handleMouseInput() throws IOException {
+		if (mc == null) {
+			return;
+		}
 		final int x = Mouse.getEventX() * width / mc.displayWidth;
 		final int y = height - Mouse.getEventY() * height / mc.displayHeight - 1;
 		if (isMouseOver(x, y)) {
@@ -300,6 +306,9 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+		if (mc == null) {
+			return;
+		}
 		if (isMouseOver(mouseX, mouseY)) {
 			if (titleHoverChecker.checkHover(mouseX, mouseY)) {
 				if (logic.setCategoryFocus()) {
@@ -360,10 +369,13 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	}
 
 	public boolean isOpen() {
-		return mc.currentScreen == this;
+		return mc != null && mc.currentScreen == this;
 	}
 
 	private void open() {
+		if (mc == null) {
+			return;
+		}
 		if (!isOpen()) {
 			parentScreen = mc.currentScreen;
 		}
@@ -371,6 +383,9 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	}
 
 	public void close() {
+		if (mc == null) {
+			return;
+		}
 		if (isOpen()) {
 			if (parentScreen != null) {
 				mc.displayGuiScreen(parentScreen);
@@ -427,7 +442,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			logic.nextRecipeCategory();
 		} else if (guibutton.id == previousRecipeCategory.id) {
 			logic.previousRecipeCategory();
-		} else if (guibutton.id >= RecipeLayout.recipeTransferButtonIndex) {
+		} else if (guibutton.id >= RecipeLayout.recipeTransferButtonIndex && mc != null) {
 			int recipeIndex = guibutton.id - RecipeLayout.recipeTransferButtonIndex;
 			RecipeLayout recipeLayout = recipeLayouts.get(recipeIndex);
 			boolean maxTransfer = GuiScreen.isShiftKeyDown();
@@ -440,7 +455,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	}
 
 	private void updateLayout() {
-		if (!init) {
+		if (!init || mc == null) {
 			return;
 		}
 		IRecipeCategory recipeCategory = logic.getSelectedRecipeCategory();
@@ -475,7 +490,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 		recipeLayouts.clear();
 		recipeLayouts.addAll(logic.getRecipeLayouts(recipeXOffset, guiTop + headerHeight + recipeSpacing, spacingY));
-		addRecipeTransferButtons(recipeLayouts);
+		addRecipeTransferButtons(mc, recipeLayouts);
 
 		nextPage.enabled = previousPage.enabled = logic.hasMultiplePages();
 		nextRecipeCategory.enabled = previousRecipeCategory.enabled = logic.hasMultipleCategories();
@@ -487,11 +502,11 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		recipeGuiTabs.initLayout(this);
 	}
 
-	private void addRecipeTransferButtons(List<RecipeLayout> recipeLayouts) {
+	private void addRecipeTransferButtons(Minecraft minecraft, List<RecipeLayout> recipeLayouts) {
 		buttonList.clear();
 		addButtons();
 
-		EntityPlayer player = mc.player;
+		EntityPlayer player = minecraft.player;
 		if (player != null) {
 			Container container = getParentContainer();
 

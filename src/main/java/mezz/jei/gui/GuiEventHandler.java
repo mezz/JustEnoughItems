@@ -60,13 +60,17 @@ public class GuiEventHandler {
 	@SubscribeEvent
 	public void onDrawBackgroundEventPost(GuiScreenEvent.BackgroundDrawnEvent event) {
 		GuiScreen gui = event.getGui();
+		Minecraft minecraft = gui.mc;
+		if (minecraft == null) {
+			return;
+		}
 		boolean exclusionAreasChanged = guiScreenHelper.updateGuiExclusionAreas();
 		ingredientListOverlay.updateScreen(gui, exclusionAreasChanged);
 		leftAreaDispatcher.updateScreen(gui, exclusionAreasChanged);
 
 		drawnOnBackground = true;
-		ingredientListOverlay.drawScreen(gui.mc, event.getMouseX(), event.getMouseY(), gui.mc.getRenderPartialTicks());
-		leftAreaDispatcher.drawScreen(gui.mc, event.getMouseX(), event.getMouseY(), gui.mc.getRenderPartialTicks());
+		ingredientListOverlay.drawScreen(minecraft, event.getMouseX(), event.getMouseY(), minecraft.getRenderPartialTicks());
+		leftAreaDispatcher.drawScreen(minecraft, event.getMouseX(), event.getMouseY(), minecraft.getRenderPartialTicks());
 	}
 
 	/**
@@ -75,13 +79,21 @@ public class GuiEventHandler {
 	@SubscribeEvent
 	public void onDrawForegroundEvent(GuiContainerEvent.DrawForeground event) {
 		GuiContainer gui = event.getGuiContainer();
-		ingredientListOverlay.drawOnForeground(gui, event.getMouseX(), event.getMouseY());
+		Minecraft minecraft = gui.mc;
+		if (minecraft == null) {
+			return;
+		}
+		ingredientListOverlay.drawOnForeground(minecraft, gui, event.getMouseX(), event.getMouseY());
 		leftAreaDispatcher.drawOnForeground(gui, event.getMouseX(), event.getMouseY());
 	}
 
 	@SubscribeEvent
 	public void onDrawScreenEventPost(GuiScreenEvent.DrawScreenEvent.Post event) {
 		GuiScreen gui = event.getGui();
+		Minecraft minecraft = gui.mc;
+		if (minecraft == null) {
+			return;
+		}
 
 		ingredientListOverlay.updateScreen(gui, false);
 		leftAreaDispatcher.updateScreen(gui, false);
@@ -91,8 +103,8 @@ public class GuiEventHandler {
 				String guiName = gui.getClass().getName();
 				missingBackgroundLogger.log(Level.WARN, guiName, "GUI did not draw the dark background layer behind itself, this may result in display issues: {}", guiName);
 			}
-			ingredientListOverlay.drawScreen(gui.mc, event.getMouseX(), event.getMouseY(), gui.mc.getRenderPartialTicks());
-			leftAreaDispatcher.drawScreen(gui.mc, event.getMouseX(), event.getMouseY(), gui.mc.getRenderPartialTicks());
+			ingredientListOverlay.drawScreen(minecraft, event.getMouseX(), event.getMouseY(), minecraft.getRenderPartialTicks());
+			leftAreaDispatcher.drawScreen(minecraft, event.getMouseX(), event.getMouseY(), minecraft.getRenderPartialTicks());
 		}
 		drawnOnBackground = false;
 
@@ -100,12 +112,12 @@ public class GuiEventHandler {
 			GuiContainer guiContainer = (GuiContainer) gui;
 			if (recipeRegistry.getRecipeClickableArea(guiContainer, event.getMouseX() - guiContainer.getGuiLeft(), event.getMouseY() - guiContainer.getGuiTop()) != null) {
 				String showRecipesText = Translator.translateToLocal("jei.tooltip.show.recipes");
-				TooltipRenderer.drawHoveringText(guiContainer.mc, showRecipesText, event.getMouseX(), event.getMouseY());
+				TooltipRenderer.drawHoveringText(minecraft, showRecipesText, event.getMouseX(), event.getMouseY());
 			}
 		}
 
-		ingredientListOverlay.drawTooltips(gui.mc, event.getMouseX(), event.getMouseY());
-		leftAreaDispatcher.drawTooltips(gui.mc, event.getMouseX(), event.getMouseY());
+		ingredientListOverlay.drawTooltips(minecraft, event.getMouseX(), event.getMouseY());
+		leftAreaDispatcher.drawTooltips(minecraft, event.getMouseX(), event.getMouseY());
 	}
 
 	@SubscribeEvent
