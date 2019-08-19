@@ -108,7 +108,9 @@ public class RecipeRegistry implements IRecipeRegistry {
 				recipeCatalystsBuilder.putAll(recipeCategory, catalystIngredients);
 				for (Object catalystIngredient : catalystIngredients) {
 					IIngredientType ingredientType = ingredientRegistry.getIngredientType(catalystIngredient);
+					@SuppressWarnings("unchecked")
 					IIngredientHelper ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
+					//noinspection unchecked
 					recipeInputMap.addRecipeCategory(recipeCategory, catalystIngredient, ingredientHelper);
 					String catalystIngredientKey = getUniqueId(catalystIngredient);
 					categoriesForRecipeCatalystKeysBuilder.put(catalystIngredientKey, recipeCategoryUid);
@@ -271,7 +273,9 @@ public class RecipeRegistry implements IRecipeRegistry {
 
 		Ingredients ingredients = getIngredients(recipeWrapper);
 
+		//noinspection unchecked
 		recipeInputMap.addRecipe(recipeWrapper, recipeCategory, ingredients.getInputIngredients());
+		//noinspection unchecked
 		recipeOutputMap.addRecipe(recipeWrapper, recipeCategory, ingredients.getOutputIngredients());
 
 		recipeWrappersForCategories.put(recipeCategory, recipeWrapper);
@@ -604,6 +608,7 @@ public class RecipeRegistry implements IRecipeRegistry {
 	@Deprecated
 	public List<ItemStack> getCraftingItems(IRecipeCategory recipeCategory, @Nullable IFocus focus) {
 		if (focus != null) {
+			//noinspection unchecked
 			focus = Focus.check(focus);
 		}
 		List<ItemStack> craftingItems = getCraftingItems(recipeCategory);

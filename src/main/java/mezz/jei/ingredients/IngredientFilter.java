@@ -284,7 +284,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 				String elementWildcardId = uidFunction.apply(element);
 				if (uid.equals(elementWildcardId)) {
 					matchingIndexes.add(i);
-					@SuppressWarnings("unchecked")
+					@SuppressWarnings({"unchecked", "CastCanBeRemovedNarrowingVariableType"})
 					IIngredientListElement<T> castElement = (IIngredientListElement<T>) element;
 					matchingElements.add(castElement);
 				} else {
@@ -296,7 +296,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 				String elementWildcardId = uidFunction.apply(element);
 				if (uid.equals(elementWildcardId)) {
 					matchingIndexes.add(i);
-					@SuppressWarnings("unchecked")
+					@SuppressWarnings({"unchecked", "CastCanBeRemovedNarrowingVariableType"})
 					IIngredientListElement<T> castElement = (IIngredientListElement<T>) element;
 					matchingElements.add(castElement);
 				} else {

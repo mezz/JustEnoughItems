@@ -48,7 +48,7 @@ public interface ICraftingGridHelper {
 	/**
 	 * Place output ingredients onto the crafting grid in a consistent way.
 	 *
-	 * @deprecated since JEI 4.0.2, use {@link IGuiItemStackGroup#set(int, Object)}
+	 * @deprecated since JEI 4.0.2, use {@link IGuiItemStackGroup#set(int, List)}
 	 */
 	@Deprecated
 	void setOutput(IGuiItemStackGroup guiItemStacks, List<ItemStack> output);

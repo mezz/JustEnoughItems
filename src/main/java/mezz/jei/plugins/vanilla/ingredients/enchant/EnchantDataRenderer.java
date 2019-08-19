@@ -13,8 +13,8 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 
 public class EnchantDataRenderer implements IIngredientRenderer<EnchantmentData> {
 
-	private IIngredientRenderer<ItemStack> itemRenderer;
-	private EnchantedBookCache cache;
+	private final IIngredientRenderer<ItemStack> itemRenderer;
+	private final EnchantedBookCache cache;
 
 	public EnchantDataRenderer(IIngredientRenderer<ItemStack> itemRenderer, EnchantedBookCache cache) {
 		this.itemRenderer = itemRenderer;

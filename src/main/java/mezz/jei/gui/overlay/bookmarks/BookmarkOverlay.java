@@ -4,10 +4,8 @@ import javax.annotation.Nullable;
 import java.awt.Rectangle;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableList;
 import mezz.jei.api.IBookmarkOverlay;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.input.MouseHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;

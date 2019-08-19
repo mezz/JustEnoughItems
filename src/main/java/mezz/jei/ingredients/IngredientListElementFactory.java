@@ -14,7 +14,7 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.IModIdHelper;
 
 public final class IngredientListElementFactory {
-	private static IngredientOrderTracker ORDER_TRACKER = new IngredientOrderTracker();
+	private static final IngredientOrderTracker ORDER_TRACKER = new IngredientOrderTracker();
 
 	private IngredientListElementFactory() {
 	}

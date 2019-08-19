@@ -46,7 +46,7 @@ public final class ServerInfo {
 			if (worldUid == null) {
 				worldUid = "default";
 			}
-			worldUid = "world" + Integer.toString(worldUid.hashCode());
+			worldUid = "world" + worldUid.hashCode();
 		}
 		return worldUid;
 	}

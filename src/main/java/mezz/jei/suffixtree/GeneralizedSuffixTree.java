@@ -387,7 +387,7 @@ public class GeneralizedSuffixTree implements ISearchTree {
 	/**
 	 * A private class used to return a tuples of two elements
 	 */
-	private class Pair<A, B> {
+	private static class Pair<A, B> {
 
 		private final A first;
 		private final B second;
