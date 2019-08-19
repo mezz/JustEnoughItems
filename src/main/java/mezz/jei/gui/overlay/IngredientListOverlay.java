@@ -192,11 +192,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		}
 	}
 
-	public void drawOnForeground(ContainerScreen gui, int mouseX, int mouseY) {
+	public void drawOnForeground(Minecraft minecraft, ContainerScreen gui, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
-			this.ghostIngredientDragManager.drawOnForeground(gui.getMinecraft(), mouseX, mouseY);
+			this.ghostIngredientDragManager.drawOnForeground(minecraft, mouseX, mouseY);
 			GlStateManager.popMatrix();
 		}
 	}

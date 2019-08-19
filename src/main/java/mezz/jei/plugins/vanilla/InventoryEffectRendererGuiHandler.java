@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.potion.Effect;
@@ -19,7 +21,15 @@ class InventoryEffectRendererGuiHandler implements IGuiContainerHandler<DisplayE
 	 */
 	@Override
 	public List<Rectangle2d> getGuiExtraAreas(DisplayEffectsScreen containerScreen) {
-		Collection<EffectInstance> activePotionEffects = containerScreen.getMinecraft().player.getActivePotionEffects();
+		Minecraft minecraft = containerScreen.getMinecraft();
+		if (minecraft == null) {
+			return Collections.emptyList();
+		}
+		ClientPlayerEntity player = minecraft.player;
+		if (player == null) {
+			return Collections.emptyList();
+		}
+		Collection<EffectInstance> activePotionEffects = player.getActivePotionEffects();
 		if (activePotionEffects.isEmpty()) {
 			return Collections.emptyList();
 		}

@@ -65,6 +65,7 @@ public class GuiIconButton extends Button {
 			GlStateManager.translated(xOffset, yOffset, 0);
 			icon.draw();
 			GlStateManager.popMatrix();
+			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 	}
 

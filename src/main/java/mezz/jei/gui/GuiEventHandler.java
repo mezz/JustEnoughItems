@@ -68,6 +68,10 @@ public class GuiEventHandler {
 	@SubscribeEvent
 	public void onDrawBackgroundEventPost(GuiScreenEvent.BackgroundDrawnEvent event) {
 		Screen gui = event.getGui();
+		Minecraft minecraft = gui.getMinecraft();
+		if (minecraft == null) {
+			return;
+		}
 		boolean exclusionAreasChanged = guiScreenHelper.updateGuiExclusionAreas();
 		ingredientListOverlay.updateScreen(gui, exclusionAreasChanged);
 		leftAreaDispatcher.updateScreen(gui, exclusionAreasChanged);
@@ -75,7 +79,6 @@ public class GuiEventHandler {
 		drawnOnBackground = true;
 		double mouseX = MouseUtil.getX();
 		double mouseY = MouseUtil.getY();
-		Minecraft minecraft = gui.getMinecraft();
 		ingredientListOverlay.drawScreen(minecraft, (int) mouseX, (int) mouseY, minecraft.getRenderPartialTicks());
 		leftAreaDispatcher.drawScreen(minecraft, (int) mouseX, (int) mouseY, minecraft.getRenderPartialTicks());
 	}
@@ -86,7 +89,11 @@ public class GuiEventHandler {
 	@SubscribeEvent
 	public void onDrawForegroundEvent(GuiContainerEvent.DrawForeground event) {
 		ContainerScreen gui = event.getGuiContainer();
-		ingredientListOverlay.drawOnForeground(gui, event.getMouseX(), event.getMouseY());
+		Minecraft minecraft = gui.getMinecraft();
+		if (minecraft == null) {
+			return;
+		}
+		ingredientListOverlay.drawOnForeground(minecraft, gui, event.getMouseX(), event.getMouseY());
 		leftAreaDispatcher.drawOnForeground(gui, event.getMouseX(), event.getMouseY());
 	}
 
@@ -94,6 +101,9 @@ public class GuiEventHandler {
 	public void onDrawScreenEventPost(GuiScreenEvent.DrawScreenEvent.Post event) {
 		Screen gui = event.getGui();
 		Minecraft minecraft = gui.getMinecraft();
+		if (minecraft == null) {
+			return;
+		}
 
 		ingredientListOverlay.updateScreen(gui, false);
 		leftAreaDispatcher.updateScreen(gui, false);
