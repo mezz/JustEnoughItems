@@ -1,7 +1,6 @@
 package mezz.jei.plugins.vanilla.brewing;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import net.minecraftforge.registries.ForgeRegistries;
@@ -15,31 +14,32 @@ import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 
 public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 	private final List<ItemStack> ingredients;
-	private final ItemStack potionInput;
+	private final List<ItemStack> potionInputs;
 	private final ItemStack potionOutput;
 	private final BrewingRecipeUtil brewingRecipeUtil;
 	private final List<List<ItemStack>> inputs;
 	private final int hashCode;
 
-	public JeiBrewingRecipe(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput, BrewingRecipeUtil brewingRecipeUtil) {
+	public JeiBrewingRecipe(List<ItemStack> ingredients, List<ItemStack> potionInputs, ItemStack potionOutput, BrewingRecipeUtil brewingRecipeUtil) {
 		this.ingredients = ingredients;
-		this.potionInput = potionInput;
+		this.potionInputs = potionInputs;
 		this.potionOutput = potionOutput;
 		this.brewingRecipeUtil = brewingRecipeUtil;
 
-		brewingRecipeUtil.addRecipe(potionInput, potionOutput);
+		brewingRecipeUtil.addRecipe(potionInputs, potionOutput);
 
 		this.inputs = new ArrayList<>();
-		this.inputs.add(Collections.singletonList(potionInput));
-		this.inputs.add(Collections.singletonList(potionInput));
-		this.inputs.add(Collections.singletonList(potionInput));
+		this.inputs.add(potionInputs);
+		this.inputs.add(potionInputs);
+		this.inputs.add(potionInputs);
 		this.inputs.add(ingredients);
 
 		ItemStack firstIngredient = ingredients.get(0);
+		ItemStack firstInput = potionInputs.get(0);
 
-		Potion typeIn = PotionUtils.getPotionFromItem(potionInput);
+		Potion typeIn = PotionUtils.getPotionFromItem(firstInput);
 		Potion typeOut = PotionUtils.getPotionFromItem(potionOutput);
-		this.hashCode = Objects.hashCode(potionInput.getItem(), ForgeRegistries.POTION_TYPES.getKey(typeIn),
+		this.hashCode = Objects.hashCode(firstInput.getItem(), ForgeRegistries.POTION_TYPES.getKey(typeIn),
 			potionOutput.getItem(), ForgeRegistries.POTION_TYPES.getKey(typeOut),
 			firstIngredient.getItem());
 	}
@@ -59,8 +59,12 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 		}
 		JeiBrewingRecipe other = (JeiBrewingRecipe) obj;
 
-		if (!arePotionsEqual(other.potionInput, potionInput)) {
-			return false;
+		for (int i = 0; i < potionInputs.size(); i++) {
+			ItemStack potionInput = potionInputs.get(i);
+			ItemStack otherPotionInput = other.potionInputs.get(i);
+			if (!arePotionsEqual(potionInput, otherPotionInput)) {
+				return false;
+			}
 		}
 
 		if (!arePotionsEqual(other.potionOutput, potionOutput)) {
@@ -103,8 +107,8 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 
 	@Override
 	public String toString() {
-		Potion inputType = PotionUtils.getPotionFromItem(potionInput);
+		Potion inputType = PotionUtils.getPotionFromItem(potionInputs.get(0));
 		Potion outputType = PotionUtils.getPotionFromItem(potionOutput);
-		return ingredients + " + [" + potionInput.getItem() + " " + inputType.getNamePrefixed("") + "] = [" + potionOutput + " " + outputType.getNamePrefixed("") + "]";
+		return ingredients + " + [" + potionInputs.get(0).getItem() + " " + inputType.getNamePrefixed("") + "] = [" + potionOutput + " " + outputType.getNamePrefixed("") + "]";
 	}
 }

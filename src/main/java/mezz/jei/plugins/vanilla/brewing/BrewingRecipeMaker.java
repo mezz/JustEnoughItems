@@ -16,6 +16,7 @@ import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
@@ -120,15 +121,12 @@ public class BrewingRecipeMaker {
 		for (IBrewingRecipe iBrewingRecipe : brewingRecipes) {
 			if (iBrewingRecipe instanceof BrewingRecipe) {
 				BrewingRecipe brewingRecipe = (BrewingRecipe) iBrewingRecipe;
-				ItemStack[] stacks = brewingRecipe.getIngredient().getMatchingStacks();
-				if (stacks.length > 0) {
-					ItemStack input = brewingRecipe.getInput();
-					// AbstractBrewingRecipe.isInput treats any uncraftable potion here as a water bottle in the brewing stand
-					if (ItemStack.areItemStacksEqual(input, BrewingRecipeUtil.POTION)) {
-						input = BrewingRecipeUtil.WATER_BOTTLE;
-					}
+				ItemStack[] ingredients = brewingRecipe.getIngredient().getMatchingStacks();
+				if (ingredients.length > 0) {
+					Ingredient inputIngredient = brewingRecipe.getInput();
 					ItemStack output = brewingRecipe.getOutput();
-					IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(Arrays.asList(stacks), input, output);
+					ItemStack[] inputs = inputIngredient.getMatchingStacks();
+					IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(Arrays.asList(ingredients), Arrays.asList(inputs), output);
 					recipes.add(recipe);
 				}
 			} else if (!(iBrewingRecipe instanceof VanillaBrewingRecipe)) {

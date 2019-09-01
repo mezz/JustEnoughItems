@@ -47,6 +47,16 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 		ErrorUtil.checkNotEmpty(potionInput, "potionInput");
 		ErrorUtil.checkNotEmpty(potionOutput, "potionOutput");
 
-		return new JeiBrewingRecipe(ingredients, potionInput, potionOutput, brewingRecipeUtil);
+		List<ItemStack> potionInputs = Collections.singletonList(potionInput);
+		return new JeiBrewingRecipe(ingredients, potionInputs, potionOutput, brewingRecipeUtil);
+	}
+
+	@Override
+	public IJeiBrewingRecipe createBrewingRecipe(List<ItemStack> ingredients, List<ItemStack> potionInputs, ItemStack potionOutput) {
+		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
+		ErrorUtil.checkNotEmpty(potionInputs, "potionInputs");
+		ErrorUtil.checkNotEmpty(potionOutput, "potionOutput");
+
+		return new JeiBrewingRecipe(ingredients, potionInputs, potionOutput, brewingRecipeUtil);
 	}
 }

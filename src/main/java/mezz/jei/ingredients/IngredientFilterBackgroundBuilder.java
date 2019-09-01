@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.NonNullList;
 

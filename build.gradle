@@ -78,7 +78,7 @@ minecraft {
 
 	runs {
 		client {
-			properties 'forge.logging.console.level': 'debug'
+			property 'forge.logging.console.level', 'debug'
 			workingDirectory project.file('run')
 			mods {
 				jei {
@@ -88,8 +88,19 @@ minecraft {
 			}
 		}
 		server {
-			properties 'forge.logging.console.level': 'debug'
+			property 'forge.logging.console.level', 'debug'
 			workingDirectory project.file('run')
+			mods {
+				jei {
+					source sourceSets.main
+					source sourceSets.api
+				}
+			}
+		}
+		data {
+			property 'forge.logging.console.level', 'debug'
+			workingDirectory project.file('run')
+			args '--mod', 'jei', '--all', '--output', file('src/generated/resources/')
 			mods {
 				jei {
 					source sourceSets.main
