@@ -25,23 +25,29 @@ public class JustEnoughItems {
 	public JustEnoughItems() {
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		NetworkHandler networkHandler = new NetworkHandler();
-		DistExecutor.runWhenOn(Dist.CLIENT, ()->()-> {
-			EventBusHelper.addListener(modEventBus, ColorHandlerEvent.Block.class, setupEvent -> {
-				Minecraft minecraft = Minecraft.getInstance();
-				JeiSpriteUploader spriteUploader = new JeiSpriteUploader(minecraft.textureManager);
-				Textures textures = new Textures(spriteUploader);
-				IResourceManager resourceManager = minecraft.getResourceManager();
-				if (resourceManager instanceof IReloadableResourceManager) {
-					IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
-					reloadableResourceManager.addReloadListener(spriteUploader);
-				}
-				EventBusHelper.addLifecycleListener(modEventBus, FMLLoadCompleteEvent.class, loadCompleteEvent -> {
-					new ClientLifecycleHandler(networkHandler, textures);
-				});
-			});
+		DistExecutor.runWhenOn(Dist.CLIENT, ()->()-> clientStart(modEventBus, networkHandler));
+		commonStart(modEventBus, networkHandler);
+	}
+
+	private static void clientStart(IEventBus modEventBus, NetworkHandler networkHandler) {
+		EventBusHelper.addListener(modEventBus, ColorHandlerEvent.Block.class, setupEvent -> {
+			Minecraft minecraft = Minecraft.getInstance();
+			JeiSpriteUploader spriteUploader = new JeiSpriteUploader(minecraft.textureManager);
+			Textures textures = new Textures(spriteUploader);
+			IResourceManager resourceManager = minecraft.getResourceManager();
+			if (resourceManager instanceof IReloadableResourceManager) {
+				IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
+				reloadableResourceManager.addReloadListener(spriteUploader);
+			}
+			EventBusHelper.addLifecycleListener(modEventBus, FMLLoadCompleteEvent.class, loadCompleteEvent ->
+				new ClientLifecycleHandler(networkHandler, textures)
+			);
 		});
-		EventBusHelper.addLifecycleListener(modEventBus, FMLCommonSetupEvent.class, event -> {
-			networkHandler.createServerPacketHandler();
-		});
+	}
+
+	private static void commonStart(IEventBus modEventBus, NetworkHandler networkHandler) {
+		EventBusHelper.addLifecycleListener(modEventBus, FMLCommonSetupEvent.class, event ->
+			networkHandler.createServerPacketHandler()
+		);
 	}
 }

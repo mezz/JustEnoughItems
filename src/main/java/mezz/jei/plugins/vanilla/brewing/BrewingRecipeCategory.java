@@ -2,6 +2,7 @@ package mezz.jei.plugins.vanilla.brewing;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.inventory.BrewingStandScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -117,7 +118,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 
 	private static class BrewingBubblesTickTimer implements ITickTimer {
 		/**
-		 * Similar to {@link net.minecraft.client.gui.inventory.GuiBrewingStand#BUBBLELENGTHS}
+		 * Similar to {@link BrewingStandScreen#BUBBLELENGTHS}
 		 */
 		private static final int[] BUBBLE_LENGTHS = new int[]{29, 23, 18, 13, 9, 5, 0};
 		private final ITickTimer internalTimer;

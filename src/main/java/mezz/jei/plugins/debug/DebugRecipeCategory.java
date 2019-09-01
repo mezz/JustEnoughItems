@@ -154,7 +154,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		guiItemStacks.init(0, false, 70, 0);
 		guiItemStacks.init(1, true, 110, 0);
 		guiItemStacks.set(0, new ItemStack(Items.WATER_BUCKET));
-		guiItemStacks.set(1, new ItemStack(Items.LAVA_BUCKET));
+		guiItemStacks.set(1, Arrays.asList(new ItemStack(Items.LAVA_BUCKET), null));
 
 //		IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
 //		guiFluidStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {

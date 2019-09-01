@@ -5,7 +5,6 @@ import java.util.List;
 
 import net.minecraftforge.fml.ModList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
@@ -63,7 +62,7 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 			tooltip.add(TextFormatting.GRAY + "info: " + ingredientHelper.getErrorInfo(ingredient));
 			tooltip.add(TextFormatting.GRAY + "uid: " + ingredientHelper.getUniqueId(ingredient));
 		}
-		if (modIdFormattingConfig.isModNameFormatOverrideActive() && (ingredient instanceof ItemStack || ingredient instanceof EnchantmentData)) {
+		if (modIdFormattingConfig.isModNameFormatOverrideActive() && (ingredient instanceof ItemStack)) {
 			// we detected that another mod is adding the mod name already
 			return tooltip;
 		}

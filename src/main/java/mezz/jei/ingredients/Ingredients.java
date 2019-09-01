@@ -2,10 +2,12 @@ package mezz.jei.ingredients;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
@@ -95,11 +97,11 @@ public class Ingredients implements IIngredients {
 	public Map<IIngredientType, List> getInputIngredients() {
 		Map<IIngredientType, List> inputIngredients = new IdentityHashMap<>();
 		for (Map.Entry<IIngredientType, List<List>> entry : inputs.entrySet()) {
-			List<Object> flatIngredients = new ArrayList<>();
-			for (List ingredients : entry.getValue()) {
-				flatIngredients.addAll(ingredients);
-			}
-			inputIngredients.put(entry.getKey(), flatIngredients);
+			IIngredientType ingredientType = entry.getKey();
+			List<Object> flatIngredients = entry.getValue().stream()
+				.flatMap(Collection::stream)
+				.collect(Collectors.toList());
+			inputIngredients.put(ingredientType, flatIngredients);
 		}
 		return inputIngredients;
 	}
@@ -107,11 +109,11 @@ public class Ingredients implements IIngredients {
 	public Map<IIngredientType, List> getOutputIngredients() {
 		Map<IIngredientType, List> outputIngredients = new IdentityHashMap<>();
 		for (Map.Entry<IIngredientType, List<List>> entry : outputs.entrySet()) {
-			List<Object> flatIngredients = new ArrayList<>();
-			for (List ingredients : entry.getValue()) {
-				flatIngredients.addAll(ingredients);
-			}
-			outputIngredients.put(entry.getKey(), flatIngredients);
+			IIngredientType ingredientType = entry.getKey();
+			List<Object> flatIngredients = entry.getValue().stream()
+				.flatMap(Collection::stream)
+				.collect(Collectors.toList());
+			outputIngredients.put(ingredientType, flatIngredients);
 		}
 		return outputIngredients;
 	}

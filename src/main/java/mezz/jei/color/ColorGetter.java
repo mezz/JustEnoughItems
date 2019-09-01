@@ -116,7 +116,6 @@ public final class ColorGetter {
 	private static List<Integer> getBlockColors(Block block, int colorCount) {
 		BlockState blockState = block.getDefaultState();
 		final BlockColors blockColors = Minecraft.getInstance().getBlockColors();
-		@SuppressWarnings("ConstantConditions")
 		final int renderColor = blockColors.getColor(blockState, null, null, 0);
 		final TextureAtlasSprite textureAtlasSprite = getTextureAtlasSprite(blockState);
 		if (textureAtlasSprite == null) {
