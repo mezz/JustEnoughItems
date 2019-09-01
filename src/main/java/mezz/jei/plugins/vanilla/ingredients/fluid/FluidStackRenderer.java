@@ -4,7 +4,8 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraftforge.fluids.Fluid;
+import net.minecraft.fluid.Fluid;
+import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
@@ -40,7 +41,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	}
 
 	public FluidStackRenderer() {
-		this(Fluid.BUCKET_VOLUME, TooltipMode.ITEM_LIST, TEX_WIDTH, TEX_HEIGHT, null);
+		this(FluidAttributes.BUCKET_VOLUME, TooltipMode.ITEM_LIST, TEX_WIDTH, TEX_HEIGHT, null);
 	}
 
 	public FluidStackRenderer(int capacityMb, boolean showCapacity, int width, int height, @Nullable IDrawable overlay) {
@@ -75,8 +76,8 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		GlStateManager.disableBlend();
 	}
 
-	private void drawFluid(final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
-		if (fluidStack == null) {
+	private void drawFluid(final int xPosition, final int yPosition, FluidStack fluidStack) {
+		if (fluidStack.isEmpty()) {
 			return;
 		}
 		Fluid fluid = fluidStack.getFluid();
@@ -86,10 +87,10 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 
 		TextureAtlasSprite fluidStillSprite = getStillFluidSprite(fluid);
 
-		int fluidColor = fluid.getColor(fluidStack);
+		int fluidColor = fluid.getAttributes().getColor(fluidStack);
 
-		int scaledAmount = (fluidStack.amount * height) / capacityMb;
-		if (fluidStack.amount > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
+		int scaledAmount = (fluidStack.getAmount() * height) / capacityMb;
+		if (fluidStack.getAmount() > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
 			scaledAmount = MIN_FLUID_HEIGHT;
 		}
 		if (scaledAmount > height) {
@@ -130,7 +131,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	private static TextureAtlasSprite getStillFluidSprite(Fluid fluid) {
 		Minecraft minecraft = Minecraft.getInstance();
 		AtlasTexture textureMapBlocks = minecraft.getTextureMap();
-		ResourceLocation fluidStill = fluid.getStill();
+		ResourceLocation fluidStill = fluid.getAttributes().getStillTexture();
 		return textureMapBlocks.getSprite(fluidStill);
 	}
 
@@ -168,14 +169,14 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 			return tooltip;
 		}
 
-		String fluidName = fluidType.getLocalizedName(fluidStack);
+		String fluidName = fluidStack.getDisplayName().getFormattedText();
 		tooltip.add(fluidName);
 
 		if (tooltipMode == TooltipMode.SHOW_AMOUNT_AND_CAPACITY) {
-			String amount = Translator.translateToLocalFormatted("jei.tooltip.liquid.amount.with.capacity", fluidStack.amount, capacityMb);
+			String amount = Translator.translateToLocalFormatted("jei.tooltip.liquid.amount.with.capacity", fluidStack.getAmount(), capacityMb);
 			tooltip.add(TextFormatting.GRAY + amount);
 		} else if (tooltipMode == TooltipMode.SHOW_AMOUNT) {
-			String amount = Translator.translateToLocalFormatted("jei.tooltip.liquid.amount", fluidStack.amount);
+			String amount = Translator.translateToLocalFormatted("jei.tooltip.liquid.amount", fluidStack.getAmount());
 			tooltip.add(TextFormatting.GRAY + amount);
 		}
 
