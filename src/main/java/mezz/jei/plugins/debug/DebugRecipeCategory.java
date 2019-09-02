@@ -6,10 +6,13 @@ import java.util.Collections;
 import java.util.List;
 
 import net.minecraftforge.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
@@ -21,6 +24,7 @@ import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IGuiFluidStackGroup;
 import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -87,10 +91,10 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 
 	@Override
 	public void setIngredients(DebugRecipe recipe, IIngredients ingredients) {
-		//		FluidStack water = new FluidStack(FluidRegistry.WATER, 1000 + (int) (Math.random() * 1000));
-//		FluidStack lava = new FluidStack(FluidRegistry.LAVA, 1000 + (int) (Math.random() * 1000));
-//
-//		ingredients.setInputs(VanillaTypes.FLUID, Arrays.asList(water, lava));
+		FluidStack water = new FluidStack(Fluids.WATER, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME));
+		FluidStack lava = new FluidStack(Fluids.LAVA, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME));
+
+		ingredients.setInputs(VanillaTypes.FLUID, Arrays.asList(water, lava));
 
 		ingredients.setInput(VanillaTypes.ITEM, new ItemStack(Items.STICK));
 
@@ -103,13 +107,6 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 			new DebugIngredient(3)
 		));
 	}
-
-//	public List<FluidStack> getFluidInputs() {
-//		return Arrays.asList(
-//				new FluidStack(FluidRegistry.WATER, 1000 + (int) (Math.random() * 1000)),
-//				new FluidStack(FluidRegistry.LAVA, 1000 + (int) (Math.random() * 1000))
-//		);
-//	}
 
 	@Override
 	public void draw(DebugRecipe recipe, double mouseX, double mouseY) {
@@ -156,23 +153,23 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		guiItemStacks.set(0, new ItemStack(Items.WATER_BUCKET));
 		guiItemStacks.set(1, Arrays.asList(new ItemStack(Items.LAVA_BUCKET), null));
 
-//		IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
-//		guiFluidStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
-//			if (input) {
-//				tooltip.add(slotIndex + " Input fluidStack");
-//			} else {
-//				tooltip.add(slotIndex + " Output fluidStack");
-//			}
-//		});
-//
-//		guiFluidStacks.init(0, false, 90, 0, 16, 58, 16000, false, tankOverlay);
-//		guiFluidStacks.init(1, true, 24, 0, 12, 47, 2000, true, null);
-//
-//		guiFluidStacks.setBackground(0, tankBackground);
-//
-//		List<FluidStack> fluidInputs = recipeWrapper.getFluidInputs();
-//		guiFluidStacks.set(0, fluidInputs.get(0));
-//		guiFluidStacks.set(1, fluidInputs.get(1));
+		IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
+		guiFluidStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
+			if (input) {
+				tooltip.add(slotIndex + " Input fluidStack");
+			} else {
+				tooltip.add(slotIndex + " Output fluidStack");
+			}
+		});
+
+		guiFluidStacks.init(0, false, 90, 0, 16, 58, 16000, false, tankOverlay);
+		guiFluidStacks.init(1, true, 24, 0, 12, 47, 2000, true, null);
+
+		guiFluidStacks.setBackground(0, tankBackground);
+
+		List<List<FluidStack>> fluidInputs = ingredients.getInputs(VanillaTypes.FLUID);
+		guiFluidStacks.set(0, fluidInputs.get(0));
+		guiFluidStacks.set(1, fluidInputs.get(1));
 
 		IGuiIngredientGroup<DebugIngredient> debugIngredientsGroup = recipeLayout.getIngredientsGroup(DebugIngredient.TYPE);
 		debugIngredientsGroup.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {

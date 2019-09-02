@@ -4,8 +4,14 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.block.Block;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -30,18 +36,21 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public IFocus<?> translateFocus(IFocus<ItemStack> focus, IFocusFactory focusFactory) {
-//		ItemStack itemStack = focus.getValue();
-//		Item item = itemStack.getItem();
-//		// Special case for ItemBlocks containing fluid blocks.
-//		// Nothing crafts those, the player probably wants to look up fluids.
-//		if (item instanceof BlockItem) {
-//			Block block = ((BlockItem) item).getBlock();
-//			Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
-//			if (fluid != null) {
-//				FluidStack fluidStack = new FluidStack(fluid, Fluid.BUCKET_VOLUME);
-//				return focusFactory.createFocus(focus.getMode(), fluidStack);
-//			}
-//		}
+		ItemStack itemStack = focus.getValue();
+		Item item = itemStack.getItem();
+		// Special case for ItemBlocks containing fluid blocks.
+		// Nothing crafts those, the player probably wants to look up fluids.
+		if (item instanceof BlockItem) {
+			Block block = ((BlockItem) item).getBlock();
+			if (block instanceof IFluidBlock) {
+				IFluidBlock fluidBlock = (IFluidBlock) block;
+				Fluid fluid = fluidBlock.getFluid();
+				if (fluid != null) {
+					FluidStack fluidStack = new FluidStack(fluid, FluidAttributes.BUCKET_VOLUME);
+					return focusFactory.createFocus(focus.getMode(), fluidStack);
+				}
+			}
+		}
 		return focus;
 	}
 

@@ -1,9 +1,14 @@
 package mezz.jei.plugins.vanilla.ingredients.fluid;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraft.fluid.Fluid;
 
 public final class FluidStackListFactory {
 	private FluidStackListFactory() {
@@ -11,17 +16,11 @@ public final class FluidStackListFactory {
 	}
 
 	public static List<FluidStack> create() {
-		List<FluidStack> fluidStacks = new ArrayList<>();
-
-//		Map<String, Fluid> registeredFluids = FluidRegistry.getRegisteredFluids();
-//		for (Fluid fluid : registeredFluids.values()) {
-//			Block fluidBlock = fluid.getBlock();
-//			if (Item.getItemFromBlock(fluidBlock) == Items.AIR) {
-//				FluidStack fluidStack = new FluidStack(fluid, Fluid.BUCKET_VOLUME);
-//				fluidStacks.add(fluidStack);
-//			}
-//		}
-
-		return fluidStacks;
+		IForgeRegistry<Fluid> fluidRegistry = ForgeRegistries.FLUIDS;
+		Collection<Fluid> fluids = fluidRegistry.getValues();
+		return fluids.stream()
+			.filter(fluid -> fluid.isSource(fluid.getDefaultState()))
+			.map(fluid -> new FluidStack(fluid, FluidAttributes.BUCKET_VOLUME))
+			.collect(Collectors.toList());
 	}
 }

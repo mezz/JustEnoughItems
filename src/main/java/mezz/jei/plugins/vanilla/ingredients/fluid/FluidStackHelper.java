@@ -3,16 +3,19 @@ package mezz.jei.plugins.vanilla.ingredients.fluid;
 import javax.annotation.Nullable;
 import java.util.Collections;
 
-import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import com.google.common.base.MoreObjects;
-import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.color.ColorGetter;
 
@@ -30,15 +33,19 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Override
 	public String getDisplayName(FluidStack ingredient) {
-		return ingredient.getLocalizedName();
+		ITextComponent displayName = ingredient.getDisplayName();
+		return displayName.getFormattedText();
 	}
 
 	@Override
 	public String getUniqueId(FluidStack ingredient) {
-		if (ingredient.tag != null) {
-			return "fluid:" + ingredient.getFluid().getName() + ":" + ingredient.tag;
+		Fluid fluid = ingredient.getFluid();
+		ResourceLocation registryName = fluid.getRegistryName();
+		CompoundNBT tag = ingredient.getTag();
+		if (tag != null) {
+			return "fluid:" + registryName + ":" + tag;
 		}
-		return "fluid:" + ingredient.getFluid().getName();
+		return "fluid:" + registryName;
 	}
 
 	@Override
@@ -48,61 +55,48 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Override
 	public String getModId(FluidStack ingredient) {
-		// TODO 1.13
-//		String defaultFluidName = FluidRegistry.getDefaultFluidName(ingredient.getFluid());
-//		if (defaultFluidName == null) {
-//			return "";
-//		}
-//		ResourceLocation fluidResourceName = new ResourceLocation(defaultFluidName);
-//		return fluidResourceName.getNamespace();
-		return ModIds.JEI_ID;
+		Fluid fluid = ingredient.getFluid();
+		ResourceLocation registryName = fluid.getRegistryName();
+		if (registryName == null) {
+			String ingredientInfo = getErrorInfo(ingredient);
+			throw new IllegalStateException("fluid.getRegistryName() returned null for: " + ingredientInfo);
+		}
+
+		return registryName.getNamespace();
 	}
 
 	@Override
 	public Iterable<Integer> getColors(FluidStack ingredient) {
 		Fluid fluid = ingredient.getFluid();
-		AtlasTexture textureMapBlocks = Minecraft.getInstance().getTextureMap();
-		ResourceLocation fluidStill = fluid.getStill();
+		FluidAttributes attributes = fluid.getAttributes();
+		ResourceLocation fluidStill = attributes.getStill(ingredient);
 		if (fluidStill != null) {
+			Minecraft minecraft = Minecraft.getInstance();
+			AtlasTexture textureMapBlocks = minecraft.getTextureMap();
 			TextureAtlasSprite fluidStillSprite = textureMapBlocks.getSprite(fluidStill);
-			if (fluidStillSprite != null) {
-				int renderColor = ingredient.getFluid().getColor(ingredient);
-				return ColorGetter.getColors(fluidStillSprite, renderColor, 1);
-			}
+			int renderColor = attributes.getColor(ingredient);
+			return ColorGetter.getColors(fluidStillSprite, renderColor, 1);
 		}
 		return Collections.emptyList();
 	}
 
 	@Override
 	public String getResourceId(FluidStack ingredient) {
-		// TODO 1.13
-//		String defaultFluidName = FluidRegistry.getDefaultFluidName(ingredient.getFluid());
-//		if (defaultFluidName == null) {
-//			return "";
-//		}
-//		ResourceLocation fluidResourceName = new ResourceLocation(defaultFluidName);
-//		return fluidResourceName.getPath();
-		return ingredient.getUnlocalizedName();
+		Fluid fluid = ingredient.getFluid();
+		ResourceLocation registryName = fluid.getRegistryName();
+		if (registryName == null) {
+			String ingredientInfo = getErrorInfo(ingredient);
+			throw new IllegalStateException("fluid.getRegistryName() returned null for: " + ingredientInfo);
+		}
+
+		return registryName.getPath();
 	}
 
 	@Override
 	public ItemStack getCheatItemStack(FluidStack ingredient) {
-		// TODO 1.13
-//		Fluid fluid = ingredient.getFluid();
-//		if (fluid == FluidRegistry.WATER) {
-//			return new ItemStack(Items.WATER_BUCKET);
-//		} else if (fluid == FluidRegistry.LAVA) {
-//			return new ItemStack(Items.LAVA_BUCKET);
-//		} else if (fluid.getName().equals("milk")) {
-//			return new ItemStack(Items.MILK_BUCKET);
-//		} else if (FluidRegistry.isUniversalBucketEnabled()) {
-//			ItemStack filledBucket = FluidUtil.getFilledBucket(ingredient);
-//			FluidStack fluidContained = FluidUtil.getFluidContained(filledBucket);
-//			if (fluidContained != null && fluidContained.isFluidEqual(ingredient)) {
-//				return filledBucket;
-//			}
-//		}
-		return ItemStack.EMPTY;
+		Fluid fluid = ingredient.getFluid();
+		Item filledBucket = fluid.getFilledBucket();
+		return new ItemStack(filledBucket);
 	}
 
 	@Override
@@ -113,7 +107,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	@Override
 	public FluidStack normalizeIngredient(FluidStack ingredient) {
 		FluidStack copy = this.copyIngredient(ingredient);
-		copy.amount = Fluid.BUCKET_VOLUME;
+		copy.setAmount(FluidAttributes.BUCKET_VOLUME);
 		return copy;
 	}
 
@@ -126,15 +120,17 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 		Fluid fluid = ingredient.getFluid();
 		if (fluid != null) {
-			toStringHelper.add("Fluid", fluid.getLocalizedName(ingredient));
+			ITextComponent displayName = ingredient.getDisplayName();
+			toStringHelper.add("Fluid", displayName.getFormattedText());
 		} else {
 			toStringHelper.add("Fluid", "null");
 		}
 
-		toStringHelper.add("Amount", ingredient.amount);
+		toStringHelper.add("Amount", ingredient.getAmount());
 
-		if (ingredient.tag != null) {
-			toStringHelper.add("Tag", ingredient.tag);
+		CompoundNBT tag = ingredient.getTag();
+		if (tag != null) {
+			toStringHelper.add("Tag", tag);
 		}
 
 		return toStringHelper.toString();

@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
@@ -14,7 +14,9 @@ import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -40,7 +42,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	}
 
 	public FluidStackRenderer() {
-		this(Fluid.BUCKET_VOLUME, TooltipMode.ITEM_LIST, TEX_WIDTH, TEX_HEIGHT, null);
+		this(FluidAttributes.BUCKET_VOLUME, TooltipMode.ITEM_LIST, TEX_WIDTH, TEX_HEIGHT, null);
 	}
 
 	public FluidStackRenderer(int capacityMb, boolean showCapacity, int width, int height, @Nullable IDrawable overlay) {
@@ -84,12 +86,14 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 			return;
 		}
 
-		TextureAtlasSprite fluidStillSprite = getStillFluidSprite(fluid);
+		TextureAtlasSprite fluidStillSprite = getStillFluidSprite(fluidStack);
 
-		int fluidColor = fluid.getColor(fluidStack);
+		FluidAttributes attributes = fluid.getAttributes();
+		int fluidColor = attributes.getColor(fluidStack);
 
-		int scaledAmount = (fluidStack.amount * height) / capacityMb;
-		if (fluidStack.amount > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
+		int amount = fluidStack.getAmount();
+		int scaledAmount = (amount * height) / capacityMb;
+		if (amount > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
 			scaledAmount = MIN_FLUID_HEIGHT;
 		}
 		if (scaledAmount > height) {
@@ -127,10 +131,12 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		}
 	}
 
-	private static TextureAtlasSprite getStillFluidSprite(Fluid fluid) {
+	private static TextureAtlasSprite getStillFluidSprite(FluidStack fluidStack) {
 		Minecraft minecraft = Minecraft.getInstance();
 		AtlasTexture textureMapBlocks = minecraft.getTextureMap();
-		ResourceLocation fluidStill = fluid.getStill();
+		Fluid fluid = fluidStack.getFluid();
+		FluidAttributes attributes = fluid.getAttributes();
+		ResourceLocation fluidStill = attributes.getStill(fluidStack);
 		return textureMapBlocks.getSprite(fluidStill);
 	}
 
@@ -138,8 +144,9 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		float red = (color >> 16 & 0xFF) / 255.0F;
 		float green = (color >> 8 & 0xFF) / 255.0F;
 		float blue = (color & 0xFF) / 255.0F;
+		float alpha = ((color >> 24) & 0xFF) / 255F;
 
-		GlStateManager.color4f(red, green, blue, 1.0F);
+		GlStateManager.color4f(red, green, blue, alpha);
 	}
 
 	private static void drawTextureWithMasking(double xCoord, double yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, double zLevel) {
@@ -168,15 +175,17 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 			return tooltip;
 		}
 
-		String fluidName = fluidType.getLocalizedName(fluidStack);
-		tooltip.add(fluidName);
+		ITextComponent displayName = fluidStack.getDisplayName();
+		String displayNameFormatted = displayName.getFormattedText();
+		tooltip.add(displayNameFormatted);
 
+		int amount = fluidStack.getAmount();
 		if (tooltipMode == TooltipMode.SHOW_AMOUNT_AND_CAPACITY) {
-			String amount = Translator.translateToLocalFormatted("jei.tooltip.liquid.amount.with.capacity", fluidStack.amount, capacityMb);
-			tooltip.add(TextFormatting.GRAY + amount);
+			String amountString = Translator.translateToLocalFormatted("jei.tooltip.liquid.amount.with.capacity", amount, capacityMb);
+			tooltip.add(TextFormatting.GRAY + amountString);
 		} else if (tooltipMode == TooltipMode.SHOW_AMOUNT) {
-			String amount = Translator.translateToLocalFormatted("jei.tooltip.liquid.amount", fluidStack.amount);
-			tooltip.add(TextFormatting.GRAY + amount);
+			String amountString = Translator.translateToLocalFormatted("jei.tooltip.liquid.amount", amount);
+			tooltip.add(TextFormatting.GRAY + amountString);
 		}
 
 		return tooltip;
