@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -244,6 +245,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 		}
 
 		Set<Item> items = itemStacks.stream()
+			.filter(Objects::nonNull)
 			.map(ItemStack::getItem)
 			.collect(Collectors.toSet());
 
