@@ -7,6 +7,8 @@ import java.util.function.Predicate;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
+import net.minecraftforge.event.TickEvent.ClientTickEvent;
+import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.resource.IResourceType;
 import net.minecraftforge.resource.ISelectiveResourceReloadListener;
@@ -51,7 +53,10 @@ public class ClientLifecycleHandler {
 	private final WorldConfig worldConfig;
 	private final IModIdHelper modIdHelper;
 	private final IEditModeConfig editModeConfig;
-
+	
+	private JeiReloadListener reloader;
+	private int reloadDelay = 0;
+	
 	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures) {
 		File jeiConfigurationDir = new File(FMLPaths.CONFIGDIR.get().toFile(), ModIds.JEI_ID);
 		if (!jeiConfigurationDir.exists()) {
@@ -95,15 +100,39 @@ public class ClientLifecycleHandler {
 		});
 		EventBusHelper.addListener(WorldEvent.Save.class, event -> worldConfig.onWorldSave());
 		EventBusHelper.addListener(RecipesUpdatedEvent.class, event -> {
+			if(reloader != null)
+			{
+				reloadDelay = 100;
+				return;
+			}
 			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
 			if (connection != null) {
 				NetworkManager networkManager = connection.getNetworkManager();
 				worldConfig.syncWorldConfig(networkManager);
 			}
+			reloadDelay = 100;
+		});
+		//Delay handler that allows for custom Recipe Syncer to catch up. (If it takes longer then 5 seconds
+		//To sync all the other custom recipe syncers then we basically ignore them.
+		EventBusHelper.addListener(ClientTickEvent.class, (event) -> {
+			if(event.phase == Phase.START || reloadDelay == -1)
+			{
+				return;
+			}
+			if(reloadDelay > 0)
+			{
+				reloadDelay--;
+				return;
+			}
+			reloadDelay = -1;
+			if(reloader != null)
+			{
+				reloader.onResourceManagerReload(null, null);
+				return;
+			}
 			onRecipesLoaded();
 			EventBusHelper.post(new PlayerJoinedWorldEvent());
 		});
-
 		networkHandler.createClientPacketHandler(worldConfig);
 
 		this.textures = textures;
@@ -119,7 +148,7 @@ public class ClientLifecycleHandler {
 		IResourceManager resourceManager = minecraft.getResourceManager();
 		if (resourceManager instanceof IReloadableResourceManager) {
 			IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
-			reloadableResourceManager.addReloadListener(new JeiReloadListener(plugins));
+			reloadableResourceManager.addReloadListener(reloader = new JeiReloadListener(plugins));
 		}
 		Preconditions.checkNotNull(textures);
 		this.starter.start(plugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
