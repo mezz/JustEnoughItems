@@ -31,6 +31,7 @@ public class IngredientManager implements IIngredientManager {
 
 	private final IModIdHelper modIdHelper;
 	private final IngredientBlacklistInternal blacklist;
+	private final List<IIngredientType> registeredIngredientTypes;
 	private final Map<IIngredientType, IngredientSet> ingredientsMap;
 	private final ImmutableMap<IIngredientType, IIngredientHelper> ingredientHelperMap;
 	private final ImmutableMap<IIngredientType, IIngredientRenderer> ingredientRendererMap;
@@ -43,6 +44,7 @@ public class IngredientManager implements IIngredientManager {
 	public IngredientManager(
 		IModIdHelper modIdHelper,
 		IngredientBlacklistInternal blacklist,
+		List<IIngredientType> registeredIngredientTypes,
 		Map<IIngredientType, IngredientSet> ingredientsMap,
 		ImmutableMap<IIngredientType, IIngredientHelper> ingredientHelperMap,
 		ImmutableMap<IIngredientType, IIngredientRenderer> ingredientRendererMap,
@@ -50,6 +52,7 @@ public class IngredientManager implements IIngredientManager {
 	) {
 		this.modIdHelper = modIdHelper;
 		this.blacklist = blacklist;
+		this.registeredIngredientTypes = Collections.unmodifiableList(registeredIngredientTypes);
 		this.ingredientsMap = ingredientsMap;
 		this.ingredientHelperMap = ingredientHelperMap;
 		this.ingredientRendererMap = ingredientRendererMap;
@@ -155,7 +158,7 @@ public class IngredientManager implements IIngredientManager {
 
 	@Override
 	public Collection<IIngredientType> getRegisteredIngredientTypes() {
-		return ingredientTypeMap.values();
+		return this.registeredIngredientTypes;
 	}
 
 	@Override
@@ -236,7 +239,7 @@ public class IngredientManager implements IIngredientManager {
 		if (ingredientType != null) {
 			return ingredientType;
 		}
-		for (IIngredientType<?> type : ingredientTypeMap.values()) {
+		for (IIngredientType<?> type : this.registeredIngredientTypes) {
 			if (type.getIngredientClass().isAssignableFrom(ingredientClass)) {
 				@SuppressWarnings("unchecked")
 				IIngredientType<V> castType = (IIngredientType<V>) type;

@@ -1,7 +1,9 @@
 package mezz.jei.ingredients;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
@@ -18,6 +20,8 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 	private final Map<IIngredientType, Collection> allIngredientsMap = new IdentityHashMap<>();
 	private final Map<IIngredientType, IIngredientHelper> ingredientHelperMap = new IdentityHashMap<>();
 	private final Map<IIngredientType, IIngredientRenderer> ingredientRendererMap = new IdentityHashMap<>();
+	/** to preserve the order that types were registered in */
+	private final List<IIngredientType> registeredIngredientTypes = new ArrayList<>();
 	private final ISubtypeManager subtypeManager;
 
 	public ModIngredientRegistration(ISubtypeManager subtypeManager) {
@@ -30,10 +34,14 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 		ErrorUtil.checkNotNull(allIngredients, "allIngredients");
 		ErrorUtil.checkNotNull(ingredientHelper, "ingredientHelper");
 		ErrorUtil.checkNotNull(ingredientRenderer, "ingredientRenderer");
+		if (allIngredientsMap.containsKey(ingredientType)) {
+			throw new IllegalArgumentException("Ingredient type has already been registered: " + ingredientType.getIngredientClass());
+		}
 
 		allIngredientsMap.put(ingredientType, allIngredients);
 		ingredientHelperMap.put(ingredientType, ingredientHelper);
 		ingredientRendererMap.put(ingredientType, ingredientRenderer);
+		registeredIngredientTypes.add(ingredientType);
 	}
 
 	@Override
@@ -53,6 +61,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 		return new IngredientManager(
 			modIdHelper,
 			blacklist,
+			registeredIngredientTypes,
 			ingredientsMap,
 			ImmutableMap.copyOf(ingredientHelperMap),
 			ImmutableMap.copyOf(ingredientRendererMap),
