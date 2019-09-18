@@ -42,6 +42,7 @@ import mezz.jei.util.Translator;
 public class IngredientRegistry implements IIngredientRegistry {
 	private final IModIdHelper modIdHelper;
 	private final IngredientBlacklistInternal blacklist;
+	private final List<IIngredientType> registeredIngredientTypes;
 	private final Map<IIngredientType, IngredientSet> ingredientsMap;
 	private final ImmutableMap<IIngredientType, IIngredientHelper> ingredientHelperMap;
 	private final ImmutableMap<IIngredientType, IIngredientRenderer> ingredientRendererMap;
@@ -55,6 +56,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 	public IngredientRegistry(
 		IModIdHelper modIdHelper,
 		IngredientBlacklistInternal blacklist,
+		List<IIngredientType> registeredIngredientTypes,
 		Map<IIngredientType, IngredientSet> ingredientsMap,
 		ImmutableMap<IIngredientType, IIngredientHelper> ingredientHelperMap,
 		ImmutableMap<IIngredientType, IIngredientRenderer> ingredientRendererMap,
@@ -63,13 +65,14 @@ public class IngredientRegistry implements IIngredientRegistry {
 	) {
 		this.modIdHelper = modIdHelper;
 		this.blacklist = blacklist;
+		this.registeredIngredientTypes = Collections.unmodifiableList(new ArrayList<>(registeredIngredientTypes));
 		this.ingredientsMap = ingredientsMap;
 		this.ingredientHelperMap = ingredientHelperMap;
 		this.ingredientRendererMap = ingredientRendererMap;
 		this.ingredientAliasesMap = ingredientAliasesMap;
 		this.ingredientSubtypeAliasesMap = ingredientSubtypeAliasesMap;
 		ImmutableMap.Builder<Class, IIngredientType> ingredientTypeBuilder = ImmutableMap.builder();
-		for (IIngredientType ingredientType : ingredientsMap.keySet()) {
+		for (IIngredientType ingredientType : this.registeredIngredientTypes) {
 			ingredientTypeBuilder.put(ingredientType.getIngredientClass(), ingredientType);
 		}
 		this.ingredientTypeMap = ingredientTypeBuilder.build();
@@ -207,7 +210,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 
 	@Override
 	public Collection<IIngredientType> getRegisteredIngredientTypes() {
-		return ingredientTypeMap.values();
+		return this.registeredIngredientTypes;
 	}
 
 	@Override
@@ -327,7 +330,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 		if (ingredientType != null) {
 			return ingredientType;
 		}
-		for (IIngredientType<?> type : ingredientTypeMap.values()) {
+		for (IIngredientType<?> type : this.registeredIngredientTypes) {
 			if (type.getIngredientClass().isAssignableFrom(ingredientClass)) {
 				@SuppressWarnings("unchecked")
 				IIngredientType<V> castType = (IIngredientType<V>) type;

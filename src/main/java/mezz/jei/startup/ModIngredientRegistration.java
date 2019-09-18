@@ -1,8 +1,10 @@
 package mezz.jei.startup;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -19,6 +21,7 @@ import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.IngredientSet;
 
 public class ModIngredientRegistration implements IModIngredientRegistration, IIngredientAliasRegistration {
+	private final List<IIngredientType> registeredIngredientTypes = new ArrayList<>();
 	private final Map<IIngredientType, Collection> allIngredientsMap = new IdentityHashMap<>();
 	private final Map<IIngredientType, IIngredientHelper> ingredientHelperMap = new IdentityHashMap<>();
 	private final Map<IIngredientType, IIngredientRenderer> ingredientRendererMap = new IdentityHashMap<>();
@@ -31,12 +34,16 @@ public class ModIngredientRegistration implements IModIngredientRegistration, II
 		ErrorUtil.checkNotNull(allIngredients, "allIngredients");
 		ErrorUtil.checkNotNull(ingredientHelper, "ingredientHelper");
 		ErrorUtil.checkNotNull(ingredientRenderer, "ingredientRenderer");
+		if (allIngredientsMap.containsKey(ingredientType)) {
+			throw new IllegalArgumentException("Ingredient type has already been registered: " + ingredientType.getIngredientClass());
+		}
 
 		allIngredientsMap.put(ingredientType, allIngredients);
 		ingredientHelperMap.put(ingredientType, ingredientHelper);
 		ingredientRendererMap.put(ingredientType, ingredientRenderer);
 		ingredientAliasesMap.put(ingredientType, ArrayListMultimap.create());
 		ingredientSubtypeAliasesMap.put(ingredientType, ArrayListMultimap.create());
+		registeredIngredientTypes.add(ingredientType);
 	}
 
 	@Override
@@ -103,6 +110,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration, II
 		return new IngredientRegistry(
 			modIdHelper,
 			blacklist,
+			registeredIngredientTypes,
 			ingredientsMap,
 			ImmutableMap.copyOf(ingredientHelperMap),
 			ImmutableMap.copyOf(ingredientRendererMap),
