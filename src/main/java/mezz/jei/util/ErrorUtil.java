@@ -26,6 +26,9 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.config.ClientConfig;
+import mezz.jei.config.IWorldConfig;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.ingredients.Ingredients;
 import org.apache.logging.log4j.LogManager;
@@ -35,12 +38,18 @@ public final class ErrorUtil {
 	private static final Logger LOGGER = LogManager.getLogger();
 	@Nullable
 	private static IModIdHelper modIdHelper;
+	@Nullable
+	private static IWorldConfig worldConfig;
 
 	private ErrorUtil() {
 	}
 
 	public static void setModIdHelper(IModIdHelper modIdHelper) {
 		ErrorUtil.modIdHelper = modIdHelper;
+	}
+
+	public static void setWorldConfig(IWorldConfig worldConfig) {
+		ErrorUtil.worldConfig = worldConfig;
 	}
 
 	public static <T> String getInfoFromRecipe(T recipe, IRecipeCategory<T> recipeCategory) {
@@ -93,8 +102,8 @@ public final class ErrorUtil {
 			registryName = registryEntry.getRegistryName();
 		}
 		if (registryName != null) {
-			String modId = registryName.getNamespace();
 			if (modIdHelper != null) {
+				String modId = registryName.getNamespace();
 				String modName = modIdHelper.getModNameForModId(modId);
 				return modName + " " + registryName + " " + recipe.getClass();
 			}
@@ -239,16 +248,37 @@ public final class ErrorUtil {
 	}
 
 	public static <T> ReportedException createRenderIngredientException(Throwable throwable, final T ingredient) {
-		final IIngredientHelper<T> ingredientHelper = Internal.getIngredientManager().getIngredientHelper(ingredient);
+		IIngredientManager ingredientManager = Internal.getIngredientManager();
+		IIngredientType<T> ingredientType = ingredientManager.getIngredientType(ingredient);
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+
 		CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering ingredient");
-		CrashReportCategory crashreportcategory = crashreport.makeCategory("Ingredient being rendered");
+		CrashReportCategory ingredientCategory = crashreport.makeCategory("Ingredient being rendered");
+
 		if (modIdHelper != null) {
-			crashreportcategory.addDetail("Ingredient Mod", () -> {
-				String modId = ingredientHelper.getModId(ingredient);
+			ingredientCategory.addDetail("Mod Name", () -> {
+				String modId = ingredientHelper.getDisplayModId(ingredient);
 				return modIdHelper.getModNameForModId(modId);
 			});
 		}
-		crashreportcategory.addDetail("Ingredient Info", () -> ingredientHelper.getErrorInfo(ingredient));
+		ingredientCategory.addDetail("Registry Name", () -> {
+			String modId = ingredientHelper.getModId(ingredient);
+			String resourceId = ingredientHelper.getResourceId(ingredient);
+			return modId + ":" + resourceId;
+		});
+		ingredientCategory.addDetail("Display Name", () -> ingredientHelper.getDisplayName(ingredient));
+		ingredientCategory.addDetail("String Name", ingredient::toString);
+
+		CrashReportCategory jeiCategory = crashreport.makeCategory("JEI render details");
+		jeiCategory.addDetail("Unique Id (for Blacklist)", () -> ingredientHelper.getUniqueId(ingredient));
+		jeiCategory.addDetail("Ingredient Type", () -> ingredientType.getIngredientClass().toString());
+		jeiCategory.addDetail("Error Info", () -> ingredientHelper.getErrorInfo(ingredient));
+		if (worldConfig != null) {
+			jeiCategory.addDetail("Filter Text", () -> worldConfig.getFilterText());
+			jeiCategory.addDetail("Edit Mode Enabled", () -> Boolean.toString(worldConfig.isEditModeEnabled()));
+		}
+		jeiCategory.addDetail("Debug Mode Enabled", () -> Boolean.toString(ClientConfig.getInstance().isDebugModeEnabled()));
+
 		throw new ReportedException(crashreport);
 	}
 }

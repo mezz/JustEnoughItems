@@ -70,6 +70,7 @@ public class ClientLifecycleHandler {
 		modIdFormattingConfig = new ModIdFormattingConfig(clientConfig.getConfig());
 		modIdHelper = new ForgeModIdHelper(clientConfig, modIdFormattingConfig);
 		ErrorUtil.setModIdHelper(modIdHelper);
+		ErrorUtil.setWorldConfig(worldConfig);
 		editModeConfig = new EditModeConfig(jeiConfigurationDir);
 
 		KeyBindings.init();
