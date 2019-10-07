@@ -13,7 +13,7 @@ buildscript {
 
 plugins {
 	id "com.matthewprenger.cursegradle" version "1.0.9"
-	id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.32"
+	id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.64"
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -69,20 +69,11 @@ processResources {
 }
 
 task makeChangelog(type: se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask) {
-	filePath = "changelog.html"
+	file = new File("changelog.html")
 	untaggedName = "Current release ${project.version}"
 	fromCommit = "2fe051cf727adce1be210a46f778aa8fe031331e"
-	toRef =  "HEAD"
-	templateContent = """
-{{#tags}}
-  <h3>{{name}}</h3>
-  <ul>
-    {{#commits}}
-    <li>{{{message}}}</li>
-    {{/commits}}
-  </ul>
-{{/tags}}
-"""
+	toRef = "HEAD"
+	templateContent = file("changelog.mustache").getText("UTF-8")
 }
 
 curseforge {
