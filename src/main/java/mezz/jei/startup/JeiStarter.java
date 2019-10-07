@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import mezz.jei.util.ErrorUtil;
 import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraft.util.NonNullList;
 
@@ -45,6 +46,9 @@ public class JeiStarter {
 		LoggedTimer totalTime = new LoggedTimer();
 		totalTime.start("Starting JEI");
 
+		IModIdHelper modIdHelper = ForgeModIdHelper.getInstance();
+		ErrorUtil.setModIdHelper(modIdHelper);
+
 		SubtypeRegistry subtypeRegistry = new SubtypeRegistry();
 
 		registerItemSubtypes(plugins, subtypeRegistry);
@@ -55,7 +59,7 @@ public class JeiStarter {
 
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
 		ModIngredientRegistration modIngredientRegistry = registerIngredients(plugins);
-		IngredientRegistry ingredientRegistry = modIngredientRegistry.createIngredientRegistry(ForgeModIdHelper.getInstance(), blacklist);
+		IngredientRegistry ingredientRegistry = modIngredientRegistry.createIngredientRegistry(modIdHelper, blacklist);
 		Internal.setIngredientRegistry(ingredientRegistry);
 
 		GuiHelper guiHelper = new GuiHelper(ingredientRegistry, textures);
@@ -78,7 +82,7 @@ public class JeiStarter {
 		timer.stop();
 
 		timer.start("Building ingredient list");
-		NonNullList<IIngredientListElement> ingredientList = IngredientListElementFactory.createBaseList(ingredientRegistry, ForgeModIdHelper.getInstance());
+		NonNullList<IIngredientListElement> ingredientList = IngredientListElementFactory.createBaseList(ingredientRegistry, modIdHelper);
 		timer.stop();
 
 		timer.start("Building ingredient filter");

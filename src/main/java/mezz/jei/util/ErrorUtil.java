@@ -22,16 +22,25 @@ import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.config.Config;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.ingredients.Ingredients;
-import mezz.jei.startup.ForgeModIdHelper;
+import mezz.jei.startup.IModIdHelper;
 
 public final class ErrorUtil {
+	@Nullable
+	private static IModIdHelper modIdHelper;
+
 	private ErrorUtil() {
+	}
+
+	public static void setModIdHelper(IModIdHelper modIdHelper) {
+		ErrorUtil.modIdHelper = modIdHelper;
 	}
 
 	public static <T> String getInfoFromRecipe(T recipe, IRecipeWrapper recipeWrapper) {
@@ -80,9 +89,12 @@ public final class ErrorUtil {
 			IForgeRegistryEntry registryEntry = (IForgeRegistryEntry) recipe;
 			ResourceLocation registryName = registryEntry.getRegistryName();
 			if (registryName != null) {
-				String modId = registryName.getNamespace();
-				String modName = ForgeModIdHelper.getInstance().getModNameForModId(modId);
-				return modName + " " + registryName;
+				if (modIdHelper != null) {
+					String modId = registryName.getNamespace();
+					String modName = modIdHelper.getModNameForModId(modId);
+					return modName + " " + registryName + " " + recipe.getClass();
+				}
+				return registryName + " " + recipe.getClass();
 			}
 		}
 		try {
@@ -251,11 +263,35 @@ public final class ErrorUtil {
 	}
 
 	public static <T> ReportedException createRenderIngredientException(Throwable throwable, final T ingredient) {
-		final IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredient);
+		IIngredientRegistry ingredientRegistry = Internal.getIngredientRegistry();
+		IIngredientType<T> ingredientType = ingredientRegistry.getIngredientType(ingredient);
+		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
+
 		CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering ingredient");
-		CrashReportCategory crashreportcategory = crashreport.makeCategory("Ingredient being rendered");
-		crashreportcategory.addDetail("Ingredient Mod", () -> ForgeModIdHelper.getInstance().getModNameForIngredient(ingredient, ingredientHelper));
-		crashreportcategory.addDetail("Ingredient Info", () -> ingredientHelper.getErrorInfo(ingredient));
+		CrashReportCategory ingredientCategory = crashreport.makeCategory("Ingredient being rendered");
+
+		if (modIdHelper != null) {
+			ingredientCategory.addDetail("Mod Name", () -> {
+				String modId = ingredientHelper.getDisplayModId(ingredient);
+				return modIdHelper.getModNameForModId(modId);
+			});
+		}
+		ingredientCategory.addDetail("Registry Name", () -> {
+			String modId = ingredientHelper.getModId(ingredient);
+			String resourceId = ingredientHelper.getResourceId(ingredient);
+			return modId + ":" + resourceId;
+		});
+		ingredientCategory.addDetail("Display Name", () -> ingredientHelper.getDisplayName(ingredient));
+		ingredientCategory.addDetail("String Name", ingredient::toString);
+
+		CrashReportCategory jeiCategory = crashreport.makeCategory("JEI render details");
+		jeiCategory.addDetail("Unique Id (for Blacklist)", () -> ingredientHelper.getUniqueId(ingredient));
+		jeiCategory.addDetail("Ingredient Type", () -> ingredientType.getIngredientClass().toString());
+		jeiCategory.addDetail("Error Info", () -> ingredientHelper.getErrorInfo(ingredient));
+		jeiCategory.addDetail("Filter Text", Config::getFilterText);
+		jeiCategory.addDetail("Edit Mode Enabled", () -> Boolean.toString(Config.isEditModeEnabled()));
+		jeiCategory.addDetail("Debug Mode Enabled", () -> Boolean.toString(Config.isDebugModeEnabled()));
+
 		throw new ReportedException(crashreport);
 	}
 }
