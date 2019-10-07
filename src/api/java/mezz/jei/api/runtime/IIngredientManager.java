@@ -1,9 +1,6 @@
 package mezz.jei.api.runtime;
 
 import java.util.Collection;
-import java.util.List;
-
-import net.minecraft.item.ItemStack;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.VanillaTypes;
@@ -47,16 +44,6 @@ public interface IIngredientManager {
 	 * Without addons, there are {@link VanillaTypes#ITEM} and {@link VanillaTypes#FLUID}.
 	 */
 	Collection<IIngredientType> getRegisteredIngredientTypes();
-
-	/**
-	 * Returns an unmodifiable list of all the ItemStacks that can be used as fuel in a vanilla furnace.
-	 */
-	List<ItemStack> getFuels();
-
-	/**
-	 * Returns an unmodifiable list of all the ItemStacks that return true to isPotionIngredient.
-	 */
-	List<ItemStack> getPotionIngredients();
 
 	/**
 	 * Add new ingredients to JEI at runtime.

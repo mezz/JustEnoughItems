@@ -7,14 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionBrewing;
-import net.minecraft.tileentity.FurnaceTileEntity;
-import net.minecraft.util.NonNullList;
-
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -38,9 +32,6 @@ public class IngredientManager implements IIngredientManager {
 	private final boolean enableDebugLogs;
 	private final ImmutableMap<Class, IIngredientType> ingredientTypeMap;
 
-	private final NonNullList<ItemStack> fuels = NonNullList.create();
-	private final NonNullList<ItemStack> potionIngredients = NonNullList.create();
-
 	public IngredientManager(
 		IModIdHelper modIdHelper,
 		IngredientBlacklistInternal blacklist,
@@ -62,30 +53,6 @@ public class IngredientManager implements IIngredientManager {
 			ingredientTypeBuilder.put(ingredientType.getIngredientClass(), ingredientType);
 		}
 		this.ingredientTypeMap = ingredientTypeBuilder.build();
-
-		for (ItemStack itemStack : getAllIngredients(VanillaTypes.ITEM)) {
-			getStackProperties(itemStack);
-		}
-	}
-
-	private void getStackProperties(ItemStack itemStack) {
-		try {
-			if (FurnaceTileEntity.isFuel(itemStack)) {
-				fuels.add(itemStack);
-			}
-		} catch (RuntimeException | LinkageError e) {
-			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
-			LOGGER.error("Failed to check if item is fuel {}.", itemStackInfo, e);
-		}
-
-		try {
-			if (PotionBrewing.isReagent(itemStack)) {
-				potionIngredients.add(itemStack);
-			}
-		} catch (RuntimeException | LinkageError e) {
-			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
-			LOGGER.error("Failed to check if item is a potion ingredient {}.", itemStackInfo, e);
-		}
 	}
 
 	@Override
@@ -162,16 +129,6 @@ public class IngredientManager implements IIngredientManager {
 	}
 
 	@Override
-	public List<ItemStack> getFuels() {
-		return Collections.unmodifiableList(fuels);
-	}
-
-	@Override
-	public List<ItemStack> getPotionIngredients() {
-		return Collections.unmodifiableList(potionIngredients);
-	}
-
-	@Override
 	public <V> void addIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients) {
 		addIngredientsAtRuntime(ingredientType, ingredients, Internal.getIngredientFilter());
 	}
@@ -186,12 +143,7 @@ public class IngredientManager implements IIngredientManager {
 		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientType);
 		//noinspection unchecked
 		Set<V> set = ingredientsMap.computeIfAbsent(ingredientType, k -> IngredientSet.create(ingredientHelper));
-		for (V ingredient : ingredients) {
-			set.add(ingredient);
-			if (ingredient instanceof ItemStack) {
-				getStackProperties((ItemStack) ingredient);
-			}
-		}
+		set.addAll(ingredients);
 
 		for (V ingredient : ingredients) {
 			List<IIngredientListElement<V>> matchingElements = ingredientFilter.findMatchingElements(ingredientHelper, ingredient);

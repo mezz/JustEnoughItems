@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import net.minecraftforge.common.brewing.BrewingRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
@@ -18,14 +19,17 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionBrewing;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
 import net.minecraft.util.ResourceLocation;
 
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.ClientConfig;
+import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -67,24 +71,34 @@ public class BrewingRecipeMaker {
 	}
 
 	private void addVanillaBrewingRecipes(Collection<IJeiBrewingRecipe> recipes, VanillaBrewingRecipe vanillaBrewingRecipe) {
-		List<ItemStack> potionIngredients = ingredientManager.getPotionIngredients();
+		List<ItemStack> potionReagents = ingredientManager.getAllIngredients(VanillaTypes.ITEM).stream()
+			.filter(itemStack -> {
+				try {
+					return PotionBrewing.isReagent(itemStack);
+				} catch (RuntimeException | LinkageError e) {
+					String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
+					LOGGER.error("Failed to check if item is a potion reagent {}.", itemStackInfo, e);
+					return false;
+				}
+			})
+			.collect(Collectors.toList());
 		List<ItemStack> knownPotions = new ArrayList<>();
 
 		knownPotions.add(BrewingRecipeUtil.WATER_BOTTLE);
 
 		boolean foundNewPotions;
 		do {
-			List<ItemStack> newPotions = getNewPotions(knownPotions, potionIngredients, recipes, vanillaBrewingRecipe);
+			List<ItemStack> newPotions = getNewPotions(knownPotions, potionReagents, recipes, vanillaBrewingRecipe);
 			foundNewPotions = !newPotions.isEmpty();
 			knownPotions.addAll(newPotions);
 		} while (foundNewPotions);
 	}
 
-	private List<ItemStack> getNewPotions(List<ItemStack> knownPotions, List<ItemStack> potionIngredients, Collection<IJeiBrewingRecipe> recipes, VanillaBrewingRecipe vanillaBrewingRecipe) {
+	private List<ItemStack> getNewPotions(List<ItemStack> knownPotions, List<ItemStack> potionReagents, Collection<IJeiBrewingRecipe> recipes, VanillaBrewingRecipe vanillaBrewingRecipe) {
 		List<ItemStack> newPotions = new ArrayList<>();
 		for (ItemStack potionInput : knownPotions) {
-			for (ItemStack potionIngredient : potionIngredients) {
-				ItemStack potionOutput = vanillaBrewingRecipe.getOutput(potionInput.copy(), potionIngredient);
+			for (ItemStack potionReagent : potionReagents) {
+				ItemStack potionOutput = vanillaBrewingRecipe.getOutput(potionInput.copy(), potionReagent);
 				if (potionOutput.isEmpty()) {
 					continue;
 				}
@@ -103,9 +117,9 @@ public class BrewingRecipeMaker {
 					}
 				}
 
-				IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(Collections.singletonList(potionIngredient), potionInput.copy(), potionOutput);
+				IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(Collections.singletonList(potionReagent), potionInput.copy(), potionOutput);
 				if (!recipes.contains(recipe) && !disabledRecipes.contains(recipe)) {
-					if (BrewingRecipeRegistry.hasOutput(potionInput, potionIngredient)) {
+					if (BrewingRecipeRegistry.hasOutput(potionInput, potionReagent)) {
 						recipes.add(recipe);
 					} else {
 						disabledRecipes.add(recipe);
