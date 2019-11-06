@@ -202,6 +202,7 @@ public class IngredientFilter implements IIngredientGridSource {
 
 	@Override
 	public List<IIngredientListElement<?>> getIngredientList(String filterText) {
+		filterText = filterText.toLowerCase();
 		if (!filterText.equals(filterCached)) {
 			List<IIngredientListElement<?>> ingredientList = getIngredientListUncached(filterText);
 			ingredientListCached = Collections.unmodifiableList(ingredientList);
