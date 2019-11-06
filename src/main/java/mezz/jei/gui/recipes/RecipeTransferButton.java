@@ -54,6 +54,15 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 		}
 	}
 
+	@Override
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		return this.visible &&
+			mouseX >= this.x &&
+			mouseY >= this.y &&
+			mouseX < this.x + this.width &&
+			mouseY < this.y + this.height;
+	}
+
 	public void setOnClickHandler(IOnClickHandler onClickHandler) {
 		this.onClickHandler = onClickHandler;
 	}
