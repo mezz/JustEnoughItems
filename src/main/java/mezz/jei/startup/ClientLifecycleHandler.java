@@ -122,8 +122,10 @@ public class ClientLifecycleHandler {
 			IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
 			reloadableResourceManager.addReloadListener(new JeiReloadListener(plugins));
 		}
-		Preconditions.checkNotNull(textures);
-		this.starter.start(plugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
+		if (minecraft.world != null) {
+			Preconditions.checkNotNull(textures);
+			this.starter.start(plugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
+		}
 	}
 
 	private final class JeiReloadListener implements ISelectiveResourceReloadListener {
@@ -136,7 +138,7 @@ public class ClientLifecycleHandler {
 		@Override
 		public void onResourceManagerReload(IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
 			// check that JEI has been started before. if not, do nothing
-			if (starter.hasStarted()) {
+			if (starter.hasStarted() && Minecraft.getInstance().world != null) {
 				LOGGER.info("Restarting JEI.");
 				Preconditions.checkNotNull(textures);
 				starter.start(plugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
