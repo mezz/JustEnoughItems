@@ -130,9 +130,9 @@ public final class AnvilRecipeMaker {
 			new ItemStack(Items.LEATHER_HELMET),
 			new ItemStack(Items.LEATHER_CHESTPLATE),
 			new ItemStack(Items.LEATHER_LEGGINGS),
-			new ItemStack(Items.LEATHER_BOOTS),
-			new ItemStack(Items.ELYTRA)
+			new ItemStack(Items.LEATHER_BOOTS)
 		));
+
 
 		ItemStack repairIron = new ItemStack(Items.IRON_INGOT);
 		items.put(Collections.singletonList(repairIron), Lists.newArrayList(
@@ -175,6 +175,11 @@ public final class AnvilRecipeMaker {
 			new ItemStack(Items.DIAMOND_CHESTPLATE),
 			new ItemStack(Items.DIAMOND_LEGGINGS),
 			new ItemStack(Items.DIAMOND_BOOTS)
+		));
+
+		ItemStack repairElytra = new ItemStack(Items.PHANTOM_MEMBRANE);
+		items.put(Collections.singletonList(repairElytra), Lists.newArrayList(
+			new ItemStack(Items.ELYTRA)
 		));
 
 		for (Map.Entry<List<ItemStack>, List<ItemStack>> entry : items.entrySet()) {
