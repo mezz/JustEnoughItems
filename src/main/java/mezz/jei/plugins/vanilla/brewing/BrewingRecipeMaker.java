@@ -16,6 +16,8 @@ import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.potion.PotionHelper;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.NonNullList;
@@ -66,9 +68,18 @@ public class BrewingRecipeMaker {
 
 	private void addVanillaBrewingRecipes(Collection<BrewingRecipeWrapper> recipes, VanillaBrewingRecipe vanillaBrewingRecipe) {
 		List<ItemStack> potionIngredients = ingredientRegistry.getPotionIngredients();
-		List<ItemStack> knownPotions = new ArrayList<>();
-
-		knownPotions.add(BrewingRecipeUtil.WATER_BOTTLE);
+		IIngredientHelper<ItemStack> itemStackHelper = ingredientRegistry.getIngredientHelper(VanillaTypes.ITEM);
+		Collection<ItemStack> knownPotions = IngredientSet.create(VanillaTypes.ITEM, itemStackHelper);
+		for (PotionType potionType : ForgeRegistries.POTION_TYPES.getValuesCollection()) {
+			if (potionType == PotionTypes.EMPTY) {
+				continue;
+			}
+			for (Ingredient container : PotionHelper.POTION_ITEMS) {
+				for (ItemStack stack : container.getMatchingStacks()) {
+					knownPotions.add(PotionUtils.addPotionToItemStack(stack.copy(), potionType));
+				}
+			}
+		}
 
 		boolean foundNewPotions;
 		do {
@@ -78,7 +89,7 @@ public class BrewingRecipeMaker {
 		} while (foundNewPotions);
 	}
 
-	private List<ItemStack> getNewPotions(List<ItemStack> knownPotions, List<ItemStack> potionIngredients, Collection<BrewingRecipeWrapper> recipes, VanillaBrewingRecipe vanillaBrewingRecipe) {
+	private List<ItemStack> getNewPotions(Collection<ItemStack> knownPotions, List<ItemStack> potionIngredients, Collection<BrewingRecipeWrapper> recipes, VanillaBrewingRecipe vanillaBrewingRecipe) {
 		List<ItemStack> newPotions = new ArrayList<>();
 		IIngredientHelper<ItemStack> itemStackHelper = ingredientRegistry.getIngredientHelper(VanillaTypes.ITEM);
 		for (ItemStack potionInput : knownPotions) {

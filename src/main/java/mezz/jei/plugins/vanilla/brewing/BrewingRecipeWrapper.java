@@ -74,10 +74,9 @@ public class BrewingRecipeWrapper implements IRecipeWrapper {
 	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 		int brewingSteps = getBrewingSteps();
-		if (brewingSteps < Integer.MAX_VALUE) {
-			String steps = Translator.translateToLocalFormatted("gui.jei.category.brewing.steps", brewingSteps);
-			minecraft.fontRenderer.drawString(steps, 70, 28, Color.gray.getRGB());
-		}
+		String brewingStepsString = brewingSteps < Integer.MAX_VALUE ? Integer.toString(brewingSteps) : "?";
+		String steps = Translator.translateToLocalFormatted("gui.jei.category.brewing.steps", brewingStepsString);
+		minecraft.fontRenderer.drawString(steps, 70, 28, Color.gray.getRGB());
 	}
 
 	@Override
