@@ -25,9 +25,11 @@ import net.minecraft.potion.Potions;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.collect.IngredientSet;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
@@ -82,9 +84,24 @@ public class BrewingRecipeMaker {
 				}
 			})
 			.collect(Collectors.toList());
-		List<ItemStack> knownPotions = new ArrayList<>();
 
-		knownPotions.add(BrewingRecipeUtil.WATER_BOTTLE);
+		List<ItemStack> basePotions = new ArrayList<>();
+		for (Ingredient potionItem : PotionBrewing.POTION_ITEMS) {
+			Collections.addAll(basePotions, potionItem.getMatchingStacks());
+		}
+
+		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM);
+		Collection<ItemStack> knownPotions = IngredientSet.create(itemStackHelper);
+		for (Potion potion : ForgeRegistries.POTION_TYPES.getValues()) {
+			if (potion == Potions.EMPTY) {
+				// skip the "uncraftable" vanilla potions
+				continue;
+			}
+			for (ItemStack input : basePotions) {
+				ItemStack result = PotionUtils.addPotionToItemStack(input.copy(), potion);
+				knownPotions.add(result);
+			}
+		}
 
 		boolean foundNewPotions;
 		do {
@@ -94,7 +111,7 @@ public class BrewingRecipeMaker {
 		} while (foundNewPotions);
 	}
 
-	private List<ItemStack> getNewPotions(List<ItemStack> knownPotions, List<ItemStack> potionReagents, Collection<IJeiBrewingRecipe> recipes, VanillaBrewingRecipe vanillaBrewingRecipe) {
+	private List<ItemStack> getNewPotions(Collection<ItemStack> knownPotions, List<ItemStack> potionReagents, Collection<IJeiBrewingRecipe> recipes, VanillaBrewingRecipe vanillaBrewingRecipe) {
 		List<ItemStack> newPotions = new ArrayList<>();
 		for (ItemStack potionInput : knownPotions) {
 			for (ItemStack potionReagent : potionReagents) {

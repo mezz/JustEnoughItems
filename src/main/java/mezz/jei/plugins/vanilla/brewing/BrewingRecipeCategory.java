@@ -94,11 +94,10 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 		arrow.draw(42, 2);
 
 		int brewingSteps = recipe.getBrewingSteps();
-		if (brewingSteps < Integer.MAX_VALUE) {
-			String steps = Translator.translateToLocalFormatted("gui.jei.category.brewing.steps", brewingSteps);
-			Minecraft minecraft = Minecraft.getInstance();
-			minecraft.fontRenderer.drawString(steps, 70, 28, 0xFF808080);
-		}
+		String brewingStepsString = brewingSteps < Integer.MAX_VALUE ? Integer.toString(brewingSteps) : "?";
+		String steps = Translator.translateToLocalFormatted("gui.jei.category.brewing.steps", brewingStepsString);
+		Minecraft minecraft = Minecraft.getInstance();
+		minecraft.fontRenderer.drawString(steps, 70, 28, 0xFF808080);
 	}
 
 	@Override
