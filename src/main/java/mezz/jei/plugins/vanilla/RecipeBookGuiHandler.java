@@ -18,7 +18,7 @@ class RecipeBookGuiHandler<T extends ContainerScreen & IRecipeShownListener> imp
 	 */
 	@Override
 	public List<Rectangle2d> getGuiExtraAreas(T containerScreen) {
-		RecipeBookGui guiRecipeBook = containerScreen.func_194310_f();
+		RecipeBookGui guiRecipeBook = containerScreen.getRecipeGui();
 		if (guiRecipeBook.isVisible()) {
 			List<Rectangle2d> areas = new ArrayList<>();
 			int i = (guiRecipeBook.width - 147) / 2 - guiRecipeBook.xOffset;
