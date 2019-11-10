@@ -72,7 +72,7 @@
   "config.jei.search.tooltipSearchMode": "#Tooltip",
   "config.jei.search.tooltipSearchMode.comment": "依物品提示搜尋（前綴：#）",
   "config.jei.search.tagSearchMode": "$Tag",
-  "config.jei.search.tagSearchMode.comment": "Search mode for Tag Names (前綴：$)",
+  "config.jei.search.tagSearchMode.comment": "依標籤搜尋 (前綴：$)",
   "config.jei.search.creativeTabSearchMode": "%%CreativeTab",
   "config.jei.search.creativeTabSearchMode.comment": "依創造模式標籤搜尋（前綴：%）",
   "config.jei.search.colorSearchMode": "^Color",
@@ -120,7 +120,7 @@
   "gui.jei.category.fuel.smeltCount.single": "可熔煉 1 個物品",
   "gui.jei.category.fuel.smeltCount": "可熔煉 %s 個物品",
   "gui.jei.category.brewing": "釀造",
-  "gui.jei.category.brewing.steps": "步驟： %s",
+  "gui.jei.category.brewing.steps": "步驟：%s",
   "gui.jei.category.itemInformation": "資訊",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
