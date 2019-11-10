@@ -2,7 +2,14 @@
     <h3>{{name}}</h3>
     <ul>
         {{#commits}}
-            <li><a href="https://github.com/mezz/JustEnoughItems/commit/{{hashFull}}">{{message}}</a> - {{authorName}}</li>
+            <li>
+                <a href="https://github.com/mezz/JustEnoughItems/commit/{{hashFull}}">{{{messageTitle}}}</a> - {{{authorName}}}
+                <ul>
+                    {{#messageBodyItems}}
+                        <li>{{.}}</li>
+                    {{/messageBodyItems}}
+                </ul>
+            </li>
         {{/commits}}
     </ul>
 {{/tags}}
