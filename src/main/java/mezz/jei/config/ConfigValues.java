@@ -6,6 +6,7 @@ public class ConfigValues {
 	// advanced
 	public boolean debugModeEnabled = false;
 	public boolean centerSearchBarEnabled = false;
+	public boolean optimizeMemoryUsage = true;
 	public GiveMode giveMode = GiveMode.MOUSE_PICKUP;
 	public String modNameFormat = Config.parseFriendlyModNameFormat(Config.defaultModNameFormatFriendly);
 	public int maxColumns = 100;

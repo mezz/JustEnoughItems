@@ -16,6 +16,8 @@
 package mezz.jei.suffixtree;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -382,6 +384,22 @@ public class GeneralizedSuffixTree implements ISearchTree {
 
 	public int getHighestIndex() {
 		return highestIndex;
+	}
+
+	public void trimToSize() {
+		LinkedList<Node> nodes = new LinkedList<>();
+		nodes.add(root);
+		while (!nodes.isEmpty()) {
+			Node node = nodes.remove();
+			node.trimToSize();
+			Node suffix = node.getSuffix();
+			if (suffix != null) {
+				suffix.trimToSize();
+			}
+			for (Edge edge : node.edges()) {
+				nodes.add(edge.getDest());
+			}
+		}
 	}
 
 	/**

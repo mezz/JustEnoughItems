@@ -114,6 +114,13 @@ public class JeiStarter {
 
 		sendRuntime(plugins, jeiRuntime);
 
+		// Some mods insist on adding ingredients at runtime, so we cannot optimize memory usage earlier than that.
+		if (Config.isOptimizeMemoryUsage()) {
+			timer.start("Optimizing memory usage");
+			ingredientFilter.trimToSize();
+			timer.stop();
+		}
+
 		LeftAreaDispatcher leftAreaDispatcher = new LeftAreaDispatcher(guiScreenHelper);
 		leftAreaDispatcher.addContent(bookmarkOverlay);
 

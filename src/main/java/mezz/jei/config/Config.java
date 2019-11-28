@@ -179,6 +179,10 @@ public final class Config {
 		return values.centerSearchBarEnabled;
 	}
 
+	public static boolean isOptimizeMemoryUsage() {
+		return values.optimizeMemoryUsage;
+	}
+
 	public static GiveMode getGiveMode() {
 		return values.giveMode;
 	}
@@ -398,6 +402,8 @@ public final class Config {
 		categoryAdvanced.remove("maxSubtypes");
 
 		values.centerSearchBarEnabled = config.getBoolean(CATEGORY_ADVANCED, "centerSearchBarEnabled", defaultValues.centerSearchBarEnabled);
+
+		values.optimizeMemoryUsage = config.getBoolean(CATEGORY_ADVANCED, "optimizeMemoryUsage", defaultValues.optimizeMemoryUsage);
 
 		values.giveMode = config.getEnum("giveMode", CATEGORY_ADVANCED, defaultValues.giveMode, GiveMode.values());
 
