@@ -16,6 +16,7 @@
 package mezz.jei.suffixtree;
 
 import javax.annotation.Nullable;
+import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Objects;
@@ -387,7 +388,7 @@ public class GeneralizedSuffixTree implements ISearchTree {
 	}
 
 	public void trimToSize() {
-		LinkedList<Node> nodes = new LinkedList<>();
+		ArrayDeque<Node> nodes = new ArrayDeque<>(128);
 		nodes.add(root);
 		while (!nodes.isEmpty()) {
 			Node node = nodes.remove();
