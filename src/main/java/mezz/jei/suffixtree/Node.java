@@ -25,6 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectCollection;
+import mezz.jei.util.Log;
 
 import java.util.Collection;
 import java.util.Map;
@@ -123,6 +124,7 @@ class Node {
 			edges.put(ch, e);
 		} catch (UnsupportedOperationException ex) {
 			// after trimToSize() call - fall back
+			Log.get().warn("Mod added a tree entry after memory optimization!", ex);
 			edges = new Char2ObjectOpenHashMap<>(edges);
 			edges.put(ch, e);
 		}
