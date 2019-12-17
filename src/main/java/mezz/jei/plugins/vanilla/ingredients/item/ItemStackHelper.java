@@ -68,9 +68,8 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	public String getDisplayName(ItemStack ingredient) {
 		ITextComponent displayNameTextComponent = ingredient.getDisplayName();
-		String displayName = displayNameTextComponent.getUnformattedComponentText();
-		ErrorUtil.checkNotNull(displayName, "itemStack.getDisplayName()");
-		return displayName;
+		ErrorUtil.checkNotNull(displayNameTextComponent, "itemStack.getDisplayName()");
+		return displayNameTextComponent.getString();
 	}
 
 	@Override
