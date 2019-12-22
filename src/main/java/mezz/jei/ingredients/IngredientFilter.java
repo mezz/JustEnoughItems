@@ -86,6 +86,13 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		this.prefixedSearchTrees.put(prefix, prefixedTree);
 	}
 
+	public void trimToSize() {
+		searchTree.trimToSize();
+		for (PrefixedSearchTree tree : prefixedSearchTrees.values()) {
+			tree.getTree().trimToSize();
+		}
+	}
+
 	public void addIngredients(NonNullList<IIngredientListElement> ingredients) {
 		ingredients.sort(IngredientListElementComparator.INSTANCE);
 		long modNameCount = ingredients.stream()
