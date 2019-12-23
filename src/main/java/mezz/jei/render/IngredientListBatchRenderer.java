@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -148,40 +148,40 @@ public class IngredientListBatchRenderer {
 	 * renders all ItemStacks
 	 */
 	public void render(Minecraft minecraft) {
-		RenderHelper.enableGUIStandardItemLighting();
+		RenderHelper.func_227780_a_();
 
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		TextureManager textureManager = minecraft.getTextureManager();
 		itemRenderer.zLevel += 50.0F;
 
 		textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-		textureManager.getTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
-		GlStateManager.enableRescaleNormal();
-		GlStateManager.enableAlphaTest();
-		GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
-		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		textureManager.func_229267_b_(AtlasTexture.LOCATION_BLOCKS_TEXTURE).setBlurMipmapDirect(false, false);
+		RenderSystem.enableRescaleNormal();
+		RenderSystem.enableAlphaTest();
+		RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F);
+		RenderSystem.enableBlend();
+		RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 		// 3d Items
-		GlStateManager.enableLighting();
+		RenderSystem.enableLighting();
 		for (ItemStackFastRenderer slot : renderItems3d) {
 			slot.renderItemAndEffectIntoGUI(editModeConfig, worldConfig);
 		}
 
 		// 2d Items
-		GlStateManager.disableLighting();
+		RenderSystem.disableLighting();
 		for (ItemStackFastRenderer slot : renderItems2d) {
 			slot.renderItemAndEffectIntoGUI(editModeConfig, worldConfig);
 		}
 
-		GlStateManager.disableAlphaTest();
-		GlStateManager.disableBlend();
-		GlStateManager.disableRescaleNormal();
-		GlStateManager.disableLighting();
+		RenderSystem.disableAlphaTest();
+		RenderSystem.disableBlend();
+		RenderSystem.disableRescaleNormal();
+		RenderSystem.disableLighting();
 
 		textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-		textureManager.getTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
+		textureManager.func_229267_b_(AtlasTexture.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
 
 		itemRenderer.zLevel -= 50.0F;
 
@@ -194,7 +194,7 @@ public class IngredientListBatchRenderer {
 			slot.renderOverlay();
 		}
 
-		GlStateManager.disableLighting();
+		RenderSystem.disableLighting();
 
 		// other rendering
 		for (IngredientListElementRenderer slot : renderOther) {

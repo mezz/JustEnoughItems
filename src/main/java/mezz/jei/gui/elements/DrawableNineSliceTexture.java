@@ -129,17 +129,17 @@ public class DrawableNineSliceTexture {
 	}
 
 	private static void draw(BufferBuilder bufferBuilder, float minU, double minV, float maxU, float maxV, int xOffset, int yOffset, int width, int height) {
-		bufferBuilder.pos(xOffset, yOffset + height, 0)
-			.tex(minU, maxV)
+		bufferBuilder.func_225582_a_(xOffset, yOffset + height, 0)
+			.func_225583_a_(minU, maxV)
 			.endVertex();
-		bufferBuilder.pos(xOffset + width, yOffset + height, 0)
-			.tex(maxU, maxV)
+		bufferBuilder.func_225582_a_(xOffset + width, yOffset + height, 0)
+			.func_225583_a_(maxU, maxV)
 			.endVertex();
-		bufferBuilder.pos(xOffset + width, yOffset, 0)
-			.tex(maxU, minV)
+		bufferBuilder.func_225582_a_(xOffset + width, yOffset, 0)
+			.func_225583_a_(maxU, (float) minV)
 			.endVertex();
-		bufferBuilder.pos(xOffset, yOffset, 0)
-			.tex(minU, minV)
+		bufferBuilder.func_225582_a_(xOffset, yOffset, 0)
+			.func_225583_a_(minU, (float) minV)
 			.endVertex();
 	}
 }

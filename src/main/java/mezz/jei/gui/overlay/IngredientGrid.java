@@ -3,6 +3,7 @@ package mezz.jei.gui.overlay;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraftforge.items.ItemHandlerHelper;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
@@ -101,7 +102,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	}
 
 	public void draw(Minecraft minecraft, int mouseX, int mouseY) {
-		GlStateManager.disableBlend();
+		RenderSystem.disableBlend();
 
 		guiIngredientSlots.render(minecraft);
 
@@ -112,7 +113,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 			}
 		}
 
-		GlStateManager.enableAlphaTest();
+		RenderSystem.enableAlphaTest();
 	}
 
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {

@@ -4,9 +4,10 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -59,22 +60,22 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 
 	@Override
 	public void render(final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
-		GlStateManager.enableBlend();
-		GlStateManager.enableAlphaTest();
+		RenderSystem.enableBlend();
+		RenderSystem.enableAlphaTest();
 
 		drawFluid(xPosition, yPosition, fluidStack);
 
-		GlStateManager.color4f(1, 1, 1, 1);
+		RenderSystem.color4f(1, 1, 1, 1);
 
 		if (overlay != null) {
-			GlStateManager.pushMatrix();
-			GlStateManager.translatef(0, 0, 200);
+			RenderSystem.pushMatrix();
+			RenderSystem.translatef(0, 0, 200);
 			overlay.draw(xPosition, yPosition);
-			GlStateManager.popMatrix();
+			RenderSystem.popMatrix();
 		}
 
-		GlStateManager.disableAlphaTest();
-		GlStateManager.disableBlend();
+		RenderSystem.disableAlphaTest();
+		RenderSystem.disableBlend();
 	}
 
 	private void drawFluid(final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
@@ -133,11 +134,10 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 
 	private static TextureAtlasSprite getStillFluidSprite(FluidStack fluidStack) {
 		Minecraft minecraft = Minecraft.getInstance();
-		AtlasTexture textureMapBlocks = minecraft.getTextureMap();
 		Fluid fluid = fluidStack.getFluid();
 		FluidAttributes attributes = fluid.getAttributes();
-		ResourceLocation fluidStill = attributes.getStill(fluidStack);
-		return textureMapBlocks.getSprite(fluidStill);
+		ResourceLocation fluidStill = attributes.getStillTexture(fluidStack);
+		return minecraft.func_228015_a_(PlayerContainer.field_226615_c_).apply(fluidStill);
 	}
 
 	private static void setGLColorFromInt(int color) {
@@ -146,7 +146,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		float blue = (color & 0xFF) / 255.0F;
 		float alpha = ((color >> 24) & 0xFF) / 255F;
 
-		GlStateManager.color4f(red, green, blue, alpha);
+		RenderSystem.color4f(red, green, blue, alpha);
 	}
 
 	private static void drawTextureWithMasking(double xCoord, double yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, double zLevel) {
@@ -160,10 +160,10 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		bufferBuilder.pos(xCoord, yCoord + 16, zLevel).tex(uMin, vMax).endVertex();
-		bufferBuilder.pos(xCoord + 16 - maskRight, yCoord + 16, zLevel).tex(uMax, vMax).endVertex();
-		bufferBuilder.pos(xCoord + 16 - maskRight, yCoord + maskTop, zLevel).tex(uMax, vMin).endVertex();
-		bufferBuilder.pos(xCoord, yCoord + maskTop, zLevel).tex(uMin, vMin).endVertex();
+		bufferBuilder.func_225582_a_(xCoord, yCoord + 16, zLevel).func_225583_a_((float) uMin, (float) vMax).endVertex();
+		bufferBuilder.func_225582_a_(xCoord + 16 - maskRight, yCoord + 16, zLevel).func_225583_a_((float) uMax, (float) vMax).endVertex();
+		bufferBuilder.func_225582_a_(xCoord + 16 - maskRight, yCoord + maskTop, zLevel).func_225583_a_((float) uMax, (float) vMin).endVertex();
+		bufferBuilder.func_225582_a_(xCoord, yCoord + maskTop, zLevel).func_225583_a_((float) uMin, (float) vMin).endVertex();
 		tessellator.draw();
 	}
 

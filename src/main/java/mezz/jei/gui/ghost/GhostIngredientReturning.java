@@ -1,8 +1,8 @@
 package mezz.jei.gui.ghost;
 
 import javax.annotation.Nullable;
-import javax.vecmath.Point2d;
 
+import javafx.geometry.Point2D;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -17,8 +17,8 @@ public class GhostIngredientReturning<T> {
 	private static final long DURATION_PER_SCREEN_WIDTH = 500; // milliseconds to move across a full screen
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final T ingredient;
-	private final Point2d start;
-	private final Point2d end;
+	private final Point2D start;
+	private final Point2D end;
 	private final long startTime;
 	private final long duration;
 
@@ -28,14 +28,14 @@ public class GhostIngredientReturning<T> {
 		if (origin != null) {
 			IIngredientRenderer<T> ingredientRenderer = ghostIngredientDrag.getIngredientRenderer();
 			T ingredient = ghostIngredientDrag.getIngredient();
-			Point2d end = new Point2d(origin.getX(), origin.getY());
-			Point2d start = new Point2d(mouseX - 8, mouseY - 8);
+			Point2D end = new Point2D(origin.getX(), origin.getY());
+			Point2D start = new Point2D(mouseX - 8, mouseY - 8);
 			return new GhostIngredientReturning<>(ingredientRenderer, ingredient, start, end);
 		}
 		return null;
 	}
 
-	private GhostIngredientReturning(IIngredientRenderer<T> ingredientRenderer, T ingredient, Point2d start, Point2d end) {
+	private GhostIngredientReturning(IIngredientRenderer<T> ingredientRenderer, T ingredient, Point2D start, Point2D end) {
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredient = ingredient;
 		this.start = start;
@@ -56,10 +56,10 @@ public class GhostIngredientReturning<T> {
 		long time = System.currentTimeMillis();
 		long elapsed = time - startTime;
 		double percent = Math.min(elapsed / (double) this.duration, 1);
-		double dx = end.x - start.x;
-		double dy = end.y - start.y;
-		double x = start.x + Math.round(dx * percent);
-		double y = start.y + Math.round(dy * percent);
+		double dx = end.getX() - start.getX();
+		double dy = end.getY() - start.getY();
+		double x = start.getX() + Math.round(dx * percent);
+		double y = start.getY() + Math.round(dy * percent);
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		itemRenderer.zLevel += 150.0F;
 		ingredientRenderer.render((int) x, (int) y, ingredient);

@@ -66,7 +66,7 @@ public class Textures {
 	}
 
 	private ResourceLocation registerSprite(String name) {
-		ResourceLocation location = new ResourceLocation(ModIds.JEI_ID, "gui/" + name);
+		ResourceLocation location = new ResourceLocation(ModIds.JEI_ID, name);
 		spriteUploader.registerSprite(location);
 		return location;
 	}

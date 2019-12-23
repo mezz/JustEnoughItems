@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.Internal;
@@ -98,18 +98,18 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 	public GuiIngredient draw(int mouseX, int mouseY) {
 		int ingredientCount = ingredients.size();
 		if (ingredientCount > 0) {
-			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-			GlStateManager.disableDepthTest();
-			GlStateManager.enableAlphaTest();
+			RenderSystem.disableDepthTest();
+			RenderSystem.enableAlphaTest();
 			{
 				int slotWidth = width - (2 * borderSize);
 				int slotHeight = height - (2 * borderSize);
 				backgroundTab.draw(this.left, this.top, width, height);
 				slotBackground.draw(this.left + borderSize, this.top + borderSize, slotWidth, slotHeight);
 			}
-			GlStateManager.disableAlphaTest();
-			GlStateManager.enableDepthTest();
+			RenderSystem.disableAlphaTest();
+			RenderSystem.enableDepthTest();
 
 			GuiIngredient hovered = null;
 			for (GuiIngredient guiIngredient : this.ingredients) {

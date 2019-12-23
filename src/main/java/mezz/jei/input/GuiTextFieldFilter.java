@@ -3,7 +3,7 @@ package mezz.jei.input;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.renderer.Rectangle2d;
@@ -162,7 +162,7 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 	public void renderButton(int mouseX, int mouseY, float partialTicks) {
 		this.isDrawing = true;
 		if (this.getVisible()) {
-			GlStateManager.color4f(1, 1, 1, 1);
+			RenderSystem.color4f(1, 1, 1, 1);
 			background.draw(this.x, this.y, this.width, this.height);
 		}
 		super.renderButton(mouseX, mouseY, partialTicks);

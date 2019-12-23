@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -29,14 +29,14 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	@Override
 	public void render(int xPosition, int yPosition, @Nullable ItemStack ingredient) {
 		if (ingredient != null) {
-			GlStateManager.enableDepthTest();
-			RenderHelper.enableGUIStandardItemLighting();
+			RenderSystem.enableDepthTest();
+			RenderHelper.func_227780_a_();
 			Minecraft minecraft = Minecraft.getInstance();
 			FontRenderer font = getFontRenderer(minecraft, ingredient);
 			ItemRenderer itemRenderer = minecraft.getItemRenderer();
 			itemRenderer.renderItemAndEffectIntoGUI(null, ingredient, xPosition, yPosition);
 			itemRenderer.renderItemOverlayIntoGUI(font, ingredient, xPosition, yPosition, null);
-			GlStateManager.disableBlend();
+			RenderSystem.disableBlend();
 			RenderHelper.disableStandardItemLighting();
 		}
 	}

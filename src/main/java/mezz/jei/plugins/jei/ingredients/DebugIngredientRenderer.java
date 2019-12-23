@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.util.ITooltipFlag;
@@ -27,7 +27,7 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 			FontRenderer font = getFontRenderer(minecraft, ingredient);
 			font.drawString("JEI", xPosition, yPosition, 0xFFFF0000);
 			font.drawString("#" + ingredient.getNumber(), xPosition, yPosition + 8, 0xFFFF0000);
-			GlStateManager.color4f(1, 1, 1, 1);
+			RenderSystem.color4f(1, 1, 1, 1);
 		}
 	}
 

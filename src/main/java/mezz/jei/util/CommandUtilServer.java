@@ -113,7 +113,7 @@ public final class CommandUtilServer {
 			}
 			ItemStack itemStackCopy = itemStack.copy();
 			sender.inventory.setInventorySlotContents(hotbarSlot, itemStack);
-			sender.world.playSound(null, sender.posX, sender.posY, sender.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((sender.getRNG().nextFloat() - sender.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+			sender.world.playSound(null, sender.serverPosX, sender.serverPosY, sender.serverPosZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((sender.getRNG().nextFloat() - sender.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			sender.container.detectAndSendChanges();
 			notifyGive(sender, itemStackCopy);
 		} else {
@@ -145,7 +145,7 @@ public final class CommandUtilServer {
 	/**
 	 * Gives a player an item.
 	 *
-	 * @see GiveCommand#giveItem(CommandSource, ItemInput, Collection, int)
+	 * see GiveCommand#giveItem(CommandSource, ItemInput, Collection, int)
 	 */
 	private static void giveToInventory(PlayerEntity entityplayermp, ItemStack itemStack) {
 		ItemStack itemStackCopy = itemStack.copy();
@@ -157,7 +157,7 @@ public final class CommandUtilServer {
 				entityitem.makeFakeItem();
 			}
 
-			entityplayermp.world.playSound(null, entityplayermp.posX, entityplayermp.posY, entityplayermp.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((entityplayermp.getRNG().nextFloat() - entityplayermp.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+			entityplayermp.world.playSound(null, entityplayermp.serverPosX, entityplayermp.serverPosY, entityplayermp.serverPosZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((entityplayermp.getRNG().nextFloat() - entityplayermp.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			entityplayermp.container.detectAndSendChanges();
 		} else {
 			ItemEntity entityitem = entityplayermp.dropItem(itemStack, false);
