@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
@@ -19,7 +18,6 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.util.ErrorUtil;
 
 public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemStack> {
-	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
 
 	public ItemStackFastRenderer(IIngredientListElement<ItemStack> itemStackElement) {
 		super(itemStackElement);

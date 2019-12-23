@@ -145,7 +145,7 @@ public final class CommandUtilServer {
 	/**
 	 * Gives a player an item.
 	 *
-	 * see GiveCommand#giveItem(CommandSource, ItemInput, Collection, int)
+	 * @see GiveCommand#giveItem(CommandSource, ItemInput, Collection, int)
 	 */
 	private static void giveToInventory(PlayerEntity entityplayermp, ItemStack itemStack) {
 		ItemStack itemStackCopy = itemStack.copy();
