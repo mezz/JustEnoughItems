@@ -2,7 +2,6 @@ package mezz.jei.gui.ghost;
 
 import javax.annotation.Nullable;
 
-import javafx.geometry.Point2D;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -56,10 +55,10 @@ public class GhostIngredientReturning<T> {
 		long time = System.currentTimeMillis();
 		long elapsed = time - startTime;
 		double percent = Math.min(elapsed / (double) this.duration, 1);
-		double dx = end.getX() - start.getX();
-		double dy = end.getY() - start.getY();
-		double x = start.getX() + Math.round(dx * percent);
-		double y = start.getY() + Math.round(dy * percent);
+		double dx = end.x - start.x;
+		double dy = end.y - start.y;
+		double x = start.x + Math.round(dx * percent);
+		double y = start.y + Math.round(dy * percent);
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		itemRenderer.zLevel += 150.0F;
 		ingredientRenderer.render((int) x, (int) y, ingredient);
@@ -70,4 +69,20 @@ public class GhostIngredientReturning<T> {
 		long time = System.currentTimeMillis();
 		return startTime + this.duration < time;
 	}
+
+	private static class Point2D {
+		public final double x, y;
+
+		Point2D(double x, double y) {
+			this.x = x;
+			this.y = y;
+		}
+
+		double distance(Point2D point) {
+			double a = x - point.x;
+			double b = y - point.y;
+			return Math.sqrt(a * a + b * b);
+		}
+	}
+
 }
