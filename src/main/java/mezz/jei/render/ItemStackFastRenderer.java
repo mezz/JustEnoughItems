@@ -2,13 +2,14 @@ package mezz.jei.render;
 
 import javax.annotation.Nullable;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -50,10 +51,19 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		if (bakedModel == null) {
 			return;
 		}
-
-		Minecraft minecraft = Minecraft.getInstance();
-		ItemRenderer itemRenderer = minecraft.getItemRenderer();
-		itemRenderer.renderItemAndEffectIntoGUI(itemStack, area.getX() + padding, area.getY() + padding);
+		RenderSystem.pushMatrix();
+		{
+			RenderSystem.translatef(area.getX() + padding + 16.0F, area.getY() + padding, 150.0F);
+			RenderSystem.scalef(16F, -16F, 16F);
+			RenderSystem.translatef(-0.5F, -0.5F, -0.5F);
+			MatrixStack matrixStack = new MatrixStack();
+			Minecraft minecraft = Minecraft.getInstance();
+			ItemRenderer itemRenderer = minecraft.getItemRenderer();
+			IRenderTypeBuffer.Impl iRenderTypeBuffer = Minecraft.getInstance().func_228019_au_().func_228487_b_();
+			itemRenderer.func_229111_a_(itemStack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, iRenderTypeBuffer, 15728880, OverlayTexture.field_229196_a_, bakedModel);
+			iRenderTypeBuffer.func_228461_a_();
+		}
+		RenderSystem.popMatrix();
 	}
 
 	public void renderOverlay() {

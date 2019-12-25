@@ -162,7 +162,6 @@ public class IngredientListBatchRenderer {
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-
 		// 3d Items
 		RenderSystem.enableLighting();
 		for (ItemStackFastRenderer slot : renderItems3d) {
@@ -171,9 +170,11 @@ public class IngredientListBatchRenderer {
 
 		// 2d Items
 		RenderSystem.disableLighting();
+		RenderHelper.func_227783_c_();
 		for (ItemStackFastRenderer slot : renderItems2d) {
 			slot.renderItemAndEffectIntoGUI(editModeConfig, worldConfig);
 		}
+		RenderHelper.func_227784_d_();
 
 		RenderSystem.disableAlphaTest();
 		RenderSystem.disableBlend();
