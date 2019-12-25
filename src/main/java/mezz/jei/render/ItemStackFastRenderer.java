@@ -51,19 +51,17 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		if (bakedModel == null) {
 			return;
 		}
-		RenderSystem.pushMatrix();
-		{
-			RenderSystem.translatef(area.getX() + padding + 16.0F, area.getY() + padding, 150.0F);
-			RenderSystem.scalef(16F, -16F, 16F);
-			RenderSystem.translatef(-0.5F, -0.5F, -0.5F);
-			MatrixStack matrixStack = new MatrixStack();
-			Minecraft minecraft = Minecraft.getInstance();
-			ItemRenderer itemRenderer = minecraft.getItemRenderer();
-			IRenderTypeBuffer.Impl iRenderTypeBuffer = Minecraft.getInstance().func_228019_au_().func_228487_b_();
-			itemRenderer.func_229111_a_(itemStack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, iRenderTypeBuffer, 15728880, OverlayTexture.field_229196_a_, bakedModel);
-			iRenderTypeBuffer.func_228461_a_();
-		}
-		RenderSystem.popMatrix();
+
+		MatrixStack matrixStack = new MatrixStack();
+		matrixStack.func_227861_a_(area.getX() + padding + 16, area.getY() + padding, 150); //translate
+		matrixStack.func_227862_a_(16, -16, 16); //scale
+		matrixStack.func_227861_a_(-0.5, -0.5, -0.5); //translate
+		Minecraft minecraft = Minecraft.getInstance();
+		ItemRenderer itemRenderer = minecraft.getItemRenderer();
+		IRenderTypeBuffer.Impl iRenderTypeBuffer = Minecraft.getInstance().func_228019_au_().func_228487_b_();
+		itemRenderer.func_229111_a_(itemStack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, iRenderTypeBuffer, 15728880, OverlayTexture.field_229196_a_, bakedModel);
+		iRenderTypeBuffer.func_228461_a_();
+
 	}
 
 	public void renderOverlay() {
