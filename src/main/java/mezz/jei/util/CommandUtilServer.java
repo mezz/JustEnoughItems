@@ -113,7 +113,7 @@ public final class CommandUtilServer {
 			}
 			ItemStack itemStackCopy = itemStack.copy();
 			sender.inventory.setInventorySlotContents(hotbarSlot, itemStack);
-			sender.world.playSound(null, sender.serverPosX, sender.serverPosY, sender.serverPosZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((sender.getRNG().nextFloat() - sender.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+			sender.world.playSound(null, sender.func_226277_ct_(), sender.func_226278_cu_(), sender.func_226281_cx_(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((sender.getRNG().nextFloat() - sender.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			sender.container.detectAndSendChanges();
 			notifyGive(sender, itemStackCopy);
 		} else {
