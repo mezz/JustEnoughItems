@@ -27,20 +27,20 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 	private final Map<Class, IGhostIngredientHandler> ghostIngredientHandlers = new HashMap<>();
 
 	@Override
-	public <T extends ContainerScreen<?>> void addGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<T> guiHandler) {
+	public synchronized <T extends ContainerScreen<?>> void addGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<T> guiHandler) {
 		ErrorUtil.checkNotNull(guiClass, "guiClass");
 		ErrorUtil.checkNotNull(guiHandler, "guiHandler");
 		this.guiHandlers.put(guiClass, guiHandler);
 	}
 
 	@Override
-	public void addGlobalGuiHandler(IGlobalGuiHandler globalGuiHandler) {
+	public synchronized void addGlobalGuiHandler(IGlobalGuiHandler globalGuiHandler) {
 		ErrorUtil.checkNotNull(globalGuiHandler, "globalGuiHandler");
 		this.globalGuiHandlers.add(globalGuiHandler);
 	}
 
 	@Override
-	public <T extends Screen> void addGuiScreenHandler(Class<T> guiClass, IScreenHandler<T> handler) {
+	public synchronized <T extends Screen> void addGuiScreenHandler(Class<T> guiClass, IScreenHandler<T> handler) {
 		ErrorUtil.checkNotNull(guiClass, "guiClass");
 		Preconditions.checkArgument(Screen.class.isAssignableFrom(guiClass), "guiClass must inherit from Screen");
 		Preconditions.checkArgument(!Screen.class.equals(guiClass), "you cannot add a handler for Screen, only a subclass.");
@@ -53,7 +53,7 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 	);
 
 	@Override
-	public <T extends Screen> void addGhostIngredientHandler(Class<T> guiClass, IGhostIngredientHandler<T> handler) {
+	public synchronized <T extends Screen> void addGhostIngredientHandler(Class<T> guiClass, IGhostIngredientHandler<T> handler) {
 		ErrorUtil.checkNotNull(guiClass, "guiClass");
 		Preconditions.checkArgument(Screen.class.isAssignableFrom(guiClass), "guiClass must inherit from Screen");
 		Preconditions.checkArgument(!ghostIngredientGuiBlacklist.contains(guiClass), "you cannot add a ghost ingredient handler for the following Guis, it would interfere with using JEI: %s", ghostIngredientGuiBlacklist);

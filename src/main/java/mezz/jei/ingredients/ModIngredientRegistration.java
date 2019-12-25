@@ -29,7 +29,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 	}
 
 	@Override
-	public <V> void register(IIngredientType<V> ingredientType, Collection<V> allIngredients, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer) {
+	public synchronized <V> void register(IIngredientType<V> ingredientType, Collection<V> allIngredients, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotNull(allIngredients, "allIngredients");
 		ErrorUtil.checkNotNull(ingredientHelper, "ingredientHelper");
@@ -49,7 +49,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 		return subtypeManager;
 	}
 
-	public IngredientManager createIngredientManager(IModIdHelper modIdHelper, IngredientBlacklistInternal blacklist, boolean enableDebugLogs) {
+	public synchronized IngredientManager createIngredientManager(IModIdHelper modIdHelper, IngredientBlacklistInternal blacklist, boolean enableDebugLogs) {
 		Map<IIngredientType, IngredientSet> ingredientsMap = new IdentityHashMap<>();
 		for (Map.Entry<IIngredientType, Collection> entry : allIngredientsMap.entrySet()) {
 			IIngredientType ingredientType = entry.getKey();
@@ -69,7 +69,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 		);
 	}
 
-	private <T> IngredientSet<T> createIngredientSet(IIngredientType<T> ingredientType, Collection<T> ingredients) {
+	private synchronized <T> IngredientSet<T> createIngredientSet(IIngredientType<T> ingredientType, Collection<T> ingredients) {
 		@SuppressWarnings("unchecked")
 		IIngredientHelper<T> ingredientHelper = ingredientHelperMap.get(ingredientType);
 		IngredientSet<T> ingredientSet = IngredientSet.create(ingredientHelper);

@@ -8,10 +8,7 @@ import mezz.jei.plugins.jei.JeiInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 
 public class PluginHelper {
-	public static void sortPlugins(List<IModPlugin> plugins, VanillaPlugin vanillaPlugin, @Nullable JeiInternalPlugin jeiInternalPlugin) {
-		plugins.remove(vanillaPlugin);
-		plugins.add(0, vanillaPlugin);
-
+	public static void sortPlugins(List<IModPlugin> plugins, @Nullable JeiInternalPlugin jeiInternalPlugin) {
 		if (jeiInternalPlugin != null) {
 			plugins.remove(jeiInternalPlugin);
 			plugins.add(jeiInternalPlugin);
@@ -19,8 +16,8 @@ public class PluginHelper {
 	}
 
 	@Nullable
-	public static <T extends IModPlugin> T getPluginWithClass(Class<? extends T> pluginClass, List<IModPlugin> modPlugins) {
-		for (IModPlugin modPlugin : modPlugins) {
+	public static <T> T getPluginWithClass(Class<? extends T> pluginClass, List<? super T> modPlugins) {
+		for (Object modPlugin : modPlugins) {
 			if (pluginClass.isInstance(modPlugin)) {
 				return pluginClass.cast(modPlugin);
 			}

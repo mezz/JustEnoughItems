@@ -22,7 +22,7 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 	}
 
 	@Override
-	public void addRecipeManagerPlugin(IRecipeManagerPlugin recipeManagerPlugin) {
+	public synchronized void addRecipeManagerPlugin(IRecipeManagerPlugin recipeManagerPlugin) {
 		ErrorUtil.checkNotNull(recipeManagerPlugin, "recipeManagerPlugin");
 
 		LOGGER.info("Added recipe manager plugin: {}", recipeManagerPlugin.getClass());
@@ -34,7 +34,7 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 		return jeiHelpers;
 	}
 
-	public ImmutableList<IRecipeManagerPlugin> getRecipeManagerPlugins() {
+	public synchronized ImmutableList<IRecipeManagerPlugin> getRecipeManagerPlugins() {
 		return ImmutableList.copyOf(recipeManagerPlugins);
 	}
 }

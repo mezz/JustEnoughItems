@@ -27,7 +27,7 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 	}
 
 	@Override
-	public void registerSubtypeInterpreter(Item item, ISubtypeInterpreter interpreter) {
+	public synchronized void registerSubtypeInterpreter(Item item, ISubtypeInterpreter interpreter) {
 		ErrorUtil.checkNotNull(item, "item ");
 		ErrorUtil.checkNotNull(interpreter, "interpreter");
 
@@ -40,14 +40,14 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 	}
 
 	@Override
-	public boolean hasSubtypeInterpreter(ItemStack itemStack) {
+	public synchronized boolean hasSubtypeInterpreter(ItemStack itemStack) {
 		ErrorUtil.checkNotEmpty(itemStack);
 
 		Item item = itemStack.getItem();
 		return interpreters.containsKey(item);
 	}
 
-	public ImmutableMap<Item, ISubtypeInterpreter> getInterpreters() {
+	public synchronized ImmutableMap<Item, ISubtypeInterpreter> getInterpreters() {
 		return ImmutableMap.copyOf(interpreters);
 	}
 

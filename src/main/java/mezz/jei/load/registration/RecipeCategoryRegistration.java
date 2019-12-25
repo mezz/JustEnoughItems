@@ -26,7 +26,7 @@ public class RecipeCategoryRegistration implements IRecipeCategoryRegistration {
 	}
 
 	@Override
-	public void addRecipeCategories(IRecipeCategory... recipeCategories) {
+	public synchronized void addRecipeCategories(IRecipeCategory... recipeCategories) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 
 		for (IRecipeCategory recipeCategory : recipeCategories) {

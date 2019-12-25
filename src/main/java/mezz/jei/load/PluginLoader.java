@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.IModPluginAsync;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -70,6 +71,7 @@ public class PluginLoader {
 
 	public PluginLoader(
 		List<IModPlugin> plugins,
+		List<IModPluginAsync> asyncPlugins,
 		VanillaPlugin vanillaPlugin,
 		Textures textures,
 		IEditModeConfig editModeConfig,
@@ -86,11 +88,17 @@ public class PluginLoader {
 		this.blacklist = new IngredientBlacklistInternal();
 
 		SubtypeRegistration subtypeRegistration = new SubtypeRegistration();
-		PluginCaller.callOnPlugins("Registering item subtypes", plugins, p -> p.registerItemSubtypes(subtypeRegistration));
+		PluginCaller.callOnPlugins("Registering item subtypes",
+			plugins, p -> p.registerItemSubtypes(subtypeRegistration),
+			asyncPlugins, p -> p.registerItemSubtypes(subtypeRegistration)
+		);
 		SubtypeManager subtypeManager = new SubtypeManager(subtypeRegistration);
 
 		ModIngredientRegistration modIngredientManager = new ModIngredientRegistration(subtypeManager);
-		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(modIngredientManager));
+		PluginCaller.callOnPlugins("Registering ingredients",
+			plugins, p -> p.registerIngredients(modIngredientManager),
+			asyncPlugins, p -> p.registerIngredients(modIngredientManager)
+		);
 		ingredientManager = modIngredientManager.createIngredientManager(modIdHelper, blacklist, debugMode);
 		Internal.setIngredientManager(ingredientManager);
 
@@ -105,28 +113,49 @@ public class PluginLoader {
 		recipeTransferRegistration = new RecipeTransferRegistration(jeiHelpers.getStackHelper(), handlerHelper, jeiHelpers);
 
 		RecipeCategoryRegistration recipeCategoryRegistration = new RecipeCategoryRegistration(jeiHelpers);
-		PluginCaller.callOnPlugins("Registering categories", plugins, p -> p.registerCategories(recipeCategoryRegistration));
+		PluginCaller.callOnPlugins("Registering categories",
+			plugins, p -> p.registerCategories(recipeCategoryRegistration),
+			asyncPlugins, p -> p.registerCategories(recipeCategoryRegistration)
+		);
 		CraftingRecipeCategory craftingCategory = vanillaPlugin.getCraftingCategory();
 		ErrorUtil.checkNotNull(craftingCategory, "vanilla crafting category");
 		VanillaCategoryExtensionRegistration vanillaCategoryExtensionRegistration = new VanillaCategoryExtensionRegistration(craftingCategory);
-		PluginCaller.callOnPlugins("Registering vanilla category extensions", plugins, p -> p.registerVanillaCategoryExtensions(vanillaCategoryExtensionRegistration));
+		PluginCaller.callOnPlugins("Registering vanilla category extensions",
+			plugins, p -> p.registerVanillaCategoryExtensions(vanillaCategoryExtensionRegistration),
+			asyncPlugins, p -> p.registerVanillaCategoryExtensions(vanillaCategoryExtensionRegistration)
+		);
 		ImmutableMap<ResourceLocation, IRecipeCategory> recipeCategoriesByUid = recipeCategoryRegistration.getRecipeCategoriesByUid();
 		recipeCategories = recipeCategoryRegistration.getRecipeCategories();
 
 		RecipeRegistration recipeRegistration = new RecipeRegistration(recipeCategoriesByUid, jeiHelpers, ingredientManager, vanillaRecipeFactory);
-		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
-		PluginCaller.callOnPlugins("Registering recipes transfer handlers", plugins, p -> p.registerRecipeTransferHandlers(recipeTransferRegistration));
+		PluginCaller.callOnPlugins("Registering recipes",
+			plugins, p -> p.registerRecipes(recipeRegistration),
+			asyncPlugins, p -> p.registerRecipes(recipeRegistration)
+		);
+		PluginCaller.callOnPlugins("Registering recipes transfer handlers",
+			plugins, p -> p.registerRecipeTransferHandlers(recipeTransferRegistration),
+			asyncPlugins, p -> p.registerRecipeTransferHandlers(recipeTransferRegistration)
+		);
 		recipes = recipeRegistration.getRecipes();
 
 		RecipeCatalystRegistration recipeCatalystRegistration = new RecipeCatalystRegistration();
-		PluginCaller.callOnPlugins("Registering recipe catalysts", plugins, p -> p.registerRecipeCatalysts(recipeCatalystRegistration));
+		PluginCaller.callOnPlugins("Registering recipe catalysts",
+			plugins, p -> p.registerRecipeCatalysts(recipeCatalystRegistration),
+			asyncPlugins, p -> p.registerRecipeCatalysts(recipeCatalystRegistration)
+		);
 		recipeCatalysts = recipeCatalystRegistration.getRecipeCatalysts();
 
 		guiHandlerRegistration = new GuiHandlerRegistration();
-		PluginCaller.callOnPlugins("Registering gui handlers", plugins, p -> p.registerGuiHandlers(guiHandlerRegistration));
+		PluginCaller.callOnPlugins("Registering gui handlers",
+			plugins, p -> p.registerGuiHandlers(guiHandlerRegistration),
+			asyncPlugins, p -> p.registerGuiHandlers(guiHandlerRegistration)
+		);
 
 		advancedRegistration = new AdvancedRegistration(jeiHelpers);
-		PluginCaller.callOnPlugins("Registering advanced plugins", plugins, p -> p.registerAdvanced(advancedRegistration));
+		PluginCaller.callOnPlugins("Registering advanced plugins",
+			plugins, p -> p.registerAdvanced(advancedRegistration),
+			asyncPlugins, p -> p.registerAdvanced(advancedRegistration)
+		);
 		recipeManagerPlugins = advancedRegistration.getRecipeManagerPlugins();
 	}
 

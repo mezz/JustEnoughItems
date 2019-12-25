@@ -56,7 +56,7 @@ public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 	}
 
 	@Override
-	public void addRecipeTransferHandler(IRecipeTransferHandler<?> recipeTransferHandler, ResourceLocation recipeCategoryUid) {
+	public synchronized void addRecipeTransferHandler(IRecipeTransferHandler<?> recipeTransferHandler, ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipeTransferHandler, "recipeTransferHandler");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 
@@ -66,13 +66,10 @@ public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 
 	@Override
 	public void addUniversalRecipeTransferHandler(IRecipeTransferHandler<?> recipeTransferHandler) {
-		ErrorUtil.checkNotNull(recipeTransferHandler, "recipeTransferHandler");
-
-		Class<?> containerClass = recipeTransferHandler.getContainerClass();
-		this.recipeTransferHandlers.put(containerClass, Constants.UNIVERSAL_RECIPE_TRANSFER_UID, recipeTransferHandler);
+		addRecipeTransferHandler(recipeTransferHandler, Constants.UNIVERSAL_RECIPE_TRANSFER_UID);
 	}
 
-	public ImmutableTable<Class, ResourceLocation, IRecipeTransferHandler> getRecipeTransferHandlers() {
+	public synchronized ImmutableTable<Class, ResourceLocation, IRecipeTransferHandler> getRecipeTransferHandlers() {
 		return recipeTransferHandlers.toImmutable();
 	}
 }

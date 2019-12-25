@@ -19,6 +19,8 @@ import net.minecraft.resources.IResourceManager;
 import com.google.common.base.Preconditions;
 import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.IModPluginAsync;
+import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.config.BookmarkConfig;
@@ -35,7 +37,7 @@ import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.ForgeModIdHelper;
 import mezz.jei.runtime.JeiRuntime;
-import mezz.jei.util.AnnotatedInstanceUtil;
+import mezz.jei.util.AnnotatedClassFactory;
 import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -113,26 +115,30 @@ public class ClientLifecycleHandler {
 	private void onRecipesLoaded() {
 		modIdFormattingConfig.checkForModNameFormatOverride();
 
-		List<IModPlugin> plugins = AnnotatedInstanceUtil.getModPlugins();
+		AnnotatedClassFactory jeiPluginFactory = AnnotatedClassFactory.create(JeiPlugin.class);
+		List<IModPlugin> plugins = jeiPluginFactory.createInstances(IModPlugin.class);
+		List<IModPluginAsync> asyncPlugins = jeiPluginFactory.createInstances(IModPluginAsync.class);
 
 		// Reload when resources change
 		Minecraft minecraft = Minecraft.getInstance();
 		IResourceManager resourceManager = minecraft.getResourceManager();
 		if (resourceManager instanceof IReloadableResourceManager) {
 			IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
-			reloadableResourceManager.addReloadListener(new JeiReloadListener(plugins));
+			reloadableResourceManager.addReloadListener(new JeiReloadListener(plugins, asyncPlugins));
 		}
 		if (minecraft.world != null) {
 			Preconditions.checkNotNull(textures);
-			this.starter.start(plugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
+			this.starter.start(plugins, asyncPlugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
 		}
 	}
 
 	private final class JeiReloadListener implements ISelectiveResourceReloadListener {
 		private final List<IModPlugin> plugins;
+		private final List<IModPluginAsync> asyncPlugins;
 
-		private JeiReloadListener(List<IModPlugin> plugins) {
+		private JeiReloadListener(List<IModPlugin> plugins, List<IModPluginAsync> asyncPlugins) {
 			this.plugins = plugins;
+			this.asyncPlugins = asyncPlugins;
 		}
 
 		@Override
@@ -141,7 +147,7 @@ public class ClientLifecycleHandler {
 			if (starter.hasStarted() && Minecraft.getInstance().world != null) {
 				LOGGER.info("Restarting JEI.");
 				Preconditions.checkNotNull(textures);
-				starter.start(plugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
+				starter.start(plugins, asyncPlugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
 			}
 		}
 	}

@@ -64,7 +64,10 @@ public class RecipeRegistration implements IRecipeRegistration {
 			if (!recipeClass.isInstance(recipe)) {
 				throw new IllegalArgumentException(recipeCategory.getUid() + " recipes must be an instance of " + recipeClass + ". Instead got: " + recipe.getClass());
 			}
-			this.recipes.put(recipeCategoryUid, recipe);
+		}
+		synchronized (this.recipes) {
+			//noinspection unchecked
+			this.recipes.putAll(recipeCategoryUid, (Collection<Object>) recipes);
 		}
 	}
 
@@ -90,6 +93,8 @@ public class RecipeRegistration implements IRecipeRegistration {
 	}
 
 	public ImmutableListMultimap<ResourceLocation, Object> getRecipes() {
-		return recipes.toImmutable();
+		synchronized (this.recipes) {
+			return this.recipes.toImmutable();
+		}
 	}
 }

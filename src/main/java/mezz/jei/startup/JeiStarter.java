@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 
 import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.IModPluginAsync;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
@@ -51,6 +52,7 @@ public class JeiStarter {
 
 	public void start(
 		List<IModPlugin> plugins,
+		List<IModPluginAsync> asyncPlugins,
 		Textures textures,
 		ClientConfig config,
 		IEditModeConfig editModeConfig,
@@ -64,11 +66,11 @@ public class JeiStarter {
 		totalTime.start("Starting JEI");
 
 		boolean debugMode = config.isDebugModeEnabled();
-		VanillaPlugin vanillaPlugin = PluginHelper.getPluginWithClass(VanillaPlugin.class, plugins);
+		VanillaPlugin vanillaPlugin = PluginHelper.getPluginWithClass(VanillaPlugin.class, asyncPlugins);
 		JeiInternalPlugin jeiInternalPlugin = PluginHelper.getPluginWithClass(JeiInternalPlugin.class, plugins);
 		ErrorUtil.checkNotNull(vanillaPlugin, "vanilla plugin");
-		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
-		PluginLoader pluginLoader = new PluginLoader(plugins, vanillaPlugin, textures, editModeConfig, ingredientFilterConfig, bookmarkConfig, modIdHelper, debugMode);
+		PluginHelper.sortPlugins(plugins, jeiInternalPlugin);
+		PluginLoader pluginLoader = new PluginLoader(plugins, asyncPlugins, vanillaPlugin, textures, editModeConfig, ingredientFilterConfig, bookmarkConfig, modIdHelper, debugMode);
 		GuiHandlerRegistration guiHandlerRegistration = pluginLoader.getGuiHandlerRegistration();
 		IngredientManager ingredientManager = pluginLoader.getIngredientManager();
 		IngredientFilter ingredientFilter = pluginLoader.getIngredientFilter();
@@ -95,7 +97,10 @@ public class JeiStarter {
 		Internal.setRuntime(jeiRuntime);
 		timer.stop();
 
-		PluginCaller.callOnPlugins("Sending Runtime", plugins, p -> p.onRuntimeAvailable(jeiRuntime));
+		PluginCaller.callOnPlugins("Sending Runtime",
+			plugins, p -> p.onRuntimeAvailable(jeiRuntime),
+			asyncPlugins, p -> p.onRuntimeAvailable(jeiRuntime)
+		);
 
 		LeftAreaDispatcher leftAreaDispatcher = new LeftAreaDispatcher(guiScreenHelper);
 		leftAreaDispatcher.addContent(bookmarkOverlay);

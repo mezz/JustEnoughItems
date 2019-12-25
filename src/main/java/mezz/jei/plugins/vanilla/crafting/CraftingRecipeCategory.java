@@ -165,7 +165,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<ICrafti
 	}
 
 	@Override
-	public <R extends ICraftingRecipe> void addCategoryExtension(Class<? extends R> recipeClass, Function<R, ? extends ICraftingCategoryExtension> extensionFactory) {
+	public synchronized <R extends ICraftingRecipe> void addCategoryExtension(Class<? extends R> recipeClass, Function<R, ? extends ICraftingCategoryExtension> extensionFactory) {
 		extendableHelper.addRecipeExtensionFactory(recipeClass, extensionFactory);
 	}
 }

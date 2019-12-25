@@ -30,6 +30,10 @@ public class MultiMap<K, V, T extends Collection<V>> {
 		return get(key).add(value);
 	}
 
+	public boolean putAll(K key, Collection<V> values) {
+		return get(key).addAll(values);
+	}
+
 	public boolean remove(K key, V value) {
 		T collection = map.get(key);
 		return collection != null && collection.remove(value);

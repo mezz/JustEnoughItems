@@ -11,7 +11,7 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 	private final ListMultiMap<ResourceLocation, Object> recipeCatalysts = new ListMultiMap<>();
 
 	@Override
-	public void addRecipeCatalyst(Object catalystIngredient, ResourceLocation... recipeCategoryUids) {
+	public synchronized void addRecipeCatalyst(Object catalystIngredient, ResourceLocation... recipeCategoryUids) {
 		ErrorUtil.checkIsValidIngredient(catalystIngredient, "catalystIngredient");
 		ErrorUtil.checkNotEmpty(recipeCategoryUids, "recipeCategoryUids");
 
@@ -21,7 +21,7 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 		}
 	}
 
-	public ImmutableListMultimap<ResourceLocation, Object> getRecipeCatalysts() {
-		return recipeCatalysts.toImmutable();
+	public synchronized ImmutableListMultimap<ResourceLocation, Object> getRecipeCatalysts() {
+		return this.recipeCatalysts.toImmutable();
 	}
 }

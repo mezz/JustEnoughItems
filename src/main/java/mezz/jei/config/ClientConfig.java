@@ -48,7 +48,7 @@ public final class ClientConfig {
 	}
 
 	public boolean isDebugModeEnabled() {
-		return values.debugModeEnabled;
+		return true;
 	}
 
 	public boolean isCenterSearchBarEnabled() {
