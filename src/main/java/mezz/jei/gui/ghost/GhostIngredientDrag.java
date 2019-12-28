@@ -3,7 +3,7 @@ package mezz.jei.gui.ghost;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -56,7 +56,7 @@ public class GhostIngredientDrag<T> {
 				lineWidth = 1 + ((1 - (percentOfDim)) * 3);
 			}
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			GlStateManager.disableDepthTest();
+			RenderSystem.disableDepthTest();
 			GL11.glLineWidth(lineWidth);
 			GL11.glEnable(GL11.GL_LINE_SMOOTH);
 			GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
@@ -65,11 +65,11 @@ public class GhostIngredientDrag<T> {
 			float green = (float)(targetColor >> 16 & 255) / 255.0F;
 			float blue = (float)(targetColor >> 8 & 255) / 255.0F;
 			float alpha = (float)(targetColor & 255) / 255.0F;
-			GlStateManager.color4f(red, green, blue, alpha);
+			RenderSystem.color4f(red, green, blue, alpha);
 			GL11.glVertex3f(mouseX, mouseY, 150);
 			GL11.glVertex3f(originX, originY, 150);
 			GL11.glEnd();
-			GlStateManager.enableDepthTest();
+			RenderSystem.enableDepthTest();
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 		}
 
@@ -80,8 +80,8 @@ public class GhostIngredientDrag<T> {
 	}
 
 	public static void drawTargets(int mouseX, int mouseY, List<Target<Object>> targets) {
-		GlStateManager.disableLighting();
-		GlStateManager.disableDepthTest();
+		RenderSystem.disableLighting();
+		RenderSystem.disableDepthTest();
 		for (Target target : targets) {
 			Rectangle2d area = target.getArea();
 			int color;
@@ -92,7 +92,7 @@ public class GhostIngredientDrag<T> {
 			}
 			Screen.fill(area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), color);
 		}
-		GlStateManager.color4f(1f, 1f, 1f, 1f);
+		RenderSystem.color4f(1f, 1f, 1f, 1f);
 	}
 
 	public boolean onClick(double mouseX, double mouseY) {

@@ -1,7 +1,6 @@
 package mezz.jei.gui.elements;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-
+import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 
@@ -26,9 +25,9 @@ public class DrawableIngredient<V> implements IDrawable {
 
 	@Override
 	public void draw(int xOffset, int yOffset) {
-		GlStateManager.enableDepthTest();
+		RenderSystem.enableDepthTest();
 		this.ingredientRenderer.render(xOffset, yOffset, ingredient);
-		GlStateManager.enableAlphaTest();
-		GlStateManager.disableDepthTest();
+		RenderSystem.enableAlphaTest();
+		RenderSystem.disableDepthTest();
 	}
 }

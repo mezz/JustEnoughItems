@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
@@ -172,7 +172,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
 		if (this.guiProperties != null) {
 			if (isListDisplayed()) {
-				GlStateManager.disableLighting();
+				RenderSystem.disableLighting();
 				this.searchField.renderButton(mouseX, mouseY, partialTicks);
 				this.contents.draw(minecraft, mouseX, mouseY, partialTicks);
 				this.configButton.draw(mouseX, mouseY, partialTicks);
@@ -194,10 +194,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 
 	public void drawOnForeground(Minecraft minecraft, ContainerScreen gui, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			GlStateManager.pushMatrix();
-			GlStateManager.translatef(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
+			RenderSystem.pushMatrix();
+			RenderSystem.translatef(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
 			this.ghostIngredientDragManager.drawOnForeground(minecraft, mouseX, mouseY);
-			GlStateManager.popMatrix();
+			RenderSystem.popMatrix();
 		}
 	}
 

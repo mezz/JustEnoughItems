@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -188,10 +188,10 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 	public void drawHighlight(int color, int xOffset, int yOffset) {
 		int x = rect.getX() + xOffset + xPadding;
 		int y = rect.getY() + yOffset + yPadding;
-		GlStateManager.disableLighting();
-		GlStateManager.disableDepthTest();
+		RenderSystem.disableLighting();
+		RenderSystem.disableDepthTest();
 		fill(x, y, x + rect.getWidth() - xPadding * 2, y + rect.getHeight() - yPadding * 2, color);
-		GlStateManager.color4f(1f, 1f, 1f, 1f);
+		RenderSystem.color4f(1f, 1f, 1f, 1f);
 	}
 
 	public void drawOverlays(int xOffset, int yOffset, int mouseX, int mouseY) {
@@ -203,7 +203,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 
 	private void drawTooltip(int xOffset, int yOffset, int mouseX, int mouseY, T value) {
 		try {
-			GlStateManager.disableDepthTest();
+			RenderSystem.disableDepthTest();
 
 			RenderHelper.disableStandardItemLighting();
 			fill(xOffset + rect.getX() + xPadding,
@@ -211,7 +211,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 				xOffset + rect.getX() + rect.getWidth() - xPadding,
 				yOffset + rect.getY() + rect.getHeight() - yPadding,
 				0x7FFFFFFF);
-			GlStateManager.color4f(1f, 1f, 1f, 1f);
+			RenderSystem.color4f(1f, 1f, 1f, 1f);
 
 			IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
 			List<String> tooltip = IngredientRenderHelper.getIngredientTooltipSafe(value, ingredientRenderer, ingredientHelper, modIdHelper);
@@ -232,7 +232,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 			}
 			TooltipRenderer.drawHoveringText(value, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
 
-			GlStateManager.enableDepthTest();
+			RenderSystem.enableDepthTest();
 		} catch (RuntimeException e) {
 			LOGGER.error("Exception when rendering tooltip on {}.", value, e);
 		}

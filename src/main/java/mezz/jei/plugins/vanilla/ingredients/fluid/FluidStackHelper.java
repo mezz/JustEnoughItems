@@ -3,6 +3,7 @@ package mezz.jei.plugins.vanilla.ingredients.fluid;
 import javax.annotation.Nullable;
 import java.util.Collections;
 
+import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
@@ -69,11 +70,10 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	public Iterable<Integer> getColors(FluidStack ingredient) {
 		Fluid fluid = ingredient.getFluid();
 		FluidAttributes attributes = fluid.getAttributes();
-		ResourceLocation fluidStill = attributes.getStill(ingredient);
+		ResourceLocation fluidStill = attributes.getStillTexture(ingredient);
 		if (fluidStill != null) {
 			Minecraft minecraft = Minecraft.getInstance();
-			AtlasTexture textureMapBlocks = minecraft.getTextureMap();
-			TextureAtlasSprite fluidStillSprite = textureMapBlocks.getSprite(fluidStill);
+			TextureAtlasSprite fluidStillSprite = minecraft.func_228015_a_(PlayerContainer.field_226615_c_).apply(fluidStill);
 			int renderColor = attributes.getColor(ingredient);
 			return ColorGetter.getColors(fluidStillSprite, renderColor, 1);
 		}

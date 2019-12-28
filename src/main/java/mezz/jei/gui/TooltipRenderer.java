@@ -33,8 +33,8 @@ public final class TooltipRenderer {
 
 	public static void drawHoveringText(Object ingredient, List<String> textLines, int x, int y, int maxWidth, FontRenderer font) {
 		Minecraft minecraft = Minecraft.getInstance();
-		int scaledWidth = minecraft.mainWindow.getScaledWidth();
-		int scaledHeight = minecraft.mainWindow.getScaledHeight();
+		int scaledWidth = minecraft.func_228018_at_().getScaledWidth();
+		int scaledHeight = minecraft.func_228018_at_().getScaledHeight();
 		ItemStack itemStack = ingredient instanceof ItemStack ? (ItemStack) ingredient : ItemStack.EMPTY;
 		GuiUtils.drawHoveringText(itemStack, textLines, x, y, scaledWidth, scaledHeight, maxWidth, font);
 	}

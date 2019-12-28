@@ -3,7 +3,7 @@ package mezz.jei.gui.recipes;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rectangle2d;
 
@@ -99,12 +99,12 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 	public void draw(Minecraft minecraft, int mouseX, int mouseY) {
 		IRecipeCategory selectedCategory = recipeGuiLogic.getSelectedRecipeCategory();
 
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 		RecipeGuiTab hovered = null;
 
-		GlStateManager.disableDepthTest();
-		GlStateManager.enableAlphaTest();
+		RenderSystem.disableDepthTest();
+		RenderSystem.enableAlphaTest();
 		{
 			for (RecipeGuiTab tab : tabs) {
 				boolean selected = tab.isSelected(selectedCategory);
@@ -114,8 +114,8 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 				}
 			}
 		}
-		GlStateManager.disableAlphaTest();
-		GlStateManager.enableDepthTest();
+		RenderSystem.disableAlphaTest();
+		RenderSystem.enableDepthTest();
 
 		pageNavigation.draw(minecraft, mouseX, mouseY, minecraft.getRenderPartialTicks());
 

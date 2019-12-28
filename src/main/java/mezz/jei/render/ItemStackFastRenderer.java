@@ -2,21 +2,16 @@ package mezz.jei.render;
 
 import javax.annotation.Nullable;
 
-import net.minecraftforge.client.ForgeHooksClient;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.texture.AtlasTexture;
-import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
 
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
@@ -24,7 +19,6 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.util.ErrorUtil;
 
 public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemStack> {
-	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
 
 	public ItemStackFastRenderer(IIngredientListElement<ItemStack> itemStackElement) {
 		super(itemStackElement);
@@ -49,7 +43,7 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 	private void uncheckedRenderItemAndEffectIntoGUI(IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
 		if (worldConfig.isEditModeEnabled()) {
 			renderEditMode(area, padding, editModeConfig);
-			GlStateManager.enableBlend();
+			RenderSystem.enableBlend();
 		}
 
 		ItemStack itemStack = element.getIngredient();
@@ -58,56 +52,16 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 			return;
 		}
 
-		GlStateManager.pushMatrix();
-		{
-			GlStateManager.translatef(area.getX() + padding + 8.0f, area.getY() + padding + 8.0f, 150.0F);
-			GlStateManager.scalef(16F, -16F, 16F);
-			bakedModel = ForgeHooksClient.handleCameraTransforms(bakedModel, ItemCameraTransforms.TransformType.GUI, false);
-			GlStateManager.translatef(-0.5F, -0.5F, -0.5F);
-
-			Minecraft minecraft = Minecraft.getInstance();
-			ItemRenderer itemRenderer = minecraft.getItemRenderer();
-			itemRenderer.renderModel(bakedModel, itemStack);
-
-			if (itemStack.hasEffect()) {
-				renderEffect(bakedModel);
-			}
-		}
-		GlStateManager.popMatrix();
-	}
-
-	protected void renderEffect(IBakedModel model) {
+		MatrixStack matrixStack = new MatrixStack();
+		matrixStack.func_227861_a_(area.getX() + padding + 16, area.getY() + padding, 150); //translate
+		matrixStack.func_227862_a_(16, -16, 16); //scale
+		matrixStack.func_227861_a_(-0.5, -0.5, -0.5); //translate
 		Minecraft minecraft = Minecraft.getInstance();
-		TextureManager textureManager = minecraft.getTextureManager();
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
+		IRenderTypeBuffer.Impl iRenderTypeBuffer = Minecraft.getInstance().func_228019_au_().func_228487_b_();
+		itemRenderer.func_229111_a_(itemStack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, iRenderTypeBuffer, 15728880, OverlayTexture.field_229196_a_, bakedModel);
+		iRenderTypeBuffer.func_228461_a_();
 
-		GlStateManager.depthMask(false);
-		GlStateManager.depthFunc(514);
-		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE);
-		textureManager.bindTexture(RES_ITEM_GLINT);
-		GlStateManager.matrixMode(5890);
-
-		GlStateManager.pushMatrix();
-		GlStateManager.scalef(8.0F, 8.0F, 8.0F);
-		float f = (float) (Util.milliTime() % 3000L) / 3000.0F / 8.0F;
-		GlStateManager.translatef(f, 0.0F, 0.0F);
-		GlStateManager.rotatef(-50.0F, 0.0F, 0.0F, 1.0F);
-		itemRenderer.renderModel(model, -8372020);
-		GlStateManager.popMatrix();
-
-		GlStateManager.pushMatrix();
-		GlStateManager.scalef(8.0F, 8.0F, 8.0F);
-		float f1 = (float) (Util.milliTime() % 4873L) / 4873.0F / 8.0F;
-		GlStateManager.translatef(-f1, 0.0F, 0.0F);
-		GlStateManager.rotatef(10.0F, 0.0F, 0.0F, 1.0F);
-		itemRenderer.renderModel(model, -8372020);
-		GlStateManager.popMatrix();
-
-		GlStateManager.matrixMode(5888);
-		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		GlStateManager.depthFunc(515);
-		GlStateManager.depthMask(true);
-		textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
 	}
 
 	public void renderOverlay() {

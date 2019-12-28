@@ -4,8 +4,8 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraftforge.fml.client.config.HoverChecker;
-import com.mojang.blaze3d.platform.GlStateManager;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -28,11 +28,11 @@ public class ShapelessIcon {
 	public void draw(int recipeWidth) {
 		int shapelessIconX = recipeWidth - (icon.getWidth() / scale);
 
-		GlStateManager.pushMatrix();
-		GlStateManager.translatef(shapelessIconX, 0, 0);
-		GlStateManager.scaled(1.0 / scale, 1.0 / scale, 1.0);
+		RenderSystem.pushMatrix();
+		RenderSystem.translatef(shapelessIconX, 0, 0);
+		RenderSystem.scaled(1.0 / scale, 1.0 / scale, 1.0);
 		icon.draw();
-		GlStateManager.popMatrix();
+		RenderSystem.popMatrix();
 	}
 
 	@Nullable

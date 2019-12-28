@@ -60,7 +60,7 @@ public class ConfigButton extends GuiIconToggleButton {
 	@Override
 	protected boolean onMouseClicked(double mouseX, double mouseY, int mouseButton) {
 		if (worldConfig.isOverlayEnabled()) {
-			long windowHandle = Minecraft.getInstance().mainWindow.getHandle();
+			long windowHandle = Minecraft.getInstance().func_228018_at_().getHandle();
 			if (InputMappings.isKeyDown(windowHandle, GLFW.GLFW_KEY_LEFT_CONTROL) || InputMappings.isKeyDown(windowHandle, GLFW.GLFW_KEY_RIGHT_CONTROL)) {
 				worldConfig.toggleCheatItemsEnabled();
 			} else {

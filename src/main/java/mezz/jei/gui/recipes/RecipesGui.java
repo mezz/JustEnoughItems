@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.FontRenderer;
@@ -189,10 +189,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 			return;
 		}
 		renderBackground();
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.background.draw(guiLeft, guiTop, xSize, ySize);
 
-		GlStateManager.disableBlend();
+		RenderSystem.disableBlend();
 
 		fill(guiLeft + borderPadding + buttonWidth,
 			nextRecipeCategory.y,
@@ -205,7 +205,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 			nextPage.y + buttonHeight,
 			0x30000000);
 
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 		int textPadding = (buttonHeight - font.FONT_HEIGHT) / 2;
 		drawCenteredStringWithShadow(font, title, xSize, guiLeft, nextRecipeCategory.y + textPadding, 0xFFFFFFFF);

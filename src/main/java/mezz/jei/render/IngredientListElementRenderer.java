@@ -3,8 +3,8 @@ package mezz.jei.render;
 import java.util.Collection;
 import java.util.List;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraftforge.fml.client.config.GuiUtils;
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -82,12 +82,12 @@ public class IngredientListElementRenderer<T> {
 	 * Matches the highlight code in {@link ContainerScreen#render(int, int, float)}
 	 */
 	public void drawHighlight() {
-		GlStateManager.disableLighting();
-		GlStateManager.disableDepthTest();
-		GlStateManager.colorMask(true, true, true, false);
+		RenderSystem.disableLighting();
+		RenderSystem.disableDepthTest();
+		RenderSystem.colorMask(true, true, true, false);
 		GuiUtils.drawGradientRect(0, area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), 0x80FFFFFF, 0x80FFFFFF);
-		GlStateManager.colorMask(true, true, true, true);
-		GlStateManager.enableDepthTest();
+		RenderSystem.colorMask(true, true, true, true);
+		RenderSystem.enableDepthTest();
 	}
 
 	public void drawTooltip(int mouseX, int mouseY, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig) {
@@ -103,7 +103,7 @@ public class IngredientListElementRenderer<T> {
 
 		if (editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
 			Screen.fill(area.getX() + padding, area.getY() + padding, area.getX() + 16 + padding, area.getY() + 16 + padding, BLACKLIST_COLOR);
-			GlStateManager.color4f(1f, 1f, 1f, 1f);
+			RenderSystem.color4f(1f, 1f, 1f, 1f);
 		}
 	}
 

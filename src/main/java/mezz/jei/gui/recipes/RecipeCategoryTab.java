@@ -3,7 +3,7 @@ package mezz.jei.gui.recipes;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.audio.SoundHandler;
@@ -62,7 +62,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 				float textCenterY = y + (TAB_HEIGHT / 2f) - 3;
 				int color = isMouseOver(mouseX, mouseY) ? 0xFFFFA0 : 0xE0E0E0;
 				fontRenderer.drawStringWithShadow(text, textCenterX - fontRenderer.getStringWidth(text) / 2f, textCenterY, color);
-				GlStateManager.color4f(1, 1, 1, 1);
+				RenderSystem.color4f(1, 1, 1, 1);
 			}
 		}
 	}
@@ -70,10 +70,10 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	private static <T> void renderIngredient(int iconX, int iconY, T ingredient) {
 		IngredientManager ingredientManager = Internal.getIngredientManager();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
-		GlStateManager.enableDepthTest();
+		RenderSystem.enableDepthTest();
 		ingredientRenderer.render(iconX, iconY, ingredient);
-		GlStateManager.enableAlphaTest();
-		GlStateManager.disableDepthTest();
+		RenderSystem.enableAlphaTest();
+		RenderSystem.disableDepthTest();
 	}
 
 	@Override

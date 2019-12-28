@@ -3,6 +3,7 @@ package mezz.jei.gui.textures;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import net.minecraft.client.renderer.texture.SpriteUploader;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -15,7 +16,7 @@ public class JeiSpriteUploader extends SpriteUploader {
 	private final Set<ResourceLocation> registeredSprites = new HashSet<>();
 
 	public JeiSpriteUploader(TextureManager p_i50905_1_) {
-		super(p_i50905_1_, Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS, "textures");
+		super(p_i50905_1_, Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS, "gui");
 	}
 
 	public void registerSprite(ResourceLocation location) {
@@ -23,8 +24,8 @@ public class JeiSpriteUploader extends SpriteUploader {
 	}
 
 	@Override
-	protected Iterable<ResourceLocation> getKnownKeys() {
-		return Collections.unmodifiableSet(registeredSprites);
+	protected Stream<ResourceLocation> func_225640_a_() {
+		return Collections.unmodifiableSet(registeredSprites).stream();
 	}
 
 	/**

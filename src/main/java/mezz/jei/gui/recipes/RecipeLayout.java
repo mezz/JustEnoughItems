@@ -5,8 +5,8 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraftforge.fluids.FluidStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.item.ItemStack;
@@ -125,15 +125,15 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	public void drawRecipe(int mouseX, int mouseY) {
 		IDrawable background = recipeCategory.getBackground();
 
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GlStateManager.disableLighting();
-		GlStateManager.enableAlphaTest();
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.disableLighting();
+		RenderSystem.enableAlphaTest();
 
 		final int recipeMouseX = mouseX - posX;
 		final int recipeMouseY = mouseY - posY;
 
-		GlStateManager.pushMatrix();
-		GlStateManager.translatef(posX, posY, 0.0F);
+		RenderSystem.pushMatrix();
+		RenderSystem.translatef(posX, posY, 0.0F);
 		{
 			IDrawable categoryBackground = recipeCategory.getBackground();
 			int width = categoryBackground.getWidth() + (2 * RECIPE_BORDER_PADDING);
@@ -143,12 +143,12 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			//noinspection unchecked
 			recipeCategory.draw(recipe, recipeMouseX, recipeMouseY);
 			// drawExtras and drawInfo often render text which messes with the color, this clears it
-			GlStateManager.color4f(1, 1, 1, 1);
+			RenderSystem.color4f(1, 1, 1, 1);
 			if (shapelessIcon != null) {
 				shapelessIcon.draw(background.getWidth());
 			}
 		}
-		GlStateManager.popMatrix();
+		RenderSystem.popMatrix();
 
 		for (GuiIngredientGroup guiIngredientGroup : guiIngredientGroups.values()) {
 			guiIngredientGroup.draw(posX, posY, HIGHLIGHT_COLOR, mouseX, mouseY);
@@ -158,16 +158,16 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			float partialTicks = minecraft.getRenderPartialTicks();
 			recipeTransferButton.render(mouseX, mouseY, partialTicks);
 		}
-		GlStateManager.disableBlend();
-		GlStateManager.disableLighting();
-		GlStateManager.disableAlphaTest();
+		RenderSystem.disableBlend();
+		RenderSystem.disableLighting();
+		RenderSystem.disableAlphaTest();
 	}
 
 	@Override
 	public void drawOverlays(int mouseX, int mouseY) {
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GlStateManager.disableLighting();
-		GlStateManager.enableAlphaTest();
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.disableLighting();
+		RenderSystem.enableAlphaTest();
 
 		final int recipeMouseX = mouseX - posX;
 		final int recipeMouseY = mouseY - posY;
@@ -182,8 +182,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		if (recipeTransferButton != null) {
 			recipeTransferButton.drawToolTip(mouseX, mouseY);
 		}
-		GlStateManager.disableBlend();
-		GlStateManager.disableLighting();
+		RenderSystem.disableBlend();
+		RenderSystem.disableLighting();
 
 		if (hoveredIngredient != null) {
 			hoveredIngredient.drawOverlays(posX, posY, recipeMouseX, recipeMouseY);
@@ -198,7 +198,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			}
 		}
 
-		GlStateManager.disableAlphaTest();
+		RenderSystem.disableAlphaTest();
 	}
 
 	@Override
