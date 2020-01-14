@@ -17,7 +17,6 @@ import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.util.ErrorUtil;
-import net.minecraft.util.ResourceLocation;
 
 public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemStack> {
 
@@ -67,7 +66,7 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		IRenderTypeBuffer.Impl iRenderTypeBuffer = Minecraft.getInstance().func_228019_au_().func_228487_b_();
 		itemRenderer.func_229111_a_(itemStack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, iRenderTypeBuffer, 15728880, OverlayTexture.field_229196_a_, bakedModel);
 		iRenderTypeBuffer.func_228461_a_();
-		
+
 		RenderSystem.popMatrix();
 	}
 
