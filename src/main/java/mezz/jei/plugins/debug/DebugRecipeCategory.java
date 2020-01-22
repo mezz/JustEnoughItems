@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraftforge.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fml.client.gui.widget.ExtendedButton;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
@@ -123,7 +123,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 			}
 		}
 
-		GuiButtonExt button = recipe.getButton();
+		ExtendedButton button = recipe.getButton();
 		button.render((int) mouseX, (int) mouseY, 0);
 	}
 
@@ -203,7 +203,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 
 	@Override
 	public boolean handleClick(DebugRecipe recipe, double mouseX, double mouseY, int mouseButton) {
-		GuiButtonExt button = recipe.getButton();
+		ExtendedButton button = recipe.getButton();
 		if (mouseButton == 0 && button.mouseClicked(mouseX, mouseY, mouseButton)) {
 			Minecraft minecraft = Minecraft.getInstance();
 			ClientPlayerEntity player = minecraft.player;

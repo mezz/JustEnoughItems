@@ -213,7 +213,7 @@ public final class AnvilRecipeMaker {
 			RepairContainer repair = new RepairContainer(0, fakeInventory);
 			repair.inventorySlots.get(0).putStack(leftStack);
 			repair.inventorySlots.get(1).putStack(rightStack);
-			return repair.func_216976_f();
+			return repair.getMaximumCost();
 		} catch (RuntimeException e) {
 			String left = ErrorUtil.getItemStackInfo(leftStack);
 			String right = ErrorUtil.getItemStackInfo(rightStack);

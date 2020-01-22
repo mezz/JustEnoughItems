@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.List;
 import java.util.function.Predicate;
 
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.event.world.WorldEvent;
@@ -76,9 +76,9 @@ public class ClientLifecycleHandler {
 		KeyBindings.init();
 
 		clientConfig.onPreInit();
-		EventBusHelper.addListener(ConfigChangedEvent.OnConfigChangedEvent.class, event -> {
+		EventBusHelper.addListener(ModConfig.Reloading.class, event -> {
 			modIdFormattingConfig.checkForModNameFormatOverride();
-			if (ModIds.JEI_ID.equals(event.getModID())) {
+			if (ModIds.JEI_ID.equals(event.getConfig().getModId())) {
 				if (clientConfig.syncAllConfig()) {
 					// todo
 				}

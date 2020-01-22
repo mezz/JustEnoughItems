@@ -155,7 +155,7 @@ public class IngredientListBatchRenderer {
 		itemRenderer.zLevel += 50.0F;
 
 		textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-		textureManager.func_229267_b_(AtlasTexture.LOCATION_BLOCKS_TEXTURE).setBlurMipmapDirect(false, false);
+		textureManager.getTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE).setBlurMipmapDirect(false, false);
 		RenderSystem.enableRescaleNormal();
 		RenderSystem.enableAlphaTest();
 		RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F);
@@ -170,11 +170,11 @@ public class IngredientListBatchRenderer {
 
 		// 2d Items
 		RenderSystem.disableLighting();
-		RenderHelper.func_227783_c_();
+		RenderHelper.setupGuiFlatDiffuseLighting();
 		for (ItemStackFastRenderer slot : renderItems2d) {
 			slot.renderItemAndEffectIntoGUI(editModeConfig, worldConfig);
 		}
-		RenderHelper.func_227784_d_();
+		RenderHelper.setupGui3DDiffuseLighting();
 
 		RenderSystem.disableAlphaTest();
 		RenderSystem.disableBlend();
@@ -182,7 +182,7 @@ public class IngredientListBatchRenderer {
 		RenderSystem.disableLighting();
 
 		textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-		textureManager.func_229267_b_(AtlasTexture.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
+		textureManager.getTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
 
 		itemRenderer.zLevel -= 50.0F;
 

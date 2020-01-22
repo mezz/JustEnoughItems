@@ -23,9 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-import net.minecraftforge.fml.client.config.IArrayEntry;
-import net.minecraftforge.fml.client.config.IConfigEntry;
-
 public class Property
 {
     public String getComment()
@@ -77,8 +74,9 @@ public class Property
     private String minValue;
     private String maxValue;
 
-    private Class<? extends IConfigEntry> configEntryClass = null;
-    private Class<? extends IArrayEntry> arrayEntryClass = null;
+    //TODO: Configs
+    //private Class<? extends IConfigEntry> configEntryClass = null;
+    //private Class<? extends IArrayEntry> arrayEntryClass = null;
 
     private boolean requiresWorldRestart = false;
     private boolean showInGui = true;
@@ -395,12 +393,12 @@ public class Property
         return this.isListLengthFixed;
     }
 
-
-    public Property setConfigEntryClass(Class<? extends IConfigEntry> clazz)
+    //TODO: Configs
+    /*public Property setConfigEntryClass(Class<? extends IConfigEntry> clazz)
     {
         this.configEntryClass = clazz;
         return this;
-    }
+    }*/
 
     /**
      * Gets the custom IConfigEntry class that should be used in place of the standard entry class for this Property type, or null if
@@ -408,7 +406,8 @@ public class Property
      *
      * @return a class that implements IConfigEntry
      */
-    public Class<? extends IConfigEntry> getConfigEntryClass()
+    //TODO: Configs
+    /*public Class<? extends IConfigEntry> getConfigEntryClass()
     {
         return this.configEntryClass;
     }
@@ -417,7 +416,7 @@ public class Property
     {
         this.arrayEntryClass = clazz;
         return this;
-    }
+    }*/
 
     /**
      * Gets the custom IArrayEntry class that should be used in place of the standard entry class for this Property type, or null if
@@ -425,10 +424,11 @@ public class Property
      *
      * @return a class that implements IArrayEntry
      */
-    public Class<? extends IArrayEntry> getArrayEntryClass()
+    //TODO: Configs
+    /*public Class<? extends IArrayEntry> getArrayEntryClass()
     {
         return this.arrayEntryClass;
-    }
+    }*/
 
     /**
      * Sets a regex Pattern object used to validate user input for formatted String or String[] properties.

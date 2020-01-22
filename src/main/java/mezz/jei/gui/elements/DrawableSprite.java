@@ -82,17 +82,17 @@ public class DrawableSprite implements IDrawableStatic {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		bufferBuilder.func_225582_a_(x, y + height, 0)
-			.func_225583_a_(minU, maxV)
+		bufferBuilder.pos(x, y + height, 0)
+			.tex(minU, maxV)
 			.endVertex();
-		bufferBuilder.func_225582_a_(x + width, y + height, 0)
-			.func_225583_a_(maxU, maxV)
+		bufferBuilder.pos(x + width, y + height, 0)
+			.tex(maxU, maxV)
 			.endVertex();
-		bufferBuilder.func_225582_a_(x + width, y, 0)
-			.func_225583_a_(maxU, minV)
+		bufferBuilder.pos(x + width, y, 0)
+			.tex(maxU, minV)
 			.endVertex();
-		bufferBuilder.func_225582_a_(x, y, 0)
-			.func_225583_a_(minU, minV)
+		bufferBuilder.pos(x, y, 0)
+			.tex(minU, minV)
 			.endVertex();
 		tessellator.draw();
 	}
