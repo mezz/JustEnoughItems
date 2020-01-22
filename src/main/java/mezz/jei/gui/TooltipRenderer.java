@@ -3,7 +3,7 @@ package mezz.jei.gui;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraftforge.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.client.gui.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
@@ -33,8 +33,8 @@ public final class TooltipRenderer {
 
 	public static void drawHoveringText(Object ingredient, List<String> textLines, int x, int y, int maxWidth, FontRenderer font) {
 		Minecraft minecraft = Minecraft.getInstance();
-		int scaledWidth = minecraft.func_228018_at_().getScaledWidth();
-		int scaledHeight = minecraft.func_228018_at_().getScaledHeight();
+		int scaledWidth = minecraft.getMainWindow().getScaledWidth();
+		int scaledHeight = minecraft.getMainWindow().getScaledHeight();
 		ItemStack itemStack = ingredient instanceof ItemStack ? (ItemStack) ingredient : ItemStack.EMPTY;
 		GuiUtils.drawHoveringText(itemStack, textLines, x, y, scaledWidth, scaledHeight, maxWidth, font);
 	}

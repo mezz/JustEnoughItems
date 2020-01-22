@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraftforge.fml.client.config.HoverChecker;
+import net.minecraftforge.fml.client.gui.HoverChecker;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;

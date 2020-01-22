@@ -70,10 +70,10 @@ public class DrawableResource implements IDrawableStatic {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
 		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		bufferbuilder.func_225582_a_(x, y + height, 0.0D).func_225583_a_(u * f, (v + (float)height) * f1).endVertex();
-		bufferbuilder.func_225582_a_(x + width, y + height, 0.0D).func_225583_a_((u + (float)width) * f, (v + (float)height) * f1).endVertex();
-		bufferbuilder.func_225582_a_(x + width, y, 0.0D).func_225583_a_((u + (float)width) * f, v * f1).endVertex();
-		bufferbuilder.func_225582_a_(x, y, 0.0D).func_225583_a_(u * f, v * f1).endVertex();
+		bufferbuilder.pos(x, y + height, 0.0D).tex(u * f, (v + (float)height) * f1).endVertex();
+		bufferbuilder.pos(x + width, y + height, 0.0D).tex((u + (float)width) * f, (v + (float)height) * f1).endVertex();
+		bufferbuilder.pos(x + width, y, 0.0D).tex((u + (float)width) * f, v * f1).endVertex();
+		bufferbuilder.pos(x, y, 0.0D).tex(u * f, v * f1).endVertex();
 		tessellator.draw();
 	}
 }

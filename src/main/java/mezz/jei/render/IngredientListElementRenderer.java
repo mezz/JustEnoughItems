@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraftforge.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.client.gui.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
