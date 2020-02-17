@@ -24,7 +24,7 @@ public class JeiSpriteUploader extends SpriteUploader {
 	}
 
 	@Override
-	protected Stream<ResourceLocation> func_225640_a_() {
+	protected Stream<ResourceLocation> getResourceLocations() {
 		return Collections.unmodifiableSet(registeredSprites).stream();
 	}
 

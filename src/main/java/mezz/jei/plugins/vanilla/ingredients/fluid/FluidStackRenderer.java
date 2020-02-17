@@ -137,7 +137,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		Fluid fluid = fluidStack.getFluid();
 		FluidAttributes attributes = fluid.getAttributes();
 		ResourceLocation fluidStill = attributes.getStillTexture(fluidStack);
-		return minecraft.getTextureGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE).apply(fluidStill);
+		return minecraft.getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE).apply(fluidStill);
 	}
 
 	private static void setGLColorFromInt(int color) {

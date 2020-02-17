@@ -148,7 +148,7 @@ public class IngredientListBatchRenderer {
 	 * renders all ItemStacks
 	 */
 	public void render(Minecraft minecraft) {
-		RenderHelper.func_227780_a_();
+		RenderHelper.enableStandardItemLighting();
 
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		TextureManager textureManager = minecraft.getTextureManager();
