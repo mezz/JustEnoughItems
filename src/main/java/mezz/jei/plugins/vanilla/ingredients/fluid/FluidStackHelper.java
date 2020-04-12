@@ -7,7 +7,6 @@ import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
@@ -73,7 +72,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		ResourceLocation fluidStill = attributes.getStillTexture(ingredient);
 		if (fluidStill != null) {
 			Minecraft minecraft = Minecraft.getInstance();
-			TextureAtlasSprite fluidStillSprite = minecraft.getTextureGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE).apply(fluidStill);
+			TextureAtlasSprite fluidStillSprite = minecraft.getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE).apply(fluidStill);
 			int renderColor = attributes.getColor(ingredient);
 			return ColorGetter.getColors(fluidStillSprite, renderColor, 1);
 		}

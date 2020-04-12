@@ -58,9 +58,9 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		matrixStack.translate(-0.5, -0.5, -0.5);
 		Minecraft minecraft = Minecraft.getInstance();
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
-		IRenderTypeBuffer.Impl iRenderTypeBuffer = minecraft.func_228019_au_().func_228487_b_();
-		itemRenderer.func_229111_a_(itemStack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, iRenderTypeBuffer, 15728880, OverlayTexture.DEFAULT_LIGHT, bakedModel);
-		iRenderTypeBuffer.func_228461_a_();
+		IRenderTypeBuffer.Impl iRenderTypeBuffer = minecraft.getRenderTypeBuffers().getBufferSource();
+		itemRenderer.renderItem(itemStack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, iRenderTypeBuffer, 15728880, OverlayTexture.NO_OVERLAY, bakedModel);
+		iRenderTypeBuffer.finish();
 
 	}
 

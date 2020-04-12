@@ -10,8 +10,8 @@ import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.item.ItemStack;
 
 import com.google.common.base.Preconditions;
@@ -148,14 +148,14 @@ public class IngredientListBatchRenderer {
 	 * renders all ItemStacks
 	 */
 	public void render(Minecraft minecraft) {
-		RenderHelper.func_227780_a_();
+		RenderHelper.enableStandardItemLighting();
 
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		TextureManager textureManager = minecraft.getTextureManager();
 		itemRenderer.zLevel += 50.0F;
 
-		textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-		textureManager.getTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE).setBlurMipmapDirect(false, false);
+		textureManager.bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
+		textureManager.getTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE).setBlurMipmapDirect(false, false);
 		RenderSystem.enableRescaleNormal();
 		RenderSystem.enableAlphaTest();
 		RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F);
@@ -181,8 +181,8 @@ public class IngredientListBatchRenderer {
 		RenderSystem.disableRescaleNormal();
 		RenderSystem.disableLighting();
 
-		textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-		textureManager.getTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
+		textureManager.bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
+		textureManager.getTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
 
 		itemRenderer.zLevel -= 50.0F;
 

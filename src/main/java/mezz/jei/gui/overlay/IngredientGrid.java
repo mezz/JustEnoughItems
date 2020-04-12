@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraftforge.items.ItemHandlerHelper;
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.Rectangle2d;

@@ -30,7 +30,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	public void render(int xPosition, int yPosition, @Nullable ItemStack ingredient) {
 		if (ingredient != null) {
 			RenderSystem.enableDepthTest();
-			RenderHelper.func_227780_a_();
+			RenderHelper.enableStandardItemLighting();
 			Minecraft minecraft = Minecraft.getInstance();
 			FontRenderer font = getFontRenderer(minecraft, ingredient);
 			ItemRenderer itemRenderer = minecraft.getItemRenderer();

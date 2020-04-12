@@ -68,7 +68,6 @@ public final class VanillaRecipeCategoryUid {
 	 * The brewing recipe category.
 	 *
 	 * Automatically tries to generate all potion variations from the basic ingredients.
-	 * You can get the list of known potion reagents from {@link IIngredientManager#getPotionIngredients()}.
 	 *
 	 * Also automatically adds modded potions from {@link BrewingRecipeRegistry#getRecipes()}.
 	 * JEI can only understand modded potion recipes that are built into vanilla or Forge.
