@@ -76,6 +76,7 @@ import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackRenderer;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackHelper;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackListFactory;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackRenderer;
+import mezz.jei.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
 import mezz.jei.transfer.PlayerRecipeTransferHandler;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.StackHelper;
@@ -84,6 +85,8 @@ import mezz.jei.util.StackHelper;
 public class VanillaPlugin implements IModPlugin {
 	@Nullable
 	private CraftingRecipeCategory craftingCategory;
+	@Nullable
+	private StoneCuttingRecipeCategory stonecuttingCategory;
 	@Nullable
 	private FurnaceSmeltingCategory furnaceCategory;
 	@Nullable
@@ -145,12 +148,14 @@ public class VanillaPlugin implements IModPlugin {
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
 		craftingCategory = new CraftingRecipeCategory(guiHelper, modIdHelper);
+		stonecuttingCategory = new StoneCuttingRecipeCategory(guiHelper, modIdHelper);
 		furnaceCategory = new FurnaceSmeltingCategory(guiHelper);
 		smokingCategory = new SmokingCategory(guiHelper);
 		blastingCategory = new BlastingCategory(guiHelper);
 		campfireCategory = new CampfireCategory(guiHelper);
 		registration.addRecipeCategories(
 			craftingCategory,
+			stonecuttingCategory,
 			furnaceCategory,
 			smokingCategory,
 			blastingCategory,
@@ -170,6 +175,7 @@ public class VanillaPlugin implements IModPlugin {
 	@Override
 	public void registerRecipes(IRecipeRegistration registration) {
 		ErrorUtil.checkNotNull(craftingCategory, "craftingCategory");
+		ErrorUtil.checkNotNull(stonecuttingCategory, "stonecuttingCategory");
 		ErrorUtil.checkNotNull(furnaceCategory, "furnaceCategory");
 		ErrorUtil.checkNotNull(smokingCategory, "smokingCategory");
 		ErrorUtil.checkNotNull(blastingCategory, "blastingCategory");
@@ -178,8 +184,9 @@ public class VanillaPlugin implements IModPlugin {
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
-		VanillaRecipeValidator.Results recipes = VanillaRecipeValidator.getValidRecipes(craftingCategory, furnaceCategory, smokingCategory, blastingCategory, campfireCategory);
+		VanillaRecipeValidator.Results recipes = VanillaRecipeValidator.getValidRecipes(craftingCategory, stonecuttingCategory, furnaceCategory, smokingCategory, blastingCategory, campfireCategory);
 		registration.addRecipes(recipes.getCraftingRecipes(), VanillaRecipeCategoryUid.CRAFTING);
+		registration.addRecipes(recipes.getStonecuttingRecipes(), VanillaRecipeCategoryUid.STONECUTTING);
 		registration.addRecipes(recipes.getFurnaceRecipes(), VanillaRecipeCategoryUid.FURNACE);
 		registration.addRecipes(recipes.getSmokingRecipes(), VanillaRecipeCategoryUid.SMOKING);
 		registration.addRecipes(recipes.getBlastingRecipes(), VanillaRecipeCategoryUid.BLASTING);
@@ -225,6 +232,7 @@ public class VanillaPlugin implements IModPlugin {
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
 		registration.addRecipeCatalyst(new ItemStack(Blocks.CRAFTING_TABLE), VanillaRecipeCategoryUid.CRAFTING);
+		registration.addRecipeCatalyst(new ItemStack(Blocks.STONECUTTER), VanillaRecipeCategoryUid.STONECUTTING);
 		registration.addRecipeCatalyst(new ItemStack(Blocks.FURNACE), VanillaRecipeCategoryUid.FURNACE, VanillaRecipeCategoryUid.FUEL);
 		registration.addRecipeCatalyst(new ItemStack(Blocks.SMOKER), VanillaRecipeCategoryUid.SMOKING, VanillaRecipeCategoryUid.FUEL);
 		registration.addRecipeCatalyst(new ItemStack(Blocks.BLAST_FURNACE), VanillaRecipeCategoryUid.BLASTING, VanillaRecipeCategoryUid.FUEL);

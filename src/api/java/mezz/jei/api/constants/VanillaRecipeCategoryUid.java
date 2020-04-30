@@ -30,6 +30,13 @@ public final class VanillaRecipeCategoryUid {
 	public static final ResourceLocation CRAFTING = new ResourceLocation(ModIds.MINECRAFT_ID, "crafting");
 
 	/**
+	 * The stonecutting recipe category
+	 *
+	 * Automatically includes every {@link StonecuttingRecipe}
+	 */
+	public static final ResourceLocation STONECUTTING = new ResourceLocation(ModIds.MINECRAFT_ID, "stonecutting");
+
+	/**
 	 * The furnace recipe category.
 	 *
 	 * Automatically includes every {@link FurnaceRecipe}
