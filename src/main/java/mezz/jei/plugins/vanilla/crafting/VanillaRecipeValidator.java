@@ -18,6 +18,7 @@ import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.item.crafting.SmokingRecipe;
+import net.minecraft.item.crafting.StonecuttingRecipe;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -34,9 +35,14 @@ public final class VanillaRecipeValidator {
 		private final List<SmokingRecipe> smokingRecipes = new ArrayList<>();
 		private final List<BlastingRecipe> blastingRecipes = new ArrayList<>();
 		private final List<CampfireCookingRecipe> campfireRecipes = new ArrayList<>();
+		private final List<StonecuttingRecipe> stonecuttingRecipes = new ArrayList<>();
 
 		public List<IRecipe> getCraftingRecipes() {
 			return craftingRecipes;
+		}
+
+		public List<StonecuttingRecipe> getStonecuttingRecipes() {
+			return stonecuttingRecipes;
 		}
 
 		public List<FurnaceRecipe> getFurnaceRecipes() {
@@ -59,8 +65,9 @@ public final class VanillaRecipeValidator {
 	private VanillaRecipeValidator() {
 	}
 
-	public static Results getValidRecipes(IRecipeCategory<ICraftingRecipe> craftingCategory, IRecipeCategory<FurnaceRecipe> furnaceCategory, IRecipeCategory<SmokingRecipe> smokingCategory, IRecipeCategory<BlastingRecipe> blastingCategory, IRecipeCategory<CampfireCookingRecipe> campfireCategory) {
+	public static Results getValidRecipes(IRecipeCategory<ICraftingRecipe> craftingCategory, IRecipeCategory<StonecuttingRecipe> stonecuttingCategory, IRecipeCategory<FurnaceRecipe> furnaceCategory, IRecipeCategory<SmokingRecipe> smokingCategory, IRecipeCategory<BlastingRecipe> blastingCategory, IRecipeCategory<CampfireCookingRecipe> campfireCategory) {
 		CategoryRecipeValidator<ICraftingRecipe> craftingRecipesValidator = new CategoryRecipeValidator<>(craftingCategory, 9);
+		CategoryRecipeValidator<StonecuttingRecipe> stonecuttingRecipesValidator = new CategoryRecipeValidator<>(stonecuttingCategory, 1);
 		CategoryRecipeValidator<FurnaceRecipe> furnaceRecipesValidator = new CategoryRecipeValidator<>(furnaceCategory, 1);
 		CategoryRecipeValidator<SmokingRecipe> smokingRecipesValidator = new CategoryRecipeValidator<>(smokingCategory, 1);
 		CategoryRecipeValidator<BlastingRecipe> blastingRecipesValidator = new CategoryRecipeValidator<>(blastingCategory, 1);
@@ -72,6 +79,11 @@ public final class VanillaRecipeValidator {
 		for (ICraftingRecipe recipe : getRecipes(recipeManager, IRecipeType.CRAFTING)) {
 			if (craftingRecipesValidator.isRecipeValid(recipe)) {
 				results.craftingRecipes.add(recipe);
+			}
+		}
+		for (StonecuttingRecipe recipe : getRecipes(recipeManager, IRecipeType.STONECUTTING)) {
+			if (stonecuttingRecipesValidator.isRecipeValid(recipe)) {
+				results.stonecuttingRecipes.add(recipe);
 			}
 		}
 		for (FurnaceRecipe recipe : getRecipes(recipeManager, IRecipeType.SMELTING)) {
