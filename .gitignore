@@ -28,3 +28,6 @@ changelog.html
 \.project
 \.settings/
 *.launch
+.vscode
+/**/build/
+/**/logs

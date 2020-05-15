@@ -11,3 +11,7 @@ This means:
 ### [JEI Developer Wiki](https://github.com/mezz/JustEnoughItems/wiki)
 
 IRC: [#JEI on EsperNet](https://webchat.esper.net/?nick=JEIGithub...&channels=JEI)
+
+
+###Branch
+branch is for 1.12.2 for Forge Gradle 3, because Forge Gradle 2 is not supported anymore

@@ -1,23 +1,24 @@
 buildscript {
 	repositories {
+		mavenLocal()
+		maven { url = "https://files.minecraftforge.net/maven" }
 		jcenter()
-		maven {
-			name = "forge"
-			url = "http://files.minecraftforge.net/maven"
-		}
+		mavenCentral()
 	}
 	dependencies {
-		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+		classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
 	}
 }
 
 plugins {
-	id "com.matthewprenger.cursegradle" version "1.0.9"
+	id "com.matthewprenger.cursegradle" version "1.2.0"
 	id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.64"
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
 apply from: 'buildtools/ColoredOutput.gradle'
+
+apply plugin: 'net.minecraftforge.gradle'
+
 
 version = version_major + '.' + version_minor + '.' + version_patch
 group = "mezz.jei" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -28,34 +29,84 @@ if (System.getenv().BUILD_NUMBER != null) {//adds the build number to the end of
 }
 
 // java version
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+compileJava {
+	sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 minecraft {
-	version = mcversion + "-" + forgeversion
-	runDir = "run"
-	replace '@VERSION@', project.version
-	mappings = mcp_mappings
+	//version = mcversion + "-" + forgeversion
+	//runDir = "run"
+	//replace '@VERSION@', project.version
+
+	mappings channel: 'snapshot', version: '20171003-1.12'
+
+	accessTransformer = file('src/main/resources/META-INF/jei_at.cfg')
+
+	// Default run configurations.
+    // These can be tweaked, removed, or duplicated as needed.
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+        }
+
+        server {
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+        }
+    }
 }
 
 repositories {
 
 }
 
-dependencies {
-	testCompile 'junit:junit:4.12'
+sourceSets {
+	api
+	main {
+		compileClasspath += sourceSets.api.output
+		runtimeClasspath += sourceSets.api.output
+	}
+	test {
+		compileClasspath += sourceSets.api.output
+		runtimeClasspath += sourceSets.api.output
+	}
 }
+
+configurations {
+	apiCompile.extendsFrom(compile)
+}
+
+dependencies {
+	minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2854'
+
+	testCompile([
+		group: "junit",
+		name: "junit",
+		version: "4.12"
+	])
+}
+
+/*println "Project Version:---------------------${project.minecraft.version}"
 
 processResources {
 	// this will ensure that this task is redone when the versions change.
 	inputs.property "version", project.version
-	inputs.property "mcversion", project.minecraft.version
+	//inputs.property "mcversion", project.minecraft.version
 
 	// replace stuff in mcmod.info, nothing else
 	from(sourceSets.main.resources.srcDirs) {
 		include 'mcmod.info'
-
-		// replace version and mcversion
 		expand 'version': project.version, 'mcversion': project.minecraft.version
 	}
 
@@ -66,7 +117,7 @@ processResources {
 
 	// Move access transformers to META-INF
 	rename '(.+_at.cfg)', 'META-INF/$1'
-}
+}*/
 
 task makeChangelog(type: se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask) {
 	file = new File("changelog.html")
@@ -98,11 +149,22 @@ allprojects {
 }
 
 jar {
+	from sourceSets.main.output.classesDirs
+	from sourceSets.api.output.classesDirs
+	from sourceSets.main.output.resourcesDir
+	from sourceSets.api.output.resourcesDir
 	manifest {
-		attributes 'FMLAT': 'jei_at.cfg'
+		attributes([
+				"Specification-Title": "Just Enough Items",
+				"Specification-Vendor": "mezz",
+				"Specification-Version": "${version}",
+				"Implementation-Title": project.name,
+				"Implementation-Version": "${project.version}",
+				"Implementation-Vendor" :"mezz",
+				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+				'FMLAT': 'jei_at.cfg'
+		])
 	}
-	from sourceSets.main.output
-	from sourceSets.api.output
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
