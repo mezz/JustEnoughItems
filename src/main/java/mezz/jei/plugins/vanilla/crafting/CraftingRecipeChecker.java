@@ -70,6 +70,10 @@ public final class CraftingRecipeChecker {
 		}
 
 		public boolean isRecipeValid(T recipe, StackHelper stackHelper) {
+			if (recipe.isDynamic()) {
+				return false;
+			}
+			
 			ItemStack recipeOutput = recipe.getRecipeOutput();
 			//noinspection ConstantConditions
 			if (recipeOutput == null || recipeOutput.isEmpty()) {
