@@ -61,7 +61,7 @@ public class EnchantDataHelper implements IIngredientHelper<EnchantmentData> {
 			String stackInfo = getErrorInfo(ingredient);
 			throw new IllegalStateException("enchantment.getRegistryName() returned null for: " + stackInfo);
 		}
-		return registryName.getNamespace();
+		return registryName.getResourceDomain();
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class EnchantDataHelper implements IIngredientHelper<EnchantmentData> {
 			String stackInfo = getErrorInfo(ingredient);
 			throw new IllegalStateException("enchantment.getRegistryName() returned null for: " + stackInfo);
 		}
-		return registryName.getPath();
+		return registryName.getResourcePath();
 	}
 
 	@Override

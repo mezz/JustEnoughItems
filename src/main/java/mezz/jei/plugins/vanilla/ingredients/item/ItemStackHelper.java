@@ -89,7 +89,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			throw new IllegalStateException("item.getRegistryName() returned null for: " + stackInfo);
 		}
 
-		return itemName.getNamespace();
+		return itemName.getResourceDomain();
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			throw new IllegalStateException("item.getRegistryName() returned null for: " + stackInfo);
 		}
 
-		return itemName.getPath();
+		return itemName.getResourcePath();
 	}
 
 	@Override
