@@ -57,7 +57,7 @@ public class JeiTextureMap extends TextureMap {
 		for (Map.Entry<String, TextureAtlasSprite> entry : this.mapRegisteredSprites.entrySet()) {
 			TextureAtlasSprite textureatlassprite = entry.getValue();
 			ResourceLocation resourcelocation = this.getResourceLocation(textureatlassprite);
-			bar.step(resourcelocation.getPath());
+			bar.step(resourcelocation.getResourcePath());
 			IResource iresource = null;
 
 			if (textureatlassprite.hasCustomLoader(resourceManager, resourcelocation)) {

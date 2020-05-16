@@ -2,13 +2,11 @@ package mezz.jei.api.gui;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
-import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
 
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
-import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 
 /**
  * Represents one drawn ingredient that is part of a recipe.

@@ -161,7 +161,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		Item item = ingredient.getItem();
 		for (CreativeTabs creativeTab : item.getCreativeTabs()) {
 			if (creativeTab != null) {
-				String creativeTabName = I18n.format(creativeTab.getTranslationKey());
+				String creativeTabName = I18n.format(creativeTab.getTranslatedTabLabel());
 				creativeTabsStrings.add(creativeTabName);
 			}
 		}

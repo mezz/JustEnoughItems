@@ -72,8 +72,7 @@ public final class CommandUtilServer {
 		if (sender.isCreative()) {
 			return true;
 		}
-
-		MinecraftServer minecraftServer = sender.server;
+		MinecraftServer minecraftServer = sender.getServer();
 		ICommand giveCommand = getGiveCommand(sender);
 		if (giveCommand != null && giveCommand.checkPermission(minecraftServer, sender)) {
 			String[] commandParameters = getGiveCommandParameters(sender, itemStack, itemStack.getCount());
@@ -189,7 +188,7 @@ public final class CommandUtilServer {
 
 	@Nullable
 	private static ICommand getGiveCommand(EntityPlayerMP sender) {
-		MinecraftServer minecraftServer = sender.server;
+		MinecraftServer minecraftServer = sender.getServer();
 		ICommandManager commandManager = minecraftServer.getCommandManager();
 		Map<String, ICommand> commands = commandManager.getCommands();
 		return commands.get("give");

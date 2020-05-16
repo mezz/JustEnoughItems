@@ -90,7 +90,7 @@ public final class ErrorUtil {
 			ResourceLocation registryName = registryEntry.getRegistryName();
 			if (registryName != null) {
 				if (modIdHelper != null) {
-					String modId = registryName.getNamespace();
+					String modId = registryName.getResourceDomain();
 					String modName = modIdHelper.getModNameForModId(modId);
 					return modName + " " + registryName + " " + recipe.getClass();
 				}
