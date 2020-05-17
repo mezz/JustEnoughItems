@@ -104,6 +104,9 @@ config.jei.advanced.giveMode.comment=Choose if JEI should give ingredients direc
 config.jei.advanced.optimizeMemoryUsage=Optimize Memory Usage
 config.jei.advanced.optimizeMemoryUsage.comment=Enable JEI memory usage optimizations.
 
+config.jei.advanced.removeRecipesFeature=Remove Recipes Feature
+config.jei.advanced.removeRecipesFeature.comment=Disables the registering of Recipes, reducing memory usage.
+
 # Hide Ingredients Mode
 gui.jei.editMode.description=JEI Hide Ingredients Mode:
 gui.jei.editMode.description.hide=%CTRL-Click to Hide

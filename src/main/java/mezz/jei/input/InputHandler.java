@@ -54,7 +54,7 @@ public class InputHandler {
 		this.leftAreaDispatcher = leftAreaDispatcher;
 		this.bookmarkList = bookmarkList;
 
-		this.showsRecipeFocuses.add(recipesGui);
+		if(recipesGui != null) this.showsRecipeFocuses.add(recipesGui);
 		this.showsRecipeFocuses.add(ingredientListOverlay);
 		this.showsRecipeFocuses.add(leftAreaDispatcher);
 		this.showsRecipeFocuses.add(new GuiContainerWrapper(guiScreenHelper));
@@ -137,7 +137,7 @@ public class InputHandler {
 			return true;
 		}
 
-		if (guiScreen instanceof GuiContainer) {
+		if (guiScreen instanceof GuiContainer && recipeRegistry != null) {
 			GuiContainer guiContainer = (GuiContainer) guiScreen;
 			RecipeClickableArea clickableArea = recipeRegistry.getRecipeClickableArea(guiContainer, mouseX - guiContainer.getGuiLeft(), mouseY - guiContainer.getGuiTop());
 			if (clickableArea != null) {
@@ -175,16 +175,18 @@ public class InputHandler {
 	}
 
 	private <V> boolean handleMouseClickedFocus(int mouseButton, IClickedIngredient<V> clicked) {
-		if (mouseButton == 0) {
-			IFocus<?> focus = new Focus<>(IFocus.Mode.OUTPUT, clicked.getValue());
-			recipesGui.show(focus);
-			clicked.onClickHandled();
-			return true;
-		} else if (mouseButton == 1) {
-			IFocus<?> focus = new Focus<>(IFocus.Mode.INPUT, clicked.getValue());
-			recipesGui.show(focus);
-			clicked.onClickHandled();
-			return true;
+		if(recipesGui != null) {
+			if (mouseButton == 0) {
+				IFocus<?> focus = new Focus<>(IFocus.Mode.OUTPUT, clicked.getValue());
+				recipesGui.show(focus);
+				clicked.onClickHandled();
+				return true;
+			} else if (mouseButton == 1) {
+				IFocus<?> focus = new Focus<>(IFocus.Mode.INPUT, clicked.getValue());
+				recipesGui.show(focus);
+				clicked.onClickHandled();
+				return true;
+			}
 		}
 
 		return false;
@@ -272,7 +274,7 @@ public class InputHandler {
 						}
 						return bookmarkList.add(clicked.getValue());
 					}
-				} else {
+				} else if(recipesGui != null){
 					IFocus.Mode mode = showRecipe ? IFocus.Mode.OUTPUT : IFocus.Mode.INPUT;
 					recipesGui.show(new Focus<Object>(mode, clicked.getValue()));
 					clicked.onClickHandled();

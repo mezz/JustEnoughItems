@@ -1,25 +1,25 @@
 package mezz.jei.gui;
 
-import mezz.jei.util.LimitedLogger;
-import mezz.jei.util.Log;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.client.event.GuiContainerEvent;
-import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import java.time.Duration;
+
+import org.apache.logging.log4j.Level;
 
 import mezz.jei.config.Config;
 import mezz.jei.config.OverlayToggleEvent;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.recipes.RecipeRegistry;
+import mezz.jei.util.LimitedLogger;
+import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
-import org.apache.logging.log4j.Level;
-
-import java.time.Duration;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraftforge.client.event.GuiContainerEvent;
+import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class GuiEventHandler {
 	private final IngredientListOverlay ingredientListOverlay;
@@ -110,7 +110,7 @@ public class GuiEventHandler {
 
 		if (gui instanceof GuiContainer) {
 			GuiContainer guiContainer = (GuiContainer) gui;
-			if (recipeRegistry.getRecipeClickableArea(guiContainer, event.getMouseX() - guiContainer.getGuiLeft(), event.getMouseY() - guiContainer.getGuiTop()) != null) {
+			if (recipeRegistry != null && recipeRegistry.getRecipeClickableArea(guiContainer, event.getMouseX() - guiContainer.getGuiLeft(), event.getMouseY() - guiContainer.getGuiTop()) != null) {
 				String showRecipesText = Translator.translateToLocal("jei.tooltip.show.recipes");
 				TooltipRenderer.drawHoveringText(minecraft, showRecipesText, event.getMouseX(), event.getMouseY());
 			}

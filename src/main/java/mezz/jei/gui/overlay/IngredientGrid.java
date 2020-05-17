@@ -1,15 +1,9 @@
 package mezz.jei.gui.overlay;
 
-import javax.annotation.Nullable;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Collection;
 
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import javax.annotation.Nullable;
 
 import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
@@ -30,6 +24,12 @@ import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.GiveMode;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Translator;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 /**
  * An ingredient grid displays a rectangular area of clickable recipe ingredients.
@@ -129,7 +129,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 				ItemStack itemStack = player.inventory.getItemStack();
 				if (!itemStack.isEmpty()) {
 					JeiRuntime runtime = Internal.getRuntime();
-					if (runtime == null || !runtime.getRecipesGui().isOpen()) {
+					if (runtime == null || runtime.getRecipesGui() == null || !runtime.getRecipesGui().isOpen()) {
 						GiveMode giveMode = Config.getGiveMode();
 						if (giveMode == GiveMode.MOUSE_PICKUP) {
 							IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);

@@ -1,7 +1,6 @@
 package mezz.jei.config;
 
-import javax.annotation.Nullable;
-import java.awt.Color;
+import java.awt.*;
 import java.io.File;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -10,17 +9,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.ConfigCategory;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.util.text.TextFormatting;
+import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+
 import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -37,6 +30,14 @@ import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.GiveMode;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.ConfigCategory;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public final class Config {
 	private static final String configKeyPrefix = "config.jei";
@@ -182,6 +183,10 @@ public final class Config {
 	public static boolean isOptimizeMemoryUsage() {
 		return values.optimizeMemoryUsage;
 	}
+
+    public static boolean removeRecipesFeature() {
+        return values.removeRecipesFeature;
+    }
 
 	public static GiveMode getGiveMode() {
 		return values.giveMode;
@@ -404,6 +409,8 @@ public final class Config {
 		values.centerSearchBarEnabled = config.getBoolean(CATEGORY_ADVANCED, "centerSearchBarEnabled", defaultValues.centerSearchBarEnabled);
 
 		values.optimizeMemoryUsage = config.getBoolean(CATEGORY_ADVANCED, "optimizeMemoryUsage", defaultValues.optimizeMemoryUsage);
+
+		values.removeRecipesFeature = config.getBoolean(CATEGORY_ADVANCED, "removeRecipesFeature", defaultValues.removeRecipesFeature);
 
 		values.giveMode = config.getEnum("giveMode", CATEGORY_ADVANCED, defaultValues.giveMode, GiveMode.values());
 

@@ -69,16 +69,13 @@ public class JeiStarter {
 		ModRegistry modRegistry = new ModRegistry(jeiHelpers, ingredientRegistry);
 
 		LoggedTimer timer = new LoggedTimer();
+
 		timer.start("Registering recipe categories");
 		registerCategories(plugins, modRegistry);
 		timer.stop();
 
 		timer.start("Registering mod plugins");
 		registerPlugins(plugins, modRegistry);
-		timer.stop();
-
-		timer.start("Building recipe registry");
-		RecipeRegistry recipeRegistry = modRegistry.createRecipeRegistry(ingredientRegistry);
 		timer.stop();
 
 		timer.start("Building ingredient list");
@@ -90,6 +87,15 @@ public class JeiStarter {
 		ingredientFilter.addIngredients(ingredientList);
 		Internal.setIngredientFilter(ingredientFilter);
 		timer.stop();
+
+		// Sometimes all you want is a mod that lets you see all items and blocks, because having too many mods uses too much RAM
+		RecipeRegistry recipeRegistry = null;
+		if (!Config.removeRecipesFeature()) {
+
+			timer.start("Building recipe registry");
+			recipeRegistry = modRegistry.createRecipeRegistry(ingredientRegistry);
+			timer.stop();
+		}
 
 		timer.start("Building bookmarks");
 		BookmarkList bookmarkList = new BookmarkList(ingredientRegistry);
@@ -105,7 +111,8 @@ public class JeiStarter {
 		IngredientListOverlay ingredientListOverlay = new IngredientListOverlay(ingredientFilter, ingredientRegistry, guiScreenHelper);
 
 		BookmarkOverlay bookmarkOverlay = new BookmarkOverlay(bookmarkList, jeiHelpers.getGuiHelper(), guiScreenHelper);
-		RecipesGui recipesGui = new RecipesGui(recipeRegistry, ingredientRegistry);
+		RecipesGui recipesGui = null;
+		if (!Config.removeRecipesFeature()) recipesGui = new RecipesGui(recipeRegistry, ingredientRegistry);
 		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, ingredientListOverlay, bookmarkOverlay, recipesGui, ingredientFilter);
 		Internal.setRuntime(jeiRuntime);
 		timer.stop();
