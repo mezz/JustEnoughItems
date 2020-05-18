@@ -1,20 +1,11 @@
 package mezz.jei.plugins.jei;
 
-import javax.annotation.Nullable;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraft.client.gui.inventory.GuiBrewingStand;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import javax.annotation.Nullable;
 
 import mezz.jei.Internal;
 import mezz.jei.api.IJeiRuntime;
@@ -39,6 +30,17 @@ import mezz.jei.plugins.jei.ingredients.DebugIngredientHelper;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientListFactory;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientRenderer;
 import mezz.jei.runtime.JeiHelpers;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.gui.inventory.GuiBrewingStand;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 @JEIPlugin
 public class JEIInternalPlugin implements IModPlugin {
@@ -76,7 +78,10 @@ public class JEIInternalPlugin implements IModPlugin {
 	public void register(IModRegistry registry) {
 		ingredientRegistry = registry.getIngredientRegistry();
 		registry.addGuiScreenHandler(GuiContainer.class, GuiProperties::create);
-		registry.addGuiScreenHandler(RecipesGui.class, GuiProperties::create);
+
+		if(Config.removeRecipesFeature()) {
+			registry.addGuiScreenHandler(RecipesGui.class, GuiProperties::create);
+		}
 
 		if (Config.isDebugModeEnabled()) {
 			registry.addIngredientInfo(Arrays.asList(
