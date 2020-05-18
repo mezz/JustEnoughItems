@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import mezz.jei.config.Config;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
@@ -118,9 +119,11 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	@Override
 	@Deprecated
 	public void addRecipes(Collection recipes) {
-		ErrorUtil.checkNotNull(recipes, "recipes");
+		if(!Config.removeRecipesFeature()) {
+			ErrorUtil.checkNotNull(recipes, "recipes");
 
-		this.unsortedRecipes.addAll(recipes);
+			this.unsortedRecipes.addAll(recipes);
+		}
 	}
 
 	/**
@@ -129,16 +132,18 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	 */
 	@Override
 	public void addRecipes(Collection<?> recipes, String recipeCategoryUid) {
-		ErrorUtil.checkNotNull(recipes, "recipes");
-		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
+		if(!Config.removeRecipesFeature()) {
+			ErrorUtil.checkNotNull(recipes, "recipes");
+			ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 //		Preconditions.checkArgument(this.recipeCategoryUids.contains(recipeCategoryUid), "No recipe category has been registered for recipeCategoryUid %s", recipeCategoryUid);
-		if (!this.recipeCategoryUids.contains(recipeCategoryUid)) {
-			Log.get().warn("No recipe category has been registered for recipeCategoryUid {}", recipeCategoryUid);
-		}
+			if (!this.recipeCategoryUids.contains(recipeCategoryUid)) {
+				Log.get().warn("No recipe category has been registered for recipeCategoryUid {}", recipeCategoryUid);
+			}
 
-		for (Object recipe : recipes) {
-			ErrorUtil.checkNotNull(recipe, "recipe");
-			this.recipes.put(recipeCategoryUid, recipe);
+			for (Object recipe : recipes) {
+				ErrorUtil.checkNotNull(recipe, "recipe");
+				this.recipes.put(recipeCategoryUid, recipe);
+			}
 		}
 	}
 

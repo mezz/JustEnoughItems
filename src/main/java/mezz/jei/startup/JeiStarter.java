@@ -70,9 +70,11 @@ public class JeiStarter {
 
 		LoggedTimer timer = new LoggedTimer();
 
-		timer.start("Registering recipe categories");
-		registerCategories(plugins, modRegistry);
-		timer.stop();
+		if (!Config.removeRecipesFeature()) {
+			timer.start("Registering recipe categories");
+			registerCategories(plugins, modRegistry);
+			timer.stop();
+		}
 
 		timer.start("Registering mod plugins");
 		registerPlugins(plugins, modRegistry);
@@ -91,7 +93,6 @@ public class JeiStarter {
 		// Sometimes all you want is a mod that lets you see all items and blocks, because having too many mods uses too much RAM
 		RecipeRegistry recipeRegistry = null;
 		if (!Config.removeRecipesFeature()) {
-
 			timer.start("Building recipe registry");
 			recipeRegistry = modRegistry.createRecipeRegistry(ingredientRegistry);
 			timer.stop();
