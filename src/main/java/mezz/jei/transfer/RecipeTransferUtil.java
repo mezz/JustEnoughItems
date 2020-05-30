@@ -39,7 +39,7 @@ public final class RecipeTransferUtil {
 
 	public static boolean transferRecipe(RecipeTransferManager recipeTransferManager, Container container, RecipeLayout recipeLayout, PlayerEntity player, boolean maxTransfer) {
 		IRecipeTransferError error = transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer, true);
-		return error == null;
+		return error == null || error.getType().equals(IRecipeTransferError.Type.COSMETIC);
 	}
 
 	@Nullable

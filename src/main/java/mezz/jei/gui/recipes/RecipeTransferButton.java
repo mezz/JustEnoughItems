@@ -33,7 +33,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 			this.recipeTransferError = RecipeTransferErrorInternal.INSTANCE;
 		}
 
-		if (this.recipeTransferError == null) {
+		if (this.recipeTransferError == null || this.recipeTransferError.getType().equals(IRecipeTransferError.Type.COSMETIC)) {
 			this.active = true;
 			this.visible = true;
 		} else {
@@ -45,11 +45,11 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 
 	public void drawToolTip(int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
-			if (recipeTransferError != null) {
-				recipeTransferError.showError(mouseX, mouseY, recipeLayout, recipeLayout.getPosX(), recipeLayout.getPosY());
-			} else {
+			if (recipeTransferError == null || !recipeTransferError.getType().equals(IRecipeTransferError.Type.COSMETIC)) {
 				String tooltipTransfer = Translator.translateToLocal("jei.tooltip.transfer");
 				TooltipRenderer.drawHoveringText(tooltipTransfer, mouseX, mouseY);
+			} else {
+				recipeTransferError.showError(mouseX, mouseY, recipeLayout, recipeLayout.getPosX(), recipeLayout.getPosY());
 			}
 		}
 	}

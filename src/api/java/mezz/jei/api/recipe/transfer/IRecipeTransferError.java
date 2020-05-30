@@ -23,7 +23,14 @@ public interface IRecipeTransferError {
 		 * Errors that the player can fix. Missing items, inventory full, etc.
 		 * Something informative will be shown to the player.
 		 */
-		USER_FACING
+		USER_FACING,
+
+		/**
+		 * Errors that still allow the usage of the recipe transfer button.
+		 * Hovering over the button will display the error, however the button is active and can be used.
+		 */
+		COSMETIC
+
 	}
 
 	Type getType();
