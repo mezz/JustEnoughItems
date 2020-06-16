@@ -15,8 +15,20 @@ public interface IGuiClickableArea {
 	 * The hover/click area for this {@link IGuiClickableArea}.
 	 * When hovered, the message from {@link #getTooltipStrings()} will be displayed.
 	 * When clicked, {@link #onClick(IFocusFactory, IRecipesGui)} will be called.
+	 * @deprecated Prefer and implement {@link #isMouseOver(double, double)} instead.
 	 */
+	@Deprecated//TODO 1.16: Remove this and make isMouseOver no longer defaulted
 	Rectangle2d getArea();
+
+	/**
+	 * Used to check if the mouse is currently over the hover/click area for this {@link IGuiClickableArea}.
+	 * When hovered, the message from {@link #getTooltipStrings()} will be displayed.
+	 * When clicked, {@link #onClick(IFocusFactory, IRecipesGui)} will be called.
+	 */
+	default boolean isMouseOver(double mouseX, double mouseY) {
+		Rectangle2d area = getArea();
+		return mouseX >= area.getX() && mouseY >= area.getY() && mouseX < area.getX() + area.getWidth() && mouseY < area.getY() + area.getHeight();
+	}
 
 	/**
 	 * Returns the strings to be shown on the tooltip when this area is hovered over.
@@ -43,8 +55,14 @@ public interface IGuiClickableArea {
 		Collections.addAll(recipeCategoryUidList, recipeCategoryUids);
 		return new IGuiClickableArea() {
 			@Override
+			@Deprecated
 			public Rectangle2d getArea() {
 				return area;
+			}
+
+			@Override
+			public boolean isMouseOver(double mouseX, double mouseY) {
+				return mouseX >= xPos && mouseY >= yPos && mouseX < xPos + width && mouseY < yPos + height;
 			}
 
 			@Override

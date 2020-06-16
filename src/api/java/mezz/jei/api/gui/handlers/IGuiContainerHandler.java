@@ -45,8 +45,23 @@ public interface IGuiContainerHandler<T extends ContainerScreen> {
 	/**
 	 * Return the JEI-controlled clickable areas for this GUI.
 	 * This is useful when you want to add a spot on your GUI that opens JEI and shows recipes.
+	 *
+	 * @deprecated Prefer and implement {@link #getGuiClickableArea(ContainerScreen, double, double)} instead.
 	 */
+	@Deprecated//TODO 1.16: Remove this in favor of getGuiClickableArea, changing that to default to returning null
 	default Collection<IGuiClickableArea> getGuiClickableAreas(T containerScreen) {
 		return Collections.emptyList();
+	}
+
+	/**
+	 * Return the JEI-controlled clickable area currently under the mouse for this GUI.
+	 * This is useful when you want to add a spot on your GUI that opens JEI and shows recipes.
+	 *
+	 * @param mouseX the current X position of the mouse in screen coordinates.
+	 * @param mouseY the current Y position of the mouse in screen coordinates.
+	 */
+	@Nullable
+	default IGuiClickableArea getGuiClickableArea(T containerScreen, double mouseX, double mouseY) {
+		return getGuiClickableAreas(containerScreen).stream().filter(guiClickableArea -> guiClickableArea.isMouseOver(mouseX, mouseY)).findFirst().orElse(null);
 	}
 }

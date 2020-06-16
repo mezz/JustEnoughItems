@@ -208,13 +208,7 @@ public class GuiScreenHelper {
 	@Nullable
 	private static <T extends ContainerScreen> IGuiClickableArea getGuiClickableArea(Class<? extends T> handlerClass, IGuiContainerHandler<T> handler, ContainerScreen containerScreen, double mouseX, double mouseY) {
 		if (handlerClass.isInstance(containerScreen)) {
-			T castContainer = handlerClass.cast(containerScreen);
-			Collection<IGuiClickableArea> guiClickableAreas = handler.getGuiClickableAreas(castContainer);
-			for (IGuiClickableArea guiClickableArea : guiClickableAreas) {
-				if (MathUtil.contains(guiClickableArea.getArea(), mouseX, mouseY)) {
-					return guiClickableArea;
-				}
-			}
+			return handler.getGuiClickableArea(handlerClass.cast(containerScreen), mouseX, mouseY);
 		}
 		return null;
 	}
