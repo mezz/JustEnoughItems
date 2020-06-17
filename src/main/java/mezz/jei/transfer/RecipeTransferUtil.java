@@ -39,7 +39,7 @@ public final class RecipeTransferUtil {
 
 	public static boolean transferRecipe(RecipeTransferManager recipeTransferManager, Container container, RecipeLayout recipeLayout, PlayerEntity player, boolean maxTransfer) {
 		IRecipeTransferError error = transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer, true);
-		return error == null || error.getType().equals(IRecipeTransferError.Type.COSMETIC);
+		return allowTransfer(error);
 	}
 
 	@Nullable
@@ -59,6 +59,15 @@ public final class RecipeTransferUtil {
 
 		//noinspection unchecked
 		return transferHandler.transferRecipe(container, recipeLayout, player, maxTransfer, doTransfer);
+	}
+
+	public static boolean allowTransfer(@Nullable IRecipeTransferError error){
+		if(error == null){
+			return true;
+		} else if(error.getType() == IRecipeTransferError.Type.COSMETIC){
+			return true;
+		}
+		return false;
 	}
 
 	public static class MatchingItemsResult {
