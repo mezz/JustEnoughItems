@@ -48,7 +48,7 @@ public interface IGuiContainerHandler<T extends ContainerScreen> {
 	 *
 	 * @deprecated Prefer and implement {@link #getGuiClickableArea(ContainerScreen, double, double)} instead.
 	 */
-	@Deprecated//TODO 1.16: Remove this in favor of getGuiClickableArea, changing that to default to returning null
+	@Deprecated
 	default Collection<IGuiClickableArea> getGuiClickableAreas(T containerScreen) {
 		return Collections.emptyList();
 	}
