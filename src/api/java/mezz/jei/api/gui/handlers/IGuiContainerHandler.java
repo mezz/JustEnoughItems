@@ -46,7 +46,7 @@ public interface IGuiContainerHandler<T extends ContainerScreen> {
 	 * Return the JEI-controlled clickable areas for this GUI.
 	 * This is useful when you want to add a spot on your GUI that opens JEI and shows recipes.
 	 *
-	 * @deprecated Prefer and implement {@link #getGuiClickableArea(ContainerScreen, double, double)} instead.
+	 * @deprecated since JEI version 6.0.1. Prefer and implement {@link #getGuiClickableArea(ContainerScreen, double, double)} instead.
 	 */
 	@Deprecated
 	default Collection<IGuiClickableArea> getGuiClickableAreas(T containerScreen) {

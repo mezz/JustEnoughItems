@@ -22,6 +22,8 @@ public interface IGuiClickableArea {
 	 * Used to check if the mouse is currently over the hover/click area for this {@link IGuiClickableArea}.
 	 * When hovered, the message from {@link #getTooltipStrings()} will be displayed.
 	 * When clicked, {@link #onClick(IFocusFactory, IRecipesGui)} will be called.
+	 *
+	 * @since JEI version 6.0.1
 	 */
 	default boolean isMouseOver(double mouseX, double mouseY) {
 		Rectangle2d area = getArea();
