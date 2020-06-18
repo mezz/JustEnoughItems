@@ -62,6 +62,13 @@ public interface IGuiContainerHandler<T extends ContainerScreen> {
 	 */
 	@Nullable
 	default IGuiClickableArea getGuiClickableArea(T containerScreen, double mouseX, double mouseY) {
-		return getGuiClickableAreas(containerScreen).stream().filter(guiClickableArea -> guiClickableArea.isMouseOver(mouseX, mouseY)).findFirst().orElse(null);
+		Collection<IGuiClickableArea> guiClickableAreas = getGuiClickableAreas(containerScreen);
+		for (IGuiClickableArea guiClickableArea : guiClickableAreas) {
+			Rectangle2d area = guiClickableArea.getArea();
+			if (mouseX >= area.getX() && mouseY >= area.getY() && mouseX < area.getX() + area.getWidth() && mouseY < area.getY() + area.getHeight()) {
+				return guiClickableArea;
+			}
+		}
+		return null;
 	}
 }

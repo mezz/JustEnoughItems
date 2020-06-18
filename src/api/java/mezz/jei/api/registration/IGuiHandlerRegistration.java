@@ -45,9 +45,8 @@ public interface IGuiHandlerRegistration {
 			@Nullable
 			@Override
 			public IGuiClickableArea getGuiClickableArea(T containerScreen, double mouseX, double mouseY) {
-				IGuiClickableArea clickableArea = IGuiClickableArea.createBasic(xPos, yPos, width, height, recipeCategoryUids);
-				if (clickableArea.isMouseOver(mouseX, mouseY)) {
-					return clickableArea;
+				if (mouseX >= xPos && mouseY >= yPos && mouseX < xPos + width && mouseY < yPos + height) {
+					return IGuiClickableArea.createBasic(xPos, yPos, width, height, recipeCategoryUids);
 				}
 				return null;
 			}
