@@ -1,6 +1,8 @@
 package mezz.jei.api.registration;
 
-import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Collections;
+
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.util.ResourceLocation;
@@ -42,13 +44,10 @@ public interface IGuiHandlerRegistration {
 	 */
 	default <T extends ContainerScreen<?>> void addRecipeClickArea(Class<? extends T> guiContainerClass, int xPos, int yPos, int width, int height, ResourceLocation... recipeCategoryUids) {
 		this.addGuiContainerHandler(guiContainerClass, new IGuiContainerHandler<T>() {
-			@Nullable
 			@Override
-			public IGuiClickableArea getGuiClickableArea(T containerScreen, double mouseX, double mouseY) {
-				if (mouseX >= xPos && mouseY >= yPos && mouseX < xPos + width && mouseY < yPos + height) {
-					return IGuiClickableArea.createBasic(xPos, yPos, width, height, recipeCategoryUids);
-				}
-				return null;
+			public Collection<IGuiClickableArea> getGuiClickableAreas(T containerScreen, double mouseX, double mouseY) {
+				IGuiClickableArea clickableArea = IGuiClickableArea.createBasic(xPos, yPos, width, height, recipeCategoryUids);
+				return Collections.singleton(clickableArea);
 			}
 		});
 	}

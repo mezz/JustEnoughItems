@@ -46,7 +46,7 @@ public interface IGuiContainerHandler<T extends ContainerScreen> {
 	 * Return the JEI-controlled clickable areas for this GUI.
 	 * This is useful when you want to add a spot on your GUI that opens JEI and shows recipes.
 	 *
-	 * @deprecated since JEI version 6.0.1. Prefer and implement {@link #getGuiClickableArea(ContainerScreen, double, double)} instead.
+	 * @deprecated since JEI version 6.0.1. Prefer and implement {@link #getGuiClickableAreas(ContainerScreen, double, double)} instead.
 	 */
 	@Deprecated
 	default Collection<IGuiClickableArea> getGuiClickableAreas(T containerScreen) {
@@ -54,21 +54,13 @@ public interface IGuiContainerHandler<T extends ContainerScreen> {
 	}
 
 	/**
-	 * Return the JEI-controlled clickable area currently under the mouse for this GUI.
+	 * Return the JEI-controlled clickable areas for this GUI.
 	 * This is useful when you want to add a spot on your GUI that opens JEI and shows recipes.
 	 *
-	 * @param mouseX the current X position of the mouse in screen coordinates.
-	 * @param mouseY the current Y position of the mouse in screen coordinates.
+	 * Optionally, you can restrict what you return here based on the current mouse position.
+	 * @since JEI version 6.0.1
 	 */
-	@Nullable
-	default IGuiClickableArea getGuiClickableArea(T containerScreen, double mouseX, double mouseY) {
-		Collection<IGuiClickableArea> guiClickableAreas = getGuiClickableAreas(containerScreen);
-		for (IGuiClickableArea guiClickableArea : guiClickableAreas) {
-			Rectangle2d area = guiClickableArea.getArea();
-			if (mouseX >= area.getX() && mouseY >= area.getY() && mouseX < area.getX() + area.getWidth() && mouseY < area.getY() + area.getHeight()) {
-				return guiClickableArea;
-			}
-		}
-		return null;
+	default Collection<IGuiClickableArea> getGuiClickableAreas(T containerScreen, double mouseX, double mouseY) {
+		return getGuiClickableAreas(containerScreen);
 	}
 }
