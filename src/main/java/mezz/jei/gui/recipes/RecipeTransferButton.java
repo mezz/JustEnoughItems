@@ -33,7 +33,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 			this.recipeTransferError = RecipeTransferErrorInternal.INSTANCE;
 		}
 
-		if (RecipeTransferUtil.allowTransfer(recipeTransferError)) {
+		if (RecipeTransferUtil.allowsTransfer(recipeTransferError)) {
 			this.active = true;
 			this.visible = true;
 		} else {
@@ -45,7 +45,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 
 	public void drawToolTip(int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
-			if (RecipeTransferUtil.allowTransfer(recipeTransferError)) {
+			if (RecipeTransferUtil.allowsTransfer(recipeTransferError)) {
 				String tooltipTransfer = Translator.translateToLocal("jei.tooltip.transfer");
 				TooltipRenderer.drawHoveringText(tooltipTransfer, mouseX, mouseY);
 			} else {
