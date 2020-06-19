@@ -70,15 +70,14 @@ public final class CraftingRecipeChecker {
 		}
 
 		public boolean isRecipeValid(T recipe, StackHelper stackHelper) {
-			if (recipe.isDynamic()) {
-				return false;
-			}
 			
 			ItemStack recipeOutput = recipe.getRecipeOutput();
 			//noinspection ConstantConditions
 			if (recipeOutput == null || recipeOutput.isEmpty()) {
-				String recipeInfo = getInfo(recipe);
-				Log.get().error("Recipe has no output. {}", recipeInfo);
+				if (recipe.isDynamic()) {
+					String recipeInfo = getInfo(recipe);
+					Log.get().error("Recipe has no output. {}", recipeInfo);
+				}
 				return false;
 			}
 			List<Ingredient> ingredients = recipe.getIngredients();
