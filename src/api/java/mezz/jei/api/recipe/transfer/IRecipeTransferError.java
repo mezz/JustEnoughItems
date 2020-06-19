@@ -26,9 +26,9 @@ public interface IRecipeTransferError {
 		USER_FACING,
 
 		/**
-		 * @since JEI version 6.0.2
 		 * Errors that still allow the usage of the recipe transfer button.
 		 * Hovering over the button will display the error, however the button is active and can be used.
+		 * @since JEI version 6.0.2
 		 */
 		COSMETIC
 
