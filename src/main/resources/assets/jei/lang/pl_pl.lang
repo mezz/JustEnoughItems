@@ -101,8 +101,8 @@ config.jei.advanced.maxRecipeGuiHeight=Maksymalna wysokość interfejsu
 config.jei.advanced.maxRecipeGuiHeight.comment=Maksymalna wysokość interfejsu z recepturami.
 config.jei.advanced.giveMode=Tryb dawania
 config.jei.advanced.giveMode.comment=Zdecyduj, czy JEI ma dawać składniki bezpośrednio do ekwipunku (inventory), czy chcesz zabierać i przenosić je samemu (mouse_pickup).
-config.jei.advanced.optimizeMemoryUsage=Optymalizacja zużycia pamięci
-config.jei.advanced.optimizeMemoryUsage.comment=Włącz optymalizacje zużycia pamięci przez JEI.
+config.jei.advanced.optimizeMemoryUsage=Optymalizacja użycia pamięci
+config.jei.advanced.optimizeMemoryUsage.comment=Włącz optymalizacje użycia pamięci przez JEI.
 
 # Hide Ingredients Mode
 gui.jei.editMode.description=Tryb ukrywania składników JEI:
