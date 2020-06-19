@@ -73,8 +73,10 @@ public final class CraftingRecipeChecker {
 			ItemStack recipeOutput = recipe.getRecipeOutput();
 			//noinspection ConstantConditions
 			if (recipeOutput == null || recipeOutput.isEmpty()) {
-				String recipeInfo = getInfo(recipe);
-				Log.get().error("Recipe has no output. {}", recipeInfo);
+				if (!recipe.isDynamic()) {
+					String recipeInfo = getInfo(recipe);
+					Log.get().error("Recipe has no output. {}", recipeInfo);
+				}
 				return false;
 			}
 			List<Ingredient> ingredients = recipe.getIngredients();
