@@ -45,7 +45,7 @@ public interface IGuiHandlerRegistration {
 	default <T extends ContainerScreen<?>> void addRecipeClickArea(Class<? extends T> guiContainerClass, int xPos, int yPos, int width, int height, ResourceLocation... recipeCategoryUids) {
 		this.addGuiContainerHandler(guiContainerClass, new IGuiContainerHandler<T>() {
 			@Override
-			public Collection<IGuiClickableArea> getGuiClickableAreas(T containerScreen) {
+			public Collection<IGuiClickableArea> getGuiClickableAreas(T containerScreen, double mouseX, double mouseY) {
 				IGuiClickableArea clickableArea = IGuiClickableArea.createBasic(xPos, yPos, width, height, recipeCategoryUids);
 				return Collections.singleton(clickableArea);
 			}
