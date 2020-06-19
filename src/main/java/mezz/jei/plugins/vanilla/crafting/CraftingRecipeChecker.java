@@ -70,7 +70,6 @@ public final class CraftingRecipeChecker {
 		}
 
 		public boolean isRecipeValid(T recipe, StackHelper stackHelper) {
-			
 			ItemStack recipeOutput = recipe.getRecipeOutput();
 			//noinspection ConstantConditions
 			if (recipeOutput == null || recipeOutput.isEmpty()) {
