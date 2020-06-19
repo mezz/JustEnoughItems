@@ -74,7 +74,7 @@ public final class CraftingRecipeChecker {
 			ItemStack recipeOutput = recipe.getRecipeOutput();
 			//noinspection ConstantConditions
 			if (recipeOutput == null || recipeOutput.isEmpty()) {
-				if (recipe.isDynamic()) {
+				if (!recipe.isDynamic()) {
 					String recipeInfo = getInfo(recipe);
 					Log.get().error("Recipe has no output. {}", recipeInfo);
 				}
