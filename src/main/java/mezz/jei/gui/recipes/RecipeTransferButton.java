@@ -31,7 +31,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 			this.recipeTransferError = RecipeTransferErrorInternal.INSTANCE;
 		}
 
-		if (this.recipeTransferError == null) {
+		if (RecipeTransferUtil.allowsTransfer(recipeTransferError)) {
 			this.enabled = true;
 			this.visible = true;
 		} else {
@@ -43,11 +43,11 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 
 	public void drawToolTip(Minecraft mc, int mouseX, int mouseY) {
 		if (hovered && visible) {
-			if (recipeTransferError != null) {
-				recipeTransferError.showError(mc, mouseX, mouseY, recipeLayout, recipeLayout.getPosX(), recipeLayout.getPosY());
-			} else {
+			if (RecipeTransferUtil.allowsTransfer(recipeTransferError)) {
 				String tooltipTransfer = Translator.translateToLocal("jei.tooltip.transfer");
 				TooltipRenderer.drawHoveringText(mc, tooltipTransfer, mouseX, mouseY);
+			} else {
+				recipeTransferError.showError(mc, mouseX, mouseY, recipeLayout, recipeLayout.getPosX(), recipeLayout.getPosY());
 			}
 		}
 	}
