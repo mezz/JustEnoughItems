@@ -16,8 +16,8 @@ import mezz.jei.util.MathUtil;
 import org.lwjgl.opengl.GL11;
 
 public class GhostIngredientDrag<T> {
-	private static final int targetColor = 0x13C90A;
-	private static final int hoverColor = 0x4CC919;
+	private static final int targetColor = 0x4013C90A;
+	private static final int hoverColor = 0x804CC919;
 
 	private final IGhostIngredientHandler<?> handler;
 	private final List<Target<T>> targets;
