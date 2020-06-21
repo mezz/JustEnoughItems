@@ -45,7 +45,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 
 	public void drawToolTip(int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
-			if (RecipeTransferUtil.allowsTransfer(recipeTransferError)) {
+			if (recipeTransferError == null) {
 				String tooltipTransfer = Translator.translateToLocal("jei.tooltip.transfer");
 				TooltipRenderer.drawHoveringText(tooltipTransfer, mouseX, mouseY);
 			} else {
