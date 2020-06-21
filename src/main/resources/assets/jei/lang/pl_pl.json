@@ -111,6 +111,7 @@
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Konstruowanie",
+  "gui.jei.category.stoneCutter": "Obróbka kamienia",
   "gui.jei.category.smelting": "Przetapianie",
   "gui.jei.category.smoking": "Wędzenie",
   "gui.jei.category.blasting": "Wytapianie",
