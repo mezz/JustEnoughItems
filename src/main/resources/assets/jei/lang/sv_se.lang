@@ -101,6 +101,8 @@ config.jei.advanced.maxRecipeGuiHeight=Maxbredd för receptgränssnittet
 config.jei.advanced.maxRecipeGuiHeight.comment=Maximal höjd för receptgränssnittet.
 config.jei.advanced.giveMode=Placeringsläge
 config.jei.advanced.giveMode.comment=Välj om JEI ska placera ingredienser direkt i utrustningen (inventory) eller plocka upp dem med musen (mouse_pickup).
+config.jei.advanced.optimizeMemoryUsage=Optimera minnesanvändning
+config.jei.advanced.optimizeMemoryUsage.comment=Aktivera optimeringar av JEI:s minnesanvändning.
 
 # Hide Ingredients Mode
 gui.jei.editMode.description=Läge för att dölja ingredienser:
