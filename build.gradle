@@ -47,14 +47,8 @@ repositories {
 
 sourceSets {
 	api
-	main {
-		compileClasspath += sourceSets.api.output
-		runtimeClasspath += sourceSets.api.output
-	}
-	test {
-		compileClasspath += sourceSets.api.output
-		runtimeClasspath += sourceSets.api.output
-	}
+	main
+	test
 }
 
 configurations {
@@ -67,6 +61,7 @@ dependencies {
 		name   : "forge",
 		version: "${project.mcversion}-${project.forgeversion}"
 	])
+	implementation sourceSets.api.output
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 }
