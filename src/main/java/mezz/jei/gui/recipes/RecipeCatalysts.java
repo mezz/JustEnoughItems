@@ -106,8 +106,8 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 			{
 				int slotWidth = width - (2 * borderSize);
 				int slotHeight = height - (2 * borderSize);
-				backgroundTab.draw(this.left, this.top, width, height);
-				slotBackground.draw(this.left + borderSize, this.top + borderSize, slotWidth, slotHeight);
+				backgroundTab.draw(matrixStack, this.left, this.top, width, height);
+				slotBackground.draw(matrixStack, this.left + borderSize, this.top + borderSize, slotWidth, slotHeight);
 			}
 			RenderSystem.disableAlphaTest();
 			RenderSystem.enableDepthTest();

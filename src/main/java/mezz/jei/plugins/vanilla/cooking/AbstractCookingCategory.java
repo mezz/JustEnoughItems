@@ -16,6 +16,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> extends FurnaceVariantCategory<T> {
 	private final IDrawable background;
@@ -55,11 +56,11 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 
 		float experience = recipe.getExperience();
 		if (experience > 0) {
-			String experienceString = Translator.translateToLocalFormatted("gui.jei.category.smelting.experience", experience);
+			TranslationTextComponent experienceString = new TranslationTextComponent("gui.jei.category.smelting.experience", experience);
 			Minecraft minecraft = Minecraft.getInstance();
 			FontRenderer fontRenderer = minecraft.fontRenderer;
-			int stringWidth = fontRenderer.getStringWidth(experienceString);
-			fontRenderer.func_238421_b_(matrixStack, experienceString, background.getWidth() - stringWidth, 0, 0xFF808080);
+			int stringWidth = fontRenderer.func_238414_a_(experienceString);
+			fontRenderer.func_238407_a_(matrixStack, experienceString, background.getWidth() - stringWidth, 0, 0xFF808080);
 		}
 	}
 

@@ -30,7 +30,7 @@ public class GuiIconButtonSmall extends Button {
 			boolean hovered = func_230992_c_(mouseX, mouseY);
 			Textures textures = Internal.getTextures();
 			DrawableNineSliceTexture texture = textures.getButtonForState(this.field_230693_o_, hovered);
-			texture.draw(this.field_230690_l_, this.field_230691_m_, this.field_230688_j_, this.field_230689_k_);
+			texture.draw(matrixStack, this.field_230690_l_, this.field_230691_m_, this.field_230688_j_, this.field_230689_k_);
 			this.func_230441_a_(matrixStack, minecraft, mouseX, mouseY);
 
 			int color = 14737632;

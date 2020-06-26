@@ -165,7 +165,7 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 		this.isDrawing = true;
 		if (this.getVisible()) {
 			RenderSystem.color4f(1, 1, 1, 1);
-			background.draw(this.field_230690_l_, this.field_230691_m_, this.field_230688_j_, this.field_230689_k_);
+			background.draw(matrixStack, this.field_230690_l_, this.field_230691_m_, this.field_230688_j_, this.field_230689_k_);
 		}
 		super.func_230431_b_(matrixStack, mouseX, mouseY, partialTicks);
 		this.isDrawing = false;

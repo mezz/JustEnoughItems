@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.inventory.container.PlayerContainer;
+import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
@@ -63,7 +64,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		RenderSystem.enableBlend();
 		RenderSystem.enableAlphaTest();
 
-		drawFluid(xPosition, yPosition, fluidStack);
+		drawFluid(matrixStack, xPosition, yPosition, fluidStack);
 
 		RenderSystem.color4f(1, 1, 1, 1);
 
@@ -78,7 +79,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		RenderSystem.disableBlend();
 	}
 
-	private void drawFluid(final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
+	private void drawFluid(MatrixStack matrixStack, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
 		if (fluidStack == null) {
 			return;
 		}
@@ -101,12 +102,13 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 			scaledAmount = height;
 		}
 
-		drawTiledSprite(xPosition, yPosition, width, height, fluidColor, scaledAmount, fluidStillSprite);
+		drawTiledSprite(matrixStack, xPosition, yPosition, width, height, fluidColor, scaledAmount, fluidStillSprite);
 	}
 
-	private void drawTiledSprite(final int xPosition, final int yPosition, final int tiledWidth, final int tiledHeight, int color, int scaledAmount, TextureAtlasSprite sprite) {
+	private void drawTiledSprite(MatrixStack matrixStack, final int xPosition, final int yPosition, final int tiledWidth, final int tiledHeight, int color, int scaledAmount, TextureAtlasSprite sprite) {
 		Minecraft minecraft = Minecraft.getInstance();
 		minecraft.getTextureManager().bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
+		Matrix4f matrix = matrixStack.getLast().getMatrix();
 		setGLColorFromInt(color);
 
 		final int xTileCount = tiledWidth / TEX_WIDTH;
@@ -126,7 +128,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 					int maskTop = TEX_HEIGHT - height;
 					int maskRight = TEX_WIDTH - width;
 
-					drawTextureWithMasking(x, y, sprite, maskTop, maskRight, 100);
+					drawTextureWithMasking(matrix, x, y, sprite, maskTop, maskRight, 100);
 				}
 			}
 		}
@@ -149,21 +151,21 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		RenderSystem.color4f(red, green, blue, alpha);
 	}
 
-	private static void drawTextureWithMasking(double xCoord, double yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, double zLevel) {
-		double uMin = textureSprite.getMinU();
-		double uMax = textureSprite.getMaxU();
-		double vMin = textureSprite.getMinV();
-		double vMax = textureSprite.getMaxV();
-		uMax = uMax - (maskRight / 16.0 * (uMax - uMin));
-		vMax = vMax - (maskTop / 16.0 * (vMax - vMin));
+	private static void drawTextureWithMasking(Matrix4f matrix, float xCoord, float yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, float zLevel) {
+		float uMin = textureSprite.getMinU();
+		float uMax = textureSprite.getMaxU();
+		float vMin = textureSprite.getMinV();
+		float vMax = textureSprite.getMaxV();
+		uMax = uMax - (maskRight / 16F * (uMax - uMin));
+		vMax = vMax - (maskTop / 16F * (vMax - vMin));
 
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		bufferBuilder.pos(xCoord, yCoord + 16, zLevel).tex((float) uMin, (float) vMax).endVertex();
-		bufferBuilder.pos(xCoord + 16 - maskRight, yCoord + 16, zLevel).tex((float) uMax, (float) vMax).endVertex();
-		bufferBuilder.pos(xCoord + 16 - maskRight, yCoord + maskTop, zLevel).tex((float) uMax, (float) vMin).endVertex();
-		bufferBuilder.pos(xCoord, yCoord + maskTop, zLevel).tex((float) uMin, (float) vMin).endVertex();
+		bufferBuilder.pos(matrix, xCoord, yCoord + 16, zLevel).tex((float) uMin, (float) vMax).endVertex();
+		bufferBuilder.pos(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).tex((float) uMax, (float) vMax).endVertex();
+		bufferBuilder.pos(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).tex((float) uMax, (float) vMin).endVertex();
+		bufferBuilder.pos(matrix, xCoord, yCoord + maskTop, zLevel).tex((float) uMin, (float) vMin).endVertex();
 		tessellator.draw();
 	}
 

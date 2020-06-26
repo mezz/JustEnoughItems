@@ -191,7 +191,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		}
 		func_230446_a_(matrixStack);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.background.draw(guiLeft, guiTop, xSize, ySize);
+		this.background.draw(matrixStack, guiLeft, guiTop, xSize, ySize);
 
 		RenderSystem.disableBlend();
 

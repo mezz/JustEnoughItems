@@ -17,6 +17,7 @@ import mezz.jei.config.Constants;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.plugins.vanilla.cooking.FurnaceVariantCategory;
 import mezz.jei.util.Translator;
+import net.minecraft.util.text.ITextComponent;
 
 public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 	private final IDrawableStatic background;
@@ -76,7 +77,7 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 		IDrawableAnimated flame = recipe.getFlame();
 		flame.draw(matrixStack, 1, 0);
 		Minecraft minecraft = Minecraft.getInstance();
-		String smeltCountString = recipe.getSmeltCountString();
-		minecraft.fontRenderer.func_238421_b_(matrixStack, smeltCountString, 24, 13, 0xFF808080);
+		ITextComponent smeltCountString = recipe.getSmeltCountString();
+		minecraft.fontRenderer.func_238407_a_(matrixStack, smeltCountString, 24, 13, 0xFF808080);
 	}
 }

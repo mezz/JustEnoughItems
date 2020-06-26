@@ -140,7 +140,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			IDrawable categoryBackground = recipeCategory.getBackground();
 			int width = categoryBackground.getWidth() + (2 * RECIPE_BORDER_PADDING);
 			int height = categoryBackground.getHeight() + (2 * RECIPE_BORDER_PADDING);
-			recipeBorder.draw(-RECIPE_BORDER_PADDING, -RECIPE_BORDER_PADDING, width, height);
+			recipeBorder.draw(matrixStack, -RECIPE_BORDER_PADDING, -RECIPE_BORDER_PADDING, width, height);
 			background.draw(matrixStack);
 			//noinspection unchecked
 			recipeCategory.draw(recipe, matrixStack, recipeMouseX, recipeMouseY);

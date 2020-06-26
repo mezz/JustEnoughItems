@@ -12,6 +12,7 @@ import net.minecraft.util.ResourceLocation;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.textures.JeiSpriteUploader;
+import net.minecraft.util.math.vector.Matrix4f;
 
 public class DrawableSprite implements IDrawableStatic {
 	private final JeiSpriteUploader spriteUploader;
@@ -83,16 +84,17 @@ public class DrawableSprite implements IDrawableStatic {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		bufferBuilder.pos(x, y + height, 0)
+		Matrix4f matrix = matrixStack.getLast().getMatrix();
+		bufferBuilder.pos(matrix, x, y + height, 0)
 			.tex(minU, maxV)
 			.endVertex();
-		bufferBuilder.pos(x + width, y + height, 0)
+		bufferBuilder.pos(matrix, x + width, y + height, 0)
 			.tex(maxU, maxV)
 			.endVertex();
-		bufferBuilder.pos(x + width, y, 0)
+		bufferBuilder.pos(matrix, x + width, y, 0)
 			.tex(maxU, minV)
 			.endVertex();
-		bufferBuilder.pos(x, y, 0)
+		bufferBuilder.pos(matrix, x, y, 0)
 			.tex(minU, minV)
 			.endVertex();
 		tessellator.draw();
