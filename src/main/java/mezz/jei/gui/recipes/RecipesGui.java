@@ -229,7 +229,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 		GuiIngredient hoveredRecipeCatalyst = recipeCatalysts.draw(matrixStack, mouseX, mouseY);
 
-		recipeGuiTabs.draw(matrixStack, field_230706_i_, mouseX, mouseY);
+		recipeGuiTabs.draw(field_230706_i_, matrixStack, mouseX, mouseY);
 
 		if (hoveredLayout != null) {
 			hoveredLayout.drawOverlays(matrixStack, mouseX, mouseY);

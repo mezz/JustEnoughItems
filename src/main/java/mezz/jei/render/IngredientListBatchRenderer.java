@@ -148,7 +148,7 @@ public class IngredientListBatchRenderer {
 	/**
 	 * renders all ItemStacks
 	 */
-	public void render(MatrixStack matrixStack, Minecraft minecraft) {
+	public void render(Minecraft minecraft, MatrixStack matrixStack) {
 		RenderHelper.enableStandardItemLighting();
 
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();

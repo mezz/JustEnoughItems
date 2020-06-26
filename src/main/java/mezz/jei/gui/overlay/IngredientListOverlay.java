@@ -170,12 +170,12 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		this.searchField.update();
 	}
 
-	public void drawScreen(MatrixStack matrixStack, Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
+	public void drawScreen(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		if (this.guiProperties != null) {
 			if (isListDisplayed()) {
 				RenderSystem.disableLighting();
 				this.searchField.func_230431_b_(matrixStack, mouseX, mouseY, partialTicks);
-				this.contents.draw(matrixStack, minecraft, mouseX, mouseY, partialTicks);
+				this.contents.draw(minecraft, matrixStack, mouseX, mouseY, partialTicks);
 				this.configButton.draw(matrixStack, mouseX, mouseY, partialTicks);
 			} else {
 				this.configButton.draw(matrixStack, mouseX, mouseY, partialTicks);
@@ -183,21 +183,21 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		}
 	}
 
-	public void drawTooltips(MatrixStack matrixStack, Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
 			this.configButton.drawTooltips(matrixStack, mouseX, mouseY);
-			this.ghostIngredientDragManager.drawTooltips(matrixStack, minecraft, mouseX, mouseY);
-			this.contents.drawTooltips(matrixStack, minecraft, mouseX, mouseY);
+			this.ghostIngredientDragManager.drawTooltips(minecraft, matrixStack, mouseX, mouseY);
+			this.contents.drawTooltips(minecraft, matrixStack, mouseX, mouseY);
 		} else if (this.guiProperties != null) {
 			this.configButton.drawTooltips(matrixStack, mouseX, mouseY);
 		}
 	}
 
-	public void drawOnForeground(MatrixStack matrixStack, Minecraft minecraft, ContainerScreen gui, int mouseX, int mouseY) {
+	public void drawOnForeground(Minecraft minecraft, MatrixStack matrixStack, ContainerScreen gui, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
 			matrixStack.push();
 			matrixStack.translate(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
-			this.ghostIngredientDragManager.drawOnForeground(matrixStack, minecraft, mouseX, mouseY);
+			this.ghostIngredientDragManager.drawOnForeground(minecraft, matrixStack, mouseX, mouseY);
 			matrixStack.pop();
 		}
 	}

@@ -6,7 +6,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**
  * Represents something to be drawn on screen.
- * Useful for drawing miscellaneous things in {@link IRecipeCategory#draw(Object, com.mojang.blaze3d.matrix.MatrixStack, double, double)}.
+ * Useful for drawing miscellaneous things in {@link IRecipeCategory#draw(Object, MatrixStack, double, double)}.
  * {@link IGuiHelper} has many functions to create IDrawables.
  *
  * @see IDrawableAnimated

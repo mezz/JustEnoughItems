@@ -101,10 +101,10 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		return area;
 	}
 
-	public void draw(MatrixStack matrixStack, Minecraft minecraft, int mouseX, int mouseY) {
+	public void draw(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
 		RenderSystem.disableBlend();
 
-		guiIngredientSlots.render(matrixStack, minecraft);
+		guiIngredientSlots.render(minecraft, matrixStack);
 
 		if (!shouldDeleteItemOnClick(minecraft, mouseX, mouseY) && isMouseOver(mouseX, mouseY)) {
 			IngredientListElementRenderer hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
@@ -116,7 +116,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		RenderSystem.enableAlphaTest();
 	}
 
-	public void drawTooltips(MatrixStack matrixStack, Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
 			if (shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				TranslationTextComponent deleteItem = new TranslationTextComponent("jei.tooltip.delete.item");

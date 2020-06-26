@@ -98,7 +98,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 		pageNavigation.updatePageState();
 	}
 
-	public void draw(MatrixStack matrixStack, Minecraft minecraft, int mouseX, int mouseY) {
+	public void draw(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
 		IRecipeCategory selectedCategory = recipeGuiLogic.getSelectedRecipeCategory();
 
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -119,7 +119,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 		RenderSystem.disableAlphaTest();
 		RenderSystem.enableDepthTest();
 
-		pageNavigation.draw(matrixStack, minecraft, mouseX, mouseY, minecraft.getRenderPartialTicks());
+		pageNavigation.draw(minecraft, matrixStack, mouseX, mouseY, minecraft.getRenderPartialTicks());
 
 		if (hovered != null) {
 			List<ITextComponent> tooltip = hovered.getTooltip();

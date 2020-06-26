@@ -82,8 +82,8 @@ public class GuiEventHandler {
 		double mouseX = MouseUtil.getX();
 		double mouseY = MouseUtil.getY();
 		MatrixStack matrixStack = new MatrixStack();//TODO - 1.16: event.getMatrixStack();//https://github.com/MinecraftForge/MinecraftForge/pull/6843
-		ingredientListOverlay.drawScreen(matrixStack, minecraft, (int) mouseX, (int) mouseY, minecraft.getRenderPartialTicks());
-		leftAreaDispatcher.drawScreen(matrixStack, minecraft, (int) mouseX, (int) mouseY, minecraft.getRenderPartialTicks());
+		ingredientListOverlay.drawScreen(minecraft, matrixStack, (int) mouseX, (int) mouseY, minecraft.getRenderPartialTicks());
+		leftAreaDispatcher.drawScreen(minecraft, matrixStack, (int) mouseX, (int) mouseY, minecraft.getRenderPartialTicks());
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class GuiEventHandler {
 		if (minecraft == null) {
 			return;
 		}
-		ingredientListOverlay.drawOnForeground(event.getMatrixStack(), minecraft, gui, event.getMouseX(), event.getMouseY());
+		ingredientListOverlay.drawOnForeground(minecraft, event.getMatrixStack(), gui, event.getMouseX(), event.getMouseY());
 		leftAreaDispatcher.drawOnForeground(gui, event.getMouseX(), event.getMouseY());
 	}
 
@@ -118,8 +118,8 @@ public class GuiEventHandler {
 				String guiName = gui.getClass().getName();
 				missingBackgroundLogger.log(Level.WARN, guiName, "GUI did not draw the dark background layer behind itself, this may result in display issues: {}", guiName);
 			}
-			ingredientListOverlay.drawScreen(matrixStack, minecraft, event.getMouseX(), event.getMouseY(), minecraft.getRenderPartialTicks());
-			leftAreaDispatcher.drawScreen(matrixStack, minecraft, event.getMouseX(), event.getMouseY(), minecraft.getRenderPartialTicks());
+			ingredientListOverlay.drawScreen(minecraft, matrixStack, event.getMouseX(), event.getMouseY(), minecraft.getRenderPartialTicks());
+			leftAreaDispatcher.drawScreen(minecraft, matrixStack, event.getMouseX(), event.getMouseY(), minecraft.getRenderPartialTicks());
 		}
 		drawnOnBackground = false;
 
@@ -135,8 +135,8 @@ public class GuiEventHandler {
 			}
 		}
 
-		ingredientListOverlay.drawTooltips(matrixStack, minecraft, event.getMouseX(), event.getMouseY());
-		leftAreaDispatcher.drawTooltips(matrixStack, minecraft, event.getMouseX(), event.getMouseY());
+		ingredientListOverlay.drawTooltips(minecraft, matrixStack, event.getMouseX(), event.getMouseY());
+		leftAreaDispatcher.drawTooltips(minecraft, matrixStack, event.getMouseX(), event.getMouseY());
 	}
 
 	@SubscribeEvent

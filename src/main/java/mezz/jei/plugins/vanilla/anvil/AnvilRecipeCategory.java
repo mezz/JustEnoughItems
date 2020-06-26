@@ -129,11 +129,11 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 				mainColor = 0xFFFF6060;
 			}
 
-			drawRepairCost(matrixStack, minecraft, text, mainColor);
+			drawRepairCost(minecraft, matrixStack, text, mainColor);
 		}
 	}
 
-	private void drawRepairCost(MatrixStack matrixStack, Minecraft minecraft, String text, int mainColor) {
+	private void drawRepairCost(Minecraft minecraft, MatrixStack matrixStack, String text, int mainColor) {
 		int shadowColor = 0xFF000000 | (mainColor & 0xFCFCFC) >> 2;
 		int width = minecraft.fontRenderer.getStringWidth(text);
 		int x = background.getWidth() - 2 - width;

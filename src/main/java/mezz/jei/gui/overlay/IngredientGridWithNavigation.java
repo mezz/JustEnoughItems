@@ -110,13 +110,13 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		return this.area;
 	}
 
-	public void draw(MatrixStack matrixStack, Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
-		this.ingredientGrid.draw(matrixStack, minecraft, mouseX, mouseY);
-		this.navigation.draw(matrixStack, minecraft, mouseX, mouseY, partialTicks);
+	public void draw(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+		this.ingredientGrid.draw(minecraft, matrixStack, mouseX, mouseY);
+		this.navigation.draw(minecraft, matrixStack, mouseX, mouseY, partialTicks);
 	}
 
-	public void drawTooltips(MatrixStack matrixStack, Minecraft minecraft, int mouseX, int mouseY) {
-		this.ingredientGrid.drawTooltips(matrixStack, minecraft, mouseX, mouseY);
+	public void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
+		this.ingredientGrid.drawTooltips(minecraft, matrixStack, mouseX, mouseY);
 	}
 
 	@Override

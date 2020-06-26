@@ -48,11 +48,11 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		return current >= 0 && current < contents.size();
 	}
 
-	public void drawScreen(MatrixStack matrixStack, Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
+	public void drawScreen(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		if (canShow && hasContent()) {
-			contents.get(current).drawScreen(matrixStack, minecraft, mouseX, mouseY, partialTicks);
+			contents.get(current).drawScreen(minecraft, matrixStack, mouseX, mouseY, partialTicks);
 			if (naviArea.getHeight() > 0) {
-				navigation.draw(matrixStack, minecraft, mouseX, mouseY, partialTicks);
+				navigation.draw(minecraft, matrixStack, mouseX, mouseY, partialTicks);
 			}
 		}
 	}
@@ -63,9 +63,9 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		}
 	}
 
-	public void drawTooltips(MatrixStack matrixStack, Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
 		if (canShow && hasContent()) {
-			contents.get(current).drawTooltips(matrixStack, minecraft, mouseX, mouseY);
+			contents.get(current).drawTooltips(minecraft, matrixStack, mouseX, mouseY);
 		}
 	}
 

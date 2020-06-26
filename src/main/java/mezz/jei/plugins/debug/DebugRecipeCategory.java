@@ -122,7 +122,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 			IIngredientListOverlay ingredientListOverlay = runtime.getIngredientListOverlay();
 			Object ingredientUnderMouse = ingredientListOverlay.getIngredientUnderMouse();
 			if (ingredientUnderMouse != null) {
-				drawIngredientName(matrixStack, minecraft, ingredientUnderMouse);
+				drawIngredientName(minecraft, matrixStack, ingredientUnderMouse);
 			}
 		}
 
@@ -130,7 +130,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		button.func_230430_a_(matrixStack, (int) mouseX, (int) mouseY, 0);
 	}
 
-	private <T> void drawIngredientName(MatrixStack matrixStack, Minecraft minecraft, T ingredient) {
+	private <T> void drawIngredientName(Minecraft minecraft, MatrixStack matrixStack, T ingredient) {
 		IIngredientManager ingredientManager = JeiDebugPlugin.ingredientManager;
 		if (ingredientManager != null) {
 			IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);

@@ -54,7 +54,7 @@ public class GhostIngredientReturning<T> {
 		}
 	}
 
-	public void drawItem(MatrixStack matrixStack, Minecraft minecraft) {
+	public void drawItem(Minecraft minecraft, MatrixStack matrixStack) {
 		long time = System.currentTimeMillis();
 		long elapsed = time - startTime;
 		double percent = Math.min(elapsed / (double) this.duration, 1);

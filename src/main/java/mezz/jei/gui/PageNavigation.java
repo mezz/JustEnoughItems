@@ -49,7 +49,7 @@ public class PageNavigation {
 		pageNumDisplayY = backButton.field_230691_m_ + Math.round((backButton.getHeight() - fontRenderer.FONT_HEIGHT) / 2.0f);
 	}
 
-	public void draw(MatrixStack matrixStack, Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
+	public void draw(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		if (!hideOnSinglePage || this.paged.hasNext() || this.paged.hasPrevious()) {
 			minecraft.fontRenderer.func_238405_a_(matrixStack, pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, 0xFFFFFFFF);
 			nextButton.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
