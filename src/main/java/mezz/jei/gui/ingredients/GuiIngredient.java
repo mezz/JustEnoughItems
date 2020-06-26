@@ -254,8 +254,8 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 		TagCollection<Item> collection = ItemTags.getCollection();
 		Collection<ITag<Item>> tags = collection.getTagMap().values();
 		for (ITag<Item> tag : tags) {
-			if (tag instanceof ITag.INamedTag && tag.func_230236_b_().equals(items)) {//TODO - 1.16: Evaluate
-				return ((ITag.INamedTag<Item>) tag).func_230234_a_();
+			if (tag.func_230236_b_().equals(items)) {
+				return collection.func_232973_a_(tag);
 			}
 		}
 		return null;

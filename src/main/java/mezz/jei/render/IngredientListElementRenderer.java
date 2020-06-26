@@ -122,7 +122,7 @@ public class IngredientListElementRenderer<T> {
 		Minecraft minecraft = Minecraft.getInstance();
 		int maxWidth = Constants.MAX_TOOLTIP_WIDTH;
 		for (ITextProperties tooltipLine : tooltip) {
-			int width = minecraft.fontRenderer.func_238414_a_(tooltipLine);//TODO - 1.16: Evaluate
+			int width = minecraft.fontRenderer.func_238414_a_(tooltipLine);
 			if (width > maxWidth) {
 				maxWidth = width;
 			}

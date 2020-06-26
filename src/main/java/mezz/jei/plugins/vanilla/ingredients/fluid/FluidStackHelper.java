@@ -119,7 +119,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		Fluid fluid = ingredient.getFluid();
 		if (fluid != null) {
 			ITextComponent displayName = ingredient.getDisplayName();
-			toStringHelper.add("Fluid", displayName);//TODO - 1.16: Evaluate
+			toStringHelper.add("Fluid", displayName.getString());
 		} else {
 			toStringHelper.add("Fluid", "null");
 		}

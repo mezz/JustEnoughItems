@@ -33,7 +33,6 @@ public final class IngredientInformation {
 		List<ITextComponent> tooltip = ingredientRenderer.getTooltip(ingredient, tooltipFlag);
 		List<String> cleanTooltip = new ArrayList<>(tooltip.size());
 		for (ITextComponent lineComponent : tooltip) {
-			//TODO - 1.16: Evaluate
 			String line = lineComponent.getString();
 			line = removeChatFormatting(line);
 			line = Translator.toLowercaseWithLocale(line);

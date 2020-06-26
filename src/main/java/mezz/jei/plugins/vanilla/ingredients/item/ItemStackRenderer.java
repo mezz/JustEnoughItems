@@ -67,7 +67,6 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 		}
 
 		for (int k = 0; k < list.size(); ++k) {
-			//TODO - 1.16: Figure out if it should be func_230532_e_ or func_230531_f_
 			if (k == 0) {
 				list.set(k, list.get(k).func_230532_e_().func_240699_a_(rarity.color));
 			} else {

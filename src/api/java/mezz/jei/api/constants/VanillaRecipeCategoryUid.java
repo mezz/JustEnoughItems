@@ -16,7 +16,7 @@ import mezz.jei.api.registration.IRecipeRegistration;
 /**
  * List of built-in recipe category UIDs, so that plugins with their own recipe handlers can use them.
  */
-public final class VanillaRecipeCategoryUid {//TODO - 1.16: There is a new recipe type if memory serves
+public final class VanillaRecipeCategoryUid {
 	/**
 	 * The crafting recipe category.
 	 *

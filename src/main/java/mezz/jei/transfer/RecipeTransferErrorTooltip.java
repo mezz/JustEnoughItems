@@ -17,7 +17,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 public class RecipeTransferErrorTooltip implements IRecipeTransferError {
 	private final List<ITextComponent> message = new ArrayList<>();
 
-	public RecipeTransferErrorTooltip(String message) {//TODO - 1.16: Make message be a text component?
+	public RecipeTransferErrorTooltip(String message) {
 		this.message.add(new TranslationTextComponent("jei.tooltip.transfer"));
 		StringTextComponent messageTextComponent = new StringTextComponent(message);
 		this.message.add(messageTextComponent.func_240699_a_(TextFormatting.RED));

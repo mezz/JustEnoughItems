@@ -50,7 +50,6 @@ public class IngredientInfoRecipe<T> {
 	}
 
 	private static List<ITextProperties> expandNewlines(List<ITextProperties> descriptionLines) {
-		//TODO - 1.16: Re-evaluate
 		List<ITextProperties> descriptionLinesExpanded = new ArrayList<>();
 		for (ITextProperties descriptionLine : descriptionLines) {
 			Optional<String[]> optionalExpandedLines = descriptionLine.func_230438_a_(line -> Optional.of(line.split("\\\\n")));
