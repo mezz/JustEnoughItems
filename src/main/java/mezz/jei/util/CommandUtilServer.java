@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import net.minecraft.util.Util;
 import net.minecraftforge.items.ItemHandlerHelper;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
@@ -64,8 +65,8 @@ public final class CommandUtilServer {
 
 	public static void writeChatMessage(PlayerEntity player, String translationKey, TextFormatting color) {
 		TranslationTextComponent component = new TranslationTextComponent(translationKey);
-		component.getStyle().setColor(color);
-		player.sendMessage(component);
+		component.getStyle().func_240712_a_(color);
+		player.sendMessage(component, Util.field_240973_b_);//TODO - 1.16: Test
 	}
 
 	public static boolean hasPermission(PlayerEntity sender) {

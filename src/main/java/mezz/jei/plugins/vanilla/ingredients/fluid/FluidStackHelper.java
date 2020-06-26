@@ -34,7 +34,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	@Override
 	public String getDisplayName(FluidStack ingredient) {
 		ITextComponent displayName = ingredient.getDisplayName();
-		return displayName.getFormattedText();
+		return displayName.getString();//TODO - 1.16: Evaluate
 	}
 
 	@Override
@@ -116,11 +116,10 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 			return "null";
 		}
 		MoreObjects.ToStringHelper toStringHelper = MoreObjects.toStringHelper(FluidStack.class);
-
 		Fluid fluid = ingredient.getFluid();
 		if (fluid != null) {
 			ITextComponent displayName = ingredient.getDisplayName();
-			toStringHelper.add("Fluid", displayName.getFormattedText());
+			toStringHelper.add("Fluid", displayName);//TODO - 1.16: Evaluate
 		} else {
 			toStringHelper.add("Fluid", "null");
 		}

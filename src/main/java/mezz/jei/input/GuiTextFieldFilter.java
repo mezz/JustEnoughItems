@@ -1,5 +1,6 @@
 package mezz.jei.input;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IIngredientGridSource;
+import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.glfw.GLFW;
 
 public class GuiTextFieldFilter extends TextFieldWidget {
@@ -31,7 +33,7 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 
 	public GuiTextFieldFilter(IIngredientGridSource ingredientSource, IWorldConfig worldConfig) {
 		// TODO narrator string
-		super(Minecraft.getInstance().fontRenderer, 0, 0, 0, 0, "");
+		super(Minecraft.getInstance().fontRenderer, 0, 0, 0, 0, StringTextComponent.field_240750_d_);
 		this.worldConfig = worldConfig;
 
 		setMaxStringLength(maxSearchLength);
@@ -42,10 +44,10 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 	}
 
 	public void updateBounds(Rectangle2d area) {
-		this.x = area.getX();
-		this.y = area.getY();
-		this.width = area.getWidth();
-		this.height = area.getHeight();
+		this.field_230690_l_ = area.getX();
+		this.field_230691_m_ = area.getY();
+		this.field_230688_j_ = area.getWidth();
+		this.field_230689_k_ = area.getHeight();
 		this.hoverChecker.updateBounds(area.getY(), area.getY() + area.getHeight(), area.getX(), area.getX() + area.getWidth());
 		setSelectionPos(getCursorPosition());
 	}
@@ -64,8 +66,8 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		boolean handled = super.keyPressed(keyCode, scanCode, modifiers);
+	public boolean func_231046_a_(int keyCode, int scanCode, int modifiers) {
+		boolean handled = super.func_231046_a_(keyCode, scanCode, modifiers);
 		if (!handled && !history.isEmpty()) {
 			if (keyCode == GLFW.GLFW_KEY_UP) {
 				String currentText = getText();
@@ -111,15 +113,15 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 			setText("");
 			return worldConfig.setFilterText("");
 		} else {
-			super.mouseClicked(mouseX, mouseY, mouseButton);
+			super.func_231044_a_(mouseX, mouseY, mouseButton);
 		}
 		return false;
 	}
 
 	@Override
-	public void setFocused(boolean keyboardFocus) {
-		final boolean previousFocus = isFocused();
-		super.setFocused(keyboardFocus);
+	public void func_230996_d_(boolean keyboardFocus) {
+		final boolean previousFocus = func_230999_j_();
+		super.func_230996_d_(keyboardFocus);
 
 		if (previousFocus != keyboardFocus) {
 			Minecraft minecraft = Minecraft.getInstance();
@@ -159,13 +161,13 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 	}
 
 	@Override
-	public void renderButton(int mouseX, int mouseY, float partialTicks) {
+	public void func_230431_b_(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		this.isDrawing = true;
 		if (this.getVisible()) {
 			RenderSystem.color4f(1, 1, 1, 1);
-			background.draw(this.x, this.y, this.width, this.height);
+			background.draw(this.field_230690_l_, this.field_230691_m_, this.field_230688_j_, this.field_230689_k_);
 		}
-		super.renderButton(mouseX, mouseY, partialTicks);
+		super.func_230431_b_(matrixStack, mouseX, mouseY, partialTicks);
 		this.isDrawing = false;
 	}
 	// end background hack

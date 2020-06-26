@@ -1,5 +1,6 @@
 package mezz.jei.gui.elements;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 
@@ -23,12 +24,12 @@ public class DrawableBlank implements IDrawableStatic, IDrawableAnimated {
 	}
 
 	@Override
-	public void draw(int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
+	public void draw(MatrixStack matrixStack, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
 		// draws nothing
 	}
 
 	@Override
-	public void draw(int xOffset, int yOffset) {
+	public void draw(MatrixStack matrixStack, int xOffset, int yOffset) {
 		// draws nothing
 	}
 }

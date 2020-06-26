@@ -27,7 +27,7 @@ public class JeiRuntime implements IJeiRuntime {
 	}
 
 	public void close() {
-		this.recipesGui.onClose();
+		this.recipesGui.func_231175_as__();
 	}
 
 	@Override

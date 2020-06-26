@@ -1,5 +1,6 @@
 package mezz.jei.plugins.vanilla.cooking.fuel;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
@@ -71,11 +72,11 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 	}
 
 	@Override
-	public void draw(FuelRecipe recipe, double mouseX, double mouseY) {
+	public void draw(FuelRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
 		IDrawableAnimated flame = recipe.getFlame();
-		flame.draw(1, 0);
+		flame.draw(matrixStack, 1, 0);
 		Minecraft minecraft = Minecraft.getInstance();
 		String smeltCountString = recipe.getSmeltCountString();
-		minecraft.fontRenderer.drawString(smeltCountString, 24, 13, 0xFF808080);
+		minecraft.fontRenderer.func_238421_b_(matrixStack, smeltCountString, 24, 13, 0xFF808080);
 	}
 }

@@ -1,11 +1,13 @@
 package mezz.jei.gui.recipes;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rectangle2d;
@@ -116,13 +118,13 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		if (this.recipeTransferButton != null) {
 			int width = recipeCategory.getBackground().getWidth();
 			int height = recipeCategory.getBackground().getHeight();
-			this.recipeTransferButton.x = posX + width + RECIPE_BORDER_PADDING + 2;
-			this.recipeTransferButton.y = posY + height - RECIPE_BUTTON_SIZE;
+			this.recipeTransferButton.field_230690_l_ = posX + width + RECIPE_BORDER_PADDING + 2;
+			this.recipeTransferButton.field_230691_m_ = posY + height - RECIPE_BUTTON_SIZE;
 		}
 	}
 
 	@Override
-	public void drawRecipe(int mouseX, int mouseY) {
+	public void drawRecipe(MatrixStack matrixStack, int mouseX, int mouseY) {
 		IDrawable background = recipeCategory.getBackground();
 
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -132,31 +134,31 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		final int recipeMouseX = mouseX - posX;
 		final int recipeMouseY = mouseY - posY;
 
-		RenderSystem.pushMatrix();
-		RenderSystem.translatef(posX, posY, 0.0F);
+		matrixStack.push();
+		matrixStack.translate(posX, posY, 0);
 		{
 			IDrawable categoryBackground = recipeCategory.getBackground();
 			int width = categoryBackground.getWidth() + (2 * RECIPE_BORDER_PADDING);
 			int height = categoryBackground.getHeight() + (2 * RECIPE_BORDER_PADDING);
 			recipeBorder.draw(-RECIPE_BORDER_PADDING, -RECIPE_BORDER_PADDING, width, height);
-			background.draw();
+			background.draw(matrixStack);
 			//noinspection unchecked
-			recipeCategory.draw(recipe, recipeMouseX, recipeMouseY);
+			recipeCategory.draw(recipe, matrixStack, recipeMouseX, recipeMouseY);
 			// drawExtras and drawInfo often render text which messes with the color, this clears it
 			RenderSystem.color4f(1, 1, 1, 1);
 			if (shapelessIcon != null) {
-				shapelessIcon.draw(background.getWidth());
+				shapelessIcon.draw(matrixStack, background.getWidth());
 			}
 		}
-		RenderSystem.popMatrix();
+		matrixStack.pop();
 
 		for (GuiIngredientGroup guiIngredientGroup : guiIngredientGroups.values()) {
-			guiIngredientGroup.draw(posX, posY, HIGHLIGHT_COLOR, mouseX, mouseY);
+			guiIngredientGroup.draw(matrixStack, posX, posY, HIGHLIGHT_COLOR, mouseX, mouseY);
 		}
 		if (recipeTransferButton != null) {
 			Minecraft minecraft = Minecraft.getInstance();
 			float partialTicks = minecraft.getRenderPartialTicks();
-			recipeTransferButton.render(mouseX, mouseY, partialTicks);
+			recipeTransferButton.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
 		}
 		RenderSystem.disableBlend();
 		RenderSystem.disableLighting();
@@ -164,7 +166,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	}
 
 	@Override
-	public void drawOverlays(int mouseX, int mouseY) {
+	public void drawOverlays(MatrixStack matrixStack, int mouseX, int mouseY) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.disableLighting();
 		RenderSystem.enableAlphaTest();
@@ -180,21 +182,21 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			}
 		}
 		if (recipeTransferButton != null) {
-			recipeTransferButton.drawToolTip(mouseX, mouseY);
+			recipeTransferButton.drawToolTip(matrixStack, mouseX, mouseY);
 		}
 		RenderSystem.disableBlend();
 		RenderSystem.disableLighting();
 
 		if (hoveredIngredient != null) {
-			hoveredIngredient.drawOverlays(posX, posY, recipeMouseX, recipeMouseY);
+			hoveredIngredient.drawOverlays(matrixStack, posX, posY, recipeMouseX, recipeMouseY);
 		} else if (isMouseOver(mouseX, mouseY)) {
 			@SuppressWarnings("unchecked")
-			List<String> tooltipStrings = recipeCategory.getTooltipStrings(recipe, recipeMouseX, recipeMouseY);
+			List<ITextComponent> tooltipStrings = recipeCategory.getTooltipStrings(recipe, recipeMouseX, recipeMouseY);
 			if (tooltipStrings.isEmpty() && shapelessIcon != null) {
 				tooltipStrings = shapelessIcon.getTooltipStrings(recipeMouseX, recipeMouseY);
 			}
 			if (tooltipStrings != null && !tooltipStrings.isEmpty()) {
-				TooltipRenderer.drawHoveringText(tooltipStrings, mouseX, mouseY);
+				TooltipRenderer.drawHoveringText(tooltipStrings, mouseX, mouseY, matrixStack);
 			}
 		}
 
@@ -206,7 +208,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		final IDrawable background = recipeCategory.getBackground();
 		final Rectangle2d backgroundRect = new Rectangle2d(posX, posY, background.getWidth(), background.getHeight());
 		return MathUtil.contains(backgroundRect, mouseX, mouseY) ||
-			(recipeTransferButton != null && recipeTransferButton.isMouseOver(mouseX, mouseY));
+			(recipeTransferButton != null && recipeTransferButton.func_230992_c_(mouseX, mouseY));
 	}
 
 	@Override
@@ -268,8 +270,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	@Override
 	public void moveRecipeTransferButton(int posX, int posY) {
 		if (recipeTransferButton != null) {
-			recipeTransferButton.x = posX + this.posX;
-			recipeTransferButton.y = posY + this.posY;
+			recipeTransferButton.field_230690_l_ = posX + this.posX;
+			recipeTransferButton.field_230691_m_ = posY + this.posY;
 		}
 	}
 

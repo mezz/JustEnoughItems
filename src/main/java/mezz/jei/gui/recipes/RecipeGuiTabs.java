@@ -1,5 +1,6 @@
 package mezz.jei.gui.recipes;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IPaged;
 import mezz.jei.util.MathUtil;
+import net.minecraft.util.text.ITextComponent;
 
 /**
  * The area drawn on top and bottom of the {@link RecipesGui} that show the recipe categories.
@@ -96,7 +98,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 		pageNavigation.updatePageState();
 	}
 
-	public void draw(Minecraft minecraft, int mouseX, int mouseY) {
+	public void draw(MatrixStack matrixStack, Minecraft minecraft, int mouseX, int mouseY) {
 		IRecipeCategory selectedCategory = recipeGuiLogic.getSelectedRecipeCategory();
 
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -108,7 +110,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 		{
 			for (RecipeGuiTab tab : tabs) {
 				boolean selected = tab.isSelected(selectedCategory);
-				tab.draw(selected, mouseX, mouseY);
+				tab.draw(selected, matrixStack, mouseX, mouseY);
 				if (tab.isMouseOver(mouseX, mouseY)) {
 					hovered = tab;
 				}
@@ -117,11 +119,11 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 		RenderSystem.disableAlphaTest();
 		RenderSystem.enableDepthTest();
 
-		pageNavigation.draw(minecraft, mouseX, mouseY, minecraft.getRenderPartialTicks());
+		pageNavigation.draw(matrixStack, minecraft, mouseX, mouseY, minecraft.getRenderPartialTicks());
 
 		if (hovered != null) {
-			List<String> tooltip = hovered.getTooltip();
-			TooltipRenderer.drawHoveringText(tooltip, mouseX, mouseY);
+			List<ITextComponent> tooltip = hovered.getTooltip();
+			TooltipRenderer.drawHoveringText(tooltip, mouseX, mouseY, matrixStack);
 		}
 	}
 

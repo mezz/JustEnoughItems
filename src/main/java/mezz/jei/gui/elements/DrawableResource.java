@@ -1,5 +1,6 @@
 package mezz.jei.gui.elements;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -50,12 +51,12 @@ public class DrawableResource implements IDrawableStatic {
 	}
 
 	@Override
-	public void draw(int xOffset, int yOffset) {
-		draw(xOffset, yOffset, 0, 0, 0, 0);
+	public void draw(MatrixStack matrixStack, int xOffset, int yOffset) {
+		draw(matrixStack, xOffset, yOffset, 0, 0, 0, 0);
 	}
 
 	@Override
-	public void draw(int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
+	public void draw(MatrixStack matrixStack, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
 		Minecraft minecraft = Minecraft.getInstance();
 		minecraft.getTextureManager().bindTexture(this.resourceLocation);
 

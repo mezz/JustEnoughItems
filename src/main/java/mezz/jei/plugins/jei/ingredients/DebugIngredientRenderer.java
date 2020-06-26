@@ -1,5 +1,6 @@
 package mezz.jei.plugins.jei.ingredients;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +9,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -21,22 +24,23 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 	}
 
 	@Override
-	public void render(int xPosition, int yPosition, @Nullable DebugIngredient ingredient) {
+	public void render(MatrixStack matrixStack, int xPosition, int yPosition, @Nullable DebugIngredient ingredient) {
 		if (ingredient != null) {
 			Minecraft minecraft = Minecraft.getInstance();
 			FontRenderer font = getFontRenderer(minecraft, ingredient);
-			font.drawString("JEI", xPosition, yPosition, 0xFFFF0000);
-			font.drawString("#" + ingredient.getNumber(), xPosition, yPosition + 8, 0xFFFF0000);
+			font.func_238421_b_(matrixStack, "JEI", xPosition, yPosition, 0xFFFF0000);
+			font.func_238421_b_(matrixStack, "#" + ingredient.getNumber(), xPosition, yPosition + 8, 0xFFFF0000);
 			RenderSystem.color4f(1, 1, 1, 1);
 		}
 	}
 
 	@Override
-	public List<String> getTooltip(DebugIngredient ingredient, ITooltipFlag tooltipFlag) {
-		List<String> tooltip = new ArrayList<>();
+	public List<ITextComponent> getTooltip(DebugIngredient ingredient, ITooltipFlag tooltipFlag) {
+		List<ITextComponent> tooltip = new ArrayList<>();
 		String displayName = ingredientHelper.getDisplayName(ingredient);
-		tooltip.add(displayName);
-		tooltip.add(TextFormatting.GRAY + "debug ingredient");
+		tooltip.add(new StringTextComponent(displayName));
+		StringTextComponent debugIngredient = new StringTextComponent("debug ingredient");
+		tooltip.add(debugIngredient.func_240699_a_(TextFormatting.GRAY));
 		return tooltip;
 	}
 }

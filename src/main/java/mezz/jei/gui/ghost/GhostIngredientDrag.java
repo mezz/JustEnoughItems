@@ -1,11 +1,12 @@
 package mezz.jei.gui.ghost;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
 
@@ -34,15 +35,15 @@ public class GhostIngredientDrag<T> {
 		this.origin = origin;
 	}
 
-	public void drawTargets(int mouseX, int mouseY) {
+	public void drawTargets(MatrixStack matrixStack, int mouseX, int mouseY) {
 		if (handler.shouldHighlightTargets()) {
 			@SuppressWarnings("unchecked")
 			List<Target<Object>> targets = (List<Target<Object>>) (Object) this.targets;
-			drawTargets(mouseX, mouseY, targets);
+			drawTargets(matrixStack, mouseX, mouseY, targets);
 		}
 	}
 
-	public void drawItem(Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawItem(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
 		if (origin != null) {
 			int originX = origin.getX() + (origin.getWidth() / 2);
 			int originY = origin.getY() + (origin.getHeight() / 2);
@@ -51,7 +52,7 @@ public class GhostIngredientDrag<T> {
 			float lineWidth = 2;
 			if (minecraft.currentScreen != null) {
 				long distanceSq = xDist * xDist + yDist * yDist;
-				int screenDim = minecraft.currentScreen.width * minecraft.currentScreen.height;
+				int screenDim = minecraft.currentScreen.field_230708_k_ * minecraft.currentScreen.field_230709_l_;
 				float percentOfDim = Math.min(1, distanceSq / (float) screenDim);
 				lineWidth = 1 + ((1 - (percentOfDim)) * 3);
 			}
@@ -75,11 +76,11 @@ public class GhostIngredientDrag<T> {
 
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		itemRenderer.zLevel += 150.0F;
-		ingredientRenderer.render(mouseX - 8, mouseY - 8, ingredient);
+		ingredientRenderer.render(matrixStack, mouseX - 8, mouseY - 8, ingredient);
 		itemRenderer.zLevel -= 150.0F;
 	}
 
-	public static void drawTargets(int mouseX, int mouseY, List<Target<Object>> targets) {
+	public static void drawTargets(MatrixStack matrixStack, int mouseX, int mouseY, List<Target<Object>> targets) {
 		RenderSystem.disableLighting();
 		RenderSystem.disableDepthTest();
 		for (Target target : targets) {
@@ -90,7 +91,7 @@ public class GhostIngredientDrag<T> {
 			} else {
 				color = targetColor;
 			}
-			Screen.fill(area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), color);
+			AbstractGui.func_238467_a_(matrixStack, area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), color);
 		}
 		RenderSystem.color4f(1f, 1f, 1f, 1f);
 	}

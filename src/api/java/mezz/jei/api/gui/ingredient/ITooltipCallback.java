@@ -1,6 +1,7 @@
 package mezz.jei.api.gui.ingredient;
 
 import java.util.List;
+import net.minecraft.util.text.ITextComponent;
 
 /**
  * Used to add tooltips to ingredients drawn on a recipe.
@@ -12,5 +13,5 @@ public interface ITooltipCallback<T> {
 	/**
 	 * Change the tooltip for an ingredient.
 	 */
-	void onTooltip(int slotIndex, boolean input, T ingredient, List<String> tooltip);
+	void onTooltip(int slotIndex, boolean input, T ingredient, List<ITextComponent> tooltip);
 }

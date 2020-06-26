@@ -1,5 +1,6 @@
 package mezz.jei.gui.recipes;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -95,7 +96,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 	}
 
 	@Nullable
-	public GuiIngredient draw(int mouseX, int mouseY) {
+	public GuiIngredient draw(MatrixStack matrixStack, int mouseX, int mouseY) {
 		int ingredientCount = ingredients.size();
 		if (ingredientCount > 0) {
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -116,7 +117,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 				if (guiIngredient.isMouseOver(0, 0, mouseX, mouseY)) {
 					hovered = guiIngredient;
 				}
-				guiIngredient.draw(0, 0);
+				guiIngredient.draw(matrixStack, 0, 0);
 			}
 			return hovered;
 		}

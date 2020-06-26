@@ -883,7 +883,7 @@ public class Property
      */
     public int[] getIntList()
     {
-        ArrayList<Integer> nums = new ArrayList<Integer>();
+        ArrayList<Integer> nums = new ArrayList<>();
 
         for (String value : values)
         {
@@ -933,7 +933,7 @@ public class Property
      */
     public boolean[] getBooleanList()
     {
-        ArrayList<Boolean> tmp = new ArrayList<Boolean>();
+        ArrayList<Boolean> tmp = new ArrayList<>();
         for (String value : values)
         {
             try
@@ -979,7 +979,7 @@ public class Property
      */
     public double[] getDoubleList()
     {
-        ArrayList<Double> tmp = new ArrayList<Double>();
+        ArrayList<Double> tmp = new ArrayList<>();
         for (String value : values)
         {
             try

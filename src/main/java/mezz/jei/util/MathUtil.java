@@ -3,7 +3,7 @@ package mezz.jei.util;
 import java.util.Collection;
 
 import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.vector.Vector2f;
 
 public final class MathUtil {
 	private MathUtil() {
@@ -96,7 +96,7 @@ public final class MathUtil {
 		return new Rectangle2d(tx1, ty1, (int) tx2, (int) ty2);
 	}
 
-	public static double distance (Vec2f start, Vec2f end){
+	public static double distance (Vector2f start, Vector2f end){
 		double a = start.x - end.x;
 		double b = start.y - end.y;
 		return Math.sqrt(a * a + b * b);

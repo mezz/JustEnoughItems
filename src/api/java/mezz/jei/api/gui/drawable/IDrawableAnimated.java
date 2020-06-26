@@ -6,7 +6,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**
  * An animated {@link IDrawable}, useful for showing a gui animation like furnace flames or progress arrows.
- * Useful for drawing miscellaneous things in {@link IRecipeCategory#draw(Object, double, double)}.
+ * Useful for drawing miscellaneous things in {@link IRecipeCategory#draw(Object, com.mojang.blaze3d.matrix.MatrixStack, double, double)}.
  *
  * To create an instance, use {@link IGuiHelper#createAnimatedDrawable(IDrawableStatic, int, StartDirection, boolean)}.
  * Internally, these use an {@link ITickTimer} to simulate tick-driven animations.

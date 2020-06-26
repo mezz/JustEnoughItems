@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -109,13 +110,13 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		return this.area;
 	}
 
-	public void draw(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
-		this.ingredientGrid.draw(minecraft, mouseX, mouseY);
-		this.navigation.draw(minecraft, mouseX, mouseY, partialTicks);
+	public void draw(MatrixStack matrixStack, Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
+		this.ingredientGrid.draw(matrixStack, minecraft, mouseX, mouseY);
+		this.navigation.draw(matrixStack, minecraft, mouseX, mouseY, partialTicks);
 	}
 
-	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
-		this.ingredientGrid.drawTooltips(minecraft, mouseX, mouseY);
+	public void drawTooltips(MatrixStack matrixStack, Minecraft minecraft, int mouseX, int mouseY) {
+		this.ingredientGrid.drawTooltips(matrixStack, minecraft, mouseX, mouseY);
 	}
 
 	@Override

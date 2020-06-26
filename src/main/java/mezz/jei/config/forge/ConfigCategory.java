@@ -44,8 +44,8 @@ public class ConfigCategory implements Map<String, Property>
     private String name;
     private String comment;
     private String languagekey;
-    private ArrayList<ConfigCategory> children = new ArrayList<ConfigCategory>();
-    private Map<String, Property> properties = new TreeMap<String, Property>();
+    private ArrayList<ConfigCategory> children = new ArrayList<>();
+    private Map<String, Property> properties = new TreeMap<>();
     @SuppressWarnings("unused")
     private int propNumber = 0;
     public final ConfigCategory parent;
@@ -116,7 +116,7 @@ public class ConfigCategory implements Map<String, Property>
     {
         if (this.propertyOrder != null)
         {
-            ArrayList<Property> set = new ArrayList<Property>();
+            ArrayList<Property> set = new ArrayList<>();
             for (String key : this.propertyOrder)
                 if (properties.containsKey(key))
                     set.add(properties.get(key));

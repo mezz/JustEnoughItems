@@ -1,13 +1,20 @@
 package mezz.jei.render;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.ITextProperties;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.client.gui.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.util.text.TextFormatting;
@@ -28,7 +35,6 @@ import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Translator;
 
 public class IngredientListElementRenderer<T> {
 	private static final int BLACKLIST_COLOR = 0xFFFF0000;
@@ -65,14 +71,14 @@ public class IngredientListElementRenderer<T> {
 		return area;
 	}
 
-	public void renderSlow(IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
+	public void renderSlow(MatrixStack matrixStack, IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
 		if (worldConfig.isEditModeEnabled()) {
-			renderEditMode(area, padding, editModeConfig);
+			renderEditMode(matrixStack, area, padding, editModeConfig);
 		}
 
 		try {
 			T ingredient = element.getIngredient();
-			ingredientRenderer.render(area.getX() + padding, area.getY() + padding, ingredient);
+			ingredientRenderer.render(matrixStack, area.getX() + padding, area.getY() + padding, ingredient);
 		} catch (RuntimeException | LinkageError e) {
 			throw ErrorUtil.createRenderIngredientException(e, element.getIngredient());
 		}
@@ -81,41 +87,42 @@ public class IngredientListElementRenderer<T> {
 	/**
 	 * Matches the highlight code in {@link ContainerScreen#render(int, int, float)}
 	 */
-	public void drawHighlight() {
+	public void drawHighlight(MatrixStack matrixStack) {
 		RenderSystem.disableLighting();
 		RenderSystem.disableDepthTest();
 		RenderSystem.colorMask(true, true, true, false);
-		GuiUtils.drawGradientRect(0, area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), 0x80FFFFFF, 0x80FFFFFF);
+		GuiUtils.drawGradientRect(matrixStack.getLast().getMatrix(), 0, area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), 0x80FFFFFF, 0x80FFFFFF);
 		RenderSystem.colorMask(true, true, true, true);
 		RenderSystem.enableDepthTest();
 	}
 
-	public void drawTooltip(int mouseX, int mouseY, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig) {
+	public void drawTooltip(MatrixStack matrixStack, int mouseX, int mouseY, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig) {
 		T ingredient = element.getIngredient();
-		List<String> tooltip = getTooltip(ingredientFilterConfig, worldConfig);
+		List<ITextProperties> tooltip = getTooltip(ingredientFilterConfig, worldConfig);
 		Minecraft minecraft = Minecraft.getInstance();
 		FontRenderer fontRenderer = ingredientRenderer.getFontRenderer(minecraft, ingredient);
-		TooltipRenderer.drawHoveringText(ingredient, tooltip, mouseX, mouseY, fontRenderer);
+		TooltipRenderer.drawHoveringText(ingredient, tooltip, mouseX, mouseY, fontRenderer, matrixStack);
 	}
 
-	protected void renderEditMode(Rectangle2d area, int padding, IEditModeConfig editModeConfig) {
+	protected void renderEditMode(MatrixStack matrixStack, Rectangle2d area, int padding, IEditModeConfig editModeConfig) {
 		T ingredient = element.getIngredient();
 
 		if (editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
-			Screen.fill(area.getX() + padding, area.getY() + padding, area.getX() + 16 + padding, area.getY() + 16 + padding, BLACKLIST_COLOR);
+			AbstractGui.func_238467_a_(matrixStack, area.getX() + padding, area.getY() + padding, area.getX() + 16 + padding, area.getY() + 16 + padding, BLACKLIST_COLOR);
 			RenderSystem.color4f(1f, 1f, 1f, 1f);
 		}
 	}
 
-	private List<String> getTooltip(IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig) {
+	private List<ITextProperties> getTooltip(IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig) {
 		T ingredient = element.getIngredient();
 		IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
-		List<String> tooltip = IngredientRenderHelper.getIngredientTooltipSafe(ingredient, ingredientRenderer, ingredientHelper, modIdHelper);
+		List<ITextComponent> ingredientTooltipSafe = IngredientRenderHelper.getIngredientTooltipSafe(ingredient, ingredientRenderer, ingredientHelper, modIdHelper);
+		List<ITextProperties> tooltip = new ArrayList<>(ingredientTooltipSafe);
 
 		Minecraft minecraft = Minecraft.getInstance();
 		int maxWidth = Constants.MAX_TOOLTIP_WIDTH;
-		for (String tooltipLine : tooltip) {
-			int width = minecraft.fontRenderer.getStringWidth(tooltipLine);
+		for (ITextProperties tooltipLine : tooltip) {
+			int width = minecraft.fontRenderer.func_238414_a_(tooltipLine);//TODO - 1.16: Evaluate
 			if (width > maxWidth) {
 				maxWidth = width;
 			}
@@ -132,7 +139,7 @@ public class IngredientListElementRenderer<T> {
 		return tooltip;
 	}
 
-	private void addColorSearchInfoToTooltip(Minecraft minecraft, List<String> tooltip, int maxWidth) {
+	private void addColorSearchInfoToTooltip(Minecraft minecraft, List<ITextProperties> tooltip, int maxWidth) {
 		ColorNamer colorNamer = Internal.getColorNamer();
 
 		T ingredient = element.getIngredient();
@@ -140,22 +147,26 @@ public class IngredientListElementRenderer<T> {
 		Collection<String> colorNames = colorNamer.getColorNames(colors, false);
 		if (!colorNames.isEmpty()) {
 			String colorNamesString = Joiner.on(", ").join(colorNames);
-			String colorNamesLocalizedString = TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.item.colors", colorNamesString);
-			tooltip.addAll(minecraft.fontRenderer.listFormattedStringToWidth(colorNamesLocalizedString, maxWidth));
+			TranslationTextComponent colorTranslation = new TranslationTextComponent("jei.tooltip.item.colors", colorNamesString);
+			IFormattableTextComponent colorNamesLocalizedString = colorTranslation.func_240699_a_(TextFormatting.GRAY);
+			tooltip.addAll(minecraft.fontRenderer.func_238425_b_(colorNamesLocalizedString, maxWidth));
 		}
 	}
 
-	private static void addEditModeInfoToTooltip(Minecraft minecraft, List<String> tooltip, int maxWidth) {
-		tooltip.add("");
-		tooltip.add(TextFormatting.DARK_GREEN + Translator.translateToLocal("gui.jei.editMode.description"));
+	private static void addEditModeInfoToTooltip(Minecraft minecraft, List<ITextProperties> tooltip, int maxWidth) {
+		tooltip.add(StringTextComponent.field_240750_d_);
+		TranslationTextComponent description = new TranslationTextComponent("gui.jei.editMode.description");
+		tooltip.add(description.func_240699_a_(TextFormatting.DARK_GREEN));
 
-		String controlKeyLocalization = Translator.translateToLocal(Minecraft.IS_RUNNING_ON_MAC ? "key.jei.ctrl.mac" : "key.jei.ctrl");
+		TranslationTextComponent controlKeyLocalization = new TranslationTextComponent(Minecraft.IS_RUNNING_ON_MAC ? "key.jei.ctrl.mac" : "key.jei.ctrl");
 
-		String hideMessage = TextFormatting.GRAY + Translator.translateToLocalFormatted("gui.jei.editMode.description.hide", controlKeyLocalization);
-		tooltip.addAll(minecraft.fontRenderer.listFormattedStringToWidth(hideMessage, maxWidth));
+		TranslationTextComponent hide = new TranslationTextComponent("gui.jei.editMode.description.hide", controlKeyLocalization);
+		IFormattableTextComponent hideMessage = hide.func_240699_a_(TextFormatting.GRAY);
+		tooltip.addAll(minecraft.fontRenderer.func_238425_b_(hideMessage, maxWidth));
 
-		String hideWildMessage = TextFormatting.GRAY + Translator.translateToLocalFormatted("gui.jei.editMode.description.hide.wild", controlKeyLocalization);
-		tooltip.addAll(minecraft.fontRenderer.listFormattedStringToWidth(hideWildMessage, maxWidth));
+		TranslationTextComponent hideWild = new TranslationTextComponent("gui.jei.editMode.description.hide.wild", controlKeyLocalization);
+		IFormattableTextComponent hideWildMessage = hideWild.func_240699_a_(TextFormatting.GRAY);
+		tooltip.addAll(minecraft.fontRenderer.func_238425_b_(hideWildMessage, maxWidth));
 	}
 
 }

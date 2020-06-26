@@ -1,5 +1,6 @@
 package mezz.jei.gui.recipes;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.List;
 
 import mezz.jei.Internal;
@@ -8,6 +9,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.input.IMouseHandler;
+import net.minecraft.util.text.ITextComponent;
 
 public abstract class RecipeGuiTab implements IMouseHandler {
 	public static final int TAB_HEIGHT = 24;
@@ -36,12 +38,12 @@ public abstract class RecipeGuiTab implements IMouseHandler {
 
 	public abstract boolean isSelected(IRecipeCategory selectedCategory);
 
-	public void draw(boolean selected, int mouseX, int mouseY) {
+	public void draw(boolean selected, MatrixStack matrixStack, int mouseX, int mouseY) {
 		Textures textures = Internal.getTextures();
 		IDrawable tab = selected ? textures.getTabSelected() : textures.getTabUnselected();
 
-		tab.draw(x, y);
+		tab.draw(matrixStack, x, y);
 	}
 
-	public abstract List<String> getTooltip();
+	public abstract List<ITextComponent> getTooltip();
 }

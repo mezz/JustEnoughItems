@@ -59,7 +59,7 @@ public class ConfigElement implements IConfigElement
     {
         if (!isProperty)
         {
-            List<IConfigElement> elements = new ArrayList<IConfigElement>();
+            List<IConfigElement> elements = new ArrayList<>();
             Iterator<ConfigCategory> ccI = category.getChildren().iterator();
             Iterator<Property> pI = category.getOrderedValues().iterator();
             @SuppressWarnings("unused")

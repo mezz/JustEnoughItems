@@ -1,8 +1,11 @@
 package mezz.jei.plugins.vanilla.crafting;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.List;
 import java.util.function.Function;
 
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.util.Size2i;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
@@ -125,13 +128,15 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<ICrafti
 
 						if (modIdDifferent) {
 							String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
-							tooltip.add(TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.recipe.by", modName));
+							TranslationTextComponent recipeBy = new TranslationTextComponent("jei.tooltip.recipe.by", modName);
+							tooltip.add(recipeBy.func_240699_a_(TextFormatting.GRAY));
 						}
 					}
 
-					boolean showAdvanced = Minecraft.getInstance().gameSettings.advancedItemTooltips || Screen.hasShiftDown();
+					boolean showAdvanced = Minecraft.getInstance().gameSettings.advancedItemTooltips || Screen.func_231173_s_();
 					if (showAdvanced) {
-						tooltip.add(TextFormatting.DARK_GRAY + Translator.translateToLocalFormatted("jei.tooltip.recipe.id", registryName.toString()));
+						TranslationTextComponent recipeId = new TranslationTextComponent("jei.tooltip.recipe.id", registryName.toString());
+						tooltip.add(recipeId.func_240699_a_(TextFormatting.DARK_GRAY));
 					}
 				}
 			});
@@ -145,15 +150,15 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<ICrafti
 	}
 
 	@Override
-	public void draw(ICraftingRecipe recipe, double mouseX, double mouseY) {
+	public void draw(ICraftingRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
 		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
 		int recipeWidth = this.background.getWidth();
 		int recipeHeight = this.background.getHeight();
-		extension.drawInfo(recipeWidth, recipeHeight, mouseX, mouseY);
+		extension.drawInfo(recipeWidth, recipeHeight, matrixStack, mouseX, mouseY);
 	}
 
 	@Override
-	public List<String> getTooltipStrings(ICraftingRecipe recipe, double mouseX, double mouseY) {
+	public List<ITextComponent> getTooltipStrings(ICraftingRecipe recipe, double mouseX, double mouseY) {
 		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
 		return extension.getTooltipStrings(mouseX, mouseY);
 	}

@@ -1,5 +1,6 @@
 package mezz.jei.plugins.vanilla.anvil;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.Map;
 
 import net.minecraft.block.Blocks;
@@ -56,7 +57,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 
 	@Override
 	public String getTitle() {
-		return Blocks.ANVIL.getNameTextComponent().getFormattedText();
+		return Blocks.ANVIL.func_235333_g_().getString();//TODO - 1.16: Evaluate
 	}
 
 	@Override
@@ -90,7 +91,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 	}
 
 	@Override
-	public void draw(AnvilRecipe recipe, double mouseX, double mouseY) {
+	public void draw(AnvilRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
 		AnvilRecipeDisplayData displayData = cachedDisplayData.getUnchecked(recipe);
 		Map<Integer, ? extends IGuiIngredient<ItemStack>> currentIngredients = displayData.getCurrentIngredients();
 		if (currentIngredients == null) {
@@ -128,21 +129,20 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 				mainColor = 0xFFFF6060;
 			}
 
-			drawRepairCost(minecraft, text, mainColor);
+			drawRepairCost(matrixStack, minecraft, text, mainColor);
 		}
 	}
 
-	private void drawRepairCost(Minecraft minecraft, String text, int mainColor) {
+	private void drawRepairCost(MatrixStack matrixStack, Minecraft minecraft, String text, int mainColor) {
 		int shadowColor = 0xFF000000 | (mainColor & 0xFCFCFC) >> 2;
 		int width = minecraft.fontRenderer.getStringWidth(text);
 		int x = background.getWidth() - 2 - width;
 		int y = 27;
 
 		// TODO 1.13 match the new GuiRepair style
-		minecraft.fontRenderer.drawString(text, x + 1, y, shadowColor);
-		minecraft.fontRenderer.drawString(text, x, y + 1, shadowColor);
-		minecraft.fontRenderer.drawString(text, x + 1, y + 1, shadowColor);
-
-		minecraft.fontRenderer.drawString(text, x, y, mainColor);
+		minecraft.fontRenderer.func_238421_b_(matrixStack, text, x + 1, y, shadowColor);
+		minecraft.fontRenderer.func_238421_b_(matrixStack, text, x, y + 1, shadowColor);
+		minecraft.fontRenderer.func_238421_b_(matrixStack, text, x + 1, y + 1, shadowColor);
+		minecraft.fontRenderer.func_238421_b_(matrixStack, text, x, y, mainColor);
 	}
 }

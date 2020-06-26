@@ -1,9 +1,11 @@
 package mezz.jei.gui.overlay;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
@@ -32,7 +34,6 @@ import mezz.jei.render.IngredientListSlot;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.GiveMode;
 import mezz.jei.util.MathUtil;
-import mezz.jei.util.Translator;
 
 /**
  * An ingredient grid displays a rectangular area of clickable recipe ingredients.
@@ -100,30 +101,30 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		return area;
 	}
 
-	public void draw(Minecraft minecraft, int mouseX, int mouseY) {
+	public void draw(MatrixStack matrixStack, Minecraft minecraft, int mouseX, int mouseY) {
 		RenderSystem.disableBlend();
 
-		guiIngredientSlots.render(minecraft);
+		guiIngredientSlots.render(matrixStack, minecraft);
 
 		if (!shouldDeleteItemOnClick(minecraft, mouseX, mouseY) && isMouseOver(mouseX, mouseY)) {
 			IngredientListElementRenderer hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
 			if (hovered != null) {
-				hovered.drawHighlight();
+				hovered.drawHighlight(matrixStack);
 			}
 		}
 
 		RenderSystem.enableAlphaTest();
 	}
 
-	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawTooltips(MatrixStack matrixStack, Minecraft minecraft, int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
 			if (shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
-				String deleteItem = Translator.translateToLocal("jei.tooltip.delete.item");
-				TooltipRenderer.drawHoveringText(deleteItem, mouseX, mouseY);
+				TranslationTextComponent deleteItem = new TranslationTextComponent("jei.tooltip.delete.item");
+				TooltipRenderer.drawHoveringText(deleteItem, mouseX, mouseY, matrixStack);
 			} else {
 				IngredientListElementRenderer hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
 				if (hovered != null) {
-					hovered.drawTooltip(mouseX, mouseY, ingredientFilterConfig, worldConfig);
+					hovered.drawTooltip(matrixStack, mouseX, mouseY, ingredientFilterConfig, worldConfig);
 				}
 			}
 		}

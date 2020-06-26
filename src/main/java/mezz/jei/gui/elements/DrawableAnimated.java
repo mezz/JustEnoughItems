@@ -1,5 +1,6 @@
 package mezz.jei.gui.elements;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
@@ -52,7 +53,7 @@ public class DrawableAnimated implements IDrawableAnimated {
 	}
 
 	@Override
-	public void draw(int xOffset, int yOffset) {
+	public void draw(MatrixStack matrixStack, int xOffset, int yOffset) {
 		int maskLeft = 0;
 		int maskRight = 0;
 		int maskTop = 0;
@@ -77,6 +78,6 @@ public class DrawableAnimated implements IDrawableAnimated {
 				throw new IllegalStateException("Unknown startDirection " + startDirection);
 		}
 
-		drawable.draw(xOffset, yOffset, maskTop, maskBottom, maskLeft, maskRight);
+		drawable.draw(matrixStack, xOffset, yOffset, maskTop, maskBottom, maskLeft, maskRight);
 	}
 }

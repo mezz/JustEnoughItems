@@ -1,5 +1,6 @@
 package mezz.jei.gui.recipes;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,7 +13,7 @@ import mezz.jei.gui.elements.GuiIconButtonSmall;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.transfer.RecipeTransferErrorInternal;
 import mezz.jei.transfer.RecipeTransferUtil;
-import mezz.jei.util.Translator;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class RecipeTransferButton extends GuiIconButtonSmall {
 	private final RecipeLayout recipeLayout;
@@ -34,33 +35,33 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 		}
 
 		if (RecipeTransferUtil.allowsTransfer(recipeTransferError)) {
-			this.active = true;
-			this.visible = true;
+			this.field_230693_o_ = true;
+			this.field_230694_p_ = true;
 		} else {
-			this.active = false;
+			this.field_230693_o_ = false;
 			IRecipeTransferError.Type type = this.recipeTransferError.getType();
-			this.visible = (type == IRecipeTransferError.Type.USER_FACING);
+			this.field_230694_p_ = (type == IRecipeTransferError.Type.USER_FACING);
 		}
 	}
 
-	public void drawToolTip(int mouseX, int mouseY) {
-		if (isMouseOver(mouseX, mouseY)) {
+	public void drawToolTip(MatrixStack matrixStack, int mouseX, int mouseY) {
+		if (func_230992_c_(mouseX, mouseY)) {
 			if (recipeTransferError == null) {
-				String tooltipTransfer = Translator.translateToLocal("jei.tooltip.transfer");
-				TooltipRenderer.drawHoveringText(tooltipTransfer, mouseX, mouseY);
+				TranslationTextComponent tooltipTransfer = new TranslationTextComponent("jei.tooltip.transfer");
+				TooltipRenderer.drawHoveringText(tooltipTransfer, mouseX, mouseY, matrixStack);
 			} else {
-				recipeTransferError.showError(mouseX, mouseY, recipeLayout, recipeLayout.getPosX(), recipeLayout.getPosY());
+				recipeTransferError.showError(matrixStack, mouseX, mouseY, recipeLayout, recipeLayout.getPosX(), recipeLayout.getPosY());
 			}
 		}
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
-		return this.visible &&
-			mouseX >= this.x &&
-			mouseY >= this.y &&
-			mouseX < this.x + this.width &&
-			mouseY < this.y + this.height;
+	public boolean func_230992_c_(double mouseX, double mouseY) {
+		return this.field_230694_p_ &&
+			mouseX >= this.field_230690_l_ &&
+			mouseY >= this.field_230691_m_ &&
+			mouseX < this.field_230690_l_ + this.field_230688_j_ &&
+			mouseY < this.field_230691_m_ + this.field_230689_k_;
 	}
 
 	public void setOnClickHandler(IOnClickHandler onClickHandler) {
@@ -68,7 +69,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 	}
 
 	@Override
-	public void onClick(double mouseX, double mouseY) {
+	public void func_230982_a_(double mouseX, double mouseY) {
 		if (onClickHandler != null) {
 			onClickHandler.onClick(mouseX, mouseY);
 		}

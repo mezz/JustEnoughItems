@@ -1,22 +1,26 @@
 package mezz.jei.transfer;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.TooltipRenderer;
-import mezz.jei.util.Translator;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class RecipeTransferErrorTooltip implements IRecipeTransferError {
-	private final List<String> message = new ArrayList<>();
+	private final List<ITextComponent> message = new ArrayList<>();
 
-	public RecipeTransferErrorTooltip(String message) {
-		this.message.add(Translator.translateToLocal("jei.tooltip.transfer"));
-		this.message.add(TextFormatting.RED + message);
+	public RecipeTransferErrorTooltip(String message) {//TODO - 1.16: Make message be a text component?
+		this.message.add(new TranslationTextComponent("jei.tooltip.transfer"));
+		StringTextComponent messageTextComponent = new StringTextComponent(message);
+		this.message.add(messageTextComponent.func_240699_a_(TextFormatting.RED));
 	}
 
 	@Override
@@ -25,7 +29,7 @@ public class RecipeTransferErrorTooltip implements IRecipeTransferError {
 	}
 
 	@Override
-	public void showError(int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY) {
-		TooltipRenderer.drawHoveringText(message, mouseX, mouseY, Constants.MAX_TOOLTIP_WIDTH);
+	public void showError(MatrixStack matrixStack, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY) {
+		TooltipRenderer.drawHoveringText(message, mouseX, mouseY, Constants.MAX_TOOLTIP_WIDTH, matrixStack);
 	}
 }

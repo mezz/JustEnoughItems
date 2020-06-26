@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
@@ -150,8 +151,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 				}
 
 				this.configButton.updateBounds(new Rectangle2d(
-					searchField.x + searchField.getWidth() - 1,
-					searchField.y,
+					searchField.field_230690_l_ + searchField.func_230998_h_() - 1,
+					searchField.field_230691_m_,
 					BUTTON_SIZE,
 					BUTTON_SIZE
 				));
@@ -169,35 +170,35 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		this.searchField.update();
 	}
 
-	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
+	public void drawScreen(MatrixStack matrixStack, Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
 		if (this.guiProperties != null) {
 			if (isListDisplayed()) {
 				RenderSystem.disableLighting();
-				this.searchField.renderButton(mouseX, mouseY, partialTicks);
-				this.contents.draw(minecraft, mouseX, mouseY, partialTicks);
-				this.configButton.draw(mouseX, mouseY, partialTicks);
+				this.searchField.func_230431_b_(matrixStack, mouseX, mouseY, partialTicks);
+				this.contents.draw(matrixStack, minecraft, mouseX, mouseY, partialTicks);
+				this.configButton.draw(matrixStack, mouseX, mouseY, partialTicks);
 			} else {
-				this.configButton.draw(mouseX, mouseY, partialTicks);
+				this.configButton.draw(matrixStack, mouseX, mouseY, partialTicks);
 			}
 		}
 	}
 
-	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawTooltips(MatrixStack matrixStack, Minecraft minecraft, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			this.configButton.drawTooltips(mouseX, mouseY);
-			this.ghostIngredientDragManager.drawTooltips(minecraft, mouseX, mouseY);
-			this.contents.drawTooltips(minecraft, mouseX, mouseY);
+			this.configButton.drawTooltips(matrixStack, mouseX, mouseY);
+			this.ghostIngredientDragManager.drawTooltips(matrixStack, minecraft, mouseX, mouseY);
+			this.contents.drawTooltips(matrixStack, minecraft, mouseX, mouseY);
 		} else if (this.guiProperties != null) {
-			this.configButton.drawTooltips(mouseX, mouseY);
+			this.configButton.drawTooltips(matrixStack, mouseX, mouseY);
 		}
 	}
 
-	public void drawOnForeground(Minecraft minecraft, ContainerScreen gui, int mouseX, int mouseY) {
+	public void drawOnForeground(MatrixStack matrixStack, Minecraft minecraft, ContainerScreen gui, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
-			this.ghostIngredientDragManager.drawOnForeground(minecraft, mouseX, mouseY);
-			RenderSystem.popMatrix();
+			matrixStack.push();
+			matrixStack.translate(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
+			this.ghostIngredientDragManager.drawOnForeground(matrixStack, minecraft, mouseX, mouseY);
+			matrixStack.pop();
 		}
 	}
 
@@ -308,11 +309,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 
 	@Override
 	public boolean hasKeyboardFocus() {
-		return isListDisplayed() && this.searchField.isFocused();
+		return isListDisplayed() && this.searchField.func_230999_j_();
 	}
 
 	public void setKeyboardFocus(boolean keyboardFocus) {
-		this.searchField.setFocused(keyboardFocus);
+		this.searchField.func_230996_d_(keyboardFocus);
 	}
 
 	public boolean onGlobalKeyPressed(InputMappings.Input input) {
@@ -336,7 +337,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	public boolean onCharTyped(char codePoint, int modifiers) {
 		if (isListDisplayed() &&
 			hasKeyboardFocus() &&
-			searchField.charTyped(codePoint, modifiers)) {
+			searchField.func_231042_a_(codePoint, modifiers)) {
 			boolean changed = worldConfig.setFilterText(searchField.getText());
 			if (changed) {
 				updateLayout(true);
@@ -349,7 +350,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	public boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
 		if (isListDisplayed()) {
 			if (hasKeyboardFocus() &&
-				searchField.keyPressed(keyCode, scanCode, modifiers)) {
+				searchField.func_231046_a_(keyCode, scanCode, modifiers)) {
 				boolean changed = worldConfig.setFilterText(searchField.getText());
 				if (changed) {
 					updateLayout(true);

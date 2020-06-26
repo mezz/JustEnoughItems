@@ -1,5 +1,6 @@
 package mezz.jei.test.lib;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,6 +15,8 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.registration.IModIngredientRegistration;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 @JeiPlugin
 public class TestPlugin implements IModPlugin {
@@ -36,13 +39,13 @@ public class TestPlugin implements IModPlugin {
 
 	private static class TestIngredientRenderer implements IIngredientRenderer<TestIngredient> {
 		@Override
-		public void render(int xPosition, int yPosition, @Nullable TestIngredient ingredient) {
+		public void render(MatrixStack matrixStack, int xPosition, int yPosition, @Nullable TestIngredient ingredient) {
 			// test ingredient is never rendered
 		}
 
 		@Override
-		public List<String> getTooltip(TestIngredient ingredient, ITooltipFlag tooltipFlag) {
-			return Collections.singletonList("Test Ingredient Tooltip " + ingredient);
+		public List<ITextComponent> getTooltip(TestIngredient ingredient, ITooltipFlag tooltipFlag) {
+			return Collections.singletonList(new StringTextComponent("Test Ingredient Tooltip " + ingredient));
 		}
 	}
 
