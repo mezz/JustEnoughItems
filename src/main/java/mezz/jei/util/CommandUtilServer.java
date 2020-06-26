@@ -66,7 +66,7 @@ public final class CommandUtilServer {
 	public static void writeChatMessage(PlayerEntity player, String translationKey, TextFormatting color) {
 		TranslationTextComponent component = new TranslationTextComponent(translationKey);
 		component.getStyle().func_240712_a_(color);
-		player.sendMessage(component, Util.field_240973_b_);//TODO - 1.16: Test
+		player.sendMessage(component, Util.field_240973_b_);
 	}
 
 	public static boolean hasPermission(PlayerEntity sender) {

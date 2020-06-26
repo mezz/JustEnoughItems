@@ -34,7 +34,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	@Override
 	public String getDisplayName(FluidStack ingredient) {
 		ITextComponent displayName = ingredient.getDisplayName();
-		return displayName.getString();//TODO - 1.16: Evaluate
+		return displayName.getString();
 	}
 
 	@Override

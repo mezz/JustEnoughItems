@@ -57,7 +57,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 
 	@Override
 	public String getTitle() {
-		return Blocks.ANVIL.func_235333_g_().getString();//TODO - 1.16: Evaluate
+		return Blocks.ANVIL.func_235333_g_().getString();
 	}
 
 	@Override
