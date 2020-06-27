@@ -72,10 +72,4 @@ public class GuiIconButton extends Button {
 		}
 	}
 
-	@Override
-	public boolean func_230992_c_(double mouseX, double mouseY) {
-		//Increase access level
-		return super.func_230992_c_(mouseX, mouseY);
-	}
-
 }

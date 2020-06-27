@@ -208,7 +208,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		final IDrawable background = recipeCategory.getBackground();
 		final Rectangle2d backgroundRect = new Rectangle2d(posX, posY, background.getWidth(), background.getHeight());
 		return MathUtil.contains(backgroundRect, mouseX, mouseY) ||
-			(recipeTransferButton != null && recipeTransferButton.func_230992_c_(mouseX, mouseY));
+			(recipeTransferButton != null && recipeTransferButton.func_231047_b_(mouseX, mouseY));
 	}
 
 	@Override

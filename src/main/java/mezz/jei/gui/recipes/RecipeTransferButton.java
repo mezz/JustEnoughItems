@@ -45,7 +45,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 	}
 
 	public void drawToolTip(MatrixStack matrixStack, int mouseX, int mouseY) {
-		if (func_230992_c_(mouseX, mouseY)) {
+		if (func_231047_b_(mouseX, mouseY)) {
 			if (recipeTransferError == null) {
 				TranslationTextComponent tooltipTransfer = new TranslationTextComponent("jei.tooltip.transfer");
 				TooltipRenderer.drawHoveringText(tooltipTransfer, mouseX, mouseY, matrixStack);
@@ -56,7 +56,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 	}
 
 	@Override
-	public boolean func_230992_c_(double mouseX, double mouseY) {
+	public boolean func_231047_b_(double mouseX, double mouseY) {
 		return this.field_230694_p_ &&
 			mouseX >= this.field_230690_l_ &&
 			mouseY >= this.field_230691_m_ &&

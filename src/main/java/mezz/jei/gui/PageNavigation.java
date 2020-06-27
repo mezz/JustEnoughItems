@@ -58,8 +58,8 @@ public class PageNavigation {
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return nextButton.func_230992_c_(mouseX, mouseY) ||
-			backButton.func_230992_c_(mouseX, mouseY);
+		return nextButton.func_231047_b_(mouseX, mouseY) ||
+			backButton.func_231047_b_(mouseX, mouseY);
 	}
 
 	public boolean handleMouseClickedButtons(double mouseX, double mouseY, int mouseButton) {
