@@ -1,5 +1,6 @@
 package mezz.jei.api.recipe.transfer;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
 
@@ -39,5 +40,5 @@ public interface IRecipeTransferError {
 	/**
 	 * Called on {@link Type#USER_FACING} errors.
 	 */
-	void showError(int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY);
+	void showError(MatrixStack matrixStack, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY);
 }

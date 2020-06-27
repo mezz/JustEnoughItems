@@ -1,5 +1,6 @@
 package mezz.jei.gui.elements;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -11,6 +12,7 @@ import net.minecraft.util.ResourceLocation;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.textures.JeiSpriteUploader;
+import net.minecraft.util.math.vector.Matrix4f;
 
 public class DrawableSprite implements IDrawableStatic {
 	private final JeiSpriteUploader spriteUploader;
@@ -48,12 +50,12 @@ public class DrawableSprite implements IDrawableStatic {
 	}
 
 	@Override
-	public void draw(int xOffset, int yOffset) {
-		draw(xOffset, yOffset, 0, 0, 0, 0);
+	public void draw(MatrixStack matrixStack, int xOffset, int yOffset) {
+		draw(matrixStack, xOffset, yOffset, 0, 0, 0, 0);
 	}
 
 	@Override
-	public void draw(int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
+	public void draw(MatrixStack matrixStack, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
 		TextureAtlasSprite sprite = spriteUploader.getSprite(location);
 		int textureWidth = this.width;
 		int textureHeight = this.height;
@@ -82,16 +84,17 @@ public class DrawableSprite implements IDrawableStatic {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		bufferBuilder.pos(x, y + height, 0)
+		Matrix4f matrix = matrixStack.getLast().getMatrix();
+		bufferBuilder.pos(matrix, x, y + height, 0)
 			.tex(minU, maxV)
 			.endVertex();
-		bufferBuilder.pos(x + width, y + height, 0)
+		bufferBuilder.pos(matrix, x + width, y + height, 0)
 			.tex(maxU, maxV)
 			.endVertex();
-		bufferBuilder.pos(x + width, y, 0)
+		bufferBuilder.pos(matrix, x + width, y, 0)
 			.tex(maxU, minV)
 			.endVertex();
-		bufferBuilder.pos(x, y, 0)
+		bufferBuilder.pos(matrix, x, y, 0)
 			.tex(minU, minV)
 			.endVertex();
 		tessellator.draw();

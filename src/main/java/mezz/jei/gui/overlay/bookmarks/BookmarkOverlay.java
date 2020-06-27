@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay.bookmarks;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 import java.util.Set;
 
@@ -67,11 +68,11 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 	}
 
 	@Override
-	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
+	public void drawScreen(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		if (this.isListDisplayed()) {
-			this.contents.draw(minecraft, mouseX, mouseY, partialTicks);
+			this.contents.draw(minecraft, matrixStack, mouseX, mouseY, partialTicks);
 		}
-		this.bookmarkButton.draw(mouseX, mouseY, partialTicks);
+		this.bookmarkButton.draw(matrixStack, mouseX, mouseY, partialTicks);
 	}
 
 	@Override
@@ -79,11 +80,11 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 	}
 
 	@Override
-	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			this.contents.drawTooltips(minecraft, mouseX, mouseY);
+			this.contents.drawTooltips(minecraft, matrixStack, mouseX, mouseY);
 		}
-		bookmarkButton.drawTooltips(mouseX, mouseY);
+		bookmarkButton.drawTooltips(matrixStack, mouseX, mouseY);
 	}
 
 	private static int getMinWidth() {

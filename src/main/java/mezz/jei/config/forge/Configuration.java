@@ -73,8 +73,8 @@ public class Configuration
 
     File file;
 
-    private Map<String, ConfigCategory> categories = new TreeMap<String, ConfigCategory>();
-    private Map<String, Configuration> children = new TreeMap<String, Configuration>();
+    private Map<String, ConfigCategory> categories = new TreeMap<>();
+    private Map<String, Configuration> children = new TreeMap<>();
 
     private boolean caseSensitiveCustomCategories;
     public String defaultEncoding = DEFAULT_ENCODING;
@@ -855,7 +855,7 @@ public class Configuration
                     if (start.matches())
                     {
                         fileName = start.group(1);
-                        categories = new TreeMap<String, ConfigCategory>();
+                        categories = new TreeMap<>();
                         continue;
                     }
                     else if (end.matches())
@@ -981,7 +981,7 @@ public class Configuration
                                             throw new RuntimeException(String.format("'%s' has no scope in '%s:%d'", name, fileName, lineNum));
                                         }
 
-                                        tmpList = new ArrayList<String>();
+                                        tmpList = new ArrayList<>();
 
                                         skip = true;
                                     }
@@ -996,7 +996,7 @@ public class Configuration
 
                                     if (isFirstNonWhitespaceCharOnLine)
                                     {
-                                        currentCat.put(name, new Property(name, tmpList.toArray(new String[tmpList.size()]), type));
+                                        currentCat.put(name, new Property(name, tmpList.toArray(new String[0]), type));
                                         name = null;
                                         tmpList = null;
                                         type = null;
@@ -1443,7 +1443,7 @@ public class Configuration
     public void copyCategoryProps(Configuration fromConfig, String[] ctgys)
     {
         if (ctgys == null)
-            ctgys = this.getCategoryNames().toArray(new String[this.getCategoryNames().size()]);
+            ctgys = this.getCategoryNames().toArray(new String[0]);
 
         for (String ctgy : ctgys)
             if (fromConfig.hasCategory(ctgy) && this.hasCategory(ctgy))

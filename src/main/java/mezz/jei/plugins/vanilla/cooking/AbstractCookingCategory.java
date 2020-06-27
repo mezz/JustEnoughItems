@@ -1,5 +1,6 @@
 package mezz.jei.plugins.vanilla.cooking;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -15,6 +16,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> extends FurnaceVariantCategory<T> {
 	private final IDrawable background;
@@ -48,17 +50,17 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	}
 
 	@Override
-	public void draw(T recipe, double mouseX, double mouseY) {
-		animatedFlame.draw(1, 20);
-		arrow.draw(24, 18);
+	public void draw(T recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+		animatedFlame.draw(matrixStack, 1, 20);
+		arrow.draw(matrixStack, 24, 18);
 
 		float experience = recipe.getExperience();
 		if (experience > 0) {
-			String experienceString = Translator.translateToLocalFormatted("gui.jei.category.smelting.experience", experience);
+			TranslationTextComponent experienceString = new TranslationTextComponent("gui.jei.category.smelting.experience", experience);
 			Minecraft minecraft = Minecraft.getInstance();
 			FontRenderer fontRenderer = minecraft.fontRenderer;
-			int stringWidth = fontRenderer.getStringWidth(experienceString);
-			fontRenderer.drawString(experienceString, background.getWidth() - stringWidth, 0, 0xFF808080);
+			int stringWidth = fontRenderer.func_238414_a_(experienceString);
+			fontRenderer.func_238422_b_(matrixStack, experienceString, background.getWidth() - stringWidth, 0, 0xFF808080);
 		}
 	}
 

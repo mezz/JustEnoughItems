@@ -1,5 +1,6 @@
 package mezz.jei.gui.elements;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -7,6 +8,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import net.minecraft.util.math.vector.Matrix4f;
 
 public class DrawableResource implements IDrawableStatic {
 
@@ -50,12 +52,12 @@ public class DrawableResource implements IDrawableStatic {
 	}
 
 	@Override
-	public void draw(int xOffset, int yOffset) {
-		draw(xOffset, yOffset, 0, 0, 0, 0);
+	public void draw(MatrixStack matrixStack, int xOffset, int yOffset) {
+		draw(matrixStack, xOffset, yOffset, 0, 0, 0, 0);
 	}
 
 	@Override
-	public void draw(int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
+	public void draw(MatrixStack matrixStack, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
 		Minecraft minecraft = Minecraft.getInstance();
 		minecraft.getTextureManager().bindTexture(this.resourceLocation);
 
@@ -70,10 +72,11 @@ public class DrawableResource implements IDrawableStatic {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
 		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		bufferbuilder.pos(x, y + height, 0.0D).tex(u * f, (v + (float)height) * f1).endVertex();
-		bufferbuilder.pos(x + width, y + height, 0.0D).tex((u + (float)width) * f, (v + (float)height) * f1).endVertex();
-		bufferbuilder.pos(x + width, y, 0.0D).tex((u + (float)width) * f, v * f1).endVertex();
-		bufferbuilder.pos(x, y, 0.0D).tex(u * f, v * f1).endVertex();
+		Matrix4f matrix = matrixStack.getLast().getMatrix();
+		bufferbuilder.pos(matrix, x, y + height, 0).tex(u * f, (v + (float)height) * f1).endVertex();
+		bufferbuilder.pos(matrix, x + width, y + height, 0).tex((u + (float)width) * f, (v + (float)height) * f1).endVertex();
+		bufferbuilder.pos(matrix, x + width, y, 0).tex((u + (float)width) * f, v * f1).endVertex();
+		bufferbuilder.pos(matrix, x, y, 0).tex(u * f, v * f1).endVertex();
 		tessellator.draw();
 	}
 }

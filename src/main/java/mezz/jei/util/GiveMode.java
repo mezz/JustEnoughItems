@@ -20,7 +20,7 @@ public enum GiveMode {
 				return 1;
 			}
 			case MOUSE_PICKUP: {
-				boolean modifierActive = Screen.hasShiftDown() || Minecraft.getInstance().gameSettings.keyBindPickBlock.isActiveAndMatches(input);
+				boolean modifierActive = Screen.func_231173_s_() || Minecraft.getInstance().gameSettings.keyBindPickBlock.isActiveAndMatches(input);
 				return modifierActive ? itemStack.getMaxStackSize() : 1;
 			}
 			default:

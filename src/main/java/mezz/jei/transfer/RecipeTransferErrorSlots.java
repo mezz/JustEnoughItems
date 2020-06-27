@@ -1,5 +1,6 @@
 package mezz.jei.transfer;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.Collection;
 import java.util.Map;
 
@@ -20,14 +21,14 @@ public class RecipeTransferErrorSlots extends RecipeTransferErrorTooltip {
 	}
 
 	@Override
-	public void showError(int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY) {
+	public void showError(MatrixStack matrixStack, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY) {
 		IGuiItemStackGroup itemStackGroup = recipeLayout.getItemStacks();
 		Map<Integer, ? extends IGuiIngredient<ItemStack>> ingredients = itemStackGroup.getGuiIngredients();
 		for (Integer slotIndex : slots) {
 			IGuiIngredient<ItemStack> ingredient = ingredients.get(slotIndex);
-			ingredient.drawHighlight(HIGHLIGHT_COLOR, recipeX, recipeY);
+			ingredient.drawHighlight(matrixStack, HIGHLIGHT_COLOR, recipeX, recipeY);
 		}
 
-		super.showError(mouseX, mouseY, recipeLayout, recipeX, recipeY);
+		super.showError(matrixStack, mouseX, mouseY, recipeLayout, recipeX, recipeY);
 	}
 }

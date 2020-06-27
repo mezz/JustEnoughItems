@@ -1,12 +1,12 @@
 package mezz.jei.gui.ingredients;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -17,10 +17,11 @@ import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagCollection;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.Internal;
@@ -37,7 +38,7 @@ import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.render.IngredientRenderHelper;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Translator;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -166,16 +167,16 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 		this.tooltipCallback = tooltipCallback;
 	}
 
-	public void draw(int xOffset, int yOffset) {
+	public void draw(MatrixStack matrixStack, int xOffset, int yOffset) {
 		cycleTimer.onDraw();
 
 		if (background != null) {
-			background.draw(xOffset + rect.getX(), yOffset + rect.getY());
+			background.draw(matrixStack, xOffset + rect.getX(), yOffset + rect.getY());
 		}
 
 		T value = getDisplayedIngredient();
 		try {
-			ingredientRenderer.render(xOffset + rect.getX() + xPadding, yOffset + rect.getY() + yPadding, value);
+			ingredientRenderer.render(matrixStack, xOffset + rect.getX() + xPadding, yOffset + rect.getY() + yPadding, value);
 		} catch (RuntimeException | LinkageError e) {
 			if (value != null) {
 				throw ErrorUtil.createRenderIngredientException(e, value);
@@ -185,28 +186,29 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 	}
 
 	@Override
-	public void drawHighlight(int color, int xOffset, int yOffset) {
+	public void drawHighlight(MatrixStack matrixStack, int color, int xOffset, int yOffset) {
 		int x = rect.getX() + xOffset + xPadding;
 		int y = rect.getY() + yOffset + yPadding;
 		RenderSystem.disableLighting();
 		RenderSystem.disableDepthTest();
-		fill(x, y, x + rect.getWidth() - xPadding * 2, y + rect.getHeight() - yPadding * 2, color);
+		func_238467_a_(matrixStack, x, y, x + rect.getWidth() - xPadding * 2, y + rect.getHeight() - yPadding * 2, color);
 		RenderSystem.color4f(1f, 1f, 1f, 1f);
 	}
 
-	public void drawOverlays(int xOffset, int yOffset, int mouseX, int mouseY) {
+	public void drawOverlays(MatrixStack matrixStack, int xOffset, int yOffset, int mouseX, int mouseY) {
 		T value = getDisplayedIngredient();
 		if (value != null) {
-			drawTooltip(xOffset, yOffset, mouseX, mouseY, value);
+			drawTooltip(matrixStack, xOffset, yOffset, mouseX, mouseY, value);
 		}
 	}
 
-	private void drawTooltip(int xOffset, int yOffset, int mouseX, int mouseY, T value) {
+	private void drawTooltip(MatrixStack matrixStack, int xOffset, int yOffset, int mouseX, int mouseY, T value) {
 		try {
 			RenderSystem.disableDepthTest();
 
 			RenderHelper.disableStandardItemLighting();
-			fill(xOffset + rect.getX() + xPadding,
+			func_238467_a_(matrixStack,
+				xOffset + rect.getX() + xPadding,
 				yOffset + rect.getY() + yPadding,
 				xOffset + rect.getX() + rect.getWidth() - xPadding,
 				yOffset + rect.getY() + rect.getHeight() - yPadding,
@@ -214,7 +216,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 			RenderSystem.color4f(1f, 1f, 1f, 1f);
 
 			IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
-			List<String> tooltip = IngredientRenderHelper.getIngredientTooltipSafe(value, ingredientRenderer, ingredientHelper, modIdHelper);
+			List<ITextComponent> tooltip = IngredientRenderHelper.getIngredientTooltipSafe(value, ingredientRenderer, ingredientHelper, modIdHelper);
 			if (tooltipCallback != null) {
 				tooltipCallback.onTooltip(slotIndex, input, value, tooltip);
 			}
@@ -226,11 +228,11 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 				Collection<ItemStack> itemStacks = (Collection<ItemStack>) this.allIngredients;
 				ResourceLocation tagEquivalent = getTagEquivalent(itemStacks);
 				if (tagEquivalent != null) {
-					final String acceptsAny = Translator.translateToLocalFormatted("jei.tooltip.recipe.tag", tagEquivalent);
-					tooltip.add(TextFormatting.GRAY + acceptsAny);
+					final TranslationTextComponent acceptsAny = new TranslationTextComponent("jei.tooltip.recipe.tag", tagEquivalent);
+					tooltip.add(acceptsAny.func_240699_a_(TextFormatting.GRAY));
 				}
 			}
-			TooltipRenderer.drawHoveringText(value, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
+			TooltipRenderer.drawHoveringText(value, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer, matrixStack);
 
 			RenderSystem.enableDepthTest();
 		} catch (RuntimeException e) {
@@ -244,16 +246,16 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 			return null;
 		}
 
-		Set<Item> items = itemStacks.stream()
+		List<Item> items = itemStacks.stream()
 			.filter(Objects::nonNull)
 			.map(ItemStack::getItem)
-			.collect(Collectors.toSet());
+			.collect(Collectors.toList());
 
 		TagCollection<Item> collection = ItemTags.getCollection();
-		Collection<Tag<Item>> tags = collection.getTagMap().values();
-		for (Tag<Item> tag : tags) {
-			if (tag.getAllElements().equals(items)) {
-				return tag.getId();
+		Collection<ITag<Item>> tags = collection.getTagMap().values();
+		for (ITag<Item> tag : tags) {
+			if (tag.func_230236_b_().equals(items)) {
+				return collection.func_232973_a_(tag);
 			}
 		}
 		return null;

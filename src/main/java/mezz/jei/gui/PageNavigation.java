@@ -1,5 +1,6 @@
 package mezz.jei.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
@@ -28,13 +29,13 @@ public class PageNavigation {
 
 	public void updateBounds(Rectangle2d area) {
 		int buttonSize = area.getHeight();
-		this.nextButton.x = area.getX() + area.getWidth() - buttonSize;
-		this.nextButton.y = area.getY();
-		this.nextButton.setWidth(buttonSize);
+		this.nextButton.field_230690_l_ = area.getX() + area.getWidth() - buttonSize;
+		this.nextButton.field_230691_m_ = area.getY();
+		this.nextButton.func_230991_b_(buttonSize);
 		this.nextButton.setHeight(buttonSize);
-		this.backButton.x = area.getX();
-		this.backButton.y = area.getY();
-		this.backButton.setWidth(buttonSize);
+		this.backButton.field_230690_l_ = area.getX();
+		this.backButton.field_230691_m_ = area.getY();
+		this.backButton.func_230991_b_(buttonSize);
 		this.backButton.setHeight(buttonSize);
 	}
 
@@ -44,25 +45,25 @@ public class PageNavigation {
 		FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
 		pageNumDisplayString = (pageNum + 1) + "/" + pageCount;
 		int pageDisplayWidth = fontRenderer.getStringWidth(pageNumDisplayString);
-		pageNumDisplayX = ((backButton.x + backButton.getWidth()) + nextButton.x) / 2 - (pageDisplayWidth / 2);
-		pageNumDisplayY = backButton.y + Math.round((backButton.getHeight() - fontRenderer.FONT_HEIGHT) / 2.0f);
+		pageNumDisplayX = ((backButton.field_230690_l_ + backButton.func_230998_h_()) + nextButton.field_230690_l_) / 2 - (pageDisplayWidth / 2);
+		pageNumDisplayY = backButton.field_230691_m_ + Math.round((backButton.getHeight() - fontRenderer.FONT_HEIGHT) / 2.0f);
 	}
 
-	public void draw(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
+	public void draw(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		if (!hideOnSinglePage || this.paged.hasNext() || this.paged.hasPrevious()) {
-			minecraft.fontRenderer.drawStringWithShadow(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, 0xFFFFFFFF);
-			nextButton.render(mouseX, mouseY, partialTicks);
-			backButton.render(mouseX, mouseY, partialTicks);
+			minecraft.fontRenderer.func_238405_a_(matrixStack, pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, 0xFFFFFFFF);
+			nextButton.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+			backButton.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
 		}
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return nextButton.isMouseOver(mouseX, mouseY) ||
-			backButton.isMouseOver(mouseX, mouseY);
+		return nextButton.func_231047_b_(mouseX, mouseY) ||
+			backButton.func_231047_b_(mouseX, mouseY);
 	}
 
 	public boolean handleMouseClickedButtons(double mouseX, double mouseY, int mouseButton) {
-		return nextButton.mouseClicked(mouseX, mouseY, mouseButton) ||
-			backButton.mouseClicked(mouseX, mouseY, mouseButton);
+		return nextButton.func_231044_a_(mouseX, mouseY, mouseButton) ||
+			backButton.func_231044_a_(mouseX, mouseY, mouseButton);
 	}
 }

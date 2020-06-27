@@ -11,11 +11,12 @@ import com.google.common.base.Preconditions;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.config.Constants;
-import mezz.jei.util.Translator;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class FuelRecipe {
 	private final List<ItemStack> inputs;
-	private final String smeltCountString;
+	private final ITextComponent smeltCountString;
 	private final IDrawableAnimated flame;
 
 	public FuelRecipe(IGuiHelper guiHelper, Collection<ItemStack> input, int burnTime) {
@@ -23,12 +24,12 @@ public class FuelRecipe {
 		this.inputs = new ArrayList<>(input);
 
 		if (burnTime == 200) {
-			this.smeltCountString = Translator.translateToLocal("gui.jei.category.fuel.smeltCount.single");
+			this.smeltCountString = new TranslationTextComponent("gui.jei.category.fuel.smeltCount.single");
 		} else {
 			NumberFormat numberInstance = NumberFormat.getNumberInstance();
 			numberInstance.setMaximumFractionDigits(2);
 			String smeltCount = numberInstance.format(burnTime / 200f);
-			this.smeltCountString = Translator.translateToLocalFormatted("gui.jei.category.fuel.smeltCount", smeltCount);
+			this.smeltCountString = new TranslationTextComponent("gui.jei.category.fuel.smeltCount", smeltCount);
 		}
 
 		this.flame = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 82, 114, 14, 14)
@@ -39,7 +40,7 @@ public class FuelRecipe {
 		return inputs;
 	}
 
-	public String getSmeltCountString() {
+	public ITextComponent getSmeltCountString() {
 		return smeltCountString;
 	}
 

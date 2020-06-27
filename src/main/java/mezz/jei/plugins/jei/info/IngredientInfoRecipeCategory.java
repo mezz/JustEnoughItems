@@ -1,5 +1,6 @@
 package mezz.jei.plugins.jei.info;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.util.Translator;
+import net.minecraft.util.text.ITextProperties;
 
 public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientInfoRecipe> {
 	public static final int recipeWidth = 160;
@@ -73,17 +75,17 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 	}
 
 	@Override
-	public void draw(IngredientInfoRecipe recipe, double mouseX, double mouseY) {
-		drawTyped((IngredientInfoRecipe<?>) recipe);
+	public void draw(IngredientInfoRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+		drawTyped(matrixStack, (IngredientInfoRecipe<?>) recipe);
 	}
 
-	private <T> void drawTyped(IngredientInfoRecipe<T> recipe) {
+	private <T> void drawTyped(MatrixStack matrixStack, IngredientInfoRecipe<T> recipe) {
 		int xPos = 0;
 		int yPos = slotBackground.getHeight() + 4;
 
 		Minecraft minecraft = Minecraft.getInstance();
-		for (String descriptionLine : recipe.getDescription()) {
-			minecraft.fontRenderer.drawString(descriptionLine, xPos, yPos, 0xFF000000);
+		for (ITextProperties descriptionLine : recipe.getDescription()) {
+			minecraft.fontRenderer.func_238422_b_(matrixStack, descriptionLine, xPos, yPos, 0xFF000000);
 			yPos += minecraft.fontRenderer.FONT_HEIGHT + lineSpacing;
 		}
 	}

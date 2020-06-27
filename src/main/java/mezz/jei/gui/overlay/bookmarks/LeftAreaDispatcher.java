@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay.bookmarks;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,11 +48,11 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		return current >= 0 && current < contents.size();
 	}
 
-	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
+	public void drawScreen(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		if (canShow && hasContent()) {
-			contents.get(current).drawScreen(minecraft, mouseX, mouseY, partialTicks);
+			contents.get(current).drawScreen(minecraft, matrixStack, mouseX, mouseY, partialTicks);
 			if (naviArea.getHeight() > 0) {
-				navigation.draw(minecraft, mouseX, mouseY, partialTicks);
+				navigation.draw(minecraft, matrixStack, mouseX, mouseY, partialTicks);
 			}
 		}
 	}
@@ -62,9 +63,9 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		}
 	}
 
-	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
 		if (canShow && hasContent()) {
-			contents.get(current).drawTooltips(minecraft, mouseX, mouseY);
+			contents.get(current).drawTooltips(minecraft, matrixStack, mouseX, mouseY);
 		}
 	}
 

@@ -1,5 +1,6 @@
 package mezz.jei.plugins.vanilla.cooking;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.crafting.CampfireCookingRecipe;
 import net.minecraft.util.ResourceLocation;
@@ -36,9 +37,9 @@ public class CampfireCategory extends AbstractCookingCategory<CampfireCookingRec
 	}
 
 	@Override
-	public void draw(CampfireCookingRecipe recipe, double mouseX, double mouseY) {
-		animatedFlame.draw(1, 20);
-		arrow.draw(24, 8);
+	public void draw(CampfireCookingRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+		animatedFlame.draw(matrixStack, 1, 20);
+		arrow.draw(matrixStack, 24, 8);
 	}
 
 	@Override

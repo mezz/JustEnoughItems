@@ -1,5 +1,6 @@
 package mezz.jei.api.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 
 import mezz.jei.api.recipe.IFocus;
@@ -21,12 +22,12 @@ public interface IRecipeLayoutDrawable extends IRecipeLayout {
 	/**
 	 * Draw the recipe without overlays such as item tool tips.
 	 */
-	void drawRecipe(int mouseX, int mouseY);
+	void drawRecipe(MatrixStack matrixStack, int mouseX, int mouseY);
 
 	/**
 	 * Draw the recipe overlays such as item tool tips.
 	 */
-	void drawOverlays(int mouseX, int mouseY);
+	void drawOverlays(MatrixStack matrixStack, int mouseX, int mouseY);
 
 	/**
 	 * Returns true if the mouse is hovering over the recipe.

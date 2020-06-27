@@ -3,6 +3,7 @@ package mezz.jei.api.helpers;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
+import net.minecraft.util.text.ITextComponent;
 
 /**
  * Helper class for getting mod names from their modIds.
@@ -30,5 +31,5 @@ public interface IModIdHelper {
 	 * If {@link #isDisplayingModNameEnabled()} is false,
 	 * this will just return the tooltip without adding the mod name.
 	 */
-	<T> List<String> addModNameToIngredientTooltip(List<String> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper);
+	<T> List<ITextComponent> addModNameToIngredientTooltip(List<ITextComponent> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper);
 }

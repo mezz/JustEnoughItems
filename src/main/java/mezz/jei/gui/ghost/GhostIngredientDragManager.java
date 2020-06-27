@@ -1,5 +1,6 @@
 package mezz.jei.gui.ghost;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,24 +39,24 @@ public class GhostIngredientDragManager {
 		this.worldConfig = worldConfig;
 	}
 
-	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
 		if (!(minecraft.currentScreen instanceof ContainerScreen)) { // guiContainer uses drawOnForeground
-			drawGhostIngredientHighlights(minecraft, mouseX, mouseY);
+			drawGhostIngredientHighlights(minecraft, matrixStack, mouseX, mouseY);
 		}
 		if (ghostIngredientDrag != null) {
-			ghostIngredientDrag.drawItem(minecraft, mouseX, mouseY);
+			ghostIngredientDrag.drawItem(minecraft, matrixStack, mouseX, mouseY);
 		}
-		ghostIngredientsReturning.forEach(returning -> returning.drawItem(minecraft));
+		ghostIngredientsReturning.forEach(returning -> returning.drawItem(minecraft, matrixStack));
 		ghostIngredientsReturning.removeIf(GhostIngredientReturning::isComplete);
 	}
 
-	public void drawOnForeground(Minecraft minecraft, int mouseX, int mouseY) {
-		drawGhostIngredientHighlights(minecraft, mouseX, mouseY);
+	public void drawOnForeground(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
+		drawGhostIngredientHighlights(minecraft, matrixStack, mouseX, mouseY);
 	}
 
-	private void drawGhostIngredientHighlights(Minecraft minecraft, int mouseX, int mouseY) {
+	private void drawGhostIngredientHighlights(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
 		if (this.ghostIngredientDrag != null) {
-			this.ghostIngredientDrag.drawTargets(mouseX, mouseY);
+			this.ghostIngredientDrag.drawTargets(matrixStack, mouseX, mouseY);
 		} else {
 			IIngredientListElement elementUnderMouse = this.source.getElementUnderMouse();
 			Object hovered = elementUnderMouse == null ? null : elementUnderMouse.getIngredient();
@@ -71,7 +72,7 @@ public class GhostIngredientDragManager {
 				}
 			}
 			if (this.hoveredIngredientTargets != null && !worldConfig.isCheatItemsEnabled()) {
-				GhostIngredientDrag.drawTargets(mouseX, mouseY, this.hoveredIngredientTargets);
+				GhostIngredientDrag.drawTargets(matrixStack, mouseX, mouseY, this.hoveredIngredientTargets);
 			}
 		}
 	}

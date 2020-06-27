@@ -1,9 +1,9 @@
 package mezz.jei.plugins.vanilla.ingredients.item;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -19,7 +19,7 @@ import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.Translator;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,7 +27,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	@Override
-	public void render(int xPosition, int yPosition, @Nullable ItemStack ingredient) {
+	public void render(MatrixStack matrixStack, int xPosition, int yPosition, @Nullable ItemStack ingredient) {
 		if (ingredient != null) {
 			RenderSystem.enableDepthTest();
 			RenderHelper.enableStandardItemLighting();
@@ -42,19 +42,18 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	}
 
 	@Override
-	public List<String> getTooltip(ItemStack ingredient, ITooltipFlag tooltipFlag) {
+	public List<ITextComponent> getTooltip(ItemStack ingredient, ITooltipFlag tooltipFlag) {
 		Minecraft minecraft = Minecraft.getInstance();
 		PlayerEntity player = minecraft.player;
-		List<String> list;
+		List<ITextComponent> list;
 		try {
-			list = ingredient.getTooltip(player, tooltipFlag).stream()
-				.map(ITextComponent::getFormattedText)
-				.collect(Collectors.toList());
+			list = ingredient.getTooltip(player, tooltipFlag);
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
 			LOGGER.error("Failed to get tooltip: {}", itemStackInfo, e);
 			list = new ArrayList<>();
-			list.add(TextFormatting.RED + Translator.translateToLocal("jei.tooltip.error.crash"));
+			TranslationTextComponent crash = new TranslationTextComponent("jei.tooltip.error.crash");
+			list.add(crash.func_240699_a_(TextFormatting.RED));
 			return list;
 		}
 
@@ -69,9 +68,9 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 
 		for (int k = 0; k < list.size(); ++k) {
 			if (k == 0) {
-				list.set(k, rarity.color + list.get(k));
+				list.set(k, list.get(k).func_230532_e_().func_240699_a_(rarity.color));
 			} else {
-				list.set(k, TextFormatting.GRAY + list.get(k));
+				list.set(k, list.get(k).func_230532_e_().func_240699_a_(TextFormatting.GRAY));
 			}
 		}
 

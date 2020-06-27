@@ -24,9 +24,9 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		super(itemStackElement);
 	}
 
-	public void renderItemAndEffectIntoGUI(IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
+	public void renderItemAndEffectIntoGUI(MatrixStack matrixStack, IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
 		try {
-			uncheckedRenderItemAndEffectIntoGUI(editModeConfig, worldConfig);
+			uncheckedRenderItemAndEffectIntoGUI(matrixStack, editModeConfig, worldConfig);
 		} catch (RuntimeException | LinkageError e) {
 			throw ErrorUtil.createRenderIngredientException(e, element.getIngredient());
 		}
@@ -37,12 +37,12 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		ItemModelMesher itemModelMesher = Minecraft.getInstance().getItemRenderer().getItemModelMesher();
 		ItemStack itemStack = element.getIngredient();
 		IBakedModel bakedModel = itemModelMesher.getItemModel(itemStack);
-		return bakedModel.getOverrides().getModelWithOverrides(bakedModel, itemStack, null, null);
+		return bakedModel.getOverrides().func_239290_a_(bakedModel, itemStack, null, null);
 	}
 
-	private void uncheckedRenderItemAndEffectIntoGUI(IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
+	private void uncheckedRenderItemAndEffectIntoGUI(MatrixStack matrixStack, IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
 		if (worldConfig.isEditModeEnabled()) {
-			renderEditMode(area, padding, editModeConfig);
+			renderEditMode(matrixStack, area, padding, editModeConfig);
 			RenderSystem.enableBlend();
 		}
 
@@ -52,7 +52,7 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 			return;
 		}
 
-		MatrixStack matrixStack = new MatrixStack();
+		matrixStack.push();
 		matrixStack.translate(area.getX() + padding + 16, area.getY() + padding, 150);
 		matrixStack.scale(16, -16, 16);
 		matrixStack.translate(-0.5, -0.5, -0.5);
@@ -61,6 +61,7 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		IRenderTypeBuffer.Impl iRenderTypeBuffer = minecraft.getRenderTypeBuffers().getBufferSource();
 		itemRenderer.renderItem(itemStack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, iRenderTypeBuffer, 15728880, OverlayTexture.NO_OVERLAY, bakedModel);
 		iRenderTypeBuffer.finish();
+		matrixStack.pop();
 
 	}
 

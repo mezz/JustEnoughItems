@@ -1,10 +1,13 @@
 package mezz.jei.plugins.debug;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.client.gui.widget.ExtendedButton;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
@@ -109,30 +112,30 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
-	public void draw(DebugRecipe recipe, double mouseX, double mouseY) {
+	public void draw(DebugRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
 		IJeiRuntime runtime = JeiDebugPlugin.jeiRuntime;
 		if (runtime != null) {
 			IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
 			Minecraft minecraft = Minecraft.getInstance();
-			minecraft.fontRenderer.drawString(ingredientFilter.getFilterText(), 20, 52, 0);
+			minecraft.fontRenderer.func_238421_b_(matrixStack, ingredientFilter.getFilterText(), 20, 52, 0);
 
 			IIngredientListOverlay ingredientListOverlay = runtime.getIngredientListOverlay();
 			Object ingredientUnderMouse = ingredientListOverlay.getIngredientUnderMouse();
 			if (ingredientUnderMouse != null) {
-				drawIngredientName(minecraft, ingredientUnderMouse);
+				drawIngredientName(minecraft, matrixStack, ingredientUnderMouse);
 			}
 		}
 
 		ExtendedButton button = recipe.getButton();
-		button.render((int) mouseX, (int) mouseY, 0);
+		button.func_230430_a_(matrixStack, (int) mouseX, (int) mouseY, 0);
 	}
 
-	private <T> void drawIngredientName(Minecraft minecraft, T ingredient) {
+	private <T> void drawIngredientName(Minecraft minecraft, MatrixStack matrixStack, T ingredient) {
 		IIngredientManager ingredientManager = JeiDebugPlugin.ingredientManager;
 		if (ingredientManager != null) {
 			IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 			String jeiUid = ingredientHelper.getUniqueId(ingredient);
-			minecraft.fontRenderer.drawString(jeiUid, 50, 52, 0);
+			minecraft.fontRenderer.func_238421_b_(matrixStack, jeiUid, 50, 52, 0);
 		}
 	}
 
@@ -142,9 +145,9 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 
 		guiItemStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
 			if (input) {
-				tooltip.add(slotIndex + " Input itemStack");
+				tooltip.add(new StringTextComponent(slotIndex + " Input itemStack"));
 			} else {
-				tooltip.add(slotIndex + " Output itemStack");
+				tooltip.add(new StringTextComponent(slotIndex + " Output itemStack"));
 			}
 		});
 
@@ -156,9 +159,9 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
 		guiFluidStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
 			if (input) {
-				tooltip.add(slotIndex + " Input fluidStack");
+				tooltip.add(new StringTextComponent(slotIndex + " Input fluidStack"));
 			} else {
-				tooltip.add(slotIndex + " Output fluidStack");
+				tooltip.add(new StringTextComponent(slotIndex + " Output fluidStack"));
 			}
 		});
 
@@ -174,9 +177,9 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		IGuiIngredientGroup<DebugIngredient> debugIngredientsGroup = recipeLayout.getIngredientsGroup(DebugIngredient.TYPE);
 		debugIngredientsGroup.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
 			if (input) {
-				tooltip.add(slotIndex + " Input DebugIngredient");
+				tooltip.add(new StringTextComponent(slotIndex + " Input DebugIngredient"));
 			} else {
-				tooltip.add(slotIndex + " Output DebugIngredient");
+				tooltip.add(new StringTextComponent(slotIndex + " Output DebugIngredient"));
 			}
 		});
 
@@ -188,23 +191,24 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
-	public List<String> getTooltipStrings(DebugRecipe recipe, double mouseX, double mouseY) {
-		List<String> tooltipStrings = new ArrayList<>();
-		tooltipStrings.add("Debug Recipe Category Tooltip");
+	public List<ITextComponent> getTooltipStrings(DebugRecipe recipe, double mouseX, double mouseY) {
+		List<ITextComponent> tooltipStrings = new ArrayList<>();
+		tooltipStrings.add(new StringTextComponent("Debug Recipe Category Tooltip"));
 
 		if (recipe.checkHover(mouseX, mouseY)) {
-			tooltipStrings.add("button tooltip!");
+			tooltipStrings.add(new StringTextComponent("button tooltip!"));
 		} else {
-			tooltipStrings.add(TextFormatting.BOLD + "tooltip debug");
+			StringTextComponent debug = new StringTextComponent("tooltip debug");
+			tooltipStrings.add(debug.func_240699_a_(TextFormatting.BOLD));
 		}
-		tooltipStrings.add(mouseX + ", " + mouseY);
+		tooltipStrings.add(new StringTextComponent(mouseX + ", " + mouseY));
 		return tooltipStrings;
 	}
 
 	@Override
 	public boolean handleClick(DebugRecipe recipe, double mouseX, double mouseY, int mouseButton) {
 		ExtendedButton button = recipe.getButton();
-		if (mouseButton == 0 && button.mouseClicked(mouseX, mouseY, mouseButton)) {
+		if (mouseButton == 0 && button.func_231044_a_(mouseX, mouseY, mouseButton)) {
 			Minecraft minecraft = Minecraft.getInstance();
 			ClientPlayerEntity player = minecraft.player;
 			if (player != null) {

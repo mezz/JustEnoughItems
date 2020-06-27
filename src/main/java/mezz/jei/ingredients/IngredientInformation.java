@@ -9,6 +9,7 @@ import java.util.Set;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.util.StringUtils;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.Internal;
@@ -29,9 +30,10 @@ public final class IngredientInformation {
 
 	public static <T> List<String> getTooltipStrings(T ingredient, IIngredientRenderer<T> ingredientRenderer, Set<String> toRemove, IIngredientFilterConfig config) {
 		ITooltipFlag.TooltipFlags tooltipFlag = config.getSearchAdvancedTooltips() ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
-		List<String> tooltip = ingredientRenderer.getTooltip(ingredient, tooltipFlag);
+		List<ITextComponent> tooltip = ingredientRenderer.getTooltip(ingredient, tooltipFlag);
 		List<String> cleanTooltip = new ArrayList<>(tooltip.size());
-		for (String line : tooltip) {
+		for (ITextComponent lineComponent : tooltip) {
+			String line = lineComponent.getString();
 			line = removeChatFormatting(line);
 			line = Translator.toLowercaseWithLocale(line);
 			for (String excludeWord : toRemove) {

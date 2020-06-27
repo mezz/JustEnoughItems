@@ -1,5 +1,6 @@
 package mezz.jei.plugins.vanilla.brewing;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.BrewingStandScreen;
@@ -19,6 +20,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> {
 
@@ -88,16 +90,16 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 	}
 
 	@Override
-	public void draw(JeiBrewingRecipe recipe, double mouseX, double mouseY) {
-		blazeHeat.draw(5, 30);
-		bubbles.draw(8, 0);
-		arrow.draw(42, 2);
+	public void draw(JeiBrewingRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+		blazeHeat.draw(matrixStack, 5, 30);
+		bubbles.draw(matrixStack, 8, 0);
+		arrow.draw(matrixStack, 42, 2);
 
 		int brewingSteps = recipe.getBrewingSteps();
 		String brewingStepsString = brewingSteps < Integer.MAX_VALUE ? Integer.toString(brewingSteps) : "?";
-		String steps = Translator.translateToLocalFormatted("gui.jei.category.brewing.steps", brewingStepsString);
+		TranslationTextComponent steps = new TranslationTextComponent("gui.jei.category.brewing.steps", brewingStepsString);
 		Minecraft minecraft = Minecraft.getInstance();
-		minecraft.fontRenderer.drawString(steps, 70, 28, 0xFF808080);
+		minecraft.fontRenderer.func_238422_b_(matrixStack, steps, 70, 28, 0xFF808080);
 	}
 
 	@Override

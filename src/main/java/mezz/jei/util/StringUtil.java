@@ -8,6 +8,6 @@ public final class StringUtil {
 	}
 
 	public static String truncateStringToWidth(String string, int width, FontRenderer fontRenderer) {
-		return fontRenderer.trimStringToWidth(string, width - fontRenderer.getStringWidth("...")) + "...";
+		return fontRenderer.func_238413_a_(string, width - fontRenderer.getStringWidth("..."), false) + "...";
 	}
 }

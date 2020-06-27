@@ -1,5 +1,6 @@
 package mezz.jei.gui.ghost;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 
 import mezz.jei.util.MathUtil;
@@ -9,7 +10,7 @@ import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.vector.Vector2f;
 
 /**
  * Renders an item returning to the ingredient list after a failed ghost drag.
@@ -18,8 +19,8 @@ public class GhostIngredientReturning<T> {
 	private static final long DURATION_PER_SCREEN_WIDTH = 500; // milliseconds to move across a full screen
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final T ingredient;
-	private final Vec2f start;
-	private final Vec2f end;
+	private final Vector2f start;
+	private final Vector2f end;
 	private final long startTime;
 	private final long duration;
 
@@ -29,14 +30,14 @@ public class GhostIngredientReturning<T> {
 		if (origin != null) {
 			IIngredientRenderer<T> ingredientRenderer = ghostIngredientDrag.getIngredientRenderer();
 			T ingredient = ghostIngredientDrag.getIngredient();
-			Vec2f end = new Vec2f(origin.getX(), origin.getY());
-			Vec2f start = new Vec2f((float) mouseX - 8, (float) mouseY - 8);
+			Vector2f end = new Vector2f(origin.getX(), origin.getY());
+			Vector2f start = new Vector2f((float) mouseX - 8, (float) mouseY - 8);
 			return new GhostIngredientReturning<>(ingredientRenderer, ingredient, start, end);
 		}
 		return null;
 	}
 
-	private GhostIngredientReturning(IIngredientRenderer<T> ingredientRenderer, T ingredient, Vec2f start, Vec2f end) {
+	private GhostIngredientReturning(IIngredientRenderer<T> ingredientRenderer, T ingredient, Vector2f start, Vector2f end) {
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredient = ingredient;
 		this.start = start;
@@ -44,7 +45,7 @@ public class GhostIngredientReturning<T> {
 		this.startTime = System.currentTimeMillis();
 		Screen currentScreen = Minecraft.getInstance().currentScreen;
 		if (currentScreen != null) {
-			int width = currentScreen.width;
+			int width = currentScreen.field_230708_k_;
 			float durationPerPixel = DURATION_PER_SCREEN_WIDTH / (float) width;
 			float distance = (float) MathUtil.distance(start, end);
 			this.duration = Math.round(durationPerPixel * distance);
@@ -53,7 +54,7 @@ public class GhostIngredientReturning<T> {
 		}
 	}
 
-	public void drawItem(Minecraft minecraft) {
+	public void drawItem(Minecraft minecraft, MatrixStack matrixStack) {
 		long time = System.currentTimeMillis();
 		long elapsed = time - startTime;
 		double percent = Math.min(elapsed / (double) this.duration, 1);
@@ -63,7 +64,7 @@ public class GhostIngredientReturning<T> {
 		double y = start.y + Math.round(dy * percent);
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		itemRenderer.zLevel += 150.0F;
-		ingredientRenderer.render((int) x, (int) y, ingredient);
+		ingredientRenderer.render(matrixStack, (int) x, (int) y, ingredient);
 		itemRenderer.zLevel -= 150.0F;
 	}
 

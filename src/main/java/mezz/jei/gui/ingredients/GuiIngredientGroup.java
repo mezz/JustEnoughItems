@@ -1,5 +1,6 @@
 package mezz.jei.gui.ingredients;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -149,12 +150,12 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		return null;
 	}
 
-	public void draw(int xOffset, int yOffset, int highlightColor, int mouseX, int mouseY) {
+	public void draw(MatrixStack matrixStack, int xOffset, int yOffset, int highlightColor, int mouseX, int mouseY) {
 		for (GuiIngredient<T> ingredient : guiIngredients.values()) {
-			ingredient.draw(xOffset, yOffset);
+			ingredient.draw(matrixStack, xOffset, yOffset);
 			if (ingredient.isMouseOver(xOffset, yOffset, mouseX, mouseY)) {
 				ingredient.setTooltipCallback(tooltipCallback);
-				ingredient.drawHighlight(highlightColor, xOffset, yOffset);
+				ingredient.drawHighlight(matrixStack, highlightColor, xOffset, yOffset);
 			}
 		}
 	}

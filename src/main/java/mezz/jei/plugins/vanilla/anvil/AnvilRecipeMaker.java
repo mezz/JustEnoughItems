@@ -104,7 +104,7 @@ public final class AnvilRecipeMaker {
 	private static void getRepairRecipes(List<Object> recipes, IVanillaRecipeFactory vanillaRecipeFactory) {
 		Map<List<ItemStack>, List<ItemStack>> items = Maps.newHashMap();
 
-		List<ItemStack> repairWoods = ItemTags.PLANKS.getAllElements().stream()
+		List<ItemStack> repairWoods = ItemTags.PLANKS.func_230236_b_().stream()
 			.map(ItemStack::new)
 			.collect(Collectors.toList());
 		items.put(repairWoods, Lists.newArrayList(

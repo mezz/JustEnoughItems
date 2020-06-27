@@ -1,5 +1,6 @@
 package mezz.jei.render;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -99,7 +100,7 @@ public class IngredientListBatchRenderer {
 			ItemModelMesher itemModelMesher = Minecraft.getInstance().getItemRenderer().getItemModelMesher();
 			try {
 				bakedModel = itemModelMesher.getItemModel(itemStack);
-				bakedModel = bakedModel.getOverrides().getModelWithOverrides(bakedModel, itemStack, null, null);
+				bakedModel = bakedModel.getOverrides().func_239290_a_(bakedModel, itemStack, null, null);
 				Preconditions.checkNotNull(bakedModel, "IBakedModel must not be null.");
 			} catch (Throwable throwable) {
 				String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
@@ -147,7 +148,7 @@ public class IngredientListBatchRenderer {
 	/**
 	 * renders all ItemStacks
 	 */
-	public void render(Minecraft minecraft) {
+	public void render(Minecraft minecraft, MatrixStack matrixStack) {
 		RenderHelper.enableStandardItemLighting();
 
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
@@ -165,14 +166,14 @@ public class IngredientListBatchRenderer {
 		// 3d Items
 		RenderSystem.enableLighting();
 		for (ItemStackFastRenderer slot : renderItems3d) {
-			slot.renderItemAndEffectIntoGUI(editModeConfig, worldConfig);
+			slot.renderItemAndEffectIntoGUI(matrixStack, editModeConfig, worldConfig);
 		}
 
 		// 2d Items
 		RenderSystem.disableLighting();
 		RenderHelper.setupGuiFlatDiffuseLighting();
 		for (ItemStackFastRenderer slot : renderItems2d) {
-			slot.renderItemAndEffectIntoGUI(editModeConfig, worldConfig);
+			slot.renderItemAndEffectIntoGUI(matrixStack, editModeConfig, worldConfig);
 		}
 		RenderHelper.setupGui3DDiffuseLighting();
 
@@ -199,7 +200,7 @@ public class IngredientListBatchRenderer {
 
 		// other rendering
 		for (IngredientListElementRenderer slot : renderOther) {
-			slot.renderSlow(editModeConfig, worldConfig);
+			slot.renderSlow(matrixStack, editModeConfig, worldConfig);
 		}
 
 		RenderHelper.disableStandardItemLighting();
