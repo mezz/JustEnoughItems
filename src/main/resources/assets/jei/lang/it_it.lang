@@ -8,10 +8,10 @@ jei.tooltip.liquid.amount=%,d mB
 jei.tooltip.transfer=Sposta item
 jei.tooltip.recipe.ore.dict=Accetta: %s
 jei.tooltip.item.colors=Colori: %s
-jei.tooltip.shapeless.recipe=Ricetta informe
+jei.tooltip.shapeless.recipe=Ricetta Senza Forma
 jei.tooltip.cheat.mode.button.enabled=Modalita' cheat
-jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
-jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Premi %s per attivarla/disattivarla.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%-clicca qui per attivarla/disattivarla.
 jei.tooltip.recipe.by=Recipe By: %s
 jei.tooltip.recipe.id=Recipe ID: %s
 jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
@@ -23,13 +23,13 @@ jei.tooltip.error.recipe.transfer.missing=Items mancanti
 jei.tooltip.error.recipe.transfer.inventory.full=L'inventario e' pieno
 jei.tooltip.error.recipe.transfer.unknown=Errore sconosciuto, guarda i log
 jei.tooltip.error.recipe.transfer.no.server=Nel server deve essere installato JEI
-jei.tooltip.error.recipe.transfer.too.large.player.inventory=Recipe is too large to craft in the 2x2 player crafting grid.
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=La ricetta è troppo grande per essere fatta in una griglia 2x2.
 jei.tooltip.error.crash=Tooltip error, see log
 
 # Error Messages
-jei.chat.error.command.too.long=Affinche' questo comando possa essere gestito, nel server deve essere installato JEI. Per Minecraft e' troppo lungo
-jei.chat.error.no.cheat.permission.1=You do not have permission to use JEI's Cheat Mode.
-jei.chat.error.no.cheat.permission.2=Permission is given to players who can /give items or are in Creative Mode.
+jei.chat.error.command.too.long=Affinche' questo comando possa essere fatto, nel server deve essere installato JEI. Per Minecraft e' troppo lungo
+jei.chat.error.no.cheat.permission.1=Non hai il permesso per usare la cheat mode della JEI.
+jei.chat.error.no.cheat.permission.2=Il permesso e' dato a chi è in Creative o a chi può utilizzare il commando /give.
 
 # Key Bindings
 key.jei.toggleOverlay=(Dis)attiva la lista di Item in sovraimpressione
@@ -38,8 +38,8 @@ key.jei.showRecipe=Mostra la ricetta dell'item
 key.jei.showUses=Mostra gli usi dell'item
 key.jei.recipeBack=Torna alla ricetta precedente
 key.jei.toggleCheatMode=(Dis)attiva la modalita' cheat
-key.jei.previousPage=Show Previous Page
-key.jei.nextPage=Show Next Page
+key.jei.previousPage=Mostra la pagina precedente
+key.jei.nextPage=Mostra la pagina successiva 
 
 # Config
 config.jei.default=Default
