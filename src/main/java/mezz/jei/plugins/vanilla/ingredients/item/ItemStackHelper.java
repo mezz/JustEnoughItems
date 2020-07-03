@@ -15,8 +15,6 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagCollection;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
@@ -161,8 +159,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public Collection<ResourceLocation> getTags(ItemStack ingredient) {
-		TagCollection<Item> collection = ItemTags.getCollection();
-		return collection.getOwningTags(ingredient.getItem());
+		return ingredient.getItem().getTags();
 	}
 
 	@Override

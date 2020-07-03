@@ -1,6 +1,7 @@
 package mezz.jei.plugins.vanilla.ingredients.fluid;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import java.text.NumberFormat;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 
 public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
+	private static final NumberFormat nf = NumberFormat.getIntegerInstance();
 	private static final int TEX_WIDTH = 16;
 	private static final int TEX_HEIGHT = 16;
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
@@ -182,10 +184,10 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 
 		int amount = fluidStack.getAmount();
 		if (tooltipMode == TooltipMode.SHOW_AMOUNT_AND_CAPACITY) {
-			TranslationTextComponent amountString = new TranslationTextComponent("jei.tooltip.liquid.amount.with.capacity", amount, capacityMb);
+			TranslationTextComponent amountString = new TranslationTextComponent("jei.tooltip.liquid.amount.with.capacity", nf.format(amount), nf.format(capacityMb));
 			tooltip.add(amountString.func_240699_a_(TextFormatting.GRAY));
 		} else if (tooltipMode == TooltipMode.SHOW_AMOUNT) {
-			TranslationTextComponent amountString = new TranslationTextComponent("jei.tooltip.liquid.amount", amount);
+			TranslationTextComponent amountString = new TranslationTextComponent("jei.tooltip.liquid.amount", nf.format(amount));
 			tooltip.add(amountString.func_240699_a_(TextFormatting.GRAY));
 		}
 
