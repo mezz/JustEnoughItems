@@ -29,6 +29,8 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	@Override
 	public void render(MatrixStack matrixStack, int xPosition, int yPosition, @Nullable ItemStack ingredient) {
 		if (ingredient != null) {
+			RenderSystem.pushMatrix();
+			RenderSystem.multMatrix(matrixStack.getLast().getMatrix());
 			RenderSystem.enableDepthTest();
 			RenderHelper.enableStandardItemLighting();
 			Minecraft minecraft = Minecraft.getInstance();
@@ -38,6 +40,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 			itemRenderer.renderItemOverlayIntoGUI(font, ingredient, xPosition, yPosition, null);
 			RenderSystem.disableBlend();
 			RenderHelper.disableStandardItemLighting();
+			RenderSystem.popMatrix();
 		}
 	}
 
