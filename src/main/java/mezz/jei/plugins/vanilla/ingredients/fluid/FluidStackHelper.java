@@ -1,5 +1,6 @@
 package mezz.jei.plugins.vanilla.ingredients.fluid;
 
+import java.util.Collection;
 import javax.annotation.Nullable;
 import java.util.Collections;
 
@@ -108,6 +109,11 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		FluidStack copy = this.copyIngredient(ingredient);
 		copy.setAmount(FluidAttributes.BUCKET_VOLUME);
 		return copy;
+	}
+
+	@Override
+	public Collection<ResourceLocation> getTags(FluidStack ingredient) {
+		return ingredient.getFluid().getTags();
 	}
 
 	@Override
