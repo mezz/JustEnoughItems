@@ -221,3 +221,6 @@ test {
 	include 'mezz/jei/**'
 	exclude 'mezz/jei/lib/**'
 }
+
+//Include resources
+sourceSets { main { output.resourcesDir = output.classesDir } }
