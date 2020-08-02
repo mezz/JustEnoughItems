@@ -222,5 +222,5 @@ test {
 	exclude 'mezz/jei/lib/**'
 }
 
-//Include resources
+// Hack to include resources for Forge 1.12.2 using FG3
 sourceSets { main { output.resourcesDir = output.classesDir } }
