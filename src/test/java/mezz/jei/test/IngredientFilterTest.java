@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.ingredients.RegisteredIngredient;
 import net.minecraft.util.NonNullList;
 
 import mezz.jei.api.helpers.IModIdHelper;
@@ -54,7 +55,8 @@ public class IngredientFilterTest {
 
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
 		this.modIdHelper = new TestModIdHelper();
-		this.ingredientManager = modIngredientRegistration.createIngredientManager(modIdHelper, blacklist, true);
+		List<RegisteredIngredient<?>> registeredIngredients = modIngredientRegistration.getRegisteredIngredients();
+		this.ingredientManager =  new IngredientManager(modIdHelper, blacklist, registeredIngredients, true);
 
 		this.baseList = IngredientListElementFactory.createBaseList(ingredientManager);
 

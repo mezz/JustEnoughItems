@@ -7,7 +7,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -17,7 +16,6 @@ import mezz.jei.util.ErrorUtil;
 
 public class ModIngredientRegistration implements IModIngredientRegistration {
 	private final List<RegisteredIngredient<?>> registeredIngredients = new ArrayList<>();
-	/** to preserve the order that types were registered in */
 	private final Set<IIngredientType<?>> registeredIngredientSet = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final ISubtypeManager subtypeManager;
 
@@ -44,12 +42,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 		return subtypeManager;
 	}
 
-	public IngredientManager createIngredientManager(IModIdHelper modIdHelper, IngredientBlacklistInternal blacklist, boolean enableDebugLogs) {
-		return new IngredientManager(
-			modIdHelper,
-			blacklist,
-			registeredIngredients,
-			enableDebugLogs
-		);
+	public List<RegisteredIngredient<?>> getRegisteredIngredients() {
+		return registeredIngredients;
 	}
 }

@@ -3,6 +3,7 @@ package mezz.jei.load;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import mezz.jei.ingredients.RegisteredIngredient;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
@@ -91,7 +92,8 @@ public class PluginLoader {
 
 		ModIngredientRegistration modIngredientManager = new ModIngredientRegistration(subtypeManager);
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(modIngredientManager));
-		ingredientManager = modIngredientManager.createIngredientManager(modIdHelper, blacklist, debugMode);
+		List<RegisteredIngredient<?>> registeredIngredients = modIngredientManager.getRegisteredIngredients();
+		ingredientManager =  new IngredientManager(modIdHelper, blacklist, registeredIngredients, debugMode);
 		Internal.setIngredientManager(ingredientManager);
 
 		StackHelper stackHelper = new StackHelper(subtypeManager);
