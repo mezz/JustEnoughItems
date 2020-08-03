@@ -1,31 +1,37 @@
 package mezz.jei.gui.ingredients;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.gui.Focus;
+import mezz.jei.gui.recipes.FocusedRecipes;
+import mezz.jei.util.ErrorUtil;
+
 import javax.annotation.Nullable;
 import java.util.List;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.gui.Focus;
-import mezz.jei.util.ErrorUtil;
-
 public class IngredientLookupState {
+	private final IRecipeManager recipeManager;
 	@Nullable
 	private final Focus<?> focus;
-	private final ImmutableList<IRecipeCategory> recipeCategories;
+	private final ImmutableList<IRecipeCategory<?>> recipeCategories;
 
 	private int recipeCategoryIndex;
 	private int recipeIndex;
 	private int recipesPerPage;
+	private FocusedRecipes<?> focusedRecipes;
 
-	public IngredientLookupState(@Nullable Focus<?> focus, List<IRecipeCategory> recipeCategories, int recipeCategoryIndex, int recipeIndex) {
+	public IngredientLookupState(IRecipeManager recipeManager, @Nullable Focus<?> focus, List<IRecipeCategory<?>> recipeCategories, int recipeCategoryIndex, int recipeIndex) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 		Preconditions.checkArgument(recipeCategoryIndex >= 0, "Recipe category index cannot be negative.");
 		Preconditions.checkArgument(recipeIndex >= 0, "Recipe index cannot be negative.");
+		this.recipeManager = recipeManager;
 		this.focus = focus;
 		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
-		this.setRecipeCategoryIndex(recipeCategoryIndex);
-		this.setRecipeIndex(recipeIndex);
+		this.recipeCategoryIndex = recipeCategoryIndex;
+		this.recipeIndex = recipeIndex;
+		this.focusedRecipes = updateFocusedRecipes();
 	}
 
 	@Nullable
@@ -33,7 +39,7 @@ public class IngredientLookupState {
 		return focus;
 	}
 
-	public ImmutableList<IRecipeCategory> getRecipeCategories() {
+	public ImmutableList<IRecipeCategory<?>> getRecipeCategories() {
 		return recipeCategories;
 	}
 
@@ -43,6 +49,8 @@ public class IngredientLookupState {
 
 	public void setRecipeCategoryIndex(int recipeCategoryIndex) {
 		this.recipeCategoryIndex = recipeCategoryIndex;
+		this.recipeIndex = 0;
+		this.focusedRecipes = updateFocusedRecipes();
 	}
 
 	public int getRecipeIndex() {
@@ -59,5 +67,14 @@ public class IngredientLookupState {
 
 	public void setRecipesPerPage(int recipesPerPage) {
 		this.recipesPerPage = recipesPerPage;
+	}
+
+	private FocusedRecipes<?> updateFocusedRecipes() {
+		final IRecipeCategory<?> recipeCategory = recipeCategories.get(recipeCategoryIndex);
+		return FocusedRecipes.create(focus, recipeManager, recipeCategory);
+	}
+
+	public FocusedRecipes<?> getFocusedRecipes() {
+		return focusedRecipes;
 	}
 }

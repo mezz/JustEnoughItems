@@ -25,7 +25,7 @@ public final class AnnotatedInstanceUtil {
 	}
 
 	@SuppressWarnings("SameParameterValue")
-	private static <T> List<T> getInstances(Class annotationClass, Class<T> instanceClass) {
+	private static <T> List<T> getInstances(Class<?> annotationClass, Class<T> instanceClass) {
 		Type annotationType = Type.getType(annotationClass);
 		List<ModFileScanData> allScanData = ModList.get().getAllScanData();
 		List<String> pluginClassNames = new ArrayList<>();

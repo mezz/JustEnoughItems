@@ -36,7 +36,7 @@ public abstract class RecipeGuiTab implements IMouseHandler {
 		return false;
 	}
 
-	public abstract boolean isSelected(IRecipeCategory selectedCategory);
+	public abstract boolean isSelected(IRecipeCategory<?> selectedCategory);
 
 	public void draw(boolean selected, MatrixStack matrixStack, int mouseX, int mouseY) {
 		Textures textures = Internal.getTextures();

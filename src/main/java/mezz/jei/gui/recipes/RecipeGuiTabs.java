@@ -36,7 +36,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 	}
 
 	public void initLayout(RecipesGui recipesGui) {
-		ImmutableList<IRecipeCategory> categories = recipeGuiLogic.getRecipeCategories();
+		ImmutableList<IRecipeCategory<?>> categories = recipeGuiLogic.getRecipeCategories();
 		if (!categories.isEmpty()) {
 			int totalWidth = 0;
 			categoriesPerPage = 0;
@@ -59,7 +59,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 
 			pageCount = MathUtil.divideCeil(categories.size(), categoriesPerPage);
 
-			IRecipeCategory currentCategory = recipeGuiLogic.getSelectedRecipeCategory();
+			IRecipeCategory<?> currentCategory = recipeGuiLogic.getSelectedRecipeCategory();
 			int categoryIndex = categories.indexOf(currentCategory);
 			pageNumber = categoryIndex / categoriesPerPage;
 
@@ -79,7 +79,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 	private void updateLayout() {
 		tabs.clear();
 
-		ImmutableList<IRecipeCategory> categories = recipeGuiLogic.getRecipeCategories();
+		ImmutableList<IRecipeCategory<?>> categories = recipeGuiLogic.getRecipeCategories();
 
 		int tabX = area.getX();
 
@@ -89,7 +89,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 			if (index >= categories.size()) {
 				break;
 			}
-			IRecipeCategory category = categories.get(index);
+			IRecipeCategory<?> category = categories.get(index);
 			RecipeGuiTab tab = new RecipeCategoryTab(recipeGuiLogic, category, tabX, area.getY());
 			this.tabs.add(tab);
 			tabX += RecipeGuiTab.TAB_WIDTH;
@@ -98,8 +98,9 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 		pageNavigation.updatePageState();
 	}
 
+	@SuppressWarnings("deprecation")
 	public void draw(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
-		IRecipeCategory selectedCategory = recipeGuiLogic.getSelectedRecipeCategory();
+		IRecipeCategory<?> selectedCategory = recipeGuiLogic.getSelectedRecipeCategory();
 
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 

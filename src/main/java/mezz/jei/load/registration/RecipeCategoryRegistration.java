@@ -17,8 +17,8 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.util.ErrorUtil;
 
 public class RecipeCategoryRegistration implements IRecipeCategoryRegistration {
-	private final List<IRecipeCategory> recipeCategories = new ArrayList<>();
-	private final Map<ResourceLocation, IRecipeCategory> recipeCategoriesByUid = new HashMap<>();
+	private final List<IRecipeCategory<?>> recipeCategories = new ArrayList<>();
+	private final Map<ResourceLocation, IRecipeCategory<?>> recipeCategoriesByUid = new HashMap<>();
 	private final IJeiHelpers jeiHelpers;
 
 	public RecipeCategoryRegistration(IJeiHelpers jeiHelpers) {
@@ -26,10 +26,10 @@ public class RecipeCategoryRegistration implements IRecipeCategoryRegistration {
 	}
 
 	@Override
-	public void addRecipeCategories(IRecipeCategory... recipeCategories) {
+	public void addRecipeCategories(IRecipeCategory<?>... recipeCategories) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 
-		for (IRecipeCategory recipeCategory : recipeCategories) {
+		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
 			ResourceLocation uid = recipeCategory.getUid();
 			Preconditions.checkNotNull(uid, "Recipe category UID cannot be null %s", recipeCategory);
 			Class<?> recipeClass = recipeCategory.getRecipeClass();
@@ -49,11 +49,11 @@ public class RecipeCategoryRegistration implements IRecipeCategoryRegistration {
 		return jeiHelpers;
 	}
 
-	public ImmutableList<IRecipeCategory> getRecipeCategories() {
+	public ImmutableList<IRecipeCategory<?>> getRecipeCategories() {
 		return ImmutableList.copyOf(recipeCategories);
 	}
 
-	public ImmutableMap<ResourceLocation, IRecipeCategory> getRecipeCategoriesByUid() {
+	public ImmutableMap<ResourceLocation, IRecipeCategory<?>> getRecipeCategoriesByUid() {
 		return ImmutableMap.copyOf(recipeCategoriesByUid);
 	}
 }

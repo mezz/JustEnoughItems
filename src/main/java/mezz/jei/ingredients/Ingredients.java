@@ -1,24 +1,20 @@
 package mezz.jei.ingredients;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class Ingredients implements IIngredients {
-	private final Map<IIngredientType, List<List>> inputs = new IdentityHashMap<>();
-	private final Map<IIngredientType, List<List>> outputs = new IdentityHashMap<>();
+	private final List<IngredientsForType<?>> inputs = new ArrayList<>();
+	private final List<IngredientsForType<?>> outputs = new ArrayList<>();
 
 	@Override
 	public <T> void setInput(IIngredientType<T> ingredientType, T input) {
@@ -27,8 +23,8 @@ public class Ingredients implements IIngredients {
 
 	@Override
 	public <T> void setInputLists(IIngredientType<T> ingredientType, List<List<T>> inputs) {
-		List<List> expandedInputs = new ArrayList<>(inputs);
-		this.inputs.put(ingredientType, expandedInputs);
+		List<List<T>> expandedInputs = new ArrayList<>(inputs);
+		setIngredients(ingredientType, this.inputs, expandedInputs);
 	}
 
 	@Override
@@ -39,17 +35,17 @@ public class Ingredients implements IIngredients {
 			List<ItemStack> expandedInput = Arrays.asList(stacks);
 			inputLists.add(expandedInput);
 		}
-		setInputLists(VanillaTypes.ITEM, inputLists);
+		setIngredients(VanillaTypes.ITEM, this.inputs, inputLists);
 	}
 
 	@Override
 	public <T> void setInputs(IIngredientType<T> ingredientType, List<T> inputs) {
-		List<List> expandedInputs = new ArrayList<>();
+		List<List<T>> expandedInputs = new ArrayList<>();
 		for (T input : inputs) {
 			List<T> expandedInput = Collections.singletonList(input);
 			expandedInputs.add(expandedInput);
 		}
-		this.inputs.put(ingredientType, expandedInputs);
+		setIngredients(ingredientType, this.inputs, expandedInputs);
 	}
 
 	@Override
@@ -59,62 +55,64 @@ public class Ingredients implements IIngredients {
 
 	@Override
 	public <T> void setOutputs(IIngredientType<T> ingredientType, List<T> outputs) {
-		List<List> expandedOutputs = new ArrayList<>();
+		List<List<T>> expandedOutputs = new ArrayList<>();
 		for (T output : outputs) {
 			List<T> expandedOutput = Collections.singletonList(output);
 			expandedOutputs.add(expandedOutput);
 		}
-
-		this.outputs.put(ingredientType, expandedOutputs);
+		setIngredients(ingredientType, this.outputs, expandedOutputs);
 	}
 
 	@Override
 	public <T> void setOutputLists(IIngredientType<T> ingredientType, List<List<T>> outputs) {
-		List<List> expandedOutputs = new ArrayList<>(outputs);
-		this.outputs.put(ingredientType, expandedOutputs);
+		List<List<T>> expandedOutputs = new ArrayList<>(outputs);
+		setIngredients(ingredientType, this.outputs, expandedOutputs);
 	}
 
 	@Override
 	public <T> List<List<T>> getInputs(IIngredientType<T> ingredientType) {
-		@SuppressWarnings("unchecked")
-		List<List<T>> inputs = (List<List<T>>) (Object) this.inputs.get(ingredientType);
-		if (inputs == null) {
-			return Collections.emptyList();
-		}
-		return inputs;
+		return getIngredients(ingredientType, this.inputs);
 	}
 
 	@Override
 	public <T> List<List<T>> getOutputs(IIngredientType<T> ingredientType) {
-		@SuppressWarnings("unchecked")
-		List<List<T>> outputs = (List<List<T>>) (Object) this.outputs.get(ingredientType);
-		if (outputs == null) {
-			return Collections.emptyList();
-		}
+		return getIngredients(ingredientType, this.outputs);
+	}
+
+	public List<IngredientsForType<?>> getInputIngredients() {
+		return inputs;
+	}
+
+	public List<IngredientsForType<?>> getOutputIngredients() {
 		return outputs;
 	}
 
-	public Map<IIngredientType, List> getInputIngredients() {
-		Map<IIngredientType, List> inputIngredients = new IdentityHashMap<>();
-		for (Map.Entry<IIngredientType, List<List>> entry : inputs.entrySet()) {
-			IIngredientType ingredientType = entry.getKey();
-			List<Object> flatIngredients = entry.getValue().stream()
-				.flatMap(Collection::stream)
-				.collect(Collectors.toList());
-			inputIngredients.put(ingredientType, flatIngredients);
+	private static <T> void setIngredients(IIngredientType<T> ingredientType, List<IngredientsForType<?>> ingredientsForTypes, List<List<T>> ingredients) {
+		IngredientsForType<T> recipeIngredients = getIngredientsForType(ingredientType, ingredientsForTypes);
+		if (recipeIngredients == null) {
+			ingredientsForTypes.add(new IngredientsForType<>(ingredientType, ingredients));
+		} else {
+			recipeIngredients.setIngredients(ingredients);
 		}
-		return inputIngredients;
 	}
 
-	public Map<IIngredientType, List> getOutputIngredients() {
-		Map<IIngredientType, List> outputIngredients = new IdentityHashMap<>();
-		for (Map.Entry<IIngredientType, List<List>> entry : outputs.entrySet()) {
-			IIngredientType ingredientType = entry.getKey();
-			List<Object> flatIngredients = entry.getValue().stream()
-				.flatMap(Collection::stream)
-				.collect(Collectors.toList());
-			outputIngredients.put(ingredientType, flatIngredients);
+	private static <T> List<List<T>> getIngredients(IIngredientType<T> ingredientType, List<IngredientsForType<?>> ingredientsForTypes) {
+		IngredientsForType<T> recipeIngredients = getIngredientsForType(ingredientType, ingredientsForTypes);
+		if (recipeIngredients == null) {
+			return Collections.emptyList();
 		}
-		return outputIngredients;
+		return recipeIngredients.getIngredients();
+	}
+
+	@Nullable
+	private static <T> IngredientsForType<T> getIngredientsForType(IIngredientType<T> ingredientType, List<IngredientsForType<?>> ingredientsForTypes) {
+		for (IngredientsForType<?> i : ingredientsForTypes) {
+			if (i.getIngredientType() == ingredientType) {
+				@SuppressWarnings("unchecked")
+				IngredientsForType<T> ingredientsForType = (IngredientsForType<T>) i;
+				return ingredientsForType;
+			}
+		}
+		return null;
 	}
 }

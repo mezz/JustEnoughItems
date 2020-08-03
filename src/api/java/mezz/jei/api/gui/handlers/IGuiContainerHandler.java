@@ -15,7 +15,7 @@ import mezz.jei.api.registration.IModIngredientRegistration;
  * Allows plugins to change how JEI is displayed next to their mod's guis.
  * Register your implementation with {@link IGuiHandlerRegistration#addGuiContainerHandler(Class, IGuiContainerHandler)}.
  */
-public interface IGuiContainerHandler<T extends ContainerScreen> {
+public interface IGuiContainerHandler<T extends ContainerScreen<?>> {
 	/**
 	 * Give JEI information about extra space that the {@link ContainerScreen} takes up.
 	 * Used for moving JEI out of the way of extra things like gui tabs.

@@ -25,7 +25,7 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 		if (!(guiScreen instanceof ContainerScreen)) {
 			return null;
 		}
-		ContainerScreen guiContainer = (ContainerScreen) guiScreen;
+		ContainerScreen<?> guiContainer = (ContainerScreen<?>) guiScreen;
 		Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
 		if (slotUnderMouse != null) {
 			ItemStack stack = slotUnderMouse.getStack();

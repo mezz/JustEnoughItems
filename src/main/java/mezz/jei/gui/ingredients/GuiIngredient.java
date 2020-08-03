@@ -186,6 +186,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public void drawHighlight(MatrixStack matrixStack, int color, int xOffset, int yOffset) {
 		int x = rect.getX() + xOffset + xPadding;
 		int y = rect.getY() + yOffset + yPadding;
@@ -202,6 +203,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private void drawTooltip(MatrixStack matrixStack, int xOffset, int yOffset, int mouseX, int mouseY, T value) {
 		try {
 			RenderSystem.disableDepthTest();

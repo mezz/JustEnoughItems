@@ -22,7 +22,7 @@ public interface IRecipeGuiLogic {
 
 	void nextRecipeCategory();
 
-	void setRecipeCategory(IRecipeCategory category);
+	void setRecipeCategory(IRecipeCategory<?> category);
 
 	boolean hasMultiplePages();
 
@@ -40,13 +40,13 @@ public interface IRecipeGuiLogic {
 
 	boolean setCategoryFocus(List<ResourceLocation> recipeCategoryUids);
 
-	IRecipeCategory getSelectedRecipeCategory();
+	IRecipeCategory<?> getSelectedRecipeCategory();
 
-	ImmutableList<IRecipeCategory> getRecipeCategories();
+	ImmutableList<IRecipeCategory<?>> getRecipeCategories();
 
 	List<Object> getRecipeCatalysts();
 
-	List<Object> getRecipeCatalysts(IRecipeCategory recipeCategory);
+	List<Object> getRecipeCatalysts(IRecipeCategory<?> recipeCategory);
 
-	List<RecipeLayout> getRecipeLayouts(int posX, int posY, int spacingY);
+	List<RecipeLayout<?>> getRecipeLayouts(int posX, int posY, int spacingY);
 }

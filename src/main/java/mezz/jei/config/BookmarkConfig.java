@@ -66,7 +66,7 @@ public class BookmarkConfig {
 			return;
 		}
 
-		Collection<IIngredientType> otherIngredientTypes = new ArrayList<>(ingredientManager.getRegisteredIngredientTypes());
+		Collection<IIngredientType<?>> otherIngredientTypes = new ArrayList<>(ingredientManager.getRegisteredIngredientTypes());
 		otherIngredientTypes.remove(VanillaTypes.ITEM);
 
 		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM);
@@ -108,7 +108,7 @@ public class BookmarkConfig {
 	}
 
 	@Nullable
-	private Object getUnknownIngredientByUid(IngredientManager ingredientManager, Collection<IIngredientType> ingredientTypes, String uid) {
+	private Object getUnknownIngredientByUid(IngredientManager ingredientManager, Collection<IIngredientType<?>> ingredientTypes, String uid) {
 		for (IIngredientType<?> ingredientType : ingredientTypes) {
 			Object ingredient = ingredientManager.getIngredientByUid(ingredientType, uid);
 			if (ingredient != null) {

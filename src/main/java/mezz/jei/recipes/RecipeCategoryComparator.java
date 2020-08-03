@@ -12,9 +12,9 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 public class RecipeCategoryComparator implements Comparator<ResourceLocation> {
 	private final ImmutableList<ResourceLocation> recipeCategories;
 
-	public RecipeCategoryComparator(List<IRecipeCategory> recipeCategories) {
+	public RecipeCategoryComparator(List<IRecipeCategory<?>> recipeCategories) {
 		List<ResourceLocation> recipeCategoryUids = new ArrayList<>();
-		for (IRecipeCategory recipeCategory : recipeCategories) {
+		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
 			recipeCategoryUids.add(recipeCategory.getUid());
 		}
 		this.recipeCategories = ImmutableList.copyOf(recipeCategoryUids);

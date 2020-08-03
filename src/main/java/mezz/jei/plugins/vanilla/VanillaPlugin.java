@@ -148,7 +148,7 @@ public class VanillaPlugin implements IModPlugin {
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
 		craftingCategory = new CraftingRecipeCategory(guiHelper, modIdHelper);
-		stonecuttingCategory = new StoneCuttingRecipeCategory(guiHelper, modIdHelper);
+		stonecuttingCategory = new StoneCuttingRecipeCategory(guiHelper);
 		furnaceCategory = new FurnaceSmeltingCategory(guiHelper);
 		smokingCategory = new SmokingCategory(guiHelper);
 		blastingCategory = new BlastingCategory(guiHelper);
@@ -207,6 +207,8 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipeClickArea(BlastFurnaceScreen.class, 78, 32, 28, 23, VanillaRecipeCategoryUid.BLASTING, VanillaRecipeCategoryUid.FUEL);
 		registration.addRecipeClickArea(AnvilScreen.class, 102, 48, 22, 15, VanillaRecipeCategoryUid.ANVIL);
 
+		// InventoryEffectRendererGuiHandler handles an abstract class, so it needs to use the rawtype here.
+		//noinspection rawtypes,unchecked
 		registration.addGuiContainerHandler(DisplayEffectsScreen.class, new InventoryEffectRendererGuiHandler());
 		registration.addGuiContainerHandler(CraftingScreen.class, new RecipeBookGuiHandler<>());
 		registration.addGuiContainerHandler(InventoryScreen.class, new RecipeBookGuiHandler<>());

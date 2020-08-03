@@ -76,7 +76,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 	}
 
 	@Override
-	public void drawOnForeground(ContainerScreen gui, int mouseX, int mouseY) {
+	public void drawOnForeground(ContainerScreen<?> gui, int mouseX, int mouseY) {
 	}
 
 	@Override
@@ -186,7 +186,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 	@Override
 	public Object getIngredientUnderMouse() {
 		if (isListDisplayed()) {
-			IIngredientListElement elementUnderMouse = this.contents.getElementUnderMouse();
+			IIngredientListElement<?> elementUnderMouse = this.contents.getElementUnderMouse();
 			if (elementUnderMouse != null) {
 				return elementUnderMouse.getIngredient();
 			}

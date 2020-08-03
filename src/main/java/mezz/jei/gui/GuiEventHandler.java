@@ -91,7 +91,7 @@ public class GuiEventHandler {
 	 */
 	@SubscribeEvent
 	public void onDrawForegroundEvent(GuiContainerEvent.DrawForeground event) {
-		ContainerScreen gui = event.getGuiContainer();
+		ContainerScreen<?> gui = event.getGuiContainer();
 		Minecraft minecraft = gui.getMinecraft();
 		if (minecraft == null) {
 			return;
@@ -124,7 +124,7 @@ public class GuiEventHandler {
 		drawnOnBackground = false;
 
 		if (gui instanceof ContainerScreen) {
-			ContainerScreen guiContainer = (ContainerScreen) gui;
+			ContainerScreen<?> guiContainer = (ContainerScreen<?>) gui;
 			IGuiClickableArea guiClickableArea = guiScreenHelper.getGuiClickableArea(guiContainer, event.getMouseX() - guiContainer.getGuiLeft(), event.getMouseY() - guiContainer.getGuiTop());
 			if (guiClickableArea != null) {
 				List<ITextComponent> tooltipStrings = guiClickableArea.getTooltipStrings();

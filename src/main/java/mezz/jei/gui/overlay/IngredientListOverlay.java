@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.ingredients.IIngredientType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
@@ -193,7 +194,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		}
 	}
 
-	public void drawOnForeground(Minecraft minecraft, MatrixStack matrixStack, ContainerScreen gui, int mouseX, int mouseY) {
+	public void drawOnForeground(Minecraft minecraft, MatrixStack matrixStack, ContainerScreen<?> gui, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
 			matrixStack.push();
 			matrixStack.translate(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
@@ -366,10 +367,21 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	@Override
 	public Object getIngredientUnderMouse() {
 		if (isListDisplayed()) {
-			IIngredientListElement elementUnderMouse = this.contents.getElementUnderMouse();
+			IIngredientListElement<?> elementUnderMouse = this.contents.getElementUnderMouse();
 			if (elementUnderMouse != null) {
 				return elementUnderMouse.getIngredient();
 			}
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Nullable
+	@Override
+	public <T> T getIngredientUnderMouse(IIngredientType<T> ingredientType) {
+		Object ingredient = getIngredientUnderMouse();
+		if (ingredientType.getIngredientClass().isInstance(ingredient)) {
+			return (T) ingredient;
 		}
 		return null;
 	}
@@ -383,8 +395,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	public ImmutableList<Object> getVisibleIngredients() {
 		if (isListDisplayed()) {
 			ImmutableList.Builder<Object> visibleIngredients = ImmutableList.builder();
-			List<IIngredientListElement> visibleElements = this.contents.getVisibleElements();
-			for (IIngredientListElement element : visibleElements) {
+			List<IIngredientListElement<?>> visibleElements = this.contents.getVisibleElements();
+			for (IIngredientListElement<?> element : visibleElements) {
 				Object ingredient = element.getIngredient();
 				visibleIngredients.add(ingredient);
 			}

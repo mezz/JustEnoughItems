@@ -21,12 +21,12 @@ import mezz.jei.util.ErrorUtil;
 
 public class RecipeRegistration implements IRecipeRegistration {
 	private final ListMultiMap<ResourceLocation, Object> recipes = new ListMultiMap<>();
-	private final ImmutableMap<ResourceLocation, IRecipeCategory> recipeCategoriesByUid;
+	private final ImmutableMap<ResourceLocation, IRecipeCategory<?>> recipeCategoriesByUid;
 	private final IJeiHelpers jeiHelpers;
 	private final IIngredientManager ingredientManager;
 	private final IVanillaRecipeFactory vanillaRecipeFactory;
 
-	public RecipeRegistration(ImmutableMap<ResourceLocation, IRecipeCategory> recipeCategoriesByUid, IJeiHelpers jeiHelpers, IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory) {
+	public RecipeRegistration(ImmutableMap<ResourceLocation, IRecipeCategory<?>> recipeCategoriesByUid, IJeiHelpers jeiHelpers, IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory) {
 		this.recipeCategoriesByUid = recipeCategoriesByUid;
 		this.jeiHelpers = jeiHelpers;
 		this.ingredientManager = ingredientManager;
@@ -53,7 +53,7 @@ public class RecipeRegistration implements IRecipeRegistration {
 		ErrorUtil.checkNotNull(recipes, "recipes");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 
-		IRecipeCategory recipeCategory = this.recipeCategoriesByUid.get(recipeCategoryUid);
+		IRecipeCategory<?> recipeCategory = this.recipeCategoriesByUid.get(recipeCategoryUid);
 		if (recipeCategory == null) {
 			throw new NullPointerException("No recipe category has been registered for recipeCategoryUid " + recipeCategoryUid);
 		}

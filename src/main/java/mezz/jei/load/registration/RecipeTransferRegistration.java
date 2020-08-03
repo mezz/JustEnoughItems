@@ -17,7 +17,7 @@ import mezz.jei.transfer.BasicRecipeTransferInfo;
 import mezz.jei.util.ErrorUtil;
 
 public class RecipeTransferRegistration implements IRecipeTransferRegistration {
-	private final Table<Class, ResourceLocation, IRecipeTransferHandler> recipeTransferHandlers = Table.hashBasedTable();
+	private final Table<Class<?>, ResourceLocation, IRecipeTransferHandler<?>> recipeTransferHandlers = Table.hashBasedTable();
 	private final IStackHelper stackHelper;
 	private final IRecipeTransferHandlerHelper handlerHelper;
 	private final IJeiHelpers jeiHelpers;
@@ -72,7 +72,7 @@ public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 		this.recipeTransferHandlers.put(containerClass, Constants.UNIVERSAL_RECIPE_TRANSFER_UID, recipeTransferHandler);
 	}
 
-	public ImmutableTable<Class, ResourceLocation, IRecipeTransferHandler> getRecipeTransferHandlers() {
+	public ImmutableTable<Class<?>, ResourceLocation, IRecipeTransferHandler<?>> getRecipeTransferHandlers() {
 		return recipeTransferHandlers.toImmutable();
 	}
 }

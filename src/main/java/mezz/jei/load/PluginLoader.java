@@ -57,7 +57,7 @@ public class PluginLoader {
 	private final BookmarkConfig bookmarkConfig;
 	private final RecipeTransferRegistration recipeTransferRegistration;
 	private final GuiHandlerRegistration guiHandlerRegistration;
-	private final ImmutableList<IRecipeCategory> recipeCategories;
+	private final ImmutableList<IRecipeCategory<?>> recipeCategories;
 	private final ImmutableListMultimap<ResourceLocation, Object> recipeCatalysts;
 	private final ImmutableListMultimap<ResourceLocation, Object> recipes;
 	private final ImmutableList<IRecipeManagerPlugin> recipeManagerPlugins;
@@ -110,7 +110,7 @@ public class PluginLoader {
 		ErrorUtil.checkNotNull(craftingCategory, "vanilla crafting category");
 		VanillaCategoryExtensionRegistration vanillaCategoryExtensionRegistration = new VanillaCategoryExtensionRegistration(craftingCategory);
 		PluginCaller.callOnPlugins("Registering vanilla category extensions", plugins, p -> p.registerVanillaCategoryExtensions(vanillaCategoryExtensionRegistration));
-		ImmutableMap<ResourceLocation, IRecipeCategory> recipeCategoriesByUid = recipeCategoryRegistration.getRecipeCategoriesByUid();
+		ImmutableMap<ResourceLocation, IRecipeCategory<?>> recipeCategoriesByUid = recipeCategoryRegistration.getRecipeCategoriesByUid();
 		recipeCategories = recipeCategoryRegistration.getRecipeCategories();
 
 		RecipeRegistration recipeRegistration = new RecipeRegistration(recipeCategoriesByUid, jeiHelpers, ingredientManager, vanillaRecipeFactory);

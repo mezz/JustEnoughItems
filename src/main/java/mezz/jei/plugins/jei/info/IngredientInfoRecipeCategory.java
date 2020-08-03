@@ -20,6 +20,7 @@ import mezz.jei.gui.textures.Textures;
 import mezz.jei.util.Translator;
 import net.minecraft.util.text.ITextProperties;
 
+@SuppressWarnings("rawtypes")
 public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientInfoRecipe> {
 	public static final int recipeWidth = 160;
 	public static final int recipeHeight = 125;

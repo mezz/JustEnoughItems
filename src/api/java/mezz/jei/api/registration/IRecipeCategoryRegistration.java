@@ -13,5 +13,5 @@ public interface IRecipeCategoryRegistration {
 	/**
 	 * Add the recipe categories provided by this plugin.
 	 */
-	void addRecipeCategories(IRecipeCategory... recipeCategories);
+	void addRecipeCategories(IRecipeCategory<?>... recipeCategories);
 }

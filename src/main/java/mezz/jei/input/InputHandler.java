@@ -169,7 +169,7 @@ public class InputHandler {
 		}
 
 		if (guiScreen instanceof ContainerScreen) {
-			ContainerScreen guiContainer = (ContainerScreen) guiScreen;
+			ContainerScreen<?> guiContainer = (ContainerScreen<?>) guiScreen;
 			IGuiClickableArea clickableArea = guiScreenHelper.getGuiClickableArea(guiContainer, mouseX - guiContainer.getGuiLeft(), mouseY - guiContainer.getGuiTop());
 			if (clickableArea != null) {
 				clickableArea.onClick(Focus::new, recipesGui);

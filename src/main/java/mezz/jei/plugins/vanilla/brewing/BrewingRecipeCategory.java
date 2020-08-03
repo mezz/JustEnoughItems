@@ -121,6 +121,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 		/**
 		 * Similar to {@link BrewingStandScreen#BUBBLELENGTHS}
 		 */
+		@SuppressWarnings("JavadocReference")
 		private static final int[] BUBBLE_LENGTHS = new int[]{29, 23, 18, 13, 9, 5, 0};
 		private final ITickTimer internalTimer;
 

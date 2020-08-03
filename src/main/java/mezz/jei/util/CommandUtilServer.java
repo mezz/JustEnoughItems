@@ -148,6 +148,7 @@ public final class CommandUtilServer {
 	 *
 	 * @see GiveCommand#giveItem(CommandSource, ItemInput, Collection, int)
 	 */
+	@SuppressWarnings("JavadocReference")
 	private static void giveToInventory(PlayerEntity entityplayermp, ItemStack itemStack) {
 		ItemStack itemStackCopy = itemStack.copy();
 		boolean flag = entityplayermp.inventory.addItemStackToInventory(itemStack);

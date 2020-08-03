@@ -2,6 +2,7 @@ package mezz.jei.api.constants;
 
 import java.util.List;
 
+import net.minecraft.item.crafting.StonecuttingRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipe;

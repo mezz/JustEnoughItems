@@ -20,14 +20,14 @@ import mezz.jei.suffixtree.GeneralizedSuffixTree;
 
 public class IngredientFilterBackgroundBuilder {
 	private final Char2ObjectMap<PrefixedSearchTree> prefixedSearchTrees;
-	private final NonNullList<IIngredientListElement> elementList;
+	private final NonNullList<IIngredientListElement<?>> elementList;
 	private final IIngredientManager ingredientManager;
 	private final IModIdHelper modIdHelper;
 	private final Consumer<TickEvent.ClientTickEvent> onTickHandler;
 
 	public IngredientFilterBackgroundBuilder(
 		Char2ObjectMap<PrefixedSearchTree> prefixedSearchTrees,
-		NonNullList<IIngredientListElement> elementList,
+		NonNullList<IIngredientListElement<?>> elementList,
 		IIngredientManager ingredientManager,
 		IModIdHelper modIdHelper
 	) {

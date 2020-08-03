@@ -59,7 +59,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	private final IRecipeGuiLogic logic;
 
 	/* List of RecipeLayout to display */
-	private final List<RecipeLayout> recipeLayouts = new ArrayList<>();
+	private final List<RecipeLayout<?>> recipeLayouts = new ArrayList<>();
 
 	private String pageString = "1/1";
 	private String title = "";
@@ -219,15 +219,15 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		nextPage.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
 		previousPage.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
 
-		RecipeLayout hoveredLayout = null;
-		for (RecipeLayout recipeLayout : recipeLayouts) {
+		RecipeLayout<?> hoveredLayout = null;
+		for (RecipeLayout<?> recipeLayout : recipeLayouts) {
 			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
 				hoveredLayout = recipeLayout;
 			}
 			recipeLayout.drawRecipe(matrixStack, mouseX, mouseY);
 		}
 
-		GuiIngredient hoveredRecipeCatalyst = recipeCatalysts.draw(matrixStack, mouseX, mouseY);
+		GuiIngredient<?> hoveredRecipeCatalyst = recipeCatalysts.draw(matrixStack, mouseX, mouseY);
 
 		recipeGuiTabs.draw(field_230706_i_, matrixStack, mouseX, mouseY);
 
@@ -249,7 +249,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 			if ((mouseX >= guiLeft) && (mouseY >= guiTop) && (mouseX < guiLeft + xSize) && (mouseY < guiTop + ySize)) {
 				return true;
 			}
-			for (RecipeLayout recipeLayout : this.recipeLayouts) {
+			for (RecipeLayout<?> recipeLayout : this.recipeLayouts) {
 				if (recipeLayout.isMouseOver(mouseX, mouseY)) {
 					return true;
 				}
@@ -270,7 +270,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 			}
 
 			if (isMouseOver(mouseX, mouseY)) {
-				for (RecipeLayout recipeLayouts : this.recipeLayouts) {
+				for (RecipeLayout<?> recipeLayouts : this.recipeLayouts) {
 					GuiIngredient<?> clicked = recipeLayouts.getGuiIngredientUnderMouse(mouseX, mouseY);
 					if (clicked != null) {
 						Object displayedIngredient = clicked.getDisplayedIngredient();
@@ -313,7 +313,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 					return true;
 				}
 			} else {
-				for (RecipeLayout recipeLayout : recipeLayouts) {
+				for (RecipeLayout<?> recipeLayout : recipeLayouts) {
 					if (recipeLayout.handleClick(mouseX, mouseY, mouseButton)) {
 						return true;
 					}
@@ -430,7 +430,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		if (!init) {
 			return;
 		}
-		IRecipeCategory recipeCategory = logic.getSelectedRecipeCategory();
+		IRecipeCategory<?> recipeCategory = logic.getSelectedRecipeCategory();
 		IDrawable recipeBackground = recipeCategory.getBackground();
 
 		int availableHeight = ySize - headerHeight;
@@ -474,7 +474,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		recipeGuiTabs.initLayout(this);
 	}
 
-	private void addRecipeTransferButtons(List<RecipeLayout> recipeLayouts) {
+	private void addRecipeTransferButtons(List<RecipeLayout<?>> recipeLayouts) {
 		field_230705_e_.removeAll(field_230710_m_);
 		field_230710_m_.clear();
 		addButtons();
@@ -488,7 +488,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		}
 		Container container = getParentContainer();
 
-		for (RecipeLayout recipeLayout : recipeLayouts) {
+		for (RecipeLayout<?> recipeLayout : recipeLayouts) {
 			RecipeTransferButton button = recipeLayout.getRecipeTransferButton();
 			if (button != null) {
 				button.init(recipeTransferManager, container, player);
@@ -511,7 +511,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	@Nullable
 	private Container getParentContainer() {
 		if (parentScreen instanceof ContainerScreen) {
-			return ((ContainerScreen) parentScreen).getContainer();
+			return ((ContainerScreen<?>) parentScreen).getContainer();
 		}
 		return null;
 	}

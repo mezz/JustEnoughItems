@@ -34,7 +34,7 @@ public class CraftingCategoryExtension<T extends ICraftingRecipe> implements ICr
 	@Override
 	public Size2i getSize() {
 		if (recipe instanceof IShapedRecipe) {
-			IShapedRecipe shapedRecipe = (IShapedRecipe) this.recipe;
+			IShapedRecipe<?> shapedRecipe = (IShapedRecipe<?>) this.recipe;
 			return new Size2i(shapedRecipe.getRecipeWidth(), shapedRecipe.getRecipeHeight());
 		}
 		return null;

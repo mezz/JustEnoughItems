@@ -4,8 +4,8 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
+import mezz.jei.ingredients.IngredientsForType;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -67,15 +67,17 @@ public final class ErrorUtil {
 		}
 
 		recipeInfoBuilder.append("\nOutputs:");
-		Set<IIngredientType> outputTypes = ingredients.getOutputIngredients().keySet();
-		for (IIngredientType<?> outputType : outputTypes) {
+		List<IngredientsForType<?>> outputIngredients = ingredients.getOutputIngredients();
+		for (IngredientsForType<?> output : outputIngredients) {
+			IIngredientType<?> outputType = output.getIngredientType();
 			List<String> ingredientOutputInfo = getIngredientOutputInfo(outputType, ingredients);
 			recipeInfoBuilder.append('\n').append(outputType.getIngredientClass().getName()).append(": ").append(ingredientOutputInfo);
 		}
 
 		recipeInfoBuilder.append("\nInputs:");
-		Set<IIngredientType> inputTypes = ingredients.getInputIngredients().keySet();
-		for (IIngredientType<?> inputType : inputTypes) {
+		List<IngredientsForType<?>> inputIngredients = ingredients.getInputIngredients();
+		for (IngredientsForType<?> input : inputIngredients) {
+			IIngredientType<?> inputType = input.getIngredientType();
 			List<String> ingredientInputInfo = getIngredientInputInfo(inputType, ingredients);
 			recipeInfoBuilder.append('\n').append(inputType.getIngredientClass().getName()).append(": ").append(ingredientInputInfo);
 		}
@@ -96,9 +98,9 @@ public final class ErrorUtil {
 	public static String getNameForRecipe(Object recipe) {
 		ResourceLocation registryName = null;
 		if (recipe instanceof IRecipe) {
-			registryName = ((IRecipe) recipe).getId();
+			registryName = ((IRecipe<?>) recipe).getId();
 		} else if (recipe instanceof IForgeRegistryEntry) {
-			IForgeRegistryEntry registryEntry = (IForgeRegistryEntry) recipe;
+			IForgeRegistryEntry<?> registryEntry = (IForgeRegistryEntry<?>) recipe;
 			registryName = registryEntry.getRegistryName();
 		}
 		if (registryName != null) {
@@ -204,7 +206,7 @@ public final class ErrorUtil {
 		}
 	}
 
-	public static void checkNotEmpty(@Nullable Collection values, String name) {
+	public static void checkNotEmpty(@Nullable Collection<?> values, String name) {
 		if (values == null) {
 			throw new NullPointerException(name + " must not be null.");
 		} else if (values.isEmpty()) {

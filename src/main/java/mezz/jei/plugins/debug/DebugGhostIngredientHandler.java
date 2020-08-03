@@ -14,7 +14,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DebugGhostIngredientHandler<T extends ContainerScreen> implements IGhostIngredientHandler<T> {
+public class DebugGhostIngredientHandler<T extends ContainerScreen<?>> implements IGhostIngredientHandler<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	@Override

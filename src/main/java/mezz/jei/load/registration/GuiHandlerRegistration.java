@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mezz.jei.gui.GuiContainerHandlers;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
@@ -17,20 +18,19 @@ import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
-import mezz.jei.collect.ListMultiMap;
 import mezz.jei.util.ErrorUtil;
 
 public class GuiHandlerRegistration implements IGuiHandlerRegistration {
-	private final ListMultiMap<Class<? extends ContainerScreen>, IGuiContainerHandler<?>> guiHandlers = new ListMultiMap<>();
+	private final GuiContainerHandlers guiContainerHandlers = new GuiContainerHandlers();
 	private final List<IGlobalGuiHandler> globalGuiHandlers = new ArrayList<>();
-	private final Map<Class, IScreenHandler> guiScreenHandlers = new HashMap<>();
-	private final Map<Class, IGhostIngredientHandler> ghostIngredientHandlers = new HashMap<>();
+	private final Map<Class<?>, IScreenHandler<?>> guiScreenHandlers = new HashMap<>();
+	private final Map<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers = new HashMap<>();
 
 	@Override
 	public <T extends ContainerScreen<?>> void addGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<T> guiHandler) {
 		ErrorUtil.checkNotNull(guiClass, "guiClass");
 		ErrorUtil.checkNotNull(guiHandler, "guiHandler");
-		this.guiHandlers.put(guiClass, guiHandler);
+		this.guiContainerHandlers.add(guiClass, guiHandler);
 	}
 
 	@Override
@@ -62,19 +62,19 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 	}
 
 
-	public ListMultiMap<Class<? extends ContainerScreen>, IGuiContainerHandler<?>> getGuiHandlers() {
-		return guiHandlers;
+	public GuiContainerHandlers getGuiContainerHandlers() {
+		return guiContainerHandlers;
 	}
 
 	public List<IGlobalGuiHandler> getGlobalGuiHandlers() {
 		return globalGuiHandlers;
 	}
 
-	public Map<Class, IScreenHandler> getGuiScreenHandlers() {
+	public Map<Class<?>, IScreenHandler<?>> getGuiScreenHandlers() {
 		return guiScreenHandlers;
 	}
 
-	public Map<Class, IGhostIngredientHandler> getGhostIngredientHandlers() {
+	public Map<Class<?>, IGhostIngredientHandler<?>> getGhostIngredientHandlers() {
 		return ghostIngredientHandlers;
 	}
 

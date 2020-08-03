@@ -18,8 +18,8 @@ import mezz.jei.api.constants.ModIds;
 
 public final class TippedArrowRecipeMaker {
 
-	public static List<IShapedRecipe> createTippedArrowRecipes() {
-		List<IShapedRecipe> recipes = new ArrayList<>();
+	public static List<IShapedRecipe<?>> createTippedArrowRecipes() {
+		List<IShapedRecipe<?>> recipes = new ArrayList<>();
 		String group = "jei.tipped.arrow";
 		for (Potion potionType : ForgeRegistries.POTION_TYPES.getValues()) {
 			ItemStack arrowStack = new ItemStack(Items.ARROW);

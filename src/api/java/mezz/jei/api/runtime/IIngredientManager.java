@@ -43,7 +43,7 @@ public interface IIngredientManager {
 	 * Returns an unmodifiable collection of all registered ingredient types.
 	 * Without addons, there are {@link VanillaTypes#ITEM} and {@link VanillaTypes#FLUID}.
 	 */
-	Collection<IIngredientType> getRegisteredIngredientTypes();
+	Collection<IIngredientType<?>> getRegisteredIngredientTypes();
 
 	/**
 	 * Add new ingredients to JEI at runtime.

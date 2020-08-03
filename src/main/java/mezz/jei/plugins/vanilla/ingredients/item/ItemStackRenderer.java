@@ -27,6 +27,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public void render(MatrixStack matrixStack, int xPosition, int yPosition, @Nullable ItemStack ingredient) {
 		if (ingredient != null) {
 			RenderSystem.pushMatrix();

@@ -33,7 +33,7 @@ public class IngredientListBatchRenderer {
 
 	private final List<ItemStackFastRenderer> renderItems2d = new ArrayList<>();
 	private final List<ItemStackFastRenderer> renderItems3d = new ArrayList<>();
-	private final List<IngredientListElementRenderer> renderOther = new ArrayList<>();
+	private final List<IngredientListElementRenderer<?>> renderOther = new ArrayList<>();
 	private final IEditModeConfig editModeConfig;
 	private final IWorldConfig worldConfig;
 
@@ -127,16 +127,16 @@ public class IngredientListBatchRenderer {
 
 	@Nullable
 	public ClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
-		IngredientListElementRenderer hovered = getHovered(mouseX, mouseY);
+		IngredientListElementRenderer<?> hovered = getHovered(mouseX, mouseY);
 		if (hovered != null) {
-			IIngredientListElement element = hovered.getElement();
+			IIngredientListElement<?> element = hovered.getElement();
 			return ClickedIngredient.create(element.getIngredient(), hovered.getArea());
 		}
 		return null;
 	}
 
 	@Nullable
-	public IngredientListElementRenderer getHovered(double mouseX, double mouseY) {
+	public IngredientListElementRenderer<?> getHovered(double mouseX, double mouseY) {
 		for (IngredientListSlot slot : slots) {
 			if (slot.isMouseOver(mouseX, mouseY)) {
 				return slot.getIngredientRenderer();
@@ -148,6 +148,7 @@ public class IngredientListBatchRenderer {
 	/**
 	 * renders all ItemStacks
 	 */
+	@SuppressWarnings("deprecation")
 	public void render(Minecraft minecraft, MatrixStack matrixStack) {
 		RenderHelper.enableStandardItemLighting();
 
@@ -199,7 +200,7 @@ public class IngredientListBatchRenderer {
 		RenderSystem.disableLighting();
 
 		// other rendering
-		for (IngredientListElementRenderer slot : renderOther) {
+		for (IngredientListElementRenderer<?> slot : renderOther) {
 			slot.renderSlow(matrixStack, editModeConfig, worldConfig);
 		}
 

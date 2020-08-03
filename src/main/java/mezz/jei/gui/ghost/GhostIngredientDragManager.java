@@ -24,7 +24,7 @@ public class GhostIngredientDragManager {
 	private final GuiScreenHelper guiScreenHelper;
 	private final IngredientManager ingredientManager;
 	private final IWorldConfig worldConfig;
-	private final List<GhostIngredientReturning> ghostIngredientsReturning = new ArrayList<>();
+	private final List<GhostIngredientReturning<?>> ghostIngredientsReturning = new ArrayList<>();
 	@Nullable
 	private GhostIngredientDrag<?> ghostIngredientDrag;
 	@Nullable
@@ -58,7 +58,7 @@ public class GhostIngredientDragManager {
 		if (this.ghostIngredientDrag != null) {
 			this.ghostIngredientDrag.drawTargets(matrixStack, mouseX, mouseY);
 		} else {
-			IIngredientListElement elementUnderMouse = this.source.getElementUnderMouse();
+			IIngredientListElement<?> elementUnderMouse = this.source.getElementUnderMouse();
 			Object hovered = elementUnderMouse == null ? null : elementUnderMouse.getIngredient();
 			if (!Objects.equals(hovered, this.hoveredIngredient)) {
 				this.hoveredIngredient = hovered;

@@ -38,7 +38,7 @@ import org.apache.logging.log4j.Logger;
 public class BrewingRecipeMaker {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final Set<Class> unhandledRecipeClasses = new HashSet<>();
+	private final Set<Class<?>> unhandledRecipeClasses = new HashSet<>();
 	private final Set<IJeiBrewingRecipe> disabledRecipes = new HashSet<>();
 	private final IIngredientManager ingredientManager;
 	private final IVanillaRecipeFactory vanillaRecipeFactory;
@@ -161,7 +161,7 @@ public class BrewingRecipeMaker {
 					recipes.add(recipe);
 				}
 			} else if (!(iBrewingRecipe instanceof VanillaBrewingRecipe)) {
-				Class recipeClass = iBrewingRecipe.getClass();
+				Class<?> recipeClass = iBrewingRecipe.getClass();
 				if (!unhandledRecipeClasses.contains(recipeClass)) {
 					unhandledRecipeClasses.add(recipeClass);
 					if (ClientConfig.getInstance().isDebugModeEnabled()) {

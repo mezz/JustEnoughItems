@@ -12,23 +12,24 @@ import mezz.jei.config.Constants;
 import mezz.jei.util.ErrorUtil;
 
 public class RecipeTransferManager {
-	private final ImmutableTable<Class, ResourceLocation, IRecipeTransferHandler> recipeTransferHandlers;
+	private final ImmutableTable<Class<?>, ResourceLocation, IRecipeTransferHandler<?>> recipeTransferHandlers;
 
-	public RecipeTransferManager(ImmutableTable<Class, ResourceLocation, IRecipeTransferHandler> recipeTransferHandlers) {
+	public RecipeTransferManager(ImmutableTable<Class<?>, ResourceLocation, IRecipeTransferHandler<?>> recipeTransferHandlers) {
 		this.recipeTransferHandlers = recipeTransferHandlers;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Nullable
-	public IRecipeTransferHandler getRecipeTransferHandler(Container container, IRecipeCategory recipeCategory) {
+	public <T extends Container> IRecipeTransferHandler<? super T> getRecipeTransferHandler(T container, IRecipeCategory<?> recipeCategory) {
 		ErrorUtil.checkNotNull(container, "container");
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 
 		Class<? extends Container> containerClass = container.getClass();
-		IRecipeTransferHandler recipeTransferHandler = recipeTransferHandlers.get(containerClass, recipeCategory.getUid());
+		IRecipeTransferHandler<?> recipeTransferHandler = recipeTransferHandlers.get(containerClass, recipeCategory.getUid());
 		if (recipeTransferHandler != null) {
-			return recipeTransferHandler;
+			return (IRecipeTransferHandler<? super T>) recipeTransferHandler;
 		}
 
-		return recipeTransferHandlers.get(containerClass, Constants.UNIVERSAL_RECIPE_TRANSFER_UID);
+		return (IRecipeTransferHandler<? super T>) recipeTransferHandlers.get(containerClass, Constants.UNIVERSAL_RECIPE_TRANSFER_UID);
 	}
 }

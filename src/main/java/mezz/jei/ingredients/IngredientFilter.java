@@ -51,7 +51,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	 * indexed list of ingredients for use with the suffix trees
 	 * includes all elements (even hidden ones) for use when rebuilding
 	 */
-	private final NonNullList<IIngredientListElement> elementList;
+	private final NonNullList<IIngredientListElement<?>> elementList;
 	private final GeneralizedSuffixTree searchTree;
 	private final Char2ObjectMap<PrefixedSearchTree> prefixedSearchTrees = new Char2ObjectOpenHashMap<>();
 	private final IngredientFilterBackgroundBuilder backgroundBuilder;
@@ -161,13 +161,13 @@ public class IngredientFilter implements IIngredientGridSource {
 		final IntIterator iterator = matchingIndexes.iterator();
 		while (iterator.hasNext()) {
 			int index = iterator.nextInt();
-			IIngredientListElement matchingElement = this.elementList.get(index);
+			IIngredientListElement<?> matchingElement = this.elementList.get(index);
 			Object matchingIngredient = matchingElement.getIngredient();
 			if (ingredientClass.isInstance(matchingIngredient)) {
 				V castMatchingIngredient = ingredientClass.cast(matchingIngredient);
 				String matchingUid = ingredientHelper.getUniqueId(castMatchingIngredient);
 				if (ingredientUid.equals(matchingUid)) {
-					@SuppressWarnings("unchecked")
+					@SuppressWarnings({"unchecked", "CastCanBeRemovedNarrowingVariableType"})
 					IIngredientListElement<V> matchingElementCast = (IIngredientListElement<V>) matchingElement;
 					matchingElements.add(matchingElementCast);
 				}
@@ -214,7 +214,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	public ImmutableList<Object> getFilteredIngredients(String filterText) {
 		List<IIngredientListElement<?>> elements = getIngredientList(filterText);
 		ImmutableList.Builder<Object> builder = ImmutableList.builder();
-		for (IIngredientListElement element : elements) {
+		for (IIngredientListElement<?> element : elements) {
 			Object ingredient = element.getIngredient();
 			builder.add(ingredient);
 		}
@@ -240,7 +240,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		List<IIngredientListElement<?>> matchingIngredients = new ArrayList<>();
 
 		if (matches == null) {
-			for (IIngredientListElement element : elementList) {
+			for (IIngredientListElement<?> element : elementList) {
 				if (element.isVisible()) {
 					matchingIngredients.add(element);
 				}
@@ -268,7 +268,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		List<IIngredientListElement<T>> matchingElements = findMatchingElements(ingredientHelper, ingredient);
 		IntSet matchingIndexes = new IntOpenHashSet(50);
 		IntSet startingIndexes = new IntOpenHashSet(matchingElements.size());
-		for (IIngredientListElement matchingElement : matchingElements) {
+		for (IIngredientListElement<?> matchingElement : matchingElements) {
 			int index = this.elementList.indexOf(matchingElement);
 			startingIndexes.add(index);
 			matchingIndexes.add(index);

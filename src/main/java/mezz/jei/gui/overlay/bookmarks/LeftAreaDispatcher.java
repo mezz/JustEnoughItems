@@ -57,7 +57,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		}
 	}
 
-	public void drawOnForeground(ContainerScreen gui, int mouseX, int mouseY) {
+	public void drawOnForeground(ContainerScreen<?> gui, int mouseX, int mouseY) {
 		if (canShow && hasContent()) {
 			contents.get(current).drawOnForeground(gui, mouseX, mouseY);
 		}

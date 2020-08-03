@@ -13,8 +13,8 @@ public class RecipeCategoryDataMap {
 	private final ImmutableMap<ResourceLocation, RecipeCategoryData<?>> map;
 
 	public RecipeCategoryDataMap(
-		List<IRecipeCategory> recipeCategories,
-		ImmutableListMultimap<IRecipeCategory, Object> recipeCatalystsMap
+		List<IRecipeCategory<?>> recipeCategories,
+		ImmutableListMultimap<IRecipeCategory<?>, Object> recipeCatalystsMap
 	) {
 		ImmutableMap.Builder<ResourceLocation, RecipeCategoryData<?>> mapBuilder = ImmutableMap.builder();
 		for (IRecipeCategory<?> recipeCategory : recipeCategories) {

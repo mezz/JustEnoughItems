@@ -95,8 +95,9 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 		return guiIngredient;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Nullable
-	public GuiIngredient draw(MatrixStack matrixStack, int mouseX, int mouseY) {
+	public GuiIngredient<?> draw(MatrixStack matrixStack, int mouseX, int mouseY) {
 		int ingredientCount = ingredients.size();
 		if (ingredientCount > 0) {
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -112,8 +113,8 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 			RenderSystem.disableAlphaTest();
 			RenderSystem.enableDepthTest();
 
-			GuiIngredient hovered = null;
-			for (GuiIngredient guiIngredient : this.ingredients) {
+			GuiIngredient<?> hovered = null;
+			for (GuiIngredient<?> guiIngredient : this.ingredients) {
 				if (guiIngredient.isMouseOver(0, 0, mouseX, mouseY)) {
 					hovered = guiIngredient;
 				}
@@ -125,8 +126,8 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 	}
 
 	@Nullable
-	private GuiIngredient getHovered(double mouseX, double mouseY) {
-		for (GuiIngredient guiIngredient : this.ingredients) {
+	private GuiIngredient<?> getHovered(double mouseX, double mouseY) {
+		for (GuiIngredient<?> guiIngredient : this.ingredients) {
 			if (guiIngredient.isMouseOver(0, 0, mouseX, mouseY)) {
 				return guiIngredient;
 			}
@@ -137,7 +138,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 	@Nullable
 	@Override
 	public IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
-		GuiIngredient hovered = getHovered(mouseX, mouseY);
+		GuiIngredient<?> hovered = getHovered(mouseX, mouseY);
 		if (hovered != null) {
 			Object ingredientUnderMouse = hovered.getDisplayedIngredient();
 			if (ingredientUnderMouse != null) {

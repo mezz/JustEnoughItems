@@ -30,14 +30,14 @@ public final class VanillaRecipeValidator {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static class Results {
-		private final List<IRecipe> craftingRecipes = new ArrayList<>();
+		private final List<IRecipe<?>> craftingRecipes = new ArrayList<>();
 		private final List<FurnaceRecipe> furnaceRecipes = new ArrayList<>();
 		private final List<SmokingRecipe> smokingRecipes = new ArrayList<>();
 		private final List<BlastingRecipe> blastingRecipes = new ArrayList<>();
 		private final List<CampfireCookingRecipe> campfireRecipes = new ArrayList<>();
 		private final List<StonecuttingRecipe> stonecuttingRecipes = new ArrayList<>();
 
-		public List<IRecipe> getCraftingRecipes() {
+		public List<IRecipe<?>> getCraftingRecipes() {
 			return craftingRecipes;
 		}
 
@@ -75,6 +75,7 @@ public final class VanillaRecipeValidator {
 
 		Results results = new Results();
 		ClientWorld world = Minecraft.getInstance().world;
+		ErrorUtil.checkNotNull(world, "minecraft world");
 		RecipeManager recipeManager = world.getRecipeManager();
 		for (ICraftingRecipe recipe : getRecipes(recipeManager, IRecipeType.CRAFTING)) {
 			if (craftingRecipesValidator.isRecipeValid(recipe)) {

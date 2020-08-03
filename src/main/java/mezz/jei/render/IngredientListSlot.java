@@ -11,7 +11,7 @@ public class IngredientListSlot {
 	private final int padding;
 	private boolean blocked = false;
 	@Nullable
-	private IngredientListElementRenderer ingredientRenderer;
+	private IngredientListElementRenderer<?> ingredientRenderer;
 
 	public IngredientListSlot(int xPosition, int yPosition, int padding) {
 		this.padding = padding;
@@ -20,7 +20,7 @@ public class IngredientListSlot {
 	}
 
 	@Nullable
-	public IngredientListElementRenderer getIngredientRenderer() {
+	public IngredientListElementRenderer<?> getIngredientRenderer() {
 		return ingredientRenderer;
 	}
 
@@ -32,7 +32,7 @@ public class IngredientListSlot {
 		return (this.ingredientRenderer != null) && MathUtil.contains(area, mouseX, mouseY);
 	}
 
-	public void setIngredientRenderer(IngredientListElementRenderer ingredientRenderer) {
+	public void setIngredientRenderer(IngredientListElementRenderer<?> ingredientRenderer) {
 		this.ingredientRenderer = ingredientRenderer;
 		ingredientRenderer.setArea(area);
 		ingredientRenderer.setPadding(padding);

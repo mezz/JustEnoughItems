@@ -11,8 +11,9 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import net.minecraft.inventory.container.Container;
 
-class RecipeBookGuiHandler<T extends ContainerScreen & IRecipeShownListener> implements IGuiContainerHandler<T> {
+class RecipeBookGuiHandler<C extends Container, T extends ContainerScreen<C> & IRecipeShownListener> implements IGuiContainerHandler<T> {
 	/**
 	 * Modeled after {@link RecipeBookGui#func_230430_a_(com.mojang.blaze3d.matrix.MatrixStack, int, int, float)}
 	 */

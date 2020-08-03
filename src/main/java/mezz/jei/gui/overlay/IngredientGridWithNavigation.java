@@ -193,7 +193,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 
 	@Nullable
 	@Override
-	public IIngredientListElement getElementUnderMouse() {
+	public IIngredientListElement<?> getElementUnderMouse() {
 		return this.ingredientGrid.getElementUnderMouse();
 	}
 
@@ -202,10 +202,10 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		return this.ingredientGrid.canSetFocusWithMouse();
 	}
 
-	public List<IIngredientListElement> getVisibleElements() {
-		List<IIngredientListElement> visibleElements = new ArrayList<>();
+	public List<IIngredientListElement<?>> getVisibleElements() {
+		List<IIngredientListElement<?>> visibleElements = new ArrayList<>();
 		for (IngredientListSlot slot : this.ingredientGrid.guiIngredientSlots.getAllGuiIngredientSlots()) {
-			IngredientListElementRenderer renderer = slot.getIngredientRenderer();
+			IngredientListElementRenderer<?> renderer = slot.getIngredientRenderer();
 			if (renderer != null) {
 				visibleElements.add(renderer.getElement());
 			}

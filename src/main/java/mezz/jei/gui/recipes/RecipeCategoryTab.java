@@ -23,9 +23,9 @@ import net.minecraft.util.text.StringTextComponent;
 
 public class RecipeCategoryTab extends RecipeGuiTab {
 	private final IRecipeGuiLogic logic;
-	private final IRecipeCategory category;
+	private final IRecipeCategory<?> category;
 
-	public RecipeCategoryTab(IRecipeGuiLogic logic, IRecipeCategory category, int x, int y) {
+	public RecipeCategoryTab(IRecipeGuiLogic logic, IRecipeCategory<?> category, int x, int y) {
 		super(x, y);
 		this.logic = logic;
 		this.category = category;
@@ -39,6 +39,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 		return true;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void draw(boolean selected, MatrixStack matrixStack, int mouseX, int mouseY) {
 		super.draw(selected, matrixStack, mouseX, mouseY);
@@ -70,6 +71,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private static <T> void renderIngredient(MatrixStack matrixStack, int iconX, int iconY, T ingredient) {
 		IngredientManager ingredientManager = Internal.getIngredientManager();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
@@ -80,7 +82,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	}
 
 	@Override
-	public boolean isSelected(IRecipeCategory selectedCategory) {
+	public boolean isSelected(IRecipeCategory<?> selectedCategory) {
 		return category.getUid().equals(selectedCategory.getUid());
 	}
 

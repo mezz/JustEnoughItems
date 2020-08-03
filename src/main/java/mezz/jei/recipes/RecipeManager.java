@@ -33,9 +33,9 @@ public class RecipeManager implements IRecipeManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final IngredientManager ingredientManager;
-	private final ImmutableList<IRecipeCategory> recipeCategories;
+	private final ImmutableList<IRecipeCategory<?>> recipeCategories;
 	private final Set<ResourceLocation> hiddenRecipeCategoryUids = new HashSet<>();
-	private final List<IRecipeCategory> recipeCategoriesVisibleCache = new ArrayList<>();
+	private final List<IRecipeCategory<?>> recipeCategoriesVisibleCache = new ArrayList<>();
 	private final RecipeCategoryDataMap recipeCategoriesDataMap;
 	private final RecipeCategoryComparator recipeCategoryComparator;
 	private final RecipeMap recipeInputMap;
@@ -43,7 +43,7 @@ public class RecipeManager implements IRecipeManager {
 	private final List<RecipeManagerPluginSafeWrapper> plugins = new ArrayList<>();
 
 	public RecipeManager(
-		ImmutableList<IRecipeCategory> recipeCategories,
+		ImmutableList<IRecipeCategory<?>> recipeCategories,
 		ImmutableListMultimap<ResourceLocation, Object> recipes,
 		ImmutableListMultimap<ResourceLocation, Object> recipeCatalysts,
 		IngredientManager ingredientManager,
@@ -58,14 +58,14 @@ public class RecipeManager implements IRecipeManager {
 		this.recipeOutputMap = new RecipeMap(recipeCategoryComparator, ingredientManager);
 
 		RecipeCatalystBuilder recipeCatalystBuilder = new RecipeCatalystBuilder(ingredientManager);
-		for (IRecipeCategory recipeCategory : recipeCategories) {
+		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
 			ResourceLocation recipeCategoryUid = recipeCategory.getUid();
 			if (recipeCatalysts.containsKey(recipeCategoryUid)) {
 				List<Object> catalysts = recipeCatalysts.get(recipeCategoryUid);
 				recipeCatalystBuilder.addCatalysts(recipeCategory, catalysts, recipeInputMap);
 			}
 		}
-		ImmutableListMultimap<IRecipeCategory, Object> recipeCatalystsMap = recipeCatalystBuilder.buildRecipeCatalysts();
+		ImmutableListMultimap<IRecipeCategory<?>, Object> recipeCatalystsMap = recipeCatalystBuilder.buildRecipeCatalysts();
 		this.recipeCategoriesDataMap = new RecipeCategoryDataMap(recipeCategories, recipeCatalystsMap);
 
 		ImmutableMultimap<String, ResourceLocation> categoriesForRecipeCatalystKeys = recipeCatalystBuilder.buildCategoriesForRecipeCatalystKeys();
@@ -116,9 +116,9 @@ public class RecipeManager implements IRecipeManager {
 
 	@Override
 	@Nullable
-	public IRecipeCategory getRecipeCategory(ResourceLocation recipeCategoryUid) {
+	public IRecipeCategory<?> getRecipeCategory(ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-		RecipeCategoryData recipeCategoryData = recipeCategoriesDataMap.get(recipeCategoryUid);
+		RecipeCategoryData<?> recipeCategoryData = recipeCategoriesDataMap.get(recipeCategoryUid);
 		return recipeCategoryData.getRecipeCategory();
 	}
 
@@ -143,7 +143,7 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public List<IRecipeCategory> getRecipeCategories() {
+	public List<IRecipeCategory<?>> getRecipeCategories() {
 		if (recipeCategoriesVisibleCache.isEmpty()) {
 			for (IRecipeCategory<?> recipeCategory : this.recipeCategories) {
 				if (isCategoryVisible(recipeCategory)) {
@@ -169,10 +169,10 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public List<IRecipeCategory> getRecipeCategories(List<ResourceLocation> recipeCategoryUids) {
+	public List<IRecipeCategory<?>> getRecipeCategories(List<ResourceLocation> recipeCategoryUids) {
 		ErrorUtil.checkNotNull(recipeCategoryUids, "recipeCategoryUids");
 
-		List<IRecipeCategory> categories = new ArrayList<>();
+		List<IRecipeCategory<?>> categories = new ArrayList<>();
 		for (ResourceLocation recipeCategoryUid : recipeCategoryUids) {
 			RecipeCategoryData<?> recipeCategoryData = recipeCategoriesDataMap.get(recipeCategoryUid);
 			IRecipeCategory<?> recipeCategory = recipeCategoryData.getRecipeCategory();
@@ -180,13 +180,13 @@ public class RecipeManager implements IRecipeManager {
 				categories.add(recipeCategory);
 			}
 		}
-		Comparator<IRecipeCategory> comparator = Comparator.comparing(IRecipeCategory::getUid, recipeCategoryComparator);
+		Comparator<IRecipeCategory<?>> comparator = Comparator.comparing(IRecipeCategory::getUid, recipeCategoryComparator);
 		categories.sort(comparator);
 		return Collections.unmodifiableList(categories);
 	}
 
 	@Override
-	public <V> List<IRecipeCategory> getRecipeCategories(IFocus<V> focus) {
+	public <V> List<IRecipeCategory<?>> getRecipeCategories(IFocus<V> focus) {
 		focus = Focus.check(focus);
 
 		List<ResourceLocation> allRecipeCategoryUids = new ArrayList<>();
@@ -274,7 +274,7 @@ public class RecipeManager implements IRecipeManager {
 	@Override
 	public <T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocus<?> focus) {
 		Focus<?> checkedFocus = Focus.check(focus);
-		RecipeLayout recipeLayout = RecipeLayout.create(-1, recipeCategory, recipe, checkedFocus, 0, 0);
+		RecipeLayout<?> recipeLayout = RecipeLayout.create(-1, recipeCategory, recipe, checkedFocus, 0, 0);
 		Preconditions.checkNotNull(recipeLayout, "Recipe layout crashed during creation, see log.");
 		return recipeLayout;
 	}
@@ -305,8 +305,8 @@ public class RecipeManager implements IRecipeManager {
 	public void hideRecipeCategory(ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		ErrorUtil.assertMainThread();
-		RecipeCategoryData recipeCategoryData = recipeCategoriesDataMap.get(recipeCategoryUid);
-		IRecipeCategory recipeCategory = recipeCategoryData.getRecipeCategory();
+		RecipeCategoryData<?> recipeCategoryData = recipeCategoriesDataMap.get(recipeCategoryUid);
+		IRecipeCategory<?> recipeCategory = recipeCategoryData.getRecipeCategory();
 		hiddenRecipeCategoryUids.add(recipeCategoryUid);
 		recipeCategoriesVisibleCache.remove(recipeCategory);
 	}

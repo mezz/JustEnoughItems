@@ -37,12 +37,11 @@ public class GhostIngredientDrag<T> {
 
 	public void drawTargets(MatrixStack matrixStack, int mouseX, int mouseY) {
 		if (handler.shouldHighlightTargets()) {
-			@SuppressWarnings("unchecked")
-			List<Target<Object>> targets = (List<Target<Object>>) (Object) this.targets;
 			drawTargets(matrixStack, mouseX, mouseY, targets);
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public void drawItem(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
 		if (origin != null) {
 			int originX = origin.getX() + (origin.getWidth() / 2);
@@ -80,10 +79,11 @@ public class GhostIngredientDrag<T> {
 		itemRenderer.zLevel -= 150.0F;
 	}
 
-	public static void drawTargets(MatrixStack matrixStack, int mouseX, int mouseY, List<Target<Object>> targets) {
+	@SuppressWarnings("deprecation")
+	public static <V> void drawTargets(MatrixStack matrixStack, int mouseX, int mouseY, List<Target<V>> targets) {
 		RenderSystem.disableLighting();
 		RenderSystem.disableDepthTest();
-		for (Target target : targets) {
+		for (Target<?> target : targets) {
 			Rectangle2d area = target.getArea();
 			int color;
 			if (MathUtil.contains(area, mouseX, mouseY)) {

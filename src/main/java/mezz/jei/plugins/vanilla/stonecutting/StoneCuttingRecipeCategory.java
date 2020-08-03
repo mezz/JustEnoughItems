@@ -15,7 +15,6 @@ import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
@@ -32,16 +31,13 @@ public class StoneCuttingRecipeCategory implements IExtendableRecipeCategory<Sto
     private final IDrawable background;
     private final IDrawable icon;
     private final String localizedName;
-    //private final ICraftingGridHelper craftingGridHelper;
-    private final IModIdHelper modIdHelper;
-    private final ExtendableRecipeCategoryHelper<IRecipe, ICraftingCategoryExtension> extendableHelper = new ExtendableRecipeCategoryHelper<>(StonecuttingRecipe.class);
-    public StoneCuttingRecipeCategory(IGuiHelper guiHelper, IModIdHelper modIdHelper) {
-        this.modIdHelper = modIdHelper;
+
+    private final ExtendableRecipeCategoryHelper<IRecipe<?>, ICraftingCategoryExtension> extendableHelper = new ExtendableRecipeCategoryHelper<>(StonecuttingRecipe.class);
+    public StoneCuttingRecipeCategory(IGuiHelper guiHelper) {
         ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
         background = guiHelper.createDrawable(location, 0, 220, width, height);
         icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.STONECUTTER));
         localizedName = Translator.translateToLocal("gui.jei.category.stoneCutter");
-        //craftingGridHelper = guiHelper.createCraftingGridHelper(outputSlot);
     }
 
     @Override

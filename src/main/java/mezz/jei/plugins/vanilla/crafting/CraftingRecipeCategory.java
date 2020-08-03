@@ -44,7 +44,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<ICrafti
 	private final String localizedName;
 	private final ICraftingGridHelper craftingGridHelper;
 	private final IModIdHelper modIdHelper;
-	private final ExtendableRecipeCategoryHelper<IRecipe, ICraftingCategoryExtension> extendableHelper = new ExtendableRecipeCategoryHelper<>(ICraftingRecipe.class);
+	private final ExtendableRecipeCategoryHelper<IRecipe<?>, ICraftingCategoryExtension> extendableHelper = new ExtendableRecipeCategoryHelper<>(ICraftingRecipe.class);
 
 	public CraftingRecipeCategory(IGuiHelper guiHelper, IModIdHelper modIdHelper) {
 		this.modIdHelper = modIdHelper;

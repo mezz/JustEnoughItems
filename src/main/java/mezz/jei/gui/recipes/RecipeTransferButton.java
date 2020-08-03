@@ -16,13 +16,13 @@ import mezz.jei.transfer.RecipeTransferUtil;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public class RecipeTransferButton extends GuiIconButtonSmall {
-	private final RecipeLayout recipeLayout;
+	private final RecipeLayout<?> recipeLayout;
 	@Nullable
 	private IRecipeTransferError recipeTransferError;
 	@Nullable
 	private IOnClickHandler onClickHandler;
 
-	public RecipeTransferButton(int xPos, int yPos, int width, int height, IDrawable icon, RecipeLayout recipeLayout) {
+	public RecipeTransferButton(int xPos, int yPos, int width, int height, IDrawable icon, RecipeLayout<?> recipeLayout) {
 		super(xPos, yPos, width, height, icon, b -> {});
 		this.recipeLayout = recipeLayout;
 	}

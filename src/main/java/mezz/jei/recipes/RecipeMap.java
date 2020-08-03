@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import mezz.jei.ingredients.IngredientsForType;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableList;
@@ -22,7 +23,7 @@ import mezz.jei.ingredients.IngredientInformation;
  * A RecipeMap efficiently links recipes, IRecipeCategory, and Ingredients.
  */
 public class RecipeMap {
-	private final Table<IRecipeCategory, String, List<Object>> recipeTable = Table.hashBasedTable();
+	private final Table<IRecipeCategory<?>, String, List<Object>> recipeTable = Table.hashBasedTable();
 	private final ListMultiMap<String, ResourceLocation> categoryUidMap = new ListMultiMap<>();
 	private final Ordering<ResourceLocation> recipeCategoryOrdering;
 	private final IIngredientManager ingredientManager;
@@ -44,7 +45,7 @@ public class RecipeMap {
 		return recipeCategoryOrdering.immutableSortedCopy(recipeCategories);
 	}
 
-	public <V> void addRecipeCategory(IRecipeCategory recipeCategory, V ingredient, IIngredientHelper<V> ingredientHelper) {
+	public <V> void addRecipeCategory(IRecipeCategory<?> recipeCategory, V ingredient, IIngredientHelper<V> ingredientHelper) {
 		String key = ingredientHelper.getUniqueId(ingredient);
 		List<ResourceLocation> recipeCategories = categoryUidMap.get(key);
 		ResourceLocation recipeCategoryUid = recipeCategory.getUid();
@@ -69,40 +70,41 @@ public class RecipeMap {
 		return listBuilder.build();
 	}
 
-	public <T> void addRecipe(T recipe, IRecipeCategory<T> recipeCategory, Map<IIngredientType, List> ingredientsByType) {
-		for (Map.Entry<IIngredientType, List> entry : ingredientsByType.entrySet()) {
-			if (entry != null) {
-				//noinspection unchecked
-				addRecipe(recipe, recipeCategory, entry.getKey(), entry.getValue());
-			}
+	public <T> void addRecipe(T recipe, IRecipeCategory<T> recipeCategory, List<IngredientsForType<?>> ingredientsByType) {
+		for (IngredientsForType<?> ingredientsForType : ingredientsByType) {
+			addRecipe(recipe, recipeCategory, ingredientsForType);
 		}
 	}
 
-	private <T, V> void addRecipe(T recipe, IRecipeCategory<T> recipeCategory, IIngredientType<V> ingredientType, List<V> ingredients) {
+	private <T, V> void addRecipe(T recipe, IRecipeCategory<T> recipeCategory, IngredientsForType<V> ingredientsForType) {
+		IIngredientType<V> ingredientType = ingredientsForType.getIngredientType();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
 		Map<String, List<Object>> recipesForType = recipeTable.getRow(recipeCategory);
 
 		Set<String> uniqueIds = new HashSet<>();
 
-		for (V ingredient : ingredients) {
-			if (ingredient == null) {
-				continue;
+		List<List<V>> ingredients = ingredientsForType.getIngredients();
+		for (List<V> slot : ingredients) {
+			for (V ingredient : slot) {
+				if (ingredient == null) {
+					continue;
+				}
+
+				String key = ingredientHelper.getUniqueId(ingredient);
+				if (uniqueIds.contains(key)) {
+					continue;
+				} else {
+					uniqueIds.add(key);
+				}
+
+				@SuppressWarnings("unchecked")
+				List<T> recipes = (List<T>) recipesForType.computeIfAbsent(key, k -> new ArrayList<>());
+
+				recipes.add(recipe);
+
+				addRecipeCategory(recipeCategory, ingredient, ingredientHelper);
 			}
-
-			String key = ingredientHelper.getUniqueId(ingredient);
-			if (uniqueIds.contains(key)) {
-				continue;
-			} else {
-				uniqueIds.add(key);
-			}
-
-			@SuppressWarnings("unchecked")
-			List<T> recipes = (List<T>) recipesForType.computeIfAbsent(key, k -> new ArrayList<>());
-
-			recipes.add(recipe);
-
-			addRecipeCategory(recipeCategory, ingredient, ingredientHelper);
 		}
 	}
 }

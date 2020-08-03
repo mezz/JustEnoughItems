@@ -8,7 +8,7 @@ import mezz.jei.collect.Table;
 
 public final class ReflectionUtil {
 
-	private static final Table<Class, Class, Optional<Field>> CACHE = Table.hashBasedTable();
+	private static final Table<Class<?>, Class<?>, Optional<Field>> CACHE = Table.hashBasedTable();
 
 	private ReflectionUtil() {
 	}

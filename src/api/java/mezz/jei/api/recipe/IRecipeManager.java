@@ -20,19 +20,19 @@ public interface IRecipeManager {
 	/**
 	 * Returns an unmodifiable list of all Recipe Categories
 	 */
-	List<IRecipeCategory> getRecipeCategories();
+	List<IRecipeCategory<?>> getRecipeCategories();
 
 	/**
 	 * Returns an unmodifiable list of Recipe Categories
 	 */
-	List<IRecipeCategory> getRecipeCategories(List<ResourceLocation> recipeCategoryUids);
+	List<IRecipeCategory<?>> getRecipeCategories(List<ResourceLocation> recipeCategoryUids);
 
 	/**
 	 * Returns the recipe category for the given UID.
 	 * Returns null if the recipe category does not exist.
 	 */
 	@Nullable
-	IRecipeCategory getRecipeCategory(ResourceLocation recipeCategoryUid);
+	IRecipeCategory<?> getRecipeCategory(ResourceLocation recipeCategoryUid);
 
 	/**
 	 * Returns a new focus.
@@ -42,7 +42,7 @@ public interface IRecipeManager {
 	/**
 	 * Returns a list of Recipe Categories for the focus.
 	 */
-	<V> List<IRecipeCategory> getRecipeCategories(IFocus<V> focus);
+	<V> List<IRecipeCategory<?>> getRecipeCategories(IFocus<V> focus);
 
 	/**
 	 * Returns a list of recipes in the recipeCategory that have the focus.
