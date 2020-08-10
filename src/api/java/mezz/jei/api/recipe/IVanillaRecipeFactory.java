@@ -22,7 +22,7 @@ public interface IVanillaRecipeFactory {
 	 * Create an anvil recipe for the given inputs and output.
 	 *
 	 * @param leftInput   The itemStack placed on the left slot.
-	 * @param rightInputs The itemStack(s) placed on the right slot.
+	 * @param rightInputs The itemStack(s) placed on the right slot, or an empty list for no right input.
 	 * @param outputs     The resulting itemStack(s).
 	 * @return the {@link IRecipeWrapper} for this recipe.
 	 */
@@ -30,10 +30,10 @@ public interface IVanillaRecipeFactory {
 
 	/**
 	 * Create an anvil recipe for the given inputs and output.
-	 * The number of inputs in the left and right side must match.
+	 * When both input lists are nonempty, their sizes must match.
 	 *
 	 * @param leftInputs  The itemStack(s) placed on the left slot.
-	 * @param rightInputs The itemStack(s) placed on the right slot.
+	 * @param rightInputs The itemStack(s) placed on the right slot, or an empty list for no right input.
 	 * @param outputs     The resulting itemStack(s).
 	 * @return the {@link IRecipeWrapper} for this recipe.
 	 * @since JEI 4.14.1
