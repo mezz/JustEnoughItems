@@ -226,6 +226,18 @@ public final class ErrorUtil {
 		}
 	}
 
+	public static void checkNotNull(@Nullable Collection<?> values, String name) {
+		if (values == null) {
+			throw new NullPointerException(name + " must not be null.");
+		} else if (!(values instanceof NonNullList)) {
+			for (Object value : values) {
+				if (value == null) {
+					throw new NullPointerException(name + " must not contain null values.");
+				}
+			}
+		}
+	}
+
 	public static <T> void checkIsValidIngredient(@Nullable T ingredient, String name) {
 		checkNotNull(ingredient, name);
 		IngredientManager ingredientManager = Internal.getIngredientManager();

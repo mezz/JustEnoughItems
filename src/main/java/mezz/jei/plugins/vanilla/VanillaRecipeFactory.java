@@ -26,7 +26,7 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 	@Override
 	public AnvilRecipe createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
 		ErrorUtil.checkNotEmpty(leftInput, "leftInput");
-		ErrorUtil.checkNotEmpty(rightInputs, "rightInputs");
+		ErrorUtil.checkNotNull(rightInputs, "rightInputs");
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 
 		return new AnvilRecipe(Collections.singletonList(leftInput), rightInputs, outputs);
@@ -35,7 +35,7 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 	@Override
 	public AnvilRecipe createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs) {
 		ErrorUtil.checkNotEmpty(leftInputs, "leftInput");
-		ErrorUtil.checkNotEmpty(rightInputs, "rightInputs");
+		ErrorUtil.checkNotNull(rightInputs, "rightInputs");
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 
 		return new AnvilRecipe(leftInputs, rightInputs, outputs);
