@@ -6,7 +6,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
-
+import net.minecraft.util.text.*;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -18,7 +18,6 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.util.Translator;
-import net.minecraft.util.text.ITextProperties;
 
 @SuppressWarnings("rawtypes")
 public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientInfoRecipe> {
@@ -86,7 +85,7 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 
 		Minecraft minecraft = Minecraft.getInstance();
 		for (ITextProperties descriptionLine : recipe.getDescription()) {
-			minecraft.fontRenderer.func_238422_b_(matrixStack, descriptionLine, xPos, yPos, 0xFF000000);
+			minecraft.fontRenderer.func_238422_b_(matrixStack, LanguageMap.getInstance().func_241870_a(descriptionLine), xPos, yPos, 0xFF000000);
 			yPos += minecraft.fontRenderer.FONT_HEIGHT + lineSpacing;
 		}
 	}

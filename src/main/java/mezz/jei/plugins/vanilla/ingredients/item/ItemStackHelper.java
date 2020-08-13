@@ -9,7 +9,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.block.Block;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -168,7 +167,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		Item item = ingredient.getItem();
 		for (ItemGroup itemGroup : item.getCreativeTabs()) {
 			if (itemGroup != null) {
-				String creativeTabName = I18n.format(itemGroup.getTranslationKey());
+				String creativeTabName = itemGroup.func_242392_c().getString();
 				creativeTabsStrings.add(creativeTabName);
 			}
 		}
