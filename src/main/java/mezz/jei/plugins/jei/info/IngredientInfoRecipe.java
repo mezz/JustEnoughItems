@@ -5,7 +5,10 @@ import java.util.List;
 
 import java.util.Optional;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.*;
+import net.minecraft.util.text.ITextProperties;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.util.MathUtil;
 

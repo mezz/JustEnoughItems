@@ -9,7 +9,8 @@ import net.minecraftforge.fml.client.gui.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.*;
+import net.minecraft.util.text.ITextProperties;
+import net.minecraft.util.text.LanguageMap;
 
 public final class TooltipRenderer {
 	private TooltipRenderer() {
