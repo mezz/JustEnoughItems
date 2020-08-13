@@ -18,6 +18,9 @@ issueTrackerURL="https://github.com/mezz/JustEnoughItems/issues?q=is%3Aissue" #o
 # A URL for the "homepage" for this mod, displayed in the mod UI
 displayURL="https://minecraft.curseforge.com/projects/jei" #optional
 
+# License
+license="The MIT License (MIT)"
+
 # A file name (in the root of the mod JAR) containing a logo for display
 #logoFile="examplemod.png" #optional
 
