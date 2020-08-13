@@ -78,6 +78,6 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 		flame.draw(matrixStack, 1, 0);
 		Minecraft minecraft = Minecraft.getInstance();
 		ITextComponent smeltCountString = recipe.getSmeltCountString();
-		minecraft.fontRenderer.func_238422_b_(matrixStack, smeltCountString, 24, 13, 0xFF808080);
+		minecraft.fontRenderer.func_243248_b(matrixStack, smeltCountString, 24, 13, 0xFF808080);
 	}
 }

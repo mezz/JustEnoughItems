@@ -17,9 +17,9 @@ import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagCollection;
+import net.minecraft.tags.ITagCollection;
+import net.minecraft.tags.ITag;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -253,8 +253,8 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 			.map(ItemStack::getItem)
 			.collect(Collectors.toList());
 
-		TagCollection<Item> collection = ItemTags.getCollection();
-		Collection<ITag<Item>> tags = collection.getTagMap().values();
+		ITagCollection<Item> collection = ItemTags.getCollection();
+		Collection<ITag<Item>> tags = collection.func_241833_a().values();
 		for (ITag<Item> tag : tags) {
 			if (tag.func_230236_b_().equals(items)) {
 				return collection.func_232973_a_(tag);

@@ -1,14 +1,16 @@
 package mezz.jei.gui;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.util.text.ITextProperties;
 import net.minecraftforge.fml.client.gui.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextProperties;
+import net.minecraft.util.text.LanguageMap;
 
 public final class TooltipRenderer {
 	private TooltipRenderer() {
@@ -38,6 +40,12 @@ public final class TooltipRenderer {
 		int scaledWidth = minecraft.getMainWindow().getScaledWidth();
 		int scaledHeight = minecraft.getMainWindow().getScaledHeight();
 		ItemStack itemStack = ingredient instanceof ItemStack ? (ItemStack) ingredient : ItemStack.EMPTY;
-		GuiUtils.drawHoveringText(itemStack, matrixStack, textLines, x, y, scaledWidth, scaledHeight, maxWidth, font);
+		
+		// Vanilla workaround for tool tips. Use the below when forge adds it back again
+		if(minecraft.currentScreen != null)
+			minecraft.currentScreen.renderToolTip(matrixStack, textLines.stream().map(LanguageMap.getInstance()::func_241870_a).collect(ImmutableList.toImmutableList()), x, y, font);
+		
+		// TODO use again when available 
+		//GuiUtils.drawHoveringText(itemStack, matrixStack, textLines, x, y, scaledWidth, scaledHeight, maxWidth, font);
 	}
 }

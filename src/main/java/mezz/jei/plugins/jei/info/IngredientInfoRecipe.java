@@ -5,12 +5,12 @@ import java.util.List;
 
 import java.util.Optional;
 import net.minecraft.client.Minecraft;
-
+import net.minecraft.util.text.ITextProperties;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.util.MathUtil;
-import net.minecraft.util.text.ITextProperties;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 
 public class IngredientInfoRecipe<T> {
 	private static final int lineSpacing = 2;
@@ -66,7 +66,7 @@ public class IngredientInfoRecipe<T> {
 		Minecraft minecraft = Minecraft.getInstance();
 		List<ITextProperties> descriptionLinesWrapped = new ArrayList<>();
 		for (ITextProperties descriptionLine : descriptionLines) {
-			List<ITextProperties> textLines = minecraft.fontRenderer.func_238425_b_(descriptionLine, IngredientInfoRecipeCategory.recipeWidth);
+			List<ITextProperties> textLines = minecraft.fontRenderer.func_238420_b_().func_238362_b_(descriptionLine, IngredientInfoRecipeCategory.recipeWidth, Style.field_240709_b_);
 			descriptionLinesWrapped.addAll(textLines);
 		}
 		return descriptionLinesWrapped;

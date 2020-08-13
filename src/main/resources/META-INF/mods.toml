@@ -7,7 +7,7 @@
 modLoader="javafml" #mandatory
 
 # A version range to match for said mod loader - for regular FML @Mod it will be the minecraft version (without the 1.)
-loaderVersion="[32,)" #mandatory
+loaderVersion="[33,)" #mandatory
 
 # A URL to query for updates for this mod. See the JSON update specification <here>
 #updateJSONURL="" #optional
@@ -17,6 +17,9 @@ issueTrackerURL="https://github.com/mezz/JustEnoughItems/issues?q=is%3Aissue" #o
 
 # A URL for the "homepage" for this mod, displayed in the mod UI
 displayURL="https://minecraft.curseforge.com/projects/jei" #optional
+
+# License
+license="The MIT License (MIT)"
 
 # A file name (in the root of the mod JAR) containing a logo for display
 #logoFile="examplemod.png" #optional
@@ -48,7 +51,7 @@ JEI is an item and recipe viewing mod for Minecraft, built from the ground up fo
 [[dependencies.jei]]
     modId="forge" #mandatory
     mandatory=true #mandatory
-    versionRange="[32.0.23,)" #mandatory
+    versionRange="[33.0.0,)" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER

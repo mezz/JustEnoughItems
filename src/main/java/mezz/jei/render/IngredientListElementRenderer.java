@@ -7,16 +7,17 @@ import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.ITextProperties;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.client.gui.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.util.text.ITextProperties;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 
 import com.google.common.base.Joiner;
@@ -149,7 +150,7 @@ public class IngredientListElementRenderer<T> {
 			String colorNamesString = Joiner.on(", ").join(colorNames);
 			TranslationTextComponent colorTranslation = new TranslationTextComponent("jei.tooltip.item.colors", colorNamesString);
 			IFormattableTextComponent colorNamesLocalizedString = colorTranslation.func_240699_a_(TextFormatting.GRAY);
-			tooltip.addAll(minecraft.fontRenderer.func_238425_b_(colorNamesLocalizedString, maxWidth));
+			tooltip.addAll(minecraft.fontRenderer.func_238420_b_().func_238362_b_(colorNamesLocalizedString, maxWidth, Style.field_240709_b_));
 		}
 	}
 
@@ -162,11 +163,11 @@ public class IngredientListElementRenderer<T> {
 
 		TranslationTextComponent hide = new TranslationTextComponent("gui.jei.editMode.description.hide", controlKeyLocalization);
 		IFormattableTextComponent hideMessage = hide.func_240699_a_(TextFormatting.GRAY);
-		tooltip.addAll(minecraft.fontRenderer.func_238425_b_(hideMessage, maxWidth));
+		tooltip.addAll(minecraft.fontRenderer.func_238420_b_().func_238362_b_(hideMessage, maxWidth, Style.field_240709_b_));
 
 		TranslationTextComponent hideWild = new TranslationTextComponent("gui.jei.editMode.description.hide.wild", controlKeyLocalization);
 		IFormattableTextComponent hideWildMessage = hideWild.func_240699_a_(TextFormatting.GRAY);
-		tooltip.addAll(minecraft.fontRenderer.func_238425_b_(hideWildMessage, maxWidth));
+		tooltip.addAll(minecraft.fontRenderer.func_238420_b_().func_238362_b_(hideWildMessage, maxWidth, Style.field_240709_b_));
 	}
 
 }
