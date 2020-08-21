@@ -20,7 +20,7 @@ public class HoverChecker {
 
 	public void updateBounds(Button button) {
 		this.top = button.field_230691_m_;
-		this.bottom = button.field_230691_m_ + button.getHeight();
+		this.bottom = button.field_230691_m_ + button.func_238483_d_();
 		this.left = button.field_230690_l_;
 		this.right = button.field_230690_l_ + button.func_230998_h_();
 	}

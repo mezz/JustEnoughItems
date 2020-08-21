@@ -46,7 +46,7 @@ public class PageNavigation {
 		pageNumDisplayString = (pageNum + 1) + "/" + pageCount;
 		int pageDisplayWidth = fontRenderer.getStringWidth(pageNumDisplayString);
 		pageNumDisplayX = ((backButton.field_230690_l_ + backButton.func_230998_h_()) + nextButton.field_230690_l_) / 2 - (pageDisplayWidth / 2);
-		pageNumDisplayY = backButton.field_230691_m_ + Math.round((backButton.getHeight() - fontRenderer.FONT_HEIGHT) / 2.0f);
+		pageNumDisplayY = backButton.field_230691_m_ + Math.round((backButton.func_238483_d_() - fontRenderer.FONT_HEIGHT) / 2.0f);
 	}
 
 	public void draw(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
