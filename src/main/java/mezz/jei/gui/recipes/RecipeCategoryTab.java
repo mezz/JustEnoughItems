@@ -58,10 +58,10 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 				String text = category.getTitle().substring(0, 2);
 				Minecraft minecraft = Minecraft.getInstance();
 				FontRenderer fontRenderer = minecraft.fontRenderer;
-				float textCenterX = x + (TAB_WIDTH / 2f);
-				float textCenterY = y + (TAB_HEIGHT / 2f) - 3;
+				int textCenterX = x + (TAB_WIDTH / 2);
+				int textCenterY = y + (TAB_HEIGHT / 2) - 3;
 				int color = isMouseOver(mouseX, mouseY) ? 0xFFFFA0 : 0xE0E0E0;
-				fontRenderer.drawStringWithShadow(text, textCenterX - fontRenderer.getStringWidth(text) / 2f, textCenterY, color);
+				fontRenderer.drawStringWithShadow(text, textCenterX - fontRenderer.getStringWidth(text) / 2, textCenterY, color);
 				RenderSystem.color4f(1, 1, 1, 1);
 			}
 		}
