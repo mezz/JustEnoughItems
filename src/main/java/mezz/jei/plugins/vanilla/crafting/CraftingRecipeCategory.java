@@ -129,14 +129,14 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<ICrafti
 						if (modIdDifferent) {
 							String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
 							TranslationTextComponent recipeBy = new TranslationTextComponent("jei.tooltip.recipe.by", modName);
-							tooltip.add(recipeBy.func_240699_a_(TextFormatting.GRAY));
+							tooltip.add(recipeBy.mergeStyle(TextFormatting.GRAY));
 						}
 					}
 
-					boolean showAdvanced = Minecraft.getInstance().gameSettings.advancedItemTooltips || Screen.func_231173_s_();
+					boolean showAdvanced = Minecraft.getInstance().gameSettings.advancedItemTooltips || Screen.hasShiftDown();
 					if (showAdvanced) {
 						TranslationTextComponent recipeId = new TranslationTextComponent("jei.tooltip.recipe.id", registryName.toString());
-						tooltip.add(recipeId.func_240699_a_(TextFormatting.DARK_GRAY));
+						tooltip.add(recipeId.mergeStyle(TextFormatting.DARK_GRAY));
 					}
 				}
 			});

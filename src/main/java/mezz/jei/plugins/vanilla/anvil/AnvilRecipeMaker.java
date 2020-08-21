@@ -196,19 +196,19 @@ public final class AnvilRecipeMaker {
 
 		Ingredient repairNetheriteItems = ItemTier.NETHERITE.getRepairMaterial();
 		items.put(repairNetheriteItems, Lists.newArrayList(
-			new ItemStack(Items.field_234754_kI_),
-			new ItemStack(Items.field_234756_kK_),
-			new ItemStack(Items.field_234757_kL_),
-			new ItemStack(Items.field_234755_kJ_),
-			new ItemStack(Items.field_234758_kU_)
+			new ItemStack(Items.NETHERITE_SWORD),
+			new ItemStack(Items.NETHERITE_AXE),
+			new ItemStack(Items.NETHERITE_HOE),
+			new ItemStack(Items.NETHERITE_SHOVEL),
+			new ItemStack(Items.NETHERITE_PICKAXE)
 		));
 
 		Ingredient repairNetheriteArmor = ArmorMaterial.NETHERITE.getRepairMaterial();
 		items.put(repairNetheriteArmor, Lists.newArrayList(
-			new ItemStack(Items.field_234763_ls_),
-			new ItemStack(Items.field_234764_lt_),
-			new ItemStack(Items.field_234765_lu_),
-			new ItemStack(Items.field_234766_lv_)
+			new ItemStack(Items.NETHERITE_BOOTS),
+			new ItemStack(Items.NETHERITE_HELMET),
+			new ItemStack(Items.NETHERITE_LEGGINGS),
+			new ItemStack(Items.NETHERITE_CHESTPLATE)
 		));
 
 		Ingredient repairElytra = Ingredient.fromItems(Items.PHANTOM_MEMBRANE);

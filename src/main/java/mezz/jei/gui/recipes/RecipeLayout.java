@@ -107,8 +107,8 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 		if (this.recipeTransferButton != null) {
 			int width = recipeCategory.getBackground().getWidth();
 			int height = recipeCategory.getBackground().getHeight();
-			this.recipeTransferButton.field_230690_l_ = posX + width + RECIPE_BORDER_PADDING + 2;
-			this.recipeTransferButton.field_230691_m_ = posY + height - RECIPE_BUTTON_SIZE;
+			this.recipeTransferButton.x = posX + width + RECIPE_BORDER_PADDING + 2;
+			this.recipeTransferButton.y = posY + height - RECIPE_BUTTON_SIZE;
 		}
 	}
 
@@ -147,7 +147,7 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 		if (recipeTransferButton != null) {
 			Minecraft minecraft = Minecraft.getInstance();
 			float partialTicks = minecraft.getRenderPartialTicks();
-			recipeTransferButton.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+			recipeTransferButton.render(matrixStack, mouseX, mouseY, partialTicks);
 		}
 		RenderSystem.disableBlend();
 		RenderSystem.disableLighting();
@@ -197,7 +197,7 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 		final IDrawable background = recipeCategory.getBackground();
 		final Rectangle2d backgroundRect = new Rectangle2d(posX, posY, background.getWidth(), background.getHeight());
 		return MathUtil.contains(backgroundRect, mouseX, mouseY) ||
-			(recipeTransferButton != null && recipeTransferButton.func_231047_b_(mouseX, mouseY));
+			(recipeTransferButton != null && recipeTransferButton.isMouseOver(mouseX, mouseY));
 	}
 
 	@Override
@@ -251,8 +251,8 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 	@Override
 	public void moveRecipeTransferButton(int posX, int posY) {
 		if (recipeTransferButton != null) {
-			recipeTransferButton.field_230690_l_ = posX + this.posX;
-			recipeTransferButton.field_230691_m_ = posY + this.posY;
+			recipeTransferButton.x = posX + this.posX;
+			recipeTransferButton.y = posY + this.posY;
 		}
 	}
 

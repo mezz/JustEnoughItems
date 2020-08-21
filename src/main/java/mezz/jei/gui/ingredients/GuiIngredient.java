@@ -192,7 +192,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 		int y = rect.getY() + yOffset + yPadding;
 		RenderSystem.disableLighting();
 		RenderSystem.disableDepthTest();
-		func_238467_a_(matrixStack, x, y, x + rect.getWidth() - xPadding * 2, y + rect.getHeight() - yPadding * 2, color);
+		fill(matrixStack, x, y, x + rect.getWidth() - xPadding * 2, y + rect.getHeight() - yPadding * 2, color);
 		RenderSystem.color4f(1f, 1f, 1f, 1f);
 	}
 
@@ -209,7 +209,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 			RenderSystem.disableDepthTest();
 
 			RenderHelper.disableStandardItemLighting();
-			func_238467_a_(matrixStack,
+			fill(matrixStack,
 				xOffset + rect.getX() + xPadding,
 				yOffset + rect.getY() + yPadding,
 				xOffset + rect.getX() + rect.getWidth() - xPadding,
@@ -231,7 +231,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 				ResourceLocation tagEquivalent = getTagEquivalent(itemStacks);
 				if (tagEquivalent != null) {
 					final TranslationTextComponent acceptsAny = new TranslationTextComponent("jei.tooltip.recipe.tag", tagEquivalent);
-					tooltip.add(acceptsAny.func_240699_a_(TextFormatting.GRAY));
+					tooltip.add(acceptsAny.mergeStyle(TextFormatting.GRAY));
 				}
 			}
 			TooltipRenderer.drawHoveringText(value, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer, matrixStack);
@@ -256,7 +256,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 		ITagCollection<Item> collection = ItemTags.getCollection();
 		Collection<ITag<Item>> tags = collection.func_241833_a().values();
 		for (ITag<Item> tag : tags) {
-			if (tag.func_230236_b_().equals(items)) {
+			if (tag.getAllElements().equals(items)) {
 				return collection.func_232973_a_(tag);
 			}
 		}

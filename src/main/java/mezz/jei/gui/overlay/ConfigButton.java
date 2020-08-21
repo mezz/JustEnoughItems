@@ -39,24 +39,24 @@ public class ConfigButton extends GuiIconToggleButton {
 			TranslationTextComponent disabled = new TranslationTextComponent("jei.tooltip.ingredient.list.disabled");
 			TranslationTextComponent overLay = new TranslationTextComponent(KeyBindings.toggleOverlay.getTranslationKey());
 			TranslationTextComponent disabledFix = new TranslationTextComponent("jei.tooltip.ingredient.list.disabled.how.to.fix", overLay);
-			tooltip.add(disabled.func_240699_a_(TextFormatting.GOLD));
-			tooltip.add(disabledFix.func_240699_a_(TextFormatting.GOLD));
+			tooltip.add(disabled.mergeStyle(TextFormatting.GOLD));
+			tooltip.add(disabledFix.mergeStyle(TextFormatting.GOLD));
 		} else if (!parent.isListDisplayed()) {
 			TranslationTextComponent notEnoughSpace = new TranslationTextComponent("jei.tooltip.not.enough.space");
-			tooltip.add(notEnoughSpace.func_240699_a_(TextFormatting.GOLD));
+			tooltip.add(notEnoughSpace.mergeStyle(TextFormatting.GOLD));
 		}
 		if (worldConfig.isCheatItemsEnabled()) {
 			TranslationTextComponent enabled = new TranslationTextComponent("jei.tooltip.cheat.mode.button.enabled");
-			tooltip.add(enabled.func_240699_a_(TextFormatting.RED));
+			tooltip.add(enabled.mergeStyle(TextFormatting.RED));
 			KeyBinding toggleCheatMode = KeyBindings.toggleCheatMode;
 			if (toggleCheatMode.getKey().getKeyCode() != 0) {
 				TranslationTextComponent cheatMode = new TranslationTextComponent(toggleCheatMode.getTranslationKey());
 				TranslationTextComponent disableHotkey = new TranslationTextComponent("jei.tooltip.cheat.mode.how.to.disable.hotkey", cheatMode);
-				tooltip.add(disableHotkey.func_240699_a_(TextFormatting.RED));
+				tooltip.add(disableHotkey.mergeStyle(TextFormatting.RED));
 			} else {
 				TranslationTextComponent controlKeyLocalization = new TranslationTextComponent(Minecraft.IS_RUNNING_ON_MAC ? "key.jei.ctrl.mac" : "key.jei.ctrl");
 				TranslationTextComponent noHotKey = new TranslationTextComponent("jei.tooltip.cheat.mode.how.to.disable.no.hotkey", controlKeyLocalization);
-				tooltip.add(noHotKey.func_240699_a_(TextFormatting.RED));
+				tooltip.add(noHotKey.mergeStyle(TextFormatting.RED));
 			}
 		}
 	}

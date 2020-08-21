@@ -222,7 +222,7 @@ public class InputHandler {
 
 	private <V> boolean handleClickEdit(IClickedIngredient<V> clicked) {
 		V ingredient = clicked.getValue();
-		IngredientBlacklistType blacklistType = Screen.func_231172_r_() ? IngredientBlacklistType.WILDCARD : IngredientBlacklistType.ITEM;
+		IngredientBlacklistType blacklistType = Screen.hasControlDown() ? IngredientBlacklistType.WILDCARD : IngredientBlacklistType.ITEM;
 
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 
@@ -315,7 +315,7 @@ public class InputHandler {
 			return false;
 		}
 		TextFieldWidget textField = ReflectionUtil.getFieldWithClass(screen, TextFieldWidget.class);
-		return textField != null && textField.getVisible() && textField.func_230999_j_();
+		return textField != null && textField.getVisible() && textField.isFocused();
 	}
 
 }

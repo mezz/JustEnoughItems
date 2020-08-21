@@ -65,7 +65,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 				int textCenterX = x + (TAB_WIDTH / 2);
 				int textCenterY = y + (TAB_HEIGHT / 2) - 3;
 				int color = isMouseOver(mouseX, mouseY) ? 0xFFFFA0 : 0xE0E0E0;
-				fontRenderer.func_238405_a_(matrixStack, text, textCenterX - fontRenderer.getStringWidth(text) / 2, textCenterY, color);
+				fontRenderer.drawStringWithShadow(matrixStack, text, textCenterX - fontRenderer.getStringWidth(text) / 2, textCenterY, color);
 				RenderSystem.color4f(1, 1, 1, 1);
 			}
 		}

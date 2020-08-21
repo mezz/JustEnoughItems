@@ -35,17 +35,17 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 		}
 
 		if (RecipeTransferUtil.allowsTransfer(recipeTransferError)) {
-			this.field_230693_o_ = true;
-			this.field_230694_p_ = true;
+			this.active = true;
+			this.visible = true;
 		} else {
-			this.field_230693_o_ = false;
+			this.active = false;
 			IRecipeTransferError.Type type = this.recipeTransferError.getType();
-			this.field_230694_p_ = (type == IRecipeTransferError.Type.USER_FACING);
+			this.visible = (type == IRecipeTransferError.Type.USER_FACING);
 		}
 	}
 
 	public void drawToolTip(MatrixStack matrixStack, int mouseX, int mouseY) {
-		if (func_231047_b_(mouseX, mouseY)) {
+		if (isMouseOver(mouseX, mouseY)) {
 			if (recipeTransferError == null) {
 				TranslationTextComponent tooltipTransfer = new TranslationTextComponent("jei.tooltip.transfer");
 				TooltipRenderer.drawHoveringText(tooltipTransfer, mouseX, mouseY, matrixStack);
@@ -56,12 +56,12 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 	}
 
 	@Override
-	public boolean func_231047_b_(double mouseX, double mouseY) {
-		return this.field_230694_p_ &&
-			mouseX >= this.field_230690_l_ &&
-			mouseY >= this.field_230691_m_ &&
-			mouseX < this.field_230690_l_ + this.field_230688_j_ &&
-			mouseY < this.field_230691_m_ + this.field_230689_k_;
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		return this.visible &&
+			mouseX >= this.x &&
+			mouseY >= this.y &&
+			mouseX < this.x + this.width &&
+			mouseY < this.y + this.height;
 	}
 
 	public void setOnClickHandler(IOnClickHandler onClickHandler) {
@@ -69,7 +69,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 	}
 
 	@Override
-	public void func_230982_a_(double mouseX, double mouseY) {
+	public void onClick(double mouseX, double mouseY) {
 		if (onClickHandler != null) {
 			onClickHandler.onClick(mouseX, mouseY);
 		}

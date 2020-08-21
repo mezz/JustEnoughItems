@@ -103,11 +103,11 @@ public final class CommandUtil {
 			sender.sendChatMessage(chatMessage);
 		} else {
 			ITextComponent errorMessage = new TranslationTextComponent("jei.chat.error.command.too.long");
-			errorMessage.getStyle().func_240712_a_(TextFormatting.RED);
+			errorMessage.getStyle().applyFormatting(TextFormatting.RED);
 			sender.sendStatusMessage(errorMessage, false);
 
 			ITextComponent chatMessageComponent = new StringTextComponent(chatMessage);
-			chatMessageComponent.getStyle().func_240712_a_(TextFormatting.RED);
+			chatMessageComponent.getStyle().applyFormatting(TextFormatting.RED);
 			sender.sendStatusMessage(chatMessageComponent, false);
 		}
 	}

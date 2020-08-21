@@ -57,7 +57,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 
 	@Override
 	public String getTitle() {
-		return Blocks.ANVIL.func_235333_g_().getString();
+		return Blocks.ANVIL.getTranslatedName().getString();
 	}
 
 	@Override
@@ -140,9 +140,9 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 		int y = 27;
 
 		// TODO 1.13 match the new GuiRepair style
-		minecraft.fontRenderer.func_238421_b_(matrixStack, text, x + 1, y, shadowColor);
-		minecraft.fontRenderer.func_238421_b_(matrixStack, text, x, y + 1, shadowColor);
-		minecraft.fontRenderer.func_238421_b_(matrixStack, text, x + 1, y + 1, shadowColor);
-		minecraft.fontRenderer.func_238421_b_(matrixStack, text, x, y, mainColor);
+		minecraft.fontRenderer.drawString(matrixStack, text, x + 1, y, shadowColor);
+		minecraft.fontRenderer.drawString(matrixStack, text, x, y + 1, shadowColor);
+		minecraft.fontRenderer.drawString(matrixStack, text, x + 1, y + 1, shadowColor);
+		minecraft.fontRenderer.drawString(matrixStack, text, x, y, mainColor);
 	}
 }

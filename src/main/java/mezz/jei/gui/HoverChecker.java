@@ -19,10 +19,10 @@ public class HoverChecker {
 	}
 
 	public void updateBounds(Button button) {
-		this.top = button.field_230691_m_;
-		this.bottom = button.field_230691_m_ + button.getHeight();
-		this.left = button.field_230690_l_;
-		this.right = button.field_230690_l_ + button.func_230998_h_();
+		this.top = button.y;
+		this.bottom = button.y + button.getWidth_CLASH(); // TODO: bad MCP name for getHeight
+		this.left = button.x;
+		this.right = button.x + button.getWidth();
 	}
 
 	public void updateBounds(int top, int bottom, int left, int right) {

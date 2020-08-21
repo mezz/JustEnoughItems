@@ -40,13 +40,13 @@ public class BookmarkButton extends GuiIconToggleButton {
 		KeyBinding bookmarkKey = KeyBindings.bookmark;
 		if (bookmarkKey.getKey().getKeyCode() == GLFW.GLFW_KEY_UNKNOWN) {
 			TranslationTextComponent noKey = new TranslationTextComponent("jei.tooltip.bookmarks.usage.nokey");
-			tooltip.add(noKey.func_240699_a_(TextFormatting.RED));
+			tooltip.add(noKey.mergeStyle(TextFormatting.RED));
 		} else if (!bookmarkOverlay.hasRoom()) {
 			TranslationTextComponent notEnoughSpace = new TranslationTextComponent("jei.tooltip.bookmarks.not.enough.space");
-			tooltip.add(notEnoughSpace.func_240699_a_(TextFormatting.GOLD));
+			tooltip.add(notEnoughSpace.mergeStyle(TextFormatting.GOLD));
 		} else {
 			TranslationTextComponent key = new TranslationTextComponent("jei.tooltip.bookmarks.usage.key", new TranslationTextComponent(bookmarkKey.getTranslationKey()));
-			tooltip.add(key.func_240699_a_(TextFormatting.GRAY));
+			tooltip.add(key.mergeStyle(TextFormatting.GRAY));
 		}
 	}
 

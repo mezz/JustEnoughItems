@@ -83,6 +83,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	private int guiTop;
 
 	private boolean init = false;
+	private boolean closing = false;
 
 	public RecipesGui(IRecipeManager recipeManager, RecipeTransferManager recipeTransferManager, IngredientManager ingredientManager) {
 		super(new StringTextComponent("Recipes"));
@@ -90,7 +91,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, ingredientManager);
 		this.recipeCatalysts = new RecipeCatalysts();
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
-		this.field_230706_i_ = Minecraft.getInstance();
+		this.minecraft = Minecraft.getInstance();
 
 		Textures textures = Internal.getTextures();
 		IDrawableStatic arrowNext = textures.getArrowNext();
@@ -105,7 +106,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	}
 
 	private static void drawCenteredStringWithShadow(MatrixStack matrixStack, FontRenderer font, String string, int guiWidth, int xOffset, int yPos, int color) {
-		font.func_238405_a_(matrixStack, string, (guiWidth - font.getStringWidth(string)) / 2 + xOffset, yPos, color);
+		int xPos = (guiWidth - font.getStringWidth(string)) / 2 + xOffset;
+		font.drawStringWithShadow(matrixStack, string, xPos, yPos, color);
 	}
 
 	public int getGuiLeft() {
@@ -132,16 +134,16 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	}
 
 	@Override
-	public boolean func_231177_au__() {
+	public boolean isPauseScreen() {
 		return false;
 	}
 
 	@Override
-	public void func_231158_b_(Minecraft minecraft, int width, int height) {
-		super.func_231158_b_(minecraft, width, height);
+	public void init(Minecraft minecraft, int width, int height) {
+		super.init(minecraft, width, height);
 
 		this.xSize = 198;
-		this.ySize = this.field_230709_l_ - 68;
+		this.ySize = this.height - 68;
 		int extraSpace = 0;
 		final int maxHeight = ClientConfig.getInstance().getMaxRecipeGuiHeight();
 		if (this.ySize > maxHeight) {
@@ -155,18 +157,18 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		final int rightButtonX = guiLeft + xSize - borderPadding - buttonWidth;
 		final int leftButtonX = guiLeft + borderPadding;
 
-		int titleHeight = field_230712_o_.FONT_HEIGHT + borderPadding;
+		int titleHeight = font.FONT_HEIGHT + borderPadding;
 		int recipeClassButtonTop = guiTop + titleHeight - buttonHeight + 2;
-		nextRecipeCategory.field_230690_l_ = rightButtonX;
-		nextRecipeCategory.field_230691_m_ = recipeClassButtonTop;
-		previousRecipeCategory.field_230690_l_ = leftButtonX;
-		previousRecipeCategory.field_230691_m_ = recipeClassButtonTop;
+		nextRecipeCategory.x = rightButtonX;
+		nextRecipeCategory.y = recipeClassButtonTop;
+		previousRecipeCategory.x = leftButtonX;
+		previousRecipeCategory.y = recipeClassButtonTop;
 
 		int pageButtonTop = recipeClassButtonTop + buttonHeight + 2;
-		nextPage.field_230690_l_ = rightButtonX;
-		nextPage.field_230691_m_ = pageButtonTop;
-		previousPage.field_230690_l_ = leftButtonX;
-		previousPage.field_230691_m_ = pageButtonTop;
+		nextPage.x = rightButtonX;
+		nextPage.y = pageButtonTop;
+		previousPage.x = leftButtonX;
+		previousPage.y = pageButtonTop;
 
 		this.headerHeight = (pageButtonTop + buttonHeight) - guiTop;
 
@@ -177,47 +179,47 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	}
 
 	private void addButtons() {
-		this.func_230480_a_(nextRecipeCategory);
-		this.func_230480_a_(nextRecipeCategory);
-		this.func_230480_a_(previousRecipeCategory);
-		this.func_230480_a_(nextPage);
-		this.func_230480_a_(previousPage);
+		this.addButton(nextRecipeCategory);
+		this.addButton(nextRecipeCategory);
+		this.addButton(previousRecipeCategory);
+		this.addButton(nextPage);
+		this.addButton(previousPage);
 	}
 
 	@Override
-	public void func_230430_a_(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-		if (field_230706_i_ == null) {
+	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+		if (minecraft == null) {
 			return;
 		}
-		func_230446_a_(matrixStack);
+		renderBackground(matrixStack);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.background.draw(matrixStack, guiLeft, guiTop, xSize, ySize);
 
 		RenderSystem.disableBlend();
 
-		func_238467_a_(matrixStack,
+		fill(matrixStack,
 			guiLeft + borderPadding + buttonWidth,
-			nextRecipeCategory.field_230691_m_,
+			nextRecipeCategory.y,
 			guiLeft + xSize - borderPadding - buttonWidth,
-			nextRecipeCategory.field_230691_m_ + buttonHeight,
+			nextRecipeCategory.y + buttonHeight,
 			0x30000000);
-		func_238467_a_(matrixStack,
+		fill(matrixStack,
 			guiLeft + borderPadding + buttonWidth,
-			nextPage.field_230691_m_,
+			nextPage.y,
 			guiLeft + xSize - borderPadding - buttonWidth,
-			nextPage.field_230691_m_ + buttonHeight,
+			nextPage.y + buttonHeight,
 			0x30000000);
 
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-		int textPadding = (buttonHeight - field_230712_o_.FONT_HEIGHT) / 2;
-		drawCenteredStringWithShadow(matrixStack, field_230712_o_, title, xSize, guiLeft, nextRecipeCategory.field_230691_m_ + textPadding, 0xFFFFFFFF);
-		drawCenteredStringWithShadow(matrixStack, field_230712_o_, pageString, xSize, guiLeft, nextPage.field_230691_m_ + textPadding, 0xFFFFFFFF);
+		int textPadding = (buttonHeight - font.FONT_HEIGHT) / 2;
+		drawCenteredStringWithShadow(matrixStack, font, title, xSize, guiLeft, nextRecipeCategory.y + textPadding, 0xFFFFFFFF);
+		drawCenteredStringWithShadow(matrixStack, font, pageString, xSize, guiLeft, nextPage.y + textPadding, 0xFFFFFFFF);
 
-		nextRecipeCategory.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
-		previousRecipeCategory.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
-		nextPage.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
-		previousPage.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+		nextRecipeCategory.render(matrixStack, mouseX, mouseY, partialTicks);
+		previousRecipeCategory.render(matrixStack, mouseX, mouseY, partialTicks);
+		nextPage.render(matrixStack, mouseX, mouseY, partialTicks);
+		previousPage.render(matrixStack, mouseX, mouseY, partialTicks);
 
 		RecipeLayout<?> hoveredLayout = null;
 		for (RecipeLayout<?> recipeLayout : recipeLayouts) {
@@ -229,7 +231,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 		GuiIngredient<?> hoveredRecipeCatalyst = recipeCatalysts.draw(matrixStack, mouseX, mouseY);
 
-		recipeGuiTabs.draw(field_230706_i_, matrixStack, mouseX, mouseY);
+		recipeGuiTabs.draw(minecraft, matrixStack, mouseX, mouseY);
 
 		if (hoveredLayout != null) {
 			hoveredLayout.drawOverlays(matrixStack, mouseX, mouseY);
@@ -245,7 +247,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		if (field_230706_i_ != null && field_230706_i_.currentScreen == this) {
+		if (minecraft != null && minecraft.currentScreen == this) {
 			if ((mouseX >= guiLeft) && (mouseY >= guiTop) && (mouseX < guiLeft + xSize) && (mouseY < guiTop + ySize)) {
 				return true;
 			}
@@ -290,7 +292,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	}
 
 	@Override
-	public boolean func_231043_a_(double scrollX, double scrollY, double scrollDelta) {
+	public boolean mouseScrolled(double scrollX, double scrollY, double scrollDelta) {
 		final double x = MouseUtil.getX();
 		final double y = MouseUtil.getY();
 		if (isMouseOver(x, y)) {
@@ -302,11 +304,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 				return true;
 			}
 		}
-		return super.func_231043_a_(scrollX, scrollY, scrollDelta);
+		return super.mouseScrolled(scrollX, scrollY, scrollDelta);
 	}
 
 	@Override
-	public boolean func_231044_a_(double mouseX, double mouseY, int mouseButton) {
+	public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
 		if (isMouseOver(mouseX, mouseY)) {
 			if (titleHoverChecker.checkHover(mouseX, mouseY)) {
 				if (logic.setCategoryFocus()) {
@@ -332,18 +334,18 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 			return true;
 		}
 
-		return super.func_231044_a_(mouseX, mouseY, mouseButton);
+		return super.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 
 	@Override
-	public boolean func_231046_a_(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		InputMappings.Input input = InputMappings.getInputByCode(keyCode, scanCode);
 		return handleKeybindings(input);
 	}
 
 	private boolean handleKeybindings(InputMappings.Input input) {
 		if (KeyBindings.isInventoryCloseKey(input) || KeyBindings.isInventoryToggleKey(input)) {
-			func_231175_as__();
+			onClose();
 			return true;
 		} else if (KeyBindings.recipeBack.isActiveAndMatches(input)) {
 			back();
@@ -367,26 +369,28 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	}
 
 	public boolean isOpen() {
-		return field_230706_i_ != null && field_230706_i_.currentScreen == this;
+		return minecraft != null && minecraft.currentScreen == this;
 	}
 
 	private void open() {
-		if (field_230706_i_ != null) {
+		if (minecraft != null) {
 			if (!isOpen()) {
-				parentScreen = field_230706_i_.currentScreen;
+				parentScreen = minecraft.currentScreen;
 			}
-			field_230706_i_.displayGuiScreen(this);
+			minecraft.displayGuiScreen(this);
 		}
 	}
 
 	@Override
-	public void func_231175_as__() {
-		if (isOpen() && field_230706_i_ != null) {
+	public void onClose() {
+		if (isOpen() && minecraft != null && !closing) {
 			if (parentScreen != null) {
-				field_230706_i_.displayGuiScreen(parentScreen);
+				closing = true;
+				minecraft.displayGuiScreen(parentScreen);
 				parentScreen = null;
+				closing = false;
 			} else {
-				ClientPlayerEntity player = field_230706_i_.player;
+				ClientPlayerEntity player = minecraft.player;
 				if (player != null) {
 					player.closeScreen();
 				}
@@ -448,15 +452,15 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		logic.setRecipesPerPage(recipesPerPage);
 
 		title = recipeCategory.getTitle();
-		int titleWidth = field_230712_o_.getStringWidth(title);
-		final int availableTitleWidth = (nextPage.field_230690_l_ - (previousPage.field_230690_l_ + previousPage.func_230998_h_())) - (2 * innerPadding);
+		int titleWidth = font.getStringWidth(title);
+		final int availableTitleWidth = (nextPage.x - (previousPage.x + previousPage.getWidth())) - (2 * innerPadding);
 		if (titleWidth > availableTitleWidth) {
-			title = StringUtil.truncateStringToWidth(title, availableTitleWidth, field_230712_o_);
-			titleWidth = field_230712_o_.getStringWidth(title);
+			title = StringUtil.truncateStringToWidth(title, availableTitleWidth, font);
+			titleWidth = font.getStringWidth(title);
 		}
 		final int titleX = guiLeft + (xSize - titleWidth) / 2;
 		final int titleY = guiTop + borderPadding;
-		titleHoverChecker.updateBounds(titleY, titleY + field_230712_o_.FONT_HEIGHT, titleX, titleX + titleWidth);
+		titleHoverChecker.updateBounds(titleY, titleY + font.FONT_HEIGHT, titleX, titleX + titleWidth);
 
 		int spacingY = recipeBackground.getHeight() + recipeSpacing;
 
@@ -464,8 +468,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		recipeLayouts.addAll(logic.getRecipeLayouts(recipeXOffset, guiTop + headerHeight + recipeSpacing, spacingY));
 		addRecipeTransferButtons(recipeLayouts);
 
-		nextPage.field_230693_o_ = previousPage.field_230693_o_ = logic.hasMultiplePages();
-		nextRecipeCategory.field_230693_o_ = previousRecipeCategory.field_230693_o_ = logic.hasMultipleCategories();
+		nextPage.active = previousPage.active = logic.hasMultiplePages();
+		nextRecipeCategory.active = previousRecipeCategory.active = logic.hasMultipleCategories();
 
 		pageString = logic.getPageString();
 
@@ -475,14 +479,14 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	}
 
 	private void addRecipeTransferButtons(List<RecipeLayout<?>> recipeLayouts) {
-		field_230705_e_.removeAll(field_230710_m_);
-		field_230710_m_.clear();
+		children.removeAll(buttons);
+		buttons.clear();
 		addButtons();
 
-		if (field_230706_i_ == null) {
+		if (minecraft == null) {
 			return;
 		}
-		PlayerEntity player = field_230706_i_.player;
+		PlayerEntity player = minecraft.player;
 		if (player == null) {
 			return;
 		}
@@ -493,12 +497,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 			if (button != null) {
 				button.init(recipeTransferManager, container, player);
 				button.setOnClickHandler((mouseX, mouseY) -> {
-					boolean maxTransfer = Screen.func_231173_s_();
+					boolean maxTransfer = Screen.hasShiftDown();
 					if (container != null && RecipeTransferUtil.transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer)) {
-						func_231175_as__();
+						onClose();
 					}
 				});
-				func_230480_a_(button);
+				addButton(button);
 			}
 		}
 	}

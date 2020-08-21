@@ -27,17 +27,17 @@ public abstract class GuiIconToggleButton {
 	}
 
 	public void updateBounds(Rectangle2d area) {
-		this.button.func_230991_b_(area.getWidth());
+		this.button.setWidth(area.getWidth());
 		this.button.setHeight(area.getHeight());
-		this.button.field_230690_l_ = area.getX();
-		this.button.field_230691_m_ = area.getY();
+		this.button.x = area.getX();
+		this.button.y = area.getY();
 		this.hoverChecker.updateBounds(this.button);
 	}
 
 	public void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-		this.button.func_230430_a_(matrixStack, mouseX, mouseY, partialTicks);
+		this.button.render(matrixStack, mouseX, mouseY, partialTicks);
 		IDrawable icon = isIconToggledOn() ? this.onIcon : this.offIcon;
-		icon.draw(matrixStack, this.button.field_230690_l_ + 2, this.button.field_230691_m_ + 2);
+		icon.draw(matrixStack, this.button.x + 2, this.button.y + 2);
 	}
 
 	public final boolean isMouseOver(double mouseX, double mouseY) {
@@ -45,7 +45,7 @@ public abstract class GuiIconToggleButton {
 	}
 
 	public final boolean handleMouseClick(double mouseX, double mouseY, int mouseButton) {
-		return button.func_231044_a_(mouseX, mouseY, mouseButton) &&
+		return button.mouseClicked(mouseX, mouseY, mouseButton) &&
 			onMouseClicked(mouseX, mouseY, mouseButton);
 	}
 

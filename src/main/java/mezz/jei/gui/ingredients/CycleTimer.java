@@ -28,7 +28,7 @@ public class CycleTimer {
 	}
 
 	public void onDraw() {
-		if (!Screen.func_231173_s_()) {
+		if (!Screen.hasShiftDown()) {
 			if (pausedDuration > 0) {
 				startTime += pausedDuration;
 				pausedDuration = 0;

@@ -33,7 +33,7 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 
 	public GuiTextFieldFilter(IIngredientGridSource ingredientSource, IWorldConfig worldConfig) {
 		// TODO narrator string
-		super(Minecraft.getInstance().fontRenderer, 0, 0, 0, 0, StringTextComponent.field_240750_d_);
+		super(Minecraft.getInstance().fontRenderer, 0, 0, 0, 0, StringTextComponent.EMPTY);
 		this.worldConfig = worldConfig;
 
 		setMaxStringLength(maxSearchLength);
@@ -44,10 +44,10 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 	}
 
 	public void updateBounds(Rectangle2d area) {
-		this.field_230690_l_ = area.getX();
-		this.field_230691_m_ = area.getY();
-		this.field_230688_j_ = area.getWidth();
-		this.field_230689_k_ = area.getHeight();
+		this.x = area.getX();
+		this.y = area.getY();
+		this.width = area.getWidth();
+		this.height = area.getHeight();
 		this.hoverChecker.updateBounds(area.getY(), area.getY() + area.getHeight(), area.getX(), area.getX() + area.getWidth());
 		setSelectionPos(getCursorPosition());
 	}
@@ -66,8 +66,8 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 	}
 
 	@Override
-	public boolean func_231046_a_(int keyCode, int scanCode, int modifiers) {
-		boolean handled = super.func_231046_a_(keyCode, scanCode, modifiers);
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		boolean handled = super.keyPressed(keyCode, scanCode, modifiers);
 		if (!handled && !history.isEmpty()) {
 			if (keyCode == GLFW.GLFW_KEY_UP) {
 				String currentText = getText();
@@ -113,15 +113,15 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 			setText("");
 			return worldConfig.setFilterText("");
 		} else {
-			super.func_231044_a_(mouseX, mouseY, mouseButton);
+			super.mouseClicked(mouseX, mouseY, mouseButton);
 		}
 		return false;
 	}
 
 	@Override
-	public void func_230996_d_(boolean keyboardFocus) {
-		final boolean previousFocus = func_230999_j_();
-		super.func_230996_d_(keyboardFocus);
+	public void setFocused(boolean keyboardFocus) {
+		final boolean previousFocus = isFocused();
+		super.setFocused(keyboardFocus);
 
 		if (previousFocus != keyboardFocus) {
 			Minecraft minecraft = Minecraft.getInstance();
@@ -161,13 +161,13 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 	}
 
 	@Override
-	public void func_230431_b_(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+	public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		this.isDrawing = true;
 		if (this.getVisible()) {
 			RenderSystem.color4f(1, 1, 1, 1);
-			background.draw(matrixStack, this.field_230690_l_, this.field_230691_m_, this.field_230688_j_, this.field_230689_k_);
+			background.draw(matrixStack, this.x, this.y, this.width, this.height);
 		}
-		super.func_230431_b_(matrixStack, mouseX, mouseY, partialTicks);
+		super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
 		this.isDrawing = false;
 	}
 	// end background hack

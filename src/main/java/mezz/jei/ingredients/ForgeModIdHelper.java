@@ -63,9 +63,9 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 			StringTextComponent jeiDebug = new StringTextComponent("JEI Debug:");
 			StringTextComponent info = new StringTextComponent("info: " + ingredientHelper.getErrorInfo(ingredient));
 			StringTextComponent uid = new StringTextComponent("uid: " + ingredientHelper.getUniqueId(ingredient));
-			tooltip.add(jeiDebug.func_240699_a_(TextFormatting.GRAY));
-			tooltip.add(info.func_240699_a_(TextFormatting.GRAY));
-			tooltip.add(uid.func_240699_a_(TextFormatting.GRAY));
+			tooltip.add(jeiDebug.mergeStyle(TextFormatting.GRAY));
+			tooltip.add(info.mergeStyle(TextFormatting.GRAY));
+			tooltip.add(uid.mergeStyle(TextFormatting.GRAY));
 		}
 		if (modIdFormattingConfig.isModNameFormatOverrideActive() && (ingredient instanceof ItemStack)) {
 			// we detected that another mod is adding the mod name already

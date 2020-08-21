@@ -187,10 +187,10 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		int amount = fluidStack.getAmount();
 		if (tooltipMode == TooltipMode.SHOW_AMOUNT_AND_CAPACITY) {
 			TranslationTextComponent amountString = new TranslationTextComponent("jei.tooltip.liquid.amount.with.capacity", nf.format(amount), nf.format(capacityMb));
-			tooltip.add(amountString.func_240699_a_(TextFormatting.GRAY));
+			tooltip.add(amountString.mergeStyle(TextFormatting.GRAY));
 		} else if (tooltipMode == TooltipMode.SHOW_AMOUNT) {
 			TranslationTextComponent amountString = new TranslationTextComponent("jei.tooltip.liquid.amount", nf.format(amount));
-			tooltip.add(amountString.func_240699_a_(TextFormatting.GRAY));
+			tooltip.add(amountString.mergeStyle(TextFormatting.GRAY));
 		}
 
 		return tooltip;

@@ -19,7 +19,7 @@ public class GuiProperties implements IGuiProperties {
 
 	@Nullable
 	public static GuiProperties create(ContainerScreen<?> containerScreen) {
-		if (containerScreen.field_230708_k_ == 0 || containerScreen.field_230709_l_ == 0) {
+		if (containerScreen.width == 0 || containerScreen.height == 0) {
 			return null;
 		}
 		return new GuiProperties(
@@ -28,8 +28,8 @@ public class GuiProperties implements IGuiProperties {
 			containerScreen.getGuiTop(),
 			containerScreen.getXSize(),
 			containerScreen.getYSize(),
-			containerScreen.field_230708_k_,
-			containerScreen.field_230709_l_
+			containerScreen.width,
+			containerScreen.height
 		);
 	}
 
@@ -41,8 +41,8 @@ public class GuiProperties implements IGuiProperties {
 			recipesGui.getGuiTop(),
 			recipesGui.getXSize() + extraWidth,
 			recipesGui.getYSize(),
-			recipesGui.field_230708_k_,
-			recipesGui.field_230709_l_
+			recipesGui.width,
+			recipesGui.height
 		);
 	}
 

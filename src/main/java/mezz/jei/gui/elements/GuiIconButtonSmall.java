@@ -17,26 +17,26 @@ public class GuiIconButtonSmall extends Button {
 	private final IDrawable icon;
 
 	public GuiIconButtonSmall(int x, int y, int widthIn, int heightIn, IDrawable icon, Button.IPressable pressable) {
-		super(x, y, widthIn, heightIn, StringTextComponent.field_240750_d_, pressable);
+		super(x, y, widthIn, heightIn, StringTextComponent.EMPTY, pressable);
 		this.icon = icon;
 	}
 
 	@Override
-	public void func_230430_a_(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-		if (this.field_230694_p_) {
+	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+		if (this.visible) {
 			Minecraft minecraft = Minecraft.getInstance();
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.enableAlphaTest();
-			boolean hovered = func_231047_b_(mouseX, mouseY);
+			boolean hovered = isMouseOver(mouseX, mouseY);
 			Textures textures = Internal.getTextures();
-			DrawableNineSliceTexture texture = textures.getButtonForState(this.field_230693_o_, hovered);
-			texture.draw(matrixStack, this.field_230690_l_, this.field_230691_m_, this.field_230688_j_, this.field_230689_k_);
-			this.func_230441_a_(matrixStack, minecraft, mouseX, mouseY);
+			DrawableNineSliceTexture texture = textures.getButtonForState(this.active, hovered);
+			texture.draw(matrixStack, this.x, this.y, this.width, this.height);
+			this.renderBg(matrixStack, minecraft, mouseX, mouseY);
 
 			int color = 14737632;
 			if (packedFGColor != 0) {
 				color = packedFGColor;
-			} else if (!this.field_230693_o_) {
+			} else if (!this.active) {
 				color = 10526880;
 			} else if (hovered) {
 				color = 16777120;
@@ -51,8 +51,8 @@ public class GuiIconButtonSmall extends Button {
 			float alpha = (float) (color >> 24 & 255) / 255.0F;
 			RenderSystem.color4f(red, blue, green, alpha);
 
-			double xOffset = field_230690_l_ + (field_230689_k_ - this.icon.getWidth()) / 2.0;
-			double yOffset = field_230691_m_ + (field_230688_j_ - this.icon.getHeight()) / 2.0;
+			double xOffset = x + (width - this.icon.getWidth()) / 2.0;
+			double yOffset = y + (height - this.icon.getHeight()) / 2.0;
 			matrixStack.push();
 			matrixStack.translate(xOffset, yOffset, 0);
 			this.icon.draw(matrixStack);

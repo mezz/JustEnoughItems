@@ -152,8 +152,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 				}
 
 				this.configButton.updateBounds(new Rectangle2d(
-					searchField.field_230690_l_ + searchField.func_230998_h_() - 1,
-					searchField.field_230691_m_,
+					searchField.x + searchField.getWidth() - 1,
+					searchField.y,
 					BUTTON_SIZE,
 					BUTTON_SIZE
 				));
@@ -175,7 +175,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		if (this.guiProperties != null) {
 			if (isListDisplayed()) {
 				RenderSystem.disableLighting();
-				this.searchField.func_230431_b_(matrixStack, mouseX, mouseY, partialTicks);
+				this.searchField.renderButton(matrixStack, mouseX, mouseY, partialTicks);
 				this.contents.draw(minecraft, matrixStack, mouseX, mouseY, partialTicks);
 				this.configButton.draw(matrixStack, mouseX, mouseY, partialTicks);
 			} else {
@@ -310,11 +310,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 
 	@Override
 	public boolean hasKeyboardFocus() {
-		return isListDisplayed() && this.searchField.func_230999_j_();
+		return isListDisplayed() && this.searchField.isFocused();
 	}
 
 	public void setKeyboardFocus(boolean keyboardFocus) {
-		this.searchField.func_230996_d_(keyboardFocus);
+		this.searchField.setFocused(keyboardFocus);
 	}
 
 	public boolean onGlobalKeyPressed(InputMappings.Input input) {
@@ -338,7 +338,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	public boolean onCharTyped(char codePoint, int modifiers) {
 		if (isListDisplayed() &&
 			hasKeyboardFocus() &&
-			searchField.func_231042_a_(codePoint, modifiers)) {
+			searchField.charTyped(codePoint, modifiers)) {
 			boolean changed = worldConfig.setFilterText(searchField.getText());
 			if (changed) {
 				updateLayout(true);
@@ -351,7 +351,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	public boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
 		if (isListDisplayed()) {
 			if (hasKeyboardFocus() &&
-				searchField.func_231046_a_(keyCode, scanCode, modifiers)) {
+				searchField.keyPressed(keyCode, scanCode, modifiers)) {
 				boolean changed = worldConfig.setFilterText(searchField.getText());
 				if (changed) {
 					updateLayout(true);

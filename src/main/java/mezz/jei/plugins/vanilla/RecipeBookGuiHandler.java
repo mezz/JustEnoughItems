@@ -15,7 +15,7 @@ import net.minecraft.inventory.container.Container;
 
 class RecipeBookGuiHandler<C extends Container, T extends ContainerScreen<C> & IRecipeShownListener> implements IGuiContainerHandler<T> {
 	/**
-	 * Modeled after {@link RecipeBookGui#func_230430_a_(com.mojang.blaze3d.matrix.MatrixStack, int, int, float)}
+	 * Modeled after {@link RecipeBookGui#render(com.mojang.blaze3d.matrix.MatrixStack, int, int, float)}
 	 */
 	@Override
 	public List<Rectangle2d> getGuiExtraAreas(T containerScreen) {
@@ -26,8 +26,8 @@ class RecipeBookGuiHandler<C extends Container, T extends ContainerScreen<C> & I
 			int j = (guiRecipeBook.height - 166) / 2;
 			areas.add(new Rectangle2d(i, j, 147, 166));
 			for (RecipeTabToggleWidget tab : guiRecipeBook.recipeTabs) {
-				if (tab.field_230694_p_) {
-					areas.add(new Rectangle2d(tab.field_230690_l_, tab.field_230691_m_, tab.func_230998_h_(), tab.getHeight()));
+				if (tab.visible) {
+					areas.add(new Rectangle2d(tab.x, tab.y, tab.getWidth(), tab.getWidth_CLASH()));
 				}
 			}
 			return areas;

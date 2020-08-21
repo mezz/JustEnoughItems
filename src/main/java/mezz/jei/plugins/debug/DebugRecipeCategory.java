@@ -117,7 +117,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		if (runtime != null) {
 			IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
 			Minecraft minecraft = Minecraft.getInstance();
-			minecraft.fontRenderer.func_238421_b_(matrixStack, ingredientFilter.getFilterText(), 20, 52, 0);
+			minecraft.fontRenderer.drawString(matrixStack, ingredientFilter.getFilterText(), 20, 52, 0);
 
 			IIngredientListOverlay ingredientListOverlay = runtime.getIngredientListOverlay();
 			Object ingredientUnderMouse = ingredientListOverlay.getIngredientUnderMouse();
@@ -127,7 +127,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		}
 
 		ExtendedButton button = recipe.getButton();
-		button.func_230430_a_(matrixStack, (int) mouseX, (int) mouseY, 0);
+		button.render(matrixStack, (int) mouseX, (int) mouseY, 0);
 	}
 
 	private <T> void drawIngredientName(Minecraft minecraft, MatrixStack matrixStack, T ingredient) {
@@ -135,7 +135,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		if (ingredientManager != null) {
 			IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 			String jeiUid = ingredientHelper.getUniqueId(ingredient);
-			minecraft.fontRenderer.func_238421_b_(matrixStack, jeiUid, 50, 52, 0);
+			minecraft.fontRenderer.drawString(matrixStack, jeiUid, 50, 52, 0);
 		}
 	}
 
@@ -199,7 +199,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 			tooltipStrings.add(new StringTextComponent("button tooltip!"));
 		} else {
 			StringTextComponent debug = new StringTextComponent("tooltip debug");
-			tooltipStrings.add(debug.func_240699_a_(TextFormatting.BOLD));
+			tooltipStrings.add(debug.mergeStyle(TextFormatting.BOLD));
 		}
 		tooltipStrings.add(new StringTextComponent(mouseX + ", " + mouseY));
 		return tooltipStrings;
@@ -208,7 +208,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	@Override
 	public boolean handleClick(DebugRecipe recipe, double mouseX, double mouseY, int mouseButton) {
 		ExtendedButton button = recipe.getButton();
-		if (mouseButton == 0 && button.func_231044_a_(mouseX, mouseY, mouseButton)) {
+		if (mouseButton == 0 && button.mouseClicked(mouseX, mouseY, mouseButton)) {
 			Minecraft minecraft = Minecraft.getInstance();
 			ClientPlayerEntity player = minecraft.player;
 			if (player != null) {

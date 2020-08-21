@@ -66,7 +66,7 @@ public class IngredientInfoRecipe<T> {
 		Minecraft minecraft = Minecraft.getInstance();
 		List<ITextProperties> descriptionLinesWrapped = new ArrayList<>();
 		for (ITextProperties descriptionLine : descriptionLines) {
-			List<ITextProperties> textLines = minecraft.fontRenderer.func_238420_b_().func_238362_b_(descriptionLine, IngredientInfoRecipeCategory.recipeWidth, Style.field_240709_b_);
+			List<ITextProperties> textLines = minecraft.fontRenderer.func_238420_b_().func_238362_b_(descriptionLine, IngredientInfoRecipeCategory.recipeWidth, Style.EMPTY);
 			descriptionLinesWrapped.addAll(textLines);
 		}
 		return descriptionLinesWrapped;

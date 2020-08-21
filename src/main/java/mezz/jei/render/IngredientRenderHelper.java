@@ -31,7 +31,7 @@ public class IngredientRenderHelper {
 
 		List<ITextComponent> tooltip = new ArrayList<>();
 		TranslationTextComponent translated = new TranslationTextComponent("jei.tooltip.error.crash");
-		tooltip.add(translated.func_240699_a_(TextFormatting.RED));
+		tooltip.add(translated.mergeStyle(TextFormatting.RED));
 		return tooltip;
 	}
 }

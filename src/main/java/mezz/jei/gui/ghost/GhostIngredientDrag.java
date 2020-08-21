@@ -51,7 +51,7 @@ public class GhostIngredientDrag<T> {
 			float lineWidth = 2;
 			if (minecraft.currentScreen != null) {
 				long distanceSq = xDist * xDist + yDist * yDist;
-				int screenDim = minecraft.currentScreen.field_230708_k_ * minecraft.currentScreen.field_230709_l_;
+				int screenDim = minecraft.currentScreen.width * minecraft.currentScreen.height;
 				float percentOfDim = Math.min(1, distanceSq / (float) screenDim);
 				lineWidth = 1 + ((1 - (percentOfDim)) * 3);
 			}
@@ -91,7 +91,7 @@ public class GhostIngredientDrag<T> {
 			} else {
 				color = targetColor;
 			}
-			AbstractGui.func_238467_a_(matrixStack, area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), color);
+			AbstractGui.fill(matrixStack, area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), color);
 		}
 		RenderSystem.color4f(1f, 1f, 1f, 1f);
 	}
