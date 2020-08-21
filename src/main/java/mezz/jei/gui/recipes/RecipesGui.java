@@ -104,7 +104,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	}
 
 	private static void drawCenteredStringWithShadow(FontRenderer font, String string, int guiWidth, int xOffset, int yPos, int color) {
-		font.drawStringWithShadow(string, (guiWidth - font.getStringWidth(string)) / 2.0f + xOffset, yPos, color);
+		font.drawStringWithShadow(string, (guiWidth - font.getStringWidth(string)) / 2 + xOffset, yPos, color);
 	}
 
 	public int getGuiLeft() {
