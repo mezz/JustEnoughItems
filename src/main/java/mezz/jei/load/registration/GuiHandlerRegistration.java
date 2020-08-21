@@ -33,6 +33,14 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 		this.guiContainerHandlers.add(guiClass, guiHandler);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends ContainerScreen<?>> void addGenericGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<?> guiHandler) {
+		ErrorUtil.checkNotNull(guiClass, "guiClass");
+		ErrorUtil.checkNotNull(guiHandler, "guiHandler");
+		this.guiContainerHandlers.add(guiClass, (IGuiContainerHandler<? super T>) guiHandler);
+	}
+
 	@Override
 	public void addGlobalGuiHandler(IGlobalGuiHandler globalGuiHandler) {
 		ErrorUtil.checkNotNull(globalGuiHandler, "globalGuiHandler");

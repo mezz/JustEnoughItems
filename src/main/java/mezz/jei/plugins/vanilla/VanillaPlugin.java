@@ -207,9 +207,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipeClickArea(BlastFurnaceScreen.class, 78, 32, 28, 23, VanillaRecipeCategoryUid.BLASTING, VanillaRecipeCategoryUid.FUEL);
 		registration.addRecipeClickArea(AnvilScreen.class, 102, 48, 22, 15, VanillaRecipeCategoryUid.ANVIL);
 
-		// InventoryEffectRendererGuiHandler handles an abstract class, so it needs to use the rawtype here.
-		//noinspection rawtypes,unchecked
-		registration.addGuiContainerHandler(DisplayEffectsScreen.class, new InventoryEffectRendererGuiHandler());
+		registration.addGenericGuiContainerHandler(DisplayEffectsScreen.class, new InventoryEffectRendererGuiHandler<>());
 		registration.addGuiContainerHandler(CraftingScreen.class, new RecipeBookGuiHandler<>());
 		registration.addGuiContainerHandler(InventoryScreen.class, new RecipeBookGuiHandler<>());
 	}

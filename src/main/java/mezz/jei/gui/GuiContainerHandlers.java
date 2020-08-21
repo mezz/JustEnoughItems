@@ -17,8 +17,8 @@ import java.util.stream.Stream;
 public class GuiContainerHandlers {
 	private final List<Entry<?>> entries = new ArrayList<>();
 
-	public <T extends ContainerScreen<?>> void add(Class<? extends T> containerClass, IGuiContainerHandler<T> handler) {
-		Entry<T> entryForClass = getEntryForClass(containerClass);
+	public <T extends ContainerScreen<?>> void add(Class<? extends T> containerClass, IGuiContainerHandler<? super T> handler) {
+		Entry<? extends T> entryForClass = getEntryForClass(containerClass);
 		if (entryForClass == null) {
 			entryForClass = new Entry<>(containerClass);
 			this.entries.add(entryForClass);
@@ -70,14 +70,14 @@ public class GuiContainerHandlers {
 
 	private static class Entry<T extends ContainerScreen<?>> {
 		private final Class<? extends T> containerClass;
-		private final List<IGuiContainerHandler<T>> handlers;
+		private final List<IGuiContainerHandler<? super T>> handlers;
 
 		private Entry(Class<? extends T> containerClass) {
 			this.containerClass = containerClass;
 			this.handlers = new ArrayList<>();
 		}
 
-		public void addHandler(IGuiContainerHandler<T> handler) {
+		public void addHandler(IGuiContainerHandler<? super T> handler) {
 			this.handlers.add(handler);
 		}
 
@@ -85,7 +85,7 @@ public class GuiContainerHandlers {
 			return containerClass;
 		}
 
-		public List<IGuiContainerHandler<T>> getHandlers() {
+		public List<IGuiContainerHandler<? super T>> getHandlers() {
 			return handlers;
 		}
 	}

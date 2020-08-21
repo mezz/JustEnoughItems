@@ -17,8 +17,17 @@ public interface IGuiHandlerRegistration {
 	/**
 	 * Add a handler to give JEI extra information about how to layout the item list next to a specific type of {@link ContainerScreen}.
 	 * Multiple handlers can be registered for one {@link ContainerScreen}.
+	 *
+	 * @see #addGenericGuiContainerHandler(Class, IGuiContainerHandler) for handlers that use Java Generics
 	 */
 	<T extends ContainerScreen<?>> void addGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<T> guiHandler);
+
+	/**
+	 * Same as {@link #addGuiContainerHandler(Class, IGuiContainerHandler)} but for handlers that use Java Generics to
+	 * support multiple types of containers. This type of handler runs into type issues with the regular method.
+	 * @since JEI 7.1.1
+	 */
+	<T extends ContainerScreen<?>> void addGenericGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<?> guiHandler);
 
 	/**
 	 * Add a handler to let JEI draw next to a specific class (or subclass) of {@link Screen}.
