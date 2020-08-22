@@ -2,7 +2,6 @@ package mezz.jei.plugins.vanilla.ingredients.item;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
-import javax.xml.soap.Text;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +13,6 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
-import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
@@ -51,40 +48,16 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	public List<ITextComponent> getTooltip(ItemStack ingredient, ITooltipFlag tooltipFlag) {
 		Minecraft minecraft = Minecraft.getInstance();
 		PlayerEntity player = minecraft.player;
-		List<ITextComponent> list;
 		try {
-			list = ingredient.getTooltip(player, tooltipFlag);
+			return ingredient.getTooltip(player, tooltipFlag);
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
 			LOGGER.error("Failed to get tooltip: {}", itemStackInfo, e);
-			list = new ArrayList<>();
+			List<ITextComponent> list = new ArrayList<>();
 			TranslationTextComponent crash = new TranslationTextComponent("jei.tooltip.error.crash");
 			list.add(crash.mergeStyle(TextFormatting.RED));
 			return list;
 		}
-
-		Rarity rarity;
-		try {
-			rarity = ingredient.getRarity();
-		} catch (RuntimeException | LinkageError e) {
-			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
-			LOGGER.error("Failed to get rarity: {}", itemStackInfo, e);
-			rarity = Rarity.COMMON;
-		}
-
-		for (int k = 0; k < list.size(); ++k) {
-			final TextFormatting style;
-			if (k == 0) {
-				style = rarity.color;
-			} else {
-				style = TextFormatting.GRAY;
-			}
-			ITextComponent textComponent = list.get(k);
-			IFormattableTextComponent textComponentCopy = textComponent.deepCopy();
-			list.set(k, textComponentCopy.mergeStyle(style));
-		}
-
-		return list;
 	}
 
 	@Override
