@@ -40,7 +40,7 @@ public final class BasicRecipeTransferHandlerServer {
 		// and a max-transfer operation has been requested by the player.
 		boolean transferAsCompleteSets = requireCompleteSets || !maxTransfer;
 
-		Map<Integer, ItemStack> toTransfer = removeItemsFromInventory(container, slotMap, craftingSlots, inventorySlots, transferAsCompleteSets, maxTransfer);
+		Map<Integer, ItemStack> toTransfer = removeItemsFromInventory(player, container, slotMap, craftingSlots, inventorySlots, transferAsCompleteSets, maxTransfer);
 
 		if (toTransfer.isEmpty()) {
 			return;
@@ -98,6 +98,7 @@ public final class BasicRecipeTransferHandlerServer {
 
 	@Nonnull
 	private static Map<Integer, ItemStack> removeItemsFromInventory(
+		EntityPlayer player,
 		Container container,
 		Map<Integer, ItemStack> required,
 		List<Integer> craftingSlots,
@@ -137,7 +138,7 @@ public final class BasicRecipeTransferHandlerServer {
 				// Locate a slot that has what we need.
 				final Slot slot = getSlotWithStack(container, requiredStack, craftingSlots, inventorySlots);
 
-				boolean itemFound = (slot != null) && !slot.getStack().isEmpty();
+				boolean itemFound = (slot != null) && !slot.getStack().isEmpty() && slot.canTakeStack(player);
 				ItemStack resultItemStack = result.get(entry.getKey());
 				boolean resultItemStackLimitReached = (resultItemStack != null) && (resultItemStack.getCount() == resultItemStack.getMaxStackSize());
 
