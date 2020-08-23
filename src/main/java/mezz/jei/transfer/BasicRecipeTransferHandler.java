@@ -47,7 +47,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 
 	@Nullable
 	@Override
-	public IRecipeTransferError transferRecipe(C container, IRecipeLayout recipeLayout, PlayerEntity player, boolean maxTransfer, boolean doTransfer) {
+	public IRecipeTransferError transferRecipe(C container, Object recipe, IRecipeLayout recipeLayout, PlayerEntity player, boolean maxTransfer, boolean doTransfer) {
 		if (!ServerInfo.isJeiOnServer()) {
 			String tooltipMessage = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.no.server");
 			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);

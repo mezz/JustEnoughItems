@@ -27,12 +27,33 @@ public interface IRecipeTransferHandler<C extends Container> {
 
 	/**
 	 * @param container    the container to act on
+	 * @param recipe       the raw recipe instance
 	 * @param recipeLayout the layout of the recipe, with information about the ingredients
 	 * @param player       the player, to do the slot manipulation
 	 * @param maxTransfer  if true, transfer as many items as possible. if false, transfer one set
 	 * @param doTransfer   if true, do the transfer. if false, check for errors but do not actually transfer the items
 	 * @return a recipe transfer error if the recipe can't be transferred. Return null on success.
+	 *
+	 * @since JEI 7.1.3
 	 */
 	@Nullable
-	IRecipeTransferError transferRecipe(C container, IRecipeLayout recipeLayout, PlayerEntity player, boolean maxTransfer, boolean doTransfer);
+	default IRecipeTransferError transferRecipe(C container, Object recipe, IRecipeLayout recipeLayout, PlayerEntity player, boolean maxTransfer, boolean doTransfer) {
+		return transferRecipe(container, recipeLayout, player, maxTransfer, doTransfer);
+	}
+
+	/**
+	 * @param container    the container to act on
+	 * @param recipeLayout the layout of the recipe, with information about the ingredients
+	 * @param player       the player, to do the slot manipulation
+	 * @param maxTransfer  if true, transfer as many items as possible. if false, transfer one set
+	 * @param doTransfer   if true, do the transfer. if false, check for errors but do not actually transfer the items
+	 * @return a recipe transfer error if the recipe can't be transferred. Return null on success.
+	 *
+	 * @deprecated since JEI 7.1.3. Use {@link #transferRecipe(Container, Object, IRecipeLayout, PlayerEntity, boolean, boolean)}
+	 */
+	@Deprecated
+	@Nullable
+	default IRecipeTransferError transferRecipe(C container, IRecipeLayout recipeLayout, PlayerEntity player, boolean maxTransfer, boolean doTransfer) {
+		return null;
+	}
 }

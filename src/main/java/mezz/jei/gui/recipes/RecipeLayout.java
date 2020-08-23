@@ -330,4 +330,8 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 	public int getPosY() {
 		return posY;
 	}
+
+	public T getRecipe() {
+		return recipe;
+	}
 }

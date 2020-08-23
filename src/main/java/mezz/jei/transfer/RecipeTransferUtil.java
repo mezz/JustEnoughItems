@@ -57,7 +57,7 @@ public final class RecipeTransferUtil {
 			return RecipeTransferErrorInternal.INSTANCE;
 		}
 
-		return transferHandler.transferRecipe(container, recipeLayout, player, maxTransfer, doTransfer);
+		return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeLayout, player, maxTransfer, doTransfer);
 	}
 
 	public static boolean allowsTransfer(@Nullable IRecipeTransferError error) {
