@@ -1,6 +1,7 @@
 package mezz.jei.plugins.vanilla.cooking;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.crafting.CampfireCookingRecipe;
 import net.minecraft.util.ResourceLocation;
@@ -18,7 +19,9 @@ public class CampfireCategory extends AbstractCookingCategory<CampfireCookingRec
 
 	public CampfireCategory(IGuiHelper guiHelper) {
 		super(guiHelper, Blocks.CAMPFIRE, "gui.jei.category.campfire", 400);
-		background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 186, 82, 34);
+		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 186, 82, 34)
+			.addPadding(0, 10, 0, 0)
+			.build();
 	}
 
 	@Override
@@ -39,7 +42,9 @@ public class CampfireCategory extends AbstractCookingCategory<CampfireCookingRec
 	@Override
 	public void draw(CampfireCookingRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
 		animatedFlame.draw(matrixStack, 1, 20);
+		IDrawableAnimated arrow = cachedArrows.getUnchecked(recipe);
 		arrow.draw(matrixStack, 24, 8);
+		drawCookTime(recipe, matrixStack, 35);
 	}
 
 	@Override
