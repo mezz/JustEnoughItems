@@ -47,8 +47,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 	private final List<T> allIngredients = new ArrayList<>(); // all ingredients, ignoring focus
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final IIngredientHelper<T> ingredientHelper;
-	@Nullable
-	private ITooltipCallback<T> tooltipCallback;
+	private List<ITooltipCallback<T>> tooltipCallbacks = Collections.emptyList();
 	@Nullable
 	private IDrawable background;
 
@@ -153,8 +152,8 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		return null;
 	}
 
-	public void setTooltipCallback(@Nullable ITooltipCallback<T> tooltipCallback) {
-		this.tooltipCallback = tooltipCallback;
+	public void setTooltipCallbacks(List<ITooltipCallback<T>> tooltipCallbacks) {
+		this.tooltipCallbacks = tooltipCallbacks;
 	}
 
 	public void draw(Minecraft minecraft, int xOffset, int yOffset) {
@@ -208,7 +207,7 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 			List<String> tooltip = ingredientRenderer.getTooltip(minecraft, value, tooltipFlag);
 			tooltip = ForgeModIdHelper.getInstance().addModNameToIngredientTooltip(tooltip, value, ingredientHelper);
 
-			if (tooltipCallback != null) {
+			for (ITooltipCallback<T> tooltipCallback : this.tooltipCallbacks) {
 				tooltipCallback.onTooltip(slotIndex, input, value, tooltip);
 			}
 

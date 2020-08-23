@@ -41,8 +41,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	@Nullable
 	private IFocus<T> focus;
 
-	@Nullable
-	private ITooltipCallback<T> tooltipCallback;
+	private final List<ITooltipCallback<T>> tooltipCallbacks = new ArrayList<>();
 
 	public GuiIngredientGroup(IIngredientType<T> ingredientType, @Nullable IFocus<T> focus, int cycleOffset) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
@@ -134,7 +133,8 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 
 	@Override
 	public void addTooltipCallback(ITooltipCallback<T> tooltipCallback) {
-		this.tooltipCallback = tooltipCallback;
+		ErrorUtil.checkNotNull(tooltipCallback, "tooltipCallback");
+		this.tooltipCallbacks.add(tooltipCallback);
 	}
 
 	@Override
@@ -156,7 +156,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		for (GuiIngredient<T> ingredient : guiIngredients.values()) {
 			ingredient.draw(minecraft, xOffset, yOffset);
 			if (ingredient.isMouseOver(xOffset, yOffset, mouseX, mouseY)) {
-				ingredient.setTooltipCallback(tooltipCallback);
+				ingredient.setTooltipCallbacks(tooltipCallbacks);
 				ingredient.drawHighlight(minecraft, highlightColor, xOffset, yOffset);
 			}
 		}
@@ -179,10 +179,6 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	 * Adds the tooltip callback after any existing tooltip callback
 	 */
 	public void addTooltipCallbackAfter(ITooltipCallback<T> tooltipCallback) {
-		ITooltipCallback<T> before = this.tooltipCallback;
-		this.tooltipCallback = before == null ? tooltipCallback : (slotIndex, input, ingredient, tooltip) -> {
-			before.onTooltip(slotIndex, input, ingredient, tooltip);
-			tooltipCallback.onTooltip(slotIndex, input, ingredient, tooltip);
-		};
+		addTooltipCallback(tooltipCallback);
 	}
 }
