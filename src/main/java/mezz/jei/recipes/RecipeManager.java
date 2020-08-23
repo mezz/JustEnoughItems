@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import mezz.jei.api.helpers.IModIdHelper;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.base.Preconditions;
@@ -41,16 +42,19 @@ public class RecipeManager implements IRecipeManager {
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
 	private final List<RecipeManagerPluginSafeWrapper> plugins = new ArrayList<>();
+	private final IModIdHelper modIdHelper;
 
 	public RecipeManager(
 		ImmutableList<IRecipeCategory<?>> recipeCategories,
 		ImmutableListMultimap<ResourceLocation, Object> recipes,
 		ImmutableListMultimap<ResourceLocation, Object> recipeCatalysts,
 		IngredientManager ingredientManager,
-		ImmutableList<IRecipeManagerPlugin> plugins
+		ImmutableList<IRecipeManagerPlugin> plugins,
+		IModIdHelper modIdHelper
 	) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 		this.ingredientManager = ingredientManager;
+		this.modIdHelper = modIdHelper;
 
 		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
 		this.recipeCategoryComparator = new RecipeCategoryComparator(recipeCategories);
@@ -274,7 +278,7 @@ public class RecipeManager implements IRecipeManager {
 	@Override
 	public <T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocus<?> focus) {
 		Focus<?> checkedFocus = Focus.check(focus);
-		RecipeLayout<?> recipeLayout = RecipeLayout.create(-1, recipeCategory, recipe, checkedFocus, 0, 0);
+		RecipeLayout<?> recipeLayout = RecipeLayout.create(-1, recipeCategory, recipe, checkedFocus, modIdHelper, 0, 0);
 		Preconditions.checkNotNull(recipeLayout, "Recipe layout crashed during creation, see log.");
 		return recipeLayout;
 	}

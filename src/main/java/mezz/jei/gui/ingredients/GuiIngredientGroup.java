@@ -32,6 +32,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 
 	private final Map<Integer, GuiIngredient<T>> guiIngredients = new HashMap<>();
 	private final Set<Integer> inputSlots = new HashSet<>();
+	private final Set<Integer> outputSlots = new HashSet<>();
 	private final IIngredientHelper<T> ingredientHelper;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final IIngredientType<T> ingredientType;
@@ -68,6 +69,8 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		guiIngredients.put(slotIndex, guiIngredient);
 		if (input) {
 			inputSlots.add(slotIndex);
+		} else {
+			outputSlots.add(slotIndex);
 		}
 	}
 
@@ -167,5 +170,9 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		} else {
 			this.focus = Focus.check(focus);
 		}
+	}
+
+	public Set<Integer> getOutputSlots() {
+		return outputSlots;
 	}
 }

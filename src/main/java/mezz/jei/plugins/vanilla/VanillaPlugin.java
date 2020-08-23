@@ -147,7 +147,7 @@ public class VanillaPlugin implements IModPlugin {
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
-		craftingCategory = new CraftingRecipeCategory(guiHelper, modIdHelper);
+		craftingCategory = new CraftingRecipeCategory(guiHelper);
 		stonecuttingCategory = new StoneCuttingRecipeCategory(guiHelper);
 		furnaceCategory = new FurnaceSmeltingCategory(guiHelper);
 		smokingCategory = new SmokingCategory(guiHelper);

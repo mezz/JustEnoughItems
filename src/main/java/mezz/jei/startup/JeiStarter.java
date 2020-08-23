@@ -87,7 +87,7 @@ public class JeiStarter {
 
 		IngredientGridWithNavigation bookmarkListGrid = new IngredientGridWithNavigation(bookmarkList, () -> "", guiScreenHelper, editModeConfig, ingredientFilterConfig, worldConfig, GridAlignment.RIGHT);
 		BookmarkOverlay bookmarkOverlay = new BookmarkOverlay(bookmarkList, textures, bookmarkListGrid, worldConfig);
-		RecipesGui recipesGui = new RecipesGui(recipeManager, recipeTransferManager, ingredientManager);
+		RecipesGui recipesGui = new RecipesGui(recipeManager, recipeTransferManager, ingredientManager, modIdHelper);
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, worldConfig);
 		JeiRuntime jeiRuntime = new JeiRuntime(recipeManager, ingredientListOverlay, bookmarkOverlay, recipesGui, ingredientFilterApi, ingredientManager);
 		Internal.setRuntime(jeiRuntime);

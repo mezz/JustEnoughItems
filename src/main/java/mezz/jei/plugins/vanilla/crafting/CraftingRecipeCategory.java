@@ -1,20 +1,17 @@
 package mezz.jei.plugins.vanilla.crafting;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+
 import java.util.List;
 import java.util.function.Function;
 
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.util.Size2i;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
@@ -23,7 +20,6 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
@@ -43,11 +39,9 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<ICrafti
 	private final IDrawable icon;
 	private final String localizedName;
 	private final ICraftingGridHelper craftingGridHelper;
-	private final IModIdHelper modIdHelper;
 	private final ExtendableRecipeCategoryHelper<IRecipe<?>, ICraftingCategoryExtension> extendableHelper = new ExtendableRecipeCategoryHelper<>(ICraftingRecipe.class);
 
-	public CraftingRecipeCategory(IGuiHelper guiHelper, IModIdHelper modIdHelper) {
-		this.modIdHelper = modIdHelper;
+	public CraftingRecipeCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
 		background = guiHelper.createDrawable(location, 0, 60, width, height);
 		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.CRAFTING_TABLE));
@@ -112,35 +106,6 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<ICrafti
 			recipeLayout.setShapeless();
 		}
 		guiItemStacks.set(craftOutputSlot, outputs.get(0));
-
-		ResourceLocation registryName = recipeExtension.getRegistryName();
-		if (registryName != null) {
-			guiItemStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
-				if (slotIndex == craftOutputSlot) {
-					if (modIdHelper.isDisplayingModNameEnabled()) {
-						String recipeModId = registryName.getNamespace();
-						boolean modIdDifferent = false;
-						ResourceLocation itemRegistryName = ingredient.getItem().getRegistryName();
-						if (itemRegistryName != null) {
-							String itemModId = itemRegistryName.getNamespace();
-							modIdDifferent = !recipeModId.equals(itemModId);
-						}
-
-						if (modIdDifferent) {
-							String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
-							TranslationTextComponent recipeBy = new TranslationTextComponent("jei.tooltip.recipe.by", modName);
-							tooltip.add(recipeBy.mergeStyle(TextFormatting.GRAY));
-						}
-					}
-
-					boolean showAdvanced = Minecraft.getInstance().gameSettings.advancedItemTooltips || Screen.hasShiftDown();
-					if (showAdvanced) {
-						TranslationTextComponent recipeId = new TranslationTextComponent("jei.tooltip.recipe.id", registryName.toString());
-						tooltip.add(recipeId.mergeStyle(TextFormatting.DARK_GRAY));
-					}
-				}
-			});
-		}
 	}
 
 	@Override

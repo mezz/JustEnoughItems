@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.helpers.IModIdHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.FontRenderer;
@@ -85,10 +86,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	private boolean init = false;
 	private boolean closing = false;
 
-	public RecipesGui(IRecipeManager recipeManager, RecipeTransferManager recipeTransferManager, IngredientManager ingredientManager) {
+	public RecipesGui(IRecipeManager recipeManager, RecipeTransferManager recipeTransferManager, IngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		super(new StringTextComponent("Recipes"));
 		this.recipeTransferManager = recipeTransferManager;
-		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, ingredientManager);
+		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, ingredientManager, modIdHelper);
 		this.recipeCatalysts = new RecipeCatalysts();
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
 		this.minecraft = Minecraft.getInstance();

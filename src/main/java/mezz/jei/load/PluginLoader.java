@@ -143,7 +143,7 @@ public class PluginLoader {
 	public RecipeManager getRecipeManager() {
 		if (recipeManager == null) {
 			timer.start("Building recipe registry");
-			recipeManager = new RecipeManager(recipeCategories, recipes, recipeCatalysts, ingredientManager, recipeManagerPlugins);
+			recipeManager = new RecipeManager(recipeCategories, recipes, recipeCatalysts, ingredientManager, recipeManagerPlugins, modIdHelper);
 			timer.stop();
 		}
 		return recipeManager;

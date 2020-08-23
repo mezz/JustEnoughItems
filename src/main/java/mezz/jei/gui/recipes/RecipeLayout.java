@@ -8,6 +8,7 @@ import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IGuiFluidStackGroup;
 import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -22,9 +23,14 @@ import mezz.jei.ingredients.Ingredients;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,17 +64,51 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 	private int posY;
 
 	@Nullable
-	public static <T> RecipeLayout<T> create(int index, IRecipeCategory<T> recipeCategory, T recipe, @Nullable Focus<?> focus, int posX, int posY) {
+	public static <T> RecipeLayout<T> create(int index, IRecipeCategory<T> recipeCategory, T recipe, @Nullable Focus<?> focus, IModIdHelper modIdHelper, int posX, int posY) {
 		RecipeLayout<T> recipeLayout = new RecipeLayout<>(index, recipeCategory, recipe, focus, posX, posY);
 		try {
 			IIngredients ingredients = new Ingredients();
 			recipeCategory.setIngredients(recipe, ingredients);
 			recipeCategory.setRecipe(recipeLayout, recipe, ingredients);
+			if (recipe instanceof IRecipe) {
+				addOutputSlotTooltip(recipeLayout, (IRecipe<?>) recipe, modIdHelper);
+			}
 			return recipeLayout;
 		} catch (RuntimeException | LinkageError e) {
 			LOGGER.error("Error caught from Recipe Category: {}", recipeCategory.getClass().getCanonicalName(), e);
 		}
 		return null;
+	}
+
+	private static void addOutputSlotTooltip(RecipeLayout<?> recipeLayout, IRecipe<?> recipe, IModIdHelper modIdHelper) {
+		GuiItemStackGroup guiItemStackGroup = recipeLayout.guiItemStackGroup;
+
+		ResourceLocation registryName = recipe.getId();
+		guiItemStackGroup.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
+			if (guiItemStackGroup.getOutputSlots().contains(slotIndex)) {
+				if (modIdHelper.isDisplayingModNameEnabled()) {
+					String recipeModId = registryName.getNamespace();
+					boolean modIdDifferent = false;
+					ResourceLocation itemRegistryName = ingredient.getItem().getRegistryName();
+					if (itemRegistryName != null) {
+						String itemModId = itemRegistryName.getNamespace();
+						modIdDifferent = !recipeModId.equals(itemModId);
+					}
+
+					if (modIdDifferent) {
+						String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
+						TranslationTextComponent recipeBy = new TranslationTextComponent("jei.tooltip.recipe.by", modName);
+						tooltip.add(recipeBy.mergeStyle(TextFormatting.GRAY));
+					}
+				}
+
+				boolean showAdvanced = Minecraft.getInstance().gameSettings.advancedItemTooltips || Screen.hasShiftDown();
+				if (showAdvanced) {
+					TranslationTextComponent recipeId = new TranslationTextComponent("jei.tooltip.recipe.id", registryName.toString());
+					tooltip.add(recipeId.mergeStyle(TextFormatting.DARK_GRAY));
+				}
+			}
+		});
 	}
 
 	private RecipeLayout(int index, IRecipeCategory<T> recipeCategory, T recipe, @Nullable Focus<?> focus, int posX, int posY) {
