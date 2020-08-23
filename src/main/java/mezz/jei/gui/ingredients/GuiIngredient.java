@@ -57,8 +57,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 	private final List<T> allIngredients = new ArrayList<>(); // all ingredients, ignoring focus
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final IIngredientHelper<T> ingredientHelper;
-	@Nullable
-	private ITooltipCallback<T> tooltipCallback;
+	private List<ITooltipCallback<T>> tooltipCallbacks = Collections.emptyList();
 	@Nullable
 	private IDrawable background;
 
@@ -163,8 +162,8 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 		return null;
 	}
 
-	public void setTooltipCallback(@Nullable ITooltipCallback<T> tooltipCallback) {
-		this.tooltipCallback = tooltipCallback;
+	public void setTooltipCallbacks(List<ITooltipCallback<T>> tooltipCallbacks) {
+		this.tooltipCallbacks = tooltipCallbacks;
 	}
 
 	public void draw(MatrixStack matrixStack, int xOffset, int yOffset) {
@@ -219,7 +218,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 
 			IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
 			List<ITextComponent> tooltip = IngredientRenderHelper.getIngredientTooltipSafe(value, ingredientRenderer, ingredientHelper, modIdHelper);
-			if (tooltipCallback != null) {
+			for (ITooltipCallback<T> tooltipCallback : this.tooltipCallbacks) {
 				tooltipCallback.onTooltip(slotIndex, input, value, tooltip);
 			}
 

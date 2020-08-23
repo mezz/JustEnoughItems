@@ -3,6 +3,7 @@ package mezz.jei.gui.ingredients;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,8 +45,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	@Nullable
 	private Focus<T> focus;
 
-	@Nullable
-	private ITooltipCallback<T> tooltipCallback;
+	private final List<ITooltipCallback<T>> tooltipCallbacks = new ArrayList<>();
 
 	public GuiIngredientGroup(IIngredientType<T> ingredientType, @Nullable Focus<T> focus, int cycleOffset) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
@@ -135,7 +135,8 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 
 	@Override
 	public void addTooltipCallback(ITooltipCallback<T> tooltipCallback) {
-		this.tooltipCallback = tooltipCallback;
+		ErrorUtil.checkNotNull(tooltipCallbacks, "tooltipCallback");
+		this.tooltipCallbacks.add(tooltipCallback);
 	}
 
 	@Override
@@ -157,7 +158,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		for (GuiIngredient<T> ingredient : guiIngredients.values()) {
 			ingredient.draw(matrixStack, xOffset, yOffset);
 			if (ingredient.isMouseOver(xOffset, yOffset, mouseX, mouseY)) {
-				ingredient.setTooltipCallback(tooltipCallback);
+				ingredient.setTooltipCallbacks(tooltipCallbacks);
 				ingredient.drawHighlight(matrixStack, highlightColor, xOffset, yOffset);
 			}
 		}
