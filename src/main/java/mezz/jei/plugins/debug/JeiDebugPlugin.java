@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.fluid.Fluids;
+import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.screen.inventory.BrewingStandScreen;
@@ -85,7 +88,8 @@ public class JeiDebugPlugin implements IModPlugin {
 				"description.jei.wooden.door.3"
 			);
 
-//			registry.addIngredientInfo(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), VanillaTypes.FLUID, "water");
+			registration.addIngredientInfo(new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), VanillaTypes.FLUID, "water");
+			registration.addIngredientInfo(new DebugIngredient(1), DebugIngredient.TYPE, "debug");
 
 			registration.addRecipes(Arrays.asList(
 				new DebugRecipe(),

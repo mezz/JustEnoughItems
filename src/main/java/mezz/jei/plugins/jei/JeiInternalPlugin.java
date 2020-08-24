@@ -1,5 +1,7 @@
 package mezz.jei.plugins.jei;
 
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.util.ResourceLocation;
 
@@ -16,8 +18,13 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.plugins.jei.info.IngredientInfoRecipeCategory;
 
+import javax.annotation.Nullable;
+
 @JeiPlugin
 public class JeiInternalPlugin implements IModPlugin {
+	@Nullable
+	public IIngredientManager ingredientManager;
+
 	@Override
 	public ResourceLocation getPluginUid() {
 		return new ResourceLocation(ModIds.JEI_ID, "internal");
@@ -30,7 +37,7 @@ public class JeiInternalPlugin implements IModPlugin {
 		Textures textures = Internal.getTextures();
 
 		registration.addRecipeCategories(
-			new IngredientInfoRecipeCategory(guiHelper, textures)
+			new IngredientInfoRecipeCategory(guiHelper, textures, this)
 		);
 	}
 
@@ -38,5 +45,10 @@ public class JeiInternalPlugin implements IModPlugin {
 	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
 		registration.addGuiScreenHandler(ContainerScreen.class, GuiProperties::create);
 		registration.addGuiScreenHandler(RecipesGui.class, GuiProperties::create);
+	}
+
+	@Override
+	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+		this.ingredientManager = jeiRuntime.getIngredientManager();
 	}
 }
