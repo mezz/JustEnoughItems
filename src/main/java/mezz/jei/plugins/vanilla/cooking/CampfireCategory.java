@@ -42,7 +42,7 @@ public class CampfireCategory extends AbstractCookingCategory<CampfireCookingRec
 	@Override
 	public void draw(CampfireCookingRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
 		animatedFlame.draw(matrixStack, 1, 20);
-		IDrawableAnimated arrow = cachedArrows.getUnchecked(recipe);
+		IDrawableAnimated arrow = getArrow(recipe);
 		arrow.draw(matrixStack, 24, 8);
 		drawCookTime(recipe, matrixStack, 35);
 	}

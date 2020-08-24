@@ -22,28 +22,34 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> extends FurnaceVariantCategory<T> {
 	private final IDrawable background;
+	private final int regularCookTime;
 	private final IDrawable icon;
 	private final String localizedName;
-	protected final LoadingCache<T, IDrawableAnimated> cachedArrows;
+	private final LoadingCache<Integer, IDrawableAnimated> cachedArrows;
 
 	public AbstractCookingCategory(IGuiHelper guiHelper, Block icon, String translationKey, int regularCookTime) {
 		super(guiHelper);
 		this.background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 114, 82, 54);
+		this.regularCookTime = regularCookTime;
 		this.icon = guiHelper.createDrawableIngredient(new ItemStack(icon));
 		this.localizedName = Translator.translateToLocal(translationKey);
 		this.cachedArrows = CacheBuilder.newBuilder()
 			.maximumSize(25)
-			.build(new CacheLoader<T, IDrawableAnimated>() {
+			.build(new CacheLoader<Integer, IDrawableAnimated>() {
 				@Override
-				public IDrawableAnimated load(T key) {
-					int cookTime = key.getCookTime();
-					if (cookTime <= 0) {
-						cookTime = regularCookTime;
-					}
+				public IDrawableAnimated load(Integer cookTime) {
 					return guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 82, 128, 24, 17)
 						.buildAnimated(cookTime, IDrawableAnimated.StartDirection.LEFT, false);
 				}
 			});
+	}
+
+	protected IDrawableAnimated getArrow(T recipe) {
+		int cookTime = recipe.getCookTime();
+		if (cookTime <= 0) {
+			cookTime = regularCookTime;
+		}
+		return this.cachedArrows.getUnchecked(cookTime);
 	}
 
 	@Override
@@ -66,7 +72,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	public void draw(T recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
 		animatedFlame.draw(matrixStack, 1, 20);
 
-		IDrawableAnimated arrow = cachedArrows.getUnchecked(recipe);
+		IDrawableAnimated arrow = getArrow(recipe);
 		arrow.draw(matrixStack, 24, 18);
 
 		drawExperience(recipe, matrixStack, 0);
