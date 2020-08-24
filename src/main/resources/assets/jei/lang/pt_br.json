@@ -111,11 +111,13 @@
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Fabricação",
+  "gui.jei.category.stoneCutter": "Corte de Pedra",
   "gui.jei.category.smelting": "Fundição",
   "gui.jei.category.smoking": "Defumação",
   "gui.jei.category.blasting": "Explosão",
   "gui.jei.category.campfire": "Fogueira",
   "gui.jei.category.smelting.experience": "%s de exp.",
+  "gui.jei.category.smelting.time.seconds": "%ss",
   "gui.jei.category.fuel": "Combustível",
   "gui.jei.category.fuel.smeltCount.single": "Funde 1 item",
   "gui.jei.category.fuel.smeltCount": "Funde %s itens",
