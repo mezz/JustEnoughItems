@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.gui.GuiScreenHelper;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraft.client.Minecraft;
@@ -43,17 +44,19 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	public static final int INGREDIENT_WIDTH = GuiIngredientProperties.getWidth(INGREDIENT_PADDING);
 	public static final int INGREDIENT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
 	private final GridAlignment alignment;
+	private final GuiScreenHelper guiScreenHelper;
 
 	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
 	protected final IngredientListBatchRenderer guiIngredientSlots;
 	private final IIngredientFilterConfig ingredientFilterConfig;
 	private final IWorldConfig worldConfig;
 
-	public IngredientGrid(GridAlignment alignment, IEditModeConfig editModeConfig, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig) {
+	public IngredientGrid(GridAlignment alignment, IEditModeConfig editModeConfig, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig, GuiScreenHelper guiScreenHelper) {
 		this.alignment = alignment;
 		this.guiIngredientSlots = new IngredientListBatchRenderer(editModeConfig, worldConfig);
 		this.ingredientFilterConfig = ingredientFilterConfig;
 		this.worldConfig = worldConfig;
+		this.guiScreenHelper = guiScreenHelper;
 	}
 
 	public int size() {
@@ -158,7 +161,8 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return MathUtil.contains(area, mouseX, mouseY);
+		return MathUtil.contains(area, mouseX, mouseY) &&
+			!guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
 	}
 
 	public boolean handleMouseClicked(double mouseX, double mouseY) {

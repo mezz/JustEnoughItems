@@ -60,7 +60,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 	) {
 		this.filterTextSource = filterTextSource;
 		this.worldConfig = worldConfig;
-		this.ingredientGrid = new IngredientGrid(alignment, editModeConfig, ingredientFilterConfig, worldConfig);
+		this.ingredientGrid = new IngredientGrid(alignment, editModeConfig, ingredientFilterConfig, worldConfig, guiScreenHelper);
 		this.ingredientSource = ingredientSource;
 		this.guiScreenHelper = guiScreenHelper;
 		this.pageDelegate = new IngredientGridPaged();
