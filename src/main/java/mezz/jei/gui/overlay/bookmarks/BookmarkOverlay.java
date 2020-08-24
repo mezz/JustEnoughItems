@@ -158,7 +158,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 	@Override
 	public boolean handleMouseScrolled(int mouseX, int mouseY, int scrollDelta) {
 		return isListDisplayed() &&
-			displayArea.contains(mouseX, mouseY) &&
+			this.contents.isMouseOver(mouseX, mouseY) &&
 			this.contents.handleMouseScrolled(mouseX, mouseY, scrollDelta);
 	}
 

@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import mezz.jei.Internal;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.config.Config;
+import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.gui.ingredients.IIngredientListElement;
@@ -39,12 +40,14 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	public static final int INGREDIENT_WIDTH = GuiItemStackGroup.getWidth(INGREDIENT_PADDING);
 	public static final int INGREDIENT_HEIGHT = GuiItemStackGroup.getHeight(INGREDIENT_PADDING);
 	private final GridAlignment alignment;
+	private final GuiScreenHelper guiScreenHelper;
 
 	private Rectangle area = new Rectangle();
 	protected final IngredientListBatchRenderer guiIngredientSlots;
 
-	public IngredientGrid(GridAlignment alignment) {
+	public IngredientGrid(GridAlignment alignment, GuiScreenHelper guiScreenHelper) {
 		this.alignment = alignment;
+		this.guiScreenHelper = guiScreenHelper;
 		this.guiIngredientSlots = new IngredientListBatchRenderer();
 	}
 
@@ -149,7 +152,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	}
 
 	public boolean isMouseOver(int mouseX, int mouseY) {
-		return area.contains(mouseX, mouseY);
+		return area.contains(mouseX, mouseY) && !guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
 	}
 
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {

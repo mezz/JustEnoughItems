@@ -201,7 +201,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 			if (Config.isCenterSearchBarEnabled() && searchField.isMouseOver(mouseX, mouseY)) {
 				return true;
 			}
-			return displayArea.contains(mouseX, mouseY);
+			return displayArea.contains(mouseX, mouseY) && !guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
 		} else if (this.guiProperties != null) {
 			return this.configButton.isMouseOver(mouseX, mouseY);
 		}
