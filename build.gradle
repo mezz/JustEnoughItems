@@ -1,124 +1,74 @@
-import se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask
-
 buildscript {
 	repositories {
-		mavenLocal()
-		maven { url = "https://files.minecraftforge.net/maven" }
 		jcenter()
-		mavenCentral()
+		maven {
+			name = "forge"
+			url = "http://files.minecraftforge.net/maven"
+		}
 	}
 	dependencies {
-		classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
+		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
 	}
 }
 
 plugins {
-	id "com.matthewprenger.cursegradle" version "1.2.0"
+	id "com.matthewprenger.cursegradle" version "1.0.9"
 	id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.64"
 }
-apply from: "buildtools/ColoredOutput.gradle"
-apply plugin: 'idea'
-apply plugin: "net.minecraftforge.gradle"
 
-//adds the build number to the end of the version string if on a build server
-String build_number = System.getenv().BUILD_NUMBER
-if (build_number == null) {
-	build_number = "9999"
-}
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply from: 'buildtools/ColoredOutput.gradle'
 
-String semver = "${version_major}.${version_minor}.${version_patch}"
-version = "${semver}.${build_number}"
+version = version_major + '.' + version_minor + '.' + version_patch
 group = "mezz.jei" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "jei_" + mcversion
 
+if (System.getenv().BUILD_NUMBER != null) {//adds the build number to the end of the version string if on a build server
+	version += ".${System.getenv().BUILD_NUMBER}"
+}
+
 // java version
-sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
-compileJava {
-	sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+minecraft {
+	version = mcversion + "-" + forgeversion
+	runDir = "run"
+	replace '@VERSION@', project.version
+	mappings = mcp_mappings
 }
 
 repositories {
-	maven { url 'https://repo1.maven.org/maven2' }
-}
 
-sourceSets {
-	api {
-		java {
-			srcDirs = ["src/api/java"]
-		}
-	}
-	main {
-		java {
-			srcDirs = ["src/main/java"]
-		}
-		resources {
-			srcDirs = ["src/main/resources"]
-		}
-	}
-	test {
-		java {
-			srcDirs = ["src/test/java"]
-		}
-	}
-}
-
-configurations {
-	apiCompile.extendsFrom(compile)
 }
 
 dependencies {
-	minecraft([
-			group  : "${project.forgegroup}",
-			name   : "forge",
-			version: "${project.mcversion}-${project.forgeversion}"
-	])
-	implementation sourceSets.api.output
-	testImplementation sourceSets.api.output
-	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
-	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+	testCompile 'junit:junit:4.12'
 }
 
-minecraft {
-	mappings channel: "${project.mcp_channel}", version: "${project.mcp_version}"
+processResources {
+	// this will ensure that this task is redone when the versions change.
+	inputs.property "version", project.version
+	inputs.property "mcversion", project.minecraft.version
 
-	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+	// replace stuff in mcmod.info, nothing else
+	from(sourceSets.main.resources.srcDirs) {
+		include 'mcmod.info'
 
-	runs {
-		client {
-			property 'forge.logging.console.level', 'debug'
-			workingDirectory project.file('run')
-			mods {
-				jei {
-					source sourceSets.main
-				}
-			}
-		}
-		server {
-			property 'forge.logging.console.level', 'debug'
-			workingDirectory project.file('run')
-			mods {
-				jei {
-					source sourceSets.main
-				}
-			}
-		}
-		data {
-			property 'forge.logging.console.level', 'debug'
-			workingDirectory project.file('run')
-			args '--mod', 'jei', '--all',
-					'--existing', '"' + file('src/main/resources/') + '"',
-					'--existing', '"' + file('src/generated/resources/') + '"',
-					'--output', '"' + file('src/generated/resources/') + '"'
-			mods {
-				jei {
-					source sourceSets.main
-				}
-			}
-		}
+		// replace version and mcversion
+		expand 'version': project.version, 'mcversion': project.minecraft.version
 	}
+
+	// copy everything else, that's not the mcmod.info
+	from(sourceSets.main.resources.srcDirs) {
+		exclude 'mcmod.info'
+	}
+
+	// Move access transformers to META-INF
+	rename '(.+_at.cfg)', 'META-INF/$1'
 }
 
-task makeChangelog(type: GitChangelogTask) {
+task makeChangelog(type: se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask) {
 	file = new File("changelog.html")
 	untaggedName = "Current release ${project.version}"
 	fromCommit = "2fe051cf727adce1be210a46f778aa8fe031331e"
@@ -148,22 +98,11 @@ allprojects {
 }
 
 jar {
-	from sourceSets.main.output.classesDirs
-	from sourceSets.api.output.classesDirs
-	from sourceSets.main.output.resourcesDir
-	from sourceSets.api.output.resourcesDir
-
 	manifest {
-		attributes([
-				"Specification-Title": "Just Enough Items",
-				"Specification-Vendor": "mezz",
-				"Specification-Version": "${semver}",
-				"Implementation-Title": project.name,
-				"Implementation-Version": "${project.version}",
-				"Implementation-Vendor" :"mezz",
-				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-		])
+		attributes 'FMLAT': 'jei_at.cfg'
 	}
+	from sourceSets.main.output
+	from sourceSets.api.output
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -205,19 +144,4 @@ task("uploadJars", dependsOn: "build") {
 			}
 		}
 	}
-}
-
-idea {
-	module {
-		for (String excludeDirName in ["run", "out", "logs", "gradle"]) {
-			File excludeDir = new File(projectDir, excludeDirName)
-			excludeDirs.add(excludeDir)
-		}
-	}
-}
-
-test {
-	useJUnitPlatform()
-	include 'mezz/jei/**'
-	exclude 'mezz/jei/lib/**'
 }
