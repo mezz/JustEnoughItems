@@ -258,7 +258,7 @@ public class InputHandler {
 			return true;
 		}
 
-		if (!isContainerTextFieldFocused()) {
+		if (!isContainerTextFieldFocused() && !ingredientListOverlay.hasKeyboardFocus()) {
 			if (handleFocusKeybinds(input)) {
 				return true;
 			}
