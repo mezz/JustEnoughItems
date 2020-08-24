@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.gui.screen.inventory.AbstractFurnaceScreen;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.block.Blocks;
@@ -210,6 +211,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addGenericGuiContainerHandler(DisplayEffectsScreen.class, new InventoryEffectRendererGuiHandler<>());
 		registration.addGuiContainerHandler(CraftingScreen.class, new RecipeBookGuiHandler<>());
 		registration.addGuiContainerHandler(InventoryScreen.class, new RecipeBookGuiHandler<>());
+		registration.addGuiContainerHandler(AbstractFurnaceScreen.class, new RecipeBookGuiHandler<>());
 	}
 
 	@Override
