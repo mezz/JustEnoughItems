@@ -6,14 +6,19 @@ import java.io.File;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.config.forge.Property;
 import mezz.jei.util.GiveMode;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.config.ModConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public final class ClientConfig {
+public final class ClientConfig
+{
 	private static final Logger LOGGER = LogManager.getLogger();
 	@Nullable
 	private static ClientConfig instance;
@@ -27,11 +32,10 @@ public final class ClientConfig {
 	public static final int minRecipeGuiHeight = 175;
 	public static final int maxRecipeGuiHeight = 5000;
 
-	private final LocalizedConfiguration config;
-	private final LocalizedConfiguration searchColorsConfig;
+	//private final LocalizedConfiguration config;
+	//private final LocalizedConfiguration searchColorsConfig;
 
-	private final ConfigValues defaultValues = new ConfigValues();
-	private final ConfigValues values = new ConfigValues();
+	private final ConfigValues values;
 
 	@Deprecated
 	public static ClientConfig getInstance() {
@@ -39,37 +43,39 @@ public final class ClientConfig {
 		return instance;
 	}
 
-	public ClientConfig(File jeiConfigurationDir) {
+	public ClientConfig(ForgeConfigSpec.Builder builder) {
 		instance = this;
-		final File configFile = new File(jeiConfigurationDir, "jei.cfg");
-		final File searchColorsConfigFile = new File(jeiConfigurationDir, "searchColors.cfg");
-		this.config = new LocalizedConfiguration(configKeyPrefix, configFile, "0.4.0");
-		this.searchColorsConfig = new LocalizedConfiguration(configKeyPrefix, searchColorsConfigFile, "0.1.0");
+		//final File configFile = new File(jeiConfigurationDir, "jei.cfg");
+		//final File searchColorsConfigFile = new File(jeiConfigurationDir, "searchColors.cfg");
+		//this.config = new LocalizedConfiguration(configKeyPrefix, configFile, "0.4.0");
+		//this.searchColorsConfig = new LocalizedConfiguration(configKeyPrefix, searchColorsConfigFile, "0.1.0");
+
+		this.values = new ConfigValues(builder);
 	}
 
 	public boolean isDebugModeEnabled() {
-		return values.debugModeEnabled;
+		return values.debugModeEnabled.get();
 	}
 
 	public boolean isCenterSearchBarEnabled() {
-		return values.centerSearchBarEnabled;
+		return values.centerSearchBarEnabled.get();
 	}
 
 	public GiveMode getGiveMode() {
-		return values.giveMode;
+		return values.giveMode.get();
 	}
 
 	public int getMaxColumns() {
-		return values.maxColumns;
+		return values.maxColumns.get();
 	}
 
 	public int getMaxRecipeGuiHeight() {
-		return values.maxRecipeGuiHeight;
+		return values.maxRecipeGuiHeight.get();
 	}
 
-	public LocalizedConfiguration getConfig() {
+	/*public LocalizedConfiguration getConfig() {
 		return config;
-	}
+	}*/
 
 	public void onPreInit() {
 		syncConfig();
@@ -91,7 +97,7 @@ public final class ClientConfig {
 
 	private boolean syncConfig() {
 		boolean needsReload = false;
-
+		/*
 		config.addCategory(CATEGORY_ADVANCED);
 
 		values.centerSearchBarEnabled = config.getBoolean(CATEGORY_ADVANCED, "centerSearchBarEnabled", defaultValues.centerSearchBarEnabled);
@@ -111,16 +117,16 @@ public final class ClientConfig {
 		final boolean configChanged = config.hasChanged();
 		if (configChanged) {
 			// TODO 1.13
-//			config.save();
-		}
+			//config.save();
+		}*/
 		return needsReload;
 	}
 
 	private boolean syncSearchColorsConfig() {
-		searchColorsConfig.addCategory(CATEGORY_SEARCH_COLORS);
+		//searchColorsConfig.addCategory(CATEGORY_SEARCH_COLORS);
 
-		final String[] searchColorDefaults = ColorGetter.getColorDefaults();
-		final String[] searchColors = searchColorsConfig.getStringList("searchColors", CATEGORY_SEARCH_COLORS, searchColorDefaults);
+		final String[] searchColors = ColorGetter.getColorDefaults();
+		//final String[] searchColors = searchColorsConfig.getStringList("searchColors", CATEGORY_SEARCH_COLORS, searchColorDefaults);
 
 		final ImmutableMap.Builder<Integer, String> searchColorsMapBuilder = ImmutableMap.builder();
 		for (String entry : searchColors) {
@@ -140,11 +146,13 @@ public final class ClientConfig {
 		final ColorNamer colorNamer = new ColorNamer(searchColorsMapBuilder.build());
 		Internal.setColorNamer(colorNamer);
 
+		/*
 		final boolean configChanged = searchColorsConfig.hasChanged();
 		if (configChanged) {
 			// TODO 1.13
-//			searchColorsConfig.save();
+			//searchColorsConfig.save();
 		}
-		return configChanged;
+		return configChanged;*/
+		return false;
 	}
 }

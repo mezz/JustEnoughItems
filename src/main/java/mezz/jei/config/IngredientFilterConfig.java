@@ -1,54 +1,55 @@
 package mezz.jei.config;
 
+import net.minecraftforge.common.ForgeConfigSpec;
+
 public class IngredientFilterConfig implements IIngredientFilterConfig {
 	public static final String CATEGORY_SEARCH = "search";
 
-	private final IngredientFilterConfigValues defaultValues = new IngredientFilterConfigValues();
-	private final IngredientFilterConfigValues values = new IngredientFilterConfigValues();
-	private final LocalizedConfiguration config;
+	private final IngredientFilterConfigValues values;
+	//private final LocalizedConfiguration config;
 
-	public IngredientFilterConfig(LocalizedConfiguration config) {
-		this.config = config;
+	public IngredientFilterConfig(ForgeConfigSpec.Builder builder) {
+		this.values = new IngredientFilterConfigValues(builder);
 	}
 
 	@Override
 	public SearchMode getModNameSearchMode() {
-		return values.modNameSearchMode;
+		return values.modNameSearchMode.get();
 	}
 
 	@Override
 	public SearchMode getTooltipSearchMode() {
-		return values.tooltipSearchMode;
+		return values.tooltipSearchMode.get();
 	}
 
 	@Override
 	public SearchMode getTagSearchMode() {
-		return values.tagSearchMode;
+		return values.tagSearchMode.get();
 	}
 
 	@Override
 	public SearchMode getCreativeTabSearchMode() {
-		return values.creativeTabSearchMode;
+		return values.creativeTabSearchMode.get();
 	}
 
 	@Override
 	public SearchMode getColorSearchMode() {
-		return values.colorSearchMode;
+		return values.colorSearchMode.get();
 	}
 
 	@Override
 	public SearchMode getResourceIdSearchMode() {
-		return values.resourceIdSearchMode;
+		return values.resourceIdSearchMode.get();
 	}
 
 	@Override
 	public boolean getSearchAdvancedTooltips() {
-		return values.searchAdvancedTooltips;
+		return values.searchAdvancedTooltips.get();
 	}
 
 	public boolean syncConfig() {
 		boolean needsReload = false;
-
+		/*
 		config.addCategory(CATEGORY_SEARCH);
 
 		SearchMode[] searchModes = SearchMode.values();
@@ -69,7 +70,7 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 		if (configChanged) {
 			// TODO 1.13
 //			config.save();
-		}
+		}*/
 		return needsReload;
 	}
 

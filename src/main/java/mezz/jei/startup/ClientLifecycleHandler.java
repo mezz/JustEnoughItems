@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.List;
 import java.util.function.Predicate;
 
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
@@ -52,7 +54,8 @@ public class ClientLifecycleHandler {
 	private final IModIdHelper modIdHelper;
 	private final IEditModeConfig editModeConfig;
 
-	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures) {
+	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures,
+			ClientConfig clientConfig, IngredientFilterConfig ingredientFilterConfig, ModIdFormattingConfig modIdFormattingConfig, ForgeModIdHelper modIdHelper) {
 		File jeiConfigurationDir = new File(FMLPaths.CONFIGDIR.get().toFile(), ModIds.JEI_ID);
 		if (!jeiConfigurationDir.exists()) {
 			try {
@@ -63,15 +66,18 @@ public class ClientLifecycleHandler {
 				throw new RuntimeException("Could not create config directory " + jeiConfigurationDir, e);
 			}
 		}
-		clientConfig = new ClientConfig(jeiConfigurationDir);
+
+		this.clientConfig = clientConfig;
+		this.ingredientFilterConfig = ingredientFilterConfig;
+		this.modIdFormattingConfig = modIdFormattingConfig;
+		this.modIdHelper = modIdHelper;
+
 		bookmarkConfig = new BookmarkConfig(jeiConfigurationDir);
 		worldConfig = new WorldConfig(jeiConfigurationDir);
-		ingredientFilterConfig = new IngredientFilterConfig(clientConfig.getConfig());
-		modIdFormattingConfig = new ModIdFormattingConfig(clientConfig.getConfig());
-		modIdHelper = new ForgeModIdHelper(clientConfig, modIdFormattingConfig);
+		editModeConfig = new EditModeConfig(jeiConfigurationDir);
+
 		ErrorUtil.setModIdHelper(modIdHelper);
 		ErrorUtil.setWorldConfig(worldConfig);
-		editModeConfig = new EditModeConfig(jeiConfigurationDir);
 
 		KeyBindings.init();
 

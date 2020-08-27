@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraft.client.Minecraft;
@@ -29,14 +30,19 @@ public class ModIdFormattingConfig {
 
 	public static final String MOD_NAME_FORMAT_CODE = "%MODNAME%";
 	public static final String defaultModNameFormatFriendly = "blue italic";
-	private final LocalizedConfiguration config;
+	//private final LocalizedConfiguration config;
+
+	public final ForgeConfigSpec.ConfigValue<String> modNameFormatConfig;
 
 	public String modNameFormat = parseFriendlyModNameFormat(defaultModNameFormatFriendly);
 	@Nullable
 	private String modNameFormatOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
 
-	public ModIdFormattingConfig(LocalizedConfiguration config) {
-		this.config = config;
+	public ModIdFormattingConfig(ForgeConfigSpec.Builder builder) {
+		//this.config = config;
+		builder.push("formatting");
+		modNameFormatConfig = builder.define("Mod name format", defaultModNameFormatFriendly);
+		builder.pop();
 	}
 
 	public String getModNameFormat() {
@@ -68,10 +74,11 @@ public class ModIdFormattingConfig {
 			validValues[i] = formatting.getFriendlyName().toLowerCase(Locale.ENGLISH);
 			i++;
 		}
+		/*
 		Property property = config.getString("modNameFormat", ClientConfig.CATEGORY_ADVANCED, defaultModNameFormatFriendly, validValues);
 		boolean showInGui = !isModNameFormatOverrideActive();
-		property.setShowInGui(showInGui);
-		String modNameFormatFriendly = property.getString();
+		property.setShowInGui(showInGui);*/
+		String modNameFormatFriendly = modNameFormatConfig.get();
 		modNameFormat = parseFriendlyModNameFormat(modNameFormatFriendly);
 	}
 
