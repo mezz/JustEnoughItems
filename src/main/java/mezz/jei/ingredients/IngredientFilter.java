@@ -167,7 +167,7 @@ public class IngredientFilter implements IIngredientGridSource {
 				V castMatchingIngredient = ingredientClass.cast(matchingIngredient);
 				String matchingUid = ingredientHelper.getUniqueId(castMatchingIngredient);
 				if (ingredientUid.equals(matchingUid)) {
-					@SuppressWarnings({"unchecked", "CastCanBeRemovedNarrowingVariableType"})
+					@SuppressWarnings("unchecked")
 					IIngredientListElement<V> matchingElementCast = (IIngredientListElement<V>) matchingElement;
 					matchingElements.add(matchingElementCast);
 				}
@@ -288,7 +288,7 @@ public class IngredientFilter implements IIngredientGridSource {
 					break;
 				}
 				matchingIndexes.add(i);
-				@SuppressWarnings({"unchecked", "CastCanBeRemovedNarrowingVariableType"})
+				@SuppressWarnings("unchecked")
 				IIngredientListElement<T> castElement = (IIngredientListElement<T>) element;
 				matchingElements.add(castElement);
 			}
@@ -303,7 +303,7 @@ public class IngredientFilter implements IIngredientGridSource {
 					break;
 				}
 				matchingIndexes.add(i);
-				@SuppressWarnings({"unchecked", "CastCanBeRemovedNarrowingVariableType"})
+				@SuppressWarnings("unchecked")
 				IIngredientListElement<T> castElement = (IIngredientListElement<T>) element;
 				matchingElements.add(castElement);
 			}

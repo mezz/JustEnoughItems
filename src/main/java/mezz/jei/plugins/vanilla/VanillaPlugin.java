@@ -39,7 +39,6 @@ import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
@@ -147,7 +146,6 @@ public class VanillaPlugin implements IModPlugin {
 		Textures textures = Internal.getTextures();
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
-		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
 		craftingCategory = new CraftingRecipeCategory(guiHelper);
 		stonecuttingCategory = new StoneCuttingRecipeCategory(guiHelper);
 		furnaceCategory = new FurnaceSmeltingCategory(guiHelper);
