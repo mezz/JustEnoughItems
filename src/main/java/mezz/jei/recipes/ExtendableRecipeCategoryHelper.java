@@ -7,12 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
 import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nullable;
 
 public class ExtendableRecipeCategoryHelper<T, W extends IRecipeCategoryExtension> {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -26,7 +29,7 @@ public class ExtendableRecipeCategoryHelper<T, W extends IRecipeCategoryExtensio
 		this.expectedRecipeClass = expectedRecipeClass;
 	}
 
-	public <R extends T> void addRecipeExtensionFactory(Class<? extends R> recipeClass, Function<R, ? extends W> recipeExtensionFactory) {
+	public <R extends T> void addRecipeExtensionFactory(Class<? extends R> recipeClass, @Nullable Predicate<R> extensionFilter, Function<R, ? extends W> recipeExtensionFactory) {
 		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
 		if (!expectedRecipeClass.isAssignableFrom(recipeClass)) {
 			throw new IllegalArgumentException("Recipe handlers must handle a specific class. Needed: " + expectedRecipeClass + " Got: " + recipeClass);
@@ -36,14 +39,27 @@ public class ExtendableRecipeCategoryHelper<T, W extends IRecipeCategoryExtensio
 			throw new IllegalArgumentException("A Recipe Extension Factory has already been registered for '" + recipeClass.getName());
 		}
 		this.handledClasses.add(recipeClass);
-		this.recipeHandlers.add(new RecipeHandler<>(recipeClass, recipeExtensionFactory));
+		this.recipeHandlers.add(new RecipeHandler<>(recipeClass, extensionFilter, recipeExtensionFactory));
 	}
 
+
 	public <R extends T> W getRecipeExtension(R recipe) {
+		ErrorUtil.checkNotNull(recipe, "recipe");
+		W recipeExtension = cache.computeIfAbsent(recipe, this::getRecipeExtensionUncached);
+		if (recipeExtension == null) {
+			String recipeName = ErrorUtil.getNameForRecipe(recipe);
+			throw new RuntimeException("Failed to create recipe extension for recipe: " + recipeName);
+		}
+		return recipeExtension;
+	}
+
+	@Nullable
+	public <R extends T> W getRecipeExtensionOrNull(R recipe) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		return cache.computeIfAbsent(recipe, this::getRecipeExtensionUncached);
 	}
 
+	@Nullable
 	private <R extends T> W getRecipeExtensionUncached(R recipe) {
 		Class<?> recipeClass = recipe.getClass();
 
@@ -54,20 +70,21 @@ public class ExtendableRecipeCategoryHelper<T, W extends IRecipeCategoryExtensio
 			if (handlerRecipeClass.isAssignableFrom(recipeClass)) {
 				@SuppressWarnings("unchecked")
 				RecipeHandler<R, W> assignableRecipeHandler = (RecipeHandler<R, W>) recipeHandler;
-				if (handlerRecipeClass.equals(recipeClass)) {
-					return assignableRecipeHandler.apply(recipe);
-				}
-				// remove any handlers that are super of this one
-				assignableHandlers.removeIf(handler -> handler.getRecipeClass().isAssignableFrom(handlerRecipeClass));
-				// only add this if it's not a super class of an another assignable handler
-				if (assignableHandlers.stream().noneMatch(handler -> handlerRecipeClass.isAssignableFrom(handler.getRecipeClass()))) {
-					assignableHandlers.add(assignableRecipeHandler);
+				if (assignableRecipeHandler.test(recipe)) {
+					if (handlerRecipeClass.equals(recipeClass)) {
+						return assignableRecipeHandler.apply(recipe);
+					}
+					// remove any handlers that are super of this one
+					assignableHandlers.removeIf(handler -> handler.getRecipeClass().isAssignableFrom(handlerRecipeClass));
+					// only add this if it's not a super class of an another assignable handler
+					if (assignableHandlers.stream().noneMatch(handler -> handlerRecipeClass.isAssignableFrom(handler.getRecipeClass()))) {
+						assignableHandlers.add(assignableRecipeHandler);
+					}
 				}
 			}
 		}
 		if (assignableHandlers.isEmpty()) {
-			String recipeName = ErrorUtil.getNameForRecipe(recipe);
-			throw new RuntimeException("Failed to create recipe wrapper for recipe: " + recipeName);
+			return null;
 		}
 		if (assignableHandlers.size() == 1) {
 			RecipeHandler<R, W> recipeHandler = assignableHandlers.get(0);
@@ -94,14 +111,24 @@ public class ExtendableRecipeCategoryHelper<T, W extends IRecipeCategoryExtensio
 	public static class RecipeHandler<T, W extends IRecipeCategoryExtension> {
 		private final Class<? extends T> recipeClass;
 		private final Function<T, W> factory;
+		@Nullable
+		private final Predicate<T> filter;
 
-		public RecipeHandler(Class<? extends T> recipeClass, Function<T, W> factory) {
+		public RecipeHandler(Class<? extends T> recipeClass, @Nullable Predicate<T> filter, Function<T, W> factory) {
 			this.recipeClass = recipeClass;
 			this.factory = factory;
+			this.filter = filter;
 		}
 
 		public Class<? extends T> getRecipeClass() {
 			return recipeClass;
+		}
+
+		public boolean test(T t) {
+			if (filter == null) {
+				return true;
+			}
+			return filter.test(t);
 		}
 
 		public W apply(T t) {

@@ -69,7 +69,7 @@ import mezz.jei.plugins.vanilla.cooking.fuel.FurnaceFuelCategory;
 import mezz.jei.plugins.vanilla.crafting.CraftingCategoryExtension;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.plugins.vanilla.crafting.TippedArrowRecipeMaker;
-import mezz.jei.plugins.vanilla.crafting.VanillaRecipeValidator;
+import mezz.jei.plugins.vanilla.crafting.VanillaRecipes;
 import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackHelper;
 import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackListFactory;
 import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackRenderer;
@@ -168,7 +168,7 @@ public class VanillaPlugin implements IModPlugin {
 	@Override
 	public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
 		IExtendableRecipeCategory<ICraftingRecipe, ICraftingCategoryExtension> craftingCategory = registration.getCraftingCategory();
-		craftingCategory.addCategoryExtension(ICraftingRecipe.class, CraftingCategoryExtension::new);
+		craftingCategory.addCategoryExtension(ICraftingRecipe.class, r -> !r.isDynamic(), CraftingCategoryExtension::new);
 	}
 
 	@Override
@@ -183,13 +183,13 @@ public class VanillaPlugin implements IModPlugin {
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
-		VanillaRecipeValidator.Results recipes = VanillaRecipeValidator.getValidRecipes(craftingCategory, stonecuttingCategory, furnaceCategory, smokingCategory, blastingCategory, campfireCategory);
-		registration.addRecipes(recipes.getCraftingRecipes(), VanillaRecipeCategoryUid.CRAFTING);
-		registration.addRecipes(recipes.getStonecuttingRecipes(), VanillaRecipeCategoryUid.STONECUTTING);
-		registration.addRecipes(recipes.getFurnaceRecipes(), VanillaRecipeCategoryUid.FURNACE);
-		registration.addRecipes(recipes.getSmokingRecipes(), VanillaRecipeCategoryUid.SMOKING);
-		registration.addRecipes(recipes.getBlastingRecipes(), VanillaRecipeCategoryUid.BLASTING);
-		registration.addRecipes(recipes.getCampfireRecipes(), VanillaRecipeCategoryUid.CAMPFIRE);
+		VanillaRecipes vanillaRecipes = new VanillaRecipes();
+		registration.addRecipes(vanillaRecipes.getCraftingRecipes(craftingCategory), VanillaRecipeCategoryUid.CRAFTING);
+		registration.addRecipes(vanillaRecipes.getStonecuttingRecipes(stonecuttingCategory), VanillaRecipeCategoryUid.STONECUTTING);
+		registration.addRecipes(vanillaRecipes.getFurnaceRecipes(furnaceCategory), VanillaRecipeCategoryUid.FURNACE);
+		registration.addRecipes(vanillaRecipes.getSmokingRecipes(smokingCategory), VanillaRecipeCategoryUid.SMOKING);
+		registration.addRecipes(vanillaRecipes.getBlastingRecipes(blastingCategory), VanillaRecipeCategoryUid.BLASTING);
+		registration.addRecipes(vanillaRecipes.getCampfireCookingRecipes(campfireCategory), VanillaRecipeCategoryUid.CAMPFIRE);
 		registration.addRecipes(FuelRecipeMaker.getFuelRecipes(ingredientManager, jeiHelpers), VanillaRecipeCategoryUid.FUEL);
 		registration.addRecipes(BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory), VanillaRecipeCategoryUid.BREWING);
 		registration.addRecipes(TippedArrowRecipeMaker.createTippedArrowRecipes(), VanillaRecipeCategoryUid.CRAFTING);
