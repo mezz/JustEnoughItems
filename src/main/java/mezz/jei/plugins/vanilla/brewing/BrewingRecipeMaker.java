@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraftforge.common.brewing.BrewingRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.brewing.IBrewingRecipe;
@@ -91,7 +92,7 @@ public class BrewingRecipeMaker {
 		}
 
 		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM);
-		Collection<ItemStack> knownPotions = IngredientSet.create(itemStackHelper);
+		Collection<ItemStack> knownPotions = IngredientSet.create(itemStackHelper, UidContext.Ingredient);
 		for (Potion potion : ForgeRegistries.POTION_TYPES.getValues()) {
 			if (potion == Potions.EMPTY) {
 				// skip the "uncraftable" vanilla potions

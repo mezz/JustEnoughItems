@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableList;
@@ -75,7 +76,7 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 			final ImmutableList<T> recipes = recipeInputMap.getRecipes(recipeCategory, ingredient);
 
 			ResourceLocation recipeCategoryUid = recipeCategory.getUid();
-			for (String inputKey : IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient)) {
+			for (String inputKey : IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient, UidContext.Recipe)) {
 				if (categoriesForRecipeCatalystKeys.get(inputKey).contains(recipeCategoryUid)) {
 					ImmutableSet<T> specificRecipes = ImmutableSet.copyOf(recipes);
 					RecipeCategoryData<T> recipeCategoryData = recipeCategoriesMap.get(recipeCategory);

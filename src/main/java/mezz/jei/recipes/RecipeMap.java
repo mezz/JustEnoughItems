@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.ingredients.IngredientsForType;
 import net.minecraft.util.ResourceLocation;
 
@@ -38,7 +39,7 @@ public class RecipeMap {
 
 		Set<ResourceLocation> recipeCategories = new HashSet<>();
 
-		for (String key : IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient)) {
+		for (String key : IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient, UidContext.Recipe)) {
 			recipeCategories.addAll(categoryUidMap.get(key));
 		}
 
@@ -46,7 +47,7 @@ public class RecipeMap {
 	}
 
 	public <V> void addRecipeCategory(IRecipeCategory<?> recipeCategory, V ingredient, IIngredientHelper<V> ingredientHelper) {
-		String key = ingredientHelper.getUniqueId(ingredient);
+		String key = ingredientHelper.getUniqueId(ingredient, UidContext.Recipe);
 		List<ResourceLocation> recipeCategories = categoryUidMap.get(key);
 		ResourceLocation recipeCategoryUid = recipeCategory.getUid();
 		if (!recipeCategories.contains(recipeCategoryUid)) {
@@ -60,7 +61,7 @@ public class RecipeMap {
 		Map<String, List<Object>> recipesForType = recipeTable.getRow(recipeCategory);
 
 		ImmutableList.Builder<T> listBuilder = ImmutableList.builder();
-		for (String key : IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient)) {
+		for (String key : IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient, UidContext.Recipe)) {
 			@SuppressWarnings("unchecked")
 			List<T> recipes = (List<T>) recipesForType.get(key);
 			if (recipes != null) {
@@ -91,7 +92,7 @@ public class RecipeMap {
 					continue;
 				}
 
-				String key = ingredientHelper.getUniqueId(ingredient);
+				String key = ingredientHelper.getUniqueId(ingredient, UidContext.Recipe);
 				if (uniqueIds.contains(key)) {
 					continue;
 				} else {

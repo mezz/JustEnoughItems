@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.JsonToNBT;
@@ -104,7 +105,7 @@ public class BookmarkConfig {
 	private <T> String getUid(IIngredientManager ingredientManager, IIngredientListElement<T> element) {
 		T ingredient = element.getIngredient();
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-		return ingredientHelper.getUniqueId(ingredient);
+		return ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
 	}
 
 	@Nullable

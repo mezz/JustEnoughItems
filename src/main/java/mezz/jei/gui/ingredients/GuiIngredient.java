@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -157,7 +158,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 	private T getMatch(Collection<T> ingredients, @Nullable Focus<T> focus) {
 		if (focus != null && isMode(focus.getMode())) {
 			T focusValue = focus.getValue();
-			return ingredientHelper.getMatch(ingredients, focusValue);
+			return ingredientHelper.getMatch(ingredients, focusValue, UidContext.Ingredient);
 		}
 		return null;
 	}

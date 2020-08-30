@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientFilter;
@@ -168,7 +169,7 @@ public class EditModeConfig implements IEditModeConfig {
 	private static <V> String getIngredientUid(V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
 		switch (blacklistType) {
 			case ITEM:
-				return ingredientHelper.getUniqueId(ingredient);
+				return ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
 			case WILDCARD:
 				return ingredientHelper.getWildcardId(ingredient);
 			default:

@@ -2,6 +2,7 @@ package mezz.jei.recipes;
 
 import java.util.List;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableListMultimap;
@@ -38,7 +39,7 @@ public class RecipeCatalystBuilder {
 
 	private static <T> String getUniqueId(T ingredient, IIngredientManager ingredientManager) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-		return ingredientHelper.getUniqueId(ingredient);
+		return ingredientHelper.getUniqueId(ingredient, UidContext.Recipe);
 	}
 
 	public ImmutableListMultimap<IRecipeCategory<?>, Object> buildRecipeCatalysts() {

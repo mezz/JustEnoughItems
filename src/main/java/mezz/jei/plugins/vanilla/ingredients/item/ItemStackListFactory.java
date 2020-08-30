@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -53,7 +54,7 @@ public final class ItemStackListFactory {
 		final String itemKey;
 
 		try {
-			itemKey = stackHelper.getUniqueIdentifierForStack(stack);
+			itemKey = stackHelper.getUniqueIdentifierForStack(stack, UidContext.Ingredient);
 		} catch (RuntimeException | LinkageError e) {
 			String stackInfo = ErrorUtil.getItemStackInfo(stack);
 			LOGGER.error("Couldn't get unique name for itemStack {}", stackInfo, e);

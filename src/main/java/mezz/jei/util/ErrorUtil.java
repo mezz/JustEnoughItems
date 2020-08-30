@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.ingredients.IngredientsForType;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraft.block.Block;
@@ -284,7 +285,7 @@ public final class ErrorUtil {
 		ingredientCategory.addDetail("String Name", ingredient::toString);
 
 		CrashReportCategory jeiCategory = crashreport.makeCategory("JEI render details");
-		jeiCategory.addDetail("Unique Id (for Blacklist)", () -> ingredientHelper.getUniqueId(ingredient));
+		jeiCategory.addDetail("Unique Id (for Blacklist)", () -> ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient));
 		jeiCategory.addDetail("Ingredient Type", () -> ingredientType.getIngredientClass().toString());
 		jeiCategory.addDetail("Error Info", () -> ingredientHelper.getErrorInfo(ingredient));
 		if (worldConfig != null) {

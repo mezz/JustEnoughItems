@@ -2,6 +2,7 @@ package mezz.jei.input;
 
 import javax.annotation.Nullable;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.item.ItemStack;
 
@@ -89,7 +90,7 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 		IIngredientManager ingredientManager = Internal.getIngredientManager();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value);
 		return MoreObjects.toStringHelper(ClickedIngredient.class)
-			.add("value", ingredientHelper.getUniqueId(value))
+			.add("value", ingredientHelper.getUniqueId(value, UidContext.Ingredient))
 			.add("area", area)
 			.add("allowsCheating", allowsCheating)
 			.toString();
