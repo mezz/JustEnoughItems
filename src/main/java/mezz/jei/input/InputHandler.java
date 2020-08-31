@@ -118,8 +118,8 @@ public class InputHandler {
 		int mouseButton = event.getButton();
 		if (mouseButton > -1) {
 			if (!clickHandled.contains(mouseButton)) {
-				if (handleMouseClick(event.getGui(), mouseButton, event.getMouseX(), event.getMouseY())) {
-					clickHandled.add(mouseButton);
+				clickHandled.add(mouseButton);
+				if (handleMouseDrag(event.getGui(), mouseButton, event.getMouseX(), event.getMouseY())) {
 					event.setCanceled(true);
 				}
 			}
@@ -132,7 +132,9 @@ public class InputHandler {
 		if (mouseButton > -1) {
 			if (clickHandled.contains(mouseButton)) {
 				clickHandled.remove(mouseButton);
-				event.setCanceled(true);
+				if (handleMouseClicked(event.getGui(), mouseButton, event.getMouseX(), event.getMouseY())) {
+					event.setCanceled(true);
+				}
 			}
 		}
 	}
@@ -148,7 +150,11 @@ public class InputHandler {
 		}
 	}
 
-	private boolean handleMouseClick(Screen guiScreen, int mouseButton, double mouseX, double mouseY) {
+	private boolean handleMouseDrag(Screen guiScreen, int mouseButton, double mouseX, double mouseY) {
+		return ingredientListOverlay.handleMouseDragStart(mouseX, mouseY, mouseButton);
+	}
+
+	private boolean handleMouseClicked(Screen guiScreen, int mouseButton, double mouseX, double mouseY) {
 		IClickedIngredient<?> clicked = getFocusUnderMouseForClick(mouseX, mouseY);
 		if (worldConfig.isEditModeEnabled() && clicked != null && handleClickEdit(clicked)) {
 			return true;

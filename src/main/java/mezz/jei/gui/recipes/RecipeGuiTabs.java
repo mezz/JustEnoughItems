@@ -151,11 +151,6 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 	}
 
 	@Override
-	public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
-		return false;
-	}
-
-	@Override
 	public boolean nextPage() {
 		if (hasNext()) {
 			pageNumber++;

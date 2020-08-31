@@ -31,11 +31,6 @@ public abstract class RecipeGuiTab implements IMouseHandler {
 		return hoverChecker.checkHover(mouseX, mouseY);
 	}
 
-	@Override
-	public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
-		return false;
-	}
-
 	public abstract boolean isSelected(IRecipeCategory<?> selectedCategory);
 
 	public void draw(boolean selected, MatrixStack matrixStack, int mouseX, int mouseY) {

@@ -24,15 +24,27 @@ public class GhostIngredientDrag<T> {
 	private final List<Target<T>> targets;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final T ingredient;
+	private final double mouseStartX;
+	private final double mouseStartY;
 	@Nullable
 	private final Rectangle2d origin;
 
-	public GhostIngredientDrag(IGhostIngredientHandler<?> handler, List<Target<T>> targets, IIngredientRenderer<T> ingredientRenderer, T ingredient, @Nullable Rectangle2d origin) {
+	public GhostIngredientDrag(
+		IGhostIngredientHandler<?> handler,
+		List<Target<T>> targets,
+		IIngredientRenderer<T> ingredientRenderer,
+		T ingredient,
+		double mouseX,
+		double mouseY,
+		@Nullable Rectangle2d origin
+	) {
 		this.handler = handler;
 		this.targets = targets;
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredient = ingredient;
 		this.origin = origin;
+		this.mouseStartX = mouseX;
+		this.mouseStartY = mouseY;
 	}
 
 	public void drawTargets(MatrixStack matrixStack, int mouseX, int mouseY) {
@@ -43,6 +55,13 @@ public class GhostIngredientDrag<T> {
 
 	@SuppressWarnings("deprecation")
 	public void drawItem(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
+		double mouseXDist = this.mouseStartX - mouseX;
+		double mouseYDist = this.mouseStartY - mouseY;
+		double mouseDistSq = mouseXDist * mouseXDist + mouseYDist * mouseYDist;
+		if (mouseDistSq < 10.0) {
+			return;
+		}
+
 		if (origin != null) {
 			int originX = origin.getX() + (origin.getWidth() / 2);
 			int originY = origin.getY() + (origin.getHeight() / 2);

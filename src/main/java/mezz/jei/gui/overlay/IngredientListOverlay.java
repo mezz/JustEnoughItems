@@ -242,6 +242,26 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	}
 
 	@Override
+	public boolean handleMouseDragStart(double mouseX, double mouseY, int mouseButton) {
+		if (isListDisplayed()) {
+			Minecraft minecraft = Minecraft.getInstance();
+			Screen currentScreen = minecraft.currentScreen;
+			if (currentScreen != null && !(currentScreen instanceof RecipesGui) && mouseButton == 0) {
+				IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
+				if (clicked != null) {
+					ClientPlayerEntity player = minecraft.player;
+					if (player != null) {
+						ItemStack mouseItem = player.inventory.getItemStack();
+						return mouseItem.isEmpty() &&
+							this.ghostIngredientDragManager.handleClickGhostIngredient(currentScreen, clicked, mouseX, mouseY);
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
 	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
 		if (isListDisplayed()) {
 			if (this.ghostIngredientDragManager.handleMouseClicked(mouseX, mouseY)) {
@@ -286,13 +306,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 						}
 						clicked.onClickHandled();
 						return true;
-					}
-					ClientPlayerEntity player = minecraft.player;
-					if (player != null) {
-						ItemStack mouseItem = player.inventory.getItemStack();
-						if (mouseItem.isEmpty() && this.ghostIngredientDragManager.handleClickGhostIngredient(currentScreen, clicked)) {
-							return true;
-						}
 					}
 				}
 			}
