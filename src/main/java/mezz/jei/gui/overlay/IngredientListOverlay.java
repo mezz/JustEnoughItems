@@ -44,14 +44,15 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	private static final int SEARCH_HEIGHT = 20;
 	private boolean hasRoom;
 
-	private static boolean isSearchBarCentered(IGuiProperties guiProperties) {
-		return ClientConfig.getInstance().isCenterSearchBarEnabled() &&
+	private static boolean isSearchBarCentered(ClientConfig clientConfig, IGuiProperties guiProperties) {
+		return clientConfig.isCenterSearchBarEnabled() &&
 			guiProperties.getGuiTop() + guiProperties.getGuiYSize() + SEARCH_HEIGHT < guiProperties.getScreenHeight();
 	}
 
 	private final IngredientFilter ingredientFilter;
 	private final GuiIconToggleButton configButton;
 	private final IngredientGridWithNavigation contents;
+	private final ClientConfig clientConfig;
 	private final IWorldConfig worldConfig;
 	private final GuiScreenHelper guiScreenHelper;
 	private final GuiTextFieldFilter searchField;
@@ -67,11 +68,13 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		IngredientManager ingredientManager,
 		GuiScreenHelper guiScreenHelper,
 		IngredientGridWithNavigation contents,
+		ClientConfig clientConfig,
 		IWorldConfig worldConfig
 	) {
 		this.ingredientFilter = ingredientFilter;
 		this.guiScreenHelper = guiScreenHelper;
 		this.contents = contents;
+		this.clientConfig = clientConfig;
 		this.worldConfig = worldConfig;
 		ingredientFilter.addListener(() -> onSetFilterText(worldConfig.getFilterText()));
 		this.searchField = new GuiTextFieldFilter(ingredientFilter, worldConfig);
@@ -114,7 +117,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 				this.guiProperties = guiProperties;
 				this.displayArea = getDisplayArea(guiProperties);
 
-				final boolean searchBarCentered = isSearchBarCentered(guiProperties);
+				final boolean searchBarCentered = isSearchBarCentered(this.clientConfig, guiProperties);
 				final int searchHeight = searchBarCentered ? 0 : SEARCH_HEIGHT + BORDER_PADDING;
 
 				Set<Rectangle2d> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
@@ -171,6 +174,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		this.searchField.update();
 	}
 
+	@SuppressWarnings("deprecation")
 	public void drawScreen(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		if (this.guiProperties != null) {
 			if (isListDisplayed()) {
@@ -212,7 +216,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
-			if (ClientConfig.getInstance().isCenterSearchBarEnabled() && searchField.isMouseOver(mouseX, mouseY)) {
+			if (this.clientConfig.isCenterSearchBarEnabled() && searchField.isMouseOver(mouseX, mouseY)) {
 				return true;
 			}
 			return MathUtil.contains(displayArea, mouseX, mouseY) &&
@@ -302,7 +306,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 					if (worldConfig.isCheatItemsEnabled()) {
 						ItemStack itemStack = clicked.getCheatItemStack();
 						if (!itemStack.isEmpty()) {
-							CommandUtil.giveStack(itemStack, input);
+							CommandUtil.giveStack(itemStack, input, this.clientConfig);
 						}
 						clicked.onClickHandled();
 						return true;

@@ -33,8 +33,8 @@ public final class CommandUtil {
 	 *
 	 * {@link CreativeScreen} has special client-side handling for itemStacks, just give the item on the client
 	 */
-	public static void giveStack(ItemStack itemStack, InputMappings.Input input) {
-		final GiveMode giveMode = ClientConfig.getInstance().getGiveMode();
+	public static void giveStack(ItemStack itemStack, InputMappings.Input input, ClientConfig clientConfig) {
+		final GiveMode giveMode = clientConfig.getGiveMode();
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientPlayerEntity player = minecraft.player;
 		if (player == null) {
