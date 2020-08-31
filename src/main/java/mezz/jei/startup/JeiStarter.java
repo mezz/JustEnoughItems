@@ -21,6 +21,7 @@ import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.overlay.GridAlignment;
+import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
@@ -77,18 +78,19 @@ public class JeiStarter {
 
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building runtime");
-		GuiContainerHandlers guiContainerHandlers = guiHandlerRegistration.getGuiContainerHandlers();
-		List<IGlobalGuiHandler> globalGuiHandlers = guiHandlerRegistration.getGlobalGuiHandlers();
-		Map<Class<?>, IScreenHandler<?>> guiScreenHandlers = guiHandlerRegistration.getGuiScreenHandlers();
-		Map<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers = guiHandlerRegistration.getGhostIngredientHandlers();
-		GuiScreenHelper guiScreenHelper = new GuiScreenHelper(ingredientManager, globalGuiHandlers, guiContainerHandlers, ghostIngredientHandlers, guiScreenHandlers);
-		IngredientGridWithNavigation ingredientListGrid = new IngredientGridWithNavigation(ingredientFilter, worldConfig, guiScreenHelper, editModeConfig, ingredientFilterConfig, worldConfig, GridAlignment.LEFT);
-		IngredientListOverlay ingredientListOverlay = new IngredientListOverlay(ingredientFilter, ingredientManager, guiScreenHelper, ingredientListGrid, worldConfig);
+		GuiScreenHelper guiScreenHelper = guiHandlerRegistration.createGuiScreenHelper(ingredientManager);
 
-		IngredientGridWithNavigation bookmarkListGrid = new IngredientGridWithNavigation(bookmarkList, () -> "", guiScreenHelper, editModeConfig, ingredientFilterConfig, worldConfig, GridAlignment.RIGHT);
-		BookmarkOverlay bookmarkOverlay = new BookmarkOverlay(bookmarkList, textures, bookmarkListGrid, worldConfig);
+		IngredientGrid ingredientListGrid = new IngredientGrid(GridAlignment.LEFT, editModeConfig, ingredientFilterConfig, worldConfig, guiScreenHelper);
+		IngredientGridWithNavigation ingredientListGridNavigation = new IngredientGridWithNavigation(ingredientFilter, worldConfig, guiScreenHelper, ingredientListGrid, worldConfig);
+		IngredientListOverlay ingredientListOverlay = new IngredientListOverlay(ingredientFilter, ingredientManager, guiScreenHelper, ingredientListGridNavigation, worldConfig);
+
+		IngredientGrid bookmarkListGrid = new IngredientGrid(GridAlignment.RIGHT, editModeConfig, ingredientFilterConfig, worldConfig, guiScreenHelper);
+		IngredientGridWithNavigation bookmarkListGridNavigation = new IngredientGridWithNavigation(bookmarkList, () -> "", guiScreenHelper, bookmarkListGrid, worldConfig);
+		BookmarkOverlay bookmarkOverlay = new BookmarkOverlay(bookmarkList, textures, bookmarkListGridNavigation, worldConfig);
+
 		RecipesGui recipesGui = new RecipesGui(recipeManager, recipeTransferManager, ingredientManager, modIdHelper);
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, worldConfig);
+
 		JeiRuntime jeiRuntime = new JeiRuntime(recipeManager, ingredientListOverlay, bookmarkOverlay, recipesGui, ingredientFilterApi, ingredientManager);
 		Internal.setRuntime(jeiRuntime);
 		timer.stop();

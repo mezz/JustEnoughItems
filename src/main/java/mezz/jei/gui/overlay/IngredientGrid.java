@@ -51,7 +51,13 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	private final IIngredientFilterConfig ingredientFilterConfig;
 	private final IWorldConfig worldConfig;
 
-	public IngredientGrid(GridAlignment alignment, IEditModeConfig editModeConfig, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig, GuiScreenHelper guiScreenHelper) {
+	public IngredientGrid(
+		GridAlignment alignment,
+		IEditModeConfig editModeConfig,
+		IIngredientFilterConfig ingredientFilterConfig,
+		IWorldConfig worldConfig,
+		GuiScreenHelper guiScreenHelper
+	) {
 		this.alignment = alignment;
 		this.guiIngredientSlots = new IngredientListBatchRenderer(editModeConfig, worldConfig);
 		this.ingredientFilterConfig = ingredientFilterConfig;
