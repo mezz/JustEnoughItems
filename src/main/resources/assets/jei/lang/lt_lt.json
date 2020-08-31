@@ -43,6 +43,7 @@
   "key.jei.nextPage": "Show Next Page",
 
   "_comment": "Config",
+  "config.jei": "konfigūracija",
   "config.jei.default": "Numatytoji",
   "config.jei.valid": "Teisinga",
   "config.jei.title": "%MODNAME konfigūracija",
@@ -70,6 +71,7 @@
   "config.jei.search.colorSearchMode.comment": "Require \"^\" in front of a word to search item colors.",
   "config.jei.search.resourceIdSearchMode": "&ResourceId",
   "config.jei.search.resourceIdSearchMode.comment": "Search mode for resources ids (prefix: &)",
+  "config.jei.search.searchAdvancedTooltips": "Search advanced tooltips",
   "config.jei.advanced": "Išsamiau",
   "config.jei.advanced.comment": "Advanced config options to change the way JEI functions.",
   "config.jei.advanced.itemBlacklist": "Item Blacklist",
@@ -108,6 +110,9 @@
   "gui.jei.category.brewing": "Brewing",
   "gui.jei.category.brewing.steps": "Žingsniai: %s",
   "gui.jei.category.itemInformation": "Aprašymas",
+
+  "_comment": "Messages",
+  "jei.message.ftbguilib": "Install FTB GUI Library to access ingame config",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",

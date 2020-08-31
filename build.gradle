@@ -43,6 +43,7 @@ compileJava {
 
 repositories {
 	maven { url 'https://repo1.maven.org/maven2' }
+	maven { url 'https://maven.latmod.com/' }
 }
 
 sourceSets {
@@ -64,6 +65,8 @@ dependencies {
 	implementation sourceSets.api.output
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+
+	compile fg.deobf('com.feed_the_beast.mods:ftb-gui-library:1.0.0.18')
 }
 
 minecraft {

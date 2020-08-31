@@ -2,6 +2,7 @@ package mezz.jei.gui.overlay;
 
 import java.util.List;
 
+import mezz.jei.config.JEIClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
@@ -73,12 +74,7 @@ public class ConfigButton extends GuiIconToggleButton {
 			if (InputMappings.isKeyDown(windowHandle, GLFW.GLFW_KEY_LEFT_CONTROL) || InputMappings.isKeyDown(windowHandle, GLFW.GLFW_KEY_RIGHT_CONTROL)) {
 				worldConfig.toggleCheatItemsEnabled();
 			} else {
-				Minecraft minecraft = Minecraft.getInstance();
-				if (minecraft.currentScreen != null) {
-//					Screen configScreen = new JEIModConfigGui(minecraft.currentScreen);
-//					parent.updateScreen(configScreen, false);
-//					minecraft.displayGuiScreen(configScreen);
-				}
+				JEIClientConfig.openSettings();
 			}
 			return true;
 		}

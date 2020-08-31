@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import com.feed_the_beast.mods.ftbguilibrary.config.ConfigGroup;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -20,29 +21,52 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.config.forge.Property;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ModIdFormattingConfig {
+public class ModIdFormattingConfig implements IJEIConfig
+{
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static final String MOD_NAME_FORMAT_CODE = "%MODNAME%";
 	public static final String defaultModNameFormatFriendly = "blue italic";
-	//private final LocalizedConfiguration config;
 
-	public final ForgeConfigSpec.ConfigValue<String> modNameFormatConfig;
-
+	private String modNameFormatFriendly = defaultModNameFormatFriendly;
 	public String modNameFormat = parseFriendlyModNameFormat(defaultModNameFormatFriendly);
 	@Nullable
 	private String modNameFormatOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
 
+	// Forge config
+	public final ForgeConfigSpec.ConfigValue<String> modNameFormatConfig;
+
 	public ModIdFormattingConfig(ForgeConfigSpec.Builder builder) {
-		//this.config = config;
-		builder.push("formatting");
-		modNameFormatConfig = builder.define("Mod name format", defaultModNameFormatFriendly);
+		builder.push("modname");
+		builder.comment("Formatting for mod name tooltip",
+				"Use these formatting keys:",
+				"black, dark_blue, dark_green, dark_aqua, dark_red, dark_purple, gold, gray, dark_gray, blue, green, aqua, red, light_purple, yellow, white",
+				"obfuscated, bold, strikethrough, underline, italic");
+		modNameFormatConfig = builder.define("ModNameFormat", defaultModNameFormatFriendly);
 		builder.pop();
+	}
+
+	@Override
+	public void buildSettingsGUI(ConfigGroup group) {
+		group.addString(cfgTranslation("modNameFormat"), modNameFormatFriendly, v -> {
+			modNameFormatConfig.set(v);
+			modNameFormatFriendly = v;
+			updateModNameFormat();
+		}, ModIdFormattingConfig.defaultModNameFormatFriendly);
+	}
+
+	private String cfgTranslation(String name) {
+		return "advanced."+name;
+	}
+
+	@Override
+	public void reload() {
+		modNameFormatFriendly = modNameFormatConfig.get();
+		updateModNameFormat();
 	}
 
 	public String getModNameFormat() {
@@ -74,11 +98,7 @@ public class ModIdFormattingConfig {
 			validValues[i] = formatting.getFriendlyName().toLowerCase(Locale.ENGLISH);
 			i++;
 		}
-		/*
-		Property property = config.getString("modNameFormat", ClientConfig.CATEGORY_ADVANCED, defaultModNameFormatFriendly, validValues);
-		boolean showInGui = !isModNameFormatOverrideActive();
-		property.setShowInGui(showInGui);*/
-		String modNameFormatFriendly = modNameFormatConfig.get();
+
 		modNameFormat = parseFriendlyModNameFormat(modNameFormatFriendly);
 	}
 

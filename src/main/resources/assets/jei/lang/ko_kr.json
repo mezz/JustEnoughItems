@@ -43,6 +43,7 @@
   "key.jei.nextPage": "Show Next Page",
 
   "_comment": "Config",
+  "config.jei": "JEI 구성",
   "config.jei.default": "기본값",
   "config.jei.valid": "현재",
   "config.jei.title": "%MODNAME 구성",
@@ -70,6 +71,7 @@
   "config.jei.search.colorSearchMode.comment": "\"^\"를 붙여 아이템 색깔로 검색합니다.",
   "config.jei.search.resourceIdSearchMode": "&ResourceId",
   "config.jei.search.resourceIdSearchMode.comment": "Search mode for resources ids (prefix: &)",
+  "config.jei.search.searchAdvancedTooltips": "Search advanced tooltips",
   "config.jei.advanced": "고급",
   "config.jei.advanced.comment": "JEI의 고급 기능들에 대해 설정합니다.",
   "config.jei.advanced.itemBlacklist": "아이템 금지 목록",
@@ -108,6 +110,9 @@
   "gui.jei.category.brewing": "양조기",
   "gui.jei.category.brewing.steps": "단계: %s개",
   "gui.jei.category.itemInformation": "설명",
+
+  "_comment": "Messages",
+  "jei.message.ftbguilib": "Install FTB GUI Library to access ingame config",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",

@@ -50,6 +50,7 @@
   "key.jei.toggleBookmarkOverlay": "開關書籤物品列表疊層",
 
   "_comment": "設定",
+  "config.jei": "JEI 設定",
   "config.jei.default": "預設",
   "config.jei.valid": "有效",
   "config.jei.title": "%MODNAME 設定",
@@ -79,6 +80,7 @@
   "config.jei.search.colorSearchMode.comment": "依物品顏色搜尋（前綴：^）",
   "config.jei.search.resourceIdSearchMode": "&ResourceId",
   "config.jei.search.resourceIdSearchMode.comment": "依 Resource ID 搜尋（前綴：&）",
+  "config.jei.search.searchAdvancedTooltips": "Search advanced tooltips",
   "config.jei.advanced": "進階設定",
   "config.jei.advanced.comment": "用於變更 JEI 功能的進階設定",
   "config.jei.advanced.itemBlacklist": "物品黑名單",
@@ -122,6 +124,9 @@
   "gui.jei.category.brewing": "釀造",
   "gui.jei.category.brewing.steps": "步驟：%s",
   "gui.jei.category.itemInformation": "資訊",
+
+  "_comment": "Messages",
+  "jei.message.ftbguilib": "Install FTB GUI Library to access ingame config",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",

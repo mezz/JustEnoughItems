@@ -43,6 +43,7 @@
   "key.jei.nextPage": "Show Next Page",
 
   "_comment": "Config",
+  "config.jei": "اعدادات جاي إي آي",
   "config.jei.default": "الأصلي",
   "config.jei.valid": "مقبول",
   "config.jei.title": "%MODNAME إعدادات",
@@ -70,6 +71,7 @@
   "config.jei.search.colorSearchMode.comment": ".طلب \"^\" قبل الكلمة ببحث في الوان العناصر",
   "config.jei.search.resourceIdSearchMode": "&ResourceId",
   "config.jei.search.resourceIdSearchMode.comment": "Search mode for resources ids (prefix: &)",
+  "config.jei.search.searchAdvancedTooltips": "Search advanced tooltips",
   "config.jei.advanced": "متقدمة",
   "config.jei.advanced.comment": ".إعدادات خيارات متقدمة لتغيير كيفية عمل جاي إي آي",
   "config.jei.advanced.itemBlacklist": "قائمة العناصر السوداء",
@@ -108,6 +110,9 @@
   "gui.jei.category.brewing": "التخمير",
   "gui.jei.category.brewing.steps": "%s :الخطوات",
   "gui.jei.category.itemInformation": "الوصف",
+
+  "_comment": "Messages",
+  "jei.message.ftbguilib": "Install FTB GUI Library to access ingame config",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",

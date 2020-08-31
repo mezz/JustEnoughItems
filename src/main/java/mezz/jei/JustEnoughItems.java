@@ -1,14 +1,9 @@
 package mezz.jei;
 
-import mezz.jei.config.ClientConfig;
-import mezz.jei.config.IngredientFilterConfig;
-import mezz.jei.config.ModIdFormattingConfig;
-import mezz.jei.ingredients.ForgeModIdHelper;
+import mezz.jei.config.JEIClientConfig;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -39,12 +34,7 @@ public class JustEnoughItems {
 	private static void clientStart(IEventBus modEventBus, NetworkHandler networkHandler) {
 		ForgeConfigSpec.Builder configBuilder = new ForgeConfigSpec.Builder();
 
-		ClientConfig clientConfig = new ClientConfig(configBuilder);
-		IngredientFilterConfig ingredientFilterConfig = new IngredientFilterConfig(configBuilder);
-		ModIdFormattingConfig modIdFormattingConfig = new ModIdFormattingConfig(configBuilder);
-		ForgeModIdHelper modIdHelper = new ForgeModIdHelper(clientConfig, modIdFormattingConfig);
-
-		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, configBuilder.build(), ModIds.JEI_ID + "/" + ModIds.JEI_ID + ".toml");
+		JEIClientConfig.register();
 
 		EventBusHelper.addListener(modEventBus, ColorHandlerEvent.Block.class, setupEvent -> {
 			Minecraft minecraft = Minecraft.getInstance();
@@ -56,7 +46,7 @@ public class JustEnoughItems {
 				reloadableResourceManager.addReloadListener(spriteUploader);
 			}
 			EventBusHelper.addLifecycleListener(modEventBus, FMLLoadCompleteEvent.class, loadCompleteEvent ->
-				new ClientLifecycleHandler(networkHandler, textures, clientConfig, ingredientFilterConfig, modIdFormattingConfig, modIdHelper)
+				new ClientLifecycleHandler(networkHandler, textures)
 			);
 		});
 	}
