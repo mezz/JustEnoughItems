@@ -30,7 +30,7 @@ public final class ClientConfig implements IJEIConfig
 	public static final int minRecipeGuiHeight = 175;
 
 	private final ConfigValues values;
-	private List<String> searchColors;
+	private List<String> searchColors = Arrays.asList(ColorGetter.getColorDefaults());
 
 	// Forge config
 	private final ForgeConfigSpec.BooleanValue debugModeEnabled;
@@ -38,7 +38,7 @@ public final class ClientConfig implements IJEIConfig
 	private final ForgeConfigSpec.EnumValue<GiveMode> giveMode;
 	private final ForgeConfigSpec.IntValue maxColumns;
 	private final ForgeConfigSpec.IntValue maxRecipeGuiHeight;
-	private final ForgeConfigSpec.ConfigValue<List<String>> searchColorsCfg;
+	private final ForgeConfigSpec.ConfigValue<List<?>> searchColorsCfg;
 
 
 	public ClientConfig(ForgeConfigSpec.Builder builder) {
@@ -61,7 +61,7 @@ public final class ClientConfig implements IJEIConfig
 
 		builder.push("colors");
 		builder.comment("Color values to search for");
-		searchColorsCfg = builder.define("SearchColors", Arrays.asList(ColorGetter.getColorDefaults()));
+		searchColorsCfg = builder.defineList("SearchColors", Arrays.asList(ColorGetter.getColorDefaults()), obj -> true);
 		builder.pop();
 	}
 
@@ -109,7 +109,7 @@ public final class ClientConfig implements IJEIConfig
 		values.giveMode = giveMode.get();
 		values.maxColumns = maxColumns.get();
 		values.maxRecipeGuiHeight = maxRecipeGuiHeight.get();
-		searchColors = searchColorsCfg.get();
+		searchColors = (List<String>) searchColorsCfg.get();
 
 		syncSearchColorsConfig();
 	}
