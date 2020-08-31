@@ -44,6 +44,7 @@ public class JEIClientConfig
 		if(event.getConfig().getSpec() != config) return;
 
 		clientConfig.reload();
+		filterConfig.reload();
 		modNameFormat.reload();
 	}
 
