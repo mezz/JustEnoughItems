@@ -50,7 +50,7 @@ public final class CategoryRecipeValidator<T extends IRecipe<?>> {
 			String recipeInfo = getInfo(recipe);
 			LOGGER.error("Recipe has too many inputs. {}", recipeInfo);
 			return false;
-		} else if (inputCount == 0) {
+		} else if (inputCount == 0 && maxInputs > 0) {
 			String recipeInfo = getInfo(recipe);
 			LOGGER.error("Recipe has no inputs. {}", recipeInfo);
 			return false;

@@ -1,36 +1,5 @@
 package mezz.jei.plugins.vanilla;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-
-import net.minecraft.client.gui.screen.inventory.AbstractFurnaceScreen;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.gui.DisplayEffectsScreen;
-import net.minecraft.client.gui.screen.inventory.AnvilScreen;
-import net.minecraft.client.gui.screen.inventory.BlastFurnaceScreen;
-import net.minecraft.client.gui.screen.inventory.BrewingStandScreen;
-import net.minecraft.client.gui.screen.inventory.CraftingScreen;
-import net.minecraft.client.gui.screen.inventory.FurnaceScreen;
-import net.minecraft.client.gui.screen.inventory.InventoryScreen;
-import net.minecraft.client.gui.screen.inventory.SmokerScreen;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.inventory.container.BlastFurnaceContainer;
-import net.minecraft.inventory.container.BrewingStandContainer;
-import net.minecraft.inventory.container.FurnaceContainer;
-import net.minecraft.inventory.container.RepairContainer;
-import net.minecraft.inventory.container.SmokerContainer;
-import net.minecraft.inventory.container.WorkbenchContainer;
-import net.minecraft.item.EnchantedBookItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.ResourceLocation;
-
 import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -41,6 +10,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
@@ -57,6 +27,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeMaker;
+import mezz.jei.plugins.vanilla.anvil.SmithingRecipeCategory;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeCategory;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeMaker;
 import mezz.jei.plugins.vanilla.brewing.PotionSubtypeInterpreter;
@@ -80,21 +51,61 @@ import mezz.jei.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
 import mezz.jei.transfer.PlayerRecipeTransferHandler;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.StackHelper;
+import net.minecraft.block.Blocks;
+import net.minecraft.client.gui.DisplayEffectsScreen;
+import net.minecraft.client.gui.screen.inventory.AbstractFurnaceScreen;
+import net.minecraft.client.gui.screen.inventory.AnvilScreen;
+import net.minecraft.client.gui.screen.inventory.BlastFurnaceScreen;
+import net.minecraft.client.gui.screen.inventory.BrewingStandScreen;
+import net.minecraft.client.gui.screen.inventory.CraftingScreen;
+import net.minecraft.client.gui.screen.inventory.FurnaceScreen;
+import net.minecraft.client.gui.screen.inventory.InventoryScreen;
+import net.minecraft.client.gui.screen.inventory.SmithingTableScreen;
+import net.minecraft.client.gui.screen.inventory.SmokerScreen;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.inventory.container.BlastFurnaceContainer;
+import net.minecraft.inventory.container.BrewingStandContainer;
+import net.minecraft.inventory.container.FurnaceContainer;
+import net.minecraft.inventory.container.RepairContainer;
+import net.minecraft.inventory.container.SmithingTableContainer;
+import net.minecraft.inventory.container.SmokerContainer;
+import net.minecraft.inventory.container.WorkbenchContainer;
+import net.minecraft.item.EnchantedBookItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.crafting.BlastingRecipe;
+import net.minecraft.item.crafting.CampfireCookingRecipe;
+import net.minecraft.item.crafting.FurnaceRecipe;
+import net.minecraft.item.crafting.ICraftingRecipe;
+import net.minecraft.item.crafting.SmithingRecipe;
+import net.minecraft.item.crafting.SmokingRecipe;
+import net.minecraft.item.crafting.StonecuttingRecipe;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.ForgeRegistries;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 @JeiPlugin
 public class VanillaPlugin implements IModPlugin {
 	@Nullable
 	private CraftingRecipeCategory craftingCategory;
 	@Nullable
-	private StoneCuttingRecipeCategory stonecuttingCategory;
+	private IRecipeCategory<StonecuttingRecipe> stonecuttingCategory;
 	@Nullable
-	private FurnaceSmeltingCategory furnaceCategory;
+	private IRecipeCategory<FurnaceRecipe> furnaceCategory;
 	@Nullable
-	private SmokingCategory smokingCategory;
+	private IRecipeCategory<SmokingRecipe> smokingCategory;
 	@Nullable
-	private BlastingCategory blastingCategory;
+	private IRecipeCategory<BlastingRecipe> blastingCategory;
 	@Nullable
-	private CampfireCategory campfireCategory;
+	private IRecipeCategory<CampfireCookingRecipe> campfireCategory;
+	@Nullable
+	private IRecipeCategory<SmithingRecipe> smithingCategory;
 
 	@Override
 	public ResourceLocation getPluginUid() {
@@ -146,19 +157,14 @@ public class VanillaPlugin implements IModPlugin {
 		Textures textures = Internal.getTextures();
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
-		craftingCategory = new CraftingRecipeCategory(guiHelper);
-		stonecuttingCategory = new StoneCuttingRecipeCategory(guiHelper);
-		furnaceCategory = new FurnaceSmeltingCategory(guiHelper);
-		smokingCategory = new SmokingCategory(guiHelper);
-		blastingCategory = new BlastingCategory(guiHelper);
-		campfireCategory = new CampfireCategory(guiHelper);
 		registration.addRecipeCategories(
-			craftingCategory,
-			stonecuttingCategory,
-			furnaceCategory,
-			smokingCategory,
-			blastingCategory,
-			campfireCategory,
+			craftingCategory = new CraftingRecipeCategory(guiHelper),
+			stonecuttingCategory = new StoneCuttingRecipeCategory(guiHelper),
+			furnaceCategory = new FurnaceSmeltingCategory(guiHelper),
+			smokingCategory = new SmokingCategory(guiHelper),
+			blastingCategory = new BlastingCategory(guiHelper),
+			campfireCategory = new CampfireCategory(guiHelper),
+			smithingCategory = new SmithingRecipeCategory(guiHelper),
 			new FurnaceFuelCategory(guiHelper, textures),
 			new BrewingRecipeCategory(guiHelper),
 			new AnvilRecipeCategory(guiHelper)
@@ -179,6 +185,7 @@ public class VanillaPlugin implements IModPlugin {
 		ErrorUtil.checkNotNull(smokingCategory, "smokingCategory");
 		ErrorUtil.checkNotNull(blastingCategory, "blastingCategory");
 		ErrorUtil.checkNotNull(campfireCategory, "campfireCategory");
+		ErrorUtil.checkNotNull(smithingCategory, "smithingCategory");
 
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IIngredientManager ingredientManager = registration.getIngredientManager();
@@ -194,6 +201,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipes(BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory), VanillaRecipeCategoryUid.BREWING);
 		registration.addRecipes(TippedArrowRecipeMaker.createTippedArrowRecipes(), VanillaRecipeCategoryUid.CRAFTING);
 		registration.addRecipes(AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientManager), VanillaRecipeCategoryUid.ANVIL);
+		registration.addRecipes(vanillaRecipes.getSmithingRecipes(smithingCategory), VanillaRecipeCategoryUid.SMITHING);
 	}
 
 	@Override
@@ -205,6 +213,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipeClickArea(SmokerScreen.class, 78, 32, 28, 23, VanillaRecipeCategoryUid.SMOKING, VanillaRecipeCategoryUid.FUEL);
 		registration.addRecipeClickArea(BlastFurnaceScreen.class, 78, 32, 28, 23, VanillaRecipeCategoryUid.BLASTING, VanillaRecipeCategoryUid.FUEL);
 		registration.addRecipeClickArea(AnvilScreen.class, 102, 48, 22, 15, VanillaRecipeCategoryUid.ANVIL);
+		registration.addRecipeClickArea(SmithingTableScreen.class, 102, 48, 22, 15, VanillaRecipeCategoryUid.SMITHING);
 
 		registration.addGenericGuiContainerHandler(DisplayEffectsScreen.class, new InventoryEffectRendererGuiHandler<>());
 		registration.addGuiContainerHandler(CraftingScreen.class, new RecipeBookGuiHandler<>());
@@ -227,6 +236,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipeTransferHandler(BlastFurnaceContainer.class, VanillaRecipeCategoryUid.FUEL, 1, 1, 3, 36);
 		registration.addRecipeTransferHandler(BrewingStandContainer.class, VanillaRecipeCategoryUid.BREWING, 0, 4, 5, 36);
 		registration.addRecipeTransferHandler(RepairContainer.class, VanillaRecipeCategoryUid.ANVIL, 0, 2, 3, 36);
+		registration.addRecipeTransferHandler(SmithingTableContainer.class, VanillaRecipeCategoryUid.SMITHING, 0, 2, 3, 36);
 	}
 
 	@Override
@@ -239,6 +249,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipeCatalyst(new ItemStack(Blocks.CAMPFIRE), VanillaRecipeCategoryUid.CAMPFIRE);
 		registration.addRecipeCatalyst(new ItemStack(Blocks.BREWING_STAND), VanillaRecipeCategoryUid.BREWING);
 		registration.addRecipeCatalyst(new ItemStack(Blocks.ANVIL), VanillaRecipeCategoryUid.ANVIL);
+		registration.addRecipeCatalyst(new ItemStack(Blocks.SMITHING_TABLE), VanillaRecipeCategoryUid.SMITHING);
 	}
 
 	@Nullable

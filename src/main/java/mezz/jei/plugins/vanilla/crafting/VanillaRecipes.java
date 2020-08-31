@@ -15,6 +15,7 @@ import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.RecipeManager;
+import net.minecraft.item.crafting.SmithingRecipe;
 import net.minecraft.item.crafting.SmokingRecipe;
 import net.minecraft.item.crafting.StonecuttingRecipe;
 
@@ -57,8 +58,13 @@ public final class VanillaRecipes {
 	}
 
 	public List<CampfireCookingRecipe> getCampfireCookingRecipes(IRecipeCategory<CampfireCookingRecipe> campfireCategory) {
-		CategoryRecipeValidator<CampfireCookingRecipe> campfireRecipesValidator = new CategoryRecipeValidator<>(campfireCategory, 1);
-		return getValidRecipes(recipeManager, IRecipeType.CAMPFIRE_COOKING, campfireRecipesValidator);
+		CategoryRecipeValidator<CampfireCookingRecipe> validator = new CategoryRecipeValidator<>(campfireCategory, 1);
+		return getValidRecipes(recipeManager, IRecipeType.CAMPFIRE_COOKING, validator);
+	}
+
+	public List<SmithingRecipe> getSmithingRecipes(IRecipeCategory<SmithingRecipe> smithingCategory) {
+		CategoryRecipeValidator<SmithingRecipe> validator = new CategoryRecipeValidator<>(smithingCategory, 0);
+		return getValidRecipes(recipeManager, IRecipeType.SMITHING, validator);
 	}
 
 	@SuppressWarnings("unchecked")
