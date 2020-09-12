@@ -22,6 +22,7 @@ import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.util.ErrorUtil;
+import net.minecraftforge.client.model.ItemMultiLayerBakedModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
@@ -111,7 +112,7 @@ public class IngredientListBatchRenderer {
 			if (!bakedModel.isBuiltInRenderer() && !(itemStack.getItem() instanceof ISlowRenderItem)) {
 				ItemStackFastRenderer renderer = new ItemStackFastRenderer(itemStackElement);
 				ingredientListSlot.setIngredientRenderer(renderer);
-				if (bakedModel.isGui3d()) {
+				if (bakedModel.isGui3d() && !(bakedModel instanceof ItemMultiLayerBakedModel)) {
 					renderItems3d.add(renderer);
 				} else {
 					renderItems2d.add(renderer);
