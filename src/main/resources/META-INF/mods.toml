@@ -37,7 +37,7 @@ authors="mezz" #optional
 modId="jei" #mandatory
 
 # The version number of the mod
-version="${file.jarVersion}" #mandatory
+version="${version}" #mandatory
 
 # A display name for the mod
 displayName="Just Enough Items" #mandatory
@@ -51,7 +51,16 @@ JEI is an item and recipe viewing mod for Minecraft, built from the ground up fo
 [[dependencies.jei]]
     modId="forge" #mandatory
     mandatory=true #mandatory
-    versionRange="[33.0.0,)" #mandatory
+    versionRange="[${forgeversion_min},${forgeversion_max})" #mandatory
+    # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
+    ordering="NONE"
+    # Side this dependency is applied on - BOTH, CLIENT or SERVER
+    side="BOTH"
+
+[[dependencies.jei]]
+    modId="minecraft" #mandatory
+    mandatory=true #mandatory
+    versionRange="[${mcversion_min},${mcversion_max})" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER

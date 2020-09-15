@@ -66,6 +66,18 @@ dependencies {
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
 }
 
+processResources {
+	from(sourceSets.main.resources.srcDirs) {
+		include 'META-INF/mods.toml'
+
+		expand 'version': version, 'forgeversion_min': forgeversion_min, 'forgeversion_max': forgeversion_max, 'mcversion_min': mcversion_min, 'mcversion_max': mcversion_max
+	}
+
+	from(sourceSets.main.resources.srcDirs) {
+		exclude 'META-INF/mods.toml'
+	}
+}
+
 minecraft {
 	mappings channel: "snapshot", version: project.mcp_mappings
 
