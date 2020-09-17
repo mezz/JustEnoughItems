@@ -69,44 +69,6 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Conta
 			craftingSlots.put(slot.slotNumber, slot);
 		}
 
-		IGuiItemStackGroup itemStackGroup = recipeLayout.getItemStacks();
-		int inputCount = 0;
-		{
-			// indexes that do not fit into the player crafting grid
-			Set<Integer> badIndexes = ImmutableSet.of(2, 5, 6, 7, 8);
-
-			int inputIndex = 0;
-			for (IGuiIngredient<ItemStack> ingredient : itemStackGroup.getGuiIngredients().values()) {
-				if (ingredient.isInput()) {
-					if (!ingredient.getAllIngredients().isEmpty()) {
-						inputCount++;
-						if (badIndexes.contains(inputIndex)) {
-							String tooltipMessage = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.too.large.player.inventory");
-							return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
-						}
-					}
-					inputIndex++;
-				}
-			}
-		}
-
-		// compact the crafting grid into a 2x2 area
-		List<IGuiIngredient<ItemStack>> guiIngredients = new ArrayList<>();
-		for (IGuiIngredient<ItemStack> guiIngredient : itemStackGroup.getGuiIngredients().values()) {
-			if (guiIngredient.isInput()) {
-				guiIngredients.add(guiIngredient);
-			}
-		}
-		IGuiItemStackGroup playerInvItemStackGroup = new GuiItemStackGroup(null, 0);
-		int[] playerGridIndexes = {0, 1, 3, 4};
-		for (int i = 0; i < 4; i++) {
-			int index = playerGridIndexes[i];
-			if (index < guiIngredients.size()) {
-				IGuiIngredient<ItemStack> ingredient = guiIngredients.get(index);
-				playerInvItemStackGroup.init(i, true, 0, 0);
-				playerInvItemStackGroup.set(i, ingredient.getAllIngredients());
-			}
-		}
 
 		Map<Integer, ItemStack> availableItemStacks = new HashMap<>();
 		int filledCraftSlotCount = 0;
@@ -133,18 +95,40 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Conta
 			}
 		}
 
+		IGuiItemStackGroup neededItems = recipeLayout.getItemStacks();
+		StackHelper.MatchingItemsResult matchingItemsResult = stackHelper.getMatchingItems(availableItemStacks, neededItems.getGuiIngredients());
+
+		if (matchingItemsResult.missingItems.size() > 0) {
+			String message = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.missing");
+			return handlerHelper.createUserErrorForSlots(message, matchingItemsResult.missingItems);
+		}
+
+		// check if fits inot 2x2 crafting grid
+		IGuiItemStackGroup itemStackGroup = recipeLayout.getItemStacks();
+		int inputCount = 0;
+		{
+			// indexes that do not fit into the player crafting grid
+			Set<Integer> badIndexes = ImmutableSet.of(2, 5, 6, 7, 8);
+
+			int inputIndex = 0;
+			for (IGuiIngredient<ItemStack> ingredient : itemStackGroup.getGuiIngredients().values()) {
+				if (ingredient.isInput()) {
+					if (!ingredient.getAllIngredients().isEmpty()) {
+						inputCount++;
+						if (badIndexes.contains(inputIndex)) {
+							String tooltipMessage = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.too.large.player.inventory");
+							return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
+						}
+					}
+					inputIndex++;
+				}
+			}
+		}
+
 		// check if we have enough inventory space to shuffle items around to their final locations
 		if (filledCraftSlotCount - inputCount > emptySlotCount) {
 			String message = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.inventory.full");
 			return handlerHelper.createUserErrorWithTooltip(message);
-		}
-
-		StackHelper.MatchingItemsResult matchingItemsResult = stackHelper.getMatchingItems(availableItemStacks, playerInvItemStackGroup.getGuiIngredients());
-
-		if (matchingItemsResult.missingItems.size() > 0) {
-			String message = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.missing");
-			matchingItemsResult = stackHelper.getMatchingItems(availableItemStacks, itemStackGroup.getGuiIngredients());
-			return handlerHelper.createUserErrorForSlots(message, matchingItemsResult.missingItems);
 		}
 
 		List<Integer> craftingSlotIndexes = new ArrayList<>(craftingSlots.keySet());
