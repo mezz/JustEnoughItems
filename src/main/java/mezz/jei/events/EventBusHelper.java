@@ -31,6 +31,10 @@ public class EventBusHelper {
 		eventBus.addListener(EventPriority.NORMAL, false, eventType, listener);
 	}
 
+	public static <T extends ModLifecycleEvent> void addLifecycleListener(IEventBus eventBus, EventPriority priority, Class<T> eventType, Consumer<T> listener) {
+		eventBus.addListener(priority, false, eventType, listener);
+	}
+
 	public static void register(Object object) {
 		IEventBus eventBus = getInstance();
 		eventBus.register(object);
