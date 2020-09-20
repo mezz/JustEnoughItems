@@ -13,7 +13,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.vote.GoVoteIngredient;
 import mezz.jei.vote.GoVotePlugin;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.JsonToNBT;
@@ -62,8 +61,7 @@ public class BookmarkConfig {
 		if (!file.exists()) {
 			// add a "vote" ingredient if this is the very first time bookmarks are being loaded
 			// and if the ingredient is active
-			Minecraft minecraft = Minecraft.getInstance();
-			GoVoteIngredient goVoteIngredient = GoVotePlugin.getVoteIngredient(minecraft);
+			GoVoteIngredient goVoteIngredient = GoVotePlugin.getVoteIngredient();
 			if (goVoteIngredient != null) {
 				bookmarkList.add(goVoteIngredient);
 			}

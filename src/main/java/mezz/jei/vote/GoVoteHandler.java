@@ -7,8 +7,6 @@ import net.minecraft.client.gui.screen.ConfirmOpenLinkScreen;
 import net.minecraft.client.gui.screen.MultiplayerScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.WorldSelectionScreen;
-import net.minecraft.client.resources.Language;
-import net.minecraft.client.resources.LanguageManager;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -22,7 +20,6 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -90,8 +87,8 @@ public class GoVoteHandler {
 		return LocalDate.now().isAfter(ELECTION_DAY);
 	}
 
-	public static boolean isProbablyUsaLocale(Minecraft minecraft) {
-		Locale locale = getLocale(minecraft);
+	public static boolean isProbablyUsaLocale() {
+		Locale locale = Locale.getDefault();
 		if (locale == null) {
 			return false;
 		}
@@ -107,30 +104,15 @@ public class GoVoteHandler {
 
 	@SubscribeEvent
 	public static void clientTick(GuiOpenEvent event) {
-		Minecraft minecraft = Minecraft.getInstance();
 		Screen curr = event.getGui();
-		if ((curr instanceof WorldSelectionScreen || curr instanceof MultiplayerScreen) && shouldShow(minecraft)) {
+		if ((curr instanceof WorldSelectionScreen || curr instanceof MultiplayerScreen) && shouldShow()) {
 			event.setGui(new GoVoteScreen(curr));
 			shownThisSession = true;
 		}
 	}
 
-	private static boolean shouldShow(Minecraft minecraft) {
-		return !shownThisSession && !isAfterElectionDay() && !markerAlreadyExists && isProbablyUsaLocale(minecraft);
-	}
-
-	@SuppressWarnings("ConstantConditions")
-	@Nullable
-	private static Locale getLocale(Minecraft minecraft) {
-		LanguageManager languageManager = minecraft.getLanguageManager();
-		if (languageManager == null) {
-			return null;
-		}
-		Language currentLanguage = languageManager.getCurrentLanguage();
-		if (currentLanguage == null) {
-			return null;
-		}
-		return currentLanguage.getJavaLocale();
+	private static boolean shouldShow() {
+		return !shownThisSession && !isAfterElectionDay() && !markerAlreadyExists && isProbablyUsaLocale();
 	}
 
 	public static void displayOpenLinkScreen(String url, Minecraft minecraft, Screen currentScreen) {
