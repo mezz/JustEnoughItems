@@ -1,6 +1,8 @@
 package mezz.jei;
 
+import mezz.jei.config.JEIClientConfig;
 import mezz.jei.vote.GoVoteHandler;
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -33,6 +35,10 @@ public class JustEnoughItems {
 	}
 
 	private static void clientStart(IEventBus modEventBus, NetworkHandler networkHandler) {
+		ForgeConfigSpec.Builder configBuilder = new ForgeConfigSpec.Builder();
+
+		JEIClientConfig.register();
+
 		EventBusHelper.addListener(modEventBus, ColorHandlerEvent.Block.class, setupEvent -> {
 			Minecraft minecraft = Minecraft.getInstance();
 			JeiSpriteUploader spriteUploader = new JeiSpriteUploader(minecraft.textureManager);

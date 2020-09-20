@@ -43,6 +43,7 @@
   "key.jei.nextPage": "Show Next Page",
 
   "_comment": "Config",
+  "config.jei": "Ρυθμίσεις JEI",
   "config.jei.default": "Αρχικό",
   "config.jei.valid": "Έγκυρο",
   "config.jei.title": "Ρυθμίσεις %MODNAME",
@@ -70,6 +71,7 @@
   "config.jei.search.colorSearchMode.comment": "Απαίτηση \"^\" μπροστά από μια λέξη για αναζήτηση από χρώματα αντικειμένων.",
   "config.jei.search.resourceIdSearchMode": "&ResourceId",
   "config.jei.search.resourceIdSearchMode.comment": "Search mode for resources ids (prefix: &)",
+  "config.jei.search.searchAdvancedTooltips": "Search advanced tooltips",
   "config.jei.advanced": "Προχωρημένα",
   "config.jei.advanced.comment": "Προχωρημένες ρυθμίσεις για να αλλάξεις τον τρόπο που λειτουργεί το JEI.",
   "config.jei.advanced.itemBlacklist": "Μαύρη Λίστα Αντικειμένων",
@@ -108,6 +110,9 @@
   "gui.jei.category.brewing": "Ζύμωση",
   "gui.jei.category.brewing.steps": "Βήματα: %s",
   "gui.jei.category.itemInformation": "Περιγραφή",
+
+  "_comment": "Messages",
+  "jei.message.ftbguilib": "Install FTB GUI Library to access ingame config",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",

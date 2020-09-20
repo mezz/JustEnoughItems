@@ -50,6 +50,7 @@
   "key.jei.toggleBookmarkOverlay": "Показать/Спрятать предметы из закладок",
 
   "_comment": "Config",
+  "config.jei": "Конфигурация JEI",
   "config.jei.default": "По-умолчанию",
   "config.jei.valid": "Доступны",
   "config.jei.title": "Конфигурация %MODNAME",
@@ -79,6 +80,7 @@
   "config.jei.search.colorSearchMode.comment": "Режим поиска по цвету предмета (префикс: ^)",
   "config.jei.search.resourceIdSearchMode": "&Идентификатор",
   "config.jei.search.resourceIdSearchMode.comment": "Режим поиска по идентификатору (префикс: &)",
+  "config.jei.search.searchAdvancedTooltips": "Search advanced tooltips",
   "config.jei.advanced": "Продвинутые",
   "config.jei.advanced.comment": "Продвинутые настройки функций JEI.",
   "config.jei.advanced.itemBlacklist": "Чёрный список предметов",
@@ -122,6 +124,9 @@
   "gui.jei.category.brewing": "Варка",
   "gui.jei.category.brewing.steps": "Шаги: %s",
   "gui.jei.category.itemInformation": "Описание",
+
+  "_comment": "Messages",
+  "jei.message.ftbguilib": "Install FTB GUI Library to access ingame config",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",

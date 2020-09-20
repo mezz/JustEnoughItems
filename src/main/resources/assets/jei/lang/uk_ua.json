@@ -43,6 +43,7 @@
   "key.jei.nextPage": "Показати наступну сторінку",
 
   "_comment": "Config",
+  "config.jei": "Конфігурація JEI",
   "config.jei.default": "По замовчуванню",
   "config.jei.valid": "Дійсний",
   "config.jei.title": "Конфігурація %MODNAME",
@@ -70,6 +71,7 @@
   "config.jei.search.colorSearchMode.comment": "Режим пошуку по кольору предмета (префікс: ^)",
   "config.jei.search.resourceIdSearchMode": "&Ідентифікатор",
   "config.jei.search.resourceIdSearchMode.comment": "Режим пошуку по ідентифікатору (префікс: &)",
+  "config.jei.search.searchAdvancedTooltips": "Search advanced tooltips",
   "config.jei.advanced": "Додаткові",
   "config.jei.advanced.comment": "Додаткові налаштування функцій JEI.",
   "config.jei.advanced.itemBlacklist": "Чорний список для предметів",
@@ -110,6 +112,9 @@
   "gui.jei.category.brewing": "Зіллє-варіння",
   "gui.jei.category.brewing.steps": "Кроки: %s",
   "gui.jei.category.itemInformation": "Опис",
+
+  "_comment": "Messages",
+  "jei.message.ftbguilib": "Install FTB GUI Library to access ingame config",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",

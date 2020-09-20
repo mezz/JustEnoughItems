@@ -50,6 +50,7 @@
   "key.jei.toggleBookmarkOverlay": "Exibir/ocultar ingredientes favoritos",
 
   "_comment": "Config",
+  "config.jei": "Configurações do JEI",
   "config.jei.default": "Padrão",
   "config.jei.valid": "Válida",
   "config.jei.title": "Config. do %MODNAME",
@@ -79,6 +80,7 @@
   "config.jei.search.colorSearchMode.comment": "Modo de busca para Colors (prefixo: ^)",
   "config.jei.search.resourceIdSearchMode": "&ResourceId",
   "config.jei.search.resourceIdSearchMode.comment": "Modo de busca para IDs de recursos (prefixo: &)",
+  "config.jei.search.searchAdvancedTooltips": "Search advanced tooltips",
   "config.jei.advanced": "Avançado",
   "config.jei.advanced.comment": "Configurações avançadas do JEI.",
   "config.jei.advanced.itemBlacklist": "Lista negra de ingredientes",
@@ -124,6 +126,9 @@
   "gui.jei.category.brewing": "Poções",
   "gui.jei.category.brewing.steps": "Passos: %s",
   "gui.jei.category.itemInformation": "Informações",
+
+  "_comment": "Messages",
+  "jei.message.ftbguilib": "Install FTB GUI Library to access ingame config",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",

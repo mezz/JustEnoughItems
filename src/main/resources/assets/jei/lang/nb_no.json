@@ -43,6 +43,7 @@
   "key.jei.nextPage": "Show Next Page",
 
   "_comment": "Config",
+  "config.jei": "Innstillinger",
   "config.jei.default": "Standard",
   "config.jei.valid": "Gyldig",
   "config.jei.title": "%MODNAME Innstillinger",
@@ -70,6 +71,7 @@
   "config.jei.search.colorSearchMode.comment": "Krev \"^\" foran et ord for å søke på artikkel med farger. Eksempel: \"^blå\" viser artikler som er blå.",
   "config.jei.search.resourceIdSearchMode": "&ResourceId",
   "config.jei.search.resourceIdSearchMode.comment": "Search mode for resources ids (prefix: &)",
+  "config.jei.search.searchAdvancedTooltips": "Search advanced tooltips",
   "config.jei.advanced": "Avansert",
   "config.jei.advanced.comment": "Avanserte innstillinger for å endre måten JEI fungerer på.",
   "config.jei.advanced.itemBlacklist": "Svartliste for Artikler",
@@ -108,6 +110,9 @@
   "gui.jei.category.brewing": "Brygging",
   "gui.jei.category.brewing.steps": "Steg: %s",
   "gui.jei.category.itemInformation": "Beskrivelse",
+
+  "_comment": "Messages",
+  "jei.message.ftbguilib": "Install FTB GUI Library to access ingame config",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",

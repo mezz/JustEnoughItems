@@ -42,7 +42,8 @@
   "key.jei.previousPage": "Mostra la pagina precedente",
   "key.jei.nextPage": "Mostra la pagina successiva",
 
-  "_comment": "Config",
+  "_comment": "Configurazione di JEI",
+  "config.jei": "JEI Config",
   "config.jei.default": "Default",
   "config.jei.valid": "Valid",
   "config.jei.title": "%MODNAME Config",
@@ -70,6 +71,7 @@
   "config.jei.search.colorSearchMode.comment": "Richiedi \"^\" prima di un colore per cercare gli item di quel colore.",
   "config.jei.search.resourceIdSearchMode": "&ResourceId",
   "config.jei.search.resourceIdSearchMode.comment": "Search mode for resources ids (prefix: &)",
+  "config.jei.search.searchAdvancedTooltips": "Search advanced tooltips",
   "config.jei.advanced": "Avanzate",
   "config.jei.advanced.comment": "Opzioni avanzate per configurare come funziona JEI.",
   "config.jei.advanced.itemBlacklist": "Lista nera di item",
@@ -108,6 +110,9 @@
   "gui.jei.category.brewing": "Alchimia",
   "gui.jei.category.brewing.steps": "Passi: %s",
   "gui.jei.category.itemInformation": "Descrizione",
+
+  "_comment": "Messages",
+  "jei.message.ftbguilib": "Install FTB GUI Library to access ingame config",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",

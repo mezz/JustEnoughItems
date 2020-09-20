@@ -50,6 +50,7 @@
   "key.jei.toggleBookmarkOverlay": "ブックマーク欄の表示/非表示",
 
   "_comment": "Config",
+  "config.jei": "JEIの設定",
   "config.jei.default": "デフォルト",
   "config.jei.valid": "有効",
   "config.jei.title": "%MODNAMEの設定",
@@ -79,6 +80,7 @@
   "config.jei.search.colorSearchMode.comment": "色検索 (プレフィックス：^)",
   "config.jei.search.resourceIdSearchMode": "&リソースID",
   "config.jei.search.resourceIdSearchMode.comment": "リソースID検索 (プレフィックス：&)",
+  "config.jei.search.searchAdvancedTooltips": "Search advanced tooltips",
   "config.jei.advanced": "高度な設定",
   "config.jei.advanced.comment": "JEIの機能を変更する高度な設定。",
   "config.jei.advanced.itemBlacklist": "アイテムのブラックリスト",
@@ -123,6 +125,9 @@
   "gui.jei.category.brewing": "醸造",
   "gui.jei.category.brewing.steps": "第%s段階",
   "gui.jei.category.itemInformation": "説明",
+
+  "_comment": "Messages",
+  "jei.message.ftbguilib": "Install FTB GUI Library to access ingame config",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",

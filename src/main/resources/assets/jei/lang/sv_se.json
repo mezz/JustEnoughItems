@@ -49,6 +49,7 @@
   "key.jei.toggleBookmarkOverlay": "Visa/dölj bokmärkta ingredienser",
 
   "_comment": "Config",
+  "config.jei": "Konfiguration för JEI",
   "config.jei.default": "Standard",
   "config.jei.valid": "Giltiga",
   "config.jei.title": "Konfiguration för %MODNAME",
@@ -78,6 +79,7 @@
   "config.jei.search.colorSearchMode.comment": "Sökläge för färger (prefix: ^)",
   "config.jei.search.resourceIdSearchMode": "&Resurs-ID",
   "config.jei.search.resourceIdSearchMode.comment": "Sökläge för resursernas ID (prefix: &)",
+  "config.jei.search.searchAdvancedTooltips": "Search advanced tooltips",
   "config.jei.advanced": "Avancerat",
   "config.jei.advanced.comment": "Avancerade konfigurationsalternativ för att ändra hur JEI fungerar.",
   "config.jei.advanced.itemBlacklist": "Svartlista för ingredienser",
@@ -118,6 +120,9 @@
   "gui.jei.category.brewing": "Bryggning",
   "gui.jei.category.brewing.steps": "Steg: %s",
   "gui.jei.category.itemInformation": "Information",
+
+  "_comment": "Messages",
+  "jei.message.ftbguilib": "Install FTB GUI Library to access ingame config",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",

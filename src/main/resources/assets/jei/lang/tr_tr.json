@@ -43,6 +43,7 @@
   "key.jei.nextPage": "Sonraki Sayfayı Göster",
 
   "_comment": "Config",
+  "config.jei": "JEI Seçenekleri",
   "config.jei.default": "Varsayılan",
   "config.jei.valid": "Geçerli",
   "config.jei.title": "%MODNAME Seçenekleri",
@@ -70,6 +71,7 @@
   "config.jei.search.colorSearchMode.comment": "Eşya renkleri için arama modu. (öneği: ^)",
   "config.jei.search.resourceIdSearchMode": "&ResourceId",
   "config.jei.search.resourceIdSearchMode.comment": "Kaynak ID'leri için arama modu. (öneği: &)",
+  "config.jei.search.searchAdvancedTooltips": "Search advanced tooltips",
   "config.jei.advanced": "Gelişmiş",
   "config.jei.advanced.comment": "JEI fonksiyonlarını değiştirmek için gelişmiş seçenekler.",
   "config.jei.advanced.itemBlacklist": "Eşya Karalistesi",
@@ -108,6 +110,9 @@
   "gui.jei.category.brewing": "İksir Tezgahı",
   "gui.jei.category.brewing.steps": "Adım: %s",
   "gui.jei.category.itemInformation": "Bilgi",
+
+  "_comment": "Messages",
+  "jei.message.ftbguilib": "Install FTB GUI Library to access ingame config",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",

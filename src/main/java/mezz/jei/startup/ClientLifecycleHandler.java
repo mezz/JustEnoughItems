@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 import java.util.function.Predicate;
 
+import mezz.jei.config.*;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
@@ -21,14 +22,6 @@ import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.config.BookmarkConfig;
-import mezz.jei.config.ClientConfig;
-import mezz.jei.config.EditModeConfig;
-import mezz.jei.config.IEditModeConfig;
-import mezz.jei.config.IngredientFilterConfig;
-import mezz.jei.config.KeyBindings;
-import mezz.jei.config.ModIdFormattingConfig;
-import mezz.jei.config.WorldConfig;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.events.PlayerJoinedWorldEvent;
 import mezz.jei.gui.overlay.IngredientListOverlay;
@@ -63,37 +56,22 @@ public class ClientLifecycleHandler {
 				throw new RuntimeException("Could not create config directory " + jeiConfigurationDir, e);
 			}
 		}
-		clientConfig = new ClientConfig(jeiConfigurationDir);
+
+		this.clientConfig = JEIClientConfig.clientConfig;
+		this.ingredientFilterConfig = JEIClientConfig.filterConfig;
+		this.modIdFormattingConfig = JEIClientConfig.modNameFormat;
+		this.modIdHelper = new ForgeModIdHelper(clientConfig, modIdFormattingConfig);
+
+		// Additional config files
 		bookmarkConfig = new BookmarkConfig(jeiConfigurationDir);
 		worldConfig = new WorldConfig(jeiConfigurationDir);
-		ingredientFilterConfig = new IngredientFilterConfig(clientConfig.getConfig());
-		modIdFormattingConfig = new ModIdFormattingConfig(clientConfig.getConfig());
-		modIdHelper = new ForgeModIdHelper(clientConfig, modIdFormattingConfig);
+		editModeConfig = new EditModeConfig(jeiConfigurationDir);
+
 		ErrorUtil.setModIdHelper(modIdHelper);
 		ErrorUtil.setWorldConfig(worldConfig);
-		editModeConfig = new EditModeConfig(jeiConfigurationDir);
 
 		KeyBindings.init();
 
-		clientConfig.onPreInit();
-		EventBusHelper.addListener(ModConfig.Reloading.class, event -> {
-			modIdFormattingConfig.checkForModNameFormatOverride();
-			if (ModIds.JEI_ID.equals(event.getConfig().getModId())) {
-				if (clientConfig.syncAllConfig()) {
-					// todo
-				}
-				if (ingredientFilterConfig.syncConfig()) {
-					JeiRuntime runtime = Internal.getRuntime();
-					if (runtime != null) {
-						IngredientListOverlay ingredientListOverlay = runtime.getIngredientListOverlay();
-						ingredientListOverlay.rebuildIngredientFilter();
-					}
-				}
-				if (worldConfig.syncConfig()) {
-					// todo
-				}
-			}
-		});
 		EventBusHelper.addListener(WorldEvent.Save.class, event -> worldConfig.onWorldSave());
 		EventBusHelper.addListener(RecipesUpdatedEvent.class, event -> {
 			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
