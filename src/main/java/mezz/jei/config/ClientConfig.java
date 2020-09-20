@@ -75,10 +75,6 @@ public final class ClientConfig implements IJEIConfig
 	public void buildSettingsGUI(ConfigGroup group) {
 		ConfigValues defaultVals = new ConfigValues();
 
-		group.addBool(cfgTranslation("debugModeEnabled"), values.debugModeEnabled, v -> {
-			debugModeEnabled.set(v);
-			values.debugModeEnabled = v;
-		}, defaultVals.debugModeEnabled);
 		group.addBool(cfgTranslation("centerSearchBarEnabled"), values.centerSearchBarEnabled, v -> {
 			centerSearchBarEnabled.set(v);
 			values.centerSearchBarEnabled = v;
