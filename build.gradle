@@ -69,6 +69,18 @@ dependencies {
 	compile fg.deobf('com.feed_the_beast.mods:ftb-gui-library:1.0.0.18')
 }
 
+processResources {
+	from(sourceSets.main.resources.srcDirs) {
+		include 'META-INF/mods.toml'
+
+		expand 'version': version, 'forgeversion_min': forgeversion_min, 'forgeversion_max': forgeversion_max, 'mcversion_min': mcversion_min, 'mcversion_max': mcversion_max
+	}
+
+	from(sourceSets.main.resources.srcDirs) {
+		exclude 'META-INF/mods.toml'
+	}
+}
+
 minecraft {
 	mappings channel: "snapshot", version: project.mcp_mappings
 
