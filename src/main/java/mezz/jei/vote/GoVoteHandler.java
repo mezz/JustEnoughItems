@@ -93,14 +93,18 @@ public class GoVoteHandler {
 
 		new Thread(() -> {
 			try {
-				URL url = new URL("http://ip-api.com/json/");
+				URL url = new URL("http://ip-api.com/json/?fields=status,message,countryCode");
 				URLConnection conn = url.openConnection();
 				conn.setConnectTimeout(4000);
 				conn.setReadTimeout(4000);
 				try (InputStreamReader reader = new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8)) {
 					Type typeToken = new TypeToken<Map<String, String>>() {}.getType();
 					Map<String, String> map = new Gson().fromJson(reader, typeToken);
-					countryCode = map.get("countryCode");
+					if ("success".equals(map.get("status"))) {
+						countryCode = map.get("countryCode");
+					} else {
+						LOGGER.warn("Failed to get geo-ip country code: {}", map.toString());
+					}
 				}
 			} catch (IOException | RuntimeException e) {
 				LOGGER.warn("IO exception when trying to get geo-ip country code", e);
