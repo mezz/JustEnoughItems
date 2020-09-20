@@ -1,5 +1,7 @@
 package mezz.jei.vote;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import mezz.jei.api.constants.ModIds;
 import net.minecraft.client.Minecraft;
@@ -21,6 +23,11 @@ import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,11 +39,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * This class is derived from Botania and released for public use via the Waive Clause of the Botania License.<br />
- * You are encouraged to copy and use it. Keep the marker file path the same so multiple mods don't show the screen
- * at once.<br />
+ * You are encouraged to copy, read, understand, and use it. You should always understand anything you copy.<br />
+ * Keep the marker file path the same so multiple mods don't show the screen at once.<br />
  * If you are uncomfortable with the network access to ip-api, feel free to remove it. The fallback is to examine the
  * computer's current locale.<br />
  * <br />
@@ -48,22 +56,14 @@ import java.util.Locale;
 @EventBusSubscriber(modid = ModIds.JEI_ID, value = Dist.CLIENT)
 public class GoVoteHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final String BRAND = "mezz's mods";
+	private static final String BRAND = "mezz";
 	private static final String MARKER_PATH = ".vote2020_marker";
 	private static final LocalDate ELECTION_DAY = LocalDate.of(2020, Month.NOVEMBER, 3);
 	public static final String VOTE_ORG_LINK = "https://vote.org/";
 	private static final int HEADER_COLOR = 0xFFD0163E; // matches vote.org header
 	private static final int BG_COLOR = 0xFF205493; // matches vote.org body
 	private static boolean shownThisSession = false;
-	private static final List<String> commonUsaLanguages = Arrays.asList(
-		Locale.ENGLISH.getLanguage(),
-		"es",
-		Locale.SIMPLIFIED_CHINESE.getLanguage(),
-		"tl",
-		"vi",
-		Locale.FRENCH.getLanguage()
-	);
-
+	private static volatile String countryCode = Locale.getDefault().getCountry();
 	private static boolean markerAlreadyExists = false;
 
 	public static void init() {
@@ -73,37 +73,52 @@ public class GoVoteHandler {
 
 		try {
 			Path path = Paths.get(MARKER_PATH);
+			/* NB: This is atomic. Meaning that if the file does not exist,
+			 * And multiple mods run this call concurrently, only one will succeed,
+			 * the rest will receive FileAlreadyExistsException
+			 */
 			Files.createFile(path);
-			Files.setAttribute(path, "dos:hidden", true);
+			// Set it to hidden on windows to avoid clutter
+			if (Util.getOSType() == Util.OS.WINDOWS) {
+				Files.setAttribute(path, "dos:hidden", true);
+			}
 		} catch (FileAlreadyExistsException ex) {
 			LOGGER.debug("Go vote handler: Marker already exists");
 			markerAlreadyExists = true;
 		} catch (IOException e) {
 			LOGGER.warn("IO exception when trying to create marker", e);
+			// default to assuming the marker exists, to avoid showing multiple screens
+			markerAlreadyExists = true;
 		}
+
+		new Thread(() -> {
+			try {
+				URL url = new URL("http://ip-api.com/json/");
+				URLConnection conn = url.openConnection();
+				conn.setConnectTimeout(4000);
+				conn.setReadTimeout(4000);
+				try (InputStreamReader reader = new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8)) {
+					Type typeToken = new TypeToken<Map<String, String>>() {}.getType();
+					Map<String, String> map = new Gson().fromJson(reader, typeToken);
+					countryCode = map.get("countryCode");
+				}
+			} catch (IOException | RuntimeException e) {
+				LOGGER.warn("IO exception when trying to get geo-ip country code", e);
+			}
+		}, "Go Vote Country GeoIp Check").start();
 	}
 
 	public static boolean isAfterElectionDay() {
 		return LocalDate.now().isAfter(ELECTION_DAY);
 	}
 
-	public static boolean isProbablyUsaLocale() {
-		Locale locale = Locale.getDefault();
-		if (locale == null) {
-			return false;
-		}
-
+	public static boolean isInUsa() {
 		String usaCountry = Locale.US.getCountry();
-		if (!usaCountry.equals(locale.getCountry())) {
-			return false;
-		}
-
-		return commonUsaLanguages.stream()
-			.anyMatch(language -> language.equals(locale.getLanguage()));
+		return usaCountry.equalsIgnoreCase(countryCode);
 	}
 
 	@SubscribeEvent
-	public static void clientTick(GuiOpenEvent event) {
+	public static void onGuiOpen(GuiOpenEvent event) {
 		Screen curr = event.getGui();
 		if ((curr instanceof WorldSelectionScreen || curr instanceof MultiplayerScreen) && shouldShow()) {
 			event.setGui(new GoVoteScreen(curr));
@@ -112,7 +127,7 @@ public class GoVoteHandler {
 	}
 
 	private static boolean shouldShow() {
-		return !shownThisSession && !isAfterElectionDay() && !markerAlreadyExists && isProbablyUsaLocale();
+		return !shownThisSession && !isAfterElectionDay() && !markerAlreadyExists && isInUsa();
 	}
 
 	public static void displayOpenLinkScreen(String url, Minecraft minecraft, Screen currentScreen) {
@@ -144,7 +159,7 @@ public class GoVoteHandler {
 			addGroup(s("it is tempting to succumb to apathy,"),
 				s("to think that nothing you do will matter."));
 			addGroup(StringTextComponent.EMPTY, s("But power is still in the hands of We, the People."));
-			addGroup(s("The Constitution and its amendments guarantee every citizen the right to vote."));
+			addGroup(s("The Constitution and its amendments guarantee us the right to vote."));
 			addGroup(s("And it is not only our right, but our ")
 				.append(s("responsibility").mergeStyle(TextFormatting.ITALIC, TextFormatting.GOLD))
 				.appendString(" to do so."));

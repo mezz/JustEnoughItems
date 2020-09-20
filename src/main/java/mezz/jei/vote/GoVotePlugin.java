@@ -37,7 +37,7 @@ public class GoVotePlugin implements IModPlugin {
 	}
 
 	public static boolean isGoVoteEnabled() {
-		return !GoVoteHandler.isAfterElectionDay() && GoVoteHandler.isProbablyUsaLocale();
+		return !GoVoteHandler.isAfterElectionDay() && GoVoteHandler.isInUsa();
 	}
 
 	@Nullable
