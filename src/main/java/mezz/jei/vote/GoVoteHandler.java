@@ -54,7 +54,7 @@ public class GoVoteHandler {
 	private static final String BRAND = "mezz's mods";
 	private static final String MARKER_PATH = ".vote2020_marker";
 	private static final LocalDate ELECTION_DAY = LocalDate.of(2020, Month.NOVEMBER, 3);
-	private static final String LINK = "https://vote.org/";
+	public static final String VOTE_ORG_LINK = "https://vote.org/";
 	private static final int HEADER_COLOR = 0xFFD0163E; // matches vote.org header
 	private static final int BG_COLOR = 0xFF205493; // matches vote.org body
 	private static boolean shownThisSession = false;
@@ -86,25 +86,11 @@ public class GoVoteHandler {
 		}
 	}
 
-	private static boolean isAfterElectionDay() {
+	public static boolean isAfterElectionDay() {
 		return LocalDate.now().isAfter(ELECTION_DAY);
 	}
 
-	@SubscribeEvent
-	public static void clientTick(GuiOpenEvent event) {
-		Minecraft minecraft = Minecraft.getInstance();
-		Screen curr = event.getGui();
-		if ((curr instanceof WorldSelectionScreen || curr instanceof MultiplayerScreen) && shouldShow(minecraft)) {
-			event.setGui(new GoVoteScreen(curr));
-			shownThisSession = true;
-		}
-	}
-
-	private static boolean shouldShow(Minecraft minecraft) {
-		if (shownThisSession || isAfterElectionDay() || markerAlreadyExists) {
-			return false;
-		}
-
+	public static boolean isProbablyUsaLocale(Minecraft minecraft) {
 		Locale locale = getLocale(minecraft);
 		if (locale == null) {
 			return false;
@@ -119,6 +105,20 @@ public class GoVoteHandler {
 			.anyMatch(language -> language.equals(locale.getLanguage()));
 	}
 
+	@SubscribeEvent
+	public static void clientTick(GuiOpenEvent event) {
+		Minecraft minecraft = Minecraft.getInstance();
+		Screen curr = event.getGui();
+		if ((curr instanceof WorldSelectionScreen || curr instanceof MultiplayerScreen) && shouldShow(minecraft)) {
+			event.setGui(new GoVoteScreen(curr));
+			shownThisSession = true;
+		}
+	}
+
+	private static boolean shouldShow(Minecraft minecraft) {
+		return !shownThisSession && !isAfterElectionDay() && !markerAlreadyExists && isProbablyUsaLocale(minecraft);
+	}
+
 	@SuppressWarnings("ConstantConditions")
 	@Nullable
 	private static Locale getLocale(Minecraft minecraft) {
@@ -131,6 +131,17 @@ public class GoVoteHandler {
 			return null;
 		}
 		return currentLanguage.getJavaLocale();
+	}
+
+	public static void displayOpenLinkScreen(String url, Minecraft minecraft, Screen currentScreen) {
+		minecraft.displayGuiScreen(new ConfirmOpenLinkScreen(doIt -> consume(doIt, minecraft, currentScreen, url), url, true));
+	}
+
+	private static void consume(boolean doIt, Minecraft minecraft, Screen currentScreen, String url) {
+		minecraft.displayGuiScreen(currentScreen);
+		if (doIt) {
+			Util.getOSType().openURI(url);
+		}
 	}
 
 	private static class GoVoteScreen extends Screen {
@@ -160,7 +171,7 @@ public class GoVoteHandler {
 				StringTextComponent.EMPTY,
 				s("If you are eligible to vote, please take 2 minutes and click anywhere"),
 				s("to check your registration status and register at ")
-					.append(s(LINK).mergeStyle(TextFormatting.GOLD))
+					.append(s(VOTE_ORG_LINK).mergeStyle(TextFormatting.GOLD))
 			);
 			addGroup(
 				StringTextComponent.EMPTY,
@@ -243,20 +254,11 @@ public class GoVoteHandler {
 		@Override
 		public boolean mouseClicked(double x, double y, int modifiers) {
 			if (modifiers == 0 && minecraft != null) {
-				minecraft.displayGuiScreen(new ConfirmOpenLinkScreen(this::consume, LINK, true));
+				displayOpenLinkScreen(VOTE_ORG_LINK, minecraft, this);
 				return true;
 			}
 
 			return super.mouseClicked(x, y, modifiers);
-		}
-
-		private void consume(boolean doIt) {
-			if (minecraft != null) {
-				minecraft.displayGuiScreen(this);
-			}
-			if (doIt) {
-				Util.getOSType().openURI(LINK);
-			}
 		}
 
 	}
