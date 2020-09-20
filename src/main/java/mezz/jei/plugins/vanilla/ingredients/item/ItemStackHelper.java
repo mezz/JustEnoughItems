@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidBlock;
@@ -54,8 +55,14 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	@Nullable
 	public ItemStack getMatch(Iterable<ItemStack> ingredients, ItemStack toMatch) {
+		return getMatch(ingredients, toMatch, UidContext.Ingredient);
+	}
+
+	@Nullable
+	@Override
+	public ItemStack getMatch(Iterable<ItemStack> ingredients, ItemStack toMatch, UidContext context) {
 		for (ItemStack stack : ingredients) {
-			if (stackHelper.isEquivalent(toMatch, stack)) {
+			if (stackHelper.isEquivalent(toMatch, stack, context)) {
 				return stack;
 			}
 		}
@@ -72,14 +79,19 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public String getUniqueId(ItemStack ingredient) {
+		return getUniqueId(ingredient, UidContext.Ingredient);
+	}
+
+	@Override
+	public String getUniqueId(ItemStack ingredient, UidContext context) {
 		ErrorUtil.checkNotEmpty(ingredient);
-		return stackHelper.getUniqueIdentifierForStack(ingredient);
+		return stackHelper.getUniqueIdentifierForStack(ingredient, context);
 	}
 
 	@Override
 	public String getWildcardId(ItemStack ingredient) {
 		ErrorUtil.checkNotEmpty(ingredient);
-		return stackHelper.getUniqueIdentifierForStack(ingredient, StackHelper.UidMode.WILDCARD);
+		return stackHelper.getRegistryNameForStack(ingredient);
 	}
 
 	@Override

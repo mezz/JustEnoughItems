@@ -6,6 +6,7 @@ import java.util.Collection;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.gui.GuiScreenHelper;
+import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraft.client.Minecraft;
@@ -14,7 +15,6 @@ import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
-import mezz.jei.Internal;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
@@ -32,7 +32,6 @@ import mezz.jei.network.packets.PacketJei;
 import mezz.jei.render.IngredientListBatchRenderer;
 import mezz.jei.render.IngredientListElementRenderer;
 import mezz.jei.render.IngredientListSlot;
-import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.GiveMode;
 import mezz.jei.util.MathUtil;
 
@@ -44,17 +43,29 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	public static final int INGREDIENT_WIDTH = GuiIngredientProperties.getWidth(INGREDIENT_PADDING);
 	public static final int INGREDIENT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
 	private final GridAlignment alignment;
+	private final RecipesGui recipesGui;
 	private final GuiScreenHelper guiScreenHelper;
 
 	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
 	protected final IngredientListBatchRenderer guiIngredientSlots;
 	private final IIngredientFilterConfig ingredientFilterConfig;
+	private final ClientConfig clientConfig;
 	private final IWorldConfig worldConfig;
 
-	public IngredientGrid(GridAlignment alignment, IEditModeConfig editModeConfig, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig, GuiScreenHelper guiScreenHelper) {
+	public IngredientGrid(
+		GridAlignment alignment,
+		IEditModeConfig editModeConfig,
+		IIngredientFilterConfig ingredientFilterConfig,
+		ClientConfig clientConfig,
+		IWorldConfig worldConfig,
+		GuiScreenHelper guiScreenHelper,
+		RecipesGui recipesGui
+	) {
 		this.alignment = alignment;
+		this.recipesGui = recipesGui;
 		this.guiIngredientSlots = new IngredientListBatchRenderer(editModeConfig, worldConfig);
 		this.ingredientFilterConfig = ingredientFilterConfig;
+		this.clientConfig = clientConfig;
 		this.worldConfig = worldConfig;
 		this.guiScreenHelper = guiScreenHelper;
 	}
@@ -64,7 +75,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	}
 
 	public boolean updateBounds(Rectangle2d availableArea, int minWidth, Collection<Rectangle2d> exclusionAreas) {
-		final int columns = Math.min(availableArea.getWidth() / INGREDIENT_WIDTH, ClientConfig.getInstance().getMaxColumns());
+		final int columns = Math.min(availableArea.getWidth() / INGREDIENT_WIDTH, this.clientConfig.getMaxColumns());
 		final int rows = availableArea.getHeight() / INGREDIENT_HEIGHT;
 
 		final int ingredientsWidth = columns * INGREDIENT_WIDTH;
@@ -139,10 +150,8 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 			if (player != null) {
 				ItemStack itemStack = player.inventory.getItemStack();
 				if (!itemStack.isEmpty()) {
-					// TODO find a better way to handle this without using Internal
-					JeiRuntime runtime = Internal.getRuntime();
-					if (runtime == null || !runtime.getRecipesGui().isOpen()) {
-						GiveMode giveMode = ClientConfig.getInstance().getGiveMode();
+					if (!this.recipesGui.isOpen()) {
+						GiveMode giveMode = this.clientConfig.getGiveMode();
 						if (giveMode == GiveMode.MOUSE_PICKUP) {
 							IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);
 							if (ingredientUnderMouse != null && ingredientUnderMouse.getValue() instanceof ItemStack) {

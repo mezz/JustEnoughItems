@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtils;
@@ -29,23 +30,23 @@ public class BrewingRecipeUtil {
 	}
 
 	public void addRecipe(List<ItemStack> inputPotions, ItemStack outputPotion) {
-		String potionOutputUid = itemStackHelper.getUniqueId(outputPotion);
+		String potionOutputUid = itemStackHelper.getUniqueId(outputPotion, UidContext.Recipe);
 		for (ItemStack inputPotion : inputPotions) {
-			String potionInputUid = itemStackHelper.getUniqueId(inputPotion);
+			String potionInputUid = itemStackHelper.getUniqueId(inputPotion, UidContext.Recipe);
 			potionMap.put(potionOutputUid, potionInputUid);
 		}
 		clearCache();
 	}
 
 	public int getBrewingSteps(ItemStack outputPotion) {
-		String potionInputUid = itemStackHelper.getUniqueId(outputPotion);
+		String potionInputUid = itemStackHelper.getUniqueId(outputPotion, UidContext.Recipe);
 		return getBrewingSteps(potionInputUid, new HashSet<>());
 	}
 
 	private void clearCache() {
 		if (brewingStepCache.size() != 1) {
 			brewingStepCache.clear();
-			String waterBottleUid = itemStackHelper.getUniqueId(WATER_BOTTLE);
+			String waterBottleUid = itemStackHelper.getUniqueId(WATER_BOTTLE, UidContext.Recipe);
 			brewingStepCache.put(waterBottleUid, 0);
 		}
 	}

@@ -34,11 +34,6 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 	}
 
 	@Override
-	public String getWildcardId(DebugIngredient ingredient) {
-		return getUniqueId(ingredient);
-	}
-
-	@Override
 	public String getModId(DebugIngredient ingredient) {
 		return ModIds.JEI_ID;
 	}

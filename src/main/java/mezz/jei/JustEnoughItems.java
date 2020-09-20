@@ -1,9 +1,12 @@
 package mezz.jei;
 
 import mezz.jei.config.JEIClientConfig;
+import mezz.jei.vote.GoVoteHandler;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -47,6 +50,9 @@ public class JustEnoughItems {
 			}
 			EventBusHelper.addLifecycleListener(modEventBus, FMLLoadCompleteEvent.class, loadCompleteEvent ->
 				new ClientLifecycleHandler(networkHandler, textures)
+			);
+			EventBusHelper.addLifecycleListener(modEventBus, EventPriority.HIGH, FMLClientSetupEvent.class, event ->
+				GoVoteHandler.init()
 			);
 		});
 	}

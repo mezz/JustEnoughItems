@@ -85,6 +85,7 @@ public class GhostIngredientDragManager {
 				this.ghostIngredientsReturning.add(returning);
 			}
 			this.ghostIngredientDrag = null;
+			this.hoveredIngredientTargets = null;
 			return success;
 		}
 		return false;
@@ -94,10 +95,11 @@ public class GhostIngredientDragManager {
 		if (this.ghostIngredientDrag != null) {
 			this.ghostIngredientDrag.stop();
 			this.ghostIngredientDrag = null;
+			this.hoveredIngredientTargets = null;
 		}
 	}
 
-	public <T extends Screen, V> boolean handleClickGhostIngredient(T currentScreen, IClickedIngredient<V> clicked) {
+	public <T extends Screen, V> boolean handleClickGhostIngredient(T currentScreen, IClickedIngredient<V> clicked, double mouseX, double mouseY) {
 		IGhostIngredientHandler<T> handler = guiScreenHelper.getGhostIngredientHandler(currentScreen);
 		if (handler != null) {
 			V ingredient = clicked.getValue();
@@ -105,7 +107,7 @@ public class GhostIngredientDragManager {
 			if (!targets.isEmpty()) {
 				IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
 				Rectangle2d clickedArea = clicked.getArea();
-				this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, clickedArea);
+				this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, mouseX, mouseY, clickedArea);
 				clicked.onClickHandled();
 				return true;
 			}

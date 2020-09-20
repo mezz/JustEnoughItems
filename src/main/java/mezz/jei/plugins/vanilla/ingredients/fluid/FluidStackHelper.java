@@ -50,11 +50,6 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	}
 
 	@Override
-	public String getWildcardId(FluidStack ingredient) {
-		return getUniqueId(ingredient);
-	}
-
-	@Override
 	public String getModId(FluidStack ingredient) {
 		Fluid fluid = ingredient.getFluid();
 		ResourceLocation registryName = fluid.getRegistryName();

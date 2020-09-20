@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.client.gui.widget.ExtendedButton;
@@ -134,7 +135,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		IIngredientManager ingredientManager = JeiDebugPlugin.ingredientManager;
 		if (ingredientManager != null) {
 			IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-			String jeiUid = ingredientHelper.getUniqueId(ingredient);
+			String jeiUid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
 			minecraft.fontRenderer.drawString(matrixStack, jeiUid, 50, 52, 0);
 		}
 	}

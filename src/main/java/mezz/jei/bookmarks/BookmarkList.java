@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.config.BookmarkConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IIngredientGridSource;
@@ -44,12 +45,18 @@ public class BookmarkList implements IIngredientGridSource {
 				return true;
 			}
 			if (existing != null && existing.getClass() == ingredient.getClass()) {
-				if (ingredientHelper.getUniqueId(existing).equals(ingredientHelper.getUniqueId(ingredient))) {
+				if (equalUids(ingredientHelper, existing, ingredient)) {
 					return true;
 				}
 			}
 		}
 		return false;
+	}
+
+	private static boolean equalUids(IIngredientHelper<Object> ingredientHelper, Object a, Object b) {
+		String uidA = ingredientHelper.getUniqueId(a, UidContext.Ingredient);
+		String uidB = ingredientHelper.getUniqueId(b, UidContext.Ingredient);
+		return uidA.equals(uidB);
 	}
 
 	public boolean remove(Object ingredient) {

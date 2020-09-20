@@ -2,6 +2,7 @@ package mezz.jei.ingredients;
 
 import javax.annotation.Nullable;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -27,6 +28,20 @@ public class SubtypeManager implements ISubtypeManager {
 		ISubtypeInterpreter subtypeInterpreter = interpreters.get(item);
 		if (subtypeInterpreter != null) {
 			return subtypeInterpreter.apply(itemStack);
+		}
+
+		return null;
+	}
+
+	@Nullable
+	@Override
+	public String getSubtypeInfo(ItemStack itemStack, UidContext context) {
+		ErrorUtil.checkNotEmpty(itemStack);
+
+		Item item = itemStack.getItem();
+		ISubtypeInterpreter subtypeInterpreter = interpreters.get(item);
+		if (subtypeInterpreter != null) {
+			return subtypeInterpreter.apply(itemStack, context);
 		}
 
 		return null;

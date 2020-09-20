@@ -53,6 +53,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	private static final int buttonWidth = 13;
 	private static final int buttonHeight = 13;
 	private final RecipeTransferManager recipeTransferManager;
+	private final ClientConfig clientConfig;
 
 	private int headerHeight;
 
@@ -86,9 +87,16 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	private boolean init = false;
 	private boolean closing = false;
 
-	public RecipesGui(IRecipeManager recipeManager, RecipeTransferManager recipeTransferManager, IngredientManager ingredientManager, IModIdHelper modIdHelper) {
+	public RecipesGui(
+		IRecipeManager recipeManager,
+		RecipeTransferManager recipeTransferManager,
+		IngredientManager ingredientManager,
+		IModIdHelper modIdHelper,
+		ClientConfig clientConfig
+	) {
 		super(new StringTextComponent("Recipes"));
 		this.recipeTransferManager = recipeTransferManager;
+		this.clientConfig = clientConfig;
 		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, ingredientManager, modIdHelper);
 		this.recipeCatalysts = new RecipeCatalysts();
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
@@ -146,7 +154,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		this.xSize = 198;
 		this.ySize = this.height - 68;
 		int extraSpace = 0;
-		final int maxHeight = ClientConfig.getInstance().getMaxRecipeGuiHeight();
+		final int maxHeight = this.clientConfig.getMaxRecipeGuiHeight();
 		if (this.ySize > maxHeight) {
 			extraSpace = this.ySize - maxHeight;
 			this.ySize = maxHeight;

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.Size2i;
@@ -135,7 +136,18 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<ICrafti
 	}
 
 	@Override
+	public boolean isHandled(ICraftingRecipe recipe) {
+		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtensionOrNull(recipe);
+		return extension != null;
+	}
+
+	@Override
 	public <R extends ICraftingRecipe> void addCategoryExtension(Class<? extends R> recipeClass, Function<R, ? extends ICraftingCategoryExtension> extensionFactory) {
-		extendableHelper.addRecipeExtensionFactory(recipeClass, extensionFactory);
+		extendableHelper.addRecipeExtensionFactory(recipeClass, null, extensionFactory);
+	}
+
+	@Override
+	public <R extends ICraftingRecipe> void addCategoryExtension(Class<? extends R> recipeClass, Predicate<R> extensionFilter, Function<R, ? extends ICraftingCategoryExtension> extensionFactory) {
+		extendableHelper.addRecipeExtensionFactory(recipeClass, extensionFilter, extensionFactory);
 	}
 }

@@ -3,6 +3,7 @@ package mezz.jei.ingredients;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.collect.IngredientSet;
 
 import java.util.Collection;
@@ -18,7 +19,7 @@ public class RegisteredIngredient<T> {
 		this.ingredientHelper = ingredientHelper;
 		this.ingredientRenderer = ingredientRenderer;
 
-		this.ingredientSet = IngredientSet.create(ingredientHelper);
+		this.ingredientSet = IngredientSet.create(ingredientHelper, UidContext.Ingredient);
 		this.ingredientSet.addAll(ingredients);
 	}
 

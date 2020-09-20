@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraftforge.common.brewing.BrewingRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.brewing.IBrewingRecipe;
@@ -30,7 +31,6 @@ import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.collect.IngredientSet;
-import mezz.jei.config.ClientConfig;
 import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -91,7 +91,7 @@ public class BrewingRecipeMaker {
 		}
 
 		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM);
-		Collection<ItemStack> knownPotions = IngredientSet.create(itemStackHelper);
+		Collection<ItemStack> knownPotions = IngredientSet.create(itemStackHelper, UidContext.Ingredient);
 		for (Potion potion : ForgeRegistries.POTION_TYPES.getValues()) {
 			if (potion == Potions.EMPTY) {
 				// skip the "uncraftable" vanilla potions
@@ -164,9 +164,7 @@ public class BrewingRecipeMaker {
 				Class<?> recipeClass = iBrewingRecipe.getClass();
 				if (!unhandledRecipeClasses.contains(recipeClass)) {
 					unhandledRecipeClasses.add(recipeClass);
-					if (ClientConfig.getInstance().isDebugModeEnabled()) {
-						LOGGER.debug("Can't handle brewing recipe class: {}", recipeClass);
-					}
+					LOGGER.debug("Can't handle brewing recipe class: {}", recipeClass);
 				}
 			}
 		}

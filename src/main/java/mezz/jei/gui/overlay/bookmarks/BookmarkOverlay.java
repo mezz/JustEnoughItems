@@ -43,10 +43,12 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 
 	// data
 	private final BookmarkList bookmarkList;
+	private final ClientConfig clientConfig;
 	private final IWorldConfig worldConfig;
 
-	public BookmarkOverlay(BookmarkList bookmarkList, Textures textures, IngredientGridWithNavigation contents, IWorldConfig worldConfig) {
+	public BookmarkOverlay(BookmarkList bookmarkList, Textures textures, IngredientGridWithNavigation contents, ClientConfig clientConfig, IWorldConfig worldConfig) {
 		this.bookmarkList = bookmarkList;
+		this.clientConfig = clientConfig;
 		this.worldConfig = worldConfig;
 		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, textures, worldConfig);
 		this.contents = contents;
@@ -164,7 +166,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 						if (worldConfig.isCheatItemsEnabled()) {
 							ItemStack itemStack = clicked.getCheatItemStack();
 							if (!itemStack.isEmpty()) {
-								CommandUtil.giveStack(itemStack, input);
+								CommandUtil.giveStack(itemStack, input, this.clientConfig);
 							}
 							clicked.onClickHandled();
 							return true;

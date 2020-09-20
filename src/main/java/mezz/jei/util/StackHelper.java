@@ -2,6 +2,7 @@ package mezz.jei.util;
 
 import javax.annotation.Nullable;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -16,11 +17,9 @@ public class StackHelper implements IStackHelper {
 		this.subtypeManager = subtypeManager;
 	}
 
-	/**
-	 * Similar to ItemStack.areItemStacksEqual but ignores NBT on items without subtypes, and uses the {@link ISubtypeManager}
-	 */
 	@Override
-	public boolean isEquivalent(@Nullable ItemStack lhs, @Nullable ItemStack rhs) {
+	public boolean isEquivalent(@Nullable ItemStack lhs, @Nullable ItemStack rhs, UidContext context) {
+		ErrorUtil.checkNotNull(context, "context");
 		if (lhs == rhs) {
 			return true;
 		}
@@ -33,16 +32,21 @@ public class StackHelper implements IStackHelper {
 			return false;
 		}
 
-		String keyLhs = getUniqueIdentifierForStack(lhs, UidMode.NORMAL);
-		String keyRhs = getUniqueIdentifierForStack(rhs, UidMode.NORMAL);
+		String keyLhs = getUniqueIdentifierForStack(lhs, context);
+		String keyRhs = getUniqueIdentifierForStack(rhs, context);
 		return keyLhs.equals(keyRhs);
 	}
 
-	public String getUniqueIdentifierForStack(ItemStack stack) {
-		return getUniqueIdentifierForStack(stack, UidMode.NORMAL);
+	public String getUniqueIdentifierForStack(ItemStack stack, UidContext context) {
+		String result = getRegistryNameForStack(stack);
+		String subtypeInfo = subtypeManager.getSubtypeInfo(stack, context);
+		if (subtypeInfo != null && !subtypeInfo.isEmpty()) {
+			result = result + ':' + subtypeInfo;
+		}
+		return result;
 	}
 
-	public String getUniqueIdentifierForStack(ItemStack stack, UidMode mode) {
+	public String getRegistryNameForStack(ItemStack stack) {
 		ErrorUtil.checkNotEmpty(stack, "stack");
 
 		Item item = stack.getItem();
@@ -52,14 +56,7 @@ public class StackHelper implements IStackHelper {
 			throw new IllegalStateException("Item has no registry name: " + stackInfo);
 		}
 
-		String result = registryName.toString();
-		if (mode == UidMode.NORMAL) {
-			String subtypeInfo = subtypeManager.getSubtypeInfo(stack);
-			if (subtypeInfo != null && !subtypeInfo.isEmpty()) {
-				result = result + ':' + subtypeInfo;
-			}
-		}
-		return result;
+		return registryName.toString();
 	}
 
 	public enum UidMode {

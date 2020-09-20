@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.ITextComponent;
@@ -57,8 +58,8 @@ public final class IngredientInformation {
 		return colorNamer.getColorNames(colors, true);
 	}
 
-	public static <V> List<String> getUniqueIdsWithWildcard(IIngredientHelper<V> ingredientHelper, V ingredient) {
-		String uid = ingredientHelper.getUniqueId(ingredient);
+	public static <V> List<String> getUniqueIdsWithWildcard(IIngredientHelper<V> ingredientHelper, V ingredient, UidContext context) {
+		String uid = ingredientHelper.getUniqueId(ingredient, context);
 		String uidWild = ingredientHelper.getWildcardId(ingredient);
 
 		if (uid.equals(uidWild)) {

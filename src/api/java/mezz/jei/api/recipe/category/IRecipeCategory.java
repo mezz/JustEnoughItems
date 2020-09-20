@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
@@ -108,5 +109,17 @@ public interface IRecipeCategory<T> {
 	 */
 	default boolean handleClick(T recipe, double mouseX, double mouseY, int mouseButton) {
 		return false;
+	}
+
+	/**
+	 * @return true if the given recipe can be handled by this category.
+	 * @since JEI 7.2.0
+	 */
+	default boolean isHandled(T recipe) {
+		if (recipe instanceof IRecipe) {
+			IRecipe<?> iRecipe = (IRecipe<?>) recipe;
+			return !iRecipe.isDynamic();
+		}
+		return true;
 	}
 }

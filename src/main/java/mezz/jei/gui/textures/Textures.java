@@ -32,6 +32,8 @@ public class Textures {
 	private final IDrawableStatic infoIcon;
 	private final DrawableNineSliceTexture catalystTab;
 	private final IDrawableStatic flameIcon;
+	private final IDrawableStatic vote;
+	private final IDrawableStatic biden;
 
 	public Textures(JeiSpriteUploader spriteUploader) {
 		this.spriteUploader = spriteUploader;
@@ -63,6 +65,8 @@ public class Textures {
 		this.bookmarkButtonEnabledIcon = registerGuiSprite("icons/bookmark_button_enabled", 16, 16);
 		this.infoIcon = registerGuiSprite("icons/info", 16, 16);
 		this.flameIcon = registerGuiSprite("icons/flame", 14, 14);
+		this.vote = registerGuiSprite("icons/vote", 16, 16);
+		this.biden = registerGuiSprite("icons/biden", 16, 16);
 	}
 
 	private ResourceLocation registerSprite(String name) {
@@ -161,5 +165,13 @@ public class Textures {
 
 	public IDrawableStatic getFlameIcon() {
 		return flameIcon;
+	}
+
+	public IDrawableStatic getVote() {
+		return vote;
+	}
+
+	public IDrawableStatic getBiden() {
+		return biden;
 	}
 }

@@ -2,6 +2,7 @@ package mezz.jei.api.constants;
 
 import java.util.List;
 
+import net.minecraft.item.crafting.SmithingRecipe;
 import net.minecraft.item.crafting.StonecuttingRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraft.item.ItemStack;
@@ -87,6 +88,14 @@ public final class VanillaRecipeCategoryUid {
 	 * This is a built-in category, you can create new recipes with {@link IVanillaRecipeFactory#createAnvilRecipe(ItemStack, List, List)}
 	 */
 	public static final ResourceLocation ANVIL = new ResourceLocation(ModIds.MINECRAFT_ID, "anvil");
+
+	/**
+	 * The smithing recipe category.
+	 *
+	 * Automatically includes every {@link SmithingRecipe}.
+	 * @since JEI 7.3.1
+	 */
+	public static final ResourceLocation SMITHING = new ResourceLocation(ModIds.MINECRAFT_ID, "smithing");
 
 	/**
 	 * The JEI info recipe category shows extra information about ingredients.

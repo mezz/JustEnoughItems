@@ -6,6 +6,12 @@ public interface IMouseHandler {
 
 	boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton);
 
-	boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta);
+	default boolean handleMouseDragStart(double mouseX, double mouseY, int mouseButton) {
+		return false;
+	}
+
+	default boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
+		return false;
+	}
 
 }

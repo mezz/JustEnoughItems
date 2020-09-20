@@ -10,10 +10,11 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 
 public class IngredientSet<V> extends AbstractSet<V> {
-	public static <V> IngredientSet<V> create(IIngredientHelper<V> ingredientHelper) {
-		final Function<V, String> uidGenerator = ingredientHelper::getUniqueId;
+	public static <V> IngredientSet<V> create(IIngredientHelper<V> ingredientHelper, UidContext context) {
+		final Function<V, String> uidGenerator = v -> ingredientHelper.getUniqueId(v, context);
 		return new IngredientSet<>(uidGenerator);
 	}
 

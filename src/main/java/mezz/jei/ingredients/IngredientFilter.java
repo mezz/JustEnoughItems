@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.util.NonNullList;
 
 import com.google.common.collect.ImmutableList;
@@ -152,7 +153,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	}
 
 	public <V> List<IIngredientListElement<V>> findMatchingElements(IIngredientHelper<V> ingredientHelper, V ingredient) {
-		final String ingredientUid = ingredientHelper.getUniqueId(ingredient);
+		final String ingredientUid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
 		final String displayName = ingredientHelper.getDisplayName(ingredient);
 		@SuppressWarnings("unchecked") final Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
 
@@ -165,9 +166,9 @@ public class IngredientFilter implements IIngredientGridSource {
 			Object matchingIngredient = matchingElement.getIngredient();
 			if (ingredientClass.isInstance(matchingIngredient)) {
 				V castMatchingIngredient = ingredientClass.cast(matchingIngredient);
-				String matchingUid = ingredientHelper.getUniqueId(castMatchingIngredient);
+				String matchingUid = ingredientHelper.getUniqueId(castMatchingIngredient, UidContext.Ingredient);
 				if (ingredientUid.equals(matchingUid)) {
-					@SuppressWarnings({"unchecked", "CastCanBeRemovedNarrowingVariableType"})
+					@SuppressWarnings("unchecked")
 					IIngredientListElement<V> matchingElementCast = (IIngredientListElement<V>) matchingElement;
 					matchingElements.add(matchingElementCast);
 				}
@@ -288,7 +289,7 @@ public class IngredientFilter implements IIngredientGridSource {
 					break;
 				}
 				matchingIndexes.add(i);
-				@SuppressWarnings({"unchecked", "CastCanBeRemovedNarrowingVariableType"})
+				@SuppressWarnings("unchecked")
 				IIngredientListElement<T> castElement = (IIngredientListElement<T>) element;
 				matchingElements.add(castElement);
 			}
@@ -303,7 +304,7 @@ public class IngredientFilter implements IIngredientGridSource {
 					break;
 				}
 				matchingIndexes.add(i);
-				@SuppressWarnings({"unchecked", "CastCanBeRemovedNarrowingVariableType"})
+				@SuppressWarnings("unchecked")
 				IIngredientListElement<T> castElement = (IIngredientListElement<T>) element;
 				matchingElements.add(castElement);
 			}
