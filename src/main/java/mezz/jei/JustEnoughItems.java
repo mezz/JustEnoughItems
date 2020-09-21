@@ -51,7 +51,7 @@ public class JustEnoughItems {
 			EventBusHelper.addLifecycleListener(modEventBus, FMLLoadCompleteEvent.class, loadCompleteEvent ->
 				new ClientLifecycleHandler(networkHandler, textures)
 			);
-			EventBusHelper.addLifecycleListener(modEventBus, EventPriority.HIGH, FMLClientSetupEvent.class, event ->
+			EventBusHelper.addLifecycleListener(modEventBus, FMLClientSetupEvent.class, event ->
 				GoVoteHandler.init()
 			);
 		});

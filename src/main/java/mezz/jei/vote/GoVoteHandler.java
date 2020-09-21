@@ -91,6 +91,10 @@ public class GoVoteHandler {
 			markerAlreadyExists = true;
 		}
 
+		if (markerAlreadyExists) {
+			return;
+		}
+
 		new Thread(() -> {
 			try {
 				URL url = new URL("http://ip-api.com/json/?fields=status,message,countryCode");
