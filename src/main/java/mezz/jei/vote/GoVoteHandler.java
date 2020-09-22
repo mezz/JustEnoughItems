@@ -251,6 +251,7 @@ public class GoVoteHandler {
 			}
 			if (keycode == GLFW.GLFW_KEY_ESCAPE && minecraft != null) {
 				minecraft.displayGuiScreen(parent);
+				return true;
 			}
 
 			return super.keyPressed(keycode, scanCode, modifiers);
