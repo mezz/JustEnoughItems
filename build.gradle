@@ -66,7 +66,7 @@ dependencies {
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
 
-	compile fg.deobf('com.feed_the_beast.mods:ftb-gui-library:1.0.0.18')
+	compileOnly fg.deobf('com.feed_the_beast.mods:ftb-gui-library:1.0.0.18')
 }
 
 processResources {
