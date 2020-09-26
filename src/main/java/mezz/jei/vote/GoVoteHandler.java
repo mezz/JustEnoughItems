@@ -22,6 +22,7 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
@@ -63,7 +64,8 @@ public class GoVoteHandler {
 	private static final int HEADER_COLOR = 0xFFD0163E; // matches vote.org header
 	private static final int BG_COLOR = 0xFF205493; // matches vote.org body
 	private static boolean shownThisSession = false;
-	private static volatile String countryCode = Locale.getDefault().getCountry();
+	@Nullable
+	private static volatile String countryCode;
 	private static boolean markerAlreadyExists = false;
 
 	public static void init() {
