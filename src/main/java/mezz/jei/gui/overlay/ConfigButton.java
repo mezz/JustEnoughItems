@@ -4,8 +4,8 @@ import java.util.List;
 
 import mezz.jei.config.JEIClientConfig;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
@@ -16,7 +16,6 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.textures.Textures;
 import net.minecraft.util.text.TranslationTextComponent;
-import org.lwjgl.glfw.GLFW;
 
 public class ConfigButton extends GuiIconToggleButton {
 	public static ConfigButton create(IngredientListOverlay parent, IWorldConfig worldConfig) {
@@ -70,8 +69,7 @@ public class ConfigButton extends GuiIconToggleButton {
 	@Override
 	protected boolean onMouseClicked(double mouseX, double mouseY, int mouseButton) {
 		if (worldConfig.isOverlayEnabled()) {
-			long windowHandle = Minecraft.getInstance().getMainWindow().getHandle();
-			if (InputMappings.isKeyDown(windowHandle, GLFW.GLFW_KEY_LEFT_CONTROL) || InputMappings.isKeyDown(windowHandle, GLFW.GLFW_KEY_RIGHT_CONTROL)) {
+			if (Screen.hasControlDown()) {
 				worldConfig.toggleCheatItemsEnabled();
 			} else {
 				JEIClientConfig.openSettings();
