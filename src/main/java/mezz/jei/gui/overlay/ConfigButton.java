@@ -15,7 +15,6 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.util.Translator;
-import org.lwjgl.input.Keyboard;
 
 public class ConfigButton extends GuiIconToggleButton {
 	public static ConfigButton create(IngredientListOverlay parent) {
@@ -59,7 +58,7 @@ public class ConfigButton extends GuiIconToggleButton {
 	@Override
 	protected boolean onMouseClicked(int mouseX, int mouseY) {
 		if (Config.isOverlayEnabled()) {
-			if (Keyboard.getEventKeyState() && (Keyboard.getEventKey() == Keyboard.KEY_LCONTROL || Keyboard.getEventKey() == Keyboard.KEY_RCONTROL)) {
+			if (GuiScreen.isCtrlKeyDown()) {
 				Config.toggleCheatItemsEnabled();
 			} else {
 				Minecraft minecraft = Minecraft.getMinecraft();
