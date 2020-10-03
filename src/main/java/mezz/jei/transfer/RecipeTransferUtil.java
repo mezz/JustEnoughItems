@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
@@ -131,7 +132,7 @@ public final class RecipeTransferUtil {
 	@Nullable
 	public static <R> R containsStack(IStackHelper stackHelper, Iterable<ItemStackMatchable<R>> stacks, ItemStackMatchable<?> contains) {
 		for (ItemStackMatchable<R> stack : stacks) {
-			if (stackHelper.isEquivalent(contains.getStack(), stack.getStack())) {
+			if (stackHelper.isEquivalent(contains.getStack(), stack.getStack(), UidContext.Recipe)) {
 				return stack.getResult();
 			}
 		}

@@ -4,6 +4,7 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
+import mezz.jei.api.registration.IRecipeTransferRegistration;
 
 /**
  * Optional context used when getting Unique IDs for ingredients and subtypes.
@@ -32,6 +33,7 @@ public enum UidContext {
 	 * Used for:
 	 * recipe lookups (see {@link IRecipeCategory#setIngredients(Object, IIngredients)})
 	 * recipe catalysts (see {@link IRecipeCatalystRegistration})
+	 * recipe transfer (since JEI 7.4.0) (see {@link IRecipeTransferRegistration}
 	 */
 	Recipe
 }
