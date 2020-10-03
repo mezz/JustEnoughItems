@@ -18,58 +18,58 @@ public class IngredientFilterConfig implements IIngredientFilterConfig, IJEIConf
 
 	public IngredientFilterConfig(ForgeConfigSpec.Builder builder) {
 		this.values = new IngredientFilterConfigValues();
-		IngredientFilterConfigValues defaultVals = new IngredientFilterConfigValues();
+		IngredientFilterConfigValues defaultValues = new IngredientFilterConfigValues();
 
 		builder.push("search");
 		builder.comment("Search mode for Mod Names (prefix: @)");
-		modNameSearchMode = builder.defineEnum("ModNameSearchMode", defaultVals.modNameSearchMode);
+		modNameSearchMode = builder.defineEnum("ModNameSearchMode", defaultValues.modNameSearchMode);
 		builder.comment("Search mode for Tooltips (prefix: #)");
-		tooltipSearchMode = builder.defineEnum("TooltipSearchMode", defaultVals.tooltipSearchMode);
+		tooltipSearchMode = builder.defineEnum("TooltipSearchMode", defaultValues.tooltipSearchMode);
 		builder.comment("Search mode for Tag Names (prefix: $)");
-		tagSearchMode = builder.defineEnum("TagSearchMode", defaultVals.tagSearchMode);
+		tagSearchMode = builder.defineEnum("TagSearchMode", defaultValues.tagSearchMode);
 		builder.comment("Search mode for Creative Tab Names (prefix: %)");
-		creativeTabSearchMode = builder.defineEnum("CreativeTabSearchMode", defaultVals.creativeTabSearchMode);
+		creativeTabSearchMode = builder.defineEnum("CreativeTabSearchMode", defaultValues.creativeTabSearchMode);
 		builder.comment("Search mode for Colors (prefix: ^)");
-		colorSearchMode = builder.defineEnum("ColorSearchMode", defaultVals.colorSearchMode);
+		colorSearchMode = builder.defineEnum("ColorSearchMode", defaultValues.colorSearchMode);
 		builder.comment("Search mode for resources IDs (prefix: &)");
-		resourceIdSearchMode = builder.defineEnum("ResourceIdSearchMode", defaultVals.resourceIdSearchMode);
+		resourceIdSearchMode = builder.defineEnum("ResourceIdSearchMode", defaultValues.resourceIdSearchMode);
 		builder.comment("Search advanced tooltips (visible with F3+H)");
-		searchAdvancedTooltips = builder.define("SearchAdvancedTooltips", defaultVals.searchAdvancedTooltips);
+		searchAdvancedTooltips = builder.define("SearchAdvancedTooltips", defaultValues.searchAdvancedTooltips);
 		builder.pop();
 	}
 
 	@Override
 	public void buildSettingsGUI(ConfigGroup group) {
-		IngredientFilterConfigValues defaultVals = new IngredientFilterConfigValues();
+		IngredientFilterConfigValues defaultValues = new IngredientFilterConfigValues();
 
 		group.addEnum(cfgTranslation("modNameSearchMode"), values.modNameSearchMode, v -> {
 			modNameSearchMode.set(v);
 			values.modNameSearchMode = v;
-		}, NameMap.of(defaultVals.modNameSearchMode, SearchMode.values()).create());
+		}, NameMap.of(defaultValues.modNameSearchMode, SearchMode.values()).create());
 		group.addEnum(cfgTranslation("tooltipSearchMode"), values.tooltipSearchMode, v -> {
 			tooltipSearchMode.set(v);
 			values.tooltipSearchMode = v;
-		}, NameMap.of(defaultVals.tooltipSearchMode, SearchMode.values()).create());
+		}, NameMap.of(defaultValues.tooltipSearchMode, SearchMode.values()).create());
 		group.addEnum(cfgTranslation("tagSearchMode"), values.tagSearchMode, v -> {
 			tagSearchMode.set(v);
 			values.tagSearchMode = v;
-		}, NameMap.of(defaultVals.tagSearchMode, SearchMode.values()).create());
+		}, NameMap.of(defaultValues.tagSearchMode, SearchMode.values()).create());
 		group.addEnum(cfgTranslation("creativeTabSearchMode"), values.creativeTabSearchMode, v -> {
 			creativeTabSearchMode.set(v);
 			values.creativeTabSearchMode = v;
-		}, NameMap.of(defaultVals.creativeTabSearchMode, SearchMode.values()).create());
+		}, NameMap.of(defaultValues.creativeTabSearchMode, SearchMode.values()).create());
 		group.addEnum(cfgTranslation("colorSearchMode"), values.colorSearchMode, v -> {
 			colorSearchMode.set(v);
 			values.colorSearchMode = v;
-		}, NameMap.of(defaultVals.colorSearchMode, SearchMode.values()).create());
+		}, NameMap.of(defaultValues.colorSearchMode, SearchMode.values()).create());
 		group.addEnum(cfgTranslation("resourceIdSearchMode"), values.resourceIdSearchMode, v -> {
 			resourceIdSearchMode.set(v);
 			values.resourceIdSearchMode = v;
-		}, NameMap.of(defaultVals.resourceIdSearchMode, SearchMode.values()).create());
+		}, NameMap.of(defaultValues.resourceIdSearchMode, SearchMode.values()).create());
 		group.addBool(cfgTranslation("searchAdvancedTooltips"), values.searchAdvancedTooltips, v -> {
 			searchAdvancedTooltips.set(v);
 			values.searchAdvancedTooltips = v;
-		}, defaultVals.searchAdvancedTooltips);
+		}, defaultValues.searchAdvancedTooltips);
 	}
 
 	private String cfgTranslation(String name) {
