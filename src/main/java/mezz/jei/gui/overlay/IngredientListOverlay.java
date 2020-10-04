@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.config.IClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
@@ -18,7 +19,6 @@ import net.minecraft.item.ItemStack;
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.runtime.IIngredientListOverlay;
-import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiScreenHelper;
@@ -44,7 +44,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	private static final int SEARCH_HEIGHT = 20;
 	private boolean hasRoom;
 
-	private static boolean isSearchBarCentered(ClientConfig clientConfig, IGuiProperties guiProperties) {
+	private static boolean isSearchBarCentered(IClientConfig clientConfig, IGuiProperties guiProperties) {
 		return clientConfig.isCenterSearchBarEnabled() &&
 			guiProperties.getGuiTop() + guiProperties.getGuiYSize() + SEARCH_HEIGHT < guiProperties.getScreenHeight();
 	}
@@ -52,7 +52,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	private final IngredientFilter ingredientFilter;
 	private final GuiIconToggleButton configButton;
 	private final IngredientGridWithNavigation contents;
-	private final ClientConfig clientConfig;
+	private final IClientConfig clientConfig;
 	private final IWorldConfig worldConfig;
 	private final GuiScreenHelper guiScreenHelper;
 	private final GuiTextFieldFilter searchField;
@@ -68,7 +68,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		IngredientManager ingredientManager,
 		GuiScreenHelper guiScreenHelper,
 		IngredientGridWithNavigation contents,
-		ClientConfig clientConfig,
+		IClientConfig clientConfig,
 		IWorldConfig worldConfig
 	) {
 		this.ingredientFilter = ingredientFilter;

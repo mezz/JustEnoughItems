@@ -3,6 +3,7 @@ package mezz.jei.ingredients;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -20,7 +21,6 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.gui.ingredients.IIngredientListElementInfo;
 import mezz.jei.util.Translator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,7 +38,7 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	private final String resourceId;
 
 	@Nullable
-	public static <V> IngredientListElementInfo<V> create(IIngredientListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
+	public static <V> IIngredientListElementInfo<V> create(IIngredientListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		V ingredient = element.getIngredient();
 		IIngredientType<V> ingredientType = ingredientManager.getIngredientType(ingredient);
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
@@ -84,9 +84,9 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	}
 
 	@Override
-	public final String getDisplayName() {
-		V ingredient = element.getIngredient();
-		return IngredientInformation.getDisplayName(ingredient, ingredientHelper);
+	public Collection<String> getNameStrings() {
+		String displayNameLowercase = Translator.toLowercaseWithLocale(this.displayName);
+		return Collections.singleton(displayNameLowercase);
 	}
 
 	@Override

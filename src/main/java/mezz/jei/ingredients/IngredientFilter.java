@@ -1,20 +1,5 @@
 package mezz.jei.ingredients;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.util.NonNullList;
-
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
@@ -23,7 +8,9 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.config.SearchMode;
@@ -31,14 +18,26 @@ import mezz.jei.events.EditModeToggleEvent;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.events.PlayerJoinedWorldEvent;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.gui.ingredients.IIngredientListElementInfo;
 import mezz.jei.gui.overlay.IIngredientGridSource;
-import mezz.jei.suffixtree.CombinedSearchTrees;
-import mezz.jei.suffixtree.GeneralizedSuffixTree;
-import mezz.jei.suffixtree.ISearchTree;
+import mezz.jei.search.ElementSearch;
+import mezz.jei.search.IElementSearch;
+import mezz.jei.search.PrefixInfo;
+import mezz.jei.search.ElementSearchLowMem;
 import mezz.jei.util.Translator;
+import net.minecraft.util.NonNullList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class IngredientFilter implements IIngredientGridSource {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -48,15 +47,9 @@ public class IngredientFilter implements IIngredientGridSource {
 	private final IngredientBlacklistInternal blacklist;
 	private final IEditModeConfig editModeConfig;
 	private final IIngredientManager ingredientManager;
-	/**
-	 * indexed list of ingredients for use with the suffix trees
-	 * includes all elements (even hidden ones) for use when rebuilding
-	 */
-	private final NonNullList<IIngredientListElement<?>> elementList;
-	private final GeneralizedSuffixTree searchTree;
-	private final Char2ObjectMap<PrefixedSearchTree> prefixedSearchTrees = new Char2ObjectOpenHashMap<>();
-	private final IngredientFilterBackgroundBuilder backgroundBuilder;
-	private CombinedSearchTrees combinedSearchTrees;
+
+	private final IElementSearch elementSearch;
+	private final Char2ObjectMap<PrefixInfo> prefixInfos = new Char2ObjectOpenHashMap<>();
 
 	@Nullable
 	private String filterCached;
@@ -65,25 +58,31 @@ public class IngredientFilter implements IIngredientGridSource {
 
 	public IngredientFilter(
 		IngredientBlacklistInternal blacklist,
+		IClientConfig clientConfig,
 		IIngredientFilterConfig config,
 		IEditModeConfig editModeConfig,
-		IIngredientManager ingredientManager,
-		IModIdHelper modIdHelper
+		IIngredientManager ingredientManager
 	) {
 		this.blacklist = blacklist;
 		this.editModeConfig = editModeConfig;
 		this.ingredientManager = ingredientManager;
-		this.elementList = NonNullList.create();
-		this.searchTree = new GeneralizedSuffixTree();
-		createPrefixedSearchTree('@', config::getModNameSearchMode, IIngredientListElementInfo::getModNameStrings);
-		createPrefixedSearchTree('#', config::getTooltipSearchMode, (e) -> e.getTooltipStrings(config));
-		createPrefixedSearchTree('$', config::getTagSearchMode, IIngredientListElementInfo::getTagStrings);
-		createPrefixedSearchTree('%', config::getCreativeTabSearchMode, IIngredientListElementInfo::getCreativeTabsStrings);
-		createPrefixedSearchTree('^', config::getColorSearchMode, IIngredientListElementInfo::getColorStrings);
-		createPrefixedSearchTree('&', config::getResourceIdSearchMode, element -> Collections.singleton(element.getResourceId()));
 
-		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.values());
-		this.backgroundBuilder = new IngredientFilterBackgroundBuilder(prefixedSearchTrees, elementList, ingredientManager, modIdHelper);
+		if (clientConfig.isLowMemorySlowSearchEnabled()) {
+			this.elementSearch = new ElementSearchLowMem();
+		} else {
+			this.elementSearch = new ElementSearch();
+		}
+
+		this.prefixInfos.put('@', new PrefixInfo(config::getModNameSearchMode, IIngredientListElementInfo::getModNameStrings));
+		this.prefixInfos.put('#', new PrefixInfo(config::getTooltipSearchMode, (e) -> e.getTooltipStrings(config)));
+		this.prefixInfos.put('$', new PrefixInfo(config::getTagSearchMode, IIngredientListElementInfo::getTagStrings));
+		this.prefixInfos.put('%', new PrefixInfo(config::getCreativeTabSearchMode, IIngredientListElementInfo::getCreativeTabsStrings));
+		this.prefixInfos.put('^', new PrefixInfo(config::getColorSearchMode, IIngredientListElementInfo::getColorStrings));
+		this.prefixInfos.put('&', new PrefixInfo(config::getResourceIdSearchMode, element -> Collections.singleton(element.getResourceId())));
+
+		for (PrefixInfo prefixInfo : this.prefixInfos.values()) {
+			this.elementSearch.registerPrefix(prefixInfo);
+		}
 
 		EventBusHelper.addListener(EditModeToggleEvent.class, editModeToggleEvent -> {
 			this.filterCached = null;
@@ -94,23 +93,6 @@ public class IngredientFilter implements IIngredientGridSource {
 			this.filterCached = null;
 			updateHidden();
 		});
-	}
-
-	private static CombinedSearchTrees buildCombinedSearchTrees(ISearchTree searchTree, Collection<PrefixedSearchTree> prefixedSearchTrees) {
-		CombinedSearchTrees combinedSearchTrees = new CombinedSearchTrees();
-		combinedSearchTrees.addSearchTree(searchTree);
-		for (PrefixedSearchTree prefixedTree : prefixedSearchTrees) {
-			if (prefixedTree.getMode() == SearchMode.ENABLED) {
-				combinedSearchTrees.addSearchTree(prefixedTree.getTree());
-			}
-		}
-		return combinedSearchTrees;
-	}
-
-	private void createPrefixedSearchTree(char prefix, PrefixedSearchTree.IModeGetter modeGetter, PrefixedSearchTree.IStringsGetter stringsGetter) {
-		GeneralizedSuffixTree tree = new GeneralizedSuffixTree();
-		PrefixedSearchTree prefixedTree = new PrefixedSearchTree(tree, stringsGetter, modeGetter);
-		this.prefixedSearchTrees.put(prefix, prefixedTree);
 	}
 
 	public void addIngredients(NonNullList<IIngredientListElement<?>> ingredients, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
@@ -132,45 +114,38 @@ public class IngredientFilter implements IIngredientGridSource {
 	public <V> void addIngredient(IIngredientListElementInfo<V> info) {
 		IIngredientListElement<V> element = info.getElement();
 		updateHiddenState(element);
-		final int index = elementList.size();
-		elementList.add(element);
-		searchTree.put(Translator.toLowercaseWithLocale(info.getDisplayName()), index);
 
-		for (PrefixedSearchTree prefixedSearchTree : this.prefixedSearchTrees.values()) {
-			SearchMode searchMode = prefixedSearchTree.getMode();
-			if (searchMode != SearchMode.DISABLED) {
-				Collection<String> strings = prefixedSearchTree.getStringsGetter().getStrings(info);
-				for (String string : strings) {
-					prefixedSearchTree.getTree().put(string, index);
-				}
-			}
-		}
-		filterCached = null;
+		this.elementSearch.add(info);
+
+		invalidateCache();
 	}
 
 	public void invalidateCache() {
 		this.filterCached = null;
 	}
 
-	public <V> List<IIngredientListElement<V>> findMatchingElements(IIngredientHelper<V> ingredientHelper, V ingredient) {
+	public <V> List<IIngredientListElementInfo<V>> findMatchingElements(IIngredientHelper<V> ingredientHelper, V ingredient) {
 		final String ingredientUid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
 		final String displayName = ingredientHelper.getDisplayName(ingredient);
 		@SuppressWarnings("unchecked") final Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
 
-		final List<IIngredientListElement<V>> matchingElements = new ArrayList<>();
-		final IntSet matchingIndexes = searchTree.search(Translator.toLowercaseWithLocale(displayName));
+		final List<IIngredientListElementInfo<V>> matchingElements = new ArrayList<>();
+		final IntSet matchingIndexes = this.elementSearch.getSearchResults(Translator.toLowercaseWithLocale(displayName), PrefixInfo.NO_PREFIX);
+		if (matchingIndexes == null) {
+			return matchingElements;
+		}
 		final IntIterator iterator = matchingIndexes.iterator();
 		while (iterator.hasNext()) {
 			int index = iterator.nextInt();
-			IIngredientListElement<?> matchingElement = this.elementList.get(index);
-			Object matchingIngredient = matchingElement.getIngredient();
+			IIngredientListElementInfo<?> matchingElementInfo = this.elementSearch.get(index);
+			Object matchingIngredient = matchingElementInfo.getElement().getIngredient();
 			if (ingredientClass.isInstance(matchingIngredient)) {
 				V castMatchingIngredient = ingredientClass.cast(matchingIngredient);
 				String matchingUid = ingredientHelper.getUniqueId(castMatchingIngredient, UidContext.Ingredient);
 				if (ingredientUid.equals(matchingUid)) {
 					@SuppressWarnings("unchecked")
-					IIngredientListElement<V> matchingElementCast = (IIngredientListElement<V>) matchingElement;
-					matchingElements.add(matchingElementCast);
+					IIngredientListElementInfo<V> matchingElementInfoCast = (IIngredientListElementInfo<V>) matchingElementInfo;
+					matchingElements.add(matchingElementInfoCast);
 				}
 			}
 		}
@@ -178,13 +153,13 @@ public class IngredientFilter implements IIngredientGridSource {
 	}
 
 	public void modesChanged() {
-		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.values());
-		this.backgroundBuilder.start();
+		this.elementSearch.start();
 		this.filterCached = null;
 	}
 
 	public void updateHidden() {
-		for (IIngredientListElement<?> element : elementList) {
+		for (IIngredientListElementInfo<?> info : this.elementSearch.getAllIngredients()) {
+			IIngredientListElement<?> element = info.getElement();
 			updateHiddenState(element);
 		}
 	}
@@ -205,8 +180,10 @@ public class IngredientFilter implements IIngredientGridSource {
 	public List<IIngredientListElement<?>> getIngredientList(String filterText) {
 		filterText = filterText.toLowerCase();
 		if (!filterText.equals(filterCached)) {
-			List<IIngredientListElement<?>> ingredientList = getIngredientListUncached(filterText);
-			ingredientListCached = Collections.unmodifiableList(ingredientList);
+			List<IIngredientListElementInfo<?>> ingredientList = getIngredientListUncached(filterText);
+			ingredientListCached = ingredientList.stream()
+				.map(IIngredientListElementInfo::getElement)
+				.collect(Collectors.toList());
 			filterCached = filterText;
 		}
 		return ingredientListCached;
@@ -222,7 +199,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		return builder.build();
 	}
 
-	private List<IIngredientListElement<?>> getIngredientListUncached(String filterText) {
+	private List<IIngredientListElementInfo<?>> getIngredientListUncached(String filterText) {
 		String[] filters = filterText.split("\\|");
 
 		IntSet matches = null;
@@ -238,22 +215,24 @@ public class IngredientFilter implements IIngredientGridSource {
 			}
 		}
 
-		List<IIngredientListElement<?>> matchingIngredients = new ArrayList<>();
-
 		if (matches == null) {
-			for (IIngredientListElement<?> element : elementList) {
-				if (element.isVisible()) {
-					matchingIngredients.add(element);
-				}
-			}
-		} else {
-			int[] matchesList = matches.toIntArray();
-			Arrays.sort(matchesList);
-			for (int match : matchesList) {
-				IIngredientListElement<?> element = elementList.get(match);
-				if (element.isVisible()) {
-					matchingIngredients.add(element);
-				}
+			return this.elementSearch.getAllIngredients()
+				.parallelStream()
+				.filter(info -> {
+					IIngredientListElement<?> element = info.getElement();
+					return element.isVisible();
+				})
+				.collect(Collectors.toList());
+		}
+
+		List<IIngredientListElementInfo<?>> matchingIngredients = new ArrayList<>();
+		int[] matchesList = matches.toIntArray();
+		Arrays.sort(matchesList);
+		for (int match : matchesList) {
+			IIngredientListElementInfo<?> info = this.elementSearch.get(match);
+			IIngredientListElement<?> element = info.getElement();
+			if (element.isVisible()) {
+				matchingIngredients.add(info);
 			}
 		}
 		return matchingIngredients;
@@ -262,15 +241,15 @@ public class IngredientFilter implements IIngredientGridSource {
 	/**
 	 * Scans up and down the element list to find wildcard matches that touch the given element.
 	 */
-	public <T> List<IIngredientListElement<T>> getMatches(T ingredient, IIngredientHelper<T> ingredientHelper, Function<T, String> uidFunction) {
+	public <T> List<IIngredientListElementInfo<T>> getMatches(T ingredient, IIngredientHelper<T> ingredientHelper, Function<T, String> uidFunction) {
 		final String uid = uidFunction.apply(ingredient);
 		@SuppressWarnings("unchecked")
 		Class<? extends T> ingredientClass = (Class<? extends T>) ingredient.getClass();
-		List<IIngredientListElement<T>> matchingElements = findMatchingElements(ingredientHelper, ingredient);
+		List<IIngredientListElementInfo<T>> matchingElements = findMatchingElements(ingredientHelper, ingredient);
 		IntSet matchingIndexes = new IntOpenHashSet(50);
 		IntSet startingIndexes = new IntOpenHashSet(matchingElements.size());
-		for (IIngredientListElement<?> matchingElement : matchingElements) {
-			int index = this.elementList.indexOf(matchingElement);
+		for (IIngredientListElementInfo<?> matchingElement : matchingElements) {
+			int index = this.elementSearch.indexOf(matchingElement);
 			startingIndexes.add(index);
 			matchingIndexes.add(index);
 		}
@@ -279,8 +258,8 @@ public class IngredientFilter implements IIngredientGridSource {
 		while (iterator.hasNext()) {
 			int startingIndex = iterator.nextInt();
 			for (int i = startingIndex - 1; i >= 0 && !matchingIndexes.contains(i); i--) {
-				IIngredientListElement<?> element = this.elementList.get(i);
-				Object elementIngredient = element.getIngredient();
+				IIngredientListElementInfo<?> info = this.elementSearch.get(i);
+				Object elementIngredient = info.getElement().getIngredient();
 				if (elementIngredient.getClass() != ingredientClass) {
 					break;
 				}
@@ -290,12 +269,12 @@ public class IngredientFilter implements IIngredientGridSource {
 				}
 				matchingIndexes.add(i);
 				@SuppressWarnings("unchecked")
-				IIngredientListElement<T> castElement = (IIngredientListElement<T>) element;
-				matchingElements.add(castElement);
+				IIngredientListElementInfo<T> castInfo = (IIngredientListElementInfo<T>) info;
+				matchingElements.add(castInfo);
 			}
-			for (int i = startingIndex + 1; i < this.elementList.size() && !matchingIndexes.contains(i); i++) {
-				IIngredientListElement<?> element = this.elementList.get(i);
-				Object elementIngredient = element.getIngredient();
+			for (int i = startingIndex + 1; i < this.elementSearch.size() && !matchingIndexes.contains(i); i++) {
+				IIngredientListElementInfo<?> info = this.elementSearch.get(i);
+				Object elementIngredient = info.getElement().getIngredient();
 				if (elementIngredient.getClass() != ingredientClass) {
 					break;
 				}
@@ -305,7 +284,7 @@ public class IngredientFilter implements IIngredientGridSource {
 				}
 				matchingIndexes.add(i);
 				@SuppressWarnings("unchecked")
-				IIngredientListElement<T> castElement = (IIngredientListElement<T>) element;
+				IIngredientListElementInfo<T> castElement = (IIngredientListElementInfo<T>) info;
 				matchingElements.add(castElement);
 			}
 		}
@@ -363,16 +342,15 @@ public class IngredientFilter implements IIngredientGridSource {
 			return null;
 		}
 		final char firstChar = token.charAt(0);
-		final PrefixedSearchTree prefixedSearchTree = this.prefixedSearchTrees.get(firstChar);
-		if (prefixedSearchTree != null && prefixedSearchTree.getMode() != SearchMode.DISABLED) {
+		final PrefixInfo prefixInfo = this.prefixInfos.get(firstChar);
+		if (prefixInfo != null && prefixInfo.getMode() != SearchMode.DISABLED) {
 			token = token.substring(1);
 			if (token.isEmpty()) {
 				return null;
 			}
-			GeneralizedSuffixTree tree = prefixedSearchTree.getTree();
-			return tree.search(token);
+			return this.elementSearch.getSearchResults(token, prefixInfo);
 		} else {
-			return combinedSearchTrees.search(token);
+			return this.elementSearch.getSearchResults(token, PrefixInfo.NO_PREFIX);
 		}
 	}
 

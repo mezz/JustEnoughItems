@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.config.IClientConfig;
 import mezz.jei.ingredients.RegisteredIngredient;
+import mezz.jei.test.lib.TestClientConfig;
 import net.minecraft.util.NonNullList;
 
 import mezz.jei.api.helpers.IModIdHelper;
@@ -62,8 +64,10 @@ public class IngredientFilterTest {
 
 		this.editModeConfig = new EditModeConfig(null);
 
+		IClientConfig clientConfig = new TestClientConfig(false);
+
 		TestIngredientFilterConfig ingredientFilterConfig = new TestIngredientFilterConfig();
-		this.ingredientFilter = new IngredientFilter(blacklist, ingredientFilterConfig, editModeConfig, ingredientManager, modIdHelper);
+		this.ingredientFilter = new IngredientFilter(blacklist, clientConfig, ingredientFilterConfig, editModeConfig, ingredientManager);
 	}
 
 	@Test

@@ -6,7 +6,6 @@ import net.minecraft.item.ItemStack;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.gui.ingredients.IIngredientListElementInfo;
 
 public final class IngredientListElementComparator implements Comparator<IIngredientListElementInfo<?>> {
 	public static final IngredientListElementComparator INSTANCE = new IngredientListElementComparator();

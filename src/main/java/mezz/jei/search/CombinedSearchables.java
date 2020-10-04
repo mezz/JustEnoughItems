@@ -1,26 +1,28 @@
-package mezz.jei.suffixtree;
+package mezz.jei.search;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.config.SearchMode;
 
-public class CombinedSearchTrees implements ISearchTree {
-	private final List<ISearchTree> searchTrees = new ArrayList<>();
+public class CombinedSearchables {
+	private final List<ISearchable> searchables = new ArrayList<>();
 
-	@Override
 	public IntSet search(String word) {
 		IntSet searchResults = new IntOpenHashSet(0);
-		for (ISearchTree searchTree : searchTrees) {
-			IntSet search = searchTree.search(word);
-			searchResults = union(searchResults, search);
+		for (ISearchable searchable : searchables) {
+			if (searchable.getMode() == SearchMode.ENABLED) {
+				IntSet search = searchable.search(word);
+				searchResults = union(searchResults, search);
+			}
 		}
 		return searchResults;
 	}
 
-	public void addSearchTree(ISearchTree searchTree) {
-		this.searchTrees.add(searchTree);
+	public void addSearchable(ISearchable searchable) {
+		this.searchables.add(searchable);
 	}
 
 	/**

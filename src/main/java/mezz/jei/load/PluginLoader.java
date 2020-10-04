@@ -3,6 +3,7 @@ package mezz.jei.load;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import mezz.jei.config.IClientConfig;
 import mezz.jei.ingredients.RegisteredIngredient;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
@@ -53,6 +54,7 @@ public class PluginLoader {
 	private final IngredientBlacklistInternal blacklist;
 	private final AdvancedRegistration advancedRegistration;
 	private final IngredientManager ingredientManager;
+	private final IClientConfig clientConfig;
 	private final IIngredientFilterConfig ingredientFilterConfig;
 	private final IEditModeConfig editModeConfig;
 	private final BookmarkConfig bookmarkConfig;
@@ -73,12 +75,14 @@ public class PluginLoader {
 		List<IModPlugin> plugins,
 		VanillaPlugin vanillaPlugin,
 		Textures textures,
+		IClientConfig clientConfig,
 		IEditModeConfig editModeConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
 		BookmarkConfig bookmarkConfig,
 		IModIdHelper modIdHelper,
 		boolean debugMode)
 	{
+		this.clientConfig = clientConfig;
 		this.ingredientFilterConfig = ingredientFilterConfig;
 		this.editModeConfig = editModeConfig;
 		this.bookmarkConfig = bookmarkConfig;
@@ -155,7 +159,7 @@ public class PluginLoader {
 			NonNullList<IIngredientListElement<?>> ingredientList = IngredientListElementFactory.createBaseList(ingredientManager);
 			timer.stop();
 			timer.start("Building ingredient filter");
-			ingredientFilter = new IngredientFilter(blacklist, ingredientFilterConfig, editModeConfig, ingredientManager, modIdHelper);
+			ingredientFilter = new IngredientFilter(blacklist, clientConfig, ingredientFilterConfig, editModeConfig, ingredientManager);
 			ingredientFilter.addIngredients(ingredientList, ingredientManager, modIdHelper);
 			Internal.setIngredientFilter(ingredientFilter);
 			timer.stop();

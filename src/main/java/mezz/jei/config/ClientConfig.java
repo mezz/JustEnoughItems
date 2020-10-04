@@ -1,9 +1,6 @@
 package mezz.jei.config;
 
-import javax.annotation.Nullable;
-
 import com.feed_the_beast.mods.ftbguilibrary.config.ConfigGroup;
-import com.feed_the_beast.mods.ftbguilibrary.config.ConfigString;
 import com.feed_the_beast.mods.ftbguilibrary.config.NameMap;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -15,58 +12,69 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
-public final class ClientConfig implements IJEIConfig
-{
+public final class ClientConfig implements IJEIConfig, IClientConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
 	@Nullable
-	private static ClientConfig instance;
+	private static IClientConfig instance;
 
 	public static final int smallestNumColumns = 4;
 	public static final int largestNumColumns = 100;
 	public static final int minRecipeGuiHeight = 175;
 
 	private final ConfigValues values;
-	private List<String> searchColors = Arrays.asList(ColorGetter.getColorDefaults());
+	private List<? extends String> searchColors = Arrays.asList(ColorGetter.getColorDefaults());
 
 	// Forge config
 	private final ForgeConfigSpec.BooleanValue debugModeEnabled;
 	private final ForgeConfigSpec.BooleanValue centerSearchBarEnabled;
+	private final ForgeConfigSpec.BooleanValue lowMemorySlowSearchEnabled;
 	private final ForgeConfigSpec.EnumValue<GiveMode> giveMode;
 	private final ForgeConfigSpec.IntValue maxColumns;
 	private final ForgeConfigSpec.IntValue maxRecipeGuiHeight;
-	private final ForgeConfigSpec.ConfigValue<List<?>> searchColorsCfg;
+	private final ForgeConfigSpec.ConfigValue<List<? extends String>> searchColorsCfg;
 
 
 	public ClientConfig(ForgeConfigSpec.Builder builder) {
 		instance = this;
 		this.values = new ConfigValues();
-		ConfigValues defaultVals = new ConfigValues();
+		ConfigValues defaultValues = new ConfigValues();
 
 		builder.push("advanced");
-		builder.comment("Debug mode enabled");
-		debugModeEnabled = builder.define("DebugMode", defaultVals.debugModeEnabled);
-		builder.comment("Display search bar in the center");
-		centerSearchBarEnabled = builder.define("CenterSearch", defaultVals.centerSearchBarEnabled);
-		builder.comment("How items should be handed to you");
-		giveMode = builder.defineEnum("GiveMode", defaultVals.giveMode);
-		builder.comment("Max number of columns shown");
-		maxColumns = builder.defineInRange("MaxColumns", defaultVals.maxColumns, 1, Integer.MAX_VALUE);
-		builder.comment("Max. recipe gui height");
-		maxRecipeGuiHeight = builder.defineInRange("RecipeGuiHeight", defaultVals.maxRecipeGuiHeight, 1, Integer.MAX_VALUE);
+		{
+			builder.comment("Debug mode enabled");
+			debugModeEnabled = builder.define("DebugMode", defaultValues.debugModeEnabled);
+
+			builder.comment("Display search bar in the center");
+			centerSearchBarEnabled = builder.define("CenterSearch", defaultValues.centerSearchBarEnabled);
+
+			builder.comment("Set low-memory mode (makes search very slow, but uses less RAM)");
+			lowMemorySlowSearchEnabled = builder.define("LowMemorySlowSearchEnabled", defaultValues.lowMemorySlowSearchEnabled);
+
+			builder.comment("How items should be handed to you");
+			giveMode = builder.defineEnum("GiveMode", defaultValues.giveMode);
+
+			builder.comment("Max number of columns shown");
+			maxColumns = builder.defineInRange("MaxColumns", defaultValues.maxColumns, smallestNumColumns, largestNumColumns);
+
+			builder.comment("Max. recipe gui height");
+			maxRecipeGuiHeight = builder.defineInRange("RecipeGuiHeight", defaultValues.maxRecipeGuiHeight, minRecipeGuiHeight, Integer.MAX_VALUE);
+		}
 		builder.pop();
 
 		builder.push("colors");
-		builder.comment("Color values to search for");
-		searchColorsCfg = builder.defineList("SearchColors", Arrays.asList(ColorGetter.getColorDefaults()), obj -> true);
+		{
+			builder.comment("Color values to search for");
+			searchColorsCfg = builder.defineList("SearchColors", Arrays.asList(ColorGetter.getColorDefaults()), obj -> true);
+		}
 		builder.pop();
 	}
 
 	@Deprecated
-	public static ClientConfig getInstance() {
+	public static IClientConfig getInstance() {
 		Preconditions.checkNotNull(instance);
 		return instance;
 	}
@@ -102,30 +110,41 @@ public final class ClientConfig implements IJEIConfig
 	public void reload() {
 		values.debugModeEnabled = debugModeEnabled.get();
 		values.centerSearchBarEnabled = centerSearchBarEnabled.get();
+		values.lowMemorySlowSearchEnabled = lowMemorySlowSearchEnabled.get();
 		values.giveMode = giveMode.get();
 		values.maxColumns = maxColumns.get();
 		values.maxRecipeGuiHeight = maxRecipeGuiHeight.get();
-		searchColors = (List<String>) searchColorsCfg.get();
+		searchColors = searchColorsCfg.get();
 
 		syncSearchColorsConfig();
 	}
 
+	@Override
 	public boolean isDebugModeEnabled() {
 		return values.debugModeEnabled;
 	}
 
+	@Override
 	public boolean isCenterSearchBarEnabled() {
 		return values.centerSearchBarEnabled;
 	}
 
+	@Override
+	public boolean isLowMemorySlowSearchEnabled() {
+		return values.lowMemorySlowSearchEnabled;
+	}
+
+	@Override
 	public GiveMode getGiveMode() {
 		return values.giveMode;
 	}
 
+	@Override
 	public int getMaxColumns() {
 		return values.maxColumns;
 	}
 
+	@Override
 	public int getMaxRecipeGuiHeight() {
 		return values.maxRecipeGuiHeight;
 	}

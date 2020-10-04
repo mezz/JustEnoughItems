@@ -1,14 +1,12 @@
 package mezz.jei.startup;
 
-import java.util.List;
-
 import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.BookmarkConfig;
-import mezz.jei.config.ClientConfig;
+import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.config.IWorldConfig;
@@ -39,13 +37,15 @@ import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.LoggedTimer;
 
+import java.util.List;
+
 public class JeiStarter {
 	private boolean started;
 
 	public void start(
 		List<IModPlugin> plugins,
 		Textures textures,
-		ClientConfig clientConfig,
+		IClientConfig clientConfig,
 		IEditModeConfig editModeConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IWorldConfig worldConfig,
@@ -61,7 +61,7 @@ public class JeiStarter {
 		JeiInternalPlugin jeiInternalPlugin = PluginHelper.getPluginWithClass(JeiInternalPlugin.class, plugins);
 		ErrorUtil.checkNotNull(vanillaPlugin, "vanilla plugin");
 		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
-		PluginLoader pluginLoader = new PluginLoader(plugins, vanillaPlugin, textures, editModeConfig, ingredientFilterConfig, bookmarkConfig, modIdHelper, debugMode);
+		PluginLoader pluginLoader = new PluginLoader(plugins, vanillaPlugin, textures, clientConfig, editModeConfig, ingredientFilterConfig, bookmarkConfig, modIdHelper, debugMode);
 		GuiHandlerRegistration guiHandlerRegistration = pluginLoader.getGuiHandlerRegistration();
 		IngredientManager ingredientManager = pluginLoader.getIngredientManager();
 		IngredientFilter ingredientFilter = pluginLoader.getIngredientFilter();

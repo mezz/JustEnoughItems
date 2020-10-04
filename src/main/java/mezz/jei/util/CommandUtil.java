@@ -1,6 +1,10 @@
 package mezz.jei.util;
 
-import net.minecraftforge.items.ItemHandlerHelper;
+import mezz.jei.config.IClientConfig;
+import mezz.jei.config.ServerInfo;
+import mezz.jei.network.Network;
+import mezz.jei.network.packets.PacketGiveItemStack;
+import mezz.jei.network.packets.PacketSetHotbarItemStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
@@ -12,12 +16,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
-
-import mezz.jei.config.ClientConfig;
-import mezz.jei.config.ServerInfo;
-import mezz.jei.network.Network;
-import mezz.jei.network.packets.PacketGiveItemStack;
-import mezz.jei.network.packets.PacketSetHotbarItemStack;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,7 +32,7 @@ public final class CommandUtil {
 	 *
 	 * {@link CreativeScreen} has special client-side handling for itemStacks, just give the item on the client
 	 */
-	public static void giveStack(ItemStack itemStack, InputMappings.Input input, ClientConfig clientConfig) {
+	public static void giveStack(ItemStack itemStack, InputMappings.Input input, IClientConfig clientConfig) {
 		final GiveMode giveMode = clientConfig.getGiveMode();
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientPlayerEntity player = minecraft.player;

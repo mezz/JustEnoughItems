@@ -160,9 +160,10 @@ public class IngredientManager implements IIngredientManager {
 		IIngredientHelper<V> ingredientHelper = registeredIngredient.getIngredientHelper();
 
 		for (V ingredient : ingredients) {
-			List<IIngredientListElement<V>> matchingElements = ingredientFilter.findMatchingElements(ingredientHelper, ingredient);
-			if (!matchingElements.isEmpty()) {
-				for (IIngredientListElement<V> matchingElement : matchingElements) {
+			List<IIngredientListElementInfo<V>> matchingElementInfos = ingredientFilter.findMatchingElements(ingredientHelper, ingredient);
+			if (!matchingElementInfos.isEmpty()) {
+				for (IIngredientListElementInfo<V> matchingElementInfo : matchingElementInfos) {
+					IIngredientListElement<V> matchingElement = matchingElementInfo.getElement();
 					blacklist.removeIngredientFromBlacklist(matchingElement.getIngredient(), ingredientHelper);
 					ingredientFilter.updateHiddenState(matchingElement);
 				}
@@ -171,7 +172,7 @@ public class IngredientManager implements IIngredientManager {
 				}
 			} else {
 				IIngredientListElement<V> element = IngredientListElementFactory.createOrderedElement(this, ingredientType, ingredient);
-				IngredientListElementInfo<V> info = IngredientListElementInfo.create(element, this, modIdHelper);
+				IIngredientListElementInfo<V> info = IngredientListElementInfo.create(element, this, modIdHelper);
 				if (info != null) {
 					blacklist.removeIngredientFromBlacklist(ingredient, ingredientHelper);
 					ingredientFilter.addIngredient(info);
@@ -233,15 +234,16 @@ public class IngredientManager implements IIngredientManager {
 		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientType);
 
 		for (V ingredient : ingredients) {
-			List<IIngredientListElement<V>> matchingElements = ingredientFilter.findMatchingElements(ingredientHelper, ingredient);
-			if (matchingElements.isEmpty()) {
+			List<IIngredientListElementInfo<V>> matchingElementInfos = ingredientFilter.findMatchingElements(ingredientHelper, ingredient);
+			if (matchingElementInfos.isEmpty()) {
 
 				String errorInfo = ingredientHelper.getErrorInfo(ingredient);
 				LOGGER.error("Could not find any matching ingredients to remove: {}", errorInfo);
 			} else if (enableDebugLogs) {
 				LOGGER.debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(ingredient));
 			}
-			for (IIngredientListElement<V> matchingElement : matchingElements) {
+			for (IIngredientListElementInfo<V> matchingElementInfo : matchingElementInfos) {
+				IIngredientListElement<V> matchingElement = matchingElementInfo.getElement();
 				blacklist.addIngredientToBlacklist(matchingElement.getIngredient(), ingredientHelper);
 				matchingElement.setVisible(false);
 			}
@@ -252,11 +254,12 @@ public class IngredientManager implements IIngredientManager {
 	public <V> boolean isIngredientVisible(V ingredient, IngredientFilter ingredientFilter) {
 		IIngredientType<V> ingredientType = getIngredientType(ingredient);
 		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientType);
-		List<IIngredientListElement<V>> matchingElements = ingredientFilter.findMatchingElements(ingredientHelper, ingredient);
-		if (matchingElements.isEmpty()) {
+		List<IIngredientListElementInfo<V>> matchingElementInfos = ingredientFilter.findMatchingElements(ingredientHelper, ingredient);
+		if (matchingElementInfos.isEmpty()) {
 			return true;
 		}
-		for (IIngredientListElement<?> matchingElement : matchingElements) {
+		for (IIngredientListElementInfo<?> matchingElementInfo : matchingElementInfos) {
+			IIngredientListElement<?> matchingElement = matchingElementInfo.getElement();
 			if (matchingElement.isVisible()) {
 				return true;
 			}

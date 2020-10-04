@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.config.IClientConfig;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.ModList;
@@ -12,15 +13,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.config.ClientConfig;
 import mezz.jei.config.ModIdFormattingConfig;
 import org.apache.commons.lang3.StringUtils;
 
 public class ForgeModIdHelper extends AbstractModIdHelper {
-	private final ClientConfig config;
+	private final IClientConfig config;
 	private final ModIdFormattingConfig modIdFormattingConfig;
 
-	public ForgeModIdHelper(ClientConfig config, ModIdFormattingConfig modIdFormattingConfig) {
+	public ForgeModIdHelper(IClientConfig config, ModIdFormattingConfig modIdFormattingConfig) {
 		this.config = config;
 		this.modIdFormattingConfig = modIdFormattingConfig;
 	}

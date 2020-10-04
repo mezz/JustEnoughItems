@@ -1,19 +1,10 @@
 package mezz.jei.gui.overlay.bookmarks;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import javax.annotation.Nullable;
-import java.util.Set;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.item.ItemStack;
-
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.ClientConfig;
+import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.ingredients.IIngredientListElement;
@@ -25,7 +16,16 @@ import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.util.CommandUtil;
 import mezz.jei.util.MathUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.util.InputMappings;
+import net.minecraft.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
+
+import javax.annotation.Nullable;
+import java.util.Set;
 
 public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, IBookmarkOverlay {
 	private static final int BUTTON_SIZE = 20;
@@ -43,10 +43,10 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 
 	// data
 	private final BookmarkList bookmarkList;
-	private final ClientConfig clientConfig;
+	private final IClientConfig clientConfig;
 	private final IWorldConfig worldConfig;
 
-	public BookmarkOverlay(BookmarkList bookmarkList, Textures textures, IngredientGridWithNavigation contents, ClientConfig clientConfig, IWorldConfig worldConfig) {
+	public BookmarkOverlay(BookmarkList bookmarkList, Textures textures, IngredientGridWithNavigation contents, IClientConfig clientConfig, IWorldConfig worldConfig) {
 		this.bookmarkList = bookmarkList;
 		this.clientConfig = clientConfig;
 		this.worldConfig = worldConfig;

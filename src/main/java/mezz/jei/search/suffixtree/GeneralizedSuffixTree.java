@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package mezz.jei.suffixtree;
+package mezz.jei.search.suffixtree;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.search.ISearchable;
 
 /**
  * A Generalized Suffix Tree, based on the Ukkonen's paper "On-line construction of suffix trees"
@@ -60,7 +61,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * - add nullable/nonnull annotations
  * - formatting
  */
-public class GeneralizedSuffixTree implements ISearchTree {
+public class GeneralizedSuffixTree implements ISearchable {
 
 	private int highestIndex = -1;
 	/**

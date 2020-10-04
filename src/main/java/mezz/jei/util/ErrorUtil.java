@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.config.ClientConfig;
 import mezz.jei.ingredients.IngredientsForType;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraft.block.Block;
@@ -28,7 +29,6 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.ingredients.Ingredients;

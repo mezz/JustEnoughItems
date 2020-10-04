@@ -1,4 +1,4 @@
-package mezz.jei.gui.ingredients;
+package mezz.jei.ingredients;
 
 import java.util.Collection;
 import java.util.List;
@@ -7,13 +7,14 @@ import java.util.Set;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.config.IIngredientFilterConfig;
+import mezz.jei.gui.ingredients.IIngredientListElement;
 
 public interface IIngredientListElementInfo<V> {
 	IIngredientHelper<V> getIngredientHelper();
 
 	IIngredientRenderer<V> getIngredientRenderer();
 
-	String getDisplayName();
+	Collection<String> getNameStrings();
 
 	String getModNameForSorting();
 

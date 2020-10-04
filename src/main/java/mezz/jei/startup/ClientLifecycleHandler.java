@@ -5,8 +5,8 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.config.BookmarkConfig;
-import mezz.jei.config.ClientConfig;
 import mezz.jei.config.EditModeConfig;
+import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IngredientFilterConfig;
 import mezz.jei.config.JEIClientConfig;
@@ -40,7 +40,7 @@ public class ClientLifecycleHandler {
 	private final Logger LOGGER = LogManager.getLogger();
 	private final JeiStarter starter = new JeiStarter();
 	private final Textures textures;
-	private final ClientConfig clientConfig;
+	private final IClientConfig clientConfig;
 	private final BookmarkConfig bookmarkConfig;
 	private final ModIdFormattingConfig modIdFormattingConfig;
 	private final IngredientFilterConfig ingredientFilterConfig;

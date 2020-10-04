@@ -5,6 +5,8 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.config.ClientConfig;
+import mezz.jei.config.IClientConfig;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -15,7 +17,6 @@ import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
-import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.config.IWorldConfig;
@@ -49,14 +50,14 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
 	protected final IngredientListBatchRenderer guiIngredientSlots;
 	private final IIngredientFilterConfig ingredientFilterConfig;
-	private final ClientConfig clientConfig;
+	private final IClientConfig clientConfig;
 	private final IWorldConfig worldConfig;
 
 	public IngredientGrid(
 		GridAlignment alignment,
 		IEditModeConfig editModeConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
-		ClientConfig clientConfig,
+		IClientConfig clientConfig,
 		IWorldConfig worldConfig,
 		GuiScreenHelper guiScreenHelper,
 		RecipesGui recipesGui

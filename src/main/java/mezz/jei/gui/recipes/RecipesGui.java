@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.config.IClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.FontRenderer;
@@ -25,7 +26,6 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IRecipesGui;
-import mezz.jei.config.ClientConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.HoverChecker;
@@ -53,7 +53,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	private static final int buttonWidth = 13;
 	private static final int buttonHeight = 13;
 	private final RecipeTransferManager recipeTransferManager;
-	private final ClientConfig clientConfig;
+	private final IClientConfig clientConfig;
 
 	private int headerHeight;
 
@@ -92,7 +92,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		RecipeTransferManager recipeTransferManager,
 		IngredientManager ingredientManager,
 		IModIdHelper modIdHelper,
-		ClientConfig clientConfig
+		IClientConfig clientConfig
 	) {
 		super(new StringTextComponent("Recipes"));
 		this.recipeTransferManager = recipeTransferManager;

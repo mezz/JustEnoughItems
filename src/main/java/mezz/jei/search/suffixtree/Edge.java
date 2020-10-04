@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package mezz.jei.suffixtree;
+package mezz.jei.search.suffixtree;
 
 /**
  * Represents an Edge in the Suffix Tree.
