@@ -1,5 +1,17 @@
 package mezz.jei.ingredients;
 
+import com.google.common.collect.ImmutableSet;
+import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.config.IIngredientFilterConfig;
+import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.util.Translator;
+import net.minecraft.util.ResourceLocation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,27 +23,11 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import net.minecraft.util.ResourceLocation;
-
-import com.google.common.collect.ImmutableSet;
-import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.config.IIngredientFilterConfig;
-import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.util.Translator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class IngredientListElementInfo<V> implements IIngredientListElementInfo<V> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");
 
 	private final IIngredientListElement<V> element;
-	private final IIngredientHelper<V> ingredientHelper;
-	private final IIngredientRenderer<V> ingredientRenderer;
 	private final String displayName;
 	private final List<String> modIds;
 	private final List<String> modNames;
@@ -40,11 +36,9 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	@Nullable
 	public static <V> IIngredientListElementInfo<V> create(IIngredientListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		V ingredient = element.getIngredient();
-		IIngredientType<V> ingredientType = ingredientManager.getIngredientType(ingredient);
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		try {
-			return new IngredientListElementInfo<>(element, ingredientHelper, ingredientRenderer, modIdHelper);
+			return new IngredientListElementInfo<>(element, ingredientHelper, modIdHelper);
 		} catch (RuntimeException e) {
 			try {
 				String ingredientInfo = ingredientHelper.getErrorInfo(ingredient);
@@ -56,10 +50,8 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 		}
 	}
 
-	protected IngredientListElementInfo(IIngredientListElement<V> element, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer, IModIdHelper modIdHelper) {
+	protected IngredientListElementInfo(IIngredientListElement<V> element, IIngredientHelper<V> ingredientHelper, IModIdHelper modIdHelper) {
 		this.element = element;
-		this.ingredientHelper = ingredientHelper;
-		this.ingredientRenderer = ingredientRenderer;
 		V ingredient = element.getIngredient();
 		String displayModId = ingredientHelper.getDisplayModId(ingredient);
 		String modId = ingredientHelper.getModId(ingredient);
@@ -71,16 +63,6 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 		this.modNames = this.modIds.stream().map(modIdHelper::getModNameForModId).collect(Collectors.toList());
 		this.displayName = IngredientInformation.getDisplayName(ingredient, ingredientHelper);
 		this.resourceId = ingredientHelper.getResourceId(ingredient);
-	}
-
-	@Override
-	public IIngredientHelper<V> getIngredientHelper() {
-		return ingredientHelper;
-	}
-
-	@Override
-	public IIngredientRenderer<V> getIngredientRenderer() {
-		return ingredientRenderer;
 	}
 
 	@Override
@@ -115,18 +97,20 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	}
 
 	@Override
-	public final List<String> getTooltipStrings(IIngredientFilterConfig config) {
+	public final List<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager) {
 		String modName = this.modNames.get(0);
 		String modId = this.modIds.get(0);
 		String modNameLowercase = modName.toLowerCase(Locale.ENGLISH);
 		String displayNameLowercase = Translator.toLowercaseWithLocale(this.displayName);
 		V ingredient = element.getIngredient();
+		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
 		return IngredientInformation.getTooltipStrings(ingredient, ingredientRenderer, ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceId), config);
 	}
 
 	@Override
-	public Collection<String> getTagStrings() {
+	public Collection<String> getTagStrings(IIngredientManager ingredientManager) {
 		V ingredient = element.getIngredient();
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		Collection<ResourceLocation> tags = ingredientHelper.getTags(ingredient);
 		return tags.stream()
 			.map(ResourceLocation::getPath)
@@ -134,8 +118,9 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	}
 
 	@Override
-	public Collection<String> getCreativeTabsStrings() {
+	public Collection<String> getCreativeTabsStrings(IIngredientManager ingredientManager) {
 		V ingredient = element.getIngredient();
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		Collection<String> creativeTabsStrings = ingredientHelper.getCreativeTabNames(ingredient);
 		return creativeTabsStrings.stream()
 			.map(Translator::toLowercaseWithLocale)
@@ -143,8 +128,9 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	}
 
 	@Override
-	public Collection<String> getColorStrings() {
+	public Collection<String> getColorStrings(IIngredientManager ingredientManager) {
 		V ingredient = element.getIngredient();
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		return IngredientInformation.getColorStrings(ingredient, ingredientHelper);
 	}
 

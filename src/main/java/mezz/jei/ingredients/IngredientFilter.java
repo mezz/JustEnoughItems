@@ -74,10 +74,10 @@ public class IngredientFilter implements IIngredientGridSource {
 		}
 
 		this.prefixInfos.put('@', new PrefixInfo(config::getModNameSearchMode, IIngredientListElementInfo::getModNameStrings));
-		this.prefixInfos.put('#', new PrefixInfo(config::getTooltipSearchMode, (e) -> e.getTooltipStrings(config)));
-		this.prefixInfos.put('$', new PrefixInfo(config::getTagSearchMode, IIngredientListElementInfo::getTagStrings));
-		this.prefixInfos.put('%', new PrefixInfo(config::getCreativeTabSearchMode, IIngredientListElementInfo::getCreativeTabsStrings));
-		this.prefixInfos.put('^', new PrefixInfo(config::getColorSearchMode, IIngredientListElementInfo::getColorStrings));
+		this.prefixInfos.put('#', new PrefixInfo(config::getTooltipSearchMode, e -> e.getTooltipStrings(config, ingredientManager)));
+		this.prefixInfos.put('$', new PrefixInfo(config::getTagSearchMode, e -> e.getTagStrings(ingredientManager)));
+		this.prefixInfos.put('%', new PrefixInfo(config::getCreativeTabSearchMode, e -> e.getCreativeTabsStrings(ingredientManager)));
+		this.prefixInfos.put('^', new PrefixInfo(config::getColorSearchMode, e -> e.getColorStrings(ingredientManager)));
 		this.prefixInfos.put('&', new PrefixInfo(config::getResourceIdSearchMode, element -> Collections.singleton(element.getResourceId())));
 
 		for (PrefixInfo prefixInfo : this.prefixInfos.values()) {

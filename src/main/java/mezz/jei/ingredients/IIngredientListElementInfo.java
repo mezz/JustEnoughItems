@@ -4,15 +4,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 
 public interface IIngredientListElementInfo<V> {
-	IIngredientHelper<V> getIngredientHelper();
-
-	IIngredientRenderer<V> getIngredientRenderer();
 
 	Collection<String> getNameStrings();
 
@@ -20,13 +16,13 @@ public interface IIngredientListElementInfo<V> {
 
 	Set<String> getModNameStrings();
 
-	List<String> getTooltipStrings(IIngredientFilterConfig config);
+	List<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager);
 
-	Collection<String> getTagStrings();
+	Collection<String> getTagStrings(IIngredientManager ingredientManager);
 
-	Collection<String> getCreativeTabsStrings();
+	Collection<String> getCreativeTabsStrings(IIngredientManager ingredientManager);
 
-	Collection<String> getColorStrings();
+	Collection<String> getColorStrings(IIngredientManager ingredientManager);
 
 	String getResourceId();
 

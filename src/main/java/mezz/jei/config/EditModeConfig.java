@@ -1,15 +1,5 @@
 package mezz.jei.config;
 
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.ingredients.IIngredientListElementInfo;
-import mezz.jei.ingredients.IngredientFilter;
-import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileReader;
@@ -19,6 +9,16 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.ingredients.IIngredientListElementInfo;
+import mezz.jei.ingredients.IngredientFilter;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class EditModeConfig implements IEditModeConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
