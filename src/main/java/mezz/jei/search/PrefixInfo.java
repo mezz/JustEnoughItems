@@ -4,11 +4,12 @@ import mezz.jei.config.SearchMode;
 import mezz.jei.ingredients.IIngredientListElementInfo;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class PrefixInfo {
 	public static final PrefixInfo NO_PREFIX = new PrefixInfo(
 		() -> SearchMode.ENABLED,
-		IIngredientListElementInfo::getNameStrings
+		i -> Collections.singleton(i.getName())
 	);
 	private final IModeGetter modeGetter;
 	private final IStringsGetter stringsGetter;

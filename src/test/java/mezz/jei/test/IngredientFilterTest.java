@@ -3,9 +3,12 @@ package mezz.jei.test;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import mezz.jei.config.IClientConfig;
+import mezz.jei.ingredients.IIngredientSorter;
+import mezz.jei.ingredients.IIngredientListElementInfo;
 import mezz.jei.ingredients.RegisteredIngredient;
 import mezz.jei.test.lib.TestClientConfig;
 import net.minecraft.util.NonNullList;
@@ -67,7 +70,8 @@ public class IngredientFilterTest {
 		IClientConfig clientConfig = new TestClientConfig(false);
 
 		TestIngredientFilterConfig ingredientFilterConfig = new TestIngredientFilterConfig();
-		this.ingredientFilter = new IngredientFilter(blacklist, clientConfig, ingredientFilterConfig, editModeConfig, ingredientManager);
+		IIngredientSorter ingredientListSorter = () -> Comparator.comparing(IIngredientListElementInfo::getModNameForSorting);
+		this.ingredientFilter = new IngredientFilter(blacklist, clientConfig, ingredientFilterConfig, editModeConfig, ingredientManager, ingredientListSorter);
 	}
 
 	@Test

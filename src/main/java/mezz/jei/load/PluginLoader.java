@@ -1,13 +1,5 @@
 package mezz.jei.load;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
-import mezz.jei.config.IClientConfig;
-import mezz.jei.ingredients.RegisteredIngredient;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
@@ -19,6 +11,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.BookmarkConfig;
+import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.gui.GuiHelper;
@@ -26,9 +19,11 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.ingredients.IngredientSorter;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.ingredients.ModIngredientRegistration;
+import mezz.jei.ingredients.RegisteredIngredient;
 import mezz.jei.ingredients.SubtypeManager;
 import mezz.jei.load.registration.AdvancedRegistration;
 import mezz.jei.load.registration.GuiHandlerRegistration;
@@ -47,6 +42,11 @@ import mezz.jei.transfer.RecipeTransferHandlerHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.LoggedTimer;
 import mezz.jei.util.StackHelper;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class PluginLoader {
 	private final LoggedTimer timer;
@@ -55,9 +55,6 @@ public class PluginLoader {
 	private final AdvancedRegistration advancedRegistration;
 	private final IngredientManager ingredientManager;
 	private final IClientConfig clientConfig;
-	private final IIngredientFilterConfig ingredientFilterConfig;
-	private final IEditModeConfig editModeConfig;
-	private final BookmarkConfig bookmarkConfig;
 	private final RecipeTransferRegistration recipeTransferRegistration;
 	private final GuiHandlerRegistration guiHandlerRegistration;
 	private final ImmutableList<IRecipeCategory<?>> recipeCategories;
@@ -76,16 +73,10 @@ public class PluginLoader {
 		VanillaPlugin vanillaPlugin,
 		Textures textures,
 		IClientConfig clientConfig,
-		IEditModeConfig editModeConfig,
-		IIngredientFilterConfig ingredientFilterConfig,
-		BookmarkConfig bookmarkConfig,
 		IModIdHelper modIdHelper,
 		boolean debugMode)
 	{
 		this.clientConfig = clientConfig;
-		this.ingredientFilterConfig = ingredientFilterConfig;
-		this.editModeConfig = editModeConfig;
-		this.bookmarkConfig = bookmarkConfig;
 		this.timer = new LoggedTimer();
 		this.modIdHelper = modIdHelper;
 		this.blacklist = new IngredientBlacklistInternal();
@@ -153,13 +144,13 @@ public class PluginLoader {
 		return recipeManager;
 	}
 
-	public IngredientFilter getIngredientFilter() {
+	public IngredientFilter createIngredientFilter(IngredientSorter sorter, IEditModeConfig editModeConfig, IIngredientFilterConfig ingredientFilterConfig) {
 		if (ingredientFilter == null) {
 			timer.start("Building ingredient list");
 			NonNullList<IIngredientListElement<?>> ingredientList = IngredientListElementFactory.createBaseList(ingredientManager);
 			timer.stop();
 			timer.start("Building ingredient filter");
-			ingredientFilter = new IngredientFilter(blacklist, clientConfig, ingredientFilterConfig, editModeConfig, ingredientManager);
+			ingredientFilter = new IngredientFilter(blacklist, clientConfig, ingredientFilterConfig, editModeConfig, ingredientManager, sorter);
 			ingredientFilter.addIngredients(ingredientList, ingredientManager, modIdHelper);
 			Internal.setIngredientFilter(ingredientFilter);
 			timer.stop();
@@ -171,7 +162,7 @@ public class PluginLoader {
 		return ingredientManager;
 	}
 
-	public BookmarkList getBookmarkList() {
+	public BookmarkList createBookmarkList(BookmarkConfig bookmarkConfig) {
 		if (bookmarkList == null) {
 			timer.start("Building bookmarks");
 			bookmarkList = new BookmarkList(ingredientManager, bookmarkConfig);

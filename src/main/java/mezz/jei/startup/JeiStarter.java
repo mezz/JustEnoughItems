@@ -10,6 +10,7 @@ import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.config.IWorldConfig;
+import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.overlay.GridAlignment;
@@ -22,6 +23,7 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientFilterApi;
+import mezz.jei.ingredients.IngredientSorter;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.InputHandler;
 import mezz.jei.load.PluginCaller;
@@ -50,8 +52,9 @@ public class JeiStarter {
 		IIngredientFilterConfig ingredientFilterConfig,
 		IWorldConfig worldConfig,
 		BookmarkConfig bookmarkConfig,
-		IModIdHelper modIdHelper
-	) {
+		IModIdHelper modIdHelper,
+		ModNameSortingConfig modNameSortingConfig)
+	{
 		ErrorUtil.checkNotEmpty(plugins, "plugins");
 		LoggedTimer totalTime = new LoggedTimer();
 		totalTime.start("Starting JEI");
@@ -61,11 +64,12 @@ public class JeiStarter {
 		JeiInternalPlugin jeiInternalPlugin = PluginHelper.getPluginWithClass(JeiInternalPlugin.class, plugins);
 		ErrorUtil.checkNotNull(vanillaPlugin, "vanilla plugin");
 		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
-		PluginLoader pluginLoader = new PluginLoader(plugins, vanillaPlugin, textures, clientConfig, editModeConfig, ingredientFilterConfig, bookmarkConfig, modIdHelper, debugMode);
+		PluginLoader pluginLoader = new PluginLoader(plugins, vanillaPlugin, textures, clientConfig, modIdHelper, debugMode);
 		GuiHandlerRegistration guiHandlerRegistration = pluginLoader.getGuiHandlerRegistration();
 		IngredientManager ingredientManager = pluginLoader.getIngredientManager();
-		IngredientFilter ingredientFilter = pluginLoader.getIngredientFilter();
-		BookmarkList bookmarkList = pluginLoader.getBookmarkList();
+		IngredientSorter ingredientSorter = new IngredientSorter(modNameSortingConfig);
+		IngredientFilter ingredientFilter = pluginLoader.createIngredientFilter(ingredientSorter, editModeConfig, ingredientFilterConfig);
+		BookmarkList bookmarkList = pluginLoader.createBookmarkList(bookmarkConfig);
 		RecipeManager recipeManager = pluginLoader.getRecipeManager();
 		RecipeTransferRegistration recipeTransferRegistration = pluginLoader.getRecipeTransferRegistration();
 		RecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferRegistration.getRecipeTransferHandlers());

@@ -66,9 +66,8 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	}
 
 	@Override
-	public Collection<String> getNameStrings() {
-		String displayNameLowercase = Translator.toLowercaseWithLocale(this.displayName);
-		return Collections.singleton(displayNameLowercase);
+	public String getName() {
+		return Translator.toLowercaseWithLocale(this.displayName);
 	}
 
 	@Override

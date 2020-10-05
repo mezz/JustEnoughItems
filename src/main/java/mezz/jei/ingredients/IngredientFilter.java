@@ -47,6 +47,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	private final IngredientBlacklistInternal blacklist;
 	private final IEditModeConfig editModeConfig;
 	private final IIngredientManager ingredientManager;
+	private final IIngredientSorter sorter;
 
 	private final IElementSearch elementSearch;
 	private final Char2ObjectMap<PrefixInfo> prefixInfos = new Char2ObjectOpenHashMap<>();
@@ -61,11 +62,13 @@ public class IngredientFilter implements IIngredientGridSource {
 		IClientConfig clientConfig,
 		IIngredientFilterConfig config,
 		IEditModeConfig editModeConfig,
-		IIngredientManager ingredientManager
-	) {
+		IIngredientManager ingredientManager,
+		IIngredientSorter sorter)
+	{
 		this.blacklist = blacklist;
 		this.editModeConfig = editModeConfig;
 		this.ingredientManager = ingredientManager;
+		this.sorter = sorter;
 
 		if (clientConfig.isLowMemorySlowSearchEnabled()) {
 			this.elementSearch = new ElementSearchLowMem();
@@ -98,14 +101,16 @@ public class IngredientFilter implements IIngredientGridSource {
 	public void addIngredients(NonNullList<IIngredientListElement<?>> ingredients, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		List<IIngredientListElementInfo<?>> ingredientInfo = ingredients.stream()
 			.map(i -> IngredientListElementInfo.create(i, ingredientManager, modIdHelper))
-			.sorted(IngredientListElementComparator.INSTANCE)
+			.sorted(sorter.getComparator())
 			.collect(Collectors.toList());
 		String currentModName = null;
 		for (IIngredientListElementInfo<?> element : ingredientInfo) {
-			String modname = element.getModNameForSorting();
-			if (!Objects.equals(currentModName, modname)) {
-				currentModName = modname;
-				LOGGER.debug("Indexing ingredients: " + modname);
+			if (LOGGER.isDebugEnabled()) {
+				String modname = element.getModNameForSorting();
+				if (!Objects.equals(currentModName, modname)) {
+					currentModName = modname;
+					LOGGER.debug("Indexing ingredients: " + modname);
+				}
 			}
 			addIngredient(element);
 		}
@@ -182,6 +187,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		if (!filterText.equals(filterCached)) {
 			List<IIngredientListElementInfo<?>> ingredientList = getIngredientListUncached(filterText);
 			ingredientListCached = ingredientList.stream()
+				.sorted(sorter.getComparator())
 				.map(IIngredientListElementInfo::getElement)
 				.collect(Collectors.toList());
 			filterCached = filterText;

@@ -12,6 +12,7 @@ import mezz.jei.config.IngredientFilterConfig;
 import mezz.jei.config.JEIClientConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.ModIdFormattingConfig;
+import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.config.WorldConfig;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.events.PlayerJoinedWorldEvent;
@@ -47,6 +48,7 @@ public class ClientLifecycleHandler {
 	private final WorldConfig worldConfig;
 	private final IModIdHelper modIdHelper;
 	private final IEditModeConfig editModeConfig;
+	private final ModNameSortingConfig ingredientModNameSortingConfig;
 
 	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures) {
 		File jeiConfigurationDir = new File(FMLPaths.CONFIGDIR.get().toFile(), ModIds.JEI_ID);
@@ -69,6 +71,8 @@ public class ClientLifecycleHandler {
 		bookmarkConfig = new BookmarkConfig(jeiConfigurationDir);
 		worldConfig = new WorldConfig(jeiConfigurationDir);
 		editModeConfig = new EditModeConfig(jeiConfigurationDir);
+		File ingredientModSortOrderFile = new File(jeiConfigurationDir, "ingredient-list-mod-sort-order.ini");
+		ingredientModNameSortingConfig = new ModNameSortingConfig(ingredientModSortOrderFile, modIdHelper);
 
 		ErrorUtil.setModIdHelper(modIdHelper);
 		ErrorUtil.setWorldConfig(worldConfig);
@@ -105,7 +109,7 @@ public class ClientLifecycleHandler {
 		}
 		if (minecraft.world != null) {
 			Preconditions.checkNotNull(textures);
-			this.starter.start(plugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
+			this.starter.start(plugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper, ingredientModNameSortingConfig);
 		}
 	}
 
@@ -122,7 +126,7 @@ public class ClientLifecycleHandler {
 			if (starter.hasStarted() && Minecraft.getInstance().world != null) {
 				LOGGER.info("Restarting JEI.");
 				Preconditions.checkNotNull(textures);
-				starter.start(plugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper);
+				starter.start(plugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper, ingredientModNameSortingConfig);
 			}
 		}
 	}

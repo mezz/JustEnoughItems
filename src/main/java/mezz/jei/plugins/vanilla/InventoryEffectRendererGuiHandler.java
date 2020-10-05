@@ -20,6 +20,7 @@ class InventoryEffectRendererGuiHandler<T extends Container> implements IGuiCont
 	/**
 	 * Modeled after {@link DisplayEffectsScreen#drawActivePotionEffects()}
 	 */
+	@SuppressWarnings("JavadocReference")
 	@Override
 	public List<Rectangle2d> getGuiExtraAreas(DisplayEffectsScreen<T> containerScreen) {
 		Minecraft minecraft = containerScreen.getMinecraft();

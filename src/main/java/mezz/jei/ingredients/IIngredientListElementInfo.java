@@ -10,7 +10,7 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 
 public interface IIngredientListElementInfo<V> {
 
-	Collection<String> getNameStrings();
+	String getName();
 
 	String getModNameForSorting();
 
