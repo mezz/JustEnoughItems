@@ -1,6 +1,5 @@
 package mezz.jei.gui;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.Collections;
 import java.util.List;
@@ -10,7 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextProperties;
-import net.minecraft.util.text.LanguageMap;
 
 public final class TooltipRenderer {
 	private TooltipRenderer() {
