@@ -40,12 +40,6 @@ public final class TooltipRenderer {
 		int scaledWidth = minecraft.getMainWindow().getScaledWidth();
 		int scaledHeight = minecraft.getMainWindow().getScaledHeight();
 		ItemStack itemStack = ingredient instanceof ItemStack ? (ItemStack) ingredient : ItemStack.EMPTY;
-		
-		// Vanilla workaround for tool tips. Use the below when forge adds it back again
-		if(minecraft.currentScreen != null)
-			minecraft.currentScreen.renderToolTip(matrixStack, textLines.stream().map(LanguageMap.getInstance()::func_241870_a).collect(ImmutableList.toImmutableList()), x, y, font);
-		
-		// TODO use again when available 
-		//GuiUtils.drawHoveringText(itemStack, matrixStack, textLines, x, y, scaledWidth, scaledHeight, maxWidth, font);
+		GuiUtils.drawHoveringText(itemStack, matrixStack, textLines, x, y, scaledWidth, scaledHeight, maxWidth, font);
 	}
 }
