@@ -11,6 +11,7 @@ import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.sorting.ModNameSortingConfig;
+import mezz.jei.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.overlay.GridAlignment;
@@ -54,7 +55,8 @@ public class JeiStarter {
 		IWorldConfig worldConfig,
 		BookmarkConfig bookmarkConfig,
 		IModIdHelper modIdHelper,
-		ModNameSortingConfig modNameSortingConfig)
+		ModNameSortingConfig ingredientModNameSortingConfig,
+		RecipeCategorySortingConfig recipeCategorySortingConfig)
 	{
 		ErrorUtil.checkNotEmpty(plugins, "plugins");
 		LoggedTimer totalTime = new LoggedTimer();
@@ -68,10 +70,10 @@ public class JeiStarter {
 		PluginLoader pluginLoader = new PluginLoader(plugins, vanillaPlugin, textures, clientConfig, modIdHelper, debugMode);
 		GuiHandlerRegistration guiHandlerRegistration = pluginLoader.getGuiHandlerRegistration();
 		IngredientManager ingredientManager = pluginLoader.getIngredientManager();
-		IIngredientSorter ingredientSorter = new IngredientSorter(modNameSortingConfig);
+		IIngredientSorter ingredientSorter = new IngredientSorter(ingredientModNameSortingConfig);
 		IngredientFilter ingredientFilter = pluginLoader.createIngredientFilter(ingredientSorter, editModeConfig, ingredientFilterConfig);
 		BookmarkList bookmarkList = pluginLoader.createBookmarkList(bookmarkConfig);
-		RecipeManager recipeManager = pluginLoader.getRecipeManager();
+		RecipeManager recipeManager = pluginLoader.getRecipeManager(recipeCategorySortingConfig);
 		RecipeTransferRegistration recipeTransferRegistration = pluginLoader.getRecipeTransferRegistration();
 		RecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferRegistration.getRecipeTransferHandlers());
 

@@ -14,6 +14,7 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.config.ModIdFormattingConfig;
 import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.config.WorldConfig;
+import mezz.jei.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.events.PlayerJoinedWorldEvent;
 import mezz.jei.gui.textures.Textures;
@@ -49,6 +50,7 @@ public class ClientLifecycleHandler {
 	private final IModIdHelper modIdHelper;
 	private final IEditModeConfig editModeConfig;
 	private final ModNameSortingConfig ingredientModNameSortingConfig;
+	private final RecipeCategorySortingConfig recipeCategorySortingConfig;
 
 	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures) {
 		File jeiConfigurationDir = new File(FMLPaths.CONFIGDIR.get().toFile(), ModIds.JEI_ID);
@@ -73,6 +75,8 @@ public class ClientLifecycleHandler {
 		editModeConfig = new EditModeConfig(jeiConfigurationDir);
 		File ingredientModSortOrderFile = new File(jeiConfigurationDir, "ingredient-list-mod-sort-order.ini");
 		ingredientModNameSortingConfig = new ModNameSortingConfig(ingredientModSortOrderFile);
+		File recipeCategoryModSortOrderFile = new File(jeiConfigurationDir, "recipe-category-sort-order.ini");
+		recipeCategorySortingConfig = new RecipeCategorySortingConfig(recipeCategoryModSortOrderFile);
 
 		ErrorUtil.setModIdHelper(modIdHelper);
 		ErrorUtil.setWorldConfig(worldConfig);
@@ -109,7 +113,18 @@ public class ClientLifecycleHandler {
 		}
 		if (minecraft.world != null) {
 			Preconditions.checkNotNull(textures);
-			this.starter.start(plugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper, ingredientModNameSortingConfig);
+			this.starter.start(
+				plugins,
+				textures,
+				clientConfig,
+				editModeConfig,
+				ingredientFilterConfig,
+				worldConfig,
+				bookmarkConfig,
+				modIdHelper,
+				ingredientModNameSortingConfig,
+				recipeCategorySortingConfig
+			);
 		}
 	}
 
@@ -126,7 +141,18 @@ public class ClientLifecycleHandler {
 			if (starter.hasStarted() && Minecraft.getInstance().world != null) {
 				LOGGER.info("Restarting JEI.");
 				Preconditions.checkNotNull(textures);
-				starter.start(plugins, textures, clientConfig, editModeConfig, ingredientFilterConfig, worldConfig, bookmarkConfig, modIdHelper, ingredientModNameSortingConfig);
+				starter.start(
+					plugins,
+					textures,
+					clientConfig,
+					editModeConfig,
+					ingredientFilterConfig,
+					worldConfig,
+					bookmarkConfig,
+					modIdHelper,
+					ingredientModNameSortingConfig,
+					recipeCategorySortingConfig
+				);
 			}
 		}
 	}

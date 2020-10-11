@@ -1,13 +1,14 @@
 package mezz.jei.config.sorting;
 
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.ingredients.IIngredientListElementInfo;
 
 import java.io.File;
 import java.util.Comparator;
 
-public class ModNameSortingConfig extends StringSortingConfig {
+public class ModNameSortingConfig extends MappedStringSortingConfig<IIngredientListElementInfo<?>> {
 	public ModNameSortingConfig(File file) {
-		super(file);
+		super(file, IIngredientListElementInfo::getModNameForSorting);
 	}
 
 	@Override

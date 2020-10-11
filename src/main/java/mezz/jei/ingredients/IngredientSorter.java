@@ -39,8 +39,7 @@ public final class IngredientSorter implements IIngredientSorter {
 	@Override
 	public Comparator<IIngredientListElementInfo<?>> getComparator(Set<String> allValues) {
 		if (this.comparator == null) {
-			List<String> ordering = this.modNameSortingConfig.getSorted(allValues);
-			Comparator<IIngredientListElementInfo<?>> modName = createModNameComparator(ordering);
+			Comparator<IIngredientListElementInfo<?>> modName = this.modNameSortingConfig.getComparatorFromMappedValues(allValues);
 			this.comparator = createComparator(modName);
 		}
 		return this.comparator;

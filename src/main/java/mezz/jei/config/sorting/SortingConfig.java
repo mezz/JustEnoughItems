@@ -9,12 +9,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.ToIntFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public abstract class SortingConfig<T> {
@@ -59,7 +58,7 @@ public abstract class SortingConfig<T> {
 		if (sortedOnFile == null) {
 			sortOrder = getDefaultSortOrder();
 		} else {
-			Comparator<T> existingOrder = Comparator.comparingInt(t -> fileSortIndex(sortedOnFile::indexOf, t));
+			Comparator<T> existingOrder = Comparator.comparingInt(t -> indexOfSort(sortedOnFile.indexOf(t)));
 			Comparator<T> defaultOrder = getDefaultSortOrder();
 			sortOrder = existingOrder.thenComparing(defaultOrder);
 		}
@@ -73,19 +72,26 @@ public abstract class SortingConfig<T> {
 		}
 	}
 
-	private int fileSortIndex(ToIntFunction<T> indexOfFunc, T value) {
-		int index = indexOfFunc.applyAsInt(value);
+	private int indexOfSort(int index) {
 		if (index < 0) {
-			index = Integer.MAX_VALUE;
+			return Integer.MAX_VALUE;
 		}
 		return index;
 	}
 
-	public List<T> getSorted(Set<T> allValues) {
+	private List<T> getSorted(Set<T> allValues) {
 		if (this.sorted == null) {
 			load(allValues);
 		}
-		return Collections.unmodifiableList(this.sorted);
+		return this.sorted;
+	}
+
+	public <V> Comparator<V> getComparator(Set<T> allValues, Function<V, T> mapping) {
+		List<T> sorted = getSorted(allValues);
+		return Comparator.comparingInt(o -> {
+			T value = mapping.apply(o);
+			return indexOfSort(sorted.indexOf(value));
+		});
 	}
 
 }

@@ -14,6 +14,7 @@ import mezz.jei.config.BookmarkConfig;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
+import mezz.jei.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.textures.Textures;
@@ -135,10 +136,10 @@ public class PluginLoader {
 		return recipeTransferRegistration;
 	}
 
-	public RecipeManager getRecipeManager() {
+	public RecipeManager getRecipeManager(RecipeCategorySortingConfig recipeCategorySortingConfig) {
 		if (recipeManager == null) {
 			timer.start("Building recipe registry");
-			recipeManager = new RecipeManager(recipeCategories, recipes, recipeCatalysts, ingredientManager, recipeManagerPlugins, modIdHelper);
+			recipeManager = new RecipeManager(recipeCategories, recipes, recipeCatalysts, ingredientManager, recipeManagerPlugins, modIdHelper, recipeCategorySortingConfig);
 			timer.stop();
 		}
 		return recipeManager;
