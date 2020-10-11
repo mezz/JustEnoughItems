@@ -1,5 +1,6 @@
 package mezz.jei.config.sorting;
 
+import mezz.jei.config.sorting.serializers.ISortingSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,7 +9,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -19,21 +19,20 @@ import java.util.stream.Collectors;
 public abstract class SortingConfig<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final File file;
+	private final ISortingSerializer<T> serializer;
 	@Nullable
 	private List<T> sorted;
 
-	public SortingConfig(File file) {
+	public SortingConfig(File file, ISortingSerializer<T> serializer) {
 		this.file = file;
+		this.serializer = serializer;
 	}
-
-	abstract protected List<T> read(Reader reader) throws IOException;
-	abstract protected void write(FileWriter writer, List<T> sorted) throws IOException;
 
 	abstract protected Comparator<T> getDefaultSortOrder();
 
 	private void save(List<T> sorted) {
 		try (FileWriter writer = new FileWriter(this.file)) {
-			write(writer, sorted);
+			this.serializer.write(writer, sorted);
 		} catch (IOException e) {
 			LOGGER.error("Failed to save to file {}", this.file, e);
 		}
@@ -44,7 +43,7 @@ public abstract class SortingConfig<T> {
 		final File file = this.file;
 		if (file.exists()) {
 			try (FileReader reader = new FileReader(file)) {
-				return read(reader);
+				return this.serializer.read(reader);
 			} catch (IOException e) {
 				LOGGER.error("Failed to load from file {}", file, e);
 			}

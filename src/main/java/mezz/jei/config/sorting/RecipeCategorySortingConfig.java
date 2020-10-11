@@ -2,14 +2,15 @@ package mezz.jei.config.sorting;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.config.sorting.serializers.SortingSerializers;
 import net.minecraft.util.ResourceLocation;
 
 import java.io.File;
 import java.util.Comparator;
 
-public class RecipeCategorySortingConfig extends MappedStringSortingConfig<ResourceLocation> {
+public class RecipeCategorySortingConfig extends MappedSortingConfig<ResourceLocation, String> {
 	public RecipeCategorySortingConfig(File file) {
-		super(file, ResourceLocation::toString);
+		super(file, SortingSerializers.STRING, ResourceLocation::toString);
 	}
 
 	@Override
