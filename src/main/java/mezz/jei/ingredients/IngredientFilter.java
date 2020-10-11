@@ -20,27 +20,25 @@ import mezz.jei.events.PlayerJoinedWorldEvent;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.search.ElementSearch;
+import mezz.jei.search.ElementSearchLowMem;
 import mezz.jei.search.IElementSearch;
 import mezz.jei.search.PrefixInfo;
-import mezz.jei.search.ElementSearchLowMem;
 import mezz.jei.util.Translator;
 import net.minecraft.util.NonNullList;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class IngredientFilter implements IIngredientGridSource {
-	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
@@ -51,6 +49,7 @@ public class IngredientFilter implements IIngredientGridSource {
 
 	private final IElementSearch elementSearch;
 	private final Char2ObjectMap<PrefixInfo> prefixInfos = new Char2ObjectOpenHashMap<>();
+	private final Set<String> modNamesForSorting = new HashSet<>();
 
 	@Nullable
 	private String filterCached;
@@ -63,7 +62,9 @@ public class IngredientFilter implements IIngredientGridSource {
 		IIngredientFilterConfig config,
 		IEditModeConfig editModeConfig,
 		IIngredientManager ingredientManager,
-		IIngredientSorter sorter)
+		IIngredientSorter sorter,
+		NonNullList<IIngredientListElement<?>> ingredients,
+		IModIdHelper modIdHelper)
 	{
 		this.blacklist = blacklist;
 		this.editModeConfig = editModeConfig;
@@ -96,22 +97,12 @@ public class IngredientFilter implements IIngredientGridSource {
 			this.filterCached = null;
 			updateHidden();
 		});
-	}
 
-	public void addIngredients(NonNullList<IIngredientListElement<?>> ingredients, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		List<IIngredientListElementInfo<?>> ingredientInfo = ingredients.stream()
 			.map(i -> IngredientListElementInfo.create(i, ingredientManager, modIdHelper))
-			.sorted(sorter.getComparator())
 			.collect(Collectors.toList());
-		String currentModName = null;
+
 		for (IIngredientListElementInfo<?> element : ingredientInfo) {
-			if (LOGGER.isDebugEnabled()) {
-				String modname = element.getModNameForSorting();
-				if (!Objects.equals(currentModName, modname)) {
-					currentModName = modname;
-					LOGGER.debug("Indexing ingredients: " + modname);
-				}
-			}
 			addIngredient(element);
 		}
 	}
@@ -121,6 +112,11 @@ public class IngredientFilter implements IIngredientGridSource {
 		updateHiddenState(element);
 
 		this.elementSearch.add(info);
+
+		String modNameForSorting = info.getModNameForSorting();
+		if (this.modNamesForSorting.add(modNameForSorting)) {
+			this.sorter.invalidateCache();
+		}
 
 		invalidateCache();
 	}
@@ -186,8 +182,9 @@ public class IngredientFilter implements IIngredientGridSource {
 		filterText = filterText.toLowerCase();
 		if (!filterText.equals(filterCached)) {
 			List<IIngredientListElementInfo<?>> ingredientList = getIngredientListUncached(filterText);
+			Set<String> modNamesForSorting = Collections.unmodifiableSet(this.modNamesForSorting);
 			ingredientListCached = ingredientList.stream()
-				.sorted(sorter.getComparator())
+				.sorted(sorter.getComparator(modNamesForSorting))
 				.map(IIngredientListElementInfo::getElement)
 				.collect(Collectors.toList());
 			filterCached = filterText;

@@ -1,29 +1,25 @@
 package mezz.jei;
 
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.config.JEIClientConfig;
+import mezz.jei.events.EventBusHelper;
+import mezz.jei.gui.textures.JeiSpriteUploader;
+import mezz.jei.gui.textures.Textures;
+import mezz.jei.startup.ClientLifecycleHandler;
+import mezz.jei.startup.NetworkHandler;
 import mezz.jei.vote.GoVoteHandler;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.IReloadableResourceManager;
+import net.minecraft.resources.IResourceManager;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.resources.IResourceManager;
-
-import mezz.jei.api.constants.ModIds;
-import mezz.jei.events.EventBusHelper;
-import mezz.jei.gui.textures.JeiSpriteUploader;
-import mezz.jei.gui.textures.Textures;
-import mezz.jei.startup.ClientLifecycleHandler;
-import mezz.jei.startup.NetworkHandler;
 
 @Mod(ModIds.JEI_ID)
 public class JustEnoughItems {
@@ -35,8 +31,6 @@ public class JustEnoughItems {
 	}
 
 	private static void clientStart(IEventBus modEventBus, NetworkHandler networkHandler) {
-		ForgeConfigSpec.Builder configBuilder = new ForgeConfigSpec.Builder();
-
 		JEIClientConfig.register();
 
 		EventBusHelper.addListener(modEventBus, ColorHandlerEvent.Block.class, setupEvent -> {

@@ -4,8 +4,10 @@ import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 public final class IngredientSorter implements IIngredientSorter {
 
@@ -25,34 +27,42 @@ public final class IngredientSorter implements IIngredientSorter {
 	private static final Comparator<IIngredientListElementInfo<?>> ALPHABETICAL =
 		Comparator.comparing(IIngredientListElementInfo::getName);
 
-	private Comparator<IIngredientListElementInfo<?>> modId;
+	private final ModNameSortingConfig modNameSortingConfig;
+
+	@Nullable
 	private Comparator<IIngredientListElementInfo<?>> comparator;
 
 	public IngredientSorter(ModNameSortingConfig modNameSortingConfig) {
-		List<String> ordering = modNameSortingConfig.getSorted();
-		this.modId = createModIdComparator(ordering);
-		this.comparator = createComparator(this.modId);
-		modNameSortingConfig.addListener(this::updateModIdSorting);
-	}
-
-	private void updateModIdSorting(List<String> ordering) {
-		modId = createModIdComparator(ordering);
-		comparator = createComparator(modId);
+		this.modNameSortingConfig = modNameSortingConfig;
 	}
 
 	@Override
-	public Comparator<IIngredientListElementInfo<?>> getComparator() {
-		return comparator;
+	public Comparator<IIngredientListElementInfo<?>> getComparator(Set<String> allValues) {
+		if (this.comparator == null) {
+			List<String> ordering = this.modNameSortingConfig.getSorted(allValues);
+			Comparator<IIngredientListElementInfo<?>> modName = createModNameComparator(ordering);
+			this.comparator = createComparator(modName);
+		}
+		return this.comparator;
 	}
 
-	private static Comparator<IIngredientListElementInfo<?>> createModIdComparator(List<String> ordering) {
+	@Override
+	public void invalidateCache() {
+		this.comparator = null;
+	}
+
+	private static Comparator<IIngredientListElementInfo<?>> createModNameComparator(List<String> ordering) {
 		return Comparator.comparingInt(o -> {
 			String modNameForSorting = o.getModNameForSorting();
-			return ordering.indexOf(modNameForSorting);
+			int index = ordering.indexOf(modNameForSorting);
+			if (index < 0) {
+				index = Integer.MAX_VALUE;
+			}
+			return index;
 		});
 	}
 
-	private static Comparator<IIngredientListElementInfo<?>> createComparator(Comparator<IIngredientListElementInfo<?>> modId) {
-		return modId.thenComparing(ITEM_STACK_FIRST).thenComparing(CREATIVE);
+	private static Comparator<IIngredientListElementInfo<?>> createComparator(Comparator<IIngredientListElementInfo<?>> modName) {
+		return modName.thenComparing(ITEM_STACK_FIRST).thenComparing(CREATIVE);
 	}
 }

@@ -1,11 +1,5 @@
 package mezz.jei.ingredients;
 
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
@@ -19,6 +13,12 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 public class IngredientManager implements IIngredientManager {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -43,7 +43,8 @@ public class IngredientManager implements IIngredientManager {
 
 		ImmutableMap.Builder<IIngredientType<?>, RegisteredIngredient<?>> ingredientsMapBuilder = ImmutableMap.builder();
 		for (RegisteredIngredient<?> registeredIngredient : registeredIngredients) {
-			ingredientsMapBuilder.put(registeredIngredient.getIngredientType(), registeredIngredient);
+			IIngredientType<?> ingredientType = registeredIngredient.getIngredientType();
+			ingredientsMapBuilder.put(ingredientType, registeredIngredient);
 		}
 		this.ingredientsMap = ingredientsMapBuilder.build();
 

@@ -9,20 +9,17 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.Set;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public abstract class SortingConfig<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final File file;
-	private final Collection<Consumer<List<T>>> listeners = new ArrayList<>();
 	@Nullable
 	private List<T> sorted;
 
@@ -34,10 +31,8 @@ public abstract class SortingConfig<T> {
 	abstract protected void write(FileWriter writer, List<T> sorted) throws IOException;
 
 	abstract protected Comparator<T> getDefaultSortOrder();
-	abstract protected Stream<T> generate();
 
-	private void save() {
-		List<T> sorted = getSorted();
+	private void save(List<T> sorted) {
 		try (FileWriter writer = new FileWriter(this.file)) {
 			write(writer, sorted);
 		} catch (IOException e) {
@@ -45,47 +40,52 @@ public abstract class SortingConfig<T> {
 		}
 	}
 
-	private void load() {
+	@Nullable
+	private List<T> loadSortedFromFile() {
 		final File file = this.file;
-		List<T> sortedOnFile = null;
 		if (file.exists()) {
 			try (FileReader reader = new FileReader(file)) {
-				sortedOnFile = read(reader);
+				return read(reader);
 			} catch (IOException e) {
 				LOGGER.error("Failed to load from file {}", file, e);
 			}
 		}
+		return null;
+	}
 
-		Comparator<T> sortOrder = getDefaultSortOrder();
-		if (sortedOnFile != null) {
-			Comparator<T> existingOrder = Comparator.comparing(sortedOnFile::indexOf);
-			sortOrder = existingOrder.thenComparing(sortOrder);
+	private void load(Set<T> allValues) {
+		final List<T> sortedOnFile = loadSortedFromFile();
+		final Comparator<T> sortOrder;
+		if (sortedOnFile == null) {
+			sortOrder = getDefaultSortOrder();
+		} else {
+			Comparator<T> existingOrder = Comparator.comparingInt(t -> fileSortIndex(sortedOnFile::indexOf, t));
+			Comparator<T> defaultOrder = getDefaultSortOrder();
+			sortOrder = existingOrder.thenComparing(defaultOrder);
 		}
 
-		final List<T> previousSorted = this.sorted;
-		this.sorted = generate()
+		this.sorted = allValues.stream()
 			.sorted(sortOrder)
 			.collect(Collectors.toList());
 
-		if (!Objects.equals(previousSorted, this.sorted)) {
-			List<T> unmodifiableList = Collections.unmodifiableList(this.sorted);
-			for (Consumer<List<T>> listener : this.listeners) {
-				listener.accept(unmodifiableList);
-			}
-		}
 		if (!Objects.equals(sortedOnFile, this.sorted)) {
-			save();
+			save(this.sorted);
 		}
 	}
 
-	public List<T> getSorted() {
+	private int fileSortIndex(ToIntFunction<T> indexOfFunc, T value) {
+		int index = indexOfFunc.applyAsInt(value);
+		if (index < 0) {
+			index = Integer.MAX_VALUE;
+		}
+		return index;
+	}
+
+	public List<T> getSorted(Set<T> allValues) {
 		if (this.sorted == null) {
-			load();
+			load(allValues);
 		}
 		return Collections.unmodifiableList(this.sorted);
 	}
 
-	public void addListener(Consumer<List<T>> listener) {
-		this.listeners.add(listener);
-	}
 }

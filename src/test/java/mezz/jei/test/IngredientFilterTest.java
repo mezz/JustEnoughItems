@@ -1,38 +1,37 @@
 package mezz.jei.test;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-
-import mezz.jei.config.IClientConfig;
-import mezz.jei.ingredients.IIngredientSorter;
-import mezz.jei.ingredients.IIngredientListElementInfo;
-import mezz.jei.ingredients.RegisteredIngredient;
-import mezz.jei.test.lib.TestClientConfig;
-import net.minecraft.util.NonNullList;
-
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.config.EditModeConfig;
+import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IngredientBlacklistType;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.ingredients.IIngredientListElementInfo;
+import mezz.jei.ingredients.IIngredientSorter;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.ingredients.ModIngredientRegistration;
+import mezz.jei.ingredients.RegisteredIngredient;
 import mezz.jei.ingredients.SubtypeManager;
 import mezz.jei.load.registration.SubtypeRegistration;
+import mezz.jei.test.lib.TestClientConfig;
 import mezz.jei.test.lib.TestIngredient;
 import mezz.jei.test.lib.TestIngredientFilterConfig;
 import mezz.jei.test.lib.TestIngredientHelper;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
+import net.minecraft.util.NonNullList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 
 public class IngredientFilterTest {
 	private static final int EXTRA_INGREDIENT_COUNT = 5;
@@ -44,8 +43,6 @@ public class IngredientFilterTest {
 	private NonNullList<IIngredientListElement<?>> baseList;
 	@Nullable
 	private IEditModeConfig editModeConfig;
-	@Nullable
-	private IModIdHelper modIdHelper;
 
 	@BeforeEach
 	public void setup() {
@@ -59,7 +56,7 @@ public class IngredientFilterTest {
 		testPlugin.registerIngredients(modIngredientRegistration);
 
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
-		this.modIdHelper = new TestModIdHelper();
+		IModIdHelper modIdHelper = new TestModIdHelper();
 		List<RegisteredIngredient<?>> registeredIngredients = modIngredientRegistration.getRegisteredIngredients();
 		this.ingredientManager =  new IngredientManager(modIdHelper, blacklist, registeredIngredients, true);
 
@@ -70,18 +67,14 @@ public class IngredientFilterTest {
 		IClientConfig clientConfig = new TestClientConfig(false);
 
 		TestIngredientFilterConfig ingredientFilterConfig = new TestIngredientFilterConfig();
-		IIngredientSorter ingredientListSorter = () -> Comparator.comparing(IIngredientListElementInfo::getModNameForSorting);
-		this.ingredientFilter = new IngredientFilter(blacklist, clientConfig, ingredientFilterConfig, editModeConfig, ingredientManager, ingredientListSorter);
+		IIngredientSorter ingredientListSorter = i -> Comparator.comparing(IIngredientListElementInfo::getModNameForSorting);
+		this.ingredientFilter = new IngredientFilter(blacklist, clientConfig, ingredientFilterConfig, editModeConfig, ingredientManager, ingredientListSorter, baseList, modIdHelper);
 	}
 
 	@Test
 	public void testSetup() {
 		Assertions.assertNotNull(ingredientFilter);
-		Assertions.assertNotNull(baseList);
-		Assertions.assertNotNull(ingredientManager);
-		Assertions.assertNotNull(modIdHelper);
 
-		ingredientFilter.addIngredients(baseList, ingredientManager, modIdHelper);
 		List<IIngredientListElement<?>> ingredientList = ingredientFilter.getIngredientList("");
 		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientList.size());
 	}
@@ -89,11 +82,7 @@ public class IngredientFilterTest {
 	@Test
 	public void testAddingAndRemovingIngredients() {
 		Assertions.assertNotNull(ingredientFilter);
-		Assertions.assertNotNull(baseList);
-		Assertions.assertNotNull(ingredientManager);
-		Assertions.assertNotNull(modIdHelper);
 
-		ingredientFilter.addIngredients(baseList, ingredientManager, modIdHelper);
 		addIngredients(ingredientFilter);
 		removeIngredients(ingredientFilter);
 	}
@@ -101,11 +90,6 @@ public class IngredientFilterTest {
 	@Test
 	public void testRebuilding() {
 		Assertions.assertNotNull(ingredientFilter);
-		Assertions.assertNotNull(baseList);
-		Assertions.assertNotNull(ingredientManager);
-		Assertions.assertNotNull(modIdHelper);
-
-		ingredientFilter.addIngredients(baseList, ingredientManager, modIdHelper);
 
 		ingredientFilter.modesChanged();
 
@@ -132,11 +116,7 @@ public class IngredientFilterTest {
 		Assertions.assertNotNull(ingredientFilter);
 		Assertions.assertNotNull(ingredientManager);
 		Assertions.assertNotNull(baseList);
-		Assertions.assertNotNull(ingredientManager);
 		Assertions.assertNotNull(editModeConfig);
-		Assertions.assertNotNull(modIdHelper);
-
-		ingredientFilter.addIngredients(baseList, ingredientManager, modIdHelper);
 
 		TestIngredient blacklistedIngredient = (TestIngredient) baseList.get(0).getIngredient();
 		TestIngredientHelper testIngredientHelper = new TestIngredientHelper();

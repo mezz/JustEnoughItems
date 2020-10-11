@@ -1,20 +1,13 @@
 package mezz.jei.config.sorting;
 
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.api.helpers.IModIdHelper;
-import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.ModList;
 
 import java.io.File;
 import java.util.Comparator;
-import java.util.stream.Stream;
 
 public class ModNameSortingConfig extends StringSortingConfig {
-	private final IModIdHelper modIdHelper;
-
-	public ModNameSortingConfig(File file, IModIdHelper modIdHelper) {
+	public ModNameSortingConfig(File file) {
 		super(file);
-		this.modIdHelper = modIdHelper;
 	}
 
 	@Override
@@ -24,10 +17,4 @@ public class ModNameSortingConfig extends StringSortingConfig {
 		return minecraftFirst.thenComparing(naturalOrder);
 	}
 
-	@Override
-	protected Stream<String> generate() {
-		return ModList.get()
-			.applyForEachModContainer(ModContainer::getModId)
-			.map(modIdHelper::getModNameForModId);
-	}
 }
