@@ -80,7 +80,7 @@ public class ClientLifecycleHandler {
 
 		ModNameSortingConfig ingredientModNameSortingConfig = new ModNameSortingConfig(new File(jeiConfigurationDir, "ingredient-list-mod-sort-order.ini"));
 		IngredientTypeSortingConfig ingredientTypeSortingConfig = new IngredientTypeSortingConfig(new File(jeiConfigurationDir, "ingredient-list-type-sort-order.ini"));
-		ingredientSorter = new IngredientSorter(ingredientModNameSortingConfig, ingredientTypeSortingConfig);
+		ingredientSorter = new IngredientSorter(clientConfig, ingredientModNameSortingConfig, ingredientTypeSortingConfig);
 
 		ErrorUtil.setModIdHelper(modIdHelper);
 		ErrorUtil.setWorldConfig(worldConfig);

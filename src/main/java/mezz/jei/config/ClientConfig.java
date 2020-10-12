@@ -7,14 +7,18 @@ import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.color.ColorNamer;
+import mezz.jei.ingredients.IngredientSortStage;
 import mezz.jei.util.GiveMode;
 import net.minecraftforge.common.ForgeConfigSpec;
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public final class ClientConfig implements IJEIConfig, IClientConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -27,6 +31,12 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 
 	private final ConfigValues values;
 	private List<? extends String> searchColors = Arrays.asList(ColorGetter.getColorDefaults());
+	private final List<IngredientSortStage> ingredientSorterStagesDefault = Arrays.asList(
+		IngredientSortStage.MOD_NAME,
+		IngredientSortStage.INGREDIENT_TYPE,
+		IngredientSortStage.CREATIVE_MENU
+	);
+	private List<IngredientSortStage> ingredientSorterStages = ingredientSorterStagesDefault;
 
 	// Forge config
 	private final ForgeConfigSpec.BooleanValue debugModeEnabled;
@@ -36,7 +46,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	private final ForgeConfigSpec.IntValue maxColumns;
 	private final ForgeConfigSpec.IntValue maxRecipeGuiHeight;
 	private final ForgeConfigSpec.ConfigValue<List<? extends String>> searchColorsCfg;
-
+	private final ForgeConfigSpec.ConfigValue<List<? extends String>> ingredientSorterStagesCfg;
 
 	public ClientConfig(ForgeConfigSpec.Builder builder) {
 		instance = this;
@@ -69,6 +79,16 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 		{
 			builder.comment("Color values to search for");
 			searchColorsCfg = builder.defineList("SearchColors", Arrays.asList(ColorGetter.getColorDefaults()), obj -> true);
+		}
+		builder.pop();
+
+		builder.push("sorting");
+		{
+			builder.comment(String.format("Sorting order for the ingredient list. Valid stages: %s", Arrays.asList(IngredientSortStage.values())));
+			List<String> defaults = ingredientSorterStagesDefault.stream()
+				.map(Enum::name)
+				.collect(Collectors.toList());
+			ingredientSorterStagesCfg = builder.defineList("IngredientSortStages", defaults, obj -> true);
 		}
 		builder.pop();
 	}
@@ -108,13 +128,22 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 
 	@Override
 	public void reload() {
-		values.debugModeEnabled = debugModeEnabled.get();
-		values.centerSearchBarEnabled = centerSearchBarEnabled.get();
-		values.lowMemorySlowSearchEnabled = lowMemorySlowSearchEnabled.get();
-		values.giveMode = giveMode.get();
-		values.maxColumns = maxColumns.get();
-		values.maxRecipeGuiHeight = maxRecipeGuiHeight.get();
-		searchColors = searchColorsCfg.get();
+		this.values.debugModeEnabled = debugModeEnabled.get();
+		this.values.centerSearchBarEnabled = centerSearchBarEnabled.get();
+		this.values.lowMemorySlowSearchEnabled = lowMemorySlowSearchEnabled.get();
+		this.values.giveMode = giveMode.get();
+		this.values.maxColumns = maxColumns.get();
+		this.values.maxRecipeGuiHeight = maxRecipeGuiHeight.get();
+		this.searchColors = searchColorsCfg.get();
+
+		this.ingredientSorterStages = ingredientSorterStagesCfg.get()
+			.stream()
+			.map(s -> EnumUtils.getEnum(IngredientSortStage.class, s))
+			.filter(Objects::nonNull)
+			.collect(Collectors.toList());
+		if (ingredientSorterStages.isEmpty()) {
+			this.ingredientSorterStages = ingredientSorterStagesDefault;
+		}
 
 		syncSearchColorsConfig();
 	}
@@ -147,6 +176,11 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	@Override
 	public int getMaxRecipeGuiHeight() {
 		return values.maxRecipeGuiHeight;
+	}
+
+	@Override
+	public List<IngredientSortStage> getIngredientSorterStages() {
+		return ingredientSorterStages;
 	}
 
 	private void syncSearchColorsConfig() {

@@ -2,6 +2,7 @@ package mezz.jei.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.config.IClientConfig;
 import mezz.jei.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
@@ -9,12 +10,14 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class IngredientSorter implements IIngredientSorter {
 
-	private static final Comparator<IIngredientListElementInfo<?>> CREATIVE =
+	private static final Comparator<IIngredientListElementInfo<?>> CREATIVE_MENU =
 		Comparator.comparingInt(o -> {
 			IIngredientListElement<?> element = o.getElement();
 			return element.getOrderIndex();
@@ -23,13 +26,15 @@ public final class IngredientSorter implements IIngredientSorter {
 	private static final Comparator<IIngredientListElementInfo<?>> ALPHABETICAL =
 		Comparator.comparing(IIngredientListElementInfo::getName);
 
+	private final IClientConfig clientConfig;
 	private final ModNameSortingConfig modNameSortingConfig;
 	private final IngredientTypeSortingConfig ingredientTypeSortingConfig;
 
 	@Nullable
 	private Comparator<IIngredientListElementInfo<?>> cachedComparator;
 
-	public IngredientSorter(ModNameSortingConfig modNameSortingConfig, IngredientTypeSortingConfig ingredientTypeSortingConfig) {
+	public IngredientSorter(IClientConfig clientConfig, ModNameSortingConfig modNameSortingConfig, IngredientTypeSortingConfig ingredientTypeSortingConfig) {
+		this.clientConfig = clientConfig;
 		this.modNameSortingConfig = modNameSortingConfig;
 		this.ingredientTypeSortingConfig = ingredientTypeSortingConfig;
 	}
@@ -43,7 +48,17 @@ public final class IngredientSorter implements IIngredientSorter {
 			Comparator<IIngredientListElementInfo<?>> modName = createModNameComparator(modNames);
 			Comparator<IIngredientListElementInfo<?>> ingredientType = createIngredientTypeComparator(ingredientTypes);
 
-			this.cachedComparator = modName.thenComparing(ingredientType).thenComparing(CREATIVE);
+			EnumMap<IngredientSortStage, Comparator<IIngredientListElementInfo<?>>> comparatorsForStages = new EnumMap<>(IngredientSortStage.class);
+			comparatorsForStages.put(IngredientSortStage.ALPHABETICAL, ALPHABETICAL);
+			comparatorsForStages.put(IngredientSortStage.CREATIVE_MENU, CREATIVE_MENU);
+			comparatorsForStages.put(IngredientSortStage.INGREDIENT_TYPE, ingredientType);
+			comparatorsForStages.put(IngredientSortStage.MOD_NAME, modName);
+
+			List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
+			this.cachedComparator =  ingredientSorterStages.stream()
+				.map(comparatorsForStages::get)
+				.reduce(Comparator::thenComparing)
+				.orElseGet(() -> modName.thenComparing(ingredientType).thenComparing(CREATIVE_MENU));
 		}
 		return this.cachedComparator;
 	}
