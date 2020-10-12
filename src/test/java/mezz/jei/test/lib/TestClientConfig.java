@@ -1,7 +1,11 @@
 package mezz.jei.test.lib;
 
+import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IClientConfig;
+import mezz.jei.ingredients.IngredientSortStage;
 import mezz.jei.util.GiveMode;
+
+import java.util.List;
 
 public class TestClientConfig implements IClientConfig {
 	private final boolean lowMemorySlowSearchEnabled;
@@ -38,5 +42,10 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public int getMaxRecipeGuiHeight() {
 		return 500;
+	}
+
+	@Override
+	public List<IngredientSortStage> getIngredientSorterStages() {
+		return ClientConfig.ingredientSorterStagesDefault;
 	}
 }

@@ -31,7 +31,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 
 	private final ConfigValues values;
 	private List<? extends String> searchColors = Arrays.asList(ColorGetter.getColorDefaults());
-	private final List<IngredientSortStage> ingredientSorterStagesDefault = Arrays.asList(
+	public static final List<IngredientSortStage> ingredientSorterStagesDefault = Arrays.asList(
 		IngredientSortStage.MOD_NAME,
 		IngredientSortStage.INGREDIENT_TYPE,
 		IngredientSortStage.CREATIVE_MENU
