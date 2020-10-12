@@ -15,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -60,7 +59,9 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 		if (!modId.equals(displayModId)) {
 			this.modIds.add(modId);
 		}
-		this.modNames = this.modIds.stream().map(modIdHelper::getModNameForModId).collect(Collectors.toList());
+		this.modNames = this.modIds.stream()
+			.map(modIdHelper::getModNameForModId)
+			.collect(Collectors.toList());
 		this.displayName = IngredientInformation.getDisplayName(ingredient, ingredientHelper);
 		this.resourceId = ingredientHelper.getResourceId(ingredient);
 	}

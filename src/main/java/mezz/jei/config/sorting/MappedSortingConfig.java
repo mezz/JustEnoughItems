@@ -24,7 +24,7 @@ public abstract class MappedSortingConfig<T, V> extends SortingConfig<V> {
 		return super.getComparator(allMappedValues, mapping);
 	}
 
-	public Comparator<T> getComparatorFromMappedValues(Set<V> allMappedValues) {
+	public Comparator<T> getComparatorFromMappedValues(Collection<V> allMappedValues) {
 		return super.getComparator(allMappedValues, mapping);
 	}
 }

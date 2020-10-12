@@ -10,7 +10,6 @@ import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.config.IWorldConfig;
-import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.gui.GuiScreenHelper;
@@ -26,7 +25,6 @@ import mezz.jei.ingredients.IIngredientSorter;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientFilterApi;
 import mezz.jei.ingredients.IngredientManager;
-import mezz.jei.ingredients.IngredientSorter;
 import mezz.jei.input.InputHandler;
 import mezz.jei.load.PluginCaller;
 import mezz.jei.load.PluginHelper;
@@ -55,9 +53,9 @@ public class JeiStarter {
 		IWorldConfig worldConfig,
 		BookmarkConfig bookmarkConfig,
 		IModIdHelper modIdHelper,
-		ModNameSortingConfig ingredientModNameSortingConfig,
-		RecipeCategorySortingConfig recipeCategorySortingConfig)
-	{
+		RecipeCategorySortingConfig recipeCategorySortingConfig,
+		IIngredientSorter ingredientSorter
+	) {
 		ErrorUtil.checkNotEmpty(plugins, "plugins");
 		LoggedTimer totalTime = new LoggedTimer();
 		totalTime.start("Starting JEI");
@@ -70,7 +68,6 @@ public class JeiStarter {
 		PluginLoader pluginLoader = new PluginLoader(plugins, vanillaPlugin, textures, clientConfig, modIdHelper, debugMode);
 		GuiHandlerRegistration guiHandlerRegistration = pluginLoader.getGuiHandlerRegistration();
 		IngredientManager ingredientManager = pluginLoader.getIngredientManager();
-		IIngredientSorter ingredientSorter = new IngredientSorter(ingredientModNameSortingConfig);
 		IngredientFilter ingredientFilter = pluginLoader.createIngredientFilter(ingredientSorter, editModeConfig, ingredientFilterConfig);
 		BookmarkList bookmarkList = pluginLoader.createBookmarkList(bookmarkConfig);
 		RecipeManager recipeManager = pluginLoader.getRecipeManager(recipeCategorySortingConfig);

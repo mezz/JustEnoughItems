@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IClientConfig;
@@ -29,6 +30,7 @@ import net.minecraft.util.NonNullList;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -183,8 +185,9 @@ public class IngredientFilter implements IIngredientGridSource {
 		if (!filterText.equals(filterCached)) {
 			List<IIngredientListElementInfo<?>> ingredientList = getIngredientListUncached(filterText);
 			Set<String> modNamesForSorting = Collections.unmodifiableSet(this.modNamesForSorting);
+			Collection<IIngredientType<?>> ingredientTypes = this.ingredientManager.getRegisteredIngredientTypes();
 			ingredientListCached = ingredientList.stream()
-				.sorted(sorter.getComparator(modNamesForSorting))
+				.sorted(sorter.getComparator(modNamesForSorting, ingredientTypes))
 				.map(IIngredientListElementInfo::getElement)
 				.collect(Collectors.toList());
 			filterCached = filterText;

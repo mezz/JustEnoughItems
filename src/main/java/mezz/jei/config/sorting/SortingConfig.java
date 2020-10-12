@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -51,7 +52,7 @@ public abstract class SortingConfig<T> {
 		return null;
 	}
 
-	private void load(Set<T> allValues) {
+	private void load(Collection<T> allValues) {
 		final List<T> sortedOnFile = loadSortedFromFile();
 		final Comparator<T> sortOrder;
 		if (sortedOnFile == null) {
@@ -63,6 +64,7 @@ public abstract class SortingConfig<T> {
 		}
 
 		this.sorted = allValues.stream()
+			.distinct()
 			.sorted(sortOrder)
 			.collect(Collectors.toList());
 
@@ -78,14 +80,14 @@ public abstract class SortingConfig<T> {
 		return index;
 	}
 
-	private List<T> getSorted(Set<T> allValues) {
+	private List<T> getSorted(Collection<T> allValues) {
 		if (this.sorted == null) {
 			load(allValues);
 		}
 		return this.sorted;
 	}
 
-	public <V> Comparator<V> getComparator(Set<T> allValues, Function<V, T> mapping) {
+	public <V> Comparator<V> getComparator(Collection<T> allValues, Function<V, T> mapping) {
 		List<T> sorted = getSorted(allValues);
 		return Comparator.comparingInt(o -> {
 			T value = mapping.apply(o);

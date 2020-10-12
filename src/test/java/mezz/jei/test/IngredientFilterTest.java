@@ -67,7 +67,7 @@ public class IngredientFilterTest {
 		IClientConfig clientConfig = new TestClientConfig(false);
 
 		TestIngredientFilterConfig ingredientFilterConfig = new TestIngredientFilterConfig();
-		IIngredientSorter ingredientListSorter = i -> Comparator.comparing(IIngredientListElementInfo::getModNameForSorting);
+		IIngredientSorter ingredientListSorter = (a, b) -> Comparator.comparing(IIngredientListElementInfo::getModNameForSorting);
 		this.ingredientFilter = new IngredientFilter(blacklist, clientConfig, ingredientFilterConfig, editModeConfig, ingredientManager, ingredientListSorter, baseList, modIdHelper);
 	}
 

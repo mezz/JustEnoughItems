@@ -12,6 +12,7 @@ import mezz.jei.config.IngredientFilterConfig;
 import mezz.jei.config.JEIClientConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.ModIdFormattingConfig;
+import mezz.jei.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.config.WorldConfig;
 import mezz.jei.config.sorting.RecipeCategorySortingConfig;
@@ -19,6 +20,8 @@ import mezz.jei.events.EventBusHelper;
 import mezz.jei.events.PlayerJoinedWorldEvent;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.ForgeModIdHelper;
+import mezz.jei.ingredients.IIngredientSorter;
+import mezz.jei.ingredients.IngredientSorter;
 import mezz.jei.util.AnnotatedInstanceUtil;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
@@ -49,8 +52,8 @@ public class ClientLifecycleHandler {
 	private final WorldConfig worldConfig;
 	private final IModIdHelper modIdHelper;
 	private final IEditModeConfig editModeConfig;
-	private final ModNameSortingConfig ingredientModNameSortingConfig;
 	private final RecipeCategorySortingConfig recipeCategorySortingConfig;
+	private final IIngredientSorter ingredientSorter;
 
 	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures) {
 		File jeiConfigurationDir = new File(FMLPaths.CONFIGDIR.get().toFile(), ModIds.JEI_ID);
@@ -73,10 +76,11 @@ public class ClientLifecycleHandler {
 		bookmarkConfig = new BookmarkConfig(jeiConfigurationDir);
 		worldConfig = new WorldConfig(jeiConfigurationDir);
 		editModeConfig = new EditModeConfig(jeiConfigurationDir);
-		File ingredientModSortOrderFile = new File(jeiConfigurationDir, "ingredient-list-mod-sort-order.ini");
-		ingredientModNameSortingConfig = new ModNameSortingConfig(ingredientModSortOrderFile);
-		File recipeCategoryModSortOrderFile = new File(jeiConfigurationDir, "recipe-category-sort-order.ini");
-		recipeCategorySortingConfig = new RecipeCategorySortingConfig(recipeCategoryModSortOrderFile);
+		recipeCategorySortingConfig = new RecipeCategorySortingConfig(new File(jeiConfigurationDir, "recipe-category-sort-order.ini"));
+
+		ModNameSortingConfig ingredientModNameSortingConfig = new ModNameSortingConfig(new File(jeiConfigurationDir, "ingredient-list-mod-sort-order.ini"));
+		IngredientTypeSortingConfig ingredientTypeSortingConfig = new IngredientTypeSortingConfig(new File(jeiConfigurationDir, "ingredient-list-type-sort-order.ini"));
+		ingredientSorter = new IngredientSorter(ingredientModNameSortingConfig, ingredientTypeSortingConfig);
 
 		ErrorUtil.setModIdHelper(modIdHelper);
 		ErrorUtil.setWorldConfig(worldConfig);
@@ -122,8 +126,8 @@ public class ClientLifecycleHandler {
 				worldConfig,
 				bookmarkConfig,
 				modIdHelper,
-				ingredientModNameSortingConfig,
-				recipeCategorySortingConfig
+				recipeCategorySortingConfig,
+				ingredientSorter
 			);
 		}
 	}
@@ -150,8 +154,8 @@ public class ClientLifecycleHandler {
 					worldConfig,
 					bookmarkConfig,
 					modIdHelper,
-					ingredientModNameSortingConfig,
-					recipeCategorySortingConfig
+					recipeCategorySortingConfig,
+					ingredientSorter
 				);
 			}
 		}
