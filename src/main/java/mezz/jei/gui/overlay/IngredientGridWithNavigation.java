@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import mezz.jei.util.Rectangle2dBuilder;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -30,6 +31,7 @@ import mezz.jei.render.IngredientListElementRenderer;
 import mezz.jei.render.IngredientListSlot;
 import mezz.jei.util.CommandUtil;
 import mezz.jei.util.MathUtil;
+import net.minecraft.util.Tuple;
 
 /**
  * Displays a list of ingredients with navigation at the top.
@@ -76,27 +78,23 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		this.navigation.updatePageState();
 	}
 
-	public boolean updateBounds(Rectangle2d availableArea, Set<Rectangle2d> guiExclusionAreas, int minWidth) {
-		Rectangle2d estimatedNavigationArea = new Rectangle2d(
-			availableArea.getX(),
-			availableArea.getY(),
-			availableArea.getWidth(),
-			NAVIGATION_HEIGHT
-		);
+	public boolean updateBounds(Rectangle2d availableArea, Set<Rectangle2d> guiExclusionAreas) {
+		Tuple<Rectangle2d, Rectangle2d> result = MathUtil.splitY(availableArea, NAVIGATION_HEIGHT);
+		Rectangle2d estimatedNavigationArea = result.getA();
 		Rectangle2d movedNavigationArea = MathUtil.moveDownToAvoidIntersection(guiExclusionAreas, estimatedNavigationArea);
 		int navigationMaxY = movedNavigationArea.getY() + movedNavigationArea.getHeight();
-		Rectangle2d boundsWithoutNavigation = new Rectangle2d(
-			availableArea.getX(),
-			navigationMaxY,
-			availableArea.getWidth(),
-			availableArea.getHeight() - navigationMaxY
-		);
-		boolean gridHasRoom = this.ingredientGrid.updateBounds(boundsWithoutNavigation, minWidth, guiExclusionAreas);
+		result = MathUtil.splitY(availableArea, navigationMaxY);
+		Rectangle2d navigationArea = result.getA();
+		Rectangle2d boundsWithoutNavigation = result.getB();
+		boolean gridHasRoom = this.ingredientGrid.updateBounds(boundsWithoutNavigation, guiExclusionAreas);
 		if (!gridHasRoom) {
 			return false;
 		}
 		Rectangle2d displayArea = this.ingredientGrid.getArea();
-		Rectangle2d navigationArea = new Rectangle2d(displayArea.getX(), movedNavigationArea.getY(), displayArea.getWidth(), NAVIGATION_HEIGHT);
+		navigationArea = new Rectangle2dBuilder(navigationArea)
+			.setX(displayArea)
+			.setWidth(displayArea)
+			.build();
 		this.navigation.updateBounds(navigationArea);
 		this.area = MathUtil.union(displayArea, navigationArea);
 		return true;
@@ -123,7 +121,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 
 	@Override
 	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
-		return !guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY) &&
+		return isMouseOver(mouseX, mouseY) &&
 			(this.ingredientGrid.handleMouseClicked(mouseX, mouseY) ||
 				this.navigation.handleMouseClickedButtons(mouseX, mouseY, mouseButton));
 	}

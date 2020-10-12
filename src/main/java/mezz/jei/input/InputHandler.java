@@ -119,7 +119,7 @@ public class InputHandler {
 		if (mouseButton > -1) {
 			if (!clickHandled.contains(mouseButton)) {
 				clickHandled.add(mouseButton);
-				if (handleMouseDrag(event.getGui(), mouseButton, event.getMouseX(), event.getMouseY())) {
+				if (handleMouseDrag(mouseButton, event.getMouseX(), event.getMouseY())) {
 					event.setCanceled(true);
 				}
 			}
@@ -150,7 +150,7 @@ public class InputHandler {
 		}
 	}
 
-	private boolean handleMouseDrag(Screen guiScreen, int mouseButton, double mouseX, double mouseY) {
+	private boolean handleMouseDrag(int mouseButton, double mouseX, double mouseY) {
 		return ingredientListOverlay.handleMouseDragStart(mouseX, mouseY, mouseButton);
 	}
 
@@ -253,7 +253,7 @@ public class InputHandler {
 		InputMappings.Input input = InputMappings.getInputByCode(keyCode, scanCode);
 		if (ingredientListOverlay.hasKeyboardFocus()) {
 			if (KeyBindings.isInventoryCloseKey(input) || KeyBindings.isEnterKey(keyCode)) {
-				ingredientListOverlay.setKeyboardFocus(false);
+				ingredientListOverlay.clearKeyboardFocus();
 				return true;
 			} else if (ingredientListOverlay.onKeyPressed(keyCode, scanCode, modifiers)) {
 				return true;

@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.gui.recipes.RecipesGui;
+import net.minecraft.client.renderer.Rectangle2d;
 
 public class GuiProperties implements IGuiProperties {
 	private final Class<? extends Screen> screenClass;
@@ -57,6 +58,22 @@ public class GuiProperties implements IGuiProperties {
 			a.getGuiXSize() == b.getGuiXSize() &&
 			a.getScreenWidth() == b.getScreenWidth() &&
 			a.getScreenHeight() == b.getScreenHeight();
+	}
+
+	public static Rectangle2d getScreenRectangle(IGuiProperties guiProperties) {
+		return new Rectangle2d(0, 0, guiProperties.getScreenWidth(), guiProperties.getScreenHeight());
+	}
+
+	public static Rectangle2d getGuiRectangle(IGuiProperties guiProperties) {
+		return new Rectangle2d(guiProperties.getGuiLeft(), guiProperties.getGuiTop(), guiProperties.getGuiXSize(), guiProperties.getGuiYSize());
+	}
+
+	public static int getGuiRight(IGuiProperties guiProperties) {
+		return guiProperties.getGuiLeft() + guiProperties.getGuiXSize();
+	}
+
+	public static int getGuiBottom(IGuiProperties guiProperties) {
+		return guiProperties.getGuiTop() + guiProperties.getGuiYSize();
 	}
 
 	private GuiProperties(Class<? extends Screen> screenClass, int guiLeft, int guiTop, int guiXSize, int guiYSize, int screenWidth, int screenHeight) {

@@ -3,6 +3,7 @@ package mezz.jei.util;
 import java.util.Collection;
 
 import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.vector.Vector2f;
 
 public final class MathUtil {
@@ -96,10 +97,49 @@ public final class MathUtil {
 		return new Rectangle2d(tx1, ty1, (int) tx2, (int) ty2);
 	}
 
-	public static double distance (Vector2f start, Vector2f end){
+	public static double distance(Vector2f start, Vector2f end){
 		double a = start.x - end.x;
 		double b = start.y - end.y;
 		return Math.sqrt(a * a + b * b);
 	}
 
+	public static Tuple<Rectangle2d, Rectangle2d> splitY(Rectangle2d rectangle, int y) {
+		Rectangle2d rectTop = new Rectangle2d(
+			rectangle.getX(),
+			rectangle.getY(),
+			rectangle.getWidth(),
+			y
+		);
+		Rectangle2d rectBottom = new Rectangle2d(
+			rectangle.getX(),
+			rectangle.getY() + y,
+			rectangle.getWidth(),
+			rectangle.getHeight() - y
+		);
+		return new Tuple<>(rectTop, rectBottom);
+	}
+
+	public static Tuple<Rectangle2d, Rectangle2d> splitYBottom(Rectangle2d rectangle, int y) {
+		return splitY(rectangle, rectangle.getHeight() - y);
+	}
+
+	public static Tuple<Rectangle2d, Rectangle2d> splitX(Rectangle2d rectangle, int x) {
+		Rectangle2d rectLeft = new Rectangle2d(
+			rectangle.getX(),
+			rectangle.getY(),
+			x,
+			rectangle.getHeight()
+		);
+		Rectangle2d rectRight = new Rectangle2d(
+			rectangle.getX() + x,
+			rectangle.getY(),
+			rectangle.getWidth() - x,
+			rectangle.getHeight()
+		);
+		return new Tuple<>(rectLeft, rectRight);
+	}
+
+	public static Tuple<Rectangle2d, Rectangle2d> splitXRight(Rectangle2d rectangle, int x) {
+		return splitX(rectangle, rectangle.getWidth() - x);
+	}
 }
