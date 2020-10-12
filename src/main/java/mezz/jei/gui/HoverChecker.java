@@ -1,6 +1,7 @@
 package mezz.jei.gui;
 
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.renderer.Rectangle2d;
 
 public class HoverChecker {
 	private int top;
@@ -30,6 +31,13 @@ public class HoverChecker {
 		this.bottom = bottom;
 		this.left = left;
 		this.right = right;
+	}
+
+	public void updateBounds(Rectangle2d rect) {
+		this.top = rect.getY();
+		this.bottom = rect.getY() + rect.getHeight();
+		this.left = rect.getX();
+		this.right = rect.getX() + rect.getWidth();
 	}
 
 	public boolean checkHover(double mouseX, double mouseY) {

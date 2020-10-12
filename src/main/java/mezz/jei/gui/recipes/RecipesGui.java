@@ -1,33 +1,16 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mojang.blaze3d.systems.RenderSystem;
-import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.config.IClientConfig;
-import mezz.jei.util.MathUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
-
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IRecipesGui;
+import mezz.jei.config.IClientConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.HoverChecker;
@@ -46,8 +29,25 @@ import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.transfer.RecipeTransferUtil;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.MathUtil;
+import mezz.jei.util.Rectangle2dBuilder;
 import mezz.jei.util.StringUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.util.InputMappings;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocuses, IRecipeLogicStateListener {
 	private static final int borderPadding = 6;
@@ -82,6 +82,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	@Nullable
 	private Screen parentScreen;
 	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
+	private Rectangle2d titleArea = new Rectangle2d(0, 0, 0, 0);
 
 	private boolean init = false;
 	private boolean closing = false;
@@ -147,8 +148,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 			ySize = maxHeight;
 		}
 
-		int guiLeft = (width - xSize) / 2;
-		int guiTop = RecipeGuiTab.TAB_HEIGHT + 21 + (extraSpace / 2);
+		final int guiLeft = (width - xSize) / 2;
+		final int guiTop = RecipeGuiTab.TAB_HEIGHT + 21 + (extraSpace / 2);
 
 		this.area = new Rectangle2d(guiLeft, guiTop, xSize, ySize);
 
@@ -169,6 +170,15 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		previousPage.y = pageButtonTop;
 
 		this.headerHeight = (pageButtonTop + buttonHeight) - guiTop;
+		int titleX = previousRecipeCategory.x + previousRecipeCategory.getWidth();
+		this.titleArea = new Rectangle2dBuilder(
+				titleX,
+				recipeClassButtonTop,
+				nextRecipeCategory.x - titleX,
+				titleHeight
+			)
+			.insetByPadding(innerPadding)
+			.build();
 
 		addButtons();
 
@@ -215,7 +225,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-		Rectangle2d titleArea = MathUtil.union(previousRecipeCategory.getArea(), nextRecipeCategory.getArea());
 		drawCenteredStringWithShadow(matrixStack, font, title, titleArea);
 
 		Rectangle2d pageArea = MathUtil.union(previousPage.getArea(), nextPage.getArea());
@@ -462,15 +471,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		logic.setRecipesPerPage(recipesPerPage);
 
 		title = recipeCategory.getTitle();
-		int titleWidth = font.getStringWidth(title);
-		final int availableTitleWidth = (nextPage.x - (previousPage.x + previousPage.getWidth())) - (2 * innerPadding);
-		if (titleWidth > availableTitleWidth) {
+		final int availableTitleWidth = titleArea.getWidth();
+		if (font.getStringWidth(title) > availableTitleWidth) {
 			title = StringUtil.truncateStringToWidth(title, availableTitleWidth, font);
-			titleWidth = font.getStringWidth(title);
 		}
-		final int titleX = x + (width - titleWidth) / 2;
-		final int titleY = y + borderPadding;
-		titleHoverChecker.updateBounds(titleY, titleY + font.FONT_HEIGHT, titleX, titleX + titleWidth);
+		Rectangle2d titleStringArea = MathUtil.centerTextArea(this.titleArea, font, title);
+		titleHoverChecker.updateBounds(titleStringArea);
 
 		int spacingY = recipeBackground.getHeight() + recipeSpacing;
 
