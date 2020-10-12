@@ -59,7 +59,8 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 		this.ingredients.clear();
 
 		if (!ingredients.isEmpty()) {
-			int availableHeight = recipesGui.getYSize() - 8;
+			Rectangle2d recipeArea = recipesGui.getArea();
+			int availableHeight = recipeArea.getHeight() - 8;
 			int borderHeight = (2 * borderSize) + (2 * ingredientBorderSize);
 			int maxIngredientsPerColumn = (availableHeight - borderHeight) / ingredientSize;
 			int columnCount = MathUtil.divideCeil(ingredients.size(), maxIngredientsPerColumn);
@@ -67,8 +68,8 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 
 			width = (2 * ingredientBorderSize) + (borderSize * 2) + (columnCount * ingredientSize);
 			height = (2 * ingredientBorderSize) + (borderSize * 2) + (maxIngredientsPerColumn * ingredientSize);
-			top = recipesGui.getGuiTop();
-			left = recipesGui.getGuiLeft() - width + overlapSize; // overlaps the recipe gui slightly
+			top = recipeArea.getY();
+			left = recipeArea.getX() - width + overlapSize; // overlaps the recipe gui slightly
 
 			for (int i = 0; i < ingredients.size(); i++) {
 				Object ingredientForSlot = ingredients.get(i);

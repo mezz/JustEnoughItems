@@ -41,8 +41,9 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 			int totalWidth = 0;
 			categoriesPerPage = 0;
 
+			Rectangle2d recipeArea = recipesGui.getArea();
 			for (int i = 0; i < categories.size(); i++) {
-				if (totalWidth + RecipeGuiTab.TAB_WIDTH <= (recipesGui.getXSize() - 4)) {
+				if (totalWidth + RecipeGuiTab.TAB_WIDTH <= (recipeArea.getWidth() - 4)) {
 					totalWidth += RecipeGuiTab.TAB_WIDTH;
 					categoriesPerPage++;
 				} else {
@@ -50,9 +51,9 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 				}
 			}
 
-			area = new Rectangle2d(
-				recipesGui.getGuiLeft() + 2,
-				recipesGui.getGuiTop() - RecipeGuiTab.TAB_HEIGHT + 3, // overlaps the recipe gui slightly
+			this.area = new Rectangle2d(
+				recipeArea.getX() + 2,
+				recipeArea.getY() - RecipeGuiTab.TAB_HEIGHT + 3, // overlaps the recipe gui slightly
 				totalWidth,
 				RecipeGuiTab.TAB_HEIGHT
 			);
@@ -65,9 +66,9 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 
 			int navHeight = 20;
 			Rectangle2d navigationArea = new Rectangle2d(
-				area.getX(),
-				area.getY() -(2 + navHeight),
-				area.getWidth(),
+				this.area.getX(),
+				this.area.getY() -(2 + navHeight),
+				this.area.getWidth(),
 				navHeight
 			);
 			pageNavigation.updateBounds(navigationArea);

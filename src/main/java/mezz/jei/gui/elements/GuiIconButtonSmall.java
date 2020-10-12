@@ -8,6 +8,7 @@ import net.minecraft.client.gui.widget.button.Button;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.gui.textures.Textures;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.util.text.StringTextComponent;
 
 /**
@@ -19,6 +20,10 @@ public class GuiIconButtonSmall extends Button {
 	public GuiIconButtonSmall(int x, int y, int widthIn, int heightIn, IDrawable icon, Button.IPressable pressable) {
 		super(x, y, widthIn, heightIn, StringTextComponent.EMPTY, pressable);
 		this.icon = icon;
+	}
+
+	public Rectangle2d getArea() {
+		return new Rectangle2d(x, y, width, height);
 	}
 
 	@Override

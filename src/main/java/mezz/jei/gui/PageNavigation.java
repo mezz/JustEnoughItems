@@ -1,6 +1,7 @@
 package mezz.jei.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
@@ -9,6 +10,8 @@ import mezz.jei.Internal;
 import mezz.jei.gui.elements.GuiIconButton;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.input.IPaged;
+import net.minecraft.util.Tuple;
+import net.minecraftforge.common.util.Size2i;
 
 public class PageNavigation {
 	private final IPaged paged;
@@ -18,6 +21,7 @@ public class PageNavigation {
 	private String pageNumDisplayString = "1/1";
 	private int pageNumDisplayX;
 	private int pageNumDisplayY;
+	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
 
 	public PageNavigation(IPaged paged, boolean hideOnSinglePage) {
 		this.paged = paged;
@@ -28,25 +32,25 @@ public class PageNavigation {
 	}
 
 	public void updateBounds(Rectangle2d area) {
+		this.area = area;
 		int buttonSize = area.getHeight();
-		this.nextButton.x = area.getX() + area.getWidth() - buttonSize;
-		this.nextButton.y = area.getY();
-		this.nextButton.setWidth(buttonSize);
-		this.nextButton.setHeight(buttonSize);
-		this.backButton.x = area.getX();
-		this.backButton.y = area.getY();
-		this.backButton.setWidth(buttonSize);
-		this.backButton.setHeight(buttonSize);
+
+		Tuple<Rectangle2d, Rectangle2d> result = MathUtil.splitX(area, buttonSize);
+		this.backButton.updateBounds(result.getA());
+
+		result = MathUtil.splitXRight(area, buttonSize);
+		this.nextButton.updateBounds(result.getB());
 	}
 
 	public void updatePageState() {
 		int pageNum = this.paged.getPageNumber();
 		int pageCount = this.paged.getPageCount();
-		FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
-		pageNumDisplayString = (pageNum + 1) + "/" + pageCount;
-		int pageDisplayWidth = fontRenderer.getStringWidth(pageNumDisplayString);
-		pageNumDisplayX = ((backButton.x + backButton.getWidth()) + nextButton.x) / 2 - (pageDisplayWidth / 2);
-		pageNumDisplayY = backButton.y + Math.round((backButton.getWidth_CLASH() - fontRenderer.FONT_HEIGHT) / 2.0f);
+		Minecraft minecraft = Minecraft.getInstance();
+		FontRenderer fontRenderer = minecraft.fontRenderer;
+		this.pageNumDisplayString = (pageNum + 1) + "/" + pageCount;
+		Rectangle2d centerArea = MathUtil.centerTextArea(this.area, fontRenderer, this.pageNumDisplayString);
+		this.pageNumDisplayX = centerArea.getX();
+		this.pageNumDisplayY = centerArea.getY();
 	}
 
 	public void draw(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {

@@ -36,12 +36,13 @@ public class GuiProperties implements IGuiProperties {
 
 	public static GuiProperties create(RecipesGui recipesGui) {
 		int extraWidth = recipesGui.getRecipeCatalystExtraWidth();
+		Rectangle2d recipeArea = recipesGui.getArea();
 		return new GuiProperties(
 			recipesGui.getClass(),
-			recipesGui.getGuiLeft() - extraWidth,
-			recipesGui.getGuiTop(),
-			recipesGui.getXSize() + extraWidth,
-			recipesGui.getYSize(),
+			recipeArea.getX() - extraWidth,
+			recipeArea.getY(),
+			recipeArea.getWidth() + extraWidth,
+			recipeArea.getHeight(),
 			recipesGui.width,
 			recipesGui.height
 		);

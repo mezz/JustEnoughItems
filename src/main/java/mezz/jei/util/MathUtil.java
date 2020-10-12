@@ -2,9 +2,12 @@ package mezz.jei.util;
 
 import java.util.Collection;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.vector.Vector2f;
+import net.minecraftforge.common.util.Size2i;
 
 public final class MathUtil {
 	private MathUtil() {
@@ -95,6 +98,21 @@ public final class MathUtil {
 		tx2 = Math.min(tx2, Integer.MAX_VALUE);
 		ty2 = Math.min(ty2, Integer.MAX_VALUE);
 		return new Rectangle2d(tx1, ty1, (int) tx2, (int) ty2);
+	}
+
+	public static Rectangle2d centerTextArea(Rectangle2d outer, FontRenderer fontRenderer, String text) {
+		int width = fontRenderer.getStringWidth(text);
+		int height = fontRenderer.FONT_HEIGHT;
+		return centerArea(outer, width, height);
+	}
+
+	public static Rectangle2d centerArea(Rectangle2d outer, int width, int height) {
+		return new Rectangle2d(
+			outer.getX() + Math.round((outer.getWidth() - width) / 2.0f),
+			outer.getY() + Math.round((outer.getHeight() - height) / 2.0f),
+			width,
+			height
+		);
 	}
 
 	public static double distance(Vector2f start, Vector2f end){

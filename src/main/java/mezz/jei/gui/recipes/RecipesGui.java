@@ -8,11 +8,13 @@ import java.util.List;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.config.IClientConfig;
+import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
@@ -79,10 +81,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 	@Nullable
 	private Screen parentScreen;
-	private int xSize;
-	private int ySize;
-	private int guiLeft;
-	private int guiTop;
+	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
 
 	private boolean init = false;
 	private boolean closing = false;
@@ -114,25 +113,13 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		background = textures.getGuiBackground();
 	}
 
-	private static void drawCenteredStringWithShadow(MatrixStack matrixStack, FontRenderer font, String string, int guiWidth, int xOffset, int yPos, int color) {
-		int xPos = (guiWidth - font.getStringWidth(string)) / 2 + xOffset;
-		font.drawStringWithShadow(matrixStack, string, xPos, yPos, color);
+	private static void drawCenteredStringWithShadow(MatrixStack matrixStack, FontRenderer font, String string, Rectangle2d area) {
+		Rectangle2d textArea = MathUtil.centerTextArea(area, font, string);
+		font.drawStringWithShadow(matrixStack, string, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
 	}
 
-	public int getGuiLeft() {
-		return guiLeft;
-	}
-
-	public int getGuiTop() {
-		return guiTop;
-	}
-
-	public int getXSize() {
-		return xSize;
-	}
-
-	public int getYSize() {
-		return ySize;
+	public Rectangle2d getArea() {
+		return this.area;
 	}
 
 	public int getRecipeCatalystExtraWidth() {
@@ -151,17 +138,19 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	public void init(Minecraft minecraft, int width, int height) {
 		super.init(minecraft, width, height);
 
-		this.xSize = 198;
-		this.ySize = this.height - 68;
+		final int xSize = 198;
+		int ySize = this.height - 68;
 		int extraSpace = 0;
 		final int maxHeight = this.clientConfig.getMaxRecipeGuiHeight();
-		if (this.ySize > maxHeight) {
-			extraSpace = this.ySize - maxHeight;
-			this.ySize = maxHeight;
+		if (ySize > maxHeight) {
+			extraSpace = ySize - maxHeight;
+			ySize = maxHeight;
 		}
 
-		this.guiLeft = (width - this.xSize) / 2;
-		this.guiTop = RecipeGuiTab.TAB_HEIGHT + 21 + (extraSpace / 2);
+		int guiLeft = (width - xSize) / 2;
+		int guiTop = RecipeGuiTab.TAB_HEIGHT + 21 + (extraSpace / 2);
+
+		this.area = new Rectangle2d(guiLeft, guiTop, xSize, ySize);
 
 		final int rightButtonX = guiLeft + xSize - borderPadding - buttonWidth;
 		final int leftButtonX = guiLeft + borderPadding;
@@ -195,6 +184,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		this.addButton(previousPage);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		if (minecraft == null) {
@@ -202,28 +192,34 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		}
 		renderBackground(matrixStack);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.background.draw(matrixStack, guiLeft, guiTop, xSize, ySize);
+		final int x = area.getX();
+		final int y = area.getY();
+		final int width = area.getWidth();
+		final int height = area.getHeight();
+		this.background.draw(matrixStack, x, y, width, height);
 
 		RenderSystem.disableBlend();
 
 		fill(matrixStack,
-			guiLeft + borderPadding + buttonWidth,
+			x + borderPadding + buttonWidth,
 			nextRecipeCategory.y,
-			guiLeft + xSize - borderPadding - buttonWidth,
+			x + width - borderPadding - buttonWidth,
 			nextRecipeCategory.y + buttonHeight,
 			0x30000000);
 		fill(matrixStack,
-			guiLeft + borderPadding + buttonWidth,
+			x + borderPadding + buttonWidth,
 			nextPage.y,
-			guiLeft + xSize - borderPadding - buttonWidth,
+			x + width - borderPadding - buttonWidth,
 			nextPage.y + buttonHeight,
 			0x30000000);
 
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-		int textPadding = (buttonHeight - font.FONT_HEIGHT) / 2;
-		drawCenteredStringWithShadow(matrixStack, font, title, xSize, guiLeft, nextRecipeCategory.y + textPadding, 0xFFFFFFFF);
-		drawCenteredStringWithShadow(matrixStack, font, pageString, xSize, guiLeft, nextPage.y + textPadding, 0xFFFFFFFF);
+		Rectangle2d titleArea = MathUtil.union(previousRecipeCategory.getArea(), nextRecipeCategory.getArea());
+		drawCenteredStringWithShadow(matrixStack, font, title, titleArea);
+
+		Rectangle2d pageArea = MathUtil.union(previousPage.getArea(), nextPage.getArea());
+		drawCenteredStringWithShadow(matrixStack, font, pageString, pageArea);
 
 		nextRecipeCategory.render(matrixStack, mouseX, mouseY, partialTicks);
 		previousRecipeCategory.render(matrixStack, mouseX, mouseY, partialTicks);
@@ -257,7 +253,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		if (minecraft != null && minecraft.currentScreen == this) {
-			if ((mouseX >= guiLeft) && (mouseY >= guiTop) && (mouseX < guiLeft + xSize) && (mouseY < guiTop + ySize)) {
+			if (MathUtil.contains(this.area, mouseX, mouseY)) {
 				return true;
 			}
 			for (RecipeLayout<?> recipeLayout : this.recipeLayouts) {
@@ -446,7 +442,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		IRecipeCategory<?> recipeCategory = logic.getSelectedRecipeCategory();
 		IDrawable recipeBackground = recipeCategory.getBackground();
 
-		int availableHeight = ySize - headerHeight;
+		final int x = area.getX();
+		final int y = area.getY();
+		final int width = area.getWidth();
+		final int height = area.getHeight();
+
+		int availableHeight = height - headerHeight;
 		final int heightPerRecipe = recipeBackground.getHeight() + innerPadding;
 		int recipesPerPage = availableHeight / heightPerRecipe;
 
@@ -455,7 +456,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 			recipesPerPage = 1;
 		}
 
-		final int recipeXOffset = guiLeft + (xSize - recipeBackground.getWidth()) / 2;
+		final int recipeXOffset = x + (width - recipeBackground.getWidth()) / 2;
 		final int recipeSpacing = (availableHeight - (recipesPerPage * recipeBackground.getHeight())) / (recipesPerPage + 1);
 
 		logic.setRecipesPerPage(recipesPerPage);
@@ -467,14 +468,14 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 			title = StringUtil.truncateStringToWidth(title, availableTitleWidth, font);
 			titleWidth = font.getStringWidth(title);
 		}
-		final int titleX = guiLeft + (xSize - titleWidth) / 2;
-		final int titleY = guiTop + borderPadding;
+		final int titleX = x + (width - titleWidth) / 2;
+		final int titleY = y + borderPadding;
 		titleHoverChecker.updateBounds(titleY, titleY + font.FONT_HEIGHT, titleX, titleX + titleWidth);
 
 		int spacingY = recipeBackground.getHeight() + recipeSpacing;
 
 		recipeLayouts.clear();
-		recipeLayouts.addAll(logic.getRecipeLayouts(recipeXOffset, guiTop + headerHeight + recipeSpacing, spacingY));
+		recipeLayouts.addAll(logic.getRecipeLayouts(recipeXOffset, y + headerHeight + recipeSpacing, spacingY));
 		addRecipeTransferButtons(recipeLayouts);
 
 		nextPage.active = previousPage.active = logic.hasMultiplePages();
@@ -514,11 +515,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 				addButton(button);
 			}
 		}
-	}
-
-	@Nullable
-	public Screen getParentScreen() {
-		return parentScreen;
 	}
 
 	@Nullable
