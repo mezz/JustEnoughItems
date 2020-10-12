@@ -1,12 +1,11 @@
 package mezz.jei.ingredients;
 
-import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.runtime.IIngredientManager;
 
-import java.util.Collection;
 import java.util.Comparator;
 
 public interface IIngredientSorter {
-	Comparator<IIngredientListElementInfo<?>> getComparator(Collection<String> modNames, Collection<IIngredientType<?>> ingredientTypes);
+	Comparator<IIngredientListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, IIngredientManager ingredientManager);
 
 	default void invalidateCache() {}
 }

@@ -1,6 +1,7 @@
 package mezz.jei.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
@@ -26,7 +27,7 @@ public final class IngredientSorter implements IIngredientSorter {
 	private final IngredientTypeSortingConfig ingredientTypeSortingConfig;
 
 	@Nullable
-	private Comparator<IIngredientListElementInfo<?>> comparator;
+	private Comparator<IIngredientListElementInfo<?>> cachedComparator;
 
 	public IngredientSorter(ModNameSortingConfig modNameSortingConfig, IngredientTypeSortingConfig ingredientTypeSortingConfig) {
 		this.modNameSortingConfig = modNameSortingConfig;
@@ -34,24 +35,34 @@ public final class IngredientSorter implements IIngredientSorter {
 	}
 
 	@Override
-	public Comparator<IIngredientListElementInfo<?>> getComparator(Collection<String> modNames, Collection<IIngredientType<?>> ingredientTypes) {
-		if (this.comparator == null) {
-			Comparator<IIngredientListElementInfo<?>> modName = this.modNameSortingConfig.getComparatorFromMappedValues(modNames);
+	public Comparator<IIngredientListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, IIngredientManager ingredientManager) {
+		if (this.cachedComparator == null) {
+			Set<String> modNames = ingredientFilter.getModNamesForSorting();
+			Collection<IIngredientType<?>> ingredientTypes = ingredientManager.getRegisteredIngredientTypes();
 
-			Set<String> ingredientTypeStrings = ingredientTypes.stream()
-				.map(IIngredientType::getIngredientClass)
-				.map(IngredientTypeSortingConfig::getIngredientType)
-				.collect(Collectors.toSet());
-			Comparator<IIngredientListElementInfo<?>> ingredientType = this.ingredientTypeSortingConfig.getComparatorFromMappedValues(ingredientTypeStrings);
+			Comparator<IIngredientListElementInfo<?>> modName = createModNameComparator(modNames);
+			Comparator<IIngredientListElementInfo<?>> ingredientType = createIngredientTypeComparator(ingredientTypes);
 
-			this.comparator = modName.thenComparing(ingredientType).thenComparing(CREATIVE);
+			this.cachedComparator = modName.thenComparing(ingredientType).thenComparing(CREATIVE);
 		}
-		return this.comparator;
+		return this.cachedComparator;
+	}
+
+	private Comparator<IIngredientListElementInfo<?>> createModNameComparator(Collection<String> modNames) {
+		return this.modNameSortingConfig.getComparatorFromMappedValues(modNames);
+	}
+
+	private Comparator<IIngredientListElementInfo<?>> createIngredientTypeComparator(Collection<IIngredientType<?>> ingredientTypes) {
+		Set<String> ingredientTypeStrings = ingredientTypes.stream()
+			.map(IIngredientType::getIngredientClass)
+			.map(IngredientTypeSortingConfig::getIngredientType)
+			.collect(Collectors.toSet());
+		return this.ingredientTypeSortingConfig.getComparatorFromMappedValues(ingredientTypeStrings);
 	}
 
 	@Override
 	public void invalidateCache() {
-		this.comparator = null;
+		this.cachedComparator = null;
 	}
 
 }

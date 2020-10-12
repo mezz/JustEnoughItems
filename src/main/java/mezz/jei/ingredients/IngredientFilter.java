@@ -184,15 +184,17 @@ public class IngredientFilter implements IIngredientGridSource {
 		filterText = filterText.toLowerCase();
 		if (!filterText.equals(filterCached)) {
 			List<IIngredientListElementInfo<?>> ingredientList = getIngredientListUncached(filterText);
-			Set<String> modNamesForSorting = Collections.unmodifiableSet(this.modNamesForSorting);
-			Collection<IIngredientType<?>> ingredientTypes = this.ingredientManager.getRegisteredIngredientTypes();
 			ingredientListCached = ingredientList.stream()
-				.sorted(sorter.getComparator(modNamesForSorting, ingredientTypes))
+				.sorted(sorter.getComparator(this, this.ingredientManager))
 				.map(IIngredientListElementInfo::getElement)
 				.collect(Collectors.toList());
 			filterCached = filterText;
 		}
 		return ingredientListCached;
+	}
+
+	public Set<String> getModNamesForSorting() {
+		return Collections.unmodifiableSet(this.modNamesForSorting);
 	}
 
 	public ImmutableList<Object> getFilteredIngredients(String filterText) {
