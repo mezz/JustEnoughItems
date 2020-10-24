@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
@@ -156,6 +157,8 @@ public class IngredientListBatchRenderer {
 		TextureManager textureManager = minecraft.getTextureManager();
 		itemRenderer.zLevel += 50.0F;
 
+		IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+
 		textureManager.bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
 		textureManager.getTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE).setBlurMipmapDirect(false, false);
 		RenderSystem.enableRescaleNormal();
@@ -167,15 +170,17 @@ public class IngredientListBatchRenderer {
 		// 3d Items
 		RenderSystem.enableLighting();
 		for (ItemStackFastRenderer slot : renderItems3d) {
-			slot.renderItemAndEffectIntoGUI(matrixStack, editModeConfig, worldConfig);
+			slot.renderItemAndEffectIntoGUI(buffer, matrixStack, editModeConfig, worldConfig);
 		}
+		buffer.finish();
 
 		// 2d Items
 		RenderSystem.disableLighting();
 		RenderHelper.setupGuiFlatDiffuseLighting();
 		for (ItemStackFastRenderer slot : renderItems2d) {
-			slot.renderItemAndEffectIntoGUI(matrixStack, editModeConfig, worldConfig);
+			slot.renderItemAndEffectIntoGUI(buffer, matrixStack, editModeConfig, worldConfig);
 		}
+		buffer.finish();
 		RenderHelper.setupGui3DDiffuseLighting();
 
 		RenderSystem.disableAlphaTest();
