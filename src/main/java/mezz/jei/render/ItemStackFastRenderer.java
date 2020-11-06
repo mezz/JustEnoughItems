@@ -24,9 +24,9 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		super(itemStackElement);
 	}
 
-	public void renderItemAndEffectIntoGUI(MatrixStack matrixStack, IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
+	public void renderItemAndEffectIntoGUI(IRenderTypeBuffer buffer, MatrixStack matrixStack, IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
 		try {
-			uncheckedRenderItemAndEffectIntoGUI(matrixStack, editModeConfig, worldConfig);
+			uncheckedRenderItemAndEffectIntoGUI(buffer, matrixStack, editModeConfig, worldConfig);
 		} catch (RuntimeException | LinkageError e) {
 			throw ErrorUtil.createRenderIngredientException(e, element.getIngredient());
 		}
@@ -40,7 +40,7 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		return bakedModel.getOverrides().getOverrideModel(bakedModel, itemStack, null, null);
 	}
 
-	private void uncheckedRenderItemAndEffectIntoGUI(MatrixStack matrixStack, IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
+	private void uncheckedRenderItemAndEffectIntoGUI(IRenderTypeBuffer buffer, MatrixStack matrixStack, IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
 		if (worldConfig.isEditModeEnabled()) {
 			renderEditMode(matrixStack, area, padding, editModeConfig);
 			RenderSystem.enableBlend();
@@ -58,11 +58,8 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		matrixStack.translate(-0.5, -0.5, -0.5);
 		Minecraft minecraft = Minecraft.getInstance();
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
-		IRenderTypeBuffer.Impl iRenderTypeBuffer = minecraft.getRenderTypeBuffers().getBufferSource();
-		itemRenderer.renderItem(itemStack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, iRenderTypeBuffer, 15728880, OverlayTexture.NO_OVERLAY, bakedModel);
-		iRenderTypeBuffer.finish();
+		itemRenderer.renderItem(itemStack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, buffer, 15728880, OverlayTexture.NO_OVERLAY, bakedModel);
 		matrixStack.pop();
-
 	}
 
 	public void renderOverlay() {
