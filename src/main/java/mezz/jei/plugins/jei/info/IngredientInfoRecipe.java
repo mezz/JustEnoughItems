@@ -52,7 +52,7 @@ public class IngredientInfoRecipe<T> {
 	private static List<ITextProperties> expandNewlines(List<ITextProperties> descriptionLines) {
 		List<ITextProperties> descriptionLinesExpanded = new ArrayList<>();
 		for (ITextProperties descriptionLine : descriptionLines) {
-			Optional<String[]> optionalExpandedLines = descriptionLine.func_230438_a_(line -> Optional.of(line.split("\\\\n")));
+			Optional<String[]> optionalExpandedLines = descriptionLine.getComponent(line -> Optional.of(line.split("\\\\n")));
 			optionalExpandedLines.ifPresent(descriptionLineExpanded -> {
 				for (String s : descriptionLineExpanded) {
 					descriptionLinesExpanded.add(new StringTextComponent(s));
@@ -66,7 +66,7 @@ public class IngredientInfoRecipe<T> {
 		Minecraft minecraft = Minecraft.getInstance();
 		List<ITextProperties> descriptionLinesWrapped = new ArrayList<>();
 		for (ITextProperties descriptionLine : descriptionLines) {
-			List<ITextProperties> textLines = minecraft.fontRenderer.func_238420_b_().func_238362_b_(descriptionLine, IngredientInfoRecipeCategory.recipeWidth, Style.EMPTY);
+			List<ITextProperties> textLines = minecraft.fontRenderer.getCharacterManager().func_238362_b_(descriptionLine, IngredientInfoRecipeCategory.recipeWidth, Style.EMPTY);
 			descriptionLinesWrapped.addAll(textLines);
 		}
 		return descriptionLinesWrapped;

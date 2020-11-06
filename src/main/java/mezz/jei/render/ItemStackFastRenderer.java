@@ -37,7 +37,7 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		ItemModelMesher itemModelMesher = Minecraft.getInstance().getItemRenderer().getItemModelMesher();
 		ItemStack itemStack = element.getIngredient();
 		IBakedModel bakedModel = itemModelMesher.getItemModel(itemStack);
-		return bakedModel.getOverrides().func_239290_a_(bakedModel, itemStack, null, null);
+		return bakedModel.getOverrides().getOverrideModel(bakedModel, itemStack, null, null);
 	}
 
 	private void uncheckedRenderItemAndEffectIntoGUI(MatrixStack matrixStack, IEditModeConfig editModeConfig, IWorldConfig worldConfig) {

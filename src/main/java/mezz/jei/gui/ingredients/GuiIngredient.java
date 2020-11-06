@@ -254,10 +254,10 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 			.collect(Collectors.toList());
 
 		ITagCollection<Item> collection = ItemTags.getCollection();
-		Collection<ITag<Item>> tags = collection.func_241833_a().values();
+		Collection<ITag<Item>> tags = collection.getIDTagMap().values();
 		for (ITag<Item> tag : tags) {
 			if (tag.getAllElements().equals(items)) {
-				return collection.func_232973_a_(tag);
+				return collection.getDirectIdFromTag(tag);
 			}
 		}
 		return null;
