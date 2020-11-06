@@ -157,7 +157,7 @@ public class IngredientListBatchRenderer {
 		TextureManager textureManager = minecraft.getTextureManager();
 		itemRenderer.zLevel += 50.0F;
 
-		IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+		IRenderTypeBuffer.Impl buffer = minecraft.getRenderTypeBuffers().getBufferSource();
 
 		textureManager.bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
 		textureManager.getTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE).setBlurMipmapDirect(false, false);
