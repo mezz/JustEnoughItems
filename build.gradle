@@ -69,16 +69,20 @@ dependencies {
 	compileOnly fg.deobf('com.feed_the_beast.mods:ftb-gui-library:1.0.0.18')
 }
 
+task replaceResources(type: Copy) {
+    outputs.upToDateWhen { false }
+    from(sourceSets.main.resources.srcDirs) {
+        include "META-INF/mods.toml"
+        expand 'version': version, 'mc_version': minecraft_version_range, 'forge_version': forge_version_range
+    }
+    into "$buildDir/resources/main/"
+}
+
 processResources {
-	from(sourceSets.main.resources.srcDirs) {
-		include 'META-INF/mods.toml'
-
-		expand 'version': version, 'forgeversion_min': forgeversion_min, 'forgeversion_max': forgeversion_max, 'mcversion_min': mcversion_min, 'mcversion_max': mcversion_max
-	}
-
-	from(sourceSets.main.resources.srcDirs) {
-		exclude 'META-INF/mods.toml'
-	}
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'META-INF/mods.toml'
+    }
+    finalizedBy replaceResources
 }
 
 minecraft {
