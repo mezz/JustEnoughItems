@@ -101,7 +101,7 @@ public class IngredientListBatchRenderer {
 			ItemModelMesher itemModelMesher = Minecraft.getInstance().getItemRenderer().getItemModelMesher();
 			try {
 				bakedModel = itemModelMesher.getItemModel(itemStack);
-				bakedModel = bakedModel.getOverrides().func_239290_a_(bakedModel, itemStack, null, null);
+				bakedModel = bakedModel.getOverrides().getOverrideModel(bakedModel, itemStack, null, null);
 				Preconditions.checkNotNull(bakedModel, "IBakedModel must not be null.");
 			} catch (Throwable throwable) {
 				String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
@@ -112,7 +112,7 @@ public class IngredientListBatchRenderer {
 			if (!bakedModel.isBuiltInRenderer() && !(itemStack.getItem() instanceof ISlowRenderItem)) {
 				ItemStackFastRenderer renderer = new ItemStackFastRenderer(itemStackElement);
 				ingredientListSlot.setIngredientRenderer(renderer);
-				if (bakedModel.func_230044_c_()) { //isSideLit
+				if (bakedModel.isSideLit()) { //isSideLit
 					renderItems3d.add(renderer);
 				} else {
 					renderItems2d.add(renderer);

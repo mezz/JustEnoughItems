@@ -179,7 +179,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		Item item = ingredient.getItem();
 		for (ItemGroup itemGroup : item.getCreativeTabs()) {
 			if (itemGroup != null) {
-				String creativeTabName = itemGroup.func_242392_c().getString();
+				String creativeTabName = itemGroup.getGroupName().getString();
 				creativeTabsStrings.add(creativeTabName);
 			}
 		}

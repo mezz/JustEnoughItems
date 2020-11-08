@@ -27,7 +27,7 @@ class RecipeBookGuiHandler<C extends Container, T extends ContainerScreen<C> & I
 			areas.add(new Rectangle2d(i, j, 147, 166));
 			for (RecipeTabToggleWidget tab : guiRecipeBook.recipeTabs) {
 				if (tab.visible) {
-					areas.add(new Rectangle2d(tab.x, tab.y, tab.getWidth(), tab.getWidth_CLASH()));
+					areas.add(new Rectangle2d(tab.x, tab.y, tab.getWidth(), tab.getHeightRealms()));
 				}
 			}
 			return areas;
