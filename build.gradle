@@ -70,10 +70,10 @@ dependencies {
 }
 
 processResources {
+    outputs.upToDateWhen { false }
 	from(sourceSets.main.resources.srcDirs) {
 		include 'META-INF/mods.toml'
-
-		expand 'version': version, 'forgeversion_min': forgeversion_min, 'forgeversion_max': forgeversion_max, 'mcversion_min': mcversion_min, 'mcversion_max': mcversion_max
+		expand 'version': version, 'mc_version': minecraft_version_range, 'forge_version': forge_version_range
 	}
 
 	from(sourceSets.main.resources.srcDirs) {
