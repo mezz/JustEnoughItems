@@ -56,7 +56,7 @@ public class PacketRecipeTransfer extends PacketJei {
 
 	public static void readPacketData(PacketBuffer buf, PlayerEntity player) {
 		int recipeMapSize = buf.readVarInt();
-		Map<Integer, Integer> recipeMap = new HashMap<>(recipeMapSize);
+		Map<Integer, Integer> recipeMap = new HashMap<>();
 		for (int i = 0; i < recipeMapSize; i++) {
 			int slotIndex = buf.readVarInt();
 			int recipeItem = buf.readVarInt();
@@ -64,14 +64,14 @@ public class PacketRecipeTransfer extends PacketJei {
 		}
 
 		int craftingSlotsSize = buf.readVarInt();
-		List<Integer> craftingSlots = new ArrayList<>(craftingSlotsSize);
+		List<Integer> craftingSlots = new ArrayList<>();
 		for (int i = 0; i < craftingSlotsSize; i++) {
 			int slotIndex = buf.readVarInt();
 			craftingSlots.add(slotIndex);
 		}
 
 		int inventorySlotsSize = buf.readVarInt();
-		List<Integer> inventorySlots = new ArrayList<>(inventorySlotsSize);
+		List<Integer> inventorySlots = new ArrayList<>();
 		for (int i = 0; i < inventorySlotsSize; i++) {
 			int slotIndex = buf.readVarInt();
 			inventorySlots.add(slotIndex);

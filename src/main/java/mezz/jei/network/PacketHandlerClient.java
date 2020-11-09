@@ -35,7 +35,7 @@ public class PacketHandlerClient {
 			if (player != null) {
 				packetHandler.readPacketData(packetBuffer, player);
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			LOGGER.error("Packet error", e);
 		}
 		event.getSource().get().setPacketHandled(true);

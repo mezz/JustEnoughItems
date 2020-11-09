@@ -45,7 +45,7 @@ public class PacketHandler {
 			PacketIdServer packetId = PacketIdServer.VALUES[packetIdOrdinal];
 			IPacketJeiHandler packetHandler = serverHandlers.get(packetId);
 			packetHandler.readPacketData(packetBuffer, player);
-		} catch (RuntimeException e) {
+		} catch (Throwable e) {
 			LOGGER.error("Packet error for event: {}", event, e);
 		}
 		event.getSource().get().setPacketHandled(true);

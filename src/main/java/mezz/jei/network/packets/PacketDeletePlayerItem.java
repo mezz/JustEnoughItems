@@ -1,12 +1,13 @@
 package mezz.jei.network.packets;
 
+import mezz.jei.network.IPacketId;
+import mezz.jei.network.PacketIdServer;
+import mezz.jei.util.CommandUtilServer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-
-import mezz.jei.network.IPacketId;
-import mezz.jei.network.PacketIdServer;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class PacketDeletePlayerItem extends PacketJei {
 	private final ItemStack itemStack;
@@ -22,16 +23,16 @@ public class PacketDeletePlayerItem extends PacketJei {
 
 	@Override
 	public void writePacketData(PacketBuffer buf) {
-		int itemId = Item.getIdFromItem(itemStack.getItem());
-		buf.writeShort(itemId);
+		buf.writeRegistryIdUnsafe(ForgeRegistries.ITEMS, itemStack.getItem());
 	}
 
 	public static void readPacketData(PacketBuffer buf, PlayerEntity player) {
-		int itemId = buf.readShort();
-		Item item = Item.getItemById(itemId);
-		ItemStack playerItem = player.inventory.getItemStack();
-		if (!playerItem.isEmpty() && playerItem.getItem() == item) {
-			player.inventory.setItemStack(ItemStack.EMPTY);
+		Item item = buf.readRegistryIdUnsafe(ForgeRegistries.ITEMS);
+		if (CommandUtilServer.hasPermission(player)) {
+			ItemStack playerItem = player.inventory.getItemStack();
+			if (playerItem.getItem() == item) {
+				player.inventory.setItemStack(ItemStack.EMPTY);
+			}
 		}
 	}
 }
