@@ -1,6 +1,7 @@
 package mezz.jei.input;
 
 import javax.annotation.Nullable;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +35,7 @@ import mezz.jei.util.ReflectionUtil;
 
 public class InputHandler {
 	private final IIngredientManager ingredientManager;
-	private final IngredientFilter ingredientFilter;
+	private final WeakReference<IngredientFilter> ingredientFilter;
 	private final RecipesGui recipesGui;
 	private final IngredientListOverlay ingredientListOverlay;
 	private final IEditModeConfig editModeConfig;
@@ -57,7 +58,7 @@ public class InputHandler {
 		BookmarkList bookmarkList
 	) {
 		this.ingredientManager = ingredientManager;
-		this.ingredientFilter = ingredientFilter;
+		this.ingredientFilter = new WeakReference<>(ingredientFilter);
 		this.recipesGui = recipesGui;
 		this.ingredientListOverlay = ingredientListOverlay;
 		this.editModeConfig = editModeConfig;
@@ -233,9 +234,9 @@ public class InputHandler {
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 
 		if (editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
-			editModeConfig.removeIngredientFromConfigBlacklist(ingredientFilter, ingredientManager, ingredient, blacklistType, ingredientHelper);
+			editModeConfig.removeIngredientFromConfigBlacklist(ingredientFilter.get(), ingredientManager, ingredient, blacklistType, ingredientHelper);
 		} else {
-			editModeConfig.addIngredientToConfigBlacklist(ingredientFilter, ingredientManager, ingredient, blacklistType, ingredientHelper);
+			editModeConfig.addIngredientToConfigBlacklist(ingredientFilter.get(), ingredientManager, ingredient, blacklistType, ingredientHelper);
 		}
 		clicked.onClickHandled();
 		return true;

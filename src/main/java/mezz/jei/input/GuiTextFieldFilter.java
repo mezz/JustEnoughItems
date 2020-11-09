@@ -1,6 +1,8 @@
 package mezz.jei.input;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+
+import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,7 +27,7 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 	private static final List<String> history = new LinkedList<>();
 
 	private final HoverChecker hoverChecker;
-	private final IIngredientGridSource ingredientSource;
+	private final WeakReference<IIngredientGridSource> ingredientSource;
 	private final IWorldConfig worldConfig;
 	private boolean previousKeyboardRepeatEnabled;
 
@@ -38,7 +40,7 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 
 		setMaxStringLength(maxSearchLength);
 		this.hoverChecker = new HoverChecker();
-		this.ingredientSource = ingredientSource;
+		this.ingredientSource = new WeakReference<>(ingredientSource);
 
 		this.background = Internal.getTextures().getSearchBackground();
 	}
@@ -57,7 +59,7 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 		if (!filterText.equals(getText())) {
 			setText(filterText);
 		}
-		List<IIngredientListElement<?>> ingredientList = ingredientSource.getIngredientList(filterText);
+		List<IIngredientListElement<?>> ingredientList = ingredientSource.get().getIngredientList(filterText);
 		if (ingredientList.size() == 0) {
 			setTextColor(0xFFFF0000);
 		} else {

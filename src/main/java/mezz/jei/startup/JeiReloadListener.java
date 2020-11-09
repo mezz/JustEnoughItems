@@ -7,40 +7,42 @@ import net.minecraft.resources.IResourceManager;
 import net.minecraftforge.resource.IResourceType;
 import net.minecraftforge.resource.ISelectiveResourceReloadListener;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.function.Predicate;
 
 public final class JeiReloadListener implements ISelectiveResourceReloadListener {
-    private ClientLifecycleHandler handler;
+    private WeakReference<ClientLifecycleHandler> handler;
     private List<IModPlugin> plugins;
 
     JeiReloadListener(ClientLifecycleHandler handler, List<IModPlugin> plugins) {
-        this.handler = handler;
+        this.handler = new WeakReference<>(handler);
         this.plugins = plugins;
     }
 
     void update(ClientLifecycleHandler handler, List<IModPlugin> plugins) {
-        this.handler = handler;
+        this.handler = new WeakReference<>(handler);
         this.plugins = plugins;
     }
 
     @Override
     public void onResourceManagerReload(IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
+        ClientLifecycleHandler handlerRef = handler.get();
         // check that JEI has been started before. if not, do nothing
-        if (handler.starter.hasStarted() && Minecraft.getInstance().world != null) {
-            handler.LOGGER.info("Restarting JEI.");
-            Preconditions.checkNotNull(handler.textures);
-            handler.starter.start(
+        if (handlerRef.starter.hasStarted() && Minecraft.getInstance().world != null) {
+            handlerRef.LOGGER.info("Restarting JEI.");
+            Preconditions.checkNotNull(handlerRef.textures);
+            handlerRef.starter.start(
                     plugins,
-                    handler.textures,
-                    handler.clientConfig,
-                    handler.editModeConfig,
-                    handler.ingredientFilterConfig,
-                    handler.worldConfig,
-                    handler.bookmarkConfig,
-                    handler.modIdHelper,
-                    handler.recipeCategorySortingConfig,
-                    handler.ingredientSorter
+                    handlerRef.textures,
+                    handlerRef.clientConfig,
+                    handlerRef.editModeConfig,
+                    handlerRef.ingredientFilterConfig,
+                    handlerRef.worldConfig,
+                    handlerRef.bookmarkConfig,
+                    handlerRef.modIdHelper,
+                    handlerRef.recipeCategorySortingConfig,
+                    handlerRef.ingredientSorter
             );
         }
     }
