@@ -1,7 +1,6 @@
 package mezz.jei.network;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.EnumMap;
 
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -36,7 +35,7 @@ public class PacketHandlerClient extends PacketHandler {
 			PacketIdClient packetId = PacketIdClient.VALUES[packetIdOrdinal];
 			IPacketJeiHandler packetHandler = clientHandlers.get(packetId);
 			checkThreadAndEnqueue(packetHandler, packetBuffer, minecraft);
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			Log.get().error("Packet error", ex);
 		}
 	}
@@ -51,9 +50,10 @@ public class PacketHandlerClient extends PacketHandler {
 					if (player != null) {
 						packetHandler.readPacketData(packetBuffer, player);
 					}
-					packetBuffer.release();
-				} catch (IOException e) {
+				} catch (Throwable e) {
 					Log.get().error("Network Error", e);
+				} finally {
+					packetBuffer.release();
 				}
 			});
 		}

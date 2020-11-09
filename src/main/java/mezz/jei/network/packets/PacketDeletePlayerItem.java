@@ -1,12 +1,14 @@
 package mezz.jei.network.packets;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
+import mezz.jei.util.CommandUtilServer;
 
 public class PacketDeletePlayerItem extends PacketJei {
 	private final ItemStack itemStack;
@@ -30,7 +32,8 @@ public class PacketDeletePlayerItem extends PacketJei {
 		int itemId = buf.readShort();
 		Item item = Item.getItemById(itemId);
 		ItemStack playerItem = player.inventory.getItemStack();
-		if (!playerItem.isEmpty() && playerItem.getItem() == item) {
+		if (!playerItem.isEmpty() && playerItem.getItem() == item &&
+			player instanceof EntityPlayerMP && CommandUtilServer.hasPermission((EntityPlayerMP) player, playerItem)) {
 			player.inventory.setItemStack(ItemStack.EMPTY);
 		}
 	}
