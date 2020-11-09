@@ -32,7 +32,7 @@ public class IngredientFilterBackgroundBuilder {
 	public void start() {
 		boolean finished = run(10000);
 		if (!finished) {
-			EventBusHelper.addListener(TickEvent.ClientTickEvent.class, this.onTickHandler);
+			EventBusHelper.addListener(this, TickEvent.ClientTickEvent.class, this.onTickHandler);
 		}
 	}
 
@@ -43,7 +43,7 @@ public class IngredientFilterBackgroundBuilder {
 				return;
 			}
 		}
-		EventBusHelper.removeListener(this.onTickHandler);
+		EventBusHelper.removeListener(this, this.onTickHandler);
 	}
 
 	private boolean run(final int timeoutMs) {

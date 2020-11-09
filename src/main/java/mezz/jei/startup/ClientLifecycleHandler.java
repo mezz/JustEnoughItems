@@ -87,8 +87,8 @@ public class ClientLifecycleHandler {
 
 		KeyBindings.init();
 
-		EventBusHelper.addListener(WorldEvent.Save.class, event -> worldConfig.onWorldSave());
-		EventBusHelper.addListener(RecipesUpdatedEvent.class, event -> {
+		EventBusHelper.addListener(this, WorldEvent.Save.class, event -> worldConfig.onWorldSave());
+		EventBusHelper.addListener(this, RecipesUpdatedEvent.class, event -> {
 			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
 			if (connection != null) {
 				NetworkManager networkManager = connection.getNetworkManager();
