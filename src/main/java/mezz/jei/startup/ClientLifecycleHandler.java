@@ -1,6 +1,7 @@
 package mezz.jei.startup;
 
 import com.google.common.base.Preconditions;
+import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -42,18 +43,18 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class ClientLifecycleHandler {
-	private final Logger LOGGER = LogManager.getLogger();
-	private final JeiStarter starter = new JeiStarter();
-	private final Textures textures;
-	private final IClientConfig clientConfig;
-	private final BookmarkConfig bookmarkConfig;
-	private final ModIdFormattingConfig modIdFormattingConfig;
-	private final IngredientFilterConfig ingredientFilterConfig;
-	private final WorldConfig worldConfig;
-	private final IModIdHelper modIdHelper;
-	private final IEditModeConfig editModeConfig;
-	private final RecipeCategorySortingConfig recipeCategorySortingConfig;
-	private final IIngredientSorter ingredientSorter;
+	final Logger LOGGER = LogManager.getLogger();
+	final JeiStarter starter = new JeiStarter();
+	final Textures textures;
+	final IClientConfig clientConfig;
+	final BookmarkConfig bookmarkConfig;
+	final ModIdFormattingConfig modIdFormattingConfig;
+	final IngredientFilterConfig ingredientFilterConfig;
+	final WorldConfig worldConfig;
+	final IModIdHelper modIdHelper;
+	final IEditModeConfig editModeConfig;
+	final RecipeCategorySortingConfig recipeCategorySortingConfig;
+	final IIngredientSorter ingredientSorter;
 
 	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures) {
 		File jeiConfigurationDir = new File(FMLPaths.CONFIGDIR.get().toFile(), ModIds.JEI_ID);
@@ -107,14 +108,21 @@ public class ClientLifecycleHandler {
 		modIdFormattingConfig.checkForModNameFormatOverride();
 
 		List<IModPlugin> plugins = AnnotatedInstanceUtil.getModPlugins();
-
-		// Reload when resources change
 		Minecraft minecraft = Minecraft.getInstance();
-		IResourceManager resourceManager = minecraft.getResourceManager();
-		if (resourceManager instanceof IReloadableResourceManager) {
-			IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
-			reloadableResourceManager.addReloadListener(new JeiReloadListener(plugins));
+
+		if (Internal.getReloadListener() == null) {
+			// Reload when resources change
+			IResourceManager resourceManager = minecraft.getResourceManager();
+			if (resourceManager instanceof IReloadableResourceManager) {
+				IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
+				JeiReloadListener reloadListener = new JeiReloadListener(this, plugins);
+				Internal.setReloadListener(reloadListener);
+				reloadableResourceManager.addReloadListener(reloadListener);
+			}
+		} else {
+			Internal.getReloadListener().update(this, plugins);
 		}
+
 		if (minecraft.world != null) {
 			Preconditions.checkNotNull(textures);
 			this.starter.start(
@@ -129,35 +137,6 @@ public class ClientLifecycleHandler {
 				recipeCategorySortingConfig,
 				ingredientSorter
 			);
-		}
-	}
-
-	private final class JeiReloadListener implements ISelectiveResourceReloadListener {
-		private final List<IModPlugin> plugins;
-
-		private JeiReloadListener(List<IModPlugin> plugins) {
-			this.plugins = plugins;
-		}
-
-		@Override
-		public void onResourceManagerReload(IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
-			// check that JEI has been started before. if not, do nothing
-			if (starter.hasStarted() && Minecraft.getInstance().world != null) {
-				LOGGER.info("Restarting JEI.");
-				Preconditions.checkNotNull(textures);
-				starter.start(
-					plugins,
-					textures,
-					clientConfig,
-					editModeConfig,
-					ingredientFilterConfig,
-					worldConfig,
-					bookmarkConfig,
-					modIdHelper,
-					recipeCategorySortingConfig,
-					ingredientSorter
-				);
-			}
 		}
 	}
 }
