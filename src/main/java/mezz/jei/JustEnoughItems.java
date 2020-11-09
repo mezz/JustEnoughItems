@@ -33,7 +33,7 @@ public class JustEnoughItems {
 	private static void clientStart(IEventBus modEventBus, NetworkHandler networkHandler) {
 		JEIClientConfig.register();
 
-		EventBusHelper.addListener(modEventBus, ColorHandlerEvent.Block.class, setupEvent -> {
+		EventBusHelper.addListener(JustEnoughItems.class, modEventBus, ColorHandlerEvent.Block.class, setupEvent -> {
 			Minecraft minecraft = Minecraft.getInstance();
 			JeiSpriteUploader spriteUploader = new JeiSpriteUploader(minecraft.textureManager);
 			Textures textures = new Textures(spriteUploader);
@@ -42,17 +42,17 @@ public class JustEnoughItems {
 				IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
 				reloadableResourceManager.addReloadListener(spriteUploader);
 			}
-			EventBusHelper.addLifecycleListener(modEventBus, FMLLoadCompleteEvent.class, loadCompleteEvent ->
+			EventBusHelper.addLifecycleListener(JustEnoughItems.class, modEventBus, FMLLoadCompleteEvent.class, loadCompleteEvent ->
 				new ClientLifecycleHandler(networkHandler, textures)
 			);
-			EventBusHelper.addLifecycleListener(modEventBus, FMLClientSetupEvent.class, event ->
+			EventBusHelper.addLifecycleListener(JustEnoughItems.class, modEventBus, FMLClientSetupEvent.class, event ->
 				GoVoteHandler.init()
 			);
 		});
 	}
 
 	private static void commonStart(IEventBus modEventBus, NetworkHandler networkHandler) {
-		EventBusHelper.addLifecycleListener(modEventBus, FMLCommonSetupEvent.class, event ->
+		EventBusHelper.addLifecycleListener(JustEnoughItems.class, modEventBus, FMLCommonSetupEvent.class, event ->
 			networkHandler.createServerPacketHandler()
 		);
 	}
