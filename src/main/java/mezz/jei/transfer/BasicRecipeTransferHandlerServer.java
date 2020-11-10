@@ -52,6 +52,9 @@ public final class BasicRecipeTransferHandlerServer {
 		for (int craftingSlotNumberIndex = 0; craftingSlotNumberIndex < craftingSlots.size(); craftingSlotNumberIndex++) {
 			int craftingSlotNumber = craftingSlots.get(craftingSlotNumberIndex);
 			Slot craftingSlot = container.getSlot(craftingSlotNumber);
+			if (!craftingSlot.canTakeStack(player)) {
+				continue;
+			}
 			if (craftingSlot.getHasStack()) {
 				ItemStack craftingItem = craftingSlot.decrStackSize(Integer.MAX_VALUE);
 				clearedCraftingItems.add(craftingItem);
