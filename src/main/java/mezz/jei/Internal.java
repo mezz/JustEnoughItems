@@ -12,6 +12,7 @@ import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.InputHandler;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
+import mezz.jei.startup.JeiReloadListener;
 
 /**
  * For JEI internal use only, these are normally accessed from the API.
@@ -33,6 +34,8 @@ public final class Internal {
 	private static InputHandler inputHandler;
 	@Nullable
 	private static Textures textures;
+	@Nullable
+	private static JeiReloadListener reloadListener;
 
 	private Internal() {
 
@@ -116,5 +119,15 @@ public final class Internal {
 
 		Internal.inputHandler = inputHandler;
 		EventBusHelper.register(inputHandler);
+	}
+
+	@Nullable
+	public static JeiReloadListener getReloadListener() {
+		return reloadListener;
+	}
+
+	public static void setReloadListener(JeiReloadListener listener) {
+		Preconditions.checkState(reloadListener == null, "Reload Listener has already been assigned.");
+		reloadListener = listener;
 	}
 }
