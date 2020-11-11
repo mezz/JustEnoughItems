@@ -22,6 +22,10 @@ public class EventBusHelper {
             this.eventBus = eventBus;
             this.listener = listener;
         }
+
+        private void unregister() {
+            eventBus.unregister(listener);
+        }
     }
 
     private static final Map<Object, List<Subscription>> subscriptions = new HashMap<>();
@@ -57,15 +61,16 @@ public class EventBusHelper {
      * See {@link EventBusHelper#addListener(Object, IEventBus, Class, Consumer)}
      */
     public static <T extends Event> void removeListener(Object owner, Consumer<T> listener) {
-        removeListener(owner, getInstance(), listener);
-    }
-
-    /**
-     * See {@link EventBusHelper#addListener(Object, IEventBus, Class, Consumer)}
-     */
-    public static <T extends Event> void removeListener(Object owner, IEventBus eventBus, Consumer<T> listener) {
-        subscriptions.get(owner).removeIf(sub -> Objects.equals(sub.listener, listener));
-        eventBus.unregister(listener);
+        List<Subscription> subs = subscriptions.get(owner);
+        if (subs != null) {
+            subs.removeIf(sub -> {
+                if (Objects.equals(sub.listener, listener)) {
+                    sub.unregister();
+                    return true;
+                }
+                return false;
+            });
+        }
     }
 
     public static void register(Object owner) {
@@ -81,11 +86,13 @@ public class EventBusHelper {
      */
     public static void unregister(Object owner) {
         IEventBus eventBus = getInstance();
-        for (Subscription sub : subscriptions.get(owner)) {
-            removeListener(owner, sub.eventBus, sub.listener);
+        List<Subscription> subs = subscriptions.remove(owner);
+        if (subs != null) {
+            for (Subscription sub : subs) {
+                sub.unregister();
+            }
         }
         eventBus.unregister(owner);
-        subscriptions.remove(owner);
     }
 
     public static void post(Event event) {
