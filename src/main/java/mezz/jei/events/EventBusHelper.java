@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import net.minecraftforge.fml.event.lifecycle.ModLifecycleEvent;
@@ -63,7 +64,7 @@ public class EventBusHelper {
      * See {@link EventBusHelper#addListener(Object, IEventBus, Class, Consumer)}
      */
     public static <T extends Event> void removeListener(Object owner, IEventBus eventBus, Consumer<T> listener) {
-        subscriptions.get(owner).remove(listener);
+        subscriptions.get(owner).removeIf(sub -> Objects.equals(sub.listener, listener));
         eventBus.unregister(listener);
     }
 
