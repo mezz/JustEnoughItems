@@ -44,12 +44,12 @@ public class Textures {
 		
 		this.tabSelected = registerGuiSprite("tab_selected", 24, 24);
 		this.tabUnselected = registerGuiSprite("tab_unselected", 24, 24);
-		this.buttonDisabled = registerNineSliceGuiSprite("button_disabled", 20, 20, 2, 2, 2, 2);
-		this.buttonEnabled = registerNineSliceGuiSprite("button_enabled", 20, 20, 2, 2, 2, 2);
-		this.buttonHighlight = registerNineSliceGuiSprite("button_highlight", 20, 20, 2, 2, 2, 2);
+		this.buttonDisabled = registerNineSliceGuiSprite("button_disabled", 20, 20, 6, 6, 6, 6);
+		this.buttonEnabled = registerNineSliceGuiSprite("button_enabled", 20, 20, 6, 6, 6, 6);
+		this.buttonHighlight = registerNineSliceGuiSprite("button_highlight", 20, 20, 6, 6, 6, 6);
 		this.guiBackground = registerNineSliceGuiSprite("gui_background", 64, 64, 16, 16, 16, 16);
 		this.recipeBackground = registerNineSliceGuiSprite("single_recipe_background", 64, 64, 16, 16, 16, 16);
-		this.searchBackground = registerNineSliceGuiSprite("search_background", 20, 20, 4, 4, 4, 4);
+		this.searchBackground = registerNineSliceGuiSprite("search_background", 20, 20, 6, 6, 6, 6);
 		this.catalystTab = registerNineSliceGuiSprite("catalyst_tab", 28, 28, 8, 9, 8, 8);
 
 		this.shapelessIcon = registerGuiSprite("icons/shapeless_icon", 36, 36)
