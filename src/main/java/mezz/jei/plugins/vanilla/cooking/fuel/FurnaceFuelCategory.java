@@ -2,6 +2,7 @@ package mezz.jei.plugins.vanilla.cooking.fuel;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
@@ -26,8 +27,15 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 
 	public FurnaceFuelCategory(IGuiHelper guiHelper, Textures textures) {
 		super(guiHelper);
+
+		// width of the recipe depends on the text, which is different in each language
+		Minecraft minecraft = Minecraft.getInstance();
+		FontRenderer fontRenderer = minecraft.fontRenderer;
+		ITextComponent smeltCountText = FuelRecipe.createSmeltCountText(100000);
+		int stringWidth = fontRenderer.getStringWidth(smeltCountText.getString());
+
 		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 134, 18, 34)
-			.addPadding(0, 0, 0, 88)
+			.addPadding(0, 0, 0, stringWidth + 20)
 			.build();
 
 		flameTransparentBackground = textures.getFlameIcon();
@@ -77,7 +85,7 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 		IDrawableAnimated flame = recipe.getFlame();
 		flame.draw(matrixStack, 1, 0);
 		Minecraft minecraft = Minecraft.getInstance();
-		ITextComponent smeltCountString = recipe.getSmeltCountString();
-		minecraft.fontRenderer.func_243248_b(matrixStack, smeltCountString, 24, 13, 0xFF808080);
+		ITextComponent smeltCountText = recipe.getSmeltCountText();
+		minecraft.fontRenderer.func_243248_b(matrixStack, smeltCountText, 24, 13, 0xFF808080);
 	}
 }
