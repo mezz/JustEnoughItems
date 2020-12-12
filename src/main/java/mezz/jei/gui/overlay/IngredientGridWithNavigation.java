@@ -82,10 +82,9 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 	public boolean updateBounds(Rectangle2d availableArea, Set<Rectangle2d> guiExclusionAreas) {
 		Tuple<Rectangle2d, Rectangle2d> result = MathUtil.splitY(availableArea, NAVIGATION_HEIGHT);
 		Rectangle2d estimatedNavigationArea = result.getA();
-		Rectangle2d movedNavigationArea = MathUtil.moveDownToAvoidIntersection(guiExclusionAreas, estimatedNavigationArea);
-		int navigationMaxY = movedNavigationArea.getY() + movedNavigationArea.getHeight();
+		Rectangle2d navigationArea = MathUtil.moveDownToAvoidIntersection(guiExclusionAreas, estimatedNavigationArea);
+		int navigationMaxY = navigationArea.getY() + navigationArea.getHeight();
 		result = MathUtil.splitY(availableArea, navigationMaxY);
-		Rectangle2d navigationArea = result.getA();
 		Rectangle2d boundsWithoutNavigation = result.getB();
 		boolean gridHasRoom = this.ingredientGrid.updateBounds(boundsWithoutNavigation, guiExclusionAreas);
 		if (!gridHasRoom) {
