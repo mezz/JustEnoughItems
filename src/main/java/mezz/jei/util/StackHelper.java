@@ -37,6 +37,7 @@ public class StackHelper implements IStackHelper {
 		return keyLhs.equals(keyRhs);
 	}
 
+	@Override
 	public String getUniqueIdentifierForStack(ItemStack stack, UidContext context) {
 		String result = getRegistryNameForStack(stack);
 		String subtypeInfo = subtypeManager.getSubtypeInfo(stack, context);
