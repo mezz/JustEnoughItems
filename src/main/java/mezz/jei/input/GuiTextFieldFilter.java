@@ -51,7 +51,6 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 		this.width = area.getWidth();
 		this.height = area.getHeight();
 		this.hoverChecker.updateBounds(area.getY(), area.getY() + area.getHeight(), area.getX(), area.getX() + area.getWidth());
-		setSelectionPos(getCursorPosition());
 	}
 
 	public void update() {
