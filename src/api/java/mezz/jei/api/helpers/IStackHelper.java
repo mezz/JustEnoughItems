@@ -26,4 +26,11 @@ public interface IStackHelper {
 	default boolean isEquivalent(@Nullable ItemStack lhs, @Nullable ItemStack rhs) {
 		return isEquivalent(lhs, rhs, UidContext.Ingredient);
 	}
+
+	/**
+	 * Gets the unique identifier for a stack, ignoring NBT on items without subtypes, and uses the {@link ISubtypeManager}.
+	 * If two unique identifiers are equal, then the items can be considered equivalent.
+	 * @since JEI 7.6.1
+	 */
+	String getUniqueIdentifierForStack(ItemStack stack, UidContext context);
 }
