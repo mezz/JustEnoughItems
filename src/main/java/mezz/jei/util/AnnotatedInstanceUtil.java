@@ -1,8 +1,10 @@
 package mezz.jei.util;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.ModFileScanData;
@@ -28,7 +30,7 @@ public final class AnnotatedInstanceUtil {
 	private static <T> List<T> getInstances(Class<?> annotationClass, Class<T> instanceClass) {
 		Type annotationType = Type.getType(annotationClass);
 		List<ModFileScanData> allScanData = ModList.get().getAllScanData();
-		List<String> pluginClassNames = new ArrayList<>();
+		Set<String> pluginClassNames = new HashSet<>();
 		for (ModFileScanData scanData : allScanData) {
 			Iterable<ModFileScanData.AnnotationData> annotations = scanData.getAnnotations();
 			for (ModFileScanData.AnnotationData a : annotations) {
