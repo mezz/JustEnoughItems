@@ -2,12 +2,10 @@ package mezz.jei.util;
 
 import java.util.Collection;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.vector.Vector2f;
-import net.minecraftforge.common.util.Size2i;
 
 public final class MathUtil {
 	private MathUtil() {
@@ -159,5 +157,29 @@ public final class MathUtil {
 
 	public static Tuple<Rectangle2d, Rectangle2d> splitXRight(Rectangle2d rectangle, int x) {
 		return splitX(rectangle, rectangle.getWidth() - x);
+	}
+
+	public static boolean equalRects(Collection<Rectangle2d> a, Collection<Rectangle2d> b) {
+		if (a.size() != b.size()) {
+			return false;
+		}
+		for (Rectangle2d aRect : a) {
+			if (!containsRect(b, aRect)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static boolean containsRect(Collection<Rectangle2d> rects, Rectangle2d aRect) {
+		for (Rectangle2d bRect : rects) {
+			if (aRect.getX() == bRect.getX() &&
+					aRect.getY() == bRect.getY() &&
+					aRect.getWidth() == bRect.getWidth() &&
+					aRect.getHeight() == bRect.getHeight()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

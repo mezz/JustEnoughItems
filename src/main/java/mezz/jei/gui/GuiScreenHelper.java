@@ -76,7 +76,7 @@ public class GuiScreenHelper {
 
 	public boolean updateGuiExclusionAreas() {
 		Set<Rectangle2d> guiAreas = getPluginsExclusionAreas();
-		if (!guiAreas.equals(this.guiExclusionAreas)) {
+		if (!MathUtil.equalRects(guiAreas, this.guiExclusionAreas)) {
 			// make a defensive copy because Rectangle is mutable
 			this.guiExclusionAreas = guiAreas.stream()
 				.map(r -> new Rectangle2d(r.getX(), r.getY(), r.getWidth(), r.getHeight()))
