@@ -27,18 +27,13 @@ import mezz.jei.util.AnnotatedInstanceUtil;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.play.ClientPlayNetHandler;
-import net.minecraft.client.resources.ReloadListener;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.world.World;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.resource.IResourceType;
-import net.minecraftforge.resource.ISelectiveResourceReloadListener;
+import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -98,14 +93,22 @@ public class ClientLifecycleHandler {
 
 		EventBusHelper.addListener(this, AddReloadListenerEvent.class, this::reloadListenerSetup);
 		// Listener for integrated server
-		EventBusHelper.addListener(this, ClientPlayerNetworkEvent.LoggedInEvent.class, event -> {
-			if (Minecraft.getInstance().world != null && Minecraft.getInstance().isIntegratedServerRunning()) {
+		EventBusHelper.addListener(this, RecipesUpdatedEvent.class, event -> {
+			if (Minecraft.getInstance().isIntegratedServerRunning()) {
 				setupJEI();
 			}
 		});
-		// Listener for remote server
+		// Listener for vanilla remote server
 		EventBusHelper.addListener(this, TagsUpdatedEvent.VanillaTagTypes.class, event -> {
-			if (Minecraft.getInstance().world != null && !Minecraft.getInstance().isIntegratedServerRunning()) {
+			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
+			if (connection != null && NetworkHooks.isVanillaConnection(connection.getNetworkManager())) {
+				setupJEI();
+			}
+		});
+		// Listener for forge remote server
+		EventBusHelper.addListener(this, TagsUpdatedEvent.CustomTagTypes.class, event -> {
+			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
+			if (connection != null && !NetworkHooks.isVanillaConnection(connection.getNetworkManager()) && !Minecraft.getInstance().isIntegratedServerRunning()) {
 				setupJEI();
 			}
 		});

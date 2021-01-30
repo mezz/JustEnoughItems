@@ -1,14 +1,10 @@
 package mezz.jei.startup;
 
-import com.google.common.base.Preconditions;
-import mezz.jei.api.IModPlugin;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.IResourceManager;
 import net.minecraftforge.resource.IResourceType;
 import net.minecraftforge.resource.ISelectiveResourceReloadListener;
 
 import java.lang.ref.WeakReference;
-import java.util.List;
 import java.util.function.Predicate;
 
 public final class JeiReloadListener implements ISelectiveResourceReloadListener {
@@ -25,7 +21,8 @@ public final class JeiReloadListener implements ISelectiveResourceReloadListener
     @Override
     public void onResourceManagerReload(IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
         ClientLifecycleHandler handlerRef = handler.get();
-        if (handlerRef != null) {
+	// Only restart JEI on a reload after initial setup
+        if (handlerRef != null && handlerRef.starter.hasStarted()) {
             handlerRef.startJEI();
         }
     }
