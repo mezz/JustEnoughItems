@@ -27,10 +27,14 @@ import mezz.jei.util.AnnotatedInstanceUtil;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.play.ClientPlayNetHandler;
+import net.minecraft.client.resources.ReloadListener;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
-import net.minecraftforge.client.event.RecipesUpdatedEvent;
+import net.minecraft.world.World;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.resource.IResourceType;
@@ -55,6 +59,8 @@ public class ClientLifecycleHandler {
 	final IEditModeConfig editModeConfig;
 	final RecipeCategorySortingConfig recipeCategorySortingConfig;
 	final IIngredientSorter ingredientSorter;
+	final List<IModPlugin> plugins;
+
 
 	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures) {
 		File jeiConfigurationDir = new File(FMLPaths.CONFIGDIR.get().toFile(), ModIds.JEI_ID);
@@ -89,43 +95,55 @@ public class ClientLifecycleHandler {
 		KeyBindings.init();
 
 		EventBusHelper.addListener(this, WorldEvent.Save.class, event -> worldConfig.onWorldSave());
-		EventBusHelper.addListener(this, RecipesUpdatedEvent.class, event -> {
-			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
-			if (connection != null) {
-				NetworkManager networkManager = connection.getNetworkManager();
-				worldConfig.syncWorldConfig(networkManager);
+
+		EventBusHelper.addListener(this, AddReloadListenerEvent.class, this::reloadListenerSetup);
+		// Listener for integrated server
+		EventBusHelper.addListener(this, ClientPlayerNetworkEvent.LoggedInEvent.class, event -> {
+			if (Minecraft.getInstance().world != null && Minecraft.getInstance().isIntegratedServerRunning()) {
+				setupJEI();
 			}
-			onRecipesLoaded();
-			EventBusHelper.post(new PlayerJoinedWorldEvent());
 		});
+		// Listener for remote server
+		EventBusHelper.addListener(this, TagsUpdatedEvent.VanillaTagTypes.class, event -> {
+			if (Minecraft.getInstance().world != null && !Minecraft.getInstance().isIntegratedServerRunning()) {
+				setupJEI();
+			}
+		});
+		plugins = AnnotatedInstanceUtil.getModPlugins();
 
 		networkHandler.createClientPacketHandler(worldConfig);
 
 		this.textures = textures;
 	}
 
-	private void onRecipesLoaded() {
-		modIdFormattingConfig.checkForModNameFormatOverride();
-
-		List<IModPlugin> plugins = AnnotatedInstanceUtil.getModPlugins();
-		Minecraft minecraft = Minecraft.getInstance();
-
+	private void reloadListenerSetup(AddReloadListenerEvent event) {
 		if (Internal.getReloadListener() == null) {
-			// Reload when resources change
-			IResourceManager resourceManager = minecraft.getResourceManager();
-			if (resourceManager instanceof IReloadableResourceManager) {
-				IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
-				JeiReloadListener reloadListener = new JeiReloadListener(this, plugins);
-				Internal.setReloadListener(reloadListener);
-				reloadableResourceManager.addReloadListener(reloadListener);
-			}
+			JeiReloadListener reloadListener = new JeiReloadListener(this);
+			Internal.setReloadListener(reloadListener);
 		} else {
-			Internal.getReloadListener().update(this, plugins);
+			Internal.getReloadListener().update(this);
+		}
+		event.addListener(Internal.getReloadListener());
+
+	}
+
+	public void setupJEI() {
+		ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
+		if (connection != null) {
+			NetworkManager networkManager = connection.getNetworkManager();
+			worldConfig.syncWorldConfig(networkManager);
 		}
 
-		if (minecraft.world != null) {
+		modIdFormattingConfig.checkForModNameFormatOverride();
+
+		startJEI();
+		EventBusHelper.post(new PlayerJoinedWorldEvent());
+	}
+
+	public void startJEI() {
+		if (Minecraft.getInstance().world != null) {
 			Preconditions.checkNotNull(textures);
-			this.starter.start(
+			starter.start(
 				plugins,
 				textures,
 				clientConfig,

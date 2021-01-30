@@ -13,37 +13,20 @@ import java.util.function.Predicate;
 
 public final class JeiReloadListener implements ISelectiveResourceReloadListener {
     private WeakReference<ClientLifecycleHandler> handler;
-    private List<IModPlugin> plugins;
 
-    JeiReloadListener(ClientLifecycleHandler handler, List<IModPlugin> plugins) {
+    JeiReloadListener(ClientLifecycleHandler handler) {
         this.handler = new WeakReference<>(handler);
-        this.plugins = plugins;
     }
 
-    void update(ClientLifecycleHandler handler, List<IModPlugin> plugins) {
+    void update(ClientLifecycleHandler handler) {
         this.handler = new WeakReference<>(handler);
-        this.plugins = plugins;
     }
 
     @Override
     public void onResourceManagerReload(IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
         ClientLifecycleHandler handlerRef = handler.get();
-        // check that JEI has been started before. if not, do nothing
-        if (handlerRef.starter.hasStarted() && Minecraft.getInstance().world != null) {
-            handlerRef.LOGGER.info("Restarting JEI.");
-            Preconditions.checkNotNull(handlerRef.textures);
-            handlerRef.starter.start(
-                    plugins,
-                    handlerRef.textures,
-                    handlerRef.clientConfig,
-                    handlerRef.editModeConfig,
-                    handlerRef.ingredientFilterConfig,
-                    handlerRef.worldConfig,
-                    handlerRef.bookmarkConfig,
-                    handlerRef.modIdHelper,
-                    handlerRef.recipeCategorySortingConfig,
-                    handlerRef.ingredientSorter
-            );
+        if (handlerRef != null) {
+            handlerRef.startJEI();
         }
     }
 }
