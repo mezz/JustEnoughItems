@@ -32,6 +32,7 @@ import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
@@ -39,7 +40,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class ClientLifecycleHandler {
 	final Logger LOGGER = LogManager.getLogger();
@@ -90,28 +90,18 @@ public class ClientLifecycleHandler {
 		KeyBindings.init();
 
 		EventBusHelper.addListener(this, WorldEvent.Save.class, event -> worldConfig.onWorldSave());
-
 		EventBusHelper.addListener(this, AddReloadListenerEvent.class, this::reloadListenerSetup);
-		// Listener for integrated server
-		EventBusHelper.addListener(this, RecipesUpdatedEvent.class, event -> {
-			if (Minecraft.getInstance().isIntegratedServerRunning()) {
-				setupJEI();
-			}
-		});
-		// Listener for vanilla remote server
-		EventBusHelper.addListener(this, TagsUpdatedEvent.VanillaTagTypes.class, event -> {
-			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
-			if (connection != null && NetworkHooks.isVanillaConnection(connection.getNetworkManager())) {
-				setupJEI();
-			}
-		});
-		// Listener for forge remote server
-		EventBusHelper.addListener(this, TagsUpdatedEvent.CustomTagTypes.class, event -> {
-			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
-			if (connection != null && !NetworkHooks.isVanillaConnection(connection.getNetworkManager()) && !Minecraft.getInstance().isIntegratedServerRunning()) {
-				setupJEI();
-			}
-		});
+
+		for (ServerType type : ServerType.values()) {
+			EventBusHelper.addListener(this, type.listenerClass, event -> {
+				ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
+				boolean isVanilla = connection != null && NetworkHooks.isVanillaConnection(connection.getNetworkManager());
+				boolean isIntegrated = Minecraft.getInstance().isIntegratedServerRunning();
+				if (isVanilla == type.isVanilla && isIntegrated == type.isIntegrated) {
+					setupJEI();
+				}
+			});
+		}
 		plugins = AnnotatedInstanceUtil.getModPlugins();
 
 		networkHandler.createClientPacketHandler(worldConfig);
@@ -158,6 +148,22 @@ public class ClientLifecycleHandler {
 				recipeCategorySortingConfig,
 				ingredientSorter
 			);
+		}
+	}
+
+	private enum ServerType {
+		// Three cases, since there's no such thing as a vanilla integrated server
+		INTEGRATED(false, true, RecipesUpdatedEvent.class),
+		VANILLA_REMOTE(true, false, TagsUpdatedEvent.VanillaTagTypes.class),
+		MODDED_REMOTE(false, false, TagsUpdatedEvent.CustomTagTypes.class);
+
+		public final boolean isVanilla, isIntegrated;
+		public final Class<? extends Event> listenerClass;
+
+		private ServerType(boolean isVanilla, boolean isIntegrated, Class<? extends Event> listenerClass) {
+			this.isVanilla = isVanilla;
+			this.isIntegrated = isIntegrated;
+			this.listenerClass = listenerClass;
 		}
 	}
 }
