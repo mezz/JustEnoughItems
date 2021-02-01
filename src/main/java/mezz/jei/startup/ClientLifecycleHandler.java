@@ -28,19 +28,18 @@ import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.play.ClientPlayNetHandler;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.resources.IResourceManager;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
+import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.resource.IResourceType;
-import net.minecraftforge.resource.ISelectiveResourceReloadListener;
+import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class ClientLifecycleHandler {
 	final Logger LOGGER = LogManager.getLogger();
@@ -55,6 +54,8 @@ public class ClientLifecycleHandler {
 	final IEditModeConfig editModeConfig;
 	final RecipeCategorySortingConfig recipeCategorySortingConfig;
 	final IIngredientSorter ingredientSorter;
+	final List<IModPlugin> plugins;
+
 
 	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures) {
 		File jeiConfigurationDir = new File(FMLPaths.CONFIGDIR.get().toFile(), ModIds.JEI_ID);
@@ -89,43 +90,50 @@ public class ClientLifecycleHandler {
 		KeyBindings.init();
 
 		EventBusHelper.addListener(this, WorldEvent.Save.class, event -> worldConfig.onWorldSave());
-		EventBusHelper.addListener(this, RecipesUpdatedEvent.class, event -> {
-			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
-			if (connection != null) {
-				NetworkManager networkManager = connection.getNetworkManager();
-				worldConfig.syncWorldConfig(networkManager);
-			}
-			onRecipesLoaded();
-			EventBusHelper.post(new PlayerJoinedWorldEvent());
-		});
+		EventBusHelper.addListener(this, AddReloadListenerEvent.class, this::reloadListenerSetup);
+
+		for (ServerType type : ServerType.values()) {
+			EventBusHelper.addListener(this, type.listenerClass, event -> {
+				if (type.connected()) {
+					setupJEI();
+				}
+			});
+		}
+		plugins = AnnotatedInstanceUtil.getModPlugins();
 
 		networkHandler.createClientPacketHandler(worldConfig);
 
 		this.textures = textures;
 	}
 
-	private void onRecipesLoaded() {
-		modIdFormattingConfig.checkForModNameFormatOverride();
-
-		List<IModPlugin> plugins = AnnotatedInstanceUtil.getModPlugins();
-		Minecraft minecraft = Minecraft.getInstance();
-
+	private void reloadListenerSetup(AddReloadListenerEvent event) {
 		if (Internal.getReloadListener() == null) {
-			// Reload when resources change
-			IResourceManager resourceManager = minecraft.getResourceManager();
-			if (resourceManager instanceof IReloadableResourceManager) {
-				IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
-				JeiReloadListener reloadListener = new JeiReloadListener(this, plugins);
-				Internal.setReloadListener(reloadListener);
-				reloadableResourceManager.addReloadListener(reloadListener);
-			}
+			JeiReloadListener reloadListener = new JeiReloadListener(this);
+			Internal.setReloadListener(reloadListener);
 		} else {
-			Internal.getReloadListener().update(this, plugins);
+			Internal.getReloadListener().update(this);
+		}
+		event.addListener(Internal.getReloadListener());
+
+	}
+
+	public void setupJEI() {
+		ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
+		if (connection != null) {
+			NetworkManager networkManager = connection.getNetworkManager();
+			worldConfig.syncWorldConfig(networkManager);
 		}
 
-		if (minecraft.world != null) {
+		modIdFormattingConfig.checkForModNameFormatOverride();
+
+		startJEI();
+		EventBusHelper.post(new PlayerJoinedWorldEvent());
+	}
+
+	public void startJEI() {
+		if (Minecraft.getInstance().world != null) {
 			Preconditions.checkNotNull(textures);
-			this.starter.start(
+			starter.start(
 				plugins,
 				textures,
 				clientConfig,
@@ -137,6 +145,29 @@ public class ClientLifecycleHandler {
 				recipeCategorySortingConfig,
 				ingredientSorter
 			);
+		}
+	}
+
+	private enum ServerType {
+		// Three cases, since there's no such thing as a vanilla integrated server
+		INTEGRATED(false, true, RecipesUpdatedEvent.class),
+		VANILLA_REMOTE(true, false, TagsUpdatedEvent.VanillaTagTypes.class),
+		MODDED_REMOTE(false, false, TagsUpdatedEvent.CustomTagTypes.class);
+
+		public final boolean isVanilla, isIntegrated;
+		public final Class<? extends Event> listenerClass;
+
+		private ServerType(boolean isVanilla, boolean isIntegrated, Class<? extends Event> listenerClass) {
+			this.isVanilla = isVanilla;
+			this.isIntegrated = isIntegrated;
+			this.listenerClass = listenerClass;
+		}
+
+		public boolean connected() {
+			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
+			boolean isVanilla = connection != null && NetworkHooks.isVanillaConnection(connection.getNetworkManager());
+			boolean isIntegrated = Minecraft.getInstance().isIntegratedServerRunning();
+			return isVanilla == this.isVanilla && isIntegrated == this.isIntegrated;
 		}
 	}
 }
