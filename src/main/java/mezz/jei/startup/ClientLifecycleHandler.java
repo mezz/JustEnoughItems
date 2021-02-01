@@ -94,10 +94,7 @@ public class ClientLifecycleHandler {
 
 		for (ServerType type : ServerType.values()) {
 			EventBusHelper.addListener(this, type.listenerClass, event -> {
-				ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
-				boolean isVanilla = connection != null && NetworkHooks.isVanillaConnection(connection.getNetworkManager());
-				boolean isIntegrated = Minecraft.getInstance().isIntegratedServerRunning();
-				if (isVanilla == type.isVanilla && isIntegrated == type.isIntegrated) {
+				if (type.connected()) {
 					setupJEI();
 				}
 			});
@@ -164,6 +161,13 @@ public class ClientLifecycleHandler {
 			this.isVanilla = isVanilla;
 			this.isIntegrated = isIntegrated;
 			this.listenerClass = listenerClass;
+		}
+
+		public boolean connected() {
+			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
+			boolean isVanilla = connection != null && NetworkHooks.isVanillaConnection(connection.getNetworkManager());
+			boolean isIntegrated = Minecraft.getInstance().isIntegratedServerRunning();
+			return isVanilla == this.isVanilla && isIntegrated == this.isIntegrated;
 		}
 	}
 }
