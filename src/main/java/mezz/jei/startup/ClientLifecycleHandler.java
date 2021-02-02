@@ -28,6 +28,8 @@ import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.play.ClientPlayNetHandler;
 import net.minecraft.network.NetworkManager;
+import net.minecraft.resources.IReloadableResourceManager;
+import net.minecraft.resources.IResourceManager;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
@@ -90,7 +92,7 @@ public class ClientLifecycleHandler {
 		KeyBindings.init();
 
 		EventBusHelper.addListener(this, WorldEvent.Save.class, event -> worldConfig.onWorldSave());
-		EventBusHelper.addListener(this, AddReloadListenerEvent.class, this::reloadListenerSetup);
+		EventBusHelper.addListener(this, AddReloadListenerEvent.class, event -> reloadListenerSetup());
 
 		for (ServerType type : ServerType.values()) {
 			EventBusHelper.addListener(this, type.listenerClass, event -> {
@@ -106,15 +108,18 @@ public class ClientLifecycleHandler {
 		this.textures = textures;
 	}
 
-	private void reloadListenerSetup(AddReloadListenerEvent event) {
+	private void reloadListenerSetup() {
+		IResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
+		if (!(resourceManager instanceof IReloadableResourceManager)) {
+			return;
+		}
 		if (Internal.getReloadListener() == null) {
 			JeiReloadListener reloadListener = new JeiReloadListener(this);
 			Internal.setReloadListener(reloadListener);
 		} else {
 			Internal.getReloadListener().update(this);
 		}
-		event.addListener(Internal.getReloadListener());
-
+		((IReloadableResourceManager) resourceManager).addReloadListener(Internal.getReloadListener());
 	}
 
 	public void setupJEI() {
