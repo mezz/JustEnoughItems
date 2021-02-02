@@ -113,11 +113,13 @@
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Создание предметов",
+  "gui.jei.category.stoneCutter": "Резка камня",
   "gui.jei.category.smelting": "Плавка",
   "gui.jei.category.smoking": "Копчение",
   "gui.jei.category.blasting": "Выплавка",
   "gui.jei.category.campfire": "Готовка на костре",
   "gui.jei.category.smelting.experience": "Опыт: %s",
+  "gui.jei.category.smelting.time.seconds": "%ss",
   "gui.jei.category.fuel": "Топливо",
   "gui.jei.category.fuel.smeltCount.single": "Плавит 1 предмет",
   "gui.jei.category.fuel.smeltCount": "Плавит предметов: %s",
