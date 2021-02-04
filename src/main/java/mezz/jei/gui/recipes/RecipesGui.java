@@ -33,7 +33,6 @@ import mezz.jei.util.MathUtil;
 import mezz.jei.util.Rectangle2dBuilder;
 import mezz.jei.util.StringUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -85,7 +84,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	private Rectangle2d titleArea = new Rectangle2d(0, 0, 0, 0);
 
 	private boolean init = false;
-	private boolean closing = false;
 
 	public RecipesGui(
 		IRecipeManager recipeManager,
@@ -396,16 +394,16 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	}
 
 	@Override
-	public void onClose() {
-		if (isOpen() && minecraft != null && !closing) {
+	public void closeScreen() {
+		if (isOpen() && minecraft != null) {
 			if (parentScreen != null) {
-				closing = true;
 				minecraft.displayGuiScreen(parentScreen);
 				parentScreen = null;
-				closing = false;
 			}
 			logic.clearHistory();
+			return;
 		}
+		super.closeScreen();
 	}
 
 	@Override
