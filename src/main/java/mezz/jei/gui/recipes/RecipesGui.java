@@ -359,7 +359,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 	private boolean handleKeybindings(InputMappings.Input input) {
 		if (KeyBindings.isInventoryCloseKey(input) || KeyBindings.isInventoryToggleKey(input)) {
-			onClose();
+			closeScreen();
 			return true;
 		} else if (KeyBindings.recipeBack.isActiveAndMatches(input)) {
 			back();
@@ -403,11 +403,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 				minecraft.displayGuiScreen(parentScreen);
 				parentScreen = null;
 				closing = false;
-			} else {
-				ClientPlayerEntity player = minecraft.player;
-				if (player != null) {
-					player.closeScreen();
-				}
 			}
 			logic.clearHistory();
 		}
@@ -515,7 +510,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 				button.setOnClickHandler((mouseX, mouseY) -> {
 					boolean maxTransfer = Screen.hasShiftDown();
 					if (container != null && RecipeTransferUtil.transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer)) {
-						onClose();
+						closeScreen();
 					}
 				});
 				addButton(button);
