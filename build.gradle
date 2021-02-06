@@ -3,7 +3,6 @@ import se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask
 buildscript {
 	repositories {
 		maven { url = "https://files.minecraftforge.net/maven" }
-		jcenter()
 		mavenCentral()
 	}
 	// This is only here while FG is under active development
