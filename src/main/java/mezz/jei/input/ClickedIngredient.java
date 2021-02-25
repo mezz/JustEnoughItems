@@ -3,7 +3,6 @@ package mezz.jei.input;
 import javax.annotation.Nullable;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.vote.GoVoteIngredient;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.item.ItemStack;
 
@@ -83,9 +82,6 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	public void onClickHandled() {
 		if (this.onClickHandler != null) {
 			this.onClickHandler.onClick();
-		}
-		if (value instanceof GoVoteIngredient) {
-			((GoVoteIngredient) value).onClick();
 		}
 	}
 

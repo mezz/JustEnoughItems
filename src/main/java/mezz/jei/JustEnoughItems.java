@@ -7,7 +7,6 @@ import mezz.jei.gui.textures.JeiSpriteUploader;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.startup.ClientLifecycleHandler;
 import mezz.jei.startup.NetworkHandler;
-import mezz.jei.vote.GoVoteHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
@@ -16,7 +15,6 @@ import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -44,9 +42,6 @@ public class JustEnoughItems {
 			}
 			EventBusHelper.addLifecycleListener(JustEnoughItems.class, modEventBus, FMLLoadCompleteEvent.class, loadCompleteEvent ->
 				new ClientLifecycleHandler(networkHandler, textures)
-			);
-			EventBusHelper.addLifecycleListener(JustEnoughItems.class, modEventBus, FMLClientSetupEvent.class, event ->
-				GoVoteHandler.init()
 			);
 		});
 	}
