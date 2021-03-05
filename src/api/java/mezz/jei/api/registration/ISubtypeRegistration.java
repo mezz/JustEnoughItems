@@ -50,5 +50,5 @@ public interface ISubtypeRegistration {
 	/**
 	 * Returns whether an {@link IFluidSubtypeInterpreter} has been registered for this fluid.
 	 */
-	boolean hasFluidSubtypeInterpreter(FluidStack fluidStack);
+	boolean hasSubtypeInterpreter(FluidStack fluidStack);
 }
