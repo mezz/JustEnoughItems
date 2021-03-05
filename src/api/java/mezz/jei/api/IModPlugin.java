@@ -33,6 +33,13 @@ public interface IModPlugin {
 	}
 
 	/**
+	 * If your fluid has subtypes that depend on NBT or capabilities, use this to help JEI identify those subtypes correctly.
+	 */
+	default void registerFluidSubtypes(ISubtypeRegistration registration) {
+
+	}
+
+	/**
 	 * Register special ingredients, beyond the basic ItemStack and FluidStack.
 	 */
 	default void registerIngredients(IModIngredientRegistration registration) {

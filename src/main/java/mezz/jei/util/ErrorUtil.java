@@ -8,6 +8,7 @@ import java.util.List;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.ingredients.IngredientsForType;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -218,6 +219,32 @@ public final class ErrorUtil {
 					throw new NullPointerException(name + " must not contain null values.");
 				}
 			}
+		}
+	}
+
+	public static void checkNotEmpty(@Nullable FluidStack fluidStack, String name) {
+		if (fluidStack == null) {
+			throw new NullPointerException(name + " must not be null.");
+		} else if (fluidStack.isEmpty()) {
+			ResourceLocation registryName = fluidStack.getFluid().getRegistryName();
+			String info = "";
+			if (registryName != null) {
+				info = registryName.toString();
+			}
+			throw new IllegalArgumentException("FluidStack " + name + " must not be empty. " + info);
+		}
+	}
+
+	public static void checkNotEmpty(@Nullable FluidStack fluidStack) {
+		if (fluidStack == null) {
+			throw new NullPointerException("FluidStack must not be null.");
+		} else if (fluidStack.isEmpty()) {
+			ResourceLocation registryName = fluidStack.getFluid().getRegistryName();
+			String info = "";
+			if (registryName != null) {
+				info = registryName.toString();
+			}
+			throw new IllegalArgumentException("FluidStack value must not be empty. " + info);
 		}
 	}
 

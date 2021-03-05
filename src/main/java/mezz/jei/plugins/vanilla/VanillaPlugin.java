@@ -147,7 +147,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.register(VanillaTypes.ITEM, itemStacks, itemStackHelper, itemStackRenderer);
 
 		List<FluidStack> fluidStacks = FluidStackListFactory.create();
-		FluidStackHelper fluidStackHelper = new FluidStackHelper();
+		FluidStackHelper fluidStackHelper = new FluidStackHelper(subtypeManager);
 		FluidStackRenderer fluidStackRenderer = new FluidStackRenderer();
 		registration.register(VanillaTypes.FLUID, fluidStacks, fluidStackHelper, fluidStackRenderer);
 	}

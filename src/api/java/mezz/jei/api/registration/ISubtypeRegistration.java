@@ -1,14 +1,17 @@
 package mezz.jei.api.registration;
 
+import mezz.jei.api.ingredients.subtypes.IFluidSubtypeInterpreter;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
+import net.minecraftforge.fluids.FluidStack;
 
 /**
- * Tell JEI how to interpret NBT tags and capabilities when comparing and looking up items.
+ * Tell JEI how to interpret NBT tags and capabilities when comparing and looking up items and fluids.
  *
- * If your item has subtypes that depend on NBT or capabilities, use this so JEI can tell those subtypes apart.
+ * If your item or fluid has subtypes that depend on NBT or capabilities, use this so JEI can tell those subtypes apart.
  */
 public interface ISubtypeRegistration {
 	/**
@@ -21,12 +24,31 @@ public interface ISubtypeRegistration {
 	void registerSubtypeInterpreter(Item item, ISubtypeInterpreter interpreter);
 
 	/**
+	 * Add an interpreter to compare fluid subtypes.
+	 * This interpreter should account for nbt and anything else that's relevant to differentiating the fluid's subtypes.
+	 *
+	 * @param fluid        the fluid that has subtypes.
+	 * @param interpreter the interpreter for the fluid.
+	 */
+	void registerFluidSubtypeInterpreter(Fluid fluid, IFluidSubtypeInterpreter interpreter);
+
+	/**
 	 * Tells JEI to treat all NBT as relevant to these items' subtypes.
 	 */
 	void useNbtForSubtypes(Item... items);
 
 	/**
+	 * Tells JEI to treat all NBT as relevant to these fluids' subtypes.
+	 */
+	void useNbtForFluidSubtypes(Fluid... fluids);
+
+	/**
 	 * Returns whether an {@link ISubtypeInterpreter} has been registered for this item.
 	 */
 	boolean hasSubtypeInterpreter(ItemStack itemStack);
+
+	/**
+	 * Returns whether an {@link IFluidSubtypeInterpreter} has been registered for this fluid.
+	 */
+	boolean hasFluidSubtypeInterpreter(FluidStack fluidStack);
 }
