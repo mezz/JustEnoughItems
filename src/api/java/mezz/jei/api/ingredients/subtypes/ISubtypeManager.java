@@ -25,8 +25,8 @@ public interface ISubtypeManager {
 	String getSubtypeInfo(ItemStack itemStack);
 
 	/**
-	 * Get the data from an itemStack that is relevant to comparing and telling subtypes apart.
-	 * Returns null if the itemStack has no information used for subtypes.
+	 * Get the data from a fluidStack that is relevant to comparing and telling subtypes apart.
+	 * Returns null if the fluidStack has no information used for subtypes.
 	 *
 	 * @since JEI 7.3.0
 	 */
@@ -35,9 +35,9 @@ public interface ISubtypeManager {
 
 	/**
 	 * Get the data from a fluidStack that is relevant to comparing and telling subtypes apart.
-	 * Returns null if the itemStack has no information used for subtypes.
+	 * Returns null if the fluidStack has no information used for subtypes.
 	 *
-	 * @since JEI x.x.x
+	 * @since JEI 7.6.2
 	 */
 	@Nullable
 	String getSubtypeInfo(FluidStack fluidStack, UidContext context);

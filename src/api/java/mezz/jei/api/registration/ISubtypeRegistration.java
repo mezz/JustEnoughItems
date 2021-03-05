@@ -27,7 +27,7 @@ public interface ISubtypeRegistration {
 	 * Add an interpreter to compare fluid subtypes.
 	 * This interpreter should account for nbt and anything else that's relevant to differentiating the fluid's subtypes.
 	 *
-	 * @param fluid        the fluid that has subtypes.
+	 * @param fluid       the fluid that has subtypes.
 	 * @param interpreter the interpreter for the fluid.
 	 */
 	void registerFluidSubtypeInterpreter(Fluid fluid, IFluidSubtypeInterpreter interpreter);

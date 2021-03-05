@@ -5,7 +5,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
+import mezz.jei.api.registration.*;
 import mezz.jei.config.ClientConfig;
+import mezz.jei.ingredients.SubtypeManager;
+import mezz.jei.load.registration.SubtypeRegistration;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
@@ -25,11 +30,6 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.registration.IGuiHandlerRegistration;
-import mezz.jei.api.registration.IModIngredientRegistration;
-import mezz.jei.api.registration.IRecipeCatalystRegistration;
-import mezz.jei.api.registration.IRecipeCategoryRegistration;
-import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
@@ -123,6 +123,14 @@ public class JeiDebugPlugin implements IModPlugin {
 
 			registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandler<>());
 		}
+	}
+
+	@Override
+	public void registerFluidSubtypes(ISubtypeRegistration registration) {
+		Fluid water = Fluids.WATER;
+		FluidSubtypeHandlerTest subtype = new FluidSubtypeHandlerTest();
+
+		registration.registerFluidSubtypeInterpreter(water, subtype);
 	}
 
 	@Override

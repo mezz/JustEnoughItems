@@ -9,7 +9,7 @@ public interface IFluidSubtypeInterpreter extends Function<FluidStack, String> {
     String NONE = "";
 
     /**
-     * Get the data from an itemStack that is relevant to telling subtypes apart.
+     * Get the data from a FluidStack that is relevant to telling subtypes apart.
      * This should account for nbt, and anything else that's relevant.
      * Return {@link #NONE} if there is no data used for subtypes.
      */
@@ -17,10 +17,10 @@ public interface IFluidSubtypeInterpreter extends Function<FluidStack, String> {
     String apply(FluidStack fluidStack);
 
     /**
-     * Get the data from an itemStack that is relevant to telling subtypes apart in the given context.
+     * Get the data from a FluidStack that is relevant to telling subtypes apart in the given context.
      * This should account for nbt, and anything else that's relevant.
      * Return {@link #NONE} if there is no data used for subtypes.
-     * @since JEI x.x.x
+     * @since JEI 7.6.2
      */
     default String apply(FluidStack fluidStack, UidContext context) {
         return apply(fluidStack);
