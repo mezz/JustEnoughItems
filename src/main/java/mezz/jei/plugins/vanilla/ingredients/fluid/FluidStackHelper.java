@@ -51,19 +51,8 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	public String getUniqueId(FluidStack ingredient) {
 		Fluid fluid = ingredient.getFluid();
 		ResourceLocation registryName = fluid.getRegistryName();
-		CompoundNBT tag = ingredient.getTag();
-		if (tag != null) {
-			return "fluid:" + registryName + ":" + tag;
-		}
-		return "fluid:" + registryName;
-	}
-
-	@Override
-	public String getUniqueId(FluidStack ingredient, UidContext context) {
-		Fluid fluid = ingredient.getFluid();
-		ResourceLocation registryName = fluid.getRegistryName();
 		String result = "fluid:" + registryName;
-		String subtypeInfo = subtypeManager.getSubtypeInfo(ingredient, context);
+		String subtypeInfo = subtypeManager.getSubtypeInfo(ingredient);
 		if (subtypeInfo != null && !subtypeInfo.isEmpty()) {
 			result = result + ":" + subtypeInfo;
 		}

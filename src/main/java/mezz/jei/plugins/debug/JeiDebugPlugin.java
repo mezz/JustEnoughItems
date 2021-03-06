@@ -5,11 +5,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
-import mezz.jei.api.registration.*;
+import mezz.jei.api.registration.IModIngredientRegistration;
+import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.config.ClientConfig;
-import mezz.jei.ingredients.SubtypeManager;
-import mezz.jei.load.registration.SubtypeRegistration;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraftforge.fluids.FluidAttributes;
@@ -70,7 +68,7 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerRecipes(IRecipeRegistration registration) {
+	public void registerRecipes(mezz.jei.api.registration.IRecipeRegistration registration) {
 		JeiDebugPlugin.ingredientManager = registration.getIngredientManager();
 
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
@@ -99,7 +97,7 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+	public void registerGuiHandlers(mezz.jei.api.registration.IGuiHandlerRegistration registration) {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
 			registration.addGuiContainerHandler(BrewingStandScreen.class, new IGuiContainerHandler<BrewingStandScreen>() {
 				@Override
@@ -126,7 +124,7 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerFluidSubtypes(ISubtypeRegistration registration) {
+	public void registerFluidSubtypes(mezz.jei.api.registration.ISubtypeRegistration registration) {
 		Fluid water = Fluids.WATER;
 		FluidSubtypeHandlerTest subtype = new FluidSubtypeHandlerTest();
 
@@ -134,7 +132,7 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
+	public void registerRecipeCatalysts(mezz.jei.api.registration.IRecipeCatalystRegistration registration) {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
 			registration.addRecipeCatalyst(new DebugIngredient(7), DebugRecipeCategory.UID);
 //			registry.addRecipeCatalyst(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), DebugRecipeCategory.UID);

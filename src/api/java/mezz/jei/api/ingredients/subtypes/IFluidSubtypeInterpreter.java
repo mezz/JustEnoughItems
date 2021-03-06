@@ -4,6 +4,11 @@ import net.minecraftforge.fluids.FluidStack;
 
 import java.util.function.Function;
 
+/**
+ * Similar to ISubtypeInterpreter, but for FluidStacks instead of ItemStacks
+ *
+ * @since JEI 7.6.2
+ */
 @FunctionalInterface
 public interface IFluidSubtypeInterpreter extends Function<FluidStack, String> {
     String NONE = "";
