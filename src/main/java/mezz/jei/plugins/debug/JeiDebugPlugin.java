@@ -7,6 +7,7 @@ import java.util.List;
 
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
+import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.config.ClientConfig;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
@@ -68,7 +69,7 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerRecipes(mezz.jei.api.registration.IRecipeRegistration registration) {
+	public void registerRecipes(IRecipeRegistration registration) {
 		JeiDebugPlugin.ingredientManager = registration.getIngredientManager();
 
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {

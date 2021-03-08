@@ -55,7 +55,7 @@ public class SubtypeManager implements ISubtypeManager {
 	@Nullable
 	@Override
 	public String getSubtypeInfo(FluidStack fluidStack) {
-		ErrorUtil.checkNotEmpty(fluidStack);
+		ErrorUtil.checkNotNull(fluidStack, "fluid ");
 
 		Fluid fluid = fluidStack.getFluid();
 		IFluidSubtypeInterpreter subtypeInterpreter = fluidInterpreters.get(fluid);

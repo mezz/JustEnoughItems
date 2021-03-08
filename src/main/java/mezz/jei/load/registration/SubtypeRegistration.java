@@ -73,7 +73,7 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 
 	@Override
 	public boolean hasSubtypeInterpreter(FluidStack fluidStack) {
-		ErrorUtil.checkNotEmpty(fluidStack);
+		ErrorUtil.checkNotNull(fluidStack, "fluid ");
 
 		Fluid fluid = fluidStack.getFluid();
 		return fluidInterpreters.containsKey(fluid);

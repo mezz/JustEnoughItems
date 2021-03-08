@@ -222,32 +222,6 @@ public final class ErrorUtil {
 		}
 	}
 
-	public static void checkNotEmpty(@Nullable FluidStack fluidStack, String name) {
-		if (fluidStack == null) {
-			throw new NullPointerException(name + " must not be null.");
-		} else if (fluidStack.isEmpty()) {
-			ResourceLocation registryName = fluidStack.getFluid().getRegistryName();
-			String info = "";
-			if (registryName != null) {
-				info = registryName.toString();
-			}
-			throw new IllegalArgumentException("FluidStack " + name + " must not be empty. " + info);
-		}
-	}
-
-	public static void checkNotEmpty(@Nullable FluidStack fluidStack) {
-		if (fluidStack == null) {
-			throw new NullPointerException("FluidStack must not be null.");
-		} else if (fluidStack.isEmpty()) {
-			ResourceLocation registryName = fluidStack.getFluid().getRegistryName();
-			String info = "";
-			if (registryName != null) {
-				info = registryName.toString();
-			}
-			throw new IllegalArgumentException("FluidStack value must not be empty. " + info);
-		}
-	}
-
 	public static <T> void checkNotNull(@Nullable T object, String name) {
 		if (object == null) {
 			throw new NullPointerException(name + " must not be null.");
