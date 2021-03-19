@@ -31,7 +31,7 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 	}
 
 	@Override
-	public void useNbtForFluidSubtypes(Fluid... fluids) {
+	public void useNbtForSubtypes(Fluid... fluids) {
 		for (Fluid fluid : fluids) {
 			registerFluidSubtypeInterpreter(fluid, AllFluidNbt.INSTANCE);
 		}

@@ -40,7 +40,7 @@ public interface ISubtypeRegistration {
 	/**
 	 * Tells JEI to treat all NBT as relevant to these fluids' subtypes.
 	 */
-	void useNbtForFluidSubtypes(Fluid... fluids);
+	void useNbtForSubtypes(Fluid... fluids);
 
 	/**
 	 * Returns whether an {@link ISubtypeInterpreter} has been registered for this item.

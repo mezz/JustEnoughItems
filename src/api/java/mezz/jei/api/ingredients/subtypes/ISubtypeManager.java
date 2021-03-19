@@ -40,5 +40,5 @@ public interface ISubtypeManager {
 	 * @since JEI 7.6.2
 	 */
 	@Nullable
-	String getSubtypeInfo(FluidStack fluidStack);
+	String getSubtypeInfo(FluidStack fluidStack, UidContext context);
 }

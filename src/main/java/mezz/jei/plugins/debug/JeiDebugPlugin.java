@@ -5,9 +5,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
+import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.config.ClientConfig;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
@@ -98,7 +101,7 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerGuiHandlers(mezz.jei.api.registration.IGuiHandlerRegistration registration) {
+	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
 			registration.addGuiContainerHandler(BrewingStandScreen.class, new IGuiContainerHandler<BrewingStandScreen>() {
 				@Override
@@ -113,9 +116,9 @@ public class JeiDebugPlugin implements IModPlugin {
 				@Nullable
 				@Override
 				public Object getIngredientUnderMouse(BrewingStandScreen containerScreen, double mouseX, double mouseY) {
-//					if (mouseX < 10 && mouseY < 10) {
-//						return new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME);
-//					}
+					if (mouseX < 10 && mouseY < 10) {
+						return new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME);
+					}
 					return null;
 				}
 			});
@@ -125,7 +128,7 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerFluidSubtypes(mezz.jei.api.registration.ISubtypeRegistration registration) {
+	public void registerFluidSubtypes(ISubtypeRegistration registration) {
 		Fluid water = Fluids.WATER;
 		FluidSubtypeHandlerTest subtype = new FluidSubtypeHandlerTest();
 
@@ -133,10 +136,10 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerRecipeCatalysts(mezz.jei.api.registration.IRecipeCatalystRegistration registration) {
+	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
 			registration.addRecipeCatalyst(new DebugIngredient(7), DebugRecipeCategory.UID);
-//			registry.addRecipeCatalyst(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME), DebugRecipeCategory.UID);
+			registration.addRecipeCatalyst(new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), DebugRecipeCategory.UID);
 			registration.addRecipeCatalyst(new ItemStack(Items.STICK), DebugRecipeCategory.UID);
 			int i = 0;
 			for (Item item : ForgeRegistries.ITEMS.getValues()) {

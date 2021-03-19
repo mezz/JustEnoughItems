@@ -49,14 +49,22 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Override
 	public String getUniqueId(FluidStack ingredient) {
+		return getUniqueId(ingredient, UidContext.Ingredient);
+	}
+
+	@Override
+	public String getUniqueId(FluidStack ingredient, UidContext context) {
 		Fluid fluid = ingredient.getFluid();
 		ResourceLocation registryName = fluid.getRegistryName();
-		String result = "fluid:" + registryName;
-		String subtypeInfo = subtypeManager.getSubtypeInfo(ingredient);
+		StringBuilder result = new StringBuilder()
+				.append("fluid:")
+				.append(registryName);
+		String subtypeInfo = subtypeManager.getSubtypeInfo(ingredient, context);
 		if (subtypeInfo != null && !subtypeInfo.isEmpty()) {
-			result = result + ":" + subtypeInfo;
+			result.append(":");
+			result.append(subtypeInfo);
 		}
-		return result;
+		return result.toString();
 	}
 
 	@Override

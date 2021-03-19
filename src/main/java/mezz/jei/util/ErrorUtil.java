@@ -8,7 +8,6 @@ import java.util.List;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.ingredients.IngredientsForType;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
