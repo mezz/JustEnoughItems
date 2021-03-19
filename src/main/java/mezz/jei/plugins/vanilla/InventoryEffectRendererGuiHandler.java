@@ -46,7 +46,7 @@ class InventoryEffectRendererGuiHandler<T extends Container> implements IGuiCont
 		for (EffectInstance potioneffect : Ordering.natural().sortedCopy(activePotionEffects)) {
 			Effect potion = potioneffect.getPotion();
 			if (potion.shouldRender(potioneffect)) {
-				areas.add(new Rectangle2d(x, y, 166, 140));
+				areas.add(new Rectangle2d(x, y, 166, height));
 				y += height;
 			}
 		}
