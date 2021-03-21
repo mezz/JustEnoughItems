@@ -171,14 +171,14 @@ public class GoVoteHandler {
 			addGroup(StringTextComponent.EMPTY, s("But power is still in the hands of We, the People."));
 			addGroup(s("The Constitution and its amendments guarantee us the right to vote."));
 			addGroup(s("And it is not only our right, but our ")
-				.append(s("responsibility").mergeStyle(TextFormatting.ITALIC, TextFormatting.GOLD))
+				.appendSibling(s("responsibility").mergeStyle(TextFormatting.ITALIC, TextFormatting.GOLD))
 				.appendString(" to do so."));
 			addGroup(s("Your vote matters. Always."));
 			addGroup(
 				StringTextComponent.EMPTY,
 				s("If you are eligible to vote, please take 2 minutes and click anywhere"),
 				s("to check your registration status and register at ")
-					.append(s(VOTE_ORG_LINK).mergeStyle(TextFormatting.GOLD))
+					.appendSibling(s(VOTE_ORG_LINK).mergeStyle(TextFormatting.GOLD))
 			);
 			addGroup(
 				StringTextComponent.EMPTY,

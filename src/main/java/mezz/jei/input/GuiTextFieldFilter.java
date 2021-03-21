@@ -163,13 +163,13 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 	}
 
 	@Override
-	public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+	public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		this.isDrawing = true;
 		if (this.getVisible()) {
 			RenderSystem.color4f(1, 1, 1, 1);
 			background.draw(matrixStack, this.x, this.y, this.width, this.height);
 		}
-		super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
+		super.renderWidget(matrixStack, mouseX, mouseY, partialTicks);
 		this.isDrawing = false;
 	}
 	// end background hack

@@ -166,7 +166,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	public void drawScreen(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
 			RenderSystem.disableLighting();
-			this.searchField.renderButton(matrixStack, mouseX, mouseY, partialTicks);
+			this.searchField.renderWidget(matrixStack, mouseX, mouseY, partialTicks);
 			this.contents.draw(minecraft, matrixStack, mouseX, mouseY, partialTicks);
 		}
 		if (this.guiProperties != null) {

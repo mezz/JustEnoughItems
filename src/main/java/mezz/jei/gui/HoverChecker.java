@@ -21,7 +21,7 @@ public class HoverChecker {
 
 	public void updateBounds(Button button) {
 		this.top = button.y;
-		this.bottom = button.y + button.getHeightRealms();
+		this.bottom = button.y + button.getHeight();
 		this.left = button.x;
 		this.right = button.x + button.getWidth();
 	}
