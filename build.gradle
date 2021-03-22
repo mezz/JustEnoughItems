@@ -136,9 +136,7 @@ minecraft {
 javadoc {
 	source = [sourceSets.main.allJava, sourceSets.api.allJava]
 	// prevent java 8's strict doclint for javadocs from failing builds
-	if (JavaVersion.current().isJava8Compatible()) {
-		options.addStringOption('Xdoclint:none', '-quiet')
-	}
+	options.addStringOption('Xdoclint:none', '-quiet')
 }
 
 task makeChangelog(type: GitChangelogTask) {
