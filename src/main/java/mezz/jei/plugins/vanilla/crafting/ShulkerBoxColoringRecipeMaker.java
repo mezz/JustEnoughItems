@@ -33,8 +33,8 @@ public final class ShulkerBoxColoringRecipeMaker {
             Ingredient.IItemList colorList = new Ingredient.TagList(colorTag);
             Stream<Ingredient.IItemList> colorIngredientStream = Stream.of(dyeList, colorList);
             //Shulker box special recipe allows the matching dye item or any item in the tag.
-			// we need to specify both in case someone removes the dye item from the dye tag
-			// as the item will still be valid for this recipe
+            // we need to specify both in case someone removes the dye item from the dye tag
+            // as the item will still be valid for this recipe
             Ingredient colorIngredient = Ingredient.fromItemListStream(colorIngredientStream);
             NonNullList<Ingredient> inputs = NonNullList.from(Ingredient.EMPTY, baseShulkerIngredient, colorIngredient);
             Block coloredShulkerBox = ShulkerBoxBlock.getBlockByColor(color);
