@@ -19,14 +19,16 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import com.google.common.base.MoreObjects;
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.color.ColorGetter;
 
 public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	private final ISubtypeManager subtypeManager;
+	private final IColorHelper colorHelper;
 
-	public FluidStackHelper(ISubtypeManager subtypeManager) {
+	public FluidStackHelper(ISubtypeManager subtypeManager, IColorHelper colorHelper) {
 		this.subtypeManager = subtypeManager;
+		this.colorHelper = colorHelper;
 	}
 
 
@@ -88,7 +90,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 			Minecraft minecraft = Minecraft.getInstance();
 			TextureAtlasSprite fluidStillSprite = minecraft.getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE).apply(fluidStill);
 			int renderColor = attributes.getColor(ingredient);
-			return ColorGetter.getColors(fluidStillSprite, renderColor, 1);
+			return colorHelper.getColors(fluidStillSprite, renderColor, 1);
 		}
 		return Collections.emptyList();
 	}

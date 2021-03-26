@@ -6,6 +6,7 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IStackHelper;
@@ -140,6 +141,7 @@ public class VanillaPlugin implements IModPlugin {
 		ISubtypeManager subtypeManager = registration.getSubtypeManager();
 		StackHelper stackHelper = new StackHelper(subtypeManager);
 		ItemStackListFactory itemStackListFactory = new ItemStackListFactory();
+		IColorHelper colorHelper = registration.getColorHelper();
 
 		List<ItemStack> itemStacks = itemStackListFactory.create(stackHelper);
 		ItemStackHelper itemStackHelper = new ItemStackHelper(stackHelper);
@@ -147,7 +149,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.register(VanillaTypes.ITEM, itemStacks, itemStackHelper, itemStackRenderer);
 
 		List<FluidStack> fluidStacks = FluidStackListFactory.create();
-		FluidStackHelper fluidStackHelper = new FluidStackHelper(subtypeManager);
+		FluidStackHelper fluidStackHelper = new FluidStackHelper(subtypeManager, FluidStackRenderer);
 		FluidStackRenderer fluidStackRenderer = new FluidStackRenderer();
 		registration.register(VanillaTypes.FLUID, fluidStacks, fluidStackHelper, fluidStackRenderer);
 	}

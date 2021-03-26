@@ -7,11 +7,13 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.registration.IModIngredientRegistration;
+import mezz.jei.color.ColorGetter;
 import mezz.jei.util.ErrorUtil;
 
 public class ModIngredientRegistration implements IModIngredientRegistration {
@@ -40,6 +42,11 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 	@Override
 	public ISubtypeManager getSubtypeManager() {
 		return subtypeManager;
+	}
+
+	@Override
+	public IColorHelper getColorHelper() {
+		return ColorGetter.INSTANCE;
 	}
 
 	public List<RegisteredIngredient<?>> getRegisteredIngredients() {
