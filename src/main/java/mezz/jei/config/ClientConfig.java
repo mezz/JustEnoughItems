@@ -82,7 +82,20 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 		builder.push("colors");
 		{
 			builder.comment("Color values to search for");
-			searchColorsCfg = builder.defineList("SearchColors", Lists.newArrayList(ColorGetter.getColorDefaults()), obj -> true);
+			searchColorsCfg = builder.defineList("SearchColors", Lists.newArrayList(ColorGetter.getColorDefaults()), obj -> {
+				if (obj instanceof String) {
+					String entry = (String) obj;
+					String[] values = entry.split(":");
+					if (values.length == 2) {
+						try {
+							Integer.decode("0x" + values[1]);
+							return true;
+						} catch (NumberFormatException ignored) {
+						}
+					}
+				}
+				return false;
+			});
 		}
 		builder.pop();
 
