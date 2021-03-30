@@ -3,7 +3,6 @@ import se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask
 buildscript {
 	repositories {
 		maven { url = 'https://files.minecraftforge.net/maven' }
-		jcenter()
 		mavenCentral()
 	}
 	// This is only here while FG is under active development
@@ -23,7 +22,7 @@ plugins {
 	id 'eclipse'
 	id 'idea'
 	id 'com.matthewprenger.cursegradle' version '1.4.0'
-	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.65'
+	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.66'
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply from: 'buildtools/ColoredOutput.gradle'
