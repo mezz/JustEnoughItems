@@ -396,10 +396,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	@Override
 	public void closeScreen() {
 		if (isOpen() && minecraft != null) {
-			if (parentScreen != null) {
-				minecraft.displayGuiScreen(parentScreen);
-				parentScreen = null;
-			}
+			minecraft.displayGuiScreen(parentScreen);
+			parentScreen = null;
 			logic.clearHistory();
 			return;
 		}
