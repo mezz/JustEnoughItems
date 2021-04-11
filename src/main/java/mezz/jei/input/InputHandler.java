@@ -32,10 +32,14 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.util.ReflectionUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class InputHandler {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final IIngredientManager ingredientManager;
-	private final WeakReference<IngredientFilter> ingredientFilter;
+	private final WeakReference<IngredientFilter> weakIngredientFilter;
 	private final RecipesGui recipesGui;
 	private final IngredientListOverlay ingredientListOverlay;
 	private final IEditModeConfig editModeConfig;
@@ -58,7 +62,7 @@ public class InputHandler {
 		BookmarkList bookmarkList
 	) {
 		this.ingredientManager = ingredientManager;
-		this.ingredientFilter = new WeakReference<>(ingredientFilter);
+		this.weakIngredientFilter = new WeakReference<>(ingredientFilter);
 		this.recipesGui = recipesGui;
 		this.ingredientListOverlay = ingredientListOverlay;
 		this.editModeConfig = editModeConfig;
@@ -236,10 +240,15 @@ public class InputHandler {
 
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 
-		if (editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
-			editModeConfig.removeIngredientFromConfigBlacklist(ingredientFilter.get(), ingredientManager, ingredient, blacklistType, ingredientHelper);
+		IngredientFilter ingredientFilter = weakIngredientFilter.get();
+		if (ingredientFilter == null) {
+			LOGGER.error("Can't edit the config blacklist, the ingredient filter is null");
 		} else {
-			editModeConfig.addIngredientToConfigBlacklist(ingredientFilter.get(), ingredientManager, ingredient, blacklistType, ingredientHelper);
+			if (editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
+				editModeConfig.removeIngredientFromConfigBlacklist(ingredientFilter, ingredientManager, ingredient, blacklistType, ingredientHelper);
+			} else {
+				editModeConfig.addIngredientToConfigBlacklist(ingredientFilter, ingredientManager, ingredient, blacklistType, ingredientHelper);
+			}
 		}
 		clicked.onClickHandled();
 		return true;

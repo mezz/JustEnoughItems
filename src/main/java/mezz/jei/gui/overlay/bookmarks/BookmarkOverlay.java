@@ -78,10 +78,6 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 	}
 
 	@Override
-	public void drawOnForeground(ContainerScreen<?> gui, int mouseX, int mouseY) {
-	}
-
-	@Override
 	public void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
 			this.contents.drawTooltips(minecraft, matrixStack, mouseX, mouseY);

@@ -148,28 +148,29 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	}
 
 	private boolean shouldDeleteItemOnClick(Minecraft minecraft, double mouseX, double mouseY) {
-		if (worldConfig.isDeleteItemsInCheatModeActive()) {
-			PlayerEntity player = minecraft.player;
-			if (player != null) {
-				ItemStack itemStack = player.inventory.getItemStack();
-				if (!itemStack.isEmpty()) {
-					if (!this.recipesGui.isOpen()) {
-						GiveMode giveMode = this.clientConfig.getGiveMode();
-						if (giveMode == GiveMode.MOUSE_PICKUP) {
-							IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);
-							if (ingredientUnderMouse != null && ingredientUnderMouse.getValue() instanceof ItemStack) {
-								ItemStack value = (ItemStack) ingredientUnderMouse.getValue();
-								if (ItemHandlerHelper.canItemStacksStack(itemStack, value)) {
-									return false;
-								}
-							}
-						}
-						return true;
-					}
-				}
+		if (!worldConfig.isDeleteItemsInCheatModeActive()) {
+			return false;
+		}
+		PlayerEntity player = minecraft.player;
+		if (player == null) {
+			return false;
+		}
+		ItemStack itemStack = player.inventory.getItemStack();
+		if (itemStack.isEmpty()) {
+			return false;
+		}
+		if (this.recipesGui.isOpen()) {
+			return false;
+		}
+		GiveMode giveMode = this.clientConfig.getGiveMode();
+		if (giveMode == GiveMode.MOUSE_PICKUP) {
+			IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);
+			if (ingredientUnderMouse != null && ingredientUnderMouse.getValue() instanceof ItemStack) {
+				ItemStack value = (ItemStack) ingredientUnderMouse.getValue();
+				return !ItemHandlerHelper.canItemStacksStack(itemStack, value);
 			}
 		}
-		return false;
+		return true;
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {

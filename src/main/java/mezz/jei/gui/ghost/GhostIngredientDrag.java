@@ -70,7 +70,7 @@ public class GhostIngredientDrag<T> {
 			int yDist = originY - mouseY;
 			float lineWidth = 2;
 			if (minecraft.currentScreen != null) {
-				long distanceSq = xDist * xDist + yDist * yDist;
+				long distanceSq = (long) xDist * xDist + (long) yDist * yDist;
 				int screenDim = minecraft.currentScreen.width * minecraft.currentScreen.height;
 				float percentOfDim = Math.min(1, distanceSq / (float) screenDim);
 				lineWidth = 1 + ((1 - (percentOfDim)) * 3);

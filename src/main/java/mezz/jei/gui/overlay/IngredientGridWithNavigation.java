@@ -3,7 +3,6 @@ package mezz.jei.gui.overlay;
 import com.mojang.blaze3d.matrix.MatrixStack;
 
 import javax.annotation.Nullable;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -48,7 +47,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 	private final IFilterTextSource filterTextSource;
 	private final IWorldConfig worldConfig;
 	private final IngredientGrid ingredientGrid;
-	private final WeakReference<IIngredientGridSource> ingredientSource;
+	private final IIngredientGridSource ingredientSource;
 	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
 
 	public IngredientGridWithNavigation(
@@ -61,7 +60,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		this.filterTextSource = filterTextSource;
 		this.worldConfig = worldConfig;
 		this.ingredientGrid = ingredientGrid;
-		this.ingredientSource = new WeakReference<>(ingredientSource);
+		this.ingredientSource = ingredientSource;
 		this.guiScreenHelper = guiScreenHelper;
 		this.pageDelegate = new IngredientGridPaged();
 		this.navigation = new PageNavigation(this.pageDelegate, false);
@@ -72,7 +71,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 			firstItemIndex = 0;
 		}
 		String filterText = filterTextSource.getFilterText();
-		List<IIngredientListElement<?>> ingredientList = ingredientSource.get().getIngredientList(filterText);
+		List<IIngredientListElement<?>> ingredientList = ingredientSource.getIngredientList(filterText);
 		if (firstItemIndex >= ingredientList.size()) {
 			firstItemIndex = 0;
 		}
@@ -212,7 +211,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		@Override
 		public boolean nextPage() {
 			String filterText = filterTextSource.getFilterText();
-			final int itemsCount = ingredientSource.get().getIngredientList(filterText).size();
+			final int itemsCount = ingredientSource.getIngredientList(filterText).size();
 			if (itemsCount > 0) {
 				firstItemIndex += ingredientGrid.size();
 				if (firstItemIndex >= itemsCount) {
@@ -236,7 +235,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 				return false;
 			}
 			String filterText = filterTextSource.getFilterText();
-			final int itemsCount = ingredientSource.get().getIngredientList(filterText).size();
+			final int itemsCount = ingredientSource.getIngredientList(filterText).size();
 
 			int pageNum = firstItemIndex / itemsPerPage;
 			if (pageNum == 0) {
@@ -259,7 +258,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 			String filterText = filterTextSource.getFilterText();
 			// true if there is more than one page because this wraps around
 			int itemsPerPage = ingredientGrid.size();
-			return itemsPerPage > 0 && ingredientSource.get().getIngredientList(filterText).size() > itemsPerPage;
+			return itemsPerPage > 0 && ingredientSource.getIngredientList(filterText).size() > itemsPerPage;
 		}
 
 		@Override
@@ -267,13 +266,13 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 			String filterText = filterTextSource.getFilterText();
 			// true if there is more than one page because this wraps around
 			int itemsPerPage = ingredientGrid.size();
-			return itemsPerPage > 0 && ingredientSource.get().getIngredientList(filterText).size() > itemsPerPage;
+			return itemsPerPage > 0 && ingredientSource.getIngredientList(filterText).size() > itemsPerPage;
 		}
 
 		@Override
 		public int getPageCount() {
 			String filterText = filterTextSource.getFilterText();
-			final int itemCount = ingredientSource.get().getIngredientList(filterText).size();
+			final int itemCount = ingredientSource.getIngredientList(filterText).size();
 			final int stacksPerPage = ingredientGrid.size();
 			if (stacksPerPage == 0) {
 				return 1;

@@ -14,8 +14,6 @@ public interface ILeftAreaContent extends IShowsRecipeFocuses {
 
 	void drawScreen(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks);
 
-	void drawOnForeground(ContainerScreen<?> gui, int mouseX, int mouseY);
-
 	void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY);
 
 	void updateBounds(Rectangle2d area, Set<Rectangle2d> guiExclusionAreas);

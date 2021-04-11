@@ -8,6 +8,7 @@ import mezz.jei.network.packets.PacketSetHotbarItemStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
+import net.minecraft.client.multiplayer.PlayerController;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -138,6 +139,12 @@ public final class CommandUtil {
 			// slot ID for the message is different from the slot id used in the mainInventory
 			mainInventorySlot += 36;
 		}
-		Minecraft.getInstance().playerController.sendSlotPacket(stack, mainInventorySlot);
+		Minecraft minecraft = Minecraft.getInstance();
+		PlayerController playerController = minecraft.playerController;
+		if (playerController != null) {
+			playerController.sendSlotPacket(stack, mainInventorySlot);
+		} else {
+			LOGGER.error("Cannot send slot packet, minecraft.playerController is null");
+		}
 	}
 }

@@ -9,7 +9,6 @@ import java.util.Set;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.api.gui.handlers.IGuiProperties;
@@ -55,12 +54,6 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 			if (naviArea.getHeight() > 0) {
 				navigation.draw(minecraft, matrixStack, mouseX, mouseY, partialTicks);
 			}
-		}
-	}
-
-	public void drawOnForeground(ContainerScreen<?> gui, int mouseX, int mouseY) {
-		if (canShow && hasContent()) {
-			contents.get(current).drawOnForeground(gui, mouseX, mouseY);
 		}
 	}
 

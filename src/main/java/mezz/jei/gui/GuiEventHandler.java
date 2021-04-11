@@ -104,7 +104,6 @@ public class GuiEventHandler {
 			return;
 		}
 		ingredientListOverlay.drawOnForeground(minecraft, event.getMatrixStack(), gui, event.getMouseX(), event.getMouseY());
-		leftAreaDispatcher.drawOnForeground(gui, event.getMouseX(), event.getMouseY());
 	}
 
 	public void onDrawScreenEventPost(GuiScreenEvent.DrawScreenEvent.Post event) {

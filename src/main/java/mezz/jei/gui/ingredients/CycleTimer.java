@@ -14,7 +14,7 @@ public class CycleTimer {
 
 	public CycleTimer(int offset) {
 		long time = System.currentTimeMillis();
-		this.startTime = time - (offset * cycleTime);
+		this.startTime = time - ((long) offset * cycleTime);
 		this.drawTime = time;
 	}
 

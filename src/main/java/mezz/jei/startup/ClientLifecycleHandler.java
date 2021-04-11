@@ -162,7 +162,7 @@ public class ClientLifecycleHandler {
 		public final boolean isVanilla, isIntegrated;
 		public final Class<? extends Event> listenerClass;
 
-		private ServerType(boolean isVanilla, boolean isIntegrated, Class<? extends Event> listenerClass) {
+		ServerType(boolean isVanilla, boolean isIntegrated, Class<? extends Event> listenerClass) {
 			this.isVanilla = isVanilla;
 			this.isIntegrated = isIntegrated;
 			this.listenerClass = listenerClass;
