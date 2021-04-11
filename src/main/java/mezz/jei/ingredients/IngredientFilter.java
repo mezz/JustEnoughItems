@@ -91,17 +91,21 @@ public class IngredientFilter implements IIngredientGridSource {
 			this.elementSearch.registerPrefix(prefixInfo);
 		}
 
-		WeakReference<IngredientFilter> weakThis = new WeakReference<>(this);
+		WeakReference<IngredientFilter> weakIngredientFilter = new WeakReference<>(this);
 		EventBusHelper.addListener(this, EditModeToggleEvent.class, editModeToggleEvent -> {
-			IngredientFilter this2 = weakThis.get();
-			this2.filterCached = null;
-			this2.updateHidden();
+			IngredientFilter ingredientFilter = weakIngredientFilter.get();
+			if (ingredientFilter != null) {
+				ingredientFilter.filterCached = null;
+				ingredientFilter.updateHidden();
+			}
 		});
 
 		EventBusHelper.addListener(this, PlayerJoinedWorldEvent.class, playerJoinedWorldEvent -> {
-			IngredientFilter this2 = weakThis.get();
-			this2.filterCached = null;
-			this2.updateHidden();
+			IngredientFilter ingredientFilter = weakIngredientFilter.get();
+			if (ingredientFilter != null) {
+				ingredientFilter.filterCached = null;
+				ingredientFilter.updateHidden();
+			}
 		});
 
 		List<IIngredientListElementInfo<?>> ingredientInfo = ingredients.stream()
