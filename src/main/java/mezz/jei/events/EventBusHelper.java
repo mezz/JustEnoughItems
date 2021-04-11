@@ -1,10 +1,12 @@
 package mezz.jei.events;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import net.minecraftforge.fml.event.lifecycle.ModLifecycleEvent;
@@ -98,5 +100,21 @@ public class EventBusHelper {
     public static void post(Event event) {
         IEventBus eventBus = getInstance();
         eventBus.post(event);
+    }
+
+    /**
+     * Registers a listener owned by the given object to the event bus. Due to MinecraftForge/EventBus#39
+     * references to the registered listeners stay around even after they are unregistered. This method
+     * works around the issue by only capturing a weak reference to the owner in the actual handler, and
+     * passing the contained value to the passed handler if the reference is still valid.
+     */
+    public static <T, E extends Event> void registerWeakListener(T owner, Class<E> eventType, BiConsumer<T, E> handler) {
+        WeakReference<T> weakOwner = new WeakReference<>(owner);
+        addListener(owner, eventType, event -> {
+            T nullableOwner = weakOwner.get();
+            if (nullableOwner != null) {
+                handler.accept(nullableOwner, event);
+            }
+        });
     }
 }

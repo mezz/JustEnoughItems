@@ -28,7 +28,6 @@ import mezz.jei.util.Translator;
 import net.minecraft.util.NonNullList;
 
 import javax.annotation.Nullable;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -91,21 +90,14 @@ public class IngredientFilter implements IIngredientGridSource {
 			this.elementSearch.registerPrefix(prefixInfo);
 		}
 
-		WeakReference<IngredientFilter> weakIngredientFilter = new WeakReference<>(this);
-		EventBusHelper.addListener(this, EditModeToggleEvent.class, editModeToggleEvent -> {
-			IngredientFilter ingredientFilter = weakIngredientFilter.get();
-			if (ingredientFilter != null) {
-				ingredientFilter.filterCached = null;
-				ingredientFilter.updateHidden();
-			}
+		EventBusHelper.registerWeakListener(this, EditModeToggleEvent.class, (ingredientFilter, editModeToggleEvent) -> {
+			ingredientFilter.filterCached = null;
+			ingredientFilter.updateHidden();
 		});
 
-		EventBusHelper.addListener(this, PlayerJoinedWorldEvent.class, playerJoinedWorldEvent -> {
-			IngredientFilter ingredientFilter = weakIngredientFilter.get();
-			if (ingredientFilter != null) {
-				ingredientFilter.filterCached = null;
-				ingredientFilter.updateHidden();
-			}
+		EventBusHelper.registerWeakListener(this, PlayerJoinedWorldEvent.class, (ingredientFilter, playerJoinedWorldEvent) -> {
+			ingredientFilter.filterCached = null;
+			ingredientFilter.updateHidden();
 		});
 
 		List<IIngredientListElementInfo<?>> ingredientInfo = ingredients.stream()
