@@ -57,7 +57,7 @@ configurations {
 	apiRuntimeOnly.extendsFrom(runtimeOnly)
 }
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaVersion.VERSION_1_8
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 repositories {
 	mavenCentral()
@@ -70,8 +70,8 @@ dependencies {
 			name   : 'forge',
 			version: "${project.mcversion}-${project.forgeversion}"
 	])
-	testImplementation platform('org.junit:junit-bom:5.7.1')
-	testImplementation 'org.junit.jupiter:junit-jupiter'
+	testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.1"
+	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.1"
 
 	compileOnly fg.deobf('com.feed_the_beast.mods:ftb-gui-library:1.0.0.18')
 }
