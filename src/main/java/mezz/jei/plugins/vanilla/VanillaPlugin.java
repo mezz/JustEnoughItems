@@ -8,6 +8,7 @@ import java.util.Set;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.RecipeFireworks;
 import net.minecraft.item.crafting.RecipeTippedArrow;
+import net.minecraft.item.crafting.ShulkerBoxRecipes;
 import net.minecraft.item.crafting.ShieldRecipes;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidStack;
@@ -68,6 +69,7 @@ import mezz.jei.plugins.vanilla.crafting.ShapedOreRecipeWrapper;
 import mezz.jei.plugins.vanilla.crafting.ShapedRecipesWrapper;
 import mezz.jei.plugins.vanilla.crafting.ShapelessRecipeWrapper;
 import mezz.jei.plugins.vanilla.crafting.ShieldDecorationRecipeMaker;
+import mezz.jei.plugins.vanilla.crafting.ShulkerBoxColoringRecipeMaker;
 import mezz.jei.plugins.vanilla.crafting.TippedArrowRecipeMaker;
 import mezz.jei.plugins.vanilla.furnace.FuelRecipeMaker;
 import mezz.jei.plugins.vanilla.furnace.FurnaceFuelCategory;
@@ -193,6 +195,9 @@ public class VanillaPlugin implements IModPlugin {
 		}
 		if (recipeTypes.contains(ShieldRecipes.Decoration.class)) {
 			registry.addRecipes(ShieldDecorationRecipeMaker.getShieldDecorationRecipes(), VanillaRecipeCategoryUid.CRAFTING);
+		}
+		if (recipeTypes.contains(ShulkerBoxRecipes.ShulkerBoxColoring.class)) {
+			registry.addRecipes(ShulkerBoxColoringRecipeMaker.getShulkerBoxColoringRecipes(ingredientRegistry.getAllIngredients(VanillaTypes.ITEM)), VanillaRecipeCategoryUid.CRAFTING);
 		}
 		registry.addRecipes(AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientRegistry), VanillaRecipeCategoryUid.ANVIL);
 
