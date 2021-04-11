@@ -2,91 +2,98 @@ import se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask
 
 buildscript {
 	repositories {
-		maven { url = "https://files.minecraftforge.net/maven" }
-		jcenter()
+		maven { url = 'https://files.minecraftforge.net/maven' }
 		mavenCentral()
 	}
 	// This is only here while FG is under active development
 	configurations.classpath {
 		resolutionStrategy {
-			cacheDynamicVersionsFor 10, "seconds"
-			cacheChangingModulesFor 0, "seconds"
+			cacheDynamicVersionsFor 10, 'seconds'
+			cacheChangingModulesFor 0, 'seconds'
 		}
 	}
 	dependencies {
-		classpath group: "net.minecraftforge.gradle", name: "ForgeGradle", version: "3.+", changing: true
+		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
 	}
 }
 
 plugins {
-	id "com.matthewprenger.cursegradle" version "1.4.0"
-	id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.64"
+	id 'java'
+	id 'eclipse'
+	id 'idea'
+	id 'com.matthewprenger.cursegradle' version '1.4.0'
+	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.66'
 }
-apply from: "buildtools/ColoredOutput.gradle"
-apply plugin: 'idea'
-apply plugin: "net.minecraftforge.gradle"
+apply plugin: 'net.minecraftforge.gradle'
+apply from: 'buildtools/ColoredOutput.gradle'
 
 //adds the build number to the end of the version string if on a build server
 String build_number = System.getenv().BUILD_NUMBER
 if (build_number == null) {
-	build_number = "9999"
+	build_number = '9999'
 }
 
 String semver = "${version_major}.${version_minor}.${version_patch}"
 version = "${semver}.${build_number}"
-group = "mezz.jei" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-
-sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
-compileJava {
-	sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-repositories {
-	maven { url 'https://repo1.maven.org/maven2' }
-	maven { url 'https://maven.latmod.com/' }
-}
+group = 'mezz.jei' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 
 sourceSets {
 	api
-	main
-	test
+	main {
+		compileClasspath += sourceSets.api.output
+		runtimeClasspath += sourceSets.api.output
+		resources {
+			srcDir 'src/generated/resources'
+		}
+	}
+	test {
+		compileClasspath += sourceSets.api.output
+		runtimeClasspath += sourceSets.api.output
+	}
 }
 
 configurations {
-	apiCompile.extendsFrom(compile)
+	apiImplementation.extendsFrom(implementation)
+	apiRuntimeOnly.extendsFrom(runtimeOnly)
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+
+repositories {
+	mavenCentral()
+	maven { url 'https://maven.latmod.com/' }
 }
 
 dependencies {
 	minecraft([
-		group  : "${project.forgegroup}",
-		name   : "forge",
-		version: "${project.mcversion}-${project.forgeversion}"
+			group  : "${project.forgegroup}",
+			name   : 'forge',
+			version: "${project.mcversion}-${project.forgeversion}"
 	])
-	implementation sourceSets.api.output
-	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
-	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+	testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.1"
+	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.1"
 
 	compileOnly fg.deobf('com.feed_the_beast.mods:ftb-gui-library:1.0.0.18')
 }
 
 task replaceResources(type: Copy) {
-    outputs.upToDateWhen { false }
-    from(sourceSets.main.resources.srcDirs) {
-        include "META-INF/mods.toml"
-        expand 'version': version, 'mc_version': minecraft_version_range, 'forge_version': forge_version_range
-    }
-    into "$buildDir/resources/main/"
+	outputs.upToDateWhen { false }
+	from(sourceSets.main.resources.srcDirs) {
+		include 'META-INF/mods.toml'
+		expand 'version': version, 'mc_version': minecraft_version_range, 'forge_version': forge_version_range
+	}
+	into "$buildDir/resources/main/"
 }
 
 processResources {
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'META-INF/mods.toml'
-    }
-    finalizedBy replaceResources
+	from(sourceSets.main.resources.srcDirs) {
+		exclude 'META-INF/mods.toml'
+	}
+	finalizedBy replaceResources
 }
 
 minecraft {
-	mappings channel: "snapshot", version: project.mcp_mappings
+	mappings channel: 'snapshot', version: project.mcp_mappings
 
 	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -125,67 +132,66 @@ minecraft {
 	}
 }
 
-// prevent java 8's strict doclint for javadocs from failing builds
-if (JavaVersion.current().isJava8Compatible()) {
-	tasks.withType(Javadoc) {
-		options.addStringOption('Xdoclint:none', '-quiet')
-	}
+javadoc {
+	source = [sourceSets.main.allJava, sourceSets.api.allJava]
+	// prevent java 8's strict doclint for javadocs from failing builds
+	options.addStringOption('Xdoclint:none', '-quiet')
 }
 
 task makeChangelog(type: GitChangelogTask) {
-	file = new File("changelog.html")
+	file = file('changelog.html')
 	untaggedName = "Current release ${project.version}"
-	fromCommit = "2fe051cf727adce1be210a46f778aa8fe031331e"
-	toRef = "HEAD"
-	templateContent = file("changelog.mustache").getText("UTF-8")
+	fromCommit = '2fe051cf727adce1be210a46f778aa8fe031331e'
+	toRef = 'HEAD'
+	templateContent = file('changelog.mustache').getText('UTF-8')
 }
 
 curseforge {
-	apiKey = project.hasProperty("curseforge_apikey") ? project.curseforge_apikey : "0"
+	apiKey = project.findProperty('curseforge_apikey') ?: '0'
 	project {
 		id = curse_project_id
-		changelog = file("changelog.html")
-		changelogType = "html"
-		releaseType = "beta"
+		changelog = file('changelog.html')
+		changelogType = 'html'
+		releaseType = 'beta'
 	}
 }
 
 afterEvaluate {
-	tasks.curseforge238222.dependsOn.add(makeChangelog)
+	tasks.curseforge238222.dependsOn makeChangelog
 }
 
 jar {
-	from sourceSets.main.output.classesDirs
-	from sourceSets.api.output.classesDirs
-	from sourceSets.main.output.resourcesDir
-	from sourceSets.api.output.resourcesDir
-	
+	from sourceSets.main.output
+	from sourceSets.api.output
+
 	manifest {
 		attributes([
-				"Specification-Title": "Just Enough Items",
-				"Specification-Vendor": "mezz",
-				"Specification-Version": "${semver}",
-				"Implementation-Title": project.name,
-				"Implementation-Version": "${project.version}",
-				"Implementation-Vendor" :"mezz",
-				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+				'Specification-Title'     : 'Just Enough Items',
+				'Specification-Vendor'    : 'mezz',
+				'Specification-Version'   : "${semver}",
+				'Implementation-Title'    : project.name,
+				'Implementation-Version'  : "${project.version}",
+				'Implementation-Vendor'   : 'mezz',
+				'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
 		])
 	}
+
+	finalizedBy 'reobfJar'
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-	classifier = "javadoc"
+	archiveClassifier = 'javadoc'
 	from javadoc.destinationDir
 }
 
 task sourcesJar(type: Jar) {
-	classifier = "sources"
+	archiveClassifier = 'sources'
 	from sourceSets.main.allJava
 	from sourceSets.api.allJava
 }
 
 task apiJar(type: Jar) {
-	classifier = "api"
+	archiveClassifier = 'api'
 	from sourceSets.api.output
 
 	// TODO: when FG bug is fixed, remove allJava from the api jar.
@@ -194,16 +200,23 @@ task apiJar(type: Jar) {
 	from sourceSets.api.allJava
 }
 
+task deobfJar(type: Jar) {
+	archiveClassifier = 'deobf'
+	from sourceSets.main.output
+	from sourceSets.api.output
+}
+
 artifacts {
 	archives javadocJar
 	archives sourcesJar
 	archives apiJar
+	archives deobfJar
 }
 
-task("uploadJars", dependsOn: "build") {
-	description = "uploads JARs"
-	if (project.hasProperty("local_maven")) {
-		apply plugin: "maven"
+task uploadJars(dependsOn: build) {
+	description = 'Uploads JARs'
+	if (project.hasProperty('local_maven')) {
+		apply plugin: 'maven'
 		uploadArchives {
 			repositories {
 				mavenDeployer {
@@ -216,9 +229,8 @@ task("uploadJars", dependsOn: "build") {
 
 idea {
 	module {
-		for (String excludeDirName in ["run", "out", "logs", "gradle"]) {
-			File excludeDir = new File(projectDir, excludeDirName)
-			excludeDirs.add(excludeDir)
+		for (String exclude in ['run', 'out', 'logs']) {
+			excludeDirs += file(exclude)
 		}
 	}
 }
