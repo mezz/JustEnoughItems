@@ -399,6 +399,12 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		} else if (KeyBindings.recipeBack.isActiveAndMatches(eventKey)) {
 			back();
 			return true;
+		} else if (KeyBindings.nextCategory.isActiveAndMatches(eventKey)) {
+			logic.nextRecipeCategory();
+			return true;
+		} else if (KeyBindings.previousCategory.isActiveAndMatches(eventKey)) {
+			logic.previousRecipeCategory();
+			return true;
 		} else if (KeyBindings.copyRecipeId.isActiveAndMatches(eventKey)) {
 			int mouseX = MouseHelper.getX();
 			int mouseY = MouseHelper.getY();
