@@ -362,6 +362,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		} else if (KeyBindings.recipeBack.isActiveAndMatches(input)) {
 			back();
 			return true;
+		} else if (KeyBindings.nextCategory.isActiveAndMatches(input)) {
+			logic.nextRecipeCategory();
+			return true;
+		} else if (KeyBindings.previousCategory.isActiveAndMatches(input)) {
+			logic.previousRecipeCategory();
+			return true;
 		} else {
 			JeiRuntime runtime = Internal.getRuntime();
 			if (runtime != null) {
