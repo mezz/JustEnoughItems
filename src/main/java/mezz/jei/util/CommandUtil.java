@@ -29,7 +29,7 @@ public final class CommandUtil {
 	}
 
 	/**
-	 * /give <player> <item> [amount] [data] [dataTag]
+	 * /give &lt;player&gt; &lt;item&gt; [amount]
 	 *
 	 * {@link CreativeScreen} has special client-side handling for itemStacks, just give the item on the client
 	 */

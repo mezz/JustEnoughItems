@@ -53,11 +53,12 @@ public final class CommandUtilServer {
 
 		List<String> commandStrings = new ArrayList<>();
 		commandStrings.add(senderName.getString());
-		commandStrings.add(itemResourceLocation.toString());
+		String itemArgument = itemResourceLocation.toString();
 		CompoundNBT tagCompound = itemStack.getTag();
 		if (tagCompound != null) {
-			commandStrings.add(tagCompound.toString());
+			itemArgument += tagCompound;
 		}
+		commandStrings.add(itemArgument);
 		commandStrings.add(String.valueOf(amount));
 		return commandStrings.toArray(new String[0]);
 	}
