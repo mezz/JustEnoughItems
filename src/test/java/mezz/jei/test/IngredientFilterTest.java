@@ -50,6 +50,7 @@ public class IngredientFilterTest {
 
 		SubtypeRegistration subtypeRegistration = new SubtypeRegistration();
 		testPlugin.registerItemSubtypes(subtypeRegistration);
+		testPlugin.registerFluidSubtypes(subtypeRegistration);
 		SubtypeManager subtypeManager = new SubtypeManager(subtypeRegistration);
 
 		ModIngredientRegistration modIngredientRegistration = new ModIngredientRegistration(subtypeManager);

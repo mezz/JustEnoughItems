@@ -84,6 +84,7 @@ public class PluginLoader {
 
 		SubtypeRegistration subtypeRegistration = new SubtypeRegistration();
 		PluginCaller.callOnPlugins("Registering item subtypes", plugins, p -> p.registerItemSubtypes(subtypeRegistration));
+		PluginCaller.callOnPlugins("Registering fluid subtypes", plugins, p -> p.registerFluidSubtypes(subtypeRegistration));
 		SubtypeManager subtypeManager = new SubtypeManager(subtypeRegistration);
 
 		ModIngredientRegistration modIngredientManager = new ModIngredientRegistration(subtypeManager);

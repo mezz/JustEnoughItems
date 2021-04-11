@@ -4,6 +4,8 @@ import java.util.Collection;
 import javax.annotation.Nullable;
 import java.util.Collections;
 
+import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
@@ -21,6 +23,13 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.color.ColorGetter;
 
 public class FluidStackHelper implements IIngredientHelper<FluidStack> {
+	private final ISubtypeManager subtypeManager;
+
+	public FluidStackHelper(ISubtypeManager subtypeManager) {
+		this.subtypeManager = subtypeManager;
+	}
+
+
 	@Override
 	@Nullable
 	public FluidStack getMatch(Iterable<FluidStack> ingredients, FluidStack toMatch) {
@@ -40,13 +49,22 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Override
 	public String getUniqueId(FluidStack ingredient) {
+		return getUniqueId(ingredient, UidContext.Ingredient);
+	}
+
+	@Override
+	public String getUniqueId(FluidStack ingredient, UidContext context) {
 		Fluid fluid = ingredient.getFluid();
 		ResourceLocation registryName = fluid.getRegistryName();
-		CompoundNBT tag = ingredient.getTag();
-		if (tag != null) {
-			return "fluid:" + registryName + ":" + tag;
+		StringBuilder result = new StringBuilder()
+				.append("fluid:")
+				.append(registryName);
+		String subtypeInfo = subtypeManager.getSubtypeInfo(ingredient, context);
+		if (subtypeInfo != null && !subtypeInfo.isEmpty()) {
+			result.append(":");
+			result.append(subtypeInfo);
 		}
-		return "fluid:" + registryName;
+		return result.toString();
 	}
 
 	@Override

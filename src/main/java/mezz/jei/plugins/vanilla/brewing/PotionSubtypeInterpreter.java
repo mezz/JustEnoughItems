@@ -2,14 +2,14 @@ package mezz.jei.plugins.vanilla.brewing;
 
 import java.util.List;
 
+import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
 
-import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
-
-public class PotionSubtypeInterpreter implements ISubtypeInterpreter {
+public class PotionSubtypeInterpreter implements IIngredientSubtypeInterpreter<ItemStack> {
 	public static final PotionSubtypeInterpreter INSTANCE = new PotionSubtypeInterpreter();
 
 	private PotionSubtypeInterpreter() {
@@ -17,9 +17,9 @@ public class PotionSubtypeInterpreter implements ISubtypeInterpreter {
 	}
 
 	@Override
-	public String apply(ItemStack itemStack) {
+	public String apply(ItemStack itemStack, UidContext context) {
 		if (!itemStack.hasTag()) {
-			return ISubtypeInterpreter.NONE;
+			return IIngredientSubtypeInterpreter.NONE;
 		}
 		Potion potionType = PotionUtils.getPotionFromItem(itemStack);
 		String potionTypeString = potionType.getNamePrefixed("");
