@@ -17,6 +17,8 @@ public interface IColorHelper {
      * @param renderColor        Overlay/tint color that is applied to the sprite.
      * @param colorCount         Number of "main" colors to get.
      * @return A list of the main colors for the given sprite when overlayed with a specific tint color.
+     *
+     * @apiNote Get the instance from {@link mezz.jei.api.registration.IModIngredientRegistration#getColorHelper()}.
      */
     List<Integer> getColors(TextureAtlasSprite textureAtlasSprite, int renderColor, int colorCount);
 }
