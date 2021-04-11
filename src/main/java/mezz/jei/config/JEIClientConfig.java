@@ -16,8 +16,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-public class JEIClientConfig
-{
+public class JEIClientConfig {
 	private static final ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
 	public static final ClientConfig clientConfig = new ClientConfig(builder);
@@ -26,7 +25,7 @@ public class JEIClientConfig
 
 	private static final ForgeConfigSpec config = builder.build();
 	private static boolean ftbGUILoaded = false;
-	private static final String TRANSLATION_KEY = "config."+ModIds.JEI_ID;
+	private static final String TRANSLATION_KEY = "config." + ModIds.JEI_ID;
 
 	public static void register() {
 		FMLJavaModLoadingContext.get().getModEventBus().register(JEIClientConfig.class);
@@ -39,9 +38,10 @@ public class JEIClientConfig
 	}
 
 	@SubscribeEvent
-	public static void reload(ModConfig.ModConfigEvent event)
-	{
-		if(event.getConfig().getSpec() != config) return;
+	public static void reload(ModConfig.ModConfigEvent event) {
+		if (event.getConfig().getSpec() != config) {
+			return;
+		}
 
 		clientConfig.reload();
 		filterConfig.reload();
@@ -50,9 +50,11 @@ public class JEIClientConfig
 
 	public static void openSettings() {
 		Minecraft mc = Minecraft.getInstance();
-		if(mc.player == null) return;
+		if (mc.player == null) {
+			return;
+		}
 
-		if(ftbGUILoaded) {
+		if (ftbGUILoaded) {
 			ConfigGroup group = new ConfigGroup(TRANSLATION_KEY);
 
 			clientConfig.buildSettingsGUI(group);
@@ -61,14 +63,15 @@ public class JEIClientConfig
 
 			GuiEditConfig gui = new GuiEditConfig(group);
 			group.savedCallback = b -> {
-				if(b) config.save();
+				if (b) {
+					config.save();
+				}
 				mc.displayGuiScreen(new InventoryScreen(mc.player));
 			};
 			gui.openGui();
-		}
-		else {
-			mc.player.sendStatusMessage(new TranslationTextComponent(ModIds.JEI_ID+".message.ftbguilib")
-					.setStyle(Style.EMPTY.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/ftb-gui-library"))), false);
+		} else {
+			mc.player.sendStatusMessage(new TranslationTextComponent(ModIds.JEI_ID + ".message.ftbguilib")
+				.setStyle(Style.EMPTY.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/ftb-gui-library"))), false);
 		}
 	}
 }

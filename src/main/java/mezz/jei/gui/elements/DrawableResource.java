@@ -73,9 +73,9 @@ public class DrawableResource implements IDrawableStatic {
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
 		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
 		Matrix4f matrix = matrixStack.getLast().getMatrix();
-		bufferbuilder.pos(matrix, x, y + height, 0).tex(u * f, (v + (float)height) * f1).endVertex();
-		bufferbuilder.pos(matrix, x + width, y + height, 0).tex((u + (float)width) * f, (v + (float)height) * f1).endVertex();
-		bufferbuilder.pos(matrix, x + width, y, 0).tex((u + (float)width) * f, v * f1).endVertex();
+		bufferbuilder.pos(matrix, x, y + height, 0).tex(u * f, (v + (float) height) * f1).endVertex();
+		bufferbuilder.pos(matrix, x + width, y + height, 0).tex((u + (float) width) * f, (v + (float) height) * f1).endVertex();
+		bufferbuilder.pos(matrix, x + width, y, 0).tex((u + (float) width) * f, v * f1).endVertex();
 		bufferbuilder.pos(matrix, x, y, 0).tex(u * f, v * f1).endVertex();
 		tessellator.draw();
 	}

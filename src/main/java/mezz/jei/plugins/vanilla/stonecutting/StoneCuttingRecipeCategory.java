@@ -17,60 +17,60 @@ import mezz.jei.config.Constants;
 import mezz.jei.util.Translator;
 
 public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecuttingRecipe> {
-    private static final int inputSlot = 0;
-    private static final int outputSlot = 1;
+	private static final int inputSlot = 0;
+	private static final int outputSlot = 1;
 
-    public static final int width = 82;
-    public static final int height = 34;
+	public static final int width = 82;
+	public static final int height = 34;
 
-    private final IDrawable background;
-    private final IDrawable icon;
-    private final String localizedName;
+	private final IDrawable background;
+	private final IDrawable icon;
+	private final String localizedName;
 
-    public StoneCuttingRecipeCategory(IGuiHelper guiHelper) {
-        ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
-        background = guiHelper.createDrawable(location, 0, 220, width, height);
-        icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.STONECUTTER));
-        localizedName = Translator.translateToLocal("gui.jei.category.stoneCutter");
-    }
+	public StoneCuttingRecipeCategory(IGuiHelper guiHelper) {
+		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
+		background = guiHelper.createDrawable(location, 0, 220, width, height);
+		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.STONECUTTER));
+		localizedName = Translator.translateToLocal("gui.jei.category.stoneCutter");
+	}
 
-    @Override
-    public ResourceLocation getUid() {
-        return VanillaRecipeCategoryUid.STONECUTTING;
-    }
+	@Override
+	public ResourceLocation getUid() {
+		return VanillaRecipeCategoryUid.STONECUTTING;
+	}
 
-    @Override
-    public Class<? extends StonecuttingRecipe> getRecipeClass() {
-        return StonecuttingRecipe.class;
-    }
+	@Override
+	public Class<? extends StonecuttingRecipe> getRecipeClass() {
+		return StonecuttingRecipe.class;
+	}
 
-    @Override
-    public String getTitle() {
-        return localizedName;
-    }
+	@Override
+	public String getTitle() {
+		return localizedName;
+	}
 
-    @Override
-    public IDrawable getBackground() {
-        return background;
-    }
+	@Override
+	public IDrawable getBackground() {
+		return background;
+	}
 
-    @Override
-    public IDrawable getIcon() {
-        return icon;
-    }
+	@Override
+	public IDrawable getIcon() {
+		return icon;
+	}
 
-    @Override
-    public void setIngredients(StonecuttingRecipe recipe, IIngredients ingredients) {
-        ingredients.setInputIngredients(recipe.getIngredients());
-        ingredients.setOutput(VanillaTypes.ITEM, recipe.getRecipeOutput());
-    }
+	@Override
+	public void setIngredients(StonecuttingRecipe recipe, IIngredients ingredients) {
+		ingredients.setInputIngredients(recipe.getIngredients());
+		ingredients.setOutput(VanillaTypes.ITEM, recipe.getRecipeOutput());
+	}
 
-    @Override
-    public void setRecipe(IRecipeLayout recipeLayout, StonecuttingRecipe recipe, IIngredients ingredients) {
-        IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-        guiItemStacks.init(inputSlot, true, 0, 8);
-        guiItemStacks.init(outputSlot, false, 60, 8);
+	@Override
+	public void setRecipe(IRecipeLayout recipeLayout, StonecuttingRecipe recipe, IIngredients ingredients) {
+		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
+		guiItemStacks.init(inputSlot, true, 0, 8);
+		guiItemStacks.init(outputSlot, false, 60, 8);
 
-        guiItemStacks.set(ingredients);
-    }
+		guiItemStacks.set(ingredients);
+	}
 }

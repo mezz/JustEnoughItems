@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Optional;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.ITextProperties;
 import net.minecraft.util.text.TranslationTextComponent;

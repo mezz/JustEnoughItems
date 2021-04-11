@@ -66,8 +66,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		IIngredientManager ingredientManager,
 		IIngredientSorter sorter,
 		NonNullList<IIngredientListElement<?>> ingredients,
-		IModIdHelper modIdHelper)
-	{
+		IModIdHelper modIdHelper) {
 		this.blacklist = blacklist;
 		this.editModeConfig = editModeConfig;
 		this.ingredientManager = ingredientManager;

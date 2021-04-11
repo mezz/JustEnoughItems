@@ -73,7 +73,7 @@ public class IngredientFilterConfig implements IIngredientFilterConfig, IJEIConf
 	}
 
 	private String cfgTranslation(String name) {
-		return "search."+name;
+		return "search." + name;
 	}
 
 	@Override

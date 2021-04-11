@@ -27,7 +27,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Represents a node of the generalized suffix tree graph
  *
  * @see GeneralizedSuffixTree
- *
+ * <p>
  * Edited by mezz:
  * - Use Java 6 features
  * - improve performance of search by passing a set around instead of creating new ones and using addAll

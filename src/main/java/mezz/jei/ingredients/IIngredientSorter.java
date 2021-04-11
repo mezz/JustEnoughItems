@@ -7,5 +7,6 @@ import java.util.Comparator;
 public interface IIngredientSorter {
 	Comparator<IIngredientListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, IIngredientManager ingredientManager);
 
-	default void invalidateCache() {}
+	default void invalidateCache() {
+	}
 }

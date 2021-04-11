@@ -1,6 +1,7 @@
 package mezz.jei.gui.elements;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,8 @@ public abstract class GuiIconToggleButton {
 	public GuiIconToggleButton(IDrawable offIcon, IDrawable onIcon) {
 		this.offIcon = offIcon;
 		this.onIcon = onIcon;
-		this.button = new GuiIconButton(new DrawableBlank(0, 0), b -> {});
+		this.button = new GuiIconButton(new DrawableBlank(0, 0), b -> {
+		});
 		this.hoverChecker = new HoverChecker();
 		this.hoverChecker.updateBounds(this.button);
 	}

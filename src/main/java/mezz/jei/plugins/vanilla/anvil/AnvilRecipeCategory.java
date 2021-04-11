@@ -1,6 +1,7 @@
 package mezz.jei.plugins.vanilla.anvil;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+
 import java.util.Map;
 
 import net.minecraft.block.Blocks;

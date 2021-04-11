@@ -26,7 +26,7 @@ public class JustEnoughItems {
 	public JustEnoughItems() {
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		NetworkHandler networkHandler = new NetworkHandler();
-		DistExecutor.runWhenOn(Dist.CLIENT, ()->()-> clientStart(modEventBus, networkHandler));
+		DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> clientStart(modEventBus, networkHandler));
 		commonStart(modEventBus, networkHandler);
 	}
 

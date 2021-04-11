@@ -41,7 +41,7 @@ public class Textures {
 		ResourceLocation slotSpriteLocation = registerSprite("slot");
 		this.slot = new DrawableSprite(this.spriteUploader, slotSpriteLocation, 18, 18);
 		this.nineSliceSlot = new DrawableNineSliceTexture(this.spriteUploader, slotSpriteLocation, 18, 18, 4, 4, 4, 4);
-		
+
 		this.tabSelected = registerGuiSprite("tab_selected", 24, 24);
 		this.tabUnselected = registerGuiSprite("tab_unselected", 24, 24);
 		this.buttonDisabled = registerNineSliceGuiSprite("button_disabled", 20, 20, 6, 6, 6, 6);
@@ -74,7 +74,7 @@ public class Textures {
 		spriteUploader.registerSprite(location);
 		return location;
 	}
-	
+
 	private DrawableSprite registerGuiSprite(String name, int width, int height) {
 		ResourceLocation location = registerSprite(name);
 		return new DrawableSprite(spriteUploader, location, width, height);

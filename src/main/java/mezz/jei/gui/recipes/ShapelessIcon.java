@@ -1,6 +1,7 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;

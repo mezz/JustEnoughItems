@@ -55,7 +55,7 @@ public final class IngredientSorter implements IIngredientSorter {
 			comparatorsForStages.put(IngredientSortStage.MOD_NAME, modName);
 
 			List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
-			this.cachedComparator =  ingredientSorterStages.stream()
+			this.cachedComparator = ingredientSorterStages.stream()
 				.map(comparatorsForStages::get)
 				.reduce(Comparator::thenComparing)
 				.orElseGet(() -> modName.thenComparing(ingredientType).thenComparing(CREATIVE_MENU));

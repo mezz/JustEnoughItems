@@ -18,7 +18,7 @@ package mezz.jei.search.suffixtree;
 /**
  * Represents an Edge in the Suffix Tree.
  * It has a label and a destination Node
- *
+ * <p>
  * Edited by mezz:
  * - formatting
  */

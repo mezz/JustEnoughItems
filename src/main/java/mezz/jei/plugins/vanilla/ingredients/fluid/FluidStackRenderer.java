@@ -1,6 +1,7 @@
 package mezz.jei.plugins.vanilla.ingredients.fluid;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+
 import java.text.NumberFormat;
 import javax.annotation.Nullable;
 import java.util.ArrayList;

@@ -1,6 +1,7 @@
 package mezz.jei.gui.overlay;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

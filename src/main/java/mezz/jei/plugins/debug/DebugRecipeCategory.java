@@ -1,6 +1,7 @@
 package mezz.jei.plugins.debug;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

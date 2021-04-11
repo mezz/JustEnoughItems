@@ -1,6 +1,7 @@
 package mezz.jei.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
