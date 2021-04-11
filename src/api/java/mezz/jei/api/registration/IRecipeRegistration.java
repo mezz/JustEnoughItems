@@ -33,7 +33,7 @@ public interface IRecipeRegistration {
 	 *                        New lines can be added with "\n" or by giving multiple descriptionKeys.
 	 *                        Long lines are wrapped automatically.
 	 *                        Very long entries will span multiple pages automatically.
-	 * @deprecated Use {@link #addIngredientInfo(Object, IIngredientType, ITextComponent...)} instead.
+	 * @deprecated Since JEI 7.6.4, use {@link #addIngredientInfo(Object, IIngredientType, ITextComponent...)} instead.
 	 */
 	@Deprecated
 	<T> void addIngredientInfo(T ingredient, IIngredientType<T> ingredientType, String... descriptionKeys);
@@ -62,7 +62,7 @@ public interface IRecipeRegistration {
 	 *                        New lines can be added with "\n" or by giving multiple descriptionKeys.
 	 *                        Long lines are wrapped automatically.
 	 *                        Very long entries will span multiple pages automatically.
-	 * @deprecated Use {@link #addIngredientInfo(List, IIngredientType, ITextComponent...)} instead.
+	 * @deprecated Since JEI 7.6.4, use {@link #addIngredientInfo(List, IIngredientType, ITextComponent...)} instead.
 	 */
 	@Deprecated
 	<T> void addIngredientInfo(List<T> ingredients, IIngredientType<T> ingredientType, String... descriptionKeys);

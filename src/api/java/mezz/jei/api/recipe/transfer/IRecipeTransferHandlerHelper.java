@@ -22,7 +22,7 @@ public interface IRecipeTransferHandlerHelper {
 	 * Create an error with type {@link Type#USER_FACING} that shows a tooltip.
 	 *
 	 * @param tooltipMessage the message to show on the tooltip for the recipe transfer button.
-	 * @deprecated Use {@link #createUserErrorWithTooltip(ITextComponent)} instead.
+	 * @deprecated Since JEI 7.6.4, use {@link #createUserErrorWithTooltip(ITextComponent)} instead.
 	 */
 	@Deprecated
 	IRecipeTransferError createUserErrorWithTooltip(String tooltipMessage);
@@ -41,7 +41,7 @@ public interface IRecipeTransferHandlerHelper {
 	 * @param tooltipMessage   the message to show on the tooltip for the recipe transfer button.
 	 * @param missingItemSlots the slot indexes for items that are missing. Must not be empty.
 	 *                         Slots are indexed according to {@link IGuiItemStackGroup#getGuiIngredients()}.
-	 * @deprecated Use {@link #createUserErrorForSlots(ITextComponent, Collection)} instead.
+	 * @deprecated Since JEI 7.6.4, use {@link #createUserErrorForSlots(ITextComponent, Collection)} instead.
 	 */
 	@Deprecated
 	IRecipeTransferError createUserErrorForSlots(String tooltipMessage, Collection<Integer> missingItemSlots);

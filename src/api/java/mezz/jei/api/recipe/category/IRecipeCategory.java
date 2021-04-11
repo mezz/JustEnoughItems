@@ -37,7 +37,7 @@ public interface IRecipeCategory<T> {
 	/**
 	 * Returns the localized name for this recipe type.
 	 * Drawn at the top of the recipe GUI pages for this category.
-	 * @deprecated Prefer calling and using {@link #getTitleAsTextComponent()}.
+	 * @deprecated Since JEI 7.6.4, prefer calling and using {@link #getTitleAsTextComponent()}.
 	 */
 	@Deprecated
 	String getTitle();
