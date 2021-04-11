@@ -44,6 +44,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.ITextProperties;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
@@ -474,7 +475,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 		logic.setRecipesPerPage(recipesPerPage);
 
-		title = recipeCategory.getTitleAsTextComponent();
+		title = StringUtil.stripStyling(recipeCategory.getTitleAsTextComponent());
 		final int availableTitleWidth = titleArea.getWidth();
 		if (font.getStringPropertyWidth(title) > availableTitleWidth) {
 			title = StringUtil.truncateStringToWidth(title, availableTitleWidth, font);
