@@ -221,9 +221,9 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 		Internal.setColorNamer(colorNamer);
 	}
 
-	private static Predicate<Object> validEnumElement(Class<? extends Enum<?>> enumClazz) {
+	private static Predicate<Object> validEnumElement(Class<? extends Enum<?>> enumClass) {
 		Set<String> validEntries = new HashSet<>();
-		Enum<?>[] enumConstants = enumClazz.getEnumConstants();
+		Enum<?>[] enumConstants = enumClass.getEnumConstants();
 		for (Enum<?> enumConstant : enumConstants) {
 			String name = enumConstant.name();
 			validEntries.add(name);
