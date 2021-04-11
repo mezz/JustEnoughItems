@@ -40,6 +40,7 @@ import mezz.jei.plugins.vanilla.cooking.fuel.FuelRecipeMaker;
 import mezz.jei.plugins.vanilla.cooking.fuel.FurnaceFuelCategory;
 import mezz.jei.plugins.vanilla.crafting.CraftingCategoryExtension;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
+import mezz.jei.plugins.vanilla.crafting.ShulkerBoxColoringRecipeMaker;
 import mezz.jei.plugins.vanilla.crafting.TippedArrowRecipeMaker;
 import mezz.jei.plugins.vanilla.crafting.VanillaRecipes;
 import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackHelper;
@@ -202,6 +203,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipes(FuelRecipeMaker.getFuelRecipes(ingredientManager, jeiHelpers), VanillaRecipeCategoryUid.FUEL);
 		registration.addRecipes(BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory), VanillaRecipeCategoryUid.BREWING);
 		registration.addRecipes(TippedArrowRecipeMaker.createTippedArrowRecipes(), VanillaRecipeCategoryUid.CRAFTING);
+		registration.addRecipes(ShulkerBoxColoringRecipeMaker.createShulkerBoxColoringRecipes(), VanillaRecipeCategoryUid.CRAFTING);
 		registration.addRecipes(AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientManager), VanillaRecipeCategoryUid.ANVIL);
 		registration.addRecipes(vanillaRecipes.getSmithingRecipes(smithingCategory), VanillaRecipeCategoryUid.SMITHING);
 	}
