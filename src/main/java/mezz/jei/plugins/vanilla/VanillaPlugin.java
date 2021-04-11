@@ -6,6 +6,7 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IStackHelper;
@@ -39,6 +40,7 @@ import mezz.jei.plugins.vanilla.cooking.fuel.FuelRecipeMaker;
 import mezz.jei.plugins.vanilla.cooking.fuel.FurnaceFuelCategory;
 import mezz.jei.plugins.vanilla.crafting.CraftingCategoryExtension;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
+import mezz.jei.plugins.vanilla.crafting.ShulkerBoxColoringRecipeMaker;
 import mezz.jei.plugins.vanilla.crafting.TippedArrowRecipeMaker;
 import mezz.jei.plugins.vanilla.crafting.VanillaRecipes;
 import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackHelper;
@@ -118,7 +120,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.registerSubtypeInterpreter(Items.POTION, PotionSubtypeInterpreter.INSTANCE);
 		registration.registerSubtypeInterpreter(Items.SPLASH_POTION, PotionSubtypeInterpreter.INSTANCE);
 		registration.registerSubtypeInterpreter(Items.LINGERING_POTION, PotionSubtypeInterpreter.INSTANCE);
-		registration.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, itemStack -> {
+		registration.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, (itemStack, context) -> {
 			List<String> enchantmentNames = new ArrayList<>();
 			ListNBT enchantments = EnchantedBookItem.getEnchantments(itemStack);
 			for (int i = 0; i < enchantments.size(); ++i) {
@@ -140,6 +142,7 @@ public class VanillaPlugin implements IModPlugin {
 		ISubtypeManager subtypeManager = registration.getSubtypeManager();
 		StackHelper stackHelper = new StackHelper(subtypeManager);
 		ItemStackListFactory itemStackListFactory = new ItemStackListFactory();
+		IColorHelper colorHelper = registration.getColorHelper();
 
 		List<ItemStack> itemStacks = itemStackListFactory.create(stackHelper);
 		ItemStackHelper itemStackHelper = new ItemStackHelper(stackHelper);
@@ -147,7 +150,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.register(VanillaTypes.ITEM, itemStacks, itemStackHelper, itemStackRenderer);
 
 		List<FluidStack> fluidStacks = FluidStackListFactory.create();
-		FluidStackHelper fluidStackHelper = new FluidStackHelper();
+		FluidStackHelper fluidStackHelper = new FluidStackHelper(subtypeManager, colorHelper);
 		FluidStackRenderer fluidStackRenderer = new FluidStackRenderer();
 		registration.register(VanillaTypes.FLUID, fluidStacks, fluidStackHelper, fluidStackRenderer);
 	}
@@ -200,6 +203,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipes(FuelRecipeMaker.getFuelRecipes(ingredientManager, jeiHelpers), VanillaRecipeCategoryUid.FUEL);
 		registration.addRecipes(BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory), VanillaRecipeCategoryUid.BREWING);
 		registration.addRecipes(TippedArrowRecipeMaker.createTippedArrowRecipes(), VanillaRecipeCategoryUid.CRAFTING);
+		registration.addRecipes(ShulkerBoxColoringRecipeMaker.createShulkerBoxColoringRecipes(), VanillaRecipeCategoryUid.CRAFTING);
 		registration.addRecipes(AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientManager), VanillaRecipeCategoryUid.ANVIL);
 		registration.addRecipes(vanillaRecipes.getSmithingRecipes(smithingCategory), VanillaRecipeCategoryUid.SMITHING);
 	}

@@ -46,6 +46,8 @@
   "key.jei.toggleEditMode": "Toggle Hide/Edit Mode",
   "key.jei.previousPage": "Show Previous Page",
   "key.jei.nextPage": "Show Next Page",
+  "key.jei.previousCategory": "Show Previous Recipe Category",
+  "key.jei.nextCategory": "Show Next Recipe Category",
   "key.jei.bookmark": "Add/Remove a Bookmarked Ingredient",
   "key.jei.toggleBookmarkOverlay": "Show/Hide Bookmarked Ingredients",
 

@@ -4,6 +4,7 @@ import com.feed_the_beast.mods.ftbguilibrary.config.ConfigGroup;
 import com.feed_the_beast.mods.ftbguilibrary.config.NameMap;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import mezz.jei.Internal;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.color.ColorNamer;
@@ -16,8 +17,11 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public final class ClientConfig implements IJEIConfig, IClientConfig {
@@ -78,7 +82,20 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 		builder.push("colors");
 		{
 			builder.comment("Color values to search for");
-			searchColorsCfg = builder.defineList("SearchColors", Arrays.asList(ColorGetter.getColorDefaults()), obj -> true);
+			searchColorsCfg = builder.defineList("SearchColors", Lists.newArrayList(ColorGetter.getColorDefaults()), obj -> {
+				if (obj instanceof String) {
+					String entry = (String) obj;
+					String[] values = entry.split(":");
+					if (values.length == 2) {
+						try {
+							Integer.decode("0x" + values[1]);
+							return true;
+						} catch (NumberFormatException ignored) {
+						}
+					}
+				}
+				return false;
+			});
 		}
 		builder.pop();
 
@@ -88,7 +105,8 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 			List<String> defaults = ingredientSorterStagesDefault.stream()
 				.map(Enum::name)
 				.collect(Collectors.toList());
-			ingredientSorterStagesCfg = builder.defineList("IngredientSortStages", defaults, obj -> true);
+			Predicate<Object> elementValidator = validEnumElement(IngredientSortStage.class);
+			ingredientSorterStagesCfg = builder.defineList("IngredientSortStages", defaults, elementValidator);
 		}
 		builder.pop();
 	}
@@ -201,5 +219,21 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 		}
 		final ColorNamer colorNamer = new ColorNamer(searchColorsMapBuilder.build());
 		Internal.setColorNamer(colorNamer);
+	}
+
+	private static Predicate<Object> validEnumElement(Class<? extends Enum<?>> enumClass) {
+		Set<String> validEntries = new HashSet<>();
+		Enum<?>[] enumConstants = enumClass.getEnumConstants();
+		for (Enum<?> enumConstant : enumConstants) {
+			String name = enumConstant.name();
+			validEntries.add(name);
+		}
+		return obj -> {
+			if (obj instanceof String) {
+				String name = (String) obj;
+				return validEntries.contains(name);
+			}
+			return false;
+		};
 	}
 }

@@ -99,7 +99,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 		String brewingStepsString = brewingSteps < Integer.MAX_VALUE ? Integer.toString(brewingSteps) : "?";
 		TranslationTextComponent steps = new TranslationTextComponent("gui.jei.category.brewing.steps", brewingStepsString);
 		Minecraft minecraft = Minecraft.getInstance();
-		minecraft.fontRenderer.func_243248_b(matrixStack, steps, 70, 28, 0xFF808080);
+		minecraft.fontRenderer.drawText(matrixStack, steps, 70, 28, 0xFF808080);
 	}
 
 	@Override
