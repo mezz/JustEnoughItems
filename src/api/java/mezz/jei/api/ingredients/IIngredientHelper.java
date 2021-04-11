@@ -97,6 +97,7 @@ public interface IIngredientHelper<V> {
 	/**
 	 * Get the main colors of this ingredient. Used for the color search.
 	 * If this is too difficult to implement for your ingredient, just return an empty collection.
+	 * @see mezz.jei.api.helpers.IColorHelper
 	 */
 	default Iterable<Integer> getColors(V ingredient) {
 		return Collections.emptyList();
