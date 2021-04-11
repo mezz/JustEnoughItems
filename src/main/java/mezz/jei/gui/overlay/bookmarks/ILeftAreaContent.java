@@ -1,6 +1,7 @@
 package mezz.jei.gui.overlay.bookmarks;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+
 import java.util.Set;
 
 import net.minecraft.client.Minecraft;

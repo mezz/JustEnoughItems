@@ -177,11 +177,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		this.headerHeight = (pageButtonTop + buttonHeight) - guiTop;
 		int titleX = previousRecipeCategory.x + previousRecipeCategory.getWidth();
 		this.titleArea = new Rectangle2dBuilder(
-				titleX,
-				recipeClassButtonTop,
-				nextRecipeCategory.x - titleX,
-				titleHeight
-			)
+			titleX,
+			recipeClassButtonTop,
+			nextRecipeCategory.x - titleX,
+			titleHeight
+		)
 			.insetByPadding(innerPadding)
 			.build();
 

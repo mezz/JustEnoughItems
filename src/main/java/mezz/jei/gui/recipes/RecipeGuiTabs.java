@@ -1,6 +1,7 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +68,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 			int navHeight = 20;
 			Rectangle2d navigationArea = new Rectangle2d(
 				this.area.getX(),
-				this.area.getY() -(2 + navHeight),
+				this.area.getY() - (2 + navHeight),
 				this.area.getWidth(),
 				navHeight
 			);

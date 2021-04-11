@@ -59,8 +59,8 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		Fluid fluid = ingredient.getFluid();
 		ResourceLocation registryName = fluid.getRegistryName();
 		StringBuilder result = new StringBuilder()
-				.append("fluid:")
-				.append(registryName);
+			.append("fluid:")
+			.append(registryName);
 		String subtypeInfo = subtypeManager.getSubtypeInfo(ingredient, context);
 		if (subtypeInfo != null && !subtypeInfo.isEmpty()) {
 			result.append(":");

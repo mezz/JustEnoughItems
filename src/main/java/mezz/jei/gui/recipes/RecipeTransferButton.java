@@ -1,6 +1,7 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,7 +24,8 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 	private IOnClickHandler onClickHandler;
 
 	public RecipeTransferButton(int xPos, int yPos, int width, int height, IDrawable icon, RecipeLayout<?> recipeLayout) {
-		super(xPos, yPos, width, height, icon, b -> {});
+		super(xPos, yPos, width, height, icon, b -> {
+		});
 		this.recipeLayout = recipeLayout;
 	}
 

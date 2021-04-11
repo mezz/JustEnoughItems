@@ -81,10 +81,18 @@ public final class MathUtil {
 		int ry1 = rect2.getY();
 		rx2 += rx1;
 		ry2 += ry1;
-		if (tx1 > rx1) tx1 = rx1;
-		if (ty1 > ry1) ty1 = ry1;
-		if (tx2 < rx2) tx2 = rx2;
-		if (ty2 < ry2) ty2 = ry2;
+        if (tx1 > rx1) {
+            tx1 = rx1;
+        }
+        if (ty1 > ry1) {
+            ty1 = ry1;
+        }
+        if (tx2 < rx2) {
+            tx2 = rx2;
+        }
+        if (ty2 < ry2) {
+            ty2 = ry2;
+        }
 		tx2 -= tx1;
 		ty2 -= ty1;
 		tx2 = Math.min(tx2, Integer.MAX_VALUE);
@@ -113,7 +121,7 @@ public final class MathUtil {
 		);
 	}
 
-	public static double distance(Vector2f start, Vector2f end){
+	public static double distance(Vector2f start, Vector2f end) {
 		double a = start.x - end.x;
 		double b = start.y - end.y;
 		return Math.sqrt(a * a + b * b);
@@ -174,9 +182,9 @@ public final class MathUtil {
 	private static boolean containsRect(Collection<Rectangle2d> rects, Rectangle2d aRect) {
 		for (Rectangle2d bRect : rects) {
 			if (aRect.getX() == bRect.getX() &&
-					aRect.getY() == bRect.getY() &&
-					aRect.getWidth() == bRect.getWidth() &&
-					aRect.getHeight() == bRect.getHeight()) {
+				aRect.getY() == bRect.getY() &&
+				aRect.getWidth() == bRect.getWidth() &&
+				aRect.getHeight() == bRect.getHeight()) {
 				return true;
 			}
 		}

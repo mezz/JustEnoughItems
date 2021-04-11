@@ -113,7 +113,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 
 				if (worldConfig.hasChanged()) {
 					// TODO 1.13
-	//				worldConfig.save();
+//					worldConfig.save();
 				}
 			}
 

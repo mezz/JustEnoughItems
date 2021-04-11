@@ -10,7 +10,8 @@ public class DebugRecipe {
 	private final HoverChecker buttonHoverChecker;
 
 	public DebugRecipe() {
-		this.button = new ExtendedButton(0, 0, 40, 20, new StringTextComponent("test"), b -> {});
+		this.button = new ExtendedButton(0, 0, 40, 20, new StringTextComponent("test"), b -> {
+		});
 		this.buttonHoverChecker = new HoverChecker();
 		this.buttonHoverChecker.updateBounds(this.button);
 	}

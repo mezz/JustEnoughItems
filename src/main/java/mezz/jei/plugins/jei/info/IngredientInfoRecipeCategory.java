@@ -1,6 +1,7 @@
 package mezz.jei.plugins.jei.info;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+
 import java.util.Collections;
 import java.util.List;
 

@@ -25,8 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ModIdFormattingConfig implements IJEIConfig
-{
+public class ModIdFormattingConfig implements IJEIConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static final String MOD_NAME_FORMAT_CODE = "%MODNAME%";
@@ -43,9 +42,9 @@ public class ModIdFormattingConfig implements IJEIConfig
 	public ModIdFormattingConfig(ForgeConfigSpec.Builder builder) {
 		builder.push("modname");
 		builder.comment("Formatting for mod name tooltip",
-				"Use these formatting keys:",
-				"black, dark_blue, dark_green, dark_aqua, dark_red, dark_purple, gold, gray, dark_gray, blue, green, aqua, red, light_purple, yellow, white",
-				"obfuscated, bold, strikethrough, underline, italic");
+			"Use these formatting keys:",
+			"black, dark_blue, dark_green, dark_aqua, dark_red, dark_purple, gold, gray, dark_gray, blue, green, aqua, red, light_purple, yellow, white",
+			"obfuscated, bold, strikethrough, underline, italic");
 		modNameFormatConfig = builder.define("ModNameFormat", defaultModNameFormatFriendly);
 		builder.pop();
 	}
@@ -60,7 +59,7 @@ public class ModIdFormattingConfig implements IJEIConfig
 	}
 
 	private String cfgTranslation(String name) {
-		return "advanced."+name;
+		return "advanced." + name;
 	}
 
 	@Override

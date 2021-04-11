@@ -75,8 +75,7 @@ public class PluginLoader {
 		Textures textures,
 		IClientConfig clientConfig,
 		IModIdHelper modIdHelper,
-		boolean debugMode)
-	{
+		boolean debugMode) {
 		this.clientConfig = clientConfig;
 		this.timer = new LoggedTimer();
 		this.modIdHelper = modIdHelper;
@@ -90,7 +89,7 @@ public class PluginLoader {
 		ModIngredientRegistration modIngredientManager = new ModIngredientRegistration(subtypeManager);
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(modIngredientManager));
 		List<RegisteredIngredient<?>> registeredIngredients = modIngredientManager.getRegisteredIngredients();
-		ingredientManager =  new IngredientManager(modIdHelper, blacklist, registeredIngredients, debugMode);
+		ingredientManager = new IngredientManager(modIdHelper, blacklist, registeredIngredients, debugMode);
 		Internal.setIngredientManager(ingredientManager);
 
 		StackHelper stackHelper = new StackHelper(subtypeManager);

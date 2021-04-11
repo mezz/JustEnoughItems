@@ -141,7 +141,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	}
 
 	private String cfgTranslation(String name) {
-		return "advanced."+name;
+		return "advanced." + name;
 	}
 
 	@Override
