@@ -49,14 +49,14 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	public static final int RECIPE_WIDTH = 160;
 	public static final int RECIPE_HEIGHT = 60;
 	private final IDrawable background;
-	private final String localizedName;
+	private final ITextComponent localizedName;
 	private final IDrawable tankBackground;
 	private final IDrawable tankOverlay;
 	private boolean hiddenRecipes;
 
 	public DebugRecipeCategory(IGuiHelper guiHelper) {
 		this.background = guiHelper.createBlankDrawable(RECIPE_WIDTH, RECIPE_HEIGHT);
-		this.localizedName = "debug";
+		this.localizedName = new StringTextComponent("debug");
 
 		ResourceLocation backgroundTexture = new ResourceLocation(ModIds.JEI_ID, Constants.TEXTURE_GUI_PATH + "debug.png");
 		this.tankBackground = guiHelper.drawableBuilder(backgroundTexture, 220, 196, 18, 60)
@@ -78,7 +78,13 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
+	@Deprecated
 	public String getTitle() {
+		return getTitleAsTextComponent().getString();
+	}
+
+	@Override
+	public ITextComponent getTitleAsTextComponent() {
 		return localizedName;
 	}
 

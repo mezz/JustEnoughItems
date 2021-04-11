@@ -12,19 +12,19 @@ import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.config.Constants;
-import mezz.jei.util.Translator;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.AbstractCookingRecipe;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> extends FurnaceVariantCategory<T> {
 	private final IDrawable background;
 	private final int regularCookTime;
 	private final IDrawable icon;
-	private final String localizedName;
+	private final ITextComponent localizedName;
 	private final LoadingCache<Integer, IDrawableAnimated> cachedArrows;
 
 	public AbstractCookingCategory(IGuiHelper guiHelper, Block icon, String translationKey, int regularCookTime) {
@@ -32,7 +32,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		this.background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 114, 82, 54);
 		this.regularCookTime = regularCookTime;
 		this.icon = guiHelper.createDrawableIngredient(new ItemStack(icon));
-		this.localizedName = Translator.translateToLocal(translationKey);
+		this.localizedName = new TranslationTextComponent(translationKey);
 		this.cachedArrows = CacheBuilder.newBuilder()
 			.maximumSize(25)
 			.build(new CacheLoader<Integer, IDrawableAnimated>() {
@@ -103,7 +103,13 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	}
 
 	@Override
+	@Deprecated
 	public String getTitle() {
+		return getTitleAsTextComponent().getString();
+	}
+
+	@Override
+	public ITextComponent getTitleAsTextComponent() {
 		return localizedName;
 	}
 

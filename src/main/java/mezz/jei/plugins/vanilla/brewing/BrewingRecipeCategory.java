@@ -19,7 +19,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.config.Constants;
-import mezz.jei.util.Translator;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> {
@@ -33,7 +33,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 	private final IDrawable background;
 	private final IDrawable icon;
 	private final IDrawable slotDrawable;
-	private final String localizedName;
+	private final ITextComponent localizedName;
 	private final IDrawableAnimated arrow;
 	private final IDrawableAnimated bubbles;
 	private final IDrawableStatic blazeHeat;
@@ -44,7 +44,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 			.addPadding(1, 0, 0, 50)
 			.build();
 		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.BREWING_STAND));
-		localizedName = Translator.translateToLocal("gui.jei.category.brewing");
+		localizedName = new TranslationTextComponent("gui.jei.category.brewing");
 
 		arrow = guiHelper.drawableBuilder(location, 64, 0, 9, 28)
 			.buildAnimated(400, IDrawableAnimated.StartDirection.TOP, false);
@@ -69,7 +69,13 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 	}
 
 	@Override
+	@Deprecated
 	public String getTitle() {
+		return getTitleAsTextComponent().getString();
+	}
+
+	@Override
+	public ITextComponent getTitleAsTextComponent() {
 		return localizedName;
 	}
 

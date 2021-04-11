@@ -59,7 +59,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 				Object ingredient = recipeCatalysts.get(0);
 				renderIngredient(matrixStack, iconX, iconY, ingredient);
 			} else {
-				String text = category.getTitle().substring(0, 2);
+				String text = category.getTitleAsTextComponent().getString().substring(0, 2);
 				Minecraft minecraft = Minecraft.getInstance();
 				FontRenderer fontRenderer = minecraft.fontRenderer;
 				int textCenterX = x + (TAB_WIDTH / 2);
@@ -90,10 +90,10 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	@Override
 	public List<ITextComponent> getTooltip() {
 		List<ITextComponent> tooltip = new ArrayList<>();
-		String title = category.getTitle();
+		ITextComponent title = category.getTitleAsTextComponent();
 		//noinspection ConstantConditions
 		if (title != null) {
-			tooltip.add(new StringTextComponent(title));
+			tooltip.add(title);
 		}
 
 		ResourceLocation uid = category.getUid();

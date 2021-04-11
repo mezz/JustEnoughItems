@@ -15,6 +15,7 @@ import net.minecraft.item.crafting.SmithingRecipe;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Arrays;
+import net.minecraft.util.text.ITextComponent;
 
 public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe> {
 
@@ -37,8 +38,14 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe> {
 	}
 
 	@Override
+	@Deprecated
 	public String getTitle() {
-		return Blocks.SMITHING_TABLE.getTranslatedName().getString();
+		return getTitleAsTextComponent().getString();
+	}
+
+	@Override
+	public ITextComponent getTitleAsTextComponent() {
+		return Blocks.SMITHING_TABLE.getTranslatedName();
 	}
 
 	@Override
