@@ -17,13 +17,6 @@ public final class MathUtil {
 		return (int) Math.ceil((float) numerator / denominator);
 	}
 
-	public static int clamp(int value, int min, int max) {
-		if (value < min) {
-			return min;
-		}
-		return Math.min(value, max);
-	}
-
 	public static boolean intersects(Collection<Rectangle2d> areas, Rectangle2d comparisonArea) {
 		for (Rectangle2d area : areas) {
 			if (intersects(area, comparisonArea)) {

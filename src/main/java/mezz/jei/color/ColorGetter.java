@@ -21,13 +21,17 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.MathUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public final class ColorGetter {
+public final class ColorGetter implements IColorHelper {
+
+	public static final ColorGetter INSTANCE = new ColorGetter();
+
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final String[] defaultColors = new String[]{
 		"White:EEEEEE",
@@ -110,7 +114,7 @@ public final class ColorGetter {
 		if (textureAtlasSprite == null) {
 			return Collections.emptyList();
 		}
-		return getColors(textureAtlasSprite, renderColor, colorCount);
+		return INSTANCE.getColors(textureAtlasSprite, renderColor, colorCount);
 	}
 
 	private static List<Integer> getBlockColors(Block block, int colorCount) {
@@ -121,10 +125,14 @@ public final class ColorGetter {
 		if (textureAtlasSprite == null) {
 			return Collections.emptyList();
 		}
-		return getColors(textureAtlasSprite, renderColor, colorCount);
+		return INSTANCE.getColors(textureAtlasSprite, renderColor, colorCount);
 	}
 
-	public static List<Integer> getColors(TextureAtlasSprite textureAtlasSprite, int renderColor, int colorCount) {
+	@Override
+	public List<Integer> getColors(TextureAtlasSprite textureAtlasSprite, int renderColor, int colorCount) {
+		if (colorCount <= 0) {
+			return Collections.emptyList();
+		}
 		final NativeImage bufferedImage = getNativeImage(textureAtlasSprite);
 		if (bufferedImage == null) {
 			return Collections.emptyList();
@@ -136,9 +144,9 @@ public final class ColorGetter {
 				int red = (int) ((colorInt[0] - 1) * (float) (renderColor >> 16 & 255) / 255.0F);
 				int green = (int) ((colorInt[1] - 1) * (float) (renderColor >> 8 & 255) / 255.0F);
 				int blue = (int) ((colorInt[2] - 1) * (float) (renderColor & 255) / 255.0F);
-				red = MathUtil.clamp(red, 0, 255);
-				green = MathUtil.clamp(green, 0, 255);
-				blue = MathUtil.clamp(blue, 0, 255);
+				red = MathHelper.clamp(red, 0, 255);
+				green = MathHelper.clamp(green, 0, 255);
+				blue = MathHelper.clamp(blue, 0, 255);
 				int color = ((0xFF) << 24) |
 					((red & 0xFF) << 16) |
 					((green & 0xFF) << 8) |
