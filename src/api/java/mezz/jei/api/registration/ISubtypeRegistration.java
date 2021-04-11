@@ -1,6 +1,6 @@
 package mezz.jei.api.registration;
 
-import mezz.jei.api.ingredients.subtypes.IFluidSubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -20,8 +20,20 @@ public interface ISubtypeRegistration {
 	 *
 	 * @param item        the item that has subtypes.
 	 * @param interpreter the interpreter for the item.
+	 * @deprecated since JEI 7.6.2, use {@link #registerSubtypeInterpreter(Item, IIngredientSubtypeInterpreter)}
 	 */
+	@Deprecated
 	void registerSubtypeInterpreter(Item item, ISubtypeInterpreter interpreter);
+
+	/**
+	 * Add an interpreter to compare item subtypes.
+	 * This interpreter should account for nbt and anything else that's relevant to differentiating the item's subtypes.
+	 *
+	 * @param item        the item that has subtypes.
+	 * @param interpreter the interpreter for the item.
+	 * @since JEI 7.6.2
+	 */
+	void registerSubtypeInterpreter(Item item, IIngredientSubtypeInterpreter<ItemStack> interpreter);
 
 	/**
 	 * Add an interpreter to compare fluid subtypes.
@@ -30,7 +42,7 @@ public interface ISubtypeRegistration {
 	 * @param fluid       the fluid that has subtypes.
 	 * @param interpreter the interpreter for the fluid.
 	 */
-	void registerFluidSubtypeInterpreter(Fluid fluid, IFluidSubtypeInterpreter interpreter);
+	void registerSubtypeInterpreter(Fluid fluid, IIngredientSubtypeInterpreter<FluidStack> interpreter);
 
 	/**
 	 * Tells JEI to treat all NBT as relevant to these items' subtypes.
@@ -43,12 +55,12 @@ public interface ISubtypeRegistration {
 	void useNbtForSubtypes(Fluid... fluids);
 
 	/**
-	 * Returns whether an {@link ISubtypeInterpreter} has been registered for this item.
+	 * Returns whether an {@link IIngredientSubtypeInterpreter} has been registered for this item.
 	 */
 	boolean hasSubtypeInterpreter(ItemStack itemStack);
 
 	/**
-	 * Returns whether an {@link IFluidSubtypeInterpreter} has been registered for this fluid.
+	 * Returns whether an {@link IIngredientSubtypeInterpreter} has been registered for this fluid.
 	 */
 	boolean hasSubtypeInterpreter(FluidStack fluidStack);
 }

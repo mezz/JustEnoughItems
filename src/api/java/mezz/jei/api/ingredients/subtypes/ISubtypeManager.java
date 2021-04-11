@@ -11,7 +11,7 @@ import net.minecraftforge.fluids.FluidStack;
 /**
  * Gets subtype information from ingredients that have subtype interpreters.
  *
- * Add subtypes for your ingredients with {@link ISubtypeRegistration#registerSubtypeInterpreter(Item, ISubtypeInterpreter)}.
+ * Add subtypes for your ingredients with {@link ISubtypeRegistration#registerSubtypeInterpreter(Item, IIngredientSubtypeInterpreter)}.
  */
 public interface ISubtypeManager {
 	/**

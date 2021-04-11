@@ -132,7 +132,7 @@ public class JeiDebugPlugin implements IModPlugin {
 		Fluid water = Fluids.WATER;
 		FluidSubtypeHandlerTest subtype = new FluidSubtypeHandlerTest();
 
-		registration.registerFluidSubtypeInterpreter(water, subtype);
+		registration.registerSubtypeInterpreter(water, subtype);
 	}
 
 	@Override
