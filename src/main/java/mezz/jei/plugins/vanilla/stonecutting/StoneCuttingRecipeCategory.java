@@ -14,7 +14,8 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.config.Constants;
-import mezz.jei.util.Translator;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecuttingRecipe> {
 	private static final int inputSlot = 0;
@@ -25,13 +26,13 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecuttingR
 
 	private final IDrawable background;
 	private final IDrawable icon;
-	private final String localizedName;
+	private final ITextComponent localizedName;
 
 	public StoneCuttingRecipeCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
 		background = guiHelper.createDrawable(location, 0, 220, width, height);
 		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.STONECUTTER));
-		localizedName = Translator.translateToLocal("gui.jei.category.stoneCutter");
+		localizedName = new TranslationTextComponent("gui.jei.category.stoneCutter");
 	}
 
 	@Override
@@ -45,7 +46,13 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecuttingR
 	}
 
 	@Override
+	@Deprecated
 	public String getTitle() {
+		return getTitleAsTextComponent().getString();
+	}
+
+	@Override
+	public ITextComponent getTitleAsTextComponent() {
 		return localizedName;
 	}
 

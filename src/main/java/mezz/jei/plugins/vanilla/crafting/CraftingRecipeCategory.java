@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.util.Size2i;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
@@ -27,7 +28,6 @@ import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategor
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICustomCraftingCategoryExtension;
 import mezz.jei.config.Constants;
 import mezz.jei.recipes.ExtendableRecipeCategoryHelper;
-import mezz.jei.util.Translator;
 
 public class CraftingRecipeCategory implements IExtendableRecipeCategory<ICraftingRecipe, ICraftingCategoryExtension> {
 	private static final int craftOutputSlot = 0;
@@ -38,7 +38,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<ICrafti
 
 	private final IDrawable background;
 	private final IDrawable icon;
-	private final String localizedName;
+	private final ITextComponent localizedName;
 	private final ICraftingGridHelper craftingGridHelper;
 	private final ExtendableRecipeCategoryHelper<IRecipe<?>, ICraftingCategoryExtension> extendableHelper = new ExtendableRecipeCategoryHelper<>(ICraftingRecipe.class);
 
@@ -46,7 +46,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<ICrafti
 		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
 		background = guiHelper.createDrawable(location, 0, 60, width, height);
 		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.CRAFTING_TABLE));
-		localizedName = Translator.translateToLocal("gui.jei.category.craftingTable");
+		localizedName = new TranslationTextComponent("gui.jei.category.craftingTable");
 		craftingGridHelper = guiHelper.createCraftingGridHelper(craftInputSlot1);
 	}
 
@@ -61,7 +61,13 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<ICrafti
 	}
 
 	@Override
+	@Deprecated
 	public String getTitle() {
+		return getTitleAsTextComponent().getString();
+	}
+
+	@Override
+	public ITextComponent getTitleAsTextComponent() {
 		return localizedName;
 	}
 

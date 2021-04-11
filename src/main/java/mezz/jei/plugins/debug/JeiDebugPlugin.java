@@ -14,6 +14,9 @@ import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.config.ClientConfig;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -85,13 +88,40 @@ public class JeiDebugPlugin implements IModPlugin {
 				new ItemStack(Blocks.DARK_OAK_DOOR)
 				),
 				VanillaTypes.ITEM,
-				"description.jei.wooden.door.1", // actually 2 lines
-				"description.jei.wooden.door.2",
-				"description.jei.wooden.door.3"
+				new TranslationTextComponent("description.jei.wooden.door.1"), // actually 2 lines
+				new TranslationTextComponent("description.jei.wooden.door.2"),
+				new TranslationTextComponent("description.jei.wooden.door.3")
 			);
 
-			registration.addIngredientInfo(new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), VanillaTypes.FLUID, "water");
-			registration.addIngredientInfo(new DebugIngredient(1), DebugIngredient.TYPE, "debug");
+			registration.addIngredientInfo(new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), VanillaTypes.FLUID, new StringTextComponent("water"));
+			registration.addIngredientInfo(new DebugIngredient(1), DebugIngredient.TYPE, new StringTextComponent("debug"));
+			registration.addIngredientInfo(new DebugIngredient(2), DebugIngredient.TYPE,
+				new StringTextComponent("debug colored").mergeStyle(TextFormatting.AQUA),
+				new StringTextComponent("debug\\nSplit and colored").mergeStyle(TextFormatting.LIGHT_PURPLE),
+				new TranslationTextComponent("description.jei.debug.formatting.1", "various"),
+				new TranslationTextComponent("description.jei.debug.formatting.1", "various\\nsplit"),
+				new TranslationTextComponent("description.jei.debug.formatting.1", new StringTextComponent("various colored").mergeStyle(TextFormatting.RED)),
+				new TranslationTextComponent("description.jei.debug.formatting.1",
+					new StringTextComponent("various\\nsplit colored").mergeStyle(TextFormatting.DARK_AQUA)
+				),
+				new TranslationTextComponent("description.jei.debug.formatting.1", "\\nSplitting at the start"),
+				new TranslationTextComponent("description.jei.debug.formatting.1", "various all colored").mergeStyle(TextFormatting.RED),
+				new TranslationTextComponent("description.jei.debug.formatting.1",
+					new TranslationTextComponent("description.jei.debug.formatting.3", "various").mergeStyle(TextFormatting.DARK_AQUA)
+				),
+				new TranslationTextComponent("description.jei.debug.formatting.2",
+					new StringTextComponent("multiple").mergeStyle(TextFormatting.GOLD).mergeStyle(TextFormatting.ITALIC),
+					new StringTextComponent("various").mergeStyle(TextFormatting.RED)
+				).mergeStyle(TextFormatting.BLUE),
+				new TranslationTextComponent("description.jei.debug.formatting.1",
+					new TranslationTextComponent("description.jei.debug.formatting.3",
+						new TranslationTextComponent("description.jei.debug.formatting.2",
+							new StringTextComponent("multiple").mergeStyle(TextFormatting.GOLD).mergeStyle(TextFormatting.ITALIC),
+							new StringTextComponent("various").mergeStyle(TextFormatting.RED)
+						).mergeStyle(TextFormatting.DARK_AQUA)
+					)
+				)
+			);
 
 			registration.addRecipes(Arrays.asList(
 				new DebugRecipe(),

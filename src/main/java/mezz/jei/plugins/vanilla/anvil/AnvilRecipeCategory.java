@@ -24,6 +24,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.config.Constants;
+import net.minecraft.util.text.ITextComponent;
 
 public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 
@@ -57,8 +58,14 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 	}
 
 	@Override
+	@Deprecated
 	public String getTitle() {
-		return Blocks.ANVIL.getTranslatedName().getString();
+		return getTitleAsTextComponent().getString();
+	}
+
+	@Override
+	public ITextComponent getTitleAsTextComponent() {
+		return Blocks.ANVIL.getTranslatedName();
 	}
 
 	@Override

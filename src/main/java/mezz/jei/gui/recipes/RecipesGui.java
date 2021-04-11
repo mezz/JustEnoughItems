@@ -41,7 +41,10 @@ import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.ITextProperties;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
@@ -65,7 +68,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	private final List<RecipeLayout<?>> recipeLayouts = new ArrayList<>();
 
 	private String pageString = "1/1";
-	private String title = "";
+	private ITextComponent title = StringTextComponent.EMPTY;
 	private final DrawableNineSliceTexture background;
 
 	private final RecipeCatalysts recipeCatalysts;
@@ -115,6 +118,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	private static void drawCenteredStringWithShadow(MatrixStack matrixStack, FontRenderer font, String string, Rectangle2d area) {
 		Rectangle2d textArea = MathUtil.centerTextArea(area, font, string);
 		font.drawStringWithShadow(matrixStack, string, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
+	}
+
+	private static void drawCenteredStringWithShadow(MatrixStack matrixStack, FontRenderer font, ITextComponent text, Rectangle2d area) {
+		Rectangle2d textArea = MathUtil.centerTextArea(area, font, text);
+		font.drawTextWithShadow(matrixStack, text, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
 	}
 
 	public Rectangle2d getArea() {
@@ -467,9 +475,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 		logic.setRecipesPerPage(recipesPerPage);
 
-		title = recipeCategory.getTitle();
+		title = StringUtil.stripStyling(recipeCategory.getTitleAsTextComponent());
 		final int availableTitleWidth = titleArea.getWidth();
-		if (font.getStringWidth(title) > availableTitleWidth) {
+		if (font.getStringPropertyWidth(title) > availableTitleWidth) {
 			title = StringUtil.truncateStringToWidth(title, availableTitleWidth, font);
 		}
 		Rectangle2d titleStringArea = MathUtil.centerTextArea(this.titleArea, font, title);

@@ -6,6 +6,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.vector.Vector2f;
+import net.minecraft.util.text.ITextProperties;
 
 public final class MathUtil {
 	private MathUtil() {
@@ -101,6 +102,12 @@ public final class MathUtil {
 
 	public static Rectangle2d centerTextArea(Rectangle2d outer, FontRenderer fontRenderer, String text) {
 		int width = fontRenderer.getStringWidth(text);
+		int height = fontRenderer.FONT_HEIGHT;
+		return centerArea(outer, width, height);
+	}
+
+	public static Rectangle2d centerTextArea(Rectangle2d outer, FontRenderer fontRenderer, ITextProperties text) {
+		int width = fontRenderer.getStringPropertyWidth(text);
 		int height = fontRenderer.FONT_HEIGHT;
 		return centerArea(outer, width, height);
 	}

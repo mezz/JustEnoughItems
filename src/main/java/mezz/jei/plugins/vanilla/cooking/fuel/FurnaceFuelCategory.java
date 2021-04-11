@@ -17,13 +17,13 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.plugins.vanilla.cooking.FurnaceVariantCategory;
-import mezz.jei.util.Translator;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 	private final IDrawableStatic background;
 	private final IDrawableStatic flameTransparentBackground;
-	private final String localizedName;
+	private final ITextComponent localizedName;
 
 	public FurnaceFuelCategory(IGuiHelper guiHelper, Textures textures) {
 		super(guiHelper);
@@ -39,7 +39,7 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 			.build();
 
 		flameTransparentBackground = textures.getFlameIcon();
-		localizedName = Translator.translateToLocal("gui.jei.category.fuel");
+		localizedName = new TranslationTextComponent("gui.jei.category.fuel");
 	}
 
 	@Override
@@ -58,7 +58,13 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 	}
 
 	@Override
+	@Deprecated
 	public String getTitle() {
+		return getTitleAsTextComponent().getString();
+	}
+
+	@Override
+	public ITextComponent getTitleAsTextComponent() {
 		return localizedName;
 	}
 

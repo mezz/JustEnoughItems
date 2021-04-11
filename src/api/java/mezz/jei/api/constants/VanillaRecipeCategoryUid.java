@@ -101,7 +101,8 @@ public final class VanillaRecipeCategoryUid {
 	 * The JEI info recipe category shows extra information about ingredients.
 	 *
 	 * This is a built-in category, you can add new recipes with
-	 * {@link IRecipeRegistration#addIngredientInfo(Object, IIngredientType, String...)}   or {@link IRecipeRegistration#addIngredientInfo(List, IIngredientType, String...)}
+	 * {@link IRecipeRegistration#addIngredientInfo(Object, IIngredientType, net.minecraft.util.text.ITextComponent...)} or
+	 * {@link IRecipeRegistration#addIngredientInfo(List, IIngredientType, net.minecraft.util.text.ITextComponent...)}
 	 */
 	public static final ResourceLocation INFORMATION = new ResourceLocation(ModIds.JEI_ID, "information");
 
