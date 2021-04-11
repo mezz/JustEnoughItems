@@ -37,7 +37,7 @@ public interface IGuiIngredient<T> {
 	 * Draws a highlight on background of this ingredient.
 	 * This is used by recipe transfer errors to turn missing ingredient backgrounds to red, but can be used for other purposes.
 	 *
-	 * @see IRecipeTransferHandlerHelper#createUserErrorForSlots(String, Collection).
+	 * @see IRecipeTransferHandlerHelper#createUserErrorForSlots(net.minecraft.util.text.ITextComponent, Collection).
 	 */
 	void drawHighlight(MatrixStack matrixStack, int color, int xOffset, int yOffset);
 }

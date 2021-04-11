@@ -23,7 +23,8 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.config.ServerInfo;
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketRecipeTransfer;
-import mezz.jei.util.Translator;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -49,7 +50,7 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 	@Override
 	public IRecipeTransferError transferRecipe(C container, Object recipe, IRecipeLayout recipeLayout, PlayerEntity player, boolean maxTransfer, boolean doTransfer) {
 		if (!ServerInfo.isJeiOnServer()) {
-			String tooltipMessage = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.no.server");
+			ITextComponent tooltipMessage = new TranslationTextComponent("jei.tooltip.error.recipe.transfer.no.server");
 			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
 		}
 
@@ -107,14 +108,14 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 
 		// check if we have enough inventory space to shuffle items around to their final locations
 		if (filledCraftSlotCount - inputCount > emptySlotCount) {
-			String message = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.inventory.full");
+			ITextComponent message = new TranslationTextComponent("jei.tooltip.error.recipe.transfer.inventory.full");
 			return handlerHelper.createUserErrorWithTooltip(message);
 		}
 
 		RecipeTransferUtil.MatchingItemsResult matchingItemsResult = RecipeTransferUtil.getMatchingItems(stackHelper, availableItemStacks, itemStackGroup.getGuiIngredients());
 
 		if (matchingItemsResult.missingItems.size() > 0) {
-			String message = Translator.translateToLocal("jei.tooltip.error.recipe.transfer.missing");
+			ITextComponent message = new TranslationTextComponent("jei.tooltip.error.recipe.transfer.missing");
 			return handlerHelper.createUserErrorForSlots(message, matchingItemsResult.missingItems);
 		}
 

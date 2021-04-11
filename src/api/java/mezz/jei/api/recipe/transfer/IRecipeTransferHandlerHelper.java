@@ -5,6 +5,7 @@ import java.util.Collection;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError.Type;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
+import net.minecraft.util.text.ITextComponent;
 
 /**
  * Helper functions for implementing an {@link IRecipeTransferHandler}.
@@ -21,8 +22,18 @@ public interface IRecipeTransferHandlerHelper {
 	 * Create an error with type {@link Type#USER_FACING} that shows a tooltip.
 	 *
 	 * @param tooltipMessage the message to show on the tooltip for the recipe transfer button.
+	 * @deprecated Use {@link #createUserErrorWithTooltip(ITextComponent)} instead.
 	 */
+	@Deprecated
 	IRecipeTransferError createUserErrorWithTooltip(String tooltipMessage);
+
+	/**
+	 * Create an error with type {@link Type#USER_FACING} that shows a tooltip.
+	 *
+	 * @param tooltipMessage the message to show on the tooltip for the recipe transfer button.
+	 * @since JEI 7.6.4
+	 */
+	IRecipeTransferError createUserErrorWithTooltip(ITextComponent tooltipMessage);
 
 	/**
 	 * Create an error with type {@link Type#USER_FACING} that shows a tooltip and highlights missing item slots.
@@ -30,6 +41,18 @@ public interface IRecipeTransferHandlerHelper {
 	 * @param tooltipMessage   the message to show on the tooltip for the recipe transfer button.
 	 * @param missingItemSlots the slot indexes for items that are missing. Must not be empty.
 	 *                         Slots are indexed according to {@link IGuiItemStackGroup#getGuiIngredients()}.
+	 * @deprecated Use {@link #createUserErrorForSlots(ITextComponent, Collection)} instead.
 	 */
+	@Deprecated
 	IRecipeTransferError createUserErrorForSlots(String tooltipMessage, Collection<Integer> missingItemSlots);
+
+	/**
+	 * Create an error with type {@link Type#USER_FACING} that shows a tooltip and highlights missing item slots.
+	 *
+	 * @param tooltipMessage   the message to show on the tooltip for the recipe transfer button.
+	 * @param missingItemSlots the slot indexes for items that are missing. Must not be empty.
+	 *                         Slots are indexed according to {@link IGuiItemStackGroup#getGuiIngredients()}.
+	 * @since JEI 7.6.4
+	 */
+	IRecipeTransferError createUserErrorForSlots(ITextComponent tooltipMessage, Collection<Integer> missingItemSlots);
 }

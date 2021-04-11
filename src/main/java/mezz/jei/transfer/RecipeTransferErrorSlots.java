@@ -9,13 +9,14 @@ import net.minecraft.item.ItemStack;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ingredient.IGuiIngredient;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
+import net.minecraft.util.text.ITextComponent;
 
 public class RecipeTransferErrorSlots extends RecipeTransferErrorTooltip {
 	private static final int HIGHLIGHT_COLOR = 0x66FF0000;
 
 	private final Collection<Integer> slots;
 
-	public RecipeTransferErrorSlots(String message, Collection<Integer> slots) {
+	public RecipeTransferErrorSlots(ITextComponent message, Collection<Integer> slots) {
 		super(message);
 		this.slots = slots;
 	}
