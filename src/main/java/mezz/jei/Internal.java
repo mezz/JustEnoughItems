@@ -109,7 +109,7 @@ public final class Internal {
 		}
 
 		Internal.guiEventHandler = guiEventHandler;
-		EventBusHelper.register(guiEventHandler);
+		guiEventHandler.registerToEventBus();
 	}
 
 	public static void setInputHandler(InputHandler inputHandler) {
@@ -118,7 +118,7 @@ public final class Internal {
 		}
 
 		Internal.inputHandler = inputHandler;
-		EventBusHelper.register(inputHandler);
+		inputHandler.registerToEventBus();
 	}
 
 	@Nullable

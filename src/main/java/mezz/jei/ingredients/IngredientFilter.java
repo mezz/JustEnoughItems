@@ -90,14 +90,14 @@ public class IngredientFilter implements IIngredientGridSource {
 			this.elementSearch.registerPrefix(prefixInfo);
 		}
 
-		EventBusHelper.addListener(this, EditModeToggleEvent.class, editModeToggleEvent -> {
-			this.filterCached = null;
-			updateHidden();
+		EventBusHelper.registerWeakListener(this, EditModeToggleEvent.class, (ingredientFilter, editModeToggleEvent) -> {
+			ingredientFilter.filterCached = null;
+			ingredientFilter.updateHidden();
 		});
 
-		EventBusHelper.addListener(this, PlayerJoinedWorldEvent.class, playerJoinedWorldEvent -> {
-			this.filterCached = null;
-			updateHidden();
+		EventBusHelper.registerWeakListener(this, PlayerJoinedWorldEvent.class, (ingredientFilter, playerJoinedWorldEvent) -> {
+			ingredientFilter.filterCached = null;
+			ingredientFilter.updateHidden();
 		});
 
 		List<IIngredientListElementInfo<?>> ingredientInfo = ingredients.stream()

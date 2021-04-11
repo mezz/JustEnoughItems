@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -24,6 +23,7 @@ import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.IngredientBlacklistType;
 import mezz.jei.config.KeyBindings;
+import mezz.jei.events.EventBusHelper;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.overlay.IngredientListOverlay;
@@ -73,10 +73,19 @@ public class InputHandler {
 		this.showsRecipeFocuses.add(new GuiContainerWrapper(guiScreenHelper));
 	}
 
+	public void registerToEventBus() {
+		EventBusHelper.registerWeakListener(this, GuiScreenEvent.KeyboardKeyPressedEvent.Pre.class, InputHandler::onGuiKeyPressedEvent);
+		EventBusHelper.registerWeakListener(this, GuiScreenEvent.KeyboardCharTypedEvent.Pre.class, InputHandler::onGuiCharTypedEvent);
+		EventBusHelper.registerWeakListener(this, GuiScreenEvent.KeyboardKeyPressedEvent.Post.class, InputHandler::onGuiKeyboardEvent);
+		EventBusHelper.registerWeakListener(this, GuiScreenEvent.KeyboardCharTypedEvent.Post.class, InputHandler::onGuiCharTypedEvent);
+		EventBusHelper.registerWeakListener(this, GuiScreenEvent.MouseClickedEvent.Pre.class, InputHandler::onGuiMouseEvent);
+		EventBusHelper.registerWeakListener(this, GuiScreenEvent.MouseReleasedEvent.Pre.class, InputHandler::onGuiMouseEvent);
+		EventBusHelper.registerWeakListener(this, GuiScreenEvent.MouseScrollEvent.Pre.class, InputHandler::onGuiMouseEvent);
+	}
+
 	/**
 	 * When we have keyboard focus, use Pre
 	 */
-	@SubscribeEvent
 	public void onGuiKeyPressedEvent(GuiScreenEvent.KeyboardKeyPressedEvent.Pre event) {
 		if (hasKeyboardFocus()) {
 			handleKeyEvent(event.getKeyCode(), event.getScanCode(), event.getModifiers());
@@ -87,7 +96,6 @@ public class InputHandler {
 	/**
 	 * When we have keyboard focus, use Pre
 	 */
-	@SubscribeEvent
 	public void onGuiCharTypedEvent(GuiScreenEvent.KeyboardCharTypedEvent.Pre event) {
 		if (hasKeyboardFocus() && handleCharTyped(event.getCodePoint(), event.getModifiers())) {
 			event.setCanceled(true);
@@ -97,7 +105,6 @@ public class InputHandler {
 	/**
 	 * Without keyboard focus, use Post
 	 */
-	@SubscribeEvent
 	public void onGuiKeyboardEvent(GuiScreenEvent.KeyboardKeyPressedEvent.Post event) {
 		if (!hasKeyboardFocus() && handleKeyEvent(event.getKeyCode(), event.getScanCode(), event.getModifiers())) {
 			event.setCanceled(true);
@@ -107,14 +114,12 @@ public class InputHandler {
 	/**
 	 * Without keyboard focus, use Post
 	 */
-	@SubscribeEvent
 	public void onGuiCharTypedEvent(GuiScreenEvent.KeyboardCharTypedEvent.Post event) {
 		if (!hasKeyboardFocus() && handleCharTyped(event.getCodePoint(), event.getModifiers())) {
 			event.setCanceled(true);
 		}
 	}
 
-	@SubscribeEvent
 	public void onGuiMouseEvent(GuiScreenEvent.MouseClickedEvent.Pre event) {
 		int mouseButton = event.getButton();
 		if (mouseButton > -1) {
@@ -127,7 +132,6 @@ public class InputHandler {
 		}
 	}
 
-	@SubscribeEvent
 	public void onGuiMouseEvent(GuiScreenEvent.MouseReleasedEvent.Pre event) {
 		int mouseButton = event.getButton();
 		if (mouseButton > -1) {
@@ -140,7 +144,6 @@ public class InputHandler {
 		}
 	}
 
-	@SubscribeEvent
 	public void onGuiMouseEvent(GuiScreenEvent.MouseScrollEvent.Pre event) {
 		double dWheel = event.getScrollDelta();
 		double mouseX = event.getMouseX();
