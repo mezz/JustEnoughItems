@@ -81,30 +81,27 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 	}
 
 	private static void addOutputSlotTooltip(RecipeLayout<?> recipeLayout, IRecipe<?> recipe, IModIdHelper modIdHelper) {
-		GuiItemStackGroup guiItemStackGroup = recipeLayout.guiItemStackGroup;
+		ResourceLocation recipeName = recipe.getId();
+		for (GuiIngredientGroup<?> ingredientGroup : recipeLayout.guiIngredientGroups.values()) {
+			addOutputSlotTooltip(ingredientGroup, recipeName, modIdHelper);
+		}
+	}
 
-		ResourceLocation registryName = recipe.getId();
-		guiItemStackGroup.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
-			if (guiItemStackGroup.getOutputSlots().contains(slotIndex)) {
+	private static <T> void addOutputSlotTooltip(GuiIngredientGroup<T> guiIngredientGroup, ResourceLocation recipeName, IModIdHelper modIdHelper) {
+		guiIngredientGroup.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
+			if (guiIngredientGroup.getOutputSlots().contains(slotIndex)) {
 				if (modIdHelper.isDisplayingModNameEnabled()) {
-					String recipeModId = registryName.getNamespace();
-					boolean modIdDifferent = false;
-					ResourceLocation itemRegistryName = ingredient.getItem().getRegistryName();
-					if (itemRegistryName != null) {
-						String itemModId = itemRegistryName.getNamespace();
-						modIdDifferent = !recipeModId.equals(itemModId);
-					}
-
-					if (modIdDifferent) {
+					String recipeModId = recipeName.getNamespace();
+					String ingredientModId = guiIngredientGroup.getIngredientModId(ingredient);
+					if (!recipeModId.equals(ingredientModId)) {
 						String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
 						TranslationTextComponent recipeBy = new TranslationTextComponent("jei.tooltip.recipe.by", modName);
 						tooltip.add(recipeBy.mergeStyle(TextFormatting.GRAY));
 					}
 				}
-
 				boolean showAdvanced = Minecraft.getInstance().gameSettings.advancedItemTooltips || Screen.hasShiftDown();
 				if (showAdvanced) {
-					TranslationTextComponent recipeId = new TranslationTextComponent("jei.tooltip.recipe.id", registryName.toString());
+					TranslationTextComponent recipeId = new TranslationTextComponent("jei.tooltip.recipe.id", recipeName.toString());
 					tooltip.add(recipeId.mergeStyle(TextFormatting.DARK_GRAY));
 				}
 			}
