@@ -5,6 +5,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.ArrayList;
 import java.util.List;
 
+import mezz.jei.input.IMouseHandler;
 import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -13,7 +14,7 @@ import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.TooltipRenderer;
 import net.minecraft.util.text.ITextComponent;
 
-public abstract class GuiIconToggleButton {
+public abstract class GuiIconToggleButton implements IMouseHandler {
 	private final IDrawable offIcon;
 	private final IDrawable onIcon;
 	private final GuiIconButton button;
@@ -46,9 +47,11 @@ public abstract class GuiIconToggleButton {
 		return this.hoverChecker.checkHover(mouseX, mouseY);
 	}
 
-	public final boolean handleMouseClick(double mouseX, double mouseY, int mouseButton) {
-		return button.mouseClicked(mouseX, mouseY, mouseButton) &&
-			onMouseClicked(mouseX, mouseY, mouseButton);
+	@Override
+	public final boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
+		return this.isMouseOver(mouseX, mouseY) &&
+			button.handleMouseClicked(mouseX, mouseY, mouseButton, doClick) &&
+			onMouseClicked(mouseX, mouseY, mouseButton, doClick);
 	}
 
 	public final void drawTooltips(MatrixStack matrixStack, int mouseX, int mouseY) {
@@ -63,5 +66,5 @@ public abstract class GuiIconToggleButton {
 
 	protected abstract boolean isIconToggledOn();
 
-	protected abstract boolean onMouseClicked(double mouseX, double mouseY, int mouseButton);
+	protected abstract boolean onMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick);
 }

@@ -1,6 +1,7 @@
 package mezz.jei.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import mezz.jei.input.IMouseHandler;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -12,7 +13,7 @@ import mezz.jei.gui.textures.Textures;
 import mezz.jei.input.IPaged;
 import net.minecraft.util.Tuple;
 
-public class PageNavigation {
+public class PageNavigation implements IMouseHandler {
 	private final IPaged paged;
 	private final GuiIconButton nextButton;
 	private final GuiIconButton backButton;
@@ -60,13 +61,9 @@ public class PageNavigation {
 		}
 	}
 
-	public boolean isMouseOver(double mouseX, double mouseY) {
-		return nextButton.isMouseOver(mouseX, mouseY) ||
-			backButton.isMouseOver(mouseX, mouseY);
-	}
-
-	public boolean handleMouseClickedButtons(double mouseX, double mouseY, int mouseButton) {
-		return nextButton.mouseClicked(mouseX, mouseY, mouseButton) ||
-			backButton.mouseClicked(mouseX, mouseY, mouseButton);
+	@Override
+	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
+		return nextButton.handleMouseClicked(mouseX, mouseY, mouseButton, doClick) ||
+			backButton.handleMouseClicked(mouseX, mouseY, mouseButton, doClick);
 	}
 }

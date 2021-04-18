@@ -343,10 +343,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 			}
 		}
 
-		if (recipeGuiTabs.isMouseOver(mouseX, mouseY)) {
-			if (recipeGuiTabs.handleMouseClicked(mouseX, mouseY, mouseButton)) {
-				return true;
-			}
+		if (recipeGuiTabs.handleMouseClicked(mouseX, mouseY, mouseButton, true)) {
+			return true;
 		}
 
 		InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);

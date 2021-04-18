@@ -78,15 +78,17 @@ public class GhostIngredientDragManager {
 		}
 	}
 
-	public boolean handleMouseClicked(double mouseX, double mouseY) {
+	public boolean handleMouseClicked(double mouseX, double mouseY, boolean doClick) {
 		if (this.ghostIngredientDrag != null) {
-			boolean success = this.ghostIngredientDrag.onClick(mouseX, mouseY);
-			if (!success) {
-				GhostIngredientReturning<?> returning = GhostIngredientReturning.create(this.ghostIngredientDrag, mouseX, mouseY);
-				this.ghostIngredientsReturning.add(returning);
+			boolean success = this.ghostIngredientDrag.onClick(mouseX, mouseY, doClick);
+			if (doClick) {
+				if (!success) {
+					GhostIngredientReturning<?> returning = GhostIngredientReturning.create(this.ghostIngredientDrag, mouseX, mouseY);
+					this.ghostIngredientsReturning.add(returning);
+				}
+				this.ghostIngredientDrag = null;
+				this.hoveredIngredientTargets = null;
 			}
-			this.ghostIngredientDrag = null;
-			this.hoveredIngredientTargets = null;
 			return success;
 		}
 		return false;

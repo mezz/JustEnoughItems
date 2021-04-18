@@ -27,7 +27,6 @@ public abstract class RecipeGuiTab implements IMouseHandler {
 		this.hoverChecker.updateBounds(y, y + TAB_HEIGHT, x, x + TAB_WIDTH);
 	}
 
-	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return hoverChecker.checkHover(mouseX, mouseY);
 	}

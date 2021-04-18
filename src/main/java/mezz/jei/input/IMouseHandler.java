@@ -2,9 +2,7 @@ package mezz.jei.input;
 
 public interface IMouseHandler {
 
-	boolean isMouseOver(double mouseX, double mouseY);
-
-	boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton);
+	boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick);
 
 	default boolean handleMouseDragStart(double mouseX, double mouseY, int mouseButton) {
 		return false;

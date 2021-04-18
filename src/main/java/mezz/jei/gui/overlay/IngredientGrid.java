@@ -10,6 +10,7 @@ import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.input.IMouseHandler;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraft.client.Minecraft;
@@ -40,7 +41,7 @@ import mezz.jei.util.MathUtil;
 /**
  * An ingredient grid displays a rectangular area of clickable recipe ingredients.
  */
-public class IngredientGrid implements IShowsRecipeFocuses {
+public class IngredientGrid implements IShowsRecipeFocuses, IMouseHandler {
 	private static final int INGREDIENT_PADDING = 1;
 	public static final int INGREDIENT_WIDTH = GuiIngredientProperties.getWidth(INGREDIENT_PADDING);
 	public static final int INGREDIENT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
@@ -178,23 +179,29 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 			!guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
 	}
 
-	public boolean handleMouseClicked(double mouseX, double mouseY) {
-		if (isMouseOver(mouseX, mouseY)) {
-			Minecraft minecraft = Minecraft.getInstance();
-			if (shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
-				ClientPlayerEntity player = minecraft.player;
-				if (player != null) {
-					ItemStack itemStack = player.inventory.getItemStack();
-					if (!itemStack.isEmpty()) {
-						player.inventory.setItemStack(ItemStack.EMPTY);
-						PacketJei packet = new PacketDeletePlayerItem(itemStack);
-						Network.sendPacketToServer(packet);
-						return true;
-					}
-				}
-			}
+	@Override
+	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
+		if (!isMouseOver(mouseX, mouseY)) {
+			return false;
 		}
-		return false;
+		Minecraft minecraft = Minecraft.getInstance();
+		if (!shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
+			return false;
+		}
+		ClientPlayerEntity player = minecraft.player;
+		if (player == null) {
+			return false;
+		}
+		ItemStack itemStack = player.inventory.getItemStack();
+		if (itemStack.isEmpty()) {
+			return false;
+		}
+		if (doClick) {
+			player.inventory.setItemStack(ItemStack.EMPTY);
+			PacketJei packet = new PacketDeletePlayerItem(itemStack);
+			Network.sendPacketToServer(packet);
+		}
+		return true;
 	}
 
 	@Nullable

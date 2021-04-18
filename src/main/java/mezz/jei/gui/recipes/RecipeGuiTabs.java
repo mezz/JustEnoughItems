@@ -131,23 +131,17 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
-		return MathUtil.contains(area, mouseX, mouseY) ||
-			pageNavigation.isMouseOver(mouseX, mouseY);
-	}
-
-	@Override
-	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
+	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
 		if (mouseButton == 0) {
-			for (RecipeGuiTab tab : tabs) {
-				if (tab.isMouseOver(mouseX, mouseY)) {
-					tab.handleMouseClicked(mouseX, mouseY, mouseButton);
-					return true;
+			if (MathUtil.contains(area, mouseX, mouseY) ) {
+				for (RecipeGuiTab tab : tabs) {
+					if (tab.isMouseOver(mouseX, mouseY)) {
+						tab.handleMouseClicked(mouseX, mouseY, mouseButton, doClick);
+						return true;
+					}
 				}
 			}
-			if (pageNavigation.isMouseOver(mouseX, mouseY)) {
-				return pageNavigation.handleMouseClickedButtons(mouseX, mouseY, mouseButton);
-			}
+			return pageNavigation.handleMouseClicked(mouseX, mouseY, mouseButton, doClick);
 		}
 		return false;
 	}

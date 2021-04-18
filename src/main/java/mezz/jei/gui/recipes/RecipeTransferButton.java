@@ -71,7 +71,10 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 	}
 
 	@Override
-	public void onClick(double mouseX, double mouseY) {
+	public void onRelease(double mouseX, double mouseY) {
+		if (!isMouseOver(mouseX, mouseY)) {
+			return;
+		}
 		if (onClickHandler != null) {
 			onClickHandler.onClick(mouseX, mouseY);
 		}

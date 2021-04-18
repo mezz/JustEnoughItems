@@ -67,12 +67,14 @@ public class ConfigButton extends GuiIconToggleButton {
 	}
 
 	@Override
-	protected boolean onMouseClicked(double mouseX, double mouseY, int mouseButton) {
+	protected boolean onMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
 		if (worldConfig.isOverlayEnabled()) {
-			if (Screen.hasControlDown()) {
-				worldConfig.toggleCheatItemsEnabled();
-			} else {
-				JEIClientConfig.openSettings();
+			if (doClick) {
+				if (Screen.hasControlDown()) {
+					worldConfig.toggleCheatItemsEnabled();
+				} else {
+					JEIClientConfig.openSettings();
+				}
 			}
 			return true;
 		}

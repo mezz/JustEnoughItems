@@ -56,9 +56,11 @@ public class BookmarkButton extends GuiIconToggleButton {
 	}
 
 	@Override
-	protected boolean onMouseClicked(double mouseX, double mouseY, int mouseButton) {
+	protected boolean onMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
 		if (!bookmarkList.isEmpty() && bookmarkOverlay.hasRoom()) {
-			worldConfig.toggleBookmarkEnabled();
+			if (doClick) {
+				worldConfig.toggleBookmarkEnabled();
+			}
 			return true;
 		}
 		return false;

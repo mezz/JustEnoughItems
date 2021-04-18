@@ -113,17 +113,16 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		this.ingredientGrid.drawTooltips(minecraft, matrixStack, mouseX, mouseY);
 	}
 
-	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return MathUtil.contains(this.area, mouseX, mouseY) &&
 			!guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
 	}
 
 	@Override
-	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
+	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
 		return isMouseOver(mouseX, mouseY) &&
-			(this.ingredientGrid.handleMouseClicked(mouseX, mouseY) ||
-				this.navigation.handleMouseClickedButtons(mouseX, mouseY, mouseButton));
+			(this.ingredientGrid.handleMouseClicked(mouseX, mouseY, mouseButton, doClick) ||
+				this.navigation.handleMouseClicked(mouseX, mouseY, mouseButton, doClick));
 	}
 
 	@Override

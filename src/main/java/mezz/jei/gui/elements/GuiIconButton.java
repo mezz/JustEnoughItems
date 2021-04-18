@@ -3,6 +3,7 @@ package mezz.jei.gui.elements;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.input.IMouseHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.Rectangle2d;
@@ -15,7 +16,7 @@ import net.minecraft.util.text.StringTextComponent;
 /**
  * A gui button that has an {@link IDrawable} instead of a string label.
  */
-public class GuiIconButton extends Button {
+public class GuiIconButton extends Button implements IMouseHandler {
 	private final IDrawable icon;
 
 	public GuiIconButton(IDrawable icon, IPressable pressable) {
@@ -72,4 +73,22 @@ public class GuiIconButton extends Button {
 		}
 	}
 
+	@Override
+	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
+		if (!this.active || !this.visible || !isMouseOver(mouseX, mouseY)) {
+			return false;
+		}
+		if (!this.isValidClickButton(mouseButton)) {
+			return false;
+		}
+		boolean flag = this.clicked(mouseX, mouseY);
+		if (!flag) {
+			return false;
+		}
+		if (doClick) {
+			this.playDownSound(Minecraft.getInstance().getSoundHandler());
+			this.onClick(mouseX, mouseY);
+		}
+		return true;
+	}
 }

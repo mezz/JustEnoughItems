@@ -116,16 +116,20 @@ public class GhostIngredientDrag<T> {
 		RenderSystem.color4f(1f, 1f, 1f, 1f);
 	}
 
-	public boolean onClick(double mouseX, double mouseY) {
+	public boolean onClick(double mouseX, double mouseY, boolean doClick) {
 		for (Target<T> target : targets) {
 			Rectangle2d area = target.getArea();
 			if (MathUtil.contains(area, mouseX, mouseY)) {
-				target.accept(ingredient);
-				handler.onComplete();
+				if (doClick) {
+					target.accept(ingredient);
+					handler.onComplete();
+				}
 				return true;
 			}
 		}
-		handler.onComplete();
+		if (doClick) {
+			handler.onComplete();
+		}
 		return false;
 	}
 

@@ -20,7 +20,7 @@ import mezz.jei.gui.overlay.IIngredientGridSource;
 import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.glfw.GLFW;
 
-public class GuiTextFieldFilter extends TextFieldWidget {
+public class GuiTextFieldFilter extends TextFieldWidget implements IMouseHandler {
 	private static final int MAX_HISTORY = 100;
 	private static final int maxSearchLength = 128;
 	private static final List<String> history = new LinkedList<>();
@@ -105,18 +105,29 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 		return handled;
 	}
 
+	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return hoverChecker.checkHover(mouseX, mouseY);
 	}
 
-	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
-		if (mouseButton == 1) {
-			setText("");
-			return worldConfig.setFilterText("");
-		} else {
-			super.mouseClicked(mouseX, mouseY, mouseButton);
+	@Override
+	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
+		if (!isMouseOver(mouseX, mouseY)) {
+			return false;
 		}
-		return false;
+		if (mouseButton == 1) {
+			if (doClick) {
+				setText("");
+				return worldConfig.setFilterText("");
+			} else {
+				return true;
+			}
+		}
+		if (doClick) {
+			return super.mouseClicked(mouseX, mouseY, mouseButton);
+		} else {
+			return true; // can't easily simulate the click, just say we could handle it
+		}
 	}
 
 	@Override

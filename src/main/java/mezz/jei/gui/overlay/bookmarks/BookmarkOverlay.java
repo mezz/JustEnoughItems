@@ -18,7 +18,6 @@ import mezz.jei.util.CommandUtil;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
@@ -148,34 +147,43 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 	}
 
 	@Override
-	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
+	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
 		if (isListDisplayed()) {
 			if (MathUtil.contains(displayArea, mouseX, mouseY)) {
-				Minecraft minecraft = Minecraft.getInstance();
-				Screen currentScreen = minecraft.currentScreen;
-				InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
-				if (currentScreen != null &&
-					!(currentScreen instanceof RecipesGui) &&
-					(mouseButton == GLFW.GLFW_MOUSE_BUTTON_1 || mouseButton == GLFW.GLFW_MOUSE_BUTTON_2 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(input))) {
-					IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
-					if (clicked != null) {
-						if (worldConfig.isCheatItemsEnabled()) {
-							ItemStack itemStack = clicked.getCheatItemStack();
-							if (!itemStack.isEmpty()) {
-								CommandUtil.giveStack(itemStack, input, this.clientConfig);
-							}
-							clicked.onClickHandled();
-							return true;
-						}
-					}
+				if (handleCheatItemClick(mouseX, mouseY, mouseButton, doClick)) {
+					return true;
 				}
 			}
 			if (contents.isMouseOver(mouseX, mouseY)) {
-				this.contents.handleMouseClicked(mouseX, mouseY, mouseButton);
+				this.contents.handleMouseClicked(mouseX, mouseY, mouseButton, doClick);
 			}
 		}
 		if (bookmarkButton.isMouseOver(mouseX, mouseY)) {
-			return bookmarkButton.handleMouseClick(mouseX, mouseY, mouseButton);
+			return bookmarkButton.handleMouseClicked(mouseX, mouseY, mouseButton, doClick);
+		}
+		return false;
+	}
+
+	private boolean handleCheatItemClick(double mouseX, double mouseY, int mouseButton, boolean doClick) {
+		Minecraft minecraft = Minecraft.getInstance();
+		Screen currentScreen = minecraft.currentScreen;
+		InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
+		if (currentScreen != null &&
+			!(currentScreen instanceof RecipesGui) &&
+			(mouseButton == GLFW.GLFW_MOUSE_BUTTON_1 || mouseButton == GLFW.GLFW_MOUSE_BUTTON_2 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(input))) {
+			IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
+			if (clicked != null) {
+				if (worldConfig.isCheatItemsEnabled()) {
+					if (doClick) {
+						ItemStack itemStack = clicked.getCheatItemStack();
+						if (!itemStack.isEmpty()) {
+							CommandUtil.giveStack(itemStack, input, this.clientConfig);
+						}
+						clicked.onClickHandled();
+					}
+					return true;
+				}
+			}
 		}
 		return false;
 	}

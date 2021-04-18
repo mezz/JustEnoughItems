@@ -33,10 +33,15 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	}
 
 	@Override
-	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
-		logic.setRecipeCategory(category);
-		SoundHandler soundHandler = Minecraft.getInstance().getSoundHandler();
-		soundHandler.play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
+		if (!isMouseOver(mouseX, mouseY)) {
+			return false;
+		}
+		if (doClick) {
+			logic.setRecipeCategory(category);
+			SoundHandler soundHandler = Minecraft.getInstance().getSoundHandler();
+			soundHandler.play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+		}
 		return true;
 	}
 

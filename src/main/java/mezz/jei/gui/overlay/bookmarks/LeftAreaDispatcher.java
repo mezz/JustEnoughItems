@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import mezz.jei.input.IMouseHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.Rectangle2d;
@@ -20,7 +21,7 @@ import mezz.jei.input.IPaged;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.util.MathUtil;
 
-public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
+public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged, IMouseHandler {
 
 	private static final int BORDER_PADDING = 2;
 	private static final int NAVIGATION_HEIGHT = 20;
@@ -142,12 +143,18 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		return false;
 	}
 
-	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		return MathUtil.contains(displayArea, mouseX, mouseY) ||
+			MathUtil.contains(naviArea, mouseX, mouseY);
+	}
+
+	@Override
+	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
 		if (canShow && hasContent()) {
 			if (MathUtil.contains(displayArea, mouseX, mouseY)) {
-				return contents.get(current).handleMouseClicked(mouseX, mouseY, mouseButton);
+				return contents.get(current).handleMouseClicked(mouseX, mouseY, mouseButton, doClick);
 			} else if (MathUtil.contains(naviArea, mouseX, mouseY)) {
-				return navigation.handleMouseClickedButtons(mouseX, mouseY, mouseButton);
+				return navigation.handleMouseClicked(mouseX, mouseY, mouseButton, doClick);
 			}
 		}
 		return false;

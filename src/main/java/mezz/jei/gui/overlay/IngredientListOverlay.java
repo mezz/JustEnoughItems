@@ -199,7 +199,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		}
 	}
 
-	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
 			if (this.clientConfig.isCenterSearchBarEnabled() && searchField.isMouseOver(mouseX, mouseY)) {
@@ -253,52 +252,67 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	}
 
 	@Override
-	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton) {
-		ClickResult clickResult = handleMouseClickedInternal(mouseX, mouseY, mouseButton);
-		setKeyboardFocus(clickResult.keyboardFocused);
+	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
+		if (!isMouseOver(mouseX, mouseY)) {
+			return false;
+		}
+		ClickResult clickResult = handleMouseClickedInternal(mouseX, mouseY, mouseButton, doClick);
+		if (doClick) {
+			setKeyboardFocus(clickResult.keyboardFocused);
+		}
 		return clickResult.handled;
 	}
 
-	private ClickResult handleMouseClickedInternal(double mouseX, double mouseY, int mouseButton) {
+	private ClickResult handleMouseClickedInternal(double mouseX, double mouseY, int mouseButton, boolean doClick) {
 		if (isListDisplayed()) {
-			if (this.ghostIngredientDragManager.handleMouseClicked(mouseX, mouseY)) {
+			if (this.ghostIngredientDragManager.handleMouseClicked(mouseX, mouseY, doClick)) {
 				return new ClickResult(true, false);
 			}
 		}
 
 		if (this.guiProperties != null) {
-			if (this.configButton.handleMouseClick(mouseX, mouseY, mouseButton)) {
+			if (this.configButton.handleMouseClicked(mouseX, mouseY, mouseButton, doClick)) {
 				return new ClickResult(true, false);
 			}
 		}
 
 		if (isListDisplayed()) {
-			if (this.contents.handleMouseClicked(mouseX, mouseY, mouseButton)) {
+			if (this.contents.handleMouseClicked(mouseX, mouseY, mouseButton, doClick)) {
 				return new ClickResult(true, false);
 			}
 
-			if (handleSearchClick(mouseX, mouseY, mouseButton)) {
+			if (handleSearchClick(mouseX, mouseY, mouseButton, doClick)) {
 				return new ClickResult(true, true);
 			}
 
-			if (handleCheatClick(this, mouseX, mouseY, mouseButton, worldConfig, clientConfig)) {
+			if (handleCheatClick(this, mouseX, mouseY, mouseButton, worldConfig, clientConfig, doClick)) {
 				return new ClickResult(true, false);
 			}
 		}
 		return new ClickResult(false, false);
 	}
 
-	private boolean handleSearchClick(double mouseX, double mouseY, int mouseButton) {
+	private boolean handleSearchClick(double mouseX, double mouseY, int mouseButton, boolean doClick) {
 		if (this.searchField.isMouseOver(mouseX, mouseY)) {
-			if (this.searchField.handleMouseClicked(mouseX, mouseY, mouseButton)) {
-				updateLayout(true);
+			if (this.searchField.handleMouseClicked(mouseX, mouseY, mouseButton, doClick)) {
+				if (doClick) {
+					updateLayout(true);
+				}
 			}
 			return true;
 		}
 		return false;
 	}
 
-	private static boolean handleCheatClick(IShowsRecipeFocuses showsRecipeFocuses, double mouseX, double mouseY, int mouseButton, IWorldConfig worldConfig, IClientConfig clientConfig) {
+	private static boolean handleCheatClick(
+		IShowsRecipeFocuses showsRecipeFocuses,
+		double mouseX,
+		double mouseY,
+		int mouseButton,
+		IWorldConfig worldConfig,
+		IClientConfig clientConfig,
+		boolean doClick
+	) {
 		if (!worldConfig.isCheatItemsEnabled()) {
 			return false;
 		}
@@ -319,11 +333,13 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 			return false;
 		}
 
-		ItemStack itemStack = clicked.getCheatItemStack();
-		if (!itemStack.isEmpty()) {
-			CommandUtil.giveStack(itemStack, input, clientConfig);
+		if (doClick) {
+			ItemStack itemStack = clicked.getCheatItemStack();
+			if (!itemStack.isEmpty()) {
+				CommandUtil.giveStack(itemStack, input, clientConfig);
+			}
+			clicked.onClickHandled();
 		}
-		clicked.onClickHandled();
 		return true;
 	}
 
@@ -347,18 +363,24 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		this.searchField.setFocused(keyboardFocus);
 	}
 
-	public boolean onGlobalKeyPressed(InputMappings.Input input) {
+	public boolean onGlobalKeyPressed(InputMappings.Input input, boolean doClick) {
 		if (isListDisplayed()) {
 			if (KeyBindings.toggleCheatMode.isActiveAndMatches(input)) {
-				worldConfig.toggleCheatItemsEnabled();
+				if (doClick) {
+					worldConfig.toggleCheatItemsEnabled();
+				}
 				return true;
 			}
 			if (KeyBindings.toggleEditMode.isActiveAndMatches(input)) {
-				worldConfig.toggleEditModeEnabled();
+				if (doClick) {
+					worldConfig.toggleEditModeEnabled();
+				}
 				return true;
 			}
 			if (KeyBindings.focusSearch.isActiveAndMatches(input)) {
-				setKeyboardFocus(true);
+				if (doClick) {
+					setKeyboardFocus(true);
+				}
 				return true;
 			}
 		}

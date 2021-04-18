@@ -4,13 +4,14 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 
 import java.util.Set;
 
+import mezz.jei.input.IMouseHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.input.IShowsRecipeFocuses;
 
-public interface ILeftAreaContent extends IShowsRecipeFocuses {
+public interface ILeftAreaContent extends IShowsRecipeFocuses, IMouseHandler {
 
 	void drawScreen(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks);
 
@@ -20,6 +21,7 @@ public interface ILeftAreaContent extends IShowsRecipeFocuses {
 
 	boolean handleMouseScrolled(double mouseX, double mouseY, double dWheel);
 
-	boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton);
+	@Override
+	boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick);
 
 }
