@@ -1,10 +1,10 @@
 package mezz.jei.gui.ghost;
 
-import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.input.IClickedIngredient;
 
 import javax.annotation.Nullable;
 
 public interface IGhostIngredientDragSource {
 	@Nullable
-	IIngredientListElement<?> getElementUnderMouse();
+	IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY);
 }

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mezz.jei.input.IMouseHandler;
+import mezz.jei.input.click.MouseClickState;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -14,11 +16,14 @@ import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.TooltipRenderer;
 import net.minecraft.util.text.ITextComponent;
 
-public abstract class GuiIconToggleButton implements IMouseHandler {
+import javax.annotation.Nullable;
+
+public abstract class GuiIconToggleButton {
 	private final IDrawable offIcon;
 	private final IDrawable onIcon;
 	private final GuiIconButton button;
 	private final HoverChecker hoverChecker;
+	private final IMouseHandler mouseHandler;
 
 	public GuiIconToggleButton(IDrawable offIcon, IDrawable onIcon) {
 		this.offIcon = offIcon;
@@ -27,6 +32,7 @@ public abstract class GuiIconToggleButton implements IMouseHandler {
 		});
 		this.hoverChecker = new HoverChecker();
 		this.hoverChecker.updateBounds(this.button);
+		this.mouseHandler = new MouseHandler();
 	}
 
 	public void updateBounds(Rectangle2d area) {
@@ -47,11 +53,8 @@ public abstract class GuiIconToggleButton implements IMouseHandler {
 		return this.hoverChecker.checkHover(mouseX, mouseY);
 	}
 
-	@Override
-	public final boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
-		return this.isMouseOver(mouseX, mouseY) &&
-			button.handleMouseClicked(mouseX, mouseY, mouseButton, doClick) &&
-			onMouseClicked(mouseX, mouseY, mouseButton, doClick);
+	public IMouseHandler getMouseHandler() {
+		return this.mouseHandler;
 	}
 
 	public final void drawTooltips(MatrixStack matrixStack, int mouseX, int mouseY) {
@@ -66,5 +69,22 @@ public abstract class GuiIconToggleButton implements IMouseHandler {
 
 	protected abstract boolean isIconToggledOn();
 
-	protected abstract boolean onMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick);
+	protected abstract boolean onMouseClicked(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState);
+
+	private class MouseHandler implements IMouseHandler {
+		@Override
+		@Nullable
+		public final IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
+			if (isMouseOver(mouseX, mouseY)) {
+				IMouseHandler mouseHandler = button.getMouseHandler();
+				IMouseHandler handled = mouseHandler.handleClick(screen, mouseX, mouseY, mouseButton, clickState);
+				if (handled != null) {
+					if (onMouseClicked(screen, mouseX, mouseY, mouseButton, clickState)) {
+						return this;
+					}
+				}
+			}
+			return null;
+		}
+	}
 }

@@ -6,7 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.input.click.MouseClickState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.renderer.Rectangle2d;
 
@@ -20,7 +22,7 @@ import mezz.jei.gui.overlay.IIngredientGridSource;
 import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.glfw.GLFW;
 
-public class GuiTextFieldFilter extends TextFieldWidget implements IMouseHandler {
+public class GuiTextFieldFilter extends TextFieldWidget {
 	private static final int MAX_HISTORY = 100;
 	private static final int maxSearchLength = 128;
 	private static final List<String> history = new LinkedList<>();
@@ -28,6 +30,7 @@ public class GuiTextFieldFilter extends TextFieldWidget implements IMouseHandler
 	private final HoverChecker hoverChecker;
 	private final IIngredientGridSource ingredientSource;
 	private final IWorldConfig worldConfig;
+	private final IMouseHandler mouseHandler;
 	private boolean previousKeyboardRepeatEnabled;
 
 	private final DrawableNineSliceTexture background;
@@ -42,6 +45,7 @@ public class GuiTextFieldFilter extends TextFieldWidget implements IMouseHandler
 		this.ingredientSource = ingredientSource;
 
 		this.background = Internal.getTextures().getSearchBackground();
+		this.mouseHandler = new MouseHandler();
 	}
 
 	public void updateBounds(Rectangle2d area) {
@@ -110,24 +114,8 @@ public class GuiTextFieldFilter extends TextFieldWidget implements IMouseHandler
 		return hoverChecker.checkHover(mouseX, mouseY);
 	}
 
-	@Override
-	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
-		if (!isMouseOver(mouseX, mouseY)) {
-			return false;
-		}
-		if (mouseButton == 1) {
-			if (doClick) {
-				setText("");
-				return worldConfig.setFilterText("");
-			} else {
-				return true;
-			}
-		}
-		if (doClick) {
-			return super.mouseClicked(mouseX, mouseY, mouseButton);
-		} else {
-			return true; // can't easily simulate the click, just say we could handle it
-		}
+	public IMouseHandler getMouseHandler() {
+		return mouseHandler;
 	}
 
 	@Override
@@ -184,4 +172,37 @@ public class GuiTextFieldFilter extends TextFieldWidget implements IMouseHandler
 		this.isDrawing = false;
 	}
 	// end background hack
+
+	private class MouseHandler implements IMouseHandler {
+		@Override
+		public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
+			if (!isMouseOver(mouseX, mouseY)) {
+				return null;
+			}
+			if (mouseButton == 1) {
+				if (!clickState.isSimulate()) {
+					setText("");
+					if (worldConfig.setFilterText("")) {
+						return this;
+					}
+					return null;
+				} else {
+					return this;
+				}
+			}
+			if (!clickState.isSimulate()) {
+				if (GuiTextFieldFilter.super.mouseClicked(mouseX, mouseY, mouseButton)) {
+					return this;
+				}
+				return null;
+			} else {
+				return this; // can't easily simulate the click, just say we could handle it
+			}
+		}
+
+		@Override
+		public void handleMouseClickedOut(int mouseButton) {
+			setFocused(false);
+		}
+	}
 }

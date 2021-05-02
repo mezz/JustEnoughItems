@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import mezz.jei.input.CombinedMouseHandler;
 import mezz.jei.util.Rectangle2dBuilder;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
@@ -37,17 +38,18 @@ import net.minecraft.util.Tuple;
 /**
  * Displays a list of ingredients with navigation at the top.
  */
-public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouseHandler, IGhostIngredientDragSource {
+public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhostIngredientDragSource {
 	private static final int NAVIGATION_HEIGHT = 20;
 
 	private int firstItemIndex = 0;
-	private final IPaged pageDelegate;
+	private final IngredientGridPaged pageDelegate;
 	private final PageNavigation navigation;
 	private final GuiScreenHelper guiScreenHelper;
 	private final IFilterTextSource filterTextSource;
 	private final IWorldConfig worldConfig;
 	private final IngredientGrid ingredientGrid;
 	private final IIngredientGridSource ingredientSource;
+	private final IMouseHandler mouseHandler;
 	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
 
 	public IngredientGridWithNavigation(
@@ -64,6 +66,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		this.guiScreenHelper = guiScreenHelper;
 		this.pageDelegate = new IngredientGridPaged();
 		this.navigation = new PageNavigation(this.pageDelegate, false);
+		this.mouseHandler = new CombinedMouseHandler(this.pageDelegate, this.ingredientGrid.getMouseHandler(), this.navigation.getMouseHandler());
 	}
 
 	public void updateLayout(boolean resetToFirstPage) {
@@ -118,23 +121,8 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 			!guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
 	}
 
-	@Override
-	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
-		return isMouseOver(mouseX, mouseY) &&
-			(this.ingredientGrid.handleMouseClicked(mouseX, mouseY, mouseButton, doClick) ||
-				this.navigation.handleMouseClicked(mouseX, mouseY, mouseButton, doClick));
-	}
-
-	@Override
-	public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
-		if (scrollDelta < 0) {
-			this.pageDelegate.nextPage();
-			return true;
-		} else if (scrollDelta > 0) {
-			this.pageDelegate.previousPage();
-			return true;
-		}
-		return false;
+	public IMouseHandler getMouseHandler() {
+		return mouseHandler;
 	}
 
 	public boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
@@ -168,7 +156,6 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 							if (!itemStack.isEmpty()) {
 								CommandUtil.setHotbarStack(itemStack, hotbarSlot);
 							}
-							ingredientUnderMouse.onClickHandled();
 						}
 						return true;
 					}
@@ -185,7 +172,6 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 	}
 
 	@Nullable
-	@Override
 	public IIngredientListElement<?> getElementUnderMouse() {
 		return this.ingredientGrid.getElementUnderMouse();
 	}
@@ -206,7 +192,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		return visibleElements;
 	}
 
-	private class IngredientGridPaged implements IPaged {
+	private class IngredientGridPaged implements IPaged, IMouseHandler {
 		@Override
 		public boolean nextPage() {
 			String filterText = filterTextSource.getFilterText();
@@ -288,6 +274,21 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 				return 0;
 			}
 			return firstItemIndex / stacksPerPage;
+		}
+
+		@Override
+		public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
+			if (!isMouseOver(mouseX, mouseY)) {
+				return false;
+			}
+			if (scrollDelta < 0) {
+				this.nextPage();
+				return true;
+			} else if (scrollDelta > 0) {
+				this.previousPage();
+				return true;
+			}
+			return false;
 		}
 	}
 }

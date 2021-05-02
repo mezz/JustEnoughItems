@@ -2,6 +2,8 @@ package mezz.jei.gui.overlay.bookmarks;
 
 import java.util.List;
 
+import mezz.jei.input.click.MouseClickState;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -56,9 +58,9 @@ public class BookmarkButton extends GuiIconToggleButton {
 	}
 
 	@Override
-	protected boolean onMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
+	protected boolean onMouseClicked(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
 		if (!bookmarkList.isEmpty() && bookmarkOverlay.hasRoom()) {
-			if (doClick) {
+			if (!clickState.isSimulate()) {
 				worldConfig.toggleBookmarkEnabled();
 			}
 			return true;

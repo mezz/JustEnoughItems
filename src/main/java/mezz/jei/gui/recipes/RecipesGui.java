@@ -23,8 +23,10 @@ import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
+import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.MouseUtil;
+import mezz.jei.input.click.MouseClickState;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.transfer.RecipeTransferUtil;
@@ -42,9 +44,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.ITextProperties;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
@@ -343,7 +343,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 			}
 		}
 
-		if (recipeGuiTabs.handleMouseClicked(mouseX, mouseY, mouseButton, true)) {
+		IMouseHandler mouseHandler = recipeGuiTabs.getMouseHandler();
+		IMouseHandler mouseHandled = mouseHandler.handleClick(this, mouseX, mouseY, mouseButton, MouseClickState.VANILLA);
+		if (mouseHandled != null) {
 			return true;
 		}
 

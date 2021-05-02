@@ -4,7 +4,9 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.input.IMouseHandler;
+import mezz.jei.input.click.MouseClickState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.Rectangle2d;
 
@@ -16,12 +18,14 @@ import net.minecraft.util.text.StringTextComponent;
 /**
  * A gui button that has an {@link IDrawable} instead of a string label.
  */
-public class GuiIconButton extends Button implements IMouseHandler {
+public class GuiIconButton extends Button {
 	private final IDrawable icon;
+	private final MouseHandler mouseHandler;
 
 	public GuiIconButton(IDrawable icon, IPressable pressable) {
 		super(0, 0, 0, 0, StringTextComponent.EMPTY, pressable);
 		this.icon = icon;
+		this.mouseHandler = new MouseHandler(this);
 	}
 
 	public void updateBounds(Rectangle2d area) {
@@ -31,6 +35,7 @@ public class GuiIconButton extends Button implements IMouseHandler {
 		this.height = area.getHeight();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		if (this.visible) {
@@ -73,22 +78,34 @@ public class GuiIconButton extends Button implements IMouseHandler {
 		}
 	}
 
-	@Override
-	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
-		if (!this.active || !this.visible || !isMouseOver(mouseX, mouseY)) {
-			return false;
+	public IMouseHandler getMouseHandler() {
+		return mouseHandler;
+	}
+
+	private class MouseHandler implements IMouseHandler {
+		private final GuiIconButton button;
+
+		public MouseHandler(GuiIconButton button) {
+			this.button = button;
 		}
-		if (!this.isValidClickButton(mouseButton)) {
-			return false;
+
+		@Override
+		public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
+			if (!this.button.active || !this.button.visible || !isMouseOver(mouseX, mouseY)) {
+				return null;
+			}
+			if (!this.button.isValidClickButton(mouseButton)) {
+				return null;
+			}
+			boolean flag = this.button.clicked(mouseX, mouseY);
+			if (!flag) {
+				return null;
+			}
+			if (!clickState.isSimulate()) {
+				this.button.playDownSound(Minecraft.getInstance().getSoundHandler());
+				this.button.onClick(mouseX, mouseY);
+			}
+			return this;
 		}
-		boolean flag = this.clicked(mouseX, mouseY);
-		if (!flag) {
-			return false;
-		}
-		if (doClick) {
-			this.playDownSound(Minecraft.getInstance().getSoundHandler());
-			this.onClick(mouseX, mouseY);
-		}
-		return true;
 	}
 }

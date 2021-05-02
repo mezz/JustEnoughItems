@@ -1,6 +1,7 @@
 package mezz.jei.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import mezz.jei.input.CombinedMouseHandler;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
@@ -13,11 +14,12 @@ import mezz.jei.gui.textures.Textures;
 import mezz.jei.input.IPaged;
 import net.minecraft.util.Tuple;
 
-public class PageNavigation implements IMouseHandler {
+public class PageNavigation {
 	private final IPaged paged;
 	private final GuiIconButton nextButton;
 	private final GuiIconButton backButton;
 	private final boolean hideOnSinglePage;
+	private final CombinedMouseHandler mouseHandler;
 	private String pageNumDisplayString = "1/1";
 	private int pageNumDisplayX;
 	private int pageNumDisplayY;
@@ -28,6 +30,7 @@ public class PageNavigation implements IMouseHandler {
 		Textures textures = Internal.getTextures();
 		this.nextButton = new GuiIconButton(textures.getArrowNext(), b -> paged.nextPage());
 		this.backButton = new GuiIconButton(textures.getArrowPrevious(), b -> paged.previousPage());
+		this.mouseHandler = new CombinedMouseHandler(this.nextButton.getMouseHandler(), this.backButton.getMouseHandler());
 		this.hideOnSinglePage = hideOnSinglePage;
 	}
 
@@ -61,9 +64,7 @@ public class PageNavigation implements IMouseHandler {
 		}
 	}
 
-	@Override
-	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
-		return nextButton.handleMouseClicked(mouseX, mouseY, mouseButton, doClick) ||
-			backButton.handleMouseClicked(mouseX, mouseY, mouseButton, doClick);
+	public IMouseHandler getMouseHandler() {
+		return mouseHandler;
 	}
 }

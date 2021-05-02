@@ -1,12 +1,14 @@
 package mezz.jei.input.click;
 
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
-import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.util.MathUtil;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+
+import javax.annotation.Nullable;
 
 public class GuiAreaClickHandler implements IMouseHandler {
 	private final RecipesGui recipesGui;
@@ -20,13 +22,14 @@ public class GuiAreaClickHandler implements IMouseHandler {
 	}
 
 	@Override
-	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
+	@Nullable
+	public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
 		if (!MathUtil.contains(clickableArea.getArea(), mouseX - guiContainer.getGuiLeft(), mouseY - guiContainer.getGuiTop())) {
-			return false;
+			return null;
 		}
-		if (doClick) {
+		if (!clickState.isSimulate()) {
 			clickableArea.onClick(Focus::new, recipesGui);
 		}
-		return true;
+		return this;
 	}
 }

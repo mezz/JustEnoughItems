@@ -5,10 +5,9 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import mezz.jei.input.click.ClickFocusHandler;
 import mezz.jei.input.click.GuiAreaClickHandler;
+import mezz.jei.input.click.MouseClickState;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -50,8 +49,7 @@ public class InputHandler {
 	private final LeftAreaDispatcher leftAreaDispatcher;
 	private final BookmarkList bookmarkList;
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<>();
-	private final Int2ObjectMap<IMouseHandler> mousedDown = new Int2ObjectArrayMap<>();
-	private final List<IMouseHandler> clickHandlers = new ArrayList<>();
+	private final CombinedMouseHandler clickHandlers;
 
 	public InputHandler(
 		RecipesGui recipesGui,
@@ -79,11 +77,14 @@ public class InputHandler {
 		this.showsRecipeFocuses.add(leftAreaDispatcher);
 		this.showsRecipeFocuses.add(new GuiContainerWrapper(guiScreenHelper));
 
-		this.clickHandlers.add(new ClickEditHandler());
-		this.clickHandlers.add(ingredientListOverlay);
-		this.clickHandlers.add(leftAreaDispatcher);
-		this.clickHandlers.add(new ClickFocusHandler(this, recipesGui));
-		this.clickHandlers.add(new ClickGlobalHandler());
+		this.clickHandlers = new CombinedMouseHandler(
+			new ClickEditHandler(),
+			ingredientListOverlay.getMouseHandler(),
+			leftAreaDispatcher.getMouseHandler(),
+			new ClickFocusHandler(this, recipesGui),
+			new ClickGlobalHandler(),
+			new GuiAreaClickHandlerGenerator()
+		);
 	}
 
 	public void registerToEventBus() {
@@ -136,18 +137,12 @@ public class InputHandler {
 	public void onGuiMouseEvent(GuiScreenEvent.MouseClickedEvent.Pre event) {
 		int mouseButton = event.getButton();
 		if (mouseButton > -1) {
-			if (!mousedDown.containsKey(mouseButton)) {
-				double mouseX = event.getMouseX();
-				double mouseY = event.getMouseY();
-				IMouseHandler handler = canHandleMouseClicked(event.getGui(), mouseButton, mouseX, mouseY);
-				if (handler != null) {
-					mousedDown.put(mouseButton, handler);
-					event.setCanceled(true);
-				} else {
-					if (handleMouseDrag(mouseButton, mouseX, mouseY)) {
-						event.setCanceled(true);
-					}
-				}
+			Screen screen = event.getGui();
+			double mouseX = event.getMouseX();
+			double mouseY = event.getMouseY();
+			IMouseHandler handler = this.clickHandlers.handleClick(screen, mouseX, mouseY, mouseButton, MouseClickState.SIMULATE);
+			if (handler != null) {
+				event.setCanceled(true);
 			}
 		}
 	}
@@ -155,11 +150,9 @@ public class InputHandler {
 	public void onGuiMouseEvent(GuiScreenEvent.MouseReleasedEvent.Pre event) {
 		int mouseButton = event.getButton();
 		if (mouseButton > -1) {
-			IMouseHandler handler = mousedDown.remove(mouseButton);
-			if (handler != null) {
-				if (handler.handleMouseClicked(event.getMouseX(), event.getMouseY(), mouseButton, true)) {
-					event.setCanceled(true);
-				}
+			IMouseHandler handled = this.clickHandlers.handleClick(event.getGui(), event.getMouseX(), event.getMouseY(), mouseButton, MouseClickState.EXECUTE);
+			if (handled != null) {
+				event.setCanceled(true);
 			}
 		}
 	}
@@ -168,33 +161,11 @@ public class InputHandler {
 		double dWheel = event.getScrollDelta();
 		double mouseX = event.getMouseX();
 		double mouseY = event.getMouseY();
-		if (ingredientListOverlay.handleMouseScrolled(mouseX, mouseY, dWheel) ||
+		IMouseHandler overlayMouseHandler = ingredientListOverlay.getMouseHandler();
+		if (overlayMouseHandler.handleMouseScrolled(mouseX, mouseY, dWheel) ||
 			leftAreaDispatcher.handleMouseScrolled(mouseX, mouseY, dWheel)) {
 			event.setCanceled(true);
 		}
-	}
-
-	private boolean handleMouseDrag(int mouseButton, double mouseX, double mouseY) {
-		return ingredientListOverlay.handleMouseDragStart(mouseX, mouseY, mouseButton);
-	}
-
-	@Nullable
-	private IMouseHandler canHandleMouseClicked(Screen guiScreen, int mouseButton, double mouseX, double mouseY) {
-		for (IMouseHandler clickHandler : this.clickHandlers) {
-			if (clickHandler.handleMouseClicked(mouseX, mouseY, mouseButton, false)) {
-				return clickHandler;
-			}
-		}
-
-		if (guiScreen instanceof ContainerScreen) {
-			ContainerScreen<?> guiContainer = (ContainerScreen<?>) guiScreen;
-			IGuiClickableArea clickableArea = guiScreenHelper.getGuiClickableArea(guiContainer, mouseX - guiContainer.getGuiLeft(), mouseY - guiContainer.getGuiTop());
-			if (clickableArea != null) {
-				return new GuiAreaClickHandler(recipesGui, clickableArea, guiContainer);
-			}
-		}
-
-		return null;
 	}
 
 	@Nullable
@@ -223,20 +194,21 @@ public class InputHandler {
 
 	public class ClickEditHandler implements IMouseHandler {
 		@Override
-		public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
-			if (worldConfig.isEditModeEnabled()) {
-				IClickedIngredient<?> clicked = getFocusUnderMouseForClick(mouseX, mouseY);
-				if (clicked != null) {
-					if (doClick) {
-						handleMouseClicked(clicked);
-					}
-					return true;
-				}
+		public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
+			if (!worldConfig.isEditModeEnabled()) {
+				return null;
 			}
-			return false;
+			IClickedIngredient<?> clicked = getFocusUnderMouseForClick(mouseX, mouseY);
+			if (clicked == null) {
+				return null;
+			}
+			if (!clickState.isSimulate()) {
+				handler(clicked);
+			}
+			return this;
 		}
 
-		private <V> void handleMouseClicked(IClickedIngredient<V> clicked) {
+		private <V> void handler(IClickedIngredient<V> clicked) {
 			V ingredient = clicked.getValue();
 			IngredientBlacklistType blacklistType = Screen.hasControlDown() ? IngredientBlacklistType.WILDCARD : IngredientBlacklistType.ITEM;
 
@@ -252,15 +224,32 @@ public class InputHandler {
 					editModeConfig.addIngredientToConfigBlacklist(ingredientFilter, ingredientManager, ingredient, blacklistType, ingredientHelper);
 				}
 			}
-			clicked.onClickHandled();
 		}
 	}
 
 	public class ClickGlobalHandler implements IMouseHandler {
 		@Override
-		public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
+		public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
 			InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
-			return handleGlobalKeybinds(input, doClick);
+			if (handleGlobalKeybinds(input, clickState)) {
+				return this;
+			}
+			return null;
+		}
+	}
+
+	public class GuiAreaClickHandlerGenerator implements IMouseHandler {
+		@Nullable
+		@Override
+		public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
+			if (screen instanceof ContainerScreen) {
+				ContainerScreen<?> guiContainer = (ContainerScreen<?>) screen;
+				IGuiClickableArea clickableArea = guiScreenHelper.getGuiClickableArea(guiContainer, mouseX - guiContainer.getGuiLeft(), mouseY - guiContainer.getGuiTop());
+				if (clickableArea != null) {
+					return new GuiAreaClickHandler(recipesGui, clickableArea, guiContainer);
+				}
+			}
+			return null;
 		}
 	}
 
@@ -283,13 +272,14 @@ public class InputHandler {
 			}
 		}
 
-		if (handleGlobalKeybinds(input, true)) {
+		if (handleGlobalKeybinds(input, MouseClickState.VANILLA)) {
 			return true;
 		}
 
 		if (!isContainerTextFieldFocused() && !ingredientListOverlay.hasKeyboardFocus()) {
 			IClickedIngredient<?> clicked = getIngredientUnderMouseForKey(MouseUtil.getX(), MouseUtil.getY());
-			if (clicked != null && handleFocusKeybinds(clicked, input, true)) {
+			if (clicked != null && handleFocusKeybinds(clicked, input, MouseClickState.VANILLA)) {
+				ingredientListOverlay.clearKeyboardFocus();
 				return true;
 			}
 			return ingredientListOverlay.onKeyPressed(keyCode, scanCode, modifiers);
@@ -298,46 +288,45 @@ public class InputHandler {
 		return false;
 	}
 
-	private boolean handleGlobalKeybinds(InputMappings.Input input, boolean doClick) {
+	private boolean handleGlobalKeybinds(InputMappings.Input input, MouseClickState clickState) {
 		if (KeyBindings.toggleOverlay.isActiveAndMatches(input)) {
-			if (doClick) {
+			if (!clickState.isSimulate()) {
 				worldConfig.toggleOverlayEnabled();
 			}
 			return true;
 		}
 		if (KeyBindings.toggleBookmarkOverlay.isActiveAndMatches(input)) {
-			if (doClick) {
+			if (!clickState.isSimulate()) {
 				worldConfig.toggleBookmarkEnabled();
 			}
 			return true;
 		}
-		return ingredientListOverlay.onGlobalKeyPressed(input, doClick);
+		return ingredientListOverlay.onGlobalKeyPressed(input, clickState);
 	}
 
-	public boolean handleFocusKeybinds(IClickedIngredient<?> clicked, InputMappings.Input input, boolean doClick) {
+	public boolean handleFocusKeybinds(IClickedIngredient<?> clicked, InputMappings.Input input, MouseClickState clickState) {
 		final boolean showRecipe = KeyBindings.showRecipe.isActiveAndMatches(input);
 		final boolean showUses = KeyBindings.showUses.isActiveAndMatches(input);
-		final boolean bookmark = KeyBindings.bookmark.isActiveAndMatches(input);
-		if (showRecipe || showUses || bookmark) {
-			if (bookmark) {
-				if (doClick) {
-					if (bookmarkList.remove(clicked.getValue())) {
-						if (bookmarkList.isEmpty()) {
-							worldConfig.setBookmarkEnabled(false);
-						}
-						return true;
-					} else {
-						worldConfig.setBookmarkEnabled(true);
-						return bookmarkList.add(clicked.getValue());
+		if (showRecipe || showUses) {
+			if (!clickState.isSimulate()) {
+				IFocus.Mode mode = showRecipe ? IFocus.Mode.OUTPUT : IFocus.Mode.INPUT;
+				recipesGui.show(new Focus<Object>(mode, clicked.getValue()));
+			}
+			this.ingredientListOverlay.clearKeyboardFocus();
+			return true;
+		} else if (KeyBindings.bookmark.isActiveAndMatches(input)) {
+			if (!clickState.isSimulate()) {
+				if (bookmarkList.remove(clicked.getValue())) {
+					if (bookmarkList.isEmpty()) {
+						worldConfig.setBookmarkEnabled(false);
 					}
-				}
-			} else {
-				if (doClick) {
-					IFocus.Mode mode = showRecipe ? IFocus.Mode.OUTPUT : IFocus.Mode.INPUT;
-					recipesGui.show(new Focus<Object>(mode, clicked.getValue()));
-					clicked.onClickHandled();
+					return true;
+				} else {
+					worldConfig.setBookmarkEnabled(true);
+					return bookmarkList.add(clicked.getValue());
 				}
 			}
+			this.ingredientListOverlay.clearKeyboardFocus();
 			return true;
 		}
 		return false;

@@ -6,10 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.input.IMouseHandler;
+import mezz.jei.input.click.MouseClickState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 
@@ -33,16 +36,16 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	}
 
 	@Override
-	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
+	public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
 		if (!isMouseOver(mouseX, mouseY)) {
-			return false;
+			return null;
 		}
-		if (doClick) {
+		if (!clickState.isSimulate()) {
 			logic.setRecipeCategory(category);
 			SoundHandler soundHandler = Minecraft.getInstance().getSoundHandler();
 			soundHandler.play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 		}
-		return true;
+		return this;
 	}
 
 	@SuppressWarnings("deprecation")

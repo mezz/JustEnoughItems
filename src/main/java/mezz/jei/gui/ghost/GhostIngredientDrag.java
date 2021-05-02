@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.input.click.MouseClickState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -116,18 +117,18 @@ public class GhostIngredientDrag<T> {
 		RenderSystem.color4f(1f, 1f, 1f, 1f);
 	}
 
-	public boolean onClick(double mouseX, double mouseY, boolean doClick) {
+	public boolean onClick(double mouseX, double mouseY, MouseClickState clickState) {
 		for (Target<T> target : targets) {
 			Rectangle2d area = target.getArea();
 			if (MathUtil.contains(area, mouseX, mouseY)) {
-				if (doClick) {
+				if (!clickState.isSimulate()) {
 					target.accept(ingredient);
 					handler.onComplete();
 				}
 				return true;
 			}
 		}
-		if (doClick) {
+		if (!clickState.isSimulate()) {
 			handler.onComplete();
 		}
 		return false;

@@ -7,7 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.input.click.MouseClickState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
@@ -16,9 +19,9 @@ import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.GuiScreenHelper;
-import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.IClickedIngredient;
+import net.minecraft.item.ItemStack;
 
 public class GhostIngredientDragManager {
 	private final IGhostIngredientDragSource source;
@@ -59,8 +62,8 @@ public class GhostIngredientDragManager {
 		if (this.ghostIngredientDrag != null) {
 			this.ghostIngredientDrag.drawTargets(matrixStack, mouseX, mouseY);
 		} else {
-			IIngredientListElement<?> elementUnderMouse = this.source.getElementUnderMouse();
-			Object hovered = elementUnderMouse == null ? null : elementUnderMouse.getIngredient();
+			IClickedIngredient<?> elementUnderMouse = this.source.getIngredientUnderMouse(mouseX, mouseY);
+			Object hovered = elementUnderMouse == null ? null : elementUnderMouse.getValue();
 			if (!Objects.equals(hovered, this.hoveredIngredient)) {
 				this.hoveredIngredient = hovered;
 				this.hoveredIngredientTargets = null;
@@ -78,20 +81,36 @@ public class GhostIngredientDragManager {
 		}
 	}
 
-	public boolean handleMouseClicked(double mouseX, double mouseY, boolean doClick) {
-		if (this.ghostIngredientDrag != null) {
-			boolean success = this.ghostIngredientDrag.onClick(mouseX, mouseY, doClick);
-			if (doClick) {
+	public boolean handleMouseClicked(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
+		if (clickState.isSimulate()) {
+			if (screen instanceof RecipesGui || mouseButton != 0) {
+				return false;
+			}
+			IClickedIngredient<?> clicked = this.source.getIngredientUnderMouse(mouseX, mouseY);
+			if (clicked == null) {
+				return false;
+			}
+			Minecraft minecraft = Minecraft.getInstance();
+			ClientPlayerEntity player = minecraft.player;
+			if (player == null) {
+				return false;
+			}
+			ItemStack mouseItem = player.inventory.getItemStack();
+			return mouseItem.isEmpty() &&
+				handleClickGhostIngredient(screen, clicked, mouseX, mouseY);
+		} else {
+			if (this.ghostIngredientDrag != null) {
+				boolean success = this.ghostIngredientDrag.onClick(mouseX, mouseY, clickState);
 				if (!success) {
 					GhostIngredientReturning<?> returning = GhostIngredientReturning.create(this.ghostIngredientDrag, mouseX, mouseY);
 					this.ghostIngredientsReturning.add(returning);
 				}
 				this.ghostIngredientDrag = null;
 				this.hoveredIngredientTargets = null;
+				return success;
 			}
-			return success;
+			return false;
 		}
-		return false;
 	}
 
 	public void stopDrag() {
@@ -102,19 +121,19 @@ public class GhostIngredientDragManager {
 		}
 	}
 
-	public <T extends Screen, V> boolean handleClickGhostIngredient(T currentScreen, IClickedIngredient<V> clicked, double mouseX, double mouseY) {
+	private <T extends Screen, V> boolean handleClickGhostIngredient(T currentScreen, IClickedIngredient<V> clicked, double mouseX, double mouseY) {
 		IGhostIngredientHandler<T> handler = guiScreenHelper.getGhostIngredientHandler(currentScreen);
-		if (handler != null) {
-			V ingredient = clicked.getValue();
-			List<IGhostIngredientHandler.Target<V>> targets = handler.getTargets(currentScreen, ingredient, true);
-			if (!targets.isEmpty()) {
-				IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
-				Rectangle2d clickedArea = clicked.getArea();
-				this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, mouseX, mouseY, clickedArea);
-				clicked.onClickHandled();
-				return true;
-			}
+		if (handler == null) {
+			return false;
 		}
-		return false;
+		V ingredient = clicked.getValue();
+		List<IGhostIngredientHandler.Target<V>> targets = handler.getTargets(currentScreen, ingredient, true);
+		if (targets.isEmpty()) {
+			return false;
+		}
+		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
+		Rectangle2d clickedArea = clicked.getArea();
+		this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, mouseX, mouseY, clickedArea);
+		return true;
 	}
 }

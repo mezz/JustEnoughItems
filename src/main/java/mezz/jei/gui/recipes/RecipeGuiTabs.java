@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.input.CombinedMouseHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rectangle2d;
 
@@ -21,10 +22,11 @@ import net.minecraft.util.text.ITextComponent;
 /**
  * The area drawn on top and bottom of the {@link RecipesGui} that show the recipe categories.
  */
-public class RecipeGuiTabs implements IMouseHandler, IPaged {
+public class RecipeGuiTabs implements IPaged {
 	private final IRecipeGuiLogic recipeGuiLogic;
 	private final List<RecipeGuiTab> tabs = new ArrayList<>();
 	private final PageNavigation pageNavigation;
+	private IMouseHandler mouseHandler;
 	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
 
 	private int pageCount = 1;
@@ -34,6 +36,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 	public RecipeGuiTabs(IRecipeGuiLogic recipeGuiLogic) {
 		this.recipeGuiLogic = recipeGuiLogic;
 		this.pageNavigation = new PageNavigation(this, true);
+		this.mouseHandler = this.pageNavigation.getMouseHandler();
 	}
 
 	public void initLayout(RecipesGui recipesGui) {
@@ -80,6 +83,7 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 
 	private void updateLayout() {
 		tabs.clear();
+		List<IMouseHandler> mouseHandlers = new ArrayList<>();
 
 		ImmutableList<IRecipeCategory<?>> categories = recipeGuiLogic.getRecipeCategories();
 
@@ -94,8 +98,12 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 			IRecipeCategory<?> category = categories.get(index);
 			RecipeGuiTab tab = new RecipeCategoryTab(recipeGuiLogic, category, tabX, area.getY());
 			this.tabs.add(tab);
+			mouseHandlers.add(tab);
 			tabX += RecipeGuiTab.TAB_WIDTH;
 		}
+
+		mouseHandlers.add(this.pageNavigation.getMouseHandler());
+		this.mouseHandler = new CombinedMouseHandler(mouseHandlers);
 
 		pageNavigation.updatePageState();
 	}
@@ -130,20 +138,8 @@ public class RecipeGuiTabs implements IMouseHandler, IPaged {
 		}
 	}
 
-	@Override
-	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
-		if (mouseButton == 0) {
-			if (MathUtil.contains(area, mouseX, mouseY) ) {
-				for (RecipeGuiTab tab : tabs) {
-					if (tab.isMouseOver(mouseX, mouseY)) {
-						tab.handleMouseClicked(mouseX, mouseY, mouseButton, doClick);
-						return true;
-					}
-				}
-			}
-			return pageNavigation.handleMouseClicked(mouseX, mouseY, mouseButton, doClick);
-		}
-		return false;
+	public IMouseHandler getMouseHandler() {
+		return this.mouseHandler;
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import mezz.jei.input.IMouseHandler;
+import mezz.jei.input.click.MouseClickState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.Rectangle2d;
@@ -21,13 +22,14 @@ import mezz.jei.input.IPaged;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.util.MathUtil;
 
-public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged, IMouseHandler {
+public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 
 	private static final int BORDER_PADDING = 2;
 	private static final int NAVIGATION_HEIGHT = 20;
 
 	private final List<ILeftAreaContent> contents = new ArrayList<>();
 	private final GuiScreenHelper guiScreenHelper;
+	private final MouseHandler mouseHandler;
 	private int current = 0;
 	@Nullable
 	private IGuiProperties guiProperties;
@@ -39,6 +41,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged, IMouseHa
 	public LeftAreaDispatcher(GuiScreenHelper guiScreenHelper) {
 		this.guiScreenHelper = guiScreenHelper;
 		this.navigation = new PageNavigation(this, false);
+		this.mouseHandler = new MouseHandler();
 	}
 
 	public void addContent(ILeftAreaContent content) {
@@ -77,10 +80,8 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged, IMouseHa
 					guiProperties = currentGuiProperties;
 					makeDisplayArea(guiProperties);
 					content.updateBounds(displayArea, guiExclusionAreas);
-					canShow = true;
-				} else {
-					canShow = true;
 				}
+				canShow = true;
 			}
 		}
 	}
@@ -130,7 +131,9 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged, IMouseHa
 	public boolean handleMouseScrolled(double mouseX, double mouseY, double dWheel) {
 		if (canShow && hasContent()) {
 			if (MathUtil.contains(displayArea, mouseX, mouseY)) {
-				return contents.get(current).handleMouseScrolled(mouseX, mouseY, dWheel);
+				ILeftAreaContent content = contents.get(current);
+				IMouseHandler mouseHandler = content.getMouseHandler();
+				return mouseHandler.handleMouseScrolled(mouseX, mouseY, dWheel);
 			} else if (MathUtil.contains(naviArea, mouseX, mouseY)) {
 				if (dWheel < 0) {
 					nextPage();
@@ -146,18 +149,6 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged, IMouseHa
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return MathUtil.contains(displayArea, mouseX, mouseY) ||
 			MathUtil.contains(naviArea, mouseX, mouseY);
-	}
-
-	@Override
-	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
-		if (canShow && hasContent()) {
-			if (MathUtil.contains(displayArea, mouseX, mouseY)) {
-				return contents.get(current).handleMouseClicked(mouseX, mouseY, mouseButton, doClick);
-			} else if (MathUtil.contains(naviArea, mouseX, mouseY)) {
-				return navigation.handleMouseClicked(mouseX, mouseY, mouseButton, doClick);
-			}
-		}
-		return false;
 	}
 
 	@Override
@@ -200,4 +191,24 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged, IMouseHa
 		return current;
 	}
 
+	public IMouseHandler getMouseHandler() {
+		return mouseHandler;
+	}
+
+	private class MouseHandler implements IMouseHandler {
+		@Override
+		public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
+			if (canShow && hasContent()) {
+				if (MathUtil.contains(displayArea, mouseX, mouseY)) {
+					ILeftAreaContent areaContent = contents.get(current);
+					IMouseHandler mouseHandler = areaContent.getMouseHandler();
+					return mouseHandler.handleClick(screen, mouseX, mouseY, mouseButton, clickState);
+				} else if (MathUtil.contains(naviArea, mouseX, mouseY)) {
+					IMouseHandler mouseHandler = navigation.getMouseHandler();
+					return mouseHandler.handleClick(screen, mouseX, mouseY, mouseButton, clickState);
+				}
+			}
+			return null;
+		}
+	}
 }

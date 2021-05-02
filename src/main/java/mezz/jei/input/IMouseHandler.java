@@ -1,11 +1,21 @@
 package mezz.jei.input;
 
+import mezz.jei.input.click.MouseClickState;
+import net.minecraft.client.gui.screen.Screen;
+
+import javax.annotation.Nullable;
+
 public interface IMouseHandler {
+	@Nullable
+	default IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
+		return null;
+	}
 
-	boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick);
+	/**
+	 * Called when a mouse is clicked but was handled by some other mouse handler.
+	 */
+	default void handleMouseClickedOut(int mouseButton) {
 
-	default boolean handleMouseDragStart(double mouseX, double mouseY, int mouseButton) {
-		return false;
 	}
 
 	default boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {

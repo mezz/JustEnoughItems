@@ -13,7 +13,9 @@ import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.input.IClickedIngredient;
+import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
+import mezz.jei.input.click.MouseClickState;
 import mezz.jei.util.CommandUtil;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
@@ -44,6 +46,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 	private final BookmarkList bookmarkList;
 	private final IClientConfig clientConfig;
 	private final IWorldConfig worldConfig;
+	private final IMouseHandler mouseHandler;
 
 	public BookmarkOverlay(BookmarkList bookmarkList, Textures textures, IngredientGridWithNavigation contents, IClientConfig clientConfig, IWorldConfig worldConfig) {
 		this.bookmarkList = bookmarkList;
@@ -51,6 +54,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 		this.worldConfig = worldConfig;
 		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, textures, worldConfig);
 		this.contents = contents;
+		this.mouseHandler = new MouseHandler();
 		bookmarkList.addListener(() -> contents.updateLayout(false));
 	}
 
@@ -139,54 +143,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 		return this.isListDisplayed() && this.contents.canSetFocusWithMouse();
 	}
 
-	@Override
-	public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
-		return isListDisplayed() &&
-			this.contents.isMouseOver(mouseX, mouseY) &&
-			this.contents.handleMouseScrolled(mouseX, mouseY, scrollDelta);
-	}
 
-	@Override
-	public boolean handleMouseClicked(double mouseX, double mouseY, int mouseButton, boolean doClick) {
-		if (isListDisplayed()) {
-			if (MathUtil.contains(displayArea, mouseX, mouseY)) {
-				if (handleCheatItemClick(mouseX, mouseY, mouseButton, doClick)) {
-					return true;
-				}
-			}
-			if (contents.isMouseOver(mouseX, mouseY)) {
-				this.contents.handleMouseClicked(mouseX, mouseY, mouseButton, doClick);
-			}
-		}
-		if (bookmarkButton.isMouseOver(mouseX, mouseY)) {
-			return bookmarkButton.handleMouseClicked(mouseX, mouseY, mouseButton, doClick);
-		}
-		return false;
-	}
-
-	private boolean handleCheatItemClick(double mouseX, double mouseY, int mouseButton, boolean doClick) {
-		Minecraft minecraft = Minecraft.getInstance();
-		Screen currentScreen = minecraft.currentScreen;
-		InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
-		if (currentScreen != null &&
-			!(currentScreen instanceof RecipesGui) &&
-			(mouseButton == GLFW.GLFW_MOUSE_BUTTON_1 || mouseButton == GLFW.GLFW_MOUSE_BUTTON_2 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(input))) {
-			IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
-			if (clicked != null) {
-				if (worldConfig.isCheatItemsEnabled()) {
-					if (doClick) {
-						ItemStack itemStack = clicked.getCheatItemStack();
-						if (!itemStack.isEmpty()) {
-							CommandUtil.giveStack(itemStack, input, this.clientConfig);
-						}
-						clicked.onClickHandled();
-					}
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 
 	@Nullable
 	@Override
@@ -198,5 +155,60 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public IMouseHandler getMouseHandler() {
+		return this.mouseHandler;
+	}
+
+	private class MouseHandler implements IMouseHandler {
+		@Override
+		public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
+			if (!isListDisplayed()) {
+				return false;
+			}
+			IMouseHandler mouseHandler = contents.getMouseHandler();
+			return mouseHandler.handleMouseScrolled(mouseX, mouseY, scrollDelta);
+		}
+
+		@Override
+		public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
+			if (isListDisplayed()) {
+				if (MathUtil.contains(displayArea, mouseX, mouseY)) {
+					if (handleCheatItemClick(screen, mouseX, mouseY, mouseButton, clickState)) {
+						return this;
+					}
+				}
+				if (contents.isMouseOver(mouseX, mouseY)) {
+					return contents.getMouseHandler().handleClick(screen, mouseX, mouseY, mouseButton, clickState);
+				}
+			}
+			if (bookmarkButton.isMouseOver(mouseX, mouseY)) {
+				return bookmarkButton.getMouseHandler().handleClick(screen, mouseX, mouseY, mouseButton, clickState);
+			}
+			return null;
+		}
+
+		private boolean handleCheatItemClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
+			Minecraft minecraft = Minecraft.getInstance();
+			InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
+			if (!(screen instanceof RecipesGui) &&
+				(mouseButton == GLFW.GLFW_MOUSE_BUTTON_1 || mouseButton == GLFW.GLFW_MOUSE_BUTTON_2 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(input))) {
+				IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
+				if (clicked != null) {
+					if (worldConfig.isCheatItemsEnabled()) {
+						if (!clickState.isSimulate()) {
+							ItemStack itemStack = clicked.getCheatItemStack();
+							if (!itemStack.isEmpty()) {
+								CommandUtil.giveStack(itemStack, input, clientConfig);
+							}
+						}
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 	}
 }
