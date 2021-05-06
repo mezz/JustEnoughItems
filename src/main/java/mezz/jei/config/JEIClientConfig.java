@@ -1,7 +1,7 @@
 package mezz.jei.config;
 
-import com.feed_the_beast.mods.ftbguilibrary.config.ConfigGroup;
-import com.feed_the_beast.mods.ftbguilibrary.config.gui.GuiEditConfig;
+import dev.ftb.mods.ftblibrary.config.ConfigGroup;
+import dev.ftb.mods.ftblibrary.config.ui.EditConfigScreen;
 import mezz.jei.api.constants.ModIds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
@@ -24,7 +24,7 @@ public class JEIClientConfig {
 	public static final ModIdFormattingConfig modNameFormat = new ModIdFormattingConfig(builder);
 
 	private static final ForgeConfigSpec config = builder.build();
-	private static boolean ftbGUILoaded = false;
+	private static boolean ftbLibraryLoaded = false;
 	private static final String TRANSLATION_KEY = "config." + ModIds.JEI_ID;
 
 	public static void register() {
@@ -34,7 +34,7 @@ public class JEIClientConfig {
 
 	@SubscribeEvent
 	public static void commonSetup(FMLCommonSetupEvent event) {
-		ftbGUILoaded = ModList.get().isLoaded("ftbguilibrary");
+		ftbLibraryLoaded = ModList.get().isLoaded("ftblibrary");
 	}
 
 	@SubscribeEvent
@@ -54,14 +54,14 @@ public class JEIClientConfig {
 			return;
 		}
 
-		if (ftbGUILoaded) {
+		if (ftbLibraryLoaded) {
 			ConfigGroup group = new ConfigGroup(TRANSLATION_KEY);
 
 			clientConfig.buildSettingsGUI(group);
 			filterConfig.buildSettingsGUI(group);
 			modNameFormat.buildSettingsGUI(group);
 
-			GuiEditConfig gui = new GuiEditConfig(group);
+			EditConfigScreen gui = new EditConfigScreen(group);
 			group.savedCallback = b -> {
 				if (b) {
 					config.save();
@@ -70,8 +70,8 @@ public class JEIClientConfig {
 			};
 			gui.openGui();
 		} else {
-			mc.player.sendStatusMessage(new TranslationTextComponent(ModIds.JEI_ID + ".message.ftbguilib")
-				.setStyle(Style.EMPTY.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/ftb-gui-library"))), false);
+			mc.player.sendStatusMessage(new TranslationTextComponent(ModIds.JEI_ID + ".message.ftbguilib") // TODO: Change language key/value to exclude 'GUI'
+				.setStyle(Style.EMPTY.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/ftb-library-forge"))), false);
 		}
 	}
 }
