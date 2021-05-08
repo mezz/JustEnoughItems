@@ -70,7 +70,7 @@ public class JEIClientConfig {
 			};
 			gui.openGui();
 		} else {
-			mc.player.sendStatusMessage(new TranslationTextComponent(ModIds.JEI_ID + ".message.ftbguilib") // TODO: Change language key/value to exclude 'GUI'
+			mc.player.sendStatusMessage(new TranslationTextComponent(ModIds.JEI_ID + ".message.ftblibrary")
 				.setStyle(Style.EMPTY.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/ftb-library-forge"))), false);
 		}
 	}

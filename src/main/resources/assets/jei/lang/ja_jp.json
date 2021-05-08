@@ -127,7 +127,7 @@
   "gui.jei.category.itemInformation": "説明",
 
   "_comment": "Messages",
-  "jei.message.ftbguilib": "FTB GUIライブラリをインストールして、ゲーム内設定にアクセスします",
+  "jei.message.ftblibrary": "FTB ライブラリをインストールして、ゲーム内設定にアクセスします",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",
