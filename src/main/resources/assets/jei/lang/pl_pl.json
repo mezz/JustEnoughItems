@@ -128,7 +128,7 @@
   "gui.jei.category.itemInformation": "Informacja",
 
   "_comment": "Messages",
-  "jei.message.ftbguilib": "Zainstaluj FTB GUI Library, aby uzyskać dostęp do konfiguracji w grze.",
+  "jei.message.ftblibrary": "Zainstaluj FTB Library, aby uzyskać dostęp do konfiguracji w grze.",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",

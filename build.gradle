@@ -61,7 +61,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 repositories {
 	mavenCentral()
-	maven { url 'https://maven.latmod.com/' }
+	maven { url 'https://maven.saps.dev/minecraft/' }
 }
 
 dependencies {
@@ -73,7 +73,7 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.1"
 	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.1"
 
-	compileOnly fg.deobf('com.feed_the_beast.mods:ftb-gui-library:1.0.0.18')
+	compileOnly fg.deobf("dev.ftb.mods:ftb-library-forge:${ftb_library_version}")
 }
 
 task replaceResources(type: Copy) {

@@ -1,7 +1,7 @@
 package mezz.jei.config;
 
-import com.feed_the_beast.mods.ftbguilibrary.config.ConfigGroup;
-import com.feed_the_beast.mods.ftbguilibrary.config.NameMap;
+import dev.ftb.mods.ftblibrary.config.ConfigGroup;
+import dev.ftb.mods.ftblibrary.config.NameMap;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class IngredientFilterConfig implements IIngredientFilterConfig, IJEIConfig {

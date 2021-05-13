@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.feed_the_beast.mods.ftbguilibrary.config.ConfigGroup;
+import dev.ftb.mods.ftblibrary.config.ConfigGroup;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;

@@ -130,7 +130,7 @@
   "gui.jei.category.itemInformation": "Information",
 
   "_comment": "Messages",
-  "jei.message.ftbguilib": "Installera \"FTB GUI Library\" för att få åtkomst till konfigurationen i spelet",
+  "jei.message.ftblibrary": "Installera \"FTB Library\" för att få åtkomst till konfigurationen i spelet",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",
