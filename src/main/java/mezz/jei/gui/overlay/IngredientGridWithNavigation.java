@@ -94,7 +94,11 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 			.collect(Collectors.toList());
 
 		final int maxWidth = this.ingredientGrid.maxWidth();
-		Size2i maxContentSize = new Size2i(maxWidth, availableArea.getHeight());
+		final int maxHeight = availableArea.getHeight();
+		if (maxWidth <= 0 || maxHeight <= 0) {
+			return false;
+		}
+		Size2i maxContentSize = new Size2i(maxWidth, maxHeight);
 		availableArea = MathUtil.cropToAvoidIntersection(intersectsNavigationArea, availableArea, maxContentSize);
 		if (MathUtil.contentArea(availableArea, maxContentSize) == 0) {
 			return false;
