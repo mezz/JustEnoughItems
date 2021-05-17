@@ -72,11 +72,15 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		);
 		Rectangle movedNavigationArea = MathUtil.moveDownToAvoidIntersection(guiExclusionAreas, estimatedNavigationArea);
 		int navigationMaxY = movedNavigationArea.y + movedNavigationArea.height;
+		int boundsHeight = availableArea.y + availableArea.height - navigationMaxY;
+		if (availableArea.width <= 0 || boundsHeight <= 0) {
+			return false;
+		}
 		Rectangle boundsWithoutNavigation = new Rectangle(
 			availableArea.x,
 			navigationMaxY,
 			availableArea.width,
-			availableArea.height - navigationMaxY
+			boundsHeight
 		);
 		boolean gridHasRoom = this.ingredientGrid.updateBounds(boundsWithoutNavigation, minWidth, guiExclusionAreas);
 		if (!gridHasRoom) {
