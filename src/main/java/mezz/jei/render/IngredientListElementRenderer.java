@@ -8,7 +8,6 @@ import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraftforge.fml.client.gui.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -89,11 +88,12 @@ public class IngredientListElementRenderer<T> {
 	/**
 	 * Matches the highlight code in {@link ContainerScreen#render(MatrixStack, int, int, float)}
 	 */
+	@SuppressWarnings("deprecation")
 	public void drawHighlight(MatrixStack matrixStack) {
 		RenderSystem.disableLighting();
 		RenderSystem.disableDepthTest();
 		RenderSystem.colorMask(true, true, true, false);
-		GuiUtils.drawGradientRect(matrixStack.getLast().getMatrix(), 0, area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), 0x80FFFFFF, 0x80FFFFFF);
+		AbstractGui.fill(matrixStack, area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), 0x80FFFFFF);
 		RenderSystem.colorMask(true, true, true, true);
 		RenderSystem.enableDepthTest();
 	}
