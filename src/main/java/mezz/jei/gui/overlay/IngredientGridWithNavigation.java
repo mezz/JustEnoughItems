@@ -4,8 +4,10 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import mezz.jei.input.CombinedMouseHandler;
 import mezz.jei.util.Rectangle2dBuilder;
@@ -34,6 +36,7 @@ import mezz.jei.render.IngredientListSlot;
 import mezz.jei.util.CommandUtil;
 import mezz.jei.util.MathUtil;
 import net.minecraft.util.Tuple;
+import net.minecraftforge.common.util.Size2i;
 
 /**
  * Displays a list of ingredients with navigation at the top.
@@ -84,10 +87,21 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 
 	public boolean updateBounds(Rectangle2d availableArea, Set<Rectangle2d> guiExclusionAreas) {
 		Tuple<Rectangle2d, Rectangle2d> result = MathUtil.splitY(availableArea, NAVIGATION_HEIGHT);
-		Rectangle2d estimatedNavigationArea = result.getA();
-		Rectangle2d navigationArea = MathUtil.moveDownToAvoidIntersection(guiExclusionAreas, estimatedNavigationArea);
-		int navigationMaxY = navigationArea.getY() + navigationArea.getHeight();
-		result = MathUtil.splitY(availableArea, navigationMaxY);
+		final Rectangle2d estimatedNavigationArea = result.getA();
+
+		Collection<Rectangle2d> intersectsNavigationArea = guiExclusionAreas.stream()
+			.filter(rectangle2d -> MathUtil.intersects(rectangle2d, estimatedNavigationArea))
+			.collect(Collectors.toList());
+
+		final int maxWidth = this.ingredientGrid.maxWidth();
+		Size2i maxContentSize = new Size2i(maxWidth, availableArea.getHeight());
+		availableArea = MathUtil.cropToAvoidIntersection(intersectsNavigationArea, availableArea, maxContentSize);
+		if (MathUtil.contentArea(availableArea, maxContentSize) == 0) {
+			return false;
+		}
+
+		result = MathUtil.splitY(availableArea, NAVIGATION_HEIGHT);
+		Rectangle2d navigationArea = result.getA();
 		Rectangle2d boundsWithoutNavigation = result.getB();
 		boolean gridHasRoom = this.ingredientGrid.updateBounds(boundsWithoutNavigation, guiExclusionAreas);
 		if (!gridHasRoom) {

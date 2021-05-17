@@ -81,6 +81,13 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		return this.guiIngredientSlots.size();
 	}
 
+	public int maxWidth() {
+		final int columns = this.clientConfig.getMaxColumns();
+		final int ingredientsWidth = columns * INGREDIENT_WIDTH;
+		final int minWidth = ClientConfig.smallestNumColumns * INGREDIENT_WIDTH;
+		return Math.max(ingredientsWidth, minWidth);
+	}
+
 	public boolean updateBounds(Rectangle2d availableArea, Collection<Rectangle2d> exclusionAreas) {
 		final int columns = Math.min(availableArea.getWidth() / INGREDIENT_WIDTH, this.clientConfig.getMaxColumns());
 		final int rows = availableArea.getHeight() / INGREDIENT_HEIGHT;
