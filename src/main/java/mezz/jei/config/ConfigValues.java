@@ -10,7 +10,7 @@ public class ConfigValues {
 	public boolean addBookmarksToFront = true;
 	public GiveMode giveMode = GiveMode.MOUSE_PICKUP;
 	public String modNameFormat = Config.parseFriendlyModNameFormat(Config.defaultModNameFormatFriendly);
-	public int maxColumns = 100;
+	public int maxColumns = 9;
 	public int maxRecipeGuiHeight = 350;
 
 	// search
