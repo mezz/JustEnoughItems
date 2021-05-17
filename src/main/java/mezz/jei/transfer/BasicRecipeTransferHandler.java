@@ -73,7 +73,10 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 		}
 
 		if (inputCount > craftingSlots.size()) {
-			Log.get().error("Recipe Transfer helper {} does not work for container {}", transferHelper.getClass(), container.getClass());
+			Log.get().error("Recipe Transfer helper {} does not work for container {}. " +
+				"{} ingredients are marked as inputs in IRecipeCategory#setRecipe, but there are only {} crafting slots defined for the recipe transfer helper.",
+				transferHelper.getClass(), container.getClass(), inputCount, craftingSlots.size()
+			);
 			return handlerHelper.createInternalError();
 		}
 
