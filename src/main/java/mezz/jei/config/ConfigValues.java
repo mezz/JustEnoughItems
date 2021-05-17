@@ -8,6 +8,6 @@ public class ConfigValues {
 	public boolean centerSearchBarEnabled = false;
 	public boolean lowMemorySlowSearchEnabled = false;
 	public GiveMode giveMode = GiveMode.MOUSE_PICKUP;
-	public int maxColumns = 100;
+	public int maxColumns = 9;
 	public int maxRecipeGuiHeight = 350;
 }
