@@ -205,24 +205,36 @@ public class RecipeManager implements IRecipeManager {
 			List<ResourceLocation> recipeCategoryUids = plugin.getRecipeCategoryUids(focus);
 			for (ResourceLocation recipeCategoryUid : recipeCategoryUids) {
 				if (!allRecipeCategoryUids.contains(recipeCategoryUid)) {
-					RecipeCategoryData<?> recipeCategoryData = recipeCategoriesDataMap.get(recipeCategoryUid);
-					Set<?> hiddenRecipes = recipeCategoryData.getHiddenRecipes();
-					if (!hiddenRecipes.isEmpty()) {
-						IRecipeCategory<?> recipeCategory = getRecipeCategory(recipeCategoryUid);
-						if (recipeCategory != null) {
+					IRecipeCategory<?> recipeCategory = getRecipeCategory(recipeCategoryUid);
+					if (recipeCategory != null) {
+						RecipeCategoryData<?> recipeCategoryData = recipeCategoriesDataMap.get(recipeCategoryUid);
+						Set<?> hiddenRecipes = recipeCategoryData.getHiddenRecipes();
+						if (!hiddenRecipes.isEmpty()) {
 							List<?> recipes = getRecipes(recipeCategory, focus);
 							if (!recipes.isEmpty()) {
 								allRecipeCategoryUids.add(recipeCategoryUid);
 							}
+						} else if (hasRecipes(recipeCategory, focus)) {
+							allRecipeCategoryUids.add(recipeCategoryUid);
 						}
-					} else {
-						allRecipeCategoryUids.add(recipeCategoryUid);
 					}
 				}
 			}
 		}
 
 		return getRecipeCategories(allRecipeCategoryUids);
+	}
+
+	private boolean hasRecipes(IRecipeCategory<?> recipeCategory, IFocus<?> focus) {
+		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
+		focus = Focus.check(focus);
+		for (IRecipeManagerPlugin plugin : this.plugins) {
+			List<?> recipes = plugin.getRecipes(recipeCategory, focus);
+			if (!recipes.isEmpty()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
