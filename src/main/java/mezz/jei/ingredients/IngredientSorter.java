@@ -53,6 +53,11 @@ public final class IngredientSorter implements IIngredientSorter {
 			comparatorsForStages.put(IngredientSortStage.CREATIVE_MENU, CREATIVE_MENU);
 			comparatorsForStages.put(IngredientSortStage.INGREDIENT_TYPE, ingredientType);
 			comparatorsForStages.put(IngredientSortStage.MOD_NAME, modName);
+			comparatorsForStages.put(IngredientSortStage.TOOL_TYPE, createToolsComparator());
+			comparatorsForStages.put(IngredientSortStage.TAG, createTagComparator());
+			comparatorsForStages.put(IngredientSortStage.WEAPON_DAMAGE, createAttackComparator());
+			comparatorsForStages.put(IngredientSortStage.ARMOR, createArmorComparator());
+			comparatorsForStages.put(IngredientSortStage.MAX_DURABILITY, createMaxDurabilityComparator());
 
 			List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
 			this.cachedComparator = ingredientSorterStages.stream()
@@ -78,6 +83,42 @@ public final class IngredientSorter implements IIngredientSorter {
 	@Override
 	public void invalidateCache() {
 		this.cachedComparator = null;
+	}
+
+	private Comparator<IIngredientListElementInfo<?>> createMaxDurabilityComparator() {
+		Comparator<IIngredientListElementInfo<?>> maxDamage = Comparator.comparing(IIngredientListElementInfo::getMaxDamage);
+		return maxDamage.reversed();
+	}
+
+	private Comparator<IIngredientListElementInfo<?>> createTagComparator() {
+		Comparator<IIngredientListElementInfo<?>> isTagged = Comparator.comparing(IIngredientListElementInfo::hasTag);
+		Comparator<IIngredientListElementInfo<?>> tag = Comparator.comparing(IIngredientListElementInfo::getTagForSorting);
+		return isTagged.reversed().thenComparing(tag);
+	}
+
+	private Comparator<IIngredientListElementInfo<?>> createToolsComparator() {
+		Comparator<IIngredientListElementInfo<?>> isTool = Comparator.comparing(IIngredientListElementInfo::isTool);
+		Comparator<IIngredientListElementInfo<?>> toolType = Comparator.comparing(IIngredientListElementInfo::getToolClass);
+		Comparator<IIngredientListElementInfo<?>> harvestLevel = Comparator.comparing(IIngredientListElementInfo::getHarvestLevel);
+		Comparator<IIngredientListElementInfo<?>> maxDamage = Comparator.comparing(IIngredientListElementInfo::getToolDurability);
+		return isTool.reversed().thenComparing(toolType).thenComparing(harvestLevel.reversed()).thenComparing(maxDamage.reversed());
+	}
+
+	private Comparator<IIngredientListElementInfo<?>> createAttackComparator() {
+		Comparator<IIngredientListElementInfo<?>> isWeapon = Comparator.comparing(IIngredientListElementInfo::isWeapon);
+		Comparator<IIngredientListElementInfo<?>> attackDamage = Comparator.comparing(IIngredientListElementInfo::getAttackDamage);
+		Comparator<IIngredientListElementInfo<?>> attackSpeed = Comparator.comparing(IIngredientListElementInfo::getAttackSpeed);
+		Comparator<IIngredientListElementInfo<?>> maxDamage = Comparator.comparing(IIngredientListElementInfo::getWeaponDurability);
+		return isWeapon.reversed().thenComparing(attackDamage.reversed()).thenComparing(attackSpeed.reversed()).thenComparing(maxDamage.reversed());
+	}
+
+	private Comparator<IIngredientListElementInfo<?>> createArmorComparator() {
+		Comparator<IIngredientListElementInfo<?>> isArmor = Comparator.comparing(IIngredientListElementInfo::isArmor);
+		Comparator<IIngredientListElementInfo<?>> armorSlot = Comparator.comparing(IIngredientListElementInfo::getArmorSlotIndex);
+		Comparator<IIngredientListElementInfo<?>> armorDamage = Comparator.comparing(IIngredientListElementInfo::getArmorDamageReduce);
+		Comparator<IIngredientListElementInfo<?>> armorToughness = Comparator.comparing(IIngredientListElementInfo::getArmorToughness);
+		Comparator<IIngredientListElementInfo<?>> maxDamage = Comparator.comparing(IIngredientListElementInfo::getArmorDurability);
+		return isArmor.reversed().thenComparing(armorSlot.reversed()).thenComparing(armorDamage.reversed()).thenComparing(armorToughness.reversed()).thenComparing(maxDamage.reversed());
 	}
 
 }

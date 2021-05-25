@@ -27,4 +27,41 @@ public interface IIngredientListElementInfo<V> {
 	String getResourceId();
 
 	IIngredientListElement<V> getElement();
+
+	int getOrderIndex();
+	
+	int getDamage();
+	
+	int getMaxDamage();
+	
+	boolean isTool();
+	
+	String getToolClass();
+	
+	int getHarvestLevel();
+	
+	int getToolDurability();
+	
+	boolean isWeapon();
+	
+	Double getAttackDamage();
+	
+	Double getAttackSpeed();
+	
+	int getWeaponDurability();
+	
+	boolean isArmor();
+	
+	int getArmorSlotIndex();
+	
+	int getArmorDamageReduce();
+	
+	float getArmorToughness();
+	
+	int getArmorDurability();
+	
+	String getTagForSorting();
+	
+	boolean hasTag();
+
 }
