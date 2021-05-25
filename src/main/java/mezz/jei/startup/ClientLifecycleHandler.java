@@ -30,6 +30,7 @@ import net.minecraft.client.network.play.ClientPlayNetHandler;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourceManager;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
@@ -94,9 +95,14 @@ public class ClientLifecycleHandler {
 		EventBusHelper.addListener(this, WorldEvent.Save.class, event -> worldConfig.onWorldSave());
 		EventBusHelper.addListener(this, AddReloadListenerEvent.class, event -> reloadListenerSetup());
 
+		EventBusHelper.addListener(this, ClientPlayerNetworkEvent.LoggedOutEvent.class, event -> {
+			for (ServerType type : ServerType.values()) {
+				type.hasRan = false;
+			}
+		});
 		for (ServerType type : ServerType.values()) {
 			EventBusHelper.addListener(this, type.listenerClass, event -> {
-				if (type.connected()) {
+				if (type.shouldRun()) {
 					setupJEI();
 				}
 			});
@@ -154,25 +160,44 @@ public class ClientLifecycleHandler {
 	}
 
 	private enum ServerType {
-		// Three cases, since there's no such thing as a vanilla integrated server
-		INTEGRATED(false, true, RecipesUpdatedEvent.class),
-		VANILLA_REMOTE(true, false, TagsUpdatedEvent.VanillaTagTypes.class),
-		MODDED_REMOTE(false, false, TagsUpdatedEvent.CustomTagTypes.class);
+		// Three cases as both vanilla and modded servers share the same post reload handling
+		// and integrated servers always have recipes update after tags
+		VANILLA(TagsUpdatedEvent.VanillaTagTypes.class),
+		MODDED(TagsUpdatedEvent.CustomTagTypes.class),
+		INTEGRATED_OR_POST_RELOAD(RecipesUpdatedEvent.class);
 
-		public final boolean isVanilla, isIntegrated;
+		public boolean hasRan;
 		public final Class<? extends Event> listenerClass;
 
-		ServerType(boolean isVanilla, boolean isIntegrated, Class<? extends Event> listenerClass) {
-			this.isVanilla = isVanilla;
-			this.isIntegrated = isIntegrated;
+		ServerType(Class<? extends Event> listenerClass) {
 			this.listenerClass = listenerClass;
 		}
 
-		public boolean connected() {
+		public boolean shouldRun() {
 			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
-			boolean isVanilla = connection != null && NetworkHooks.isVanillaConnection(connection.getNetworkManager());
 			boolean isIntegrated = Minecraft.getInstance().isIntegratedServerRunning();
-			return isVanilla == this.isVanilla && isIntegrated == this.isIntegrated;
+			if (connection == null || isIntegrated) {
+				//If we are an integrated server we always handle handle recipes updating as it is consistently last
+				// so we ignore the value of hasRan. Note we also check if the connection is null and treat is as
+				// integrated as the connection is null when connecting to a single player world during the tag events
+				hasRan = true;
+				return this == INTEGRATED_OR_POST_RELOAD;
+			} else if (this == INTEGRATED_OR_POST_RELOAD) {
+				//For post reload handling, if we have already had the recipes updated event fired
+				// then we know we are a reload and can return true for if we should run
+				if (hasRan) {
+					return true;
+				}
+				// If we haven't ran this is the first time the event is being fired so we mark that it has ran but don't actually run it again
+				hasRan = true;
+				return false;
+			} else if (hasRan) {
+				//Non post reloads only run the first time around
+				return false;
+			}
+			hasRan = true;
+			boolean isVanilla = NetworkHooks.isVanillaConnection(connection.getNetworkManager());
+			return isVanilla == (this == VANILLA);
 		}
 	}
 }
