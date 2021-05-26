@@ -1,8 +1,8 @@
 package mezz.jei.ingredients;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Multimap;
 
+import mezz.jei.Internal;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -10,25 +10,14 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.util.Translator;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.FishingRodItem;
-import net.minecraft.item.HoeItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.ShearsItem;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.ToolType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -47,20 +36,6 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	private final List<String> modIds;
 	private final List<String> modNames;
 	private final String resourceId;
-
-	private final int orderIndex;         //Maybe if I implement InvTools Tree reading in JEI.
-	private final int damage;             //Not sure if this is even useful.
-	private final String toolClass;       //For segregating the tools.
-	private final int harvestLevel;       //For quality of the tools.
-	private final Double attackDamage;    //For quality of weapons.
-	private final Double attackSpeed;     //For quality of weapons.
-	private final boolean isArmorFlag;    //For Armor Sorting
-	private final int armorSlotIndex;     //For Armor Sorting
-	private final int armorDamageReduce;  //For quality of armor.
-	private final float armorToughness;   //For quality of armor.
-	private final int maxDamage;          //For quality of damagable items.
-	private final String bestTag;         //For grouping like items.
-	
 
 	@Nullable
 	public static <V> IIngredientListElementInfo<V> create(IIngredientListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
@@ -94,78 +69,6 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 			.collect(Collectors.toList());
 		this.displayName = IngredientInformation.getDisplayName(ingredient, ingredientHelper);
 		this.resourceId = ingredientHelper.getResourceId(ingredient);
-		ItemStack itemStack = ingredientHelper.getCheatItemStack(ingredient);
-		if (itemStack != null) {
-			Item item = itemStack.getItem();
-			this.damage = itemStack.getDamage();
-			this.maxDamage = itemStack.getMaxDamage();
-			//These are framework dependent.
-			this.toolClass = getToolClass(itemStack, item);
-			this.harvestLevel = (itemStack.getToolTypes().size() > 0 ? itemStack.getHarvestLevel(itemStack.getToolTypes().iterator().next(), null, null) : -1);
-			
-			Multimap<Attribute, AttributeModifier> multimap = itemStack.getAttributeModifiers(EquipmentSlotType.MAINHAND);
-			boolean hasDamage = multimap.containsKey(Attributes.ATTACK_DAMAGE);
-			boolean hasSpeed = multimap.containsKey(Attributes.ATTACK_SPEED);			
-			if (hasDamage) {
-				Collection<AttributeModifier> damageMap = multimap.get(Attributes.ATTACK_DAMAGE);
-				this.attackDamage = ((AttributeModifier) damageMap.toArray()[0]).getAmount();
-				if (hasSpeed) {
-					Collection<AttributeModifier> speedMap = multimap.get(Attributes.ATTACK_SPEED);
-					this.attackSpeed = ((AttributeModifier) speedMap.toArray()[0]).getAmount();
-				}
-				else {
-					this.attackSpeed = Double.MIN_VALUE;
-				}
-			} else {
-				this.attackDamage = Double.MIN_VALUE;
-				this.attackSpeed = Double.MIN_VALUE;		
-			}
-		
-			if (item instanceof ArmorItem) {
-				this.isArmorFlag = true;
-				ArmorItem armorItem = (ArmorItem) item;				
-				this.armorSlotIndex = armorItem.getEquipmentSlot().getSlotIndex();
-				this.armorDamageReduce = armorItem.getDamageReduceAmount();
-				this.armorToughness = armorItem.getToughness();
-			} else {
-				this.isArmorFlag = false;
-				this.armorSlotIndex = 0;
-				this.armorDamageReduce = Integer.MIN_VALUE;
-				this.armorToughness = Float.MIN_VALUE;				
-			}
-		}
-		else {
-			this.damage = 0;
-			this.toolClass = "";
-			this.harvestLevel = -1;
-			this.attackDamage = Double.MIN_VALUE;
-			this.attackSpeed = Double.MIN_VALUE;
-			this.armorSlotIndex = 0;
-			this.armorDamageReduce = Integer.MIN_VALUE;
-			this.armorToughness = Float.MIN_VALUE;
-			this.isArmorFlag = false;
-			this.maxDamage = 0;
-			}
-		this.orderIndex = 0;
-		
-		Collection<ResourceLocation> tags = ingredientHelper.getTags(ingredient);
-		if (tags.size() > 0 ) {
-			ResourceLocation maxTag = Items.AIR.getRegistryName();
-			int maxTagSize = Integer.MIN_VALUE;
-			//Group things by the most popular tag it has.
-			for (ResourceLocation tag : tags) {			
-				int thisTagSize = ItemTags.getCollection().getTagByID(tag).getAllElements().size();
-				if (thisTagSize > maxTagSize) {
-					maxTag = tag;
-					maxTagSize = thisTagSize;
-				}
-			}
-			bestTag = maxTag.toString();
-		}
-		else {
-			bestTag = "";
-		}		
-
 	}
 
 	@Override
@@ -220,6 +123,13 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	}
 
 	@Override
+	public Collection<ResourceLocation> getTagIds(IIngredientManager ingredientManager) {
+		V ingredient = element.getIngredient();
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
+		return ingredientHelper.getTags(ingredient);
+	}
+
+	@Override
 	public Collection<String> getCreativeTabsStrings(IIngredientManager ingredientManager) {
 		V ingredient = element.getIngredient();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
@@ -246,152 +156,16 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 		return element;
 	}
 
+	//I needed the "V" to get all of the element -> itemStack flow to work.
+	//And IngredientSorter.java could only get me so far.
 	@Override
-	public int getOrderIndex() {
-		return orderIndex;
-	};
-
-	@Override
-	public int getDamage() {
-		return damage;
-	};
-
-	@Override
-	public int getMaxDamage() {
-		return maxDamage;
-	};
-
-	@Override
-	public String getToolClass() {
-		return toolClass;
-	};
-	
-	@Override
-	public int getHarvestLevel() {
-		return harvestLevel;
-	};
-
-	@Override
-	public boolean isTool(){
-		//Sort non-tools after the tools.
-		return !toolClass.isEmpty();
-	};
-
-	@Override
-	public int getToolDurability() {
-		if (isTool())
-			return maxDamage;
-		return 0;
+	public ItemStack getCheatItemStack() {
+		V ingredient = element.getIngredient();
+		IIngredientManager ingredientManager = Internal.getIngredientManager();
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
+		ItemStack itemStack = ingredientHelper.getCheatItemStack(ingredient);
+		//In case any mods misbehave and return null instead of EMPTY.
+		return itemStack == null ? ItemStack.EMPTY : itemStack;
 	}
-
-	@Override
-	public boolean isWeapon() {
-		//Sort Weapons apart from tools, armor, and other random things..
-		//0 did not successfully filter out the non-weapons. 1/1024 should do the trick.
-		return toolClass.isEmpty() && attackDamage > 0.000976562f && !isArmorFlag;
-	};
-
-	@Override
-	public Double getAttackDamage() {
-		if (isWeapon()) {
-			return attackDamage;
-		}
-		return Double.MIN_VALUE;
-	};
-
-	@Override
-	public Double getAttackSpeed() {
-		if (isWeapon()) {
-			return attackSpeed;
-		}
-		return Double.MIN_VALUE;
-	};
-
-	@Override
-	public int getWeaponDurability() {
-		if (isWeapon()) {
-			return maxDamage;
-		}
-		return 0;
-	}
-
-	@Override
-	public boolean isArmor() {
-		return isArmorFlag;
-	};
-
-	@Override
-	public int getArmorSlotIndex() {
-		if (isArmor())
-			return armorSlotIndex;
-		return 0;
-	};
-
-	@Override
-	public int getArmorDamageReduce() {
-		return armorDamageReduce;
-	};
-
-	@Override
-	public float getArmorToughness() {
-		return armorToughness;
-	};
-
-	@Override
-	public int getArmorDurability() {
-		if (isArmor())
-			return maxDamage;
-		return 0;
-	}
-
-
-	@Override
-	public String getTagForSorting() {
-		return bestTag;
-	};
-
-	@Override
-	public boolean hasTag(){
-		//Sort non-tools after the tools.
-		return !bestTag.isEmpty();
-	};
-
-
-
-	private static String getToolClass(ItemStack itemStack, Item item)
-    {
-        if (itemStack == null || item == null) return "";
-        Set<ToolType> toolTypeSet = item.getToolTypes(itemStack);
-        
-        Set<String> toolClassSet = new HashSet<String>();
-
-        for (ToolType toolClass: toolTypeSet) {
-            //Swords are not "tools".
-            if (toolClass.getName() != "sword") {
-            	toolClassSet.add(toolClass.getName());
-            }
-        }
-
-        //Minecraft hoes, shears, and fishing rods don't have tool class names.
-        if (toolClassSet.isEmpty()) {
-            if (item instanceof HoeItem) return "hoe";
-            if (item instanceof ShearsItem) return "shears";
-            if (item instanceof FishingRodItem) return "fishingrod";
-            return "";
-        }
-        
-        //Get the only thing.
-        if (toolClassSet.size() == 1)
-            return (String) toolClassSet.toArray()[0];
-        
-        //We have a preferred type to list tools under, primarily the pickaxe for harvest level.
-        String[] prefOrder = {"pickaxe", "axe", "shovel", "hoe", "shears", "wrench"};
-        for (int i = 0; i < prefOrder.length; i++)
-            if (toolClassSet.contains(prefOrder[i])) 
-                return prefOrder[i];
-        
-        //Whatever happens to be the first thing:
-        return (String) toolClassSet.toArray()[0];
-    }
 
 }
