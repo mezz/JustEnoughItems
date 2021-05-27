@@ -29,6 +29,5 @@ public interface IIngredientListElementInfo<V> {
 
 	String getResourceId();
 
-	IIngredientListElement<V> getElement();	
-
+	IIngredientListElement<V> getElement();
 }
