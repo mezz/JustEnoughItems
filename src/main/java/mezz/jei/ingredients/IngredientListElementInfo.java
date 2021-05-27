@@ -2,7 +2,6 @@ package mezz.jei.ingredients;
 
 import com.google.common.collect.ImmutableSet;
 
-import mezz.jei.Internal;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -10,7 +9,6 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.util.Translator;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import org.apache.logging.log4j.LogManager;
@@ -154,18 +152,6 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	@Override
 	public IIngredientListElement<V> getElement() {
 		return element;
-	}
-
-	//I needed the "V" to get all of the element -> itemStack flow to work.
-	//And IngredientSorter.java could only get me so far.
-	@Override
-	public ItemStack getCheatItemStack() {
-		V ingredient = element.getIngredient();
-		IIngredientManager ingredientManager = Internal.getIngredientManager();
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-		ItemStack itemStack = ingredientHelper.getCheatItemStack(ingredient);
-		//In case any mods misbehave and return null instead of EMPTY.
-		return itemStack == null ? ItemStack.EMPTY : itemStack;
 	}
 
 }

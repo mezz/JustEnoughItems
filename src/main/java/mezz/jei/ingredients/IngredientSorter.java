@@ -35,6 +35,9 @@ import java.util.stream.Collectors;
 
 public final class IngredientSorter implements IIngredientSorter {
 
+	//0 did not successfully filter out the non-weapons. 1/1024 should do the trick.
+	final static Double notQuiteZero = 1.0/ 1024.0;
+
 	private static final Comparator<IIngredientListElementInfo<?>> CREATIVE_MENU =
 		Comparator.comparingInt(o -> {
 			IIngredientListElement<?> element = o.getElement();
@@ -105,7 +108,7 @@ public final class IngredientSorter implements IIngredientSorter {
 
 	private Comparator<IIngredientListElementInfo<?>> createMaxDurabilityComparator() {
 		Comparator<IIngredientListElementInfo<?>> maxDamage = 
-			Comparator.comparing(o -> getMaxDamage(o.getCheatItemStack()));
+			Comparator.comparing(o -> getMaxDamage(getItemStack(o)));
 		return maxDamage.reversed();
 	}
 
@@ -119,43 +122,42 @@ public final class IngredientSorter implements IIngredientSorter {
 
 	private Comparator<IIngredientListElementInfo<?>> createToolsComparator() {
 		Comparator<IIngredientListElementInfo<?>> isToolComp = 
-			Comparator.comparing(o -> isTool(o.getCheatItemStack()));
+			Comparator.comparing(o -> isTool(getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> toolType = 
-			Comparator.comparing(o -> getToolClass(o.getCheatItemStack()));
+			Comparator.comparing(o -> getToolClass(getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> harvestLevel = 
-			Comparator.comparing(o -> getHarvestLevel(o.getCheatItemStack()));
+			Comparator.comparing(o -> getHarvestLevel(getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> maxDamage = 
-			Comparator.comparing(o -> getToolDurability(o.getCheatItemStack()));
+			Comparator.comparing(o -> getToolDurability(getItemStack(o)));
 		return isToolComp.reversed().thenComparing(toolType).thenComparing(harvestLevel.reversed()).thenComparing(maxDamage.reversed());
 	}
 
 	private Comparator<IIngredientListElementInfo<?>> createAttackComparator() {
 		Comparator<IIngredientListElementInfo<?>> isWeaponComp = 
-			Comparator.comparing(o -> isWeapon(o.getCheatItemStack()));
+			Comparator.comparing(o -> isWeapon(getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> attackDamage = 
-			Comparator.comparing(o -> getAttackDamage(o.getCheatItemStack()));
+			Comparator.comparing(o -> getAttackDamage(getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> attackSpeed = 
-			Comparator.comparing(o -> getAttackSpeed(o.getCheatItemStack()));
+			Comparator.comparing(o -> getAttackSpeed(getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> maxDamage = 
-			Comparator.comparing(o -> getWeaponDurability(o.getCheatItemStack()));
+			Comparator.comparing(o -> getWeaponDurability(getItemStack(o)));
 		return isWeaponComp.reversed().thenComparing(attackDamage.reversed()).thenComparing(attackSpeed.reversed()).thenComparing(maxDamage.reversed());
 	}
 
 	private Comparator<IIngredientListElementInfo<?>> createArmorComparator() {
 		Comparator<IIngredientListElementInfo<?>> isArmorComp = 
-			Comparator.comparing(o -> isArmor(o.getCheatItemStack()));
+			Comparator.comparing(o -> isArmor(getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> armorSlot = 
-			Comparator.comparing(o -> getArmorSlotIndex(o.getCheatItemStack()));
+			Comparator.comparing(o -> getArmorSlotIndex(getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> armorDamage = 
-			Comparator.comparing(o -> getArmorDamageReduce(o.getCheatItemStack()));
+			Comparator.comparing(o -> getArmorDamageReduce(getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> armorToughness = 
-			Comparator.comparing(o -> getArmorToughness(o.getCheatItemStack()));
+			Comparator.comparing(o -> getArmorToughness(getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> maxDamage = 
-			Comparator.comparing(o -> getArmorDurability(o.getCheatItemStack()));
+			Comparator.comparing(o -> getArmorDurability(getItemStack(o)));
 		return isArmorComp.reversed().thenComparing(armorSlot.reversed()).thenComparing(armorDamage.reversed()).thenComparing(armorToughness.reversed()).thenComparing(maxDamage.reversed());
 	}
 
-	//ATB:  I mentally don't do well with anonymous functions.
 	private static int getMaxDamage(ItemStack itemStack) {
 		int maxDamage = Integer.MAX_VALUE;
 		if (itemStack != ItemStack.EMPTY) {
@@ -183,10 +185,9 @@ public final class IngredientSorter implements IIngredientSorter {
 	}
 
 	private static boolean isWeapon(ItemStack itemStack) {
-		//Sort Weapons apart from tools, armor, and other random things..
-		//0 did not successfully filter out the non-weapons. 1/1024 should do the trick.
+		//Sort Weapons apart from tools, armor, and other random things..		
 		//AttackDamage also filters out Tools and Armor.  Anything that deals extra damage is a weapon.
-		return getAttackDamage(itemStack) > 0.000976562f;
+		return getAttackDamage(itemStack) > notQuiteZero;
 	};
 
 	private static Double getAttackDamage(ItemStack itemStack) {
@@ -214,7 +215,7 @@ public final class IngredientSorter implements IIngredientSorter {
 				Collection<AttributeModifier> damageMap = multimap.get(Attributes.ATTACK_DAMAGE);
 				attackDamage = ((AttributeModifier) damageMap.toArray()[0]).getAmount();
 				//Apply the isWeapon final test here.
-				if (attackDamage > 0.000976562f && hasSpeed) {
+				if (attackDamage > notQuiteZero && hasSpeed) {
 					Collection<AttributeModifier> speedMap = multimap.get(Attributes.ATTACK_SPEED);
 					attackSpeed = ((AttributeModifier) speedMap.toArray()[0]).getAmount();
 				}
@@ -297,7 +298,9 @@ public final class IngredientSorter implements IIngredientSorter {
 	private static String getToolClass(ItemStack itemStack)
     {
 		//I think I should find a way to cache this.
-        if (itemStack == null || itemStack == ItemStack.EMPTY) return "";
+        if (itemStack == null || itemStack == ItemStack.EMPTY) {
+			return "";
+		}
 		Item item = itemStack.getItem();
         Set<ToolType> toolTypeSet = item.getToolTypes(itemStack);
         
@@ -319,17 +322,29 @@ public final class IngredientSorter implements IIngredientSorter {
         }
         
         //Get the only thing.
-        if (toolClassSet.size() == 1)
+        if (toolClassSet.size() == 1) {
             return (String) toolClassSet.toArray()[0];
+		}
         
         //We have a preferred type to list tools under, primarily the pickaxe for harvest level.
         String[] prefOrder = {"pickaxe", "axe", "shovel", "hoe", "shears", "wrench"};
-        for (int i = 0; i < prefOrder.length; i++)
-            if (toolClassSet.contains(prefOrder[i])) 
+        for (int i = 0; i < prefOrder.length; i++) {
+            if (toolClassSet.contains(prefOrder[i])) {
                 return prefOrder[i];
+			}
+		}
         
         //Whatever happens to be the first thing:
         return (String) toolClassSet.toArray()[0];
     }
+
+	public static <V> ItemStack getItemStack(IIngredientListElementInfo<V> ingredientInfo) {
+		IIngredientListElement<V> element = ingredientInfo.getElement();
+		V ingredient = element.getIngredient();
+		if (ingredient instanceof ItemStack) {
+			return (ItemStack) ingredient;
+		}
+		return ItemStack.EMPTY;
+	}
 
 }

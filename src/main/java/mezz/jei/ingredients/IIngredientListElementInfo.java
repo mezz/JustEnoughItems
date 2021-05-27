@@ -7,7 +7,6 @@ import java.util.Set;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 public interface IIngredientListElementInfo<V> {
@@ -31,7 +30,5 @@ public interface IIngredientListElementInfo<V> {
 	String getResourceId();
 
 	IIngredientListElement<V> getElement();	
-
-	ItemStack getCheatItemStack();
 
 }
