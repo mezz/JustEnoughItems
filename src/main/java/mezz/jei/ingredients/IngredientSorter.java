@@ -4,6 +4,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IClientConfig;
+import mezz.jei.config.sorting.IngredientTreeSortingConfig;
 import mezz.jei.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
@@ -12,14 +13,10 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
-import net.minecraft.item.FishingRodItem;
-import net.minecraft.item.HoeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ShearsItem;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nullable;
 
@@ -50,14 +47,16 @@ public final class IngredientSorter implements IIngredientSorter {
 	private final IClientConfig clientConfig;
 	private final ModNameSortingConfig modNameSortingConfig;
 	private final IngredientTypeSortingConfig ingredientTypeSortingConfig;
+	private final IngredientTreeSortingConfig ingredientTreeSortingConfig;
 
 	@Nullable
 	private Comparator<IIngredientListElementInfo<?>> cachedComparator;
 
-	public IngredientSorter(IClientConfig clientConfig, ModNameSortingConfig modNameSortingConfig, IngredientTypeSortingConfig ingredientTypeSortingConfig) {
+	public IngredientSorter(IClientConfig clientConfig, ModNameSortingConfig modNameSortingConfig, IngredientTypeSortingConfig ingredientTypeSortingConfig, IngredientTreeSortingConfig ingredientTreeSortingConfig) {
 		this.clientConfig = clientConfig;
 		this.modNameSortingConfig = modNameSortingConfig;
 		this.ingredientTypeSortingConfig = ingredientTypeSortingConfig;
+		this.ingredientTreeSortingConfig = ingredientTreeSortingConfig;
 	}
 
 	@Override
@@ -68,6 +67,8 @@ public final class IngredientSorter implements IIngredientSorter {
 
 			Comparator<IIngredientListElementInfo<?>> modName = createModNameComparator(modNames);
 			Comparator<IIngredientListElementInfo<?>> ingredientType = createIngredientTypeComparator(ingredientTypes);
+			Comparator<IIngredientListElementInfo<?>> ingredientTree = ingredientTreeSortingConfig.getComparator();
+			
 
 			EnumMap<IngredientSortStage, Comparator<IIngredientListElementInfo<?>>> comparatorsForStages = new EnumMap<>(IngredientSortStage.class);
 			comparatorsForStages.put(IngredientSortStage.ALPHABETICAL, ALPHABETICAL);
@@ -79,7 +80,9 @@ public final class IngredientSorter implements IIngredientSorter {
 			comparatorsForStages.put(IngredientSortStage.WEAPON_DAMAGE, createAttackComparator());
 			comparatorsForStages.put(IngredientSortStage.ARMOR, createArmorComparator());
 			comparatorsForStages.put(IngredientSortStage.MAX_DURABILITY, createMaxDurabilityComparator());
+			comparatorsForStages.put(IngredientSortStage.ITEM_TREE, ingredientTree);
 
+			
 			List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
 			this.cachedComparator = ingredientSorterStages.stream()
 				.map(comparatorsForStages::get)
@@ -104,6 +107,7 @@ public final class IngredientSorter implements IIngredientSorter {
 	@Override
 	public void invalidateCache() {
 		this.cachedComparator = null;
+		this.ingredientTreeSortingConfig.reset();
 	}
 
 	private Comparator<IIngredientListElementInfo<?>> createMaxDurabilityComparator() {
@@ -296,46 +300,8 @@ public final class IngredientSorter implements IIngredientSorter {
 	};
 
 	private static String getToolClass(ItemStack itemStack)
-    {
-		//I think I should find a way to cache this.
-        if (itemStack == null || itemStack == ItemStack.EMPTY) {
-			return "";
-		}
-		Item item = itemStack.getItem();
-        Set<ToolType> toolTypeSet = item.getToolTypes(itemStack);
-        
-        Set<String> toolClassSet = new HashSet<String>();
-
-        for (ToolType toolClass: toolTypeSet) {
-            //Swords are not "tools".
-            if (toolClass.getName() != "sword") {
-            	toolClassSet.add(toolClass.getName());
-            }
-        }
-
-        //Minecraft hoes, shears, and fishing rods don't have tool class names.
-        if (toolClassSet.isEmpty()) {
-            if (item instanceof HoeItem) return "hoe";
-            if (item instanceof ShearsItem) return "shears";
-            if (item instanceof FishingRodItem) return "fishingrod";
-            return "";
-        }
-        
-        //Get the only thing.
-        if (toolClassSet.size() == 1) {
-            return (String) toolClassSet.toArray()[0];
-		}
-        
-        //We have a preferred type to list tools under, primarily the pickaxe for harvest level.
-        String[] prefOrder = {"pickaxe", "axe", "shovel", "hoe", "shears", "wrench"};
-        for (int i = 0; i < prefOrder.length; i++) {
-            if (toolClassSet.contains(prefOrder[i])) {
-                return prefOrder[i];
-			}
-		}
-        
-        //Whatever happens to be the first thing:
-        return (String) toolClassSet.toArray()[0];
+    {		
+        return IngredientUtils.getToolClass(itemStack);
     }
 
 	public static <V> ItemStack getItemStack(IIngredientListElementInfo<V> ingredientInfo) {

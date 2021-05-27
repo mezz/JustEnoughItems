@@ -13,6 +13,7 @@ import mezz.jei.config.IngredientFilterConfig;
 import mezz.jei.config.JEIClientConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.ModIdFormattingConfig;
+import mezz.jei.config.sorting.IngredientTreeSortingConfig;
 import mezz.jei.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.config.WorldConfig;
@@ -61,6 +62,7 @@ public class ClientLifecycleHandler {
 
 	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures) {
 		File jeiConfigurationDir = new File(FMLPaths.CONFIGDIR.get().toFile(), ModIds.JEI_ID);
+		File invTweaksConfigurationDir = new File(FMLPaths.CONFIGDIR.get().toFile(), "InvTweaks");
 		if (!jeiConfigurationDir.exists()) {
 			try {
 				if (!jeiConfigurationDir.mkdir()) {
@@ -70,6 +72,11 @@ public class ClientLifecycleHandler {
 				throw new RuntimeException("Could not create config directory " + jeiConfigurationDir, e);
 			}
 		}
+		if (!invTweaksConfigurationDir.exists()) {  //Todo:  Add config setting to intentionally use JEI tree file.
+			//If there is no Inventory Tweaks folder, we will use our tree file instead, always.
+			invTweaksConfigurationDir = jeiConfigurationDir;
+		}
+
 
 		this.clientConfig = JEIClientConfig.clientConfig;
 		this.ingredientFilterConfig = JEIClientConfig.filterConfig;
@@ -84,7 +91,8 @@ public class ClientLifecycleHandler {
 
 		ModNameSortingConfig ingredientModNameSortingConfig = new ModNameSortingConfig(new File(jeiConfigurationDir, "ingredient-list-mod-sort-order.ini"));
 		IngredientTypeSortingConfig ingredientTypeSortingConfig = new IngredientTypeSortingConfig(new File(jeiConfigurationDir, "ingredient-list-type-sort-order.ini"));
-		ingredientSorter = new IngredientSorter(clientConfig, ingredientModNameSortingConfig, ingredientTypeSortingConfig);
+		IngredientTreeSortingConfig ingredientTreeSortingConfig = new IngredientTreeSortingConfig(new File(invTweaksConfigurationDir, "InvTweaksTree.txt"));
+		ingredientSorter = new IngredientSorter(clientConfig, ingredientModNameSortingConfig, ingredientTypeSortingConfig, ingredientTreeSortingConfig);
 
 		ErrorUtil.setModIdHelper(modIdHelper);
 		ErrorUtil.setWorldConfig(worldConfig);
