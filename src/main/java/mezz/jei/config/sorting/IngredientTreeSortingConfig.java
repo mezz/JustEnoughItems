@@ -1,6 +1,7 @@
 package mezz.jei.config.sorting;
 
 import mezz.jei.ingredients.IIngredientListElementInfo;
+import mezz.jei.ingredients.IngredientUtils;
 import mezz.jei.ingredients.tree.InvTweaksItemTree;
 import mezz.jei.ingredients.tree.InvTweaksItemTreeLoader;
 import net.minecraft.item.ItemStack;
@@ -48,8 +49,22 @@ public class IngredientTreeSortingConfig {
 		if (tree == null) {
 			return getDefaultSortOrder();
 		}
-		return Comparator.comparingInt(t -> tree.getItemOrder(t.getCheatItemStack()));
+		return Comparator.comparingInt(t -> getItemOrder(t));
 	}
+
+	private int getItemOrder(IIngredientListElementInfo<?> t) {
+		ItemStack itemStack = IngredientUtils.getItemStack(t);
+		if (itemStack != ItemStack.EMPTY) {
+			return tree.getItemOrder(itemStack);
+		}
+		
+		//I wish I could get the NBT for the non-items.
+		return tree.getItemOrder(IngredientUtils.getUniqueId(t));
+		
+
+
+	}
+	
 
 	protected Comparator<IIngredientListElementInfo<?>> getDefaultSortOrder() {
 		Comparator<IIngredientListElementInfo<?>> naturalOrder = Comparator.comparingInt(o -> {

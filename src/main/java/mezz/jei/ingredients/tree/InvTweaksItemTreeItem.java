@@ -34,9 +34,9 @@ public class InvTweaksItemTreeItem implements IItemTreeItem {
         if(id_ == null) {
             id =  null;
         } else if(id_.indexOf(':') == -1) {
-        	id = "minecraft:" + id_;
+        	id = "minecraft:" + id_.toLowerCase();
         } else {
-        	id = id_;
+        	id = id_.toLowerCase();
         }        
         damage = damage_;
         extraData = extraData_;

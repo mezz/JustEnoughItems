@@ -112,7 +112,7 @@ public final class IngredientSorter implements IIngredientSorter {
 
 	private Comparator<IIngredientListElementInfo<?>> createMaxDurabilityComparator() {
 		Comparator<IIngredientListElementInfo<?>> maxDamage = 
-			Comparator.comparing(o -> getMaxDamage(getItemStack(o)));
+			Comparator.comparing(o -> getMaxDamage(IngredientUtils.getItemStack(o)));
 		return maxDamage.reversed();
 	}
 
@@ -126,39 +126,39 @@ public final class IngredientSorter implements IIngredientSorter {
 
 	private Comparator<IIngredientListElementInfo<?>> createToolsComparator() {
 		Comparator<IIngredientListElementInfo<?>> isToolComp = 
-			Comparator.comparing(o -> isTool(getItemStack(o)));
+			Comparator.comparing(o -> isTool(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> toolType = 
-			Comparator.comparing(o -> getToolClass(getItemStack(o)));
+			Comparator.comparing(o -> getToolClass(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> harvestLevel = 
-			Comparator.comparing(o -> getHarvestLevel(getItemStack(o)));
+			Comparator.comparing(o -> getHarvestLevel(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> maxDamage = 
-			Comparator.comparing(o -> getToolDurability(getItemStack(o)));
+			Comparator.comparing(o -> getToolDurability(IngredientUtils.getItemStack(o)));
 		return isToolComp.reversed().thenComparing(toolType).thenComparing(harvestLevel.reversed()).thenComparing(maxDamage.reversed());
 	}
 
 	private Comparator<IIngredientListElementInfo<?>> createAttackComparator() {
 		Comparator<IIngredientListElementInfo<?>> isWeaponComp = 
-			Comparator.comparing(o -> isWeapon(getItemStack(o)));
+			Comparator.comparing(o -> isWeapon(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> attackDamage = 
-			Comparator.comparing(o -> getAttackDamage(getItemStack(o)));
+			Comparator.comparing(o -> getAttackDamage(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> attackSpeed = 
-			Comparator.comparing(o -> getAttackSpeed(getItemStack(o)));
+			Comparator.comparing(o -> getAttackSpeed(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> maxDamage = 
-			Comparator.comparing(o -> getWeaponDurability(getItemStack(o)));
+			Comparator.comparing(o -> getWeaponDurability(IngredientUtils.getItemStack(o)));
 		return isWeaponComp.reversed().thenComparing(attackDamage.reversed()).thenComparing(attackSpeed.reversed()).thenComparing(maxDamage.reversed());
 	}
 
 	private Comparator<IIngredientListElementInfo<?>> createArmorComparator() {
 		Comparator<IIngredientListElementInfo<?>> isArmorComp = 
-			Comparator.comparing(o -> isArmor(getItemStack(o)));
+			Comparator.comparing(o -> isArmor(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> armorSlot = 
-			Comparator.comparing(o -> getArmorSlotIndex(getItemStack(o)));
+			Comparator.comparing(o -> getArmorSlotIndex(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> armorDamage = 
-			Comparator.comparing(o -> getArmorDamageReduce(getItemStack(o)));
+			Comparator.comparing(o -> getArmorDamageReduce(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> armorToughness = 
-			Comparator.comparing(o -> getArmorToughness(getItemStack(o)));
+			Comparator.comparing(o -> getArmorToughness(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> maxDamage = 
-			Comparator.comparing(o -> getArmorDurability(getItemStack(o)));
+			Comparator.comparing(o -> getArmorDurability(IngredientUtils.getItemStack(o)));
 		return isArmorComp.reversed().thenComparing(armorSlot.reversed()).thenComparing(armorDamage.reversed()).thenComparing(armorToughness.reversed()).thenComparing(maxDamage.reversed());
 	}
 
@@ -303,14 +303,5 @@ public final class IngredientSorter implements IIngredientSorter {
     {		
         return IngredientUtils.getToolClass(itemStack);
     }
-
-	public static <V> ItemStack getItemStack(IIngredientListElementInfo<V> ingredientInfo) {
-		IIngredientListElement<V> element = ingredientInfo.getElement();
-		V ingredient = element.getIngredient();
-		if (ingredient instanceof ItemStack) {
-			return (ItemStack) ingredient;
-		}
-		return ItemStack.EMPTY;
-	}
 
 }

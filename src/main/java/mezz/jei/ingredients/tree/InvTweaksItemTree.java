@@ -258,6 +258,11 @@ public class InvTweaksItemTree implements IItemTree {
         return (items.size() > 0) ? items.get(0).getOrder() : Integer.MAX_VALUE;
     }
 
+    public int getItemOrder(String id) {
+        List<IItemTreeItem> items = getItems(id, InvTweaksConst.DAMAGE_WILDCARD , null);
+        return (items.size() > 0) ? items.get(0).getOrder() : Integer.MAX_VALUE;
+    }
+
     
     @Override
     public IItemTreeItem getRandomItem( Random r) {
