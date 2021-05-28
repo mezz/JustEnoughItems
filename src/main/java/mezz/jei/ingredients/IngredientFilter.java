@@ -184,7 +184,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	public List<IIngredientListElement<?>> getIngredientList(String filterText) {
 		filterText = filterText.toLowerCase();
 		if (!filterText.equals(filterCached)) {
-			//First step is to get the full list.
+			//First step is to get the filtered unsorted list.
 			List<IIngredientListElementInfo<?>> ingredientList = getIngredientListUncached(filterText);
 			LoggedTimer filterTimer = new LoggedTimer();
 			filterTimer.start("Filtering and Sorting: " + filterText);
