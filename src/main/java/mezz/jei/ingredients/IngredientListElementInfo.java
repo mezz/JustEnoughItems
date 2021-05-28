@@ -34,6 +34,7 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	private final List<String> modIds;
 	private final List<String> modNames;
 	private final String resourceId;
+	private Integer sortedIndex;
 
 	@Nullable
 	public static <V> IIngredientListElementInfo<V> create(IIngredientListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
@@ -67,6 +68,7 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 			.collect(Collectors.toList());
 		this.displayName = IngredientInformation.getDisplayName(ingredient, ingredientHelper);
 		this.resourceId = ingredientHelper.getResourceId(ingredient);
+		this.sortedIndex = -1;
 	}
 
 	@Override
@@ -153,5 +155,16 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	public IIngredientListElement<V> getElement() {
 		return element;
 	}
+
+	@Override
+	public void setSortedIndex(int sortIndex) {
+		this.sortedIndex = sortIndex;
+	}
+
+	@Override
+	public int getSortedIndex() {
+		return sortedIndex;
+	}
+
 
 }

@@ -44,6 +44,9 @@ public final class IngredientSorter implements IIngredientSorter {
 			return element.getOrderIndex();
 		});
 
+	private static final Comparator<IIngredientListElementInfo<?>> PRE_SORTED =
+		Comparator.comparing(IIngredientListElementInfo::getSortedIndex);
+
 	private static final Comparator<IIngredientListElementInfo<?>> ALPHABETICAL =
 		Comparator.comparing(IIngredientListElementInfo::getName);
 
@@ -81,12 +84,22 @@ public final class IngredientSorter implements IIngredientSorter {
 			comparatorsForStages.put(IngredientSortStage.MAX_DURABILITY, createMaxDurabilityComparator());
 
 			List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
+
 			this.cachedComparator = ingredientSorterStages.stream()
 				.map(comparatorsForStages::get)
 				.reduce(Comparator::thenComparing)
 				.orElseGet(() -> modName.thenComparing(ingredientType).thenComparing(CREATIVE_MENU));
+
+			List<IIngredientListElementInfo<?>> results = ingredientFilter.getIngredientListPreSort(this.cachedComparator);
+			int index = 0;
+			//Go through all of the items and set their home.
+			for(IIngredientListElementInfo<?> element: results){
+				element.setSortedIndex(index);
+				index++;
+			}
 		}
-		return this.cachedComparator;
+		//Now the comparator just uses that index value to order everything.
+		return PRE_SORTED;
 	}
 
 	private Comparator<IIngredientListElementInfo<?>> createModNameComparator(Collection<String> modNames) {

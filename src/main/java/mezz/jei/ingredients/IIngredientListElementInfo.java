@@ -31,4 +31,8 @@ public interface IIngredientListElementInfo<V> {
 
 	IIngredientListElement<V> getElement();	
 
+	void setSortedIndex(int sortIndex);
+
+	int getSortedIndex();
+
 }
