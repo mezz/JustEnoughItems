@@ -41,6 +41,9 @@ public final class IngredientSorter implements IIngredientSorter {
 			return element.getOrderIndex();
 		});
 
+	private static final Comparator<IIngredientListElementInfo<?>> PRE_SORTED =
+		Comparator.comparing(IIngredientListElementInfo::getSortedIndex);
+
 	private static final Comparator<IIngredientListElementInfo<?>> ALPHABETICAL =
 		Comparator.comparing(IIngredientListElementInfo::getName);
 
@@ -49,19 +52,19 @@ public final class IngredientSorter implements IIngredientSorter {
 	private final IngredientTypeSortingConfig ingredientTypeSortingConfig;
 	private final IngredientTreeSortingConfig ingredientTreeSortingConfig;
 
-	@Nullable
-	private Comparator<IIngredientListElementInfo<?>> cachedComparator;
+	private boolean isCacheValid;
 
 	public IngredientSorter(IClientConfig clientConfig, ModNameSortingConfig modNameSortingConfig, IngredientTypeSortingConfig ingredientTypeSortingConfig, IngredientTreeSortingConfig ingredientTreeSortingConfig) {
 		this.clientConfig = clientConfig;
 		this.modNameSortingConfig = modNameSortingConfig;
 		this.ingredientTypeSortingConfig = ingredientTypeSortingConfig;
 		this.ingredientTreeSortingConfig = ingredientTreeSortingConfig;
+		this.isCacheValid = false;
 	}
 
 	@Override
 	public Comparator<IIngredientListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, IIngredientManager ingredientManager) {
-		if (this.cachedComparator == null) {
+		if (!this.isCacheValid) {
 			Set<String> modNames = ingredientFilter.getModNamesForSorting();
 			Collection<IIngredientType<?>> ingredientTypes = ingredientManager.getRegisteredIngredientTypes();
 
@@ -84,12 +87,25 @@ public final class IngredientSorter implements IIngredientSorter {
 
 			
 			List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
-			this.cachedComparator = ingredientSorterStages.stream()
+
+			Comparator<IIngredientListElementInfo<?>> completeComparator = ingredientSorterStages.stream()
 				.map(comparatorsForStages::get)
 				.reduce(Comparator::thenComparing)
 				.orElseGet(() -> modName.thenComparing(ingredientType).thenComparing(CREATIVE_MENU));
+
+			//Get all of the items sorted with our custom comparator.
+			List<IIngredientListElementInfo<?>> results = ingredientFilter.getIngredientListPreSort(completeComparator);
+			
+			//Go through all of the items and set their home.
+			int index = 0;
+			for(IIngredientListElementInfo<?> element: results){
+				element.setSortedIndex(index);
+				index++;
+			}
+			this.isCacheValid = true;
 		}
-		return this.cachedComparator;
+		//Now the comparator just uses that index value to order everything.
+		return PRE_SORTED;
 	}
 
 	private Comparator<IIngredientListElementInfo<?>> createModNameComparator(Collection<String> modNames) {
@@ -106,8 +122,8 @@ public final class IngredientSorter implements IIngredientSorter {
 
 	@Override
 	public void invalidateCache() {
-		this.cachedComparator = null;
 		this.ingredientTreeSortingConfig.reset();
+		this.isCacheValid = false;
 	}
 
 	private Comparator<IIngredientListElementInfo<?>> createMaxDurabilityComparator() {
