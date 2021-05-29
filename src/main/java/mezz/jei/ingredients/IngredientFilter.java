@@ -10,6 +10,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
@@ -37,7 +38,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -50,6 +50,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	private final IEditModeConfig editModeConfig;
 	private final IIngredientManager ingredientManager;
 	private final IIngredientSorter sorter;
+	private final boolean debugMode;
 
 	private final IElementSearch elementSearch;
 	private final Char2ObjectMap<PrefixInfo> prefixInfos = new Char2ObjectOpenHashMap<>();
@@ -79,6 +80,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		} else {
 			this.elementSearch = new ElementSearch();
 		}
+		this.debugMode = clientConfig.isDebugModeEnabled();
 
 		this.prefixInfos.put('@', new PrefixInfo(config::getModNameSearchMode, IIngredientListElementInfo::getModNameStrings));
 		this.prefixInfos.put('#', new PrefixInfo(config::getTooltipSearchMode, e -> e.getTooltipStrings(config, ingredientManager)));
@@ -187,14 +189,18 @@ public class IngredientFilter implements IIngredientGridSource {
 			//First step is to get the filtered unsorted list.
 			List<IIngredientListElementInfo<?>> ingredientList = getIngredientListUncached(filterText);
 			LoggedTimer filterTimer = new LoggedTimer();
-			filterTimer.start("Filtering and Sorting: " + filterText);
+			if (debugMode) {
+				filterTimer.start("Filtering and Sorting: " + filterText);
+			}
 			//Then we sort it.
 			ingredientListCached = ingredientList.stream()
 				.sorted(sorter.getComparator(this, this.ingredientManager))
 				.map(IIngredientListElementInfo::getElement)
 				.collect(Collectors.toList());
-			filterTimer.stop();
-			LogManager.getLogger().info("Filter has " + ingredientListCached.size() + " of " + ingredientList.size());
+			if (debugMode) {
+				filterTimer.stop();
+				LogManager.getLogger().info("Filter has " + ingredientListCached.size() + " of " + ingredientList.size());
+			}
 			filterCached = filterText;
 		}
 		return ingredientListCached;
@@ -205,13 +211,17 @@ public class IngredientFilter implements IIngredientGridSource {
 		//First step is to get the full list.
 		List<IIngredientListElementInfo<?>> ingredientList = getIngredientListUncached("");
 		LoggedTimer filterTimer = new LoggedTimer();
-		filterTimer.start("Pre-Sorting.");
+		if (debugMode) {
+			filterTimer.start("Pre-Sorting.");
+		}
 		//Then we sort it.
 		List<IIngredientListElementInfo<?>> fullSortedList = ingredientList.stream()
 			.sorted(directComparator)
 			.collect(Collectors.toList());
-		filterTimer.stop();
-		LogManager.getLogger().info("Sort has " + ingredientList.size());
+		if (debugMode) {
+			filterTimer.stop();
+			LogManager.getLogger().info("Sort has " + ingredientList.size());
+		}
 		return fullSortedList;
 	}
 
