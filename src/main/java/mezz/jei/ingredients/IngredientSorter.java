@@ -18,8 +18,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nullable;
-
 import com.google.common.collect.Multimap;
 
 import java.util.Collection;
@@ -27,7 +25,6 @@ import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.stream.Collectors;
 
 public final class IngredientSorter implements IIngredientSorter {
@@ -63,46 +60,54 @@ public final class IngredientSorter implements IIngredientSorter {
 	}
 
 	@Override
+	public void doPreSort(IngredientFilter ingredientFilter, IIngredientManager ingredientManager) {
+		//When this is called, we always resort, regardless of valid status.
+		Set<String> modNames = ingredientFilter.getModNamesForSorting();
+		Collection<IIngredientType<?>> ingredientTypes = ingredientManager.getRegisteredIngredientTypes();
+
+		Comparator<IIngredientListElementInfo<?>> modName = createModNameComparator(modNames);
+		Comparator<IIngredientListElementInfo<?>> ingredientType = createIngredientTypeComparator(ingredientTypes);
+		Comparator<IIngredientListElementInfo<?>> ingredientTree = ingredientTreeSortingConfig.getComparator();
+		
+
+		EnumMap<IngredientSortStage, Comparator<IIngredientListElementInfo<?>>> comparatorsForStages = new EnumMap<>(IngredientSortStage.class);
+		comparatorsForStages.put(IngredientSortStage.ALPHABETICAL, ALPHABETICAL);
+		comparatorsForStages.put(IngredientSortStage.CREATIVE_MENU, CREATIVE_MENU);
+		comparatorsForStages.put(IngredientSortStage.INGREDIENT_TYPE, ingredientType);
+		comparatorsForStages.put(IngredientSortStage.MOD_NAME, modName);
+		comparatorsForStages.put(IngredientSortStage.TOOL_TYPE, createToolsComparator());
+		comparatorsForStages.put(IngredientSortStage.TAG, createTagComparator());
+		comparatorsForStages.put(IngredientSortStage.WEAPON_DAMAGE, createAttackComparator());
+		comparatorsForStages.put(IngredientSortStage.ARMOR, createArmorComparator());
+		comparatorsForStages.put(IngredientSortStage.MAX_DURABILITY, createMaxDurabilityComparator());
+		comparatorsForStages.put(IngredientSortStage.ITEM_TREE, ingredientTree);
+
+		
+		List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
+
+		Comparator<IIngredientListElementInfo<?>> completeComparator = ingredientSorterStages.stream()
+			.map(comparatorsForStages::get)
+			.reduce(Comparator::thenComparing)
+			.orElseGet(() -> modName.thenComparing(ingredientType).thenComparing(CREATIVE_MENU));
+
+		//Get all of the items sorted with our custom comparator.
+		List<IIngredientListElementInfo<?>> results = ingredientFilter.getIngredientListPreSort(completeComparator);
+		
+		//Go through all of the items and set their home.
+		int index = 0;
+		for(IIngredientListElementInfo<?> element: results){
+			element.setSortedIndex(index);
+			index++;
+		}
+		this.isCacheValid = true;
+		//Don't need to hang on to this any more.
+		ingredientTreeSortingConfig.reset();
+	}
+
+	@Override
 	public Comparator<IIngredientListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, IIngredientManager ingredientManager) {
 		if (!this.isCacheValid) {
-			Set<String> modNames = ingredientFilter.getModNamesForSorting();
-			Collection<IIngredientType<?>> ingredientTypes = ingredientManager.getRegisteredIngredientTypes();
-
-			Comparator<IIngredientListElementInfo<?>> modName = createModNameComparator(modNames);
-			Comparator<IIngredientListElementInfo<?>> ingredientType = createIngredientTypeComparator(ingredientTypes);
-			Comparator<IIngredientListElementInfo<?>> ingredientTree = ingredientTreeSortingConfig.getComparator();
-			
-
-			EnumMap<IngredientSortStage, Comparator<IIngredientListElementInfo<?>>> comparatorsForStages = new EnumMap<>(IngredientSortStage.class);
-			comparatorsForStages.put(IngredientSortStage.ALPHABETICAL, ALPHABETICAL);
-			comparatorsForStages.put(IngredientSortStage.CREATIVE_MENU, CREATIVE_MENU);
-			comparatorsForStages.put(IngredientSortStage.INGREDIENT_TYPE, ingredientType);
-			comparatorsForStages.put(IngredientSortStage.MOD_NAME, modName);
-			comparatorsForStages.put(IngredientSortStage.TOOL_TYPE, createToolsComparator());
-			comparatorsForStages.put(IngredientSortStage.TAG, createTagComparator());
-			comparatorsForStages.put(IngredientSortStage.WEAPON_DAMAGE, createAttackComparator());
-			comparatorsForStages.put(IngredientSortStage.ARMOR, createArmorComparator());
-			comparatorsForStages.put(IngredientSortStage.MAX_DURABILITY, createMaxDurabilityComparator());
-			comparatorsForStages.put(IngredientSortStage.ITEM_TREE, ingredientTree);
-
-			
-			List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
-
-			Comparator<IIngredientListElementInfo<?>> completeComparator = ingredientSorterStages.stream()
-				.map(comparatorsForStages::get)
-				.reduce(Comparator::thenComparing)
-				.orElseGet(() -> modName.thenComparing(ingredientType).thenComparing(CREATIVE_MENU));
-
-			//Get all of the items sorted with our custom comparator.
-			List<IIngredientListElementInfo<?>> results = ingredientFilter.getIngredientListPreSort(completeComparator);
-			
-			//Go through all of the items and set their home.
-			int index = 0;
-			for(IIngredientListElementInfo<?> element: results){
-				element.setSortedIndex(index);
-				index++;
-			}
-			this.isCacheValid = true;
+			this.doPreSort(ingredientFilter, ingredientManager);
 		}
 		//Now the comparator just uses that index value to order everything.
 		return PRE_SORTED;
@@ -122,7 +127,6 @@ public final class IngredientSorter implements IIngredientSorter {
 
 	@Override
 	public void invalidateCache() {
-		this.ingredientTreeSortingConfig.reset();
 		this.isCacheValid = false;
 	}
 

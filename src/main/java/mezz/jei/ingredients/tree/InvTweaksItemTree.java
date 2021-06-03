@@ -354,7 +354,6 @@ public class InvTweaksItemTree implements IItemTree {
 	            if(i != null) {
 	                addItem(category,
 	                        new InvTweaksItemTreeItem(name, i.getRegistryName().toString(), InvTweaksConst.DAMAGE_WILDCARD, null, order, path));
-	                log.info(String.format("An OreDictionary entry for %s is named %s", oreName, i.getRegistryName().toString()));
 	            } else {
 	                log.warn(String.format("An OreDictionary entry for %s is null", oreName));
 	            }
@@ -365,23 +364,6 @@ public class InvTweaksItemTree implements IItemTree {
     	}
     	
     }
-
-    //ATB: I hope I don't need this any more...
-    /*@SubscribeEvent
-    public void tagRegistered( ItemTags ev) {
-        // TODO: It looks like Mojang changed the internal name type to ResourceLocation. Evaluate how much of a pain that will be.
-        oresRegistered.stream().filter(ore -> ore.oreName.equals(ev.getName())).forEach(ore -> {
-             ItemStack evOre = ev.getOre();
-            if(!evOre.isEmpty()) {
-                // TODO: It looks like Mojang changed the internal name type to ResourceLocation. Evaluate how much of a pain that will be.
-                addItem(ore.category, new InvTweaksItemTreeItem(ore.name, evOre.getItem().getRegistryName().toString(),
-                        evOre.getItemDamage(), null, ore.order, ore.orePath));
-            } else {
-                log.warn(String.format("An OreDictionary entry for %s is null", ev.getName()));
-            }
-        });
-    }
-    */
     
     public void registerClass(String category, String name, String className, CompoundNBT extraData, int order, String path)
     {
@@ -404,13 +386,19 @@ public class InvTweaksItemTree implements IItemTree {
                         //An empty toolclass will match non-tools.                        
                         doIt = tclass.equals(IngredientUtils.getToolClass(stack));                        
                     }
-                    if (doIt && extraData.contains("armortype") && item instanceof ArmorItem) 
+                    if (doIt && extraData.contains("armortype")) 
                     {
-                        ArmorItem armor = (ArmorItem) item;
-                        String keyArmorType = extraData.getString("armortype");
-                        String itemArmorType = armor.getEquipmentSlot().getName().toLowerCase();
-                        doIt = (keyArmorType.equals(itemArmorType));
-                        armor = null;
+                    	if (item instanceof ArmorItem) {
+	                        ArmorItem armor = (ArmorItem) item;
+	                        String keyArmorType = extraData.getString("armortype");
+	                        String itemArmorType = armor.getEquipmentSlot().getName().toLowerCase();
+	                        doIt = (keyArmorType.equals(itemArmorType));
+	                        armor = null;
+                    	} else {
+                    		//The ArmorItem isn't a proper ArmorItem (HorseArmorItem)
+                    		doIt = false;
+                    	}
+                    	
                     }
                     if (doIt && extraData.contains("isshield")) 
                     {                        

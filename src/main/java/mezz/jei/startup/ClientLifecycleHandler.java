@@ -72,10 +72,6 @@ public class ClientLifecycleHandler {
 				throw new RuntimeException("Could not create config directory " + jeiConfigurationDir, e);
 			}
 		}
-		if (!invTweaksConfigurationDir.exists()) {  //Todo:  Add config setting to intentionally use JEI tree file.
-			//If there is no Inventory Tweaks folder, we will use our tree file instead, always.
-			invTweaksConfigurationDir = jeiConfigurationDir;
-		}
 
 
 		this.clientConfig = JEIClientConfig.clientConfig;
@@ -87,6 +83,13 @@ public class ClientLifecycleHandler {
 		bookmarkConfig = new BookmarkConfig(jeiConfigurationDir);
 		worldConfig = new WorldConfig(jeiConfigurationDir);
 		editModeConfig = new EditModeConfig(jeiConfigurationDir);
+		
+		if (!invTweaksConfigurationDir.exists() || clientConfig.getUseJeiTreeFile()) {
+			//If there is no Inventory Tweaks folder, we will use our tree file instead, always.
+			invTweaksConfigurationDir = jeiConfigurationDir;
+		}
+		
+		
 		recipeCategorySortingConfig = new RecipeCategorySortingConfig(new File(jeiConfigurationDir, "recipe-category-sort-order.ini"));
 
 		ModNameSortingConfig ingredientModNameSortingConfig = new ModNameSortingConfig(new File(jeiConfigurationDir, "ingredient-list-mod-sort-order.ini"));

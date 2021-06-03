@@ -88,6 +88,8 @@
   "config.jei.advanced.maxColumns.comment": "The maximum width of the ingredient list.",
   "config.jei.advanced.giveMode": "Give Mode",
   "config.jei.advanced.giveMode.comment": "Choose if JEI should give items direct to the inventory (inventory) or pick them up with the mouse (mouse_pickup).",
+  "config.jei.advanced.jeiSortTree": "JEI Inventory Tree",
+  "config.jei.advanced.jeiSortTree.comment": "Force JEI to use JEI/InvTreeFile.txt instead of InvTweaks/InvTreeFile.txt for Item_Tree sort.",
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Hide Ingredients Mode:",

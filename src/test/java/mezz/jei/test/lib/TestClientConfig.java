@@ -48,4 +48,10 @@ public class TestClientConfig implements IClientConfig {
 	public List<IngredientSortStage> getIngredientSorterStages() {
 		return ClientConfig.ingredientSorterStagesDefault;
 	}
+
+	@Override
+	public boolean getUseJeiTreeFile() {
+		return true;
+	}
+
 }

@@ -36,6 +36,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	private final ConfigValues values;
 	private List<? extends String> searchColors = Arrays.asList(ColorGetter.getColorDefaults());
 	public static final List<IngredientSortStage> ingredientSorterStagesDefault = Arrays.asList(
+		IngredientSortStage.ITEM_TREE,
 		IngredientSortStage.WEAPON_DAMAGE,
 		IngredientSortStage.TOOL_TYPE,
 		IngredientSortStage.ARMOR,
@@ -56,6 +57,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	private final ForgeConfigSpec.IntValue maxRecipeGuiHeight;
 	private final ForgeConfigSpec.ConfigValue<List<? extends String>> searchColorsCfg;
 	private final ForgeConfigSpec.ConfigValue<List<? extends String>> ingredientSorterStagesCfg;
+	private final ForgeConfigSpec.BooleanValue useJeiTreeFile;
 
 	public ClientConfig(ForgeConfigSpec.Builder builder) {
 		instance = this;
@@ -112,6 +114,9 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 				.collect(Collectors.toList());
 			Predicate<Object> elementValidator = validEnumElement(IngredientSortStage.class);
 			ingredientSorterStagesCfg = builder.defineList("IngredientSortStages", defaults, elementValidator);
+
+			builder.comment("Force the use of the JEI InvTweaksTree.txt file vs try Inventory Tweaks's file.");
+			useJeiTreeFile = builder.define("JeiSortTree", defaultValues.useJeiTreeFile);
 		}
 		builder.pop();
 	}
@@ -142,6 +147,11 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 			maxRecipeGuiHeight.set(v);
 			values.maxRecipeGuiHeight = v;
 		}, defaultVals.maxRecipeGuiHeight, 1, Integer.MAX_VALUE);
+
+		group.addBool(cfgTranslation("jeiSortTree"), values.useJeiTreeFile, v -> {
+			useJeiTreeFile.set(v);
+			values.useJeiTreeFile = v;
+		}, defaultVals.useJeiTreeFile);
 
 	}
 
@@ -204,6 +214,11 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	@Override
 	public List<IngredientSortStage> getIngredientSorterStages() {
 		return ingredientSorterStages;
+	}
+
+	@Override
+	public boolean getUseJeiTreeFile() {
+		return values.useJeiTreeFile;
 	}
 
 	private void syncSearchColorsConfig() {

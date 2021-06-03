@@ -89,7 +89,7 @@ public class InvTweaksItemTreeLoader extends DefaultHandler {
 
             VersionLoader loader = new VersionLoader();
             parser.parse(file, loader);
-            return true; //InvTweaksConst.TREE_VERSION.equals(loader.version);
+            return InvTweaksConst.TREE_VERSION.equals(loader.version);
         } else {
             return false;
         }

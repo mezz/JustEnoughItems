@@ -10,4 +10,5 @@ public class ConfigValues {
 	public GiveMode giveMode = GiveMode.MOUSE_PICKUP;
 	public int maxColumns = 9;
 	public int maxRecipeGuiHeight = 350;
+	public boolean useJeiTreeFile = false;
 }
