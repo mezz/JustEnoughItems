@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class ClientConfig implements IJEIConfig, IClientConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -44,7 +45,8 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 		IngredientSortStage.ALPHABETICAL,
 		IngredientSortStage.MOD_NAME,
 		IngredientSortStage.INGREDIENT_TYPE,
-		IngredientSortStage.CREATIVE_MENU
+		IngredientSortStage.CREATIVE_MENU,
+		IngredientSortStage.MAX_DURABILITY
 	);
 	private List<IngredientSortStage> ingredientSorterStages = ingredientSorterStagesDefault;
 
@@ -135,14 +137,17 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 			centerSearchBarEnabled.set(v);
 			values.centerSearchBarEnabled = v;
 		}, defaultVals.centerSearchBarEnabled);
+
 		group.addEnum(cfgTranslation("giveMode"), values.giveMode, v -> {
 			giveMode.set(v);
 			values.giveMode = v;
 		}, NameMap.of(defaultVals.giveMode, GiveMode.values()).create());
+
 		group.addInt(cfgTranslation("maxColumns"), values.maxColumns, v -> {
 			maxColumns.set(v);
 			values.maxColumns = v;
 		}, defaultVals.maxColumns, 1, Integer.MAX_VALUE);
+
 		group.addInt(cfgTranslation("maxRecipeGuiHeight"), values.maxRecipeGuiHeight, v -> {
 			maxRecipeGuiHeight.set(v);
 			values.maxRecipeGuiHeight = v;
@@ -152,6 +157,10 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 			useJeiTreeFile.set(v);
 			values.useJeiTreeFile = v;
 		}, defaultVals.useJeiTreeFile);
+
+		group.addString(cfgTranslation("jeiSortOrder"), getIngredientSorterStagesString(), v -> {
+			setIngredientSorterStringStages(v);
+		}, getIngredientSorterDefaultString());
 
 	}
 
@@ -215,6 +224,55 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	public List<IngredientSortStage> getIngredientSorterStages() {
 		return ingredientSorterStages;
 	}
+
+	public List<String> getIngredientSorterDefaults() {
+		return ingredientSorterStagesDefault.stream()
+		.map(Enum::name)
+		.collect(Collectors.toList());
+		
+	}
+
+	public String getIngredientSorterDefaultString() {
+		return ingredientSorterStagesDefault.stream()
+		.map(Enum::name)
+		.collect(Collectors.joining(","));
+	}
+
+	public String getIngredientSorterStagesString() {
+		return String.join(",", ingredientSorterStagesCfg.get());
+		//ingredientSorterStagesCfg.get().stream().collect(Collectors.joining(","));
+	}
+
+	public void setIngredientSorterStringStages(String stagesCSV) {
+		List<String> stagesList = Stream.of(stagesCSV.split(",", -1)).map(s -> s.trim().toUpperCase()).collect(Collectors.toList());
+		setIngredientSorterStringStages(stagesList);
+	}
+
+	public void setIngredientSorterStringStages(List<String> stagesList) {
+		ingredientSorterStagesCfg.set(stagesList);
+		this.ingredientSorterStages = ingredientSorterStagesCfg.get()
+		.stream()
+		.map(s -> EnumUtils.getEnum(IngredientSortStage.class, s))
+		.filter(Objects::nonNull)
+		.collect(Collectors.toList());
+		if (ingredientSorterStages.isEmpty()) {
+			this.ingredientSorterStages = ingredientSorterStagesDefault;
+		}
+		Internal.getIngredientFilter().invalidateCache();		
+	}
+
+	public void setIngredientSorterStages(List<IngredientSortStage> stagesList) {
+		this.ingredientSorterStages = stagesList;
+		if (ingredientSorterStages.isEmpty()) {
+			this.ingredientSorterStages = ingredientSorterStagesDefault;
+		}
+		List<String> stagesStrings = ingredientSorterStages.stream()
+		.map(Enum::name)
+		.collect(Collectors.toList());
+		this.ingredientSorterStagesCfg.set(stagesStrings);
+		Internal.getIngredientFilter().invalidateCache();
+	}
+
 
 	@Override
 	public boolean getUseJeiTreeFile() {

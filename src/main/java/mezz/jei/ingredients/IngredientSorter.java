@@ -106,7 +106,7 @@ public final class IngredientSorter implements IIngredientSorter {
 
 	@Override
 	public Comparator<IIngredientListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, IIngredientManager ingredientManager) {
-		if (!this.isCacheValid) {
+		if (!this.isCacheValid || ingredientTreeSortingConfig.hasFileChanged()) {
 			this.doPreSort(ingredientFilter, ingredientManager);
 		}
 		//Now the comparator just uses that index value to order everything.

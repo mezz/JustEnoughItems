@@ -84,17 +84,11 @@ public class ClientLifecycleHandler {
 		worldConfig = new WorldConfig(jeiConfigurationDir);
 		editModeConfig = new EditModeConfig(jeiConfigurationDir);
 		
-		if (!invTweaksConfigurationDir.exists() || clientConfig.getUseJeiTreeFile()) {
-			//If there is no Inventory Tweaks folder, we will use our tree file instead, always.
-			invTweaksConfigurationDir = jeiConfigurationDir;
-		}
-		
-		
 		recipeCategorySortingConfig = new RecipeCategorySortingConfig(new File(jeiConfigurationDir, "recipe-category-sort-order.ini"));
 
 		ModNameSortingConfig ingredientModNameSortingConfig = new ModNameSortingConfig(new File(jeiConfigurationDir, "ingredient-list-mod-sort-order.ini"));
 		IngredientTypeSortingConfig ingredientTypeSortingConfig = new IngredientTypeSortingConfig(new File(jeiConfigurationDir, "ingredient-list-type-sort-order.ini"));
-		IngredientTreeSortingConfig ingredientTreeSortingConfig = new IngredientTreeSortingConfig(new File(invTweaksConfigurationDir, "InvTweaksTree.txt"));
+		IngredientTreeSortingConfig ingredientTreeSortingConfig = new IngredientTreeSortingConfig(clientConfig, new File(jeiConfigurationDir, "InvTweaksTree.txt"), new File(invTweaksConfigurationDir, "InvTweaksTree.txt"));
 		ingredientSorter = new IngredientSorter(clientConfig, ingredientModNameSortingConfig, ingredientTypeSortingConfig, ingredientTreeSortingConfig);
 
 		ErrorUtil.setModIdHelper(modIdHelper);

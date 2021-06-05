@@ -117,16 +117,12 @@ public class IngredientFilter implements IIngredientGridSource {
 
 		this.elementSearch.add(info);
 
-		String modNameForSorting = info.getModNameForSorting();
-		if (this.modNamesForSorting.add(modNameForSorting)) {
-			this.sorter.invalidateCache();
-		}
-
 		invalidateCache();
 	}
 
 	public void invalidateCache() {
 		this.filterCached = null;
+		sorter.invalidateCache();
 	}
 
 	public <V> List<IIngredientListElementInfo<V>> findMatchingElements(IIngredientHelper<V> ingredientHelper, V ingredient) {
