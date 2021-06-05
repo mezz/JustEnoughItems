@@ -10,6 +10,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
@@ -116,6 +117,9 @@ public class IngredientFilter implements IIngredientGridSource {
 		updateHiddenState(element);
 
 		this.elementSearch.add(info);
+
+		String modNameForSorting = info.getModNameForSorting();
+		this.modNamesForSorting.add(modNameForSorting);
 
 		invalidateCache();
 	}
