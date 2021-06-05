@@ -1,6 +1,7 @@
 package mezz.jei.ingredients;
 
 import com.google.common.collect.ImmutableSet;
+
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -9,10 +10,12 @@ import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.util.Translator;
 import net.minecraft.util.ResourceLocation;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -31,6 +34,7 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	private final List<String> modIds;
 	private final List<String> modNames;
 	private final String resourceId;
+	private Integer sortedIndex;
 
 	@Nullable
 	public static <V> IIngredientListElementInfo<V> create(IIngredientListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
@@ -64,6 +68,7 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 			.collect(Collectors.toList());
 		this.displayName = IngredientInformation.getDisplayName(ingredient, ingredientHelper);
 		this.resourceId = ingredientHelper.getResourceId(ingredient);
+		this.sortedIndex = -1;
 	}
 
 	@Override
@@ -118,6 +123,13 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	}
 
 	@Override
+	public Collection<ResourceLocation> getTagIds(IIngredientManager ingredientManager) {
+		V ingredient = element.getIngredient();
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
+		return ingredientHelper.getTags(ingredient);
+	}
+
+	@Override
 	public Collection<String> getCreativeTabsStrings(IIngredientManager ingredientManager) {
 		V ingredient = element.getIngredient();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
@@ -143,4 +155,16 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	public IIngredientListElement<V> getElement() {
 		return element;
 	}
+
+	@Override
+	public void setSortedIndex(int sortIndex) {
+		this.sortedIndex = sortIndex;
+	}
+
+	@Override
+	public int getSortedIndex() {
+		return sortedIndex;
+	}
+
+
 }

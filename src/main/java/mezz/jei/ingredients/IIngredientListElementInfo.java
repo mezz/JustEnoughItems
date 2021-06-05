@@ -7,6 +7,7 @@ import java.util.Set;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import net.minecraft.util.ResourceLocation;
 
 public interface IIngredientListElementInfo<V> {
 
@@ -20,11 +21,18 @@ public interface IIngredientListElementInfo<V> {
 
 	Collection<String> getTagStrings(IIngredientManager ingredientManager);
 
+	Collection<ResourceLocation> getTagIds(IIngredientManager ingredientManager);
+
 	Collection<String> getCreativeTabsStrings(IIngredientManager ingredientManager);
 
 	Collection<String> getColorStrings(IIngredientManager ingredientManager);
 
 	String getResourceId();
 
-	IIngredientListElement<V> getElement();
+	IIngredientListElement<V> getElement();	
+
+	void setSortedIndex(int sortIndex);
+
+	int getSortedIndex();
+
 }
