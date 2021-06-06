@@ -18,6 +18,10 @@
   "jei.tooltip.not.enough.space": "No hay espacio suficiente para mostrar la lista de ingredientes aquí.",
   "jei.tooltip.ingredient.list.disabled": "La superposición de JEI está desactivada.",
   "jei.tooltip.ingredient.list.disabled.how.to.fix": "Pulse %s para activar.",
+  "jei.tooltip.bookmarks": "Marcadores JEI",
+  "jei.tooltip.bookmarks.usage.nokey": "Añade un enlace de teclas para los marcadores JEI en la configuración de tus Controles.",
+  "jei.tooltip.bookmarks.usage.key": "Pasa el ratón por encima de un ingrediente y pulsa \"%s\" para marcarlo como favorito.",
+  "jei.tooltip.bookmarks.not.enough.space": "No hay suficiente espacio para mostrar los marcadores aquí.",
 
   "_comment": "Error Tooltips",
   "jei.tooltip.error.recipe.transfer.missing": "Faltan objetos",
@@ -39,8 +43,13 @@
   "key.jei.showUses": "Mostrar los usos",
   "key.jei.recipeBack": "Mostrar receta anterior",
   "key.jei.toggleCheatMode": "Alternar modo trampa",
+  "key.jei.toggleEditMode": "Toggle Hide/Edit Mode",
   "key.jei.previousPage": "Mostrar página anterior",
   "key.jei.nextPage": "Mostrar página anterior",
+  "key.jei.previousCategory": "Mostrar la categoría de la receta anterior",
+  "key.jei.nextCategory": "Mostrar la siguiente categoría de recetas",
+  "key.jei.bookmark": "Añadir/quitar un ingrediente marcado",
+  "key.jei.toggleBookmarkOverlay": "Mostrar/Ocultar ingredientes marcados",
 
   "_comment": "Config",
   "config.jei": "Configuración de JEI",
@@ -57,6 +66,8 @@
   "config.jei.interface.comment": "Opciones relacionadas con la interfaz de usuario.",
   "config.jei.interface.overlayEnabled": "Lista de objetos habilitada",
   "config.jei.interface.overlayEnabled.comment": "Muestra la lista de objetas tras abrir la interfaz",
+  "config.jei.interface.bookmarkOverlayEnabled": "Mostrar favoritos",
+  "config.jei.interface.bookmarkOverlayEnabled.comment": "Muestra la lista de marcadores junto a las interfaces gráficas abiertas.",
   "config.jei.search": "Opciones de búsqueda",
   "config.jei.search.comment": "Opciones relacionadas con la barra de búsqueda",
   "config.jei.search.modNameSearchMode": "@Nombre del mod",
@@ -64,7 +75,7 @@
   "config.jei.search.tooltipSearchMode": "#Información",
   "config.jei.search.tooltipSearchMode.comment": "Búsqueda por descripción (prefijo: #)",
   "config.jei.search.tagSearchMode": "$Etiqueta",
-  "config.jei.search.tagSearchMode.comment": "Modo de búsqueda de nombres de etiquetas (prefix: $)",
+  "config.jei.search.tagSearchMode.comment": "Modo de búsqueda de nombres de etiquetas (prefijo: $)",
   "config.jei.search.creativeTabSearchMode": "%%Ficha creativo",
   "config.jei.search.creativeTabSearchMode.comment": "Modo de búsqueda para los nombres de la pestaña de creativo (prefijo: %)",
   "config.jei.search.colorSearchMode": "^Color",
@@ -86,6 +97,8 @@
   "config.jei.advanced.modNameFormat.comment": "Cómo debe formatearse el nombre del mod en la información sobre herramientas para la interfaz JEI. Dejar en blanco para deshabilitar.",
   "config.jei.advanced.maxColumns": "Anchura máxima",
   "config.jei.advanced.maxColumns.comment": "El ancho máximo de la lista de ingredientes.",
+  "config.jei.advanced.maxRecipeGuiHeight": "Altura máxima de la GUI de la receta",
+  "config.jei.advanced.maxRecipeGuiHeight.comment": "La altura máxima del GUI de la receta.",
   "config.jei.advanced.giveMode": "Modo de obtener",
   "config.jei.advanced.giveMode.comment": "Elija si JEI debe dar elementos directamente al inventario (inventory) o recogerlos con el mouse (mouse_pickup).",
 
@@ -102,8 +115,13 @@
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Fabricando",
+  "gui.jei.category.stoneCutter": "Cortando piedras"
   "gui.jei.category.smelting": "Cocinando",
+  "gui.jei.category.smoking": "Ahumando",
+  "gui.jei.category.blasting": "Destruyendo",
+  "gui.jei.category.campfire": "Cocinando en la hoguera",
   "gui.jei.category.smelting.experience": "%s EXP",
+  "gui.jei.category.smelting.time.seconds": "%ss",
   "gui.jei.category.fuel": "Combustible",
   "gui.jei.category.fuel.smeltCount.single": "Quema 1 item",
   "gui.jei.category.fuel.smeltCount": "Quema %s ítems",
@@ -118,4 +136,7 @@
   "description.jei.wooden.door.1": "Las puertas de madera te permiten bloquear la entrada de monstruos a tu edificio.\\nFrases de prueba.",
   "description.jei.wooden.door.2": "Al hacer clic en una puerta, su estado cambia de abierto a cerrado y viceversa.",
   "description.jei.wooden.door.3": "Las puertas de madera pueden abrirse/cerrarse mediante circuitos de piedra roja."
+  "description.jei.debug.formatting.1": "Testing %s formatting replacements.",
+  "description.jei.debug.formatting.2": "Testing %s %s formatting replacements.",
+  "description.jei.debug.formatting.3": "%s nested"
 }
