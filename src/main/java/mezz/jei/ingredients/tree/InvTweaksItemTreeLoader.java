@@ -1,6 +1,7 @@
 package mezz.jei.ingredients.tree;
 
 import mezz.jei.api.ingredients.tree.IItemTreeListener;
+import mezz.jei.util.LoggedTimer;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.MinecraftForge;
@@ -55,10 +56,11 @@ public class InvTweaksItemTreeLoader extends DefaultHandler {
         mergeStack = new LinkedList<>();
     }
 
-    public synchronized static InvTweaksItemTree load( File file) throws Exception {
+    public synchronized static InvTweaksItemTree load(File file) throws Exception {
         init();
     	
-        LogManager.getLogger().info("Starting Loading Tree.");
+		LoggedTimer treeTimer = new LoggedTimer();
+		treeTimer.start("Starting Loading Tree.");
         
         SAXParserFactory parserFactory = SAXParserFactory.newInstance();
         SAXParser parser = parserFactory.newSAXParser();
@@ -74,6 +76,7 @@ public class InvTweaksItemTreeLoader extends DefaultHandler {
 
         MinecraftForge.EVENT_BUS.register(tree);
         
+        treeTimer.stop();
         LogManager.getLogger().info("Finished Loading Tree.  Highest Order: " + tree.getHighestOrder());
         
         return tree;

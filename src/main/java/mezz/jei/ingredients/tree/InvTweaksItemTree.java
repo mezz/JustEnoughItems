@@ -13,7 +13,6 @@ import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
-//import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import org.apache.logging.log4j.LogManager;
@@ -51,9 +50,6 @@ public class InvTweaksItemTree implements IItemTree {
     private Map<String, List<IItemTreeItem>> itemsByName = new HashMap<>(500);
 
     private String rootCategory;
-    
-    private List<OreDictInfo> oresRegistered = new ArrayList<>();
-    
     
     private List<ItemStack> allGameItems = new ArrayList<ItemStack>();
 
@@ -358,7 +354,6 @@ public class InvTweaksItemTree implements IItemTree {
 	                log.warn(String.format("An OreDictionary entry for %s is null", oreName));
 	            }
 	        }
-	        oresRegistered.add(new OreDictInfo(category, name, oreName, order, path));
     	} catch (Exception ex) {
     		log.warn(String.format("An OreDictionary name '%s' contains invalid characters.", oreName));
     	}
@@ -414,32 +409,13 @@ public class InvTweaksItemTree implements IItemTree {
             }
         }
     }
-
-    private static class OreDictInfo {
-        String category;
-        String name;
-        String oreName;
-        int order;
-        String orePath;
-
-        OreDictInfo(String category_, String name_, String oreName_, int order_, String orePath_) {
-            category = category_;
-            name = name_;
-            oreName = oreName_;
-            order = order_;
-            orePath = orePath_;
-        }
-    }
-    
+   
     private void populateGameItems()
     {
         for (Entry<RegistryKey<Item>, Item> entry : ForgeRegistries.ITEMS.getEntries())
         {
-            //getDataForItemSubtypes(itemDump, entry.getValue(), entry.getKey(), includeToolClass, dumpNBT);
             Item item = entry.getValue();
-            
             allGameItems.add(item.getDefaultInstance());
-            //addData(itemDump, item, rl, false, includeToolClass, dumpNBT, new ItemStack(item, 1, 0));
         }
     }
     

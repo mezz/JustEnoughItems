@@ -111,9 +111,6 @@ public class JeiStarter {
 
 		started = true;
 
-		//This needs to be run after all of the "Ingredients are being added at runtime" items.
-		ingredientSorter.doPreSort(ingredientFilter, ingredientManager);
-
 		totalTime.stop();
 	}
 
