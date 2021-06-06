@@ -75,7 +75,7 @@
   "config.jei.search.tooltipSearchMode": "#Información",
   "config.jei.search.tooltipSearchMode.comment": "Búsqueda por descripción (prefijo: #)",
   "config.jei.search.tagSearchMode": "$Etiqueta",
-  "config.jei.search.tagSearchMode.comment": "Modo de búsqueda de nombres de etiquetas (prefix: $)",
+  "config.jei.search.tagSearchMode.comment": "Modo de búsqueda de nombres de etiquetas (prefijo: $)",
   "config.jei.search.creativeTabSearchMode": "%%Ficha creativo",
   "config.jei.search.creativeTabSearchMode.comment": "Modo de búsqueda para los nombres de la pestaña de creativo (prefijo: %)",
   "config.jei.search.colorSearchMode": "^Color",
@@ -115,7 +115,7 @@
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Fabricando",
-  "gui.jei.category.stoneCutter": "Cortando piedras"
+  "gui.jei.category.stoneCutter": "Cortando piedras",
   "gui.jei.category.smelting": "Cocinando",
   "gui.jei.category.smoking": "Ahumando",
   "gui.jei.category.blasting": "Destruyendo",
@@ -135,7 +135,7 @@
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Las puertas de madera te permiten bloquear la entrada de monstruos a tu edificio.\\nFrases de prueba.",
   "description.jei.wooden.door.2": "Al hacer clic en una puerta, su estado cambia de abierto a cerrado y viceversa.",
-  "description.jei.wooden.door.3": "Las puertas de madera pueden abrirse/cerrarse mediante circuitos de piedra roja."
+  "description.jei.wooden.door.3": "Las puertas de madera pueden abrirse/cerrarse mediante circuitos de piedra roja.",
   "description.jei.debug.formatting.1": "Testing %s formatting replacements.",
   "description.jei.debug.formatting.2": "Testing %s %s formatting replacements.",
   "description.jei.debug.formatting.3": "%s nested"
