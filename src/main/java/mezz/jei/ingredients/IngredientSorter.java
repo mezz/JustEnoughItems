@@ -324,53 +324,53 @@ public final class IngredientSorter implements IIngredientSorter {
 	private static Boolean nullToolClassWarned = false;
 
 	private static String getToolClass(ItemStack itemStack)
-    {
+	{
 		//I think I should find a way to cache this.
-        if (itemStack == null || itemStack == ItemStack.EMPTY) {
+		if (itemStack == null || itemStack == ItemStack.EMPTY) {
 			return "";
 		}
 		Item item = itemStack.getItem();
-        Set<ToolType> toolTypeSet = item.getToolTypes(itemStack);
-        
-        Set<String> toolClassSet = new HashSet<String>();
+		Set<ToolType> toolTypeSet = item.getToolTypes(itemStack);
+		
+		Set<String> toolClassSet = new HashSet<String>();
 
-        for (ToolType toolClass: toolTypeSet) {
+		for (ToolType toolClass: toolTypeSet) {
 			if (toolClass == null) {
 				//What kind of monster puts a null ToolClass instance into the toolTypes list?
 				if (!nullToolClassWarned) {
 					nullToolClassWarned = true;
 					LogManager.getLogger().warn("Item '" + item.getRegistryName() + "' has a null tool class entry.");
 				}
-            } else if (toolClass.getName() != "sword") {
-	            //Swords are not "tools".
+			} else if (toolClass.getName() != "sword") {
+				//Swords are not "tools".
 				toolClassSet.add(toolClass.getName());
-            }
-        }
-
-        //Minecraft hoes, shears, and fishing rods don't have tool class names.
-        if (toolClassSet.isEmpty()) {
-            if (item instanceof HoeItem) return "hoe";
-            if (item instanceof ShearsItem) return "shears";
-            if (item instanceof FishingRodItem) return "fishingrod";
-            return "";
-        }
-        
-        //Get the only thing.
-        if (toolClassSet.size() == 1) {
-            return (String) toolClassSet.toArray()[0];
-		}
-        
-        //We have a preferred type to list tools under, primarily the pickaxe for harvest level.
-        String[] prefOrder = {"pickaxe", "axe", "shovel", "hoe", "shears", "wrench"};
-        for (int i = 0; i < prefOrder.length; i++) {
-            if (toolClassSet.contains(prefOrder[i])) {
-                return prefOrder[i];
 			}
 		}
-        
-        //Whatever happens to be the first thing:
-        return (String) toolClassSet.toArray()[0];
-    }
+
+		//Minecraft hoes, shears, and fishing rods don't have tool class names.
+		if (toolClassSet.isEmpty()) {
+			if (item instanceof HoeItem) return "hoe";
+			if (item instanceof ShearsItem) return "shears";
+			if (item instanceof FishingRodItem) return "fishingrod";
+			return "";
+		}
+		
+		//Get the only thing.
+		if (toolClassSet.size() == 1) {
+			return (String) toolClassSet.toArray()[0];
+		}
+		
+		//We have a preferred type to list tools under, primarily the pickaxe for harvest level.
+		String[] prefOrder = {"pickaxe", "axe", "shovel", "hoe", "shears", "wrench"};
+		for (int i = 0; i < prefOrder.length; i++) {
+			if (toolClassSet.contains(prefOrder[i])) {
+				return prefOrder[i];
+			}
+		}
+		
+		//Whatever happens to be the first thing:
+		return (String) toolClassSet.toArray()[0];
+	}
 
 	public static <V> ItemStack getItemStack(IIngredientListElementInfo<V> ingredientInfo) {
 		IIngredientListElement<V> element = ingredientInfo.getElement();
