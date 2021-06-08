@@ -23,6 +23,8 @@ import net.minecraftforge.common.ToolType;
 
 import com.google.common.collect.Multimap;
 
+import org.apache.logging.log4j.LogManager;
+
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumMap;
@@ -318,6 +320,9 @@ public final class IngredientSorter implements IIngredientSorter {
 		return !getTagForSorting(elementInfo).isEmpty();
 	};
 
+
+	private static Boolean nullToolClassWarned = false;
+
 	private static String getToolClass(ItemStack itemStack)
     {
 		//I think I should find a way to cache this.
@@ -330,9 +335,15 @@ public final class IngredientSorter implements IIngredientSorter {
         Set<String> toolClassSet = new HashSet<String>();
 
         for (ToolType toolClass: toolTypeSet) {
-            //Swords are not "tools".
-            if (toolClass.getName() != "sword") {
-            	toolClassSet.add(toolClass.getName());
+			if (toolClass == null) {
+				//What kind of monster puts a null ToolClass instance into the toolTypes list?
+				if (!nullToolClassWarned) {
+					nullToolClassWarned = true;
+					LogManager.getLogger().warn("Item '" + item.getRegistryName() + "' has a null tool class entry.");
+				}
+            } else if (toolClass.getName() != "sword") {
+	            //Swords are not "tools".
+				toolClassSet.add(toolClass.getName());
             }
         }
 
