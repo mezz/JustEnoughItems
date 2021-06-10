@@ -36,14 +36,14 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	private final ConfigValues values;
 	private List<? extends String> searchColors = Arrays.asList(ColorGetter.getColorDefaults());
 	public static final List<IngredientSortStage> ingredientSorterStagesDefault = Arrays.asList(
+		IngredientSortStage.MOD_NAME,
+		IngredientSortStage.INGREDIENT_TYPE,
+		IngredientSortStage.CREATIVE_MENU,
+		IngredientSortStage.ALPHABETICAL,
 		IngredientSortStage.WEAPON_DAMAGE,
 		IngredientSortStage.TOOL_TYPE,
 		IngredientSortStage.ARMOR,
-		IngredientSortStage.TAG,
-		IngredientSortStage.ALPHABETICAL,
-		IngredientSortStage.MOD_NAME,
-		IngredientSortStage.INGREDIENT_TYPE,
-		IngredientSortStage.CREATIVE_MENU
+		IngredientSortStage.TAG
 	);
 	private List<IngredientSortStage> ingredientSorterStages = ingredientSorterStagesDefault;
 
