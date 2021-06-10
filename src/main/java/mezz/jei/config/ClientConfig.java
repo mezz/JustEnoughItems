@@ -16,13 +16,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class ClientConfig implements IJEIConfig, IClientConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -43,9 +47,28 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 		IngredientSortStage.WEAPON_DAMAGE,
 		IngredientSortStage.TOOL_TYPE,
 		IngredientSortStage.ARMOR,
-		IngredientSortStage.TAG
+		IngredientSortStage.TAG,
+		IngredientSortStage.MAX_DURABILITY
 	);
 	private List<IngredientSortStage> ingredientSorterStages = ingredientSorterStagesDefault;
+
+	private class StageSorterConfig {
+		public IngredientSortStage stage;
+		public int initialWeight;
+		public int requestedWeight;
+
+		public StageSorterConfig(IngredientSortStage assignStage, int weight) {
+			stage = assignStage;
+			initialWeight = weight;
+			requestedWeight = weight;
+		}
+		public IngredientSortStage getStage() { return stage; }
+		public int getInitialWeight() { return initialWeight;}
+		public int getRequestedWeight() { return requestedWeight;}
+}
+
+	private List<StageSorterConfig> ingredientSorterWeights;
+
 
 	// Forge config
 	private final ForgeConfigSpec.BooleanValue debugModeEnabled;
@@ -143,6 +166,24 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 			values.maxRecipeGuiHeight = v;
 		}, defaultVals.maxRecipeGuiHeight, 1, Integer.MAX_VALUE);
 
+		int order = 1;
+		if (ingredientSorterStages.size() != ingredientSorterStagesDefault.size())
+		{
+			//We need all of them to appear because you can't add them.
+			//The new default has all of them.
+			ingredientSorterStages = ingredientSorterStagesDefault;
+		}
+		ingredientSorterWeights = new ArrayList<StageSorterConfig>(ingredientSorterStages.size());
+		for (IngredientSortStage stage : ingredientSorterStages) {
+			ingredientSorterWeights.add(new StageSorterConfig(stage, order * 10));
+			group.addInt(cfgTranslation("sort." + stage.name().toLowerCase()), order * 10, 
+			v -> {setIngredientSorterStages(stage, v);},
+			order * 10,
+			Integer.MIN_VALUE,
+			Integer.MAX_VALUE
+			);
+			order++;
+		}
 	}
 
 	private String cfgTranslation(String name) {
@@ -204,6 +245,77 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	@Override
 	public List<IngredientSortStage> getIngredientSorterStages() {
 		return ingredientSorterStages;
+	}
+
+	public List<String> getIngredientSorterDefaults() {
+		return ingredientSorterStagesDefault.stream()
+		.map(Enum::name)
+		.collect(Collectors.toList());
+
+	}
+
+	public String getIngredientSorterDefaultString() {
+		return ingredientSorterStagesDefault.stream()
+		.map(Enum::name)
+		.collect(Collectors.joining(","));
+	}
+
+	public String getIngredientSorterStagesString() {
+		return String.join(",", ingredientSorterStagesCfg.get());
+		//ingredientSorterStagesCfg.get().stream().collect(Collectors.joining(","));
+	}
+
+	public void setIngredientSorterStringStages(String stagesCSV) {
+		List<String> stagesList = Stream.of(stagesCSV.split(",", -1)).map(s -> s.trim().toUpperCase()).collect(Collectors.toList());
+		setIngredientSorterStringStages(stagesList);
+	}
+
+	public void setIngredientSorterStringStages(List<String> stagesList) {
+		ingredientSorterStagesCfg.set(stagesList);
+		this.ingredientSorterStages = ingredientSorterStagesCfg.get()
+		.stream()
+		.map(s -> EnumUtils.getEnum(IngredientSortStage.class, s))
+		.filter(Objects::nonNull)
+		.collect(Collectors.toList());
+		if (ingredientSorterStages.isEmpty()) {
+			this.ingredientSorterStages = ingredientSorterStagesDefault;
+		}
+		Internal.getIngredientFilter().invalidateCache();		
+	}
+
+	public void setIngredientSorterStages(List<IngredientSortStage> stagesList) {
+		this.ingredientSorterStages = stagesList;
+		if (ingredientSorterStages.isEmpty()) {
+			this.ingredientSorterStages = ingredientSorterStagesDefault;
+		}
+		List<String> stagesStrings = ingredientSorterStages.stream()
+		.map(Enum::name)
+		.collect(Collectors.toList());
+		this.ingredientSorterStagesCfg.set(stagesStrings);
+		Internal.getIngredientFilter().invalidateCache();
+	}
+
+	public void setIngredientSorterStages(IngredientSortStage setStage, int setWeight) {
+		boolean saveIt = false;
+		for (StageSorterConfig sorterWeight : ingredientSorterWeights) {
+			if (sorterWeight.stage == setStage) {
+				sorterWeight.requestedWeight = setWeight;
+				//We shouldn't try to save until we have updated the last one.
+				saveIt = (sorterWeight.initialWeight == (ingredientSorterStages.size() * 10));
+				break;
+			}
+		}
+
+		if (saveIt) {
+			Comparator<StageSorterConfig> requestedWeight = Comparator.comparing(StageSorterConfig::getRequestedWeight);
+			Comparator<StageSorterConfig> initalWeight = Comparator.comparing(StageSorterConfig::getInitialWeight);
+
+			List<IngredientSortStage> stagesList = ingredientSorterWeights.stream()
+			.sorted(requestedWeight.thenComparing(initalWeight))
+			.map(StageSorterConfig::getStage)
+			.collect(Collectors.toList());
+			setIngredientSorterStages(stagesList);
+		}
 	}
 
 	private void syncSearchColorsConfig() {
