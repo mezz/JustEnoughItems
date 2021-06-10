@@ -210,17 +210,20 @@ public class IngredientFilter implements IIngredientGridSource {
 		//First step is to get the full list.
 		List<IIngredientListElementInfo<?>> ingredientList = getIngredientListUncached("");
 		LoggedTimer filterTimer = new LoggedTimer();
-		if (debugMode) {
-			filterTimer.start("Pre-Sorting.");
-		}
+		filterTimer.start("Pre-Sorting.");
 		//Then we sort it.
-		List<IIngredientListElementInfo<?>> fullSortedList = ingredientList.stream()
+		List<IIngredientListElementInfo<?>> fullSortedList;
+		try {
+			fullSortedList = ingredientList.stream()
 			.sorted(directComparator)
 			.collect(Collectors.toList());
-		if (debugMode) {
-			filterTimer.stop();
-			LogManager.getLogger().info("Sort has " + ingredientList.size());
+		} catch (Exception e) {
+			//Be even more defensive.
+			LogManager.getLogger().error("Error pre-sorting items.", e);
+			fullSortedList = ingredientList;
 		}
+		filterTimer.stop();
+		LogManager.getLogger().info("Sort has " + ingredientList.size());
 		return fullSortedList;
 	}
 
