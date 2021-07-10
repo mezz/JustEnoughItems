@@ -181,7 +181,7 @@ public class RecipeManagerInternal {
 			}
 		} else {
 			// non-null focus => get all recipe categories from plugins with the focus
-			Stream<ResourceLocation> uidStream = this.plugins.parallelStream()
+			Stream<ResourceLocation> uidStream = this.plugins.stream()
 				.map(p -> p.getRecipeCategoryUids(focus))
 				.flatMap(Collection::stream)
 				.distinct();
