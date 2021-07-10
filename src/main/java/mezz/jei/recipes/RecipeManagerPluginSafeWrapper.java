@@ -18,7 +18,6 @@ public class RecipeManagerPluginSafeWrapper implements IRecipeManagerPlugin {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final IRecipeManagerPlugin plugin;
-	private final Stopwatch stopWatch = Stopwatch.createUnstarted();
 
 	public RecipeManagerPluginSafeWrapper(IRecipeManagerPlugin plugin) {
 		this.plugin = plugin;
@@ -40,9 +39,8 @@ public class RecipeManagerPluginSafeWrapper implements IRecipeManagerPlugin {
 	}
 
 	private <T> T callPluginMethod(Supplier<T> supplier, T defaultValue) {
+		Stopwatch stopWatch = Stopwatch.createStarted();
 		try {
-			stopWatch.reset();
-			stopWatch.start();
 			T result = supplier.get();
 			stopWatch.stop();
 			if (stopWatch.elapsed(TimeUnit.MILLISECONDS) > 10) {

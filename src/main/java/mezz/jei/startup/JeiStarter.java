@@ -3,6 +3,7 @@ package mezz.jei.startup;
 import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.BookmarkConfig;
@@ -34,7 +35,6 @@ import mezz.jei.load.registration.GuiHandlerRegistration;
 import mezz.jei.load.registration.RecipeTransferRegistration;
 import mezz.jei.plugins.jei.JeiInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
-import mezz.jei.recipes.RecipeManager;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.ErrorUtil;
@@ -71,7 +71,7 @@ public class JeiStarter {
 		IngredientManager ingredientManager = pluginLoader.getIngredientManager();
 		IngredientFilter ingredientFilter = pluginLoader.createIngredientFilter(ingredientSorter, editModeConfig, ingredientFilterConfig);
 		BookmarkList bookmarkList = pluginLoader.createBookmarkList(bookmarkConfig);
-		RecipeManager recipeManager = pluginLoader.getRecipeManager(recipeCategorySortingConfig);
+		IRecipeManager recipeManager = pluginLoader.getRecipeManager(recipeCategorySortingConfig);
 		RecipeTransferRegistration recipeTransferRegistration = pluginLoader.getRecipeTransferRegistration();
 		RecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferRegistration.getRecipeTransferHandlers());
 

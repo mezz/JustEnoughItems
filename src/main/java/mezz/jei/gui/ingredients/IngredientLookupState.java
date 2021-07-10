@@ -6,10 +6,8 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.FocusedRecipes;
-import mezz.jei.util.ErrorUtil;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 public class IngredientLookupState {
 	private final IRecipeManager recipeManager;
@@ -20,18 +18,13 @@ public class IngredientLookupState {
 	private int recipeCategoryIndex;
 	private int recipeIndex;
 	private int recipesPerPage;
+	@Nullable
 	private FocusedRecipes<?> focusedRecipes;
 
-	public IngredientLookupState(IRecipeManager recipeManager, @Nullable Focus<?> focus, List<IRecipeCategory<?>> recipeCategories, int recipeCategoryIndex, int recipeIndex) {
-		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
-		Preconditions.checkArgument(recipeCategoryIndex >= 0, "Recipe category index cannot be negative.");
-		Preconditions.checkArgument(recipeIndex >= 0, "Recipe index cannot be negative.");
+	public IngredientLookupState(IRecipeManager recipeManager, @Nullable Focus<?> focus) {
 		this.recipeManager = recipeManager;
 		this.focus = focus;
-		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
-		this.recipeCategoryIndex = recipeCategoryIndex;
-		this.recipeIndex = recipeIndex;
-		this.focusedRecipes = updateFocusedRecipes();
+		this.recipeCategories = ImmutableList.copyOf(recipeManager.getRecipeCategories(focus, false));
 	}
 
 	@Nullable
@@ -47,10 +40,30 @@ public class IngredientLookupState {
 		return recipeCategoryIndex;
 	}
 
+	public boolean setRecipeCategory(IRecipeCategory<?> recipeCategory) {
+		final int recipeCategoryIndex = recipeCategories.indexOf(recipeCategory);
+		if (recipeCategoryIndex >= 0) {
+			this.setRecipeCategoryIndex(recipeCategoryIndex);
+			return true;
+		}
+		return false;
+	}
+
 	public void setRecipeCategoryIndex(int recipeCategoryIndex) {
+		Preconditions.checkArgument(recipeCategoryIndex >= 0, "Recipe category index cannot be negative.");
 		this.recipeCategoryIndex = recipeCategoryIndex;
 		this.recipeIndex = 0;
-		this.focusedRecipes = updateFocusedRecipes();
+		this.focusedRecipes = null;
+	}
+
+	public void nextRecipeCategory() {
+		final int recipesTypesCount = getRecipeCategories().size();
+		setRecipeCategoryIndex((getRecipeCategoryIndex() + 1) % recipesTypesCount);
+	}
+
+	public void previousRecipeCategory() {
+		final int recipesTypesCount = getRecipeCategories().size();
+		setRecipeCategoryIndex((recipesTypesCount + getRecipeCategoryIndex() - 1) % recipesTypesCount);
 	}
 
 	public int getRecipeIndex() {
@@ -69,12 +82,11 @@ public class IngredientLookupState {
 		this.recipesPerPage = recipesPerPage;
 	}
 
-	private FocusedRecipes<?> updateFocusedRecipes() {
-		final IRecipeCategory<?> recipeCategory = recipeCategories.get(recipeCategoryIndex);
-		return FocusedRecipes.create(focus, recipeManager, recipeCategory);
-	}
-
 	public FocusedRecipes<?> getFocusedRecipes() {
+		if (focusedRecipes == null) {
+			final IRecipeCategory<?> recipeCategory = recipeCategories.get(recipeCategoryIndex);
+			focusedRecipes = FocusedRecipes.create(focus, recipeManager, recipeCategory);
+		}
 		return focusedRecipes;
 	}
 }
