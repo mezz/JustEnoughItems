@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
-import com.google.common.collect.ImmutableList;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;

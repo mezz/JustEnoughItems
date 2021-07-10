@@ -16,7 +16,6 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RecipeManager implements IRecipeManager {
 	private final RecipeManagerInternal internal;

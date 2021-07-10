@@ -10,7 +10,6 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;

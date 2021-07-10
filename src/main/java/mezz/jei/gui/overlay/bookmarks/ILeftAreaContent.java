@@ -5,15 +5,10 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import java.util.Set;
 
 import mezz.jei.input.IMouseHandler;
-import mezz.jei.input.click.MouseClickState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
 
 import mezz.jei.input.IShowsRecipeFocuses;
-
-import javax.annotation.Nullable;
 
 public interface ILeftAreaContent extends IShowsRecipeFocuses {
 
