@@ -13,7 +13,7 @@ buildscript {
 		}
 	}
 	dependencies {
-		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
+		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
 	}
 }
 
@@ -22,7 +22,7 @@ plugins {
 	id 'eclipse'
 	id 'idea'
 	id 'com.matthewprenger.cursegradle' version '1.4.0'
-	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.66'
+	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.71.4'
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply from: 'buildtools/ColoredOutput.gradle'
@@ -70,26 +70,10 @@ dependencies {
 			name   : 'forge',
 			version: "${project.mcversion}-${project.forgeversion}"
 	])
-	testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.1"
-	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.1"
+	testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
+	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
 
 	compileOnly fg.deobf("dev.ftb.mods:ftb-library-forge:${ftb_library_version}")
-}
-
-task replaceResources(type: Copy) {
-	outputs.upToDateWhen { false }
-	from(sourceSets.main.resources.srcDirs) {
-		include 'META-INF/mods.toml'
-		expand 'version': version, 'mc_version': minecraft_version_range, 'forge_version': forge_version_range
-	}
-	into "$buildDir/resources/main/"
-}
-
-processResources {
-	from(sourceSets.main.resources.srcDirs) {
-		exclude 'META-INF/mods.toml'
-	}
-	finalizedBy replaceResources
 }
 
 minecraft {
@@ -100,36 +84,47 @@ minecraft {
 	runs {
 		client {
 			property 'forge.logging.console.level', 'debug'
-			workingDirectory project.file('run')
+			workingDirectory file('run')
 			mods {
-				jei {
-					source sourceSets.main
-					source sourceSets.api
-				}
+				jei.sources((SourceSet[]) [sourceSets.main, sourceSets.api])
 			}
 		}
 		server {
 			property 'forge.logging.console.level', 'debug'
-			workingDirectory project.file('run')
+			workingDirectory file('run')
 			mods {
-				jei {
-					source sourceSets.main
-					source sourceSets.api
-				}
+				jei.sources((SourceSet[]) [sourceSets.main, sourceSets.api])
 			}
 		}
 		data {
 			property 'forge.logging.console.level', 'debug'
-			workingDirectory project.file('run')
+			workingDirectory file('run')
 			args '--mod', 'jei', '--all', '--output', file('src/generated/resources/')
 			mods {
-				jei {
-					source sourceSets.main
-					source sourceSets.api
-				}
+				jei.sources((SourceSet[]) [sourceSets.main, sourceSets.api])
 			}
 		}
 	}
+}
+
+def replaceResources = tasks.register("replaceResources", Copy) {
+	it.outputs.upToDateWhen { false }
+	//Copy it into the build dir
+	it.from(sourceSets.main.resources) {
+		include "META-INF/mods.toml"
+		expand 'version': version, 'mc_version': minecraft_version_range, 'forge_version': forge_version_range
+	}
+	it.into "$buildDir/resources/main/"
+}
+
+processResources {
+	duplicatesStrategy(DuplicatesStrategy.FAIL)
+	exclude('META-INF/mods.toml')
+	configure { finalizedBy(replaceResources) }
+}
+
+classes.configure {
+	dependsOn(replaceResources)
 }
 
 javadoc {
@@ -164,35 +159,37 @@ jar {
 	from sourceSets.main.output
 	from sourceSets.api.output
 
-	manifest {
-		attributes([
-				'Specification-Title'     : 'Just Enough Items',
-				'Specification-Vendor'    : 'mezz',
-				'Specification-Version'   : "${semver}",
-				'Implementation-Title'    : project.name,
-				'Implementation-Version'  : "${project.version}",
-				'Implementation-Vendor'   : 'mezz',
-				'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-		])
-	}
+	manifest.attributes([
+			'Specification-Title'     : 'Just Enough Items',
+			'Specification-Vendor'    : 'mezz',
+			'Specification-Version'   : "${semver}",
+			'Implementation-Title'    : project.name,
+			'Implementation-Version'  : "${project.version}",
+			'Implementation-Vendor'   : 'mezz',
+			'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+	])
 
 	finalizedBy 'reobfJar'
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-	archiveClassifier = 'javadoc'
+	duplicatesStrategy(DuplicatesStrategy.FAIL)
+	archiveClassifier.set('javadoc')
 	from javadoc.destinationDir
 }
 
 task sourcesJar(type: Jar) {
-	archiveClassifier = 'sources'
+	duplicatesStrategy(DuplicatesStrategy.FAIL)
+	archiveClassifier.set('sources')
 	from sourceSets.main.allJava
 	from sourceSets.api.allJava
 }
 
 task apiJar(type: Jar) {
-	archiveClassifier = 'api'
+	duplicatesStrategy(DuplicatesStrategy.FAIL)
+	archiveClassifier.set('api')
 	from sourceSets.api.output
+	afterEvaluate { finalizedBy reobfApiJar }
 
 	// TODO: when FG bug is fixed, remove allJava from the api jar.
 	// https://github.com/MinecraftForge/ForgeGradle/issues/369
@@ -201,7 +198,8 @@ task apiJar(type: Jar) {
 }
 
 task deobfJar(type: Jar) {
-	archiveClassifier = 'deobf'
+	duplicatesStrategy(DuplicatesStrategy.FAIL)
+	archiveClassifier.set('deobf')
 	from sourceSets.main.output
 	from sourceSets.api.output
 }
@@ -213,14 +211,24 @@ artifacts {
 	archives deobfJar
 }
 
+reobf {
+	apiJar { classpath.from(sourceSets.api.compileClasspath) }
+	jar { classpath.from(sourceSets.main.compileClasspath) }
+}
+
 task uploadJars(dependsOn: build) {
 	description = 'Uploads JARs'
 	if (project.hasProperty('local_maven')) {
-		apply plugin: 'maven'
-		uploadArchives {
+		apply plugin: 'maven-publish'
+		publishing {
+			publications { PublicationContainer publicationContainer ->
+				publicationContainer.register("maven", MavenPublication) { MavenPublication publication ->
+					publication.artifacts = [apiJar, jar, javadocJar, deobfJar, sourcesJar]
+				}
+			}
 			repositories {
-				mavenDeployer {
-					repository(url: "file://${local_maven}")
+				maven {
+					url("file://${local_maven}")
 				}
 			}
 		}
