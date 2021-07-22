@@ -168,7 +168,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		if (player == null) {
 			return false;
 		}
-		ItemStack itemStack = player.inventory.getItemStack();
+		ItemStack itemStack = player.inventory.getCarried();
 		if (itemStack.isEmpty()) {
 			return false;
 		}
@@ -237,12 +237,12 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 			if (player == null) {
 				return null;
 			}
-			ItemStack itemStack = player.inventory.getItemStack();
+			ItemStack itemStack = player.inventory.getCarried();
 			if (itemStack.isEmpty()) {
 				return null;
 			}
 			if (!clickState.isSimulate()) {
-				player.inventory.setItemStack(ItemStack.EMPTY);
+				player.inventory.setCarried(ItemStack.EMPTY);
 				PacketJei packet = new PacketDeletePlayerItem(itemStack);
 				Network.sendPacketToServer(packet);
 			}

@@ -31,7 +31,7 @@ public class Ingredients implements IIngredients {
 	public void setInputIngredients(List<Ingredient> inputs) {
 		List<List<ItemStack>> inputLists = new ArrayList<>();
 		for (Ingredient input : inputs) {
-			ItemStack[] stacks = input.getMatchingStacks();
+			ItemStack[] stacks = input.getItems();
 			List<ItemStack> expandedInput = Arrays.asList(stacks);
 			inputLists.add(expandedInput);
 		}

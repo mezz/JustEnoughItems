@@ -38,7 +38,7 @@ public class JustEnoughItems {
 			IResourceManager resourceManager = minecraft.getResourceManager();
 			if (resourceManager instanceof IReloadableResourceManager) {
 				IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
-				reloadableResourceManager.addReloadListener(spriteUploader);
+				reloadableResourceManager.registerReloadListener(spriteUploader);
 			}
 			EventBusHelper.addLifecycleListener(JustEnoughItems.class, modEventBus, FMLLoadCompleteEvent.class, loadCompleteEvent ->
 				new ClientLifecycleHandler(networkHandler, textures)

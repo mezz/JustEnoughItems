@@ -69,7 +69,7 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecuttingR
 	@Override
 	public void setIngredients(StonecuttingRecipe recipe, IIngredients ingredients) {
 		ingredients.setInputIngredients(recipe.getIngredients());
-		ingredients.setOutput(VanillaTypes.ITEM, recipe.getRecipeOutput());
+		ingredients.setOutput(VanillaTypes.ITEM, recipe.getResultItem());
 	}
 
 	@Override

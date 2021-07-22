@@ -23,13 +23,13 @@ public final class ItemStackListFactory {
 		final List<ItemStack> itemList = new ArrayList<>();
 		final Set<String> itemNameSet = new HashSet<>();
 
-		for (ItemGroup itemGroup : ItemGroup.GROUPS) {
-			if (itemGroup == ItemGroup.HOTBAR || itemGroup == ItemGroup.INVENTORY) {
+		for (ItemGroup itemGroup : ItemGroup.TABS) {
+			if (itemGroup == ItemGroup.TAB_HOTBAR || itemGroup == ItemGroup.TAB_INVENTORY) {
 				continue;
 			}
 			NonNullList<ItemStack> creativeTabItemStacks = NonNullList.create();
 			try {
-				itemGroup.fill(creativeTabItemStacks);
+				itemGroup.fillItemList(creativeTabItemStacks);
 			} catch (RuntimeException | LinkageError e) {
 				LOGGER.error("Item Group crashed while getting items." +
 					"Some items from this group will be missing from the ingredient list. {}", itemGroup, e);

@@ -144,7 +144,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 	}
 
 	public boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
-		InputMappings.Input input = InputMappings.getInputByCode(keyCode, scanCode);
+		InputMappings.Input input = InputMappings.getKey(keyCode, scanCode);
 		if (KeyBindings.nextPage.isActiveAndMatches(input)) {
 			this.pageDelegate.nextPage();
 			return true;
@@ -160,14 +160,14 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 	 * Sets the stack in a hotbar slot to the one that's hovered over.
 	 */
 	protected boolean checkHotbarKeys(InputMappings.Input input) {
-		Screen guiScreen = Minecraft.getInstance().currentScreen;
+		Screen guiScreen = Minecraft.getInstance().screen;
 		if (worldConfig.isCheatItemsEnabled() && guiScreen != null && !(guiScreen instanceof RecipesGui)) {
 			final double mouseX = MouseUtil.getX();
 			final double mouseY = MouseUtil.getY();
 			if (isMouseOver(mouseX, mouseY)) {
-				GameSettings gameSettings = Minecraft.getInstance().gameSettings;
+				GameSettings gameSettings = Minecraft.getInstance().options;
 				for (int hotbarSlot = 0; hotbarSlot < 9; ++hotbarSlot) {
-					if (gameSettings.keyBindsHotbar[hotbarSlot].isActiveAndMatches(input)) {
+					if (gameSettings.keyHotbarSlots[hotbarSlot].isActiveAndMatches(input)) {
 						IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);
 						if (ingredientUnderMouse != null) {
 							ItemStack itemStack = ingredientUnderMouse.getCheatItemStack();

@@ -124,7 +124,7 @@ public class IngredientListElementRenderer<T> {
 		Minecraft minecraft = Minecraft.getInstance();
 		int maxWidth = Constants.MAX_TOOLTIP_WIDTH;
 		for (ITextProperties tooltipLine : tooltip) {
-			int width = minecraft.fontRenderer.getStringPropertyWidth(tooltipLine);
+			int width = minecraft.font.width(tooltipLine);
 			if (width > maxWidth) {
 				maxWidth = width;
 			}
@@ -150,25 +150,25 @@ public class IngredientListElementRenderer<T> {
 		if (!colorNames.isEmpty()) {
 			String colorNamesString = Joiner.on(", ").join(colorNames);
 			TranslationTextComponent colorTranslation = new TranslationTextComponent("jei.tooltip.item.colors", colorNamesString);
-			IFormattableTextComponent colorNamesLocalizedString = colorTranslation.mergeStyle(TextFormatting.GRAY);
-			tooltip.addAll(minecraft.fontRenderer.getCharacterManager().func_238362_b_(colorNamesLocalizedString, maxWidth, Style.EMPTY));
+			IFormattableTextComponent colorNamesLocalizedString = colorTranslation.withStyle(TextFormatting.GRAY);
+			tooltip.addAll(minecraft.font.getSplitter().splitLines(colorNamesLocalizedString, maxWidth, Style.EMPTY));
 		}
 	}
 
 	private static void addEditModeInfoToTooltip(Minecraft minecraft, List<ITextProperties> tooltip, int maxWidth) {
 		tooltip.add(StringTextComponent.EMPTY);
 		TranslationTextComponent description = new TranslationTextComponent("gui.jei.editMode.description");
-		tooltip.add(description.mergeStyle(TextFormatting.DARK_GREEN));
+		tooltip.add(description.withStyle(TextFormatting.DARK_GREEN));
 
-		TranslationTextComponent controlKeyLocalization = new TranslationTextComponent(Minecraft.IS_RUNNING_ON_MAC ? "key.jei.ctrl.mac" : "key.jei.ctrl");
+		TranslationTextComponent controlKeyLocalization = new TranslationTextComponent(Minecraft.ON_OSX ? "key.jei.ctrl.mac" : "key.jei.ctrl");
 
 		TranslationTextComponent hide = new TranslationTextComponent("gui.jei.editMode.description.hide", controlKeyLocalization);
-		IFormattableTextComponent hideMessage = hide.mergeStyle(TextFormatting.GRAY);
-		tooltip.addAll(minecraft.fontRenderer.getCharacterManager().func_238362_b_(hideMessage, maxWidth, Style.EMPTY));
+		IFormattableTextComponent hideMessage = hide.withStyle(TextFormatting.GRAY);
+		tooltip.addAll(minecraft.font.getSplitter().splitLines(hideMessage, maxWidth, Style.EMPTY));
 
 		TranslationTextComponent hideWild = new TranslationTextComponent("gui.jei.editMode.description.hide.wild", controlKeyLocalization);
-		IFormattableTextComponent hideWildMessage = hideWild.mergeStyle(TextFormatting.GRAY);
-		tooltip.addAll(minecraft.fontRenderer.getCharacterManager().func_238362_b_(hideWildMessage, maxWidth, Style.EMPTY));
+		IFormattableTextComponent hideWildMessage = hideWild.withStyle(TextFormatting.GRAY);
+		tooltip.addAll(minecraft.font.getSplitter().splitLines(hideWildMessage, maxWidth, Style.EMPTY));
 	}
 
 }

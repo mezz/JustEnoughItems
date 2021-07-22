@@ -59,7 +59,7 @@ public class DrawableResource implements IDrawableStatic {
 	@Override
 	public void draw(MatrixStack matrixStack, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
 		Minecraft minecraft = Minecraft.getInstance();
-		minecraft.getTextureManager().bindTexture(this.resourceLocation);
+		minecraft.getTextureManager().bind(this.resourceLocation);
 
 		int x = xOffset + this.paddingLeft + maskLeft;
 		int y = yOffset + this.paddingTop + maskTop;
@@ -70,13 +70,13 @@ public class DrawableResource implements IDrawableStatic {
 		float f = 1.0F / this.textureWidth;
 		float f1 = 1.0F / this.textureHeight;
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferbuilder = tessellator.getBuffer();
+		BufferBuilder bufferbuilder = tessellator.getBuilder();
 		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		Matrix4f matrix = matrixStack.getLast().getMatrix();
-		bufferbuilder.pos(matrix, x, y + height, 0).tex(u * f, (v + (float) height) * f1).endVertex();
-		bufferbuilder.pos(matrix, x + width, y + height, 0).tex((u + (float) width) * f, (v + (float) height) * f1).endVertex();
-		bufferbuilder.pos(matrix, x + width, y, 0).tex((u + (float) width) * f, v * f1).endVertex();
-		bufferbuilder.pos(matrix, x, y, 0).tex(u * f, v * f1).endVertex();
-		tessellator.draw();
+		Matrix4f matrix = matrixStack.last().pose();
+		bufferbuilder.vertex(matrix, x, y + height, 0).uv(u * f, (v + (float) height) * f1).endVertex();
+		bufferbuilder.vertex(matrix, x + width, y + height, 0).uv((u + (float) width) * f, (v + (float) height) * f1).endVertex();
+		bufferbuilder.vertex(matrix, x + width, y, 0).uv((u + (float) width) * f, v * f1).endVertex();
+		bufferbuilder.vertex(matrix, x, y, 0).uv(u * f, v * f1).endVertex();
+		tessellator.end();
 	}
 }

@@ -265,7 +265,7 @@ public final class IngredientSorter implements IIngredientSorter {
 		Item item = itemStack.getItem();	
 		if (item instanceof ArmorItem) {
 			ArmorItem armorItem = (ArmorItem) item;				
-			return armorItem.getEquipmentSlot().getSlotIndex();
+			return armorItem.getSlot().getFilterFlag();
 		}
 		return 0;
 	};
@@ -274,7 +274,7 @@ public final class IngredientSorter implements IIngredientSorter {
 		Item item = itemStack.getItem();	
 		if (item instanceof ArmorItem) {
 			ArmorItem armorItem = (ArmorItem) item;				
-			return armorItem.getDamageReduceAmount();
+			return armorItem.getDefense();
 		}
 		return Integer.MIN_VALUE;
 	};
@@ -304,7 +304,7 @@ public final class IngredientSorter implements IIngredientSorter {
 			for (ResourceLocation tag : tags) {			
 				//TODO: make a tag blacklist.
 				if (!tag.toString().equals("itemfilters:check_nbt")) {
-					int thisTagSize = ItemTags.getCollection().getTagByID(tag).getAllElements().size();
+					int thisTagSize = ItemTags.getAllTags().getTagOrEmpty(tag).getValues().size();
 					if (thisTagSize > maxTagSize) {
 						bestTag = tag.getPath();
 						maxTagSize = thisTagSize;

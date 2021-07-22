@@ -48,7 +48,7 @@ public final class IngredientInformation {
 	}
 
 	private static String removeChatFormatting(String string) {
-		String withoutFormattingCodes = TextFormatting.getTextWithoutFormattingCodes(string);
+		String withoutFormattingCodes = TextFormatting.stripFormatting(string);
 		return (withoutFormattingCodes == null) ? "" : withoutFormattingCodes;
 	}
 

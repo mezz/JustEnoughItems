@@ -27,7 +27,7 @@ public class JeiRuntime implements IJeiRuntime {
 	}
 
 	public void close() {
-		this.recipesGui.onClose();
+		this.recipesGui.removed();
 	}
 
 	@Override

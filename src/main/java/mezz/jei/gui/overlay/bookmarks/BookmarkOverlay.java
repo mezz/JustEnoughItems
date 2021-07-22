@@ -192,9 +192,9 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 
 		private boolean handleCheatItemClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
 			Minecraft minecraft = Minecraft.getInstance();
-			InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
+			InputMappings.Input input = InputMappings.Type.MOUSE.getOrCreate(mouseButton);
 			if (!(screen instanceof RecipesGui) &&
-				(mouseButton == GLFW.GLFW_MOUSE_BUTTON_1 || mouseButton == GLFW.GLFW_MOUSE_BUTTON_2 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(input))) {
+				(mouseButton == GLFW.GLFW_MOUSE_BUTTON_1 || mouseButton == GLFW.GLFW_MOUSE_BUTTON_2 || minecraft.options.keyPickItem.isActiveAndMatches(input))) {
 				IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
 				if (clicked != null) {
 					if (worldConfig.isCheatItemsEnabled()) {

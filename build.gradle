@@ -93,7 +93,7 @@ processResources {
 }
 
 minecraft {
-	mappings channel: 'snapshot', version: project.mcp_mappings
+	mappings channel: 'official', version: project.mcversion
 
 	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 

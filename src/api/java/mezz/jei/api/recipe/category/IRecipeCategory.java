@@ -132,7 +132,7 @@ public interface IRecipeCategory<T> {
 	default boolean isHandled(T recipe) {
 		if (recipe instanceof IRecipe) {
 			IRecipe<?> iRecipe = (IRecipe<?>) recipe;
-			return !iRecipe.isDynamic();
+			return !iRecipe.isSpecial();
 		}
 		return true;
 	}

@@ -31,7 +31,7 @@ class InventoryEffectRendererGuiHandler<T extends Container> implements IGuiCont
 		if (player == null) {
 			return Collections.emptyList();
 		}
-		Collection<EffectInstance> activePotionEffects = player.getActivePotionEffects();
+		Collection<EffectInstance> activePotionEffects = player.getActiveEffects();
 		if (activePotionEffects.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -44,7 +44,7 @@ class InventoryEffectRendererGuiHandler<T extends Container> implements IGuiCont
 			height = 132 / (activePotionEffects.size() - 1);
 		}
 		for (EffectInstance potioneffect : Ordering.natural().sortedCopy(activePotionEffects)) {
-			Effect potion = potioneffect.getPotion();
+			Effect potion = potioneffect.getEffect();
 			if (potion.shouldRender(potioneffect)) {
 				areas.add(new Rectangle2d(x, y, 166, height));
 				y += height;

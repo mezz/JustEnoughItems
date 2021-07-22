@@ -41,7 +41,7 @@ public final class CommandUtil {
 			LOGGER.error("Can't give stack, there is no player");
 			return;
 		}
-		if (minecraft.currentScreen instanceof CreativeScreen && giveMode == GiveMode.MOUSE_PICKUP) {
+		if (minecraft.screen instanceof CreativeScreen && giveMode == GiveMode.MOUSE_PICKUP) {
 			final int amount = GiveMode.getStackSize(giveMode, itemStack, input);
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
 			CommandUtilServer.mousePickupItemStack(player, sendStack);
@@ -81,7 +81,7 @@ public final class CommandUtil {
 
 		ClientPlayerEntity sender = Minecraft.getInstance().player;
 		if (sender != null) {
-			if (sender.getCommandSource().hasPermissionLevel(2)) {
+			if (sender.createCommandSourceStack().hasPermission(2)) {
 				sendGiveAction(sender, itemStack, amount);
 			} else if (sender.isCreative()) {
 				sendCreativeInventoryActions(sender, itemStack, amount);
@@ -100,27 +100,27 @@ public final class CommandUtil {
 
 	private static void sendChatMessage(ClientPlayerEntity sender, String chatMessage) {
 		if (chatMessage.length() <= 256) {
-			sender.sendChatMessage(chatMessage);
+			sender.chat(chatMessage);
 		} else {
 			ITextComponent errorMessage = new TranslationTextComponent("jei.chat.error.command.too.long");
-			errorMessage.getStyle().applyFormatting(TextFormatting.RED);
-			sender.sendStatusMessage(errorMessage, false);
+			errorMessage.getStyle().applyFormat(TextFormatting.RED);
+			sender.displayClientMessage(errorMessage, false);
 
 			ITextComponent chatMessageComponent = new StringTextComponent(chatMessage);
-			chatMessageComponent.getStyle().applyFormatting(TextFormatting.RED);
-			sender.sendStatusMessage(chatMessageComponent, false);
+			chatMessageComponent.getStyle().applyFormat(TextFormatting.RED);
+			sender.displayClientMessage(chatMessageComponent, false);
 		}
 	}
 
 	private static void sendCreativeInventoryActions(ClientPlayerEntity sender, ItemStack stack, int amount) {
 		int i = 0; // starting in the inventory, not armour or crafting slots
-		while (i < sender.inventory.mainInventory.size() && amount > 0) {
-			ItemStack currentStack = sender.inventory.mainInventory.get(i);
+		while (i < sender.inventory.items.size() && amount > 0) {
+			ItemStack currentStack = sender.inventory.items.get(i);
 			if (currentStack.isEmpty()) {
 				ItemStack sendAllRemaining = ItemHandlerHelper.copyStackWithSize(stack, amount);
 				sendSlotPacket(sendAllRemaining, i);
 				amount = 0;
-			} else if (currentStack.isItemEqual(stack) && currentStack.getMaxStackSize() > currentStack.getCount()) {
+			} else if (currentStack.sameItem(stack) && currentStack.getMaxStackSize() > currentStack.getCount()) {
 				int canAdd = Math.min(currentStack.getMaxStackSize() - currentStack.getCount(), amount);
 				ItemStack fillRemainingSpace = ItemHandlerHelper.copyStackWithSize(stack, canAdd + currentStack.getCount());
 				sendSlotPacket(fillRemainingSpace, i);
@@ -140,9 +140,9 @@ public final class CommandUtil {
 			mainInventorySlot += 36;
 		}
 		Minecraft minecraft = Minecraft.getInstance();
-		PlayerController playerController = minecraft.playerController;
+		PlayerController playerController = minecraft.gameMode;
 		if (playerController != null) {
-			playerController.sendSlotPacket(stack, mainInventorySlot);
+			playerController.handleCreativeModeItemAdd(stack, mainInventorySlot);
 		} else {
 			LOGGER.error("Cannot send slot packet, minecraft.playerController is null");
 		}

@@ -94,7 +94,7 @@ public class ModIdFormattingConfig implements IJEIConfig {
 		String[] validValues = new String[validFormatting.size()];
 		int i = 0;
 		for (TextFormatting formatting : validFormatting) {
-			validValues[i] = formatting.getFriendlyName().toLowerCase(Locale.ENGLISH);
+			validValues[i] = formatting.getName().toLowerCase(Locale.ENGLISH);
 			i++;
 		}
 
@@ -108,7 +108,7 @@ public class ModIdFormattingConfig implements IJEIConfig {
 		StringBuilder format = new StringBuilder();
 		String[] strings = formatWithEnumNames.split(" ");
 		for (String string : strings) {
-			TextFormatting valueByName = TextFormatting.getValueByName(string);
+			TextFormatting valueByName = TextFormatting.getByName(string);
 			if (valueByName != null) {
 				format.append(valueByName.toString());
 			} else {
@@ -133,7 +133,7 @@ public class ModIdFormattingConfig implements IJEIConfig {
 					ITextComponent line = tooltip.get(lineNum);
 					String lineString = line.getString();
 					if (lineString.contains(ModIds.MINECRAFT_NAME)) {
-						String withoutFormatting = TextFormatting.getTextWithoutFormattingCodes(lineString);
+						String withoutFormatting = TextFormatting.stripFormatting(lineString);
 						if (withoutFormatting != null) {
 							if (lineString.equals(withoutFormatting)) {
 								return "";

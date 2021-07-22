@@ -50,12 +50,12 @@ public class DrawableNineSliceTexture {
 
 		Minecraft minecraft = Minecraft.getInstance();
 		TextureManager textureManager = minecraft.getTextureManager();
-		textureManager.bindTexture(Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
+		textureManager.bind(Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
 
-		float uMin = sprite.getMinU();
-		float uMax = sprite.getMaxU();
-		float vMin = sprite.getMinV();
-		float vMax = sprite.getMaxV();
+		float uMin = sprite.getU0();
+		float uMax = sprite.getU1();
+		float vMin = sprite.getV0();
+		float vMax = sprite.getV1();
 		float uSize = uMax - uMin;
 		float vSize = vMax - vMin;
 
@@ -65,9 +65,9 @@ public class DrawableNineSliceTexture {
 		float vBottom = vMax - vSize * (bottomHeight / (float) textureHeight);
 
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBuilder();
 		bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		Matrix4f matrix = matrixStack.getLast().getMatrix();
+		Matrix4f matrix = matrixStack.last().pose();
 
 		// left top
 		draw(bufferBuilder, matrix, uMin, vMin, uLeft, vTop, xOffset, yOffset, leftWidth, topHeight);
@@ -99,7 +99,7 @@ public class DrawableNineSliceTexture {
 			drawTiled(bufferBuilder, matrix, uLeft, vTop, uRight, vBottom, xOffset + leftWidth, yOffset + topHeight, tiledMiddleWidth, tiledMiddleHeight, middleWidth, middleHeight);
 		}
 
-		tessellator.draw();
+		tessellator.end();
 	}
 
 	private void drawTiled(BufferBuilder bufferBuilder, Matrix4f matrix, float uMin, float vMin, float uMax, float vMax, int xOffset, int yOffset, int tiledWidth, int tiledHeight, int width, int height) {
@@ -132,17 +132,17 @@ public class DrawableNineSliceTexture {
 	}
 
 	private static void draw(BufferBuilder bufferBuilder, Matrix4f matrix, float minU, double minV, float maxU, float maxV, int xOffset, int yOffset, int width, int height) {
-		bufferBuilder.pos(matrix, xOffset, yOffset + height, 0)
-			.tex(minU, maxV)
+		bufferBuilder.vertex(matrix, xOffset, yOffset + height, 0)
+			.uv(minU, maxV)
 			.endVertex();
-		bufferBuilder.pos(matrix, xOffset + width, yOffset + height, 0)
-			.tex(maxU, maxV)
+		bufferBuilder.vertex(matrix, xOffset + width, yOffset + height, 0)
+			.uv(maxU, maxV)
 			.endVertex();
-		bufferBuilder.pos(matrix, xOffset + width, yOffset, 0)
-			.tex(maxU, (float) minV)
+		bufferBuilder.vertex(matrix, xOffset + width, yOffset, 0)
+			.uv(maxU, (float) minV)
 			.endVertex();
-		bufferBuilder.pos(matrix, xOffset, yOffset, 0)
-			.tex(minU, (float) minV)
+		bufferBuilder.vertex(matrix, xOffset, yOffset, 0)
+			.uv(minU, (float) minV)
 			.endVertex();
 	}
 }

@@ -45,7 +45,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	}
 
 	protected IDrawableAnimated getArrow(T recipe) {
-		int cookTime = recipe.getCookTime();
+		int cookTime = recipe.getCookingTime();
 		if (cookTime <= 0) {
 			cookTime = regularCookTime;
 		}
@@ -65,7 +65,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	@Override
 	public void setIngredients(T recipe, IIngredients ingredients) {
 		ingredients.setInputIngredients(recipe.getIngredients());
-		ingredients.setOutput(VanillaTypes.ITEM, recipe.getRecipeOutput());
+		ingredients.setOutput(VanillaTypes.ITEM, recipe.getResultItem());
 	}
 
 	@Override
@@ -84,21 +84,21 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		if (experience > 0) {
 			TranslationTextComponent experienceString = new TranslationTextComponent("gui.jei.category.smelting.experience", experience);
 			Minecraft minecraft = Minecraft.getInstance();
-			FontRenderer fontRenderer = minecraft.fontRenderer;
-			int stringWidth = fontRenderer.getStringPropertyWidth(experienceString);
-			fontRenderer.drawText(matrixStack, experienceString, background.getWidth() - stringWidth, y, 0xFF808080);
+			FontRenderer fontRenderer = minecraft.font;
+			int stringWidth = fontRenderer.width(experienceString);
+			fontRenderer.draw(matrixStack, experienceString, background.getWidth() - stringWidth, y, 0xFF808080);
 		}
 	}
 
 	protected void drawCookTime(T recipe, MatrixStack matrixStack, int y) {
-		int cookTime = recipe.getCookTime();
+		int cookTime = recipe.getCookingTime();
 		if (cookTime > 0) {
 			int cookTimeSeconds = cookTime / 20;
 			TranslationTextComponent timeString = new TranslationTextComponent("gui.jei.category.smelting.time.seconds", cookTimeSeconds);
 			Minecraft minecraft = Minecraft.getInstance();
-			FontRenderer fontRenderer = minecraft.fontRenderer;
-			int stringWidth = fontRenderer.getStringPropertyWidth(timeString);
-			fontRenderer.drawText(matrixStack, timeString, background.getWidth() - stringWidth, y, 0xFF808080);
+			FontRenderer fontRenderer = minecraft.font;
+			int stringWidth = fontRenderer.width(timeString);
+			fontRenderer.draw(matrixStack, timeString, background.getWidth() - stringWidth, y, 0xFF808080);
 		}
 	}
 

@@ -230,7 +230,7 @@ public class InputHandler {
 	public class ClickGlobalHandler implements IMouseHandler {
 		@Override
 		public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
-			InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
+			InputMappings.Input input = InputMappings.Type.MOUSE.getOrCreate(mouseButton);
 			if (handleGlobalKeybinds(input, clickState)) {
 				return this;
 			}
@@ -262,7 +262,7 @@ public class InputHandler {
 	}
 
 	private boolean handleKeyEvent(int keyCode, int scanCode, int modifiers) {
-		InputMappings.Input input = InputMappings.getInputByCode(keyCode, scanCode);
+		InputMappings.Input input = InputMappings.getKey(keyCode, scanCode);
 		if (ingredientListOverlay.hasKeyboardFocus()) {
 			if (KeyBindings.isInventoryCloseKey(input) || KeyBindings.isEnterKey(keyCode)) {
 				ingredientListOverlay.clearKeyboardFocus();
@@ -334,12 +334,12 @@ public class InputHandler {
 
 	private boolean isContainerTextFieldFocused() {
 		Minecraft minecraft = Minecraft.getInstance();
-		Screen screen = minecraft.currentScreen;
+		Screen screen = minecraft.screen;
 		if (screen == null) {
 			return false;
 		}
 		TextFieldWidget textField = ReflectionUtil.getFieldWithClass(screen, TextFieldWidget.class);
-		return textField != null && textField.getVisible() && textField.isFocused();
+		return textField != null && textField.isVisible() && textField.isFocused();
 	}
 
 }

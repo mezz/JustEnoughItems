@@ -28,6 +28,7 @@ public interface ISubtypeInterpreter extends IIngredientSubtypeInterpreter<ItemS
 	 * Return {@link #NONE} if there is no data used for subtypes.
 	 * @since JEI 7.3.0
 	 */
+	@Override
 	default String apply(ItemStack itemStack, UidContext context) {
 		return apply(itemStack);
 	}

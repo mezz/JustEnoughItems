@@ -167,7 +167,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 	public void drawScreen(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
 			RenderSystem.disableLighting();
-			this.searchField.renderWidget(matrixStack, mouseX, mouseY, partialTicks);
+			this.searchField.renderButton(matrixStack, mouseX, mouseY, partialTicks);
 			this.contents.draw(minecraft, matrixStack, mouseX, mouseY, partialTicks);
 		}
 		if (this.guiProperties != null) {
@@ -187,10 +187,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 
 	public void drawOnForeground(Minecraft minecraft, MatrixStack matrixStack, ContainerScreen<?> gui, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			matrixStack.push();
+			matrixStack.pushPose();
 			matrixStack.translate(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
 			this.ghostIngredientDragManager.drawOnForeground(minecraft, matrixStack, mouseX, mouseY);
-			matrixStack.pop();
+			matrixStack.popPose();
 		}
 	}
 
@@ -285,13 +285,13 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 		}
 
 		Minecraft minecraft = Minecraft.getInstance();
-		Screen currentScreen = minecraft.currentScreen;
+		Screen currentScreen = minecraft.screen;
 		if (currentScreen == null || currentScreen instanceof RecipesGui) {
 			return false;
 		}
 
-		InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
-		if (mouseButton != 0 && mouseButton != 1 && !minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(input)) {
+		InputMappings.Input input = InputMappings.Type.MOUSE.getOrCreate(mouseButton);
+		if (mouseButton != 0 && mouseButton != 1 && !minecraft.options.keyPickItem.isActiveAndMatches(input)) {
 			return false;
 		}
 
@@ -354,7 +354,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 		if (isListDisplayed() &&
 			hasKeyboardFocus() &&
 			searchField.charTyped(codePoint, modifiers)) {
-			boolean changed = worldConfig.setFilterText(searchField.getText());
+			boolean changed = worldConfig.setFilterText(searchField.getValue());
 			if (changed) {
 				updateLayout(true);
 			}
@@ -367,7 +367,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 		if (isListDisplayed()) {
 			if (hasKeyboardFocus() &&
 				searchField.keyPressed(keyCode, scanCode, modifiers)) {
-				boolean changed = worldConfig.setFilterText(searchField.getText());
+				boolean changed = worldConfig.setFilterText(searchField.getValue());
 				if (changed) {
 					updateLayout(true);
 				}
@@ -406,7 +406,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 	}
 
 	public void onSetFilterText(String filterText) {
-		this.searchField.setText(filterText);
+		this.searchField.setValue(filterText);
 		updateLayout(true);
 	}
 

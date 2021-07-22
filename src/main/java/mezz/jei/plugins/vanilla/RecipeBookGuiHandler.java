@@ -19,13 +19,13 @@ class RecipeBookGuiHandler<C extends Container, T extends ContainerScreen<C> & I
 	 */
 	@Override
 	public List<Rectangle2d> getGuiExtraAreas(T containerScreen) {
-		RecipeBookGui guiRecipeBook = containerScreen.getRecipeGui();
+		RecipeBookGui guiRecipeBook = containerScreen.getRecipeBookComponent();
 		if (guiRecipeBook.isVisible()) {
 			List<Rectangle2d> areas = new ArrayList<>();
 			int i = (guiRecipeBook.width - 147) / 2 - guiRecipeBook.xOffset;
 			int j = (guiRecipeBook.height - 166) / 2;
 			areas.add(new Rectangle2d(i, j, 147, 166));
-			for (RecipeTabToggleWidget tab : guiRecipeBook.recipeTabs) {
+			for (RecipeTabToggleWidget tab : guiRecipeBook.tabButtons) {
 				if (tab.visible) {
 					areas.add(new Rectangle2d(tab.x, tab.y, tab.getWidth(), tab.getHeight()));
 				}

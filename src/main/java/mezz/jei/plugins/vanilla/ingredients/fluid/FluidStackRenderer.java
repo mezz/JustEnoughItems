@@ -73,10 +73,10 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		RenderSystem.color4f(1, 1, 1, 1);
 
 		if (overlay != null) {
-			matrixStack.push();
+			matrixStack.pushPose();
 			matrixStack.translate(0, 0, 200);
 			overlay.draw(matrixStack, xPosition, yPosition);
-			matrixStack.pop();
+			matrixStack.popPose();
 		}
 
 		RenderSystem.disableAlphaTest();
@@ -111,8 +111,8 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 
 	private void drawTiledSprite(MatrixStack matrixStack, final int xPosition, final int yPosition, final int tiledWidth, final int tiledHeight, int color, int scaledAmount, TextureAtlasSprite sprite) {
 		Minecraft minecraft = Minecraft.getInstance();
-		minecraft.getTextureManager().bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
-		Matrix4f matrix = matrixStack.getLast().getMatrix();
+		minecraft.getTextureManager().bind(PlayerContainer.BLOCK_ATLAS);
+		Matrix4f matrix = matrixStack.last().pose();
 		setGLColorFromInt(color);
 
 		final int xTileCount = tiledWidth / TEX_WIDTH;
@@ -143,7 +143,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		Fluid fluid = fluidStack.getFluid();
 		FluidAttributes attributes = fluid.getAttributes();
 		ResourceLocation fluidStill = attributes.getStillTexture(fluidStack);
-		return minecraft.getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE).apply(fluidStill);
+		return minecraft.getTextureAtlas(PlayerContainer.BLOCK_ATLAS).apply(fluidStill);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -157,21 +157,21 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	}
 
 	private static void drawTextureWithMasking(Matrix4f matrix, float xCoord, float yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, float zLevel) {
-		float uMin = textureSprite.getMinU();
-		float uMax = textureSprite.getMaxU();
-		float vMin = textureSprite.getMinV();
-		float vMax = textureSprite.getMaxV();
+		float uMin = textureSprite.getU0();
+		float uMax = textureSprite.getU1();
+		float vMin = textureSprite.getV0();
+		float vMax = textureSprite.getV1();
 		uMax = uMax - (maskRight / 16F * (uMax - uMin));
 		vMax = vMax - (maskTop / 16F * (vMax - vMin));
 
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBuilder();
 		bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		bufferBuilder.pos(matrix, xCoord, yCoord + 16, zLevel).tex(uMin, vMax).endVertex();
-		bufferBuilder.pos(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).tex(uMax, vMax).endVertex();
-		bufferBuilder.pos(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).tex(uMax, vMin).endVertex();
-		bufferBuilder.pos(matrix, xCoord, yCoord + maskTop, zLevel).tex(uMin, vMin).endVertex();
-		tessellator.draw();
+		bufferBuilder.vertex(matrix, xCoord, yCoord + 16, zLevel).uv(uMin, vMax).endVertex();
+		bufferBuilder.vertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).uv(uMax, vMax).endVertex();
+		bufferBuilder.vertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).uv(uMax, vMin).endVertex();
+		bufferBuilder.vertex(matrix, xCoord, yCoord + maskTop, zLevel).uv(uMin, vMin).endVertex();
+		tessellator.end();
 	}
 
 	@Override
@@ -188,10 +188,10 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		int amount = fluidStack.getAmount();
 		if (tooltipMode == TooltipMode.SHOW_AMOUNT_AND_CAPACITY) {
 			TranslationTextComponent amountString = new TranslationTextComponent("jei.tooltip.liquid.amount.with.capacity", nf.format(amount), nf.format(capacityMb));
-			tooltip.add(amountString.mergeStyle(TextFormatting.GRAY));
+			tooltip.add(amountString.withStyle(TextFormatting.GRAY));
 		} else if (tooltipMode == TooltipMode.SHOW_AMOUNT) {
 			TranslationTextComponent amountString = new TranslationTextComponent("jei.tooltip.liquid.amount", nf.format(amount));
-			tooltip.add(amountString.mergeStyle(TextFormatting.GRAY));
+			tooltip.add(amountString.withStyle(TextFormatting.GRAY));
 		}
 
 		return tooltip;
