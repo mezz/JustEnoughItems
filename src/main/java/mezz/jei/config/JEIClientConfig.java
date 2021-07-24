@@ -66,12 +66,12 @@ public class JEIClientConfig {
 				if (b) {
 					config.save();
 				}
-				mc.displayGuiScreen(new InventoryScreen(mc.player));
+				mc.setScreen(new InventoryScreen(mc.player));
 			};
 			gui.openGui();
 		} else {
-			mc.player.sendStatusMessage(new TranslationTextComponent(ModIds.JEI_ID + ".message.ftblibrary")
-				.setStyle(Style.EMPTY.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/ftb-library-forge"))), false);
+			mc.player.displayClientMessage(new TranslationTextComponent(ModIds.JEI_ID + ".message.ftblibrary")
+				.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/ftb-library-forge"))), false);
 		}
 	}
 }

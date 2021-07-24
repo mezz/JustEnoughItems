@@ -70,9 +70,9 @@ public class GhostIngredientDrag<T> {
 			int xDist = originX - mouseX;
 			int yDist = originY - mouseY;
 			float lineWidth = 2;
-			if (minecraft.currentScreen != null) {
+			if (minecraft.screen != null) {
 				long distanceSq = (long) xDist * xDist + (long) yDist * yDist;
-				int screenDim = minecraft.currentScreen.width * minecraft.currentScreen.height;
+				int screenDim = minecraft.screen.width * minecraft.screen.height;
 				float percentOfDim = Math.min(1, distanceSq / (float) screenDim);
 				lineWidth = 1 + ((1 - (percentOfDim)) * 3);
 			}
@@ -95,9 +95,9 @@ public class GhostIngredientDrag<T> {
 		}
 
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
-		itemRenderer.zLevel += 150.0F;
+		itemRenderer.blitOffset += 150.0F;
 		ingredientRenderer.render(matrixStack, mouseX - 8, mouseY - 8, ingredient);
-		itemRenderer.zLevel -= 150.0F;
+		itemRenderer.blitOffset -= 150.0F;
 	}
 
 	@SuppressWarnings("deprecation")

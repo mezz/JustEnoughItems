@@ -14,13 +14,13 @@ public enum GiveMode {
 	public static int getStackSize(GiveMode giveMode, ItemStack itemStack, InputMappings.Input input) {
 		switch (giveMode) {
 			case INVENTORY: {
-				if (input.getType() == InputMappings.Type.MOUSE && input.getKeyCode() == 0) {
+				if (input.getType() == InputMappings.Type.MOUSE && input.getValue() == 0) {
 					return itemStack.getMaxStackSize();
 				}
 				return 1;
 			}
 			case MOUSE_PICKUP: {
-				boolean modifierActive = Screen.hasShiftDown() || Minecraft.getInstance().gameSettings.keyBindPickBlock.isActiveAndMatches(input);
+				boolean modifierActive = Screen.hasShiftDown() || Minecraft.getInstance().options.keyPickItem.isActiveAndMatches(input);
 				return modifierActive ? itemStack.getMaxStackSize() : 1;
 			}
 			default:

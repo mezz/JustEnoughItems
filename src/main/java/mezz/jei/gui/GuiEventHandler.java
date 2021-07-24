@@ -59,7 +59,7 @@ public class GuiEventHandler {
 	}
 
 	public void onOverlayToggle(OverlayToggleEvent event) {
-		Screen currentScreen = Minecraft.getInstance().currentScreen;
+		Screen currentScreen = Minecraft.getInstance().screen;
 		ingredientListOverlay.updateScreen(currentScreen, true);
 		leftAreaDispatcher.updateScreen(currentScreen, false);
 	}
@@ -90,8 +90,8 @@ public class GuiEventHandler {
 		double mouseX = MouseUtil.getX();
 		double mouseY = MouseUtil.getY();
 		MatrixStack matrixStack = event.getMatrixStack();
-		ingredientListOverlay.drawScreen(minecraft, matrixStack, (int) mouseX, (int) mouseY, minecraft.getRenderPartialTicks());
-		leftAreaDispatcher.drawScreen(minecraft, matrixStack, (int) mouseX, (int) mouseY, minecraft.getRenderPartialTicks());
+		ingredientListOverlay.drawScreen(minecraft, matrixStack, (int) mouseX, (int) mouseY, minecraft.getFrameTime());
+		leftAreaDispatcher.drawScreen(minecraft, matrixStack, (int) mouseX, (int) mouseY, minecraft.getFrameTime());
 	}
 
 	/**
@@ -123,8 +123,8 @@ public class GuiEventHandler {
 				String guiName = gui.getClass().getName();
 				missingBackgroundLogger.log(Level.WARN, guiName, "GUI did not draw the dark background layer behind itself, this may result in display issues: {}", guiName);
 			}
-			ingredientListOverlay.drawScreen(minecraft, matrixStack, event.getMouseX(), event.getMouseY(), minecraft.getRenderPartialTicks());
-			leftAreaDispatcher.drawScreen(minecraft, matrixStack, event.getMouseX(), event.getMouseY(), minecraft.getRenderPartialTicks());
+			ingredientListOverlay.drawScreen(minecraft, matrixStack, event.getMouseX(), event.getMouseY(), minecraft.getFrameTime());
+			leftAreaDispatcher.drawScreen(minecraft, matrixStack, event.getMouseX(), event.getMouseY(), minecraft.getFrameTime());
 		}
 		drawnOnBackground = false;
 

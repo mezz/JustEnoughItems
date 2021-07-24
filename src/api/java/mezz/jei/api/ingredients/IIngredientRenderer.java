@@ -45,6 +45,6 @@ public interface IIngredientRenderer<T> {
 	 * @return The font renderer for the ingredient.
 	 */
 	default FontRenderer getFontRenderer(Minecraft minecraft, T ingredient) {
-		return minecraft.fontRenderer;
+		return minecraft.font;
 	}
 }

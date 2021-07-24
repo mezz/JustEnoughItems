@@ -65,7 +65,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 
 	@Override
 	public ITextComponent getTitleAsTextComponent() {
-		return Blocks.ANVIL.getTranslatedName();
+		return Blocks.ANVIL.getName();
 	}
 
 	@Override
@@ -117,15 +117,15 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 		ItemStack lastRightStack = displayData.getLastRightStack();
 		int lastCost = displayData.getLastCost();
 		if (lastLeftStack == null || lastRightStack == null
-			|| !ItemStack.areItemStacksEqual(lastLeftStack, newLeftStack)
-			|| !ItemStack.areItemStacksEqual(lastRightStack, newRightStack)) {
+			|| !ItemStack.matches(lastLeftStack, newLeftStack)
+			|| !ItemStack.matches(lastRightStack, newRightStack)) {
 			lastCost = AnvilRecipeMaker.findLevelsCost(newLeftStack, newRightStack);
 			displayData.setLast(newLeftStack, newRightStack, lastCost);
 		}
 
 		if (lastCost != 0) {
 			String costText = lastCost < 0 ? "err" : Integer.toString(lastCost);
-			String text = I18n.format("container.repair.cost", costText);
+			String text = I18n.get("container.repair.cost", costText);
 
 			Minecraft minecraft = Minecraft.getInstance();
 			int mainColor = 0xFF80FF20;
@@ -143,14 +143,14 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 
 	private void drawRepairCost(Minecraft minecraft, MatrixStack matrixStack, String text, int mainColor) {
 		int shadowColor = 0xFF000000 | (mainColor & 0xFCFCFC) >> 2;
-		int width = minecraft.fontRenderer.getStringWidth(text);
+		int width = minecraft.font.width(text);
 		int x = background.getWidth() - 2 - width;
 		int y = 27;
 
 		// TODO 1.13 match the new GuiRepair style
-		minecraft.fontRenderer.drawString(matrixStack, text, x + 1, y, shadowColor);
-		minecraft.fontRenderer.drawString(matrixStack, text, x, y + 1, shadowColor);
-		minecraft.fontRenderer.drawString(matrixStack, text, x + 1, y + 1, shadowColor);
-		minecraft.fontRenderer.drawString(matrixStack, text, x, y, mainColor);
+		minecraft.font.draw(matrixStack, text, x + 1, y, shadowColor);
+		minecraft.font.draw(matrixStack, text, x, y + 1, shadowColor);
+		minecraft.font.draw(matrixStack, text, x + 1, y + 1, shadowColor);
+		minecraft.font.draw(matrixStack, text, x, y, mainColor);
 	}
 }

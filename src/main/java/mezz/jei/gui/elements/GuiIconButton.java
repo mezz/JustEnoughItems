@@ -70,10 +70,10 @@ public class GuiIconButton extends Button {
 
 			double xOffset = x + (width - icon.getWidth()) / 2.0;
 			double yOffset = y + (height - icon.getHeight()) / 2.0;
-			matrixStack.push();
+			matrixStack.pushPose();
 			matrixStack.translate(xOffset, yOffset, 0);
 			icon.draw(matrixStack);
-			matrixStack.pop();
+			matrixStack.popPose();
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 	}
@@ -102,7 +102,7 @@ public class GuiIconButton extends Button {
 				return null;
 			}
 			if (!clickState.isSimulate()) {
-				this.button.playDownSound(Minecraft.getInstance().getSoundHandler());
+				this.button.playDownSound(Minecraft.getInstance().getSoundManager());
 				this.button.onClick(mouseX, mouseY);
 			}
 			return this;

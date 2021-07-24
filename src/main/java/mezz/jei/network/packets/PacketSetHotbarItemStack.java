@@ -18,7 +18,7 @@ public class PacketSetHotbarItemStack extends PacketJei {
 
 	public PacketSetHotbarItemStack(ItemStack itemStack, int hotbarSlot) {
 		ErrorUtil.checkNotNull(itemStack, "itemStack");
-		Preconditions.checkArgument(PlayerInventory.isHotbar(hotbarSlot), "hotbar slot must be in the hotbar. got: " + hotbarSlot);
+		Preconditions.checkArgument(PlayerInventory.isHotbarSlot(hotbarSlot), "hotbar slot must be in the hotbar. got: " + hotbarSlot);
 		this.itemStack = itemStack;
 		this.hotbarSlot = hotbarSlot;
 	}
@@ -30,7 +30,7 @@ public class PacketSetHotbarItemStack extends PacketJei {
 
 	@Override
 	public void writePacketData(PacketBuffer buf) {
-		buf.writeItemStack(itemStack);
+		buf.writeItem(itemStack);
 		buf.writeVarInt(hotbarSlot);
 	}
 
@@ -38,7 +38,7 @@ public class PacketSetHotbarItemStack extends PacketJei {
 		if (player instanceof ServerPlayerEntity) {
 			ServerPlayerEntity sender = (ServerPlayerEntity) player;
 
-			ItemStack itemStack = buf.readItemStack();
+			ItemStack itemStack = buf.readItem();
 			if (!itemStack.isEmpty()) {
 				int hotbarSlot = buf.readVarInt();
 				CommandUtilServer.setHotbarSlot(sender, itemStack, hotbarSlot);

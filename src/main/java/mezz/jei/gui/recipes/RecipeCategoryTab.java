@@ -42,8 +42,8 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 		}
 		if (!clickState.isSimulate()) {
 			logic.setRecipeCategory(category);
-			SoundHandler soundHandler = Minecraft.getInstance().getSoundHandler();
-			soundHandler.play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+			SoundHandler soundHandler = Minecraft.getInstance().getSoundManager();
+			soundHandler.play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 		}
 		return this;
 	}
@@ -70,12 +70,12 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 			} else {
 				String text = category.getTitleAsTextComponent().getString().substring(0, 2);
 				Minecraft minecraft = Minecraft.getInstance();
-				FontRenderer fontRenderer = minecraft.fontRenderer;
+				FontRenderer fontRenderer = minecraft.font;
 				int textCenterX = x + (TAB_WIDTH / 2);
 				int textCenterY = y + (TAB_HEIGHT / 2) - 3;
 				int color = isMouseOver(mouseX, mouseY) ? 0xFFFFA0 : 0xE0E0E0;
-				int stringCenter = fontRenderer.getStringWidth(text) / 2;
-				fontRenderer.drawStringWithShadow(matrixStack, text, textCenterX - stringCenter, textCenterY, color);
+				int stringCenter = fontRenderer.width(text) / 2;
+				fontRenderer.drawShadow(matrixStack, text, textCenterX - stringCenter, textCenterY, color);
 				RenderSystem.color4f(1, 1, 1, 1);
 			}
 		}

@@ -209,7 +209,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 		try {
 			RenderSystem.disableDepthTest();
 
-			RenderHelper.disableStandardItemLighting();
+			RenderHelper.turnOff();
 			fill(matrixStack,
 				xOffset + rect.getX() + xPadding,
 				yOffset + rect.getY() + yPadding,
@@ -232,7 +232,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 				ResourceLocation tagEquivalent = getTagEquivalent(itemStacks);
 				if (tagEquivalent != null) {
 					final TranslationTextComponent acceptsAny = new TranslationTextComponent("jei.tooltip.recipe.tag", tagEquivalent);
-					tooltip.add(acceptsAny.mergeStyle(TextFormatting.GRAY));
+					tooltip.add(acceptsAny.withStyle(TextFormatting.GRAY));
 				}
 			}
 			TooltipRenderer.drawHoveringText(value, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer, matrixStack);
@@ -254,11 +254,11 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 			.map(ItemStack::getItem)
 			.collect(Collectors.toList());
 
-		ITagCollection<Item> collection = ItemTags.getCollection();
-		Collection<ITag<Item>> tags = collection.getIDTagMap().values();
+		ITagCollection<Item> collection = ItemTags.getAllTags();
+		Collection<ITag<Item>> tags = collection.getAllTags().values();
 		for (ITag<Item> tag : tags) {
-			if (tag.getAllElements().equals(items)) {
-				return collection.getDirectIdFromTag(tag);
+			if (tag.getValues().equals(items)) {
+				return collection.getId(tag);
 			}
 		}
 		return null;

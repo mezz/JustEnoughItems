@@ -34,10 +34,10 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 
 	@Nullable
 	private IBakedModel getBakedModel() {
-		ItemModelMesher itemModelMesher = Minecraft.getInstance().getItemRenderer().getItemModelMesher();
+		ItemModelMesher itemModelMesher = Minecraft.getInstance().getItemRenderer().getItemModelShaper();
 		ItemStack itemStack = element.getIngredient();
 		IBakedModel bakedModel = itemModelMesher.getItemModel(itemStack);
-		return bakedModel.getOverrides().getOverrideModel(bakedModel, itemStack, null, null);
+		return bakedModel.getOverrides().resolve(bakedModel, itemStack, null, null);
 	}
 
 	private void uncheckedRenderItemAndEffectIntoGUI(IRenderTypeBuffer buffer, MatrixStack matrixStack, IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
@@ -52,14 +52,14 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 			return;
 		}
 
-		matrixStack.push();
+		matrixStack.pushPose();
 		matrixStack.translate(area.getX() + padding + 16, area.getY() + padding, 150);
 		matrixStack.scale(16, -16, 16);
 		matrixStack.translate(-0.5, -0.5, -0.5);
 		Minecraft minecraft = Minecraft.getInstance();
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
-		itemRenderer.renderItem(itemStack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, buffer, 15728880, OverlayTexture.NO_OVERLAY, bakedModel);
-		matrixStack.pop();
+		itemRenderer.render(itemStack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, buffer, 15728880, OverlayTexture.NO_OVERLAY, bakedModel);
+		matrixStack.popPose();
 	}
 
 	public void renderOverlay() {
@@ -74,14 +74,14 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 	private void renderOverlay(ItemStack itemStack, Rectangle2d area, int padding) {
 		FontRenderer font = getFontRenderer(itemStack);
 		ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-		itemRenderer.renderItemOverlayIntoGUI(font, itemStack, area.getX() + padding, area.getY() + padding, null);
+		itemRenderer.renderGuiItemDecorations(font, itemStack, area.getX() + padding, area.getY() + padding, null);
 	}
 
 	public static FontRenderer getFontRenderer(ItemStack itemStack) {
 		Item item = itemStack.getItem();
 		FontRenderer fontRenderer = item.getFontRenderer(itemStack);
 		if (fontRenderer == null) {
-			fontRenderer = Minecraft.getInstance().fontRenderer;
+			fontRenderer = Minecraft.getInstance().font;
 		}
 		return fontRenderer;
 	}

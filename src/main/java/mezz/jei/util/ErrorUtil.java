@@ -252,7 +252,7 @@ public final class ErrorUtil {
 	@SuppressWarnings("ConstantConditions")
 	public static void assertMainThread() {
 		Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft != null && !minecraft.isOnExecutionThread()) {
+		if (minecraft != null && !minecraft.isSameThread()) {
 			Thread currentThread = Thread.currentThread();
 			throw new IllegalStateException(
 				"A JEI API method is being called by another mod from the wrong thread:\n" +
@@ -267,32 +267,32 @@ public final class ErrorUtil {
 		IIngredientType<T> ingredientType = ingredientManager.getIngredientType(ingredient);
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
-		CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering ingredient");
-		CrashReportCategory ingredientCategory = crashreport.makeCategory("Ingredient being rendered");
+		CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering ingredient");
+		CrashReportCategory ingredientCategory = crashreport.addCategory("Ingredient being rendered");
 
 		if (modIdHelper != null) {
-			ingredientCategory.addDetail("Mod Name", () -> {
+			ingredientCategory.setDetail("Mod Name", () -> {
 				String modId = ingredientHelper.getDisplayModId(ingredient);
 				return modIdHelper.getModNameForModId(modId);
 			});
 		}
-		ingredientCategory.addDetail("Registry Name", () -> {
+		ingredientCategory.setDetail("Registry Name", () -> {
 			String modId = ingredientHelper.getModId(ingredient);
 			String resourceId = ingredientHelper.getResourceId(ingredient);
 			return modId + ":" + resourceId;
 		});
-		ingredientCategory.addDetail("Display Name", () -> ingredientHelper.getDisplayName(ingredient));
-		ingredientCategory.addDetail("String Name", ingredient::toString);
+		ingredientCategory.setDetail("Display Name", () -> ingredientHelper.getDisplayName(ingredient));
+		ingredientCategory.setDetail("String Name", ingredient::toString);
 
-		CrashReportCategory jeiCategory = crashreport.makeCategory("JEI render details");
-		jeiCategory.addDetail("Unique Id (for Blacklist)", () -> ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient));
-		jeiCategory.addDetail("Ingredient Type", () -> ingredientType.getIngredientClass().toString());
-		jeiCategory.addDetail("Error Info", () -> ingredientHelper.getErrorInfo(ingredient));
+		CrashReportCategory jeiCategory = crashreport.addCategory("JEI render details");
+		jeiCategory.setDetail("Unique Id (for Blacklist)", () -> ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient));
+		jeiCategory.setDetail("Ingredient Type", () -> ingredientType.getIngredientClass().toString());
+		jeiCategory.setDetail("Error Info", () -> ingredientHelper.getErrorInfo(ingredient));
 		if (worldConfig != null) {
-			jeiCategory.addDetail("Filter Text", () -> worldConfig.getFilterText());
-			jeiCategory.addDetail("Edit Mode Enabled", () -> Boolean.toString(worldConfig.isEditModeEnabled()));
+			jeiCategory.setDetail("Filter Text", () -> worldConfig.getFilterText());
+			jeiCategory.setDetail("Edit Mode Enabled", () -> Boolean.toString(worldConfig.isEditModeEnabled()));
 		}
-		jeiCategory.addDetail("Debug Mode Enabled", () -> Boolean.toString(ClientConfig.getInstance().isDebugModeEnabled()));
+		jeiCategory.setDetail("Debug Mode Enabled", () -> Boolean.toString(ClientConfig.getInstance().isDebugModeEnabled()));
 
 		throw new ReportedException(crashreport);
 	}

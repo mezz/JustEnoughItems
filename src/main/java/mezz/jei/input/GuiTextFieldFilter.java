@@ -37,10 +37,10 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 
 	public GuiTextFieldFilter(IIngredientGridSource ingredientSource, IWorldConfig worldConfig) {
 		// TODO narrator string
-		super(Minecraft.getInstance().fontRenderer, 0, 0, 0, 0, StringTextComponent.EMPTY);
+		super(Minecraft.getInstance().font, 0, 0, 0, 0, StringTextComponent.EMPTY);
 		this.worldConfig = worldConfig;
 
-		setMaxStringLength(maxSearchLength);
+		setMaxLength(maxSearchLength);
 		this.hoverChecker = new HoverChecker();
 		this.ingredientSource = ingredientSource;
 
@@ -54,13 +54,13 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 		this.width = area.getWidth();
 		this.height = area.getHeight();
 		this.hoverChecker.updateBounds(area.getY(), area.getY() + area.getHeight(), area.getX(), area.getX() + area.getWidth());
-		setSelectionPos(getCursorPosition());
+		setHighlightPos(getCursorPosition());
 	}
 
 	public void update() {
 		String filterText = worldConfig.getFilterText();
-		if (!filterText.equals(getText())) {
-			setText(filterText);
+		if (!filterText.equals(getValue())) {
+			setValue(filterText);
 		}
 		List<IIngredientListElement<?>> ingredientList = ingredientSource.getIngredientList(filterText);
 		if (ingredientList.size() == 0) {
@@ -75,7 +75,7 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 		boolean handled = super.keyPressed(keyCode, scanCode, modifiers);
 		if (!handled && !history.isEmpty()) {
 			if (keyCode == GLFW.GLFW_KEY_UP) {
-				String currentText = getText();
+				String currentText = getValue();
 				int historyIndex = history.indexOf(currentText);
 				if (historyIndex < 0) {
 					if (saveHistory()) {
@@ -86,11 +86,11 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 				}
 				if (historyIndex > 0) {
 					String historyString = history.get(historyIndex - 1);
-					setText(historyString);
+					setValue(historyString);
 					handled = true;
 				}
 			} else if (keyCode == GLFW.GLFW_KEY_DOWN) {
-				String currentText = getText();
+				String currentText = getValue();
 				int historyIndex = history.indexOf(currentText);
 				if (historyIndex >= 0) {
 					String historyString;
@@ -99,7 +99,7 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 					} else {
 						historyString = "";
 					}
-					setText(historyString);
+					setValue(historyString);
 					handled = true;
 				}
 			} else if (KeyBindings.isEnterKey(keyCode)) {
@@ -126,10 +126,10 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 		if (previousFocus != keyboardFocus) {
 			Minecraft minecraft = Minecraft.getInstance();
 			if (keyboardFocus) {
-				previousKeyboardRepeatEnabled = minecraft.keyboardListener.repeatEventsEnabled;
-				minecraft.keyboardListener.enableRepeatEvents(true);
+				previousKeyboardRepeatEnabled = minecraft.keyboardHandler.sendRepeatsToGui;
+				minecraft.keyboardHandler.setSendRepeatsToGui(true);
 			} else {
-				minecraft.keyboardListener.enableRepeatEvents(previousKeyboardRepeatEnabled);
+				minecraft.keyboardHandler.setSendRepeatsToGui(previousKeyboardRepeatEnabled);
 			}
 
 			saveHistory();
@@ -137,7 +137,7 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 	}
 
 	private boolean saveHistory() {
-		String text = getText();
+		String text = getValue();
 		if (text.length() > 0) {
 			history.remove(text);
 			history.add(text);
@@ -153,22 +153,22 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 	private boolean isDrawing = false;
 
 	@Override
-	protected boolean getEnableBackgroundDrawing() {
+	protected boolean isBordered() {
 		if (this.isDrawing) {
 			return false;
 		}
-		return super.getEnableBackgroundDrawing();
+		return super.isBordered();
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+	public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		this.isDrawing = true;
-		if (this.getVisible()) {
+		if (this.isVisible()) {
 			RenderSystem.color4f(1, 1, 1, 1);
 			background.draw(matrixStack, this.x, this.y, this.width, this.height);
 		}
-		super.renderWidget(matrixStack, mouseX, mouseY, partialTicks);
+		super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
 		this.isDrawing = false;
 	}
 	// end background hack
@@ -181,7 +181,7 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 			}
 			if (mouseButton == 1) {
 				if (!clickState.isSimulate()) {
-					setText("");
+					setValue("");
 					worldConfig.setFilterText("");
 				}
 				return this;

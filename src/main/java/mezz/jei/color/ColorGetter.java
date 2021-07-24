@@ -118,7 +118,7 @@ public final class ColorGetter implements IColorHelper {
 	}
 
 	private static List<Integer> getBlockColors(Block block, int colorCount) {
-		BlockState blockState = block.getDefaultState();
+		BlockState blockState = block.defaultBlockState();
 		final BlockColors blockColors = Minecraft.getInstance().getBlockColors();
 		final int renderColor = blockColors.getColor(blockState, null, null, 0);
 		final TextureAtlasSprite textureAtlasSprite = getTextureAtlasSprite(blockState);
@@ -165,16 +165,16 @@ public final class ColorGetter implements IColorHelper {
 		if (iconWidth <= 0 || iconHeight <= 0 || frameCount <= 0) {
 			return null;
 		}
-		NativeImage[] frames = textureAtlasSprite.frames;
+		NativeImage[] frames = textureAtlasSprite.mainImage;
 		return frames[0];
 	}
 
 	@Nullable
 	private static TextureAtlasSprite getTextureAtlasSprite(BlockState blockState) {
 		Minecraft minecraft = Minecraft.getInstance();
-		BlockRendererDispatcher blockRendererDispatcher = minecraft.getBlockRendererDispatcher();
-		BlockModelShapes blockModelShapes = blockRendererDispatcher.getBlockModelShapes();
-		TextureAtlasSprite textureAtlasSprite = blockModelShapes.getTexture(blockState);
+		BlockRendererDispatcher blockRendererDispatcher = minecraft.getBlockRenderer();
+		BlockModelShapes blockModelShapes = blockRendererDispatcher.getBlockModelShaper();
+		TextureAtlasSprite textureAtlasSprite = blockModelShapes.getParticleIcon(blockState);
 		if (textureAtlasSprite instanceof MissingTextureSprite) {
 			return null;
 		}
@@ -184,9 +184,9 @@ public final class ColorGetter implements IColorHelper {
 	@Nullable
 	private static TextureAtlasSprite getTextureAtlasSprite(ItemStack itemStack) {
 		ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-		ItemModelMesher itemModelMesher = itemRenderer.getItemModelMesher();
+		ItemModelMesher itemModelMesher = itemRenderer.getItemModelShaper();
 		IBakedModel itemModel = itemModelMesher.getItemModel(itemStack);
-		TextureAtlasSprite particleTexture = itemModel.getParticleTexture();
+		TextureAtlasSprite particleTexture = itemModel.getParticleIcon();
 		if (particleTexture instanceof MissingTextureSprite) {
 			return null;
 		}

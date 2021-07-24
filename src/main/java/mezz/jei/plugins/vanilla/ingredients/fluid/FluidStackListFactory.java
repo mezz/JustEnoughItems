@@ -19,7 +19,7 @@ public final class FluidStackListFactory {
 		IForgeRegistry<Fluid> fluidRegistry = ForgeRegistries.FLUIDS;
 		Collection<Fluid> fluids = fluidRegistry.getValues();
 		return fluids.stream()
-			.filter(fluid -> fluid.isSource(fluid.getDefaultState()))
+			.filter(fluid -> fluid.isSource(fluid.defaultFluidState()))
 			.map(fluid -> new FluidStack(fluid, FluidAttributes.BUCKET_VOLUME))
 			.collect(Collectors.toList());
 	}

@@ -30,7 +30,7 @@ public class ClickFocusHandler implements IMouseHandler {
 		if (handleMouseClickedFocus(mouseButton, clicked, clickState)) {
 			return this;
 		}
-		InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
+		InputMappings.Input input = InputMappings.Type.MOUSE.getOrCreate(mouseButton);
 		if (inputHandler.handleFocusKeybinds(clicked, input, clickState)) {
 			return this;
 		}

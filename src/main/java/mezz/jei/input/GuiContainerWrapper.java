@@ -21,16 +21,16 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 	@Nullable
 	@Override
 	public IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
-		Screen guiScreen = Minecraft.getInstance().currentScreen;
+		Screen guiScreen = Minecraft.getInstance().screen;
 		if (!(guiScreen instanceof ContainerScreen)) {
 			return null;
 		}
 		ContainerScreen<?> guiContainer = (ContainerScreen<?>) guiScreen;
 		Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
 		if (slotUnderMouse != null) {
-			ItemStack stack = slotUnderMouse.getStack();
+			ItemStack stack = slotUnderMouse.getItem();
 			if (!stack.isEmpty()) {
-				Rectangle2d slotArea = new Rectangle2d(slotUnderMouse.xPos, slotUnderMouse.yPos, 16, 16);
+				Rectangle2d slotArea = new Rectangle2d(slotUnderMouse.x, slotUnderMouse.y, 16, 16);
 				return ClickedIngredient.create(stack, slotArea);
 			}
 		}

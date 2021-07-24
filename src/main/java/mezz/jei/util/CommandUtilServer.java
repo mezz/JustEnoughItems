@@ -66,8 +66,8 @@ public final class CommandUtilServer {
 
 	public static void writeChatMessage(PlayerEntity player, String translationKey, TextFormatting color) {
 		TranslationTextComponent component = new TranslationTextComponent(translationKey);
-		component.getStyle().applyFormatting(color);
-		player.sendMessage(component, Util.DUMMY_UUID);
+		component.getStyle().applyFormat(color);
+		player.sendMessage(component, Util.NIL_UUID);
 	}
 
 	public static boolean hasPermission(PlayerEntity sender) {
@@ -75,7 +75,7 @@ public final class CommandUtilServer {
 			return true;
 		}
 		CommandNode<CommandSource> giveCommand = getGiveCommand(sender);
-		CommandSource commandSource = sender.getCommandSource();
+		CommandSource commandSource = sender.createCommandSourceStack();
 		if (giveCommand != null) {
 			return giveCommand.canUse(commandSource);
 		} else {
@@ -83,8 +83,8 @@ public final class CommandUtilServer {
 			if (minecraftServer == null) {
 				return false;
 			}
-			int opPermissionLevel = minecraftServer.getOpPermissionLevel();
-			return commandSource.hasPermissionLevel(opPermissionLevel);
+			int opPermissionLevel = minecraftServer.getOperatorUserPermissionLevel();
+			return commandSource.hasPermission(opPermissionLevel);
 		}
 	}
 
@@ -105,18 +105,18 @@ public final class CommandUtilServer {
 
 	public static void setHotbarSlot(ServerPlayerEntity sender, ItemStack itemStack, int hotbarSlot) {
 		if (hasPermission(sender)) {
-			if (!PlayerInventory.isHotbar(hotbarSlot)) {
+			if (!PlayerInventory.isHotbarSlot(hotbarSlot)) {
 				LOGGER.error("Tried to set slot that is not in the hotbar: {}", hotbarSlot);
 				return;
 			}
-			ItemStack stackInSlot = sender.inventory.getStackInSlot(hotbarSlot);
-			if (ItemStack.areItemStacksEqual(stackInSlot, itemStack)) {
+			ItemStack stackInSlot = sender.inventory.getItem(hotbarSlot);
+			if (ItemStack.matches(stackInSlot, itemStack)) {
 				return;
 			}
 			ItemStack itemStackCopy = itemStack.copy();
-			sender.inventory.setInventorySlotContents(hotbarSlot, itemStack);
-			sender.world.playSound(null, sender.getPosX(), sender.getPosY(), sender.getPosZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((sender.getRNG().nextFloat() - sender.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
-			sender.container.detectAndSendChanges();
+			sender.inventory.setItem(hotbarSlot, itemStack);
+			sender.level.playSound(null, sender.getX(), sender.getY(), sender.getZ(), SoundEvents.ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((sender.getRandom().nextFloat() - sender.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+			sender.inventoryMenu.broadcastChanges();
 			notifyGive(sender, itemStackCopy);
 		} else {
 			Network.sendPacketToClient(new PacketCheatPermission(false), sender);
@@ -126,13 +126,13 @@ public final class CommandUtilServer {
 	public static void mousePickupItemStack(PlayerEntity sender, ItemStack itemStack) {
 		int giveCount;
 		ItemStack itemStackCopy = itemStack.copy();
-		ItemStack existingStack = sender.inventory.getItemStack();
+		ItemStack existingStack = sender.inventory.getCarried();
 		if (ItemHandlerHelper.canItemStacksStack(existingStack, itemStack)) {
 			int newCount = Math.min(existingStack.getMaxStackSize(), existingStack.getCount() + itemStack.getCount());
 			giveCount = newCount - existingStack.getCount();
 			existingStack.setCount(newCount);
 		} else {
-			sender.inventory.setItemStack(itemStack);
+			sender.inventory.setCarried(itemStack);
 			giveCount = itemStack.getCount();
 		}
 
@@ -140,7 +140,7 @@ public final class CommandUtilServer {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity) sender;
 			itemStackCopy.setCount(giveCount);
 			notifyGive(serverPlayerEntity, itemStackCopy);
-			serverPlayerEntity.updateHeldItem();
+			serverPlayerEntity.broadcastCarriedItem();
 		}
 	}
 
@@ -152,21 +152,21 @@ public final class CommandUtilServer {
 	@SuppressWarnings("JavadocReference")
 	private static void giveToInventory(PlayerEntity entityplayermp, ItemStack itemStack) {
 		ItemStack itemStackCopy = itemStack.copy();
-		boolean flag = entityplayermp.inventory.addItemStackToInventory(itemStack);
+		boolean flag = entityplayermp.inventory.add(itemStack);
 		if (flag && itemStack.isEmpty()) {
 			itemStack.setCount(1);
-			ItemEntity entityitem = entityplayermp.dropItem(itemStack, false);
+			ItemEntity entityitem = entityplayermp.drop(itemStack, false);
 			if (entityitem != null) {
 				entityitem.makeFakeItem();
 			}
 
-			entityplayermp.world.playSound(null, entityplayermp.getPosX(), entityplayermp.getPosY(), entityplayermp.getPosZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((entityplayermp.getRNG().nextFloat() - entityplayermp.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
-			entityplayermp.container.detectAndSendChanges();
+			entityplayermp.level.playSound(null, entityplayermp.getX(), entityplayermp.getY(), entityplayermp.getZ(), SoundEvents.ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((entityplayermp.getRandom().nextFloat() - entityplayermp.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+			entityplayermp.inventoryMenu.broadcastChanges();
 		} else {
-			ItemEntity entityitem = entityplayermp.dropItem(itemStack, false);
+			ItemEntity entityitem = entityplayermp.drop(itemStack, false);
 			if (entityitem != null) {
-				entityitem.setNoPickupDelay();
-				entityitem.setOwnerId(entityplayermp.getUniqueID());
+				entityitem.setNoPickUpDelay();
+				entityitem.setOwner(entityplayermp.getUUID());
 			}
 		}
 
@@ -174,12 +174,12 @@ public final class CommandUtilServer {
 	}
 
 	private static void notifyGive(PlayerEntity entityPlayerMP, ItemStack stack) {
-		CommandSource commandSource = entityPlayerMP.getCommandSource();
+		CommandSource commandSource = entityPlayerMP.createCommandSourceStack();
 		int count = stack.getCount();
-		ITextComponent stackTextComponent = stack.getTextComponent();
+		ITextComponent stackTextComponent = stack.getDisplayName();
 		ITextComponent displayName = entityPlayerMP.getDisplayName();
 		TranslationTextComponent message = new TranslationTextComponent("commands.give.success.single", count, stackTextComponent, displayName);
-		commandSource.sendFeedback(message, true);
+		commandSource.sendSuccess(message, true);
 	}
 
 	@Nullable
@@ -188,7 +188,7 @@ public final class CommandUtilServer {
 		if (minecraftServer == null) {
 			return null;
 		}
-		Commands commandManager = minecraftServer.getCommandManager();
+		Commands commandManager = minecraftServer.getCommands();
 		CommandDispatcher<CommandSource> dispatcher = commandManager.getDispatcher();
 		RootCommandNode<CommandSource> root = dispatcher.getRoot();
 		return root.getChild("give");

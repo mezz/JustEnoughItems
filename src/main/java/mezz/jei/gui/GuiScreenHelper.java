@@ -96,7 +96,7 @@ public class GuiScreenHelper {
 	}
 
 	private Set<Rectangle2d> getPluginsExclusionAreas() {
-		Screen screen = Minecraft.getInstance().currentScreen;
+		Screen screen = Minecraft.getInstance().screen;
 		if (screen == null) {
 			return Collections.emptySet();
 		}
@@ -160,8 +160,8 @@ public class GuiScreenHelper {
 		if (ingredient != null && ingredientManager.isValidIngredient(ingredient)) {
 			Rectangle2d area = null;
 			Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
-			if (ingredient instanceof ItemStack && slotUnderMouse != null && ItemStack.areItemStacksEqual(slotUnderMouse.getStack(), (ItemStack) ingredient)) {
-				area = new Rectangle2d(slotUnderMouse.xPos, slotUnderMouse.yPos, 16, 16);
+			if (ingredient instanceof ItemStack && slotUnderMouse != null && ItemStack.matches(slotUnderMouse.getItem(), (ItemStack) ingredient)) {
+				area = new Rectangle2d(slotUnderMouse.x, slotUnderMouse.y, 16, 16);
 			}
 			return ClickedIngredient.create(ingredient, area);
 		}

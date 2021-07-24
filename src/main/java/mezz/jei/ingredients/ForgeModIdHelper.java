@@ -53,13 +53,13 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 	}
 
 	private static String removeChatFormatting(String string) {
-		String withoutFormattingCodes = TextFormatting.getTextWithoutFormattingCodes(string);
+		String withoutFormattingCodes = TextFormatting.stripFormatting(string);
 		return (withoutFormattingCodes == null) ? "" : withoutFormattingCodes;
 	}
 
 	@Override
 	public <T> List<ITextComponent> addModNameToIngredientTooltip(List<ITextComponent> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
-		if (config.isDebugModeEnabled() && Minecraft.getInstance().gameSettings.advancedItemTooltips) {
+		if (config.isDebugModeEnabled() && Minecraft.getInstance().options.advancedItemTooltips) {
 			tooltip = addDebugInfo(tooltip, ingredient, ingredientHelper);
 		}
 		if (modIdFormattingConfig.isModNameFormatOverrideActive() && (ingredient instanceof ItemStack)) {
@@ -78,9 +78,9 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 		StringTextComponent jeiDebug = new StringTextComponent("JEI Debug:");
 		StringTextComponent info = new StringTextComponent("info: " + ingredientHelper.getErrorInfo(ingredient));
 		StringTextComponent uid = new StringTextComponent("uid: " + ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient));
-		tooltip.add(jeiDebug.mergeStyle(TextFormatting.GRAY));
-		tooltip.add(info.mergeStyle(TextFormatting.GRAY));
-		tooltip.add(uid.mergeStyle(TextFormatting.GRAY));
+		tooltip.add(jeiDebug.withStyle(TextFormatting.GRAY));
+		tooltip.add(info.withStyle(TextFormatting.GRAY));
+		tooltip.add(uid.withStyle(TextFormatting.GRAY));
 		return tooltip;
 	}
 }

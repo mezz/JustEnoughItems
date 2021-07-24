@@ -23,17 +23,17 @@ public final class TippedArrowRecipeMaker {
 		String group = "jei.tipped.arrow";
 		for (Potion potionType : ForgeRegistries.POTION_TYPES.getValues()) {
 			ItemStack arrowStack = new ItemStack(Items.ARROW);
-			ItemStack lingeringPotion = PotionUtils.addPotionToItemStack(new ItemStack(Items.LINGERING_POTION), potionType);
-			Ingredient arrowIngredient = Ingredient.fromStacks(arrowStack);
-			Ingredient potionIngredient = Ingredient.fromStacks(lingeringPotion);
-			NonNullList<Ingredient> inputs = NonNullList.from(Ingredient.EMPTY,
+			ItemStack lingeringPotion = PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), potionType);
+			Ingredient arrowIngredient = Ingredient.of(arrowStack);
+			Ingredient potionIngredient = Ingredient.of(lingeringPotion);
+			NonNullList<Ingredient> inputs = NonNullList.of(Ingredient.EMPTY,
 				arrowIngredient, arrowIngredient, arrowIngredient,
 				arrowIngredient, potionIngredient, arrowIngredient,
 				arrowIngredient, arrowIngredient, arrowIngredient
 			);
 			ItemStack output = new ItemStack(Items.TIPPED_ARROW, 8);
-			PotionUtils.addPotionToItemStack(output, potionType);
-			ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, "jei.tipped.arrow." + output.getTranslationKey());
+			PotionUtils.setPotion(output, potionType);
+			ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, "jei.tipped.arrow." + output.getDescriptionId());
 			ShapedRecipe recipe = new ShapedRecipe(id, group, 3, 3, inputs, output);
 			recipes.add(recipe);
 		}

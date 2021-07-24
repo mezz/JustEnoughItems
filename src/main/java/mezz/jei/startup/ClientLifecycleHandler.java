@@ -125,13 +125,13 @@ public class ClientLifecycleHandler {
 		} else {
 			Internal.getReloadListener().update(this);
 		}
-		((IReloadableResourceManager) resourceManager).addReloadListener(Internal.getReloadListener());
+		((IReloadableResourceManager) resourceManager).registerReloadListener(Internal.getReloadListener());
 	}
 
 	public void setupJEI() {
 		ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
 		if (connection != null) {
-			NetworkManager networkManager = connection.getNetworkManager();
+			NetworkManager networkManager = connection.getConnection();
 			worldConfig.syncWorldConfig(networkManager);
 		}
 
@@ -142,7 +142,7 @@ public class ClientLifecycleHandler {
 	}
 
 	public void startJEI() {
-		if (Minecraft.getInstance().world != null) {
+		if (Minecraft.getInstance().level != null) {
 			Preconditions.checkNotNull(textures);
 			starter.start(
 				plugins,
@@ -175,7 +175,7 @@ public class ClientLifecycleHandler {
 
 		public boolean shouldRun() {
 			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
-			boolean isIntegrated = Minecraft.getInstance().isIntegratedServerRunning();
+			boolean isIntegrated = Minecraft.getInstance().isLocalServer();
 			if (connection == null || isIntegrated) {
 				//If we are an integrated server we always handle handle recipes updating as it is consistently last
 				// so we ignore the value of hasRan. Note we also check if the connection is null and treat is as
@@ -196,7 +196,7 @@ public class ClientLifecycleHandler {
 				return false;
 			}
 			hasRan = true;
-			boolean isVanilla = NetworkHooks.isVanillaConnection(connection.getNetworkManager());
+			boolean isVanilla = NetworkHooks.isVanillaConnection(connection.getConnection());
 			return isVanilla == (this == VANILLA);
 		}
 	}

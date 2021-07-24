@@ -96,29 +96,29 @@ public class JeiDebugPlugin implements IModPlugin {
 			registration.addIngredientInfo(new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), VanillaTypes.FLUID, new StringTextComponent("water"));
 			registration.addIngredientInfo(new DebugIngredient(1), DebugIngredient.TYPE, new StringTextComponent("debug"));
 			registration.addIngredientInfo(new DebugIngredient(2), DebugIngredient.TYPE,
-				new StringTextComponent("debug colored").mergeStyle(TextFormatting.AQUA),
-				new StringTextComponent("debug\\nSplit and colored").mergeStyle(TextFormatting.LIGHT_PURPLE),
+				new StringTextComponent("debug colored").withStyle(TextFormatting.AQUA),
+				new StringTextComponent("debug\\nSplit and colored").withStyle(TextFormatting.LIGHT_PURPLE),
 				new TranslationTextComponent("description.jei.debug.formatting.1", "various"),
 				new TranslationTextComponent("description.jei.debug.formatting.1", "various\\nsplit"),
-				new TranslationTextComponent("description.jei.debug.formatting.1", new StringTextComponent("various colored").mergeStyle(TextFormatting.RED)),
+				new TranslationTextComponent("description.jei.debug.formatting.1", new StringTextComponent("various colored").withStyle(TextFormatting.RED)),
 				new TranslationTextComponent("description.jei.debug.formatting.1",
-					new StringTextComponent("various\\nsplit colored").mergeStyle(TextFormatting.DARK_AQUA)
+					new StringTextComponent("various\\nsplit colored").withStyle(TextFormatting.DARK_AQUA)
 				),
 				new TranslationTextComponent("description.jei.debug.formatting.1", "\\nSplitting at the start"),
-				new TranslationTextComponent("description.jei.debug.formatting.1", "various all colored").mergeStyle(TextFormatting.RED),
+				new TranslationTextComponent("description.jei.debug.formatting.1", "various all colored").withStyle(TextFormatting.RED),
 				new TranslationTextComponent("description.jei.debug.formatting.1",
-					new TranslationTextComponent("description.jei.debug.formatting.3", "various").mergeStyle(TextFormatting.DARK_AQUA)
+					new TranslationTextComponent("description.jei.debug.formatting.3", "various").withStyle(TextFormatting.DARK_AQUA)
 				),
 				new TranslationTextComponent("description.jei.debug.formatting.2",
-					new StringTextComponent("multiple").mergeStyle(TextFormatting.GOLD).mergeStyle(TextFormatting.ITALIC),
-					new StringTextComponent("various").mergeStyle(TextFormatting.RED)
-				).mergeStyle(TextFormatting.BLUE),
+					new StringTextComponent("multiple").withStyle(TextFormatting.GOLD).withStyle(TextFormatting.ITALIC),
+					new StringTextComponent("various").withStyle(TextFormatting.RED)
+				).withStyle(TextFormatting.BLUE),
 				new TranslationTextComponent("description.jei.debug.formatting.1",
 					new TranslationTextComponent("description.jei.debug.formatting.3",
 						new TranslationTextComponent("description.jei.debug.formatting.2",
-							new StringTextComponent("multiple").mergeStyle(TextFormatting.GOLD).mergeStyle(TextFormatting.ITALIC),
-							new StringTextComponent("various").mergeStyle(TextFormatting.RED)
-						).mergeStyle(TextFormatting.DARK_AQUA)
+							new StringTextComponent("multiple").withStyle(TextFormatting.GOLD).withStyle(TextFormatting.ITALIC),
+							new StringTextComponent("various").withStyle(TextFormatting.RED)
+						).withStyle(TextFormatting.DARK_AQUA)
 					)
 				)
 			);

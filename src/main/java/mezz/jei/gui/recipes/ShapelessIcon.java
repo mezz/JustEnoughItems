@@ -29,11 +29,11 @@ public class ShapelessIcon {
 	public void draw(MatrixStack matrixStack, int recipeWidth) {
 		int shapelessIconX = recipeWidth - (icon.getWidth() / scale);
 
-		matrixStack.push();
+		matrixStack.pushPose();
 		matrixStack.translate(shapelessIconX, 0, 0);
 		matrixStack.scale(1F / scale, 1F / scale, 1);
 		icon.draw(matrixStack);
-		matrixStack.pop();
+		matrixStack.popPose();
 	}
 
 	@Nullable

@@ -20,8 +20,8 @@ public class RecipeTransferErrorTooltip implements IRecipeTransferError {
 
 	public RecipeTransferErrorTooltip(ITextComponent message) {
 		this.message.add(new TranslationTextComponent("jei.tooltip.transfer"));
-		IFormattableTextComponent messageTextComponent = message.deepCopy();
-		this.message.add(messageTextComponent.mergeStyle(TextFormatting.RED));
+		IFormattableTextComponent messageTextComponent = message.copy();
+		this.message.add(messageTextComponent.withStyle(TextFormatting.RED));
 	}
 
 	@Override

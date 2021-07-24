@@ -12,16 +12,16 @@ public final class StringUtil {
 	}
 
 	public static ITextComponent stripStyling(ITextComponent textComponent) {
-		IFormattableTextComponent text = textComponent.copyRaw();
+		IFormattableTextComponent text = textComponent.plainCopy();
 		for (ITextComponent sibling : textComponent.getSiblings()) {
-			text.appendSibling(stripStyling(sibling));
+			text.append(stripStyling(sibling));
 		}
 		return text;
 	}
 
 	public static ITextComponent truncateStringToWidth(ITextComponent text, int width, FontRenderer fontRenderer) {
-		int ellipsisWidth = fontRenderer.getStringWidth("...");
-		ITextProperties truncatedText = fontRenderer.func_238417_a_(text, width - ellipsisWidth);
+		int ellipsisWidth = fontRenderer.width("...");
+		ITextProperties truncatedText = fontRenderer.substrByWidth(text, width - ellipsisWidth);
 		String truncatedTextString = truncatedText.getString();
 		return new StringTextComponent(truncatedTextString + "...");
 	}

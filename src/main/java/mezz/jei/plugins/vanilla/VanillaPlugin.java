@@ -126,9 +126,9 @@ public class VanillaPlugin implements IModPlugin {
 			for (int i = 0; i < enchantments.size(); ++i) {
 				CompoundNBT compoundnbt = enchantments.getCompound(i);
 				String id = compoundnbt.getString("id");
-				Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(ResourceLocation.tryCreate(id));
+				Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(ResourceLocation.tryParse(id));
 				if (enchantment != null) {
-					String enchantmentUid = enchantment.getName() + ".lvl" + compoundnbt.getShort("lvl");
+					String enchantmentUid = enchantment.getDescriptionId() + ".lvl" + compoundnbt.getShort("lvl");
 					enchantmentNames.add(enchantmentUid);
 				}
 			}
@@ -177,7 +177,7 @@ public class VanillaPlugin implements IModPlugin {
 	@Override
 	public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
 		IExtendableRecipeCategory<ICraftingRecipe, ICraftingCategoryExtension> craftingCategory = registration.getCraftingCategory();
-		craftingCategory.addCategoryExtension(ICraftingRecipe.class, r -> !r.isDynamic(), CraftingCategoryExtension::new);
+		craftingCategory.addCategoryExtension(ICraftingRecipe.class, r -> !r.isSpecial(), CraftingCategoryExtension::new);
 	}
 
 	@Override

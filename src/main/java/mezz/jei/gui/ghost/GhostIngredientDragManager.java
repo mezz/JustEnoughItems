@@ -44,7 +44,7 @@ public class GhostIngredientDragManager {
 	}
 
 	public void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
-		if (!(minecraft.currentScreen instanceof ContainerScreen)) { // guiContainer uses drawOnForeground
+		if (!(minecraft.screen instanceof ContainerScreen)) { // guiContainer uses drawOnForeground
 			drawGhostIngredientHighlights(minecraft, matrixStack, mouseX, mouseY);
 		}
 		if (ghostIngredientDrag != null) {
@@ -67,7 +67,7 @@ public class GhostIngredientDragManager {
 			if (!Objects.equals(hovered, this.hoveredIngredient)) {
 				this.hoveredIngredient = hovered;
 				this.hoveredIngredientTargets = null;
-				Screen currentScreen = minecraft.currentScreen;
+				Screen currentScreen = minecraft.screen;
 				if (currentScreen != null && hovered != null) {
 					IGhostIngredientHandler<Screen> handler = guiScreenHelper.getGhostIngredientHandler(currentScreen);
 					if (handler != null && handler.shouldHighlightTargets()) {
@@ -95,7 +95,7 @@ public class GhostIngredientDragManager {
 			if (player == null) {
 				return false;
 			}
-			ItemStack mouseItem = player.inventory.getItemStack();
+			ItemStack mouseItem = player.inventory.getCarried();
 			return mouseItem.isEmpty() &&
 				handleClickGhostIngredient(screen, clicked, mouseX, mouseY);
 		} else {

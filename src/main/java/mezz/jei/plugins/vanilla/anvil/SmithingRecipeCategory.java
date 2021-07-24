@@ -45,7 +45,7 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe> {
 
 	@Override
 	public ITextComponent getTitleAsTextComponent() {
-		return Blocks.SMITHING_TABLE.getTranslatedName();
+		return Blocks.SMITHING_TABLE.getName();
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe> {
 	@Override
 	public void setIngredients(SmithingRecipe recipe, IIngredients ingredients) {
 		ingredients.setInputIngredients(Arrays.asList(recipe.base, recipe.addition));
-		ingredients.setOutput(VanillaTypes.ITEM, recipe.getRecipeOutput());
+		ingredients.setOutput(VanillaTypes.ITEM, recipe.getResultItem());
 	}
 
 	@Override

@@ -88,7 +88,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		ResourceLocation fluidStill = attributes.getStillTexture(ingredient);
 		if (fluidStill != null) {
 			Minecraft minecraft = Minecraft.getInstance();
-			TextureAtlasSprite fluidStillSprite = minecraft.getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE).apply(fluidStill);
+			TextureAtlasSprite fluidStillSprite = minecraft.getTextureAtlas(PlayerContainer.BLOCK_ATLAS).apply(fluidStill);
 			int renderColor = attributes.getColor(ingredient);
 			return colorHelper.getColors(fluidStillSprite, renderColor, 1);
 		}
@@ -110,7 +110,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	@Override
 	public ItemStack getCheatItemStack(FluidStack ingredient) {
 		Fluid fluid = ingredient.getFluid();
-		Item filledBucket = fluid.getFilledBucket();
+		Item filledBucket = fluid.getBucket();
 		return new ItemStack(filledBucket);
 	}
 

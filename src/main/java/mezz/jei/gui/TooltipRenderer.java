@@ -17,17 +17,17 @@ public final class TooltipRenderer {
 
 	public static void drawHoveringText(ITextProperties textLine, int x, int y, MatrixStack matrixStack) {
 		Minecraft minecraft = Minecraft.getInstance();
-		drawHoveringText(ItemStack.EMPTY, Collections.singletonList(textLine), x, y, -1, minecraft.fontRenderer, matrixStack);
+		drawHoveringText(ItemStack.EMPTY, Collections.singletonList(textLine), x, y, -1, minecraft.font, matrixStack);
 	}
 
 	public static void drawHoveringText(List<? extends ITextProperties> textLines, int x, int y, MatrixStack matrixStack) {
 		Minecraft minecraft = Minecraft.getInstance();
-		drawHoveringText(ItemStack.EMPTY, textLines, x, y, -1, minecraft.fontRenderer, matrixStack);
+		drawHoveringText(ItemStack.EMPTY, textLines, x, y, -1, minecraft.font, matrixStack);
 	}
 
 	public static void drawHoveringText(List<? extends ITextProperties> textLines, int x, int y, int maxWidth, MatrixStack matrixStack) {
 		Minecraft minecraft = Minecraft.getInstance();
-		drawHoveringText(ItemStack.EMPTY, textLines, x, y, maxWidth, minecraft.fontRenderer, matrixStack);
+		drawHoveringText(ItemStack.EMPTY, textLines, x, y, maxWidth, minecraft.font, matrixStack);
 	}
 
 	public static void drawHoveringText(Object ingredient, List<? extends ITextProperties> textLines, int x, int y, FontRenderer font, MatrixStack matrixStack) {
@@ -36,8 +36,8 @@ public final class TooltipRenderer {
 
 	public static void drawHoveringText(Object ingredient, List<? extends ITextProperties> textLines, int x, int y, int maxWidth, FontRenderer font, MatrixStack matrixStack) {
 		Minecraft minecraft = Minecraft.getInstance();
-		int scaledWidth = minecraft.getMainWindow().getScaledWidth();
-		int scaledHeight = minecraft.getMainWindow().getScaledHeight();
+		int scaledWidth = minecraft.getWindow().getGuiScaledWidth();
+		int scaledHeight = minecraft.getWindow().getGuiScaledHeight();
 		ItemStack itemStack = ingredient instanceof ItemStack ? (ItemStack) ingredient : ItemStack.EMPTY;
 		GuiUtils.drawHoveringText(itemStack, matrixStack, textLines, x, y, scaledWidth, scaledHeight, maxWidth, font);
 	}

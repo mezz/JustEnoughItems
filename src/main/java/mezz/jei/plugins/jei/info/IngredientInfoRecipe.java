@@ -39,7 +39,7 @@ public class IngredientInfoRecipe<T> {
 		final int lineCount = descriptionLines.size();
 
 		Minecraft minecraft = Minecraft.getInstance();
-		final int maxLinesPerPage = (IngredientInfoRecipeCategory.recipeHeight - 20) / (minecraft.fontRenderer.FONT_HEIGHT + lineSpacing);
+		final int maxLinesPerPage = (IngredientInfoRecipeCategory.recipeHeight - 20) / (minecraft.font.lineHeight + lineSpacing);
 		final int pageCount = MathUtil.divideCeil(lineCount, maxLinesPerPage);
 		for (int i = 0; i < pageCount; i++) {
 			int startLine = i * maxLinesPerPage;
@@ -56,7 +56,7 @@ public class IngredientInfoRecipe<T> {
 		List<ITextProperties> descriptionLinesExpanded = new ArrayList<>();
 		for (ITextComponent descriptionLine : descriptionComponents) {
 			ExpandNewLineTextAcceptor newLineTextAcceptor = new ExpandNewLineTextAcceptor();
-			descriptionLine.getComponentWithStyle(newLineTextAcceptor, Style.EMPTY);
+			descriptionLine.visit(newLineTextAcceptor, Style.EMPTY);
 			newLineTextAcceptor.addLinesTo(descriptionLinesExpanded);
 		}
 		return descriptionLinesExpanded;
@@ -66,7 +66,7 @@ public class IngredientInfoRecipe<T> {
 		Minecraft minecraft = Minecraft.getInstance();
 		List<ITextProperties> descriptionLinesWrapped = new ArrayList<>();
 		for (ITextProperties descriptionLine : descriptionLines) {
-			List<ITextProperties> textLines = minecraft.fontRenderer.getCharacterManager().func_238362_b_(descriptionLine, IngredientInfoRecipeCategory.recipeWidth, Style.EMPTY);
+			List<ITextProperties> textLines = minecraft.font.getSplitter().splitLines(descriptionLine, IngredientInfoRecipeCategory.recipeWidth, Style.EMPTY);
 			descriptionLinesWrapped.addAll(textLines);
 		}
 		return descriptionLinesWrapped;
@@ -125,9 +125,9 @@ public class IngredientInfoRecipe<T> {
 							//If it has a style and the style is different from the style the text component
 							// we are adding has add the last component as a sibling to an empty unstyled
 							// component so that we don't cause the styling to leak into the component we are adding
-							lastComponent = new StringTextComponent("").appendSibling(lastComponent);
+							lastComponent = new StringTextComponent("").append(lastComponent);
 						}
-						lastComponent.appendSibling(textComponent);
+						lastComponent.append(textComponent);
 						continue;
 					} else {
 						// otherwise if we aren't the first line, add the old component to our list of lines

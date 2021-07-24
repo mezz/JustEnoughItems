@@ -28,10 +28,10 @@ public final class CategoryRecipeValidator<T extends IRecipe<?>> {
 
 	@SuppressWarnings("ConstantConditions")
 	private boolean hasValidInputsAndOutputs(T recipe) {
-		if (recipe.isDynamic()) {
+		if (recipe.isSpecial()) {
 			return true;
 		}
-		ItemStack recipeOutput = recipe.getRecipeOutput();
+		ItemStack recipeOutput = recipe.getResultItem();
 		if (recipeOutput == null || recipeOutput.isEmpty()) {
 			String recipeInfo = getInfo(recipe);
 			LOGGER.error("Recipe has no output. {}", recipeInfo);
@@ -66,7 +66,7 @@ public final class CategoryRecipeValidator<T extends IRecipe<?>> {
 	protected static int getInputCount(List<Ingredient> ingredientList) {
 		int inputCount = 0;
 		for (Ingredient ingredient : ingredientList) {
-			ItemStack[] input = ingredient.getMatchingStacks();
+			ItemStack[] input = ingredient.getItems();
 			if (input == null) {
 				return INVALID_COUNT;
 			} else {

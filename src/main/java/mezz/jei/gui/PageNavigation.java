@@ -49,7 +49,7 @@ public class PageNavigation {
 		int pageNum = this.paged.getPageNumber();
 		int pageCount = this.paged.getPageCount();
 		Minecraft minecraft = Minecraft.getInstance();
-		FontRenderer fontRenderer = minecraft.fontRenderer;
+		FontRenderer fontRenderer = minecraft.font;
 		this.pageNumDisplayString = (pageNum + 1) + "/" + pageCount;
 		Rectangle2d centerArea = MathUtil.centerTextArea(this.area, fontRenderer, this.pageNumDisplayString);
 		this.pageNumDisplayX = centerArea.getX();
@@ -58,7 +58,7 @@ public class PageNavigation {
 
 	public void draw(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		if (!hideOnSinglePage || this.paged.hasNext() || this.paged.hasPrevious()) {
-			minecraft.fontRenderer.drawStringWithShadow(matrixStack, pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, 0xFFFFFFFF);
+			minecraft.font.drawShadow(matrixStack, pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, 0xFFFFFFFF);
 			nextButton.render(matrixStack, mouseX, mouseY, partialTicks);
 			backButton.render(matrixStack, mouseX, mouseY, partialTicks);
 		}

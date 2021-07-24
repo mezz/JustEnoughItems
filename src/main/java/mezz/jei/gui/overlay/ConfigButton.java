@@ -38,26 +38,26 @@ public class ConfigButton extends GuiIconToggleButton {
 		tooltip.add(new TranslationTextComponent("jei.tooltip.config"));
 		if (!worldConfig.isOverlayEnabled()) {
 			TranslationTextComponent disabled = new TranslationTextComponent("jei.tooltip.ingredient.list.disabled");
-			TranslationTextComponent overLay = new TranslationTextComponent(KeyBindings.toggleOverlay.getTranslationKey());
+			TranslationTextComponent overLay = new TranslationTextComponent(KeyBindings.toggleOverlay.saveString());
 			TranslationTextComponent disabledFix = new TranslationTextComponent("jei.tooltip.ingredient.list.disabled.how.to.fix", overLay);
-			tooltip.add(disabled.mergeStyle(TextFormatting.GOLD));
-			tooltip.add(disabledFix.mergeStyle(TextFormatting.GOLD));
+			tooltip.add(disabled.withStyle(TextFormatting.GOLD));
+			tooltip.add(disabledFix.withStyle(TextFormatting.GOLD));
 		} else if (!parent.isListDisplayed()) {
 			TranslationTextComponent notEnoughSpace = new TranslationTextComponent("jei.tooltip.not.enough.space");
-			tooltip.add(notEnoughSpace.mergeStyle(TextFormatting.GOLD));
+			tooltip.add(notEnoughSpace.withStyle(TextFormatting.GOLD));
 		}
 		if (worldConfig.isCheatItemsEnabled()) {
 			TranslationTextComponent enabled = new TranslationTextComponent("jei.tooltip.cheat.mode.button.enabled");
-			tooltip.add(enabled.mergeStyle(TextFormatting.RED));
+			tooltip.add(enabled.withStyle(TextFormatting.RED));
 			KeyBinding toggleCheatMode = KeyBindings.toggleCheatMode;
-			if (toggleCheatMode.getKey().getKeyCode() != 0) {
-				TranslationTextComponent cheatMode = new TranslationTextComponent(toggleCheatMode.getTranslationKey());
+			if (toggleCheatMode.getKey().getValue() != 0) {
+				TranslationTextComponent cheatMode = new TranslationTextComponent(toggleCheatMode.saveString());
 				TranslationTextComponent disableHotkey = new TranslationTextComponent("jei.tooltip.cheat.mode.how.to.disable.hotkey", cheatMode);
-				tooltip.add(disableHotkey.mergeStyle(TextFormatting.RED));
+				tooltip.add(disableHotkey.withStyle(TextFormatting.RED));
 			} else {
-				TranslationTextComponent controlKeyLocalization = new TranslationTextComponent(Minecraft.IS_RUNNING_ON_MAC ? "key.jei.ctrl.mac" : "key.jei.ctrl");
+				TranslationTextComponent controlKeyLocalization = new TranslationTextComponent(Minecraft.ON_OSX ? "key.jei.ctrl.mac" : "key.jei.ctrl");
 				TranslationTextComponent noHotKey = new TranslationTextComponent("jei.tooltip.cheat.mode.how.to.disable.no.hotkey", controlKeyLocalization);
-				tooltip.add(noHotKey.mergeStyle(TextFormatting.RED));
+				tooltip.add(noHotKey.withStyle(TextFormatting.RED));
 			}
 		}
 	}

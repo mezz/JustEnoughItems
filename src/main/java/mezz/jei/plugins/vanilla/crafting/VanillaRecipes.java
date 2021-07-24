@@ -27,7 +27,7 @@ public final class VanillaRecipes {
 	private final RecipeManager recipeManager;
 
 	public VanillaRecipes() {
-		ClientWorld world = Minecraft.getInstance().world;
+		ClientWorld world = Minecraft.getInstance().level;
 		ErrorUtil.checkNotNull(world, "minecraft world");
 		this.recipeManager = world.getRecipeManager();
 	}
@@ -72,7 +72,7 @@ public final class VanillaRecipes {
 		RecipeManager recipeManager,
 		IRecipeType<T> recipeType
 	) {
-		Map<ResourceLocation, IRecipe<C>> recipes = recipeManager.getRecipes(recipeType);
+		Map<ResourceLocation, IRecipe<C>> recipes = recipeManager.byType(recipeType);
 		return (Collection<T>) recipes.values();
 	}
 

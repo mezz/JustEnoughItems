@@ -18,7 +18,7 @@ import mezz.jei.collect.SetMultiMap;
 
 public class BrewingRecipeUtil {
 	public static final ItemStack POTION = new ItemStack(Items.POTION);
-	public static final ItemStack WATER_BOTTLE = PotionUtils.addPotionToItemStack(POTION.copy(), Potions.WATER);
+	public static final ItemStack WATER_BOTTLE = PotionUtils.setPotion(POTION.copy(), Potions.WATER);
 
 	private final Map<String, Integer> brewingStepCache = new HashMap<>(); // output potion -> brewing steps
 	private final SetMultiMap<String, String> potionMap = new SetMultiMap<>(); // output potion -> input potions

@@ -32,7 +32,7 @@ public class PacketCheatPermission extends PacketJei {
 			CommandUtilServer.writeChatMessage(player, "jei.chat.error.no.cheat.permission.1", TextFormatting.RED);
 			CommandUtilServer.writeChatMessage(player, "jei.chat.error.no.cheat.permission.2", TextFormatting.RED);
 			worldConfig.setCheatItemsEnabled(false);
-			player.closeScreen();
+			player.closeContainer();
 		}
 	}
 }

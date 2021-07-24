@@ -67,7 +67,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientPlayerEntity player = minecraft.player;
 		if (player != null) {
-			Container openContainer = player.openContainer;
+			Container openContainer = player.containerMenu;
 			if (openContainer != null) {
 				for (int i = 0; i < recipeCategories.size(); i++) {
 					IRecipeCategory<?> recipeCategory = recipeCategories.get(i);

@@ -21,7 +21,7 @@ public class CraftingCategoryExtension<T extends ICraftingRecipe> implements ICr
 	@Override
 	public void setIngredients(IIngredients ingredients) {
 		ingredients.setInputIngredients(recipe.getIngredients());
-		ingredients.setOutput(VanillaTypes.ITEM, recipe.getRecipeOutput());
+		ingredients.setOutput(VanillaTypes.ITEM, recipe.getResultItem());
 	}
 
 	@Nullable
