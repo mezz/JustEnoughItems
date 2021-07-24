@@ -49,7 +49,6 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 		return this;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void draw(boolean selected, PoseStack poseStack, int mouseX, int mouseY) {
 		super.draw(selected, poseStack, mouseX, mouseY);
@@ -82,14 +81,11 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private static <T> void renderIngredient(PoseStack poseStack, int iconX, int iconY, T ingredient) {
 		IngredientManager ingredientManager = Internal.getIngredientManager();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
 		RenderSystem.enableDepthTest();
 		ingredientRenderer.render(poseStack, iconX, iconY, ingredient);
-		//TODO - 1.17: Replacement?
-		//RenderSystem.enableAlphaTest();
 		RenderSystem.disableDepthTest();
 	}
 

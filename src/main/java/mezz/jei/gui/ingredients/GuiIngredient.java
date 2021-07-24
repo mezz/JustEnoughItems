@@ -187,12 +187,9 @@ public class GuiIngredient<T> extends GuiComponent implements IGuiIngredient<T> 
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public void drawHighlight(PoseStack poseStack, int color, int xOffset, int yOffset) {
 		int x = rect.getX() + xOffset + xPadding;
 		int y = rect.getY() + yOffset + yPadding;
-		//TODO - 1.17: Replacement?
-		//RenderSystem.disableLighting();
 		RenderSystem.disableDepthTest();
 		fill(poseStack, x, y, x + rect.getWidth() - xPadding * 2, y + rect.getHeight() - yPadding * 2, color);
 		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
@@ -205,13 +202,10 @@ public class GuiIngredient<T> extends GuiComponent implements IGuiIngredient<T> 
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private void drawTooltip(PoseStack poseStack, int xOffset, int yOffset, int mouseX, int mouseY, T value) {
 		try {
 			RenderSystem.disableDepthTest();
 
-			//TODO - 1.17: Replacement?
-			//Lighting.turnOff();
 			fill(poseStack,
 				xOffset + rect.getX() + xPadding,
 				yOffset + rect.getY() + yPadding,

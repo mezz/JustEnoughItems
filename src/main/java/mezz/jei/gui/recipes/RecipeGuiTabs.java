@@ -109,7 +109,6 @@ public class RecipeGuiTabs implements IPaged {
 		pageNavigation.updatePageState();
 	}
 
-	@SuppressWarnings("deprecation")
 	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
 		IRecipeCategory<?> selectedCategory = recipeGuiLogic.getSelectedRecipeCategory();
 
@@ -118,8 +117,6 @@ public class RecipeGuiTabs implements IPaged {
 		RecipeGuiTab hovered = null;
 
 		RenderSystem.disableDepthTest();
-		//TODO - 1.17: Replacement?
-		//RenderSystem.enableAlphaTest();
 		{
 			for (RecipeGuiTab tab : tabs) {
 				boolean selected = tab.isSelected(selectedCategory);
@@ -129,8 +126,6 @@ public class RecipeGuiTabs implements IPaged {
 				}
 			}
 		}
-		//TODO - 1.17: Replacement?
-		//RenderSystem.disableAlphaTest();
 		RenderSystem.enableDepthTest();
 
 		pageNavigation.draw(minecraft, poseStack, mouseX, mouseY, minecraft.getFrameTime());

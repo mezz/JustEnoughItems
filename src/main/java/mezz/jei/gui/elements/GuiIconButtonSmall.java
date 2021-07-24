@@ -32,8 +32,6 @@ public class GuiIconButtonSmall extends Button {
 		if (this.visible) {
 			Minecraft minecraft = Minecraft.getInstance();
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-			//TODO - 1.17: Replacement?
-			//RenderSystem.enableAlphaTest();
 			boolean hovered = isMouseOver(mouseX, mouseY);
 			Textures textures = Internal.getTextures();
 			DrawableNineSliceTexture texture = textures.getButtonForState(this.active, hovered);

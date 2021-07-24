@@ -34,33 +34,20 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		}
 	}
 
-	@Nullable
-	private BakedModel getBakedModel() {
-		ItemModelShaper itemModelMesher = Minecraft.getInstance().getItemRenderer().getItemModelShaper();
-		ItemStack itemStack = element.getIngredient();
-		BakedModel bakedModel = itemModelMesher.getItemModel(itemStack);
-		//TODO - 1.17: Validate
-		return bakedModel.getOverrides().resolve(bakedModel, itemStack, null, null, 0);
-	}
-
 	private void uncheckedRenderItemAndEffectIntoGUI(MultiBufferSource buffer, PoseStack poseStack, IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
 		if (worldConfig.isEditModeEnabled()) {
 			renderEditMode(poseStack, area, padding, editModeConfig);
 			RenderSystem.enableBlend();
 		}
 
+		Minecraft minecraft = Minecraft.getInstance();
+		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		ItemStack itemStack = element.getIngredient();
-		BakedModel bakedModel = getBakedModel();
-		if (bakedModel == null) {
-			return;
-		}
-
+		BakedModel bakedModel = itemRenderer.getModel(itemStack, null, null, 0);
 		poseStack.pushPose();
 		poseStack.translate(area.getX() + padding + 16, area.getY() + padding, 150);
 		poseStack.scale(16, -16, 16);
 		poseStack.translate(-0.5, -0.5, -0.5);
-		Minecraft minecraft = Minecraft.getInstance();
-		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		itemRenderer.render(itemStack, ItemTransforms.TransformType.GUI, false, poseStack, buffer, 15728880, OverlayTexture.NO_OVERLAY, bakedModel);
 		poseStack.popPose();
 	}

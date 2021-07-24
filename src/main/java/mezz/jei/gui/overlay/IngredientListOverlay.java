@@ -26,7 +26,6 @@ import mezz.jei.util.Rectangle2dBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.renderer.Rect2i;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.world.item.ItemStack;
@@ -164,11 +163,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 		this.searchField.update();
 	}
 
-	@SuppressWarnings("deprecation")
 	public void drawScreen(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
-			//TODO - 1.17: Replacement?
-			//RenderSystem.disableLighting();
 			this.searchField.renderButton(poseStack, mouseX, mouseY, partialTicks);
 			this.contents.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
 		}

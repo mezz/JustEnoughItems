@@ -99,7 +99,6 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 		return guiIngredient;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Nullable
 	public GuiIngredient<?> draw(PoseStack poseStack, int mouseX, int mouseY) {
 		int ingredientCount = ingredients.size();
@@ -107,16 +106,12 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
 			RenderSystem.disableDepthTest();
-			//TODO - 1.17: Replacement?
-			//RenderSystem.enableAlphaTest();
 			{
 				int slotWidth = width - (2 * borderSize);
 				int slotHeight = height - (2 * borderSize);
 				backgroundTab.draw(poseStack, this.left, this.top, width, height);
 				slotBackground.draw(poseStack, this.left + borderSize, this.top + borderSize, slotWidth, slotHeight);
 			}
-			//TODO - 1.17: Replacement?
-			//RenderSystem.disableAlphaTest();
 			RenderSystem.enableDepthTest();
 
 			GuiIngredient<?> hovered = null;

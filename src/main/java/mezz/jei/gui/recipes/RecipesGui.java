@@ -202,7 +202,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		this.addRenderableWidget(previousPage);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (minecraft == null) {

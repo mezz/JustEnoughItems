@@ -65,11 +65,8 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public void render(PoseStack poseStack, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
 		RenderSystem.enableBlend();
-		//TODO - 1.17: Replacement?
-		//RenderSystem.enableAlphaTest();
 
 		drawFluid(poseStack, xPosition, yPosition, fluidStack);
 
@@ -82,8 +79,6 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 			poseStack.popPose();
 		}
 
-		//TODO - 1.17: Replacement?
-		//RenderSystem.disableAlphaTest();
 		RenderSystem.disableBlend();
 	}
 
@@ -149,7 +144,6 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		return minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
 	}
 
-	@SuppressWarnings("deprecation")
 	private static void setGLColorFromInt(int color) {
 		float red = (color >> 16 & 0xFF) / 255.0F;
 		float green = (color >> 8 & 0xFF) / 255.0F;

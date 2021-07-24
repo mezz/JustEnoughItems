@@ -29,8 +29,6 @@ public class DrawableIngredient<V> implements IDrawable {
 	public void draw(PoseStack poseStack, int xOffset, int yOffset) {
 		RenderSystem.enableDepthTest();
 		this.ingredientRenderer.render(poseStack, xOffset, yOffset, ingredient);
-		//TODO - 1.17: Replacement?
-		//RenderSystem.enableAlphaTest();
 		RenderSystem.disableDepthTest();
 	}
 }

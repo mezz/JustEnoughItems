@@ -55,7 +55,6 @@ public class GhostIngredientDrag<T> {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public void drawItem(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
 		double mouseXDist = this.mouseStartX - mouseX;
 		double mouseYDist = this.mouseStartY - mouseY;
@@ -100,10 +99,7 @@ public class GhostIngredientDrag<T> {
 		itemRenderer.blitOffset -= 150.0F;
 	}
 
-	@SuppressWarnings("deprecation")
 	public static <V> void drawTargets(PoseStack poseStack, int mouseX, int mouseY, List<Target<V>> targets) {
-		//TODO - 1.17: Replacement?
-		//RenderSystem.disableLighting();
 		RenderSystem.disableDepthTest();
 		for (Target<?> target : targets) {
 			Rect2i area = target.getArea();

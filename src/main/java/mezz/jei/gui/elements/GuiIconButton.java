@@ -37,7 +37,6 @@ public class GuiIconButton extends Button {
 		this.height = area.getHeight();
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (this.visible) {

@@ -131,7 +131,6 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		return area;
 	}
 
-	@SuppressWarnings("deprecation")
 	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
 		RenderSystem.disableBlend();
 
@@ -143,8 +142,6 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 				hovered.drawHighlight(poseStack);
 			}
 		}
-
-		//TODO - 1.17: Replacement?
 	}
 
 	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {

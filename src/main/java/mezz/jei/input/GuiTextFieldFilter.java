@@ -160,7 +160,6 @@ public class GuiTextFieldFilter extends EditBox {
 		return super.isBordered();
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		this.isDrawing = true;

@@ -86,12 +86,9 @@ public class IngredientListElementRenderer<T> {
 	}
 
 	/**
-	 * Matches the highlight code in {@link AbstractContainerScreen#render(PoseStack, int, int, float)}
+	 * Matches the highlight code in {@link AbstractContainerScreen#renderSlotHighlight(PoseStack, int, int, int)} but with a custom area width and height
 	 */
-	@SuppressWarnings("deprecation")
 	public void drawHighlight(PoseStack poseStack) {
-		//TODO - 1.17: Replacement?
-		//RenderSystem.disableLighting();
 		RenderSystem.disableDepthTest();
 		RenderSystem.colorMask(true, true, true, false);
 		GuiComponent.fill(poseStack, area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), 0x80FFFFFF);

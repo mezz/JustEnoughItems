@@ -95,17 +95,17 @@ public class IngredientListBatchRenderer {
 	private <V> void set(IngredientListSlot ingredientListSlot, IIngredientListElement<V> element) {
 		ingredientListSlot.clear();
 
-		V ingredient = element.getIngredient();
+		//TODO - 1.17: Fix fast renderer
+		/*V ingredient = element.getIngredient();
 		if (ingredient instanceof ItemStack) {
 			//noinspection unchecked
 			IIngredientListElement<ItemStack> itemStackElement = (IIngredientListElement<ItemStack>) element;
 			ItemStack itemStack = itemStackElement.getIngredient();
+			Minecraft minecraft = Minecraft.getInstance();
+			ItemRenderer itemRenderer = minecraft.getItemRenderer();
 			BakedModel bakedModel;
-			ItemModelShaper itemModelMesher = Minecraft.getInstance().getItemRenderer().getItemModelShaper();
 			try {
-				bakedModel = itemModelMesher.getItemModel(itemStack);
-				//TODO - 1.17: Validate
-				bakedModel = bakedModel.getOverrides().resolve(bakedModel, itemStack, null, null, 0);
+				bakedModel = itemRenderer.getModel(itemStack, null, null, 0);
 				Preconditions.checkNotNull(bakedModel, "IBakedModel must not be null.");
 			} catch (Throwable throwable) {
 				String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
@@ -116,14 +116,14 @@ public class IngredientListBatchRenderer {
 			if (!bakedModel.isCustomRenderer() && !(itemStack.getItem() instanceof ISlowRenderItem)) {
 				ItemStackFastRenderer renderer = new ItemStackFastRenderer(itemStackElement);
 				ingredientListSlot.setIngredientRenderer(renderer);
-				if (bakedModel.usesBlockLight()) { //isSideLit
+				if (bakedModel.usesBlockLight()) {
 					renderItems3d.add(renderer);
 				} else {
 					renderItems2d.add(renderer);
 				}
 				return;
 			}
-		}
+		}*/
 
 		IngredientListElementRenderer<V> renderer = new IngredientListElementRenderer<>(element);
 		ingredientListSlot.setIngredientRenderer(renderer);
@@ -153,16 +153,14 @@ public class IngredientListBatchRenderer {
 	/**
 	 * renders all ItemStacks
 	 */
-	@SuppressWarnings("deprecation")
 	public void render(Minecraft minecraft, PoseStack poseStack) {
 
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
-		TextureManager textureManager = minecraft.getTextureManager();
 		itemRenderer.blitOffset += 50.0F;
-
 
 		// Most of this code can be found in ItemRenderer#renderGuiItem, and is intended to
 		// speed up state-setting by grouping similar items.
+		TextureManager textureManager = minecraft.getTextureManager();
 		textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
 		RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
 		RenderSystem.enableBlend();
@@ -172,7 +170,6 @@ public class IngredientListBatchRenderer {
 		MultiBufferSource.BufferSource buffer = minecraft.renderBuffers().bufferSource();
 
 		for (ItemStackFastRenderer slot : renderItems3d) {
-//			itemRenderer.renderGuiItem(slot.element.getIngredient(), slot.area.getX(), slot.area.getY());
 			slot.renderItemAndEffectIntoGUI(buffer, poseStack, editModeConfig, worldConfig);
 		}
 		buffer.endBatch();
@@ -188,13 +185,7 @@ public class IngredientListBatchRenderer {
 		Lighting.setupFor3DItems();
 
 		RenderSystem.enableDepthTest();
-
-		//TODO - 1.17: Replacement?
-		//RenderSystem.disableAlphaTest();
 		RenderSystem.disableBlend();
-		//TODO - 1.17: Replacement?
-		//RenderSystem.disableRescaleNormal();
-		//RenderSystem.disableLighting();
 
 		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
 		textureManager.getTexture(InventoryMenu.BLOCK_ATLAS).restoreLastBlurMipmap();
@@ -210,18 +201,12 @@ public class IngredientListBatchRenderer {
 			slot.renderOverlay();
 		}
 
-		//TODO - 1.17: Replacement?
-		//RenderSystem.disableLighting();
-
-		// Restore model-view matrix now that all items have been renderered
+		// Restore model-view matrix now that all items have been rendered
 		RenderSystem.applyModelViewMatrix();
 
 		// other rendering
 		for (IngredientListElementRenderer<?> slot : renderOther) {
 			slot.renderSlow(poseStack, editModeConfig, worldConfig);
 		}
-
-		//TODO - 1.17: Replacement?
-		//Lighting.turnOff();
 	}
 }

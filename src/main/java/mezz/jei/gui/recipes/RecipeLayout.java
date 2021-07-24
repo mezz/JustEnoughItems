@@ -153,14 +153,10 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public void drawRecipe(PoseStack poseStack, int mouseX, int mouseY) {
 		IDrawable background = recipeCategory.getBackground();
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		//TODO - 1.17: Replacement?
-		//RenderSystem.disableLighting();
-		//RenderSystem.enableAlphaTest();
 
 		final int recipeMouseX = mouseX - posX;
 		final int recipeMouseY = mouseY - posY;
@@ -191,18 +187,11 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 			recipeTransferButton.render(poseStack, mouseX, mouseY, partialTicks);
 		}
 		RenderSystem.disableBlend();
-		//TODO - 1.17: Replacement?
-		//RenderSystem.disableLighting();
-		//RenderSystem.disableAlphaTest();
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public void drawOverlays(PoseStack poseStack, int mouseX, int mouseY) {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		//TODO - 1.17: Replacement?
-		//RenderSystem.disableLighting();
-		//RenderSystem.enableAlphaTest();
 
 		final int recipeMouseX = mouseX - posX;
 		final int recipeMouseY = mouseY - posY;
@@ -218,8 +207,6 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 			recipeTransferButton.drawToolTip(poseStack, mouseX, mouseY);
 		}
 		RenderSystem.disableBlend();
-		//TODO - 1.17: Replacement?
-		//RenderSystem.disableLighting();
 
 		if (hoveredIngredient != null) {
 			hoveredIngredient.drawOverlays(poseStack, posX, posY, recipeMouseX, recipeMouseY);
@@ -232,9 +219,6 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 				TooltipRenderer.drawHoveringText(tooltipStrings, mouseX, mouseY, poseStack);
 			}
 		}
-
-		//TODO - 1.17: Replacement?
-		//RenderSystem.disableAlphaTest();
 	}
 
 	@Override
