@@ -34,6 +34,8 @@ if (build_number == null) {
 }
 
 String semver = "${version_major}.${version_minor}.${version_patch}"
+
+// these two are required for the java plugin to generate jar files with a version
 version = "${semver}.${build_number}"
 group = 'mezz.jei' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 
@@ -214,6 +216,11 @@ artifacts {
 reobf {
 	apiJar { classpath.from(sourceSets.api.compileClasspath) }
 	jar { classpath.from(sourceSets.main.compileClasspath) }
+}
+
+task reobf {
+	dependsOn reobfJar
+	dependsOn reobfApiJar
 }
 
 task uploadJars(dependsOn: build) {
