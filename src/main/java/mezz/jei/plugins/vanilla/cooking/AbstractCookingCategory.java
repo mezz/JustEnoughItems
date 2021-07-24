@@ -103,13 +103,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	}
 
 	@Override
-	@Deprecated
-	public String getTitle() {
-		return getTitleAsTextComponent().getString();
-	}
-
-	@Override
-	public ITextComponent getTitleAsTextComponent() {
+	public ITextComponent getTitle() {
 		return localizedName;
 	}
 

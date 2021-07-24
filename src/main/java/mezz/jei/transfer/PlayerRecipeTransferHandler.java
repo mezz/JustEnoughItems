@@ -52,7 +52,7 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Playe
 
 	@Nullable
 	@Override
-	public IRecipeTransferError transferRecipe(PlayerContainer container, IRecipeLayout recipeLayout, PlayerEntity player, boolean maxTransfer, boolean doTransfer) {
+	public IRecipeTransferError transferRecipe(PlayerContainer container, Object recipe, IRecipeLayout recipeLayout, PlayerEntity player, boolean maxTransfer, boolean doTransfer) {
 		if (!ServerInfo.isJeiOnServer()) {
 			ITextComponent tooltipMessage = new TranslationTextComponent("jei.tooltip.error.recipe.transfer.no.server");
 			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);

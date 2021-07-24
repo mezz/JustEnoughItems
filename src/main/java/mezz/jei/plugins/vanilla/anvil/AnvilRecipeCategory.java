@@ -58,13 +58,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 	}
 
 	@Override
-	@Deprecated
-	public String getTitle() {
-		return getTitleAsTextComponent().getString();
-	}
-
-	@Override
-	public ITextComponent getTitleAsTextComponent() {
+	public ITextComponent getTitle() {
 		return Blocks.ANVIL.getName();
 	}
 

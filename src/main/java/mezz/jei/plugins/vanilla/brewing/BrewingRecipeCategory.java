@@ -69,13 +69,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 	}
 
 	@Override
-	@Deprecated
-	public String getTitle() {
-		return getTitleAsTextComponent().getString();
-	}
-
-	@Override
-	public ITextComponent getTitleAsTextComponent() {
+	public ITextComponent getTitle() {
 		return localizedName;
 	}
 

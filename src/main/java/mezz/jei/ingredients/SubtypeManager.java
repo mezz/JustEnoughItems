@@ -3,7 +3,6 @@ package mezz.jei.ingredients;
 import javax.annotation.Nullable;
 
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
-import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
@@ -22,24 +21,6 @@ public class SubtypeManager implements ISubtypeManager {
 	public SubtypeManager(SubtypeRegistration subtypeRegistration) {
 		this.itemInterpreters = subtypeRegistration.getItemInterpreters();
 		this.fluidInterpreters = subtypeRegistration.getFluidInterpreters();
-	}
-
-	@Nullable
-	@Override
-	@SuppressWarnings("deprecation")
-	public String getSubtypeInfo(ItemStack itemStack) {
-		ErrorUtil.checkNotEmpty(itemStack);
-
-		Item item = itemStack.getItem();
-		IIngredientSubtypeInterpreter<ItemStack> subtypeInterpreter = itemInterpreters.get(item);
-		if (subtypeInterpreter != null) {
-			if (subtypeInterpreter instanceof ISubtypeInterpreter) {
-				return ((ISubtypeInterpreter) subtypeInterpreter).apply(itemStack);
-			}
-			return subtypeInterpreter.apply(itemStack, UidContext.Ingredient);
-		}
-
-		return null;
 	}
 
 	@Nullable

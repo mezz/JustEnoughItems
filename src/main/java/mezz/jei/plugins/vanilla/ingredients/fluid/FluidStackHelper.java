@@ -6,6 +6,7 @@ import java.util.Collections;
 
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.util.ErrorUtil;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
@@ -31,13 +32,16 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		this.colorHelper = colorHelper;
 	}
 
-
 	@Override
 	@Nullable
-	public FluidStack getMatch(Iterable<FluidStack> ingredients, FluidStack toMatch) {
+	public FluidStack getMatch(Iterable<FluidStack> ingredients, FluidStack toMatch, UidContext context) {
 		for (FluidStack fluidStack : ingredients) {
 			if (toMatch.getFluid() == fluidStack.getFluid()) {
-				return fluidStack;
+				String keyLhs = getUniqueId(toMatch, context);
+				String keyRhs = getUniqueId(fluidStack, context);
+				if (keyLhs.equals(keyRhs)) {
+					return fluidStack;
+				}
 			}
 		}
 		return null;
@@ -47,11 +51,6 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	public String getDisplayName(FluidStack ingredient) {
 		ITextComponent displayName = ingredient.getDisplayName();
 		return displayName.getString();
-	}
-
-	@Override
-	public String getUniqueId(FluidStack ingredient) {
-		return getUniqueId(ingredient, UidContext.Ingredient);
 	}
 
 	@Override
@@ -67,6 +66,14 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 			result.append(subtypeInfo);
 		}
 		return result.toString();
+	}
+
+	@Override
+	public String getWildcardId(FluidStack ingredient) {
+		ErrorUtil.checkNotEmpty(ingredient);
+		Fluid fluid = ingredient.getFluid();
+		ResourceLocation registryName = fluid.getRegistryName();
+		return "fluid:" + registryName;
 	}
 
 	@Override

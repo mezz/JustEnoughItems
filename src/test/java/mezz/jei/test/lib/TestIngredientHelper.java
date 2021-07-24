@@ -4,14 +4,19 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 
 public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 	@Nullable
 	@Override
-	public TestIngredient getMatch(Iterable<TestIngredient> ingredients, TestIngredient ingredientToMatch) {
+	public TestIngredient getMatch(Iterable<TestIngredient> ingredients, TestIngredient ingredientToMatch, UidContext context) {
 		for (TestIngredient ingredient : ingredients) {
 			if (ingredient.getNumber() == ingredientToMatch.getNumber()) {
-				return ingredient;
+				String keyLhs = getUniqueId(ingredientToMatch, context);
+				String keyRhs = getUniqueId(ingredient, context);
+				if (keyLhs.equals(keyRhs)) {
+					return ingredient;
+				}
 			}
 		}
 		return null;
@@ -23,7 +28,7 @@ public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 	}
 
 	@Override
-	public String getUniqueId(TestIngredient ingredient) {
+	public String getUniqueId(TestIngredient ingredient, UidContext context) {
 		return "Test Ingredient Unique Id " + ingredient;
 	}
 

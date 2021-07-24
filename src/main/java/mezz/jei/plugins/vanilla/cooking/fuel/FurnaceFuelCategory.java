@@ -58,13 +58,7 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 	}
 
 	@Override
-	@Deprecated
-	public String getTitle() {
-		return getTitleAsTextComponent().getString();
-	}
-
-	@Override
-	public ITextComponent getTitleAsTextComponent() {
+	public ITextComponent getTitle() {
 		return localizedName;
 	}
 

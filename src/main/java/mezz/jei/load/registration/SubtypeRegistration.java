@@ -11,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 
 import com.google.common.collect.ImmutableMap;
-import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.util.ErrorUtil;
 import net.minecraftforge.fluids.FluidStack;
@@ -36,12 +35,6 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 		for (Fluid fluid : fluids) {
 			registerSubtypeInterpreter(fluid, AllFluidNbt.INSTANCE);
 		}
-	}
-
-	@Override
-	@SuppressWarnings("deprecation")
-	public void registerSubtypeInterpreter(Item item, ISubtypeInterpreter interpreter) {
-		registerSubtypeInterpreter(item, (IIngredientSubtypeInterpreter<ItemStack>) interpreter);
 	}
 
 	@Override

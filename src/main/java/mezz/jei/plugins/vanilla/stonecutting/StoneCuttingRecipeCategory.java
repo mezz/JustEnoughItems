@@ -46,13 +46,7 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecuttingR
 	}
 
 	@Override
-	@Deprecated
-	public String getTitle() {
-		return getTitleAsTextComponent().getString();
-	}
-
-	@Override
-	public ITextComponent getTitleAsTextComponent() {
+	public ITextComponent getTitle() {
 		return localizedName;
 	}
 

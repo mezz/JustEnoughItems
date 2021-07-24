@@ -52,12 +52,6 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		return focus;
 	}
 
-	@Override
-	@Nullable
-	public ItemStack getMatch(Iterable<ItemStack> ingredients, ItemStack toMatch) {
-		return getMatch(ingredients, toMatch, UidContext.Ingredient);
-	}
-
 	@Nullable
 	@Override
 	public ItemStack getMatch(Iterable<ItemStack> ingredients, ItemStack toMatch, UidContext context) {
@@ -75,11 +69,6 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		String displayName = displayNameTextComponent.getString();
 		ErrorUtil.checkNotNull(displayName, "itemStack.getDisplayName()");
 		return displayName;
-	}
-
-	@Override
-	public String getUniqueId(ItemStack ingredient) {
-		return getUniqueId(ingredient, UidContext.Ingredient);
 	}
 
 	@Override

@@ -70,36 +70,12 @@ public class RecipeRegistration implements IRecipeRegistration {
 	}
 
 	@Override
-	@Deprecated
-	public <T> void addIngredientInfo(T ingredient, IIngredientType<T> ingredientType, String... descriptionKeys) {
-		ErrorUtil.checkIsValidIngredient(ingredient, "ingredient");
-		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
-		ErrorUtil.checkNotEmpty(descriptionKeys, "descriptionKeys");
-
-		addIngredientInfo(Collections.singletonList(ingredient), ingredientType, descriptionKeys);
-	}
-
-	@Override
 	public <T> void addIngredientInfo(T ingredient, IIngredientType<T> ingredientType, ITextComponent... descriptionComponents) {
 		ErrorUtil.checkIsValidIngredient(ingredient, "ingredient");
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(descriptionComponents, "descriptionComponents");
 
 		addIngredientInfo(Collections.singletonList(ingredient), ingredientType, descriptionComponents);
-	}
-
-	@Override
-	@Deprecated
-	public <T> void addIngredientInfo(List<T> ingredients, IIngredientType<T> ingredientType, String... descriptionKeys) {
-		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
-		for (Object ingredient : ingredients) {
-			ErrorUtil.checkIsValidIngredient(ingredient, "ingredient");
-		}
-		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
-		ErrorUtil.checkNotEmpty(descriptionKeys, "descriptionKeys");
-
-		List<IngredientInfoRecipe<T>> recipes = IngredientInfoRecipe.create(ingredients, ingredientType, descriptionKeys);
-		addRecipes(recipes, VanillaRecipeCategoryUid.INFORMATION);
 	}
 
 	@Override

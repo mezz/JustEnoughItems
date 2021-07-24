@@ -14,23 +14,12 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.ITextProperties;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TranslationTextComponent;
 
 public class IngredientInfoRecipe<T> {
 	private static final int lineSpacing = 2;
 	private final List<ITextProperties> description;
 	private final List<T> ingredients;
 	private final IIngredientType<T> ingredientType;
-
-	@Deprecated
-	public static <T> List<IngredientInfoRecipe<T>> create(List<T> ingredients, IIngredientType<T> ingredientType, String... descriptionKeys) {
-		ITextComponent[] descriptionComponents = new ITextComponent[descriptionKeys.length];
-		for (int i = 0; i < descriptionKeys.length; i++) {
-			String descriptionKey = descriptionKeys[i];
-			descriptionComponents[i] = new TranslationTextComponent(descriptionKey);
-		}
-		return create(ingredients, ingredientType, descriptionComponents);
-	}
 
 	public static <T> List<IngredientInfoRecipe<T>> create(List<T> ingredients, IIngredientType<T> ingredientType, ITextComponent... descriptionComponents) {
 		List<IngredientInfoRecipe<T>> recipes = new ArrayList<>();

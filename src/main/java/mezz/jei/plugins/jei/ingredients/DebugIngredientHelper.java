@@ -2,6 +2,7 @@ package mezz.jei.plugins.jei.ingredients;
 
 import javax.annotation.Nullable;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -14,10 +15,14 @@ import mezz.jei.util.CommandUtilServer;
 public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient> {
 	@Nullable
 	@Override
-	public DebugIngredient getMatch(Iterable<DebugIngredient> ingredients, DebugIngredient ingredientToMatch) {
+	public DebugIngredient getMatch(Iterable<DebugIngredient> ingredients, DebugIngredient ingredientToMatch, UidContext context) {
 		for (DebugIngredient debugIngredient : ingredients) {
 			if (debugIngredient.getNumber() == ingredientToMatch.getNumber()) {
-				return debugIngredient;
+				String keyLhs = getUniqueId(ingredientToMatch, context);
+				String keyRhs = getUniqueId(debugIngredient, context);
+				if (keyLhs.equals(keyRhs)) {
+					return debugIngredient;
+				}
 			}
 		}
 		return null;
@@ -29,7 +34,7 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 	}
 
 	@Override
-	public String getUniqueId(DebugIngredient ingredient) {
+	public String getUniqueId(DebugIngredient ingredient, UidContext context) {
 		return "JEI_debug_" + ingredient.getNumber();
 	}
 

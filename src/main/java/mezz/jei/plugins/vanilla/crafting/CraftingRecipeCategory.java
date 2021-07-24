@@ -61,13 +61,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<ICrafti
 	}
 
 	@Override
-	@Deprecated
-	public String getTitle() {
-		return getTitleAsTextComponent().getString();
-	}
-
-	@Override
-	public ITextComponent getTitleAsTextComponent() {
+	public ITextComponent getTitle() {
 		return localizedName;
 	}
 

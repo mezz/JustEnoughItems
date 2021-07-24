@@ -35,23 +35,11 @@ public interface IRecipeCategory<T> {
 	Class<? extends T> getRecipeClass();
 
 	/**
-	 * Returns the localized name for this recipe type.
-	 * Drawn at the top of the recipe GUI pages for this category.
-	 * @deprecated Since JEI 7.6.4, prefer calling and using {@link #getTitleAsTextComponent()}.
-	 */
-	@Deprecated
-	String getTitle();
-
-	/**
 	 * Returns a text component representing the name of this recipe type.
 	 * Drawn at the top of the recipe GUI pages for this category.
 	 * @since JEI 7.6.4
 	 */
-	default ITextComponent getTitleAsTextComponent() {
-		//TODO: When getTitle is removed this should just be rename to getTitle and not be defaulted anymore.
-		String title = getTitle();
-		return title == null ? null : new StringTextComponent(title);
-	}
+	ITextComponent getTitle();
 
 	/**
 	 * Returns the drawable background for a single recipe in this category.

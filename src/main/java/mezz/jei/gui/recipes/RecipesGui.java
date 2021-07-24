@@ -476,7 +476,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 		logic.setRecipesPerPage(recipesPerPage);
 
-		title = StringUtil.stripStyling(recipeCategory.getTitleAsTextComponent());
+		title = StringUtil.stripStyling(recipeCategory.getTitle());
 		final int availableTitleWidth = titleArea.getWidth();
 		if (font.width(title) > availableTitleWidth) {
 			title = StringUtil.truncateStringToWidth(title, availableTitleWidth, font);

@@ -38,13 +38,7 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe> {
 	}
 
 	@Override
-	@Deprecated
-	public String getTitle() {
-		return getTitleAsTextComponent().getString();
-	}
-
-	@Override
-	public ITextComponent getTitleAsTextComponent() {
+	public ITextComponent getTitle() {
 		return Blocks.SMITHING_TABLE.getName();
 	}
 
