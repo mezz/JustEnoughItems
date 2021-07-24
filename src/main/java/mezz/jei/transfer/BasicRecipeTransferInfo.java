@@ -3,13 +3,13 @@ package mezz.jei.transfer;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 
-public class BasicRecipeTransferInfo<C extends Container> implements IRecipeTransferInfo<C> {
+public class BasicRecipeTransferInfo<C extends AbstractContainerMenu> implements IRecipeTransferInfo<C> {
 	private final Class<C> containerClass;
 	private final ResourceLocation recipeCategoryUid;
 	private final int recipeSlotStart;

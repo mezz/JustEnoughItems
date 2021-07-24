@@ -1,9 +1,10 @@
 package mezz.jei.gui.elements;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import net.minecraft.client.renderer.GameRenderer;
 
 public class DrawableIngredient<V> implements IDrawable {
 	private final V ingredient;
@@ -25,10 +26,11 @@ public class DrawableIngredient<V> implements IDrawable {
 	}
 
 	@Override
-	public void draw(MatrixStack matrixStack, int xOffset, int yOffset) {
+	public void draw(PoseStack poseStack, int xOffset, int yOffset) {
 		RenderSystem.enableDepthTest();
-		this.ingredientRenderer.render(matrixStack, xOffset, yOffset, ingredient);
-		RenderSystem.enableAlphaTest();
+		this.ingredientRenderer.render(poseStack, xOffset, yOffset, ingredient);
+		//TODO - 1.17: Replacement?
+		//RenderSystem.enableAlphaTest();
 		RenderSystem.disableDepthTest();
 	}
 }

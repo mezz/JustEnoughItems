@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ingredient.IGuiIngredient;
@@ -23,12 +23,12 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.config.ServerInfo;
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketRecipeTransfer;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class BasicRecipeTransferHandler<C extends Container> implements IRecipeTransferHandler<C> {
+public class BasicRecipeTransferHandler<C extends AbstractContainerMenu> implements IRecipeTransferHandler<C> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final IStackHelper stackHelper;
@@ -48,9 +48,9 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 
 	@Nullable
 	@Override
-	public IRecipeTransferError transferRecipe(C container, Object recipe, IRecipeLayout recipeLayout, PlayerEntity player, boolean maxTransfer, boolean doTransfer) {
+	public IRecipeTransferError transferRecipe(C container, Object recipe, IRecipeLayout recipeLayout, Player player, boolean maxTransfer, boolean doTransfer) {
 		if (!ServerInfo.isJeiOnServer()) {
-			ITextComponent tooltipMessage = new TranslationTextComponent("jei.tooltip.error.recipe.transfer.no.server");
+			Component tooltipMessage = new TranslatableComponent("jei.tooltip.error.recipe.transfer.no.server");
 			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
 		}
 
@@ -111,14 +111,14 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 
 		// check if we have enough inventory space to shuffle items around to their final locations
 		if (filledCraftSlotCount - inputCount > emptySlotCount) {
-			ITextComponent message = new TranslationTextComponent("jei.tooltip.error.recipe.transfer.inventory.full");
+			Component message = new TranslatableComponent("jei.tooltip.error.recipe.transfer.inventory.full");
 			return handlerHelper.createUserErrorWithTooltip(message);
 		}
 
 		RecipeTransferUtil.MatchingItemsResult matchingItemsResult = RecipeTransferUtil.getMatchingItems(stackHelper, availableItemStacks, itemStackGroup.getGuiIngredients());
 
 		if (matchingItemsResult.missingItems.size() > 0) {
-			ITextComponent message = new TranslationTextComponent("jei.tooltip.error.recipe.transfer.missing");
+			Component message = new TranslatableComponent("jei.tooltip.error.recipe.transfer.missing");
 			return handlerHelper.createUserErrorForSlots(message, matchingItemsResult.missingItems);
 		}
 

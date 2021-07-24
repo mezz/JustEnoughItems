@@ -5,12 +5,12 @@ import java.util.List;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.config.IClientConfig;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.fml.ModList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.ChatFormatting;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.ModIdFormattingConfig;
@@ -53,12 +53,12 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 	}
 
 	private static String removeChatFormatting(String string) {
-		String withoutFormattingCodes = TextFormatting.stripFormatting(string);
+		String withoutFormattingCodes = ChatFormatting.stripFormatting(string);
 		return (withoutFormattingCodes == null) ? "" : withoutFormattingCodes;
 	}
 
 	@Override
-	public <T> List<ITextComponent> addModNameToIngredientTooltip(List<ITextComponent> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
+	public <T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
 		if (config.isDebugModeEnabled() && Minecraft.getInstance().options.advancedItemTooltips) {
 			tooltip = addDebugInfo(tooltip, ingredient, ingredientHelper);
 		}
@@ -73,14 +73,14 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 		return super.addModNameToIngredientTooltip(tooltip, ingredient, ingredientHelper);
 	}
 
-	private <T> List<ITextComponent> addDebugInfo(List<ITextComponent> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
+	private <T> List<Component> addDebugInfo(List<Component> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
 		tooltip = new ArrayList<>(tooltip);
-		StringTextComponent jeiDebug = new StringTextComponent("JEI Debug:");
-		StringTextComponent info = new StringTextComponent("info: " + ingredientHelper.getErrorInfo(ingredient));
-		StringTextComponent uid = new StringTextComponent("uid: " + ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient));
-		tooltip.add(jeiDebug.withStyle(TextFormatting.GRAY));
-		tooltip.add(info.withStyle(TextFormatting.GRAY));
-		tooltip.add(uid.withStyle(TextFormatting.GRAY));
+		TextComponent jeiDebug = new TextComponent("JEI Debug:");
+		TextComponent info = new TextComponent("info: " + ingredientHelper.getErrorInfo(ingredient));
+		TextComponent uid = new TextComponent("uid: " + ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient));
+		tooltip.add(jeiDebug.withStyle(ChatFormatting.GRAY));
+		tooltip.add(info.withStyle(ChatFormatting.GRAY));
+		tooltip.add(uid.withStyle(ChatFormatting.GRAY));
 		return tooltip;
 	}
 }

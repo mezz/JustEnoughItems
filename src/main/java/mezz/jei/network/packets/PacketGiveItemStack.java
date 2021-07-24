@@ -1,9 +1,9 @@
 package mezz.jei.network.packets;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
 
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
@@ -25,14 +25,14 @@ public class PacketGiveItemStack extends PacketJei {
 	}
 
 	@Override
-	public void writePacketData(PacketBuffer buf) {
+	public void writePacketData(FriendlyByteBuf buf) {
 		buf.writeItem(itemStack);
 		buf.writeEnum(giveMode);
 	}
 
-	public static void readPacketData(PacketBuffer buf, PlayerEntity player) {
-		if (player instanceof ServerPlayerEntity) {
-			ServerPlayerEntity sender = (ServerPlayerEntity) player;
+	public static void readPacketData(FriendlyByteBuf buf, Player player) {
+		if (player instanceof ServerPlayer) {
+			ServerPlayer sender = (ServerPlayer) player;
 
 			ItemStack itemStack = buf.readItem();
 			if (!itemStack.isEmpty()) {

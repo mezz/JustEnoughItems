@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.runtime.IRecipesGui;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
 public interface IGuiClickableArea {
 	/**
@@ -17,13 +17,13 @@ public interface IGuiClickableArea {
 	 * When hovered, the message from {@link #getTooltipStrings()} will be displayed.
 	 * When clicked, {@link #onClick(IFocusFactory, IRecipesGui)} will be called.
 	 */
-	Rectangle2d getArea();
+	Rect2i getArea();
 
 	/**
 	 * Returns the strings to be shown on the tooltip when this area is hovered over.
 	 * Return an empty list to display the default "Show Recipes" message.
 	 */
-	default List<ITextComponent> getTooltipStrings() {
+	default List<Component> getTooltipStrings() {
 		return Collections.emptyList();
 	}
 
@@ -39,12 +39,12 @@ public interface IGuiClickableArea {
 	 * which displays a recipe category on click.
 	 */
 	static IGuiClickableArea createBasic(int xPos, int yPos, int width, int height, ResourceLocation... recipeCategoryUids) {
-		Rectangle2d area = new Rectangle2d(xPos, yPos, width, height);
+		Rect2i area = new Rect2i(xPos, yPos, width, height);
 		List<ResourceLocation> recipeCategoryUidList = new ArrayList<>();
 		Collections.addAll(recipeCategoryUidList, recipeCategoryUids);
 		return new IGuiClickableArea() {
 			@Override
-			public Rectangle2d getArea() {
+			public Rect2i getArea() {
 				return area;
 			}
 

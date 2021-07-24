@@ -5,23 +5,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockModelShapes;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.color.BlockColors;
-import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.texture.MissingTextureSprite;
-import net.minecraft.client.renderer.texture.NativeImage;
+import net.minecraft.client.renderer.block.BlockModelShaper;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.ItemModelShaper;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.color.block.BlockColors;
+import net.minecraft.client.color.item.ItemColors;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.Mth;
 
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.util.ErrorUtil;
@@ -144,9 +144,9 @@ public final class ColorGetter implements IColorHelper {
 				int red = (int) ((colorInt[0] - 1) * (float) (renderColor >> 16 & 255) / 255.0F);
 				int green = (int) ((colorInt[1] - 1) * (float) (renderColor >> 8 & 255) / 255.0F);
 				int blue = (int) ((colorInt[2] - 1) * (float) (renderColor & 255) / 255.0F);
-				red = MathHelper.clamp(red, 0, 255);
-				green = MathHelper.clamp(green, 0, 255);
-				blue = MathHelper.clamp(blue, 0, 255);
+				red = Mth.clamp(red, 0, 255);
+				green = Mth.clamp(green, 0, 255);
+				blue = Mth.clamp(blue, 0, 255);
 				int color = ((0xFF) << 24) |
 					((red & 0xFF) << 16) |
 					((green & 0xFF) << 8) |
@@ -172,10 +172,10 @@ public final class ColorGetter implements IColorHelper {
 	@Nullable
 	private static TextureAtlasSprite getTextureAtlasSprite(BlockState blockState) {
 		Minecraft minecraft = Minecraft.getInstance();
-		BlockRendererDispatcher blockRendererDispatcher = minecraft.getBlockRenderer();
-		BlockModelShapes blockModelShapes = blockRendererDispatcher.getBlockModelShaper();
+		BlockRenderDispatcher blockRendererDispatcher = minecraft.getBlockRenderer();
+		BlockModelShaper blockModelShapes = blockRendererDispatcher.getBlockModelShaper();
 		TextureAtlasSprite textureAtlasSprite = blockModelShapes.getParticleIcon(blockState);
-		if (textureAtlasSprite instanceof MissingTextureSprite) {
+		if (textureAtlasSprite instanceof MissingTextureAtlasSprite) {
 			return null;
 		}
 		return textureAtlasSprite;
@@ -184,10 +184,10 @@ public final class ColorGetter implements IColorHelper {
 	@Nullable
 	private static TextureAtlasSprite getTextureAtlasSprite(ItemStack itemStack) {
 		ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-		ItemModelMesher itemModelMesher = itemRenderer.getItemModelShaper();
-		IBakedModel itemModel = itemModelMesher.getItemModel(itemStack);
+		ItemModelShaper itemModelMesher = itemRenderer.getItemModelShaper();
+		BakedModel itemModel = itemModelMesher.getItemModel(itemStack);
 		TextureAtlasSprite particleTexture = itemModel.getParticleIcon();
-		if (particleTexture instanceof MissingTextureSprite) {
+		if (particleTexture instanceof MissingTextureAtlasSprite) {
 			return null;
 		}
 		return particleTexture;

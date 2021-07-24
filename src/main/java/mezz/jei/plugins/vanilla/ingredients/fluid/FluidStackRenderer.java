@@ -1,28 +1,30 @@
 package mezz.jei.plugins.vanilla.ingredients.fluid;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
+import com.mojang.blaze3d.vertex.VertexFormat;
 import java.text.NumberFormat;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.world.inventory.InventoryMenu;
+import com.mojang.math.Matrix4f;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -64,26 +66,28 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 
 	@Override
 	@SuppressWarnings("deprecation")
-	public void render(MatrixStack matrixStack, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
+	public void render(PoseStack poseStack, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
 		RenderSystem.enableBlend();
-		RenderSystem.enableAlphaTest();
+		//TODO - 1.17: Replacement?
+		//RenderSystem.enableAlphaTest();
 
-		drawFluid(matrixStack, xPosition, yPosition, fluidStack);
+		drawFluid(poseStack, xPosition, yPosition, fluidStack);
 
-		RenderSystem.color4f(1, 1, 1, 1);
+		RenderSystem.setShaderColor(1, 1, 1, 1);
 
 		if (overlay != null) {
-			matrixStack.pushPose();
-			matrixStack.translate(0, 0, 200);
-			overlay.draw(matrixStack, xPosition, yPosition);
-			matrixStack.popPose();
+			poseStack.pushPose();
+			poseStack.translate(0, 0, 200);
+			overlay.draw(poseStack, xPosition, yPosition);
+			poseStack.popPose();
 		}
 
-		RenderSystem.disableAlphaTest();
+		//TODO - 1.17: Replacement?
+		//RenderSystem.disableAlphaTest();
 		RenderSystem.disableBlend();
 	}
 
-	private void drawFluid(MatrixStack matrixStack, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
+	private void drawFluid(PoseStack poseStack, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
 		if (fluidStack == null) {
 			return;
 		}
@@ -106,13 +110,13 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 			scaledAmount = height;
 		}
 
-		drawTiledSprite(matrixStack, xPosition, yPosition, width, height, fluidColor, scaledAmount, fluidStillSprite);
+		drawTiledSprite(poseStack, xPosition, yPosition, width, height, fluidColor, scaledAmount, fluidStillSprite);
 	}
 
-	private void drawTiledSprite(MatrixStack matrixStack, final int xPosition, final int yPosition, final int tiledWidth, final int tiledHeight, int color, int scaledAmount, TextureAtlasSprite sprite) {
+	private void drawTiledSprite(PoseStack poseStack, final int xPosition, final int yPosition, final int tiledWidth, final int tiledHeight, int color, int scaledAmount, TextureAtlasSprite sprite) {
 		Minecraft minecraft = Minecraft.getInstance();
-		minecraft.getTextureManager().bind(PlayerContainer.BLOCK_ATLAS);
-		Matrix4f matrix = matrixStack.last().pose();
+		minecraft.getTextureManager().bindForSetup(InventoryMenu.BLOCK_ATLAS);
+		Matrix4f matrix = poseStack.last().pose();
 		setGLColorFromInt(color);
 
 		final int xTileCount = tiledWidth / TEX_WIDTH;
@@ -143,7 +147,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		Fluid fluid = fluidStack.getFluid();
 		FluidAttributes attributes = fluid.getAttributes();
 		ResourceLocation fluidStill = attributes.getStillTexture(fluidStack);
-		return minecraft.getTextureAtlas(PlayerContainer.BLOCK_ATLAS).apply(fluidStill);
+		return minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -153,7 +157,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		float blue = (color & 0xFF) / 255.0F;
 		float alpha = ((color >> 24) & 0xFF) / 255F;
 
-		RenderSystem.color4f(red, green, blue, alpha);
+		RenderSystem.setShaderColor(red, green, blue, alpha);
 	}
 
 	private static void drawTextureWithMasking(Matrix4f matrix, float xCoord, float yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, float zLevel) {
@@ -164,9 +168,9 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		uMax = uMax - (maskRight / 16F * (uMax - uMin));
 		vMax = vMax - (maskTop / 16F * (vMax - vMin));
 
-		Tessellator tessellator = Tessellator.getInstance();
+		Tesselator tessellator = Tesselator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuilder();
-		bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+		bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 		bufferBuilder.vertex(matrix, xCoord, yCoord + 16, zLevel).uv(uMin, vMax).endVertex();
 		bufferBuilder.vertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).uv(uMax, vMax).endVertex();
 		bufferBuilder.vertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).uv(uMax, vMin).endVertex();
@@ -175,23 +179,23 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	}
 
 	@Override
-	public List<ITextComponent> getTooltip(FluidStack fluidStack, ITooltipFlag tooltipFlag) {
-		List<ITextComponent> tooltip = new ArrayList<>();
+	public List<Component> getTooltip(FluidStack fluidStack, TooltipFlag tooltipFlag) {
+		List<Component> tooltip = new ArrayList<>();
 		Fluid fluidType = fluidStack.getFluid();
 		if (fluidType == null) {
 			return tooltip;
 		}
 
-		ITextComponent displayName = fluidStack.getDisplayName();
+		Component displayName = fluidStack.getDisplayName();
 		tooltip.add(displayName);
 
 		int amount = fluidStack.getAmount();
 		if (tooltipMode == TooltipMode.SHOW_AMOUNT_AND_CAPACITY) {
-			TranslationTextComponent amountString = new TranslationTextComponent("jei.tooltip.liquid.amount.with.capacity", nf.format(amount), nf.format(capacityMb));
-			tooltip.add(amountString.withStyle(TextFormatting.GRAY));
+			TranslatableComponent amountString = new TranslatableComponent("jei.tooltip.liquid.amount.with.capacity", nf.format(amount), nf.format(capacityMb));
+			tooltip.add(amountString.withStyle(ChatFormatting.GRAY));
 		} else if (tooltipMode == TooltipMode.SHOW_AMOUNT) {
-			TranslationTextComponent amountString = new TranslationTextComponent("jei.tooltip.liquid.amount", nf.format(amount));
-			tooltip.add(amountString.withStyle(TextFormatting.GRAY));
+			TranslatableComponent amountString = new TranslatableComponent("jei.tooltip.liquid.amount", nf.format(amount));
+			tooltip.add(amountString.withStyle(ChatFormatting.GRAY));
 		}
 
 		return tooltip;

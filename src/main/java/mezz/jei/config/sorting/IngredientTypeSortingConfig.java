@@ -3,7 +3,7 @@ package mezz.jei.config.sorting;
 import mezz.jei.config.sorting.serializers.SortingSerializers;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IIngredientListElementInfo;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import java.io.File;
 import java.util.Comparator;

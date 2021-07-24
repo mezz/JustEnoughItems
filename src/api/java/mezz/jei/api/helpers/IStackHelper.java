@@ -3,7 +3,7 @@ package mezz.jei.api.helpers;
 import javax.annotation.Nullable;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 

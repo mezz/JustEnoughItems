@@ -3,7 +3,7 @@ package mezz.jei.util;
 import javax.annotation.Nullable;
 import java.util.Iterator;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 public class MatchingIterable implements Iterable<ItemStackMatchable<ItemStack>> {
 	private final Iterable<ItemStack> list;

@@ -1,6 +1,6 @@
 package mezz.jei.api.gui.ingredient;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
@@ -37,7 +37,7 @@ public interface IGuiIngredient<T> {
 	 * Draws a highlight on background of this ingredient.
 	 * This is used by recipe transfer errors to turn missing ingredient backgrounds to red, but can be used for other purposes.
 	 *
-	 * @see IRecipeTransferHandlerHelper#createUserErrorForSlots(net.minecraft.util.text.ITextComponent, Collection).
+	 * @see IRecipeTransferHandlerHelper#createUserErrorForSlots(net.minecraft.network.chat.Component, Collection).
 	 */
-	void drawHighlight(MatrixStack matrixStack, int color, int xOffset, int yOffset);
+	void drawHighlight(PoseStack stack, int color, int xOffset, int yOffset);
 }

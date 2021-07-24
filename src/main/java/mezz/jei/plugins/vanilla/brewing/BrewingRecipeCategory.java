@@ -1,11 +1,10 @@
 package mezz.jei.plugins.vanilla.brewing;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.block.Blocks;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.BrewingStandScreen;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
@@ -19,8 +18,8 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.config.Constants;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> {
 
@@ -33,7 +32,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 	private final IDrawable background;
 	private final IDrawable icon;
 	private final IDrawable slotDrawable;
-	private final ITextComponent localizedName;
+	private final Component localizedName;
 	private final IDrawableAnimated arrow;
 	private final IDrawableAnimated bubbles;
 	private final IDrawableStatic blazeHeat;
@@ -44,7 +43,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 			.addPadding(1, 0, 0, 50)
 			.build();
 		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.BREWING_STAND));
-		localizedName = new TranslationTextComponent("gui.jei.category.brewing");
+		localizedName = new TranslatableComponent("gui.jei.category.brewing");
 
 		arrow = guiHelper.drawableBuilder(location, 64, 0, 9, 28)
 			.buildAnimated(400, IDrawableAnimated.StartDirection.TOP, false);
@@ -69,7 +68,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 	}
 
 	@Override
-	public ITextComponent getTitle() {
+	public Component getTitle() {
 		return localizedName;
 	}
 
@@ -90,16 +89,16 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 	}
 
 	@Override
-	public void draw(JeiBrewingRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
-		blazeHeat.draw(matrixStack, 5, 30);
-		bubbles.draw(matrixStack, 8, 0);
-		arrow.draw(matrixStack, 42, 2);
+	public void draw(JeiBrewingRecipe recipe, PoseStack poseStack, double mouseX, double mouseY) {
+		blazeHeat.draw(poseStack, 5, 30);
+		bubbles.draw(poseStack, 8, 0);
+		arrow.draw(poseStack, 42, 2);
 
 		int brewingSteps = recipe.getBrewingSteps();
 		String brewingStepsString = brewingSteps < Integer.MAX_VALUE ? Integer.toString(brewingSteps) : "?";
-		TranslationTextComponent steps = new TranslationTextComponent("gui.jei.category.brewing.steps", brewingStepsString);
+		TranslatableComponent steps = new TranslatableComponent("gui.jei.category.brewing.steps", brewingStepsString);
 		Minecraft minecraft = Minecraft.getInstance();
-		minecraft.font.draw(matrixStack, steps, 70, 28, 0xFF808080);
+		minecraft.font.draw(poseStack, steps, 70, 28, 0xFF808080);
 	}
 
 	@Override

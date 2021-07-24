@@ -1,16 +1,16 @@
 package mezz.jei.api.ingredients;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.client.gui.Font;
+import net.minecraft.world.item.TooltipFlag;
 
 import mezz.jei.api.registration.IModIngredientRegistration;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
 /**
  * Renders a type of ingredient in JEI's item list and recipes.
@@ -26,7 +26,7 @@ public interface IIngredientRenderer<T> {
 	 * @param yPosition  The y position to render the ingredient.
 	 * @param ingredient the ingredient to render. May be null, some renderers (like fluid tanks) will render a
 	 */
-	void render(MatrixStack matrixStack, int xPosition, int yPosition, @Nullable T ingredient);
+	void render(PoseStack stack, int xPosition, int yPosition, @Nullable T ingredient);
 
 	/**
 	 * Get the tooltip text for this ingredient. JEI renders the tooltip based on this.
@@ -35,7 +35,7 @@ public interface IIngredientRenderer<T> {
 	 * @param tooltipFlag Whether to show advanced information on item tooltips, toggled by F3+H
 	 * @return The tooltip text for the ingredient.
 	 */
-	List<ITextComponent> getTooltip(T ingredient, ITooltipFlag tooltipFlag);
+	List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag);
 
 	/**
 	 * Get the tooltip font renderer for this ingredient. JEI renders the tooltip based on this.
@@ -44,7 +44,7 @@ public interface IIngredientRenderer<T> {
 	 * @param ingredient The ingredient to get the tooltip for.
 	 * @return The font renderer for the ingredient.
 	 */
-	default FontRenderer getFontRenderer(Minecraft minecraft, T ingredient) {
+	default Font getFontRenderer(Minecraft minecraft, T ingredient) {
 		return minecraft.font;
 	}
 }

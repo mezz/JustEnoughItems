@@ -2,8 +2,8 @@ package mezz.jei.api.ingredients.subtypes;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraftforge.fluids.FluidStack;

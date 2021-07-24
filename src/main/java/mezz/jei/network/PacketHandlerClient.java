@@ -2,16 +2,16 @@ package mezz.jei.network;
 
 import java.util.EnumMap;
 
-import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
 
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.network.packets.IPacketJeiHandler;
 import mezz.jei.network.packets.PacketCheatPermission;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,12 +26,12 @@ public class PacketHandlerClient {
 
 	public void onPacket(NetworkEvent.ServerCustomPayloadEvent event) {
 		try {
-			PacketBuffer packetBuffer = new PacketBuffer(event.getPayload());
+			FriendlyByteBuf packetBuffer = new FriendlyByteBuf(event.getPayload());
 			int packetIdOrdinal = packetBuffer.readByte();
 			PacketIdClient packetId = PacketIdClient.VALUES[packetIdOrdinal];
 			IPacketJeiHandler packetHandler = clientHandlers.get(packetId);
 			Minecraft minecraft = Minecraft.getInstance();
-			PlayerEntity player = minecraft.player;
+			Player player = minecraft.player;
 			if (player != null) {
 				packetHandler.readPacketData(packetBuffer, player);
 			}

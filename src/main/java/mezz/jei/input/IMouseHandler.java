@@ -1,7 +1,7 @@
 package mezz.jei.input;
 
 import mezz.jei.input.click.MouseClickState;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 
 import javax.annotation.Nullable;
 

@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
@@ -27,34 +27,34 @@ import mezz.jei.config.ServerInfo;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketRecipeTransfer;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<PlayerContainer> {
+public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<InventoryMenu> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final IStackHelper stackHelper;
 	private final IRecipeTransferHandlerHelper handlerHelper;
-	private final IRecipeTransferInfo<PlayerContainer> transferHelper;
+	private final IRecipeTransferInfo<InventoryMenu> transferHelper;
 
 	public PlayerRecipeTransferHandler(IStackHelper stackhelper, IRecipeTransferHandlerHelper handlerHelper) {
 		this.stackHelper = stackhelper;
 		this.handlerHelper = handlerHelper;
-		this.transferHelper = new BasicRecipeTransferInfo<>(PlayerContainer.class, VanillaRecipeCategoryUid.CRAFTING, 1, 4, 9, 36);
+		this.transferHelper = new BasicRecipeTransferInfo<>(InventoryMenu.class, VanillaRecipeCategoryUid.CRAFTING, 1, 4, 9, 36);
 	}
 
 	@Override
-	public Class<PlayerContainer> getContainerClass() {
+	public Class<InventoryMenu> getContainerClass() {
 		return transferHelper.getContainerClass();
 	}
 
 	@Nullable
 	@Override
-	public IRecipeTransferError transferRecipe(PlayerContainer container, Object recipe, IRecipeLayout recipeLayout, PlayerEntity player, boolean maxTransfer, boolean doTransfer) {
+	public IRecipeTransferError transferRecipe(InventoryMenu container, Object recipe, IRecipeLayout recipeLayout, Player player, boolean maxTransfer, boolean doTransfer) {
 		if (!ServerInfo.isJeiOnServer()) {
-			ITextComponent tooltipMessage = new TranslationTextComponent("jei.tooltip.error.recipe.transfer.no.server");
+			Component tooltipMessage = new TranslatableComponent("jei.tooltip.error.recipe.transfer.no.server");
 			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
 		}
 
@@ -84,7 +84,7 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Playe
 					if (!ingredient.getAllIngredients().isEmpty()) {
 						inputCount++;
 						if (badIndexes.contains(inputIndex)) {
-							ITextComponent tooltipMessage = new TranslationTextComponent("jei.tooltip.error.recipe.transfer.too.large.player.inventory");
+							Component tooltipMessage = new TranslatableComponent("jei.tooltip.error.recipe.transfer.too.large.player.inventory");
 							return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
 						}
 					}
@@ -138,14 +138,14 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Playe
 
 		// check if we have enough inventory space to shuffle items around to their final locations
 		if (filledCraftSlotCount - inputCount > emptySlotCount) {
-			ITextComponent message = new TranslationTextComponent("jei.tooltip.error.recipe.transfer.inventory.full");
+			Component message = new TranslatableComponent("jei.tooltip.error.recipe.transfer.inventory.full");
 			return handlerHelper.createUserErrorWithTooltip(message);
 		}
 
 		RecipeTransferUtil.MatchingItemsResult matchingItemsResult = RecipeTransferUtil.getMatchingItems(stackHelper, availableItemStacks, playerInvItemStackGroup.getGuiIngredients());
 
 		if (matchingItemsResult.missingItems.size() > 0) {
-			ITextComponent message = new TranslationTextComponent("jei.tooltip.error.recipe.transfer.missing");
+			Component message = new TranslatableComponent("jei.tooltip.error.recipe.transfer.missing");
 			matchingItemsResult = RecipeTransferUtil.getMatchingItems(stackHelper, availableItemStacks, itemStackGroup.getGuiIngredients());
 			return handlerHelper.createUserErrorForSlots(message, matchingItemsResult.missingItems);
 		}

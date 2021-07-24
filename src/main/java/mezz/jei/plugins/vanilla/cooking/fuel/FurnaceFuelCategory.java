@@ -1,9 +1,9 @@
 package mezz.jei.plugins.vanilla.cooking.fuel;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.gui.Font;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
@@ -17,21 +17,21 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.plugins.vanilla.cooking.FurnaceVariantCategory;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 	private final IDrawableStatic background;
 	private final IDrawableStatic flameTransparentBackground;
-	private final ITextComponent localizedName;
+	private final Component localizedName;
 
 	public FurnaceFuelCategory(IGuiHelper guiHelper, Textures textures) {
 		super(guiHelper);
 
 		// width of the recipe depends on the text, which is different in each language
 		Minecraft minecraft = Minecraft.getInstance();
-		FontRenderer fontRenderer = minecraft.font;
-		ITextComponent smeltCountText = FuelRecipe.createSmeltCountText(100000);
+		Font fontRenderer = minecraft.font;
+		Component smeltCountText = FuelRecipe.createSmeltCountText(100000);
 		int stringWidth = fontRenderer.width(smeltCountText.getString());
 
 		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 134, 18, 34)
@@ -39,7 +39,7 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 			.build();
 
 		flameTransparentBackground = textures.getFlameIcon();
-		localizedName = new TranslationTextComponent("gui.jei.category.fuel");
+		localizedName = new TranslatableComponent("gui.jei.category.fuel");
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 	}
 
 	@Override
-	public ITextComponent getTitle() {
+	public Component getTitle() {
 		return localizedName;
 	}
 
@@ -81,11 +81,11 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 	}
 
 	@Override
-	public void draw(FuelRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+	public void draw(FuelRecipe recipe, PoseStack poseStack, double mouseX, double mouseY) {
 		IDrawableAnimated flame = recipe.getFlame();
-		flame.draw(matrixStack, 1, 0);
+		flame.draw(poseStack, 1, 0);
 		Minecraft minecraft = Minecraft.getInstance();
-		ITextComponent smeltCountText = recipe.getSmeltCountText();
-		minecraft.font.draw(matrixStack, smeltCountText, 24, 13, 0xFF808080);
+		Component smeltCountText = recipe.getSmeltCountText();
+		minecraft.font.draw(poseStack, smeltCountText, 24, 13, 0xFF808080);
 	}
 }

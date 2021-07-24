@@ -7,46 +7,47 @@ import java.util.List;
 
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.gui.DisplayEffectsScreen;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.effect.MobEffectInstance;
 
 import com.google.common.collect.Ordering;
+import net.minecraftforge.client.EffectRenderer;
+import net.minecraftforge.client.RenderProperties;
 
-class InventoryEffectRendererGuiHandler<T extends Container> implements IGuiContainerHandler<DisplayEffectsScreen<T>> {
+class InventoryEffectRendererGuiHandler<T extends AbstractContainerMenu> implements IGuiContainerHandler<EffectRenderingInventoryScreen<T>> {
 	/**
 	 * Modeled after {@link DisplayEffectsScreen#drawActivePotionEffects()}
 	 */
 	@SuppressWarnings("JavadocReference")
 	@Override
-	public List<Rectangle2d> getGuiExtraAreas(DisplayEffectsScreen<T> containerScreen) {
+	public List<Rect2i> getGuiExtraAreas(EffectRenderingInventoryScreen<T> containerScreen) {
 		Minecraft minecraft = containerScreen.getMinecraft();
 		if (minecraft == null) {
 			return Collections.emptyList();
 		}
-		ClientPlayerEntity player = minecraft.player;
+		LocalPlayer player = minecraft.player;
 		if (player == null) {
 			return Collections.emptyList();
 		}
-		Collection<EffectInstance> activePotionEffects = player.getActiveEffects();
+		Collection<MobEffectInstance> activePotionEffects = player.getActiveEffects();
 		if (activePotionEffects.isEmpty()) {
 			return Collections.emptyList();
 		}
 
-		List<Rectangle2d> areas = new ArrayList<>();
+		List<Rect2i> areas = new ArrayList<>();
 		int x = containerScreen.getGuiLeft() - 124;
 		int y = containerScreen.getGuiTop();
 		int height = 33;
 		if (activePotionEffects.size() > 5) {
 			height = 132 / (activePotionEffects.size() - 1);
 		}
-		for (EffectInstance potioneffect : Ordering.natural().sortedCopy(activePotionEffects)) {
-			Effect potion = potioneffect.getEffect();
-			if (potion.shouldRender(potioneffect)) {
-				areas.add(new Rectangle2d(x, y, 166, height));
+		for (MobEffectInstance potioneffect : Ordering.natural().sortedCopy(activePotionEffects)) {
+			EffectRenderer effectRenderer = RenderProperties.getEffectRenderer(potioneffect);
+			if (effectRenderer.shouldRender(potioneffect)) {
+				areas.add(new Rect2i(x, y, 166, height));
 				y += height;
 			}
 		}

@@ -2,7 +2,8 @@ package mezz.jei.api.gui.ingredient;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.item.ItemStack;
+import mezz.jei.api.ingredients.IIngredientRenderer;
+import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.api.gui.IRecipeLayout;
 

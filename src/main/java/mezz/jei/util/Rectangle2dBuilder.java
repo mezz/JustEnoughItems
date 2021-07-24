@@ -1,6 +1,6 @@
 package mezz.jei.util;
 
-import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.renderer.Rect2i;
 
 public class Rectangle2dBuilder {
 	private int x;
@@ -8,7 +8,7 @@ public class Rectangle2dBuilder {
 	private int width;
 	private int height;
 
-	public Rectangle2dBuilder(Rectangle2d rectangle2d) {
+	public Rectangle2dBuilder(Rect2i rectangle2d) {
 		this.x = rectangle2d.getX();
 		this.y = rectangle2d.getY();
 		this.width = rectangle2d.getWidth();
@@ -27,7 +27,7 @@ public class Rectangle2dBuilder {
 		return this;
 	}
 
-	public Rectangle2dBuilder setX(Rectangle2d rect) {
+	public Rectangle2dBuilder setX(Rect2i rect) {
 		this.x = rect.getX();
 		return this;
 	}
@@ -47,7 +47,7 @@ public class Rectangle2dBuilder {
 		return this;
 	}
 
-	public Rectangle2dBuilder setY(Rectangle2d rect) {
+	public Rectangle2dBuilder setY(Rect2i rect) {
 		this.y = rect.getY();
 		return this;
 	}
@@ -62,7 +62,7 @@ public class Rectangle2dBuilder {
 		return this;
 	}
 
-	public Rectangle2dBuilder setWidth(Rectangle2d rect) {
+	public Rectangle2dBuilder setWidth(Rect2i rect) {
 		this.width = rect.getWidth();
 		return this;
 	}
@@ -82,7 +82,7 @@ public class Rectangle2dBuilder {
 		return this;
 	}
 
-	public Rectangle2dBuilder setHeight(Rectangle2d rect) {
+	public Rectangle2dBuilder setHeight(Rect2i rect) {
 		this.height = rect.getHeight();
 		return this;
 	}
@@ -105,7 +105,7 @@ public class Rectangle2dBuilder {
 		return this;
 	}
 
-	public Rectangle2d build() {
-		return new Rectangle2d(x, y, width, height);
+	public Rect2i build() {
+		return new Rect2i(x, y, width, height);
 	}
 }

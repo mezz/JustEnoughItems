@@ -1,6 +1,6 @@
 package mezz.jei.gui.ghost;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -8,9 +8,9 @@ import java.util.List;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.input.click.MouseClickState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
@@ -29,7 +29,7 @@ public class GhostIngredientDrag<T> {
 	private final double mouseStartX;
 	private final double mouseStartY;
 	@Nullable
-	private final Rectangle2d origin;
+	private final Rect2i origin;
 
 	public GhostIngredientDrag(
 		IGhostIngredientHandler<?> handler,
@@ -38,7 +38,7 @@ public class GhostIngredientDrag<T> {
 		T ingredient,
 		double mouseX,
 		double mouseY,
-		@Nullable Rectangle2d origin
+		@Nullable Rect2i origin
 	) {
 		this.handler = handler;
 		this.targets = targets;
@@ -49,14 +49,14 @@ public class GhostIngredientDrag<T> {
 		this.mouseStartY = mouseY;
 	}
 
-	public void drawTargets(MatrixStack matrixStack, int mouseX, int mouseY) {
+	public void drawTargets(PoseStack poseStack, int mouseX, int mouseY) {
 		if (handler.shouldHighlightTargets()) {
-			drawTargets(matrixStack, mouseX, mouseY, targets);
+			drawTargets(poseStack, mouseX, mouseY, targets);
 		}
 	}
 
 	@SuppressWarnings("deprecation")
-	public void drawItem(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
+	public void drawItem(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
 		double mouseXDist = this.mouseStartX - mouseX;
 		double mouseYDist = this.mouseStartY - mouseY;
 		double mouseDistSq = mouseXDist * mouseXDist + mouseYDist * mouseYDist;
@@ -86,7 +86,7 @@ public class GhostIngredientDrag<T> {
 			float green = (float) (targetColor >> 16 & 255) / 255.0F;
 			float blue = (float) (targetColor >> 8 & 255) / 255.0F;
 			float alpha = (float) (targetColor & 255) / 255.0F;
-			RenderSystem.color4f(red, green, blue, alpha);
+			RenderSystem.setShaderColor(red, green, blue, alpha);
 			GL11.glVertex3f(mouseX, mouseY, 150);
 			GL11.glVertex3f(originX, originY, 150);
 			GL11.glEnd();
@@ -96,30 +96,31 @@ public class GhostIngredientDrag<T> {
 
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		itemRenderer.blitOffset += 150.0F;
-		ingredientRenderer.render(matrixStack, mouseX - 8, mouseY - 8, ingredient);
+		ingredientRenderer.render(poseStack, mouseX - 8, mouseY - 8, ingredient);
 		itemRenderer.blitOffset -= 150.0F;
 	}
 
 	@SuppressWarnings("deprecation")
-	public static <V> void drawTargets(MatrixStack matrixStack, int mouseX, int mouseY, List<Target<V>> targets) {
-		RenderSystem.disableLighting();
+	public static <V> void drawTargets(PoseStack poseStack, int mouseX, int mouseY, List<Target<V>> targets) {
+		//TODO - 1.17: Replacement?
+		//RenderSystem.disableLighting();
 		RenderSystem.disableDepthTest();
 		for (Target<?> target : targets) {
-			Rectangle2d area = target.getArea();
+			Rect2i area = target.getArea();
 			int color;
 			if (MathUtil.contains(area, mouseX, mouseY)) {
 				color = hoverColor;
 			} else {
 				color = targetColor;
 			}
-			AbstractGui.fill(matrixStack, area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), color);
+			GuiComponent.fill(poseStack, area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), color);
 		}
-		RenderSystem.color4f(1f, 1f, 1f, 1f);
+		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 	}
 
 	public boolean onClick(double mouseX, double mouseY, MouseClickState clickState) {
 		for (Target<T> target : targets) {
-			Rectangle2d area = target.getArea();
+			Rect2i area = target.getArea();
 			if (MathUtil.contains(area, mouseX, mouseY)) {
 				if (!clickState.isSimulate()) {
 					target.accept(ingredient);
@@ -147,7 +148,7 @@ public class GhostIngredientDrag<T> {
 	}
 
 	@Nullable
-	public Rectangle2d getOrigin() {
+	public Rect2i getOrigin() {
 		return origin;
 	}
 }

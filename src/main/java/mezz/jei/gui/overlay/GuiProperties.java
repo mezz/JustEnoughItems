@@ -2,12 +2,12 @@ package mezz.jei.gui.overlay;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.gui.recipes.RecipesGui;
-import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.renderer.Rect2i;
 
 public class GuiProperties implements IGuiProperties {
 	private final Class<? extends Screen> screenClass;
@@ -19,7 +19,7 @@ public class GuiProperties implements IGuiProperties {
 	private final int screenHeight;
 
 	@Nullable
-	public static GuiProperties create(ContainerScreen<?> containerScreen) {
+	public static GuiProperties create(AbstractContainerScreen<?> containerScreen) {
 		if (containerScreen.width == 0 || containerScreen.height == 0) {
 			return null;
 		}
@@ -36,7 +36,7 @@ public class GuiProperties implements IGuiProperties {
 
 	public static GuiProperties create(RecipesGui recipesGui) {
 		int extraWidth = recipesGui.getRecipeCatalystExtraWidth();
-		Rectangle2d recipeArea = recipesGui.getArea();
+		Rect2i recipeArea = recipesGui.getArea();
 		return new GuiProperties(
 			recipesGui.getClass(),
 			recipeArea.getX() - extraWidth,
@@ -61,12 +61,12 @@ public class GuiProperties implements IGuiProperties {
 			a.getScreenHeight() == b.getScreenHeight();
 	}
 
-	public static Rectangle2d getScreenRectangle(IGuiProperties guiProperties) {
-		return new Rectangle2d(0, 0, guiProperties.getScreenWidth(), guiProperties.getScreenHeight());
+	public static Rect2i getScreenRectangle(IGuiProperties guiProperties) {
+		return new Rect2i(0, 0, guiProperties.getScreenWidth(), guiProperties.getScreenHeight());
 	}
 
-	public static Rectangle2d getGuiRectangle(IGuiProperties guiProperties) {
-		return new Rectangle2d(guiProperties.getGuiLeft(), guiProperties.getGuiTop(), guiProperties.getGuiXSize(), guiProperties.getGuiYSize());
+	public static Rect2i getGuiRectangle(IGuiProperties guiProperties) {
+		return new Rect2i(guiProperties.getGuiLeft(), guiProperties.getGuiTop(), guiProperties.getGuiXSize(), guiProperties.getGuiYSize());
 	}
 
 	public static int getGuiRight(IGuiProperties guiProperties) {

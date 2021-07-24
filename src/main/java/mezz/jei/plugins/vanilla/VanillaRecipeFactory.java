@@ -3,7 +3,7 @@ package mezz.jei.plugins.vanilla;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;

@@ -4,9 +4,9 @@ import javax.annotation.Nullable;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.ChatFormatting;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -50,9 +50,9 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 
 	@Override
 	public ItemStack getCheatItemStack(DebugIngredient ingredient) {
-		ClientPlayerEntity player = Minecraft.getInstance().player;
+		LocalPlayer player = Minecraft.getInstance().player;
 		if (player != null) {
-			CommandUtilServer.writeChatMessage(player, "Debug ingredients cannot be cheated", TextFormatting.RED);
+			CommandUtilServer.writeChatMessage(player, "Debug ingredients cannot be cheated", ChatFormatting.RED);
 		}
 		return ItemStack.EMPTY;
 	}

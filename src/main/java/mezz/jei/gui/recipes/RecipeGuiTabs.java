@@ -1,6 +1,6 @@
 package mezz.jei.gui.recipes;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,8 @@ import java.util.List;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.input.CombinedMouseHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.Rect2i;
 
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -17,7 +18,7 @@ import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IPaged;
 import mezz.jei.util.MathUtil;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
 /**
  * The area drawn on top and bottom of the {@link RecipesGui} that show the recipe categories.
@@ -27,7 +28,7 @@ public class RecipeGuiTabs implements IPaged {
 	private final List<RecipeGuiTab> tabs = new ArrayList<>();
 	private final PageNavigation pageNavigation;
 	private IMouseHandler mouseHandler;
-	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
+	private Rect2i area = new Rect2i(0, 0, 0, 0);
 
 	private int pageCount = 1;
 	private int pageNumber = 0;
@@ -45,7 +46,7 @@ public class RecipeGuiTabs implements IPaged {
 			int totalWidth = 0;
 			categoriesPerPage = 0;
 
-			Rectangle2d recipeArea = recipesGui.getArea();
+			Rect2i recipeArea = recipesGui.getArea();
 			for (int i = 0; i < categories.size(); i++) {
 				if (totalWidth + RecipeGuiTab.TAB_WIDTH <= (recipeArea.getWidth() - 4)) {
 					totalWidth += RecipeGuiTab.TAB_WIDTH;
@@ -55,7 +56,7 @@ public class RecipeGuiTabs implements IPaged {
 				}
 			}
 
-			this.area = new Rectangle2d(
+			this.area = new Rect2i(
 				recipeArea.getX() + 2,
 				recipeArea.getY() - RecipeGuiTab.TAB_HEIGHT + 3, // overlaps the recipe gui slightly
 				totalWidth,
@@ -69,7 +70,7 @@ public class RecipeGuiTabs implements IPaged {
 			pageNumber = categoryIndex / categoriesPerPage;
 
 			int navHeight = 20;
-			Rectangle2d navigationArea = new Rectangle2d(
+			Rect2i navigationArea = new Rect2i(
 				this.area.getX(),
 				this.area.getY() - (2 + navHeight),
 				this.area.getWidth(),
@@ -109,32 +110,34 @@ public class RecipeGuiTabs implements IPaged {
 	}
 
 	@SuppressWarnings("deprecation")
-	public void draw(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
+	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
 		IRecipeCategory<?> selectedCategory = recipeGuiLogic.getSelectedRecipeCategory();
 
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
 		RecipeGuiTab hovered = null;
 
 		RenderSystem.disableDepthTest();
-		RenderSystem.enableAlphaTest();
+		//TODO - 1.17: Replacement?
+		//RenderSystem.enableAlphaTest();
 		{
 			for (RecipeGuiTab tab : tabs) {
 				boolean selected = tab.isSelected(selectedCategory);
-				tab.draw(selected, matrixStack, mouseX, mouseY);
+				tab.draw(selected, poseStack, mouseX, mouseY);
 				if (tab.isMouseOver(mouseX, mouseY)) {
 					hovered = tab;
 				}
 			}
 		}
-		RenderSystem.disableAlphaTest();
+		//TODO - 1.17: Replacement?
+		//RenderSystem.disableAlphaTest();
 		RenderSystem.enableDepthTest();
 
-		pageNavigation.draw(minecraft, matrixStack, mouseX, mouseY, minecraft.getFrameTime());
+		pageNavigation.draw(minecraft, poseStack, mouseX, mouseY, minecraft.getFrameTime());
 
 		if (hovered != null) {
-			List<ITextComponent> tooltip = hovered.getTooltip();
-			TooltipRenderer.drawHoveringText(tooltip, mouseX, mouseY, matrixStack);
+			List<Component> tooltip = hovered.getTooltip();
+			TooltipRenderer.drawHoveringText(tooltip, mouseX, mouseY, poseStack);
 		}
 	}
 

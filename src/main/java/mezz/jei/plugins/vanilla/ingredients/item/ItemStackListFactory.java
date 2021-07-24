@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Set;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.NonNullList;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.core.NonNullList;
 
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.StackHelper;
@@ -23,8 +23,8 @@ public final class ItemStackListFactory {
 		final List<ItemStack> itemList = new ArrayList<>();
 		final Set<String> itemNameSet = new HashSet<>();
 
-		for (ItemGroup itemGroup : ItemGroup.TABS) {
-			if (itemGroup == ItemGroup.TAB_HOTBAR || itemGroup == ItemGroup.TAB_INVENTORY) {
+		for (CreativeModeTab itemGroup : CreativeModeTab.TABS) {
+			if (itemGroup == CreativeModeTab.TAB_HOTBAR || itemGroup == CreativeModeTab.TAB_INVENTORY) {
 				continue;
 			}
 			NonNullList<ItemStack> creativeTabItemStacks = NonNullList.create();

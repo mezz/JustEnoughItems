@@ -59,7 +59,7 @@ configurations {
 	apiRuntimeOnly.extendsFrom(runtimeOnly)
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
 repositories {
 	mavenCentral()
@@ -150,6 +150,7 @@ curseforge {
 		changelog = file('changelog.html')
 		changelogType = 'html'
 		releaseType = 'beta'
+		addGameVersion "${mcversion}"
 	}
 }
 

@@ -1,11 +1,11 @@
 package mezz.jei.api.recipe.category;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -14,8 +14,7 @@ import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.gui.ingredient.ITooltipCallback;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.Component;
 
 /**
  * Defines a category of recipe, (i.e. Crafting Table Recipe, Furnace Recipe).
@@ -39,7 +38,7 @@ public interface IRecipeCategory<T> {
 	 * Drawn at the top of the recipe GUI pages for this category.
 	 * @since JEI 7.6.4
 	 */
-	ITextComponent getTitle();
+	Component getTitle();
 
 	/**
 	 * Returns the drawable background for a single recipe in this category.
@@ -82,7 +81,7 @@ public interface IRecipeCategory<T> {
 	 * @see IDrawable for a simple class for drawing things.
 	 * @see IGuiHelper for useful functions.
 	 */
-	default void draw(T recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+	default void draw(T recipe, PoseStack stack, double mouseX, double mouseY) {
 
 	}
 
@@ -96,7 +95,7 @@ public interface IRecipeCategory<T> {
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
 	 * @return tooltip strings. If there is no tooltip at this position, return an empty list.
 	 */
-	default List<ITextComponent> getTooltipStrings(T recipe, double mouseX, double mouseY) {
+	default List<Component> getTooltipStrings(T recipe, double mouseX, double mouseY) {
 		return Collections.emptyList();
 	}
 
@@ -118,8 +117,8 @@ public interface IRecipeCategory<T> {
 	 * @since JEI 7.2.0
 	 */
 	default boolean isHandled(T recipe) {
-		if (recipe instanceof IRecipe) {
-			IRecipe<?> iRecipe = (IRecipe<?>) recipe;
+		if (recipe instanceof Recipe) {
+			Recipe<?> iRecipe = (Recipe<?>) recipe;
 			return !iRecipe.isSpecial();
 		}
 		return true;

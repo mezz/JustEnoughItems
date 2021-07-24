@@ -6,17 +6,17 @@ import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketGiveItemStack;
 import mezz.jei.network.packets.PacketSetHotbarItemStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.gui.screen.inventory.CreativeScreen;
-import net.minecraft.client.multiplayer.PlayerController;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -33,15 +33,15 @@ public final class CommandUtil {
 	 * <p>
 	 * {@link CreativeScreen} has special client-side handling for itemStacks, just give the item on the client
 	 */
-	public static void giveStack(ItemStack itemStack, InputMappings.Input input, IClientConfig clientConfig) {
+	public static void giveStack(ItemStack itemStack, InputConstants.Key input, IClientConfig clientConfig) {
 		final GiveMode giveMode = clientConfig.getGiveMode();
 		Minecraft minecraft = Minecraft.getInstance();
-		ClientPlayerEntity player = minecraft.player;
+		LocalPlayer player = minecraft.player;
 		if (player == null) {
 			LOGGER.error("Can't give stack, there is no player");
 			return;
 		}
-		if (minecraft.screen instanceof CreativeScreen && giveMode == GiveMode.MOUSE_PICKUP) {
+		if (minecraft.screen instanceof CreativeModeInventoryScreen && giveMode == GiveMode.MOUSE_PICKUP) {
 			final int amount = GiveMode.getStackSize(giveMode, itemStack, input);
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
 			CommandUtilServer.mousePickupItemStack(player, sendStack);
@@ -79,7 +79,7 @@ public final class CommandUtil {
 		ResourceLocation itemResourceLocation = item.getRegistryName();
 		ErrorUtil.checkNotNull(itemResourceLocation, "itemStack.getItem().getRegistryName()");
 
-		ClientPlayerEntity sender = Minecraft.getInstance().player;
+		LocalPlayer sender = Minecraft.getInstance().player;
 		if (sender != null) {
 			if (sender.createCommandSourceStack().hasPermission(2)) {
 				sendGiveAction(sender, itemStack, amount);
@@ -92,30 +92,30 @@ public final class CommandUtil {
 		}
 	}
 
-	private static void sendGiveAction(ClientPlayerEntity sender, ItemStack itemStack, int amount) {
+	private static void sendGiveAction(LocalPlayer sender, ItemStack itemStack, int amount) {
 		String[] commandParameters = CommandUtilServer.getGiveCommandParameters(sender, itemStack, amount);
 		String fullCommand = "/give " + StringUtils.join(commandParameters, " ");
 		sendChatMessage(sender, fullCommand);
 	}
 
-	private static void sendChatMessage(ClientPlayerEntity sender, String chatMessage) {
+	private static void sendChatMessage(LocalPlayer sender, String chatMessage) {
 		if (chatMessage.length() <= 256) {
 			sender.chat(chatMessage);
 		} else {
-			ITextComponent errorMessage = new TranslationTextComponent("jei.chat.error.command.too.long");
-			errorMessage.getStyle().applyFormat(TextFormatting.RED);
+			Component errorMessage = new TranslatableComponent("jei.chat.error.command.too.long");
+			errorMessage.getStyle().applyFormat(ChatFormatting.RED);
 			sender.displayClientMessage(errorMessage, false);
 
-			ITextComponent chatMessageComponent = new StringTextComponent(chatMessage);
-			chatMessageComponent.getStyle().applyFormat(TextFormatting.RED);
+			Component chatMessageComponent = new TextComponent(chatMessage);
+			chatMessageComponent.getStyle().applyFormat(ChatFormatting.RED);
 			sender.displayClientMessage(chatMessageComponent, false);
 		}
 	}
 
-	private static void sendCreativeInventoryActions(ClientPlayerEntity sender, ItemStack stack, int amount) {
+	private static void sendCreativeInventoryActions(LocalPlayer sender, ItemStack stack, int amount) {
 		int i = 0; // starting in the inventory, not armour or crafting slots
-		while (i < sender.inventory.items.size() && amount > 0) {
-			ItemStack currentStack = sender.inventory.items.get(i);
+		while (i < sender.getInventory().items.size() && amount > 0) {
+			ItemStack currentStack = sender.getInventory().items.get(i);
 			if (currentStack.isEmpty()) {
 				ItemStack sendAllRemaining = ItemHandlerHelper.copyStackWithSize(stack, amount);
 				sendSlotPacket(sendAllRemaining, i);
@@ -140,7 +140,7 @@ public final class CommandUtil {
 			mainInventorySlot += 36;
 		}
 		Minecraft minecraft = Minecraft.getInstance();
-		PlayerController playerController = minecraft.gameMode;
+		MultiPlayerGameMode playerController = minecraft.gameMode;
 		if (playerController != null) {
 			playerController.handleCreativeModeItemAdd(stack, mainInventorySlot);
 		} else {

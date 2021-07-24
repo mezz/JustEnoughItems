@@ -1,6 +1,6 @@
 package mezz.jei.gui.ghost;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -10,10 +10,10 @@ import java.util.Objects;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.click.MouseClickState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -21,7 +21,7 @@ import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.IClickedIngredient;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 public class GhostIngredientDragManager {
 	private final IGhostIngredientDragSource source;
@@ -43,24 +43,24 @@ public class GhostIngredientDragManager {
 		this.worldConfig = worldConfig;
 	}
 
-	public void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
-		if (!(minecraft.screen instanceof ContainerScreen)) { // guiContainer uses drawOnForeground
-			drawGhostIngredientHighlights(minecraft, matrixStack, mouseX, mouseY);
+	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+		if (!(minecraft.screen instanceof AbstractContainerScreen)) { // guiContainer uses drawOnForeground
+			drawGhostIngredientHighlights(minecraft, poseStack, mouseX, mouseY);
 		}
 		if (ghostIngredientDrag != null) {
-			ghostIngredientDrag.drawItem(minecraft, matrixStack, mouseX, mouseY);
+			ghostIngredientDrag.drawItem(minecraft, poseStack, mouseX, mouseY);
 		}
-		ghostIngredientsReturning.forEach(returning -> returning.drawItem(minecraft, matrixStack));
+		ghostIngredientsReturning.forEach(returning -> returning.drawItem(minecraft, poseStack));
 		ghostIngredientsReturning.removeIf(GhostIngredientReturning::isComplete);
 	}
 
-	public void drawOnForeground(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
-		drawGhostIngredientHighlights(minecraft, matrixStack, mouseX, mouseY);
+	public void drawOnForeground(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+		drawGhostIngredientHighlights(minecraft, poseStack, mouseX, mouseY);
 	}
 
-	private void drawGhostIngredientHighlights(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
+	private void drawGhostIngredientHighlights(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
 		if (this.ghostIngredientDrag != null) {
-			this.ghostIngredientDrag.drawTargets(matrixStack, mouseX, mouseY);
+			this.ghostIngredientDrag.drawTargets(poseStack, mouseX, mouseY);
 		} else {
 			IClickedIngredient<?> elementUnderMouse = this.source.getIngredientUnderMouse(mouseX, mouseY);
 			Object hovered = elementUnderMouse == null ? null : elementUnderMouse.getValue();
@@ -76,7 +76,7 @@ public class GhostIngredientDragManager {
 				}
 			}
 			if (this.hoveredIngredientTargets != null && !worldConfig.isCheatItemsEnabled()) {
-				GhostIngredientDrag.drawTargets(matrixStack, mouseX, mouseY, this.hoveredIngredientTargets);
+				GhostIngredientDrag.drawTargets(poseStack, mouseX, mouseY, this.hoveredIngredientTargets);
 			}
 		}
 	}
@@ -91,11 +91,11 @@ public class GhostIngredientDragManager {
 				return false;
 			}
 			Minecraft minecraft = Minecraft.getInstance();
-			ClientPlayerEntity player = minecraft.player;
+			LocalPlayer player = minecraft.player;
 			if (player == null) {
 				return false;
 			}
-			ItemStack mouseItem = player.inventory.getCarried();
+			ItemStack mouseItem = player.containerMenu.getCarried();
 			return mouseItem.isEmpty() &&
 				handleClickGhostIngredient(screen, clicked, mouseX, mouseY);
 		} else {
@@ -132,7 +132,7 @@ public class GhostIngredientDragManager {
 			return false;
 		}
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
-		Rectangle2d clickedArea = clicked.getArea();
+		Rect2i clickedArea = clicked.getArea();
 		this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, mouseX, mouseY, clickedArea);
 		return true;
 	}

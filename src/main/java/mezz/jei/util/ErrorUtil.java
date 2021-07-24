@@ -8,21 +8,21 @@ import java.util.List;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.ingredients.IngredientsForType;
-import net.minecraft.fluid.Fluid;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.IForgeRegistryEntry;
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.CrashReportCategory;
-import net.minecraft.crash.ReportedException;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.CrashReport;
+import net.minecraft.CrashReportCategory;
+import net.minecraft.ReportedException;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.Internal;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -100,8 +100,8 @@ public final class ErrorUtil {
 
 	public static String getNameForRecipe(Object recipe) {
 		ResourceLocation registryName = null;
-		if (recipe instanceof IRecipe) {
-			registryName = ((IRecipe<?>) recipe).getId();
+		if (recipe instanceof Recipe) {
+			registryName = ((Recipe<?>) recipe).getId();
 		} else if (recipe instanceof IForgeRegistryEntry) {
 			IForgeRegistryEntry<?> registryEntry = (IForgeRegistryEntry<?>) recipe;
 			registryName = registryEntry.getRegistryName();
@@ -171,7 +171,7 @@ public final class ErrorUtil {
 			itemName = item.getClass().getName();
 		}
 
-		CompoundNBT nbt = itemStack.getTag();
+		CompoundTag nbt = itemStack.getTag();
 		if (nbt != null) {
 			return itemStack + " " + itemName + " nbt:" + nbt;
 		}
@@ -191,7 +191,7 @@ public final class ErrorUtil {
 			fluidName = fluid.getClass().getName();
 		}
 
-		CompoundNBT nbt = fluidStack.getTag();
+		CompoundTag nbt = fluidStack.getTag();
 		if (nbt != null) {
 			return fluidStack + " " + fluidName + " nbt:" + nbt;
 		}

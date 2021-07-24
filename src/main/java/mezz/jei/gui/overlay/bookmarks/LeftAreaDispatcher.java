@@ -1,6 +1,6 @@
 package mezz.jei.gui.overlay.bookmarks;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -10,8 +10,8 @@ import java.util.Set;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.click.MouseClickState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.gui.GuiScreenHelper;
@@ -33,8 +33,8 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 	private int current = 0;
 	@Nullable
 	private IGuiProperties guiProperties;
-	private Rectangle2d naviArea = new Rectangle2d(0, 0, 0, 0);
-	private Rectangle2d displayArea = new Rectangle2d(0, 0, 0, 0);
+	private Rect2i naviArea = new Rect2i(0, 0, 0, 0);
+	private Rect2i displayArea = new Rect2i(0, 0, 0, 0);
 	private final PageNavigation navigation;
 	private boolean canShow = false;
 
@@ -52,18 +52,18 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		return current >= 0 && current < contents.size();
 	}
 
-	public void drawScreen(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+	public void drawScreen(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (canShow && hasContent()) {
-			contents.get(current).drawScreen(minecraft, matrixStack, mouseX, mouseY, partialTicks);
+			contents.get(current).drawScreen(minecraft, poseStack, mouseX, mouseY, partialTicks);
 			if (naviArea.getHeight() > 0) {
-				navigation.draw(minecraft, matrixStack, mouseX, mouseY, partialTicks);
+				navigation.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
 			}
 		}
 	}
 
-	public void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
 		if (canShow && hasContent()) {
-			contents.get(current).drawTooltips(minecraft, matrixStack, mouseX, mouseY);
+			contents.get(current).drawTooltips(minecraft, poseStack, mouseX, mouseY);
 		}
 	}
 
@@ -76,7 +76,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 			} else {
 				ILeftAreaContent content = contents.get(current);
 				if (forceUpdate || !GuiProperties.areEqual(guiProperties, currentGuiProperties)) {
-					Set<Rectangle2d> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
+					Set<Rect2i> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
 					guiProperties = currentGuiProperties;
 					makeDisplayArea(guiProperties);
 					content.updateBounds(displayArea, guiExclusionAreas);
@@ -91,15 +91,15 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		final int y = BORDER_PADDING;
 		int width = guiProperties.getGuiLeft() - x - BORDER_PADDING;
 		final int height = guiProperties.getScreenHeight() - y - BORDER_PADDING;
-		displayArea = new Rectangle2d(x, y, width, height);
+		displayArea = new Rect2i(x, y, width, height);
 		if (contents.size() > 1) {
-			naviArea = new Rectangle2d(
+			naviArea = new Rect2i(
 				displayArea.getX(),
 				displayArea.getY(),
 				displayArea.getWidth(),
 				NAVIGATION_HEIGHT
 			);
-			displayArea = new Rectangle2d(
+			displayArea = new Rect2i(
 				displayArea.getX(),
 				displayArea.getY() + NAVIGATION_HEIGHT + BORDER_PADDING,
 				displayArea.getWidth(),
@@ -107,7 +107,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 			);
 			navigation.updateBounds(naviArea);
 		} else {
-			naviArea = new Rectangle2d(0, 0, 0, 0);
+			naviArea = new Rect2i(0, 0, 0, 0);
 		}
 	}
 

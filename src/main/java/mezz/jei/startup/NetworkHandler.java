@@ -1,7 +1,5 @@
 package mezz.jei.startup;
 
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.event.EventNetworkChannel;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -9,6 +7,8 @@ import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.ServerInfo;
 import mezz.jei.network.PacketHandler;
 import mezz.jei.network.PacketHandlerClient;
+import net.minecraftforge.fmllegacy.network.NetworkRegistry;
+import net.minecraftforge.fmllegacy.network.event.EventNetworkChannel;
 
 public class NetworkHandler {
 	private final EventNetworkChannel channel;

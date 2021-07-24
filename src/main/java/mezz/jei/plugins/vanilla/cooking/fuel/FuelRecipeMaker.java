@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -37,7 +37,8 @@ public final class FuelRecipeMaker {
 
 	private static int getBurnTime(ItemStack itemStack) {
 		try {
-			return ForgeHooks.getBurnTime(itemStack);
+			//TODO - 1.17: Evaluate i f this should have a given recipe type or not
+			return ForgeHooks.getBurnTime(itemStack, null);
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
 			LOGGER.error("Failed to check if item is fuel {}.", itemStackInfo, e);

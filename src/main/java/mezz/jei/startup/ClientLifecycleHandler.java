@@ -26,10 +26,10 @@ import mezz.jei.ingredients.IngredientSorter;
 import mezz.jei.util.AnnotatedInstanceUtil;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.play.ClientPlayNetHandler;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.resources.IResourceManager;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.Connection;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
@@ -37,7 +37,7 @@ import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -115,8 +115,8 @@ public class ClientLifecycleHandler {
 	}
 
 	private void reloadListenerSetup() {
-		IResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
-		if (!(resourceManager instanceof IReloadableResourceManager)) {
+		ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
+		if (!(resourceManager instanceof ReloadableResourceManager)) {
 			return;
 		}
 		if (Internal.getReloadListener() == null) {
@@ -125,13 +125,13 @@ public class ClientLifecycleHandler {
 		} else {
 			Internal.getReloadListener().update(this);
 		}
-		((IReloadableResourceManager) resourceManager).registerReloadListener(Internal.getReloadListener());
+		((ReloadableResourceManager) resourceManager).registerReloadListener(Internal.getReloadListener());
 	}
 
 	public void setupJEI() {
-		ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
+		ClientPacketListener connection = Minecraft.getInstance().getConnection();
 		if (connection != null) {
-			NetworkManager networkManager = connection.getConnection();
+			Connection networkManager = connection.getConnection();
 			worldConfig.syncWorldConfig(networkManager);
 		}
 
@@ -174,7 +174,7 @@ public class ClientLifecycleHandler {
 		}
 
 		public boolean shouldRun() {
-			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
+			ClientPacketListener connection = Minecraft.getInstance().getConnection();
 			boolean isIntegrated = Minecraft.getInstance().isLocalServer();
 			if (connection == null || isIntegrated) {
 				//If we are an integrated server we always handle handle recipes updating as it is consistently last

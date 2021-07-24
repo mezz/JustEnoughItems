@@ -2,10 +2,9 @@ package mezz.jei.network;
 
 import java.util.EnumMap;
 
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.network.packets.IPacketJeiHandler;
@@ -14,6 +13,7 @@ import mezz.jei.network.packets.PacketGiveItemStack;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
 import mezz.jei.network.packets.PacketSetHotbarItemStack;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,9 +33,9 @@ public class PacketHandler {
 	}
 
 	public void onPacket(NetworkEvent.ClientCustomPayloadEvent event) {
-		PacketBuffer packetBuffer = new PacketBuffer(event.getPayload());
+		FriendlyByteBuf packetBuffer = new FriendlyByteBuf(event.getPayload());
 		NetworkEvent.Context context = event.getSource().get();
-		ServerPlayerEntity player = context.getSender();
+		ServerPlayer player = context.getSender();
 		if (player == null) {
 			LOGGER.error("Packet error, the sender player is missing for event: {}", event);
 			return;

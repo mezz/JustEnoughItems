@@ -3,10 +3,10 @@ package mezz.jei.gui.overlay.bookmarks;
 import java.util.List;
 
 import mezz.jei.input.click.MouseClickState;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
@@ -15,7 +15,7 @@ import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.textures.Textures;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.lwjgl.glfw.GLFW;
 
 public class BookmarkButton extends GuiIconToggleButton {
@@ -37,18 +37,18 @@ public class BookmarkButton extends GuiIconToggleButton {
 	}
 
 	@Override
-	protected void getTooltips(List<ITextComponent> tooltip) {
-		tooltip.add(new TranslationTextComponent("jei.tooltip.bookmarks"));
-		KeyBinding bookmarkKey = KeyBindings.bookmark;
+	protected void getTooltips(List<Component> tooltip) {
+		tooltip.add(new TranslatableComponent("jei.tooltip.bookmarks"));
+		KeyMapping bookmarkKey = KeyBindings.bookmark;
 		if (bookmarkKey.getKey().getValue() == GLFW.GLFW_KEY_UNKNOWN) {
-			TranslationTextComponent noKey = new TranslationTextComponent("jei.tooltip.bookmarks.usage.nokey");
-			tooltip.add(noKey.withStyle(TextFormatting.RED));
+			TranslatableComponent noKey = new TranslatableComponent("jei.tooltip.bookmarks.usage.nokey");
+			tooltip.add(noKey.withStyle(ChatFormatting.RED));
 		} else if (!bookmarkOverlay.hasRoom()) {
-			TranslationTextComponent notEnoughSpace = new TranslationTextComponent("jei.tooltip.bookmarks.not.enough.space");
-			tooltip.add(notEnoughSpace.withStyle(TextFormatting.GOLD));
+			TranslatableComponent notEnoughSpace = new TranslatableComponent("jei.tooltip.bookmarks.not.enough.space");
+			tooltip.add(notEnoughSpace.withStyle(ChatFormatting.GOLD));
 		} else {
-			TranslationTextComponent key = new TranslationTextComponent("jei.tooltip.bookmarks.usage.key", new TranslationTextComponent(bookmarkKey.saveString()));
-			tooltip.add(key.withStyle(TextFormatting.GRAY));
+			TranslatableComponent key = new TranslatableComponent("jei.tooltip.bookmarks.usage.key", new TranslatableComponent(bookmarkKey.saveString()));
+			tooltip.add(key.withStyle(ChatFormatting.GRAY));
 		}
 	}
 

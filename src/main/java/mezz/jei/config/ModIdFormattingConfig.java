@@ -12,13 +12,13 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 
 import mezz.jei.api.constants.ModIds;
 import org.apache.commons.lang3.StringUtils;
@@ -89,11 +89,11 @@ public class ModIdFormattingConfig implements IJEIConfig {
 	}
 
 	private void updateModNameFormat() {
-		EnumSet<TextFormatting> validFormatting = EnumSet.allOf(TextFormatting.class);
-		validFormatting.remove(TextFormatting.RESET);
+		EnumSet<ChatFormatting> validFormatting = EnumSet.allOf(ChatFormatting.class);
+		validFormatting.remove(ChatFormatting.RESET);
 		String[] validValues = new String[validFormatting.size()];
 		int i = 0;
-		for (TextFormatting formatting : validFormatting) {
+		for (ChatFormatting formatting : validFormatting) {
 			validValues[i] = formatting.getName().toLowerCase(Locale.ENGLISH);
 			i++;
 		}
@@ -108,7 +108,7 @@ public class ModIdFormattingConfig implements IJEIConfig {
 		StringBuilder format = new StringBuilder();
 		String[] strings = formatWithEnumNames.split(" ");
 		for (String string : strings) {
-			TextFormatting valueByName = TextFormatting.getByName(string);
+			ChatFormatting valueByName = ChatFormatting.getByName(string);
 			if (valueByName != null) {
 				format.append(valueByName.toString());
 			} else {
@@ -122,18 +122,18 @@ public class ModIdFormattingConfig implements IJEIConfig {
 	private static String detectModNameTooltipFormatting() {
 		try {
 			ItemStack itemStack = new ItemStack(Items.APPLE);
-			ClientPlayerEntity player = Minecraft.getInstance().player;
-			List<ITextComponent> tooltip = new ArrayList<>();
-			tooltip.add(new StringTextComponent("JEI Tooltip Testing for mod name formatting"));
-			ItemTooltipEvent tooltipEvent = ForgeEventFactory.onItemTooltip(itemStack, player, tooltip, ITooltipFlag.TooltipFlags.NORMAL);
+			LocalPlayer player = Minecraft.getInstance().player;
+			List<Component> tooltip = new ArrayList<>();
+			tooltip.add(new TextComponent("JEI Tooltip Testing for mod name formatting"));
+			ItemTooltipEvent tooltipEvent = ForgeEventFactory.onItemTooltip(itemStack, player, tooltip, TooltipFlag.Default.NORMAL);
 			tooltip = tooltipEvent.getToolTip();
 
 			if (tooltip.size() > 1) {
 				for (int lineNum = 1; lineNum < tooltip.size(); lineNum++) {
-					ITextComponent line = tooltip.get(lineNum);
+					Component line = tooltip.get(lineNum);
 					String lineString = line.getString();
 					if (lineString.contains(ModIds.MINECRAFT_NAME)) {
-						String withoutFormatting = TextFormatting.stripFormatting(lineString);
+						String withoutFormatting = ChatFormatting.stripFormatting(lineString);
 						if (withoutFormatting != null) {
 							if (lineString.equals(withoutFormatting)) {
 								return "";

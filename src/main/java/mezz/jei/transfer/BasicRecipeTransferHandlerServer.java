@@ -8,10 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 public final class BasicRecipeTransferHandlerServer {
 	private BasicRecipeTransferHandlerServer() {
@@ -20,8 +20,8 @@ public final class BasicRecipeTransferHandlerServer {
 	/**
 	 * Called server-side to actually put the items in place.
 	 */
-	public static void setItems(PlayerEntity player, Map<Integer, Integer> slotIdMap, List<Integer> craftingSlots, List<Integer> inventorySlots, boolean maxTransfer, boolean requireCompleteSets) {
-		Container container = player.containerMenu;
+	public static void setItems(Player player, Map<Integer, Integer> slotIdMap, List<Integer> craftingSlots, List<Integer> inventorySlots, boolean maxTransfer, boolean requireCompleteSets) {
+		AbstractContainerMenu container = player.containerMenu;
 
 		// grab items from slots
 		Map<Integer, ItemStack> slotMap = new HashMap<>(slotIdMap.size());
@@ -90,7 +90,7 @@ public final class BasicRecipeTransferHandlerServer {
 		for (ItemStack oldCraftingItem : clearedCraftingItems) {
 			int added = addStack(container, inventorySlots, oldCraftingItem);
 			if (added < oldCraftingItem.getCount()) {
-				if (!player.inventory.add(oldCraftingItem)) {
+				if (!player.getInventory().add(oldCraftingItem)) {
 					player.drop(oldCraftingItem, false);
 				}
 			}
@@ -101,8 +101,8 @@ public final class BasicRecipeTransferHandlerServer {
 
 	@Nonnull
 	private static Map<Integer, ItemStack> removeItemsFromInventory(
-		PlayerEntity player,
-		Container container,
+		Player player,
+		AbstractContainerMenu container,
 		Map<Integer, ItemStack> required,
 		List<Integer> craftingSlots,
 		List<Integer> inventorySlots,
@@ -197,7 +197,7 @@ public final class BasicRecipeTransferHandlerServer {
 	}
 
 	@Nullable
-	private static Slot getSlotWithStack(Container container, ItemStack stack, List<Integer> craftingSlots, List<Integer> inventorySlots) {
+	private static Slot getSlotWithStack(AbstractContainerMenu container, ItemStack stack, List<Integer> craftingSlots, List<Integer> inventorySlots) {
 		Slot slot = getSlotWithStack(container, craftingSlots, stack);
 		if (slot == null) {
 			slot = getSlotWithStack(container, inventorySlots, stack);
@@ -206,7 +206,7 @@ public final class BasicRecipeTransferHandlerServer {
 		return slot;
 	}
 
-	private static int addStack(Container container, Collection<Integer> slotIndexes, ItemStack stack) {
+	private static int addStack(AbstractContainerMenu container, Collection<Integer> slotIndexes, ItemStack stack) {
 		int added = 0;
 		// Add to existing stacks first
 		for (final Integer slotIndex : slotIndexes) {
@@ -268,7 +268,7 @@ public final class BasicRecipeTransferHandlerServer {
 	 * @return the slot that contains the itemStack. returns null if no slot contains the itemStack.
 	 */
 	@Nullable
-	private static Slot getSlotWithStack(Container container, Iterable<Integer> slotNumbers, ItemStack itemStack) {
+	private static Slot getSlotWithStack(AbstractContainerMenu container, Iterable<Integer> slotNumbers, ItemStack itemStack) {
 		for (Integer slotNumber : slotNumbers) {
 			if (slotNumber >= 0 && slotNumber < container.slots.size()) {
 				Slot slot = container.getSlot(slotNumber);

@@ -13,9 +13,9 @@ import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnegative;
 import java.util.ArrayList;
@@ -65,9 +65,9 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	@Nonnegative
 	private static int getRecipeCategoryIndexToShowFirst(List<IRecipeCategory<?>> recipeCategories, RecipeTransferManager recipeTransferManager) {
 		Minecraft minecraft = Minecraft.getInstance();
-		ClientPlayerEntity player = minecraft.player;
+		LocalPlayer player = minecraft.player;
 		if (player != null) {
-			Container openContainer = player.containerMenu;
+			AbstractContainerMenu openContainer = player.containerMenu;
 			if (openContainer != null) {
 				for (int i = 0; i < recipeCategories.size(); i++) {
 					IRecipeCategory<?> recipeCategory = recipeCategories.get(i);

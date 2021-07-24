@@ -1,6 +1,6 @@
 package mezz.jei.gui.overlay;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -12,14 +12,15 @@ import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.click.MouseClickState;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
@@ -52,7 +53,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	private final GuiScreenHelper guiScreenHelper;
 	private final IMouseHandler mouseHandler;
 
-	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
+	private Rect2i area = new Rect2i(0, 0, 0, 0);
 	protected final IngredientListBatchRenderer guiIngredientSlots;
 	private final IIngredientFilterConfig ingredientFilterConfig;
 	private final IClientConfig clientConfig;
@@ -88,7 +89,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		return Math.max(ingredientsWidth, minWidth);
 	}
 
-	public boolean updateBounds(Rectangle2d availableArea, Collection<Rectangle2d> exclusionAreas) {
+	public boolean updateBounds(Rect2i availableArea, Collection<Rect2i> exclusionAreas) {
 		final int columns = Math.min(availableArea.getWidth() / INGREDIENT_WIDTH, this.clientConfig.getMaxColumns());
 		final int rows = availableArea.getHeight() / INGREDIENT_HEIGHT;
 
@@ -105,7 +106,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		final int y = availableArea.getY() + (availableArea.getHeight() - height) / 2;
 		final int xOffset = x + Math.max(0, (width - ingredientsWidth) / 2);
 
-		this.area = new Rectangle2d(x, y, width, height);
+		this.area = new Rect2i(x, y, width, height);
 		this.guiIngredientSlots.clear();
 
 		if (rows == 0 || columns < ClientConfig.smallestNumColumns) {
@@ -117,7 +118,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 			for (int column = 0; column < columns; column++) {
 				int x1 = xOffset + (column * INGREDIENT_WIDTH);
 				IngredientListSlot ingredientListSlot = new IngredientListSlot(x1, y1, INGREDIENT_PADDING);
-				Rectangle2d stackArea = ingredientListSlot.getArea();
+				Rect2i stackArea = ingredientListSlot.getArea();
 				final boolean blocked = MathUtil.intersects(exclusionAreas, stackArea);
 				ingredientListSlot.setBlocked(blocked);
 				this.guiIngredientSlots.add(ingredientListSlot);
@@ -126,35 +127,36 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		return true;
 	}
 
-	public Rectangle2d getArea() {
+	public Rect2i getArea() {
 		return area;
 	}
 
 	@SuppressWarnings("deprecation")
-	public void draw(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
+	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
 		RenderSystem.disableBlend();
 
-		guiIngredientSlots.render(minecraft, matrixStack);
+		guiIngredientSlots.render(minecraft, poseStack);
 
 		if (!shouldDeleteItemOnClick(minecraft, mouseX, mouseY) && isMouseOver(mouseX, mouseY)) {
 			IngredientListElementRenderer<?> hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
 			if (hovered != null) {
-				hovered.drawHighlight(matrixStack);
+				hovered.drawHighlight(poseStack);
 			}
 		}
 
-		RenderSystem.enableAlphaTest();
+		//TODO - 1.17: Replacement?
+		//RenderSystem.enableAlphaTest();
 	}
 
-	public void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
 			if (shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
-				TranslationTextComponent deleteItem = new TranslationTextComponent("jei.tooltip.delete.item");
-				TooltipRenderer.drawHoveringText(deleteItem, mouseX, mouseY, matrixStack);
+				TranslatableComponent deleteItem = new TranslatableComponent("jei.tooltip.delete.item");
+				TooltipRenderer.drawHoveringText(deleteItem, mouseX, mouseY, poseStack);
 			} else {
 				IngredientListElementRenderer<?> hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
 				if (hovered != null) {
-					hovered.drawTooltip(matrixStack, mouseX, mouseY, ingredientFilterConfig, worldConfig);
+					hovered.drawTooltip(poseStack, mouseX, mouseY, ingredientFilterConfig, worldConfig);
 				}
 			}
 		}
@@ -164,11 +166,11 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		if (!worldConfig.isDeleteItemsInCheatModeActive()) {
 			return false;
 		}
-		PlayerEntity player = minecraft.player;
+		Player player = minecraft.player;
 		if (player == null) {
 			return false;
 		}
-		ItemStack itemStack = player.inventory.getCarried();
+		ItemStack itemStack = player.containerMenu.getCarried();
 		if (itemStack.isEmpty()) {
 			return false;
 		}
@@ -233,16 +235,16 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 			if (!shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				return null;
 			}
-			ClientPlayerEntity player = minecraft.player;
+			LocalPlayer player = minecraft.player;
 			if (player == null) {
 				return null;
 			}
-			ItemStack itemStack = player.inventory.getCarried();
+			ItemStack itemStack = player.containerMenu.getCarried();
 			if (itemStack.isEmpty()) {
 				return null;
 			}
 			if (!clickState.isSimulate()) {
-				player.inventory.setCarried(ItemStack.EMPTY);
+				player.containerMenu.setCarried(ItemStack.EMPTY);
 				PacketJei packet = new PacketDeletePlayerItem(itemStack);
 				Network.sendPacketToServer(packet);
 			}

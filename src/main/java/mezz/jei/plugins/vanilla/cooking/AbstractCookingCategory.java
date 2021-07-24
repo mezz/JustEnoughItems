@@ -3,7 +3,7 @@ package mezz.jei.plugins.vanilla.cooking;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -12,19 +12,19 @@ import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.config.Constants;
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.AbstractCookingRecipe;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> extends FurnaceVariantCategory<T> {
 	private final IDrawable background;
 	private final int regularCookTime;
 	private final IDrawable icon;
-	private final ITextComponent localizedName;
+	private final Component localizedName;
 	private final LoadingCache<Integer, IDrawableAnimated> cachedArrows;
 
 	public AbstractCookingCategory(IGuiHelper guiHelper, Block icon, String translationKey, int regularCookTime) {
@@ -32,7 +32,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		this.background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 114, 82, 54);
 		this.regularCookTime = regularCookTime;
 		this.icon = guiHelper.createDrawableIngredient(new ItemStack(icon));
-		this.localizedName = new TranslationTextComponent(translationKey);
+		this.localizedName = new TranslatableComponent(translationKey);
 		this.cachedArrows = CacheBuilder.newBuilder()
 			.maximumSize(25)
 			.build(new CacheLoader<Integer, IDrawableAnimated>() {
@@ -69,41 +69,41 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	}
 
 	@Override
-	public void draw(T recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
-		animatedFlame.draw(matrixStack, 1, 20);
+	public void draw(T recipe, PoseStack poseStack, double mouseX, double mouseY) {
+		animatedFlame.draw(poseStack, 1, 20);
 
 		IDrawableAnimated arrow = getArrow(recipe);
-		arrow.draw(matrixStack, 24, 18);
+		arrow.draw(poseStack, 24, 18);
 
-		drawExperience(recipe, matrixStack, 0);
-		drawCookTime(recipe, matrixStack, 45);
+		drawExperience(recipe, poseStack, 0);
+		drawCookTime(recipe, poseStack, 45);
 	}
 
-	protected void drawExperience(T recipe, MatrixStack matrixStack, int y) {
+	protected void drawExperience(T recipe, PoseStack poseStack, int y) {
 		float experience = recipe.getExperience();
 		if (experience > 0) {
-			TranslationTextComponent experienceString = new TranslationTextComponent("gui.jei.category.smelting.experience", experience);
+			TranslatableComponent experienceString = new TranslatableComponent("gui.jei.category.smelting.experience", experience);
 			Minecraft minecraft = Minecraft.getInstance();
-			FontRenderer fontRenderer = minecraft.font;
+			Font fontRenderer = minecraft.font;
 			int stringWidth = fontRenderer.width(experienceString);
-			fontRenderer.draw(matrixStack, experienceString, background.getWidth() - stringWidth, y, 0xFF808080);
+			fontRenderer.draw(poseStack, experienceString, background.getWidth() - stringWidth, y, 0xFF808080);
 		}
 	}
 
-	protected void drawCookTime(T recipe, MatrixStack matrixStack, int y) {
+	protected void drawCookTime(T recipe, PoseStack poseStack, int y) {
 		int cookTime = recipe.getCookingTime();
 		if (cookTime > 0) {
 			int cookTimeSeconds = cookTime / 20;
-			TranslationTextComponent timeString = new TranslationTextComponent("gui.jei.category.smelting.time.seconds", cookTimeSeconds);
+			TranslatableComponent timeString = new TranslatableComponent("gui.jei.category.smelting.time.seconds", cookTimeSeconds);
 			Minecraft minecraft = Minecraft.getInstance();
-			FontRenderer fontRenderer = minecraft.font;
+			Font fontRenderer = minecraft.font;
 			int stringWidth = fontRenderer.width(timeString);
-			fontRenderer.draw(matrixStack, timeString, background.getWidth() - stringWidth, y, 0xFF808080);
+			fontRenderer.draw(poseStack, timeString, background.getWidth() - stringWidth, y, 0xFF808080);
 		}
 	}
 
 	@Override
-	public ITextComponent getTitle() {
+	public Component getTitle() {
 		return localizedName;
 	}
 

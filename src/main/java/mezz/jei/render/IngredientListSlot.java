@@ -2,12 +2,12 @@ package mezz.jei.render;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.util.MathUtil;
 
 public class IngredientListSlot {
-	private final Rectangle2d area;
+	private final Rect2i area;
 	private final int padding;
 	private boolean blocked = false;
 	@Nullable
@@ -16,7 +16,7 @@ public class IngredientListSlot {
 	public IngredientListSlot(int xPosition, int yPosition, int padding) {
 		this.padding = padding;
 		final int size = 16 + (2 * padding);
-		this.area = new Rectangle2d(xPosition, yPosition, size, size);
+		this.area = new Rect2i(xPosition, yPosition, size, size);
 	}
 
 	@Nullable
@@ -38,7 +38,7 @@ public class IngredientListSlot {
 		ingredientRenderer.setPadding(padding);
 	}
 
-	public Rectangle2d getArea() {
+	public Rect2i getArea() {
 		return area;
 	}
 

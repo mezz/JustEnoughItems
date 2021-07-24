@@ -2,8 +2,8 @@ package mezz.jei.recipes;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.inventory.container.Container;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.resources.ResourceLocation;
 
 import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -20,11 +20,11 @@ public class RecipeTransferManager {
 
 	@SuppressWarnings("unchecked")
 	@Nullable
-	public <T extends Container> IRecipeTransferHandler<? super T> getRecipeTransferHandler(T container, IRecipeCategory<?> recipeCategory) {
+	public <T extends AbstractContainerMenu> IRecipeTransferHandler<? super T> getRecipeTransferHandler(T container, IRecipeCategory<?> recipeCategory) {
 		ErrorUtil.checkNotNull(container, "container");
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 
-		Class<? extends Container> containerClass = container.getClass();
+		Class<? extends AbstractContainerMenu> containerClass = container.getClass();
 		IRecipeTransferHandler<?> recipeTransferHandler = recipeTransferHandlers.get(containerClass, recipeCategory.getUid());
 		if (recipeTransferHandler != null) {
 			return (IRecipeTransferHandler<? super T>) recipeTransferHandler;

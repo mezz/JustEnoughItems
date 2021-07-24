@@ -2,15 +2,15 @@ package mezz.jei.input;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.item.ItemStack;
 
 public interface IClickedIngredient<V> {
 
 	V getValue();
 
 	@Nullable
-	Rectangle2d getArea();
+	Rect2i getArea();
 
 	ItemStack getCheatItemStack();
 }

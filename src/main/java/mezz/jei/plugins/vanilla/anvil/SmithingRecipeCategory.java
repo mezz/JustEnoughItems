@@ -9,15 +9,15 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.config.Constants;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.SmithingRecipe;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.UpgradeRecipe;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Arrays;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
-public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe> {
+public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe> {
 
 	private final IDrawable background;
 	private final IDrawable icon;
@@ -33,12 +33,12 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe> {
 	}
 
 	@Override
-	public Class<? extends SmithingRecipe> getRecipeClass() {
-		return SmithingRecipe.class;
+	public Class<? extends UpgradeRecipe> getRecipeClass() {
+		return UpgradeRecipe.class;
 	}
 
 	@Override
-	public ITextComponent getTitle() {
+	public Component getTitle() {
 		return Blocks.SMITHING_TABLE.getName();
 	}
 
@@ -53,13 +53,13 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe> {
 	}
 
 	@Override
-	public void setIngredients(SmithingRecipe recipe, IIngredients ingredients) {
+	public void setIngredients(UpgradeRecipe recipe, IIngredients ingredients) {
 		ingredients.setInputIngredients(Arrays.asList(recipe.base, recipe.addition));
 		ingredients.setOutput(VanillaTypes.ITEM, recipe.getResultItem());
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, SmithingRecipe recipe, IIngredients ingredients) {
+	public void setRecipe(IRecipeLayout recipeLayout, UpgradeRecipe recipe, IIngredients ingredients) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		guiItemStacks.init(0, true, 0, 0);

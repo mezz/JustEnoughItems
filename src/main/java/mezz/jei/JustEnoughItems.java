@@ -8,8 +8,8 @@ import mezz.jei.gui.textures.Textures;
 import mezz.jei.startup.ClientLifecycleHandler;
 import mezz.jei.startup.NetworkHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.resources.IResourceManager;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -35,9 +35,9 @@ public class JustEnoughItems {
 			Minecraft minecraft = Minecraft.getInstance();
 			JeiSpriteUploader spriteUploader = new JeiSpriteUploader(minecraft.textureManager);
 			Textures textures = new Textures(spriteUploader);
-			IResourceManager resourceManager = minecraft.getResourceManager();
-			if (resourceManager instanceof IReloadableResourceManager) {
-				IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
+			ResourceManager resourceManager = minecraft.getResourceManager();
+			if (resourceManager instanceof ReloadableResourceManager) {
+				ReloadableResourceManager reloadableResourceManager = (ReloadableResourceManager) resourceManager;
 				reloadableResourceManager.registerReloadListener(spriteUploader);
 			}
 			EventBusHelper.addLifecycleListener(JustEnoughItems.class, modEventBus, FMLLoadCompleteEvent.class, loadCompleteEvent ->

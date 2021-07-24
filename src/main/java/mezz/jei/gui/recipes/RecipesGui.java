@@ -1,6 +1,6 @@
 package mezz.jei.gui.recipes;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -35,17 +35,17 @@ import mezz.jei.util.MathUtil;
 import mezz.jei.util.Rectangle2dBuilder;
 import mezz.jei.util.StringUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.Rect2i;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	private final List<RecipeLayout<?>> recipeLayouts = new ArrayList<>();
 
 	private String pageString = "1/1";
-	private ITextComponent title = StringTextComponent.EMPTY;
+	private Component title = TextComponent.EMPTY;
 	private final DrawableNineSliceTexture background;
 
 	private final RecipeCatalysts recipeCatalysts;
@@ -83,8 +83,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 	@Nullable
 	private Screen parentScreen;
-	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
-	private Rectangle2d titleArea = new Rectangle2d(0, 0, 0, 0);
+	private Rect2i area = new Rect2i(0, 0, 0, 0);
+	private Rect2i titleArea = new Rect2i(0, 0, 0, 0);
 
 	private boolean init = false;
 
@@ -95,7 +95,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		IModIdHelper modIdHelper,
 		IClientConfig clientConfig
 	) {
-		super(new StringTextComponent("Recipes"));
+		super(new TextComponent("Recipes"));
 		this.recipeTransferManager = recipeTransferManager;
 		this.clientConfig = clientConfig;
 		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, ingredientManager, modIdHelper);
@@ -115,17 +115,17 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		background = textures.getGuiBackground();
 	}
 
-	private static void drawCenteredStringWithShadow(MatrixStack matrixStack, FontRenderer font, String string, Rectangle2d area) {
-		Rectangle2d textArea = MathUtil.centerTextArea(area, font, string);
-		font.drawShadow(matrixStack, string, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
+	private static void drawCenteredStringWithShadow(PoseStack poseStack, Font font, String string, Rect2i area) {
+		Rect2i textArea = MathUtil.centerTextArea(area, font, string);
+		font.drawShadow(poseStack, string, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
 	}
 
-	private static void drawCenteredStringWithShadow(MatrixStack matrixStack, FontRenderer font, ITextComponent text, Rectangle2d area) {
-		Rectangle2d textArea = MathUtil.centerTextArea(area, font, text);
-		font.drawShadow(matrixStack, text, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
+	private static void drawCenteredStringWithShadow(PoseStack poseStack, Font font, Component text, Rect2i area) {
+		Rect2i textArea = MathUtil.centerTextArea(area, font, text);
+		font.drawShadow(poseStack, text, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
 	}
 
-	public Rectangle2d getArea() {
+	public Rect2i getArea() {
 		return this.area;
 	}
 
@@ -142,8 +142,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	}
 
 	@Override
-	public void init(Minecraft minecraft, int width, int height) {
-		super.init(minecraft, width, height);
+	public void init() {
+		super.init();
+		//TODO - 1.17: Re-evaluate, this used to override the full on init method, but that is final now
+		// and we can impl init, but it can be cancelled by events. Do we care
 
 		final int xSize = 198;
 		int ySize = this.height - 68;
@@ -154,10 +156,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 			ySize = maxHeight;
 		}
 
-		final int guiLeft = (width - xSize) / 2;
+		final int guiLeft = (this.width - xSize) / 2;
 		final int guiTop = RecipeGuiTab.TAB_HEIGHT + 21 + (extraSpace / 2);
 
-		this.area = new Rectangle2d(guiLeft, guiTop, xSize, ySize);
+		this.area = new Rect2i(guiLeft, guiTop, xSize, ySize);
 
 		final int rightButtonX = guiLeft + xSize - borderPadding - buttonWidth;
 		final int leftButtonX = guiLeft + borderPadding;
@@ -193,76 +195,76 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	}
 
 	private void addButtons() {
-		this.addButton(nextRecipeCategory);
-		this.addButton(nextRecipeCategory);
-		this.addButton(previousRecipeCategory);
-		this.addButton(nextPage);
-		this.addButton(previousPage);
+		this.addRenderableWidget(nextRecipeCategory);
+		this.addRenderableWidget(nextRecipeCategory);
+		this.addRenderableWidget(previousRecipeCategory);
+		this.addRenderableWidget(nextPage);
+		this.addRenderableWidget(previousPage);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (minecraft == null) {
 			return;
 		}
-		renderBackground(matrixStack);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		renderBackground(poseStack);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		final int x = area.getX();
 		final int y = area.getY();
 		final int width = area.getWidth();
 		final int height = area.getHeight();
-		this.background.draw(matrixStack, x, y, width, height);
+		this.background.draw(poseStack, x, y, width, height);
 
 		RenderSystem.disableBlend();
 
-		fill(matrixStack,
+		fill(poseStack,
 			x + borderPadding + buttonWidth,
 			nextRecipeCategory.y,
 			x + width - borderPadding - buttonWidth,
 			nextRecipeCategory.y + buttonHeight,
 			0x30000000);
-		fill(matrixStack,
+		fill(poseStack,
 			x + borderPadding + buttonWidth,
 			nextPage.y,
 			x + width - borderPadding - buttonWidth,
 			nextPage.y + buttonHeight,
 			0x30000000);
 
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-		drawCenteredStringWithShadow(matrixStack, font, title, titleArea);
+		drawCenteredStringWithShadow(poseStack, font, title, titleArea);
 
-		Rectangle2d pageArea = MathUtil.union(previousPage.getArea(), nextPage.getArea());
-		drawCenteredStringWithShadow(matrixStack, font, pageString, pageArea);
+		Rect2i pageArea = MathUtil.union(previousPage.getArea(), nextPage.getArea());
+		drawCenteredStringWithShadow(poseStack, font, pageString, pageArea);
 
-		nextRecipeCategory.render(matrixStack, mouseX, mouseY, partialTicks);
-		previousRecipeCategory.render(matrixStack, mouseX, mouseY, partialTicks);
-		nextPage.render(matrixStack, mouseX, mouseY, partialTicks);
-		previousPage.render(matrixStack, mouseX, mouseY, partialTicks);
+		nextRecipeCategory.render(poseStack, mouseX, mouseY, partialTicks);
+		previousRecipeCategory.render(poseStack, mouseX, mouseY, partialTicks);
+		nextPage.render(poseStack, mouseX, mouseY, partialTicks);
+		previousPage.render(poseStack, mouseX, mouseY, partialTicks);
 
 		RecipeLayout<?> hoveredLayout = null;
 		for (RecipeLayout<?> recipeLayout : recipeLayouts) {
 			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
 				hoveredLayout = recipeLayout;
 			}
-			recipeLayout.drawRecipe(matrixStack, mouseX, mouseY);
+			recipeLayout.drawRecipe(poseStack, mouseX, mouseY);
 		}
 
-		GuiIngredient<?> hoveredRecipeCatalyst = recipeCatalysts.draw(matrixStack, mouseX, mouseY);
+		GuiIngredient<?> hoveredRecipeCatalyst = recipeCatalysts.draw(poseStack, mouseX, mouseY);
 
-		recipeGuiTabs.draw(minecraft, matrixStack, mouseX, mouseY);
+		recipeGuiTabs.draw(minecraft, poseStack, mouseX, mouseY);
 
 		if (hoveredLayout != null) {
-			hoveredLayout.drawOverlays(matrixStack, mouseX, mouseY);
+			hoveredLayout.drawOverlays(poseStack, mouseX, mouseY);
 		}
 		if (hoveredRecipeCatalyst != null) {
-			hoveredRecipeCatalyst.drawOverlays(matrixStack, 0, 0, mouseX, mouseY);
+			hoveredRecipeCatalyst.drawOverlays(poseStack, 0, 0, mouseX, mouseY);
 		}
 
 		if (titleHoverChecker.checkHover(mouseX, mouseY) && !logic.hasAllCategories()) {
-			TranslationTextComponent showAllRecipesString = new TranslationTextComponent("jei.tooltip.show.all.recipes");
-			TooltipRenderer.drawHoveringText(showAllRecipesString, mouseX, mouseY, matrixStack);
+			TranslatableComponent showAllRecipesString = new TranslatableComponent("jei.tooltip.show.all.recipes");
+			TooltipRenderer.drawHoveringText(showAllRecipesString, mouseX, mouseY, poseStack);
 		}
 	}
 
@@ -350,7 +352,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 			return true;
 		}
 
-		InputMappings.Input input = InputMappings.Type.MOUSE.getOrCreate(mouseButton);
+		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(mouseButton);
 		if (handleKeybindings(input)) {
 			return true;
 		}
@@ -360,11 +362,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		InputMappings.Input input = InputMappings.getKey(keyCode, scanCode);
+		InputConstants.Key input = InputConstants.getKey(keyCode, scanCode);
 		return handleKeybindings(input);
 	}
 
-	private boolean handleKeybindings(InputMappings.Input input) {
+	private boolean handleKeybindings(InputConstants.Key input) {
 		if (KeyBindings.isInventoryCloseKey(input) || KeyBindings.isInventoryToggleKey(input)) {
 			onClose();
 			return true;
@@ -481,7 +483,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		if (font.width(title) > availableTitleWidth) {
 			title = StringUtil.truncateStringToWidth(title, availableTitleWidth, font);
 		}
-		Rectangle2d titleStringArea = MathUtil.centerTextArea(this.titleArea, font, title);
+		Rect2i titleStringArea = MathUtil.centerTextArea(this.titleArea, font, title);
 		titleHoverChecker.updateBounds(titleStringArea);
 
 		int spacingY = recipeBackground.getHeight() + recipeSpacing;
@@ -501,18 +503,19 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	}
 
 	private void addRecipeTransferButtons(List<RecipeLayout<?>> recipeLayouts) {
-		children.removeAll(buttons);
-		buttons.clear();
+		//TODO - 1.17: Re-evaluate if this is correct or not
+		children().removeAll(renderables);
+		renderables.clear();
 		addButtons();
 
 		if (minecraft == null) {
 			return;
 		}
-		PlayerEntity player = minecraft.player;
+		Player player = minecraft.player;
 		if (player == null) {
 			return;
 		}
-		Container container = getParentContainer();
+		AbstractContainerMenu container = getParentContainer();
 
 		for (RecipeLayout<?> recipeLayout : recipeLayouts) {
 			RecipeTransferButton button = recipeLayout.getRecipeTransferButton();
@@ -524,15 +527,15 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 						onClose();
 					}
 				});
-				addButton(button);
+				addRenderableWidget(button);
 			}
 		}
 	}
 
 	@Nullable
-	private Container getParentContainer() {
-		if (parentScreen instanceof ContainerScreen) {
-			return ((ContainerScreen<?>) parentScreen).getMenu();
+	private AbstractContainerMenu getParentContainer() {
+		if (parentScreen instanceof AbstractContainerScreen) {
+			return ((AbstractContainerScreen<?>) parentScreen).getMenu();
 		}
 		return null;
 	}

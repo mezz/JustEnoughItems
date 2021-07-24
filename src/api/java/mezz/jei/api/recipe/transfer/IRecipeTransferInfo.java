@@ -2,9 +2,9 @@ package mezz.jei.api.recipe.transfer;
 
 import java.util.List;
 
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 
@@ -15,7 +15,7 @@ import mezz.jei.api.registration.IRecipeTransferRegistration;
  * Containers with slot ranges that contain gaps or other oddities can implement this interface directly.
  * Containers that need full control over the recipe transfer or do not use slots can implement {@link IRecipeTransferHandler}.
  */
-public interface IRecipeTransferInfo<C extends Container> {
+public interface IRecipeTransferInfo<C extends AbstractContainerMenu> {
 	/**
 	 * Return the container class that this recipe transfer helper supports.
 	 */

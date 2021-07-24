@@ -1,6 +1,6 @@
 package mezz.jei.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -8,14 +8,15 @@ import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.ItemModelShaper;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import com.mojang.blaze3d.platform.Lighting;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.item.ItemStack;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.ingredients.ISlowRenderItem;
@@ -98,11 +99,12 @@ public class IngredientListBatchRenderer {
 			//noinspection unchecked
 			IIngredientListElement<ItemStack> itemStackElement = (IIngredientListElement<ItemStack>) element;
 			ItemStack itemStack = itemStackElement.getIngredient();
-			IBakedModel bakedModel;
-			ItemModelMesher itemModelMesher = Minecraft.getInstance().getItemRenderer().getItemModelShaper();
+			BakedModel bakedModel;
+			ItemModelShaper itemModelMesher = Minecraft.getInstance().getItemRenderer().getItemModelShaper();
 			try {
 				bakedModel = itemModelMesher.getItemModel(itemStack);
-				bakedModel = bakedModel.getOverrides().resolve(bakedModel, itemStack, null, null);
+				//TODO - 1.17: Validate
+				bakedModel = bakedModel.getOverrides().resolve(bakedModel, itemStack, null, null, 0);
 				Preconditions.checkNotNull(bakedModel, "IBakedModel must not be null.");
 			} catch (Throwable throwable) {
 				String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
@@ -151,46 +153,52 @@ public class IngredientListBatchRenderer {
 	 * renders all ItemStacks
 	 */
 	@SuppressWarnings("deprecation")
-	public void render(Minecraft minecraft, MatrixStack matrixStack) {
-		RenderHelper.turnBackOn();
+	public void render(Minecraft minecraft, PoseStack poseStack) {
+		//TODO - 1.17: Replacement?
+		//Lighting.turnBackOn();
 
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		TextureManager textureManager = minecraft.getTextureManager();
 		itemRenderer.blitOffset += 50.0F;
 
-		IRenderTypeBuffer.Impl buffer = minecraft.renderBuffers().bufferSource();
+		MultiBufferSource.BufferSource buffer = minecraft.renderBuffers().bufferSource();
 
-		textureManager.bind(PlayerContainer.BLOCK_ATLAS);
-		textureManager.getTexture(PlayerContainer.BLOCK_ATLAS).setFilter(false, false);
-		RenderSystem.enableRescaleNormal();
-		RenderSystem.enableAlphaTest();
-		RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F);
+		textureManager.bindForSetup(InventoryMenu.BLOCK_ATLAS);
+		textureManager.getTexture(InventoryMenu.BLOCK_ATLAS).setFilter(false, false);
+		//TODO - 1.17: Replacement?
+		//RenderSystem.enableRescaleNormal();
+		//RenderSystem.enableAlphaTest();
+		//RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		// 3d Items
-		RenderSystem.enableLighting();
+		//TODO - 1.17: Replacement?
+		//RenderSystem.enableLighting();
 		for (ItemStackFastRenderer slot : renderItems3d) {
-			slot.renderItemAndEffectIntoGUI(buffer, matrixStack, editModeConfig, worldConfig);
+			slot.renderItemAndEffectIntoGUI(buffer, poseStack, editModeConfig, worldConfig);
 		}
 		buffer.endBatch();
 
 		// 2d Items
-		RenderSystem.disableLighting();
-		RenderHelper.setupForFlatItems();
+		//TODO - 1.17: Replacement?
+		//RenderSystem.disableLighting();
+		Lighting.setupForFlatItems();
 		for (ItemStackFastRenderer slot : renderItems2d) {
-			slot.renderItemAndEffectIntoGUI(buffer, matrixStack, editModeConfig, worldConfig);
+			slot.renderItemAndEffectIntoGUI(buffer, poseStack, editModeConfig, worldConfig);
 		}
 		buffer.endBatch();
-		RenderHelper.setupFor3DItems();
+		Lighting.setupFor3DItems();
 
-		RenderSystem.disableAlphaTest();
+		//TODO - 1.17: Replacement?
+		//RenderSystem.disableAlphaTest();
 		RenderSystem.disableBlend();
-		RenderSystem.disableRescaleNormal();
-		RenderSystem.disableLighting();
+		//TODO - 1.17: Replacement?
+		//RenderSystem.disableRescaleNormal();
+		//RenderSystem.disableLighting();
 
-		textureManager.bind(PlayerContainer.BLOCK_ATLAS);
-		textureManager.getTexture(PlayerContainer.BLOCK_ATLAS).restoreLastBlurMipmap();
+		textureManager.bindForSetup(InventoryMenu.BLOCK_ATLAS);
+		textureManager.getTexture(InventoryMenu.BLOCK_ATLAS).restoreLastBlurMipmap();
 
 		itemRenderer.blitOffset -= 50.0F;
 
@@ -203,13 +211,15 @@ public class IngredientListBatchRenderer {
 			slot.renderOverlay();
 		}
 
-		RenderSystem.disableLighting();
+		//TODO - 1.17: Replacement?
+		//RenderSystem.disableLighting();
 
 		// other rendering
 		for (IngredientListElementRenderer<?> slot : renderOther) {
-			slot.renderSlow(matrixStack, editModeConfig, worldConfig);
+			slot.renderSlow(poseStack, editModeConfig, worldConfig);
 		}
 
-		RenderHelper.turnOff();
+		//TODO - 1.17: Replacement?
+		//Lighting.turnOff();
 	}
 }

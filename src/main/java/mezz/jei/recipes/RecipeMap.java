@@ -10,7 +10,7 @@ import mezz.jei.collect.ListMultiMap;
 import mezz.jei.collect.Table;
 import mezz.jei.ingredients.IngredientInformation;
 import mezz.jei.ingredients.IngredientsForType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.Comparator;

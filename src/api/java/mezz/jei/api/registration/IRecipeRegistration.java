@@ -3,13 +3,13 @@ package mezz.jei.api.registration;
 import java.util.Collection;
 import java.util.List;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
 public interface IRecipeRegistration {
 	IJeiHelpers getJeiHelpers();
@@ -35,7 +35,7 @@ public interface IRecipeRegistration {
 	 *                              Very long entries will span multiple pages automatically.
 	 * @since JEI 7.6.4
 	 */
-	<T> void addIngredientInfo(T ingredient, IIngredientType<T> ingredientType, ITextComponent... descriptionComponents);
+	<T> void addIngredientInfo(T ingredient, IIngredientType<T> ingredientType, Component... descriptionComponents);
 
 	/**
 	 * Add an info page for multiple ingredients together.
@@ -49,5 +49,5 @@ public interface IRecipeRegistration {
 	 *                              Very long entries will span multiple pages automatically.
 	 * @since JEI 7.6.4
 	 */
-	<T> void addIngredientInfo(List<T> ingredients, IIngredientType<T> ingredientType, ITextComponent... descriptionComponents);
+	<T> void addIngredientInfo(List<T> ingredients, IIngredientType<T> ingredientType, Component... descriptionComponents);
 }

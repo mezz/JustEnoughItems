@@ -6,79 +6,79 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.crafting.BlastingRecipe;
-import net.minecraft.item.crafting.CampfireCookingRecipe;
-import net.minecraft.item.crafting.FurnaceRecipe;
-import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.RecipeManager;
-import net.minecraft.item.crafting.SmithingRecipe;
-import net.minecraft.item.crafting.SmokingRecipe;
-import net.minecraft.item.crafting.StonecuttingRecipe;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.crafting.BlastingRecipe;
+import net.minecraft.world.item.crafting.CampfireCookingRecipe;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.UpgradeRecipe;
+import net.minecraft.world.item.crafting.SmokingRecipe;
+import net.minecraft.world.item.crafting.StonecutterRecipe;
 
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.util.ErrorUtil;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public final class VanillaRecipes {
 	private final RecipeManager recipeManager;
 
 	public VanillaRecipes() {
-		ClientWorld world = Minecraft.getInstance().level;
+		ClientLevel world = Minecraft.getInstance().level;
 		ErrorUtil.checkNotNull(world, "minecraft world");
 		this.recipeManager = world.getRecipeManager();
 	}
 
-	public List<ICraftingRecipe> getCraftingRecipes(IRecipeCategory<ICraftingRecipe> craftingCategory) {
-		CategoryRecipeValidator<ICraftingRecipe> validator = new CategoryRecipeValidator<>(craftingCategory, 9);
-		return getValidRecipes(recipeManager, IRecipeType.CRAFTING, validator);
+	public List<CraftingRecipe> getCraftingRecipes(IRecipeCategory<CraftingRecipe> craftingCategory) {
+		CategoryRecipeValidator<CraftingRecipe> validator = new CategoryRecipeValidator<>(craftingCategory, 9);
+		return getValidRecipes(recipeManager, RecipeType.CRAFTING, validator);
 	}
 
-	public List<StonecuttingRecipe> getStonecuttingRecipes(IRecipeCategory<StonecuttingRecipe> stonecuttingCategory) {
-		CategoryRecipeValidator<StonecuttingRecipe> validator = new CategoryRecipeValidator<>(stonecuttingCategory, 1);
-		return getValidRecipes(recipeManager, IRecipeType.STONECUTTING, validator);
+	public List<StonecutterRecipe> getStonecuttingRecipes(IRecipeCategory<StonecutterRecipe> stonecuttingCategory) {
+		CategoryRecipeValidator<StonecutterRecipe> validator = new CategoryRecipeValidator<>(stonecuttingCategory, 1);
+		return getValidRecipes(recipeManager, RecipeType.STONECUTTING, validator);
 	}
 
-	public List<FurnaceRecipe> getFurnaceRecipes(IRecipeCategory<FurnaceRecipe> furnaceCategory) {
-		CategoryRecipeValidator<FurnaceRecipe> validator = new CategoryRecipeValidator<>(furnaceCategory, 1);
-		return getValidRecipes(recipeManager, IRecipeType.SMELTING, validator);
+	public List<SmeltingRecipe> getFurnaceRecipes(IRecipeCategory<SmeltingRecipe> furnaceCategory) {
+		CategoryRecipeValidator<SmeltingRecipe> validator = new CategoryRecipeValidator<>(furnaceCategory, 1);
+		return getValidRecipes(recipeManager, RecipeType.SMELTING, validator);
 	}
 
 	public List<SmokingRecipe> getSmokingRecipes(IRecipeCategory<SmokingRecipe> smokingCategory) {
 		CategoryRecipeValidator<SmokingRecipe> validator = new CategoryRecipeValidator<>(smokingCategory, 1);
-		return getValidRecipes(recipeManager, IRecipeType.SMOKING, validator);
+		return getValidRecipes(recipeManager, RecipeType.SMOKING, validator);
 	}
 
 	public List<BlastingRecipe> getBlastingRecipes(IRecipeCategory<BlastingRecipe> blastingCategory) {
 		CategoryRecipeValidator<BlastingRecipe> validator = new CategoryRecipeValidator<>(blastingCategory, 1);
-		return getValidRecipes(recipeManager, IRecipeType.BLASTING, validator);
+		return getValidRecipes(recipeManager, RecipeType.BLASTING, validator);
 	}
 
 	public List<CampfireCookingRecipe> getCampfireCookingRecipes(IRecipeCategory<CampfireCookingRecipe> campfireCategory) {
 		CategoryRecipeValidator<CampfireCookingRecipe> validator = new CategoryRecipeValidator<>(campfireCategory, 1);
-		return getValidRecipes(recipeManager, IRecipeType.CAMPFIRE_COOKING, validator);
+		return getValidRecipes(recipeManager, RecipeType.CAMPFIRE_COOKING, validator);
 	}
 
-	public List<SmithingRecipe> getSmithingRecipes(IRecipeCategory<SmithingRecipe> smithingCategory) {
-		CategoryRecipeValidator<SmithingRecipe> validator = new CategoryRecipeValidator<>(smithingCategory, 0);
-		return getValidRecipes(recipeManager, IRecipeType.SMITHING, validator);
+	public List<UpgradeRecipe> getSmithingRecipes(IRecipeCategory<UpgradeRecipe> smithingCategory) {
+		CategoryRecipeValidator<UpgradeRecipe> validator = new CategoryRecipeValidator<>(smithingCategory, 0);
+		return getValidRecipes(recipeManager, RecipeType.SMITHING, validator);
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <C extends IInventory, T extends IRecipe<C>> Collection<T> getRecipes(
+	private static <C extends Container, T extends Recipe<C>> Collection<T> getRecipes(
 		RecipeManager recipeManager,
-		IRecipeType<T> recipeType
+		RecipeType<T> recipeType
 	) {
-		Map<ResourceLocation, IRecipe<C>> recipes = recipeManager.byType(recipeType);
+		Map<ResourceLocation, Recipe<C>> recipes = recipeManager.byType(recipeType);
 		return (Collection<T>) recipes.values();
 	}
 
-	private static <C extends IInventory, T extends IRecipe<C>> List<T> getValidRecipes(
+	private static <C extends Container, T extends Recipe<C>> List<T> getValidRecipes(
 		RecipeManager recipeManager,
-		IRecipeType<T> recipeType,
+		RecipeType<T> recipeType,
 		CategoryRecipeValidator<T> validator
 	) {
 		return getRecipes(recipeManager, recipeType)

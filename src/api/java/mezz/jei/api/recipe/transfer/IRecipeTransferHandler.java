@@ -2,9 +2,9 @@ package mezz.jei.api.recipe.transfer;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
@@ -19,7 +19,7 @@ import mezz.jei.api.registration.IRecipeTransferRegistration;
  *
  * To register your recipe transfer handler, use {@link IRecipeTransferRegistration#addRecipeTransferHandler(IRecipeTransferHandler, ResourceLocation)}
  */
-public interface IRecipeTransferHandler<C extends Container> {
+public interface IRecipeTransferHandler<C extends AbstractContainerMenu> {
 	/**
 	 * The container that this recipe transfer handler can use.
 	 */
@@ -37,7 +37,7 @@ public interface IRecipeTransferHandler<C extends Container> {
 	 * @since JEI 7.1.3
 	 */
 	@Nullable
-	default IRecipeTransferError transferRecipe(C container, Object recipe, IRecipeLayout recipeLayout, PlayerEntity player, boolean maxTransfer, boolean doTransfer) {
+	default IRecipeTransferError transferRecipe(C container, Object recipe, IRecipeLayout recipeLayout, Player player, boolean maxTransfer, boolean doTransfer) {
 		return null;
 	}
 }

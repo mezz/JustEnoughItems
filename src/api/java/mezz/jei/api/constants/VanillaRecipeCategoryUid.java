@@ -2,12 +2,14 @@ package mezz.jei.api.constants;
 
 import java.util.List;
 
-import net.minecraft.item.crafting.SmithingRecipe;
-import net.minecraft.item.crafting.StonecuttingRecipe;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.BlastingRecipe;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraft.world.item.crafting.SmokingRecipe;
+import net.minecraft.world.item.crafting.StonecutterRecipe;
+import net.minecraft.world.item.crafting.UpgradeRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipe;
-import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
@@ -33,35 +35,35 @@ public final class VanillaRecipeCategoryUid {
 	/**
 	 * The stonecutting recipe category
 	 *
-	 * Automatically includes every {@link StonecuttingRecipe}
+	 * Automatically includes every {@link StonecutterRecipe}
 	 */
 	public static final ResourceLocation STONECUTTING = new ResourceLocation(ModIds.MINECRAFT_ID, "stonecutting");
 
 	/**
 	 * The furnace recipe category.
 	 *
-	 * Automatically includes every {@link FurnaceRecipe}
+	 * Automatically includes every {@link SmeltingRecipe}
 	 */
 	public static final ResourceLocation FURNACE = new ResourceLocation(ModIds.MINECRAFT_ID, "furnace");
 
 	/**
 	 * The smoking recipe category.
 	 *
-	 * Automatically includes every {@link FurnaceRecipe}
+	 * Automatically includes every {@link SmokingRecipe}
 	 */
 	public static final ResourceLocation SMOKING = new ResourceLocation(ModIds.MINECRAFT_ID, "smoking");
 
 	/**
 	 * The blasting recipe category.
 	 *
-	 * Automatically includes every {@link FurnaceRecipe}
+	 * Automatically includes every {@link BlastingRecipe}
 	 */
 	public static final ResourceLocation BLASTING = new ResourceLocation(ModIds.MINECRAFT_ID, "blasting");
 
 	/**
 	 * The campfire furnace recipe category.
 	 *
-	 * Automatically includes every {@link FurnaceRecipe}
+	 * Automatically includes every {@link SmeltingRecipe}
 	 */
 	public static final ResourceLocation CAMPFIRE = new ResourceLocation(ModIds.MINECRAFT_ID, "campfire");
 
@@ -92,7 +94,7 @@ public final class VanillaRecipeCategoryUid {
 	/**
 	 * The smithing recipe category.
 	 *
-	 * Automatically includes every {@link SmithingRecipe}.
+	 * Automatically includes every {@link UpgradeRecipe}.
 	 * @since JEI 7.3.1
 	 */
 	public static final ResourceLocation SMITHING = new ResourceLocation(ModIds.MINECRAFT_ID, "smithing");
@@ -101,8 +103,8 @@ public final class VanillaRecipeCategoryUid {
 	 * The JEI info recipe category shows extra information about ingredients.
 	 *
 	 * This is a built-in category, you can add new recipes with
-	 * {@link IRecipeRegistration#addIngredientInfo(Object, IIngredientType, net.minecraft.util.text.ITextComponent...)} or
-	 * {@link IRecipeRegistration#addIngredientInfo(List, IIngredientType, net.minecraft.util.text.ITextComponent...)}
+	 * {@link IRecipeRegistration#addIngredientInfo(Object, IIngredientType, net.minecraft.network.chat.Component...)} or
+	 * {@link IRecipeRegistration#addIngredientInfo(List, IIngredientType, net.minecraft.network.chat.Component...)}
 	 */
 	public static final ResourceLocation INFORMATION = new ResourceLocation(ModIds.JEI_ID, "information");
 

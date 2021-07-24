@@ -3,7 +3,7 @@ package mezz.jei.config.sorting;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.config.sorting.serializers.SortingSerializers;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import java.io.File;
 import java.util.Comparator;

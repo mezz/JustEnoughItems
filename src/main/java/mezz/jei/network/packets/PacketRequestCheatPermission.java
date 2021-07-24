@@ -1,8 +1,8 @@
 package mezz.jei.network.packets;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.Network;
@@ -16,13 +16,13 @@ public class PacketRequestCheatPermission extends PacketJei {
 	}
 
 	@Override
-	public void writePacketData(PacketBuffer buf) {
+	public void writePacketData(FriendlyByteBuf buf) {
 		// the packet itself is the only data needed
 	}
 
-	public static void readPacketData(PacketBuffer buf, PlayerEntity player) {
-		if (player instanceof ServerPlayerEntity) {
-			ServerPlayerEntity sender = (ServerPlayerEntity) player;
+	public static void readPacketData(FriendlyByteBuf buf, Player player) {
+		if (player instanceof ServerPlayer) {
+			ServerPlayer sender = (ServerPlayer) player;
 			boolean hasPermission = CommandUtilServer.hasPermission(sender);
 			PacketCheatPermission packetCheatPermission = new PacketCheatPermission(hasPermission);
 

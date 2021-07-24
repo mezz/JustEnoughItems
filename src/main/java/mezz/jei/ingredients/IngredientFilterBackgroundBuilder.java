@@ -5,7 +5,7 @@ import mezz.jei.events.EventBusHelper;
 import mezz.jei.search.PrefixInfo;
 import mezz.jei.search.suffixtree.GeneralizedSuffixTree;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.fml.LogicalSide;
 

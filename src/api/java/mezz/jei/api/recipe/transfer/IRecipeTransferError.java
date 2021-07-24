@@ -1,8 +1,8 @@
 package mezz.jei.api.recipe.transfer;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Container;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 
 import mezz.jei.api.gui.IRecipeLayout;
 
@@ -10,7 +10,7 @@ import mezz.jei.api.gui.IRecipeLayout;
  * A reason that a recipe transfer couldn't happen.
  *
  * Recipe transfer errors can be created with {@link IRecipeTransferHandlerHelper} or you can implement your own.
- * These errors are returned from {@link IRecipeTransferHandler#transferRecipe(Container, Object, IRecipeLayout, PlayerEntity, boolean, boolean)}.
+ * These errors are returned from {@link IRecipeTransferHandler#transferRecipe(AbstractContainerMenu, Object, IRecipeLayout, Player, boolean, boolean)}.
  */
 public interface IRecipeTransferError {
 	enum Type {
@@ -40,5 +40,5 @@ public interface IRecipeTransferError {
 	/**
 	 * Called on {@link Type#USER_FACING} errors.
 	 */
-	void showError(MatrixStack matrixStack, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY);
+	void showError(PoseStack stack, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY);
 }

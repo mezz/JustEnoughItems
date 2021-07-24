@@ -3,8 +3,8 @@ package mezz.jei.input;
 import javax.annotation.Nullable;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.item.ItemStack;
 
 import com.google.common.base.MoreObjects;
 import mezz.jei.Internal;
@@ -20,11 +20,11 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 
 	private final V value;
 	@Nullable
-	private final Rectangle2d area;
+	private final Rect2i area;
 	private boolean allowsCheating;
 
 	@Nullable
-	public static <V> ClickedIngredient<V> create(V value, @Nullable Rectangle2d area) {
+	public static <V> ClickedIngredient<V> create(V value, @Nullable Rect2i area) {
 		ErrorUtil.checkNotNull(value, "value");
 		IngredientManager ingredientManager = Internal.getIngredientManager();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value);
@@ -41,7 +41,7 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 		return null;
 	}
 
-	private ClickedIngredient(V value, @Nullable Rectangle2d area) {
+	private ClickedIngredient(V value, @Nullable Rect2i area) {
 		this.value = value;
 		this.area = area;
 	}
@@ -53,7 +53,7 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 
 	@Nullable
 	@Override
-	public Rectangle2d getArea() {
+	public Rect2i getArea() {
 		return area;
 	}
 

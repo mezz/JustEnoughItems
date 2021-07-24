@@ -3,7 +3,7 @@ package mezz.jei.plugins.vanilla.anvil;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.api.gui.ingredient.IGuiIngredient;
 

@@ -2,15 +2,15 @@ package mezz.jei.plugins.vanilla.crafting;
 
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.util.ErrorUtil;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
-public final class CategoryRecipeValidator<T extends IRecipe<?>> {
+public final class CategoryRecipeValidator<T extends Recipe<?>> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int INVALID_COUNT = -1;
 	private final IRecipeCategory<T> recipeCategory;

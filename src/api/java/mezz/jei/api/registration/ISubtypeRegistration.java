@@ -1,9 +1,9 @@
 package mezz.jei.api.registration;
 
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import net.minecraftforge.fluids.FluidStack;
 

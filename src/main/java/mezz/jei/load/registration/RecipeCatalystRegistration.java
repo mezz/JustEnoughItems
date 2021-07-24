@@ -1,6 +1,6 @@
 package mezz.jei.load.registration;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;

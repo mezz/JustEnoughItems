@@ -1,17 +1,17 @@
 package mezz.jei.gui.ghost;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import javax.annotation.Nullable;
 
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import net.minecraft.util.math.vector.Vector2f;
+import net.minecraft.world.phys.Vec2;
 
 /**
  * Renders an item returning to the ingredient list after a failed ghost drag.
@@ -20,25 +20,25 @@ public class GhostIngredientReturning<T> {
 	private static final long DURATION_PER_SCREEN_WIDTH = 500; // milliseconds to move across a full screen
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final T ingredient;
-	private final Vector2f start;
-	private final Vector2f end;
+	private final Vec2 start;
+	private final Vec2 end;
 	private final long startTime;
 	private final long duration;
 
 	@Nullable
 	public static <T> GhostIngredientReturning<T> create(GhostIngredientDrag<T> ghostIngredientDrag, double mouseX, double mouseY) {
-		Rectangle2d origin = ghostIngredientDrag.getOrigin();
+		Rect2i origin = ghostIngredientDrag.getOrigin();
 		if (origin != null) {
 			IIngredientRenderer<T> ingredientRenderer = ghostIngredientDrag.getIngredientRenderer();
 			T ingredient = ghostIngredientDrag.getIngredient();
-			Vector2f end = new Vector2f(origin.getX(), origin.getY());
-			Vector2f start = new Vector2f((float) mouseX - 8, (float) mouseY - 8);
+			Vec2 end = new Vec2(origin.getX(), origin.getY());
+			Vec2 start = new Vec2((float) mouseX - 8, (float) mouseY - 8);
 			return new GhostIngredientReturning<>(ingredientRenderer, ingredient, start, end);
 		}
 		return null;
 	}
 
-	private GhostIngredientReturning(IIngredientRenderer<T> ingredientRenderer, T ingredient, Vector2f start, Vector2f end) {
+	private GhostIngredientReturning(IIngredientRenderer<T> ingredientRenderer, T ingredient, Vec2 start, Vec2 end) {
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredient = ingredient;
 		this.start = start;
@@ -55,7 +55,7 @@ public class GhostIngredientReturning<T> {
 		}
 	}
 
-	public void drawItem(Minecraft minecraft, MatrixStack matrixStack) {
+	public void drawItem(Minecraft minecraft, PoseStack poseStack) {
 		long time = System.currentTimeMillis();
 		long elapsed = time - startTime;
 		double percent = Math.min(elapsed / (double) this.duration, 1);
@@ -65,7 +65,7 @@ public class GhostIngredientReturning<T> {
 		double y = start.y + Math.round(dy * percent);
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		itemRenderer.blitOffset += 150.0F;
-		ingredientRenderer.render(matrixStack, (int) x, (int) y, ingredient);
+		ingredientRenderer.render(poseStack, (int) x, (int) y, ingredient);
 		itemRenderer.blitOffset -= 150.0F;
 	}
 

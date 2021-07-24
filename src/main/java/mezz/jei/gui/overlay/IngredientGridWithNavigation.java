@@ -1,6 +1,6 @@
 package mezz.jei.gui.overlay;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -11,12 +11,12 @@ import java.util.stream.Collectors;
 
 import mezz.jei.input.CombinedMouseHandler;
 import mezz.jei.util.Rectangle2dBuilder;
-import net.minecraft.client.GameSettings;
+import net.minecraft.client.Options;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.config.IFilterTextSource;
 import mezz.jei.config.IWorldConfig;
@@ -53,7 +53,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 	private final IngredientGrid ingredientGrid;
 	private final IIngredientGridSource ingredientSource;
 	private final IMouseHandler mouseHandler;
-	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
+	private Rect2i area = new Rect2i(0, 0, 0, 0);
 
 	public IngredientGridWithNavigation(
 		IIngredientGridSource ingredientSource,
@@ -85,11 +85,11 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 		this.navigation.updatePageState();
 	}
 
-	public boolean updateBounds(Rectangle2d availableArea, Set<Rectangle2d> guiExclusionAreas) {
-		Tuple<Rectangle2d, Rectangle2d> result = MathUtil.splitY(availableArea, NAVIGATION_HEIGHT);
-		final Rectangle2d estimatedNavigationArea = result.getA();
+	public boolean updateBounds(Rect2i availableArea, Set<Rect2i> guiExclusionAreas) {
+		Tuple<Rect2i, Rect2i> result = MathUtil.splitY(availableArea, NAVIGATION_HEIGHT);
+		final Rect2i estimatedNavigationArea = result.getA();
 
-		Collection<Rectangle2d> intersectsNavigationArea = guiExclusionAreas.stream()
+		Collection<Rect2i> intersectsNavigationArea = guiExclusionAreas.stream()
 			.filter(rectangle2d -> MathUtil.intersects(rectangle2d, estimatedNavigationArea))
 			.collect(Collectors.toList());
 
@@ -105,13 +105,13 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 		}
 
 		result = MathUtil.splitY(availableArea, NAVIGATION_HEIGHT);
-		Rectangle2d navigationArea = result.getA();
-		Rectangle2d boundsWithoutNavigation = result.getB();
+		Rect2i navigationArea = result.getA();
+		Rect2i boundsWithoutNavigation = result.getB();
 		boolean gridHasRoom = this.ingredientGrid.updateBounds(boundsWithoutNavigation, guiExclusionAreas);
 		if (!gridHasRoom) {
 			return false;
 		}
-		Rectangle2d displayArea = this.ingredientGrid.getArea();
+		Rect2i displayArea = this.ingredientGrid.getArea();
 		navigationArea = new Rectangle2dBuilder(navigationArea)
 			.setX(displayArea)
 			.setWidth(displayArea)
@@ -121,17 +121,17 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 		return true;
 	}
 
-	public Rectangle2d getArea() {
+	public Rect2i getArea() {
 		return this.area;
 	}
 
-	public void draw(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-		this.ingredientGrid.draw(minecraft, matrixStack, mouseX, mouseY);
-		this.navigation.draw(minecraft, matrixStack, mouseX, mouseY, partialTicks);
+	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+		this.ingredientGrid.draw(minecraft, poseStack, mouseX, mouseY);
+		this.navigation.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
 	}
 
-	public void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
-		this.ingredientGrid.drawTooltips(minecraft, matrixStack, mouseX, mouseY);
+	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+		this.ingredientGrid.drawTooltips(minecraft, poseStack, mouseX, mouseY);
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
@@ -144,7 +144,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 	}
 
 	public boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
-		InputMappings.Input input = InputMappings.getKey(keyCode, scanCode);
+		InputConstants.Key input = InputConstants.getKey(keyCode, scanCode);
 		if (KeyBindings.nextPage.isActiveAndMatches(input)) {
 			this.pageDelegate.nextPage();
 			return true;
@@ -159,13 +159,13 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 	 * Modeled after ContainerScreen#checkHotbarKeys(int)
 	 * Sets the stack in a hotbar slot to the one that's hovered over.
 	 */
-	protected boolean checkHotbarKeys(InputMappings.Input input) {
+	protected boolean checkHotbarKeys(InputConstants.Key input) {
 		Screen guiScreen = Minecraft.getInstance().screen;
 		if (worldConfig.isCheatItemsEnabled() && guiScreen != null && !(guiScreen instanceof RecipesGui)) {
 			final double mouseX = MouseUtil.getX();
 			final double mouseY = MouseUtil.getY();
 			if (isMouseOver(mouseX, mouseY)) {
-				GameSettings gameSettings = Minecraft.getInstance().options;
+				Options gameSettings = Minecraft.getInstance().options;
 				for (int hotbarSlot = 0; hotbarSlot < 9; ++hotbarSlot) {
 					if (gameSettings.keyHotbarSlots[hotbarSlot].isActiveAndMatches(input)) {
 						IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);

@@ -5,7 +5,7 @@ import java.util.Collection;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.util.ErrorUtil;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
 public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper {
 	@Override
@@ -14,14 +14,14 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 	}
 
 	@Override
-	public IRecipeTransferError createUserErrorWithTooltip(ITextComponent tooltipMessage) {
+	public IRecipeTransferError createUserErrorWithTooltip(Component tooltipMessage) {
 		ErrorUtil.checkNotNull(tooltipMessage, "tooltipMessage");
 
 		return new RecipeTransferErrorTooltip(tooltipMessage);
 	}
 
 	@Override
-	public IRecipeTransferError createUserErrorForSlots(ITextComponent tooltipMessage, Collection<Integer> missingItemSlots) {
+	public IRecipeTransferError createUserErrorForSlots(Component tooltipMessage, Collection<Integer> missingItemSlots) {
 		ErrorUtil.checkNotNull(tooltipMessage, "tooltipMessage");
 		ErrorUtil.checkNotEmpty(missingItemSlots, "missingItemSlots");
 

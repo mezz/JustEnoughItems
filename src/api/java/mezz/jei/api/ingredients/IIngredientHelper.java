@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusFactory;

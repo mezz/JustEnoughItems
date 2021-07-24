@@ -2,7 +2,7 @@ package mezz.jei.plugins.debug;
 
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
 public class FluidSubtypeHandlerTest implements IIngredientSubtypeInterpreter<FluidStack> {

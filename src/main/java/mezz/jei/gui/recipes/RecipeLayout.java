@@ -1,6 +1,6 @@
 package mezz.jei.gui.recipes;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.Internal;
 import mezz.jei.api.constants.VanillaTypes;
@@ -23,14 +23,17 @@ import mezz.jei.ingredients.Ingredients;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,8 +73,8 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 			IIngredients ingredients = new Ingredients();
 			recipeCategory.setIngredients(recipe, ingredients);
 			recipeCategory.setRecipe(recipeLayout, recipe, ingredients);
-			if (recipe instanceof IRecipe) {
-				addOutputSlotTooltip(recipeLayout, (IRecipe<?>) recipe, modIdHelper);
+			if (recipe instanceof Recipe) {
+				addOutputSlotTooltip(recipeLayout, (Recipe<?>) recipe, modIdHelper);
 			}
 			return recipeLayout;
 		} catch (RuntimeException | LinkageError e) {
@@ -80,7 +83,7 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 		return null;
 	}
 
-	private static void addOutputSlotTooltip(RecipeLayout<?> recipeLayout, IRecipe<?> recipe, IModIdHelper modIdHelper) {
+	private static void addOutputSlotTooltip(RecipeLayout<?> recipeLayout, Recipe<?> recipe, IModIdHelper modIdHelper) {
 		ResourceLocation recipeName = recipe.getId();
 		for (GuiIngredientGroup<?> ingredientGroup : recipeLayout.guiIngredientGroups.values()) {
 			addOutputSlotTooltip(ingredientGroup, recipeName, modIdHelper);
@@ -95,14 +98,14 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 					String ingredientModId = guiIngredientGroup.getIngredientModId(ingredient);
 					if (!recipeModId.equals(ingredientModId)) {
 						String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
-						TranslationTextComponent recipeBy = new TranslationTextComponent("jei.tooltip.recipe.by", modName);
-						tooltip.add(recipeBy.withStyle(TextFormatting.GRAY));
+						TranslatableComponent recipeBy = new TranslatableComponent("jei.tooltip.recipe.by", modName);
+						tooltip.add(recipeBy.withStyle(ChatFormatting.GRAY));
 					}
 				}
 				boolean showAdvanced = Minecraft.getInstance().options.advancedItemTooltips || Screen.hasShiftDown();
 				if (showAdvanced) {
-					TranslationTextComponent recipeId = new TranslationTextComponent("jei.tooltip.recipe.id", recipeName.toString());
-					tooltip.add(recipeId.withStyle(TextFormatting.DARK_GRAY));
+					TranslatableComponent recipeId = new TranslatableComponent("jei.tooltip.recipe.id", recipeName.toString());
+					tooltip.add(recipeId.withStyle(ChatFormatting.DARK_GRAY));
 				}
 			}
 		});
@@ -151,52 +154,55 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 
 	@Override
 	@SuppressWarnings("deprecation")
-	public void drawRecipe(MatrixStack matrixStack, int mouseX, int mouseY) {
+	public void drawRecipe(PoseStack poseStack, int mouseX, int mouseY) {
 		IDrawable background = recipeCategory.getBackground();
 
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.disableLighting();
-		RenderSystem.enableAlphaTest();
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		//TODO - 1.17: Replacement?
+		//RenderSystem.disableLighting();
+		//RenderSystem.enableAlphaTest();
 
 		final int recipeMouseX = mouseX - posX;
 		final int recipeMouseY = mouseY - posY;
 
-		matrixStack.pushPose();
-		matrixStack.translate(posX, posY, 0);
+		poseStack.pushPose();
+		poseStack.translate(posX, posY, 0);
 		{
 			IDrawable categoryBackground = recipeCategory.getBackground();
 			int width = categoryBackground.getWidth() + (2 * RECIPE_BORDER_PADDING);
 			int height = categoryBackground.getHeight() + (2 * RECIPE_BORDER_PADDING);
-			recipeBorder.draw(matrixStack, -RECIPE_BORDER_PADDING, -RECIPE_BORDER_PADDING, width, height);
-			background.draw(matrixStack);
-			recipeCategory.draw(recipe, matrixStack, recipeMouseX, recipeMouseY);
+			recipeBorder.draw(poseStack, -RECIPE_BORDER_PADDING, -RECIPE_BORDER_PADDING, width, height);
+			background.draw(poseStack);
+			recipeCategory.draw(recipe, poseStack, recipeMouseX, recipeMouseY);
 			// drawExtras and drawInfo often render text which messes with the color, this clears it
-			RenderSystem.color4f(1, 1, 1, 1);
+			RenderSystem.setShaderColor(1, 1, 1, 1);
 			if (shapelessIcon != null) {
-				shapelessIcon.draw(matrixStack, background.getWidth());
+				shapelessIcon.draw(poseStack, background.getWidth());
 			}
 		}
-		matrixStack.popPose();
+		poseStack.popPose();
 
 		for (GuiIngredientGroup<?> guiIngredientGroup : guiIngredientGroups.values()) {
-			guiIngredientGroup.draw(matrixStack, posX, posY, HIGHLIGHT_COLOR, mouseX, mouseY);
+			guiIngredientGroup.draw(poseStack, posX, posY, HIGHLIGHT_COLOR, mouseX, mouseY);
 		}
 		if (recipeTransferButton != null) {
 			Minecraft minecraft = Minecraft.getInstance();
 			float partialTicks = minecraft.getFrameTime();
-			recipeTransferButton.render(matrixStack, mouseX, mouseY, partialTicks);
+			recipeTransferButton.render(poseStack, mouseX, mouseY, partialTicks);
 		}
 		RenderSystem.disableBlend();
-		RenderSystem.disableLighting();
-		RenderSystem.disableAlphaTest();
+		//TODO - 1.17: Replacement?
+		//RenderSystem.disableLighting();
+		//RenderSystem.disableAlphaTest();
 	}
 
 	@Override
 	@SuppressWarnings("deprecation")
-	public void drawOverlays(MatrixStack matrixStack, int mouseX, int mouseY) {
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.disableLighting();
-		RenderSystem.enableAlphaTest();
+	public void drawOverlays(PoseStack poseStack, int mouseX, int mouseY) {
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		//TODO - 1.17: Replacement?
+		//RenderSystem.disableLighting();
+		//RenderSystem.enableAlphaTest();
 
 		final int recipeMouseX = mouseX - posX;
 		final int recipeMouseY = mouseY - posY;
@@ -209,30 +215,32 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 			}
 		}
 		if (recipeTransferButton != null) {
-			recipeTransferButton.drawToolTip(matrixStack, mouseX, mouseY);
+			recipeTransferButton.drawToolTip(poseStack, mouseX, mouseY);
 		}
 		RenderSystem.disableBlend();
-		RenderSystem.disableLighting();
+		//TODO - 1.17: Replacement?
+		//RenderSystem.disableLighting();
 
 		if (hoveredIngredient != null) {
-			hoveredIngredient.drawOverlays(matrixStack, posX, posY, recipeMouseX, recipeMouseY);
+			hoveredIngredient.drawOverlays(poseStack, posX, posY, recipeMouseX, recipeMouseY);
 		} else if (isMouseOver(mouseX, mouseY)) {
-			List<ITextComponent> tooltipStrings = recipeCategory.getTooltipStrings(recipe, recipeMouseX, recipeMouseY);
+			List<Component> tooltipStrings = recipeCategory.getTooltipStrings(recipe, recipeMouseX, recipeMouseY);
 			if (tooltipStrings.isEmpty() && shapelessIcon != null) {
 				tooltipStrings = shapelessIcon.getTooltipStrings(recipeMouseX, recipeMouseY);
 			}
 			if (tooltipStrings != null && !tooltipStrings.isEmpty()) {
-				TooltipRenderer.drawHoveringText(tooltipStrings, mouseX, mouseY, matrixStack);
+				TooltipRenderer.drawHoveringText(tooltipStrings, mouseX, mouseY, poseStack);
 			}
 		}
 
-		RenderSystem.disableAlphaTest();
+		//TODO - 1.17: Replacement?
+		//RenderSystem.disableAlphaTest();
 	}
 
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		final IDrawable background = recipeCategory.getBackground();
-		final Rectangle2d backgroundRect = new Rectangle2d(posX, posY, background.getWidth(), background.getHeight());
+		final Rect2i backgroundRect = new Rect2i(posX, posY, background.getWidth(), background.getHeight());
 		return MathUtil.contains(backgroundRect, mouseX, mouseY) ||
 			(recipeTransferButton != null && recipeTransferButton.isMouseOver(mouseX, mouseY));
 	}

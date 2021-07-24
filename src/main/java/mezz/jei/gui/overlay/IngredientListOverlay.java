@@ -1,7 +1,7 @@
 package mezz.jei.gui.overlay;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -24,11 +24,12 @@ import mezz.jei.util.CommandUtil;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Rectangle2dBuilder;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.renderer.Rect2i;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.Tuple;
 
 import javax.annotation.Nullable;
@@ -48,7 +49,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 	private final GuiTextFieldFilter searchField;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private final IMouseHandler mouseHandler = new MouseHandler();
-	private Rectangle2d displayArea = new Rectangle2d(0, 0, 0, 0);
+	private Rect2i displayArea = new Rect2i(0, 0, 0, 0);
 	private boolean hasRoom;
 
 	// properties of the gui we're next to
@@ -78,11 +79,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 		return worldConfig.isOverlayEnabled() && this.guiProperties != null && this.hasRoom;
 	}
 
-	private static Rectangle2d createDisplayArea(IGuiProperties guiProperties) {
-		Rectangle2d screenRectangle = GuiProperties.getScreenRectangle(guiProperties);
+	private static Rect2i createDisplayArea(IGuiProperties guiProperties) {
+		Rect2i screenRectangle = GuiProperties.getScreenRectangle(guiProperties);
 		int guiRight = GuiProperties.getGuiRight(guiProperties);
-		Tuple<Rectangle2d, Rectangle2d> result = MathUtil.splitX(screenRectangle, guiRight);
-		Rectangle2d displayArea = result.getB();
+		Tuple<Rect2i, Rect2i> result = MathUtil.splitX(screenRectangle, guiRight);
+		Rect2i displayArea = result.getB();
 		return new Rectangle2dBuilder(displayArea)
 			.insetByPadding(BORDER_PADDING)
 			.build();
@@ -112,25 +113,25 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 
 		final boolean searchBarCentered = isSearchBarCentered(this.clientConfig, guiProperties);
 
-		Set<Rectangle2d> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
-		Rectangle2d availableContentsArea = new Rectangle2dBuilder(this.displayArea)
+		Set<Rect2i> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
+		Rect2i availableContentsArea = new Rectangle2dBuilder(this.displayArea)
 			.subtractHeight(searchBarCentered ? 0 : SEARCH_HEIGHT + BORDER_PADDING)
 			.build();
 		this.hasRoom = this.contents.updateBounds(availableContentsArea, guiExclusionAreas);
 
 		// update area to match contents size
-		Rectangle2d contentsArea = this.contents.getArea();
+		Rect2i contentsArea = this.contents.getArea();
 		this.displayArea = new Rectangle2dBuilder(this.displayArea)
 			.setX(contentsArea)
 			.setWidth(contentsArea)
 			.build();
 
-		Tuple<Rectangle2d, Rectangle2d> result = getSearchAndConfigArea(searchBarCentered, guiProperties, this.displayArea);
-		Rectangle2d searchAndConfigArea = result.getB();
+		Tuple<Rect2i, Rect2i> result = getSearchAndConfigArea(searchBarCentered, guiProperties, this.displayArea);
+		Rect2i searchAndConfigArea = result.getB();
 
 		result = MathUtil.splitXRight(searchAndConfigArea, BUTTON_SIZE);
-		Rectangle2d searchArea = result.getA();
-		Rectangle2d configButtonArea = result.getB();
+		Rect2i searchArea = result.getA();
+		Rect2i configButtonArea = result.getB();
 
 		this.searchField.updateBounds(searchArea);
 		this.configButton.updateBounds(configButtonArea);
@@ -143,10 +144,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 			GuiProperties.getGuiBottom(guiProperties) + SEARCH_HEIGHT < guiProperties.getScreenHeight();
 	}
 
-	private static Tuple<Rectangle2d, Rectangle2d> getSearchAndConfigArea(boolean searchBarCentered, IGuiProperties guiProperties, Rectangle2d displayArea) {
+	private static Tuple<Rect2i, Rect2i> getSearchAndConfigArea(boolean searchBarCentered, IGuiProperties guiProperties, Rect2i displayArea) {
 		if (searchBarCentered) {
-			Rectangle2d guiRectangle = GuiProperties.getGuiRectangle(guiProperties);
-			Rectangle2d searchRect = new Rectangle2d(
+			Rect2i guiRectangle = GuiProperties.getGuiRectangle(guiProperties);
+			Rect2i searchRect = new Rect2i(
 				guiRectangle.getX(),
 				displayArea.getHeight() - SEARCH_HEIGHT,
 				guiRectangle.getWidth(),
@@ -164,33 +165,34 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 	}
 
 	@SuppressWarnings("deprecation")
-	public void drawScreen(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+	public void drawScreen(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
-			RenderSystem.disableLighting();
-			this.searchField.renderButton(matrixStack, mouseX, mouseY, partialTicks);
-			this.contents.draw(minecraft, matrixStack, mouseX, mouseY, partialTicks);
+			//TODO - 1.17: Replacement?
+			//RenderSystem.disableLighting();
+			this.searchField.renderButton(poseStack, mouseX, mouseY, partialTicks);
+			this.contents.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
 		}
 		if (this.guiProperties != null) {
-			this.configButton.draw(matrixStack, mouseX, mouseY, partialTicks);
+			this.configButton.draw(poseStack, mouseX, mouseY, partialTicks);
 		}
 	}
 
-	public void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			this.ghostIngredientDragManager.drawTooltips(minecraft, matrixStack, mouseX, mouseY);
-			this.contents.drawTooltips(minecraft, matrixStack, mouseX, mouseY);
+			this.ghostIngredientDragManager.drawTooltips(minecraft, poseStack, mouseX, mouseY);
+			this.contents.drawTooltips(minecraft, poseStack, mouseX, mouseY);
 		}
 		if (this.guiProperties != null) {
-			this.configButton.drawTooltips(matrixStack, mouseX, mouseY);
+			this.configButton.drawTooltips(poseStack, mouseX, mouseY);
 		}
 	}
 
-	public void drawOnForeground(Minecraft minecraft, MatrixStack matrixStack, ContainerScreen<?> gui, int mouseX, int mouseY) {
+	public void drawOnForeground(Minecraft minecraft, PoseStack poseStack, AbstractContainerScreen<?> gui, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			matrixStack.pushPose();
-			matrixStack.translate(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
-			this.ghostIngredientDragManager.drawOnForeground(minecraft, matrixStack, mouseX, mouseY);
-			matrixStack.popPose();
+			poseStack.pushPose();
+			poseStack.translate(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
+			this.ghostIngredientDragManager.drawOnForeground(minecraft, poseStack, mouseX, mouseY);
+			poseStack.popPose();
 		}
 	}
 
@@ -290,7 +292,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 			return false;
 		}
 
-		InputMappings.Input input = InputMappings.Type.MOUSE.getOrCreate(mouseButton);
+		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(mouseButton);
 		if (mouseButton != 0 && mouseButton != 1 && !minecraft.options.keyPickItem.isActiveAndMatches(input)) {
 			return false;
 		}
@@ -326,7 +328,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 		this.searchField.setFocused(keyboardFocus);
 	}
 
-	public boolean onGlobalKeyPressed(InputMappings.Input input, MouseClickState clickState) {
+	public boolean onGlobalKeyPressed(InputConstants.Key input, MouseClickState clickState) {
 		if (isListDisplayed()) {
 			if (KeyBindings.toggleCheatMode.isActiveAndMatches(input)) {
 				if (!clickState.isSimulate()) {
