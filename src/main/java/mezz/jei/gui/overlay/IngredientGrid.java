@@ -145,7 +145,6 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		}
 
 		//TODO - 1.17: Replacement?
-		//RenderSystem.enableAlphaTest();
 	}
 
 	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {

@@ -114,8 +114,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	}
 
 	private void drawTiledSprite(PoseStack poseStack, final int xPosition, final int yPosition, final int tiledWidth, final int tiledHeight, int color, int scaledAmount, TextureAtlasSprite sprite) {
-		Minecraft minecraft = Minecraft.getInstance();
-		minecraft.getTextureManager().bindForSetup(InventoryMenu.BLOCK_ATLAS);
+		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
 		Matrix4f matrix = poseStack.last().pose();
 		setGLColorFromInt(color);
 
@@ -167,6 +166,8 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		float vMax = textureSprite.getV1();
 		uMax = uMax - (maskRight / 16F * (uMax - uMin));
 		vMax = vMax - (maskTop / 16F * (vMax - vMin));
+
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 
 		Tesselator tessellator = Tesselator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuilder();

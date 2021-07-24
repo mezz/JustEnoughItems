@@ -32,26 +32,17 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	@SuppressWarnings("deprecation")
 	public void render(PoseStack poseStack, int xPosition, int yPosition, @Nullable ItemStack ingredient) {
 		if (ingredient != null) {
-			//TODO - 1.17: Validate
-			//RenderSystem.pushMatrix();
-			//RenderSystem.multMatrix(poseStack.last().pose());
-			RenderSystem.backupProjectionMatrix();
-			RenderSystem.setProjectionMatrix(poseStack.last().pose());
+			//TODO - 1.17: This works, assuming poseStack is actually the RenderSystem's model-view pose stack, but in that case, it doesn't really need to be passed in anymore
+			RenderSystem.applyModelViewMatrix();
 
 			RenderSystem.enableDepthTest();
-			//TODO - 1.17: Replacement?
-			//Lighting.turnBackOn();
+
 			Minecraft minecraft = Minecraft.getInstance();
 			Font font = getFontRenderer(minecraft, ingredient);
 			ItemRenderer itemRenderer = minecraft.getItemRenderer();
 			itemRenderer.renderAndDecorateFakeItem(ingredient, xPosition, yPosition);
 			itemRenderer.renderGuiItemDecorations(font, ingredient, xPosition, yPosition, null);
 			RenderSystem.disableBlend();
-			//TODO - 1.17: Replacement?
-			//Lighting.turnOff();
-			//TODO - 1.17: Validate
-			//RenderSystem.popMatrix();
-			RenderSystem.restoreProjectionMatrix();
 		}
 	}
 

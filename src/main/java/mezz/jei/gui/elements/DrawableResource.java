@@ -1,11 +1,13 @@
 package mezz.jei.gui.elements;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.gui.drawable.IDrawableStatic;
@@ -59,8 +61,8 @@ public class DrawableResource implements IDrawableStatic {
 
 	@Override
 	public void draw(PoseStack poseStack, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
-		Minecraft minecraft = Minecraft.getInstance();
-		minecraft.getTextureManager().bindForSetup(this.resourceLocation);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShaderTexture(0, this.resourceLocation);
 
 		int x = xOffset + this.paddingLeft + maskLeft;
 		int y = yOffset + this.paddingTop + maskTop;

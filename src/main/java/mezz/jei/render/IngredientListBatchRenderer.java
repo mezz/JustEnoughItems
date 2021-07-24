@@ -1,5 +1,6 @@
 package mezz.jei.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import javax.annotation.Nullable;
@@ -8,11 +9,11 @@ import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.ItemModelShaper;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import com.mojang.blaze3d.platform.Lighting;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -154,41 +155,39 @@ public class IngredientListBatchRenderer {
 	 */
 	@SuppressWarnings("deprecation")
 	public void render(Minecraft minecraft, PoseStack poseStack) {
-		//TODO - 1.17: Replacement?
-		//Lighting.turnBackOn();
 
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		TextureManager textureManager = minecraft.getTextureManager();
 		itemRenderer.blitOffset += 50.0F;
 
+
+		// Most of this code can be found in ItemRenderer#renderGuiItem, and is intended to
+		// speed up state-setting by grouping similar items.
+		textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
+		RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
+		RenderSystem.enableBlend();
+		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+
 		MultiBufferSource.BufferSource buffer = minecraft.renderBuffers().bufferSource();
 
-		textureManager.bindForSetup(InventoryMenu.BLOCK_ATLAS);
-		textureManager.getTexture(InventoryMenu.BLOCK_ATLAS).setFilter(false, false);
-		//TODO - 1.17: Replacement?
-		//RenderSystem.enableRescaleNormal();
-		//RenderSystem.enableAlphaTest();
-		//RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F);
-		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		// 3d Items
-		//TODO - 1.17: Replacement?
-		//RenderSystem.enableLighting();
 		for (ItemStackFastRenderer slot : renderItems3d) {
+//			itemRenderer.renderGuiItem(slot.element.getIngredient(), slot.area.getX(), slot.area.getY());
 			slot.renderItemAndEffectIntoGUI(buffer, poseStack, editModeConfig, worldConfig);
 		}
 		buffer.endBatch();
 
 		// 2d Items
-		//TODO - 1.17: Replacement?
-		//RenderSystem.disableLighting();
 		Lighting.setupForFlatItems();
 		for (ItemStackFastRenderer slot : renderItems2d) {
 			slot.renderItemAndEffectIntoGUI(buffer, poseStack, editModeConfig, worldConfig);
 		}
 		buffer.endBatch();
+
+		// Default is 3d lighting, see ItemRenderer
 		Lighting.setupFor3DItems();
+
+		RenderSystem.enableDepthTest();
 
 		//TODO - 1.17: Replacement?
 		//RenderSystem.disableAlphaTest();
@@ -197,7 +196,7 @@ public class IngredientListBatchRenderer {
 		//RenderSystem.disableRescaleNormal();
 		//RenderSystem.disableLighting();
 
-		textureManager.bindForSetup(InventoryMenu.BLOCK_ATLAS);
+		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
 		textureManager.getTexture(InventoryMenu.BLOCK_ATLAS).restoreLastBlurMipmap();
 
 		itemRenderer.blitOffset -= 50.0F;
@@ -213,6 +212,9 @@ public class IngredientListBatchRenderer {
 
 		//TODO - 1.17: Replacement?
 		//RenderSystem.disableLighting();
+
+		// Restore model-view matrix now that all items have been renderered
+		RenderSystem.applyModelViewMatrix();
 
 		// other rendering
 		for (IngredientListElementRenderer<?> slot : renderOther) {
