@@ -170,6 +170,7 @@ jar {
 			'Implementation-Version'  : "${project.version}",
 			'Implementation-Vendor'   : 'mezz',
 			'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+			"Automatic-Module-Name": "mezz.jei",
 	])
 
 	finalizedBy 'reobfJar'
