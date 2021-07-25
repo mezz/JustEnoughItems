@@ -1,5 +1,6 @@
 package mezz.jei.util;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -45,9 +46,10 @@ public final class AnnotatedInstanceUtil {
 			try {
 				Class<?> asmClass = Class.forName(className);
 				Class<? extends T> asmInstanceClass = asmClass.asSubclass(instanceClass);
-				T instance = asmInstanceClass.newInstance();
+				Constructor<? extends T> constructor = asmInstanceClass.getDeclaredConstructor();
+				T instance = constructor.newInstance();
 				instances.add(instance);
-			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | LinkageError e) {
+			} catch (ReflectiveOperationException | LinkageError e) {
 				LOGGER.error("Failed to load: {}", className, e);
 			}
 		}
