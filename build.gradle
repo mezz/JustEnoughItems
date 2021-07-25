@@ -114,7 +114,7 @@ def replaceResources = tasks.register("replaceResources", Copy) {
 	//Copy it into the build dir
 	it.from(sourceSets.main.resources) {
 		include "META-INF/mods.toml"
-		expand 'version': version, 'mc_version': minecraft_version_range, 'forge_version': forge_version_range
+		expand 'version': version, 'mc_version': minecraft_version_range, 'forge_version': forge_version_range, "loader_version": loader_version_range
 	}
 	it.into "$buildDir/resources/main/"
 }

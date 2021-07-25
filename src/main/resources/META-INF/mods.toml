@@ -7,7 +7,7 @@
 modLoader="javafml" #mandatory
 
 # A version range to match for said mod loader - for regular FML @Mod it will be the minecraft version (without the 1.)
-loaderVersion="[34,)" #mandatory
+loaderVersion="${loader_version}" #mandatory
 
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://github.com/mezz/JustEnoughItems/issues?q=is%3Aissue" #optional

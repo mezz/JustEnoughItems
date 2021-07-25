@@ -6,12 +6,11 @@ import mezz.jei.events.EventBusHelper;
 import mezz.jei.gui.textures.JeiSpriteUploader;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.startup.ClientLifecycleHandler;
+import mezz.jei.startup.JeiReloadListener;
 import mezz.jei.startup.NetworkHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -31,15 +30,15 @@ public class JustEnoughItems {
 	private static void clientStart(IEventBus modEventBus, NetworkHandler networkHandler) {
 		JEIClientConfig.register();
 
-		EventBusHelper.addListener(JustEnoughItems.class, modEventBus, ColorHandlerEvent.Block.class, setupEvent -> {
+		EventBusHelper.addListener(JustEnoughItems.class, modEventBus, RegisterClientReloadListenersEvent.class, registerReloadListenerEvent -> {
 			Minecraft minecraft = Minecraft.getInstance();
+			//Add the Sprite uploader reload listener
 			JeiSpriteUploader spriteUploader = new JeiSpriteUploader(minecraft.textureManager);
 			Textures textures = new Textures(spriteUploader);
-			ResourceManager resourceManager = minecraft.getResourceManager();
-			if (resourceManager instanceof ReloadableResourceManager) {
-				ReloadableResourceManager reloadableResourceManager = (ReloadableResourceManager) resourceManager;
-				reloadableResourceManager.registerReloadListener(spriteUploader);
-			}
+			registerReloadListenerEvent.registerReloadListener(spriteUploader);
+			//Add JEI's reload listener
+			JeiReloadListener.initializeJeiReloadListener(registerReloadListenerEvent);
+			//Add listener for fml load complete
 			EventBusHelper.addLifecycleListener(JustEnoughItems.class, modEventBus, FMLLoadCompleteEvent.class, loadCompleteEvent ->
 				new ClientLifecycleHandler(networkHandler, textures)
 			);

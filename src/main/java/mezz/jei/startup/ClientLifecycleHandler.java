@@ -28,11 +28,8 @@ import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.Connection;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
-import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -92,8 +89,13 @@ public class ClientLifecycleHandler {
 
 		KeyBindings.init();
 
+		if (Internal.getReloadListener() == null) {
+			//Should never be null as we set it in an earlier event
+			throw new RuntimeException("Something went wrong when registering JEI's reload listener.");
+		}
+		Internal.getReloadListener().update(this);
+
 		EventBusHelper.addListener(this, WorldEvent.Save.class, event -> worldConfig.onWorldSave());
-		EventBusHelper.addListener(this, AddReloadListenerEvent.class, event -> reloadListenerSetup());
 
 		EventBusHelper.addListener(this, ClientPlayerNetworkEvent.LoggedOutEvent.class, event -> {
 			for (ServerType type : ServerType.values()) {
@@ -112,20 +114,6 @@ public class ClientLifecycleHandler {
 		networkHandler.createClientPacketHandler(worldConfig);
 
 		this.textures = textures;
-	}
-
-	private void reloadListenerSetup() {
-		ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
-		if (!(resourceManager instanceof ReloadableResourceManager)) {
-			return;
-		}
-		if (Internal.getReloadListener() == null) {
-			JeiReloadListener reloadListener = new JeiReloadListener(this);
-			Internal.setReloadListener(reloadListener);
-		} else {
-			Internal.getReloadListener().update(this);
-		}
-		((ReloadableResourceManager) resourceManager).registerReloadListener(Internal.getReloadListener());
 	}
 
 	public void setupJEI() {
