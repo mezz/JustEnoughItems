@@ -158,8 +158,8 @@ public class IngredientListBatchRenderer {
 		// Most of this code can be found in ItemRenderer#renderGuiItem, and is intended to
 		// speed up state-setting by grouping similar items.
 		TextureManager textureManager = minecraft.getTextureManager();
-		textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
-		RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
+		textureManager.getTexture(InventoryMenu.BLOCK_ATLAS).setFilter(false, false);
+		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
