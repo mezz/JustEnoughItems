@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import net.minecraft.client.renderer.GameRenderer;
 
 public class DrawableIngredient<V> implements IDrawable {
 	private final V ingredient;

@@ -8,7 +8,6 @@ import java.util.List;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.input.CombinedMouseHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 
 import com.google.common.collect.ImmutableList;

@@ -8,8 +8,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.Internal;

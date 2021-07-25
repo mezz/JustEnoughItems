@@ -16,7 +16,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.Rect2i;
-import com.mojang.blaze3d.platform.Lighting;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.tags.ItemTags;

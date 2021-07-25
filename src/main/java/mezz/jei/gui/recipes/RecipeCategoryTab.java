@@ -9,7 +9,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.click.MouseClickState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.client.gui.Font;

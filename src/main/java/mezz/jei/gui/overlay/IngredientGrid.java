@@ -13,7 +13,6 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.click.MouseClickState;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraft.client.Minecraft;

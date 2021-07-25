@@ -1,14 +1,11 @@
 package mezz.jei.util;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.Util;
-import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import net.minecraftforge.items.ItemHandlerHelper;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;

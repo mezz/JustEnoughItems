@@ -8,7 +8,6 @@ import net.minecraft.client.gui.components.Button;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.gui.textures.Textures;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.TextComponent;
 
