@@ -1,5 +1,6 @@
 package mezz.jei.plugins.debug;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import java.util.ArrayList;
@@ -8,6 +9,8 @@ import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.runtime.IBookmarkOverlay;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.fluids.FluidAttributes;
@@ -125,9 +128,18 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 			Object ingredientUnderMouse = ingredientListOverlay.getIngredientUnderMouse();
 			if (ingredientUnderMouse != null) {
 				drawIngredientName(minecraft, poseStack, ingredientUnderMouse);
+			} else {
+				IBookmarkOverlay bookmarkOverlay = runtime.getBookmarkOverlay();
+				ingredientUnderMouse = bookmarkOverlay.getIngredientUnderMouse();
+				if (ingredientUnderMouse != null) {
+					drawIngredientName(minecraft, poseStack, ingredientUnderMouse);
+				}
 			}
 		}
 
+		//Ensure the correct shader is set as ExtendedButton expects this shader to be set but doesn't actually set it
+		// and drawing font causes another shader to get bound
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		ExtendedButton button = recipe.getButton();
 		button.render(poseStack, (int) mouseX, (int) mouseY, 0);
 	}
