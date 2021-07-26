@@ -76,7 +76,7 @@ public interface IIngredientHelper<V> {
 	/**
 	 * Wildcard ID for use in comparing, blacklisting, and looking up ingredients.
 	 * For an example, ItemStack's wildcardId does not include NBT.
-	 * For ingredients like FluidStacks which do not have a wildcardId, just return the uniqueId here.
+	 * For ingredients which do not have a wildcardId, just return the uniqueId here.
 	 */
 	default String getWildcardId(V ingredient) {
 		return getUniqueId(ingredient);

@@ -54,6 +54,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	@Nullable
+	@Deprecated
 	public ItemStack getMatch(Iterable<ItemStack> ingredients, ItemStack toMatch) {
 		return getMatch(ingredients, toMatch, UidContext.Ingredient);
 	}
