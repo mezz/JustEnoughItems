@@ -144,8 +144,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	@Override
 	public void init() {
 		super.init();
-		//TODO - 1.17: Re-evaluate, this used to override the full on init method, but that is final now
-		// and we can impl init, but it can be cancelled by events. Do we care
 
 		final int xSize = 198;
 		int ySize = this.height - 68;
