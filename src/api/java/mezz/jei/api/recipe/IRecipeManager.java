@@ -165,6 +165,7 @@ public interface IRecipeManager {
 	 * Returns a list of recipes in recipeCategory.
 	 * @deprecated since JEI 7.7.1. Use {@link #getRecipes(IRecipeCategory, IFocus, boolean)}
 	 */
+	@Deprecated
 	default <T> List<T> getRecipes(IRecipeCategory<T> recipeCategory) {
 		return getRecipes(recipeCategory, null, false);
 	}
@@ -174,6 +175,7 @@ public interface IRecipeManager {
 	 *
 	 * @deprecated since JEI 7.7.1. Use {@link #getRecipes(IRecipeCategory, IFocus, boolean)}
 	 */
+	@Deprecated
 	default <T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
 		return getRecipes(recipeCategory, focus, false);
 	}
