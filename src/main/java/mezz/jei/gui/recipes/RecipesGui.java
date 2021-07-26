@@ -36,6 +36,8 @@ import mezz.jei.util.Rectangle2dBuilder;
 import mezz.jei.util.StringUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
@@ -49,7 +51,9 @@ import net.minecraft.network.chat.TranslatableComponent;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocuses, IRecipeLogicStateListener {
 	private static final int borderPadding = 6;
@@ -186,18 +190,13 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 			.insetByPadding(innerPadding)
 			.build();
 
-		addButtons();
-
-		this.init = true;
-		updateLayout();
-	}
-
-	private void addButtons() {
-		this.addRenderableWidget(nextRecipeCategory);
 		this.addRenderableWidget(nextRecipeCategory);
 		this.addRenderableWidget(previousRecipeCategory);
 		this.addRenderableWidget(nextPage);
 		this.addRenderableWidget(previousPage);
+
+		this.init = true;
+		updateLayout();
 	}
 
 	@Override
@@ -500,11 +499,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	}
 
 	private void addRecipeTransferButtons(List<RecipeLayout<?>> recipeLayouts) {
-		//TODO - 1.17: Re-evaluate if this is correct or not
-		children().removeAll(renderables);
-		renderables.clear();
-		addButtons();
-
 		if (minecraft == null) {
 			return;
 		}
@@ -512,6 +506,15 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		if (player == null) {
 			return;
 		}
+
+		List<? extends GuiEventListener> oldTransferButtons = children().stream()
+			.filter(widget -> widget instanceof RecipeTransferButton)
+			.collect(Collectors.toList());
+
+		for (GuiEventListener button : oldTransferButtons) {
+			removeWidget(button);
+		}
+
 		AbstractContainerMenu container = getParentContainer();
 
 		for (RecipeLayout<?> recipeLayout : recipeLayouts) {
