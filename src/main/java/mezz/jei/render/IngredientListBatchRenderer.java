@@ -10,7 +10,6 @@ import java.util.List;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.ItemModelShaper;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import com.mojang.blaze3d.platform.Lighting;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -28,7 +27,6 @@ import mezz.jei.input.ClickedIngredient;
 import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.opengl.GL11;
 
 public class IngredientListBatchRenderer {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -95,8 +93,7 @@ public class IngredientListBatchRenderer {
 	private <V> void set(IngredientListSlot ingredientListSlot, IIngredientListElement<V> element) {
 		ingredientListSlot.clear();
 
-		//TODO - 1.17: Fix fast renderer
-		/*V ingredient = element.getIngredient();
+		V ingredient = element.getIngredient();
 		if (ingredient instanceof ItemStack) {
 			//noinspection unchecked
 			IIngredientListElement<ItemStack> itemStackElement = (IIngredientListElement<ItemStack>) element;
@@ -123,7 +120,7 @@ public class IngredientListBatchRenderer {
 				}
 				return;
 			}
-		}*/
+		}
 
 		IngredientListElementRenderer<V> renderer = new IngredientListElementRenderer<>(element);
 		ingredientListSlot.setIngredientRenderer(renderer);
@@ -167,19 +164,23 @@ public class IngredientListBatchRenderer {
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
+		//TODO - 1.17: Figure out if we are properly factoring the base pose stack into account when calling render
+		// in ItemStackFastRenderer, as there is a decent chance that we are not fully taking it into account for how
+		// the MVM is done.
+
 		MultiBufferSource.BufferSource buffer = minecraft.renderBuffers().bufferSource();
 
 		for (ItemStackFastRenderer slot : renderItems3d) {
 			slot.renderItemAndEffectIntoGUI(buffer, poseStack, editModeConfig, worldConfig);
 		}
-		buffer.endBatch();
+		renderBatch(itemRenderer, buffer);
 
 		// 2d Items
 		Lighting.setupForFlatItems();
 		for (ItemStackFastRenderer slot : renderItems2d) {
 			slot.renderItemAndEffectIntoGUI(buffer, poseStack, editModeConfig, worldConfig);
 		}
-		buffer.endBatch();
+		renderBatch(itemRenderer, buffer);
 
 		// Default is 3d lighting, see ItemRenderer
 		Lighting.setupFor3DItems();
@@ -208,5 +209,19 @@ public class IngredientListBatchRenderer {
 		for (IngredientListElementRenderer<?> slot : renderOther) {
 			slot.renderSlow(poseStack, editModeConfig, worldConfig);
 		}
+	}
+
+	private void renderBatch(ItemRenderer itemRenderer, MultiBufferSource.BufferSource buffer) {
+		//Apply changes to MVM AFTER the rendering so that the edit mode overlay draws properly
+		// but before we draw the batch of items as the batch is drawn against the MVM
+		PoseStack modelViewStack = RenderSystem.getModelViewStack();
+		modelViewStack.pushPose();
+		modelViewStack.translate(16, 0, 100 + itemRenderer.blitOffset);
+		modelViewStack.scale(16, -16, 16);
+		modelViewStack.translate(-0.5, -0.5, -0.5);
+		RenderSystem.applyModelViewMatrix();
+		buffer.endBatch();
+		modelViewStack.popPose();
+		RenderSystem.applyModelViewMatrix();
 	}
 }

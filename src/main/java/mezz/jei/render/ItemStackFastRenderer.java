@@ -1,7 +1,5 @@
 package mezz.jei.render;
 
-import javax.annotation.Nullable;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -45,9 +43,7 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		ItemStack itemStack = element.getIngredient();
 		BakedModel bakedModel = itemRenderer.getModel(itemStack, null, null, 0);
 		poseStack.pushPose();
-		poseStack.translate(area.getX() + padding + 16, area.getY() + padding, 150);
-		poseStack.scale(16, -16, 16);
-		poseStack.translate(-0.5, -0.5, -0.5);
+		poseStack.translate((area.getX() + padding) / 16D, (area.getY() + padding) / -16D, 0);
 		itemRenderer.render(itemStack, ItemTransforms.TransformType.GUI, false, poseStack, buffer, 15728880, OverlayTexture.NO_OVERLAY, bakedModel);
 		poseStack.popPose();
 	}
