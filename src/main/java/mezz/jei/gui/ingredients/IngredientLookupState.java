@@ -8,6 +8,7 @@ import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.FocusedRecipes;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class IngredientLookupState {
 	private final IRecipeManager recipeManager;
@@ -21,10 +22,19 @@ public class IngredientLookupState {
 	@Nullable
 	private FocusedRecipes<?> focusedRecipes;
 
-	public IngredientLookupState(IRecipeManager recipeManager, @Nullable Focus<?> focus) {
+	public static IngredientLookupState createWithFocus(IRecipeManager recipeManager, @Nullable Focus<?> focus) {
+		List<IRecipeCategory<?>> recipeCategories = recipeManager.getRecipeCategories(focus, false);
+		return new IngredientLookupState(recipeManager, focus, recipeCategories);
+	}
+
+	public static IngredientLookupState createWithCategories(IRecipeManager recipeManager, List<IRecipeCategory<?>> recipeCategories) {
+		return new IngredientLookupState(recipeManager, null, recipeCategories);
+	}
+
+	private IngredientLookupState(IRecipeManager recipeManager, @Nullable Focus<?> focus, List<IRecipeCategory<?>> recipeCategories) {
 		this.recipeManager = recipeManager;
 		this.focus = focus;
-		this.recipeCategories = ImmutableList.copyOf(recipeManager.getRecipeCategories(focus, false));
+		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
 	}
 
 	@Nullable

@@ -39,7 +39,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		this.stateListener = stateListener;
 		this.ingredientManager = ingredientManager;
 		this.modIdHelper = modIdHelper;
-		this.state = new IngredientLookupState(recipeManager, null);
+		this.state = IngredientLookupState.createWithFocus(recipeManager, null);
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		IFocus<?> translatedFocus = ingredientHelper.translateFocus(focus, Focus::new);
 		Focus<?> checkedTranslatedFocus = Focus.check(translatedFocus);
 
-		IngredientLookupState state = new IngredientLookupState(recipeManager, checkedTranslatedFocus);
+		IngredientLookupState state = IngredientLookupState.createWithFocus(recipeManager, checkedTranslatedFocus);
 		ImmutableList<IRecipeCategory<?>> recipeCategories = state.getRecipeCategories();
 		if (recipeCategories.isEmpty()) {
 			return false;
@@ -111,7 +111,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	public boolean setCategoryFocus() {
 		IRecipeCategory<?> recipeCategory = getSelectedRecipeCategory();
 
-		final IngredientLookupState state = new IngredientLookupState(recipeManager, null);
+		final IngredientLookupState state = IngredientLookupState.createWithFocus(recipeManager, null);
 		state.setRecipeCategory(recipeCategory);
 		setState(state, true);
 
@@ -120,7 +120,8 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public boolean setCategoryFocus(List<ResourceLocation> recipeCategoryUids) {
-		final IngredientLookupState state = new IngredientLookupState(recipeManager, null);
+		List<IRecipeCategory<?>> recipeCategories = recipeManager.getRecipeCategories(recipeCategoryUids, null, false);
+		final IngredientLookupState state = IngredientLookupState.createWithCategories(recipeManager, recipeCategories);
 		if (state.getRecipeCategories().isEmpty()) {
 			return false;
 		}
