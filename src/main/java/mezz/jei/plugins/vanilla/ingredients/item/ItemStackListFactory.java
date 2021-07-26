@@ -46,6 +46,7 @@ public final class ItemStackListFactory {
 	}
 
 	private void addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<String> itemNameSet) {
+		//TODO: Test to make sure this is actually fixed in 1.17 and if so remove this check
 		// Game freezes when loading player skulls, see https://bugs.mojang.com/browse/MC-65587
 		if (stack.getItem() == Items.PLAYER_HEAD) {
 			return;

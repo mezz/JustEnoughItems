@@ -34,7 +34,6 @@ import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -148,10 +147,9 @@ public class ClientLifecycleHandler {
 	}
 
 	private enum ServerType {
-		// Three cases as both vanilla and modded servers share the same post reload handling
+		// Two cases, one for first connection and one for when it is an integrated server or  cases as both vanilla and modded servers share the same post reload handling
 		// and integrated servers always have recipes update after tags
-		VANILLA(TagsUpdatedEvent.VanillaTagTypes.class),
-		MODDED(TagsUpdatedEvent.CustomTagTypes.class),
+		FIRST_CONNECTION(TagsUpdatedEvent.class),
 		INTEGRATED_OR_POST_RELOAD(RecipesUpdatedEvent.class);
 
 		public boolean hasRan;
@@ -184,8 +182,7 @@ public class ClientLifecycleHandler {
 				return false;
 			}
 			hasRan = true;
-			boolean isVanilla = NetworkHooks.isVanillaConnection(connection.getConnection());
-			return isVanilla == (this == VANILLA);
+			return true;
 		}
 	}
 }
