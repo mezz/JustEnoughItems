@@ -139,8 +139,6 @@ public final class CommandUtilServer {
 			ServerPlayer serverPlayerEntity = (ServerPlayer) sender;
 			itemStackCopy.setCount(giveCount);
 			notifyGive(serverPlayerEntity, itemStackCopy);
-			//TODO - 1.17: Recheck this
-			//serverPlayerEntity.broadcastCarriedItem();
 			serverPlayerEntity.containerMenu.setRemoteCarried(serverPlayerEntity.containerMenu.getCarried());
 		}
 	}
