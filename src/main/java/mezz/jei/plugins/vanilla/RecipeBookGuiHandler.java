@@ -15,7 +15,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 
 class RecipeBookGuiHandler<C extends AbstractContainerMenu, T extends AbstractContainerScreen<C> & RecipeUpdateListener> implements IGuiContainerHandler<T> {
 	/**
-	 * Modeled after {@link RecipeBookGui#render(com.mojang.blaze3d.vertex.PoseStack, int, int, float)}
+	 * Modeled after {@link RecipeBookComponent#render(com.mojang.blaze3d.vertex.PoseStack, int, int, float)}
 	 */
 	@Override
 	public List<Rect2i> getGuiExtraAreas(T containerScreen) {

@@ -31,7 +31,7 @@ public final class CommandUtil {
 	/**
 	 * /give &lt;player&gt; &lt;item&gt; [amount]
 	 * <p>
-	 * {@link CreativeScreen} has special client-side handling for itemStacks, just give the item on the client
+	 * {@link CreativeModeInventoryScreen} has special client-side handling for itemStacks, just give the item on the client
 	 */
 	public static void giveStack(ItemStack itemStack, InputConstants.Key input, IClientConfig clientConfig) {
 		final GiveMode giveMode = clientConfig.getGiveMode();
