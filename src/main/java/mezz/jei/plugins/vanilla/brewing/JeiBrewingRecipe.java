@@ -39,8 +39,8 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 
 		Potion typeIn = PotionUtils.getPotion(firstInput);
 		Potion typeOut = PotionUtils.getPotion(potionOutput);
-		this.hashCode = Objects.hashCode(firstInput.getItem(), ForgeRegistries.POTION_TYPES.getKey(typeIn),
-			potionOutput.getItem(), ForgeRegistries.POTION_TYPES.getKey(typeOut),
+		this.hashCode = Objects.hashCode(firstInput.getItem(), ForgeRegistries.POTIONS.getKey(typeIn),
+			potionOutput.getItem(), ForgeRegistries.POTIONS.getKey(typeOut),
 			firstIngredient.getItem());
 	}
 

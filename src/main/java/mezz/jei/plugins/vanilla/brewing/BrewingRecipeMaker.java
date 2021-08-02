@@ -92,7 +92,7 @@ public class BrewingRecipeMaker {
 
 		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM);
 		Collection<ItemStack> knownPotions = IngredientSet.create(itemStackHelper, UidContext.Ingredient);
-		for (Potion potion : ForgeRegistries.POTION_TYPES.getValues()) {
+		for (Potion potion : ForgeRegistries.POTIONS.getValues()) {
 			if (potion == Potions.EMPTY) {
 				// skip the "uncraftable" vanilla potions
 				continue;
@@ -127,8 +127,8 @@ public class BrewingRecipeMaker {
 					}
 
 					Potion potionInputType = PotionUtils.getPotion(potionInput);
-					ResourceLocation inputId = ForgeRegistries.POTION_TYPES.getKey(potionInputType);
-					ResourceLocation outputId = ForgeRegistries.POTION_TYPES.getKey(potionOutputType);
+					ResourceLocation inputId = ForgeRegistries.POTIONS.getKey(potionInputType);
+					ResourceLocation outputId = ForgeRegistries.POTIONS.getKey(potionOutputType);
 					if (Objects.equals(inputId, outputId)) {
 						continue;
 					}
