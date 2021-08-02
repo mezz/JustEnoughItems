@@ -37,7 +37,6 @@ public final class FuelRecipeMaker {
 
 	private static int getBurnTime(ItemStack itemStack) {
 		try {
-			//TODO - 1.17: Evaluate i f this should have a given recipe type or not
 			return ForgeHooks.getBurnTime(itemStack, null);
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
