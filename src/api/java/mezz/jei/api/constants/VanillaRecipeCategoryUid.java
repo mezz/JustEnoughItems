@@ -2,7 +2,10 @@ package mezz.jei.api.constants;
 
 import java.util.List;
 
+import net.minecraft.item.crafting.BlastingRecipe;
+import net.minecraft.item.crafting.CampfireCookingRecipe;
 import net.minecraft.item.crafting.SmithingRecipe;
+import net.minecraft.item.crafting.SmokingRecipe;
 import net.minecraft.item.crafting.StonecuttingRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraft.item.ItemStack;
@@ -47,21 +50,21 @@ public final class VanillaRecipeCategoryUid {
 	/**
 	 * The smoking recipe category.
 	 *
-	 * Automatically includes every {@link FurnaceRecipe}
+	 * Automatically includes every {@link SmokingRecipe}
 	 */
 	public static final ResourceLocation SMOKING = new ResourceLocation(ModIds.MINECRAFT_ID, "smoking");
 
 	/**
 	 * The blasting recipe category.
 	 *
-	 * Automatically includes every {@link FurnaceRecipe}
+	 * Automatically includes every {@link BlastingRecipe}
 	 */
 	public static final ResourceLocation BLASTING = new ResourceLocation(ModIds.MINECRAFT_ID, "blasting");
 
 	/**
 	 * The campfire furnace recipe category.
 	 *
-	 * Automatically includes every {@link FurnaceRecipe}
+	 * Automatically includes every {@link CampfireCookingRecipe}
 	 */
 	public static final ResourceLocation CAMPFIRE = new ResourceLocation(ModIds.MINECRAFT_ID, "campfire");
 
