@@ -8,6 +8,8 @@ import java.util.List;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.ingredients.IngredientsForType;
+import net.minecraft.fluid.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -176,6 +178,26 @@ public final class ErrorUtil {
 		return itemStack + " " + itemName;
 	}
 
+	public static String getFluidStackInfo(@Nullable FluidStack fluidStack) {
+		if (fluidStack == null) {
+			return "null";
+		}
+		Fluid fluid = fluidStack.getFluid();
+		final String fluidName;
+		ResourceLocation registryName = fluid.getRegistryName();
+		if (registryName != null) {
+			fluidName = registryName.toString();
+		} else {
+			fluidName = fluid.getClass().getName();
+		}
+
+		CompoundNBT nbt = fluidStack.getTag();
+		if (nbt != null) {
+			return fluidStack + " " + fluidName + " nbt:" + nbt;
+		}
+		return fluidStack + " " + fluidName;
+	}
+
 	public static void checkNotEmpty(@Nullable ItemStack itemStack) {
 		if (itemStack == null) {
 			throw new NullPointerException("ItemStack must not be null.");
@@ -191,6 +213,15 @@ public final class ErrorUtil {
 		} else if (itemStack.isEmpty()) {
 			String info = getItemStackInfo(itemStack);
 			throw new IllegalArgumentException("ItemStack " + name + " must not be empty. " + info);
+		}
+	}
+
+	public static void checkNotEmpty(@Nullable FluidStack fluidStack) {
+		if (fluidStack == null) {
+			throw new NullPointerException("FluidStack must not be null.");
+		} else if (fluidStack.isEmpty()) {
+			String info = getFluidStackInfo(fluidStack);
+			throw new IllegalArgumentException("FluidStack value must not be empty. " + info);
 		}
 	}
 
