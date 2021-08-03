@@ -1666,7 +1666,7 @@ public class Configuration
         prop.setComment(comment + " [range: " + minValue + " ~ " + maxValue + ", default: " + defaultValue + "]");
         prop.setMinValue(minValue);
         prop.setMaxValue(maxValue);
-        return prop.getInt(defaultValue) < minValue ? minValue : (prop.getInt(defaultValue) > maxValue ? maxValue : prop.getInt(defaultValue));
+        return prop.getInt(defaultValue) < minValue ? minValue : Math.min(prop.getInt(defaultValue), maxValue);
     }
 
     /**
