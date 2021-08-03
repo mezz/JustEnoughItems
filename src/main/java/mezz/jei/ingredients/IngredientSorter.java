@@ -189,19 +189,19 @@ public final class IngredientSorter implements IIngredientSorter {
 			maxDamage = itemStack.getMaxDamage();	
 		}
 		return maxDamage;
-	};
+	}
 
 	private static int getHarvestLevel(ItemStack itemStack) {		
 		if (itemStack != ItemStack.EMPTY) {
 			return (itemStack.getToolTypes().size() > 0 ? itemStack.getHarvestLevel(itemStack.getToolTypes().iterator().next(), null, null) : -1);
 		}
 		return -1;
-	};
+	}
 
 	private static boolean isTool(ItemStack itemStack){
 		//Sort non-tools after the tools.
 		return !getToolClass(itemStack).isEmpty();
-	};
+	}
 
 	private static int getToolDurability(ItemStack itemStack) {
 		if (isTool(itemStack))
@@ -213,7 +213,7 @@ public final class IngredientSorter implements IIngredientSorter {
 		//Sort Weapons apart from tools, armor, and other random things..		
 		//AttackDamage also filters out Tools and Armor.  Anything that deals extra damage is a weapon.
 		return getAttackDamage(itemStack) > notQuiteZero;
-	};
+	}
 
 	private static Double getAttackDamage(ItemStack itemStack) {
 		double attackDamage = Double.MIN_VALUE;
@@ -226,7 +226,7 @@ public final class IngredientSorter implements IIngredientSorter {
 			}
 		}
 		return attackDamage;
-	};
+	}
 
 	private static Double getAttackSpeed(ItemStack itemStack) {
 		double attackDamage = Double.MIN_VALUE;
@@ -247,7 +247,7 @@ public final class IngredientSorter implements IIngredientSorter {
 			}
 		}
 		return attackSpeed;
-	};
+	}
 
 	private static int getWeaponDurability(ItemStack itemStack) {
 		if (isWeapon(itemStack)) {
@@ -259,7 +259,7 @@ public final class IngredientSorter implements IIngredientSorter {
 	private static boolean isArmor(ItemStack itemStack) {
 		Item item = itemStack.getItem();	
 		return item instanceof ArmorItem;
-	};
+	}
 
 	private static int getArmorSlotIndex(ItemStack itemStack) {
 		Item item = itemStack.getItem();	
@@ -267,7 +267,7 @@ public final class IngredientSorter implements IIngredientSorter {
 			return armorItem.getSlot().getFilterFlag();
 		}
 		return 0;
-	};
+	}
 
 	private static int getArmorDamageReduce(ItemStack itemStack) {
 		Item item = itemStack.getItem();	
@@ -275,7 +275,7 @@ public final class IngredientSorter implements IIngredientSorter {
 			return armorItem.getDefense();
 		}
 		return Integer.MIN_VALUE;
-	};
+	}
 
 	private static float getArmorToughness(ItemStack itemStack) {
 		Item item = itemStack.getItem();	
@@ -283,7 +283,7 @@ public final class IngredientSorter implements IIngredientSorter {
 			return armorItem.getToughness();
 		}
 		return Float.MIN_VALUE;
-	};
+	}
 
 	private static int getArmorDurability(ItemStack itemStack) {
 		if (isArmor(itemStack))
@@ -310,12 +310,12 @@ public final class IngredientSorter implements IIngredientSorter {
 			}
 		}
 		return bestTag;
-	};
+	}
 
 	private static boolean hasTag(IIngredientListElementInfo<?> elementInfo){
 		//Sort non-tools after the tools.
 		return !getTagForSorting(elementInfo).isEmpty();
-	};
+	}
 
 
 	private static Boolean nullToolClassWarned = false;

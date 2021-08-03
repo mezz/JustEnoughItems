@@ -27,5 +27,5 @@ public enum ConfigGuiType
 	DOUBLE,
 	COLOR,
 	MOD_ID,
-	CONFIG_CATEGORY;
+	CONFIG_CATEGORY
 }
