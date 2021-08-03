@@ -10,9 +10,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.ingredient.IGuiIngredient;
@@ -34,17 +34,17 @@ public final class RecipeTransferUtil {
 	}
 
 	@Nullable
-	public static IRecipeTransferError getTransferRecipeError(RecipeTransferManager recipeTransferManager, Container container, RecipeLayout<?> recipeLayout, PlayerEntity player) {
+	public static IRecipeTransferError getTransferRecipeError(RecipeTransferManager recipeTransferManager, AbstractContainerMenu container, RecipeLayout<?> recipeLayout, Player player) {
 		return transferRecipe(recipeTransferManager, container, recipeLayout, player, false, false);
 	}
 
-	public static boolean transferRecipe(RecipeTransferManager recipeTransferManager, Container container, RecipeLayout<?> recipeLayout, PlayerEntity player, boolean maxTransfer) {
+	public static boolean transferRecipe(RecipeTransferManager recipeTransferManager, AbstractContainerMenu container, RecipeLayout<?> recipeLayout, Player player, boolean maxTransfer) {
 		IRecipeTransferError error = transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer, true);
 		return allowsTransfer(error);
 	}
 
 	@Nullable
-	private static <T extends Container> IRecipeTransferError transferRecipe(RecipeTransferManager recipeTransferManager, T container, RecipeLayout<?> recipeLayout, PlayerEntity player, boolean maxTransfer, boolean doTransfer) {
+	private static <T extends AbstractContainerMenu> IRecipeTransferError transferRecipe(RecipeTransferManager recipeTransferManager, T container, RecipeLayout<?> recipeLayout, Player player, boolean maxTransfer, boolean doTransfer) {
 		final JeiRuntime runtime = Internal.getRuntime();
 		if (runtime == null) {
 			return RecipeTransferErrorInternal.INSTANCE;

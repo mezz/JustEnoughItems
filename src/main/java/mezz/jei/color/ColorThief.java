@@ -21,7 +21,7 @@ package mezz.jei.color;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 
-import net.minecraft.client.renderer.texture.NativeImage;
+import com.mojang.blaze3d.platform.NativeImage;
 
 public class ColorThief {
 	/**
@@ -59,7 +59,7 @@ public class ColorThief {
 	 */
 	@Nullable
 	public static MMCQ.CMap getColorMap(NativeImage sourceImage, int colorCount, int quality, boolean ignoreWhite) {
-		if (sourceImage.format() == NativeImage.PixelFormat.RGBA) {
+		if (sourceImage.format() == NativeImage.Format.RGBA) {
 			int[][] pixelArray = getPixels(sourceImage, quality, ignoreWhite);
 			// Send array to quantize function which clusters values using median
 			// cut algorithm

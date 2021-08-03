@@ -26,18 +26,14 @@ import mezz.jei.ingredients.IngredientSorter;
 import mezz.jei.util.AnnotatedInstanceUtil;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.play.ClientPlayNetHandler;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.resources.IResourceManager;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.Connection;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
-import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -92,8 +88,13 @@ public class ClientLifecycleHandler {
 
 		KeyBindings.init();
 
+		if (Internal.getReloadListener() == null) {
+			//Should never be null as we set it in an earlier event
+			throw new RuntimeException("Something went wrong when registering JEI's reload listener.");
+		}
+		Internal.getReloadListener().update(this);
+
 		EventBusHelper.addListener(this, WorldEvent.Save.class, event -> worldConfig.onWorldSave());
-		EventBusHelper.addListener(this, AddReloadListenerEvent.class, event -> reloadListenerSetup());
 
 		EventBusHelper.addListener(this, ClientPlayerNetworkEvent.LoggedOutEvent.class, event -> {
 			for (ServerType type : ServerType.values()) {
@@ -114,24 +115,10 @@ public class ClientLifecycleHandler {
 		this.textures = textures;
 	}
 
-	private void reloadListenerSetup() {
-		IResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
-		if (!(resourceManager instanceof IReloadableResourceManager)) {
-			return;
-		}
-		if (Internal.getReloadListener() == null) {
-			JeiReloadListener reloadListener = new JeiReloadListener(this);
-			Internal.setReloadListener(reloadListener);
-		} else {
-			Internal.getReloadListener().update(this);
-		}
-		((IReloadableResourceManager) resourceManager).registerReloadListener(Internal.getReloadListener());
-	}
-
 	public void setupJEI() {
-		ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
+		ClientPacketListener connection = Minecraft.getInstance().getConnection();
 		if (connection != null) {
-			NetworkManager networkManager = connection.getConnection();
+			Connection networkManager = connection.getConnection();
 			worldConfig.syncWorldConfig(networkManager);
 		}
 
@@ -160,10 +147,9 @@ public class ClientLifecycleHandler {
 	}
 
 	private enum ServerType {
-		// Three cases as both vanilla and modded servers share the same post reload handling
+		// Two cases, one for first connection and one for when it is an integrated server or  cases as both vanilla and modded servers share the same post reload handling
 		// and integrated servers always have recipes update after tags
-		VANILLA(TagsUpdatedEvent.VanillaTagTypes.class),
-		MODDED(TagsUpdatedEvent.CustomTagTypes.class),
+		FIRST_CONNECTION(TagsUpdatedEvent.class),
 		INTEGRATED_OR_POST_RELOAD(RecipesUpdatedEvent.class);
 
 		public boolean hasRan;
@@ -174,7 +160,7 @@ public class ClientLifecycleHandler {
 		}
 
 		public boolean shouldRun() {
-			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
+			ClientPacketListener connection = Minecraft.getInstance().getConnection();
 			boolean isIntegrated = Minecraft.getInstance().isLocalServer();
 			if (connection == null || isIntegrated) {
 				//If we are an integrated server we always handle handle recipes updating as it is consistently last
@@ -196,8 +182,7 @@ public class ClientLifecycleHandler {
 				return false;
 			}
 			hasRan = true;
-			boolean isVanilla = NetworkHooks.isVanillaConnection(connection.getConnection());
-			return isVanilla == (this == VANILLA);
+			return true;
 		}
 	}
 }

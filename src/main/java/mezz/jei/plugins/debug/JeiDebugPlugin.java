@@ -12,21 +12,21 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.config.ClientConfig;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.gui.screen.inventory.BrewingStandScreen;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -88,37 +88,37 @@ public class JeiDebugPlugin implements IModPlugin {
 				new ItemStack(Blocks.DARK_OAK_DOOR)
 				),
 				VanillaTypes.ITEM,
-				new TranslationTextComponent("description.jei.wooden.door.1"), // actually 2 lines
-				new TranslationTextComponent("description.jei.wooden.door.2"),
-				new TranslationTextComponent("description.jei.wooden.door.3")
+				new TranslatableComponent("description.jei.wooden.door.1"), // actually 2 lines
+				new TranslatableComponent("description.jei.wooden.door.2"),
+				new TranslatableComponent("description.jei.wooden.door.3")
 			);
 
-			registration.addIngredientInfo(new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), VanillaTypes.FLUID, new StringTextComponent("water"));
-			registration.addIngredientInfo(new DebugIngredient(1), DebugIngredient.TYPE, new StringTextComponent("debug"));
+			registration.addIngredientInfo(new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), VanillaTypes.FLUID, new TextComponent("water"));
+			registration.addIngredientInfo(new DebugIngredient(1), DebugIngredient.TYPE, new TextComponent("debug"));
 			registration.addIngredientInfo(new DebugIngredient(2), DebugIngredient.TYPE,
-				new StringTextComponent("debug colored").withStyle(TextFormatting.AQUA),
-				new StringTextComponent("debug\\nSplit and colored").withStyle(TextFormatting.LIGHT_PURPLE),
-				new TranslationTextComponent("description.jei.debug.formatting.1", "various"),
-				new TranslationTextComponent("description.jei.debug.formatting.1", "various\\nsplit"),
-				new TranslationTextComponent("description.jei.debug.formatting.1", new StringTextComponent("various colored").withStyle(TextFormatting.RED)),
-				new TranslationTextComponent("description.jei.debug.formatting.1",
-					new StringTextComponent("various\\nsplit colored").withStyle(TextFormatting.DARK_AQUA)
+				new TextComponent("debug colored").withStyle(ChatFormatting.AQUA),
+				new TextComponent("debug\\nSplit and colored").withStyle(ChatFormatting.LIGHT_PURPLE),
+				new TranslatableComponent("description.jei.debug.formatting.1", "various"),
+				new TranslatableComponent("description.jei.debug.formatting.1", "various\\nsplit"),
+				new TranslatableComponent("description.jei.debug.formatting.1", new TextComponent("various colored").withStyle(ChatFormatting.RED)),
+				new TranslatableComponent("description.jei.debug.formatting.1",
+					new TextComponent("various\\nsplit colored").withStyle(ChatFormatting.DARK_AQUA)
 				),
-				new TranslationTextComponent("description.jei.debug.formatting.1", "\\nSplitting at the start"),
-				new TranslationTextComponent("description.jei.debug.formatting.1", "various all colored").withStyle(TextFormatting.RED),
-				new TranslationTextComponent("description.jei.debug.formatting.1",
-					new TranslationTextComponent("description.jei.debug.formatting.3", "various").withStyle(TextFormatting.DARK_AQUA)
+				new TranslatableComponent("description.jei.debug.formatting.1", "\\nSplitting at the start"),
+				new TranslatableComponent("description.jei.debug.formatting.1", "various all colored").withStyle(ChatFormatting.RED),
+				new TranslatableComponent("description.jei.debug.formatting.1",
+					new TranslatableComponent("description.jei.debug.formatting.3", "various").withStyle(ChatFormatting.DARK_AQUA)
 				),
-				new TranslationTextComponent("description.jei.debug.formatting.2",
-					new StringTextComponent("multiple").withStyle(TextFormatting.GOLD).withStyle(TextFormatting.ITALIC),
-					new StringTextComponent("various").withStyle(TextFormatting.RED)
-				).withStyle(TextFormatting.BLUE),
-				new TranslationTextComponent("description.jei.debug.formatting.1",
-					new TranslationTextComponent("description.jei.debug.formatting.3",
-						new TranslationTextComponent("description.jei.debug.formatting.2",
-							new StringTextComponent("multiple").withStyle(TextFormatting.GOLD).withStyle(TextFormatting.ITALIC),
-							new StringTextComponent("various").withStyle(TextFormatting.RED)
-						).withStyle(TextFormatting.DARK_AQUA)
+				new TranslatableComponent("description.jei.debug.formatting.2",
+					new TextComponent("multiple").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),
+					new TextComponent("various").withStyle(ChatFormatting.RED)
+				).withStyle(ChatFormatting.BLUE),
+				new TranslatableComponent("description.jei.debug.formatting.1",
+					new TranslatableComponent("description.jei.debug.formatting.3",
+						new TranslatableComponent("description.jei.debug.formatting.2",
+							new TextComponent("multiple").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),
+							new TextComponent("various").withStyle(ChatFormatting.RED)
+						).withStyle(ChatFormatting.DARK_AQUA)
 					)
 				)
 			);
@@ -135,11 +135,11 @@ public class JeiDebugPlugin implements IModPlugin {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
 			registration.addGuiContainerHandler(BrewingStandScreen.class, new IGuiContainerHandler<BrewingStandScreen>() {
 				@Override
-				public List<Rectangle2d> getGuiExtraAreas(BrewingStandScreen containerScreen) {
+				public List<Rect2i> getGuiExtraAreas(BrewingStandScreen containerScreen) {
 					int widthMovement = (int) ((System.currentTimeMillis() / 100) % 100);
 					int size = 25 + widthMovement;
 					return Collections.singletonList(
-						new Rectangle2d(containerScreen.getGuiLeft() + containerScreen.getXSize(), containerScreen.getGuiTop() + 40, size, size)
+						new Rect2i(containerScreen.getGuiLeft() + containerScreen.getXSize(), containerScreen.getGuiTop() + 40, size, size)
 					);
 				}
 

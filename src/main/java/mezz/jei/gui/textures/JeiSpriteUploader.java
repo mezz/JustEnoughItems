@@ -5,14 +5,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import net.minecraft.client.renderer.texture.SpriteUploader;
+import net.minecraft.client.resources.TextureAtlasHolder;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.config.Constants;
 
-public class JeiSpriteUploader extends SpriteUploader {
+public class JeiSpriteUploader extends TextureAtlasHolder {
 	private final Set<ResourceLocation> registeredSprites = new HashSet<>();
 
 	public JeiSpriteUploader(TextureManager p_i50905_1_) {

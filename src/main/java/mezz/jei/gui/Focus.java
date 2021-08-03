@@ -8,6 +8,8 @@ import mezz.jei.util.ErrorUtil;
 
 import javax.annotation.Nullable;
 
+import mezz.jei.api.recipe.IFocus.Mode;
+
 public final class Focus<V> implements IFocus<V> {
 	private final Mode mode;
 	private final V value;

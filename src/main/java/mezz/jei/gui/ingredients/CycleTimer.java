@@ -3,7 +3,7 @@ package mezz.jei.gui.ingredients;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 
 public class CycleTimer {
 	/* the amount of time in ms to display one thing before cycling to the next one */

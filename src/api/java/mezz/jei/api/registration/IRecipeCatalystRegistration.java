@@ -1,6 +1,6 @@
 package mezz.jei.api.registration;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public interface IRecipeCatalystRegistration {
 	/**

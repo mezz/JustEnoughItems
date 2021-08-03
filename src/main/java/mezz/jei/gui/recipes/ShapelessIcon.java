@@ -1,6 +1,6 @@
 package mezz.jei.gui.recipes;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -10,8 +10,8 @@ import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.gui.HoverChecker;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class ShapelessIcon {
 	private static final int scale = 4;
@@ -26,20 +26,20 @@ public class ShapelessIcon {
 		this.hoverChecker = new HoverChecker(0, iconBottom, iconLeft, iconRight);
 	}
 
-	public void draw(MatrixStack matrixStack, int recipeWidth) {
+	public void draw(PoseStack poseStack, int recipeWidth) {
 		int shapelessIconX = recipeWidth - (icon.getWidth() / scale);
 
-		matrixStack.pushPose();
-		matrixStack.translate(shapelessIconX, 0, 0);
-		matrixStack.scale(1F / scale, 1F / scale, 1);
-		icon.draw(matrixStack);
-		matrixStack.popPose();
+		poseStack.pushPose();
+		poseStack.translate(shapelessIconX, 0, 0);
+		poseStack.scale(1F / scale, 1F / scale, 1);
+		icon.draw(poseStack);
+		poseStack.popPose();
 	}
 
 	@Nullable
-	public List<ITextComponent> getTooltipStrings(int mouseX, int mouseY) {
+	public List<Component> getTooltipStrings(int mouseX, int mouseY) {
 		if (hoverChecker.checkHover(mouseX, mouseY)) {
-			return Collections.singletonList(new TranslationTextComponent("jei.tooltip.shapeless.recipe"));
+			return Collections.singletonList(new TranslatableComponent("jei.tooltip.shapeless.recipe"));
 		}
 		return null;
 	}

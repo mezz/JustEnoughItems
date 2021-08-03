@@ -1,22 +1,22 @@
 package mezz.jei.render;
 
-import javax.annotation.Nullable;
-
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.util.ErrorUtil;
+
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraftforge.client.RenderProperties;
 
 public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemStack> {
 
@@ -24,42 +24,28 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		super(itemStackElement);
 	}
 
-	public void renderItemAndEffectIntoGUI(IRenderTypeBuffer buffer, MatrixStack matrixStack, IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
+	public void renderItemAndEffectIntoGUI(MultiBufferSource buffer, PoseStack poseStack, IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
 		try {
-			uncheckedRenderItemAndEffectIntoGUI(buffer, matrixStack, editModeConfig, worldConfig);
+			uncheckedRenderItemAndEffectIntoGUI(buffer, poseStack, editModeConfig, worldConfig);
 		} catch (RuntimeException | LinkageError e) {
 			throw ErrorUtil.createRenderIngredientException(e, element.getIngredient());
 		}
 	}
 
-	@Nullable
-	private IBakedModel getBakedModel() {
-		ItemModelMesher itemModelMesher = Minecraft.getInstance().getItemRenderer().getItemModelShaper();
-		ItemStack itemStack = element.getIngredient();
-		IBakedModel bakedModel = itemModelMesher.getItemModel(itemStack);
-		return bakedModel.getOverrides().resolve(bakedModel, itemStack, null, null);
-	}
-
-	private void uncheckedRenderItemAndEffectIntoGUI(IRenderTypeBuffer buffer, MatrixStack matrixStack, IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
+	private void uncheckedRenderItemAndEffectIntoGUI(MultiBufferSource buffer, PoseStack poseStack, IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
 		if (worldConfig.isEditModeEnabled()) {
-			renderEditMode(matrixStack, area, padding, editModeConfig);
+			renderEditMode(poseStack, area, padding, editModeConfig);
 			RenderSystem.enableBlend();
 		}
 
-		ItemStack itemStack = element.getIngredient();
-		IBakedModel bakedModel = getBakedModel();
-		if (bakedModel == null) {
-			return;
-		}
-
-		matrixStack.pushPose();
-		matrixStack.translate(area.getX() + padding + 16, area.getY() + padding, 150);
-		matrixStack.scale(16, -16, 16);
-		matrixStack.translate(-0.5, -0.5, -0.5);
 		Minecraft minecraft = Minecraft.getInstance();
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
-		itemRenderer.render(itemStack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, buffer, 15728880, OverlayTexture.NO_OVERLAY, bakedModel);
-		matrixStack.popPose();
+		ItemStack itemStack = element.getIngredient();
+		BakedModel bakedModel = itemRenderer.getModel(itemStack, null, null, 0);
+		poseStack.pushPose();
+		poseStack.translate((area.getX() + padding) / 16D, (area.getY() + padding) / -16D, 0);
+		itemRenderer.render(itemStack, ItemTransforms.TransformType.GUI, false, poseStack, buffer, 15728880, OverlayTexture.NO_OVERLAY, bakedModel);
+		poseStack.popPose();
 	}
 
 	public void renderOverlay() {
@@ -71,15 +57,14 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		}
 	}
 
-	private void renderOverlay(ItemStack itemStack, Rectangle2d area, int padding) {
-		FontRenderer font = getFontRenderer(itemStack);
+	private void renderOverlay(ItemStack itemStack, Rect2i area, int padding) {
+		Font font = getFontRenderer(itemStack);
 		ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
 		itemRenderer.renderGuiItemDecorations(font, itemStack, area.getX() + padding, area.getY() + padding, null);
 	}
 
-	public static FontRenderer getFontRenderer(ItemStack itemStack) {
-		Item item = itemStack.getItem();
-		FontRenderer fontRenderer = item.getFontRenderer(itemStack);
+	public static Font getFontRenderer(ItemStack itemStack) {
+		Font fontRenderer = RenderProperties.get(itemStack).getFont(itemStack);
 		if (fontRenderer == null) {
 			fontRenderer = Minecraft.getInstance().font;
 		}

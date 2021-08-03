@@ -17,13 +17,13 @@ import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.common.brewing.VanillaBrewingRecipe;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionBrewing;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.potion.Potions;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionBrewing;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -92,7 +92,7 @@ public class BrewingRecipeMaker {
 
 		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM);
 		Collection<ItemStack> knownPotions = IngredientSet.create(itemStackHelper, UidContext.Ingredient);
-		for (Potion potion : ForgeRegistries.POTION_TYPES.getValues()) {
+		for (Potion potion : ForgeRegistries.POTIONS.getValues()) {
 			if (potion == Potions.EMPTY) {
 				// skip the "uncraftable" vanilla potions
 				continue;
@@ -127,8 +127,8 @@ public class BrewingRecipeMaker {
 					}
 
 					Potion potionInputType = PotionUtils.getPotion(potionInput);
-					ResourceLocation inputId = ForgeRegistries.POTION_TYPES.getKey(potionInputType);
-					ResourceLocation outputId = ForgeRegistries.POTION_TYPES.getKey(potionOutputType);
+					ResourceLocation inputId = ForgeRegistries.POTIONS.getKey(potionInputType);
+					ResourceLocation outputId = ForgeRegistries.POTIONS.getKey(potionOutputType);
 					if (Objects.equals(inputId, outputId)) {
 						continue;
 					}

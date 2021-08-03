@@ -1,8 +1,8 @@
 package mezz.jei.plugins.vanilla.cooking;
 
-import net.minecraft.block.Blocks;
-import net.minecraft.item.crafting.SmokingRecipe;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.crafting.SmokingRecipe;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.helpers.IGuiHelper;

@@ -1,17 +1,18 @@
 package mezz.jei.gui.elements;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tesselator;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.config.Constants;
 import mezz.jei.gui.textures.JeiSpriteUploader;
-import net.minecraft.util.math.vector.Matrix4f;
+import com.mojang.math.Matrix4f;
 
 /**
  * Breaks a texture into 9 pieces so that it can be scaled to any size.
@@ -39,7 +40,7 @@ public class DrawableNineSliceTexture {
 		this.sliceBottom = bottom;
 	}
 
-	public void draw(MatrixStack matrixStack, int xOffset, int yOffset, int width, int height) {
+	public void draw(PoseStack poseStack, int xOffset, int yOffset, int width, int height) {
 		TextureAtlasSprite sprite = spriteUploader.getSprite(location);
 		int leftWidth = sliceLeft;
 		int rightWidth = sliceRight;
@@ -48,9 +49,8 @@ public class DrawableNineSliceTexture {
 		int textureWidth = this.width;
 		int textureHeight = this.height;
 
-		Minecraft minecraft = Minecraft.getInstance();
-		TextureManager textureManager = minecraft.getTextureManager();
-		textureManager.bind(Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShaderTexture(0, Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
 
 		float uMin = sprite.getU0();
 		float uMax = sprite.getU1();
@@ -64,10 +64,10 @@ public class DrawableNineSliceTexture {
 		float vTop = vMin + vSize * (topHeight / (float) textureHeight);
 		float vBottom = vMax - vSize * (bottomHeight / (float) textureHeight);
 
-		Tessellator tessellator = Tessellator.getInstance();
+		Tesselator tessellator = Tesselator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuilder();
-		bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		Matrix4f matrix = matrixStack.last().pose();
+		bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+		Matrix4f matrix = poseStack.last().pose();
 
 		// left top
 		draw(bufferBuilder, matrix, uMin, vMin, uLeft, vTop, xOffset, yOffset, leftWidth, topHeight);

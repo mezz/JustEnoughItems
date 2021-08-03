@@ -11,9 +11,9 @@ import java.util.List;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -41,7 +41,7 @@ public class BookmarkConfig {
 		for (IIngredientListElement<?> element : ingredientListElements) {
 			Object object = element.getIngredient();
 			if (object instanceof ItemStack) {
-				strings.add(MARKER_STACK + ((ItemStack) object).save(new CompoundNBT()).toString());
+				strings.add(MARKER_STACK + ((ItemStack) object).save(new CompoundTag()).toString());
 			} else {
 				strings.add(MARKER_OTHER + getUid(ingredientManager, element));
 			}
@@ -76,7 +76,7 @@ public class BookmarkConfig {
 			if (ingredientJsonString.startsWith(MARKER_STACK)) {
 				String itemStackAsJson = ingredientJsonString.substring(MARKER_STACK.length());
 				try {
-					CompoundNBT itemStackAsNbt = JsonToNBT.parseTag(itemStackAsJson);
+					CompoundTag itemStackAsNbt = TagParser.parseTag(itemStackAsJson);
 					ItemStack itemStack = ItemStack.of(itemStackAsNbt);
 					if (!itemStack.isEmpty()) {
 						ItemStack normalized = itemStackHelper.normalizeIngredient(itemStack);

@@ -1,6 +1,6 @@
 package mezz.jei.input;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -8,9 +8,9 @@ import java.util.List;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.input.click.MouseClickState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.Internal;
 import mezz.jei.config.IWorldConfig;
@@ -19,10 +19,10 @@ import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IIngredientGridSource;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.TextComponent;
 import org.lwjgl.glfw.GLFW;
 
-public class GuiTextFieldFilter extends TextFieldWidget {
+public class GuiTextFieldFilter extends EditBox {
 	private static final int MAX_HISTORY = 100;
 	private static final int maxSearchLength = 128;
 	private static final List<String> history = new LinkedList<>();
@@ -37,7 +37,7 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 
 	public GuiTextFieldFilter(IIngredientGridSource ingredientSource, IWorldConfig worldConfig) {
 		// TODO narrator string
-		super(Minecraft.getInstance().font, 0, 0, 0, 0, StringTextComponent.EMPTY);
+		super(Minecraft.getInstance().font, 0, 0, 0, 0, TextComponent.EMPTY);
 		this.worldConfig = worldConfig;
 
 		setMaxLength(maxSearchLength);
@@ -48,7 +48,7 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 		this.mouseHandler = new MouseHandler();
 	}
 
-	public void updateBounds(Rectangle2d area) {
+	public void updateBounds(Rect2i area) {
 		this.x = area.getX();
 		this.y = area.getY();
 		this.width = area.getWidth();
@@ -160,15 +160,14 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 		return super.isBordered();
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
-	public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+	public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		this.isDrawing = true;
 		if (this.isVisible()) {
-			RenderSystem.color4f(1, 1, 1, 1);
-			background.draw(matrixStack, this.x, this.y, this.width, this.height);
+			RenderSystem.setShaderColor(1, 1, 1, 1);
+			background.draw(poseStack, this.x, this.y, this.width, this.height);
 		}
-		super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
+		super.renderButton(poseStack, mouseX, mouseY, partialTicks);
 		this.isDrawing = false;
 	}
 	// end background hack

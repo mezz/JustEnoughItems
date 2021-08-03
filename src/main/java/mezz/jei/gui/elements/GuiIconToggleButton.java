@@ -1,20 +1,20 @@
 package mezz.jei.gui.elements;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.click.MouseClickState;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.TooltipRenderer;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
 
@@ -35,7 +35,7 @@ public abstract class GuiIconToggleButton {
 		this.mouseHandler = new MouseHandler();
 	}
 
-	public void updateBounds(Rectangle2d area) {
+	public void updateBounds(Rect2i area) {
 		this.button.setWidth(area.getWidth());
 		this.button.setHeight(area.getHeight());
 		this.button.x = area.getX();
@@ -43,10 +43,10 @@ public abstract class GuiIconToggleButton {
 		this.hoverChecker.updateBounds(this.button);
 	}
 
-	public void draw(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-		this.button.render(matrixStack, mouseX, mouseY, partialTicks);
+	public void draw(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+		this.button.render(poseStack, mouseX, mouseY, partialTicks);
 		IDrawable icon = isIconToggledOn() ? this.onIcon : this.offIcon;
-		icon.draw(matrixStack, this.button.x + 2, this.button.y + 2);
+		icon.draw(poseStack, this.button.x + 2, this.button.y + 2);
 	}
 
 	public final boolean isMouseOver(double mouseX, double mouseY) {
@@ -57,15 +57,15 @@ public abstract class GuiIconToggleButton {
 		return this.mouseHandler;
 	}
 
-	public final void drawTooltips(MatrixStack matrixStack, int mouseX, int mouseY) {
+	public final void drawTooltips(PoseStack poseStack, int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
-			List<ITextComponent> tooltip = new ArrayList<>();
+			List<Component> tooltip = new ArrayList<>();
 			getTooltips(tooltip);
-			TooltipRenderer.drawHoveringText(tooltip, mouseX, mouseY, Constants.MAX_TOOLTIP_WIDTH, matrixStack);
+			TooltipRenderer.drawHoveringText(tooltip, mouseX, mouseY, Constants.MAX_TOOLTIP_WIDTH, poseStack);
 		}
 	}
 
-	protected abstract void getTooltips(List<ITextComponent> tooltip);
+	protected abstract void getTooltips(List<Component> tooltip);
 
 	protected abstract boolean isIconToggledOn();
 

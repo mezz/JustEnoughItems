@@ -5,17 +5,17 @@ import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.util.MathUtil;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 import javax.annotation.Nullable;
 
 public class GuiAreaClickHandler implements IMouseHandler {
 	private final RecipesGui recipesGui;
 	private final IGuiClickableArea clickableArea;
-	private final ContainerScreen<?> guiContainer;
+	private final AbstractContainerScreen<?> guiContainer;
 
-	public GuiAreaClickHandler(RecipesGui recipesGui, IGuiClickableArea clickableArea, ContainerScreen<?> guiContainer) {
+	public GuiAreaClickHandler(RecipesGui recipesGui, IGuiClickableArea clickableArea, AbstractContainerScreen<?> guiContainer) {
 		this.recipesGui = recipesGui;
 		this.clickableArea = clickableArea;
 		this.guiContainer = guiContainer;

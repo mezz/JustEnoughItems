@@ -1,7 +1,7 @@
 package mezz.jei.api.registration;
 
-import net.minecraft.inventory.container.Container;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IJeiHelpers;
@@ -28,14 +28,14 @@ public interface IRecipeTransferRegistration {
 	 * @param inventorySlotStart the first slot of the available inventory (usually player inventory)
 	 * @param inventorySlotCount the number of slots of the available inventory
 	 */
-	<C extends Container> void addRecipeTransferHandler(Class<C> containerClass, ResourceLocation recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount);
+	<C extends AbstractContainerMenu> void addRecipeTransferHandler(Class<C> containerClass, ResourceLocation recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount);
 
 	/**
 	 * Advanced method for adding a recipe transfer handler.
 	 *
 	 * Use this when recipe slots or inventory slots are spread out in different number ranges.
 	 */
-	<C extends Container> void addRecipeTransferHandler(IRecipeTransferInfo<C> recipeTransferInfo);
+	<C extends AbstractContainerMenu> void addRecipeTransferHandler(IRecipeTransferInfo<C> recipeTransferInfo);
 
 	/**
 	 * Complete control over recipe transfer.

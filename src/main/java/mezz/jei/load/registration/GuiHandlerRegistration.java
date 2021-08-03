@@ -8,10 +8,10 @@ import java.util.Map;
 import mezz.jei.gui.GuiContainerHandlers;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.ingredients.IngredientManager;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.screen.inventory.CreativeScreen;
-import net.minecraft.client.gui.screen.inventory.InventoryScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -29,7 +29,7 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 	private final Map<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers = new HashMap<>();
 
 	@Override
-	public <T extends ContainerScreen<?>> void addGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<T> guiHandler) {
+	public <T extends AbstractContainerScreen<?>> void addGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<T> guiHandler) {
 		ErrorUtil.checkNotNull(guiClass, "guiClass");
 		ErrorUtil.checkNotNull(guiHandler, "guiHandler");
 		this.guiContainerHandlers.add(guiClass, guiHandler);
@@ -37,7 +37,7 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends ContainerScreen<?>> void addGenericGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<?> guiHandler) {
+	public <T extends AbstractContainerScreen<?>> void addGenericGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<?> guiHandler) {
 		ErrorUtil.checkNotNull(guiClass, "guiClass");
 		ErrorUtil.checkNotNull(guiHandler, "guiHandler");
 		this.guiContainerHandlers.add(guiClass, (IGuiContainerHandler<? super T>) guiHandler);
@@ -59,7 +59,7 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 	}
 
 	private static final List<Class<? extends Screen>> ghostIngredientGuiBlacklist = ImmutableList.of(
-		Screen.class, InventoryScreen.class, CreativeScreen.class
+		Screen.class, InventoryScreen.class, CreativeModeInventoryScreen.class
 	);
 
 	@Override

@@ -1,18 +1,19 @@
 package mezz.jei.gui.elements;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tesselator;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.textures.JeiSpriteUploader;
-import net.minecraft.util.math.vector.Matrix4f;
+import com.mojang.math.Matrix4f;
 
 public class DrawableSprite implements IDrawableStatic {
 	private final JeiSpriteUploader spriteUploader;
@@ -50,19 +51,18 @@ public class DrawableSprite implements IDrawableStatic {
 	}
 
 	@Override
-	public void draw(MatrixStack matrixStack, int xOffset, int yOffset) {
-		draw(matrixStack, xOffset, yOffset, 0, 0, 0, 0);
+	public void draw(PoseStack poseStack, int xOffset, int yOffset) {
+		draw(poseStack, xOffset, yOffset, 0, 0, 0, 0);
 	}
 
 	@Override
-	public void draw(MatrixStack matrixStack, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
+	public void draw(PoseStack poseStack, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
 		TextureAtlasSprite sprite = spriteUploader.getSprite(location);
 		int textureWidth = this.width;
 		int textureHeight = this.height;
 
-		Minecraft minecraft = Minecraft.getInstance();
-		TextureManager textureManager = minecraft.getTextureManager();
-		textureManager.bind(Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShaderTexture(0, Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
 
 		maskTop += trimTop;
 		maskBottom += trimBottom;
@@ -81,10 +81,10 @@ public class DrawableSprite implements IDrawableStatic {
 		float maxU = sprite.getU1() - uSize * (maskRight / (float) textureWidth);
 		float maxV = sprite.getV1() - vSize * (maskBottom / (float) textureHeight);
 
-		Tessellator tessellator = Tessellator.getInstance();
+		Tesselator tessellator = Tesselator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuilder();
-		bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		Matrix4f matrix = matrixStack.last().pose();
+		bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+		Matrix4f matrix = poseStack.last().pose();
 		bufferBuilder.vertex(matrix, x, y + height, 0)
 			.uv(minU, maxV)
 			.endVertex();

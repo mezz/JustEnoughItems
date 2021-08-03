@@ -6,19 +6,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.item.ArmorMaterial;
-import net.minecraft.item.ItemTier;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.world.item.ArmorMaterials;
+import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.client.Minecraft;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.RepairContainer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AnvilMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.tags.ItemTags;
 
 import com.google.common.base.Stopwatch;
@@ -105,7 +105,7 @@ public final class AnvilRecipeMaker {
 	private static void getRepairRecipes(List<Object> recipes, IVanillaRecipeFactory vanillaRecipeFactory) {
 		Map<Ingredient, List<ItemStack>> items = Maps.newHashMap();
 
-		Ingredient repairWoods = ItemTier.WOOD.getRepairIngredient();
+		Ingredient repairWoods = Tiers.WOOD.getRepairIngredient();
 		items.put(repairWoods, Lists.newArrayList(
 			new ItemStack(Items.WOODEN_SWORD),
 			new ItemStack(Items.WOODEN_PICKAXE),
@@ -119,7 +119,7 @@ public final class AnvilRecipeMaker {
 			new ItemStack(Items.SHIELD)
 		));
 
-		items.put(ItemTier.STONE.getRepairIngredient(), Lists.newArrayList(
+		items.put(Tiers.STONE.getRepairIngredient(), Lists.newArrayList(
 			new ItemStack(Items.STONE_SWORD),
 			new ItemStack(Items.STONE_PICKAXE),
 			new ItemStack(Items.STONE_AXE),
@@ -127,7 +127,7 @@ public final class AnvilRecipeMaker {
 			new ItemStack(Items.STONE_HOE)
 		));
 
-		Ingredient repairLeather = ArmorMaterial.LEATHER.getRepairIngredient();
+		Ingredient repairLeather = ArmorMaterials.LEATHER.getRepairIngredient();
 		items.put(repairLeather, Lists.newArrayList(
 			new ItemStack(Items.LEATHER_HELMET),
 			new ItemStack(Items.LEATHER_CHESTPLATE),
@@ -135,7 +135,7 @@ public final class AnvilRecipeMaker {
 			new ItemStack(Items.LEATHER_BOOTS)
 		));
 
-		Ingredient repairIronItems = ItemTier.IRON.getRepairIngredient();
+		Ingredient repairIronItems = Tiers.IRON.getRepairIngredient();
 		items.put(repairIronItems, Lists.newArrayList(
 			new ItemStack(Items.IRON_SWORD),
 			new ItemStack(Items.IRON_PICKAXE),
@@ -144,7 +144,7 @@ public final class AnvilRecipeMaker {
 			new ItemStack(Items.IRON_HOE)
 		));
 
-		Ingredient repairIronArmor = ArmorMaterial.IRON.getRepairIngredient();
+		Ingredient repairIronArmor = ArmorMaterials.IRON.getRepairIngredient();
 		items.put(repairIronArmor, Lists.newArrayList(
 			new ItemStack(Items.IRON_HELMET),
 			new ItemStack(Items.IRON_CHESTPLATE),
@@ -152,7 +152,7 @@ public final class AnvilRecipeMaker {
 			new ItemStack(Items.IRON_BOOTS)
 		));
 
-		Ingredient repairChain = ArmorMaterial.CHAIN.getRepairIngredient();
+		Ingredient repairChain = ArmorMaterials.CHAIN.getRepairIngredient();
 		items.put(repairChain, Lists.newArrayList(
 			new ItemStack(Items.CHAINMAIL_HELMET),
 			new ItemStack(Items.CHAINMAIL_CHESTPLATE),
@@ -160,7 +160,7 @@ public final class AnvilRecipeMaker {
 			new ItemStack(Items.CHAINMAIL_BOOTS)
 		));
 
-		Ingredient repairGoldItems = ItemTier.GOLD.getRepairIngredient();
+		Ingredient repairGoldItems = Tiers.GOLD.getRepairIngredient();
 		items.put(repairGoldItems, Lists.newArrayList(
 			new ItemStack(Items.GOLDEN_SWORD),
 			new ItemStack(Items.GOLDEN_PICKAXE),
@@ -169,7 +169,7 @@ public final class AnvilRecipeMaker {
 			new ItemStack(Items.GOLDEN_HOE)
 		));
 
-		Ingredient repairGoldArmor = ArmorMaterial.GOLD.getRepairIngredient();
+		Ingredient repairGoldArmor = ArmorMaterials.GOLD.getRepairIngredient();
 		items.put(repairGoldArmor, Lists.newArrayList(
 			new ItemStack(Items.GOLDEN_HELMET),
 			new ItemStack(Items.GOLDEN_CHESTPLATE),
@@ -177,7 +177,7 @@ public final class AnvilRecipeMaker {
 			new ItemStack(Items.GOLDEN_BOOTS)
 		));
 
-		Ingredient repairDiamondItems = ItemTier.DIAMOND.getRepairIngredient();
+		Ingredient repairDiamondItems = Tiers.DIAMOND.getRepairIngredient();
 		items.put(repairDiamondItems, Lists.newArrayList(
 			new ItemStack(Items.DIAMOND_SWORD),
 			new ItemStack(Items.DIAMOND_PICKAXE),
@@ -186,7 +186,7 @@ public final class AnvilRecipeMaker {
 			new ItemStack(Items.DIAMOND_HOE)
 		));
 
-		Ingredient repairDiamondArmor = ArmorMaterial.DIAMOND.getRepairIngredient();
+		Ingredient repairDiamondArmor = ArmorMaterials.DIAMOND.getRepairIngredient();
 		items.put(repairDiamondArmor, Lists.newArrayList(
 			new ItemStack(Items.DIAMOND_HELMET),
 			new ItemStack(Items.DIAMOND_CHESTPLATE),
@@ -194,7 +194,7 @@ public final class AnvilRecipeMaker {
 			new ItemStack(Items.DIAMOND_BOOTS)
 		));
 
-		Ingredient repairNetheriteItems = ItemTier.NETHERITE.getRepairIngredient();
+		Ingredient repairNetheriteItems = Tiers.NETHERITE.getRepairIngredient();
 		items.put(repairNetheriteItems, Lists.newArrayList(
 			new ItemStack(Items.NETHERITE_SWORD),
 			new ItemStack(Items.NETHERITE_AXE),
@@ -203,7 +203,7 @@ public final class AnvilRecipeMaker {
 			new ItemStack(Items.NETHERITE_PICKAXE)
 		));
 
-		Ingredient repairNetheriteArmor = ArmorMaterial.NETHERITE.getRepairIngredient();
+		Ingredient repairNetheriteArmor = ArmorMaterials.NETHERITE.getRepairIngredient();
 		items.put(repairNetheriteArmor, Lists.newArrayList(
 			new ItemStack(Items.NETHERITE_BOOTS),
 			new ItemStack(Items.NETHERITE_HELMET),
@@ -216,7 +216,7 @@ public final class AnvilRecipeMaker {
 			new ItemStack(Items.ELYTRA)
 		));
 
-		Ingredient repairTurtle = ArmorMaterial.TURTLE.getRepairIngredient();
+		Ingredient repairTurtle = ArmorMaterials.TURTLE.getRepairIngredient();
 		items.put(repairTurtle, Lists.newArrayList(
 			new ItemStack(Items.TURTLE_HELMET)
 		));
@@ -247,13 +247,13 @@ public final class AnvilRecipeMaker {
 	}
 
 	public static int findLevelsCost(ItemStack leftStack, ItemStack rightStack) {
-		PlayerEntity player = Minecraft.getInstance().player;
+		Player player = Minecraft.getInstance().player;
 		if (player == null) {
 			return -1;
 		}
-		PlayerInventory fakeInventory = new PlayerInventory(player);
+		Inventory fakeInventory = new Inventory(player);
 		try {
-			RepairContainer repair = new RepairContainer(0, fakeInventory);
+			AnvilMenu repair = new AnvilMenu(0, fakeInventory);
 			repair.slots.get(0).set(leftStack);
 			repair.slots.get(1).set(rightStack);
 			return repair.getCost();

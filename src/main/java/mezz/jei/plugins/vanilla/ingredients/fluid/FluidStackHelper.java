@@ -6,17 +6,18 @@ import java.util.Collections;
 
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.inventory.container.PlayerContainer;
+import mezz.jei.util.ErrorUtil;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 import com.google.common.base.MoreObjects;
 import mezz.jei.api.helpers.IColorHelper;
@@ -31,13 +32,16 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		this.colorHelper = colorHelper;
 	}
 
-
 	@Override
 	@Nullable
-	public FluidStack getMatch(Iterable<FluidStack> ingredients, FluidStack toMatch) {
+	public FluidStack getMatch(Iterable<FluidStack> ingredients, FluidStack toMatch, UidContext context) {
 		for (FluidStack fluidStack : ingredients) {
 			if (toMatch.getFluid() == fluidStack.getFluid()) {
-				return fluidStack;
+				String keyLhs = getUniqueId(toMatch, context);
+				String keyRhs = getUniqueId(fluidStack, context);
+				if (keyLhs.equals(keyRhs)) {
+					return fluidStack;
+				}
 			}
 		}
 		return null;
@@ -45,13 +49,8 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Override
 	public String getDisplayName(FluidStack ingredient) {
-		ITextComponent displayName = ingredient.getDisplayName();
+		Component displayName = ingredient.getDisplayName();
 		return displayName.getString();
-	}
-
-	@Override
-	public String getUniqueId(FluidStack ingredient) {
-		return getUniqueId(ingredient, UidContext.Ingredient);
 	}
 
 	@Override
@@ -67,6 +66,14 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 			result.append(subtypeInfo);
 		}
 		return result.toString();
+	}
+
+	@Override
+	public String getWildcardId(FluidStack ingredient) {
+		ErrorUtil.checkNotEmpty(ingredient);
+		Fluid fluid = ingredient.getFluid();
+		ResourceLocation registryName = fluid.getRegistryName();
+		return "fluid:" + registryName;
 	}
 
 	@Override
@@ -88,7 +95,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		ResourceLocation fluidStill = attributes.getStillTexture(ingredient);
 		if (fluidStill != null) {
 			Minecraft minecraft = Minecraft.getInstance();
-			TextureAtlasSprite fluidStillSprite = minecraft.getTextureAtlas(PlayerContainer.BLOCK_ATLAS).apply(fluidStill);
+			TextureAtlasSprite fluidStillSprite = minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
 			int renderColor = attributes.getColor(ingredient);
 			return colorHelper.getColors(fluidStillSprite, renderColor, 1);
 		}
@@ -139,7 +146,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		MoreObjects.ToStringHelper toStringHelper = MoreObjects.toStringHelper(FluidStack.class);
 		Fluid fluid = ingredient.getFluid();
 		if (fluid != null) {
-			ITextComponent displayName = ingredient.getDisplayName();
+			Component displayName = ingredient.getDisplayName();
 			toStringHelper.add("Fluid", displayName.getString());
 		} else {
 			toStringHelper.add("Fluid", "null");
@@ -147,7 +154,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 		toStringHelper.add("Amount", ingredient.getAmount());
 
-		CompoundNBT tag = ingredient.getTag();
+		CompoundTag tag = ingredient.getTag();
 		if (tag != null) {
 			toStringHelper.add("Tag", tag);
 		}

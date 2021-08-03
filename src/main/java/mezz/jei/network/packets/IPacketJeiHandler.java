@@ -1,8 +1,8 @@
 package mezz.jei.network.packets;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
 
 public interface IPacketJeiHandler {
-	void readPacketData(PacketBuffer buf, PlayerEntity player);
+	void readPacketData(FriendlyByteBuf buf, Player player);
 }

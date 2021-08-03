@@ -1,6 +1,6 @@
 package mezz.jei.config;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.ModIds;
 

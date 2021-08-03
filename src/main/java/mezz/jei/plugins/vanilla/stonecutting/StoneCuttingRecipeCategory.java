@@ -3,10 +3,10 @@ package mezz.jei.plugins.vanilla.stonecutting;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.StonecuttingRecipe;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.StonecutterRecipe;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -14,10 +14,10 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.config.Constants;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
-public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecuttingRecipe> {
+public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRecipe> {
 	private static final int inputSlot = 0;
 	private static final int outputSlot = 1;
 
@@ -26,13 +26,13 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecuttingR
 
 	private final IDrawable background;
 	private final IDrawable icon;
-	private final ITextComponent localizedName;
+	private final Component localizedName;
 
 	public StoneCuttingRecipeCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
 		background = guiHelper.createDrawable(location, 0, 220, width, height);
 		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.STONECUTTER));
-		localizedName = new TranslationTextComponent("gui.jei.category.stoneCutter");
+		localizedName = new TranslatableComponent("gui.jei.category.stoneCutter");
 	}
 
 	@Override
@@ -41,18 +41,12 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecuttingR
 	}
 
 	@Override
-	public Class<? extends StonecuttingRecipe> getRecipeClass() {
-		return StonecuttingRecipe.class;
+	public Class<? extends StonecutterRecipe> getRecipeClass() {
+		return StonecutterRecipe.class;
 	}
 
 	@Override
-	@Deprecated
-	public String getTitle() {
-		return getTitleAsTextComponent().getString();
-	}
-
-	@Override
-	public ITextComponent getTitleAsTextComponent() {
+	public Component getTitle() {
 		return localizedName;
 	}
 
@@ -67,13 +61,13 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecuttingR
 	}
 
 	@Override
-	public void setIngredients(StonecuttingRecipe recipe, IIngredients ingredients) {
+	public void setIngredients(StonecutterRecipe recipe, IIngredients ingredients) {
 		ingredients.setInputIngredients(recipe.getIngredients());
 		ingredients.setOutput(VanillaTypes.ITEM, recipe.getResultItem());
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, StonecuttingRecipe recipe, IIngredients ingredients) {
+	public void setRecipe(IRecipeLayout recipeLayout, StonecutterRecipe recipe, IIngredients ingredients) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 		guiItemStacks.init(inputSlot, true, 0, 8);
 		guiItemStacks.init(outputSlot, false, 60, 8);

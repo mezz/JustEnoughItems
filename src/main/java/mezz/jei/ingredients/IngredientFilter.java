@@ -25,7 +25,7 @@ import mezz.jei.search.IElementSearch;
 import mezz.jei.search.PrefixInfo;
 import mezz.jei.util.LoggedTimer;
 import mezz.jei.util.Translator;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

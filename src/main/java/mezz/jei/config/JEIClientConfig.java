@@ -4,15 +4,16 @@ import dev.ftb.mods.ftblibrary.config.ConfigGroup;
 import dev.ftb.mods.ftblibrary.config.ui.EditConfigScreen;
 import mezz.jei.api.constants.ModIds;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.InventoryScreen;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -38,7 +39,7 @@ public class JEIClientConfig {
 	}
 
 	@SubscribeEvent
-	public static void reload(ModConfig.ModConfigEvent event) {
+	public static void reload(ModConfigEvent event) {
 		if (event.getConfig().getSpec() != config) {
 			return;
 		}
@@ -70,7 +71,7 @@ public class JEIClientConfig {
 			};
 			gui.openGui();
 		} else {
-			mc.player.displayClientMessage(new TranslationTextComponent(ModIds.JEI_ID + ".message.ftblibrary")
+			mc.player.displayClientMessage(new TranslatableComponent(ModIds.JEI_ID + ".message.ftblibrary")
 				.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/ftb-library-forge"))), false);
 		}
 	}

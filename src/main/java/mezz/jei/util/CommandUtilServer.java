@@ -5,29 +5,28 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraftforge.items.ItemHandlerHelper;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.command.arguments.ItemInput;
-import net.minecraft.command.impl.GiveCommand;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.item.ItemInput;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketCheatPermission;
@@ -43,8 +42,8 @@ public final class CommandUtilServer {
 	private CommandUtilServer() {
 	}
 
-	public static String[] getGiveCommandParameters(PlayerEntity sender, ItemStack itemStack, int amount) {
-		ITextComponent senderName = sender.getName();
+	public static String[] getGiveCommandParameters(Player sender, ItemStack itemStack, int amount) {
+		Component senderName = sender.getName();
 		Item item = itemStack.getItem();
 		ResourceLocation itemResourceLocation = item.getRegistryName();
 		if (itemResourceLocation == null) {
@@ -55,7 +54,7 @@ public final class CommandUtilServer {
 		List<String> commandStrings = new ArrayList<>();
 		commandStrings.add(senderName.getString());
 		String itemArgument = itemResourceLocation.toString();
-		CompoundNBT tagCompound = itemStack.getTag();
+		CompoundTag tagCompound = itemStack.getTag();
 		if (tagCompound != null) {
 			itemArgument += tagCompound;
 		}
@@ -64,18 +63,18 @@ public final class CommandUtilServer {
 		return commandStrings.toArray(new String[0]);
 	}
 
-	public static void writeChatMessage(PlayerEntity player, String translationKey, TextFormatting color) {
-		TranslationTextComponent component = new TranslationTextComponent(translationKey);
+	public static void writeChatMessage(Player player, String translationKey, ChatFormatting color) {
+		TranslatableComponent component = new TranslatableComponent(translationKey);
 		component.getStyle().applyFormat(color);
 		player.sendMessage(component, Util.NIL_UUID);
 	}
 
-	public static boolean hasPermission(PlayerEntity sender) {
+	public static boolean hasPermission(Player sender) {
 		if (sender.isCreative()) {
 			return true;
 		}
-		CommandNode<CommandSource> giveCommand = getGiveCommand(sender);
-		CommandSource commandSource = sender.createCommandSourceStack();
+		CommandNode<CommandSourceStack> giveCommand = getGiveCommand(sender);
+		CommandSourceStack commandSource = sender.createCommandSourceStack();
 		if (giveCommand != null) {
 			return giveCommand.canUse(commandSource);
 		} else {
@@ -91,7 +90,7 @@ public final class CommandUtilServer {
 	/**
 	 * Gives a player an item.
 	 */
-	public static void executeGive(ServerPlayerEntity sender, ItemStack itemStack, GiveMode giveMode) {
+	public static void executeGive(ServerPlayer sender, ItemStack itemStack, GiveMode giveMode) {
 		if (hasPermission(sender)) {
 			if (giveMode == GiveMode.INVENTORY) {
 				giveToInventory(sender, itemStack);
@@ -103,19 +102,19 @@ public final class CommandUtilServer {
 		}
 	}
 
-	public static void setHotbarSlot(ServerPlayerEntity sender, ItemStack itemStack, int hotbarSlot) {
+	public static void setHotbarSlot(ServerPlayer sender, ItemStack itemStack, int hotbarSlot) {
 		if (hasPermission(sender)) {
-			if (!PlayerInventory.isHotbarSlot(hotbarSlot)) {
+			if (!Inventory.isHotbarSlot(hotbarSlot)) {
 				LOGGER.error("Tried to set slot that is not in the hotbar: {}", hotbarSlot);
 				return;
 			}
-			ItemStack stackInSlot = sender.inventory.getItem(hotbarSlot);
+			ItemStack stackInSlot = sender.getInventory().getItem(hotbarSlot);
 			if (ItemStack.matches(stackInSlot, itemStack)) {
 				return;
 			}
 			ItemStack itemStackCopy = itemStack.copy();
-			sender.inventory.setItem(hotbarSlot, itemStack);
-			sender.level.playSound(null, sender.getX(), sender.getY(), sender.getZ(), SoundEvents.ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((sender.getRandom().nextFloat() - sender.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+			sender.getInventory().setItem(hotbarSlot, itemStack);
+			sender.level.playSound(null, sender.getX(), sender.getY(), sender.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((sender.getRandom().nextFloat() - sender.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			sender.inventoryMenu.broadcastChanges();
 			notifyGive(sender, itemStackCopy);
 		} else {
@@ -123,24 +122,24 @@ public final class CommandUtilServer {
 		}
 	}
 
-	public static void mousePickupItemStack(PlayerEntity sender, ItemStack itemStack) {
+	public static void mousePickupItemStack(Player sender, ItemStack itemStack) {
 		int giveCount;
 		ItemStack itemStackCopy = itemStack.copy();
-		ItemStack existingStack = sender.inventory.getCarried();
+		ItemStack existingStack = sender.containerMenu.getCarried();
 		if (ItemHandlerHelper.canItemStacksStack(existingStack, itemStack)) {
 			int newCount = Math.min(existingStack.getMaxStackSize(), existingStack.getCount() + itemStack.getCount());
 			giveCount = newCount - existingStack.getCount();
 			existingStack.setCount(newCount);
 		} else {
-			sender.inventory.setCarried(itemStack);
+			sender.containerMenu.setCarried(itemStack);
 			giveCount = itemStack.getCount();
 		}
 
-		if (sender instanceof ServerPlayerEntity) {
-			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity) sender;
+		if (sender instanceof ServerPlayer) {
+			ServerPlayer serverPlayerEntity = (ServerPlayer) sender;
 			itemStackCopy.setCount(giveCount);
 			notifyGive(serverPlayerEntity, itemStackCopy);
-			serverPlayerEntity.broadcastCarriedItem();
+			serverPlayerEntity.containerMenu.setRemoteCarried(serverPlayerEntity.containerMenu.getCarried());
 		}
 	}
 
@@ -150,9 +149,9 @@ public final class CommandUtilServer {
 	 * @see GiveCommand#giveItem(CommandSource, ItemInput, Collection, int)
 	 */
 	@SuppressWarnings("JavadocReference")
-	private static void giveToInventory(PlayerEntity entityplayermp, ItemStack itemStack) {
+	private static void giveToInventory(Player entityplayermp, ItemStack itemStack) {
 		ItemStack itemStackCopy = itemStack.copy();
-		boolean flag = entityplayermp.inventory.add(itemStack);
+		boolean flag = entityplayermp.getInventory().add(itemStack);
 		if (flag && itemStack.isEmpty()) {
 			itemStack.setCount(1);
 			ItemEntity entityitem = entityplayermp.drop(itemStack, false);
@@ -160,7 +159,7 @@ public final class CommandUtilServer {
 				entityitem.makeFakeItem();
 			}
 
-			entityplayermp.level.playSound(null, entityplayermp.getX(), entityplayermp.getY(), entityplayermp.getZ(), SoundEvents.ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((entityplayermp.getRandom().nextFloat() - entityplayermp.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+			entityplayermp.level.playSound(null, entityplayermp.getX(), entityplayermp.getY(), entityplayermp.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((entityplayermp.getRandom().nextFloat() - entityplayermp.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			entityplayermp.inventoryMenu.broadcastChanges();
 		} else {
 			ItemEntity entityitem = entityplayermp.drop(itemStack, false);
@@ -173,24 +172,24 @@ public final class CommandUtilServer {
 		notifyGive(entityplayermp, itemStackCopy);
 	}
 
-	private static void notifyGive(PlayerEntity entityPlayerMP, ItemStack stack) {
-		CommandSource commandSource = entityPlayerMP.createCommandSourceStack();
+	private static void notifyGive(Player entityPlayerMP, ItemStack stack) {
+		CommandSourceStack commandSource = entityPlayerMP.createCommandSourceStack();
 		int count = stack.getCount();
-		ITextComponent stackTextComponent = stack.getDisplayName();
-		ITextComponent displayName = entityPlayerMP.getDisplayName();
-		TranslationTextComponent message = new TranslationTextComponent("commands.give.success.single", count, stackTextComponent, displayName);
+		Component stackTextComponent = stack.getDisplayName();
+		Component displayName = entityPlayerMP.getDisplayName();
+		TranslatableComponent message = new TranslatableComponent("commands.give.success.single", count, stackTextComponent, displayName);
 		commandSource.sendSuccess(message, true);
 	}
 
 	@Nullable
-	private static CommandNode<CommandSource> getGiveCommand(PlayerEntity sender) {
+	private static CommandNode<CommandSourceStack> getGiveCommand(Player sender) {
 		MinecraftServer minecraftServer = sender.getServer();
 		if (minecraftServer == null) {
 			return null;
 		}
 		Commands commandManager = minecraftServer.getCommands();
-		CommandDispatcher<CommandSource> dispatcher = commandManager.getDispatcher();
-		RootCommandNode<CommandSource> root = dispatcher.getRoot();
+		CommandDispatcher<CommandSourceStack> dispatcher = commandManager.getDispatcher();
+		RootCommandNode<CommandSourceStack> root = dispatcher.getRoot();
 		return root.getChild("give");
 	}
 }

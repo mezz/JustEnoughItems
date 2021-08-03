@@ -1,6 +1,6 @@
 package mezz.jei.plugins.jei.info;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import java.util.Collections;
 import java.util.List;
@@ -9,10 +9,10 @@ import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.plugins.jei.JeiInternalPlugin;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.ITextProperties;
-import net.minecraft.util.text.LanguageMap;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.locale.Language;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -22,7 +22,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.textures.Textures;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 @SuppressWarnings("rawtypes")
 public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientInfoRecipe> {
@@ -34,14 +34,14 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 	private final IDrawable icon;
 	private final IDrawable slotBackground;
 	private final JeiInternalPlugin jeiPlugin;
-	private final ITextComponent localizedName;
+	private final Component localizedName;
 
 	public IngredientInfoRecipeCategory(IGuiHelper guiHelper, Textures textures, JeiInternalPlugin jeiPlugin) {
 		this.background = guiHelper.createBlankDrawable(recipeWidth, recipeHeight);
 		this.icon = textures.getInfoIcon();
 		this.slotBackground = guiHelper.getSlotDrawable();
 		this.jeiPlugin = jeiPlugin;
-		this.localizedName = new TranslationTextComponent("gui.jei.category.itemInformation");
+		this.localizedName = new TranslatableComponent("gui.jei.category.itemInformation");
 	}
 
 	@Override
@@ -55,13 +55,7 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 	}
 
 	@Override
-	@Deprecated
-	public String getTitle() {
-		return getTitleAsTextComponent().getString();
-	}
-
-	@Override
-	public ITextComponent getTitleAsTextComponent() {
+	public Component getTitle() {
 		return localizedName;
 	}
 
@@ -88,17 +82,17 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 	}
 
 	@Override
-	public void draw(IngredientInfoRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
-		drawTyped(matrixStack, (IngredientInfoRecipe<?>) recipe);
+	public void draw(IngredientInfoRecipe recipe, PoseStack poseStack, double mouseX, double mouseY) {
+		drawTyped(poseStack, (IngredientInfoRecipe<?>) recipe);
 	}
 
-	private <T> void drawTyped(MatrixStack matrixStack, IngredientInfoRecipe<T> recipe) {
+	private <T> void drawTyped(PoseStack poseStack, IngredientInfoRecipe<T> recipe) {
 		int xPos = 0;
 		int yPos = slotBackground.getHeight() + 4;
 
 		Minecraft minecraft = Minecraft.getInstance();
-		for (ITextProperties descriptionLine : recipe.getDescription()) {
-			minecraft.font.draw(matrixStack, LanguageMap.getInstance().getVisualOrder(descriptionLine), xPos, yPos, 0xFF000000);
+		for (FormattedText descriptionLine : recipe.getDescription()) {
+			minecraft.font.draw(poseStack, Language.getInstance().getVisualOrder(descriptionLine), xPos, yPos, 0xFF000000);
 			yPos += minecraft.font.lineHeight + lineSpacing;
 		}
 	}

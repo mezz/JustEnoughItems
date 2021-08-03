@@ -1,6 +1,6 @@
 package mezz.jei.gui.overlay.bookmarks;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.ClientConfig;
@@ -19,10 +19,10 @@ import mezz.jei.input.click.MouseClickState;
 import mezz.jei.util.CommandUtil;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
@@ -32,8 +32,8 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 	private static final int BUTTON_SIZE = 20;
 
 	// areas
-	private Rectangle2d parentArea = new Rectangle2d(0, 0, 0, 0);
-	private Rectangle2d displayArea = new Rectangle2d(0, 0, 0, 0);
+	private Rect2i parentArea = new Rect2i(0, 0, 0, 0);
+	private Rect2i displayArea = new Rect2i(0, 0, 0, 0);
 
 	// display elements
 	private final IngredientGridWithNavigation contents;
@@ -67,32 +67,32 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 	}
 
 	@Override
-	public void updateBounds(Rectangle2d area, Set<Rectangle2d> guiExclusionAreas) {
+	public void updateBounds(Rect2i area, Set<Rect2i> guiExclusionAreas) {
 		this.parentArea = area;
 		hasRoom = updateBounds(guiExclusionAreas);
 	}
 
 	@Override
-	public void drawScreen(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+	public void drawScreen(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (this.isListDisplayed()) {
-			this.contents.draw(minecraft, matrixStack, mouseX, mouseY, partialTicks);
+			this.contents.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
 		}
-		this.bookmarkButton.draw(matrixStack, mouseX, mouseY, partialTicks);
+		this.bookmarkButton.draw(poseStack, mouseX, mouseY, partialTicks);
 	}
 
 	@Override
-	public void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			this.contents.drawTooltips(minecraft, matrixStack, mouseX, mouseY);
+			this.contents.drawTooltips(minecraft, poseStack, mouseX, mouseY);
 		}
-		bookmarkButton.drawTooltips(matrixStack, mouseX, mouseY);
+		bookmarkButton.drawTooltips(poseStack, mouseX, mouseY);
 	}
 
 	private static int getMinWidth() {
 		return Math.max(4 * BUTTON_SIZE, ClientConfig.smallestNumColumns * IngredientGrid.INGREDIENT_WIDTH);
 	}
 
-	public boolean updateBounds(Set<Rectangle2d> guiExclusionAreas) {
+	public boolean updateBounds(Set<Rect2i> guiExclusionAreas) {
 		displayArea = parentArea;
 
 		final int minWidth = getMinWidth();
@@ -100,7 +100,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 			return false;
 		}
 
-		Rectangle2d availableContentsArea = new Rectangle2d(
+		Rect2i availableContentsArea = new Rect2i(
 			displayArea.getX(),
 			displayArea.getY(),
 			displayArea.getWidth(),
@@ -109,15 +109,15 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 		boolean contentsHasRoom = this.contents.updateBounds(availableContentsArea, guiExclusionAreas);
 
 		// update area to match contents size
-		Rectangle2d contentsArea = this.contents.getArea();
-		displayArea = new Rectangle2d(
+		Rect2i contentsArea = this.contents.getArea();
+		displayArea = new Rect2i(
 			contentsArea.getX(),
 			displayArea.getY(),
 			contentsArea.getWidth(),
 			displayArea.getHeight()
 		);
 
-		this.bookmarkButton.updateBounds(new Rectangle2d(
+		this.bookmarkButton.updateBounds(new Rect2i(
 			displayArea.getX(),
 			(int) Math.floor(displayArea.getY() + displayArea.getHeight()) - BUTTON_SIZE - 2,
 			BUTTON_SIZE,
@@ -192,7 +192,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 
 		private boolean handleCheatItemClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
 			Minecraft minecraft = Minecraft.getInstance();
-			InputMappings.Input input = InputMappings.Type.MOUSE.getOrCreate(mouseButton);
+			InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(mouseButton);
 			if (!(screen instanceof RecipesGui) &&
 				(mouseButton == GLFW.GLFW_MOUSE_BUTTON_1 || mouseButton == GLFW.GLFW_MOUSE_BUTTON_2 || minecraft.options.keyPickItem.isActiveAndMatches(input))) {
 				IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);

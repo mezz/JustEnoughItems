@@ -5,34 +5,34 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import mezz.jei.api.constants.ModIds;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.DyeItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapelessRecipe;
-import net.minecraft.tags.ITag;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.tags.Tag;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
 
 public final class ShulkerBoxColoringRecipeMaker {
 
-	public static List<IRecipe<?>> createShulkerBoxColoringRecipes() {
-		List<IRecipe<?>> recipes = new ArrayList<>();
+	public static List<Recipe<?>> createShulkerBoxColoringRecipes() {
+		List<Recipe<?>> recipes = new ArrayList<>();
 		String group = "jei.shulker.color";
 		ItemStack baseShulkerStack = new ItemStack(Blocks.SHULKER_BOX);
 		Ingredient baseShulkerIngredient = Ingredient.of(baseShulkerStack);
 		for (DyeColor color : DyeColor.values()) {
 			DyeItem dye = DyeItem.byColor(color);
 			ItemStack dyeStack = new ItemStack(dye);
-			ITag<Item> colorTag = color.getTag();
-			Ingredient.IItemList dyeList = new Ingredient.SingleItemList(dyeStack);
-			Ingredient.IItemList colorList = new Ingredient.TagList(colorTag);
-			Stream<Ingredient.IItemList> colorIngredientStream = Stream.of(dyeList, colorList);
+			Tag<Item> colorTag = color.getTag();
+			Ingredient.Value dyeList = new Ingredient.ItemValue(dyeStack);
+			Ingredient.Value colorList = new Ingredient.TagValue(colorTag);
+			Stream<Ingredient.Value> colorIngredientStream = Stream.of(dyeList, colorList);
 			//Shulker box special recipe allows the matching dye item or any item in the tag.
 			// we need to specify both in case someone removes the dye item from the dye tag
 			// as the item will still be valid for this recipe

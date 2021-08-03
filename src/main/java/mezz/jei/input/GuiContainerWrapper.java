@@ -3,11 +3,11 @@ package mezz.jei.input;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.gui.GuiScreenHelper;
 
@@ -22,15 +22,15 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 	@Override
 	public IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
 		Screen guiScreen = Minecraft.getInstance().screen;
-		if (!(guiScreen instanceof ContainerScreen)) {
+		if (!(guiScreen instanceof AbstractContainerScreen)) {
 			return null;
 		}
-		ContainerScreen<?> guiContainer = (ContainerScreen<?>) guiScreen;
+		AbstractContainerScreen<?> guiContainer = (AbstractContainerScreen<?>) guiScreen;
 		Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
 		if (slotUnderMouse != null) {
 			ItemStack stack = slotUnderMouse.getItem();
 			if (!stack.isEmpty()) {
-				Rectangle2d slotArea = new Rectangle2d(slotUnderMouse.x, slotUnderMouse.y, 16, 16);
+				Rect2i slotArea = new Rect2i(slotUnderMouse.x, slotUnderMouse.y, 16, 16);
 				return ClickedIngredient.create(stack, slotArea);
 			}
 		}

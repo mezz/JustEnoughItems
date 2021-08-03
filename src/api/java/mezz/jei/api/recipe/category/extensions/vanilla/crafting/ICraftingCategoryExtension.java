@@ -3,7 +3,7 @@ package mezz.jei.api.recipe.category.extensions.vanilla.crafting;
 import javax.annotation.Nullable;
 
 import net.minecraftforge.common.util.Size2i;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;

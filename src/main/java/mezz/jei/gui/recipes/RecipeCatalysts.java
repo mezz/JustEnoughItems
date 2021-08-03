@@ -1,6 +1,6 @@
 package mezz.jei.gui.recipes;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -60,7 +60,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 		this.ingredients.clear();
 
 		if (!ingredients.isEmpty()) {
-			Rectangle2d recipeArea = recipesGui.getArea();
+			Rect2i recipeArea = recipesGui.getArea();
 			int availableHeight = recipeArea.getHeight() - 8;
 			int borderHeight = (2 * borderSize) + (2 * ingredientBorderSize);
 			int maxIngredientsPerColumn = (availableHeight - borderHeight) / ingredientSize;
@@ -86,7 +86,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		int column = index / maxIngredientsPerColumn;
 		int row = index % maxIngredientsPerColumn;
-		Rectangle2d rect = new Rectangle2d(
+		Rect2i rect = new Rect2i(
 			left + borderSize + (column * ingredientSize) + ingredientBorderSize,
 			top + borderSize + (row * ingredientSize) + ingredientBorderSize,
 			ingredientSize,
@@ -97,22 +97,19 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 		return guiIngredient;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Nullable
-	public GuiIngredient<?> draw(MatrixStack matrixStack, int mouseX, int mouseY) {
+	public GuiIngredient<?> draw(PoseStack poseStack, int mouseX, int mouseY) {
 		int ingredientCount = ingredients.size();
 		if (ingredientCount > 0) {
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
 			RenderSystem.disableDepthTest();
-			RenderSystem.enableAlphaTest();
 			{
 				int slotWidth = width - (2 * borderSize);
 				int slotHeight = height - (2 * borderSize);
-				backgroundTab.draw(matrixStack, this.left, this.top, width, height);
-				slotBackground.draw(matrixStack, this.left + borderSize, this.top + borderSize, slotWidth, slotHeight);
+				backgroundTab.draw(poseStack, this.left, this.top, width, height);
+				slotBackground.draw(poseStack, this.left + borderSize, this.top + borderSize, slotWidth, slotHeight);
 			}
-			RenderSystem.disableAlphaTest();
 			RenderSystem.enableDepthTest();
 
 			GuiIngredient<?> hovered = null;
@@ -120,7 +117,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 				if (guiIngredient.isMouseOver(0, 0, mouseX, mouseY)) {
 					hovered = guiIngredient;
 				}
-				guiIngredient.draw(matrixStack, 0, 0);
+				guiIngredient.draw(poseStack, 0, 0);
 			}
 			return hovered;
 		}

@@ -1,12 +1,12 @@
 package mezz.jei.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.input.CombinedMouseHandler;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.Internal;
 import mezz.jei.gui.elements.GuiIconButton;
@@ -23,7 +23,7 @@ public class PageNavigation {
 	private String pageNumDisplayString = "1/1";
 	private int pageNumDisplayX;
 	private int pageNumDisplayY;
-	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
+	private Rect2i area = new Rect2i(0, 0, 0, 0);
 
 	public PageNavigation(IPaged paged, boolean hideOnSinglePage) {
 		this.paged = paged;
@@ -34,11 +34,11 @@ public class PageNavigation {
 		this.hideOnSinglePage = hideOnSinglePage;
 	}
 
-	public void updateBounds(Rectangle2d area) {
+	public void updateBounds(Rect2i area) {
 		this.area = area;
 		int buttonSize = area.getHeight();
 
-		Tuple<Rectangle2d, Rectangle2d> result = MathUtil.splitX(area, buttonSize);
+		Tuple<Rect2i, Rect2i> result = MathUtil.splitX(area, buttonSize);
 		this.backButton.updateBounds(result.getA());
 
 		result = MathUtil.splitXRight(area, buttonSize);
@@ -49,18 +49,18 @@ public class PageNavigation {
 		int pageNum = this.paged.getPageNumber();
 		int pageCount = this.paged.getPageCount();
 		Minecraft minecraft = Minecraft.getInstance();
-		FontRenderer fontRenderer = minecraft.font;
+		Font fontRenderer = minecraft.font;
 		this.pageNumDisplayString = (pageNum + 1) + "/" + pageCount;
-		Rectangle2d centerArea = MathUtil.centerTextArea(this.area, fontRenderer, this.pageNumDisplayString);
+		Rect2i centerArea = MathUtil.centerTextArea(this.area, fontRenderer, this.pageNumDisplayString);
 		this.pageNumDisplayX = centerArea.getX();
 		this.pageNumDisplayY = centerArea.getY();
 	}
 
-	public void draw(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (!hideOnSinglePage || this.paged.hasNext() || this.paged.hasPrevious()) {
-			minecraft.font.drawShadow(matrixStack, pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, 0xFFFFFFFF);
-			nextButton.render(matrixStack, mouseX, mouseY, partialTicks);
-			backButton.render(matrixStack, mouseX, mouseY, partialTicks);
+			minecraft.font.drawShadow(poseStack, pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, 0xFFFFFFFF);
+			nextButton.render(poseStack, mouseX, mouseY, partialTicks);
+			backButton.render(poseStack, mouseX, mouseY, partialTicks);
 		}
 	}
 

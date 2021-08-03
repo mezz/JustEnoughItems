@@ -1,6 +1,7 @@
 package mezz.jei.plugins.debug;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,20 +9,21 @@ import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.fml.client.gui.widget.ExtendedButton;
+import mezz.jei.api.runtime.IBookmarkOverlay;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.InventoryScreen;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.ChatFormatting;
 
 import mezz.jei.Internal;
 import mezz.jei.api.constants.ModIds;
@@ -44,20 +46,21 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
+import net.minecraftforge.fmlclient.gui.widget.ExtendedButton;
 
 public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	public static final ResourceLocation UID = new ResourceLocation(ModIds.JEI_ID, "debug");
 	public static final int RECIPE_WIDTH = 160;
 	public static final int RECIPE_HEIGHT = 60;
 	private final IDrawable background;
-	private final ITextComponent localizedName;
+	private final Component localizedName;
 	private final IDrawable tankBackground;
 	private final IDrawable tankOverlay;
 	private boolean hiddenRecipes;
 
 	public DebugRecipeCategory(IGuiHelper guiHelper) {
 		this.background = guiHelper.createBlankDrawable(RECIPE_WIDTH, RECIPE_HEIGHT);
-		this.localizedName = new StringTextComponent("debug");
+		this.localizedName = new TextComponent("debug");
 
 		ResourceLocation backgroundTexture = new ResourceLocation(ModIds.JEI_ID, Constants.TEXTURE_GUI_PATH + "debug.png");
 		this.tankBackground = guiHelper.drawableBuilder(backgroundTexture, 220, 196, 18, 60)
@@ -79,13 +82,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
-	@Deprecated
-	public String getTitle() {
-		return getTitleAsTextComponent().getString();
-	}
-
-	@Override
-	public ITextComponent getTitleAsTextComponent() {
+	public Component getTitle() {
 		return localizedName;
 	}
 
@@ -120,30 +117,39 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
-	public void draw(DebugRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+	public void draw(DebugRecipe recipe, PoseStack poseStack, double mouseX, double mouseY) {
 		IJeiRuntime runtime = JeiDebugPlugin.jeiRuntime;
 		if (runtime != null) {
 			IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
 			Minecraft minecraft = Minecraft.getInstance();
-			minecraft.font.draw(matrixStack, ingredientFilter.getFilterText(), 20, 52, 0);
+			minecraft.font.draw(poseStack, ingredientFilter.getFilterText(), 20, 52, 0);
 
 			IIngredientListOverlay ingredientListOverlay = runtime.getIngredientListOverlay();
 			Object ingredientUnderMouse = ingredientListOverlay.getIngredientUnderMouse();
 			if (ingredientUnderMouse != null) {
-				drawIngredientName(minecraft, matrixStack, ingredientUnderMouse);
+				drawIngredientName(minecraft, poseStack, ingredientUnderMouse);
+			} else {
+				IBookmarkOverlay bookmarkOverlay = runtime.getBookmarkOverlay();
+				ingredientUnderMouse = bookmarkOverlay.getIngredientUnderMouse();
+				if (ingredientUnderMouse != null) {
+					drawIngredientName(minecraft, poseStack, ingredientUnderMouse);
+				}
 			}
 		}
 
+		//Ensure the correct shader is set as ExtendedButton expects this shader to be set but doesn't actually set it
+		// and drawing font causes another shader to get bound
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		ExtendedButton button = recipe.getButton();
-		button.render(matrixStack, (int) mouseX, (int) mouseY, 0);
+		button.render(poseStack, (int) mouseX, (int) mouseY, 0);
 	}
 
-	private <T> void drawIngredientName(Minecraft minecraft, MatrixStack matrixStack, T ingredient) {
+	private <T> void drawIngredientName(Minecraft minecraft, PoseStack poseStack, T ingredient) {
 		IIngredientManager ingredientManager = JeiDebugPlugin.ingredientManager;
 		if (ingredientManager != null) {
 			IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 			String jeiUid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
-			minecraft.font.draw(matrixStack, jeiUid, 50, 52, 0);
+			minecraft.font.draw(poseStack, jeiUid, 50, 52, 0);
 		}
 	}
 
@@ -153,9 +159,9 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 
 		guiItemStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
 			if (input) {
-				tooltip.add(new StringTextComponent(slotIndex + " Input itemStack"));
+				tooltip.add(new TextComponent(slotIndex + " Input itemStack"));
 			} else {
-				tooltip.add(new StringTextComponent(slotIndex + " Output itemStack"));
+				tooltip.add(new TextComponent(slotIndex + " Output itemStack"));
 			}
 		});
 
@@ -167,9 +173,9 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
 		guiFluidStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
 			if (input) {
-				tooltip.add(new StringTextComponent(slotIndex + " Input fluidStack"));
+				tooltip.add(new TextComponent(slotIndex + " Input fluidStack"));
 			} else {
-				tooltip.add(new StringTextComponent(slotIndex + " Output fluidStack"));
+				tooltip.add(new TextComponent(slotIndex + " Output fluidStack"));
 			}
 		});
 
@@ -185,9 +191,9 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		IGuiIngredientGroup<DebugIngredient> debugIngredientsGroup = recipeLayout.getIngredientsGroup(DebugIngredient.TYPE);
 		debugIngredientsGroup.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
 			if (input) {
-				tooltip.add(new StringTextComponent(slotIndex + " Input DebugIngredient"));
+				tooltip.add(new TextComponent(slotIndex + " Input DebugIngredient"));
 			} else {
-				tooltip.add(new StringTextComponent(slotIndex + " Output DebugIngredient"));
+				tooltip.add(new TextComponent(slotIndex + " Output DebugIngredient"));
 			}
 		});
 
@@ -199,17 +205,17 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
-	public List<ITextComponent> getTooltipStrings(DebugRecipe recipe, double mouseX, double mouseY) {
-		List<ITextComponent> tooltipStrings = new ArrayList<>();
-		tooltipStrings.add(new StringTextComponent("Debug Recipe Category Tooltip"));
+	public List<Component> getTooltipStrings(DebugRecipe recipe, double mouseX, double mouseY) {
+		List<Component> tooltipStrings = new ArrayList<>();
+		tooltipStrings.add(new TextComponent("Debug Recipe Category Tooltip"));
 
 		if (recipe.checkHover(mouseX, mouseY)) {
-			tooltipStrings.add(new StringTextComponent("button tooltip!"));
+			tooltipStrings.add(new TextComponent("button tooltip!"));
 		} else {
-			StringTextComponent debug = new StringTextComponent("tooltip debug");
-			tooltipStrings.add(debug.withStyle(TextFormatting.BOLD));
+			TextComponent debug = new TextComponent("tooltip debug");
+			tooltipStrings.add(debug.withStyle(ChatFormatting.BOLD));
 		}
-		tooltipStrings.add(new StringTextComponent(mouseX + ", " + mouseY));
+		tooltipStrings.add(new TextComponent(mouseX + ", " + mouseY));
 		return tooltipStrings;
 	}
 
@@ -218,7 +224,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		ExtendedButton button = recipe.getButton();
 		if (mouseButton == 0 && button.mouseClicked(mouseX, mouseY, mouseButton)) {
 			Minecraft minecraft = Minecraft.getInstance();
-			ClientPlayerEntity player = minecraft.player;
+			LocalPlayer player = minecraft.player;
 			if (player != null) {
 				Screen screen = new InventoryScreen(player);
 				minecraft.setScreen(screen);

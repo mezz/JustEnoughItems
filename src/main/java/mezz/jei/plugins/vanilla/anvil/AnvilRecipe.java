@@ -3,7 +3,7 @@ package mezz.jei.plugins.vanilla.anvil;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import com.google.common.collect.ImmutableList;
 

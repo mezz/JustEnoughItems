@@ -3,7 +3,7 @@ package mezz.jei.recipes;
 import java.util.List;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMultimap;

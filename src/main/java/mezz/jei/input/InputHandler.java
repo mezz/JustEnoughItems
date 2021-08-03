@@ -10,10 +10,10 @@ import mezz.jei.input.click.GuiAreaClickHandler;
 import mezz.jei.input.click.MouseClickState;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.InputMappings;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.components.EditBox;
+import com.mojang.blaze3d.platform.InputConstants;
 
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -230,7 +230,7 @@ public class InputHandler {
 	public class ClickGlobalHandler implements IMouseHandler {
 		@Override
 		public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
-			InputMappings.Input input = InputMappings.Type.MOUSE.getOrCreate(mouseButton);
+			InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(mouseButton);
 			if (handleGlobalKeybinds(input, clickState)) {
 				return this;
 			}
@@ -242,8 +242,8 @@ public class InputHandler {
 		@Nullable
 		@Override
 		public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
-			if (screen instanceof ContainerScreen) {
-				ContainerScreen<?> guiContainer = (ContainerScreen<?>) screen;
+			if (screen instanceof AbstractContainerScreen) {
+				AbstractContainerScreen<?> guiContainer = (AbstractContainerScreen<?>) screen;
 				IGuiClickableArea clickableArea = guiScreenHelper.getGuiClickableArea(guiContainer, mouseX - guiContainer.getGuiLeft(), mouseY - guiContainer.getGuiTop());
 				if (clickableArea != null) {
 					return new GuiAreaClickHandler(recipesGui, clickableArea, guiContainer);
@@ -262,7 +262,7 @@ public class InputHandler {
 	}
 
 	private boolean handleKeyEvent(int keyCode, int scanCode, int modifiers) {
-		InputMappings.Input input = InputMappings.getKey(keyCode, scanCode);
+		InputConstants.Key input = InputConstants.getKey(keyCode, scanCode);
 		if (ingredientListOverlay.hasKeyboardFocus()) {
 			if (KeyBindings.isInventoryCloseKey(input) || KeyBindings.isEnterKey(keyCode)) {
 				ingredientListOverlay.clearKeyboardFocus();
@@ -288,7 +288,7 @@ public class InputHandler {
 		return false;
 	}
 
-	private boolean handleGlobalKeybinds(InputMappings.Input input, MouseClickState clickState) {
+	private boolean handleGlobalKeybinds(InputConstants.Key input, MouseClickState clickState) {
 		if (KeyBindings.toggleOverlay.isActiveAndMatches(input)) {
 			if (!clickState.isSimulate()) {
 				worldConfig.toggleOverlayEnabled();
@@ -304,7 +304,7 @@ public class InputHandler {
 		return ingredientListOverlay.onGlobalKeyPressed(input, clickState);
 	}
 
-	public boolean handleFocusKeybinds(IClickedIngredient<?> clicked, InputMappings.Input input, MouseClickState clickState) {
+	public boolean handleFocusKeybinds(IClickedIngredient<?> clicked, InputConstants.Key input, MouseClickState clickState) {
 		final boolean showRecipe = KeyBindings.showRecipe.isActiveAndMatches(input);
 		final boolean showUses = KeyBindings.showUses.isActiveAndMatches(input);
 		if (showRecipe || showUses) {
@@ -338,7 +338,7 @@ public class InputHandler {
 		if (screen == null) {
 			return false;
 		}
-		TextFieldWidget textField = ReflectionUtil.getFieldWithClass(screen, TextFieldWidget.class);
+		EditBox textField = ReflectionUtil.getFieldWithClass(screen, EditBox.class);
 		return textField != null && textField.isVisible() && textField.isFocused();
 	}
 

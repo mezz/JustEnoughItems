@@ -1,14 +1,16 @@
 package mezz.jei.gui.elements;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.gui.drawable.IDrawableStatic;
-import net.minecraft.util.math.vector.Matrix4f;
+import com.mojang.math.Matrix4f;
 
 public class DrawableResource implements IDrawableStatic {
 
@@ -52,14 +54,14 @@ public class DrawableResource implements IDrawableStatic {
 	}
 
 	@Override
-	public void draw(MatrixStack matrixStack, int xOffset, int yOffset) {
-		draw(matrixStack, xOffset, yOffset, 0, 0, 0, 0);
+	public void draw(PoseStack poseStack, int xOffset, int yOffset) {
+		draw(poseStack, xOffset, yOffset, 0, 0, 0, 0);
 	}
 
 	@Override
-	public void draw(MatrixStack matrixStack, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
-		Minecraft minecraft = Minecraft.getInstance();
-		minecraft.getTextureManager().bind(this.resourceLocation);
+	public void draw(PoseStack poseStack, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShaderTexture(0, this.resourceLocation);
 
 		int x = xOffset + this.paddingLeft + maskLeft;
 		int y = yOffset + this.paddingTop + maskTop;
@@ -69,10 +71,10 @@ public class DrawableResource implements IDrawableStatic {
 		int height = this.height - maskBottom - maskTop;
 		float f = 1.0F / this.textureWidth;
 		float f1 = 1.0F / this.textureHeight;
-		Tessellator tessellator = Tessellator.getInstance();
+		Tesselator tessellator = Tesselator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuilder();
-		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		Matrix4f matrix = matrixStack.last().pose();
+		bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+		Matrix4f matrix = poseStack.last().pose();
 		bufferbuilder.vertex(matrix, x, y + height, 0).uv(u * f, (v + (float) height) * f1).endVertex();
 		bufferbuilder.vertex(matrix, x + width, y + height, 0).uv((u + (float) width) * f, (v + (float) height) * f1).endVertex();
 		bufferbuilder.vertex(matrix, x + width, y, 0).uv((u + (float) width) * f, v * f1).endVertex();

@@ -4,10 +4,10 @@ import java.util.List;
 
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtils;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
 
 public class PotionSubtypeInterpreter implements IIngredientSubtypeInterpreter<ItemStack> {
 	public static final PotionSubtypeInterpreter INSTANCE = new PotionSubtypeInterpreter();
@@ -24,8 +24,8 @@ public class PotionSubtypeInterpreter implements IIngredientSubtypeInterpreter<I
 		Potion potionType = PotionUtils.getPotion(itemStack);
 		String potionTypeString = potionType.getName("");
 		StringBuilder stringBuilder = new StringBuilder(potionTypeString);
-		List<EffectInstance> effects = PotionUtils.getMobEffects(itemStack);
-		for (EffectInstance effect : effects) {
+		List<MobEffectInstance> effects = PotionUtils.getMobEffects(itemStack);
+		for (MobEffectInstance effect : effects) {
 			stringBuilder.append(";").append(effect);
 		}
 

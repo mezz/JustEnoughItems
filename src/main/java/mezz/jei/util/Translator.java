@@ -3,9 +3,9 @@ package mezz.jei.util;
 import java.util.Locale;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.resources.Language;
-import net.minecraft.client.resources.LanguageManager;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.client.resources.language.LanguageInfo;
+import net.minecraft.client.resources.language.LanguageManager;
 
 public final class Translator {
 	private Translator() {
@@ -29,7 +29,7 @@ public final class Translator {
 		if (minecraft != null) {
 			LanguageManager languageManager = minecraft.getLanguageManager();
 			if (languageManager != null) {
-				Language currentLanguage = languageManager.getSelected();
+				LanguageInfo currentLanguage = languageManager.getSelected();
 				if (currentLanguage != null) {
 					return currentLanguage.getJavaLocale();
 				}

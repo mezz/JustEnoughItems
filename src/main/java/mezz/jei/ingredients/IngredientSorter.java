@@ -7,18 +7,18 @@ import mezz.jei.config.IClientConfig;
 import mezz.jei.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.FishingRodItem;
-import net.minecraft.item.HoeItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ShearsItem;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.FishingRodItem;
+import net.minecraft.world.item.HoeItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShearsItem;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ToolType;
 
 import com.google.common.collect.Multimap;
@@ -218,7 +218,7 @@ public final class IngredientSorter implements IIngredientSorter {
 	private static Double getAttackDamage(ItemStack itemStack) {
 		Double attackDamage = Double.MIN_VALUE;
 		if (!isTool(itemStack) && !isArmor(itemStack)) {
-			Multimap<Attribute, AttributeModifier> multimap = itemStack.getAttributeModifiers(EquipmentSlotType.MAINHAND);
+			Multimap<Attribute, AttributeModifier> multimap = itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND);
 			boolean hasDamage = multimap.containsKey(Attributes.ATTACK_DAMAGE);
 			if (hasDamage) {
 				Collection<AttributeModifier> damageMap = multimap.get(Attributes.ATTACK_DAMAGE);
@@ -233,7 +233,7 @@ public final class IngredientSorter implements IIngredientSorter {
 		Double attackSpeed = Double.MIN_VALUE;
 		//This is the isWeapon test so we don't order by these properties for non-weapons.
 		if (!isTool(itemStack) && !isArmor(itemStack)) {
-			Multimap<Attribute, AttributeModifier> multimap = itemStack.getAttributeModifiers(EquipmentSlotType.MAINHAND);
+			Multimap<Attribute, AttributeModifier> multimap = itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND);
 			boolean hasDamage = multimap.containsKey(Attributes.ATTACK_DAMAGE);
 			boolean hasSpeed = multimap.containsKey(Attributes.ATTACK_SPEED);			
 			if (hasDamage) {

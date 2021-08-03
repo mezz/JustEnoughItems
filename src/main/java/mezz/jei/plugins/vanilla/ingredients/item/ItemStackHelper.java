@@ -9,14 +9,14 @@ import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraft.block.Block;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
@@ -52,12 +52,6 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		return focus;
 	}
 
-	@Override
-	@Nullable
-	public ItemStack getMatch(Iterable<ItemStack> ingredients, ItemStack toMatch) {
-		return getMatch(ingredients, toMatch, UidContext.Ingredient);
-	}
-
 	@Nullable
 	@Override
 	public ItemStack getMatch(Iterable<ItemStack> ingredients, ItemStack toMatch, UidContext context) {
@@ -71,15 +65,10 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public String getDisplayName(ItemStack ingredient) {
-		ITextComponent displayNameTextComponent = ingredient.getHoverName();
+		Component displayNameTextComponent = ingredient.getHoverName();
 		String displayName = displayNameTextComponent.getString();
 		ErrorUtil.checkNotNull(displayName, "itemStack.getDisplayName()");
 		return displayName;
-	}
-
-	@Override
-	public String getUniqueId(ItemStack ingredient) {
-		return getUniqueId(ingredient, UidContext.Ingredient);
 	}
 
 	@Override
@@ -177,7 +166,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	public Collection<String> getCreativeTabNames(ItemStack ingredient) {
 		Collection<String> creativeTabsStrings = new ArrayList<>();
 		Item item = ingredient.getItem();
-		for (ItemGroup itemGroup : item.getCreativeTabs()) {
+		for (CreativeModeTab itemGroup : item.getCreativeTabs()) {
 			if (itemGroup != null) {
 				String creativeTabName = itemGroup.getDisplayName().getString();
 				creativeTabsStrings.add(creativeTabName);

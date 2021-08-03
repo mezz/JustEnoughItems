@@ -4,14 +4,14 @@ import javax.annotation.Nullable;
 
 import net.minecraftforge.common.crafting.IShapedRecipe;
 import net.minecraftforge.common.util.Size2i;
-import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 
-public class CraftingCategoryExtension<T extends ICraftingRecipe> implements ICraftingCategoryExtension {
+public class CraftingCategoryExtension<T extends CraftingRecipe> implements ICraftingCategoryExtension {
 	protected final T recipe;
 
 	public CraftingCategoryExtension(T recipe) {

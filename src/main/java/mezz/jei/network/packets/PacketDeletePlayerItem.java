@@ -3,10 +3,10 @@ package mezz.jei.network.packets;
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
 import mezz.jei.util.CommandUtilServer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class PacketDeletePlayerItem extends PacketJei {
@@ -22,16 +22,16 @@ public class PacketDeletePlayerItem extends PacketJei {
 	}
 
 	@Override
-	public void writePacketData(PacketBuffer buf) {
+	public void writePacketData(FriendlyByteBuf buf) {
 		buf.writeRegistryIdUnsafe(ForgeRegistries.ITEMS, itemStack.getItem());
 	}
 
-	public static void readPacketData(PacketBuffer buf, PlayerEntity player) {
+	public static void readPacketData(FriendlyByteBuf buf, Player player) {
 		Item item = buf.readRegistryIdUnsafe(ForgeRegistries.ITEMS);
 		if (CommandUtilServer.hasPermission(player)) {
-			ItemStack playerItem = player.inventory.getCarried();
+			ItemStack playerItem = player.containerMenu.getCarried();
 			if (playerItem.getItem() == item) {
-				player.inventory.setCarried(ItemStack.EMPTY);
+				player.containerMenu.setCarried(ItemStack.EMPTY);
 			}
 		}
 	}

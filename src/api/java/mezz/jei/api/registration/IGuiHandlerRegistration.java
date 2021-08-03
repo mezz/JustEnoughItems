@@ -3,9 +3,9 @@ package mezz.jei.api.registration;
 import java.util.Collection;
 import java.util.Collections;
 
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
@@ -15,23 +15,23 @@ import mezz.jei.api.gui.handlers.IScreenHandler;
 
 public interface IGuiHandlerRegistration {
 	/**
-	 * Add a handler to give JEI extra information about how to layout the item list next to a specific type of {@link ContainerScreen}.
-	 * Multiple handlers can be registered for one {@link ContainerScreen}.
+	 * Add a handler to give JEI extra information about how to layout the item list next to a specific type of {@link AbstractContainerScreen}.
+	 * Multiple handlers can be registered for one {@link AbstractContainerScreen}.
 	 *
 	 * @see #addGenericGuiContainerHandler(Class, IGuiContainerHandler) for handlers that use Java Generics
 	 */
-	<T extends ContainerScreen<?>> void addGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<T> guiHandler);
+	<T extends AbstractContainerScreen<?>> void addGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<T> guiHandler);
 
 	/**
 	 * Same as {@link #addGuiContainerHandler(Class, IGuiContainerHandler)} but for handlers that use Java Generics to
 	 * support multiple types of containers. This type of handler runs into type issues with the regular method.
 	 * @since JEI 7.1.1
 	 */
-	<T extends ContainerScreen<?>> void addGenericGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<?> guiHandler);
+	<T extends AbstractContainerScreen<?>> void addGenericGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<?> guiHandler);
 
 	/**
 	 * Add a handler to let JEI draw next to a specific class (or subclass) of {@link Screen}.
-	 * By default, JEI can only draw next to {@link ContainerScreen}.
+	 * By default, JEI can only draw next to {@link AbstractContainerScreen}.
 	 */
 	<T extends Screen> void addGuiScreenHandler(Class<T> guiClass, IScreenHandler<T> handler);
 
@@ -51,7 +51,7 @@ public interface IGuiHandlerRegistration {
 	 * @param height             the height of the clickable area.
 	 * @param recipeCategoryUids the recipe categories that JEI should display.
 	 */
-	default <T extends ContainerScreen<?>> void addRecipeClickArea(Class<? extends T> guiContainerClass, int xPos, int yPos, int width, int height, ResourceLocation... recipeCategoryUids) {
+	default <T extends AbstractContainerScreen<?>> void addRecipeClickArea(Class<? extends T> guiContainerClass, int xPos, int yPos, int width, int height, ResourceLocation... recipeCategoryUids) {
 		this.addGuiContainerHandler(guiContainerClass, new IGuiContainerHandler<T>() {
 			@Override
 			public Collection<IGuiClickableArea> getGuiClickableAreas(T containerScreen, double mouseX, double mouseY) {

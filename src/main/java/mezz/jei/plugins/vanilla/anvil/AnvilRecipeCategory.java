@@ -1,15 +1,15 @@
 package mezz.jei.plugins.vanilla.anvil;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import java.util.Map;
 
-import net.minecraft.block.Blocks;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -24,7 +24,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.config.Constants;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
 public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 
@@ -58,13 +58,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 	}
 
 	@Override
-	@Deprecated
-	public String getTitle() {
-		return getTitleAsTextComponent().getString();
-	}
-
-	@Override
-	public ITextComponent getTitleAsTextComponent() {
+	public Component getTitle() {
 		return Blocks.ANVIL.getName();
 	}
 
@@ -99,7 +93,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 	}
 
 	@Override
-	public void draw(AnvilRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+	public void draw(AnvilRecipe recipe, PoseStack poseStack, double mouseX, double mouseY) {
 		AnvilRecipeDisplayData displayData = cachedDisplayData.getUnchecked(recipe);
 		Map<Integer, ? extends IGuiIngredient<ItemStack>> currentIngredients = displayData.getCurrentIngredients();
 		if (currentIngredients == null) {
@@ -129,7 +123,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 
 			Minecraft minecraft = Minecraft.getInstance();
 			int mainColor = 0xFF80FF20;
-			ClientPlayerEntity player = minecraft.player;
+			LocalPlayer player = minecraft.player;
 			if (player != null &&
 				(lastCost >= 40 || lastCost > player.experienceLevel) &&
 				!player.isCreative()) {
@@ -137,20 +131,20 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 				mainColor = 0xFFFF6060;
 			}
 
-			drawRepairCost(minecraft, matrixStack, text, mainColor);
+			drawRepairCost(minecraft, poseStack, text, mainColor);
 		}
 	}
 
-	private void drawRepairCost(Minecraft minecraft, MatrixStack matrixStack, String text, int mainColor) {
+	private void drawRepairCost(Minecraft minecraft, PoseStack poseStack, String text, int mainColor) {
 		int shadowColor = 0xFF000000 | (mainColor & 0xFCFCFC) >> 2;
 		int width = minecraft.font.width(text);
 		int x = background.getWidth() - 2 - width;
 		int y = 27;
 
 		// TODO 1.13 match the new GuiRepair style
-		minecraft.font.draw(matrixStack, text, x + 1, y, shadowColor);
-		minecraft.font.draw(matrixStack, text, x, y + 1, shadowColor);
-		minecraft.font.draw(matrixStack, text, x + 1, y + 1, shadowColor);
-		minecraft.font.draw(matrixStack, text, x, y, mainColor);
+		minecraft.font.draw(poseStack, text, x + 1, y, shadowColor);
+		minecraft.font.draw(poseStack, text, x, y + 1, shadowColor);
+		minecraft.font.draw(poseStack, text, x + 1, y + 1, shadowColor);
+		minecraft.font.draw(poseStack, text, x, y, mainColor);
 	}
 }

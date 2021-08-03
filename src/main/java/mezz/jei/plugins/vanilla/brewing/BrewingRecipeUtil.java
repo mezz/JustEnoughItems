@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.Set;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.potion.Potions;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.collect.SetMultiMap;

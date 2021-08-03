@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Set;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.NonNullList;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.core.NonNullList;
 
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.StackHelper;
@@ -23,8 +23,8 @@ public final class ItemStackListFactory {
 		final List<ItemStack> itemList = new ArrayList<>();
 		final Set<String> itemNameSet = new HashSet<>();
 
-		for (ItemGroup itemGroup : ItemGroup.TABS) {
-			if (itemGroup == ItemGroup.TAB_HOTBAR || itemGroup == ItemGroup.TAB_INVENTORY) {
+		for (CreativeModeTab itemGroup : CreativeModeTab.TABS) {
+			if (itemGroup == CreativeModeTab.TAB_HOTBAR || itemGroup == CreativeModeTab.TAB_INVENTORY) {
 				continue;
 			}
 			NonNullList<ItemStack> creativeTabItemStacks = NonNullList.create();
@@ -46,6 +46,7 @@ public final class ItemStackListFactory {
 	}
 
 	private void addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<String> itemNameSet) {
+		//TODO: Test to make sure this is actually fixed in 1.17 and if so remove this check
 		// Game freezes when loading player skulls, see https://bugs.mojang.com/browse/MC-65587
 		if (stack.getItem() == Items.PLAYER_HEAD) {
 			return;

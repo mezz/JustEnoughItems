@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusFactory;
@@ -34,23 +34,10 @@ public interface IIngredientHelper<V> {
 	 * Find a matching ingredient from a group of them.
 	 * Used for finding a specific focused ingredient in a recipe.
 	 * Return null if there is no match.
-	 *
-	 * @deprecated since JEI 7.3.0. Use {@link #getMatch(Iterable, Object, UidContext)}
-	 */
-	@Deprecated
-	@Nullable
-	V getMatch(Iterable<V> ingredients, V ingredientToMatch);
-
-	/**
-	 * Find a matching ingredient from a group of them.
-	 * Used for finding a specific focused ingredient in a recipe.
-	 * Return null if there is no match.
 	 * @since JEI 7.3.0
 	 */
 	@Nullable
-	default V getMatch(Iterable<V> ingredients, V ingredientToMatch, UidContext context) {
-		return getMatch(ingredients, ingredientToMatch);
-	}
+	V getMatch(Iterable<V> ingredients, V ingredientToMatch, UidContext context);
 
 	/**
 	 * Display name used for searching. Normally this is the first line of the tooltip.
@@ -59,27 +46,17 @@ public interface IIngredientHelper<V> {
 
 	/**
 	 * Unique ID for use in comparing, blacklisting, and looking up ingredients.
-	 *
-	 * @deprecated since JEI 7.3.0. Use {@link #getUniqueId(Object, UidContext)}
-	 */
-	@Deprecated
-	String getUniqueId(V ingredient);
-
-	/**
-	 * Unique ID for use in comparing, blacklisting, and looking up ingredients.
 	 * @since JEI 7.3.0
 	 */
-	default String getUniqueId(V ingredient, UidContext context) {
-		return getUniqueId(ingredient);
-	}
+	String getUniqueId(V ingredient, UidContext context);
 
 	/**
 	 * Wildcard ID for use in comparing, blacklisting, and looking up ingredients.
 	 * For an example, ItemStack's wildcardId does not include NBT.
-	 * For ingredients like FluidStacks which do not have a wildcardId, just return the uniqueId here.
+	 * For ingredients which do not have a wildcardId, just return the uniqueId here.
 	 */
 	default String getWildcardId(V ingredient) {
-		return getUniqueId(ingredient);
+		return getUniqueId(ingredient, UidContext.Ingredient);
 	}
 
 	/**

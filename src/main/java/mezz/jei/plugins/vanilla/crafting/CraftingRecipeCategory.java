@@ -1,19 +1,19 @@
 package mezz.jei.plugins.vanilla.crafting;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.common.util.Size2i;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
@@ -29,7 +29,7 @@ import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICustomCraftingC
 import mezz.jei.config.Constants;
 import mezz.jei.recipes.ExtendableRecipeCategoryHelper;
 
-public class CraftingRecipeCategory implements IExtendableRecipeCategory<ICraftingRecipe, ICraftingCategoryExtension> {
+public class CraftingRecipeCategory implements IExtendableRecipeCategory<CraftingRecipe, ICraftingCategoryExtension> {
 	private static final int craftOutputSlot = 0;
 	private static final int craftInputSlot1 = 1;
 
@@ -38,15 +38,15 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<ICrafti
 
 	private final IDrawable background;
 	private final IDrawable icon;
-	private final ITextComponent localizedName;
+	private final Component localizedName;
 	private final ICraftingGridHelper craftingGridHelper;
-	private final ExtendableRecipeCategoryHelper<IRecipe<?>, ICraftingCategoryExtension> extendableHelper = new ExtendableRecipeCategoryHelper<>(ICraftingRecipe.class);
+	private final ExtendableRecipeCategoryHelper<Recipe<?>, ICraftingCategoryExtension> extendableHelper = new ExtendableRecipeCategoryHelper<>(CraftingRecipe.class);
 
 	public CraftingRecipeCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
 		background = guiHelper.createDrawable(location, 0, 60, width, height);
 		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.CRAFTING_TABLE));
-		localizedName = new TranslationTextComponent("gui.jei.category.craftingTable");
+		localizedName = new TranslatableComponent("gui.jei.category.craftingTable");
 		craftingGridHelper = guiHelper.createCraftingGridHelper(craftInputSlot1);
 	}
 
@@ -56,18 +56,12 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<ICrafti
 	}
 
 	@Override
-	public Class<? extends ICraftingRecipe> getRecipeClass() {
-		return ICraftingRecipe.class;
+	public Class<? extends CraftingRecipe> getRecipeClass() {
+		return CraftingRecipe.class;
 	}
 
 	@Override
-	@Deprecated
-	public String getTitle() {
-		return getTitleAsTextComponent().getString();
-	}
-
-	@Override
-	public ITextComponent getTitleAsTextComponent() {
+	public Component getTitle() {
 		return localizedName;
 	}
 
@@ -82,7 +76,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<ICrafti
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, ICraftingRecipe recipe, IIngredients ingredients) {
+	public void setRecipe(IRecipeLayout recipeLayout, CraftingRecipe recipe, IIngredients ingredients) {
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		guiItemStacks.init(craftOutputSlot, false, 94, 18);
@@ -116,44 +110,44 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<ICrafti
 	}
 
 	@Override
-	public void setIngredients(ICraftingRecipe recipe, IIngredients ingredients) {
+	public void setIngredients(CraftingRecipe recipe, IIngredients ingredients) {
 		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
 		extension.setIngredients(ingredients);
 	}
 
 	@Override
-	public void draw(ICraftingRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+	public void draw(CraftingRecipe recipe, PoseStack poseStack, double mouseX, double mouseY) {
 		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
 		int recipeWidth = this.background.getWidth();
 		int recipeHeight = this.background.getHeight();
-		extension.drawInfo(recipeWidth, recipeHeight, matrixStack, mouseX, mouseY);
+		extension.drawInfo(recipeWidth, recipeHeight, poseStack, mouseX, mouseY);
 	}
 
 	@Override
-	public List<ITextComponent> getTooltipStrings(ICraftingRecipe recipe, double mouseX, double mouseY) {
+	public List<Component> getTooltipStrings(CraftingRecipe recipe, double mouseX, double mouseY) {
 		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
 		return extension.getTooltipStrings(mouseX, mouseY);
 	}
 
 	@Override
-	public boolean handleClick(ICraftingRecipe recipe, double mouseX, double mouseY, int mouseButton) {
+	public boolean handleClick(CraftingRecipe recipe, double mouseX, double mouseY, int mouseButton) {
 		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
 		return extension.handleClick(mouseX, mouseY, mouseButton);
 	}
 
 	@Override
-	public boolean isHandled(ICraftingRecipe recipe) {
+	public boolean isHandled(CraftingRecipe recipe) {
 		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtensionOrNull(recipe);
 		return extension != null;
 	}
 
 	@Override
-	public <R extends ICraftingRecipe> void addCategoryExtension(Class<? extends R> recipeClass, Function<R, ? extends ICraftingCategoryExtension> extensionFactory) {
+	public <R extends CraftingRecipe> void addCategoryExtension(Class<? extends R> recipeClass, Function<R, ? extends ICraftingCategoryExtension> extensionFactory) {
 		extendableHelper.addRecipeExtensionFactory(recipeClass, null, extensionFactory);
 	}
 
 	@Override
-	public <R extends ICraftingRecipe> void addCategoryExtension(Class<? extends R> recipeClass, Predicate<R> extensionFilter, Function<R, ? extends ICraftingCategoryExtension> extensionFactory) {
+	public <R extends CraftingRecipe> void addCategoryExtension(Class<? extends R> recipeClass, Predicate<R> extensionFilter, Function<R, ? extends ICraftingCategoryExtension> extensionFactory) {
 		extendableHelper.addRecipeExtensionFactory(recipeClass, extensionFilter, extensionFactory);
 	}
 }

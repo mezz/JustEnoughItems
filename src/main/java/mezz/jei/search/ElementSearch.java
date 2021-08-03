@@ -6,7 +6,7 @@ import mezz.jei.ingredients.IIngredientListElementInfo;
 import mezz.jei.ingredients.IngredientFilterBackgroundBuilder;
 import mezz.jei.ingredients.PrefixedSearchable;
 import mezz.jei.search.suffixtree.GeneralizedSuffixTree;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 
 import javax.annotation.Nullable;
 import java.util.Collection;

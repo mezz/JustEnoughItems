@@ -2,7 +2,7 @@ package mezz.jei.ingredients;
 
 import java.util.Collection;
 
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;

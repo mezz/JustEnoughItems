@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
@@ -119,74 +119,4 @@ public interface IRecipeManager {
 	 */
 	@Deprecated
 	<T> void addRecipe(T recipe, ResourceLocation recipeCategoryUid);
-
-	/**
-	 * Returns an unmodifiable list of Recipe Categories that are displayed by JEI.
-	 *
-	 * @deprecated since JEI 7.7.1. Use {@link #getRecipeCategories(Collection, IFocus, boolean)}
-	 */
-	@Deprecated
-	default List<IRecipeCategory<?>> getRecipeCategories(List<ResourceLocation> recipeCategoryUids) {
-		return getRecipeCategories(recipeCategoryUids, null, false);
-	}
-
-	/**
-	 * Returns an unmodifiable list of all Recipe Categories that are displayed by JEI.
-	 *
-	 * @deprecated since JEI 7.7.1. Use {@link #getRecipeCategories(IFocus, boolean)}
-	 */
-	@Deprecated
-	default List<IRecipeCategory<?>> getRecipeCategories() {
-		return getRecipeCategories(null, false);
-	}
-
-	/**
-	 * Returns a list of Recipe Categories for the focus that are displayed by JEI.
-	 *
-	 * @deprecated since JEI 7.7.1. Use {@link #getRecipeCategories(IFocus, boolean)}
-	 */
-	@Deprecated
-	default <V> List<IRecipeCategory<?>> getRecipeCategories(IFocus<V> focus) {
-		return getRecipeCategories(focus, false);
-	}
-
-	/**
-	 * Returns the recipe category for the given UID.
-	 * Returns null if the recipe category does not exist.
-	 *
-	 * @deprecated since JEI 7.7.1. Use {@link #getRecipeCategory(ResourceLocation, boolean)}
-	 */
-	@Nullable
-	default IRecipeCategory<?> getRecipeCategory(ResourceLocation recipeCategoryUid) {
-		return getRecipeCategory(recipeCategoryUid, true);
-	}
-
-	/**
-	 * Returns a list of recipes in recipeCategory.
-	 * @deprecated since JEI 7.7.1. Use {@link #getRecipes(IRecipeCategory, IFocus, boolean)}
-	 */
-	default <T> List<T> getRecipes(IRecipeCategory<T> recipeCategory) {
-		return getRecipes(recipeCategory, null, false);
-	}
-
-	/**
-	 * Returns a list of recipes in the recipeCategory that have the focus and are displayed by JEI.
-	 *
-	 * @deprecated since JEI 7.7.1. Use {@link #getRecipes(IRecipeCategory, IFocus, boolean)}
-	 */
-	default <T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
-		return getRecipes(recipeCategory, focus, false);
-	}
-
-	/**
-	 * Returns an unmodifiable collection of ingredients that can craft the recipes from recipeCategory.
-	 * For instance, the crafting table ItemStack is returned here for Crafting recipe category.
-	 * These are registered with {@link IRecipeCatalystRegistration#addRecipeCatalyst(Object, ResourceLocation...)}.
-	 *
-	 * @deprecated since JEI 7.7.1. Use {@link #getRecipeCatalysts(IRecipeCategory, boolean)}
-	 */
-	default List<Object> getRecipeCatalysts(IRecipeCategory<?> recipeCategory) {
-		return getRecipeCatalysts(recipeCategory, false);
-	}
-
 }

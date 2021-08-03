@@ -5,13 +5,12 @@ import java.util.Map;
 
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 
 import com.google.common.collect.ImmutableMap;
-import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.util.ErrorUtil;
 import net.minecraftforge.fluids.FluidStack;
@@ -36,12 +35,6 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 		for (Fluid fluid : fluids) {
 			registerSubtypeInterpreter(fluid, AllFluidNbt.INSTANCE);
 		}
-	}
-
-	@Override
-	@SuppressWarnings("deprecation")
-	public void registerSubtypeInterpreter(Item item, ISubtypeInterpreter interpreter) {
-		registerSubtypeInterpreter(item, (IIngredientSubtypeInterpreter<ItemStack>) interpreter);
 	}
 
 	@Override
@@ -102,7 +95,7 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 
 		@Override
 		public String apply(ItemStack itemStack, UidContext context) {
-			CompoundNBT nbtTagCompound = itemStack.getTag();
+			CompoundTag nbtTagCompound = itemStack.getTag();
 			if (nbtTagCompound == null || nbtTagCompound.isEmpty()) {
 				return IIngredientSubtypeInterpreter.NONE;
 			}
@@ -118,7 +111,7 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 
 		@Override
 		public String apply(FluidStack fluidStack, UidContext context) {
-			CompoundNBT nbtTagCompound = fluidStack.getTag();
+			CompoundTag nbtTagCompound = fluidStack.getTag();
 			if (nbtTagCompound == null || nbtTagCompound.isEmpty()) {
 				return IIngredientSubtypeInterpreter.NONE;
 			}

@@ -1,7 +1,7 @@
 package mezz.jei.api.constants;
 
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.api.ingredients.IIngredientType;
 

@@ -1,6 +1,6 @@
 package mezz.jei.api.gui.handlers;
 
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 
 /**
  * Defines the properties of a gui so that JEI can draw next to it.

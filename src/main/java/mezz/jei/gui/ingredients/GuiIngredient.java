@@ -1,6 +1,6 @@
 package mezz.jei.gui.ingredients;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -13,18 +13,17 @@ import java.util.stream.Collectors;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.ITagCollection;
-import net.minecraft.tags.ITag;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.tags.TagCollection;
+import net.minecraft.tags.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -40,17 +39,17 @@ import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.render.IngredientRenderHelper;
 import mezz.jei.util.ErrorUtil;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
+public class GuiIngredient<T> extends GuiComponent implements IGuiIngredient<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final int slotIndex;
 	private final boolean input;
 
-	private final Rectangle2d rect;
+	private final Rect2i rect;
 	private final int xPadding;
 	private final int yPadding;
 
@@ -70,7 +69,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 		boolean input,
 		IIngredientRenderer<T> ingredientRenderer,
 		IIngredientHelper<T> ingredientHelper,
-		Rectangle2d rect,
+		Rect2i rect,
 		int xPadding, int yPadding,
 		int cycleOffset
 	) {
@@ -87,7 +86,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 		this.cycleTimer = new CycleTimer(cycleOffset);
 	}
 
-	public Rectangle2d getRect() {
+	public Rect2i getRect() {
 		return rect;
 	}
 
@@ -168,16 +167,16 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 		this.tooltipCallbacks = tooltipCallbacks;
 	}
 
-	public void draw(MatrixStack matrixStack, int xOffset, int yOffset) {
+	public void draw(PoseStack poseStack, int xOffset, int yOffset) {
 		cycleTimer.onDraw();
 
 		if (background != null) {
-			background.draw(matrixStack, xOffset + rect.getX(), yOffset + rect.getY());
+			background.draw(poseStack, xOffset + rect.getX(), yOffset + rect.getY());
 		}
 
 		T value = getDisplayedIngredient();
 		try {
-			ingredientRenderer.render(matrixStack, xOffset + rect.getX() + xPadding, yOffset + rect.getY() + yPadding, value);
+			ingredientRenderer.render(poseStack, xOffset + rect.getX() + xPadding, yOffset + rect.getY() + yPadding, value);
 		} catch (RuntimeException | LinkageError e) {
 			if (value != null) {
 				throw ErrorUtil.createRenderIngredientException(e, value);
@@ -187,55 +186,51 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
-	public void drawHighlight(MatrixStack matrixStack, int color, int xOffset, int yOffset) {
+	public void drawHighlight(PoseStack poseStack, int color, int xOffset, int yOffset) {
 		int x = rect.getX() + xOffset + xPadding;
 		int y = rect.getY() + yOffset + yPadding;
-		RenderSystem.disableLighting();
 		RenderSystem.disableDepthTest();
-		fill(matrixStack, x, y, x + rect.getWidth() - xPadding * 2, y + rect.getHeight() - yPadding * 2, color);
-		RenderSystem.color4f(1f, 1f, 1f, 1f);
+		fill(poseStack, x, y, x + rect.getWidth() - xPadding * 2, y + rect.getHeight() - yPadding * 2, color);
+		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 	}
 
-	public void drawOverlays(MatrixStack matrixStack, int xOffset, int yOffset, int mouseX, int mouseY) {
+	public void drawOverlays(PoseStack poseStack, int xOffset, int yOffset, int mouseX, int mouseY) {
 		T value = getDisplayedIngredient();
 		if (value != null) {
-			drawTooltip(matrixStack, xOffset, yOffset, mouseX, mouseY, value);
+			drawTooltip(poseStack, xOffset, yOffset, mouseX, mouseY, value);
 		}
 	}
 
-	@SuppressWarnings("deprecation")
-	private void drawTooltip(MatrixStack matrixStack, int xOffset, int yOffset, int mouseX, int mouseY, T value) {
+	private void drawTooltip(PoseStack poseStack, int xOffset, int yOffset, int mouseX, int mouseY, T value) {
 		try {
 			RenderSystem.disableDepthTest();
 
-			RenderHelper.turnOff();
-			fill(matrixStack,
+			fill(poseStack,
 				xOffset + rect.getX() + xPadding,
 				yOffset + rect.getY() + yPadding,
 				xOffset + rect.getX() + rect.getWidth() - xPadding,
 				yOffset + rect.getY() + rect.getHeight() - yPadding,
 				0x7FFFFFFF);
-			RenderSystem.color4f(1f, 1f, 1f, 1f);
+			RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
 			IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
-			List<ITextComponent> tooltip = IngredientRenderHelper.getIngredientTooltipSafe(value, ingredientRenderer, ingredientHelper, modIdHelper);
+			List<Component> tooltip = IngredientRenderHelper.getIngredientTooltipSafe(value, ingredientRenderer, ingredientHelper, modIdHelper);
 			for (ITooltipCallback<T> tooltipCallback : this.tooltipCallbacks) {
 				tooltipCallback.onTooltip(slotIndex, input, value, tooltip);
 			}
 
 			Minecraft minecraft = Minecraft.getInstance();
-			FontRenderer fontRenderer = ingredientRenderer.getFontRenderer(minecraft, value);
+			Font fontRenderer = ingredientRenderer.getFontRenderer(minecraft, value);
 			if (value instanceof ItemStack) {
 				//noinspection unchecked
 				Collection<ItemStack> itemStacks = (Collection<ItemStack>) this.allIngredients;
 				ResourceLocation tagEquivalent = getTagEquivalent(itemStacks);
 				if (tagEquivalent != null) {
-					final TranslationTextComponent acceptsAny = new TranslationTextComponent("jei.tooltip.recipe.tag", tagEquivalent);
-					tooltip.add(acceptsAny.withStyle(TextFormatting.GRAY));
+					final TranslatableComponent acceptsAny = new TranslatableComponent("jei.tooltip.recipe.tag", tagEquivalent);
+					tooltip.add(acceptsAny.withStyle(ChatFormatting.GRAY));
 				}
 			}
-			TooltipRenderer.drawHoveringText(value, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer, matrixStack);
+			TooltipRenderer.drawHoveringText(value, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer, poseStack);
 
 			RenderSystem.enableDepthTest();
 		} catch (RuntimeException e) {
@@ -254,9 +249,9 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 			.map(ItemStack::getItem)
 			.collect(Collectors.toList());
 
-		ITagCollection<Item> collection = ItemTags.getAllTags();
-		Collection<ITag<Item>> tags = collection.getAllTags().values();
-		for (ITag<Item> tag : tags) {
+		TagCollection<Item> collection = ItemTags.getAllTags();
+		Collection<Tag<Item>> tags = collection.getAllTags().values();
+		for (Tag<Item> tag : tags) {
 			if (tag.getValues().equals(items)) {
 				return collection.getId(tag);
 			}

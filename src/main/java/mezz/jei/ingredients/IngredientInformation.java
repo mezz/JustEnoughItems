@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Set;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.util.StringUtils;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.util.StringUtil;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -30,17 +30,17 @@ public final class IngredientInformation {
 	}
 
 	public static <T> List<String> getTooltipStrings(T ingredient, IIngredientRenderer<T> ingredientRenderer, Set<String> toRemove, IIngredientFilterConfig config) {
-		ITooltipFlag.TooltipFlags tooltipFlag = config.getSearchAdvancedTooltips() ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
-		List<ITextComponent> tooltip = ingredientRenderer.getTooltip(ingredient, tooltipFlag);
+		TooltipFlag.Default tooltipFlag = config.getSearchAdvancedTooltips() ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
+		List<Component> tooltip = ingredientRenderer.getTooltip(ingredient, tooltipFlag);
 		List<String> cleanTooltip = new ArrayList<>(tooltip.size());
-		for (ITextComponent lineComponent : tooltip) {
+		for (Component lineComponent : tooltip) {
 			String line = lineComponent.getString();
 			line = removeChatFormatting(line);
 			line = Translator.toLowercaseWithLocale(line);
 			for (String excludeWord : toRemove) {
 				line = line.replace(excludeWord, "");
 			}
-			if (!StringUtils.isNullOrEmpty(line)) {
+			if (!StringUtil.isNullOrEmpty(line)) {
 				cleanTooltip.add(line);
 			}
 		}
@@ -48,7 +48,7 @@ public final class IngredientInformation {
 	}
 
 	private static String removeChatFormatting(String string) {
-		String withoutFormattingCodes = TextFormatting.stripFormatting(string);
+		String withoutFormattingCodes = ChatFormatting.stripFormatting(string);
 		return (withoutFormattingCodes == null) ? "" : withoutFormattingCodes;
 	}
 

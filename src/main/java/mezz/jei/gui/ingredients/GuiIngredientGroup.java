@@ -1,6 +1,6 @@
 package mezz.jei.gui.ingredients;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -64,7 +64,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 
 	@Override
 	public void init(int slotIndex, boolean input, IIngredientRenderer<T> ingredientRenderer, int xPosition, int yPosition, int width, int height, int xPadding, int yPadding) {
-		Rectangle2d rect = new Rectangle2d(xPosition, yPosition, width, height);
+		Rect2i rect = new Rect2i(xPosition, yPosition, width, height);
 		GuiIngredient<T> guiIngredient = new GuiIngredient<>(slotIndex, input, ingredientRenderer, ingredientHelper, rect, xPadding, yPadding, cycleOffset);
 		guiIngredients.put(slotIndex, guiIngredient);
 		if (input) {
@@ -154,12 +154,12 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		return null;
 	}
 
-	public void draw(MatrixStack matrixStack, int xOffset, int yOffset, int highlightColor, int mouseX, int mouseY) {
+	public void draw(PoseStack poseStack, int xOffset, int yOffset, int highlightColor, int mouseX, int mouseY) {
 		for (GuiIngredient<T> ingredient : guiIngredients.values()) {
-			ingredient.draw(matrixStack, xOffset, yOffset);
+			ingredient.draw(poseStack, xOffset, yOffset);
 			if (ingredient.isMouseOver(xOffset, yOffset, mouseX, mouseY)) {
 				ingredient.setTooltipCallbacks(tooltipCallbacks);
-				ingredient.drawHighlight(matrixStack, highlightColor, xOffset, yOffset);
+				ingredient.drawHighlight(poseStack, highlightColor, xOffset, yOffset);
 			}
 		}
 	}

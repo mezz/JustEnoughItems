@@ -1,15 +1,15 @@
 package mezz.jei.gui.elements;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.gui.components.Button;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.gui.textures.Textures;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.network.chat.TextComponent;
 
 /**
  * A small gui button that has an {@link IDrawable} instead of a string label.
@@ -17,26 +17,25 @@ import net.minecraft.util.text.StringTextComponent;
 public class GuiIconButtonSmall extends Button {
 	private final IDrawable icon;
 
-	public GuiIconButtonSmall(int x, int y, int widthIn, int heightIn, IDrawable icon, Button.IPressable pressable) {
-		super(x, y, widthIn, heightIn, StringTextComponent.EMPTY, pressable);
+	public GuiIconButtonSmall(int x, int y, int widthIn, int heightIn, IDrawable icon, Button.OnPress pressable) {
+		super(x, y, widthIn, heightIn, TextComponent.EMPTY, pressable);
 		this.icon = icon;
 	}
 
-	public Rectangle2d getArea() {
-		return new Rectangle2d(x, y, width, height);
+	public Rect2i getArea() {
+		return new Rect2i(x, y, width, height);
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (this.visible) {
 			Minecraft minecraft = Minecraft.getInstance();
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			RenderSystem.enableAlphaTest();
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			boolean hovered = isMouseOver(mouseX, mouseY);
 			Textures textures = Internal.getTextures();
 			DrawableNineSliceTexture texture = textures.getButtonForState(this.active, hovered);
-			texture.draw(matrixStack, this.x, this.y, this.width, this.height);
-			this.renderBg(matrixStack, minecraft, mouseX, mouseY);
+			texture.draw(poseStack, this.x, this.y, this.width, this.height);
+			this.renderBg(poseStack, minecraft, mouseX, mouseY);
 
 			int color = 14737632;
 			if (packedFGColor != 0) {
@@ -54,14 +53,14 @@ public class GuiIconButtonSmall extends Button {
 			float blue = (float) (color >> 8 & 255) / 255.0F;
 			float green = (float) (color & 255) / 255.0F;
 			float alpha = (float) (color >> 24 & 255) / 255.0F;
-			RenderSystem.color4f(red, blue, green, alpha);
+			RenderSystem.setShaderColor(red, blue, green, alpha);
 
 			double xOffset = x + (width - this.icon.getWidth()) / 2.0;
 			double yOffset = y + (height - this.icon.getHeight()) / 2.0;
-			matrixStack.pushPose();
-			matrixStack.translate(xOffset, yOffset, 0);
-			this.icon.draw(matrixStack);
-			matrixStack.popPose();
+			poseStack.pushPose();
+			poseStack.translate(xOffset, yOffset, 0);
+			this.icon.draw(poseStack);
+			poseStack.popPose();
 		}
 	}
 }

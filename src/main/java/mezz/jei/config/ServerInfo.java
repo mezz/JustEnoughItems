@@ -2,10 +2,10 @@ package mezz.jei.config;
 
 import javax.annotation.Nullable;
 
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Connection;
 import net.minecraft.server.MinecraftServer;
 
 public final class ServerInfo {
@@ -26,7 +26,7 @@ public final class ServerInfo {
 		ServerInfo.worldUid = null;
 	}
 
-	public static String getWorldUid(@Nullable NetworkManager networkManager) {
+	public static String getWorldUid(@Nullable Connection networkManager) {
 		if (worldUid == null) {
 			if (networkManager == null) {
 				worldUid = "default"; // we get here when opening the in-game config before loading a world
