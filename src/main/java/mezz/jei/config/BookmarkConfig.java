@@ -41,7 +41,7 @@ public class BookmarkConfig {
 		for (IIngredientListElement<?> element : ingredientListElements) {
 			Object object = element.getIngredient();
 			if (object instanceof ItemStack) {
-				strings.add(MARKER_STACK + ((ItemStack) object).save(new CompoundTag()).toString());
+				strings.add(MARKER_STACK + ((ItemStack) object).save(new CompoundTag()));
 			} else {
 				strings.add(MARKER_OTHER + getUid(ingredientManager, element));
 			}
