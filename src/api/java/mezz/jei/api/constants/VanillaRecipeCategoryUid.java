@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.BlastingRecipe;
+import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
@@ -63,7 +64,7 @@ public final class VanillaRecipeCategoryUid {
 	/**
 	 * The campfire furnace recipe category.
 	 *
-	 * Automatically includes every {@link SmeltingRecipe}
+	 * Automatically includes every {@link CampfireCookingRecipe}
 	 */
 	public static final ResourceLocation CAMPFIRE = new ResourceLocation(ModIds.MINECRAFT_ID, "campfire");
 
