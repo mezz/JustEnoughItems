@@ -119,7 +119,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 
 		this.bookmarkButton.updateBounds(new Rect2i(
 			displayArea.getX(),
-			(int) Math.floor(displayArea.getY() + displayArea.getHeight()) - BUTTON_SIZE - 2,
+			displayArea.getY() + displayArea.getHeight() - BUTTON_SIZE - 2,
 			BUTTON_SIZE,
 			BUTTON_SIZE
 		));

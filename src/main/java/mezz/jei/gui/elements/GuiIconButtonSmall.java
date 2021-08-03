@@ -49,10 +49,10 @@ public class GuiIconButtonSmall extends Button {
 				color |= -16777216;
 			}
 
-			float red = (float) (color >> 16 & 255) / 255.0F;
-			float blue = (float) (color >> 8 & 255) / 255.0F;
-			float green = (float) (color & 255) / 255.0F;
-			float alpha = (float) (color >> 24 & 255) / 255.0F;
+			float red = (color >> 16 & 255) / 255.0F;
+			float blue = (color >> 8 & 255) / 255.0F;
+			float green = (color & 255) / 255.0F;
+			float alpha = (color >> 24 & 255) / 255.0F;
 			RenderSystem.setShaderColor(red, blue, green, alpha);
 
 			double xOffset = x + (width - this.icon.getWidth()) / 2.0;
