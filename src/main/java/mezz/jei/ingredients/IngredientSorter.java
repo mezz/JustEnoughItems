@@ -338,7 +338,7 @@ public final class IngredientSorter implements IIngredientSorter {
 					nullToolClassWarned = true;
 					LogManager.getLogger().warn("Item '" + item.getRegistryName() + "' has a null tool class entry.");
 				}
-			} else if (toolClass.getName() != "sword") {
+			} else if (!toolClass.getName().equals("sword")) {
 				//Swords are not "tools".
 				toolClassSet.add(toolClass.getName());
 			}
