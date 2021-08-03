@@ -60,7 +60,7 @@ public @interface Config
         INSTANCE(true);
 
 
-        private boolean isStatic = true;
+        private boolean isStatic;
         Type(boolean isStatic) { this.isStatic = isStatic; }
         public boolean isStatic(){ return this.isStatic; }
     }

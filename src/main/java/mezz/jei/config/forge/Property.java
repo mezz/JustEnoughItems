@@ -84,8 +84,8 @@ public class Property
     private Pattern validationPattern;
     private final boolean wasRead;
     private final boolean isList;
-    private boolean isListLengthFixed = false;
-    private int maxListLength = -1;
+    private boolean isListLengthFixed;
+    private int maxListLength;
     private final Type type;
     private boolean changed = false;
 

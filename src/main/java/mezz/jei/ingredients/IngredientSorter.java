@@ -229,7 +229,6 @@ public final class IngredientSorter implements IIngredientSorter {
 	}
 
 	private static Double getAttackSpeed(ItemStack itemStack) {
-		double attackDamage = Double.MIN_VALUE;
 		double attackSpeed = Double.MIN_VALUE;
 		//This is the isWeapon test so we don't order by these properties for non-weapons.
 		if (!isTool(itemStack) && !isArmor(itemStack)) {
@@ -238,7 +237,7 @@ public final class IngredientSorter implements IIngredientSorter {
 			boolean hasSpeed = multimap.containsKey(Attributes.ATTACK_SPEED);			
 			if (hasDamage) {
 				Collection<AttributeModifier> damageMap = multimap.get(Attributes.ATTACK_DAMAGE);
-				attackDamage = ((AttributeModifier) damageMap.toArray()[0]).getAmount();
+				double attackDamage = ((AttributeModifier) damageMap.toArray()[0]).getAmount();
 				//Apply the isWeapon final test here.
 				if (attackDamage > notQuiteZero && hasSpeed) {
 					Collection<AttributeModifier> speedMap = multimap.get(Attributes.ATTACK_SPEED);
