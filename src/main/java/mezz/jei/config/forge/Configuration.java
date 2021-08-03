@@ -66,8 +66,8 @@ public class Configuration
     public static final String NEW_LINE;
     public static final String COMMENT_SEPARATOR = "##########################################################################################################";
     private static final String CONFIG_VERSION_MARKER = "~CONFIG_VERSION";
-    private static final Pattern CONFIG_START = Pattern.compile("START: \"([^\\\"]+)\"");
-    private static final Pattern CONFIG_END = Pattern.compile("END: \"([^\\\"]+)\"");
+    private static final Pattern CONFIG_START = Pattern.compile("START: \"([^\"]+)\"");
+    private static final Pattern CONFIG_END = Pattern.compile("END: \"([^\"]+)\"");
     public static final CharMatcher allowedProperties = CharMatcher.javaLetterOrDigit().or(CharMatcher.anyOf(ALLOWED_CHARS));
     private static Configuration PARENT = null;
 
