@@ -25,6 +25,7 @@ import net.minecraft.util.Mth;
 
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.util.ErrorUtil;
+import net.minecraftforge.client.model.data.EmptyModelData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -174,7 +175,8 @@ public final class ColorGetter implements IColorHelper {
 		Minecraft minecraft = Minecraft.getInstance();
 		BlockRenderDispatcher blockRendererDispatcher = minecraft.getBlockRenderer();
 		BlockModelShaper blockModelShapes = blockRendererDispatcher.getBlockModelShaper();
-		TextureAtlasSprite textureAtlasSprite = blockModelShapes.getParticleIcon(blockState);
+		BakedModel blockModel = blockModelShapes.getBlockModel(blockState);
+		TextureAtlasSprite textureAtlasSprite = blockModel.getParticleIcon(EmptyModelData.INSTANCE);
 		if (textureAtlasSprite instanceof MissingTextureAtlasSprite) {
 			return null;
 		}
@@ -186,7 +188,7 @@ public final class ColorGetter implements IColorHelper {
 		ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
 		ItemModelShaper itemModelMesher = itemRenderer.getItemModelShaper();
 		BakedModel itemModel = itemModelMesher.getItemModel(itemStack);
-		TextureAtlasSprite particleTexture = itemModel.getParticleIcon();
+		TextureAtlasSprite particleTexture = itemModel.getParticleIcon(EmptyModelData.INSTANCE);
 		if (particleTexture instanceof MissingTextureAtlasSprite) {
 			return null;
 		}
