@@ -532,8 +532,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 	@Nullable
 	private AbstractContainerMenu getParentContainer() {
-		if (parentScreen instanceof AbstractContainerScreen) {
-			return ((AbstractContainerScreen<?>) parentScreen).getMenu();
+		if (parentScreen instanceof AbstractContainerScreen<?> screen) {
+			return screen.getMenu();
 		}
 		return null;
 	}
