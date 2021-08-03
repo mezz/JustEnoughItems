@@ -50,7 +50,6 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 		return switch (focus.getMode()) {
 			case INPUT -> recipeInputMap.getRecipeCategories(ingredient);
 			case OUTPUT -> recipeOutputMap.getRecipeCategories(ingredient);
-			default -> getRecipeCategories();
 		};
 	}
 

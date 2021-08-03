@@ -175,7 +175,6 @@ public class EditModeConfig implements IEditModeConfig {
 		return switch (blacklistType) {
 			case ITEM -> ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
 			case WILDCARD -> ingredientHelper.getWildcardId(ingredient);
-			default -> throw new IllegalStateException("Unknown blacklist type: " + blacklistType);
 		};
 	}
 }
