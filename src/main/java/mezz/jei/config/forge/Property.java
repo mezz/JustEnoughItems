@@ -891,7 +891,7 @@ public class Property
             {
                 nums.add(Integer.parseInt(value));
             }
-            catch (NumberFormatException e){}
+            catch (NumberFormatException ignored){}
         }
 
         int[] primitives = new int[nums.size()];
@@ -940,7 +940,7 @@ public class Property
             {
                 tmp.add(Boolean.parseBoolean(value));
             }
-            catch (NumberFormatException e){}
+            catch (NumberFormatException ignored){}
         }
 
         boolean[] primitives = new boolean[tmp.size()];
@@ -986,7 +986,7 @@ public class Property
             {
                 tmp.add(Double.parseDouble(value));
             }
-            catch (NumberFormatException e) {}
+            catch (NumberFormatException ignored) {}
         }
 
         double[] primitives = new double[tmp.size()];
