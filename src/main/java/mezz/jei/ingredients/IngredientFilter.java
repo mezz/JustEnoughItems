@@ -204,7 +204,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		return ingredientListCached;
 	}
 
-	//This is used to allow the sorting function to set all item's indexes, precomuting master sort order.
+	//This is used to allow the sorting function to set all item's indexes, precomputing the master sort order.
 	public List<IIngredientListElementInfo<?>> getIngredientListPreSort(Comparator<IIngredientListElementInfo<?>> directComparator) {
 		//First step is to get the full list.
 		List<IIngredientListElementInfo<?>> ingredientList = getIngredientListUncached("");
