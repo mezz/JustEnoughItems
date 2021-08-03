@@ -8,7 +8,7 @@ import java.io.Reader;
 import java.util.List;
 
 public final class SortingSerializers {
-	public static final ISortingSerializer<String> STRING = new ISortingSerializer<String>() {
+	public static final ISortingSerializer<String> STRING = new ISortingSerializer<>() {
 		@Override
 		public List<String> read(Reader reader) throws IOException {
 			return IOUtils.readLines(reader);

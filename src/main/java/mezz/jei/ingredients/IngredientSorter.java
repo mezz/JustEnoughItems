@@ -139,9 +139,9 @@ public final class IngredientSorter implements IIngredientSorter {
 
 	private Comparator<IIngredientListElementInfo<?>> createTagComparator() {
 		Comparator<IIngredientListElementInfo<?>> isTagged = 
-			Comparator.comparing(o -> hasTag(o));
+			Comparator.comparing(IngredientSorter::hasTag);
 		Comparator<IIngredientListElementInfo<?>> tag = 
-			Comparator.comparing(o -> getTagForSorting(o));
+			Comparator.comparing(IngredientSorter::getTagForSorting);
 		return isTagged.reversed().thenComparing(tag);
 	}
 
@@ -263,8 +263,7 @@ public final class IngredientSorter implements IIngredientSorter {
 
 	private static int getArmorSlotIndex(ItemStack itemStack) {
 		Item item = itemStack.getItem();	
-		if (item instanceof ArmorItem) {
-			ArmorItem armorItem = (ArmorItem) item;				
+		if (item instanceof ArmorItem armorItem) {
 			return armorItem.getSlot().getFilterFlag();
 		}
 		return 0;
@@ -272,8 +271,7 @@ public final class IngredientSorter implements IIngredientSorter {
 
 	private static int getArmorDamageReduce(ItemStack itemStack) {
 		Item item = itemStack.getItem();	
-		if (item instanceof ArmorItem) {
-			ArmorItem armorItem = (ArmorItem) item;				
+		if (item instanceof ArmorItem armorItem) {
 			return armorItem.getDefense();
 		}
 		return Integer.MIN_VALUE;
@@ -281,8 +279,7 @@ public final class IngredientSorter implements IIngredientSorter {
 
 	private static float getArmorToughness(ItemStack itemStack) {
 		Item item = itemStack.getItem();	
-		if (item instanceof ArmorItem) {
-			ArmorItem armorItem = (ArmorItem) item;				
+		if (item instanceof ArmorItem armorItem) {
 			return armorItem.getToughness();
 		}
 		return Float.MIN_VALUE;
@@ -332,7 +329,7 @@ public final class IngredientSorter implements IIngredientSorter {
 		Item item = itemStack.getItem();
 		Set<ToolType> toolTypeSet = item.getToolTypes(itemStack);
 		
-		Set<String> toolClassSet = new HashSet<String>();
+		Set<String> toolClassSet = new HashSet<>();
 
 		for (ToolType toolClass: toolTypeSet) {
 			if (toolClass == null) {
@@ -362,9 +359,9 @@ public final class IngredientSorter implements IIngredientSorter {
 		
 		//We have a preferred type to list tools under, primarily the pickaxe for harvest level.
 		String[] prefOrder = {"pickaxe", "axe", "shovel", "hoe", "shears", "wrench"};
-		for (int i = 0; i < prefOrder.length; i++) {
-			if (toolClassSet.contains(prefOrder[i])) {
-				return prefOrder[i];
+		for (String type : prefOrder) {
+			if (toolClassSet.contains(type)) {
+				return type;
 			}
 		}
 		

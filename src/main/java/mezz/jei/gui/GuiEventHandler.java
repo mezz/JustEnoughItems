@@ -128,8 +128,7 @@ public class GuiEventHandler {
 		}
 		drawnOnBackground = false;
 
-		if (gui instanceof AbstractContainerScreen) {
-			AbstractContainerScreen<?> guiContainer = (AbstractContainerScreen<?>) gui;
+		if (gui instanceof AbstractContainerScreen<?> guiContainer) {
 			IGuiClickableArea guiClickableArea = guiScreenHelper.getGuiClickableArea(guiContainer, event.getMouseX() - guiContainer.getGuiLeft(), event.getMouseY() - guiContainer.getGuiTop());
 			if (guiClickableArea != null) {
 				List<Component> tooltipStrings = guiClickableArea.getTooltipStrings();

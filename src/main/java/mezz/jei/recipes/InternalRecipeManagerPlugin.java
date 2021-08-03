@@ -47,14 +47,11 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 		focus = Focus.check(focus);
 		V ingredient = focus.getValue();
 
-		switch (focus.getMode()) {
-			case INPUT:
-				return recipeInputMap.getRecipeCategories(ingredient);
-			case OUTPUT:
-				return recipeOutputMap.getRecipeCategories(ingredient);
-			default:
-				return getRecipeCategories();
-		}
+		return switch (focus.getMode()) {
+			case INPUT -> recipeInputMap.getRecipeCategories(ingredient);
+			case OUTPUT -> recipeOutputMap.getRecipeCategories(ingredient);
+			default -> getRecipeCategories();
+		};
 	}
 
 	private ImmutableList<ResourceLocation> getRecipeCategories() {

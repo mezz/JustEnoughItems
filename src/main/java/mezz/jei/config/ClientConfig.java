@@ -88,8 +88,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 		{
 			builder.comment("Color values to search for");
 			searchColorsCfg = builder.defineList("SearchColors", Lists.newArrayList(ColorGetter.getColorDefaults()), obj -> {
-				if (obj instanceof String) {
-					String entry = (String) obj;
+				if (obj instanceof String entry) {
 					String[] values = entry.split(":");
 					if (values.length == 2) {
 						try {
@@ -234,8 +233,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 			validEntries.add(name);
 		}
 		return obj -> {
-			if (obj instanceof String) {
-				String name = (String) obj;
+			if (obj instanceof String name) {
 				return validEntries.contains(name);
 			}
 			return false;

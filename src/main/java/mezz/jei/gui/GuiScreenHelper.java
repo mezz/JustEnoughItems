@@ -101,8 +101,7 @@ public class GuiScreenHelper {
 			return Collections.emptySet();
 		}
 		Set<Rect2i> allGuiExtraAreas = new HashSet<>();
-		if (screen instanceof AbstractContainerScreen) {
-			AbstractContainerScreen<?> guiContainer = (AbstractContainerScreen<?>) screen;
+		if (screen instanceof AbstractContainerScreen<?> guiContainer) {
 			Collection<Rect2i> guiExtraAreas = this.guiContainerHandlers.getGuiExtraAreas(guiContainer);
 			allGuiExtraAreas.addAll(guiExtraAreas);
 		}

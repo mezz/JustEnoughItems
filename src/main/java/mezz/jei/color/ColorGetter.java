@@ -94,8 +94,7 @@ public final class ColorGetter implements IColorHelper {
 		final Item item = itemStack.getItem();
 		if (itemStack.isEmpty()) {
 			return Collections.emptyList();
-		} else if (item instanceof BlockItem) {
-			final BlockItem itemBlock = (BlockItem) item;
+		} else if (item instanceof final BlockItem itemBlock) {
 			final Block block = itemBlock.getBlock();
 			//noinspection ConstantConditions
 			if (block == null) {

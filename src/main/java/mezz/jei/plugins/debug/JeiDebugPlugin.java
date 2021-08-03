@@ -133,7 +133,7 @@ public class JeiDebugPlugin implements IModPlugin {
 	@Override
 	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
-			registration.addGuiContainerHandler(BrewingStandScreen.class, new IGuiContainerHandler<BrewingStandScreen>() {
+			registration.addGuiContainerHandler(BrewingStandScreen.class, new IGuiContainerHandler<>() {
 				@Override
 				public List<Rect2i> getGuiExtraAreas(BrewingStandScreen containerScreen) {
 					int widthMovement = (int) ((System.currentTimeMillis() / 100) % 100);

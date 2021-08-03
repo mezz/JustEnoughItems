@@ -148,11 +148,11 @@ public final class RecipeTransferUtil {
 
 		@Override
 		public Iterator<ItemStackMatchable<Integer>> iterator() {
-			return new MatchingIterable.DelegateIterator<Map.Entry<Integer, ItemStack>, ItemStackMatchable<Integer>>(map.entrySet().iterator()) {
+			return new MatchingIterable.DelegateIterator<>(map.entrySet().iterator()) {
 				@Override
 				public ItemStackMatchable<Integer> next() {
 					final Map.Entry<Integer, ItemStack> entry = delegate.next();
-					return new ItemStackMatchable<Integer>() {
+					return new ItemStackMatchable<>() {
 						@Override
 						public ItemStack getStack() {
 							return entry.getValue();

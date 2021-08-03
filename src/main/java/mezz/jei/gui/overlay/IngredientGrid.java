@@ -175,8 +175,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		GiveMode giveMode = this.clientConfig.getGiveMode();
 		if (giveMode == GiveMode.MOUSE_PICKUP) {
 			IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);
-			if (ingredientUnderMouse != null && ingredientUnderMouse.getValue() instanceof ItemStack) {
-				ItemStack value = (ItemStack) ingredientUnderMouse.getValue();
+			if (ingredientUnderMouse != null && ingredientUnderMouse.getValue() instanceof ItemStack value) {
 				return !ItemHandlerHelper.canItemStacksStack(itemStack, value);
 			}
 		}
