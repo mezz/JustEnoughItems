@@ -40,8 +40,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		// Nothing crafts those, the player probably wants to look up fluids.
 		if (item instanceof BlockItem) {
 			Block block = ((BlockItem) item).getBlock();
-			if (block instanceof IFluidBlock) {
-				IFluidBlock fluidBlock = (IFluidBlock) block;
+			if (block instanceof IFluidBlock fluidBlock) {
 				Fluid fluid = fluidBlock.getFluid();
 				if (fluid != null) {
 					FluidStack fluidStack = new FluidStack(fluid, FluidAttributes.BUCKET_VOLUME);

@@ -242,8 +242,7 @@ public class InputHandler {
 		@Nullable
 		@Override
 		public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
-			if (screen instanceof AbstractContainerScreen) {
-				AbstractContainerScreen<?> guiContainer = (AbstractContainerScreen<?>) screen;
+			if (screen instanceof AbstractContainerScreen<?> guiContainer) {
 				IGuiClickableArea clickableArea = guiScreenHelper.getGuiClickableArea(guiContainer, mouseX - guiContainer.getGuiLeft(), mouseY - guiContainer.getGuiTop());
 				if (clickableArea != null) {
 					return new GuiAreaClickHandler(recipesGui, clickableArea, guiContainer);

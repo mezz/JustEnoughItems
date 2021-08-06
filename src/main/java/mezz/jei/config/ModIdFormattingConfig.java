@@ -110,7 +110,7 @@ public class ModIdFormattingConfig implements IJEIConfig {
 		for (String string : strings) {
 			ChatFormatting valueByName = ChatFormatting.getByName(string);
 			if (valueByName != null) {
-				format.append(valueByName.toString());
+				format.append(valueByName);
 			} else {
 				LOGGER.error("Invalid format: {}", string);
 			}

@@ -90,8 +90,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 
 		ICraftingCategoryExtension recipeExtension = this.extendableHelper.getRecipeExtension(recipe);
 
-		if (recipeExtension instanceof ICustomCraftingCategoryExtension) {
-			ICustomCraftingCategoryExtension customExtension = (ICustomCraftingCategoryExtension) recipeExtension;
+		if (recipeExtension instanceof ICustomCraftingCategoryExtension customExtension) {
 			customExtension.setRecipe(recipeLayout, ingredients);
 			return;
 		}

@@ -108,12 +108,7 @@ public class GuiIngredient<T> extends GuiComponent implements IGuiIngredient<T> 
 	public void set(@Nullable List<T> ingredients, @Nullable Focus<T> focus) {
 		this.displayIngredients.clear();
 		this.allIngredients.clear();
-		List<T> displayIngredients;
-		if (ingredients == null) {
-			displayIngredients = Collections.emptyList();
-		} else {
-			displayIngredients = ingredients;
-		}
+		List<T> displayIngredients = Objects.requireNonNullElse(ingredients, Collections.emptyList());
 
 		T match = getMatch(displayIngredients, focus);
 		if (match != null) {

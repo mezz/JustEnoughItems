@@ -172,13 +172,9 @@ public class EditModeConfig implements IEditModeConfig {
 	}
 
 	private static <V> String getIngredientUid(V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
-		switch (blacklistType) {
-			case ITEM:
-				return ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
-			case WILDCARD:
-				return ingredientHelper.getWildcardId(ingredient);
-			default:
-				throw new IllegalStateException("Unknown blacklist type: " + blacklistType);
-		}
+		return switch (blacklistType) {
+			case ITEM -> ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+			case WILDCARD -> ingredientHelper.getWildcardId(ingredient);
+		};
 	}
 }

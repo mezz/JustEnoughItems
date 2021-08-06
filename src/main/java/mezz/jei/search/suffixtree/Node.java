@@ -136,6 +136,6 @@ class Node {
 
 	@Override
 	public String toString() {
-		return "Node: size:" + data.size() + " Edges: " + edges.toString();
+		return "Node: size:" + data.size() + " Edges: " + edges;
 	}
 }

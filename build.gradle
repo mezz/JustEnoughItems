@@ -40,15 +40,17 @@ version = "${semver}.${build_number}"
 group = 'mezz.jei' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 
 sourceSets {
-	api
+	api {
+		//The API has no resources
+		resources.srcDirs = []
+	}
 	main {
 		compileClasspath += sourceSets.api.output
 		runtimeClasspath += sourceSets.api.output
-		resources {
-			srcDir 'src/generated/resources'
-		}
 	}
 	test {
+		//The test module has no resources
+		resources.srcDirs = []
 		compileClasspath += sourceSets.api.output
 		runtimeClasspath += sourceSets.api.output
 	}
@@ -94,14 +96,6 @@ minecraft {
 		server {
 			property 'forge.logging.console.level', 'debug'
 			workingDirectory file('run')
-			mods {
-				jei.sources((SourceSet[]) [sourceSets.main, sourceSets.api])
-			}
-		}
-		data {
-			property 'forge.logging.console.level', 'debug'
-			workingDirectory file('run')
-			args '--mod', 'jei', '--all', '--output', file('src/generated/resources/')
 			mods {
 				jei.sources((SourceSet[]) [sourceSets.main, sourceSets.api])
 			}

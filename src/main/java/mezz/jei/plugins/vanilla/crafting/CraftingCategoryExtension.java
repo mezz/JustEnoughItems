@@ -33,8 +33,7 @@ public class CraftingCategoryExtension<T extends CraftingRecipe> implements ICra
 	@Nullable
 	@Override
 	public Size2i getSize() {
-		if (recipe instanceof IShapedRecipe) {
-			IShapedRecipe<?> shapedRecipe = (IShapedRecipe<?>) this.recipe;
+		if (recipe instanceof IShapedRecipe<?> shapedRecipe) {
 			return new Size2i(shapedRecipe.getRecipeWidth(), shapedRecipe.getRecipeHeight());
 		}
 		return null;

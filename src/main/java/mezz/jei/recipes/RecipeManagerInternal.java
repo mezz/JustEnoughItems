@@ -151,7 +151,7 @@ public class RecipeManagerInternal {
 
 		// hide the category if it has no recipes, or if the recipes have all been hidden
 		Stream<?> visibleRecipes = getRecipesStream(recipeCategory, focus, false);
-		return !visibleRecipes.findAny().isPresent();
+		return visibleRecipes.findAny().isEmpty();
 	}
 
 	public <V> Stream<IRecipeCategory<?>> getRecipeCategoriesStream(@Nullable Collection<ResourceLocation> recipeCategoryUids, @Nullable Focus<V> focus, boolean includeHidden) {

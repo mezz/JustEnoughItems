@@ -13,18 +13,17 @@ public enum GiveMode {
 	@OnlyIn(Dist.CLIENT)
 	public static int getStackSize(GiveMode giveMode, ItemStack itemStack, InputConstants.Key input) {
 		switch (giveMode) {
-			case INVENTORY: {
+			case INVENTORY -> {
 				if (input.getType() == InputConstants.Type.MOUSE && input.getValue() == 0) {
 					return itemStack.getMaxStackSize();
 				}
 				return 1;
 			}
-			case MOUSE_PICKUP: {
+			case MOUSE_PICKUP -> {
 				boolean modifierActive = Screen.hasShiftDown() || Minecraft.getInstance().options.keyPickItem.isActiveAndMatches(input);
 				return modifierActive ? itemStack.getMaxStackSize() : 1;
 			}
-			default:
-				throw new IllegalArgumentException("Unknown give mode: " + giveMode);
+			default -> throw new IllegalArgumentException("Unknown give mode: " + giveMode);
 		}
 	}
 }

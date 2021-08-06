@@ -135,8 +135,7 @@ public final class CommandUtilServer {
 			giveCount = itemStack.getCount();
 		}
 
-		if (sender instanceof ServerPlayer) {
-			ServerPlayer serverPlayerEntity = (ServerPlayer) sender;
+		if (sender instanceof ServerPlayer serverPlayerEntity) {
 			itemStackCopy.setCount(giveCount);
 			notifyGive(serverPlayerEntity, itemStackCopy);
 			serverPlayerEntity.containerMenu.setRemoteCarried(serverPlayerEntity.containerMenu.getCarried());

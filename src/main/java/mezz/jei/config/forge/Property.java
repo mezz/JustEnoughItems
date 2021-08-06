@@ -84,8 +84,8 @@ public class Property
     private Pattern validationPattern;
     private final boolean wasRead;
     private final boolean isList;
-    private boolean isListLengthFixed = false;
-    private int maxListLength = -1;
+    private boolean isListLengthFixed;
+    private int maxListLength;
     private final Type type;
     private boolean changed = false;
 
@@ -813,7 +813,7 @@ public class Property
      */
     public boolean isBooleanValue()
     {
-        return ("true".equals(value.toLowerCase()) || "false".equals(value.toLowerCase()));
+        return ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value));
     }
 
     /**
@@ -891,7 +891,7 @@ public class Property
             {
                 nums.add(Integer.parseInt(value));
             }
-            catch (NumberFormatException e){}
+            catch (NumberFormatException ignored){}
         }
 
         int[] primitives = new int[nums.size()];
@@ -940,7 +940,7 @@ public class Property
             {
                 tmp.add(Boolean.parseBoolean(value));
             }
-            catch (NumberFormatException e){}
+            catch (NumberFormatException ignored){}
         }
 
         boolean[] primitives = new boolean[tmp.size()];
@@ -986,7 +986,7 @@ public class Property
             {
                 tmp.add(Double.parseDouble(value));
             }
-            catch (NumberFormatException e) {}
+            catch (NumberFormatException ignored) {}
         }
 
         double[] primitives = new double[tmp.size()];

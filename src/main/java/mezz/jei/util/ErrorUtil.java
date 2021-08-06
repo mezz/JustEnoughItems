@@ -102,8 +102,7 @@ public final class ErrorUtil {
 		ResourceLocation registryName = null;
 		if (recipe instanceof Recipe) {
 			registryName = ((Recipe<?>) recipe).getId();
-		} else if (recipe instanceof IForgeRegistryEntry) {
-			IForgeRegistryEntry<?> registryEntry = (IForgeRegistryEntry<?>) recipe;
+		} else if (recipe instanceof IForgeRegistryEntry<?> registryEntry) {
 			registryName = registryEntry.getRegistryName();
 		}
 		if (registryName != null) {

@@ -150,8 +150,7 @@ public class BrewingRecipeMaker {
 
 	private void addModdedBrewingRecipes(Collection<IBrewingRecipe> brewingRecipes, Collection<IJeiBrewingRecipe> recipes) {
 		for (IBrewingRecipe iBrewingRecipe : brewingRecipes) {
-			if (iBrewingRecipe instanceof BrewingRecipe) {
-				BrewingRecipe brewingRecipe = (BrewingRecipe) iBrewingRecipe;
+			if (iBrewingRecipe instanceof BrewingRecipe brewingRecipe) {
 				ItemStack[] ingredients = brewingRecipe.getIngredient().getItems();
 				if (ingredients.length > 0) {
 					Ingredient inputIngredient = brewingRecipe.getInput();

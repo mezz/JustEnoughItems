@@ -139,9 +139,9 @@ public final class IngredientSorter implements IIngredientSorter {
 
 	private Comparator<IIngredientListElementInfo<?>> createTagComparator() {
 		Comparator<IIngredientListElementInfo<?>> isTagged = 
-			Comparator.comparing(o -> hasTag(o));
+			Comparator.comparing(IngredientSorter::hasTag);
 		Comparator<IIngredientListElementInfo<?>> tag = 
-			Comparator.comparing(o -> getTagForSorting(o));
+			Comparator.comparing(IngredientSorter::getTagForSorting);
 		return isTagged.reversed().thenComparing(tag);
 	}
 
@@ -189,19 +189,19 @@ public final class IngredientSorter implements IIngredientSorter {
 			maxDamage = itemStack.getMaxDamage();	
 		}
 		return maxDamage;
-	};
+	}
 
 	private static int getHarvestLevel(ItemStack itemStack) {		
 		if (itemStack != ItemStack.EMPTY) {
 			return (itemStack.getToolTypes().size() > 0 ? itemStack.getHarvestLevel(itemStack.getToolTypes().iterator().next(), null, null) : -1);
 		}
 		return -1;
-	};
+	}
 
 	private static boolean isTool(ItemStack itemStack){
 		//Sort non-tools after the tools.
 		return !getToolClass(itemStack).isEmpty();
-	};
+	}
 
 	private static int getToolDurability(ItemStack itemStack) {
 		if (isTool(itemStack))
@@ -213,10 +213,10 @@ public final class IngredientSorter implements IIngredientSorter {
 		//Sort Weapons apart from tools, armor, and other random things..		
 		//AttackDamage also filters out Tools and Armor.  Anything that deals extra damage is a weapon.
 		return getAttackDamage(itemStack) > notQuiteZero;
-	};
+	}
 
 	private static Double getAttackDamage(ItemStack itemStack) {
-		Double attackDamage = Double.MIN_VALUE;
+		double attackDamage = Double.MIN_VALUE;
 		if (!isTool(itemStack) && !isArmor(itemStack)) {
 			Multimap<Attribute, AttributeModifier> multimap = itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND);
 			boolean hasDamage = multimap.containsKey(Attributes.ATTACK_DAMAGE);
@@ -226,11 +226,10 @@ public final class IngredientSorter implements IIngredientSorter {
 			}
 		}
 		return attackDamage;
-	};
+	}
 
 	private static Double getAttackSpeed(ItemStack itemStack) {
-		Double attackDamage = Double.MIN_VALUE;
-		Double attackSpeed = Double.MIN_VALUE;
+		double attackSpeed = Double.MIN_VALUE;
 		//This is the isWeapon test so we don't order by these properties for non-weapons.
 		if (!isTool(itemStack) && !isArmor(itemStack)) {
 			Multimap<Attribute, AttributeModifier> multimap = itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND);
@@ -238,7 +237,7 @@ public final class IngredientSorter implements IIngredientSorter {
 			boolean hasSpeed = multimap.containsKey(Attributes.ATTACK_SPEED);			
 			if (hasDamage) {
 				Collection<AttributeModifier> damageMap = multimap.get(Attributes.ATTACK_DAMAGE);
-				attackDamage = ((AttributeModifier) damageMap.toArray()[0]).getAmount();
+				double attackDamage = ((AttributeModifier) damageMap.toArray()[0]).getAmount();
 				//Apply the isWeapon final test here.
 				if (attackDamage > notQuiteZero && hasSpeed) {
 					Collection<AttributeModifier> speedMap = multimap.get(Attributes.ATTACK_SPEED);
@@ -247,7 +246,7 @@ public final class IngredientSorter implements IIngredientSorter {
 			}
 		}
 		return attackSpeed;
-	};
+	}
 
 	private static int getWeaponDurability(ItemStack itemStack) {
 		if (isWeapon(itemStack)) {
@@ -259,34 +258,31 @@ public final class IngredientSorter implements IIngredientSorter {
 	private static boolean isArmor(ItemStack itemStack) {
 		Item item = itemStack.getItem();	
 		return item instanceof ArmorItem;
-	};
+	}
 
 	private static int getArmorSlotIndex(ItemStack itemStack) {
 		Item item = itemStack.getItem();	
-		if (item instanceof ArmorItem) {
-			ArmorItem armorItem = (ArmorItem) item;				
+		if (item instanceof ArmorItem armorItem) {
 			return armorItem.getSlot().getFilterFlag();
 		}
 		return 0;
-	};
+	}
 
 	private static int getArmorDamageReduce(ItemStack itemStack) {
 		Item item = itemStack.getItem();	
-		if (item instanceof ArmorItem) {
-			ArmorItem armorItem = (ArmorItem) item;				
+		if (item instanceof ArmorItem armorItem) {
 			return armorItem.getDefense();
 		}
 		return Integer.MIN_VALUE;
-	};
+	}
 
 	private static float getArmorToughness(ItemStack itemStack) {
 		Item item = itemStack.getItem();	
-		if (item instanceof ArmorItem) {
-			ArmorItem armorItem = (ArmorItem) item;				
+		if (item instanceof ArmorItem armorItem) {
 			return armorItem.getToughness();
 		}
 		return Float.MIN_VALUE;
-	};
+	}
 
 	private static int getArmorDurability(ItemStack itemStack) {
 		if (isArmor(itemStack))
@@ -313,12 +309,12 @@ public final class IngredientSorter implements IIngredientSorter {
 			}
 		}
 		return bestTag;
-	};
+	}
 
 	private static boolean hasTag(IIngredientListElementInfo<?> elementInfo){
 		//Sort non-tools after the tools.
 		return !getTagForSorting(elementInfo).isEmpty();
-	};
+	}
 
 
 	private static Boolean nullToolClassWarned = false;
@@ -332,7 +328,7 @@ public final class IngredientSorter implements IIngredientSorter {
 		Item item = itemStack.getItem();
 		Set<ToolType> toolTypeSet = item.getToolTypes(itemStack);
 		
-		Set<String> toolClassSet = new HashSet<String>();
+		Set<String> toolClassSet = new HashSet<>();
 
 		for (ToolType toolClass: toolTypeSet) {
 			if (toolClass == null) {
@@ -341,7 +337,7 @@ public final class IngredientSorter implements IIngredientSorter {
 					nullToolClassWarned = true;
 					LogManager.getLogger().warn("Item '" + item.getRegistryName() + "' has a null tool class entry.");
 				}
-			} else if (toolClass.getName() != "sword") {
+			} else if (!toolClass.getName().equals("sword")) {
 				//Swords are not "tools".
 				toolClassSet.add(toolClass.getName());
 			}
@@ -362,9 +358,9 @@ public final class IngredientSorter implements IIngredientSorter {
 		
 		//We have a preferred type to list tools under, primarily the pickaxe for harvest level.
 		String[] prefOrder = {"pickaxe", "axe", "shovel", "hoe", "shears", "wrench"};
-		for (int i = 0; i < prefOrder.length; i++) {
-			if (toolClassSet.contains(prefOrder[i])) {
-				return prefOrder[i];
+		for (String type : prefOrder) {
+			if (toolClassSet.contains(type)) {
+				return type;
 			}
 		}
 		

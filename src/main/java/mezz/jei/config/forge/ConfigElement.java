@@ -219,14 +219,14 @@ public class ConfigElement implements IConfigElement
             {
                 Double[] da = new Double[aVal.length];
                 for(int i = 0; i < aVal.length; i++)
-                    da[i] = Double.valueOf(aVal[i].toString());
+                    da[i] = Double.valueOf(aVal[i]);
                 return da;
             }
             else if (type == Property.Type.INTEGER)
             {
                 Integer[] ia = new Integer[aVal.length];
                 for(int i = 0; i < aVal.length; i++)
-                    ia[i] = Integer.valueOf(aVal[i].toString());
+                    ia[i] = Integer.valueOf(aVal[i]);
                 return ia;
             }
             else
@@ -269,14 +269,14 @@ public class ConfigElement implements IConfigElement
             {
                 Double[] da = new Double[aVal.length];
                 for(int i = 0; i < aVal.length; i++)
-                    da[i] = Double.valueOf(aVal[i].toString());
+                    da[i] = Double.valueOf(aVal[i]);
                 return da;
             }
             else if (type == Property.Type.INTEGER)
             {
                 Integer[] ia = new Integer[aVal.length];
                 for(int i = 0; i < aVal.length; i++)
-                    ia[i] = Integer.valueOf(aVal[i].toString());
+                    ia[i] = Integer.valueOf(aVal[i]);
                 return ia;
             }
             else
@@ -310,21 +310,21 @@ public class ConfigElement implements IConfigElement
             {
                 boolean[] ba = new boolean[aVal.length];
                 for(int i = 0; i < aVal.length; i++)
-                    ba[i] = Boolean.valueOf(aVal[i].toString());
+                    ba[i] = Boolean.parseBoolean(aVal[i].toString());
                 prop.set(ba);
             }
             else if (type == Property.Type.DOUBLE)
             {
                 double[] da = new double[aVal.length];
                 for(int i = 0; i < aVal.length; i++)
-                    da[i] = Double.valueOf(aVal[i].toString());
+                    da[i] = Double.parseDouble(aVal[i].toString());
                 prop.set(da);
             }
             else if (type == Property.Type.INTEGER)
             {
                 int[] ia = new int[aVal.length];
                 for(int i = 0; i < aVal.length; i++)
-                    ia[i] = Integer.valueOf(aVal[i].toString());
+                    ia[i] = Integer.parseInt(aVal[i].toString());
                 prop.set(ia);
             }
             else

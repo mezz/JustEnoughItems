@@ -35,8 +35,7 @@ public class PacketSetHotbarItemStack extends PacketJei {
 	}
 
 	public static void readPacketData(FriendlyByteBuf buf, Player player) {
-		if (player instanceof ServerPlayer) {
-			ServerPlayer sender = (ServerPlayer) player;
+		if (player instanceof ServerPlayer sender) {
 
 			ItemStack itemStack = buf.readItem();
 			if (!itemStack.isEmpty()) {

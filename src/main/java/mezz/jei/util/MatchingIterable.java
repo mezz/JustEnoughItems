@@ -15,11 +15,11 @@ public class MatchingIterable implements Iterable<ItemStackMatchable<ItemStack>>
 	@Override
 	public Iterator<ItemStackMatchable<ItemStack>> iterator() {
 		Iterator<ItemStack> stacks = list.iterator();
-		return new DelegateIterator<ItemStack, ItemStackMatchable<ItemStack>>(stacks) {
+		return new DelegateIterator<>(stacks) {
 			@Override
 			public ItemStackMatchable<ItemStack> next() {
 				final ItemStack stack = delegate.next();
-				return new ItemStackMatchable<ItemStack>() {
+				return new ItemStackMatchable<>() {
 					@Nullable
 					@Override
 					public ItemStack getStack() {

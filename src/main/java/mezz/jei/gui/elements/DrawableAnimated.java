@@ -64,20 +64,11 @@ public class DrawableAnimated implements IDrawableAnimated {
 		int animationValue = tickTimer.getValue();
 
 		switch (startDirection) {
-			case TOP:
-				maskBottom = animationValue;
-				break;
-			case BOTTOM:
-				maskTop = animationValue;
-				break;
-			case LEFT:
-				maskRight = animationValue;
-				break;
-			case RIGHT:
-				maskLeft = animationValue;
-				break;
-			default:
-				throw new IllegalStateException("Unknown startDirection " + startDirection);
+			case TOP -> maskBottom = animationValue;
+			case BOTTOM -> maskTop = animationValue;
+			case LEFT -> maskRight = animationValue;
+			case RIGHT -> maskLeft = animationValue;
+			default -> throw new IllegalStateException("Unknown startDirection " + startDirection);
 		}
 
 		drawable.draw(poseStack, xOffset, yOffset, maskTop, maskBottom, maskLeft, maskRight);

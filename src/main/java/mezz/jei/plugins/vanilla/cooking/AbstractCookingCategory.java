@@ -35,7 +35,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		this.localizedName = new TranslatableComponent(translationKey);
 		this.cachedArrows = CacheBuilder.newBuilder()
 			.maximumSize(25)
-			.build(new CacheLoader<Integer, IDrawableAnimated>() {
+			.build(new CacheLoader<>() {
 				@Override
 				public IDrawableAnimated load(Integer cookTime) {
 					return guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 82, 128, 24, 17)

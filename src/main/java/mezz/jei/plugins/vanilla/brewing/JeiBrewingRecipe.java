@@ -54,10 +54,9 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof JeiBrewingRecipe)) {
+		if (!(obj instanceof JeiBrewingRecipe other)) {
 			return false;
 		}
-		JeiBrewingRecipe other = (JeiBrewingRecipe) obj;
 
 		for (int i = 0; i < potionInputs.size(); i++) {
 			ItemStack potionInput = potionInputs.get(i);

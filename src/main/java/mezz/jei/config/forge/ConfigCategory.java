@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -75,9 +76,8 @@ public class ConfigCategory implements Map<String, Property>
     @Override
     public boolean equals(Object obj)
     {
-        if (obj instanceof ConfigCategory)
+        if (obj instanceof ConfigCategory cat)
         {
-            ConfigCategory cat = (ConfigCategory)obj;
             return name.equals(cat.name) && children.equals(cat.children);
         }
 
@@ -224,10 +224,7 @@ public class ConfigCategory implements Map<String, Property>
 
     public List<String> getPropertyOrder()
     {
-        if (this.propertyOrder != null)
-            return ImmutableList.copyOf(this.propertyOrder);
-        else
-            return ImmutableList.copyOf(properties.keySet());
+        return ImmutableList.copyOf(Objects.requireNonNullElseGet(this.propertyOrder, () -> properties.keySet()));
     }
 
     public boolean containsKey(String key)
@@ -247,9 +244,9 @@ public class ConfigCategory implements Map<String, Property>
 
     private void write(BufferedWriter out, boolean new_line, String... data) throws IOException
     {
-        for (int x = 0; x < data.length; x++)
+        for (String datum : data)
         {
-            out.write(data[x]);
+            out.write(datum);
         }
         if (new_line) out.newLine();
     }
@@ -350,12 +347,7 @@ public class ConfigCategory implements Map<String, Property>
 
     private String getIndent(int indent)
     {
-        StringBuilder buf = new StringBuilder("");
-        for (int x = 0; x < indent; x++)
-        {
-            buf.append("    ");
-        }
-        return buf.toString();
+        return "    ".repeat(Math.max(0, indent));
     }
 
     public boolean hasChanged()
