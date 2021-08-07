@@ -2,8 +2,11 @@ package mezz.jei.config;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.ForgeEventFactory;
@@ -37,11 +40,25 @@ public class ModIdFormattingConfig implements IJEIConfig {
 	public final ForgeConfigSpec.ConfigValue<String> modNameFormatConfig;
 
 	public ModIdFormattingConfig(ForgeConfigSpec.Builder builder) {
+		EnumSet<TextFormatting> validFormatting = EnumSet.allOf(TextFormatting.class);
+		validFormatting.remove(TextFormatting.RESET);
+
+		StringJoiner validColorsJoiner = new StringJoiner(", ");
+		StringJoiner validFormatsJoiner = new StringJoiner(", ");
+
+		for (TextFormatting textFormatting : validFormatting) {
+			String lowerCaseName = textFormatting.getName().toLowerCase(Locale.ENGLISH);
+			if (textFormatting.isColor()) {
+				validColorsJoiner.add(lowerCaseName);
+			} else {
+				validFormatsJoiner.add(lowerCaseName);
+			}
+		}
+		String validColors = validColorsJoiner.toString();
+		String validFormats = validFormatsJoiner.toString();
+
 		builder.push("modname");
-		builder.comment("Formatting for mod name tooltip",
-			"Use these formatting keys:",
-			"black, dark_blue, dark_green, dark_aqua, dark_red, dark_purple, gold, gray, dark_gray, blue, green, aqua, red, light_purple, yellow, white",
-			"obfuscated, bold, strikethrough, underline, italic");
+		builder.comment("Formatting for mod name tooltip", "Use these formatting colors:", validColors, "With these formatting options:", validFormats);
 		modNameFormatConfig = builder.define("ModNameFormat", defaultModNameFormatFriendly);
 		builder.pop();
 	}
