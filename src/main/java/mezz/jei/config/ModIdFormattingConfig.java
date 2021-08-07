@@ -6,6 +6,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 import dev.ftb.mods.ftblibrary.config.ConfigGroup;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -40,26 +41,36 @@ public class ModIdFormattingConfig implements IJEIConfig {
 	public final ForgeConfigSpec.ConfigValue<String> modNameFormatConfig;
 
 	public ModIdFormattingConfig(ForgeConfigSpec.Builder builder) {
+		EnumSet<ChatFormatting> validFormatting = EnumSet.allOf(ChatFormatting.class);
+		validFormatting.remove(ChatFormatting.RESET);
+
+		StringJoiner validColorsJoiner = new StringJoiner(", ");
+		StringJoiner validFormatsJoiner = new StringJoiner(", ");
+
+		for (ChatFormatting chatFormatting : validFormatting) {
+			String lowerCaseName = chatFormatting.getName().toLowerCase(Locale.ENGLISH);
+			if (chatFormatting.isColor()) {
+				validColorsJoiner.add(lowerCaseName);
+			} else if (chatFormatting.isFormat()) {
+				validFormatsJoiner.add(lowerCaseName);
+			}
+		}
+		String validColors = validColorsJoiner.toString();
+		String validFormats = validFormatsJoiner.toString();
+
 		builder.push("modname");
-		builder.comment("Formatting for mod name tooltip",
-			"Use these formatting keys:",
-			"black, dark_blue, dark_green, dark_aqua, dark_red, dark_purple, gold, gray, dark_gray, blue, green, aqua, red, light_purple, yellow, white",
-			"obfuscated, bold, strikethrough, underline, italic");
+		builder.comment("Formatting for mod name tooltip", "Use these formatting colors:", validColors, "With these formatting options:", validFormats);
 		modNameFormatConfig = builder.define("ModNameFormat", defaultModNameFormatFriendly);
 		builder.pop();
 	}
 
 	@Override
 	public void buildSettingsGUI(ConfigGroup group) {
-		group.addString(cfgTranslation("modNameFormat"), modNameFormatFriendly, v -> {
+		group.addString("advanced.modNameFormat", modNameFormatFriendly, v -> {
 			modNameFormatConfig.set(v);
 			modNameFormatFriendly = v;
 			updateModNameFormat();
 		}, ModIdFormattingConfig.defaultModNameFormatFriendly);
-	}
-
-	private String cfgTranslation(String name) {
-		return "advanced." + name;
 	}
 
 	@Override
@@ -89,15 +100,6 @@ public class ModIdFormattingConfig implements IJEIConfig {
 	}
 
 	private void updateModNameFormat() {
-		EnumSet<ChatFormatting> validFormatting = EnumSet.allOf(ChatFormatting.class);
-		validFormatting.remove(ChatFormatting.RESET);
-		String[] validValues = new String[validFormatting.size()];
-		int i = 0;
-		for (ChatFormatting formatting : validFormatting) {
-			validValues[i] = formatting.getName().toLowerCase(Locale.ENGLISH);
-			i++;
-		}
-
 		modNameFormat = parseFriendlyModNameFormat(modNameFormatFriendly);
 	}
 
