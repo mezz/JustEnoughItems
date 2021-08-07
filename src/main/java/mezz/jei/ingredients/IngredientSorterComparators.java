@@ -290,7 +290,6 @@ public class IngredientSorterComparators {
 	}
 
 	private static boolean hasTag(IIngredientListElementInfo<?> elementInfo) {
-		//Sort non-tools after the tools.
 		return !getTagForSorting(elementInfo).isEmpty();
 	}
 
