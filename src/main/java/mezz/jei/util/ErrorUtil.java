@@ -269,6 +269,15 @@ public final class ErrorUtil {
 		}
 	}
 
+	public static <T> void checkIsInstance(IIngredientType<T> ingredientType, @Nullable T ingredient, String name) {
+		checkNotNull(ingredient, name);
+		Class<? extends T> ingredientClass = ingredientType.getIngredientClass();
+		if (!ingredientClass.isInstance(ingredient)) {
+			throw new IllegalArgumentException("Invalid ingredient found. Parameter Name: " + name +
+				" Should be an instance of: " + ingredientClass + " Instead got: " + ingredient.getClass());
+		}
+	}
+
 	public static <T> void checkIsValidIngredient(@Nullable T ingredient, String name) {
 		checkNotNull(ingredient, name);
 		IngredientManager ingredientManager = Internal.getIngredientManager();

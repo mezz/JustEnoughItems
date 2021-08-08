@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 
@@ -14,6 +15,11 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
  * Get these from {@link IGuiIngredientGroup#getGuiIngredients()}.
  */
 public interface IGuiIngredient<T> {
+	/**
+	 * @return The ingredient type for this IGuiIngredient.
+	 */
+	IIngredientType<T> getIngredientType();
+
 	/**
 	 * The ingredient variation that is shown at this moment.
 	 * For ingredients that rotate through several values, this will change over time.

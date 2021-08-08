@@ -10,6 +10,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
@@ -44,13 +45,21 @@ public final class RecipeTransferUtil {
 	}
 
 	@Nullable
-	private static <T extends AbstractContainerMenu> IRecipeTransferError transferRecipe(RecipeTransferManager recipeTransferManager, T container, RecipeLayout<?> recipeLayout, Player player, boolean maxTransfer, boolean doTransfer) {
+	private static <C extends AbstractContainerMenu, R> IRecipeTransferError transferRecipe(
+		RecipeTransferManager recipeTransferManager,
+		C container,
+		RecipeLayout<R> recipeLayout,
+		Player player,
+		boolean maxTransfer,
+		boolean doTransfer
+	) {
 		final JeiRuntime runtime = Internal.getRuntime();
 		if (runtime == null) {
 			return RecipeTransferErrorInternal.INSTANCE;
 		}
 
-		final IRecipeTransferHandler<? super T> transferHandler = recipeTransferManager.getRecipeTransferHandler(container, recipeLayout.getRecipeCategory());
+		IRecipeCategory<R> recipeCategory = recipeLayout.getRecipeCategory();
+		final IRecipeTransferHandler<C, R> transferHandler = recipeTransferManager.getRecipeTransferHandler(container, recipeCategory);
 		if (transferHandler == null) {
 			if (doTransfer) {
 				LOGGER.error("No Recipe Transfer handler for container {}", container.getClass());

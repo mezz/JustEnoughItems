@@ -29,20 +29,21 @@ import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<InventoryMenu> {
+public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<InventoryMenu, CraftingRecipe> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final IStackHelper stackHelper;
 	private final IRecipeTransferHandlerHelper handlerHelper;
-	private final IRecipeTransferInfo<InventoryMenu> transferHelper;
+	private final IRecipeTransferInfo<InventoryMenu, CraftingRecipe> transferHelper;
 
 	public PlayerRecipeTransferHandler(IStackHelper stackhelper, IRecipeTransferHandlerHelper handlerHelper) {
 		this.stackHelper = stackhelper;
 		this.handlerHelper = handlerHelper;
-		this.transferHelper = new BasicRecipeTransferInfo<>(InventoryMenu.class, VanillaRecipeCategoryUid.CRAFTING, 1, 4, 9, 36);
+		this.transferHelper = new BasicRecipeTransferInfo<>(InventoryMenu.class, CraftingRecipe.class, VanillaRecipeCategoryUid.CRAFTING, 1, 4, 9, 36);
 	}
 
 	@Override
@@ -50,25 +51,30 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Inven
 		return transferHelper.getContainerClass();
 	}
 
+	@Override
+	public Class<CraftingRecipe> getRecipeClass() {
+		return transferHelper.getRecipeClass();
+	}
+
 	@Nullable
 	@Override
-	public IRecipeTransferError transferRecipe(InventoryMenu container, Object recipe, IRecipeLayout recipeLayout, Player player, boolean maxTransfer, boolean doTransfer) {
+	public IRecipeTransferError transferRecipe(InventoryMenu container, CraftingRecipe recipe, IRecipeLayout recipeLayout, Player player, boolean maxTransfer, boolean doTransfer) {
 		if (!ServerInfo.isJeiOnServer()) {
 			Component tooltipMessage = new TranslatableComponent("jei.tooltip.error.recipe.transfer.no.server");
 			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
 		}
 
-		if (!transferHelper.canHandle(container)) {
+		if (!transferHelper.canHandle(container, recipe)) {
 			return handlerHelper.createInternalError();
 		}
 
 		Map<Integer, Slot> inventorySlots = new HashMap<>();
-		for (Slot slot : transferHelper.getInventorySlots(container)) {
+		for (Slot slot : transferHelper.getInventorySlots(container, recipe)) {
 			inventorySlots.put(slot.index, slot);
 		}
 
 		Map<Integer, Slot> craftingSlots = new HashMap<>();
-		for (Slot slot : transferHelper.getRecipeSlots(container)) {
+		for (Slot slot : transferHelper.getRecipeSlots(container, recipe)) {
 			craftingSlots.put(slot.index, slot);
 		}
 

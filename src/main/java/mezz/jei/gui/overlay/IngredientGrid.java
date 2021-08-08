@@ -1,36 +1,24 @@
 package mezz.jei.gui.overlay;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import javax.annotation.Nullable;
-import java.util.Collection;
-
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IClientConfig;
-import mezz.jei.gui.GuiScreenHelper;
-import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.input.IMouseHandler;
-import mezz.jei.input.click.MouseClickState;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.config.IWorldConfig;
+import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
+import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.MouseUtil;
+import mezz.jei.input.click.MouseClickState;
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
 import mezz.jei.network.packets.PacketJei;
@@ -39,6 +27,18 @@ import mezz.jei.render.IngredientListElementRenderer;
 import mezz.jei.render.IngredientListSlot;
 import mezz.jei.util.GiveMode;
 import mezz.jei.util.MathUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.items.ItemHandlerHelper;
+
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  * An ingredient grid displays a rectangular area of clickable recipe ingredients.
@@ -187,13 +187,9 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 			!guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
 	}
 
-	@Nullable
-	public IIngredientListElement<?> getElementUnderMouse() {
-		IngredientListElementRenderer<?> hovered = guiIngredientSlots.getHovered(MouseUtil.getX(), MouseUtil.getY());
-		if (hovered != null) {
-			return hovered.getElement();
-		}
-		return null;
+	public <T> Optional<IIngredientListElement<T>> getElementUnderMouse(IIngredientType<T> ingredientType) {
+		return this.guiIngredientSlots.getHovered(MouseUtil.getX(), MouseUtil.getY(), ingredientType)
+			.map(IngredientListElementRenderer::getElement);
 	}
 
 	@Override

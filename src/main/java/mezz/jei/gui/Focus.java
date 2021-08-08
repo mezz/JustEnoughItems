@@ -2,13 +2,10 @@ package mezz.jei.gui;
 
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.util.ErrorUtil;
 
 import javax.annotation.Nullable;
-
-import mezz.jei.api.recipe.IFocus.Mode;
 
 public final class Focus<V> implements IFocus<V> {
 	private final Mode mode;
@@ -54,15 +51,4 @@ public final class Focus<V> implements IFocus<V> {
 		return check(focus);
 	}
 
-	@Nullable
-	public static <V> Focus<V> cast(@Nullable Focus<?> focus, IIngredientType<V> ingredientType) {
-		if (focus != null) {
-			Class<? extends V> ingredientClass = ingredientType.getIngredientClass();
-			if (ingredientClass.isInstance(focus.getValue())) {
-				//noinspection unchecked
-				return (Focus<V>) focus;
-			}
-		}
-		return null;
-	}
 }

@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
@@ -86,12 +87,21 @@ public class GuiIngredient<T> extends GuiComponent implements IGuiIngredient<T> 
 		this.cycleTimer = new CycleTimer(cycleOffset);
 	}
 
+	@Override
+	public IIngredientType<T> getIngredientType() {
+		return ingredientHelper.getIngredientType();
+	}
+
 	public Rect2i getRect() {
 		return rect;
 	}
 
 	public boolean isMouseOver(double xOffset, double yOffset, double mouseX, double mouseY) {
-		return enabled && (mouseX >= xOffset + rect.getX()) && (mouseY >= yOffset + rect.getY()) && (mouseX < xOffset + rect.getX() + rect.getWidth()) && (mouseY < yOffset + rect.getY() + rect.getHeight());
+		return enabled &&
+			(mouseX >= xOffset + rect.getX()) &&
+			(mouseY >= yOffset + rect.getY()) &&
+			(mouseX < xOffset + rect.getX() + rect.getWidth()) &&
+			(mouseY < yOffset + rect.getY() + rect.getHeight());
 	}
 
 	@Nullable

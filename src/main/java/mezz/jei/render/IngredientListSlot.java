@@ -2,6 +2,8 @@ package mezz.jei.render;
 
 import javax.annotation.Nullable;
 
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.ingredients.IngredientTypeHelper;
 import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.util.MathUtil;
@@ -22,6 +24,11 @@ public class IngredientListSlot {
 	@Nullable
 	public IngredientListElementRenderer<?> getIngredientRenderer() {
 		return ingredientRenderer;
+	}
+
+	@Nullable
+	public <T> IngredientListElementRenderer<T> getIngredientRenderer(IIngredientType<T> ingredientType) {
+		return IngredientTypeHelper.checkedCast(ingredientRenderer, ingredientType);
 	}
 
 	public void clear() {

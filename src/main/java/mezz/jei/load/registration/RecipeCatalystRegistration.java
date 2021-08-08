@@ -1,5 +1,6 @@
 package mezz.jei.load.registration;
 
+import mezz.jei.api.ingredients.IIngredientType;
 import net.minecraft.resources.ResourceLocation;
 
 import com.google.common.collect.ImmutableListMultimap;
@@ -11,7 +12,9 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 	private final ListMultiMap<ResourceLocation, Object> recipeCatalysts = new ListMultiMap<>();
 
 	@Override
-	public void addRecipeCatalyst(Object catalystIngredient, ResourceLocation... recipeCategoryUids) {
+	public <T> void addRecipeCatalyst(IIngredientType<T> ingredientType, T catalystIngredient, ResourceLocation... recipeCategoryUids) {
+		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
+		ErrorUtil.checkIsInstance(ingredientType, catalystIngredient, "catalystIngredient");
 		ErrorUtil.checkIsValidIngredient(catalystIngredient, "catalystIngredient");
 		ErrorUtil.checkNotEmpty(recipeCategoryUids, "recipeCategoryUids");
 

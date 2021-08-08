@@ -42,24 +42,13 @@ public interface IRecipeLayout {
 	<T> IGuiIngredientGroup<T> getIngredientsGroup(IIngredientType<T> ingredientType);
 
 	/**
-	 * The current search focus. Set by the player when they look up the recipe. The object being looked up is the focus.
-	 * @see #getFocus(IIngredientType) for when you only care about a specific type of focus.
-	 */
-	@Nullable
-	IFocus<?> getFocus();
-
-	/**
-	 * The current search focus. Set by the player when they look up the recipe. The object being looked up is the focus.
+	 * The current search focus. Set by the player when they look up the recipe.
+	 * The ingredient being looked up is the focus.
 	 * Returns null if there is no focus, or if the focus is a different type
 	 * @since JEI 7.0.1
 	 */
 	@Nullable
 	<V> IFocus<V> getFocus(IIngredientType<V> ingredientType);
-
-	/**
-	 * The current recipe category.
-	 */
-	IRecipeCategory<?> getRecipeCategory();
 
 	/**
 	 * Moves the recipe transfer button's position relative to the recipe layout.

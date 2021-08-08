@@ -3,6 +3,7 @@ package mezz.jei.api.gui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import javax.annotation.Nullable;
 
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -37,8 +38,8 @@ public interface IRecipeLayoutDrawable extends IRecipeLayout {
 
 	/**
 	 * Returns the ingredient currently under the mouse, if there is one.
-	 * Can be an ItemStack, FluidStack, or any other ingredient registered with JEI.
+	 * Can be an ItemStack, FluidStack, or any other ingredient type registered with JEI.
 	 */
 	@Nullable
-	Object getIngredientUnderMouse(int mouseX, int mouseY);
+	<T> T getIngredientUnderMouse(int mouseX, int mouseY, IIngredientType<T> ingredientType);
 }

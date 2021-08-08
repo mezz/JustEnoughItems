@@ -1,6 +1,5 @@
 package mezz.jei.gui.overlay;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -14,6 +13,7 @@ import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.IngredientTypeHelper;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IMouseHandler;
@@ -31,6 +31,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.Tuple;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -381,23 +382,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 
 	@Nullable
 	@Override
-	public Object getIngredientUnderMouse() {
-		if (isListDisplayed()) {
-			IIngredientListElement<?> elementUnderMouse = this.contents.getElementUnderMouse();
-			if (elementUnderMouse != null) {
-				return elementUnderMouse.getIngredient();
-			}
-		}
-		return null;
-	}
-
-	@Nullable
-	@Override
 	public <T> T getIngredientUnderMouse(IIngredientType<T> ingredientType) {
-		Object ingredient = getIngredientUnderMouse();
-		Class<? extends T> ingredientClass = ingredientType.getIngredientClass();
-		if (ingredientClass.isInstance(ingredient)) {
-			return ingredientClass.cast(ingredient);
+		if (isListDisplayed()) {
+			return this.contents.getElementUnderMouse(ingredientType)
+				.map(IIngredientListElement::getIngredient)
+				.orElse(null);
 		}
 		return null;
 	}
@@ -407,16 +396,15 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 		updateLayout(true);
 	}
 
-	@SuppressWarnings("UnstableApiUsage")
 	@Override
-	public ImmutableList<Object> getVisibleIngredients() {
+	public <T> List<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
 		if (isListDisplayed()) {
-			List<IIngredientListElement<?>> visibleElements = this.contents.getVisibleElements();
+			List<IIngredientListElement<T>> visibleElements = this.contents.getVisibleElements(ingredientType);
 			return visibleElements.stream()
 				.map(IIngredientListElement::getIngredient)
-				.collect(ImmutableList.toImmutableList());
+				.toList();
 		}
-		return ImmutableList.of();
+		return Collections.emptyList();
 	}
 
 	private static class ClickResult {

@@ -1,6 +1,5 @@
 package mezz.jei.ingredients;
 
-import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -8,6 +7,7 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IClientConfig;
@@ -228,14 +228,11 @@ public class IngredientFilter implements IIngredientGridSource {
 		return Collections.unmodifiableSet(this.modNamesForSorting);
 	}
 
-	public ImmutableList<Object> getFilteredIngredients(String filterText) {
-		List<IIngredientListElement<?>> elements = getIngredientList(filterText);
-		ImmutableList.Builder<Object> builder = ImmutableList.builder();
-		for (IIngredientListElement<?> element : elements) {
-			Object ingredient = element.getIngredient();
-			builder.add(ingredient);
-		}
-		return builder.build();
+	public <T> List<T> getFilteredIngredients(String filterText, IIngredientType<T> ingredientType) {
+		List<IIngredientListElement<?>> ingredientList = getIngredientList(filterText);
+		return IngredientTypeHelper.ofType(ingredientList.stream(), ingredientType)
+			.map(IIngredientListElement::getIngredient)
+			.toList();
 	}
 
 	private List<IIngredientListElementInfo<?>> getIngredientListUncached(String filterText) {

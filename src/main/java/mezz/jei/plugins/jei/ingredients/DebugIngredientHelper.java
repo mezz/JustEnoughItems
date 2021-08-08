@@ -2,6 +2,7 @@ package mezz.jei.plugins.jei.ingredients;
 
 import javax.annotation.Nullable;
 
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -13,6 +14,11 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.util.CommandUtilServer;
 
 public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient> {
+	@Override
+	public IIngredientType<DebugIngredient> getIngredientType() {
+		return DebugIngredient.TYPE;
+	}
+
 	@Nullable
 	@Override
 	public DebugIngredient getMatch(Iterable<DebugIngredient> ingredients, DebugIngredient ingredientToMatch, UidContext context) {

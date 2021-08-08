@@ -1,11 +1,13 @@
 package mezz.jei.gui.recipes;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -21,6 +23,7 @@ import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.IngredientTypeHelper;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IMouseHandler;
@@ -40,17 +43,17 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
-import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocuses, IRecipeLogicStateListener {
@@ -434,12 +437,14 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 	@Nullable
 	@Override
-	public Object getIngredientUnderMouse() {
-		IClickedIngredient<?> ingredient = getIngredientUnderMouse(MouseUtil.getX(), MouseUtil.getY());
-		if (ingredient != null) {
-			return ingredient.getValue();
-		}
-		return null;
+	public <T> T getIngredientUnderMouse(IIngredientType<T> ingredientType) {
+		double x = MouseUtil.getX();
+		double y = MouseUtil.getY();
+		IClickedIngredient<?> ingredient = getIngredientUnderMouse(x, y);
+		return Optional.ofNullable(ingredient)
+			.map(i -> IngredientTypeHelper.checkedCast(i, ingredientType))
+			.map(IClickedIngredient::getValue)
+			.orElse(null);
 	}
 
 	public void back() {

@@ -7,7 +7,6 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IGuiFluidStackGroup;
-import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
@@ -19,6 +18,7 @@ import mezz.jei.gui.ingredients.GuiFluidStackGroup;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiIngredientGroup;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
+import mezz.jei.ingredients.IngredientTypeHelper;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.MathUtil;
@@ -39,21 +39,22 @@ import javax.annotation.Nullable;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-public class RecipeLayout<T> implements IRecipeLayoutDrawable {
+public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int HIGHLIGHT_COLOR = 0x7FFFFFFF;
 	private static final int RECIPE_BUTTON_SIZE = 13;
 	private static final int RECIPE_BORDER_PADDING = 4;
 
 	private final int ingredientCycleOffset = (int) ((Math.random() * 10000) % Integer.MAX_VALUE);
-	private final IRecipeCategory<T> recipeCategory;
+	private final IRecipeCategory<R> recipeCategory;
 	private final GuiItemStackGroup guiItemStackGroup;
 	private final GuiFluidStackGroup guiFluidStackGroup;
 	private final Map<IIngredientType<?>, GuiIngredientGroup<?>> guiIngredientGroups;
 	@Nullable
 	private final RecipeTransferButton recipeTransferButton;
-	private final T recipe;
+	private final R recipe;
 	@Nullable
 	private final Focus<?> focus;
 	@Nullable
@@ -108,14 +109,14 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 		});
 	}
 
-	private RecipeLayout(int index, IRecipeCategory<T> recipeCategory, T recipe, @Nullable Focus<?> focus, int posX, int posY) {
+	private RecipeLayout(int index, IRecipeCategory<R> recipeCategory, R recipe, @Nullable Focus<?> focus, int posX, int posY) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		this.recipeCategory = recipeCategory;
 		this.focus = focus;
 
-		Focus<ItemStack> itemStackFocus = Focus.cast(focus, VanillaTypes.ITEM);
-		Focus<FluidStack> fluidStackFocus = Focus.cast(focus, VanillaTypes.FLUID);
+		Focus<ItemStack> itemStackFocus = IngredientTypeHelper.checkedCast(focus, VanillaTypes.ITEM);
+		Focus<FluidStack> fluidStackFocus = IngredientTypeHelper.checkedCast(focus, VanillaTypes.FLUID);
 		this.guiItemStackGroup = new GuiItemStackGroup(itemStackFocus, ingredientCycleOffset);
 		this.guiFluidStackGroup = new GuiFluidStackGroup(fluidStackFocus, ingredientCycleOffset);
 
@@ -228,13 +229,12 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 
 	@Override
 	@Nullable
-	public Object getIngredientUnderMouse(int mouseX, int mouseY) {
+	public <I> I getIngredientUnderMouse(int mouseX, int mouseY, IIngredientType<I> ingredientType) {
 		GuiIngredient<?> guiIngredient = getGuiIngredientUnderMouse(mouseX, mouseY);
-		if (guiIngredient != null) {
-			return guiIngredient.getDisplayedIngredient();
-		}
-
-		return null;
+		return Optional.ofNullable(guiIngredient)
+			.map(i -> IngredientTypeHelper.checkedCast(i, ingredientType))
+			.map(GuiIngredient::getDisplayedIngredient)
+			.orElse(null);
 	}
 
 	@Nullable
@@ -263,7 +263,7 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 	}
 
 	@Override
-	public <V> IGuiIngredientGroup<V> getIngredientsGroup(IIngredientType<V> ingredientType) {
+	public <V> GuiIngredientGroup<V> getIngredientsGroup(IIngredientType<V> ingredientType) {
 		@SuppressWarnings("unchecked")
 		GuiIngredientGroup<V> guiIngredientGroup = (GuiIngredientGroup<V>) guiIngredientGroups.get(ingredientType);
 		if (guiIngredientGroup == null) {
@@ -287,16 +287,10 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 		this.shapelessIcon = new ShapelessIcon();
 	}
 
-	@Override
-	@Nullable
-	public Focus<?> getFocus() {
-		return focus;
-	}
-
 	@Nullable
 	@Override
 	public <V> Focus<V> getFocus(IIngredientType<V> ingredientType) {
-		return Focus.cast(this.focus, ingredientType);
+		return IngredientTypeHelper.checkedCast(this.focus, ingredientType);
 	}
 
 	@Nullable
@@ -304,8 +298,7 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 		return recipeTransferButton;
 	}
 
-	@Override
-	public IRecipeCategory<?> getRecipeCategory() {
+	public IRecipeCategory<R> getRecipeCategory() {
 		return recipeCategory;
 	}
 
@@ -317,7 +310,7 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 		return posY;
 	}
 
-	public T getRecipe() {
+	public R getRecipe() {
 		return recipe;
 	}
 }
