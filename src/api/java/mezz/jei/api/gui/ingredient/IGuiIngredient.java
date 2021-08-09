@@ -16,7 +16,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
  */
 public interface IGuiIngredient<T> {
 	/**
-	 * @return The ingredient type for this IGuiIngredient.
+	 * @return The ingredient type for this {@link IGuiIngredient}.
 	 */
 	IIngredientType<T> getIngredientType();
 
