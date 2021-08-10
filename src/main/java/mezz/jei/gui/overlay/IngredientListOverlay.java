@@ -13,7 +13,6 @@ import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientManager;
-import mezz.jei.ingredients.IngredientTypeHelper;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IMouseHandler;
