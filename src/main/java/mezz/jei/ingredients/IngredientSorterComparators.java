@@ -16,17 +16,16 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.FishingRodItem;
-import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ShearsItem;
-import net.minecraftforge.common.ToolType;
-import org.apache.logging.log4j.LogManager;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.TieredItem;
+import net.minecraftforge.common.TierSortingRegistry;
+import net.minecraftforge.common.ToolAction;
+import net.minecraftforge.common.ToolActions;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -116,18 +115,15 @@ public class IngredientSorterComparators {
 	}
 
 	private static Comparator<IIngredientListElementInfo<?>> getToolsComparator() {
-		Comparator<IIngredientListElementInfo<?>> isToolComp =
-			Comparator.comparing(o -> isTool(getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> toolType =
 			Comparator.comparing(o -> getToolClass(getItemStack(o)));
-		Comparator<IIngredientListElementInfo<?>> harvestLevel =
-			Comparator.comparing(o -> getHarvestLevel(getItemStack(o)));
+		Comparator<IIngredientListElementInfo<?>> tier =
+			Comparator.comparing(o -> getTier(getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> maxDamage =
 			Comparator.comparing(o -> getToolDurability(getItemStack(o)));
 
-		return isToolComp.reversed() // Sort non-tools after the tools.
-			.thenComparing(toolType)
-			.thenComparing(harvestLevel.reversed())
+		return toolType.reversed() // Sort non-tools after the tools.
+			.thenComparing(tier.reversed())
 			.thenComparing(maxDamage.reversed());
 	}
 
@@ -164,16 +160,19 @@ public class IngredientSorterComparators {
 			.thenComparing(maxDamage.reversed());
 	}
 
-	private static int getHarvestLevel(ItemStack itemStack) {
-		return itemStack.getToolTypes()
-			.stream()
-			.mapToInt(tool -> itemStack.getHarvestLevel(tool, null, null))
-			.max()
-			.orElse(-1);
+	private static int getTier(ItemStack itemStack) {
+		Item item = itemStack.getItem();
+		if (item instanceof TieredItem tieredItem) {
+			Tier tier = tieredItem.getTier();
+			List<Tier> sortedTiers = TierSortingRegistry.getSortedTiers();
+			return sortedTiers.indexOf(tier);
+		}
+		return -1;
 	}
 
 	private static boolean isTool(ItemStack itemStack) {
-		return !getToolClass(itemStack).isEmpty();
+		return getToolActions(itemStack).stream()
+			.anyMatch(itemStack::canPerformAction);
 	}
 
 	private static int getToolDurability(ItemStack itemStack) {
@@ -293,64 +292,31 @@ public class IngredientSorterComparators {
 		return !getTagForSorting(elementInfo).isEmpty();
 	}
 
-	private static Boolean nullToolClassWarned = false;
-
 	private static String getToolClass(ItemStack itemStack) {
 		if (itemStack.isEmpty()) {
 			return "";
 		}
-		Item item = itemStack.getItem();
-		Set<ToolType> toolTypeSet = item.getToolTypes(itemStack);
 
-		Set<String> toolClassSet = new HashSet<>();
+		return getToolActions(itemStack).stream()
+			.filter(itemStack::canPerformAction)
+			.findFirst()
+			.map(ToolAction::name)
+			.orElse("");
+	}
 
-		for (ToolType toolClass : toolTypeSet) {
-			if (toolClass == null) {
-				if (!nullToolClassWarned) {
-					nullToolClassWarned = true;
-					LogManager.getLogger().warn("Item '" + item.getRegistryName() + "' has a null tool class entry.");
-				}
-			} else if (!toolClass.getName().equals("sword")) {
-				//Swords are not "tools".
-				toolClassSet.add(toolClass.getName());
-			}
-		}
+	private static Collection<ToolAction> getToolActions(ItemStack itemStack) {
+		// HACK: ensure the actions for the itemStack get loaded before we call ToolAction.getActions(),
+		// so the ToolAction.getActions() map is populated with whatever actions the itemStack uses.
+		itemStack.canPerformAction(ToolActions.AXE_DIG);
 
-		//Minecraft hoes, shears, and fishing rods don't have tool class names.
-		if (toolClassSet.isEmpty()) {
-			if (item instanceof HoeItem) {
-				return "hoe";
-			}
-			if (item instanceof ShearsItem) {
-				return "shears";
-			}
-			if (item instanceof FishingRodItem) {
-				return "fishingrod";
-			}
-			return "";
-		}
-
-		//Get the only thing.
-		if (toolClassSet.size() == 1) {
-			return toolClassSet.stream().findAny().get();
-		}
-
-		//We have a preferred type to list tools under, primarily the pickaxe for harvest level.
-		String[] prefOrder = {"pickaxe", "axe", "shovel", "hoe", "shears", "wrench"};
-		for (String s : prefOrder) {
-			if (toolClassSet.contains(s)) {
-				return s;
-			}
-		}
-
-		return toolClassSet.stream().sorted().findFirst().orElse("");
+		return ToolAction.getActions();
 	}
 
 	public static <V> ItemStack getItemStack(IIngredientListElementInfo<V> ingredientInfo) {
 		IIngredientListElement<V> element = ingredientInfo.getElement();
 		V ingredient = element.getIngredient();
-		if (ingredient instanceof ItemStack) {
-			return (ItemStack) ingredient;
+		if (ingredient instanceof ItemStack itemStack) {
+			return itemStack;
 		}
 		return ItemStack.EMPTY;
 	}
