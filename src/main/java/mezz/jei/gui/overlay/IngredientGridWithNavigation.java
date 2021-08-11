@@ -3,12 +3,14 @@ package mezz.jei.gui.overlay;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.input.CombinedMouseHandler;
 import mezz.jei.util.Rectangle2dBuilder;
 import net.minecraft.client.Options;
@@ -32,7 +34,6 @@ import mezz.jei.input.IPaged;
 import mezz.jei.input.IShowsRecipeFocuses;
 import mezz.jei.input.MouseUtil;
 import mezz.jei.render.IngredientListElementRenderer;
-import mezz.jei.render.IngredientListSlot;
 import mezz.jei.util.CommandUtil;
 import mezz.jei.util.MathUtil;
 import net.minecraft.util.Tuple;
@@ -189,9 +190,8 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 		return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY);
 	}
 
-	@Nullable
-	public IIngredientListElement<?> getElementUnderMouse() {
-		return this.ingredientGrid.getElementUnderMouse();
+	public <T> Optional<IIngredientListElement<T>> getElementUnderMouse(IIngredientType<T> ingredientType) {
+		return this.ingredientGrid.getElementUnderMouse(ingredientType);
 	}
 
 	@Override
@@ -199,15 +199,12 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 		return this.ingredientGrid.canSetFocusWithMouse();
 	}
 
-	public List<IIngredientListElement<?>> getVisibleElements() {
-		List<IIngredientListElement<?>> visibleElements = new ArrayList<>();
-		for (IngredientListSlot slot : this.ingredientGrid.guiIngredientSlots.getAllGuiIngredientSlots()) {
-			IngredientListElementRenderer<?> renderer = slot.getIngredientRenderer();
-			if (renderer != null) {
-				visibleElements.add(renderer.getElement());
-			}
-		}
-		return visibleElements;
+	public <T> List<IIngredientListElement<T>> getVisibleElements(IIngredientType<T> ingredientType) {
+		return this.ingredientGrid.guiIngredientSlots.getAllGuiIngredientSlots().stream()
+			.map(slot -> slot.getIngredientRenderer(ingredientType))
+			.filter(Objects::nonNull)
+			.map(IngredientListElementRenderer::getElement)
+			.toList();
 	}
 
 	private class IngredientGridPaged implements IPaged, IMouseHandler {

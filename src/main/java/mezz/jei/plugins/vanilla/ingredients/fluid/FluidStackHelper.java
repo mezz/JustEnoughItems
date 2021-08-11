@@ -4,6 +4,8 @@ import java.util.Collection;
 import javax.annotation.Nullable;
 import java.util.Collections;
 
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.util.ErrorUtil;
@@ -30,6 +32,11 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	public FluidStackHelper(ISubtypeManager subtypeManager, IColorHelper colorHelper) {
 		this.subtypeManager = subtypeManager;
 		this.colorHelper = colorHelper;
+	}
+
+	@Override
+	public IIngredientType<FluidStack> getIngredientType() {
+		return VanillaTypes.FLUID;
 	}
 
 	@Override

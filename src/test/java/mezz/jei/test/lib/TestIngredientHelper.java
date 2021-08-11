@@ -4,9 +4,15 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 
 public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
+	@Override
+	public IIngredientType<TestIngredient> getIngredientType() {
+		return TestIngredient.TYPE;
+	}
+
 	@Nullable
 	@Override
 	public TestIngredient getMatch(Iterable<TestIngredient> ingredients, TestIngredient ingredientToMatch, UidContext context) {

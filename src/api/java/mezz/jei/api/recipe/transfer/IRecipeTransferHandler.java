@@ -19,11 +19,16 @@ import mezz.jei.api.registration.IRecipeTransferRegistration;
  *
  * To register your recipe transfer handler, use {@link IRecipeTransferRegistration#addRecipeTransferHandler(IRecipeTransferHandler, ResourceLocation)}
  */
-public interface IRecipeTransferHandler<C extends AbstractContainerMenu> {
+public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
 	/**
 	 * The container that this recipe transfer handler can use.
 	 */
 	Class<C> getContainerClass();
+
+	/**
+	 * The recipe that this recipe transfer handler can use.
+	 */
+	Class<R> getRecipeClass();
 
 	/**
 	 * @param container    the container to act on
@@ -37,7 +42,7 @@ public interface IRecipeTransferHandler<C extends AbstractContainerMenu> {
 	 * @since JEI 7.1.3
 	 */
 	@Nullable
-	default IRecipeTransferError transferRecipe(C container, Object recipe, IRecipeLayout recipeLayout, Player player, boolean maxTransfer, boolean doTransfer) {
+	default IRecipeTransferError transferRecipe(C container, R recipe, IRecipeLayout recipeLayout, Player player, boolean maxTransfer, boolean doTransfer) {
 		return null;
 	}
 }

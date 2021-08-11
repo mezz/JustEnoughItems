@@ -1,9 +1,11 @@
 package mezz.jei.ingredients;
 
-import com.google.common.collect.ImmutableList;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.util.ErrorUtil;
+
+import java.util.List;
 
 public class IngredientFilterApi implements IIngredientFilter {
 	private final IngredientFilter ingredientFilter;
@@ -28,8 +30,8 @@ public class IngredientFilterApi implements IIngredientFilter {
 	}
 
 	@Override
-	public ImmutableList<Object> getFilteredIngredients() {
+	public <T> List<T> getFilteredIngredients(IIngredientType<T> ingredientType) {
 		String filterText = worldConfig.getFilterText();
-		return ingredientFilter.getFilteredIngredients(filterText);
+		return ingredientFilter.getFilteredIngredients(filterText, ingredientType);
 	}
 }

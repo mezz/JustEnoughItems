@@ -1,6 +1,7 @@
 package mezz.jei.gui.overlay.bookmarks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.ClientConfig;
@@ -143,16 +144,13 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 		return this.isListDisplayed() && this.contents.canSetFocusWithMouse();
 	}
 
-
-
 	@Nullable
 	@Override
-	public Object getIngredientUnderMouse() {
+	public <T> T getIngredientUnderMouse(IIngredientType<T> ingredientType) {
 		if (isListDisplayed()) {
-			IIngredientListElement<?> elementUnderMouse = this.contents.getElementUnderMouse();
-			if (elementUnderMouse != null) {
-				return elementUnderMouse.getIngredient();
-			}
+			return this.contents.getElementUnderMouse(ingredientType)
+				.map(IIngredientListElement::getIngredient)
+				.orElse(null);
 		}
 		return null;
 	}

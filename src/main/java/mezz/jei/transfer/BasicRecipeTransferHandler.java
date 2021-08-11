@@ -28,14 +28,14 @@ import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class BasicRecipeTransferHandler<C extends AbstractContainerMenu> implements IRecipeTransferHandler<C> {
+public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> implements IRecipeTransferHandler<C, R> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final IStackHelper stackHelper;
 	private final IRecipeTransferHandlerHelper handlerHelper;
-	private final IRecipeTransferInfo<C> transferHelper;
+	private final IRecipeTransferInfo<C, R> transferHelper;
 
-	public BasicRecipeTransferHandler(IStackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper, IRecipeTransferInfo<C> transferHelper) {
+	public BasicRecipeTransferHandler(IStackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper, IRecipeTransferInfo<C, R> transferHelper) {
 		this.stackHelper = stackHelper;
 		this.handlerHelper = handlerHelper;
 		this.transferHelper = transferHelper;
@@ -46,25 +46,30 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu> impleme
 		return transferHelper.getContainerClass();
 	}
 
+	@Override
+	public Class<R> getRecipeClass() {
+		return transferHelper.getRecipeClass();
+	}
+
 	@Nullable
 	@Override
-	public IRecipeTransferError transferRecipe(C container, Object recipe, IRecipeLayout recipeLayout, Player player, boolean maxTransfer, boolean doTransfer) {
+	public IRecipeTransferError transferRecipe(C container, R recipe, IRecipeLayout recipeLayout, Player player, boolean maxTransfer, boolean doTransfer) {
 		if (!ServerInfo.isJeiOnServer()) {
 			Component tooltipMessage = new TranslatableComponent("jei.tooltip.error.recipe.transfer.no.server");
 			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
 		}
 
-		if (!transferHelper.canHandle(container)) {
+		if (!transferHelper.canHandle(container, recipe)) {
 			return handlerHelper.createInternalError();
 		}
 
 		Map<Integer, Slot> inventorySlots = new HashMap<>();
-		for (Slot slot : transferHelper.getInventorySlots(container)) {
+		for (Slot slot : transferHelper.getInventorySlots(container, recipe)) {
 			inventorySlots.put(slot.index, slot);
 		}
 
 		Map<Integer, Slot> craftingSlots = new HashMap<>();
-		for (Slot slot : transferHelper.getRecipeSlots(container)) {
+		for (Slot slot : transferHelper.getRecipeSlots(container, recipe)) {
 			craftingSlots.put(slot.index, slot);
 		}
 
@@ -139,7 +144,8 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu> impleme
 		}
 
 		if (doTransfer) {
-			PacketRecipeTransfer packet = new PacketRecipeTransfer(matchingItemsResult.matchingItems, craftingSlotIndexes, inventorySlotIndexes, maxTransfer, transferHelper.requireCompleteSets());
+			boolean requireCompleteSets = transferHelper.requireCompleteSets(container, recipe);
+			PacketRecipeTransfer packet = new PacketRecipeTransfer(matchingItemsResult.matchingItems, craftingSlotIndexes, inventorySlotIndexes, maxTransfer, requireCompleteSets);
 			Network.sendPacketToServer(packet);
 		}
 

@@ -3,11 +3,12 @@ package mezz.jei.plugins.vanilla.anvil;
 import java.util.Collections;
 import java.util.List;
 
+import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import net.minecraft.world.item.ItemStack;
 
 import com.google.common.collect.ImmutableList;
 
-public class AnvilRecipe {
+public class AnvilRecipe implements IJeiAnvilRecipe {
 	private final List<List<ItemStack>> inputs;
 	private final List<List<ItemStack>> outputs;
 

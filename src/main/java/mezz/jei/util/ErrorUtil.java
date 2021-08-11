@@ -177,7 +177,8 @@ public final class ErrorUtil {
 		return itemStack + " " + itemName;
 	}
 
-	public static String getFluidStackInfo(@Nullable FluidStack fluidStack) {
+	@SuppressWarnings("ConstantConditions")
+	public static String getFluidStackInfo(FluidStack fluidStack) {
 		if (fluidStack == null) {
 			return "null";
 		}
@@ -197,7 +198,8 @@ public final class ErrorUtil {
 		return fluidStack + " " + fluidName;
 	}
 
-	public static void checkNotEmpty(@Nullable ItemStack itemStack) {
+	@SuppressWarnings("ConstantConditions")
+	public static void checkNotEmpty(ItemStack itemStack) {
 		if (itemStack == null) {
 			throw new NullPointerException("ItemStack must not be null.");
 		} else if (itemStack.isEmpty()) {
@@ -206,7 +208,8 @@ public final class ErrorUtil {
 		}
 	}
 
-	public static void checkNotEmpty(@Nullable ItemStack itemStack, String name) {
+	@SuppressWarnings("ConstantConditions")
+	public static void checkNotEmpty(ItemStack itemStack, String name) {
 		if (itemStack == null) {
 			throw new NullPointerException(name + " must not be null.");
 		} else if (itemStack.isEmpty()) {
@@ -215,7 +218,8 @@ public final class ErrorUtil {
 		}
 	}
 
-	public static void checkNotEmpty(@Nullable FluidStack fluidStack) {
+	@SuppressWarnings("ConstantConditions")
+	public static void checkNotEmpty(FluidStack fluidStack) {
 		if (fluidStack == null) {
 			throw new NullPointerException("FluidStack must not be null.");
 		} else if (fluidStack.isEmpty()) {
@@ -224,7 +228,8 @@ public final class ErrorUtil {
 		}
 	}
 
-	public static <T> void checkNotEmpty(@Nullable T[] values, String name) {
+	@SuppressWarnings("ConstantConditions")
+	public static <T> void checkNotEmpty(T[] values, String name) {
 		if (values == null) {
 			throw new NullPointerException(name + " must not be null.");
 		} else if (values.length <= 0) {
@@ -237,7 +242,8 @@ public final class ErrorUtil {
 		}
 	}
 
-	public static void checkNotEmpty(@Nullable Collection<?> values, String name) {
+	@SuppressWarnings("ConstantConditions")
+	public static void checkNotEmpty(Collection<?> values, String name) {
 		if (values == null) {
 			throw new NullPointerException(name + " must not be null.");
 		} else if (values.isEmpty()) {
@@ -251,13 +257,15 @@ public final class ErrorUtil {
 		}
 	}
 
-	public static <T> void checkNotNull(@Nullable T object, String name) {
+	@SuppressWarnings("ConstantConditions")
+	public static <T> void checkNotNull(T object, String name) {
 		if (object == null) {
 			throw new NullPointerException(name + " must not be null.");
 		}
 	}
 
-	public static void checkNotNull(@Nullable Collection<?> values, String name) {
+	@SuppressWarnings("ConstantConditions")
+	public static void checkNotNull(Collection<?> values, String name) {
 		if (values == null) {
 			throw new NullPointerException(name + " must not be null.");
 		} else if (!(values instanceof NonNullList)) {
@@ -269,7 +277,16 @@ public final class ErrorUtil {
 		}
 	}
 
-	public static <T> void checkIsValidIngredient(@Nullable T ingredient, String name) {
+	public static <T> void checkIsInstance(IIngredientType<T> ingredientType, T ingredient, String name) {
+		checkNotNull(ingredient, name);
+		Class<? extends T> ingredientClass = ingredientType.getIngredientClass();
+		if (!ingredientClass.isInstance(ingredient)) {
+			throw new IllegalArgumentException("Invalid ingredient found. Parameter Name: " + name +
+				" Should be an instance of: " + ingredientClass + " Instead got: " + ingredient.getClass());
+		}
+	}
+
+	public static <T> void checkIsValidIngredient(T ingredient, String name) {
 		checkNotNull(ingredient, name);
 		IngredientManager ingredientManager = Internal.getIngredientManager();
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);

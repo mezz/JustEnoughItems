@@ -168,14 +168,14 @@ public class JeiDebugPlugin implements IModPlugin {
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
-			registration.addRecipeCatalyst(new DebugIngredient(7), DebugRecipeCategory.UID);
-			registration.addRecipeCatalyst(new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), DebugRecipeCategory.UID);
-			registration.addRecipeCatalyst(new ItemStack(Items.STICK), DebugRecipeCategory.UID);
+			registration.addRecipeCatalyst(DebugIngredient.TYPE, new DebugIngredient(7), DebugRecipeCategory.UID);
+			registration.addRecipeCatalyst(VanillaTypes.FLUID, new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), DebugRecipeCategory.UID);
+			registration.addRecipeCatalyst(VanillaTypes.ITEM, new ItemStack(Items.STICK), DebugRecipeCategory.UID);
 			int i = 0;
 			for (Item item : ForgeRegistries.ITEMS.getValues()) {
 				ItemStack catalystIngredient = new ItemStack(item);
 				if (!catalystIngredient.isEmpty()) {
-					registration.addRecipeCatalyst(catalystIngredient, DebugRecipeCategory.UID);
+					registration.addRecipeCatalyst(VanillaTypes.ITEM, catalystIngredient, DebugRecipeCategory.UID);
 				}
 				i++;
 				if (i > 30) {

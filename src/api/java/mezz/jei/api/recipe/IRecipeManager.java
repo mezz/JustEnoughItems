@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.api.ingredients.IIngredientType;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
@@ -59,7 +60,7 @@ public interface IRecipeManager {
 	/**
 	 * Returns an unmodifiable collection of ingredients that can craft the recipes from recipeCategory.
 	 * For instance, the crafting table ItemStack is returned here for Crafting recipe category.
-	 * These are registered with {@link IRecipeCatalystRegistration#addRecipeCatalyst(Object, ResourceLocation...)}.
+	 * These are registered with {@link IRecipeCatalystRegistration#addRecipeCatalyst(IIngredientType, Object, ResourceLocation...)}.
 	 * @since JEI 7.7.1
 	 */
 	List<Object> getRecipeCatalysts(IRecipeCategory<?> recipeCategory, boolean includeHidden);

@@ -5,9 +5,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import net.minecraft.client.renderer.GameRenderer;
@@ -125,14 +127,20 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 			minecraft.font.draw(poseStack, ingredientFilter.getFilterText(), 20, 52, 0);
 
 			IIngredientListOverlay ingredientListOverlay = runtime.getIngredientListOverlay();
-			Object ingredientUnderMouse = ingredientListOverlay.getIngredientUnderMouse();
-			if (ingredientUnderMouse != null) {
-				drawIngredientName(minecraft, poseStack, ingredientUnderMouse);
-			} else {
-				IBookmarkOverlay bookmarkOverlay = runtime.getBookmarkOverlay();
-				ingredientUnderMouse = bookmarkOverlay.getIngredientUnderMouse();
+			IIngredientManager ingredientManager = runtime.getIngredientManager();
+			Collection<IIngredientType<?>> ingredientTypes = ingredientManager.getRegisteredIngredientTypes();
+			for (IIngredientType<?> ingredientType : ingredientTypes) {
+				Object ingredientUnderMouse = ingredientListOverlay.getIngredientUnderMouse(ingredientType);
 				if (ingredientUnderMouse != null) {
 					drawIngredientName(minecraft, poseStack, ingredientUnderMouse);
+					break;
+				} else {
+					IBookmarkOverlay bookmarkOverlay = runtime.getBookmarkOverlay();
+					ingredientUnderMouse = bookmarkOverlay.getIngredientUnderMouse(ingredientType);
+					if (ingredientUnderMouse != null) {
+						drawIngredientName(minecraft, poseStack, ingredientUnderMouse);
+						break;
+					}
 				}
 			}
 		}

@@ -1,31 +1,32 @@
 package mezz.jei.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import com.mojang.blaze3d.platform.Lighting;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.item.ItemStack;
-
 import com.google.common.base.Preconditions;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ISlowRenderItem;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.util.ErrorUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class IngredientListBatchRenderer {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -144,6 +145,14 @@ public class IngredientListBatchRenderer {
 			}
 		}
 		return null;
+	}
+
+	public <T> Optional<IngredientListElementRenderer<T>> getHovered(double mouseX, double mouseY, IIngredientType<T> ingredientType) {
+		return this.slots.stream()
+			.filter(s -> s.isMouseOver(mouseX, mouseY))
+			.map(s -> s.getIngredientRenderer(ingredientType))
+			.filter(Objects::nonNull)
+			.findFirst();
 	}
 
 	/**

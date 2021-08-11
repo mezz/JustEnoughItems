@@ -35,17 +35,17 @@ public interface IRecipeTransferRegistration {
 	 *
 	 * Use this when recipe slots or inventory slots are spread out in different number ranges.
 	 */
-	<C extends AbstractContainerMenu> void addRecipeTransferHandler(IRecipeTransferInfo<C> recipeTransferInfo);
+	<C extends AbstractContainerMenu, R> void addRecipeTransferHandler(IRecipeTransferInfo<C, R> recipeTransferInfo);
 
 	/**
 	 * Complete control over recipe transfer.
 	 * Use this when the container has a non-standard inventory or crafting area.
 	 */
-	void addRecipeTransferHandler(IRecipeTransferHandler<?> recipeTransferHandler, ResourceLocation recipeCategoryUid);
+	<C extends AbstractContainerMenu, R> void addRecipeTransferHandler(IRecipeTransferHandler<C, R> recipeTransferHandler, ResourceLocation recipeCategoryUid);
 
 	/**
 	 * Add a universal handler that can handle any category of recipe.
 	 * Useful for mods with recipe pattern encoding, for automated recipe systems.
 	 */
-	void addUniversalRecipeTransferHandler(IRecipeTransferHandler<?> recipeTransferHandler);
+	<C extends AbstractContainerMenu, R> void addUniversalRecipeTransferHandler(IRecipeTransferHandler<C, R> recipeTransferHandler);
 }

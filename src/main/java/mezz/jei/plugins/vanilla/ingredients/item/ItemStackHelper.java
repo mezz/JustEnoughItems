@@ -4,6 +4,8 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
@@ -30,6 +32,11 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	public ItemStackHelper(StackHelper stackHelper) {
 		this.stackHelper = stackHelper;
+	}
+
+	@Override
+	public IIngredientType<ItemStack> getIngredientType() {
+		return VanillaTypes.ITEM;
 	}
 
 	@Override

@@ -22,7 +22,7 @@ public interface IVanillaRecipeFactory {
 	 * @param rightInputs The itemStack(s) placed on the right slot.
 	 * @param outputs     The resulting itemStack(s).
 	 */
-	Object createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs);
+	IJeiAnvilRecipe createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs);
 
 	/**
 	 * Create an anvil recipe for the given inputs and output.
@@ -32,7 +32,7 @@ public interface IVanillaRecipeFactory {
 	 * @param rightInputs The itemStack(s) placed on the right slot.
 	 * @param outputs     The resulting itemStack(s).
 	 */
-	Object createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs);
+	IJeiAnvilRecipe createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs);
 
 	/**
 	 * Create a new brewing recipe.
