@@ -63,7 +63,7 @@ public final class CategoryRecipeValidator<T extends Recipe<?>> {
 	}
 
 	@SuppressWarnings("ConstantConditions")
-	protected static int getInputCount(List<Ingredient> ingredientList) {
+	private static int getInputCount(List<Ingredient> ingredientList) {
 		int inputCount = 0;
 		for (Ingredient ingredient : ingredientList) {
 			ItemStack[] input = ingredient.getItems();

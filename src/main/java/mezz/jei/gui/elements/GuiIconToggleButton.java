@@ -69,7 +69,7 @@ public abstract class GuiIconToggleButton {
 
 	protected abstract boolean isIconToggledOn();
 
-	protected abstract boolean onMouseClicked(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState);
+	protected abstract boolean onMouseClicked(MouseClickState clickState);
 
 	private class MouseHandler implements IMouseHandler {
 		@Override
@@ -79,7 +79,7 @@ public abstract class GuiIconToggleButton {
 				IMouseHandler mouseHandler = button.getMouseHandler();
 				IMouseHandler handled = mouseHandler.handleClick(screen, mouseX, mouseY, mouseButton, clickState);
 				if (handled != null) {
-					if (onMouseClicked(screen, mouseX, mouseY, mouseButton, clickState)) {
+					if (onMouseClicked(clickState)) {
 						return this;
 					}
 				}

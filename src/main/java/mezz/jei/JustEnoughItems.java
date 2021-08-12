@@ -20,6 +20,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(ModIds.JEI_ID)
 public class JustEnoughItems {
+	@SuppressWarnings("unused")
 	public JustEnoughItems() {
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		NetworkHandler networkHandler = new NetworkHandler();

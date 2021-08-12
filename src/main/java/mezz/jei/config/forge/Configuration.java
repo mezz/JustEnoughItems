@@ -50,6 +50,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nonnull;
+
 /**
  * This class offers advanced configurations capabilities, allowing to provide
  * various categories for configuration variables.
@@ -1344,7 +1346,7 @@ public class Configuration
         }
 
         @Override
-        public int read(char[] cbuf, int off, int len) throws IOException
+        public int read(@Nonnull char[] cbuf, int off, int len) throws IOException
         {
             return input.read(cbuf, off, len);
         }

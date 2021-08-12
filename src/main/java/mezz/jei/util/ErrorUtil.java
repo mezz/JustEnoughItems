@@ -257,8 +257,7 @@ public final class ErrorUtil {
 		}
 	}
 
-	@SuppressWarnings("ConstantConditions")
-	public static <T> void checkNotNull(T object, String name) {
+	public static <T> void checkNotNull(@Nullable T object, String name) {
 		if (object == null) {
 			throw new NullPointerException(name + " must not be null.");
 		}

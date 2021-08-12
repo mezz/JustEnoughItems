@@ -41,7 +41,6 @@ import java.io.File;
 import java.util.List;
 
 public class ClientLifecycleHandler {
-	final Logger LOGGER = LogManager.getLogger();
 	final JeiStarter starter = new JeiStarter();
 	final Textures textures;
 	final IClientConfig clientConfig;
@@ -163,7 +162,7 @@ public class ClientLifecycleHandler {
 			ClientPacketListener connection = Minecraft.getInstance().getConnection();
 			boolean isIntegrated = Minecraft.getInstance().isLocalServer();
 			if (connection == null || isIntegrated) {
-				//If we are an integrated server we always handle handle recipes updating as it is consistently last
+				//If we are an integrated server we always handle recipes updating as it is consistently last
 				// so we ignore the value of hasRan. Note we also check if the connection is null and treat is as
 				// integrated as the connection is null when connecting to a single player world during the tag events
 				hasRan = true;

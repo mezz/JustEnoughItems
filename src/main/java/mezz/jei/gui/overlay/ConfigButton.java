@@ -68,7 +68,7 @@ public class ConfigButton extends GuiIconToggleButton {
 	}
 
 	@Override
-	protected boolean onMouseClicked(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
+	protected boolean onMouseClicked(MouseClickState clickState) {
 		if (worldConfig.isOverlayEnabled()) {
 			if (!clickState.isSimulate()) {
 				if (Screen.hasControlDown()) {

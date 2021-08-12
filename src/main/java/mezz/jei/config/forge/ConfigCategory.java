@@ -35,6 +35,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
+import javax.annotation.Nonnull;
 import java.util.Map.Entry;
 
 public class ConfigCategory implements Map<String, Property>
@@ -388,7 +389,7 @@ public class ConfigCategory implements Map<String, Property>
         changed = true;
         return properties.remove(key);
     }
-    @Override public void putAll(Map<? extends String, ? extends Property> m)
+    @Override public void putAll(@Nonnull Map<? extends String, ? extends Property> m)
     {
         changed = true;
         if (this.propertyOrder != null)

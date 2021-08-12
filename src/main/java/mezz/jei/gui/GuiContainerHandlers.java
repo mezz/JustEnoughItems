@@ -30,7 +30,7 @@ public class GuiContainerHandlers {
 	@SuppressWarnings("unchecked")
 	private <T extends AbstractContainerScreen<?>> Entry<T> getEntryForClass(Class<? extends T> containerClass) {
 		return this.entries.stream()
-			.filter(entry -> entry.containerClass == containerClass)
+			.filter(entry -> entry.getContainerClass() == containerClass)
 			.map(entry -> (Entry<T>) entry)
 			.findFirst()
 			.orElse(null);
