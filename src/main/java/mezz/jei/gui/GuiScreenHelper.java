@@ -6,8 +6,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -19,7 +21,6 @@ import net.minecraft.world.item.ItemStack;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
-import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.ingredients.IngredientManager;
@@ -79,8 +80,8 @@ public class GuiScreenHelper {
 		if (!MathUtil.equalRects(guiAreas, this.guiExclusionAreas)) {
 			// make a defensive copy because Rectangle is mutable
 			this.guiExclusionAreas = guiAreas.stream()
-				.map(r -> new Rect2i(r.getX(), r.getY(), r.getWidth(), r.getHeight()))
-				.collect(Collectors.toSet());
+				.map(MathUtil::copyRect)
+				.collect(Collectors.toUnmodifiableSet());
 			return true;
 		}
 		return false;
@@ -114,22 +115,20 @@ public class GuiScreenHelper {
 
 	@Nullable
 	public <T extends AbstractContainerScreen<?>> IClickedIngredient<?> getPluginsIngredientUnderMouse(T guiContainer, double mouseX, double mouseY) {
-		List<IGuiContainerHandler<? super T>> activeAdvancedGuiHandlers = this.guiContainerHandlers.getActiveGuiHandlers(guiContainer);
-		for (IGuiContainerHandler<? super T> advancedGuiHandler : activeAdvancedGuiHandlers) {
-			Object clicked = advancedGuiHandler.getIngredientUnderMouse(guiContainer, mouseX, mouseY);
-			IClickedIngredient<?> clickedIngredient = createClickedIngredient(clicked, guiContainer);
-			if (clickedIngredient != null) {
-				return clickedIngredient;
-			}
-		}
-		for (IGlobalGuiHandler globalGuiHandler : globalGuiHandlers) {
-			Object clicked = globalGuiHandler.getIngredientUnderMouse(mouseX, mouseY);
-			IClickedIngredient<?> clickedIngredient = createClickedIngredient(clicked, guiContainer);
-			if (clickedIngredient != null) {
-				return clickedIngredient;
-			}
-		}
-		return null;
+		return getIngredientsUnderMouse(guiContainer, mouseX, mouseY)
+			.map(c -> createClickedIngredient(c, guiContainer))
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElse(null);
+	}
+
+	private <T extends AbstractContainerScreen<?>> Stream<Object> getIngredientsUnderMouse(T guiContainer, double mouseX, double mouseY) {
+		return Stream.concat(
+			this.guiContainerHandlers.getActiveGuiHandlerStream(guiContainer)
+				.map(a -> a.getIngredientUnderMouse(guiContainer, mouseX, mouseY)),
+			this.globalGuiHandlers.stream()
+				.map(a -> a.getIngredientUnderMouse(mouseX, mouseY))
+		);
 	}
 
 	@Nullable

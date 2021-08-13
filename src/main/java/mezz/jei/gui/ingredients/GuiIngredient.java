@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -252,16 +251,15 @@ public class GuiIngredient<T> extends GuiComponent implements IGuiIngredient<T> 
 		List<Item> items = itemStacks.stream()
 			.filter(Objects::nonNull)
 			.map(ItemStack::getItem)
-			.collect(Collectors.toList());
+			.toList();
 
 		TagCollection<Item> collection = ItemTags.getAllTags();
 		Collection<Tag<Item>> tags = collection.getAllTags().values();
-		for (Tag<Item> tag : tags) {
-			if (tag.getValues().equals(items)) {
-				return collection.getId(tag);
-			}
-		}
-		return null;
+		return tags.stream()
+			.filter(tag -> tag.getValues().equals(items))
+			.findFirst()
+			.map(collection::getId)
+			.orElse(null);
 	}
 
 	@Override

@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public final class ClientConfig implements IJEIConfig, IClientConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -108,7 +107,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 			builder.comment(String.format("Sorting order for the ingredient list. Valid stages: %s", Arrays.asList(IngredientSortStage.values())));
 			List<String> defaults = ingredientSorterStagesDefault.stream()
 				.map(Enum::name)
-				.collect(Collectors.toList());
+				.toList();
 			Predicate<Object> elementValidator = validEnumElement(IngredientSortStage.class);
 			ingredientSorterStagesCfg = builder.defineList("IngredientSortStages", defaults, elementValidator);
 		}
@@ -162,7 +161,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 			.stream()
 			.map(s -> EnumUtils.getEnum(IngredientSortStage.class, s))
 			.filter(Objects::nonNull)
-			.collect(Collectors.toList());
+			.toList();
 		if (ingredientSorterStages.isEmpty()) {
 			this.ingredientSorterStages = ingredientSorterStagesDefault;
 		}

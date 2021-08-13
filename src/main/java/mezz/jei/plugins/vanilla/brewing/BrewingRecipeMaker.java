@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraftforge.common.brewing.BrewingRecipe;
@@ -72,23 +71,24 @@ public class BrewingRecipeMaker {
 		return recipeList;
 	}
 
-	private void addVanillaBrewingRecipes(Collection<IJeiBrewingRecipe> recipes, VanillaBrewingRecipe vanillaBrewingRecipe) {
-		List<ItemStack> potionReagents = ingredientManager.getAllIngredients(VanillaTypes.ITEM).stream()
-			.filter(itemStack -> {
-				try {
-					return PotionBrewing.isIngredient(itemStack);
-				} catch (RuntimeException | LinkageError e) {
-					String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
-					LOGGER.error("Failed to check if item is a potion reagent {}.", itemStackInfo, e);
-					return false;
-				}
-			})
-			.collect(Collectors.toList());
-
-		List<ItemStack> basePotions = new ArrayList<>();
-		for (Ingredient potionItem : PotionBrewing.ALLOWED_CONTAINERS) {
-			Collections.addAll(basePotions, potionItem.getItems());
+	private boolean isIngredient(ItemStack itemStack) {
+		try {
+			return PotionBrewing.isIngredient(itemStack);
+		} catch (RuntimeException | LinkageError e) {
+			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
+			LOGGER.error("Failed to check if item is a potion reagent {}.", itemStackInfo, e);
+			return false;
 		}
+	}
+
+	private void addVanillaBrewingRecipes(Collection<IJeiBrewingRecipe> recipes, VanillaBrewingRecipe vanillaBrewingRecipe) {
+		List<ItemStack> potionIngredients = ingredientManager.getAllIngredients(VanillaTypes.ITEM).stream()
+			.filter(this::isIngredient)
+			.toList();
+
+		List<ItemStack> basePotions = PotionBrewing.ALLOWED_CONTAINERS.stream()
+			.flatMap(potionItem -> Arrays.stream(potionItem.getItems()))
+			.toList();
 
 		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM);
 		Collection<ItemStack> knownPotions = IngredientSet.create(itemStackHelper, UidContext.Ingredient);
@@ -105,7 +105,7 @@ public class BrewingRecipeMaker {
 
 		boolean foundNewPotions;
 		do {
-			List<ItemStack> newPotions = getNewPotions(knownPotions, potionReagents, recipes, vanillaBrewingRecipe);
+			List<ItemStack> newPotions = getNewPotions(knownPotions, potionIngredients, recipes, vanillaBrewingRecipe);
 			foundNewPotions = !newPotions.isEmpty();
 			knownPotions.addAll(newPotions);
 		} while (foundNewPotions);

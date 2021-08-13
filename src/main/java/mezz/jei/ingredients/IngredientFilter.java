@@ -258,7 +258,7 @@ public class IngredientFilter implements IIngredientGridSource {
 					IIngredientListElement<?> element = info.getElement();
 					return element.isVisible();
 				})
-				.collect(Collectors.toList());
+				.toList();
 		}
 
 		List<IIngredientListElementInfo<?>> matchingIngredients = new ArrayList<>();

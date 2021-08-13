@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RecipeManagerInternal {
@@ -53,7 +52,7 @@ public class RecipeManagerInternal {
 
 		Collection<ResourceLocation> recipeCategoryResourceLocations = recipeCategories.stream()
 			.map(IRecipeCategory::getUid)
-			.collect(Collectors.toList());
+			.toList();
 		Comparator<ResourceLocation> recipeCategoryUidComparator = recipeCategorySortingConfig.getComparator(recipeCategoryResourceLocations);
 		this.recipeInputMap = new RecipeMap(recipeCategoryUidComparator, ingredientManager);
 		this.recipeOutputMap = new RecipeMap(recipeCategoryUidComparator, ingredientManager);
@@ -235,7 +234,7 @@ public class RecipeManagerInternal {
 		IngredientFilter ingredientFilter = Internal.getIngredientFilter();
 		return catalysts.stream()
 			.filter(catalyst -> ingredientManager.isIngredientVisible(catalyst, ingredientFilter))
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	public <T> void hideRecipe(T recipe, ResourceLocation recipeCategoryUid) {

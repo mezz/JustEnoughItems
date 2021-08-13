@@ -54,7 +54,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocuses, IRecipeLogicStateListener {
 	private static final int borderPadding = 6;
@@ -512,7 +511,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 		List<? extends GuiEventListener> oldTransferButtons = children().stream()
 			.filter(widget -> widget instanceof RecipeTransferButton)
-			.collect(Collectors.toList());
+			.toList();
 
 		for (GuiEventListener button : oldTransferButtons) {
 			removeWidget(button);

@@ -270,6 +270,10 @@ public final class MathUtil {
 		return true;
 	}
 
+	public static Rect2i copyRect(Rect2i rect) {
+		return new Rect2i(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+	}
+
 	private static boolean containsRect(Collection<Rect2i> rects, Rect2i aRect) {
 		for (Rect2i bRect : rects) {
 			if (aRect.getX() == bRect.getX() &&

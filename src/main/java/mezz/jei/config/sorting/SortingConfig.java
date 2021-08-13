@@ -14,7 +14,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public abstract class SortingConfig<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -65,7 +64,7 @@ public abstract class SortingConfig<T> {
 		this.sorted = allValues.stream()
 			.distinct()
 			.sorted(sortOrder)
-			.collect(Collectors.toList());
+			.toList();
 
 		if (!Objects.equals(sortedOnFile, this.sorted)) {
 			save(this.sorted);

@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class IngredientListElementInfo<V> implements IIngredientListElementInfo<V> {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -65,7 +64,7 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 		}
 		this.modNames = this.modIds.stream()
 			.map(modIdHelper::getModNameForModId)
-			.collect(Collectors.toList());
+			.toList();
 		this.displayName = IngredientInformation.getDisplayName(ingredient, ingredientHelper);
 		this.resourceId = ingredientHelper.getResourceId(ingredient);
 		this.sortedIndex = -1;
@@ -119,7 +118,7 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 		Collection<ResourceLocation> tags = ingredientHelper.getTags(ingredient);
 		return tags.stream()
 			.map(ResourceLocation::getPath)
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	@Override
@@ -136,7 +135,7 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 		Collection<String> creativeTabsStrings = ingredientHelper.getCreativeTabNames(ingredient);
 		return creativeTabsStrings.stream()
 			.map(Translator::toLowercaseWithLocale)
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	@Override

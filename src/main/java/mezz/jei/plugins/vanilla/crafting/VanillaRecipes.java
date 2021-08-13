@@ -3,7 +3,6 @@ package mezz.jei.plugins.vanilla.crafting;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -84,7 +83,7 @@ public final class VanillaRecipes {
 		return getRecipes(recipeManager, recipeType)
 			.stream()
 			.filter(validator::isRecipeValid)
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 }

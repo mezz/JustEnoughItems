@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.input.CombinedMouseHandler;
@@ -92,7 +91,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 
 		Collection<Rect2i> intersectsNavigationArea = guiExclusionAreas.stream()
 			.filter(rectangle2d -> MathUtil.intersects(rectangle2d, estimatedNavigationArea))
-			.collect(Collectors.toList());
+			.toList();
 
 		final int maxWidth = this.ingredientGrid.maxWidth();
 		final int maxHeight = availableArea.getHeight();

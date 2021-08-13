@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.config.IClientConfig;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
@@ -14,6 +15,7 @@ import net.minecraft.ChatFormatting;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.config.ModIdFormattingConfig;
+import net.minecraftforge.forgespi.language.IModInfo;
 import org.apache.commons.lang3.StringUtils;
 
 public class ForgeModIdHelper extends AbstractModIdHelper {
@@ -28,7 +30,8 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 	@Override
 	public String getModNameForModId(String modId) {
 		return ModList.get().getModContainerById(modId)
-			.map(modContainer -> modContainer.getModInfo().getDisplayName())
+			.map(ModContainer::getModInfo)
+			.map(IModInfo::getDisplayName)
 			.orElse(StringUtils.capitalize(modId));
 	}
 
