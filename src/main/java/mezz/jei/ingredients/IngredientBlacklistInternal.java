@@ -23,12 +23,7 @@ public class IngredientBlacklistInternal {
 	public <V> boolean isIngredientBlacklistedByApi(V ingredient, IIngredientHelper<V> ingredientHelper) {
 		List<String> uids = IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient, UidContext.Ingredient);
 
-		for (String uid : uids) {
-			if (ingredientBlacklist.contains(uid)) {
-				return true;
-			}
-		}
-
-		return false;
+		return uids.stream()
+			.anyMatch(ingredientBlacklist::contains);
 	}
 }

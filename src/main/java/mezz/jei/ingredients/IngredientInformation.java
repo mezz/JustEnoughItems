@@ -1,11 +1,11 @@
 package mezz.jei.ingredients;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.world.item.TooltipFlag;
@@ -32,19 +32,18 @@ public final class IngredientInformation {
 	public static <T> List<String> getTooltipStrings(T ingredient, IIngredientRenderer<T> ingredientRenderer, Set<String> toRemove, IIngredientFilterConfig config) {
 		TooltipFlag.Default tooltipFlag = config.getSearchAdvancedTooltips() ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
 		List<Component> tooltip = ingredientRenderer.getTooltip(ingredient, tooltipFlag);
-		List<String> cleanTooltip = new ArrayList<>(tooltip.size());
-		for (Component lineComponent : tooltip) {
-			String line = lineComponent.getString();
-			line = removeChatFormatting(line);
-			line = Translator.toLowercaseWithLocale(line);
-			for (String excludeWord : toRemove) {
-				line = line.replace(excludeWord, "");
-			}
-			if (!StringUtil.isNullOrEmpty(line)) {
-				cleanTooltip.add(line);
-			}
-		}
-		return cleanTooltip;
+		return tooltip.stream()
+			.map(Component::getString)
+			.map(IngredientInformation::removeChatFormatting)
+			.map(Translator::toLowercaseWithLocale)
+			.map(line -> {
+				for (String excludeWord : toRemove) {
+					line = line.replace(excludeWord, "");
+				}
+				return line;
+			})
+			.filter(line -> !StringUtil.isNullOrEmpty(line))
+			.collect(Collectors.toList());
 	}
 
 	private static String removeChatFormatting(String string) {
