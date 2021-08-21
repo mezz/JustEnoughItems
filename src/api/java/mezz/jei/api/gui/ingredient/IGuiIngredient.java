@@ -2,12 +2,10 @@ package mezz.jei.api.gui.ingredient;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
-import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 
 /**
  * Represents one drawn ingredient that is part of a recipe.

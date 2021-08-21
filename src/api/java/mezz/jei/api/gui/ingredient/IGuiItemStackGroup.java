@@ -20,8 +20,8 @@ public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {
 	 * Initialize the itemStack at slotIndex.
 	 *
 	 * Note that for legacy reasons, this method adds a padding and offset of 1 pixel on all sides, so that an 18x18 slot texture will center a 16x16 item.
-	 * If you do not want this behavior, use the full init method defined in 
-	 * {@link IGuiIngredientGroup#init(int, boolean, IIngredientRenderer, int, int, int, int, int, int)} with padding set to 0. 
+	 * If you do not want this behavior, use the full init method defined in
+	 * {@link IGuiIngredientGroup#init(int, boolean, IIngredientRenderer, int, int, int, int, int, int)} with padding set to 0.
 	 *
 	 * @param slotIndex the slot index of this itemStack
 	 * @param input     whether this slot is an input. Used for the recipe-fill feature.

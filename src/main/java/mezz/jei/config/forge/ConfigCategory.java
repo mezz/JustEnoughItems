@@ -331,7 +331,7 @@ public class ConfigCategory implements Map<String, Property>
                 char type = prop.getType().getID();
                 write(out, pad1, String.valueOf(type), ":", propName, "=", prop.getString());
             }
-            
+
             prop.resetChangedState();
         }
 

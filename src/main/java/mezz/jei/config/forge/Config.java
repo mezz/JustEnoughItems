@@ -106,12 +106,12 @@ public @interface Config
     {
         String value();
     }
-    
+
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.FIELD, ElementType.TYPE})
     @interface RequiresMcRestart
     {}
-    
+
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.FIELD, ElementType.TYPE})
     @interface RequiresWorldRestart
