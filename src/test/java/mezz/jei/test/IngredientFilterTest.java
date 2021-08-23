@@ -95,12 +95,13 @@ public class IngredientFilterTest {
 		TestIngredient testIngredient = ingredients.get(0);
 		IIngredientRenderer<TestIngredient> ingredientRenderer = ingredientManager.getIngredientRenderer(testIngredient);
 		List<String> tooltipStrings = getTooltipStrings(ingredientRenderer, testIngredient);
-		List<TestIngredient> filteredIngredients;
 
 		addIngredients(ingredientFilter, ingredientManager, ingredients);
 		for (String tooltipString : tooltipStrings) {
-			filteredIngredients = getFilteredIngredients(ingredientFilter, tooltipString);
+			List<TestIngredient> filteredIngredients = getFilteredIngredients(ingredientFilter, tooltipString);
 			assert filteredIngredients.contains(testIngredient);
+			Collection<TestIngredient> allIngredients = ingredientManager.getAllIngredients(TestIngredient.TYPE);
+			assert allIngredients.contains(testIngredient);
 		}
 		for (TestIngredient ingredient : ingredients) {
 			assert ingredientFilter.isIngredientVisible(ingredient);
@@ -108,8 +109,10 @@ public class IngredientFilterTest {
 
 		removeIngredients(ingredientFilter, ingredientManager, ingredients);
 		for (String tooltipString : tooltipStrings) {
-			filteredIngredients = getFilteredIngredients(ingredientFilter, tooltipString);
+			List<TestIngredient> filteredIngredients = getFilteredIngredients(ingredientFilter, tooltipString);
 			assert !filteredIngredients.contains(testIngredient);
+			Collection<TestIngredient> allIngredients = ingredientManager.getAllIngredients(TestIngredient.TYPE);
+			assert !allIngredients.contains(testIngredient);
 		}
 		for (TestIngredient ingredient : ingredients) {
 			assert !ingredientFilter.isIngredientVisible(ingredient);
@@ -117,8 +120,10 @@ public class IngredientFilterTest {
 
 		addIngredients(ingredientFilter, ingredientManager, ingredients);
 		for (String tooltipString : tooltipStrings) {
-			filteredIngredients = getFilteredIngredients(ingredientFilter, tooltipString);
+			List<TestIngredient> filteredIngredients = getFilteredIngredients(ingredientFilter, tooltipString);
 			assert filteredIngredients.contains(testIngredient);
+			Collection<TestIngredient> allIngredients = ingredientManager.getAllIngredients(TestIngredient.TYPE);
+			assert allIngredients.contains(testIngredient);
 		}
 		for (TestIngredient ingredient : ingredients) {
 			assert ingredientFilter.isIngredientVisible(ingredient);
