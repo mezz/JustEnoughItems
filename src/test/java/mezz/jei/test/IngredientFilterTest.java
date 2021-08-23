@@ -92,6 +92,18 @@ public class IngredientFilterTest {
 		Assertions.assertNotNull(ingredientManager);
 
 		List<TestIngredient> ingredients = createIngredients();
+
+		addIngredients(ingredientFilter, ingredientManager, ingredients);
+		removeIngredients(ingredientFilter, ingredientManager, ingredients);
+		addIngredients(ingredientFilter, ingredientManager, ingredients);
+	}
+
+	@Test
+	public void testAddingAndRemovingIngredientsWithTooltipStrings() {
+		Assertions.assertNotNull(ingredientFilter);
+		Assertions.assertNotNull(ingredientManager);
+
+		List<TestIngredient> ingredients = createIngredients();
 		TestIngredient testIngredient = ingredients.get(0);
 		IIngredientRenderer<TestIngredient> ingredientRenderer = ingredientManager.getIngredientRenderer(testIngredient);
 		List<String> tooltipStrings = getTooltipStrings(ingredientRenderer, testIngredient);
@@ -100,37 +112,22 @@ public class IngredientFilterTest {
 		for (String tooltipString : tooltipStrings) {
 			List<TestIngredient> filteredIngredients = getFilteredIngredients(ingredientFilter, tooltipString);
 			assert filteredIngredients.contains(testIngredient);
-			Collection<TestIngredient> allIngredients = ingredientManager.getAllIngredients(TestIngredient.TYPE);
-			assert allIngredients.contains(testIngredient);
-		}
-		for (TestIngredient ingredient : ingredients) {
-			assert ingredientFilter.isIngredientVisible(ingredient);
 		}
 
 		removeIngredients(ingredientFilter, ingredientManager, ingredients);
 		for (String tooltipString : tooltipStrings) {
 			List<TestIngredient> filteredIngredients = getFilteredIngredients(ingredientFilter, tooltipString);
 			assert !filteredIngredients.contains(testIngredient);
-			Collection<TestIngredient> allIngredients = ingredientManager.getAllIngredients(TestIngredient.TYPE);
-			assert !allIngredients.contains(testIngredient);
-		}
-		for (TestIngredient ingredient : ingredients) {
-			assert !ingredientFilter.isIngredientVisible(ingredient);
 		}
 
 		addIngredients(ingredientFilter, ingredientManager, ingredients);
 		for (String tooltipString : tooltipStrings) {
 			List<TestIngredient> filteredIngredients = getFilteredIngredients(ingredientFilter, tooltipString);
 			assert filteredIngredients.contains(testIngredient);
-			Collection<TestIngredient> allIngredients = ingredientManager.getAllIngredients(TestIngredient.TYPE);
-			assert allIngredients.contains(testIngredient);
-		}
-		for (TestIngredient ingredient : ingredients) {
-			assert ingredientFilter.isIngredientVisible(ingredient);
 		}
 	}
 	
-	private List<TestIngredient> getFilteredIngredients(IngredientFilter ingredientFilter, String tooltipString) {
+	private static List<TestIngredient> getFilteredIngredients(IngredientFilter ingredientFilter, String tooltipString) {
 		return ingredientFilter.getFilteredIngredients(tooltipString)
 				.stream()
 				.filter(i -> i instanceof TestIngredient)
@@ -206,17 +203,27 @@ public class IngredientFilterTest {
 		return ingredients;
 	}
 
-	private static void addIngredients(IngredientFilter ingredientFilter, IngredientManager ingredientManager, List<TestIngredient> ingredients) {
-		List<IIngredientListElement<TestIngredient>> listToAdd = IngredientListElementFactory.createList(ingredientManager, TestIngredient.TYPE, ingredients);
+	private static void addIngredients(IngredientFilter ingredientFilter, IngredientManager ingredientManager, List<TestIngredient> ingredientsToAdd) {
+		List<IIngredientListElement<TestIngredient>> listToAdd = IngredientListElementFactory.createList(ingredientManager, TestIngredient.TYPE, ingredientsToAdd);
 		Assertions.assertEquals(EXTRA_INGREDIENT_COUNT, listToAdd.size());
 
-		ingredientManager.addIngredientsAtRuntime(TestIngredient.TYPE, ingredients, ingredientFilter);
+		ingredientManager.addIngredientsAtRuntime(TestIngredient.TYPE, ingredientsToAdd, ingredientFilter);
 
 		Collection<TestIngredient> testIngredients = ingredientManager.getAllIngredients(TestIngredient.TYPE);
 		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT, testIngredients.size());
+		for (TestIngredient testIngredient : ingredientsToAdd) {
+			assert testIngredients.contains(testIngredient);
+		}
 
-		List<IIngredientListElement<?>> ingredientList = ingredientFilter.getIngredientList("");
-		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT, ingredientList.size());
+		List<TestIngredient> filteredIngredients = getFilteredIngredients(ingredientFilter, "");
+		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT, filteredIngredients.size());
+		for (TestIngredient testIngredient : filteredIngredients) {
+			assert testIngredients.contains(testIngredient);
+		}
+
+		for (TestIngredient ingredient : ingredientsToAdd) {
+			assert ingredientFilter.isIngredientVisible(ingredient);
+		}
 	}
 
 	private static void removeIngredients(IngredientFilter ingredientFilter, IngredientManager ingredientManager, List<TestIngredient> ingredientsToRemove) {
@@ -225,10 +232,20 @@ public class IngredientFilterTest {
 
 		ingredientManager.removeIngredientsAtRuntime(TestIngredient.TYPE, ingredientsToRemove, ingredientFilter);
 
-		List<IIngredientListElement<?>> ingredientList = ingredientFilter.getIngredientList("");
-		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientList.size());
+		List<TestIngredient> filteredIngredients = getFilteredIngredients(ingredientFilter, "");
+		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, filteredIngredients.size());
+		for (TestIngredient testIngredient : filteredIngredients) {
+			assert !ingredientsToRemove.contains(testIngredient);
+		}
 
 		Collection<TestIngredient> testIngredients = ingredientManager.getAllIngredients(TestIngredient.TYPE);
 		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, testIngredients.size());
+		for (TestIngredient testIngredient : testIngredients) {
+			assert !ingredientsToRemove.contains(testIngredient);
+		}
+
+		for (TestIngredient ingredient : ingredientsToRemove) {
+			assert !ingredientFilter.isIngredientVisible(ingredient);
+		}
 	}
 }
