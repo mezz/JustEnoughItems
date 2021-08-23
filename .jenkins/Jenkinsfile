@@ -26,7 +26,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh "JAVA_HOME=${env.JDK_16} ./gradlew publishMavenJavaPublicationToMavenRepository curseforge -PBUILD_NUMBER=${env.BUILD_NUMBER} -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "JAVA_HOME=${env.JDK_16} ./gradlew publishMavenJavaPublicationToMavenLocal curseforge -PBUILD_NUMBER=${env.BUILD_NUMBER} -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
             }
         }
     }
