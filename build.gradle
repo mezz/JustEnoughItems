@@ -131,6 +131,7 @@ javadoc {
 }
 
 task makeChangelog(type: GitChangelogTask) {
+	fromRepo = file("$projectDir")
 	file = file('changelog.html')
 	untaggedName = "Current release ${project.version}"
 	fromCommit = '2fe051cf727adce1be210a46f778aa8fe031331e'
