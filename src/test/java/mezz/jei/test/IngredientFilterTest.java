@@ -178,6 +178,9 @@ public class IngredientFilterTest {
 
 		Collection<TestIngredient> testIngredients = ingredientRegistry.getAllIngredients(TestIngredient.TYPE);
 		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT, testIngredients.size());
+		for (TestIngredient testIngredient : ingredientsToAdd) {
+			Assert.assertTrue(testIngredients.contains(testIngredient));
+		}
 
 		List<IIngredientListElement> ingredientList = ingredientFilter.getIngredientList();
 		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT, ingredientList.size());
@@ -203,5 +206,8 @@ public class IngredientFilterTest {
 
 		Collection<TestIngredient> testIngredients = ingredientRegistry.getAllIngredients(TestIngredient.TYPE);
 		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, testIngredients.size());
+		for (TestIngredient testIngredient : ingredientsToRemove) {
+			Assert.assertFalse(testIngredients.contains(testIngredient));
+		}
 	}
 }
