@@ -253,18 +253,6 @@ public class IngredientManager implements IIngredientManager {
 	}
 
 	public <V> boolean isIngredientVisible(V ingredient, IngredientFilter ingredientFilter) {
-		IIngredientType<V> ingredientType = getIngredientType(ingredient);
-		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientType);
-		List<IIngredientListElementInfo<V>> matchingElementInfos = ingredientFilter.findMatchingElements(ingredientHelper, ingredient);
-		if (matchingElementInfos.isEmpty()) {
-			return true;
-		}
-		for (IIngredientListElementInfo<?> matchingElementInfo : matchingElementInfos) {
-			IIngredientListElement<?> matchingElement = matchingElementInfo.getElement();
-			if (matchingElement.isVisible()) {
-				return true;
-			}
-		}
-		return false;
+		return ingredientFilter.isIngredientVisible(ingredient);
 	}
 }

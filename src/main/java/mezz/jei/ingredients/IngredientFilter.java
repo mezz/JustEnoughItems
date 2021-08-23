@@ -168,18 +168,6 @@ public class IngredientFilter implements IIngredientGridSource {
 		}
 	}
 
-	public <V> void updateHiddenState(IIngredientListElement<V> element) {
-		V ingredient = element.getIngredient();
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-		boolean visible = !blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper) &&
-			ingredientHelper.isIngredientOnServer(ingredient) &&
-			(editModeConfig.isEditModeEnabled() || !editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
-		if (element.isVisible() != visible) {
-			element.setVisible(visible);
-			this.filterCached = null;
-		}
-	}
-
 	@Override
 	public List<IIngredientListElement<?>> getIngredientList(String filterText) {
 		filterText = filterText.toLowerCase();
@@ -416,5 +404,29 @@ public class IngredientFilter implements IIngredientGridSource {
 		for (IIngredientGridSource.Listener listener : listeners) {
 			listener.onChange();
 		}
+	}
+
+	public <V> void updateHiddenState(IIngredientListElement<V> element) {
+		V ingredient = element.getIngredient();
+		boolean visible = isIngredientVisible(ingredient);
+		if (element.isVisible() != visible) {
+			element.setVisible(visible);
+			this.filterCached = null;
+		}
+	}
+
+	public <V> boolean isIngredientVisible(V ingredient) {
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
+		return isIngredientVisible(ingredient, ingredientHelper);
+	}
+
+	public <V> boolean isIngredientVisible(V ingredient, IIngredientHelper<V> ingredientHelper) {
+		if (blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper)) {
+			return false;
+		}
+		if (!ingredientHelper.isIngredientOnServer(ingredient)) {
+			return false;
+		}
+		return editModeConfig.isEditModeEnabled() || !editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper);
 	}
 }
