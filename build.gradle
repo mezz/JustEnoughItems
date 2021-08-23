@@ -220,8 +220,8 @@ task reobf {
 	dependsOn reobfApiJar
 }
 
-task uploadJars(dependsOn: build) {
-	description = 'Uploads JARs'
+task publish(dependsOn: build) {
+	description = 'Publishes JARs to local maven'
 	if (project.hasProperty('local_maven')) {
 		apply plugin: 'maven-publish'
 		publishing {
