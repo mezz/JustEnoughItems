@@ -223,13 +223,9 @@ task reobf {
 }
 
 publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			artifact apiJar
-			artifact jar
-			artifact javadocJar
-			artifact deobfJar
-			artifact sourcesJar
+	publications { PublicationContainer publicationContainer ->
+		publicationContainer.register("maven", MavenPublication) { MavenPublication publication ->
+			publication.artifacts = [apiJar, jar, javadocJar, deobfJar, sourcesJar]
 		}
 	}
 	repositories {
