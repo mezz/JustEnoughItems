@@ -233,10 +233,8 @@ publishing {
 		}
 	}
 	repositories {
-		if (project.hasProperty('local_maven')) {
-			maven {
-				url("file://${local_maven}")
-			}
+		if (project.hasProperty('DEPLOY_DIR')) {
+			maven { url DEPLOY_DIR }
 		}
 	}
 }
