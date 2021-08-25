@@ -1,7 +1,6 @@
 package mezz.jei.recipes;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -16,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RecipeManager implements IRecipeManager {
 	private final RecipeManagerInternal internal;
@@ -51,26 +51,26 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public <V> ImmutableList<IRecipeCategory<?>> getRecipeCategories(Collection<ResourceLocation> recipeCategoryUids, @Nullable IFocus<V> focus, boolean includeHidden) {
+	public <V> List<IRecipeCategory<?>> getRecipeCategories(Collection<ResourceLocation> recipeCategoryUids, @Nullable IFocus<V> focus, boolean includeHidden) {
 		ErrorUtil.checkNotNull(recipeCategoryUids, "recipeCategoryUids");
 		Focus<V> internalFocus = Focus.checkNullable(focus);
 		return internal.getRecipeCategoriesStream(recipeCategoryUids, internalFocus, includeHidden)
-			.collect(ImmutableList.toImmutableList());
+			.collect(Collectors.toList());
 	}
 
 	@Override
-	public <V> ImmutableList<IRecipeCategory<?>> getRecipeCategories(@Nullable IFocus<V> focus, boolean includeHidden) {
+	public <V> List<IRecipeCategory<?>> getRecipeCategories(@Nullable IFocus<V> focus, boolean includeHidden) {
 		Focus<V> internalFocus = Focus.checkNullable(focus);
 		return internal.getRecipeCategoriesStream(null, internalFocus, includeHidden)
-			.collect(ImmutableList.toImmutableList());
+			.collect(Collectors.toList());
 	}
 
 	@Override
-	public <T, V> ImmutableList<T> getRecipes(IRecipeCategory<T> recipeCategory, @Nullable IFocus<V> focus, boolean includeHidden) {
+	public <T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, @Nullable IFocus<V> focus, boolean includeHidden) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		Focus<V> internalFocus = Focus.checkNullable(focus);
 		return internal.getRecipesStream(recipeCategory, internalFocus, includeHidden)
-			.collect(ImmutableList.toImmutableList());
+			.collect(Collectors.toList());
 	}
 
 	@Override
