@@ -110,7 +110,7 @@ public class IngredientListBatchRenderer {
 				return;
 			}
 
-			if (!bakedModel.isCustomRenderer() && !(itemStack.getItem() instanceof ISlowRenderItem)) {
+			if (!bakedModel.isCustomRenderer() && !bakedModel.isLayered() && !(itemStack.getItem() instanceof ISlowRenderItem)) {
 				ItemStackFastRenderer renderer = new ItemStackFastRenderer(itemStackElement);
 				ingredientListSlot.setIngredientRenderer(renderer);
 				if (bakedModel.usesBlockLight()) {
