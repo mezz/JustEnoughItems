@@ -145,9 +145,6 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 			}
 		}
 
-		//Ensure the correct shader is set as ExtendedButton expects this shader to be set but doesn't actually set it
-		// and drawing font causes another shader to get bound
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		ExtendedButton button = recipe.getButton();
 		button.render(poseStack, (int) mouseX, (int) mouseY, 0);
 	}
