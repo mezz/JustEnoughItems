@@ -9,8 +9,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.input.click.MouseClickState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
@@ -82,31 +85,28 @@ public class GhostIngredientDrag<T> {
 		if (origin != null) {
 			int originX = origin.getX() + (origin.getWidth() / 2);
 			int originY = origin.getY() + (origin.getHeight() / 2);
-			int xDist = originX - mouseX;
-			int yDist = originY - mouseY;
-			float lineWidth = 2;
-			if (minecraft.screen != null) {
-				long distanceSq = (long) xDist * xDist + (long) yDist * yDist;
-				int screenDim = minecraft.screen.width * minecraft.screen.height;
-				float percentOfDim = Math.min(1, distanceSq / (float) screenDim);
-				lineWidth = 1 + ((1 - (percentOfDim)) * 3);
-			}
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+			RenderSystem.disableTexture();
 			RenderSystem.disableDepthTest();
-			GL11.glLineWidth(lineWidth);
+			RenderSystem.depthMask(false);
+
 			GL11.glEnable(GL11.GL_LINE_SMOOTH);
 			GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
-			GL11.glBegin(GL11.GL_LINES);
-			float red = (float) (targetColor >> 24 & 255) / 255.0F;
-			float green = (float) (targetColor >> 16 & 255) / 255.0F;
-			float blue = (float) (targetColor >> 8 & 255) / 255.0F;
-			float alpha = (float) (targetColor & 255) / 255.0F;
-			RenderSystem.color4f(red, green, blue, alpha);
-			GL11.glVertex3f(mouseX, mouseY, 150);
-			GL11.glVertex3f(originX, originY, 150);
-			GL11.glEnd();
+
+			Tessellator tessellator = Tessellator.getInstance();
+			BufferBuilder bufferBuilder = tessellator.getBuilder();
+			bufferBuilder.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+			int red = targetColor >> 24 & 255;
+			int green = targetColor >> 16 & 255;
+			int blue = targetColor >> 8 & 255;
+			int alpha = targetColor & 255;
+			bufferBuilder.vertex(mouseX, mouseY, 150).color(red, green, blue, alpha).endVertex();
+			bufferBuilder.vertex(originX, originY, 150).color(red, green, blue, alpha).endVertex();
+			tessellator.end();
+
 			RenderSystem.enableDepthTest();
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			RenderSystem.enableTexture();
+			RenderSystem.depthMask(true);
 		}
 
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
