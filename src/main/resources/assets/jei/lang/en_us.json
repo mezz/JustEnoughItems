@@ -127,6 +127,8 @@
   "gui.jei.category.fuel.smeltCount": "Smelts %s items",
   "gui.jei.category.brewing": "Brewing",
   "gui.jei.category.brewing.steps": "Steps: %s",
+  "gui.jei.category.compostable": "Compostable",
+  "gui.jei.category.compostable.chance": "Chance: %s%%",
   "gui.jei.category.itemInformation": "Information",
 
   "_comment": "Messages",

@@ -10,6 +10,7 @@ import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.world.item.crafting.UpgradeRecipe;
+import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 
 import mezz.jei.api.ingredients.IIngredientType;
@@ -99,6 +100,14 @@ public final class VanillaRecipeCategoryUid {
 	 * @since JEI 7.3.1
 	 */
 	public static final ResourceLocation SMITHING = new ResourceLocation(ModIds.MINECRAFT_ID, "smithing");
+
+	/**
+	 * The sompostable recipe category.
+	 *
+	 * Automatically includes every item added to {@link ComposterBlock#COMPOSTABLES}.
+	 * @since JEI 8.1.0
+	 */
+	public static final ResourceLocation COMPOSTABLE = new ResourceLocation(ModIds.MINECRAFT_ID, "compostable");
 
 	/**
 	 * The JEI info recipe category shows extra information about ingredients.
