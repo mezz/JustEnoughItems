@@ -32,6 +32,8 @@ import mezz.jei.plugins.vanilla.anvil.SmithingRecipeCategory;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeCategory;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeMaker;
 import mezz.jei.plugins.vanilla.brewing.PotionSubtypeInterpreter;
+import mezz.jei.plugins.vanilla.compostable.CompostableRecipeCategory;
+import mezz.jei.plugins.vanilla.compostable.CompostableRecipeMaker;
 import mezz.jei.plugins.vanilla.cooking.BlastingCategory;
 import mezz.jei.plugins.vanilla.cooking.CampfireCategory;
 import mezz.jei.plugins.vanilla.cooking.FurnaceSmeltingCategory;
@@ -177,6 +179,7 @@ public class VanillaPlugin implements IModPlugin {
 			blastingCategory = new BlastingCategory(guiHelper),
 			campfireCategory = new CampfireCategory(guiHelper),
 			smithingCategory = new SmithingRecipeCategory(guiHelper),
+			new CompostableRecipeCategory(guiHelper),
 			new FurnaceFuelCategory(guiHelper, textures),
 			new BrewingRecipeCategory(guiHelper),
 			new AnvilRecipeCategory(guiHelper)
@@ -221,6 +224,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipes(BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory), VanillaRecipeCategoryUid.BREWING);
 		registration.addRecipes(AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientManager), VanillaRecipeCategoryUid.ANVIL);
 		registration.addRecipes(vanillaRecipes.getSmithingRecipes(smithingCategory), VanillaRecipeCategoryUid.SMITHING);
+		registration.addRecipes(CompostableRecipeMaker.getRecipes(ingredientManager), VanillaRecipeCategoryUid.COMPOSTABLE);
 	}
 
 	@Override
@@ -270,6 +274,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipeCatalyst(new ItemStack(Blocks.BREWING_STAND), VanillaRecipeCategoryUid.BREWING);
 		registration.addRecipeCatalyst(new ItemStack(Blocks.ANVIL), VanillaRecipeCategoryUid.ANVIL);
 		registration.addRecipeCatalyst(new ItemStack(Blocks.SMITHING_TABLE), VanillaRecipeCategoryUid.SMITHING);
+		registration.addRecipeCatalyst(new ItemStack(Blocks.COMPOSTER), VanillaRecipeCategoryUid.COMPOSTABLE);
 	}
 
 	@Nullable

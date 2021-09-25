@@ -2,6 +2,7 @@ package mezz.jei.api.constants;
 
 import java.util.List;
 
+import net.minecraft.block.ComposterBlock;
 import net.minecraft.item.crafting.BlastingRecipe;
 import net.minecraft.item.crafting.CampfireCookingRecipe;
 import net.minecraft.item.crafting.SmithingRecipe;
@@ -99,6 +100,14 @@ public final class VanillaRecipeCategoryUid {
 	 * @since JEI 7.3.1
 	 */
 	public static final ResourceLocation SMITHING = new ResourceLocation(ModIds.MINECRAFT_ID, "smithing");
+
+	/**
+	 * The compostable recipe category.
+	 *
+	 * Automatically includes every item added to {@link ComposterBlock#COMPOSTABLES}.
+	 * @since JEI 7.9.0
+	 */
+	public static final ResourceLocation COMPOSTABLE = new ResourceLocation(ModIds.MINECRAFT_ID, "compostable");
 
 	/**
 	 * The JEI info recipe category shows extra information about ingredients.
