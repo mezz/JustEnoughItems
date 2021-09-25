@@ -18,20 +18,32 @@ public class RecipeTransferManager {
 		this.recipeTransferHandlers = recipeTransferHandlers;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Nullable
 	public <C extends AbstractContainerMenu, R> IRecipeTransferHandler<C, R> getRecipeTransferHandler(C container, IRecipeCategory<R> recipeCategory) {
 		ErrorUtil.checkNotNull(container, "container");
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 
 		Class<? extends AbstractContainerMenu> containerClass = container.getClass();
-		IRecipeTransferHandler<?, ?> recipeTransferHandler = recipeTransferHandlers.get(containerClass, recipeCategory.getUid());
-		if (recipeTransferHandler != null) {
-			if (recipeTransferHandler.getRecipeClass().isAssignableFrom(recipeCategory.getRecipeClass())) {
-				return (IRecipeTransferHandler<C, R>) recipeTransferHandler;
-			}
+		Class<? extends R> recipeClass = recipeCategory.getRecipeClass();
+
+		IRecipeTransferHandler<C, R> handler = getHandler(recipeClass, containerClass, recipeCategory.getUid());
+		if (handler != null) {
+			return handler;
 		}
 
-		return (IRecipeTransferHandler<C, R>) recipeTransferHandlers.get(containerClass, Constants.UNIVERSAL_RECIPE_TRANSFER_UID);
+		return getHandler(recipeClass, containerClass, Constants.UNIVERSAL_RECIPE_TRANSFER_UID);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Nullable
+	private <C extends AbstractContainerMenu, R> IRecipeTransferHandler<C, R> getHandler(Class<? extends R> recipeClass, Class<? extends AbstractContainerMenu> containerClass, ResourceLocation recipeCategoryUid) {
+		IRecipeTransferHandler<?, ?> handler = recipeTransferHandlers.get(containerClass, recipeCategoryUid);
+		if (handler != null &&
+			handler.getRecipeClass().isAssignableFrom(recipeClass) &&
+			handler.getContainerClass().isAssignableFrom(containerClass)
+		) {
+			return (IRecipeTransferHandler<C, R>) handler;
+		}
+		return null;
 	}
 }
