@@ -1086,8 +1086,10 @@ public class Property
      */
     public Property setValue(String value)
     {
-        this.value = value;
-        changed = true;
+        if (!this.value.equals(value)) {
+            this.value = value;
+            changed = true;
+        }
         return this;
     }
 

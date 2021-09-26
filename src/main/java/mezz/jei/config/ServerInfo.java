@@ -1,17 +1,21 @@
 package mezz.jei.config;
 
 import javax.annotation.Nullable;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.network.play.ClientPlayNetHandler;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public final class ServerInfo {
+	private static final Path worldDirPath = Paths.get("world");
 	private static boolean jeiOnServer = false;
 	@Nullable
-	private static String worldUid = null;
+	private static Path worldPath = null;
 
 	private ServerInfo() {
 
@@ -23,30 +27,41 @@ public final class ServerInfo {
 
 	public static void onConnectedToServer(boolean jeiOnServer) {
 		ServerInfo.jeiOnServer = jeiOnServer;
-		ServerInfo.worldUid = null;
+		ServerInfo.worldPath = null;
 	}
 
-	public static String getWorldUid(@Nullable NetworkManager networkManager) {
-		if (worldUid == null) {
-			if (networkManager == null) {
-				worldUid = "default"; // we get here when opening the in-game config before loading a world
-			} else if (networkManager.isMemoryConnection()) {
-				MinecraftServer minecraftServer = ServerLifecycleHooks.getCurrentServer();
-				if (minecraftServer != null) {
-					worldUid = minecraftServer.storageSource.getLevelId();
-				}
-			} else {
-				ServerData serverData = Minecraft.getInstance().getCurrentServer();
-				if (serverData != null) {
-					worldUid = serverData.ip + ' ' + serverData.name;
-				}
+	@Nullable
+	public static Path getWorldPath(Path basePath) {
+		if (worldPath == null) {
+			worldPath = getWorldPath();
+			if (worldPath == null) {
+				return null;
 			}
-
-			if (worldUid == null) {
-				worldUid = "default";
-			}
-			worldUid = "world" + worldUid.hashCode();
 		}
-		return worldUid;
+		return basePath.resolve(worldPath);
+	}
+
+	@Nullable
+	private static Path getWorldPath() {
+		Minecraft minecraft = Minecraft.getInstance();
+		ClientPlayNetHandler clientPlayNetHandler = minecraft.getConnection();
+		if (clientPlayNetHandler == null) {
+			return null;
+		}
+		NetworkManager connection = clientPlayNetHandler.getConnection();
+		if (connection.isMemoryConnection()) {
+			MinecraftServer minecraftServer = ServerLifecycleHooks.getCurrentServer();
+			if (minecraftServer != null) {
+				String name = minecraftServer.storageSource.getLevelId();
+				return worldDirPath.resolve("local").resolve(name);
+			}
+		} else {
+			ServerData serverData = minecraft.getCurrentServer();
+			if (serverData != null) {
+				String name = String.format("%s (%s)", serverData.name, serverData.ip);
+				return worldDirPath.resolve("server").resolve(name);
+			}
+		}
+		return null;
 	}
 }
