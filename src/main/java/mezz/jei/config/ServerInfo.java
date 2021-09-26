@@ -14,8 +14,6 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 public final class ServerInfo {
 	private static final Path worldDirPath = Paths.get("world");
 	private static boolean jeiOnServer = false;
-	@Nullable
-	private static Path worldPath = null;
 
 	private ServerInfo() {
 
@@ -27,16 +25,13 @@ public final class ServerInfo {
 
 	public static void onConnectedToServer(boolean jeiOnServer) {
 		ServerInfo.jeiOnServer = jeiOnServer;
-		ServerInfo.worldPath = null;
 	}
 
 	@Nullable
 	public static Path getWorldPath(Path basePath) {
+		Path worldPath = getWorldPath();
 		if (worldPath == null) {
-			worldPath = getWorldPath();
-			if (worldPath == null) {
-				return null;
-			}
+			return null;
 		}
 		return basePath.resolve(worldPath);
 	}
