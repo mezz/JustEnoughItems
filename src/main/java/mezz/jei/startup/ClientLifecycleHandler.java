@@ -27,18 +27,21 @@ import mezz.jei.util.AnnotatedInstanceUtil;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.network.Connection;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.loading.FMLPaths;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.List;
 
 public class ClientLifecycleHandler {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	final JeiStarter starter = new JeiStarter();
 	final Textures textures;
 	final IClientConfig clientConfig;
@@ -51,10 +54,10 @@ public class ClientLifecycleHandler {
 	final RecipeCategorySortingConfig recipeCategorySortingConfig;
 	final IIngredientSorter ingredientSorter;
 	final List<IModPlugin> plugins;
-
+	private final File jeiConfigurationDir;
 
 	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures) {
-		File jeiConfigurationDir = new File(FMLPaths.CONFIGDIR.get().toFile(), ModIds.JEI_ID);
+		jeiConfigurationDir = new File(FMLPaths.CONFIGDIR.get().toFile(), ModIds.JEI_ID);
 		if (!jeiConfigurationDir.exists()) {
 			try {
 				if (!jeiConfigurationDir.mkdir()) {
@@ -113,11 +116,7 @@ public class ClientLifecycleHandler {
 	}
 
 	public void setupJEI() {
-		ClientPacketListener connection = Minecraft.getInstance().getConnection();
-		if (connection != null) {
-			Connection networkManager = connection.getConnection();
-			worldConfig.syncWorldConfig(networkManager);
-		}
+		worldConfig.syncWorldConfig(jeiConfigurationDir);
 
 		modIdFormattingConfig.checkForModNameFormatOverride();
 
@@ -126,21 +125,27 @@ public class ClientLifecycleHandler {
 	}
 
 	public void startJEI() {
-		if (Minecraft.getInstance().level != null) {
-			Preconditions.checkNotNull(textures);
-			starter.start(
-				plugins,
-				textures,
-				clientConfig,
-				editModeConfig,
-				ingredientFilterConfig,
-				worldConfig,
-				bookmarkConfig,
-				modIdHelper,
-				recipeCategorySortingConfig,
-				ingredientSorter
-			);
+		Minecraft minecraft = Minecraft.getInstance();
+		if (minecraft == null) {
+			LOGGER.error("Failed to start JEI, there is no Minecraft instance.");
+			return;
+		} else if (minecraft.level == null) {
+			LOGGER.error("Failed to start JEI, there is no Minecraft client level.");
+			return;
 		}
+		Preconditions.checkNotNull(textures);
+		starter.start(
+			plugins,
+			textures,
+			clientConfig,
+			editModeConfig,
+			ingredientFilterConfig,
+			worldConfig,
+			bookmarkConfig,
+			modIdHelper,
+			recipeCategorySortingConfig,
+			ingredientSorter
+		);
 	}
 
 	private enum ServerType {
@@ -157,8 +162,12 @@ public class ClientLifecycleHandler {
 		}
 
 		public boolean shouldRun() {
-			ClientPacketListener connection = Minecraft.getInstance().getConnection();
-			boolean isIntegrated = Minecraft.getInstance().isLocalServer();
+			Minecraft minecraft = Minecraft.getInstance();
+			if (minecraft == null) {
+				return false;
+			}
+			ClientPacketListener connection = minecraft.getConnection();
+			boolean isIntegrated = minecraft.isLocalServer();
 			if (connection == null || isIntegrated) {
 				//If we are an integrated server we always handle recipes updating as it is consistently last
 				// so we ignore the value of hasRan. Note we also check if the connection is null and treat is as

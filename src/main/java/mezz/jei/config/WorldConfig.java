@@ -1,12 +1,5 @@
 package mezz.jei.config;
 
-import javax.annotation.Nullable;
-import java.io.File;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.network.Connection;
-
 import mezz.jei.config.forge.Configuration;
 import mezz.jei.config.forge.Property;
 import mezz.jei.events.BookmarkOverlayToggleEvent;
@@ -20,17 +13,30 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
+import javax.annotation.Nullable;
+import java.io.File;
+import java.nio.file.Path;
+
 public class WorldConfig implements IWorldConfig, IFilterTextSource {
 	private static final Logger LOGGER = LogManager.getLogger();
-
+	private static final String worldCategory = "world";
 	private final WorldConfigValues defaultValues = new WorldConfigValues();
 	private final WorldConfigValues values = new WorldConfigValues();
-	private final Configuration worldConfig;
+	@Nullable
+	private Configuration worldConfig;
+
+	@Nullable
+	private static Configuration getConfiguration(File jeiConfigurationDir) {
+		Path configPath = ServerInfo.getWorldPath(jeiConfigurationDir.toPath());
+		if (configPath == null) {
+			return null;
+		}
+		Path worldConfigPath = configPath.resolve("worldSettings.cfg");
+		return new Configuration(worldConfigPath.toFile());
+	}
 
 	public WorldConfig(File jeiConfigurationDir) {
-		// TODO move world settings into the world save folder
-		final File worldConfigFile = new File(jeiConfigurationDir, "worldSettings.cfg");
-		worldConfig = new Configuration(worldConfigFile);
+		worldConfig = getConfiguration(jeiConfigurationDir);
 	}
 
 	@Override
@@ -50,16 +56,12 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 
 	@Override
 	public void saveFilterText() {
-		ClientPacketListener connection = Minecraft.getInstance().getConnection();
-		if (connection != null) {
-			Connection networkManager = connection.getConnection();
-			final String worldCategory = ServerInfo.getWorldUid(networkManager);
+		if (worldConfig != null) {
 			Property property = worldConfig.get(worldCategory, "filterText", defaultValues.filterText);
 			property.set(values.filterText);
 
 			if (worldConfig.hasChanged()) {
-				// TODO 1.13
-//				worldConfig.save();
+				worldConfig.save();
 			}
 		}
 	}
@@ -74,16 +76,12 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 	public void toggleOverlayEnabled() {
 		values.overlayEnabled = !values.overlayEnabled;
 
-		ClientPacketListener connection = Minecraft.getInstance().getConnection();
-		if (connection != null) {
-			Connection networkManager = connection.getConnection();
-			final String worldCategory = ServerInfo.getWorldUid(networkManager);
+		if (worldConfig != null) {
 			Property property = worldConfig.get(worldCategory, "overlayEnabled", defaultValues.overlayEnabled);
 			property.set(values.overlayEnabled);
 
 			if (worldConfig.hasChanged()) {
-				// TODO 1.13
-//				worldConfig.save();
+				worldConfig.save();
 			}
 		}
 
@@ -104,16 +102,12 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 	public void setBookmarkEnabled(boolean value) {
 		if (values.bookmarkOverlayEnabled != value) {
 			values.bookmarkOverlayEnabled = value;
-			ClientPacketListener connection = Minecraft.getInstance().getConnection();
-			if (connection != null) {
-				Connection networkManager = connection.getConnection();
-				final String worldCategory = ServerInfo.getWorldUid(networkManager);
+			if (worldConfig != null) {
 				Property property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);
 				property.set(values.bookmarkOverlayEnabled);
 
 				if (worldConfig.hasChanged()) {
-					// TODO 1.13
-//					worldConfig.save();
+					worldConfig.save();
 				}
 			}
 
@@ -142,16 +136,12 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 		if (values.cheatItemsEnabled != value) {
 			values.cheatItemsEnabled = value;
 
-			ClientPacketListener connection = Minecraft.getInstance().getConnection();
-			if (connection != null) {
-				Connection networkManager = connection.getConnection();
-				final String worldCategory = ServerInfo.getWorldUid(networkManager);
+			if (worldConfig != null) {
 				Property property = worldConfig.get(worldCategory, "cheatItemsEnabled", defaultValues.cheatItemsEnabled);
 				property.set(values.cheatItemsEnabled);
 
 				if (worldConfig.hasChanged()) {
-					// TODO 1.13
-//					worldConfig.save();
+					worldConfig.save();
 				}
 			}
 
@@ -170,16 +160,12 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 	public void toggleEditModeEnabled() {
 		values.editModeEnabled = !values.editModeEnabled;
 
-		ClientPacketListener connection = Minecraft.getInstance().getConnection();
-		if (connection != null) {
-			Connection networkManager = connection.getConnection();
-			final String worldCategory = ServerInfo.getWorldUid(networkManager);
+		if (worldConfig != null) {
 			Property property = worldConfig.get(worldCategory, "editModeEnabled", defaultValues.editModeEnabled);
 			property.set(values.editModeEnabled);
 
 			if (worldConfig.hasChanged()) {
-				// TODO 1.13
-//					worldConfig.save();
+				worldConfig.save();
 			}
 		}
 	}
@@ -192,17 +178,11 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 		}
 	}
 
-	public boolean syncConfig() {
-		ClientPacketListener connection = Minecraft.getInstance().getConnection();
-		if (connection != null) {
-			Connection networkManager = connection.getConnection();
-			return syncWorldConfig(networkManager);
+	public void syncWorldConfig(File jeiConfigurationDir) {
+		worldConfig = getConfiguration(jeiConfigurationDir);
+		if (worldConfig == null) {
+			return;
 		}
-		return false;
-	}
-
-	public boolean syncWorldConfig(@Nullable Connection networkManager) {
-		final String worldCategory = ServerInfo.getWorldUid(networkManager);
 
 		Property property = worldConfig.get(worldCategory, "overlayEnabled", defaultValues.overlayEnabled);
 		property.setLanguageKey("config.jei.interface.overlayEnabled");
@@ -235,10 +215,8 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 
 		final boolean configChanged = worldConfig.hasChanged();
 		if (configChanged) {
-			// TODO 1.13
-//			worldConfig.save();
+			worldConfig.save();
 		}
-		return false;
 	}
 
 }

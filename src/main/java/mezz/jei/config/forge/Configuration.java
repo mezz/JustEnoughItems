@@ -30,7 +30,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PushbackInputStream;
 import java.io.Reader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -103,13 +105,12 @@ public class Configuration
 
     /**
      * Create a configuration file for the file given in parameter with the provided config version number.
-     * /
+     */
     private void runConfiguration(File file, String configVersion)
     {
         this.file = file;
         this.definedConfigVersion = configVersion;
-        String basePath = ((File)(FMLInjectionData.data()[6])).getAbsolutePath().replace(File.separatorChar, '/').replace("/.", "");
-        String path = file.getAbsolutePath().replace(File.separatorChar, '/').replace("/./", "/").replace(basePath, "");
+        String path = file.getAbsolutePath();
         if (PARENT != null)
         {
             PARENT.setChild(path, this);
@@ -134,16 +135,16 @@ public class Configuration
             }
         }
     }
-*/
+
     public Configuration(File file, String configVersion)
     {
-//        runConfiguration(file, configVersion);
+        runConfiguration(file, configVersion);
     }
 
     public Configuration(File file, String configVersion, boolean caseSensitiveCustomCategories)
     {
         this.caseSensitiveCustomCategories = caseSensitiveCustomCategories;
-//        runConfiguration(file, configVersion);
+        runConfiguration(file, configVersion);
     }
 
     public Configuration(File file, boolean caseSensitiveCustomCategories)
