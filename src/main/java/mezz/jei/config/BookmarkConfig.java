@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -30,13 +33,31 @@ public class BookmarkConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final String MARKER_OTHER = "O:";
 	private static final String MARKER_STACK = "T:";
-	private final File bookmarkFile;
+	private final File jeiConfigurationDir;
+
+	@Nullable
+	private static File getFile(File jeiConfigurationDir) {
+		Path configPath = ServerInfo.getWorldPath(jeiConfigurationDir.toPath());
+		if (configPath == null) {
+			return null;
+		}
+		return configPath.resolve("bookmarks.ini").toFile();
+	}
+
+	private static File getOldFile(File jeiConfigurationDir) {
+		return Path.of(jeiConfigurationDir.getAbsolutePath(), "bookmarks.ini").toFile();
+	}
 
 	public BookmarkConfig(File jeiConfigurationDir) {
-		this.bookmarkFile = new File(jeiConfigurationDir, "bookmarks.ini");
+		this.jeiConfigurationDir = jeiConfigurationDir;
 	}
 
 	public void saveBookmarks(IIngredientManager ingredientManager, List<IIngredientListElement<?>> ingredientListElements) {
+		File file = getFile(jeiConfigurationDir);
+		if (file == null) {
+			return;
+		}
+
 		List<String> strings = new ArrayList<>();
 		for (IIngredientListElement<?> element : ingredientListElements) {
 			Object object = element.getIngredient();
@@ -46,7 +67,7 @@ public class BookmarkConfig {
 				strings.add(MARKER_OTHER + getUid(ingredientManager, element));
 			}
 		}
-		File file = bookmarkFile;
+
 		try (FileWriter writer = new FileWriter(file)) {
 			IOUtils.writeLines(strings, "\n", writer);
 		} catch (IOException e) {
@@ -55,9 +76,20 @@ public class BookmarkConfig {
 	}
 
 	public void loadBookmarks(IngredientManager ingredientManager, BookmarkList bookmarkList) {
-		File file = bookmarkFile;
-		if (!file.exists()) {
+		File file = getFile(jeiConfigurationDir);
+		if (file == null) {
 			return;
+		} else if (!file.exists()) {
+			File oldFile = getOldFile(jeiConfigurationDir);
+			if (!oldFile.exists()) {
+				return;
+			}
+			try {
+				Files.copy(oldFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException e) {
+				LOGGER.error("Failed to copy old bookmarks {} to new location {}", oldFile, file, e);
+				return;
+			}
 		}
 		List<String> ingredientJsonStrings;
 		try (FileReader reader = new FileReader(file)) {
