@@ -14,8 +14,6 @@ import java.nio.file.Path;
 public final class ServerInfo {
 	private static boolean jeiOnServer = false;
 	private static final Path worldDirPath = Path.of("world");
-	@Nullable
-	private static Path worldPath = null;
 
 	private ServerInfo() {
 
@@ -27,16 +25,13 @@ public final class ServerInfo {
 
 	public static void onConnectedToServer(boolean jeiOnServer) {
 		ServerInfo.jeiOnServer = jeiOnServer;
-		ServerInfo.worldPath = null;
 	}
 
 	@Nullable
 	public static Path getWorldPath(Path basePath) {
+		Path worldPath = getWorldPath();
 		if (worldPath == null) {
-			worldPath = getWorldPath();
-			if (worldPath == null) {
-				return null;
-			}
+			return null;
 		}
 		return basePath.resolve(worldPath);
 	}
