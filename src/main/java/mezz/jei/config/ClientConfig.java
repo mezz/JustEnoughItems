@@ -86,19 +86,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 		builder.push("colors");
 		{
 			builder.comment("Color values to search for");
-			searchColorsCfg = builder.defineList("SearchColors", Lists.newArrayList(ColorGetter.getColorDefaults()), obj -> {
-				if (obj instanceof String entry) {
-					String[] values = entry.split(":");
-					if (values.length == 2) {
-						try {
-							Integer.decode("0x" + values[1]);
-							return true;
-						} catch (NumberFormatException ignored) {
-						}
-					}
-				}
-				return false;
-			});
+			searchColorsCfg = builder.defineList("SearchColors", Lists.newArrayList(ColorGetter.getColorDefaults()), ClientConfig::validSearchColor);
 		}
 		builder.pop();
 
@@ -224,6 +212,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 		Internal.setColorNamer(colorNamer);
 	}
 
+	@SuppressWarnings("SameParameterValue")
 	private static Predicate<Object> validEnumElement(Class<? extends Enum<?>> enumClass) {
 		Set<String> validEntries = new HashSet<>();
 		Enum<?>[] enumConstants = enumClass.getEnumConstants();
@@ -237,5 +226,20 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 			}
 			return false;
 		};
+	}
+
+	private static boolean validSearchColor(Object obj) {
+		if (obj instanceof String entry) {
+			String[] values = entry.split(":");
+			if (values.length == 2) {
+				try {
+					@SuppressWarnings("unused")
+					Integer color = Integer.decode("0x" + values[1]);
+					return true;
+				} catch (NumberFormatException ignored) {
+				}
+			}
+		}
+		return false;
 	}
 }
