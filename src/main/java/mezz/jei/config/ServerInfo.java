@@ -14,6 +14,7 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 public final class ServerInfo {
 	private static final Path worldDirPath = Paths.get("world");
 	private static boolean jeiOnServer = false;
+	private static final String unsafeFileChars = "[^\\w-]";
 
 	private ServerInfo() {
 
@@ -48,15 +49,23 @@ public final class ServerInfo {
 			MinecraftServer minecraftServer = ServerLifecycleHooks.getCurrentServer();
 			if (minecraftServer != null) {
 				String name = minecraftServer.storageSource.getLevelId();
+				name = sanitizePathName(name);
 				return worldDirPath.resolve("local").resolve(name);
 			}
 		} else {
 			ServerData serverData = minecraft.getCurrentServer();
 			if (serverData != null) {
-				String name = String.format("%s (%s)", serverData.name, serverData.ip);
+				int ipHash = serverData.ip.hashCode();
+				String ipHashHex = Integer.toHexString(ipHash);
+				String name = String.format("%s_%s", serverData.name, ipHashHex);
+				name = sanitizePathName(name);
 				return worldDirPath.resolve("server").resolve(name);
 			}
 		}
 		return null;
+	}
+
+	public static String sanitizePathName(String filename) {
+		return String.join("_", filename.split(unsafeFileChars));
 	}
 }
