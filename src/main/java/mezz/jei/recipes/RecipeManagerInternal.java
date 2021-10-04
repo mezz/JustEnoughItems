@@ -116,6 +116,9 @@ public class RecipeManagerInternal {
 
 	private <T> void addRecipe(T recipe, RecipeCategoryData<T> recipeCategoryData) {
 		IRecipeCategory<T> recipeCategory = recipeCategoryData.getRecipeCategory();
+		if (!recipeCategory.isHandled(recipe)) {
+			return;
+		}
 		try {
 			Ingredients ingredients = new Ingredients();
 			recipeCategory.setIngredients(recipe, ingredients);
