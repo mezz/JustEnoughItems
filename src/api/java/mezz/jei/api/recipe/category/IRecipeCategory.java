@@ -117,9 +117,6 @@ public interface IRecipeCategory<T> {
 	 * @since JEI 7.2.0
 	 */
 	default boolean isHandled(T recipe) {
-		if (recipe instanceof Recipe<?> iRecipe) {
-			return !iRecipe.isSpecial();
-		}
 		return true;
 	}
 }
