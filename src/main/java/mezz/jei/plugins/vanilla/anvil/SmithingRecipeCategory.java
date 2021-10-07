@@ -75,4 +75,8 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe> {
 		guiItemStacks.set(ingredients);
 	}
 
+	@Override
+	public boolean isHandled(UpgradeRecipe recipe) {
+		return !recipe.isSpecial();
+	}
 }

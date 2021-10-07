@@ -122,4 +122,9 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 
 		guiItemStacks.set(ingredients);
 	}
+
+	@Override
+	public boolean isHandled(T recipe) {
+		return !recipe.isSpecial();
+	}
 }

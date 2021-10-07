@@ -80,4 +80,9 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecuttingR
 
 		guiItemStacks.set(ingredients);
 	}
+
+	@Override
+	public boolean isHandled(StonecutterRecipe recipe) {
+		return !recipe.isSpecial();
+	}
 }
