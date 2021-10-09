@@ -82,7 +82,7 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecuttingR
 	}
 
 	@Override
-	public boolean isHandled(StonecutterRecipe recipe) {
+	public boolean isHandled(StonecuttingRecipe recipe) {
 		return !recipe.isSpecial();
 	}
 }

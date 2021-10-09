@@ -76,7 +76,7 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe> {
 	}
 
 	@Override
-	public boolean isHandled(UpgradeRecipe recipe) {
+	public boolean isHandled(SmithingRecipe recipe) {
 		return !recipe.isSpecial();
 	}
 }
