@@ -127,6 +127,8 @@
   "gui.jei.category.fuel.smeltCount": "可熔煉 %s 個物品",
   "gui.jei.category.brewing": "釀造",
   "gui.jei.category.brewing.steps": "步驟：%s",
+  "gui.jei.category.compostable": "可堆肥",
+  "gui.jei.category.compostable.chance": "機率：%s%%",
   "gui.jei.category.itemInformation": "資訊",
 
   "_comment": "訊息",
