@@ -1,7 +1,5 @@
 package mezz.jei.network;
 
-import mezz.jei.config.IServerConfig;
-import mezz.jei.config.ServerConfig;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
@@ -22,8 +20,7 @@ public class Network {
 		Minecraft minecraft = Minecraft.getInstance();
 		if (minecraft != null) {
 			ClientPacketListener netHandler = minecraft.getConnection();
-			IServerConfig serverConfig = ServerConfig.getInstance();
-			if (netHandler != null && ServerInfo.isJeiOnServer() && serverConfig.isRecipeTransferEnabled()) {
+			if (netHandler != null && ServerInfo.isJeiOnServer()) {
 				Pair<FriendlyByteBuf, Integer> packetData = packet.getPacketData();
 				ICustomPacket<Packet<?>> payload = NetworkDirection.PLAY_TO_SERVER.buildPacket(packetData, PacketHandler.CHANNEL_ID);
 				netHandler.send(payload.getThis());

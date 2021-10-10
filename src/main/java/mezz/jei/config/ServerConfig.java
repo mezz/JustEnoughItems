@@ -16,7 +16,6 @@ public final class ServerConfig implements IServerConfig {
 	private final ForgeConfigSpec.BooleanValue enableCheatModeForOp;
 	private final ForgeConfigSpec.BooleanValue enableCheatModeForCreative;
 	private final ForgeConfigSpec.BooleanValue enableCheatModeForGive;
-	private final ForgeConfigSpec.BooleanValue enableRecipeTransfer;
 
 	public static void register(IEventBus modEventBus, ModLoadingContext modLoadingContext) {
 		modEventBus.register(ServerConfig.class);
@@ -41,13 +40,6 @@ public final class ServerConfig implements IServerConfig {
 			enableCheatModeForGive = builder.define("enableCheatModeForGive", defaultValues.enableCheatModeForGive);
 		}
 		builder.pop();
-
-		builder.push("helpers");
-		{
-			builder.comment("Enable Recipe Transfer");
-			enableRecipeTransfer = builder.define("enableRecipeTransfer", defaultValues.enableRecipeTransfer);
-		}
-		builder.pop();
 	}
 
 	public static IServerConfig getInstance() {
@@ -68,10 +60,5 @@ public final class ServerConfig implements IServerConfig {
 	@Override
 	public boolean isCheatModeEnabledForGive() {
 		return enableCheatModeForGive.get();
-	}
-
-	@Override
-	public boolean isRecipeTransferEnabled() {
-		return enableRecipeTransfer.get();
 	}
 }

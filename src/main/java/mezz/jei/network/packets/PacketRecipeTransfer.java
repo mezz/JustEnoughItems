@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mezz.jei.config.IServerConfig;
-import mezz.jei.config.ServerConfig;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -57,11 +55,6 @@ public class PacketRecipeTransfer extends PacketJei {
 	}
 
 	public static void readPacketData(FriendlyByteBuf buf, Player player) {
-		IServerConfig serverConfig = ServerConfig.getInstance();
-		if (!serverConfig.isRecipeTransferEnabled()) {
-			return;
-		}
-
 		int recipeMapSize = buf.readVarInt();
 		Map<Integer, Integer> recipeMap = new HashMap<>();
 		for (int i = 0; i < recipeMapSize; i++) {

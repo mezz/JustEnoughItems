@@ -65,11 +65,6 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Inven
 			Component tooltipMessage = new TranslatableComponent("jei.tooltip.error.recipe.transfer.no.server");
 			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
 		}
-		IServerConfig serverConfig = ServerConfig.getInstance();
-		if (!serverConfig.isRecipeTransferEnabled()) {
-			Component tooltipMessage = new TranslatableComponent("jei.tooltip.error.recipe.transfer.disabled");
-			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
-		}
 
 		if (!transferHelper.canHandle(container, recipe)) {
 			return handlerHelper.createInternalError();

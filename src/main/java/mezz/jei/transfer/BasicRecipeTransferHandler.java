@@ -60,11 +60,6 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 			Component tooltipMessage = new TranslatableComponent("jei.tooltip.error.recipe.transfer.no.server");
 			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
 		}
-		IServerConfig serverConfig = ServerConfig.getInstance();
-		if (!serverConfig.isRecipeTransferEnabled()) {
-			Component tooltipMessage = new TranslatableComponent("jei.tooltip.error.recipe.transfer.disabled");
-			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
-		}
 
 		if (!transferHelper.canHandle(container, recipe)) {
 			return handlerHelper.createInternalError();

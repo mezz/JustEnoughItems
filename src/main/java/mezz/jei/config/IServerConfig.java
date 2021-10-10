@@ -6,6 +6,4 @@ public interface IServerConfig {
 	boolean isCheatModeEnabledForGive();
 
 	boolean isCheatModeEnabledForCreative();
-
-	boolean isRecipeTransferEnabled();
 }
