@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mezz.jei.config.IServerConfig;
+import mezz.jei.config.ServerConfig;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -56,6 +58,11 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 	public IRecipeTransferError transferRecipe(C container, R recipe, IRecipeLayout recipeLayout, Player player, boolean maxTransfer, boolean doTransfer) {
 		if (!ServerInfo.isJeiOnServer()) {
 			Component tooltipMessage = new TranslatableComponent("jei.tooltip.error.recipe.transfer.no.server");
+			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
+		}
+		IServerConfig serverConfig = ServerConfig.getInstance();
+		if (!serverConfig.isRecipeTransferEnabled()) {
+			Component tooltipMessage = new TranslatableComponent("jei.tooltip.error.recipe.transfer.disabled");
 			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
 		}
 

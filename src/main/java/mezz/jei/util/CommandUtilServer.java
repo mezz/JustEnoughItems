@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.config.IServerConfig;
+import mezz.jei.config.ServerConfig;
 import net.minecraft.Util;
 import net.minecraftforge.items.ItemHandlerHelper;
 import com.mojang.brigadier.CommandDispatcher;
@@ -69,29 +71,37 @@ public final class CommandUtilServer {
 		player.sendMessage(component, Util.NIL_UUID);
 	}
 
-	public static boolean hasPermission(Player sender) {
-		if (sender.isCreative()) {
+	public static boolean hasPermissionForCheatMode(Player sender) {
+		IServerConfig serverConfig = ServerConfig.getInstance();
+		if (serverConfig.isCheatModeEnabledForCreative() &&
+			sender.isCreative()) {
 			return true;
 		}
-		CommandNode<CommandSourceStack> giveCommand = getGiveCommand(sender);
+
 		CommandSourceStack commandSource = sender.createCommandSourceStack();
-		if (giveCommand != null) {
-			return giveCommand.canUse(commandSource);
-		} else {
+		if (serverConfig.isCheatModeEnabledForOp()) {
 			MinecraftServer minecraftServer = sender.getServer();
-			if (minecraftServer == null) {
-				return false;
+			if (minecraftServer != null) {
+				int opPermissionLevel = minecraftServer.getOperatorUserPermissionLevel();
+				return commandSource.hasPermission(opPermissionLevel);
 			}
-			int opPermissionLevel = minecraftServer.getOperatorUserPermissionLevel();
-			return commandSource.hasPermission(opPermissionLevel);
 		}
+
+		if (serverConfig.isCheatModeEnabledForGive()) {
+			CommandNode<CommandSourceStack> giveCommand = getGiveCommand(sender);
+			if (giveCommand != null) {
+				return giveCommand.canUse(commandSource);
+			}
+		}
+
+		return false;
 	}
 
 	/**
 	 * Gives a player an item.
 	 */
 	public static void executeGive(ServerPlayer sender, ItemStack itemStack, GiveMode giveMode) {
-		if (hasPermission(sender)) {
+		if (hasPermissionForCheatMode(sender)) {
 			if (giveMode == GiveMode.INVENTORY) {
 				giveToInventory(sender, itemStack);
 			} else if (giveMode == GiveMode.MOUSE_PICKUP) {
@@ -103,7 +113,7 @@ public final class CommandUtilServer {
 	}
 
 	public static void setHotbarSlot(ServerPlayer sender, ItemStack itemStack, int hotbarSlot) {
-		if (hasPermission(sender)) {
+		if (hasPermissionForCheatMode(sender)) {
 			if (!Inventory.isHotbarSlot(hotbarSlot)) {
 				LOGGER.error("Tried to set slot that is not in the hotbar: {}", hotbarSlot);
 				return;

@@ -2,6 +2,7 @@ package mezz.jei;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.config.JEIClientConfig;
+import mezz.jei.config.ServerConfig;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.gui.textures.JeiSpriteUploader;
 import mezz.jei.gui.textures.Textures;
@@ -13,7 +14,9 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -29,7 +32,7 @@ public class JustEnoughItems {
 	}
 
 	private static void clientStart(IEventBus modEventBus, NetworkHandler networkHandler) {
-		JEIClientConfig.register();
+		JEIClientConfig.register(modEventBus);
 
 		EventBusHelper.addListener(JustEnoughItems.class, modEventBus, RegisterClientReloadListenersEvent.class, registerReloadListenerEvent -> {
 			Minecraft minecraft = Minecraft.getInstance();
@@ -47,8 +50,10 @@ public class JustEnoughItems {
 	}
 
 	private static void commonStart(IEventBus modEventBus, NetworkHandler networkHandler) {
-		EventBusHelper.addLifecycleListener(JustEnoughItems.class, modEventBus, FMLCommonSetupEvent.class, event ->
-			networkHandler.createServerPacketHandler()
-		);
+		EventBusHelper.addLifecycleListener(JustEnoughItems.class, modEventBus, FMLCommonSetupEvent.class, event -> {
+			networkHandler.createServerPacketHandler();
+			ModLoadingContext modLoadingContext = ModLoadingContext.get();
+			ServerConfig.register(modEventBus, modLoadingContext);
+		});
 	}
 }

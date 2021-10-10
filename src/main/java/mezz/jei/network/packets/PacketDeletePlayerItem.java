@@ -28,7 +28,7 @@ public class PacketDeletePlayerItem extends PacketJei {
 
 	public static void readPacketData(FriendlyByteBuf buf, Player player) {
 		Item item = buf.readRegistryIdUnsafe(ForgeRegistries.ITEMS);
-		if (CommandUtilServer.hasPermission(player)) {
+		if (CommandUtilServer.hasPermissionForCheatMode(player)) {
 			ItemStack playerItem = player.containerMenu.getCarried();
 			if (playerItem.getItem() == item) {
 				player.containerMenu.setCarried(ItemStack.EMPTY);
