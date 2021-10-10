@@ -50,7 +50,7 @@ public class ConfigButton extends GuiIconToggleButton {
 			TranslatableComponent enabled = new TranslatableComponent("jei.tooltip.cheat.mode.button.enabled");
 			tooltip.add(enabled.withStyle(ChatFormatting.RED));
 			KeyMapping toggleCheatMode = KeyBindings.toggleCheatMode;
-			if (toggleCheatMode.getKey().getValue() != 0) {
+			if (!toggleCheatMode.isUnbound()) {
 				TranslatableComponent cheatMode = new TranslatableComponent(toggleCheatMode.saveString());
 				TranslatableComponent disableHotkey = new TranslatableComponent("jei.tooltip.cheat.mode.how.to.disable.hotkey", cheatMode);
 				tooltip.add(disableHotkey.withStyle(ChatFormatting.RED));
