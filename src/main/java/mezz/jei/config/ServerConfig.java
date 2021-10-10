@@ -26,18 +26,16 @@ public final class ServerConfig implements IServerConfig {
 	}
 
 	public ServerConfig(ForgeConfigSpec.Builder builder) {
-		ServerConfigValues defaultValues = new ServerConfigValues();
-
 		builder.push("cheat mode");
 		{
 			builder.comment("Enable Cheat Mode for Operators (/op)");
-			enableCheatModeForOp = builder.define("enableCheatModeForOp", defaultValues.enableCheatModeForOp);
+			enableCheatModeForOp = builder.define("enableCheatModeForOp", true);
 
 			builder.comment("Enable Cheat Mode for users in Creative Mode");
-			enableCheatModeForCreative = builder.define("enableCheatModeForCreative", defaultValues.enableCheatModeForCreative);
+			enableCheatModeForCreative = builder.define("enableCheatModeForCreative", true);
 
 			builder.comment("Enable Cheat Mode for users who can use /give");
-			enableCheatModeForGive = builder.define("enableCheatModeForGive", defaultValues.enableCheatModeForGive);
+			enableCheatModeForGive = builder.define("enableCheatModeForGive", false);
 		}
 		builder.pop();
 	}
