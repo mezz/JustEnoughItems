@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -28,12 +29,16 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	@Nullable
 	private static IClientConfig instance;
 
-	public static final int smallestNumColumns = 4;
-	public static final int largestNumColumns = 100;
-	public static final int minRecipeGuiHeight = 175;
+	private static final int minNumColumns = 4;
+	private static final int defaultNumColumns = 9;
+	private static final int largestNumColumns = 100;
 
-	private final ClientConfigValues values;
-	private List<? extends String> searchColors = Arrays.asList(ColorGetter.getColorDefaults());
+	private static final int minRecipeGuiHeight = 175;
+	private static final int defaultRecipeGuiHeight = 350;
+
+	private static final GiveMode defaultGiveMode = GiveMode.MOUSE_PICKUP;
+	private static final boolean defaultCenterSearchBar = false;
+
 	public static final List<IngredientSortStage> ingredientSorterStagesDefault = Arrays.asList(
 		IngredientSortStage.MOD_NAME,
 		IngredientSortStage.INGREDIENT_TYPE,
@@ -58,28 +63,26 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 
 	public ClientConfig(ForgeConfigSpec.Builder builder) {
 		instance = this;
-		this.values = new ClientConfigValues();
-		ClientConfigValues defaultValues = new ClientConfigValues();
 
 		builder.push("advanced");
 		{
 			builder.comment("Debug mode enabled");
-			debugModeEnabled = builder.define("DebugMode", defaultValues.debugModeEnabled);
+			debugModeEnabled = builder.define("DebugMode", false);
 
 			builder.comment("Display search bar in the center");
-			centerSearchBarEnabled = builder.define("CenterSearch", defaultValues.centerSearchBarEnabled);
+			centerSearchBarEnabled = builder.define("CenterSearch", defaultCenterSearchBar);
 
 			builder.comment("Set low-memory mode (makes search very slow, but uses less RAM)");
-			lowMemorySlowSearchEnabled = builder.define("LowMemorySlowSearchEnabled", defaultValues.lowMemorySlowSearchEnabled);
+			lowMemorySlowSearchEnabled = builder.define("LowMemorySlowSearchEnabled", false);
 
 			builder.comment("How items should be handed to you");
-			giveMode = builder.defineEnum("GiveMode", defaultValues.giveMode);
+			giveMode = builder.defineEnum("GiveMode", defaultGiveMode);
 
 			builder.comment("Max number of columns shown");
-			maxColumns = builder.defineInRange("MaxColumns", defaultValues.maxColumns, smallestNumColumns, largestNumColumns);
+			maxColumns = builder.defineInRange("MaxColumns", defaultNumColumns, minNumColumns, largestNumColumns);
 
 			builder.comment("Max. recipe gui height");
-			maxRecipeGuiHeight = builder.defineInRange("RecipeGuiHeight", defaultValues.maxRecipeGuiHeight, minRecipeGuiHeight, Integer.MAX_VALUE);
+			maxRecipeGuiHeight = builder.defineInRange("RecipeGuiHeight", defaultRecipeGuiHeight, minRecipeGuiHeight, Integer.MAX_VALUE);
 		}
 		builder.pop();
 
@@ -110,41 +113,14 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 
 	@Override
 	public void buildSettingsGUI(ConfigGroup group) {
-		ClientConfigValues defaultVals = new ClientConfigValues();
-
-		group.addBool(cfgTranslation("centerSearchBarEnabled"), values.centerSearchBarEnabled, v -> {
-			centerSearchBarEnabled.set(v);
-			values.centerSearchBarEnabled = v;
-		}, defaultVals.centerSearchBarEnabled);
-		group.addEnum(cfgTranslation("giveMode"), values.giveMode, v -> {
-			giveMode.set(v);
-			values.giveMode = v;
-		}, NameMap.of(defaultVals.giveMode, GiveMode.values()).create());
-		group.addInt(cfgTranslation("maxColumns"), values.maxColumns, v -> {
-			maxColumns.set(v);
-			values.maxColumns = v;
-		}, defaultVals.maxColumns, 1, Integer.MAX_VALUE);
-		group.addInt(cfgTranslation("maxRecipeGuiHeight"), values.maxRecipeGuiHeight, v -> {
-			maxRecipeGuiHeight.set(v);
-			values.maxRecipeGuiHeight = v;
-		}, defaultVals.maxRecipeGuiHeight, 1, Integer.MAX_VALUE);
-
-	}
-
-	private String cfgTranslation(String name) {
-		return "advanced." + name;
+		group.addBool("advanced.centerSearchBarEnabled", centerSearchBarEnabled.get(), centerSearchBarEnabled::set, defaultCenterSearchBar);
+		group.addEnum("advanced.giveMode", giveMode.get(), giveMode::set, NameMap.of(defaultGiveMode, GiveMode.values()).create());
+		group.addInt("advanced.maxColumns", maxColumns.get(), maxColumns::set, defaultNumColumns, minNumColumns, largestNumColumns);
+		group.addInt("advanced.maxRecipeGuiHeight", maxRecipeGuiHeight.get(), maxRecipeGuiHeight::set, defaultRecipeGuiHeight, minRecipeGuiHeight, Integer.MAX_VALUE);
 	}
 
 	@Override
 	public void reload() {
-		this.values.debugModeEnabled = debugModeEnabled.get();
-		this.values.centerSearchBarEnabled = centerSearchBarEnabled.get();
-		this.values.lowMemorySlowSearchEnabled = lowMemorySlowSearchEnabled.get();
-		this.values.giveMode = giveMode.get();
-		this.values.maxColumns = maxColumns.get();
-		this.values.maxRecipeGuiHeight = maxRecipeGuiHeight.get();
-		this.searchColors = searchColorsCfg.get();
-
 		this.ingredientSorterStages = ingredientSorterStagesCfg.get()
 			.stream()
 			.map(s -> EnumUtils.getEnum(IngredientSortStage.class, s))
@@ -159,32 +135,37 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 
 	@Override
 	public boolean isDebugModeEnabled() {
-		return values.debugModeEnabled;
+		return debugModeEnabled.get();
 	}
 
 	@Override
 	public boolean isCenterSearchBarEnabled() {
-		return values.centerSearchBarEnabled;
+		return centerSearchBarEnabled.get();
 	}
 
 	@Override
 	public boolean isLowMemorySlowSearchEnabled() {
-		return values.lowMemorySlowSearchEnabled;
+		return lowMemorySlowSearchEnabled.get();
 	}
 
 	@Override
 	public GiveMode getGiveMode() {
-		return values.giveMode;
+		return giveMode.get();
+	}
+
+	@Override
+	public int getMinColumns() {
+		return minNumColumns;
 	}
 
 	@Override
 	public int getMaxColumns() {
-		return values.maxColumns;
+		return maxColumns.get();
 	}
 
 	@Override
 	public int getMaxRecipeGuiHeight() {
-		return values.maxRecipeGuiHeight;
+		return maxRecipeGuiHeight.get();
 	}
 
 	@Override
@@ -194,18 +175,17 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 
 	private void syncSearchColorsConfig() {
 		final ImmutableMap.Builder<Integer, String> searchColorsMapBuilder = ImmutableMap.builder();
+		List<? extends String> searchColors = searchColorsCfg.get();
 		for (String entry : searchColors) {
-			final String[] values = entry.split(":");
-			if (values.length != 2) {
-				LOGGER.error("Invalid format for searchColor entry: {}", entry);
-			} else {
-				try {
-					final String name = values[0];
-					final Integer colorValue = Integer.decode("0x" + values[1]);
-					searchColorsMapBuilder.put(colorValue, name);
-				} catch (NumberFormatException e) {
-					LOGGER.error("Invalid number format for searchColor entry: {}", entry, e);
+			try {
+				Map.Entry<Integer, String> result = parseSearchColor(entry);
+				if (result == null) {
+					LOGGER.error("Invalid number format for searchColor entry: {}", entry);
+				} else {
+					searchColorsMapBuilder.put(result);
 				}
+			} catch (NumberFormatException e) {
+				LOGGER.error("Invalid number format for searchColor entry: {}", entry, e);
 			}
 		}
 		final ColorNamer colorNamer = new ColorNamer(searchColorsMapBuilder.build());
@@ -228,18 +208,50 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 		};
 	}
 
-	private static boolean validSearchColor(Object obj) {
+	@Nullable
+	private static Map.Entry<Integer, String> parseSearchColor(Object obj) throws NumberFormatException {
 		if (obj instanceof String entry) {
 			String[] values = entry.split(":");
 			if (values.length == 2) {
-				try {
-					@SuppressWarnings("unused")
-					Integer color = Integer.decode("0x" + values[1]);
-					return true;
-				} catch (NumberFormatException ignored) {
-				}
+				String name = values[0];
+				Integer color = Integer.decode("0x" + values[1]);
+				return new ColorEntry(color, name);
 			}
 		}
-		return false;
+		return null;
+	}
+
+	private static boolean validSearchColor(Object obj) {
+		try {
+			var result = parseSearchColor(obj);
+			return result != null;
+		} catch (NumberFormatException ignored) {
+			return false;
+		}
+	}
+
+	private static class ColorEntry implements Map.Entry<Integer, String> {
+		private final Integer color;
+		private final String name;
+
+		public ColorEntry(Integer color, String name) {
+			this.color = color;
+			this.name = name;
+		}
+
+		@Override
+		public Integer getKey() {
+			return color;
+		}
+
+		@Override
+		public String getValue() {
+			return name;
+		}
+
+		@Override
+		public String setValue(String value) {
+			throw new UnsupportedOperationException();
+		}
 	}
 }

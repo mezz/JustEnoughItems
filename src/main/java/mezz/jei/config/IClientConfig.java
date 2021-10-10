@@ -14,6 +14,8 @@ public interface IClientConfig {
 
 	GiveMode getGiveMode();
 
+	int getMinColumns();
+
 	int getMaxColumns();
 
 	int getMaxRecipeGuiHeight();
