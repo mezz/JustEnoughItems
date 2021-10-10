@@ -3,7 +3,6 @@ package mezz.jei.gui.overlay.bookmarks;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.bookmarks.BookmarkList;
-import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.elements.GuiIconToggleButton;
@@ -88,14 +87,14 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 		bookmarkButton.drawTooltips(matrixStack, mouseX, mouseY);
 	}
 
-	private static int getMinWidth() {
-		return Math.max(4 * BUTTON_SIZE, ClientConfig.smallestNumColumns * IngredientGrid.INGREDIENT_WIDTH);
+	private static int getMinWidth(IClientConfig clientConfig) {
+		return Math.max(4 * BUTTON_SIZE, clientConfig.getMinColumns() * IngredientGrid.INGREDIENT_WIDTH);
 	}
 
 	public boolean updateBounds(Set<Rectangle2d> guiExclusionAreas) {
 		displayArea = parentArea;
 
-		final int minWidth = getMinWidth();
+		final int minWidth = getMinWidth(this.clientConfig);
 		if (displayArea.getWidth() < minWidth) {
 			return false;
 		}
