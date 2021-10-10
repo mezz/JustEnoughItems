@@ -6,7 +6,9 @@ import mezz.jei.input.click.MouseClickState;
 import net.minecraft.client.gui.screens.Screen;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class CombinedMouseHandler implements IMouseHandler {
 	private final Int2ObjectMap<IMouseHandler> mousedDown = new Int2ObjectArrayMap<>();
@@ -25,15 +27,22 @@ public class CombinedMouseHandler implements IMouseHandler {
 	public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
 		if (clickState.isSimulate() || clickState.isVanilla()) {
 			this.mousedDown.remove(mouseButton);
+			IMouseHandler handledSource = null;
 			IMouseHandler handled = null;
 			for (IMouseHandler mouseHandler : this.mouseHandlers) {
-				if (handled == null) {
-					handled = mouseHandler.handleClick(screen, mouseX, mouseY, mouseButton, clickState);
-				} else {
-					mouseHandler.handleMouseClickedOut(mouseButton);
+				handled = mouseHandler.handleClick(screen, mouseX, mouseY, mouseButton, clickState);
+				if (handled != null) {
+					handledSource = mouseHandler;
+					break;
 				}
 			}
+
 			if (handled != null) {
+				for (IMouseHandler mouseHandler : this.mouseHandlers) {
+					if (mouseHandler != handledSource) {
+						mouseHandler.handleMouseClickedOut(mouseButton);
+					}
+				}
 				if (!clickState.isVanilla()) {
 					this.mousedDown.put(mouseButton, handled);
 				}
