@@ -2,7 +2,7 @@ package mezz.jei.config;
 
 import mezz.jei.util.GiveMode;
 
-public class ConfigValues {
+public class ClientConfigValues {
 	// advanced
 	public boolean debugModeEnabled = false;
 	public boolean centerSearchBarEnabled = false;

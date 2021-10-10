@@ -3,18 +3,18 @@ package mezz.jei.config;
 import dev.ftb.mods.ftblibrary.config.ConfigGroup;
 import dev.ftb.mods.ftblibrary.config.ui.EditConfigScreen;
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.events.EventBusHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 public class JEIClientConfig {
 	private static final ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
@@ -27,17 +27,18 @@ public class JEIClientConfig {
 	private static boolean ftbLibraryLoaded = false;
 	private static final String TRANSLATION_KEY = "config." + ModIds.JEI_ID;
 
-	public static void register() {
-		FMLJavaModLoadingContext.get().getModEventBus().register(JEIClientConfig.class);
-		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, config);
+	public static void register(IEventBus modEventBus) {
+		EventBusHelper.addListener(modEventBus, FMLCommonSetupEvent.class, JEIClientConfig::commonSetup);
+		EventBusHelper.addListener(modEventBus, ModConfig.ModConfigEvent.class, JEIClientConfig::reload);
+
+		ModLoadingContext modLoadingContext = ModLoadingContext.get();
+		modLoadingContext.registerConfig(ModConfig.Type.CLIENT, config);
 	}
 
-	@SubscribeEvent
 	public static void commonSetup(FMLCommonSetupEvent event) {
 		ftbLibraryLoaded = ModList.get().isLoaded("ftblibrary");
 	}
 
-	@SubscribeEvent
 	public static void reload(ModConfig.ModConfigEvent event) {
 		if (event.getConfig().getSpec() != config) {
 			return;
@@ -50,7 +51,7 @@ public class JEIClientConfig {
 
 	public static void openSettings() {
 		Minecraft mc = Minecraft.getInstance();
-		if (mc.player == null) {
+		if (mc == null || mc.player == null) {
 			return;
 		}
 

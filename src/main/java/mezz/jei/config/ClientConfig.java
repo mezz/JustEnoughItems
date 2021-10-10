@@ -33,7 +33,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	public static final int largestNumColumns = 100;
 	public static final int minRecipeGuiHeight = 175;
 
-	private final ConfigValues values;
+	private final ClientConfigValues values;
 	private List<? extends String> searchColors = Arrays.asList(ColorGetter.getColorDefaults());
 	public static final List<IngredientSortStage> ingredientSorterStagesDefault = Arrays.asList(
 		IngredientSortStage.MOD_NAME,
@@ -59,8 +59,8 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 
 	public ClientConfig(ForgeConfigSpec.Builder builder) {
 		instance = this;
-		this.values = new ConfigValues();
-		ConfigValues defaultValues = new ConfigValues();
+		this.values = new ClientConfigValues();
+		ClientConfigValues defaultValues = new ClientConfigValues();
 
 		builder.push("advanced");
 		{
@@ -124,7 +124,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 
 	@Override
 	public void buildSettingsGUI(ConfigGroup group) {
-		ConfigValues defaultVals = new ConfigValues();
+		ClientConfigValues defaultVals = new ClientConfigValues();
 
 		group.addBool(cfgTranslation("centerSearchBarEnabled"), values.centerSearchBarEnabled, v -> {
 			centerSearchBarEnabled.set(v);

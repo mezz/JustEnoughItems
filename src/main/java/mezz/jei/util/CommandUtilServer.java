@@ -1,15 +1,12 @@
 package mezz.jei.util;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import net.minecraft.util.Util;
-import net.minecraftforge.items.ItemHandlerHelper;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
+import mezz.jei.config.IServerConfig;
+import mezz.jei.config.ServerConfig;
+import mezz.jei.network.Network;
+import mezz.jei.network.packets.PacketCheatPermission;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.ItemInput;
@@ -25,14 +22,18 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
-
-import mezz.jei.network.Network;
-import mezz.jei.network.packets.PacketCheatPermission;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Server-side-safe utilities for commands.
@@ -70,29 +71,37 @@ public final class CommandUtilServer {
 		player.sendMessage(component, Util.NIL_UUID);
 	}
 
-	public static boolean hasPermission(PlayerEntity sender) {
-		if (sender.isCreative()) {
+	public static boolean hasPermissionForCheatMode(PlayerEntity sender) {
+		IServerConfig serverConfig = ServerConfig.getInstance();
+		if (serverConfig.isCheatModeEnabledForCreative() &&
+			sender.isCreative()) {
 			return true;
 		}
-		CommandNode<CommandSource> giveCommand = getGiveCommand(sender);
+
 		CommandSource commandSource = sender.createCommandSourceStack();
-		if (giveCommand != null) {
-			return giveCommand.canUse(commandSource);
-		} else {
+		if (serverConfig.isCheatModeEnabledForOp()) {
 			MinecraftServer minecraftServer = sender.getServer();
-			if (minecraftServer == null) {
-				return false;
+			if (minecraftServer != null) {
+				int opPermissionLevel = minecraftServer.getOperatorUserPermissionLevel();
+				return commandSource.hasPermission(opPermissionLevel);
 			}
-			int opPermissionLevel = minecraftServer.getOperatorUserPermissionLevel();
-			return commandSource.hasPermission(opPermissionLevel);
 		}
+
+		if (serverConfig.isCheatModeEnabledForGive()) {
+			CommandNode<CommandSource> giveCommand = getGiveCommand(sender);
+			if (giveCommand != null) {
+				return giveCommand.canUse(commandSource);
+			}
+		}
+
+		return false;
 	}
 
 	/**
 	 * Gives a player an item.
 	 */
 	public static void executeGive(ServerPlayerEntity sender, ItemStack itemStack, GiveMode giveMode) {
-		if (hasPermission(sender)) {
+		if (hasPermissionForCheatMode(sender)) {
 			if (giveMode == GiveMode.INVENTORY) {
 				giveToInventory(sender, itemStack);
 			} else if (giveMode == GiveMode.MOUSE_PICKUP) {
@@ -104,7 +113,7 @@ public final class CommandUtilServer {
 	}
 
 	public static void setHotbarSlot(ServerPlayerEntity sender, ItemStack itemStack, int hotbarSlot) {
-		if (hasPermission(sender)) {
+		if (hasPermissionForCheatMode(sender)) {
 			if (!PlayerInventory.isHotbarSlot(hotbarSlot)) {
 				LOGGER.error("Tried to set slot that is not in the hotbar: {}", hotbarSlot);
 				return;
