@@ -61,11 +61,6 @@ configurations {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
-repositories {
-	mavenCentral()
-	maven { url 'https://maven.saps.dev/minecraft/' }
-}
-
 dependencies {
 	minecraft([
 			group  : "${project.forgegroup}",
@@ -74,8 +69,6 @@ dependencies {
 	])
 	testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
 	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
-
-	compileOnly fg.deobf("dev.ftb.mods:ftb-library-forge:${ftb_library_version}")
 }
 
 minecraft {

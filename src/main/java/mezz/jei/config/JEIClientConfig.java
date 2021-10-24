@@ -1,20 +1,15 @@
 package mezz.jei.config;
 
-import dev.ftb.mods.ftblibrary.config.ConfigGroup;
-import dev.ftb.mods.ftblibrary.config.ui.EditConfigScreen;
-import mezz.jei.api.constants.ModIds;
 import mezz.jei.events.EventBusHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.InventoryScreen;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 public class JEIClientConfig {
 	private static final ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
@@ -24,19 +19,12 @@ public class JEIClientConfig {
 	public static final ModIdFormattingConfig modNameFormat = new ModIdFormattingConfig(builder);
 
 	private static final ForgeConfigSpec config = builder.build();
-	private static boolean ftbLibraryLoaded = false;
-	private static final String TRANSLATION_KEY = "config." + ModIds.JEI_ID;
 
 	public static void register(IEventBus modEventBus) {
-		EventBusHelper.addListener(modEventBus, FMLCommonSetupEvent.class, JEIClientConfig::commonSetup);
 		EventBusHelper.addListener(modEventBus, ModConfig.ModConfigEvent.class, JEIClientConfig::reload);
 
 		ModLoadingContext modLoadingContext = ModLoadingContext.get();
 		modLoadingContext.registerConfig(ModConfig.Type.CLIENT, config);
-	}
-
-	public static void commonSetup(FMLCommonSetupEvent event) {
-		ftbLibraryLoaded = ModList.get().isLoaded("ftblibrary");
 	}
 
 	public static void reload(ModConfig.ModConfigEvent event) {
@@ -55,24 +43,12 @@ public class JEIClientConfig {
 			return;
 		}
 
-		if (ftbLibraryLoaded) {
-			ConfigGroup group = new ConfigGroup(TRANSLATION_KEY);
-
-			clientConfig.buildSettingsGUI(group);
-			filterConfig.buildSettingsGUI(group);
-			modNameFormat.buildSettingsGUI(group);
-
-			EditConfigScreen gui = new EditConfigScreen(group);
-			group.savedCallback = b -> {
-				if (b) {
-					config.save();
-				}
-				mc.setScreen(new InventoryScreen(mc.player));
-			};
-			gui.openGui();
-		} else {
-			mc.player.displayClientMessage(new TranslationTextComponent(ModIds.JEI_ID + ".message.ftblibrary")
-				.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/ftb-library-forge"))), false);
-		}
+		ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/configured");
+		Style style = Style.EMPTY
+				.setUnderlined(true)
+				.withClickEvent(clickEvent);
+		TranslationTextComponent textComponent = new TranslationTextComponent("jei.message.configured");
+		ITextComponent message = textComponent.setStyle(style);
+		mc.player.displayClientMessage(message, false);
 	}
 }

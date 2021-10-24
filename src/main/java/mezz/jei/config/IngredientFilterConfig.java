@@ -1,7 +1,5 @@
 package mezz.jei.config;
 
-import dev.ftb.mods.ftblibrary.config.ConfigGroup;
-import dev.ftb.mods.ftblibrary.config.NameMap;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class IngredientFilterConfig implements IIngredientFilterConfig, IJEIConfig {
@@ -36,44 +34,6 @@ public class IngredientFilterConfig implements IIngredientFilterConfig, IJEIConf
 		builder.comment("Search advanced tooltips (visible with F3+H)");
 		searchAdvancedTooltips = builder.define("SearchAdvancedTooltips", defaultValues.searchAdvancedTooltips);
 		builder.pop();
-	}
-
-	@Override
-	public void buildSettingsGUI(ConfigGroup group) {
-		IngredientFilterConfigValues defaultValues = new IngredientFilterConfigValues();
-
-		group.addEnum(cfgTranslation("modNameSearchMode"), values.modNameSearchMode, v -> {
-			modNameSearchMode.set(v);
-			values.modNameSearchMode = v;
-		}, NameMap.of(defaultValues.modNameSearchMode, SearchMode.values()).create());
-		group.addEnum(cfgTranslation("tooltipSearchMode"), values.tooltipSearchMode, v -> {
-			tooltipSearchMode.set(v);
-			values.tooltipSearchMode = v;
-		}, NameMap.of(defaultValues.tooltipSearchMode, SearchMode.values()).create());
-		group.addEnum(cfgTranslation("tagSearchMode"), values.tagSearchMode, v -> {
-			tagSearchMode.set(v);
-			values.tagSearchMode = v;
-		}, NameMap.of(defaultValues.tagSearchMode, SearchMode.values()).create());
-		group.addEnum(cfgTranslation("creativeTabSearchMode"), values.creativeTabSearchMode, v -> {
-			creativeTabSearchMode.set(v);
-			values.creativeTabSearchMode = v;
-		}, NameMap.of(defaultValues.creativeTabSearchMode, SearchMode.values()).create());
-		group.addEnum(cfgTranslation("colorSearchMode"), values.colorSearchMode, v -> {
-			colorSearchMode.set(v);
-			values.colorSearchMode = v;
-		}, NameMap.of(defaultValues.colorSearchMode, SearchMode.values()).create());
-		group.addEnum(cfgTranslation("resourceIdSearchMode"), values.resourceIdSearchMode, v -> {
-			resourceIdSearchMode.set(v);
-			values.resourceIdSearchMode = v;
-		}, NameMap.of(defaultValues.resourceIdSearchMode, SearchMode.values()).create());
-		group.addBool(cfgTranslation("searchAdvancedTooltips"), values.searchAdvancedTooltips, v -> {
-			searchAdvancedTooltips.set(v);
-			values.searchAdvancedTooltips = v;
-		}, defaultValues.searchAdvancedTooltips);
-	}
-
-	private String cfgTranslation(String name) {
-		return "search." + name;
 	}
 
 	@Override

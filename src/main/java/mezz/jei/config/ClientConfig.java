@@ -1,7 +1,5 @@
 package mezz.jei.config;
 
-import dev.ftb.mods.ftblibrary.config.ConfigGroup;
-import dev.ftb.mods.ftblibrary.config.NameMap;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -120,33 +118,6 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	public static IClientConfig getInstance() {
 		Preconditions.checkNotNull(instance);
 		return instance;
-	}
-
-	@Override
-	public void buildSettingsGUI(ConfigGroup group) {
-		ClientConfigValues defaultVals = new ClientConfigValues();
-
-		group.addBool(cfgTranslation("centerSearchBarEnabled"), values.centerSearchBarEnabled, v -> {
-			centerSearchBarEnabled.set(v);
-			values.centerSearchBarEnabled = v;
-		}, defaultVals.centerSearchBarEnabled);
-		group.addEnum(cfgTranslation("giveMode"), values.giveMode, v -> {
-			giveMode.set(v);
-			values.giveMode = v;
-		}, NameMap.of(defaultVals.giveMode, GiveMode.values()).create());
-		group.addInt(cfgTranslation("maxColumns"), values.maxColumns, v -> {
-			maxColumns.set(v);
-			values.maxColumns = v;
-		}, defaultVals.maxColumns, 1, Integer.MAX_VALUE);
-		group.addInt(cfgTranslation("maxRecipeGuiHeight"), values.maxRecipeGuiHeight, v -> {
-			maxRecipeGuiHeight.set(v);
-			values.maxRecipeGuiHeight = v;
-		}, defaultVals.maxRecipeGuiHeight, 1, Integer.MAX_VALUE);
-
-	}
-
-	private String cfgTranslation(String name) {
-		return "advanced." + name;
 	}
 
 	@Override

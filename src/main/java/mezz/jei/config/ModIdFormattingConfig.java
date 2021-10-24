@@ -2,12 +2,9 @@ package mezz.jei.config;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
-import dev.ftb.mods.ftblibrary.config.ConfigGroup;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -50,19 +47,6 @@ public class ModIdFormattingConfig implements IJEIConfig {
 	}
 
 	@Override
-	public void buildSettingsGUI(ConfigGroup group) {
-		group.addString(cfgTranslation("modNameFormat"), modNameFormatFriendly, v -> {
-			modNameFormatConfig.set(v);
-			modNameFormatFriendly = v;
-			updateModNameFormat();
-		}, ModIdFormattingConfig.defaultModNameFormatFriendly);
-	}
-
-	private String cfgTranslation(String name) {
-		return "advanced." + name;
-	}
-
-	@Override
 	public void reload() {
 		modNameFormatFriendly = modNameFormatConfig.get();
 		updateModNameFormat();
@@ -89,15 +73,6 @@ public class ModIdFormattingConfig implements IJEIConfig {
 	}
 
 	private void updateModNameFormat() {
-		EnumSet<TextFormatting> validFormatting = EnumSet.allOf(TextFormatting.class);
-		validFormatting.remove(TextFormatting.RESET);
-		String[] validValues = new String[validFormatting.size()];
-		int i = 0;
-		for (TextFormatting formatting : validFormatting) {
-			validValues[i] = formatting.getName().toLowerCase(Locale.ENGLISH);
-			i++;
-		}
-
 		modNameFormat = parseFriendlyModNameFormat(modNameFormatFriendly);
 	}
 
@@ -110,7 +85,7 @@ public class ModIdFormattingConfig implements IJEIConfig {
 		for (String string : strings) {
 			TextFormatting valueByName = TextFormatting.getByName(string);
 			if (valueByName != null) {
-				format.append(valueByName.toString());
+				format.append(valueByName);
 			} else {
 				LOGGER.error("Invalid format: {}", string);
 			}
@@ -122,7 +97,9 @@ public class ModIdFormattingConfig implements IJEIConfig {
 	private static String detectModNameTooltipFormatting() {
 		try {
 			ItemStack itemStack = new ItemStack(Items.APPLE);
-			ClientPlayerEntity player = Minecraft.getInstance().player;
+			Minecraft minecraft = Minecraft.getInstance();
+			assert minecraft != null;
+			ClientPlayerEntity player = minecraft.player;
 			List<ITextComponent> tooltip = new ArrayList<>();
 			tooltip.add(new StringTextComponent("JEI Tooltip Testing for mod name formatting"));
 			ItemTooltipEvent tooltipEvent = ForgeEventFactory.onItemTooltip(itemStack, player, tooltip, ITooltipFlag.TooltipFlags.NORMAL);

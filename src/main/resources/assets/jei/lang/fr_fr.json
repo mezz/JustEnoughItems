@@ -122,7 +122,7 @@
   "gui.jei.category.itemInformation": "Information",
 
   "_comment": "Messages",
-  "jei.message.ftblibrary": "Installez FTB Library pour accéder aux configurations en jeu",
+  "jei.message.configured": "Install the \"Configured\" mod to access the in-game config",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",
