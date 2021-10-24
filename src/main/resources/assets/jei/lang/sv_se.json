@@ -135,7 +135,7 @@
   "gui.jei.category.itemInformation": "Information",
 
   "_comment": "Messages",
-  "jei.message.configured": "Install the \"Configured\" mod to access the in-game config",
+  "jei.message.configured": "Installera modden \"Configured\" för att få åtkomst till konfigurationen i spelet",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",
