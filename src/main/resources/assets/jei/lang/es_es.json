@@ -112,7 +112,7 @@
   "gui.jei.category.itemInformation": "Información",
 
   "_comment": "Messages",
-  "jei.message.ftblibrary": "Instala FTB Library para acceder a la configuración en el juego",
+  "jei.message.configured": "Install the \"Configured\" mod to access the in-game config",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Las puertas de madera te permiten bloquear la entrada de monstruos a tu edificio.\\nFrases de prueba.",

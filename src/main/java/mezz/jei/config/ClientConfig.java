@@ -1,7 +1,5 @@
 package mezz.jei.config;
 
-import dev.ftb.mods.ftblibrary.config.ConfigGroup;
-import dev.ftb.mods.ftblibrary.config.NameMap;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -109,14 +107,6 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	public static IClientConfig getInstance() {
 		Preconditions.checkNotNull(instance);
 		return instance;
-	}
-
-	@Override
-	public void buildSettingsGUI(ConfigGroup group) {
-		group.addBool("advanced.centerSearchBarEnabled", centerSearchBarEnabled.get(), centerSearchBarEnabled::set, defaultCenterSearchBar);
-		group.addEnum("advanced.giveMode", giveMode.get(), giveMode::set, NameMap.of(defaultGiveMode, GiveMode.values()).create());
-		group.addInt("advanced.maxColumns", maxColumns.get(), maxColumns::set, defaultNumColumns, minNumColumns, largestNumColumns);
-		group.addInt("advanced.maxRecipeGuiHeight", maxRecipeGuiHeight.get(), maxRecipeGuiHeight::set, defaultRecipeGuiHeight, minRecipeGuiHeight, Integer.MAX_VALUE);
 	}
 
 	@Override

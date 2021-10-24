@@ -8,7 +8,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import dev.ftb.mods.ftblibrary.config.ConfigGroup;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -65,15 +64,6 @@ public class ModIdFormattingConfig implements IJEIConfig {
 	}
 
 	@Override
-	public void buildSettingsGUI(ConfigGroup group) {
-		group.addString("advanced.modNameFormat", modNameFormatFriendly, v -> {
-			modNameFormatConfig.set(v);
-			modNameFormatFriendly = v;
-			updateModNameFormat();
-		}, ModIdFormattingConfig.defaultModNameFormatFriendly);
-	}
-
-	@Override
 	public void reload() {
 		modNameFormatFriendly = modNameFormatConfig.get();
 		updateModNameFormat();
@@ -124,7 +114,9 @@ public class ModIdFormattingConfig implements IJEIConfig {
 	private static String detectModNameTooltipFormatting() {
 		try {
 			ItemStack itemStack = new ItemStack(Items.APPLE);
-			LocalPlayer player = Minecraft.getInstance().player;
+			Minecraft minecraft = Minecraft.getInstance();
+			assert minecraft != null;
+			LocalPlayer player = minecraft.player;
 			List<Component> tooltip = new ArrayList<>();
 			tooltip.add(new TextComponent("JEI Tooltip Testing for mod name formatting"));
 			ItemTooltipEvent tooltipEvent = ForgeEventFactory.onItemTooltip(itemStack, player, tooltip, TooltipFlag.Default.NORMAL);

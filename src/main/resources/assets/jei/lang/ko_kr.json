@@ -130,7 +130,7 @@
   "gui.jei.category.itemInformation": "설명",
 
   "_comment": "Messages",
-  "jei.message.ftblibrary": "게임 구성에서 접근할 수 있도록 FTB 라이브러리를 설치합니다.",
+  "jei.message.configured": "Install the \"Configured\" mod to access the in-game config",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "나무 문을 통해 건물에 괴물이 들어오지 못하게 막을 수 있습니다.\\n문장을 테스트하는 중입니다.",
