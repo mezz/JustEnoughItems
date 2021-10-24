@@ -38,8 +38,8 @@ public class ConfigButton extends GuiIconToggleButton {
 		tooltip.add(new TranslationTextComponent("jei.tooltip.config"));
 		if (!worldConfig.isOverlayEnabled()) {
 			TranslationTextComponent disabled = new TranslationTextComponent("jei.tooltip.ingredient.list.disabled");
-			TranslationTextComponent overLay = new TranslationTextComponent(KeyBindings.toggleOverlay.saveString());
-			TranslationTextComponent disabledFix = new TranslationTextComponent("jei.tooltip.ingredient.list.disabled.how.to.fix", overLay);
+			ITextComponent overlay = KeyBindings.toggleOverlay.getTranslatedKeyMessage();
+			TranslationTextComponent disabledFix = new TranslationTextComponent("jei.tooltip.ingredient.list.disabled.how.to.fix", overlay);
 			tooltip.add(disabled.withStyle(TextFormatting.GOLD));
 			tooltip.add(disabledFix.withStyle(TextFormatting.GOLD));
 		} else if (!parent.isListDisplayed()) {
@@ -51,7 +51,7 @@ public class ConfigButton extends GuiIconToggleButton {
 			tooltip.add(enabled.withStyle(TextFormatting.RED));
 			KeyBinding toggleCheatMode = KeyBindings.toggleCheatMode;
 			if (!toggleCheatMode.isUnbound()) {
-				TranslationTextComponent cheatMode = new TranslationTextComponent(toggleCheatMode.saveString());
+				ITextComponent cheatMode = toggleCheatMode.getTranslatedKeyMessage();
 				TranslationTextComponent disableHotkey = new TranslationTextComponent("jei.tooltip.cheat.mode.how.to.disable.hotkey", cheatMode);
 				tooltip.add(disableHotkey.withStyle(TextFormatting.RED));
 			} else {
