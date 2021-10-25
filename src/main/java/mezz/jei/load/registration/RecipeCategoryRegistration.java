@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
@@ -51,9 +50,5 @@ public class RecipeCategoryRegistration implements IRecipeCategoryRegistration {
 
 	public ImmutableList<IRecipeCategory<?>> getRecipeCategories() {
 		return ImmutableList.copyOf(recipeCategories);
-	}
-
-	public ImmutableMap<ResourceLocation, IRecipeCategory<?>> getRecipeCategoriesByUid() {
-		return ImmutableMap.copyOf(recipeCategoriesByUid);
 	}
 }

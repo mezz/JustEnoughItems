@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;

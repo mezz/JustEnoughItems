@@ -58,7 +58,7 @@ public final class ErrorUtil {
 	public static <T> String getInfoFromRecipe(T recipe, IRecipeCategory<T> recipeCategory) {
 		StringBuilder recipeInfoBuilder = new StringBuilder();
 		String recipeName = getNameForRecipe(recipe);
-		recipeInfoBuilder.append(recipeName);
+		recipeInfoBuilder.append(recipeName).append(" {");
 
 		Ingredients ingredients = new Ingredients();
 
@@ -69,21 +69,23 @@ public final class ErrorUtil {
 			return recipeInfoBuilder.toString();
 		}
 
-		recipeInfoBuilder.append("\nOutputs:");
+		recipeInfoBuilder.append("\n  Outputs:");
 		List<IngredientsForType<?>> outputIngredients = ingredients.getOutputIngredients();
 		for (IngredientsForType<?> output : outputIngredients) {
 			IIngredientType<?> outputType = output.getIngredientType();
 			List<String> ingredientOutputInfo = getIngredientOutputInfo(outputType, ingredients);
-			recipeInfoBuilder.append('\n').append(outputType.getIngredientClass().getName()).append(": ").append(ingredientOutputInfo);
+			recipeInfoBuilder.append("\n    ").append(outputType.getIngredientClass().getName()).append(": ").append(ingredientOutputInfo);
 		}
 
-		recipeInfoBuilder.append("\nInputs:");
+		recipeInfoBuilder.append("\n  Inputs:");
 		List<IngredientsForType<?>> inputIngredients = ingredients.getInputIngredients();
 		for (IngredientsForType<?> input : inputIngredients) {
 			IIngredientType<?> inputType = input.getIngredientType();
 			List<String> ingredientInputInfo = getIngredientInputInfo(inputType, ingredients);
-			recipeInfoBuilder.append('\n').append(inputType.getIngredientClass().getName()).append(": ").append(ingredientInputInfo);
+			recipeInfoBuilder.append("\n    ").append(inputType.getIngredientClass().getName()).append(": ").append(ingredientInputInfo);
 		}
+
+		recipeInfoBuilder.append("\n}");
 
 		return recipeInfoBuilder.toString();
 	}

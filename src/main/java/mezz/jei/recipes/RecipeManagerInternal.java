@@ -41,7 +41,6 @@ public class RecipeManagerInternal {
 
 	public RecipeManagerInternal(
 		ImmutableList<IRecipeCategory<?>> recipeCategories,
-		ImmutableListMultimap<ResourceLocation, Object> recipes,
 		ImmutableListMultimap<ResourceLocation, Object> recipeCatalysts,
 		IngredientManager ingredientManager,
 		ImmutableList<IRecipeManagerPlugin> plugins,
@@ -83,39 +82,28 @@ public class RecipeManagerInternal {
 		for (IRecipeManagerPlugin plugin : plugins) {
 			this.plugins.add(new RecipeManagerPluginSafeWrapper(plugin));
 		}
-
-		addRecipes(recipes);
 	}
 
-	private void addRecipes(ImmutableListMultimap<ResourceLocation, Object> recipes) {
-		Set<ResourceLocation> recipeCategoryUids = recipes.keySet();
-		for (ResourceLocation recipeCategoryUid : recipeCategoryUids) {
-			LOGGER.debug("Loading recipes: " + recipeCategoryUid.toString());
-			for (Object recipe : recipes.get(recipeCategoryUid)) {
-				addRecipeTyped(recipe, recipeCategoryUid);
-			}
+	public void addRecipes(Iterable<?> recipes, ResourceLocation recipeCategoryUid) {
+		LOGGER.debug("Loading recipes: " + recipeCategoryUid);
+		for (Object recipe : recipes) {
+			addRecipe(recipe, recipeCategoryUid);
 		}
 	}
 
-	private <T> void addRecipeTyped(T recipe, ResourceLocation recipeCategoryUid) {
-		RecipeCategoryData<T> recipeCategoryData = recipeCategoriesDataMap.get(recipe, recipeCategoryUid);
-		addRecipe(recipe, recipeCategoryData);
-	}
-
-	@Deprecated
 	public <T> void addRecipe(T recipe, ResourceLocation recipeCategoryUid) {
 		RecipeCategoryData<T> recipeCategoryData = recipeCategoriesDataMap.get(recipe, recipeCategoryUid);
-		Set<T> hiddenRecipes = recipeCategoryData.getHiddenRecipes();
-		if (hiddenRecipes.contains(recipe)) {
-			unhideRecipe(recipe, recipeCategoryUid);
-		} else {
-			addRecipe(recipe, recipeCategoryData);
-		}
+		addRecipe(recipe, recipeCategoryData);
 	}
 
 	private <T> void addRecipe(T recipe, RecipeCategoryData<T> recipeCategoryData) {
 		IRecipeCategory<T> recipeCategory = recipeCategoryData.getRecipeCategory();
 		if (!recipeCategory.isHandled(recipe)) {
+			return;
+		}
+		Set<T> hiddenRecipes = recipeCategoryData.getHiddenRecipes();
+		if (hiddenRecipes.contains(recipe)) {
+			unhideRecipe(recipe, recipeCategory.getUid());
 			return;
 		}
 		try {
@@ -126,8 +114,6 @@ public class RecipeManagerInternal {
 			recipeOutputMap.addRecipe(recipe, recipeCategory, ingredients.getOutputIngredients());
 
 			recipeCategoryData.getRecipes().add(recipe);
-
-			unhideRecipe(recipe, recipeCategory.getUid());
 
 			recipeCategoriesVisibleCache = null;
 		} catch (RuntimeException | LinkageError e) {

@@ -6,9 +6,7 @@ import mezz.jei.input.click.MouseClickState;
 import net.minecraft.client.gui.screens.Screen;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class CombinedMouseHandler implements IMouseHandler {
 	private final Int2ObjectMap<IMouseHandler> mousedDown = new Int2ObjectArrayMap<>();

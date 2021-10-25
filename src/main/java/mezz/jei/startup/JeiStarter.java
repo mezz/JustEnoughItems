@@ -1,9 +1,11 @@
 package mezz.jei.startup;
 
+import com.google.common.collect.ImmutableTable;
 import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.BookmarkConfig;
@@ -31,14 +33,13 @@ import mezz.jei.input.InputHandler;
 import mezz.jei.load.PluginCaller;
 import mezz.jei.load.PluginHelper;
 import mezz.jei.load.PluginLoader;
-import mezz.jei.load.registration.GuiHandlerRegistration;
-import mezz.jei.load.registration.RecipeTransferRegistration;
 import mezz.jei.plugins.jei.JeiInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.LoggedTimer;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
@@ -61,23 +62,24 @@ public class JeiStarter {
 		LoggedTimer totalTime = new LoggedTimer();
 		totalTime.start("Starting JEI");
 
+		Internal.setTextures(textures);
+
 		boolean debugMode = clientConfig.isDebugModeEnabled();
 		VanillaPlugin vanillaPlugin = PluginHelper.getPluginWithClass(VanillaPlugin.class, plugins);
 		JeiInternalPlugin jeiInternalPlugin = PluginHelper.getPluginWithClass(JeiInternalPlugin.class, plugins);
 		ErrorUtil.checkNotNull(vanillaPlugin, "vanilla plugin");
 		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
-		PluginLoader pluginLoader = new PluginLoader(plugins, vanillaPlugin, textures, clientConfig, modIdHelper, debugMode);
-		GuiHandlerRegistration guiHandlerRegistration = pluginLoader.getGuiHandlerRegistration();
+		PluginLoader pluginLoader = new PluginLoader(plugins, textures, clientConfig, modIdHelper, debugMode);
 		IngredientManager ingredientManager = pluginLoader.getIngredientManager();
 		IngredientFilter ingredientFilter = pluginLoader.createIngredientFilter(ingredientSorter, editModeConfig, ingredientFilterConfig);
 		BookmarkList bookmarkList = pluginLoader.createBookmarkList(bookmarkConfig);
-		IRecipeManager recipeManager = pluginLoader.getRecipeManager(recipeCategorySortingConfig);
-		RecipeTransferRegistration recipeTransferRegistration = pluginLoader.getRecipeTransferRegistration();
-		RecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferRegistration.getRecipeTransferHandlers());
+		IRecipeManager recipeManager = pluginLoader.createRecipeManager(plugins, vanillaPlugin, recipeCategorySortingConfig);
+		ImmutableTable<Class<?>, ResourceLocation, IRecipeTransferHandler<?, ?>> recipeTransferHandlers = pluginLoader.createRecipeTransferHandlers(plugins);
+		RecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferHandlers);
 
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building runtime");
-		GuiScreenHelper guiScreenHelper = guiHandlerRegistration.createGuiScreenHelper(ingredientManager);
+		GuiScreenHelper guiScreenHelper = pluginLoader.createGuiScreenHelper(plugins);
 		RecipesGui recipesGui = new RecipesGui(recipeManager, recipeTransferManager, ingredientManager, modIdHelper, clientConfig);
 
 		IngredientGrid ingredientListGrid = new IngredientGrid(GridAlignment.LEFT, editModeConfig, ingredientFilterConfig, clientConfig, worldConfig, guiScreenHelper, recipesGui);

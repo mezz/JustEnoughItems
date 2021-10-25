@@ -46,14 +46,14 @@ public class RecipeCategoryDataMap {
 	public RecipeCategoryData<?> get(ResourceLocation recipeCategoryUid) {
 		RecipeCategoryData<?> recipeCategoryData = map.get(recipeCategoryUid);
 		if (recipeCategoryData == null) {
-			throw new IllegalStateException("Failed to find recipe category data for: " + recipeCategoryUid);
+			throw new IllegalStateException("There is no recipe category registered for: " + recipeCategoryUid);
 		}
 		return recipeCategoryData;
 	}
 
 	public void validate(ResourceLocation recipeCategoryUid) {
 		if (!map.containsKey(recipeCategoryUid)) {
-			throw new IllegalStateException("Failed to find recipe category data for: " + recipeCategoryUid);
+			throw new IllegalStateException("There is no recipe category registered for: " + recipeCategoryUid);
 		}
 	}
 }
