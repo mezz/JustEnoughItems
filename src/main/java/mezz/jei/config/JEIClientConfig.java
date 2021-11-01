@@ -1,16 +1,24 @@
 package mezz.jei.config;
 
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.events.EventBusHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.chat.ClickEvent;
+
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.minecraftforge.fmlclient.ConfigGuiHandler;
+
+import java.util.Optional;
 
 public class JEIClientConfig {
 	private static final ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
@@ -44,12 +52,22 @@ public class JEIClientConfig {
 			return;
 		}
 
-		ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/configured");
-		Style style = Style.EMPTY
-			.setUnderlined(true)
-			.withClickEvent(clickEvent);
-		MutableComponent message = new TranslatableComponent("jei.message.configured");
-		message = message.setStyle(style);
-		mc.player.displayClientMessage(message, false);
+		Optional<Screen> configScreen = ModList.get()
+			.getModContainerById(ModIds.JEI_ID)
+			.map(ModContainer::getModInfo)
+			.flatMap(ConfigGuiHandler::getGuiFactoryFor)
+			.map(f -> f.apply(mc, mc.screen));
+
+		if (configScreen.isPresent()) {
+            mc.setScreen(configScreen.get());
+        } else {
+            ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/configured");
+            Style style = Style.EMPTY
+                    .setUnderlined(true)
+                    .withClickEvent(clickEvent);
+			MutableComponent message = new TranslatableComponent("jei.message.configured");
+            message = message.setStyle(style);
+            mc.player.displayClientMessage(message, false);
+        }
 	}
 }
