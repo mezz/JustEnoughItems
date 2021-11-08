@@ -40,8 +40,9 @@ import mezz.jei.plugins.vanilla.cooking.fuel.FuelRecipeMaker;
 import mezz.jei.plugins.vanilla.cooking.fuel.FurnaceFuelCategory;
 import mezz.jei.plugins.vanilla.crafting.CraftingCategoryExtension;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
-import mezz.jei.plugins.vanilla.crafting.ShulkerBoxColoringRecipeMaker;
-import mezz.jei.plugins.vanilla.crafting.TippedArrowRecipeMaker;
+import mezz.jei.plugins.vanilla.crafting.replacers.ShulkerBoxColoringRecipeMaker;
+import mezz.jei.plugins.vanilla.crafting.replacers.SuspiciousStewRecipeMaker;
+import mezz.jei.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
 import mezz.jei.plugins.vanilla.crafting.VanillaRecipes;
 import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackHelper;
 import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackListFactory;
@@ -79,9 +80,12 @@ import net.minecraft.item.crafting.BlastingRecipe;
 import net.minecraft.item.crafting.CampfireCookingRecipe;
 import net.minecraft.item.crafting.FurnaceRecipe;
 import net.minecraft.item.crafting.ICraftingRecipe;
+import net.minecraft.item.crafting.ShulkerBoxColoringRecipe;
 import net.minecraft.item.crafting.SmithingRecipe;
 import net.minecraft.item.crafting.SmokingRecipe;
 import net.minecraft.item.crafting.StonecuttingRecipe;
+import net.minecraft.item.crafting.SuspiciousStewRecipe;
+import net.minecraft.item.crafting.TippedArrowRecipe;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
@@ -90,7 +94,12 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @JeiPlugin
 public class VanillaPlugin implements IModPlugin {
@@ -194,7 +203,15 @@ public class VanillaPlugin implements IModPlugin {
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
 		VanillaRecipes vanillaRecipes = new VanillaRecipes();
-		registration.addRecipes(vanillaRecipes.getCraftingRecipes(craftingCategory), VanillaRecipeCategoryUid.CRAFTING);
+
+		Map<Boolean, List<ICraftingRecipe>> craftingRecipes = vanillaRecipes.getCraftingRecipes(craftingCategory);
+		List<ICraftingRecipe> handledCraftingRecipes = craftingRecipes.get(true);
+		List<ICraftingRecipe> unhandledCraftingRecipes = craftingRecipes.get(false);
+		List<ICraftingRecipe> specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes);
+
+		registration.addRecipes(handledCraftingRecipes, VanillaRecipeCategoryUid.CRAFTING);
+		registration.addRecipes(specialCraftingRecipes, VanillaRecipeCategoryUid.CRAFTING);
+
 		registration.addRecipes(vanillaRecipes.getStonecuttingRecipes(stonecuttingCategory), VanillaRecipeCategoryUid.STONECUTTING);
 		registration.addRecipes(vanillaRecipes.getFurnaceRecipes(furnaceCategory), VanillaRecipeCategoryUid.FURNACE);
 		registration.addRecipes(vanillaRecipes.getSmokingRecipes(smokingCategory), VanillaRecipeCategoryUid.SMOKING);
@@ -202,8 +219,6 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipes(vanillaRecipes.getCampfireCookingRecipes(campfireCategory), VanillaRecipeCategoryUid.CAMPFIRE);
 		registration.addRecipes(FuelRecipeMaker.getFuelRecipes(ingredientManager, jeiHelpers), VanillaRecipeCategoryUid.FUEL);
 		registration.addRecipes(BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory), VanillaRecipeCategoryUid.BREWING);
-		registration.addRecipes(TippedArrowRecipeMaker.createTippedArrowRecipes(), VanillaRecipeCategoryUid.CRAFTING);
-		registration.addRecipes(ShulkerBoxColoringRecipeMaker.createShulkerBoxColoringRecipes(), VanillaRecipeCategoryUid.CRAFTING);
 		registration.addRecipes(AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientManager), VanillaRecipeCategoryUid.ANVIL);
 		registration.addRecipes(vanillaRecipes.getSmithingRecipes(smithingCategory), VanillaRecipeCategoryUid.SMITHING);
 	}
@@ -260,5 +275,29 @@ public class VanillaPlugin implements IModPlugin {
 	@Nullable
 	public CraftingRecipeCategory getCraftingCategory() {
 		return craftingCategory;
+	}
+
+	/**
+	 * By default, JEI can't handle special recipes.
+	 * This method expands some special unhandled recipes into a list of normal recipes that JEI can understand.
+	 *
+	 * If a special recipe we know how to replace is not present (because it has been removed),
+	 * we do not replace it.
+	 */
+	private static List<ICraftingRecipe> replaceSpecialCraftingRecipes(List<ICraftingRecipe> validRecipes) {
+		Map<Class<? extends ICraftingRecipe>, Supplier<Stream<ICraftingRecipe>>> replacers = new IdentityHashMap<>();
+		replacers.put(TippedArrowRecipe.class, TippedArrowRecipeMaker::createRecipes);
+		replacers.put(ShulkerBoxColoringRecipe.class, ShulkerBoxColoringRecipeMaker::createRecipes);
+		replacers.put(SuspiciousStewRecipe.class, SuspiciousStewRecipeMaker::createRecipes);
+
+		return validRecipes.parallelStream()
+			.map(ICraftingRecipe::getClass)
+			.distinct()
+			.filter(replacers::containsKey)
+			// distinct + this limit will ensure we stop iterating early if we find all the recipes we're looking for.
+			.limit(replacers.size())
+			.map(replacers::get)
+			.flatMap(Supplier::get)
+			.collect(Collectors.toList());
 	}
 }

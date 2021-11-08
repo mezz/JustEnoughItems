@@ -27,44 +27,49 @@ public final class VanillaRecipes {
 	private final RecipeManager recipeManager;
 
 	public VanillaRecipes() {
+		Minecraft minecraft = Minecraft.getInstance();
+		ErrorUtil.checkNotNull(minecraft, "minecraft");
 		ClientWorld world = Minecraft.getInstance().level;
 		ErrorUtil.checkNotNull(world, "minecraft world");
 		this.recipeManager = world.getRecipeManager();
 	}
 
-	public List<ICraftingRecipe> getCraftingRecipes(IRecipeCategory<ICraftingRecipe> craftingCategory) {
+	public Map<Boolean, List<ICraftingRecipe>> getCraftingRecipes(IRecipeCategory<ICraftingRecipe> craftingCategory) {
 		CategoryRecipeValidator<ICraftingRecipe> validator = new CategoryRecipeValidator<>(craftingCategory, 9);
-		return getValidRecipes(recipeManager, IRecipeType.CRAFTING, validator);
+		Collection<ICraftingRecipe> recipes = getRecipes(recipeManager, IRecipeType.CRAFTING);
+		return recipes.parallelStream()
+			.filter(validator::isRecipeValid)
+			.collect(Collectors.partitioningBy(validator::isRecipeHandled));
 	}
 
 	public List<StonecuttingRecipe> getStonecuttingRecipes(IRecipeCategory<StonecuttingRecipe> stonecuttingCategory) {
 		CategoryRecipeValidator<StonecuttingRecipe> validator = new CategoryRecipeValidator<>(stonecuttingCategory, 1);
-		return getValidRecipes(recipeManager, IRecipeType.STONECUTTING, validator);
+		return getValidHandledRecipes(recipeManager, IRecipeType.STONECUTTING, validator);
 	}
 
 	public List<FurnaceRecipe> getFurnaceRecipes(IRecipeCategory<FurnaceRecipe> furnaceCategory) {
 		CategoryRecipeValidator<FurnaceRecipe> validator = new CategoryRecipeValidator<>(furnaceCategory, 1);
-		return getValidRecipes(recipeManager, IRecipeType.SMELTING, validator);
+		return getValidHandledRecipes(recipeManager, IRecipeType.SMELTING, validator);
 	}
 
 	public List<SmokingRecipe> getSmokingRecipes(IRecipeCategory<SmokingRecipe> smokingCategory) {
 		CategoryRecipeValidator<SmokingRecipe> validator = new CategoryRecipeValidator<>(smokingCategory, 1);
-		return getValidRecipes(recipeManager, IRecipeType.SMOKING, validator);
+		return getValidHandledRecipes(recipeManager, IRecipeType.SMOKING, validator);
 	}
 
 	public List<BlastingRecipe> getBlastingRecipes(IRecipeCategory<BlastingRecipe> blastingCategory) {
 		CategoryRecipeValidator<BlastingRecipe> validator = new CategoryRecipeValidator<>(blastingCategory, 1);
-		return getValidRecipes(recipeManager, IRecipeType.BLASTING, validator);
+		return getValidHandledRecipes(recipeManager, IRecipeType.BLASTING, validator);
 	}
 
 	public List<CampfireCookingRecipe> getCampfireCookingRecipes(IRecipeCategory<CampfireCookingRecipe> campfireCategory) {
 		CategoryRecipeValidator<CampfireCookingRecipe> validator = new CategoryRecipeValidator<>(campfireCategory, 1);
-		return getValidRecipes(recipeManager, IRecipeType.CAMPFIRE_COOKING, validator);
+		return getValidHandledRecipes(recipeManager, IRecipeType.CAMPFIRE_COOKING, validator);
 	}
 
 	public List<SmithingRecipe> getSmithingRecipes(IRecipeCategory<SmithingRecipe> smithingCategory) {
 		CategoryRecipeValidator<SmithingRecipe> validator = new CategoryRecipeValidator<>(smithingCategory, 0);
-		return getValidRecipes(recipeManager, IRecipeType.SMITHING, validator);
+		return getValidHandledRecipes(recipeManager, IRecipeType.SMITHING, validator);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -76,14 +81,14 @@ public final class VanillaRecipes {
 		return (Collection<T>) recipes.values();
 	}
 
-	private static <C extends IInventory, T extends IRecipe<C>> List<T> getValidRecipes(
+	private static <C extends IInventory, T extends IRecipe<C>> List<T> getValidHandledRecipes(
 		RecipeManager recipeManager,
 		IRecipeType<T> recipeType,
 		CategoryRecipeValidator<T> validator
 	) {
 		return getRecipes(recipeManager, recipeType)
 			.stream()
-			.filter(validator::isRecipeValid)
+			.filter(r -> validator.isRecipeValid(r) && validator.isRecipeHandled(r))
 			.collect(Collectors.toList());
 	}
 

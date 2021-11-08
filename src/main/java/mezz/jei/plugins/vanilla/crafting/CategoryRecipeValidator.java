@@ -22,8 +22,11 @@ public final class CategoryRecipeValidator<T extends IRecipe<?>> {
 	}
 
 	public boolean isRecipeValid(T recipe) {
-		return hasValidInputsAndOutputs(recipe) &&
-			this.recipeCategory.isHandled(recipe);
+		return hasValidInputsAndOutputs(recipe);
+	}
+
+	public boolean isRecipeHandled(T recipe) {
+		return this.recipeCategory.isHandled(recipe);
 	}
 
 	@SuppressWarnings("ConstantConditions")
