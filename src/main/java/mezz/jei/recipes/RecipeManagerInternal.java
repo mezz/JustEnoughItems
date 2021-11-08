@@ -30,7 +30,6 @@ import java.util.stream.Stream;
 public class RecipeManagerInternal {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final IngredientManager ingredientManager;
 	private final ImmutableList<IRecipeCategory<?>> recipeCategories;
 	private final Set<ResourceLocation> hiddenRecipeCategoryUids = new HashSet<>();
 	private @Nullable ImmutableList<IRecipeCategory<?>> recipeCategoriesVisibleCache = null;
@@ -49,7 +48,6 @@ public class RecipeManagerInternal {
 		RecipeCategorySortingConfig recipeCategorySortingConfig
 	) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
-		this.ingredientManager = ingredientManager;
 
 		Collection<ResourceLocation> recipeCategoryResourceLocations = recipeCategories.stream()
 			.map(IRecipeCategory::getUid)
@@ -237,7 +235,7 @@ public class RecipeManagerInternal {
 		}
 		IngredientFilter ingredientFilter = Internal.getIngredientFilter();
 		return catalysts.stream()
-			.filter(catalyst -> ingredientManager.isIngredientVisible(catalyst, ingredientFilter))
+			.filter(ingredientFilter::isIngredientVisible)
 			.collect(Collectors.toList());
 	}
 
