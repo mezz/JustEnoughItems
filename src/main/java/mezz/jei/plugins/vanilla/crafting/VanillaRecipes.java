@@ -3,6 +3,7 @@ package mezz.jei.plugins.vanilla.crafting;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -26,44 +27,49 @@ public final class VanillaRecipes {
 	private final RecipeManager recipeManager;
 
 	public VanillaRecipes() {
-		ClientLevel world = Minecraft.getInstance().level;
+		Minecraft minecraft = Minecraft.getInstance();
+		ErrorUtil.checkNotNull(minecraft, "minecraft");
+		ClientLevel world = minecraft.level;
 		ErrorUtil.checkNotNull(world, "minecraft world");
 		this.recipeManager = world.getRecipeManager();
 	}
 
-	public List<CraftingRecipe> getCraftingRecipes(IRecipeCategory<CraftingRecipe> craftingCategory) {
+	public Map<Boolean, List<CraftingRecipe>> getCraftingRecipes(IRecipeCategory<CraftingRecipe> craftingCategory) {
 		CategoryRecipeValidator<CraftingRecipe> validator = new CategoryRecipeValidator<>(craftingCategory, 9);
-		return getValidRecipes(recipeManager, RecipeType.CRAFTING, validator);
+		Collection<CraftingRecipe> recipes = getRecipes(recipeManager, RecipeType.CRAFTING);
+		return recipes.parallelStream()
+			.filter(validator::isRecipeValid)
+			.collect(Collectors.partitioningBy(validator::isRecipeHandled));
 	}
 
 	public List<StonecutterRecipe> getStonecuttingRecipes(IRecipeCategory<StonecutterRecipe> stonecuttingCategory) {
 		CategoryRecipeValidator<StonecutterRecipe> validator = new CategoryRecipeValidator<>(stonecuttingCategory, 1);
-		return getValidRecipes(recipeManager, RecipeType.STONECUTTING, validator);
+		return getValidHandledRecipes(recipeManager, RecipeType.STONECUTTING, validator);
 	}
 
 	public List<SmeltingRecipe> getFurnaceRecipes(IRecipeCategory<SmeltingRecipe> furnaceCategory) {
 		CategoryRecipeValidator<SmeltingRecipe> validator = new CategoryRecipeValidator<>(furnaceCategory, 1);
-		return getValidRecipes(recipeManager, RecipeType.SMELTING, validator);
+		return getValidHandledRecipes(recipeManager, RecipeType.SMELTING, validator);
 	}
 
 	public List<SmokingRecipe> getSmokingRecipes(IRecipeCategory<SmokingRecipe> smokingCategory) {
 		CategoryRecipeValidator<SmokingRecipe> validator = new CategoryRecipeValidator<>(smokingCategory, 1);
-		return getValidRecipes(recipeManager, RecipeType.SMOKING, validator);
+		return getValidHandledRecipes(recipeManager, RecipeType.SMOKING, validator);
 	}
 
 	public List<BlastingRecipe> getBlastingRecipes(IRecipeCategory<BlastingRecipe> blastingCategory) {
 		CategoryRecipeValidator<BlastingRecipe> validator = new CategoryRecipeValidator<>(blastingCategory, 1);
-		return getValidRecipes(recipeManager, RecipeType.BLASTING, validator);
+		return getValidHandledRecipes(recipeManager, RecipeType.BLASTING, validator);
 	}
 
 	public List<CampfireCookingRecipe> getCampfireCookingRecipes(IRecipeCategory<CampfireCookingRecipe> campfireCategory) {
 		CategoryRecipeValidator<CampfireCookingRecipe> validator = new CategoryRecipeValidator<>(campfireCategory, 1);
-		return getValidRecipes(recipeManager, RecipeType.CAMPFIRE_COOKING, validator);
+		return getValidHandledRecipes(recipeManager, RecipeType.CAMPFIRE_COOKING, validator);
 	}
 
 	public List<UpgradeRecipe> getSmithingRecipes(IRecipeCategory<UpgradeRecipe> smithingCategory) {
 		CategoryRecipeValidator<UpgradeRecipe> validator = new CategoryRecipeValidator<>(smithingCategory, 0);
-		return getValidRecipes(recipeManager, RecipeType.SMITHING, validator);
+		return getValidHandledRecipes(recipeManager, RecipeType.SMITHING, validator);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -75,14 +81,14 @@ public final class VanillaRecipes {
 		return (Collection<T>) recipes.values();
 	}
 
-	private static <C extends Container, T extends Recipe<C>> List<T> getValidRecipes(
+	private static <C extends Container, T extends Recipe<C>> List<T> getValidHandledRecipes(
 		RecipeManager recipeManager,
 		RecipeType<T> recipeType,
 		CategoryRecipeValidator<T> validator
 	) {
 		return getRecipes(recipeManager, recipeType)
 			.stream()
-			.filter(validator::isRecipeValid)
+			.filter(r -> validator.isRecipeValid(r) && validator.isRecipeHandled(r))
 			.toList();
 	}
 
