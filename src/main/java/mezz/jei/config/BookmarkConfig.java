@@ -134,14 +134,14 @@ public class BookmarkConfig {
 		bookmarkList.notifyListenersOfChange();
 	}
 
-	private <T> String getUid(IIngredientManager ingredientManager, IIngredientListElement<T> element) {
+	private static <T> String getUid(IIngredientManager ingredientManager, IIngredientListElement<T> element) {
 		T ingredient = element.getIngredient();
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		return ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
 	}
 
 	@Nullable
-	private Object getUnknownIngredientByUid(IngredientManager ingredientManager, Collection<IIngredientType<?>> ingredientTypes, String uid) {
+	private static Object getUnknownIngredientByUid(IngredientManager ingredientManager, Collection<IIngredientType<?>> ingredientTypes, String uid) {
 		for (IIngredientType<?> ingredientType : ingredientTypes) {
 			Object ingredient = ingredientManager.getIngredientByUid(ingredientType, uid);
 			if (ingredient != null) {

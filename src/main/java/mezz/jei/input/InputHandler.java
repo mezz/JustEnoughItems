@@ -331,7 +331,7 @@ public class InputHandler {
 		return false;
 	}
 
-	private boolean isContainerTextFieldFocused() {
+	private static boolean isContainerTextFieldFocused() {
 		Minecraft minecraft = Minecraft.getInstance();
 		Screen screen = minecraft.screen;
 		if (screen == null) {

@@ -47,7 +47,7 @@ public class StackHelper implements IStackHelper {
 		return result;
 	}
 
-	public String getRegistryNameForStack(ItemStack stack) {
+	public static String getRegistryNameForStack(ItemStack stack) {
 		ErrorUtil.checkNotEmpty(stack, "stack");
 
 		Item item = stack.getItem();

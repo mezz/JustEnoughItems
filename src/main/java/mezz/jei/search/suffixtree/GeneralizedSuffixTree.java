@@ -193,7 +193,7 @@ public class GeneralizedSuffixTree implements ISearchable {
 	 * true/false depending on whether (stringPart + t) is contained in the subtree starting in inputs
 	 * the last node that can be reached by following the path denoted by stringPart starting from inputs
 	 */
-	private Pair<Boolean, Node> testAndSplit(final Node inputs, final String stringPart, final char t, final String remainder, final int value) {
+	private static Pair<Boolean, Node> testAndSplit(final Node inputs, final String stringPart, final char t, final String remainder, final int value) {
 		// descend the tree as far as possible
 		Pair<Node, String> ret = canonize(inputs, stringPart);
 		Node s = ret.getFirst();
@@ -266,7 +266,7 @@ public class GeneralizedSuffixTree implements ISearchable {
 	 * a prefix of inputstr and remainder will be string that must be
 	 * appended to the concatenation of labels from s to n to get inpustr.
 	 */
-	private Pair<Node, String> canonize(final Node s, final String inputstr) {
+	private static Pair<Node, String> canonize(final Node s, final String inputstr) {
 
 		if ("".equals(inputstr)) {
 			return new Pair<>(s, inputstr);

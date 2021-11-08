@@ -76,7 +76,7 @@ public class ForgeModIdHelper extends AbstractModIdHelper {
 		return super.addModNameToIngredientTooltip(tooltip, ingredient, ingredientHelper);
 	}
 
-	private <T> List<Component> addDebugInfo(List<Component> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
+	private static <T> List<Component> addDebugInfo(List<Component> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
 		tooltip = new ArrayList<>(tooltip);
 		TextComponent jeiDebug = new TextComponent("JEI Debug:");
 		TextComponent info = new TextComponent("info: " + ingredientHelper.getErrorInfo(ingredient));

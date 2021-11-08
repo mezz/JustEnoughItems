@@ -252,7 +252,4 @@ public class IngredientManager implements IIngredientManager {
 		ingredientFilter.invalidateCache();
 	}
 
-	public <V> boolean isIngredientVisible(V ingredient, IngredientFilter ingredientFilter) {
-		return ingredientFilter.isIngredientVisible(ingredient);
-	}
 }

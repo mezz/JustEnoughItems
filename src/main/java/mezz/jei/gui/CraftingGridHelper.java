@@ -40,7 +40,7 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		guiIngredients.set(craftInputSlot1 + inputIndex, input);
 	}
 
-	private int getCraftingIndex(int i, int width, int height) {
+	private static int getCraftingIndex(int i, int width, int height) {
 		int index;
 		if (width == 1) {
 			if (height == 3) {

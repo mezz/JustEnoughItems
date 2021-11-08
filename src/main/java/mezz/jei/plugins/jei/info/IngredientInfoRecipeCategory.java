@@ -74,7 +74,7 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 		setIngredientsTyped((IngredientInfoRecipe<?>) recipe, ingredients);
 	}
 
-	private <T> void setIngredientsTyped(IngredientInfoRecipe<T> recipe, IIngredients ingredients) {
+	private static <T> void setIngredientsTyped(IngredientInfoRecipe<T> recipe, IIngredients ingredients) {
 		IIngredientType<T> ingredientType = recipe.getIngredientType();
 		List<List<T>> recipeIngredients = Collections.singletonList(recipe.getIngredients());
 		ingredients.setInputLists(ingredientType, recipeIngredients);

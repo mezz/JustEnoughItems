@@ -137,11 +137,10 @@ public class GuiIngredient<T> extends GuiComponent implements IGuiIngredient<T> 
 		if (ingredients.isEmpty()) {
 			return ingredients;
 		}
-		IngredientManager ingredientManager = Internal.getIngredientManager();
 		IngredientFilter ingredientFilter = Internal.getIngredientFilter();
 		List<T> visible = new ArrayList<>();
 		for (T ingredient : ingredients) {
-			if (ingredient == null || ingredientManager.isIngredientVisible(ingredient, ingredientFilter)) {
+			if (ingredient == null || ingredientFilter.isIngredientVisible(ingredient)) {
 				visible.add(ingredient);
 			}
 			if (visible.size() > 100) {

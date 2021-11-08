@@ -71,7 +71,7 @@ public abstract class SortingConfig<T> {
 		}
 	}
 
-	private int indexOfSort(int index) {
+	private static int indexOfSort(int index) {
 		if (index < 0) {
 			return Integer.MAX_VALUE;
 		}

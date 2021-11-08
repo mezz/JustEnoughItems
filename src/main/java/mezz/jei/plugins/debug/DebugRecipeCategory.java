@@ -147,7 +147,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		button.render(poseStack, (int) mouseX, (int) mouseY, 0);
 	}
 
-	private <T> void drawIngredientName(Minecraft minecraft, PoseStack poseStack, T ingredient) {
+	private static <T> void drawIngredientName(Minecraft minecraft, PoseStack poseStack, T ingredient) {
 		IIngredientManager ingredientManager = JeiDebugPlugin.ingredientManager;
 		if (ingredientManager != null) {
 			IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);

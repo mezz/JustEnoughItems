@@ -57,7 +57,7 @@ public class ItemStackFastRenderer extends IngredientListElementRenderer<ItemSta
 		}
 	}
 
-	private void renderOverlay(ItemStack itemStack, Rect2i area, int padding) {
+	private static void renderOverlay(ItemStack itemStack, Rect2i area, int padding) {
 		Font font = getFontRenderer(itemStack);
 		ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
 		itemRenderer.renderGuiItemDecorations(font, itemStack, area.getX() + padding, area.getY() + padding, null);

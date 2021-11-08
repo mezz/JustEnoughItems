@@ -219,7 +219,7 @@ public class IngredientListBatchRenderer {
 		}
 	}
 
-	private void renderBatch(ItemRenderer itemRenderer, MultiBufferSource.BufferSource buffer) {
+	private static void renderBatch(ItemRenderer itemRenderer, MultiBufferSource.BufferSource buffer) {
 		//Apply changes to MVM AFTER the rendering so that the edit mode overlay draws properly
 		// but before we draw the batch of items as the batch is drawn against the MVM
 		PoseStack modelViewStack = RenderSystem.getModelViewStack();

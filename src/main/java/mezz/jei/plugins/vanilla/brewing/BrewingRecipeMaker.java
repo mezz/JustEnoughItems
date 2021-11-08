@@ -71,7 +71,7 @@ public class BrewingRecipeMaker {
 		return recipeList;
 	}
 
-	private boolean isIngredient(ItemStack itemStack) {
+	private static boolean isIngredient(ItemStack itemStack) {
 		try {
 			return PotionBrewing.isIngredient(itemStack);
 		} catch (RuntimeException | LinkageError e) {
@@ -83,7 +83,7 @@ public class BrewingRecipeMaker {
 
 	private void addVanillaBrewingRecipes(Collection<IJeiBrewingRecipe> recipes, VanillaBrewingRecipe vanillaBrewingRecipe) {
 		List<ItemStack> potionIngredients = ingredientManager.getAllIngredients(VanillaTypes.ITEM).stream()
-			.filter(this::isIngredient)
+			.filter(BrewingRecipeMaker::isIngredient)
 			.toList();
 
 		List<ItemStack> basePotions = PotionBrewing.ALLOWED_CONTAINERS.stream()

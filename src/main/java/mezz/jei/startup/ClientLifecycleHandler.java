@@ -169,7 +169,7 @@ public class ClientLifecycleHandler {
 			ClientPacketListener connection = minecraft.getConnection();
 			boolean isIntegrated = minecraft.isLocalServer();
 			if (connection == null || isIntegrated) {
-				//If we are an integrated server we always handle recipes updating as it is consistently last
+				//If we are an integrated server we always handle recipes updating as it is consistently last,
 				// so we ignore the value of hasRan. Note we also check if the connection is null and treat is as
 				// integrated as the connection is null when connecting to a single player world during the tag events
 				hasRan = true;
@@ -180,7 +180,8 @@ public class ClientLifecycleHandler {
 				if (hasRan) {
 					return true;
 				}
-				// If we haven't ran this is the first time the event is being fired so we mark that it has ran but don't actually run it again
+				// If we haven't ran this is the first time the event is being fired,
+				// so we mark that it has ran but don't actually run it again
 				hasRan = true;
 				return false;
 			} else if (hasRan) {

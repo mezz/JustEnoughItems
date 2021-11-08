@@ -86,7 +86,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	public String getWildcardId(ItemStack ingredient) {
 		ErrorUtil.checkNotEmpty(ingredient);
-		return stackHelper.getRegistryNameForStack(ingredient);
+		return StackHelper.getRegistryNameForStack(ingredient);
 	}
 
 	@Override

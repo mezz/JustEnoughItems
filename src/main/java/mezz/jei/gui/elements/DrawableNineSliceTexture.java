@@ -102,7 +102,7 @@ public class DrawableNineSliceTexture {
 		tessellator.end();
 	}
 
-	private void drawTiled(BufferBuilder bufferBuilder, Matrix4f matrix, float uMin, float vMin, float uMax, float vMax, int xOffset, int yOffset, int tiledWidth, int tiledHeight, int width, int height) {
+	private static void drawTiled(BufferBuilder bufferBuilder, Matrix4f matrix, float uMin, float vMin, float uMax, float vMax, int xOffset, int yOffset, int tiledWidth, int tiledHeight, int width, int height) {
 		int xTileCount = tiledWidth / width;
 		int xRemainder = tiledWidth - (xTileCount * width);
 		int yTileCount = tiledHeight / height;
