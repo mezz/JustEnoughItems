@@ -29,7 +29,7 @@ public class JEIClientConfig {
 	private static final ForgeConfigSpec config = builder.build();
 
 	public static void register(IEventBus modEventBus) {
-		EventBusHelper.addListener(modEventBus, ModConfig.ModConfigEvent.class, JEIClientConfig::reload);
+		EventBusHelper.addListener(JEIClientConfig.class, modEventBus, ModConfig.ModConfigEvent.class, JEIClientConfig::reload);
 
 		ModLoadingContext modLoadingContext = ModLoadingContext.get();
 		modLoadingContext.registerConfig(ModConfig.Type.CLIENT, config);
@@ -41,7 +41,6 @@ public class JEIClientConfig {
 		}
 
 		clientConfig.reload();
-		filterConfig.reload();
 		modNameFormat.reload();
 	}
 
