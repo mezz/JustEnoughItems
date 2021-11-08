@@ -17,7 +17,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
-import mezz.jei.config.Constants;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.events.OverlayToggleEvent;
 import mezz.jei.gui.overlay.IngredientListOverlay;
@@ -135,7 +134,7 @@ public class GuiEventHandler {
 				if (tooltipStrings.isEmpty()) {
 					tooltipStrings = Collections.singletonList(new TranslatableComponent("jei.tooltip.show.recipes"));
 				}
-				TooltipRenderer.drawHoveringText(tooltipStrings, event.getMouseX(), event.getMouseY(), Constants.MAX_TOOLTIP_WIDTH, poseStack);
+				TooltipRenderer.drawHoveringText(poseStack, tooltipStrings, event.getMouseX(), event.getMouseY(), minecraft.font);
 			}
 		}
 

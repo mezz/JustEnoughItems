@@ -260,7 +260,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 		if (titleHoverChecker.checkHover(mouseX, mouseY) && !logic.hasAllCategories()) {
 			TranslatableComponent showAllRecipesString = new TranslatableComponent("jei.tooltip.show.all.recipes");
-			TooltipRenderer.drawHoveringText(showAllRecipesString, mouseX, mouseY, poseStack);
+			TooltipRenderer.drawHoveringText(poseStack, List.of(showAllRecipesString), mouseX, mouseY);
 		}
 	}
 

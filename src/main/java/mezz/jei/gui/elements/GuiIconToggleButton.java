@@ -11,7 +11,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.config.Constants;
 import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.TooltipRenderer;
 import net.minecraft.network.chat.Component;
@@ -61,7 +60,7 @@ public abstract class GuiIconToggleButton {
 		if (isMouseOver(mouseX, mouseY)) {
 			List<Component> tooltip = new ArrayList<>();
 			getTooltips(tooltip);
-			TooltipRenderer.drawHoveringText(tooltip, mouseX, mouseY, Constants.MAX_TOOLTIP_WIDTH, poseStack);
+			TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY);
 		}
 	}
 

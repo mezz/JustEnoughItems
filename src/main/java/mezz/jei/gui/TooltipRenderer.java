@@ -1,44 +1,63 @@
 package mezz.jei.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-
-import java.util.Collections;
-import java.util.List;
-
+import mezz.jei.config.Constants;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraftforge.fmlclient.gui.GuiUtils;
+import net.minecraft.network.chat.Style;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
 
 public final class TooltipRenderer {
 	private TooltipRenderer() {
 	}
 
-	public static void drawHoveringText(FormattedText textLine, int x, int y, PoseStack poseStack) {
+	public static void drawHoveringText(PoseStack poseStack, List<? extends FormattedText> textLines, int x, int y) {
 		Minecraft minecraft = Minecraft.getInstance();
-		drawHoveringText(ItemStack.EMPTY, Collections.singletonList(textLine), x, y, -1, minecraft.font, poseStack);
+		if (minecraft == null) {
+			return;
+		}
+
+		drawHoveringText(poseStack, textLines, x, y, Constants.MAX_TOOLTIP_WIDTH, minecraft.font, ItemStack.EMPTY);
 	}
 
-	public static void drawHoveringText(List<? extends FormattedText> textLines, int x, int y, PoseStack poseStack) {
-		Minecraft minecraft = Minecraft.getInstance();
-		drawHoveringText(ItemStack.EMPTY, textLines, x, y, -1, minecraft.font, poseStack);
+	public static void drawHoveringText(PoseStack poseStack, List<? extends FormattedText> textLines, int x, int y, Font font) {
+		drawHoveringText(poseStack, textLines, x, y, Constants.MAX_TOOLTIP_WIDTH, font, ItemStack.EMPTY);
 	}
 
-	public static void drawHoveringText(List<? extends FormattedText> textLines, int x, int y, int maxWidth, PoseStack poseStack) {
-		Minecraft minecraft = Minecraft.getInstance();
-		drawHoveringText(ItemStack.EMPTY, textLines, x, y, maxWidth, minecraft.font, poseStack);
+	public static void drawHoveringText(PoseStack poseStack, List<? extends FormattedText> textLines, int x, int y, Font font, Object ingredient) {
+		drawHoveringText(poseStack, textLines, x, y, Constants.MAX_TOOLTIP_WIDTH, font, ingredient);
 	}
 
-	public static void drawHoveringText(Object ingredient, List<? extends FormattedText> textLines, int x, int y, Font font, PoseStack poseStack) {
-		drawHoveringText(ingredient, textLines, x, y, -1, font, poseStack);
-	}
-
-	public static void drawHoveringText(Object ingredient, List<? extends FormattedText> textLines, int x, int y, int maxWidth, Font font, PoseStack poseStack) {
+	public static void drawHoveringText(PoseStack poseStack, List<? extends FormattedText> textLines, int x, int y, int maxWidth, Font font, Object ingredient) {
 		Minecraft minecraft = Minecraft.getInstance();
-		int scaledWidth = minecraft.getWindow().getGuiScaledWidth();
-		int scaledHeight = minecraft.getWindow().getGuiScaledHeight();
+		if (minecraft == null) {
+			return;
+		}
+
+		Screen screen = minecraft.screen;
+		if (screen == null) {
+			return;
+		}
+
+		// text wrapping
+		if (maxWidth > 0) {
+			boolean needsWrap = textLines.stream()
+				.anyMatch(line -> font.width(line) > maxWidth);
+
+			if (needsWrap) {
+				StringSplitter splitter = font.getSplitter();
+				textLines = textLines.stream()
+					.flatMap(text -> splitter.splitLines(text, maxWidth, Style.EMPTY).stream())
+					.toList();
+			}
+		}
+
 		ItemStack itemStack = ingredient instanceof ItemStack ? (ItemStack) ingredient : ItemStack.EMPTY;
-		GuiUtils.drawHoveringText(itemStack, poseStack, textLines, x, y, scaledWidth, scaledHeight, maxWidth, font);
+		screen.renderComponentTooltip(poseStack, textLines, x, y, font, itemStack);
 	}
 }

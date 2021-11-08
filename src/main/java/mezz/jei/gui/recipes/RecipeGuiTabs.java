@@ -131,7 +131,7 @@ public class RecipeGuiTabs implements IPaged {
 
 		if (hovered != null) {
 			List<Component> tooltip = hovered.getTooltip();
-			TooltipRenderer.drawHoveringText(tooltip, mouseX, mouseY, poseStack);
+			TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY);
 		}
 	}
 

@@ -101,7 +101,7 @@ public class IngredientListElementRenderer<T> {
 		List<FormattedText> tooltip = getTooltip(ingredientFilterConfig, worldConfig);
 		Minecraft minecraft = Minecraft.getInstance();
 		Font fontRenderer = ingredientRenderer.getFontRenderer(minecraft, ingredient);
-		TooltipRenderer.drawHoveringText(ingredient, tooltip, mouseX, mouseY, fontRenderer, poseStack);
+		TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, fontRenderer, ingredient);
 	}
 
 	protected void renderEditMode(PoseStack poseStack, Rect2i area, int padding, IEditModeConfig editModeConfig) {

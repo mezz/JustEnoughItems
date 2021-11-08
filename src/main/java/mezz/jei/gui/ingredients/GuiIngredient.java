@@ -36,7 +36,6 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.ingredients.IngredientFilter;
-import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.render.IngredientRenderHelper;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -233,7 +232,7 @@ public class GuiIngredient<T> extends GuiComponent implements IGuiIngredient<T> 
 					tooltip.add(acceptsAny.withStyle(ChatFormatting.GRAY));
 				}
 			}
-			TooltipRenderer.drawHoveringText(value, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer, poseStack);
+			TooltipRenderer.drawHoveringText(poseStack, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer, value);
 
 			RenderSystem.enableDepthTest();
 		} catch (RuntimeException e) {

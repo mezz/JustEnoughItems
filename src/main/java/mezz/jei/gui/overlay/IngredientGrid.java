@@ -37,6 +37,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -146,7 +147,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		if (isMouseOver(mouseX, mouseY)) {
 			if (shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				TranslatableComponent deleteItem = new TranslatableComponent("jei.tooltip.delete.item");
-				TooltipRenderer.drawHoveringText(deleteItem, mouseX, mouseY, poseStack);
+				TooltipRenderer.drawHoveringText(poseStack, List.of(deleteItem), mouseX, mouseY);
 			} else {
 				IngredientListElementRenderer<?> hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
 				if (hovered != null) {

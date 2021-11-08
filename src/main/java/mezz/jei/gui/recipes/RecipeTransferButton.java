@@ -16,6 +16,8 @@ import mezz.jei.transfer.RecipeTransferErrorInternal;
 import mezz.jei.transfer.RecipeTransferUtil;
 import net.minecraft.network.chat.TranslatableComponent;
 
+import java.util.List;
+
 public class RecipeTransferButton extends GuiIconButtonSmall {
 	private final RecipeLayout<?> recipeLayout;
 	@Nullable
@@ -50,7 +52,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 		if (isMouseOver(mouseX, mouseY)) {
 			if (recipeTransferError == null) {
 				TranslatableComponent tooltipTransfer = new TranslatableComponent("jei.tooltip.transfer");
-				TooltipRenderer.drawHoveringText(tooltipTransfer, mouseX, mouseY, poseStack);
+				TooltipRenderer.drawHoveringText(poseStack, List.of(tooltipTransfer), mouseX, mouseY);
 			} else {
 				recipeTransferError.showError(poseStack, mouseX, mouseY, recipeLayout, recipeLayout.getPosX(), recipeLayout.getPosY());
 			}

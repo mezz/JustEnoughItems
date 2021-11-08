@@ -214,7 +214,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 				tooltipStrings = shapelessIcon.getTooltipStrings(recipeMouseX, recipeMouseY);
 			}
 			if (tooltipStrings != null && !tooltipStrings.isEmpty()) {
-				TooltipRenderer.drawHoveringText(tooltipStrings, mouseX, mouseY, poseStack);
+				TooltipRenderer.drawHoveringText(poseStack, tooltipStrings, mouseX, mouseY);
 			}
 		}
 	}
