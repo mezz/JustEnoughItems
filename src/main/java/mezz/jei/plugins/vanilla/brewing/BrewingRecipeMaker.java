@@ -60,8 +60,8 @@ public class BrewingRecipeMaker {
 
 		Collection<IBrewingRecipe> brewingRecipes = BrewingRecipeRegistry.getRecipes();
 		brewingRecipes.stream()
-			.filter(r -> r instanceof VanillaBrewingRecipe)
-			.map(r -> (VanillaBrewingRecipe) r)
+			.filter(VanillaBrewingRecipe.class::isInstance)
+			.map(VanillaBrewingRecipe.class::cast)
 			.findFirst()
 			.ifPresent(vanillaBrewingRecipe -> addVanillaBrewingRecipes(recipes, vanillaBrewingRecipe));
 		addModdedBrewingRecipes(brewingRecipes, recipes);
