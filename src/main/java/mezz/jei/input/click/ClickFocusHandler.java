@@ -6,6 +6,7 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.InputHandler;
+import mezz.jei.input.LimitedAreaMouseHandler;
 import net.minecraft.client.gui.screens.Screen;
 import com.mojang.blaze3d.platform.InputConstants;
 
@@ -28,11 +29,11 @@ public class ClickFocusHandler implements IMouseHandler {
 			return null;
 		}
 		if (handleMouseClickedFocus(mouseButton, clicked, clickState)) {
-			return this;
+			return LimitedAreaMouseHandler.create(this, clicked.getArea());
 		}
 		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(mouseButton);
 		if (inputHandler.handleFocusKeybinds(clicked, input, clickState)) {
-			return this;
+			return LimitedAreaMouseHandler.create(this, clicked.getArea());
 		}
 		return null;
 	}
