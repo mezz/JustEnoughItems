@@ -13,14 +13,18 @@ import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.input.CombinedMouseHandler;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IClickedIngredient;
+import mezz.jei.input.IMouseDragHandler;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
+import mezz.jei.input.NullMouseDragHandler;
+import mezz.jei.input.NullMouseHandler;
+import mezz.jei.input.ProxyMouseDragHandler;
+import mezz.jei.input.ProxyMouseHandler;
 import mezz.jei.input.click.MouseClickState;
-import mezz.jei.util.CommandUtil;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Rectangle2dBuilder;
 import net.minecraft.client.Minecraft;
@@ -28,7 +32,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.util.InputMappings;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.Tuple;
 
 import javax.annotation.Nullable;
@@ -47,7 +50,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 	private final GuiScreenHelper guiScreenHelper;
 	private final GuiTextFieldFilter searchField;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
-	private final IMouseHandler mouseHandler = new MouseHandler();
+	private final IMouseHandler displayedMouseHandler;
+	private final IMouseHandler hiddenMouseHandler;
 	private Rectangle2d displayArea = new Rectangle2d(0, 0, 0, 0);
 	private boolean hasRoom;
 
@@ -71,6 +75,15 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 		this.searchField = new GuiTextFieldFilter(ingredientGridSource, worldConfig);
 		this.configButton = ConfigButton.create(this, worldConfig);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, guiScreenHelper, ingredientManager, worldConfig);
+
+		this.displayedMouseHandler = new CombinedMouseHandler(
+				this.configButton.getMouseHandler(),
+				this.contents.getMouseHandler(),
+				new SearchMouseHandler(),
+				new CheatMouseHandler(this, worldConfig, clientConfig)
+		);
+		this.hiddenMouseHandler = this.configButton.getMouseHandler();
+
 		this.clearKeyboardFocus();
 	}
 
@@ -228,89 +241,25 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 		return this.isListDisplayed() && this.contents.canSetFocusWithMouse();
 	}
 
-	private ClickResult handleMouseClickedInternal(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
-		if (isListDisplayed()) {
-			if (this.ghostIngredientDragManager.handleMouseClicked(screen, mouseX, mouseY, mouseButton, clickState)) {
-				return new ClickResult(true, false);
-			}
-		}
-
-		if (this.guiProperties != null) {
-			IMouseHandler mouseHandler = this.configButton.getMouseHandler();
-			IMouseHandler mouseHandled = mouseHandler.handleClick(screen, mouseX, mouseY, mouseButton, clickState);
-			if (mouseHandled != null) {
-				return new ClickResult(true, false);
-			}
-		}
-
-		if (isListDisplayed()) {
-			if (this.contents.getMouseHandler().handleClick(screen, mouseX, mouseY, mouseButton, clickState) != null) {
-				return new ClickResult(true, false);
-			}
-
-			if (handleSearchClick(screen, mouseX, mouseY, mouseButton, clickState)) {
-				return new ClickResult(true, true);
-			}
-
-			if (handleCheatClick(this, mouseX, mouseY, mouseButton, worldConfig, clientConfig, clickState)) {
-				return new ClickResult(true, false);
-			}
-		}
-		return new ClickResult(false, false);
-	}
-
-	private boolean handleSearchClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
-		IMouseHandler mouseHandler = this.searchField.getMouseHandler();
-		IMouseHandler handled = mouseHandler.handleClick(screen, mouseX, mouseY, mouseButton, clickState);
-		if (handled != null) {
-			if (!clickState.isSimulate()) {
-				updateLayout(true);
-			}
-			return true;
-		}
-		return false;
-	}
-
-	private static boolean handleCheatClick(
-		IShowsRecipeFocuses showsRecipeFocuses,
-		double mouseX,
-		double mouseY,
-		int mouseButton,
-		IWorldConfig worldConfig,
-		IClientConfig clientConfig,
-		MouseClickState clickState
-	) {
-		if (!worldConfig.isCheatItemsEnabled()) {
-			return false;
-		}
-
-		Minecraft minecraft = Minecraft.getInstance();
-		Screen currentScreen = minecraft.screen;
-		if (currentScreen == null || currentScreen instanceof RecipesGui) {
-			return false;
-		}
-
-		InputMappings.Input input = InputMappings.Type.MOUSE.getOrCreate(mouseButton);
-		if (mouseButton != 0 && mouseButton != 1 && !minecraft.options.keyPickItem.isActiveAndMatches(input)) {
-			return false;
-		}
-
-		IClickedIngredient<?> clicked = showsRecipeFocuses.getIngredientUnderMouse(mouseX, mouseY);
-		if (clicked == null) {
-			return false;
-		}
-
-		if (!clickState.isSimulate()) {
-			ItemStack itemStack = clicked.getCheatItemStack();
-			if (!itemStack.isEmpty()) {
-				CommandUtil.giveStack(itemStack, input, clientConfig);
-			}
-		}
-		return true;
-	}
-
 	public IMouseHandler getMouseHandler() {
-		return mouseHandler;
+		return new ProxyMouseHandler(() -> {
+			if (this.guiProperties == null) {
+				return NullMouseHandler.INSTANCE;
+			}
+			if (isListDisplayed()) {
+				return this.displayedMouseHandler;
+			}
+			return this.hiddenMouseHandler;
+		});
+	}
+
+	public IMouseDragHandler getMouseDragHandler() {
+		return new ProxyMouseDragHandler(() -> {
+			if (isListDisplayed()) {
+				return this.ghostIngredientDragManager.getMouseDragHandler();
+			}
+			return NullMouseDragHandler.INSTANCE;
+		});
 	}
 
 	@Override
@@ -422,42 +371,24 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 		return ImmutableList.of();
 	}
 
-	private static class ClickResult {
-		public final boolean handled;
-		public final boolean keyboardFocused;
-
-		public ClickResult(boolean handled, boolean keyboardFocused) {
-			this.handled = handled;
-			this.keyboardFocused = keyboardFocused;
-		}
-	}
-
-	private class MouseHandler implements IMouseHandler {
+	private class SearchMouseHandler implements IMouseHandler {
 		@Nullable
 		@Override
 		public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
-			ClickResult clickResult = handleMouseClickedInternal(screen, mouseX, mouseY, mouseButton, clickState);
-			if (!clickState.isSimulate()) {
-				setKeyboardFocus(clickResult.keyboardFocused);
+			IMouseHandler mouseHandler = searchField.getMouseHandler();
+			IMouseHandler handled = mouseHandler.handleClick(screen, mouseX, mouseY, mouseButton, clickState);
+			if (handled != null) {
+				if (!clickState.isSimulate()) {
+					updateLayout(true);
+				}
+				return this;
 			}
-			if (!clickResult.handled) {
-				return null;
-			}
-			return this;
+			return null;
 		}
 
 		@Override
 		public void handleMouseClickedOut(int mouseButton) {
 			clearKeyboardFocus();
-		}
-
-		@Override
-		public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
-			if (!isMouseOver(mouseX, mouseY)) {
-				return false;
-			}
-			IMouseHandler mouseHandler = contents.getMouseHandler();
-			return mouseHandler.handleMouseScrolled(mouseX, mouseY, scrollDelta);
 		}
 	}
 }

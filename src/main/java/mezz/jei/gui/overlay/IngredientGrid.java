@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.recipes.RecipesGui;

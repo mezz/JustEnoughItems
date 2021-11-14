@@ -55,12 +55,27 @@ public class GhostIngredientDrag<T> {
 		}
 	}
 
+	public static boolean farEnoughToDraw(GhostIngredientDrag<?> drag, double mouseX, double mouseY) {
+		final double centerX;
+		final double centerY;
+
+		Rectangle2d origin = drag.getOrigin();
+		if (origin != null) {
+			centerX = origin.getX() + (origin.getWidth() / 2.0);
+			centerY = origin.getY() + (origin.getHeight() / 2.0);
+		} else {
+			centerX = drag.mouseStartX;
+			centerY = drag.mouseStartY;
+		}
+		double mouseXDist = centerX - mouseX;
+		double mouseYDist = centerY - mouseY;
+		double mouseDistSq = mouseXDist * mouseXDist + mouseYDist * mouseYDist;
+		return mouseDistSq > 64.0;
+	}
+
 	@SuppressWarnings("deprecation")
 	public void drawItem(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
-		double mouseXDist = this.mouseStartX - mouseX;
-		double mouseYDist = this.mouseStartY - mouseY;
-		double mouseDistSq = mouseXDist * mouseXDist + mouseYDist * mouseYDist;
-		if (mouseDistSq < 10.0) {
+		if (!farEnoughToDraw(this, mouseX, mouseY)) {
 			return;
 		}
 

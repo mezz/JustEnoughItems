@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.input.IMouseDragHandler;
 import mezz.jei.input.click.MouseClickState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
@@ -29,6 +30,7 @@ public class GhostIngredientDragManager {
 	private final IngredientManager ingredientManager;
 	private final IWorldConfig worldConfig;
 	private final List<GhostIngredientReturning<?>> ghostIngredientsReturning = new ArrayList<>();
+	private final IMouseDragHandler mouseDragHandler;
 	@Nullable
 	private GhostIngredientDrag<?> ghostIngredientDrag;
 	@Nullable
@@ -41,6 +43,7 @@ public class GhostIngredientDragManager {
 		this.guiScreenHelper = guiScreenHelper;
 		this.ingredientManager = ingredientManager;
 		this.worldConfig = worldConfig;
+		this.mouseDragHandler = new MouseDragHandler();
 	}
 
 	public void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
@@ -81,44 +84,12 @@ public class GhostIngredientDragManager {
 		}
 	}
 
-	public boolean handleMouseClicked(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
-		if (clickState.isSimulate()) {
-			if (screen instanceof RecipesGui || mouseButton != 0) {
-				return false;
-			}
-			IClickedIngredient<?> clicked = this.source.getIngredientUnderMouse(mouseX, mouseY);
-			if (clicked == null) {
-				return false;
-			}
-			Minecraft minecraft = Minecraft.getInstance();
-			ClientPlayerEntity player = minecraft.player;
-			if (player == null) {
-				return false;
-			}
-			ItemStack mouseItem = player.inventory.getCarried();
-			return mouseItem.isEmpty() &&
-				handleClickGhostIngredient(screen, clicked, mouseX, mouseY);
-		} else {
-			if (this.ghostIngredientDrag != null) {
-				boolean success = this.ghostIngredientDrag.onClick(mouseX, mouseY, clickState);
-				if (!success) {
-					GhostIngredientReturning<?> returning = GhostIngredientReturning.create(this.ghostIngredientDrag, mouseX, mouseY);
-					this.ghostIngredientsReturning.add(returning);
-				}
-				this.ghostIngredientDrag = null;
-				this.hoveredIngredientTargets = null;
-				return success;
-			}
-			return false;
-		}
-	}
-
 	public void stopDrag() {
 		if (this.ghostIngredientDrag != null) {
 			this.ghostIngredientDrag.stop();
 			this.ghostIngredientDrag = null;
-			this.hoveredIngredientTargets = null;
 		}
+		this.hoveredIngredientTargets = null;
 	}
 
 	private <T extends Screen, V> boolean handleClickGhostIngredient(T currentScreen, IClickedIngredient<V> clicked, double mouseX, double mouseY) {
@@ -135,5 +106,64 @@ public class GhostIngredientDragManager {
 		Rectangle2d clickedArea = clicked.getArea();
 		this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, mouseX, mouseY, clickedArea);
 		return true;
+	}
+
+	public IMouseDragHandler getMouseDragHandler() {
+		return mouseDragHandler;
+	}
+
+	private class MouseDragHandler implements IMouseDragHandler {
+		@Nullable
+		@Override
+		public IMouseDragHandler handleDragStart(Screen screen, double mouseX, double mouseY) {
+			if (screen instanceof RecipesGui) {
+				return null;
+			}
+			IClickedIngredient<?> clicked = source.getIngredientUnderMouse(mouseX, mouseY);
+			if (clicked == null) {
+				return null;
+			}
+			Minecraft minecraft = Minecraft.getInstance();
+			if (minecraft == null) {
+				return null;
+			}
+			ClientPlayerEntity player = minecraft.player;
+			if (player == null) {
+				return null;
+			}
+			ItemStack mouseItem = player.inventory.getCarried();
+			if (mouseItem.isEmpty() &&
+					handleClickGhostIngredient(screen, clicked, mouseX, mouseY)) {
+				return this;
+			}
+			return null;
+		}
+
+		@Nullable
+		@Override
+		public IMouseDragHandler handleDragComplete(Screen screen, double mouseX, double mouseY) {
+			if (screen instanceof RecipesGui) {
+				return null;
+			}
+			if (ghostIngredientDrag == null) {
+				return null;
+			}
+			boolean success = ghostIngredientDrag.onClick(mouseX, mouseY, MouseClickState.EXECUTE);
+			if (!success && GhostIngredientDrag.farEnoughToDraw(ghostIngredientDrag, mouseX, mouseY)) {
+				GhostIngredientReturning<?> returning = GhostIngredientReturning.create(ghostIngredientDrag, mouseX, mouseY);
+				ghostIngredientsReturning.add(returning);
+			}
+			ghostIngredientDrag = null;
+			hoveredIngredientTargets = null;
+			if (success) {
+				return this;
+			}
+			return null;
+		}
+
+		@Override
+		public void handleDragCanceled() {
+			stopDrag();
+		}
 	}
 }
