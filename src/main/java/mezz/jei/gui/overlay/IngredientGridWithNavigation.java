@@ -1,6 +1,32 @@
 package mezz.jei.gui.overlay;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.config.IFilterTextSource;
+import mezz.jei.config.IWorldConfig;
+import mezz.jei.config.KeyBindings;
+import mezz.jei.gui.GuiScreenHelper;
+import mezz.jei.gui.PageNavigation;
+import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.input.IClickedIngredient;
+import mezz.jei.input.IPaged;
+import mezz.jei.input.IRecipeFocusSource;
+import mezz.jei.input.UserInput;
+import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.input.mouse.handlers.CombinedUserInputHandler;
+import mezz.jei.render.IngredientListElementRenderer;
+import mezz.jei.util.CommandUtil;
+import mezz.jei.util.MathUtil;
+import mezz.jei.util.Rectangle2dBuilder;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.util.Size2i;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -9,39 +35,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.input.CombinedMouseHandler;
-import mezz.jei.util.Rectangle2dBuilder;
-import net.minecraft.client.Options;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.Rect2i;
-import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.world.item.ItemStack;
-
-import mezz.jei.config.IFilterTextSource;
-import mezz.jei.config.IWorldConfig;
-import mezz.jei.config.KeyBindings;
-import mezz.jei.gui.GuiScreenHelper;
-import mezz.jei.gui.PageNavigation;
-import mezz.jei.gui.ghost.IGhostIngredientDragSource;
-import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.input.IClickedIngredient;
-import mezz.jei.input.IMouseHandler;
-import mezz.jei.input.IPaged;
-import mezz.jei.input.IShowsRecipeFocuses;
-import mezz.jei.input.MouseUtil;
-import mezz.jei.render.IngredientListElementRenderer;
-import mezz.jei.util.CommandUtil;
-import mezz.jei.util.MathUtil;
-import net.minecraft.util.Tuple;
-import net.minecraftforge.common.util.Size2i;
-
 /**
  * Displays a list of ingredients with navigation at the top.
  */
-public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhostIngredientDragSource {
+public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private static final int NAVIGATION_HEIGHT = 20;
 
 	private int firstItemIndex = 0;
@@ -52,7 +49,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 	private final IWorldConfig worldConfig;
 	private final IngredientGrid ingredientGrid;
 	private final IIngredientGridSource ingredientSource;
-	private final IMouseHandler mouseHandler;
+
 	private Rect2i area = new Rect2i(0, 0, 0, 0);
 
 	public IngredientGridWithNavigation(
@@ -69,7 +66,6 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 		this.guiScreenHelper = guiScreenHelper;
 		this.pageDelegate = new IngredientGridPaged();
 		this.navigation = new PageNavigation(this.pageDelegate, false);
-		this.mouseHandler = new CombinedMouseHandler(this.pageDelegate, this.ingredientGrid.getMouseHandler(), this.navigation.getMouseHandler());
 	}
 
 	public void updateLayout(boolean resetToFirstPage) {
@@ -139,48 +135,12 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 			!guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
 	}
 
-	public IMouseHandler getMouseHandler() {
-		return mouseHandler;
-	}
-
-	public boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
-		InputConstants.Key input = InputConstants.getKey(keyCode, scanCode);
-		if (KeyBindings.nextPage.isActiveAndMatches(input)) {
-			this.pageDelegate.nextPage();
-			return true;
-		} else if (KeyBindings.previousPage.isActiveAndMatches(input)) {
-			this.pageDelegate.previousPage();
-			return true;
-		}
-		return checkHotbarKeys(input);
-	}
-
-	/**
-	 * Modeled after ContainerScreen#checkHotbarKeys(int)
-	 * Sets the stack in a hotbar slot to the one that's hovered over.
-	 */
-	protected boolean checkHotbarKeys(InputConstants.Key input) {
-		Screen guiScreen = Minecraft.getInstance().screen;
-		if (worldConfig.isCheatItemsEnabled() && guiScreen != null && !(guiScreen instanceof RecipesGui)) {
-			final double mouseX = MouseUtil.getX();
-			final double mouseY = MouseUtil.getY();
-			if (isMouseOver(mouseX, mouseY)) {
-				Options gameSettings = Minecraft.getInstance().options;
-				for (int hotbarSlot = 0; hotbarSlot < 9; ++hotbarSlot) {
-					if (gameSettings.keyHotbarSlots[hotbarSlot].isActiveAndMatches(input)) {
-						IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);
-						if (ingredientUnderMouse != null) {
-							ItemStack itemStack = ingredientUnderMouse.getCheatItemStack();
-							if (!itemStack.isEmpty()) {
-								CommandUtil.setHotbarStack(itemStack, hotbarSlot);
-							}
-						}
-						return true;
-					}
-				}
-			}
-		}
-		return false;
+	public IUserInputHandler createInputHandler() {
+		return new CombinedUserInputHandler(
+			new UserInputHandler(this.pageDelegate, this.ingredientGrid, this.worldConfig, this::isMouseOver),
+			this.ingredientGrid.createInputHandler(),
+			this.navigation.createInputHandler()
+		);
 	}
 
 	@Nullable
@@ -193,11 +153,6 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 		return this.ingredientGrid.getElementUnderMouse(ingredientType);
 	}
 
-	@Override
-	public boolean canSetFocusWithMouse() {
-		return this.ingredientGrid.canSetFocusWithMouse();
-	}
-
 	public <T> List<IIngredientListElement<T>> getVisibleElements(IIngredientType<T> ingredientType) {
 		return this.ingredientGrid.guiIngredientSlots.getAllGuiIngredientSlots().stream()
 			.map(slot -> slot.getIngredientRenderer(ingredientType))
@@ -206,7 +161,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 			.toList();
 	}
 
-	private class IngredientGridPaged implements IPaged, IMouseHandler {
+	private class IngredientGridPaged implements IPaged {
 		@Override
 		public boolean nextPage() {
 			String filterText = filterTextSource.getFilterText();
@@ -289,20 +244,103 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 			}
 			return firstItemIndex / stacksPerPage;
 		}
+	}
+
+	private static class UserInputHandler implements IUserInputHandler {
+		private final IngredientGridPaged paged;
+		private final IRecipeFocusSource focusSource;
+		private final IWorldConfig worldConfig;
+		private final UserInput.MouseOverable mouseOverable;
+
+		private UserInputHandler(IngredientGridPaged paged, IRecipeFocusSource focusSource, IWorldConfig worldConfig, UserInput.MouseOverable mouseOverable) {
+			this.paged = paged;
+			this.focusSource = focusSource;
+			this.worldConfig = worldConfig;
+			this.mouseOverable = mouseOverable;
+		}
 
 		@Override
 		public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
-			if (!isMouseOver(mouseX, mouseY)) {
+			if (!mouseOverable.isMouseOver(mouseX, mouseY)) {
 				return false;
 			}
 			if (scrollDelta < 0) {
-				this.nextPage();
+				this.paged.nextPage();
 				return true;
 			} else if (scrollDelta > 0) {
-				this.previousPage();
+				this.paged.previousPage();
 				return true;
 			}
 			return false;
+		}
+
+		@Nullable
+		@Override
+		public IUserInputHandler handleUserInput(Screen screen, UserInput input) {
+			if (input.is(KeyBindings.nextPage)) {
+				this.paged.nextPage();
+				return this;
+			}
+
+			if (input.is(KeyBindings.previousPage)) {
+				this.paged.previousPage();
+				return this;
+			}
+
+			if (checkHotbarKeys(screen, input)) {
+				return this;
+			}
+			return null;
+		}
+
+		/**
+		 * Modeled after ContainerScreen#checkHotbarKeys(int)
+		 * Sets the stack in a hotbar slot to the one that's hovered over.
+		 */
+		protected boolean checkHotbarKeys(Screen screen, UserInput input) {
+			Minecraft minecraft = screen.getMinecraft();
+			if (minecraft == null) {
+				return false;
+			}
+
+			if (!this.worldConfig.isCheatItemsEnabled() || screen instanceof RecipesGui) {
+				return false;
+			}
+
+			final double mouseX = input.getMouseX();
+			final double mouseY = input.getMouseY();
+			if (!this.mouseOverable.isMouseOver(mouseX, mouseY)) {
+				return false;
+			}
+
+			Options gameSettings = minecraft.options;
+			int hotbarSlot = getHotbarSlotForInput(input, gameSettings);
+			if (hotbarSlot < 0) {
+				return false;
+			}
+
+			IClickedIngredient<?> ingredientUnderMouse = this.focusSource.getIngredientUnderMouse(mouseX, mouseY);
+			if (ingredientUnderMouse == null) {
+				return false;
+			}
+
+			ItemStack itemStack = ingredientUnderMouse.getCheatItemStack();
+			if (itemStack.isEmpty()) {
+				return false;
+			}
+
+			CommandUtil.setHotbarStack(itemStack, hotbarSlot);
+			return true;
+		}
+
+		private static int getHotbarSlotForInput(UserInput input, Options gameSettings) {
+			for (int hotbarSlot = 0; hotbarSlot < gameSettings.keyHotbarSlots.length; ++hotbarSlot) {
+				KeyMapping keyHotbarSlot = gameSettings.keyHotbarSlots[hotbarSlot];
+				if (input.is(keyHotbarSlot)) {
+					return hotbarSlot;
+				}
+			}
+			return -1;
 		}
 	}
 }

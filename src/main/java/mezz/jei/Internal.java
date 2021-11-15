@@ -9,7 +9,7 @@ import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientManager;
-import mezz.jei.input.InputHandler;
+import mezz.jei.input.InputEventHandler;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.startup.JeiReloadListener;
@@ -31,7 +31,7 @@ public final class Internal {
 	@Nullable
 	private static GuiEventHandler guiEventHandler;
 	@Nullable
-	private static InputHandler inputHandler;
+	private static InputEventHandler inputEventHandler;
 	@Nullable
 	private static Textures textures;
 	@Nullable
@@ -112,13 +112,13 @@ public final class Internal {
 		guiEventHandler.registerToEventBus();
 	}
 
-	public static void setInputHandler(InputHandler inputHandler) {
-		if (Internal.inputHandler != null) {
-			EventBusHelper.unregister(Internal.inputHandler);
+	public static void setInputEventHandler(InputEventHandler inputEventHandler) {
+		if (Internal.inputEventHandler != null) {
+			EventBusHelper.unregister(Internal.inputEventHandler);
 		}
 
-		Internal.inputHandler = inputHandler;
-		inputHandler.registerToEventBus();
+		Internal.inputEventHandler = inputEventHandler;
+		inputEventHandler.registerToEventBus();
 	}
 
 	@Nullable

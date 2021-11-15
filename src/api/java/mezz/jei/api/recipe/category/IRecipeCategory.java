@@ -1,5 +1,6 @@
 package mezz.jei.api.recipe.category;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.Collections;
 import java.util.List;
@@ -102,12 +103,18 @@ public interface IRecipeCategory<T> {
 	 * Called when a player clicks the recipe.
 	 * Useful for implementing buttons, hyperlinks, and other interactions to your recipe.
 	 *
-	 * @param mouseX      the X position of the mouse, relative to the recipe.
-	 * @param mouseY      the Y position of the mouse, relative to the recipe.
-	 * @param mouseButton the current mouse event button.
-	 * @return true if the click was handled, false otherwise
+
+	 * @param recipe the currently hovered recipe
+	 * @param mouseX the X position of the mouse, relative to the recipe.
+	 * @param mouseY the Y position of the mouse, relative to the recipe.
+	 * @param input  the current input
+	 * @return true if the input was handled, false otherwise
+	 * @since JEI 8.3.0
 	 */
-	default boolean handleClick(T recipe, double mouseX, double mouseY, int mouseButton) {
+	default boolean handleInput(T recipe, double mouseX, double mouseY, InputConstants.Key input) {
+		if (input.getType() == InputConstants.Type.MOUSE) {
+			return handleClick(recipe, mouseX, mouseY, input.getValue());
+		}
 		return false;
 	}
 
@@ -117,5 +124,20 @@ public interface IRecipeCategory<T> {
 	 */
 	default boolean isHandled(T recipe) {
 		return true;
+	}
+
+	/**
+	 * Called when a player clicks the recipe.
+	 * Useful for implementing buttons, hyperlinks, and other interactions to your recipe.
+	 *
+	 * @param mouseX      the X position of the mouse, relative to the recipe.
+	 * @param mouseY      the Y position of the mouse, relative to the recipe.
+	 * @param mouseButton the current mouse event button.
+	 * @return true if the click was handled, false otherwise
+	 * @deprecated since JEI 8.3.0. Use {@link #handleInput(Object, double, double, InputConstants.Key)}
+	 */
+	@Deprecated
+	default boolean handleClick(T recipe, double mouseX, double mouseY, int mouseButton) {
+		return false;
 	}
 }

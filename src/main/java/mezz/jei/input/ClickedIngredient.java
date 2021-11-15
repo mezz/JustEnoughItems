@@ -21,6 +21,7 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	private final V value;
 	@Nullable
 	private final Rect2i area;
+	private boolean canSetFocusWithMouse;
 	private boolean allowsCheating;
 
 	@Nullable
@@ -61,6 +62,10 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 		this.allowsCheating = true;
 	}
 
+	public void setCanSetFocusWithMouse() {
+		this.canSetFocusWithMouse = true;
+	}
+
 	@Override
 	public ItemStack getCheatItemStack() {
 		if (allowsCheating) {
@@ -72,6 +77,11 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	}
 
 	@Override
+	public boolean canSetFocusWithMouse() {
+		return this.canSetFocusWithMouse;
+	}
+
+	@Override
 	public String toString() {
 		IIngredientManager ingredientManager = Internal.getIngredientManager();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value);
@@ -79,6 +89,7 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 			.add("value", ingredientHelper.getUniqueId(value, UidContext.Ingredient))
 			.add("area", area)
 			.add("allowsCheating", allowsCheating)
+			.add("canSetFocusWithMouse", canSetFocusWithMouse)
 			.toString();
 	}
 }

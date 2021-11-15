@@ -5,11 +5,13 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ISlowRenderItem;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.ingredients.IngredientTypeHelper;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
@@ -93,12 +95,14 @@ public class IngredientListBatchRenderer {
 	private <V> void set(IngredientListSlot ingredientListSlot, IIngredientListElement<V> element) {
 		ingredientListSlot.clear();
 
-		V ingredient = element.getIngredient();
-		if (ingredient instanceof ItemStack) {
-			//noinspection unchecked
-			IIngredientListElement<ItemStack> itemStackElement = (IIngredientListElement<ItemStack>) element;
+		IIngredientListElement<ItemStack> itemStackElement = IngredientTypeHelper.checkedCast(element, VanillaTypes.ITEM);
+		if (itemStackElement != null) {
 			ItemStack itemStack = itemStackElement.getIngredient();
 			Minecraft minecraft = Minecraft.getInstance();
+			if (minecraft == null) {
+				LOGGER.error("Minecraft instance is missing");
+				return;
+			}
 			ItemRenderer itemRenderer = minecraft.getItemRenderer();
 			BakedModel bakedModel;
 			try {

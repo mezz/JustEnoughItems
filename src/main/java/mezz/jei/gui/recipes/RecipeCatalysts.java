@@ -19,13 +19,13 @@ import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
-import mezz.jei.input.IShowsRecipeFocuses;
+import mezz.jei.input.IRecipeFocusSource;
 import mezz.jei.util.MathUtil;
 
 /**
  * The area drawn on left side of the {@link RecipesGui} that shows which items can craft the current recipe category.
  */
-public class RecipeCatalysts implements IShowsRecipeFocuses {
+public class RecipeCatalysts implements IRecipeFocusSource {
 	private static final int ingredientSize = 16;
 	private static final int ingredientBorderSize = 1;
 	private static final int borderSize = 5;
@@ -141,14 +141,13 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 		if (hovered != null) {
 			Object ingredientUnderMouse = hovered.getDisplayedIngredient();
 			if (ingredientUnderMouse != null) {
-				return ClickedIngredient.create(ingredientUnderMouse, hovered.getRect());
+				ClickedIngredient<Object> ingredient = ClickedIngredient.create(ingredientUnderMouse, hovered.getRect());
+				if (ingredient != null) {
+					ingredient.setCanSetFocusWithMouse();
+				}
+				return ingredient;
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public boolean canSetFocusWithMouse() {
-		return true;
 	}
 }

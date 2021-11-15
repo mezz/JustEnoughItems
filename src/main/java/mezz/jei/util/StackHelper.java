@@ -59,8 +59,4 @@ public class StackHelper implements IStackHelper {
 
 		return registryName.toString();
 	}
-
-	public enum UidMode {
-		NORMAL, WILDCARD
-	}
 }

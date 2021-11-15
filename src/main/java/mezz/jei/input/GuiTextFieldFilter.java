@@ -1,51 +1,42 @@
 package mezz.jei.input;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import java.util.LinkedList;
-import java.util.List;
-
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import mezz.jei.input.click.MouseClickState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.renderer.Rect2i;
-
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.Internal;
-import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IIngredientGridSource;
+import mezz.jei.input.mouse.IUserInputHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.TextComponent;
-import org.lwjgl.glfw.GLFW;
+
+import java.util.List;
 
 public class GuiTextFieldFilter extends EditBox {
-	private static final int MAX_HISTORY = 100;
 	private static final int maxSearchLength = 128;
-	private static final List<String> history = new LinkedList<>();
+	private static final TextHistory history = new TextHistory();
 
 	private final HoverChecker hoverChecker;
 	private final IIngredientGridSource ingredientSource;
-	private final IWorldConfig worldConfig;
-	private final IMouseHandler mouseHandler;
-	private boolean previousKeyboardRepeatEnabled;
-
 	private final DrawableNineSliceTexture background;
 
-	public GuiTextFieldFilter(IIngredientGridSource ingredientSource, IWorldConfig worldConfig) {
+	private boolean previousKeyboardRepeatEnabled;
+
+	public GuiTextFieldFilter(IIngredientGridSource ingredientSource) {
 		// TODO narrator string
 		super(Minecraft.getInstance().font, 0, 0, 0, 0, TextComponent.EMPTY);
-		this.worldConfig = worldConfig;
 
 		setMaxLength(maxSearchLength);
 		this.hoverChecker = new HoverChecker();
 		this.ingredientSource = ingredientSource;
 
 		this.background = Internal.getTextures().getSearchBackground();
-		this.mouseHandler = new MouseHandler();
 	}
 
 	public void updateBounds(Rect2i area) {
@@ -57,10 +48,10 @@ public class GuiTextFieldFilter extends EditBox {
 		setHighlightPos(getCursorPosition());
 	}
 
-	public void update() {
-		String filterText = worldConfig.getFilterText();
+	@Override
+	public void setValue(String filterText) {
 		if (!filterText.equals(getValue())) {
-			setValue(filterText);
+			super.setValue(filterText);
 		}
 		List<IIngredientListElement<?>> ingredientList = ingredientSource.getIngredientList(filterText);
 		if (ingredientList.size() == 0) {
@@ -70,43 +61,23 @@ public class GuiTextFieldFilter extends EditBox {
 		}
 	}
 
-	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		boolean handled = super.keyPressed(keyCode, scanCode, modifiers);
-		if (!handled && !history.isEmpty()) {
-			if (keyCode == GLFW.GLFW_KEY_UP) {
-				String currentText = getValue();
-				int historyIndex = history.indexOf(currentText);
-				if (historyIndex < 0) {
-					if (saveHistory()) {
-						historyIndex = history.size() - 1;
-					} else {
-						historyIndex = history.size();
-					}
-				}
-				if (historyIndex > 0) {
-					String historyString = history.get(historyIndex - 1);
-					setValue(historyString);
-					handled = true;
-				}
-			} else if (keyCode == GLFW.GLFW_KEY_DOWN) {
-				String currentText = getValue();
-				int historyIndex = history.indexOf(currentText);
-				if (historyIndex >= 0) {
-					String historyString;
-					if (historyIndex + 1 < history.size()) {
-						historyString = history.get(historyIndex + 1);
-					} else {
-						historyString = "";
-					}
-					setValue(historyString);
-					handled = true;
-				}
-			} else if (KeyBindings.isEnterKey(keyCode)) {
-				saveHistory();
-			}
+	private boolean navigateHistory(UserInput userInput) {
+		final String currentText = getValue();
+		String newText = null;
+		if (userInput.is(KeyBindings.previousSearch)) {
+			newText = history.getPrevious(currentText);
+		} else if (userInput.is(KeyBindings.nextSearch)) {
+			newText = history.getNext(currentText);
 		}
-		return handled;
+
+		if (newText != null) {
+			if (!userInput.isSimulate()) {
+				setValue(newText);
+			}
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
@@ -114,8 +85,8 @@ public class GuiTextFieldFilter extends EditBox {
 		return hoverChecker.checkHover(mouseX, mouseY);
 	}
 
-	public IMouseHandler getMouseHandler() {
-		return mouseHandler;
+	public IUserInputHandler createInputHandler() {
+		return new UserInputHandler();
 	}
 
 	@Override
@@ -132,21 +103,9 @@ public class GuiTextFieldFilter extends EditBox {
 				minecraft.keyboardHandler.setSendRepeatsToGui(previousKeyboardRepeatEnabled);
 			}
 
-			saveHistory();
-		}
-	}
-
-	private boolean saveHistory() {
-		String text = getValue();
-		if (text.length() > 0) {
-			history.remove(text);
+			String text = getValue();
 			history.add(text);
-			if (history.size() > MAX_HISTORY) {
-				history.remove(0);
-			}
-			return true;
 		}
-		return false;
 	}
 
 	// begin hack to draw our own background texture instead of the default one
@@ -172,31 +131,56 @@ public class GuiTextFieldFilter extends EditBox {
 	}
 	// end background hack
 
-	private class MouseHandler implements IMouseHandler {
+	private class UserInputHandler implements IUserInputHandler {
 		@Override
-		public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
-			if (!isMouseOver(mouseX, mouseY)) {
-				return null;
+		public IUserInputHandler handleUserInput(Screen screen, UserInput input) {
+			if (isFocused()) {
+				if (input.isEscapeKey() || input.isEnterKey()) {
+					setFocused(false);
+					return this;
+				}
 			}
-			if (mouseButton == 1) {
-				if (!clickState.isSimulate()) {
-					setValue("");
-					worldConfig.setFilterText("");
+
+			if (input.is(KeyBindings.focusSearch)) {
+				if (!input.isSimulate()) {
+					setFocused(true);
 				}
 				return this;
 			}
-			if (!clickState.isSimulate()) {
-				if (GuiTextFieldFilter.super.mouseClicked(mouseX, mouseY, mouseButton)) {
+
+			if (isMouseOver(input.getMouseX(), input.getMouseY())) {
+				if (input.is(KeyBindings.hoveredClearSearchBar)) {
+					if (!input.isSimulate()) {
+						setValue("");
+						setFocused(true);
+					}
 					return this;
 				}
-				return null;
-			} else {
-				return this; // can't easily simulate the click, just say we could handle it
 			}
+
+			if (input.callVanilla(
+				GuiTextFieldFilter.this::isMouseOver,
+				GuiTextFieldFilter.this::mouseClicked,
+				GuiTextFieldFilter.this::keyPressed
+			)) {
+				return this;
+			}
+
+			if (navigateHistory(input)) {
+				return this;
+			}
+
+			// If we can handle this input as a typed char,
+			// treat it as handled to prevent other handlers from using it.
+			if (canConsumeInput() && input.isAllowedChatCharacter()) {
+				return this;
+			}
+
+			return null;
 		}
 
 		@Override
-		public void handleMouseClickedOut(int mouseButton) {
+		public void handleMouseClickedOut(InputConstants.Key input) {
 			setFocused(false);
 		}
 	}

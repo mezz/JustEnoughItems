@@ -1,5 +1,6 @@
 package mezz.jei.plugins.vanilla.crafting;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import java.util.List;
@@ -129,9 +130,9 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 	}
 
 	@Override
-	public boolean handleClick(CraftingRecipe recipe, double mouseX, double mouseY, int mouseButton) {
+	public boolean handleInput(CraftingRecipe recipe, double mouseX, double mouseY, InputConstants.Key input) {
 		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
-		return extension.handleClick(mouseX, mouseY, mouseButton);
+		return extension.handleInput(mouseX, mouseY, input);
 	}
 
 	@Override

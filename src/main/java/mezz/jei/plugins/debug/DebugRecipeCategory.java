@@ -1,5 +1,6 @@
 package mezz.jei.plugins.debug;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import java.util.ArrayList;
@@ -223,8 +224,12 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
-	public boolean handleClick(DebugRecipe recipe, double mouseX, double mouseY, int mouseButton) {
+	public boolean handleInput(DebugRecipe recipe, double mouseX, double mouseY, InputConstants.Key input) {
+		if (input.getType() != InputConstants.Type.MOUSE) {
+			return false;
+		}
 		ExtendedButton button = recipe.getButton();
+		int mouseButton = input.getValue();
 		if (mouseButton == 0 && button.mouseClicked(mouseX, mouseY, mouseButton)) {
 			Minecraft minecraft = Minecraft.getInstance();
 			LocalPlayer player = minecraft.player;

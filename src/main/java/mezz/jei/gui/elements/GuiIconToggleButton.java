@@ -1,28 +1,24 @@
 package mezz.jei.gui.elements;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import mezz.jei.input.IMouseHandler;
-import mezz.jei.input.click.MouseClickState;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.Rect2i;
-
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.TooltipRenderer;
+import mezz.jei.input.UserInput;
+import mezz.jei.input.mouse.IUserInputHandler;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class GuiIconToggleButton {
 	private final IDrawable offIcon;
 	private final IDrawable onIcon;
 	private final GuiIconButton button;
 	private final HoverChecker hoverChecker;
-	private final IMouseHandler mouseHandler;
 
 	public GuiIconToggleButton(IDrawable offIcon, IDrawable onIcon) {
 		this.offIcon = offIcon;
@@ -31,7 +27,6 @@ public abstract class GuiIconToggleButton {
 		});
 		this.hoverChecker = new HoverChecker();
 		this.hoverChecker.updateBounds(this.button);
-		this.mouseHandler = new MouseHandler();
 	}
 
 	public void updateBounds(Rect2i area) {
@@ -52,8 +47,8 @@ public abstract class GuiIconToggleButton {
 		return this.hoverChecker.checkHover(mouseX, mouseY);
 	}
 
-	public IMouseHandler getMouseHandler() {
-		return this.mouseHandler;
+	public IUserInputHandler createInputHandler() {
+		return new UserInputHandler();
 	}
 
 	public final void drawTooltips(PoseStack poseStack, int mouseX, int mouseY) {
@@ -68,17 +63,16 @@ public abstract class GuiIconToggleButton {
 
 	protected abstract boolean isIconToggledOn();
 
-	protected abstract boolean onMouseClicked(MouseClickState clickState);
+	protected abstract boolean onMouseClicked(UserInput input);
 
-	private class MouseHandler implements IMouseHandler {
+	private class UserInputHandler implements IUserInputHandler {
 		@Override
 		@Nullable
-		public final IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
-			if (isMouseOver(mouseX, mouseY)) {
-				IMouseHandler mouseHandler = button.getMouseHandler();
-				IMouseHandler handled = mouseHandler.handleClick(screen, mouseX, mouseY, mouseButton, clickState);
-				if (handled != null) {
-					if (onMouseClicked(clickState)) {
+		public final IUserInputHandler handleUserInput(Screen screen, UserInput input) {
+			if (isMouseOver(input.getMouseX(), input.getMouseY())) {
+				IUserInputHandler handler = button.createInputHandler();
+				if (handler.handleUserInput(screen, input) != null) {
+					if (onMouseClicked(input)) {
 						return this;
 					}
 				}

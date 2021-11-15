@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
@@ -75,8 +74,8 @@ public class GuiScreenHelper {
 		return null;
 	}
 
-	public boolean updateGuiExclusionAreas() {
-		Set<Rect2i> guiAreas = getPluginsExclusionAreas();
+	public boolean updateGuiExclusionAreas(Screen screen) {
+		Set<Rect2i> guiAreas = getPluginsExclusionAreas(screen);
 		if (!MathUtil.equalRects(guiAreas, this.guiExclusionAreas)) {
 			// make a defensive copy because Rectangle is mutable
 			this.guiExclusionAreas = guiAreas.stream()
@@ -96,11 +95,7 @@ public class GuiScreenHelper {
 		return MathUtil.contains(guiExclusionAreas, mouseX, mouseY);
 	}
 
-	private Set<Rect2i> getPluginsExclusionAreas() {
-		Screen screen = Minecraft.getInstance().screen;
-		if (screen == null) {
-			return Collections.emptySet();
-		}
+	private Set<Rect2i> getPluginsExclusionAreas(Screen screen) {
 		Set<Rect2i> allGuiExtraAreas = new HashSet<>();
 		if (screen instanceof AbstractContainerScreen<?> guiContainer) {
 			Collection<Rect2i> guiExtraAreas = this.guiContainerHandlers.getGuiExtraAreas(guiContainer);

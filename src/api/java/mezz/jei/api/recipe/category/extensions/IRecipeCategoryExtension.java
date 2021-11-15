@@ -1,5 +1,6 @@
 package mezz.jei.api.recipe.category.extensions;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.Collections;
 import java.util.List;
@@ -53,6 +54,23 @@ public interface IRecipeCategoryExtension {
 	}
 
 	/**
+	 * Called when a player inputs while hovering over the recipe.
+	 * Useful for implementing buttons, hyperlinks, and other interactions to your recipe.
+	 *
+	 * @param mouseX the X position of the mouse, relative to the recipe.
+	 * @param mouseY the Y position of the mouse, relative to the recipe.
+	 * @param input  the current input from the player.
+	 * @return true if the input was handled, false otherwise
+	 * @since JEI 8.3.0
+	 */
+	default boolean handleInput(double mouseX, double mouseY, InputConstants.Key input) {
+		if (input.getType() == InputConstants.Type.MOUSE) {
+			return handleClick(mouseX, mouseY, input.getValue());
+		}
+		return false;
+	}
+
+	/**
 	 * Called when a player clicks the recipe.
 	 * Useful for implementing buttons, hyperlinks, and other interactions to your recipe.
 	 *
@@ -60,7 +78,9 @@ public interface IRecipeCategoryExtension {
 	 * @param mouseY      the Y position of the mouse, relative to the recipe.
 	 * @param mouseButton the current mouse event button.
 	 * @return true if the click was handled, false otherwise
+	 * @deprecated since JEI 8.3.0. Use {@link #handleInput(double, double, InputConstants.Key)}
 	 */
+	@Deprecated
 	default boolean handleClick(double mouseX, double mouseY, int mouseButton) {
 		return false;
 	}

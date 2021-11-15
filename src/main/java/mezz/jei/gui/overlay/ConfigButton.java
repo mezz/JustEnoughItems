@@ -3,7 +3,7 @@ package mezz.jei.gui.overlay;
 import java.util.List;
 
 import mezz.jei.config.JEIClientConfig;
-import mezz.jei.input.click.MouseClickState;
+import mezz.jei.input.UserInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.KeyMapping;
@@ -68,9 +68,9 @@ public class ConfigButton extends GuiIconToggleButton {
 	}
 
 	@Override
-	protected boolean onMouseClicked(MouseClickState clickState) {
+	protected boolean onMouseClicked(UserInput input) {
 		if (worldConfig.isOverlayEnabled()) {
-			if (!clickState.isSimulate()) {
+			if (!input.isSimulate()) {
 				if (Screen.hasControlDown()) {
 					worldConfig.toggleCheatItemsEnabled();
 				} else {

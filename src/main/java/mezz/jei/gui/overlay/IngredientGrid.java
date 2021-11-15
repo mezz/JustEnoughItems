@@ -14,10 +14,10 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
-import mezz.jei.input.IMouseHandler;
-import mezz.jei.input.IShowsRecipeFocuses;
+import mezz.jei.input.UserInput;
+import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.input.IRecipeFocusSource;
 import mezz.jei.input.MouseUtil;
-import mezz.jei.input.click.MouseClickState;
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
 import mezz.jei.network.packets.PacketJei;
@@ -43,14 +43,13 @@ import java.util.Optional;
 /**
  * An ingredient grid displays a rectangular area of clickable recipe ingredients.
  */
-public class IngredientGrid implements IShowsRecipeFocuses {
+public class IngredientGrid implements IRecipeFocusSource {
 	private static final int INGREDIENT_PADDING = 1;
 	public static final int INGREDIENT_WIDTH = GuiIngredientProperties.getWidth(INGREDIENT_PADDING);
 	public static final int INGREDIENT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
 	private final GridAlignment alignment;
 	private final RecipesGui recipesGui;
 	private final GuiScreenHelper guiScreenHelper;
-	private final IMouseHandler mouseHandler;
 
 	private Rect2i area = new Rect2i(0, 0, 0, 0);
 	protected final IngredientListBatchRenderer guiIngredientSlots;
@@ -74,7 +73,6 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		this.clientConfig = clientConfig;
 		this.worldConfig = worldConfig;
 		this.guiScreenHelper = guiScreenHelper;
-		this.mouseHandler = new MouseHandler();
 	}
 
 	public int size() {
@@ -199,29 +197,30 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 			ClickedIngredient<?> clicked = guiIngredientSlots.getIngredientUnderMouse(mouseX, mouseY);
 			if (clicked != null) {
 				clicked.setAllowsCheating();
+				clicked.setCanSetFocusWithMouse();
 			}
 			return clicked;
 		}
 		return null;
 	}
 
-	@Override
-	public boolean canSetFocusWithMouse() {
-		return true;
+	public IUserInputHandler createInputHandler() {
+		return new UserInputHandler();
 	}
 
-	public IMouseHandler getMouseHandler() {
-		return mouseHandler;
-	}
-
-	private class MouseHandler implements IMouseHandler {
+	private class UserInputHandler implements IUserInputHandler {
 		@Nullable
 		@Override
-		public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
+		public IUserInputHandler handleUserInput(Screen screen, UserInput userInput) {
+			double mouseX = userInput.getMouseX();
+			double mouseY = userInput.getMouseY();
 			if (!isMouseOver(mouseX, mouseY)) {
 				return null;
 			}
 			Minecraft minecraft = Minecraft.getInstance();
+			if (minecraft == null) {
+				return null;
+			}
 			if (!shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				return null;
 			}
@@ -233,7 +232,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 			if (itemStack.isEmpty()) {
 				return null;
 			}
-			if (!clickState.isSimulate()) {
+			if (!userInput.isSimulate()) {
 				player.containerMenu.setCarried(ItemStack.EMPTY);
 				PacketJei packet = new PacketDeletePlayerItem(itemStack);
 				Network.sendPacketToServer(packet);

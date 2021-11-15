@@ -9,7 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
@@ -33,25 +32,27 @@ public final class CommandUtil {
 	 * <p>
 	 * {@link CreativeModeInventoryScreen} has special client-side handling for itemStacks, just give the item on the client
 	 */
-	public static void giveStack(ItemStack itemStack, InputConstants.Key input, IClientConfig clientConfig) {
+	public static void giveStack(ItemStack itemStack, GiveAmount giveAmount, IClientConfig clientConfig) {
 		final GiveMode giveMode = clientConfig.getGiveMode();
 		Minecraft minecraft = Minecraft.getInstance();
+		if (minecraft == null) {
+			LOGGER.error("Can't give stack, there is no minecraft instance");
+			return;
+		}
 		LocalPlayer player = minecraft.player;
 		if (player == null) {
 			LOGGER.error("Can't give stack, there is no player");
 			return;
 		}
+		final int amount = giveAmount.getAmountForStack(itemStack);
 		if (minecraft.screen instanceof CreativeModeInventoryScreen && giveMode == GiveMode.MOUSE_PICKUP) {
-			final int amount = GiveMode.getStackSize(giveMode, itemStack, input);
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
 			CommandUtilServer.mousePickupItemStack(player, sendStack);
 		} else if (ServerInfo.isJeiOnServer()) {
-			final int amount = GiveMode.getStackSize(giveMode, itemStack, input);
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
 			PacketGiveItemStack packet = new PacketGiveItemStack(sendStack, giveMode);
 			Network.sendPacketToServer(packet);
 		} else {
-			int amount = GiveMode.getStackSize(GiveMode.INVENTORY, itemStack, input);
 			giveStackVanilla(itemStack, amount);
 		}
 	}
