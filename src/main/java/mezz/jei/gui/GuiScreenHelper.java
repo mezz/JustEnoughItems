@@ -159,7 +159,12 @@ public class GuiScreenHelper {
 			Rect2i area = null;
 			Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
 			if (ingredient instanceof ItemStack && slotUnderMouse != null && ItemStack.matches(slotUnderMouse.getItem(), (ItemStack) ingredient)) {
-				area = new Rect2i(slotUnderMouse.x, slotUnderMouse.y, 16, 16);
+				area = new Rect2i(
+					guiContainer.getGuiLeft() + slotUnderMouse.x,
+					guiContainer.getGuiTop() + slotUnderMouse.y,
+					16,
+					16
+				);
 			}
 			return ClickedIngredient.create(ingredient, area);
 		}

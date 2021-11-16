@@ -291,12 +291,19 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 			}
 
 			if (isMouseOver(mouseX, mouseY)) {
-				for (RecipeLayout<?> recipeLayouts : this.recipeLayouts) {
-					GuiIngredient<?> clicked = recipeLayouts.getGuiIngredientUnderMouse(mouseX, mouseY);
+				for (RecipeLayout<?> recipeLayout : this.recipeLayouts) {
+					GuiIngredient<?> clicked = recipeLayout.getGuiIngredientUnderMouse(mouseX, mouseY);
 					if (clicked != null) {
 						Object displayedIngredient = clicked.getDisplayedIngredient();
 						if (displayedIngredient != null) {
-							return ClickedIngredient.create(displayedIngredient, clicked.getRect());
+							Rect2i area = clicked.getRect();
+							area = new Rect2i(
+									area.getX() + recipeLayout.getPosX(),
+									area.getY() + recipeLayout.getPosY(),
+									area.getWidth(),
+									area.getHeight()
+							);
+							return ClickedIngredient.create(displayedIngredient, area);
 						}
 					}
 				}
