@@ -161,7 +161,12 @@ public class GuiScreenHelper {
 			Rectangle2d area = null;
 			Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
 			if (ingredient instanceof ItemStack && slotUnderMouse != null && ItemStack.matches(slotUnderMouse.getItem(), (ItemStack) ingredient)) {
-				area = new Rectangle2d(slotUnderMouse.x, slotUnderMouse.y, 16, 16);
+				area = new Rectangle2d(
+						guiContainer.getGuiLeft() + slotUnderMouse.x,
+						guiContainer.getGuiTop() + slotUnderMouse.y,
+						16,
+						16
+				);
 			}
 			return ClickedIngredient.create(ingredient, area);
 		}
