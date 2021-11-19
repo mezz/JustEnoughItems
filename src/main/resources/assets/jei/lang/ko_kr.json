@@ -28,13 +28,18 @@
   "jei.tooltip.error.recipe.transfer.inventory.full": "인벤토리에 공간이 부족합니다.",
   "jei.tooltip.error.recipe.transfer.unknown": "알려지지 않은 오류입니다. 로그 파일을 확인하세요.",
   "jei.tooltip.error.recipe.transfer.no.server": "서버에 JEI가 설치되어 있어야 합니다.",
+  "jei.tooltip.error.recipe.transfer.disabled": "서버 구성에서 JEI 제작법 전송을 사용할 수 없도록 설정했습니다.",
   "jei.tooltip.error.recipe.transfer.too.large.player.inventory": "제작법이 너무 커서 2x2 플레이어 제작 그리드에서 만들 수 없습니다.",
   "jei.tooltip.error.crash": "툴팁 에러입니다. 로그를 확인하세요.",
 
   "_comment": "Error Messages",
   "jei.chat.error.command.too.long": "이 명령어를 처리하려면 서버에 JEI가 설치되어 있어야 합니다. 이 명령어는 일반 마인크래프트가 처리하기에는 너무 깁니다.",
   "jei.chat.error.no.cheat.permission.1": "JEI의 치트 모드를 사용할 권한이 없습니다.",
-  "jei.chat.error.no.cheat.permission.2": "아이템을 제공(/give)하거나 크리에이티브 모드에 있는 플레이어에게 권한이 부여됩니다.",
+  "jei.chat.error.no.cheat.permission.disabled": "이 서버에서 모든 플레이어에게 JEI의 치트 모드가 비활성화되었습니다.",
+  "jei.chat.error.no.cheat.permission.enabled": "이 서버에서 다음 유형의 플레이어가 JEI의 치트 모드를 사용할 수 있습니다:",
+  "jei.chat.error.no.cheat.permission.creative": "크리에이티브 모드에 있는 플레이어입니다.",
+  "jei.chat.error.no.cheat.permission.op": "오퍼레이터 상태를 가진 플레이어입니다. (/op)",
+  "jei.chat.error.no.cheat.permission.give": "아이템을 제공(/give)하거나 크리에이티브 모드에 있는 플레이어에게 권한이 부여됩니다.",
 
   "_comment": "Key Bindings",
   "key.jei.toggleOverlay": "아이템 목록 겹침 켜기/끄기",
@@ -127,10 +132,12 @@
   "gui.jei.category.fuel.smeltCount": "%s개 아이템을 굽습니다.",
   "gui.jei.category.brewing": "양조기",
   "gui.jei.category.brewing.steps": "단계: %s개",
+  "gui.jei.category.compostable": "퇴비화 가능",
+  "gui.jei.category.compostable.chance": "기회: %s%%",
   "gui.jei.category.itemInformation": "설명",
 
   "_comment": "Messages",
-  "jei.message.configured": "Install the \"Configured\" mod to access the in-game config",
+  "jei.message.ftblibrary": "게임 구성에서 접근할 수 있도록 FTB 라이브러리를 설치합니다.",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "나무 문을 통해 건물에 괴물이 들어오지 못하게 막을 수 있습니다.\\n문장을 테스트하는 중입니다.",
