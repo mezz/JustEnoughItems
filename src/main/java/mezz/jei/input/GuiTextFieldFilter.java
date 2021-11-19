@@ -182,6 +182,7 @@ public class GuiTextFieldFilter extends TextFieldWidget {
 			if (mouseButton == 1) {
 				if (!clickState.isSimulate()) {
 					setValue("");
+					setFocused(true);
 					worldConfig.setFilterText("");
 				}
 				return this;
