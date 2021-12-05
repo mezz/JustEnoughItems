@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class CombinedUserInputHandler implements IUserInputHandler {
@@ -135,6 +136,7 @@ public class CombinedUserInputHandler implements IUserInputHandler {
 
 		this.dragStarted = this.inputHandlers.stream()
 			.map(i -> i.handleDragStart(screen, input))
+			.filter(Objects::nonNull)
 			.findFirst()
 			.orElse(null);
 
