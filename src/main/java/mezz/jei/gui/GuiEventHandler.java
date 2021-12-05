@@ -8,10 +8,10 @@ import java.util.List;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraftforge.client.event.ContainerScreenEvent;
+import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.client.event.ScreenOpenEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.client.event.GuiContainerEvent;
-import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -48,13 +48,13 @@ public class GuiEventHandler {
 
 	public void registerToEventBus() {
 		EventBusHelper.registerWeakListener(this, OverlayToggleEvent.class, GuiEventHandler::onOverlayToggle);
-		EventBusHelper.registerWeakListener(this, GuiScreenEvent.InitGuiEvent.Post.class, GuiEventHandler::onGuiInit);
-		EventBusHelper.registerWeakListener(this, GuiOpenEvent.class, GuiEventHandler::onGuiOpen);
-		EventBusHelper.registerWeakListener(this, GuiScreenEvent.BackgroundDrawnEvent.class, GuiEventHandler::onDrawBackgroundEventPost);
-		EventBusHelper.registerWeakListener(this, GuiContainerEvent.DrawForeground.class, GuiEventHandler::onDrawForegroundEvent);
-		EventBusHelper.registerWeakListener(this, GuiScreenEvent.DrawScreenEvent.Post.class, GuiEventHandler::onDrawScreenEventPost);
+		EventBusHelper.registerWeakListener(this, ScreenEvent.InitScreenEvent.Post.class, GuiEventHandler::onGuiInit);
+		EventBusHelper.registerWeakListener(this, ScreenOpenEvent.class, GuiEventHandler::onGuiOpen);
+		EventBusHelper.registerWeakListener(this, ScreenEvent.BackgroundDrawnEvent.class, GuiEventHandler::onDrawBackgroundEventPost);
+		EventBusHelper.registerWeakListener(this, ContainerScreenEvent.DrawForeground.class, GuiEventHandler::onDrawForegroundEvent);
+		EventBusHelper.registerWeakListener(this, ScreenEvent.DrawScreenEvent.Post.class, GuiEventHandler::onDrawScreenEventPost);
 		EventBusHelper.registerWeakListener(this, TickEvent.ClientTickEvent.class, GuiEventHandler::onClientTick);
-		EventBusHelper.registerWeakListener(this, GuiScreenEvent.PotionShiftEvent.class, GuiEventHandler::onPotionShiftEvent);
+		EventBusHelper.registerWeakListener(this, ScreenEvent.PotionShiftEvent.class, GuiEventHandler::onPotionShiftEvent);
 	}
 
 	public void onOverlayToggle(OverlayToggleEvent event) {
@@ -63,20 +63,20 @@ public class GuiEventHandler {
 		leftAreaDispatcher.updateScreen(currentScreen, false);
 	}
 
-	public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
-		Screen gui = event.getGui();
+	public void onGuiInit(ScreenEvent.InitScreenEvent.Post event) {
+		Screen gui = event.getScreen();
 		ingredientListOverlay.updateScreen(gui, false);
 		leftAreaDispatcher.updateScreen(gui, false);
 	}
 
-	public void onGuiOpen(GuiOpenEvent event) {
-		Screen gui = event.getGui();
+	public void onGuiOpen(ScreenOpenEvent event) {
+		Screen gui = event.getScreen();
 		ingredientListOverlay.updateScreen(gui, false);
 		leftAreaDispatcher.updateScreen(gui, false);
 	}
 
-	public void onDrawBackgroundEventPost(GuiScreenEvent.BackgroundDrawnEvent event) {
-		Screen gui = event.getGui();
+	public void onDrawBackgroundEventPost(ScreenEvent.BackgroundDrawnEvent event) {
+		Screen gui = event.getScreen();
 		Minecraft minecraft = gui.getMinecraft();
 		if (minecraft == null) {
 			return;
@@ -88,7 +88,7 @@ public class GuiEventHandler {
 		drawnOnBackground = true;
 		double mouseX = MouseUtil.getX();
 		double mouseY = MouseUtil.getY();
-		PoseStack poseStack = event.getMatrixStack();
+		PoseStack poseStack = event.getPoseStack();
 		ingredientListOverlay.drawScreen(minecraft, poseStack, (int) mouseX, (int) mouseY, minecraft.getFrameTime());
 		leftAreaDispatcher.drawScreen(minecraft, poseStack, (int) mouseX, (int) mouseY, minecraft.getFrameTime());
 	}
@@ -96,23 +96,23 @@ public class GuiEventHandler {
 	/**
 	 * Draws above most ContainerScreen elements, but below the tooltips.
 	 */
-	public void onDrawForegroundEvent(GuiContainerEvent.DrawForeground event) {
-		AbstractContainerScreen<?> gui = event.getGuiContainer();
+	public void onDrawForegroundEvent(ContainerScreenEvent.DrawForeground event) {
+		AbstractContainerScreen<?> gui = event.getContainerScreen();
 		Minecraft minecraft = gui.getMinecraft();
 		if (minecraft == null) {
 			return;
 		}
-		ingredientListOverlay.drawOnForeground(minecraft, event.getMatrixStack(), gui, event.getMouseX(), event.getMouseY());
+		ingredientListOverlay.drawOnForeground(minecraft, event.getPoseStack(), gui, event.getMouseX(), event.getMouseY());
 	}
 
-	public void onDrawScreenEventPost(GuiScreenEvent.DrawScreenEvent.Post event) {
-		Screen gui = event.getGui();
+	public void onDrawScreenEventPost(ScreenEvent.DrawScreenEvent.Post event) {
+		Screen gui = event.getScreen();
 		Minecraft minecraft = gui.getMinecraft();
 		if (minecraft == null) {
 			return;
 		}
 
-		PoseStack poseStack = event.getMatrixStack();
+		PoseStack poseStack = event.getPoseStack();
 
 		ingredientListOverlay.updateScreen(gui, false);
 		leftAreaDispatcher.updateScreen(gui, false);
@@ -150,7 +150,7 @@ public class GuiEventHandler {
 		ingredientListOverlay.handleTick();
 	}
 
-	public void onPotionShiftEvent(GuiScreenEvent.PotionShiftEvent event) {
+	public void onPotionShiftEvent(ScreenEvent.PotionShiftEvent event) {
 		if (ingredientListOverlay.isListDisplayed()) {
 			event.setCanceled(true);
 		}

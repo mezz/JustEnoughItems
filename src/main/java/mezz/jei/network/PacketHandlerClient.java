@@ -11,7 +11,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.network.packets.IPacketJeiHandler;
 import mezz.jei.network.packets.PacketCheatPermission;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

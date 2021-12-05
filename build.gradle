@@ -63,7 +63,7 @@ configurations {
 	apiRuntimeOnly.extendsFrom(runtimeOnly)
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 dependencies {
 	minecraft([

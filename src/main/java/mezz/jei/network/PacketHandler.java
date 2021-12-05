@@ -13,7 +13,7 @@ import mezz.jei.network.packets.PacketGiveItemStack;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
 import mezz.jei.network.packets.PacketSetHotbarItemStack;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

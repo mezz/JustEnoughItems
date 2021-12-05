@@ -2,6 +2,7 @@ package mezz.jei.config;
 
 import java.util.List;
 
+import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraft.client.Minecraft;
@@ -10,7 +11,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.constants.ModIds;
-import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import org.lwjgl.glfw.GLFW;
 
 public final class KeyBindings {

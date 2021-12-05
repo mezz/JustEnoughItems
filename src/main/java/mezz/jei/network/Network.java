@@ -10,8 +10,8 @@ import net.minecraft.network.FriendlyByteBuf;
 
 import mezz.jei.config.ServerInfo;
 import mezz.jei.network.packets.PacketJei;
-import net.minecraftforge.fmllegacy.network.ICustomPacket;
-import net.minecraftforge.fmllegacy.network.NetworkDirection;
+import net.minecraftforge.network.ICustomPacket;
+import net.minecraftforge.network.NetworkDirection;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class Network {

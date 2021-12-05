@@ -13,6 +13,7 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraftforge.client.gui.widget.ExtendedButton;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
@@ -46,7 +47,6 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
-import net.minecraftforge.fmlclient.gui.widget.ExtendedButton;
 
 public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	public static final ResourceLocation UID = new ResourceLocation(ModIds.JEI_ID, "debug");
