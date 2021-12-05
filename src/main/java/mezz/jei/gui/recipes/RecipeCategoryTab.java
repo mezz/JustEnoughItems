@@ -1,29 +1,27 @@
 package mezz.jei.gui.recipes;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mojang.blaze3d.systems.RenderSystem;
-import mezz.jei.input.IMouseHandler;
-import mezz.jei.input.click.MouseClickState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
-
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.input.UserInput;
+import mezz.jei.input.mouse.IUserInputHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RecipeCategoryTab extends RecipeGuiTab {
 	private final IRecipeGuiLogic logic;
@@ -36,11 +34,11 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	}
 
 	@Override
-	public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
-		if (!isMouseOver(mouseX, mouseY)) {
+	public IUserInputHandler handleUserInput(Screen screen, UserInput input) {
+		if (!isMouseOver(input.getMouseX(), input.getMouseY())) {
 			return null;
 		}
-		if (!clickState.isSimulate()) {
+		if (!input.isSimulate()) {
 			logic.setRecipeCategory(category);
 			SoundManager soundHandler = Minecraft.getInstance().getSoundManager();
 			soundHandler.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));

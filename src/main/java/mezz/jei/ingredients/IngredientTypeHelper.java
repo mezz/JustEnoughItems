@@ -64,4 +64,13 @@ public final class IngredientTypeHelper {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Nullable
+	public static <T> IIngredientListElement<T> checkedCast(IIngredientListElement<?> element, IIngredientType<T> ingredientType) {
+		Class<? extends T> ingredientClass = ingredientType.getIngredientClass();
+		if (ingredientClass.isInstance(element.getIngredient())) {
+			return (IIngredientListElement<T>) element;
+		}
+		return null;
+	}
 }

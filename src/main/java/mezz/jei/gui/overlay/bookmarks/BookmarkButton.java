@@ -2,7 +2,7 @@ package mezz.jei.gui.overlay.bookmarks;
 
 import java.util.List;
 
-import mezz.jei.input.click.MouseClickState;
+import mezz.jei.input.UserInput;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
@@ -57,9 +57,9 @@ public class BookmarkButton extends GuiIconToggleButton {
 	}
 
 	@Override
-	protected boolean onMouseClicked(MouseClickState clickState) {
+	protected boolean onMouseClicked(UserInput input) {
 		if (!bookmarkList.isEmpty() && bookmarkOverlay.hasRoom()) {
-			if (!clickState.isSimulate()) {
+			if (!input.isSimulate()) {
 				worldConfig.toggleBookmarkEnabled();
 			}
 			return true;

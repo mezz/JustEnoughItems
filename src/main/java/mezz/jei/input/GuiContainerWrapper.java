@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.gui.GuiScreenHelper;
 
-public class GuiContainerWrapper implements IShowsRecipeFocuses {
+public class GuiContainerWrapper implements IRecipeFocusSource {
 	private final GuiScreenHelper guiScreenHelper;
 
 	public GuiContainerWrapper(GuiScreenHelper guiScreenHelper) {
@@ -34,10 +34,5 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 			}
 		}
 		return guiScreenHelper.getPluginsIngredientUnderMouse(guiContainer, mouseX, mouseY);
-	}
-
-	@Override
-	public boolean canSetFocusWithMouse() {
-		return false;
 	}
 }

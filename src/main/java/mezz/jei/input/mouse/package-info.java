@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.input.click;
+package mezz.jei.input.mouse;
 
 import mezz.jei.util.FieldsAndMethodsAreNonnullByDefault;
 

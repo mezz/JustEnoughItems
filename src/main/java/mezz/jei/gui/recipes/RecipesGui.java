@@ -1,6 +1,5 @@
 package mezz.jei.gui.recipes;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.Internal;
@@ -26,10 +25,10 @@ import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.ingredients.IngredientTypeHelper;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
-import mezz.jei.input.IMouseHandler;
-import mezz.jei.input.IShowsRecipeFocuses;
+import mezz.jei.input.IRecipeFocusSource;
 import mezz.jei.input.MouseUtil;
-import mezz.jei.input.click.MouseClickState;
+import mezz.jei.input.UserInput;
+import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.transfer.RecipeTransferUtil;
@@ -55,7 +54,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocuses, IRecipeLogicStateListener {
+public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSource, IRecipeLogicStateListener {
 	private static final int borderPadding = 6;
 	private static final int innerPadding = 14;
 	private static final int buttonWidth = 13;
@@ -283,38 +282,40 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	@Override
 	public IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isOpen()) {
-			{
-				IClickedIngredient<?> clicked = recipeCatalysts.getIngredientUnderMouse(mouseX, mouseY);
-				if (clicked != null) {
-					return clicked;
+			IClickedIngredient<?> clicked = recipeCatalysts.getIngredientUnderMouse(mouseX, mouseY);
+			if (clicked == null) {
+				if (isMouseOver(mouseX, mouseY)) {
+					clicked = getRecipeLayoutsIngredientUnderMouse(mouseX, mouseY);
 				}
 			}
 
-			if (isMouseOver(mouseX, mouseY)) {
-				for (RecipeLayout<?> recipeLayout : this.recipeLayouts) {
-					GuiIngredient<?> clicked = recipeLayout.getGuiIngredientUnderMouse(mouseX, mouseY);
-					if (clicked != null) {
-						Object displayedIngredient = clicked.getDisplayedIngredient();
-						if (displayedIngredient != null) {
-							Rect2i area = clicked.getRect();
-							area = new Rect2i(
-									area.getX() + recipeLayout.getPosX(),
-									area.getY() + recipeLayout.getPosY(),
-									area.getWidth(),
-									area.getHeight()
-							);
-							return ClickedIngredient.create(displayedIngredient, area);
-						}
-					}
-				}
+			if (clicked != null) {
+				clicked.canSetFocusWithMouse();
+				return clicked;
 			}
 		}
 		return null;
 	}
 
-	@Override
-	public boolean canSetFocusWithMouse() {
-		return true;
+	@Nullable
+	private IClickedIngredient<?> getRecipeLayoutsIngredientUnderMouse(double mouseX, double mouseY) {
+		for (RecipeLayout<?> recipeLayout : this.recipeLayouts) {
+			GuiIngredient<?> clicked = recipeLayout.getGuiIngredientUnderMouse(mouseX, mouseY);
+			if (clicked != null) {
+				Object displayedIngredient = clicked.getDisplayedIngredient();
+				if (displayedIngredient != null) {
+					Rect2i area = clicked.getRect();
+					area = new Rect2i(
+						area.getX() + recipeLayout.getPosX(),
+						area.getY() + recipeLayout.getPosY(),
+						area.getWidth(),
+						area.getHeight()
+					);
+					return ClickedIngredient.create(displayedIngredient, area);
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -335,62 +336,64 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+		UserInput input = UserInput.fromVanilla(mouseX, mouseY, mouseButton);
+		if (input != null) {
+			return handleInput(input) ||
+				super.mouseClicked(mouseX, mouseY, mouseButton);
+		}
+		return super.mouseClicked(mouseX, mouseY, mouseButton);
+	}
+
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		UserInput input = UserInput.fromVanilla(keyCode, scanCode, modifiers);
+		return handleInput(input);
+	}
+
+	private boolean handleInput(UserInput input) {
+		double mouseX = input.getMouseX();
+		double mouseY = input.getMouseY();
 		if (isMouseOver(mouseX, mouseY)) {
 			if (titleHoverChecker.checkHover(mouseX, mouseY)) {
-				if (logic.setCategoryFocus()) {
+				if (input.isLeftClick() && logic.setCategoryFocus()) {
 					return true;
 				}
 			} else {
 				for (RecipeLayout<?> recipeLayout : recipeLayouts) {
-					if (recipeLayout.handleClick(mouseX, mouseY, mouseButton)) {
+					if (recipeLayout.handleInput(input)) {
 						return true;
 					}
 				}
 			}
 		}
 
-		IMouseHandler mouseHandler = recipeGuiTabs.getMouseHandler();
-		IMouseHandler mouseHandled = mouseHandler.handleClick(this, mouseX, mouseY, mouseButton, MouseClickState.VANILLA);
-		if (mouseHandled != null) {
+		IUserInputHandler handler = recipeGuiTabs.getInputHandler();
+		if (handler.handleUserInput(this, input) != null) {
 			return true;
 		}
 
-		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(mouseButton);
-		if (handleKeybindings(input)) {
-			return true;
-		}
-
-		return super.mouseClicked(mouseX, mouseY, mouseButton);
-	}
-
-	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		InputConstants.Key input = InputConstants.getKey(keyCode, scanCode);
-		return handleKeybindings(input);
-	}
-
-	private boolean handleKeybindings(InputConstants.Key input) {
-		if (KeyBindings.isInventoryCloseKey(input) || KeyBindings.isInventoryToggleKey(input)) {
+		Minecraft minecraft = Minecraft.getInstance();
+		if (input.isEscapeKey() || input.is(minecraft.options.keyInventory)) {
 			onClose();
 			return true;
-		} else if (KeyBindings.recipeBack.isActiveAndMatches(input)) {
+		} else if (input.is(KeyBindings.recipeBack)) {
 			back();
 			return true;
-		} else if (KeyBindings.nextCategory.isActiveAndMatches(input)) {
+		} else if (input.is(KeyBindings.nextCategory)) {
 			logic.nextRecipeCategory();
 			return true;
-		} else if (KeyBindings.previousCategory.isActiveAndMatches(input)) {
+		} else if (input.is(KeyBindings.previousCategory)) {
 			logic.previousRecipeCategory();
 			return true;
 		} else {
 			JeiRuntime runtime = Internal.getRuntime();
 			if (runtime != null) {
 				IngredientListOverlay itemListOverlay = runtime.getIngredientListOverlay();
-				if (!itemListOverlay.isMouseOver(MouseUtil.getX(), MouseUtil.getY())) {
-					if (KeyBindings.nextPage.isActiveAndMatches(input)) {
+				if (!itemListOverlay.isMouseOver(mouseX, mouseY)) {
+					if (input.is(KeyBindings.nextRecipePage)) {
 						logic.nextPage();
 						return true;
-					} else if (KeyBindings.previousPage.isActiveAndMatches(input)) {
+					} else if (input.is(KeyBindings.previousRecipePage)) {
 						logic.previousPage();
 						return true;
 					}

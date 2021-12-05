@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import mezz.jei.input.CombinedMouseHandler;
+import mezz.jei.input.mouse.handlers.CombinedUserInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
 
@@ -14,7 +14,7 @@ import com.google.common.collect.ImmutableList;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.TooltipRenderer;
-import mezz.jei.input.IMouseHandler;
+import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.input.IPaged;
 import mezz.jei.util.MathUtil;
 import net.minecraft.network.chat.Component;
@@ -26,7 +26,7 @@ public class RecipeGuiTabs implements IPaged {
 	private final IRecipeGuiLogic recipeGuiLogic;
 	private final List<RecipeGuiTab> tabs = new ArrayList<>();
 	private final PageNavigation pageNavigation;
-	private IMouseHandler mouseHandler;
+	private IUserInputHandler inputHandler;
 	private Rect2i area = new Rect2i(0, 0, 0, 0);
 
 	private int pageCount = 1;
@@ -36,7 +36,7 @@ public class RecipeGuiTabs implements IPaged {
 	public RecipeGuiTabs(IRecipeGuiLogic recipeGuiLogic) {
 		this.recipeGuiLogic = recipeGuiLogic;
 		this.pageNavigation = new PageNavigation(this, true);
-		this.mouseHandler = this.pageNavigation.getMouseHandler();
+		this.inputHandler = this.pageNavigation.createInputHandler();
 	}
 
 	public void initLayout(RecipesGui recipesGui) {
@@ -83,7 +83,7 @@ public class RecipeGuiTabs implements IPaged {
 
 	private void updateLayout() {
 		tabs.clear();
-		List<IMouseHandler> mouseHandlers = new ArrayList<>();
+		List<IUserInputHandler> inputHandlers = new ArrayList<>();
 
 		ImmutableList<IRecipeCategory<?>> categories = recipeGuiLogic.getRecipeCategories();
 
@@ -98,12 +98,12 @@ public class RecipeGuiTabs implements IPaged {
 			IRecipeCategory<?> category = categories.get(index);
 			RecipeGuiTab tab = new RecipeCategoryTab(recipeGuiLogic, category, tabX, area.getY());
 			this.tabs.add(tab);
-			mouseHandlers.add(tab);
+			inputHandlers.add(tab);
 			tabX += RecipeGuiTab.TAB_WIDTH;
 		}
 
-		mouseHandlers.add(this.pageNavigation.getMouseHandler());
-		this.mouseHandler = new CombinedMouseHandler(mouseHandlers);
+		inputHandlers.add(this.pageNavigation.createInputHandler());
+		this.inputHandler = new CombinedUserInputHandler(inputHandlers);
 
 		pageNavigation.updatePageState();
 	}
@@ -135,8 +135,8 @@ public class RecipeGuiTabs implements IPaged {
 		}
 	}
 
-	public IMouseHandler getMouseHandler() {
-		return this.mouseHandler;
+	public IUserInputHandler getInputHandler() {
+		return this.inputHandler;
 	}
 
 	@Override

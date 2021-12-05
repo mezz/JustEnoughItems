@@ -20,6 +20,7 @@ import mezz.jei.gui.ingredients.GuiIngredientGroup;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
 import mezz.jei.ingredients.IngredientTypeHelper;
 import mezz.jei.ingredients.Ingredients;
+import mezz.jei.input.UserInput;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
@@ -248,8 +249,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 		return null;
 	}
 
-	public boolean handleClick(double mouseX, double mouseY, int mouseButton) {
-		return recipeCategory.handleClick(recipe, mouseX - posX, mouseY - posY, mouseButton);
+	public boolean handleInput(UserInput input) {
+		return recipeCategory.handleInput(recipe, input.getMouseX() - posX, input.getMouseY() - posY, input.getKey());
 	}
 
 	@Override

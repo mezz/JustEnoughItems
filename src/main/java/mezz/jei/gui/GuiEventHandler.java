@@ -58,7 +58,11 @@ public class GuiEventHandler {
 	}
 
 	public void onOverlayToggle(OverlayToggleEvent event) {
-		Screen currentScreen = Minecraft.getInstance().screen;
+		Minecraft minecraft = Minecraft.getInstance();
+		if (minecraft == null) {
+			return;
+		}
+		Screen currentScreen = minecraft.screen;
 		ingredientListOverlay.updateScreen(currentScreen, true);
 		leftAreaDispatcher.updateScreen(currentScreen, false);
 	}
@@ -81,7 +85,7 @@ public class GuiEventHandler {
 		if (minecraft == null) {
 			return;
 		}
-		boolean exclusionAreasChanged = guiScreenHelper.updateGuiExclusionAreas();
+		boolean exclusionAreasChanged = guiScreenHelper.updateGuiExclusionAreas(gui);
 		ingredientListOverlay.updateScreen(gui, exclusionAreasChanged);
 		leftAreaDispatcher.updateScreen(gui, exclusionAreasChanged);
 

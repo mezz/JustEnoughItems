@@ -8,8 +8,9 @@ import java.util.List;
 import java.util.Objects;
 
 import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.input.IMouseDragHandler;
-import mezz.jei.input.click.MouseClickState;
+import mezz.jei.input.IRecipeFocusSource;
+import mezz.jei.input.UserInput;
+import mezz.jei.input.mouse.IUserInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.gui.screens.Screen;
@@ -25,12 +26,11 @@ import mezz.jei.input.IClickedIngredient;
 import net.minecraft.world.item.ItemStack;
 
 public class GhostIngredientDragManager {
-	private final IGhostIngredientDragSource source;
+	private final IRecipeFocusSource source;
 	private final GuiScreenHelper guiScreenHelper;
 	private final IngredientManager ingredientManager;
 	private final IWorldConfig worldConfig;
 	private final List<GhostIngredientReturning<?>> ghostIngredientsReturning = new ArrayList<>();
-	private final IMouseDragHandler mouseDragHandler;
 	@Nullable
 	private GhostIngredientDrag<?> ghostIngredientDrag;
 	@Nullable
@@ -38,12 +38,11 @@ public class GhostIngredientDragManager {
 	@Nullable
 	private List<IGhostIngredientHandler.Target<Object>> hoveredIngredientTargets;
 
-	public GhostIngredientDragManager(IGhostIngredientDragSource source, GuiScreenHelper guiScreenHelper, IngredientManager ingredientManager, IWorldConfig worldConfig) {
+	public GhostIngredientDragManager(IRecipeFocusSource source, GuiScreenHelper guiScreenHelper, IngredientManager ingredientManager, IWorldConfig worldConfig) {
 		this.source = source;
 		this.guiScreenHelper = guiScreenHelper;
 		this.ingredientManager = ingredientManager;
 		this.worldConfig = worldConfig;
-		this.mouseDragHandler = new MouseDragHandler();
 	}
 
 	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
@@ -92,7 +91,7 @@ public class GhostIngredientDragManager {
 		this.hoveredIngredientTargets = null;
 	}
 
-	private <T extends Screen, V> boolean handleClickGhostIngredient(T currentScreen, IClickedIngredient<V> clicked, double mouseX, double mouseY) {
+	private <T extends Screen, V> boolean handleClickGhostIngredient(T currentScreen, IClickedIngredient<V> clicked, UserInput input) {
 		IGhostIngredientHandler<T> handler = guiScreenHelper.getGhostIngredientHandler(currentScreen);
 		if (handler == null) {
 			return false;
@@ -104,22 +103,22 @@ public class GhostIngredientDragManager {
 		}
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
 		Rect2i clickedArea = clicked.getArea();
-		this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, mouseX, mouseY, clickedArea);
+		this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, input.getMouseX(), input.getMouseY(), clickedArea);
 		return true;
 	}
 
-	public IMouseDragHandler getMouseDragHandler() {
-		return mouseDragHandler;
+	public IUserInputHandler createInputHandler() {
+		return new UserInputHandler();
 	}
 
-	private class MouseDragHandler implements IMouseDragHandler {
+	private class UserInputHandler implements IUserInputHandler {
 		@Nullable
 		@Override
-		public IMouseDragHandler handleDragStart(Screen screen, double mouseX, double mouseY) {
+		public IUserInputHandler handleDragStart(Screen screen, UserInput input) {
 			if (screen instanceof RecipesGui) {
 				return null;
 			}
-			IClickedIngredient<?> clicked = source.getIngredientUnderMouse(mouseX, mouseY);
+			IClickedIngredient<?> clicked = source.getIngredientUnderMouse(input.getMouseX(), input.getMouseY());
 			if (clicked == null) {
 				return null;
 			}
@@ -133,7 +132,7 @@ public class GhostIngredientDragManager {
 			}
 			ItemStack mouseItem = player.containerMenu.getCarried();
 			if (mouseItem.isEmpty() &&
-					handleClickGhostIngredient(screen, clicked, mouseX, mouseY)) {
+					handleClickGhostIngredient(screen, clicked, input)) {
 				return this;
 			}
 			return null;
@@ -141,14 +140,16 @@ public class GhostIngredientDragManager {
 
 		@Nullable
 		@Override
-		public IMouseDragHandler handleDragComplete(Screen screen, double mouseX, double mouseY) {
+		public IUserInputHandler handleDragComplete(Screen screen, UserInput input) {
 			if (screen instanceof RecipesGui) {
 				return null;
 			}
 			if (ghostIngredientDrag == null) {
 				return null;
 			}
-			boolean success = ghostIngredientDrag.onClick(mouseX, mouseY, MouseClickState.EXECUTE);
+			boolean success = ghostIngredientDrag.onClick(input);
+			double mouseX = input.getMouseX();
+			double mouseY = input.getMouseY();
 			if (!success && GhostIngredientDrag.farEnoughToDraw(ghostIngredientDrag, mouseX, mouseY)) {
 				GhostIngredientReturning<?> returning = GhostIngredientReturning.create(ghostIngredientDrag, mouseX, mouseY);
 				ghostIngredientsReturning.add(returning);

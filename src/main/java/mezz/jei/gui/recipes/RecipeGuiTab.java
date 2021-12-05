@@ -9,10 +9,10 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.textures.Textures;
-import mezz.jei.input.IMouseHandler;
+import mezz.jei.input.mouse.IUserInputHandler;
 import net.minecraft.network.chat.Component;
 
-public abstract class RecipeGuiTab implements IMouseHandler {
+public abstract class RecipeGuiTab implements IUserInputHandler {
 	public static final int TAB_HEIGHT = 24;
 	public static final int TAB_WIDTH = 24;
 

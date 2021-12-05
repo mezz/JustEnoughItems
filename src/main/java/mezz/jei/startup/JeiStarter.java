@@ -29,7 +29,16 @@ import mezz.jei.ingredients.IIngredientSorter;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientFilterApi;
 import mezz.jei.ingredients.IngredientManager;
-import mezz.jei.input.InputHandler;
+import mezz.jei.input.CombinedRecipeFocusSource;
+import mezz.jei.input.GuiContainerWrapper;
+import mezz.jei.input.InputEventHandler;
+import mezz.jei.input.mouse.ICharTypedHandler;
+import mezz.jei.input.mouse.handlers.ClickBookmarkHandler;
+import mezz.jei.input.mouse.handlers.ClickEditHandler;
+import mezz.jei.input.mouse.handlers.ClickFocusHandler;
+import mezz.jei.input.mouse.handlers.ClickGlobalHandler;
+import mezz.jei.input.mouse.handlers.CombinedUserInputHandler;
+import mezz.jei.input.mouse.handlers.GuiAreaClickHandler;
 import mezz.jei.load.PluginCaller;
 import mezz.jei.load.PluginHelper;
 import mezz.jei.load.PluginLoader;
@@ -100,13 +109,33 @@ public class JeiStarter {
 
 		PluginCaller.callOnPlugins("Sending Runtime", plugins, p -> p.onRuntimeAvailable(jeiRuntime));
 
-		LeftAreaDispatcher leftAreaDispatcher = new LeftAreaDispatcher(guiScreenHelper);
-		leftAreaDispatcher.addContent(bookmarkOverlay);
+		LeftAreaDispatcher leftAreaDispatcher = new LeftAreaDispatcher(guiScreenHelper, bookmarkOverlay);
 
 		GuiEventHandler guiEventHandler = new GuiEventHandler(guiScreenHelper, leftAreaDispatcher, ingredientListOverlay);
 		Internal.setGuiEventHandler(guiEventHandler);
-		InputHandler inputHandler = new InputHandler(recipesGui, ingredientFilter, ingredientManager, ingredientListOverlay, editModeConfig, worldConfig, guiScreenHelper, leftAreaDispatcher, bookmarkList);
-		Internal.setInputHandler(inputHandler);
+
+		CombinedRecipeFocusSource recipeFocusSource = new CombinedRecipeFocusSource(
+			recipesGui,
+			ingredientListOverlay,
+			leftAreaDispatcher,
+			new GuiContainerWrapper(guiScreenHelper)
+		);
+
+		List<ICharTypedHandler> charTypedHandlers = List.of(
+			ingredientListOverlay
+		);
+
+		CombinedUserInputHandler userInputHandler = new CombinedUserInputHandler(
+			new ClickEditHandler(recipeFocusSource, ingredientManager, ingredientFilter, worldConfig, editModeConfig),
+			ingredientListOverlay.createInputHandler(),
+			leftAreaDispatcher.createInputHandler(),
+			new ClickFocusHandler(recipeFocusSource, recipesGui),
+			new ClickBookmarkHandler(recipeFocusSource, bookmarkList),
+			new ClickGlobalHandler(worldConfig),
+			new GuiAreaClickHandler(guiScreenHelper, recipesGui)
+		);
+		InputEventHandler inputEventHandler = new InputEventHandler(charTypedHandlers, userInputHandler);
+		Internal.setInputEventHandler(inputEventHandler);
 
 		started = true;
 

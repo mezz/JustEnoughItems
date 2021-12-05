@@ -1,33 +1,28 @@
 package mezz.jei.gui.elements;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import mezz.jei.input.IMouseHandler;
-import mezz.jei.input.click.MouseClickState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.renderer.Rect2i;
-
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.gui.textures.Textures;
+import mezz.jei.input.UserInput;
+import mezz.jei.input.mouse.IUserInputHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.TextComponent;
-
-import net.minecraft.client.gui.components.Button.OnPress;
 
 /**
  * A gui button that has an {@link IDrawable} instead of a string label.
  */
 public class GuiIconButton extends Button {
 	private final IDrawable icon;
-	private final MouseHandler mouseHandler;
 
 	public GuiIconButton(IDrawable icon, OnPress pressable) {
 		super(0, 0, 0, 0, TextComponent.EMPTY, pressable);
 		this.icon = icon;
-		this.mouseHandler = new MouseHandler(this);
 	}
 
 	public void updateBounds(Rect2i area) {
@@ -79,30 +74,35 @@ public class GuiIconButton extends Button {
 		}
 	}
 
-	public IMouseHandler getMouseHandler() {
-		return mouseHandler;
+	public IUserInputHandler createInputHandler() {
+		return new UserInputHandler(this);
 	}
 
-	private class MouseHandler implements IMouseHandler {
+	private class UserInputHandler implements IUserInputHandler {
 		private final GuiIconButton button;
 
-		public MouseHandler(GuiIconButton button) {
+		public UserInputHandler(GuiIconButton button) {
 			this.button = button;
 		}
 
 		@Override
-		public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
+		public IUserInputHandler handleUserInput(Screen screen, UserInput input) {
+			if (!input.isMouse()) {
+				return null;
+			}
+			double mouseX = input.getMouseX();
+			double mouseY = input.getMouseY();
 			if (!this.button.active || !this.button.visible || !isMouseOver(mouseX, mouseY)) {
 				return null;
 			}
-			if (!this.button.isValidClickButton(mouseButton)) {
+			if (!this.button.isValidClickButton(input.getKey().getValue())) {
 				return null;
 			}
 			boolean flag = this.button.clicked(mouseX, mouseY);
 			if (!flag) {
 				return null;
 			}
-			if (!clickState.isSimulate()) {
+			if (!input.isSimulate()) {
 				this.button.playDownSound(Minecraft.getInstance().getSoundManager());
 				this.button.onClick(mouseX, mouseY);
 			}

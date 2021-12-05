@@ -1,8 +1,8 @@
 package mezz.jei.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.input.CombinedMouseHandler;
-import mezz.jei.input.IMouseHandler;
+import mezz.jei.input.mouse.handlers.CombinedUserInputHandler;
+import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -19,7 +19,6 @@ public class PageNavigation {
 	private final GuiIconButton nextButton;
 	private final GuiIconButton backButton;
 	private final boolean hideOnSinglePage;
-	private final CombinedMouseHandler mouseHandler;
 	private String pageNumDisplayString = "1/1";
 	private int pageNumDisplayX;
 	private int pageNumDisplayY;
@@ -30,7 +29,6 @@ public class PageNavigation {
 		Textures textures = Internal.getTextures();
 		this.nextButton = new GuiIconButton(textures.getArrowNext(), b -> paged.nextPage());
 		this.backButton = new GuiIconButton(textures.getArrowPrevious(), b -> paged.previousPage());
-		this.mouseHandler = new CombinedMouseHandler(this.nextButton.getMouseHandler(), this.backButton.getMouseHandler());
 		this.hideOnSinglePage = hideOnSinglePage;
 	}
 
@@ -64,7 +62,10 @@ public class PageNavigation {
 		}
 	}
 
-	public IMouseHandler getMouseHandler() {
-		return mouseHandler;
+	public IUserInputHandler createInputHandler() {
+		return new CombinedUserInputHandler(
+			this.nextButton.createInputHandler(),
+			this.backButton.createInputHandler()
+		);
 	}
 }

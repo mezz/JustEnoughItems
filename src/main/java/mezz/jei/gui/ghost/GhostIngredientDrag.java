@@ -8,7 +8,7 @@ import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import mezz.jei.input.click.MouseClickState;
+import mezz.jei.input.UserInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
@@ -133,18 +133,18 @@ public class GhostIngredientDrag<T> {
 		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 	}
 
-	public boolean onClick(double mouseX, double mouseY, MouseClickState clickState) {
+	public boolean onClick(UserInput input) {
 		for (Target<T> target : targets) {
 			Rect2i area = target.getArea();
-			if (MathUtil.contains(area, mouseX, mouseY)) {
-				if (!clickState.isSimulate()) {
+			if (input.in(area)) {
+				if (!input.isSimulate()) {
 					target.accept(ingredient);
 					handler.onComplete();
 				}
 				return true;
 			}
 		}
-		if (!clickState.isSimulate()) {
+		if (!input.isSimulate()) {
 			handler.onComplete();
 		}
 		return false;
