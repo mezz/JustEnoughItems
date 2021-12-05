@@ -3,11 +3,11 @@ package mezz.jei.config;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.network.Connection;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.nio.file.Path;
 

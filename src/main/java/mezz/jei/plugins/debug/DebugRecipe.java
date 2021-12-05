@@ -3,7 +3,7 @@ package mezz.jei.plugins.debug;
 import net.minecraft.network.chat.TextComponent;
 
 import mezz.jei.gui.HoverChecker;
-import net.minecraftforge.fmlclient.gui.widget.ExtendedButton;
+import net.minecraftforge.client.gui.widget.ExtendedButton;
 
 public class DebugRecipe {
 	private final ExtendedButton button;

@@ -6,7 +6,7 @@ import mezz.jei.util.MathUtil;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.ScreenEvent;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
@@ -28,7 +28,7 @@ public class UserInput {
 		boolean isMouseOver(double mouseX, double mouseY);
 	}
 
-	public static UserInput fromEvent(GuiScreenEvent.KeyboardKeyEvent keyEvent) {
+	public static UserInput fromEvent(ScreenEvent.KeyboardKeyEvent keyEvent) {
 		InputConstants.Key input = InputConstants.getKey(keyEvent.getKeyCode(), keyEvent.getScanCode());
 		double mouseX = MouseUtil.getX();
 		double mouseY = MouseUtil.getY();
@@ -37,7 +37,7 @@ public class UserInput {
 	}
 
 	@Nullable
-	public static UserInput fromEvent(GuiScreenEvent.MouseClickedEvent event) {
+	public static UserInput fromEvent(ScreenEvent.MouseClickedEvent event) {
 		int button = event.getButton();
 		if (button < 0) {
 			return null;
@@ -47,7 +47,7 @@ public class UserInput {
 	}
 
 	@Nullable
-	public static UserInput fromEvent(GuiScreenEvent.MouseReleasedEvent event) {
+	public static UserInput fromEvent(ScreenEvent.MouseReleasedEvent event) {
 		int button = event.getButton();
 		if (button < 0) {
 			return null;

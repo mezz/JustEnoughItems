@@ -7,7 +7,7 @@ import mezz.jei.input.mouse.handlers.CombinedUserInputHandler;
 import mezz.jei.util.ReflectionUtil;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.ScreenEvent;
 
 import java.util.List;
 
@@ -21,29 +21,29 @@ public class InputEventHandler {
 	}
 
 	public void registerToEventBus() {
-		EventBusHelper.registerWeakListener(this, GuiScreenEvent.InitGuiEvent.class, InputEventHandler::onInitGuiEvent);
+		EventBusHelper.registerWeakListener(this, ScreenEvent.InitScreenEvent.class, InputEventHandler::onInitGuiEvent);
 
-		EventBusHelper.registerWeakListener(this, GuiScreenEvent.KeyboardKeyPressedEvent.Pre.class, InputEventHandler::onKeyboardKeyPressedEvent);
-		EventBusHelper.registerWeakListener(this, GuiScreenEvent.KeyboardKeyPressedEvent.Post.class, InputEventHandler::onKeyboardKeyPressedEvent);
+		EventBusHelper.registerWeakListener(this, ScreenEvent.KeyboardKeyPressedEvent.Pre.class, InputEventHandler::onKeyboardKeyPressedEvent);
+		EventBusHelper.registerWeakListener(this, ScreenEvent.KeyboardKeyPressedEvent.Post.class, InputEventHandler::onKeyboardKeyPressedEvent);
 
-		EventBusHelper.registerWeakListener(this, GuiScreenEvent.KeyboardCharTypedEvent.Pre.class, InputEventHandler::onKeyboardCharTypedEvent);
-		EventBusHelper.registerWeakListener(this, GuiScreenEvent.KeyboardCharTypedEvent.Post.class, InputEventHandler::onKeyboardCharTypedEvent);
+		EventBusHelper.registerWeakListener(this, ScreenEvent.KeyboardCharTypedEvent.Pre.class, InputEventHandler::onKeyboardCharTypedEvent);
+		EventBusHelper.registerWeakListener(this, ScreenEvent.KeyboardCharTypedEvent.Post.class, InputEventHandler::onKeyboardCharTypedEvent);
 
-		EventBusHelper.registerWeakListener(this, GuiScreenEvent.MouseClickedEvent.Pre.class, InputEventHandler::onGuiMouseClickedEvent);
-		EventBusHelper.registerWeakListener(this, GuiScreenEvent.MouseReleasedEvent.Pre.class, InputEventHandler::onGuiMouseReleasedEvent);
+		EventBusHelper.registerWeakListener(this, ScreenEvent.MouseClickedEvent.Pre.class, InputEventHandler::onGuiMouseClickedEvent);
+		EventBusHelper.registerWeakListener(this, ScreenEvent.MouseReleasedEvent.Pre.class, InputEventHandler::onGuiMouseReleasedEvent);
 
-		EventBusHelper.registerWeakListener(this, GuiScreenEvent.MouseScrollEvent.Pre.class, InputEventHandler::onGuiMouseScrollEvent);
+		EventBusHelper.registerWeakListener(this, ScreenEvent.MouseScrollEvent.Pre.class, InputEventHandler::onGuiMouseScrollEvent);
 	}
 
-	public void onInitGuiEvent(GuiScreenEvent.InitGuiEvent event) {
+	public void onInitGuiEvent(ScreenEvent.InitScreenEvent event) {
 		this.inputHandler.handleGuiChange();
 	}
 
 	/**
 	 * When we have keyboard focus, use Pre
 	 */
-	public void onKeyboardKeyPressedEvent(GuiScreenEvent.KeyboardKeyPressedEvent.Pre event) {
-		Screen screen = event.getGui();
+	public void onKeyboardKeyPressedEvent(ScreenEvent.KeyboardKeyPressedEvent.Pre event) {
+		Screen screen = event.getScreen();
 		if (!isContainerTextFieldFocused(screen)) {
 			UserInput input = UserInput.fromEvent(event);
 			IUserInputHandler handler = this.inputHandler.handleUserInput(screen, input);
@@ -56,8 +56,8 @@ public class InputEventHandler {
 	/**
 	 * Without keyboard focus, use Post
 	 */
-	public void onKeyboardKeyPressedEvent(GuiScreenEvent.KeyboardKeyPressedEvent.Post event) {
-		Screen screen = event.getGui();
+	public void onKeyboardKeyPressedEvent(ScreenEvent.KeyboardKeyPressedEvent.Post event) {
+		Screen screen = event.getScreen();
 		if (isContainerTextFieldFocused(screen)) {
 			UserInput input = UserInput.fromEvent(event);
 			IUserInputHandler handler = this.inputHandler.handleUserInput(screen, input);
@@ -70,8 +70,8 @@ public class InputEventHandler {
 	/**
 	 * When we have keyboard focus, use Pre
 	 */
-	public void onKeyboardCharTypedEvent(GuiScreenEvent.KeyboardCharTypedEvent.Pre event) {
-		if (!isContainerTextFieldFocused(event.getGui())) {
+	public void onKeyboardCharTypedEvent(ScreenEvent.KeyboardCharTypedEvent.Pre event) {
+		if (!isContainerTextFieldFocused(event.getScreen())) {
 			if (handleCharTyped(event.getCodePoint(), event.getModifiers())) {
 				event.setCanceled(true);
 			}
@@ -81,18 +81,18 @@ public class InputEventHandler {
 	/**
 	 * Without keyboard focus, use Post
 	 */
-	public void onKeyboardCharTypedEvent(GuiScreenEvent.KeyboardCharTypedEvent.Post event) {
-		if (isContainerTextFieldFocused(event.getGui())) {
+	public void onKeyboardCharTypedEvent(ScreenEvent.KeyboardCharTypedEvent.Post event) {
+		if (isContainerTextFieldFocused(event.getScreen())) {
 			if (handleCharTyped(event.getCodePoint(), event.getModifiers())) {
 				event.setCanceled(true);
 			}
 		}
 	}
 
-	public void onGuiMouseClickedEvent(GuiScreenEvent.MouseClickedEvent.Pre event) {
+	public void onGuiMouseClickedEvent(ScreenEvent.MouseClickedEvent.Pre event) {
 		UserInput input = UserInput.fromEvent(event);
 		if (input != null) {
-			Screen screen = event.getGui();
+			Screen screen = event.getScreen();
 			IUserInputHandler handler = this.inputHandler.handleUserInput(screen, input);
 			IUserInputHandler dragHandler = null;
 			if (input.isLeftClick()) {
@@ -104,10 +104,10 @@ public class InputEventHandler {
 		}
 	}
 
-	public void onGuiMouseReleasedEvent(GuiScreenEvent.MouseReleasedEvent.Pre event) {
+	public void onGuiMouseReleasedEvent(ScreenEvent.MouseReleasedEvent.Pre event) {
 		UserInput input = UserInput.fromEvent(event);
 		if (input != null) {
-			Screen screen = event.getGui();
+			Screen screen = event.getScreen();
 			IUserInputHandler handled = this.inputHandler.handleUserInput(screen, input);
 			IUserInputHandler dragHandled = null;
 			if (input.isLeftClick()) {
@@ -119,7 +119,7 @@ public class InputEventHandler {
 		}
 	}
 
-	public void onGuiMouseScrollEvent(GuiScreenEvent.MouseScrollEvent.Pre event) {
+	public void onGuiMouseScrollEvent(ScreenEvent.MouseScrollEvent.Pre event) {
 		if (this.inputHandler.handleMouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDelta())) {
 			event.setCanceled(true);
 		}

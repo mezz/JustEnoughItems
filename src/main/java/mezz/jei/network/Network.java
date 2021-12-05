@@ -10,21 +10,19 @@ import net.minecraft.network.FriendlyByteBuf;
 
 import mezz.jei.config.ServerInfo;
 import mezz.jei.network.packets.PacketJei;
-import net.minecraftforge.fmllegacy.network.ICustomPacket;
-import net.minecraftforge.fmllegacy.network.NetworkDirection;
+import net.minecraftforge.network.ICustomPacket;
+import net.minecraftforge.network.NetworkDirection;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class Network {
 	@OnlyIn(Dist.CLIENT)
 	public static void sendPacketToServer(PacketJei packet) {
 		Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft != null) {
-			ClientPacketListener netHandler = minecraft.getConnection();
-			if (netHandler != null && ServerInfo.isJeiOnServer()) {
-				Pair<FriendlyByteBuf, Integer> packetData = packet.getPacketData();
-				ICustomPacket<Packet<?>> payload = NetworkDirection.PLAY_TO_SERVER.buildPacket(packetData, PacketHandler.CHANNEL_ID);
-				netHandler.send(payload.getThis());
-			}
+		ClientPacketListener netHandler = minecraft.getConnection();
+		if (netHandler != null && ServerInfo.isJeiOnServer()) {
+			Pair<FriendlyByteBuf, Integer> packetData = packet.getPacketData();
+			ICustomPacket<Packet<?>> payload = NetworkDirection.PLAY_TO_SERVER.buildPacket(packetData, PacketHandler.CHANNEL_ID);
+			netHandler.send(payload.getThis());
 		}
 	}
 

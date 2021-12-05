@@ -11,7 +11,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.network.packets.IPacketJeiHandler;
 import mezz.jei.network.packets.PacketCheatPermission;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,11 +31,9 @@ public class PacketHandlerClient {
 			PacketIdClient packetId = PacketIdClient.VALUES[packetIdOrdinal];
 			IPacketJeiHandler packetHandler = clientHandlers.get(packetId);
 			Minecraft minecraft = Minecraft.getInstance();
-			if (minecraft != null) {
-				Player player = minecraft.player;
-				if (player != null) {
-					packetHandler.readPacketData(packetBuffer, player);
-				}
+			Player player = minecraft.player;
+			if (player != null) {
+				packetHandler.readPacketData(packetBuffer, player);
 			}
 		} catch (Throwable e) {
 			LOGGER.error("Packet error", e);
