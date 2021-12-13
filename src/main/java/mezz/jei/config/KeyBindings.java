@@ -39,7 +39,7 @@ public final class KeyBindings {
 	public static final List<KeyMapping> showRecipe;
 	public static final List<KeyMapping> showUses;
 
-	public static final KeyMapping cheatOneItem;
+	public static final List<KeyMapping> cheatOneItem;
 	public static final List<KeyMapping> cheatItemStack;
 
 	public static final KeyMapping hoveredClearSearchBar;
@@ -57,6 +57,8 @@ public final class KeyBindings {
 		KeyMapping showRecipe2;
 		KeyMapping showUses1;
 		KeyMapping showUses2;
+		KeyMapping cheatOneItem1;
+		KeyMapping cheatOneItem2;
 		KeyMapping cheatItemStack1;
 		KeyMapping cheatItemStack2;
 
@@ -83,7 +85,8 @@ public final class KeyBindings {
 
 			// Cheat Mode
 			toggleCheatMode = new KeyMapping("key.jei.toggleCheatMode", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), cheatModeCategoryName),
-			cheatOneItem = new KeyMapping("key.jei.cheatOneItem", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, InputConstants.Type.MOUSE, 0, cheatModeCategoryName),
+			cheatOneItem1 = new KeyMapping("key.jei.cheatOneItem", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, InputConstants.Type.MOUSE, 0, cheatModeCategoryName),
+			cheatOneItem2 = new KeyMapping("key.jei.cheatOneItem2", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, InputConstants.Type.MOUSE, 1, cheatModeCategoryName),
 			cheatItemStack1 = new KeyMapping("key.jei.cheatItemStack", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, KeyModifier.SHIFT, InputConstants.Type.MOUSE, 0, cheatModeCategoryName),
 			cheatItemStack2 = new KeyMapping("key.jei.cheatItemStack2", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, InputConstants.Type.MOUSE, 2, cheatModeCategoryName),
 
@@ -97,6 +100,7 @@ public final class KeyBindings {
 
 		showRecipe = List.of(showRecipe1, showRecipe2);
 		showUses = List.of(showUses1, showUses2);
+		cheatOneItem = List.of(cheatOneItem1, cheatOneItem2);
 		cheatItemStack = List.of(cheatItemStack1, cheatItemStack2);
 	}
 
