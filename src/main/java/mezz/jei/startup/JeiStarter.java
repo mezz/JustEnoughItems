@@ -35,7 +35,7 @@ import mezz.jei.input.InputEventHandler;
 import mezz.jei.input.mouse.ICharTypedHandler;
 import mezz.jei.input.mouse.handlers.ClickBookmarkHandler;
 import mezz.jei.input.mouse.handlers.ClickEditHandler;
-import mezz.jei.input.mouse.handlers.ClickFocusHandler;
+import mezz.jei.input.mouse.handlers.FocusInputHandler;
 import mezz.jei.input.mouse.handlers.ClickGlobalHandler;
 import mezz.jei.input.mouse.handlers.CombinedUserInputHandler;
 import mezz.jei.input.mouse.handlers.GuiAreaClickHandler;
@@ -129,7 +129,7 @@ public class JeiStarter {
 			new ClickEditHandler(recipeFocusSource, ingredientManager, ingredientFilter, worldConfig, editModeConfig),
 			ingredientListOverlay.createInputHandler(),
 			leftAreaDispatcher.createInputHandler(),
-			new ClickFocusHandler(recipeFocusSource, recipesGui),
+			new FocusInputHandler(recipeFocusSource, recipesGui),
 			new ClickBookmarkHandler(recipeFocusSource, bookmarkList),
 			new ClickGlobalHandler(worldConfig),
 			new GuiAreaClickHandler(guiScreenHelper, recipesGui)

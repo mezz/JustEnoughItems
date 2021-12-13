@@ -12,11 +12,11 @@ import net.minecraft.client.gui.screens.Screen;
 
 import javax.annotation.Nullable;
 
-public class ClickFocusHandler implements IUserInputHandler {
+public class FocusInputHandler implements IUserInputHandler {
 	private final CombinedRecipeFocusSource focusSource;
 	private final IRecipesGui recipesGui;
 
-	public ClickFocusHandler(CombinedRecipeFocusSource focusSource, IRecipesGui recipesGui) {
+	public FocusInputHandler(CombinedRecipeFocusSource focusSource, IRecipesGui recipesGui) {
 		this.focusSource = focusSource;
 		this.recipesGui = recipesGui;
 	}
