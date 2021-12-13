@@ -289,10 +289,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 				}
 			}
 
-			if (clicked != null) {
-				clicked.canSetFocusWithMouse();
-				return clicked;
-			}
+			return clicked;
 		}
 		return null;
 	}
@@ -311,7 +308,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 						area.getWidth(),
 						area.getHeight()
 					);
-					return ClickedIngredient.create(displayedIngredient, area);
+					ClickedIngredient<Object> clickedIngredient = ClickedIngredient.create(displayedIngredient, area);
+					if (clickedIngredient != null) {
+						clickedIngredient.setCanSetFocusWithMouse();
+					}
+					return clickedIngredient;
 				}
 			}
 		}
