@@ -37,7 +37,7 @@ public final class VanillaRecipes {
 	public Map<Boolean, List<CraftingRecipe>> getCraftingRecipes(IRecipeCategory<CraftingRecipe> craftingCategory) {
 		CategoryRecipeValidator<CraftingRecipe> validator = new CategoryRecipeValidator<>(craftingCategory, 9);
 		Collection<CraftingRecipe> recipes = getRecipes(recipeManager, RecipeType.CRAFTING);
-		return recipes.parallelStream()
+		return recipes.stream()
 			.filter(validator::isRecipeValid)
 			.collect(Collectors.partitioningBy(validator::isRecipeHandled));
 	}
