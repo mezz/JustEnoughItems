@@ -116,8 +116,10 @@ public class CombinedUserInputHandler implements IUserInputHandler {
 	}
 
 	public void handleGuiChange() {
-		Set<InputConstants.Key> keys = this.mousedDown.keySet();
-		keys.forEach(this::handleMouseClickedOut);
+		Set<InputConstants.Key> keys = Set.copyOf(this.mousedDown.keySet());
+		for (InputConstants.Key key : keys) {
+			handleMouseClickedOut(key);
+		}
 		handleDragCanceled();
 	}
 
