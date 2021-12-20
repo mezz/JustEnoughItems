@@ -57,6 +57,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	private final Component localizedName;
 	private final IDrawable tankBackground;
 	private final IDrawable tankOverlay;
+	private final IDrawable item;
 	private boolean hiddenRecipes;
 
 	public DebugRecipeCategory(IGuiHelper guiHelper) {
@@ -70,6 +71,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		this.tankOverlay = guiHelper.drawableBuilder(backgroundTexture, 238, 196, 18, 60)
 			.addPadding(-1, -1, -1, -1)
 			.build();
+		this.item = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Items.ACACIA_LEAVES));
 	}
 
 	@Override
@@ -121,6 +123,8 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	public void draw(DebugRecipe recipe, PoseStack poseStack, double mouseX, double mouseY) {
 		IJeiRuntime runtime = JeiDebugPlugin.jeiRuntime;
 		if (runtime != null) {
+			this.item.draw(poseStack, 50, 20);
+
 			IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
 			Minecraft minecraft = Minecraft.getInstance();
 			minecraft.font.draw(poseStack, ingredientFilter.getFilterText(), 20, 52, 0);

@@ -44,6 +44,8 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 				RenderSystem.disableBlend();
 			}
 			modelViewStack.popPose();
+			// Restore model-view matrix now that the item has been rendered
+			RenderSystem.applyModelViewMatrix();
 		}
 	}
 
