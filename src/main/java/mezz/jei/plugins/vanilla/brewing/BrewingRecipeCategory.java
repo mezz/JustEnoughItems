@@ -42,7 +42,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 		background = guiHelper.drawableBuilder(location, 0, 0, 64, 60)
 			.addPadding(1, 0, 0, 50)
 			.build();
-		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.BREWING_STAND));
+		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Blocks.BREWING_STAND));
 		localizedName = new TranslatableComponent("gui.jei.category.brewing");
 
 		arrow = guiHelper.drawableBuilder(location, 64, 0, 9, 28)

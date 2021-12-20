@@ -31,7 +31,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		super(guiHelper);
 		this.background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 114, 82, 54);
 		this.regularCookTime = regularCookTime;
-		this.icon = guiHelper.createDrawableIngredient(new ItemStack(icon));
+		this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(icon));
 		this.localizedName = new TranslatableComponent(translationKey);
 		this.cachedArrows = CacheBuilder.newBuilder()
 			.maximumSize(25)

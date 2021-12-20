@@ -24,7 +24,7 @@ public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe> {
 
 	public SmithingRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 168, 125, 18);
-		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.SMITHING_TABLE));
+		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Blocks.SMITHING_TABLE));
 	}
 
 	@Override

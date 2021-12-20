@@ -32,7 +32,7 @@ public class CompostableRecipeCategory implements IRecipeCategory<CompostableRec
 	public CompostableRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.createBlankDrawable(width, height);
 		slot = guiHelper.getSlotDrawable();
-		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.COMPOSTER));
+		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Blocks.COMPOSTER));
 		localizedName = new TranslatableComponent("gui.jei.category.compostable");
 	}
 

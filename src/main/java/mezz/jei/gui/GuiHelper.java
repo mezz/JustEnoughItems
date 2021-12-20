@@ -1,5 +1,6 @@
 package mezz.jei.gui;
 
+import mezz.jei.api.ingredients.IIngredientType;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.gui.ITickTimer;
@@ -50,7 +51,16 @@ public class GuiHelper implements IGuiHelper {
 	}
 
 	@Override
+	public <V> IDrawable createDrawableIngredient(IIngredientType<V> type, V ingredient) {
+		ErrorUtil.checkNotNull(type, "type");
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
+		return new DrawableIngredient<>(ingredient, ingredientRenderer);
+	}
+
+	@Override
 	public <V> IDrawable createDrawableIngredient(V ingredient) {
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
 		return new DrawableIngredient<>(ingredient, ingredientRenderer);
 	}

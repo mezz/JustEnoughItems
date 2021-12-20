@@ -1,5 +1,6 @@
 package mezz.jei.api.helpers;
 
+import mezz.jei.api.ingredients.IIngredientType;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.gui.ITickTimer;
@@ -50,8 +51,9 @@ public interface IGuiHelper {
 
 	/**
 	 * Returns a 16x16 drawable for the given ingredient, matching the one JEI draws in the ingredient list.
+	 * @since JEI 9.1.1
 	 */
-	<V> IDrawable createDrawableIngredient(V ingredient);
+	<V> IDrawable createDrawableIngredient(IIngredientType<V> type, V ingredient);
 
 	/**
 	 * Create a crafting grid helper.
@@ -67,4 +69,11 @@ public interface IGuiHelper {
 	 * @param countDown     if true, the tick timer will count backwards from maxValue
 	 */
 	ITickTimer createTickTimer(int ticksPerCycle, int maxValue, boolean countDown);
+
+	/**
+	 * Returns a 16x16 drawable for the given ingredient, matching the one JEI draws in the ingredient list.
+	 * @deprecated since JEI 9.1.1. Use {@link #createDrawableIngredient(IIngredientType, Object)}
+	 */
+	@Deprecated
+	<V> IDrawable createDrawableIngredient(V ingredient);
 }

@@ -36,7 +36,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 168, 125, 18)
 			.addPadding(0, 20, 0, 0)
 			.build();
-		icon = guiHelper.createDrawableIngredient(new ItemStack(Blocks.ANVIL));
+		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Blocks.ANVIL));
 		cachedDisplayData = CacheBuilder.newBuilder()
 			.maximumSize(25)
 			.build(new CacheLoader<>() {
