@@ -35,10 +35,6 @@ public final class CommandUtil {
 	public static void giveStack(ItemStack itemStack, GiveAmount giveAmount, IClientConfig clientConfig) {
 		final GiveMode giveMode = clientConfig.getGiveMode();
 		Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft == null) {
-			LOGGER.error("Can't give stack, there is no minecraft instance");
-			return;
-		}
 		LocalPlayer player = minecraft.player;
 		if (player == null) {
 			LOGGER.error("Can't give stack, there is no player");

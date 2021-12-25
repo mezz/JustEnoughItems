@@ -218,9 +218,6 @@ public class IngredientGrid implements IRecipeFocusSource {
 				return null;
 			}
 			Minecraft minecraft = Minecraft.getInstance();
-			if (minecraft == null) {
-				return null;
-			}
 			if (!shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				return null;
 			}

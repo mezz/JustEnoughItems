@@ -298,11 +298,6 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		 * Sets the stack in a hotbar slot to the one that's hovered over.
 		 */
 		protected boolean checkHotbarKeys(Screen screen, UserInput input) {
-			Minecraft minecraft = screen.getMinecraft();
-			if (minecraft == null) {
-				return false;
-			}
-
 			if (!this.worldConfig.isCheatItemsEnabled() || screen instanceof RecipesGui) {
 				return false;
 			}
@@ -313,6 +308,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 				return false;
 			}
 
+			Minecraft minecraft = screen.getMinecraft();
 			Options gameSettings = minecraft.options;
 			int hotbarSlot = getHotbarSlotForInput(input, gameSettings);
 			if (hotbarSlot < 0) {

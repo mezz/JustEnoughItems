@@ -18,10 +18,6 @@ public final class TooltipRenderer {
 
 	public static void drawHoveringText(PoseStack poseStack, List<? extends FormattedText> textLines, int x, int y) {
 		Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft == null) {
-			return;
-		}
-
 		drawHoveringText(poseStack, textLines, x, y, Constants.MAX_TOOLTIP_WIDTH, minecraft.font, ItemStack.EMPTY);
 	}
 
@@ -35,10 +31,6 @@ public final class TooltipRenderer {
 
 	public static void drawHoveringText(PoseStack poseStack, List<? extends FormattedText> textLines, int x, int y, int maxWidth, Font font, Object ingredient) {
 		Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft == null) {
-			return;
-		}
-
 		Screen screen = minecraft.screen;
 		if (screen == null) {
 			return;

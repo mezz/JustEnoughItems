@@ -115,7 +115,6 @@ public class ModIdFormattingConfig implements IJEIConfig {
 		try {
 			ItemStack itemStack = new ItemStack(Items.APPLE);
 			Minecraft minecraft = Minecraft.getInstance();
-			assert minecraft != null;
 			LocalPlayer player = minecraft.player;
 			List<Component> tooltip = new ArrayList<>();
 			tooltip.add(new TextComponent("JEI Tooltip Testing for mod name formatting"));

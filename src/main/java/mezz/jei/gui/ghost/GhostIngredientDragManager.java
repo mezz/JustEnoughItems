@@ -123,9 +123,6 @@ public class GhostIngredientDragManager {
 				return null;
 			}
 			Minecraft minecraft = Minecraft.getInstance();
-			if (minecraft == null) {
-				return null;
-			}
 			LocalPlayer player = minecraft.player;
 			if (player == null) {
 				return null;
