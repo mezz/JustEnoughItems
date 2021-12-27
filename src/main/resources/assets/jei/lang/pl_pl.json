@@ -1,4 +1,5 @@
 {
+  
   "_comment": "Tooltips",
   "jei.tooltip.config": "Konfiguracja JEI",
   "jei.tooltip.show.recipes": "Pokaż receptury",
@@ -22,7 +23,7 @@
   "jei.tooltip.bookmarks.usage.nokey": "Przypisz klawisz dla zakładek JEI w swoich ustawieniach sterowania.",
   "jei.tooltip.bookmarks.usage.key": "Najedź kursorem na składnik i naciśnij „%s”, aby dodać go do zakładek.",
   "jei.tooltip.bookmarks.not.enough.space": "Nie ma wystarczająco dużo miejsca, żeby wyświetlić tutaj nakładkę z listą zakładek JEI.",
-
+  
   "_comment": "Error Tooltips",
   "jei.tooltip.error.recipe.transfer.missing": "Brakuje przedmiotów",
   "jei.tooltip.error.recipe.transfer.inventory.full": "Ekwipunek jest przepełniony",
@@ -31,7 +32,7 @@
   "jei.tooltip.error.recipe.transfer.disabled": "Konfiguracja serwera wyłączyła funkcję transferu receptur JEI",
   "jei.tooltip.error.recipe.transfer.too.large.player.inventory": "Receptura jest za duża, żeby móc to wytworzyć w siatce 2x2 gracza.",
   "jei.tooltip.error.crash": "Błąd z tooltipami, sprawdź logi",
-
+  
   "_comment": "Error Messages",
   "jei.chat.error.command.too.long": "JEI musi być zainstalowane na serwerze, żeby obsłużyć tę komendę czatu. Jest ona zbyt długa, aby Minecraft mógł ją wysłać.",
   "jei.chat.error.no.cheat.permission.1": "Nie masz uprawnień do używania trybu cheatów JEI.",
@@ -40,22 +41,42 @@
   "jei.chat.error.no.cheat.permission.creative": "gracze, którzy są w trybie kreatywnym",
   "jei.chat.error.no.cheat.permission.op": "gracze, którzy mają status operatora (/op)",
   "jei.chat.error.no.cheat.permission.give": "gracze, którzy mogą używać komendy /give",
-
+  
   "_comment": "Key Bindings",
+  "jei.key.category.overlays": "JEI (nakładki)",
   "key.jei.toggleOverlay": "Pokaż/ukryj nakładki JEI",
   "key.jei.focusSearch": "Zaznacz pasek wyszukiwania",
-  "key.jei.showRecipe": "Pokaż recepturę",
-  "key.jei.showUses": "Pokaż zastosowania",
-  "key.jei.recipeBack": "Pokaż poprz. oglądaną recepturę",
-  "key.jei.toggleCheatMode": "Włącz/wyłącz tryb cheatów",
   "key.jei.toggleEditMode": "Wł./wył. tryb ukrywania składników",
   "key.jei.previousPage": "Pokaż poprzednią stronę",
   "key.jei.nextPage": "Pokaż następną stronę",
+  "key.jei.toggleBookmarkOverlay": "Pokaż/ukryj składniki z zakładek",
+  
+  "jei.key.category.recipe.gui": "JEI (Receptury)",
+  "key.jei.recipeBack": "Pokaż poprz. oglądaną recepturę",
   "key.jei.previousCategory": "Pokaż poprz. kategorię przepisów",
   "key.jei.nextCategory": "Pokaż nast. kategorię przepisów",
+  "key.jei.previousRecipePage": "Pokaż stronę poprz. receptury",
+  "key.jei.nextRecipePage": "Pokaż stronę nast. receptury",
+  
+  "jei.key.category.cheat.mode": "JEI (Tryb cheatów)",
+  "key.jei.toggleCheatMode": "Włącz/wyłącz tryb cheatów",
+  "key.jei.cheatOneItem": "Zcheatuj 1 przedmiot",
+  "key.jei.cheatOneItem2": "Zcheatuj 1 przedmiot",
+  "key.jei.cheatItemStack": "Zcheatuj 1 stos przedmiotów",
+  "key.jei.cheatItemStack2": "Zcheatuj 1 stos przedmiotów",
+  
+  "jei.key.category.mouse.hover": "JEI (najeżdżanie myszą)",
   "key.jei.bookmark": "Dodaj/usuń składnik z zakładek",
-  "key.jei.toggleBookmarkOverlay": "Pokaż/ukryj składniki z zakładek",
-
+  "key.jei.showRecipe": "Pokaż recepturę",
+  "key.jei.showRecipe2": "Pokaż recepturę",
+  "key.jei.showUses": "Pokaż zastosowania",
+  "key.jei.showUses2": "Pokaż zastosowania",
+  
+  "jei.key.category.search": "JEI (filtr szukania)",
+  "key.jei.clearSearchBar": "Wyczyść filtr szukania",
+  "key.jei.previousSearch": "Poprz. wyszukanie z historii",
+  "key.jei.nextSearch": "Nast. wyszukanie z historii",
+  
   "_comment": "Config",
   "config.jei": "Konfiguracja JEI",
   "config.jei.default": "Domyślne",
@@ -106,18 +127,18 @@
   "config.jei.advanced.maxRecipeGuiHeight.comment": "Maksymalna wysokość interfejsu z recepturami.",
   "config.jei.advanced.giveMode": "Tryb dawania",
   "config.jei.advanced.giveMode.comment": "Wybierz, czy JEI ma dawać składniki bezpośrednio do ekwipunku (inventory), czy wolisz samemu zabierać i przenosić je za pomocą myszy (mouse_pickup).",
-
+  
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "Tryb ukrywania składników JEI:",
   "gui.jei.editMode.description.hide": "%s + klik, aby ukryć",
   "gui.jei.editMode.description.hide.wild": "%s + prawoklik, aby ukryć przez wieloznacznik",
-
+  
   "_comment": "PC/Linux Control Key",
   "key.jei.ctrl": "CTRL",
-
+  
   "_comment": "Mac Command Key",
   "key.jei.ctrl.mac": "CMD",
-
+  
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Wytwarzanie",
   "gui.jei.category.stoneCutter": "Obróbka kamienia",
@@ -135,10 +156,10 @@
   "gui.jei.category.compostable": "Kompostowanie",
   "gui.jei.category.compostable.chance": "Szansa: %s%%",
   "gui.jei.category.itemInformation": "Informacja",
-
+  
   "_comment": "Messages",
   "jei.message.configured": "Zainstaluj moda Configured, aby uzyskać dostęp do konfiguracji w grze",
-
+  
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",
   "description.jei.wooden.door.2": "Clicking on a door changes its state from open to closed and vice versa.",
