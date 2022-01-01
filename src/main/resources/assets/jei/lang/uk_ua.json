@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "Безформний рецепт",
   "jei.tooltip.cheat.mode.button.enabled": "Режим шахрайства",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Аби перемкнути, натисніть %s.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "Затисніть %s-та натисніть тут для перемикання.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s here to toggle it.",
   "jei.tooltip.recipe.by": "Рецепт з: %s",
   "jei.tooltip.recipe.id": "ID рецепту: %s",
   "jei.tooltip.not.enough.space": "Тут недостатньо місця для показу списку.",

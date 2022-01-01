@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "Receita indefinida",
   "jei.tooltip.cheat.mode.button.enabled": "Modo trapaça ativado",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Pressione %s para ativá-lo.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "%s + clique aqui para ativá-lo.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s aqui para ativá-lo.",
   "jei.tooltip.recipe.by": "Receita por: %s",
   "jei.tooltip.recipe.id": "ID da receita: %s",
   "jei.tooltip.not.enough.space": "Não há espaço suficiente para exibir o JEI aqui.",

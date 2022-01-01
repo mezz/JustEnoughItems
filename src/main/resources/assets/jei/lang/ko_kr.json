@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "무형 제작법",
   "jei.tooltip.cheat.mode.button.enabled": "치트 모드",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "%s을(를) 눌러 전환하십시오.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "%s을(를) 클릭하여 전환하십시오.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s here to toggle it.",
   "jei.tooltip.recipe.by": "제작법 제작자: %s",
   "jei.tooltip.recipe.id": "제작법 ID: %s",
   "jei.tooltip.not.enough.space": "여기에 재료 목록을 표시할 공간이 부족합니다.",

@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "不定形レシピ",
   "jei.tooltip.cheat.mode.button.enabled": "チートモード有効",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "%sキーで無効にします。",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "ここを%s+左クリックで無効にします。",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s here to toggle it.",
   "jei.tooltip.recipe.by": "%s によるレシピ",
   "jei.tooltip.recipe.id": "レシピID: %s",
   "jei.tooltip.not.enough.space": "JEIを表示する十分なスペースがありません。",

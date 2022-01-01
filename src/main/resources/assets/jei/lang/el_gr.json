@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "Άμορφη Συνταγή",
   "jei.tooltip.cheat.mode.button.enabled": "Λειτουργία Cheat",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Press %s to toggle it.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "%s-click here to toggle it.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s here to toggle it.",
   "jei.tooltip.recipe.by": "Recipe By: %s",
   "jei.tooltip.recipe.id": "Recipe ID: %s",
   "jei.tooltip.not.enough.space": "There is not enough space to display the ingredient list here.",

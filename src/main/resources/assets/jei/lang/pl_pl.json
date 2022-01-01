@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "Bezkształtna receptura",
   "jei.tooltip.cheat.mode.button.enabled": "Tryb cheatów włączony",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Naciśnij „%s”, aby go wyłączyć/włączyć.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "%s + klik tutaj, aby go wyłączyć/włączyć.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s here to toggle it.",
   "jei.tooltip.recipe.by": "Receptura z: %s",
   "jei.tooltip.recipe.id": "ID receptury: %s",
   "jei.tooltip.not.enough.space": "Nie ma wystarczająco dużo miejsca, żeby wyświetlić tutaj nakładkę z listą składników JEI.",

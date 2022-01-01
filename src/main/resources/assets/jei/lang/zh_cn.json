@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "无序配方",
   "jei.tooltip.cheat.mode.button.enabled": "作弊模式",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "按 %s 以切换。",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "按住 %s 并点击以切换。",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s here to toggle it.",
   "jei.tooltip.recipe.by": "该配方由 %s 添加",
   "jei.tooltip.recipe.id": "配方 ID: %s",
   "jei.tooltip.not.enough.space": "屏幕空间不足，无法显示 JEI 界面。",

@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "Receta sin forma",
   "jei.tooltip.cheat.mode.button.enabled": "Modo trampa",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Pulsa %s para activar.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "%s-click aquí para activar.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s aquí para activar.",
   "jei.tooltip.recipe.by": "Receta por: %s",
   "jei.tooltip.recipe.id": "ID de receta: %s",
   "jei.tooltip.not.enough.space": "No hay espacio suficiente para mostrar la lista de ingredientes aquí.",
