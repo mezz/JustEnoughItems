@@ -101,15 +101,9 @@
   "config.jei.advanced.giveMode.comment": "Wähle, ob JEI die Items direkt in das Inventar geben soll oder du sie mit der Maus aufnimmst.",
 
   "_comment": "Hide Ingredients Mode",
-  "gui.jei.editMode.description": "JEI-Listeneditiermodus:",
-  "gui.jei.editMode.description.hide": "Ausblenden mit %s-Klick.",
-  "gui.jei.editMode.description.hide.wild": "Ausblenden per Wildcard mit %s-Rechtsklick.",
-
-  "_comment": "PC/Linux Control Key",
-  "key.jei.ctrl": "STRG",
-
-  "_comment": "Mac Command Key",
-  "key.jei.ctrl.mac": "CMD",
+  "gui.jei.editMode.description": "JEI Zutaten Ausblendungsmodus:",
+  "gui.jei.editMode.description.hide": "Ausblenden mit %s.",
+  "gui.jei.editMode.description.hide.wild": "Ausblenden per Wildcard mit %s.",
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Fertigungsrezepte",

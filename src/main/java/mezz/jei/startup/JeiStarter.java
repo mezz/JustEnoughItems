@@ -80,7 +80,7 @@ public class JeiStarter {
 		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
 		PluginLoader pluginLoader = new PluginLoader(plugins, textures, clientConfig, modIdHelper, debugMode);
 		IngredientManager ingredientManager = pluginLoader.getIngredientManager();
-		IngredientFilter ingredientFilter = pluginLoader.createIngredientFilter(ingredientSorter, editModeConfig, ingredientFilterConfig);
+		IngredientFilter ingredientFilter = pluginLoader.createIngredientFilter(ingredientSorter, worldConfig, editModeConfig, ingredientFilterConfig);
 		BookmarkList bookmarkList = pluginLoader.createBookmarkList(bookmarkConfig);
 		IRecipeManager recipeManager = pluginLoader.createRecipeManager(plugins, vanillaPlugin, recipeCategorySortingConfig);
 		ImmutableTable<Class<?>, ResourceLocation, IRecipeTransferHandler<?, ?>> recipeTransferHandlers = pluginLoader.createRecipeTransferHandlers(plugins);

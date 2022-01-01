@@ -16,6 +16,7 @@ public final class KeyBindings {
 	private static final String overlaysCategoryName = Translator.translateToLocal("jei.key.category.overlays");
 	private static final String mouseHoverCategoryName = Translator.translateToLocal("jei.key.category.mouse.hover");
 	private static final String cheatModeCategoryName = Translator.translateToLocal("jei.key.category.cheat.mode");
+	private static final String editModeCategoryName = Translator.translateToLocal("jei.key.category.edit.mode");
 	private static final String recipeCategoryName = Translator.translateToLocal("jei.key.category.recipe.gui");
 	private static final String searchCategoryName = Translator.translateToLocal("jei.key.category.search");
 
@@ -43,6 +44,9 @@ public final class KeyBindings {
 	public static final List<KeyMapping> cheatOneItem;
 	public static final List<KeyMapping> cheatItemStack;
 
+	public static final KeyMapping toggleHideIngredient;
+	public static final KeyMapping toggleWildcardHideIngredient;
+
 	public static final KeyMapping hoveredClearSearchBar;
 	public static final KeyMapping previousSearch;
 	public static final KeyMapping nextSearch;
@@ -67,7 +71,6 @@ public final class KeyBindings {
 			// Overlay
 			toggleOverlay = new KeyMapping("key.jei.toggleOverlay", KeyConflictContext.GUI, KeyModifier.CONTROL, getKey(GLFW.GLFW_KEY_O), overlaysCategoryName),
 			focusSearch = new KeyMapping("key.jei.focusSearch", KeyConflictContext.GUI, KeyModifier.CONTROL, getKey(GLFW.GLFW_KEY_F), overlaysCategoryName),
-			toggleEditMode = new KeyMapping("key.jei.toggleEditMode", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), overlaysCategoryName),
 			previousPage = new KeyMapping("key.jei.previousPage", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), overlaysCategoryName),
 			nextPage = new KeyMapping("key.jei.nextPage", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), overlaysCategoryName),
 			toggleBookmarkOverlay = new KeyMapping("key.jei.toggleBookmarkOverlay", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), overlaysCategoryName),
@@ -91,6 +94,11 @@ public final class KeyBindings {
 			cheatOneItem2 = new KeyMapping("key.jei.cheatOneItem2", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, InputConstants.Type.MOUSE, 1, cheatModeCategoryName),
 			cheatItemStack1 = new KeyMapping("key.jei.cheatItemStack", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, KeyModifier.SHIFT, InputConstants.Type.MOUSE, 0, cheatModeCategoryName),
 			cheatItemStack2 = new KeyMapping("key.jei.cheatItemStack2", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, InputConstants.Type.MOUSE, 2, cheatModeCategoryName),
+
+			// Edit Mode
+			toggleEditMode = new KeyMapping("key.jei.toggleEditMode", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), editModeCategoryName),
+			toggleHideIngredient = new KeyMapping("key.jei.toggleHideIngredient", JeiConflictContexts.JEI_GUI_HOVER, KeyModifier.CONTROL, InputConstants.Type.MOUSE, 0, editModeCategoryName),
+			toggleWildcardHideIngredient = new KeyMapping("key.jei.toggleWildcardHideIngredient", JeiConflictContexts.JEI_GUI_HOVER, KeyModifier.CONTROL, InputConstants.Type.MOUSE, 1, editModeCategoryName),
 
 			// Recipes
 			recipeBack = new KeyMapping("key.jei.recipeBack", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_BACKSPACE), recipeCategoryName),

@@ -1,26 +1,8 @@
 package mezz.jei.render;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.ChatFormatting;
-
 import com.google.common.base.Joiner;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.Internal;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -31,11 +13,26 @@ import mezz.jei.config.Constants;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.config.IWorldConfig;
+import mezz.jei.config.KeyBindings;
 import mezz.jei.config.SearchMode;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.StringUtil;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class IngredientListElementRenderer<T> {
 	private static final int BLACKLIST_COLOR = 0xFFFF0000;
@@ -127,17 +124,17 @@ public class IngredientListElementRenderer<T> {
 		}
 
 		if (ingredientFilterConfig.getColorSearchMode() != SearchMode.DISABLED) {
-			addColorSearchInfoToTooltip(minecraft, tooltip, maxWidth);
+			addColorSearchInfoToTooltip(tooltip, maxWidth);
 		}
 
 		if (worldConfig.isEditModeEnabled()) {
-			addEditModeInfoToTooltip(minecraft, tooltip, maxWidth);
+			addEditModeInfoToTooltip(tooltip, maxWidth);
 		}
 
 		return tooltip;
 	}
 
-	private void addColorSearchInfoToTooltip(Minecraft minecraft, List<FormattedText> tooltip, int maxWidth) {
+	private void addColorSearchInfoToTooltip(List<FormattedText> tooltip, int maxWidth) {
 		ColorNamer colorNamer = Internal.getColorNamer();
 
 		T ingredient = element.getIngredient();
@@ -145,26 +142,29 @@ public class IngredientListElementRenderer<T> {
 		Collection<String> colorNames = colorNamer.getColorNames(colors, false);
 		if (!colorNames.isEmpty()) {
 			String colorNamesString = Joiner.on(", ").join(colorNames);
-			TranslatableComponent colorTranslation = new TranslatableComponent("jei.tooltip.item.colors", colorNamesString);
-			MutableComponent colorNamesLocalizedString = colorTranslation.withStyle(ChatFormatting.GRAY);
-			tooltip.addAll(minecraft.font.getSplitter().splitLines(colorNamesLocalizedString, maxWidth, Style.EMPTY));
+			Component colorTranslation = new TranslatableComponent("jei.tooltip.item.colors", colorNamesString)
+				.withStyle(ChatFormatting.GRAY);
+			List<FormattedText> lines = StringUtil.splitLines(colorTranslation, maxWidth);
+			tooltip.addAll(lines);
 		}
 	}
 
-	private static void addEditModeInfoToTooltip(Minecraft minecraft, List<FormattedText> tooltip, int maxWidth) {
-		tooltip.add(TextComponent.EMPTY);
-		TranslatableComponent description = new TranslatableComponent("gui.jei.editMode.description");
-		tooltip.add(description.withStyle(ChatFormatting.DARK_GREEN));
-
-		TranslatableComponent controlKeyLocalization = new TranslatableComponent(Minecraft.ON_OSX ? "key.jei.ctrl.mac" : "key.jei.ctrl");
-
-		TranslatableComponent hide = new TranslatableComponent("gui.jei.editMode.description.hide", controlKeyLocalization);
-		MutableComponent hideMessage = hide.withStyle(ChatFormatting.GRAY);
-		tooltip.addAll(minecraft.font.getSplitter().splitLines(hideMessage, maxWidth, Style.EMPTY));
-
-		TranslatableComponent hideWild = new TranslatableComponent("gui.jei.editMode.description.hide.wild", controlKeyLocalization);
-		MutableComponent hideWildMessage = hideWild.withStyle(ChatFormatting.GRAY);
-		tooltip.addAll(minecraft.font.getSplitter().splitLines(hideWildMessage, maxWidth, Style.EMPTY));
+	private static void addEditModeInfoToTooltip(List<FormattedText> tooltip, int maxWidth) {
+		List<FormattedText> lines = List.of(
+			TextComponent.EMPTY,
+			new TranslatableComponent("gui.jei.editMode.description")
+				.withStyle(ChatFormatting.DARK_GREEN),
+			new TranslatableComponent(
+				"gui.jei.editMode.description.hide",
+				KeyBindings.toggleHideIngredient.getTranslatedKeyMessage()
+			).withStyle(ChatFormatting.GRAY),
+			new TranslatableComponent(
+				"gui.jei.editMode.description.hide.wild",
+				KeyBindings.toggleWildcardHideIngredient.getTranslatedKeyMessage()
+			).withStyle(ChatFormatting.GRAY)
+		);
+		lines = StringUtil.splitLines(lines, maxWidth);
+		tooltip.addAll(lines);
 	}
 
 }

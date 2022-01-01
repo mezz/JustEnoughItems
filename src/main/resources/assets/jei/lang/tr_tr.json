@@ -104,14 +104,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Eşya Listesi Düzenleme Modu:",
-  "gui.jei.editMode.description.hide": "Gizle (%s-click).",
-  "gui.jei.editMode.description.hide.wild": "Joker ile Gizle (%s-right-click).",
-
-  "_comment": "PC/Linux Control Key",
-  "key.jei.ctrl": "CTRL",
-
-  "_comment": "Mac Command Key",
-  "key.jei.ctrl.mac": "CMD",
+  "gui.jei.editMode.description.hide": "Gizle (%s).",
+  "gui.jei.editMode.description.hide.wild": "Joker ile Gizle (%s).",
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Eşya Yapma",
