@@ -75,7 +75,7 @@ public class IngredientFilterTest {
 
 		TestIngredientFilterConfig ingredientFilterConfig = new TestIngredientFilterConfig();
 		IIngredientSorter ingredientListSorter = (a, b) -> Comparator.comparing(IIngredientListElementInfo::getModNameForSorting);
-		this.ingredientFilter = new IngredientFilter(blacklist, clientConfig, ingredientFilterConfig, editModeConfig, ingredientManager, ingredientListSorter, baseList, modIdHelper);
+		this.ingredientFilter = new IngredientFilter(blacklist, worldConfig, clientConfig, ingredientFilterConfig, editModeConfig, ingredientManager, ingredientListSorter, baseList, modIdHelper);
 	}
 
 	@Test

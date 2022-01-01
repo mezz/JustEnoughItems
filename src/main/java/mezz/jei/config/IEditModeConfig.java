@@ -5,10 +5,6 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.ingredients.IngredientFilter;
 
 public interface IEditModeConfig {
-	@Deprecated
-		// goes in world config
-	boolean isEditModeEnabled();
-
 	<V> boolean isIngredientOnConfigBlacklist(V ingredient, IIngredientHelper<V> ingredientHelper);
 
 	<V> void addIngredientToConfigBlacklist(IngredientFilter ingredientFilter, IIngredientManager ingredientManager, V ingredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper);

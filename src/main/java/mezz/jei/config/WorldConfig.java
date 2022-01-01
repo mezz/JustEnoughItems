@@ -180,6 +180,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 			if (worldConfig.hasChanged()) {
 				// TODO 1.13
 //					worldConfig.save();
+				EventBusHelper.post(new EditModeToggleEvent(values.editModeEnabled));
 			}
 		}
 	}
