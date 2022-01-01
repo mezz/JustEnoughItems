@@ -16,6 +16,7 @@ import mezz.jei.config.BookmarkConfig;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
+import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.GuiScreenHelper;
@@ -140,12 +141,12 @@ public class PluginLoader {
 		return new RecipeManager(recipeManagerInternal, modIdHelper);
 	}
 
-	public IngredientFilter createIngredientFilter(IIngredientSorter ingredientSorter, IEditModeConfig editModeConfig, IIngredientFilterConfig ingredientFilterConfig) {
+	public IngredientFilter createIngredientFilter(IIngredientSorter ingredientSorter, IWorldConfig worldConfig, IEditModeConfig editModeConfig, IIngredientFilterConfig ingredientFilterConfig) {
 		timer.start("Building ingredient list");
 		NonNullList<IIngredientListElement<?>> ingredientList = IngredientListElementFactory.createBaseList(ingredientManager);
 		timer.stop();
 		timer.start("Building ingredient filter");
-		IngredientFilter ingredientFilter = new IngredientFilter(blacklist, clientConfig, ingredientFilterConfig, editModeConfig, ingredientManager, ingredientSorter, ingredientList, modIdHelper);
+		IngredientFilter ingredientFilter = new IngredientFilter(blacklist, worldConfig, clientConfig, ingredientFilterConfig, editModeConfig, ingredientManager, ingredientSorter, ingredientList, modIdHelper);
 		Internal.setIngredientFilter(ingredientFilter);
 		timer.stop();
 		return ingredientFilter;

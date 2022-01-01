@@ -104,14 +104,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "Modalità nascondi ingredienti nella JEI:",
-  "gui.jei.editMode.description.hide": "Clic-%s per nascondere.",
-  "gui.jei.editMode.description.hide.wild": "Clic-destro-%s per nascondere con carattere jolly.",
-
-  "_comment": "PC/Linux Control Key",
-  "key.jei.ctrl": "CTRL",
-
-  "_comment": "Mac Command Key",
-  "key.jei.ctrl.mac": "CMD",
+  "gui.jei.editMode.description.hide": "%s per nascondere.",
+  "gui.jei.editMode.description.hide.wild": "%s per nascondere con carattere jolly.",
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Fabbricazione",

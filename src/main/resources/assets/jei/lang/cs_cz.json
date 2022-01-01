@@ -91,14 +91,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Item List Editovací Mód:",
-  "gui.jei.editMode.description.hide": "%s-klik pro skrytí.",
-  "gui.jei.editMode.description.hide.wild": "%s-pravý-klik pro schování divoké karty.",
-
-  "_comment": "PC/Linux Control Key",
-  "key.jei.ctrl": "CTRL",
-
-  "_comment": "Mac Command Key",
-  "key.jei.ctrl.mac": "CMD",
+  "gui.jei.editMode.description.hide": "%s pro skrytí.",
+  "gui.jei.editMode.description.hide.wild": "%s pro schování divoké karty.",
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Výroba",

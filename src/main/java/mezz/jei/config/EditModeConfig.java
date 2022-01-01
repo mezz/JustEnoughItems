@@ -22,10 +22,8 @@ import org.apache.logging.log4j.Logger;
 
 public class EditModeConfig implements IEditModeConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final boolean defaultEditModeEnabled = false;
 	private static final String[] defaultBlacklist = new String[]{};
 
-	private boolean editModeEnabled = defaultEditModeEnabled;
 	private final Set<String> blacklist = new LinkedHashSet<>();
 
 	@Nullable
@@ -39,11 +37,6 @@ public class EditModeConfig implements IEditModeConfig {
 		} else {
 			blacklistConfigFile = null;
 		}
-	}
-
-	@Override
-	public boolean isEditModeEnabled() {
-		return editModeEnabled;
 	}
 
 	private void loadBlacklistConfig() {

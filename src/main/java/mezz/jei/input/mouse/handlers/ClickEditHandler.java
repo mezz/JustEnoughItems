@@ -5,6 +5,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.IngredientBlacklistType;
+import mezz.jei.config.KeyBindings;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.input.CombinedRecipeFocusSource;
 import mezz.jei.input.IClickedIngredient;
@@ -14,6 +15,7 @@ import net.minecraft.client.gui.screens.Screen;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 
 public class ClickEditHandler implements IUserInputHandler {
@@ -38,17 +40,21 @@ public class ClickEditHandler implements IUserInputHandler {
 		if (!worldConfig.isEditModeEnabled()) {
 			return null;
 		}
+		IngredientBlacklistType blacklistType = getBlacklistType(input);
+		if (blacklistType == null) {
+			return null;
+		}
 		IClickedIngredient<?> clicked = focusSource.getIngredientUnderMouse(input);
 		if (clicked == null) {
 			return null;
 		}
 		if (!input.isSimulate()) {
-			handle(clicked);
+			handle(clicked, blacklistType);
 		}
 		return LimitedAreaUserInputHandler.create(this, clicked.getArea());
 	}
 
-	private <V> void handle(IClickedIngredient<V> clicked) {
+	private <V> void handle(IClickedIngredient<V> clicked, IngredientBlacklistType blacklistType) {
 		IngredientFilter ingredientFilter = weakIngredientFilter.get();
 		if (ingredientFilter == null) {
 			LOGGER.error("Can't edit the config blacklist, the ingredient filter is null");
@@ -56,7 +62,6 @@ public class ClickEditHandler implements IUserInputHandler {
 		}
 
 		V ingredient = clicked.getValue();
-		IngredientBlacklistType blacklistType = Screen.hasControlDown() ? IngredientBlacklistType.WILDCARD : IngredientBlacklistType.ITEM;
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 
 		if (editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
@@ -64,5 +69,16 @@ public class ClickEditHandler implements IUserInputHandler {
 		} else {
 			editModeConfig.addIngredientToConfigBlacklist(ingredientFilter, ingredientManager, ingredient, blacklistType, ingredientHelper);
 		}
+	}
+
+	@Nullable
+	private static IngredientBlacklistType getBlacklistType(UserInput userInput) {
+		if (userInput.is(KeyBindings.toggleHideIngredient)) {
+			return IngredientBlacklistType.ITEM;
+		}
+		if (userInput.is(KeyBindings.toggleWildcardHideIngredient)) {
+			return IngredientBlacklistType.WILDCARD;
+		}
+		return null;
 	}
 }

@@ -91,8 +91,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": ":وضع جاي إي آي لتعديل قائمة العناصر",
-  "gui.jei.editMode.description.hide": ".للإخفاء %s أنقر",
-  "gui.jei.editMode.description.hide.wild": ".مع زر الفأرة الأيمن للإخفاء مع البدل %s أنقر",
+  "gui.jei.editMode.description.hide": "%s to hide",
+  "gui.jei.editMode.description.hide.wild": "%s to hide by wildcard",
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "الصناعة",
