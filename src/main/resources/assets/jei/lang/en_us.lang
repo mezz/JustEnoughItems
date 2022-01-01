@@ -151,3 +151,5 @@ key.jei.transferRecipeGui=Craft Hovered Recipe (One)
 key.jei.maxTransferRecipeGui=Craft Hovered Recipe (Many)
 jei.tooltip.transfer.key=[%s to craft one]
 jei.tooltip.transfer.max.key=[%s to craft many]
+
+key.jei.toggleCheatModeConfigButton=Toggle Cheat Mode (Config Button)

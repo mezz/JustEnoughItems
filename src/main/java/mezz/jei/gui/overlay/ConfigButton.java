@@ -14,6 +14,7 @@ import mezz.jei.config.JEIModConfigGui;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
+import mezz.jei.input.MouseHelper;
 import mezz.jei.util.Translator;
 
 public class ConfigButton extends GuiIconToggleButton {
@@ -43,11 +44,19 @@ public class ConfigButton extends GuiIconToggleButton {
 			KeyBinding toggleCheatMode = KeyBindings.toggleCheatMode;
 			if (toggleCheatMode.getKeyCode() != 0) {
 				tooltip.add(TextFormatting.RED + Translator.translateToLocalFormatted("jei.tooltip.cheat.mode.how.to.disable.hotkey", toggleCheatMode.getDisplayName()));
-			} else {
-				String controlKeyLocalization = Translator.translateToLocal(Minecraft.IS_RUNNING_ON_MAC ? "key.jei.ctrl.mac" : "key.jei.ctrl");
-				tooltip.add(TextFormatting.RED + Translator.translateToLocalFormatted("jei.tooltip.cheat.mode.how.to.disable.no.hotkey", controlKeyLocalization));
+			} else if (KeyBindings.toggleCheatModeConfigButton.getKeyCode() != 0) {
+				tooltip.add(TextFormatting.RED + Translator.translateToLocalFormatted("jei.tooltip.cheat.mode.how.to.disable.hotkey", KeyBindings.toggleCheatModeConfigButton.getDisplayName()));
 			}
 		}
+	}
+
+	public boolean handleKeyPressed(int eventKey) {
+		if (Config.isOverlayEnabled() && isMouseOver(MouseHelper.getX(), MouseHelper.getY()) &&
+			KeyBindings.toggleCheatModeConfigButton.isActiveAndMatches(eventKey)) {
+			Config.toggleCheatItemsEnabled();
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -58,15 +67,11 @@ public class ConfigButton extends GuiIconToggleButton {
 	@Override
 	protected boolean onMouseClicked(int mouseX, int mouseY) {
 		if (Config.isOverlayEnabled()) {
-			if (GuiScreen.isCtrlKeyDown()) {
-				Config.toggleCheatItemsEnabled();
-			} else {
-				Minecraft minecraft = Minecraft.getMinecraft();
-				if (minecraft.currentScreen != null) {
-					GuiScreen configScreen = new JEIModConfigGui(minecraft.currentScreen);
-					parent.updateScreen(configScreen, false);
-					minecraft.displayGuiScreen(configScreen);
-				}
+			Minecraft minecraft = Minecraft.getMinecraft();
+			if (minecraft.currentScreen != null) {
+				GuiScreen configScreen = new JEIModConfigGui(minecraft.currentScreen);
+				parent.updateScreen(configScreen, false);
+				minecraft.displayGuiScreen(configScreen);
 			}
 			return true;
 		}

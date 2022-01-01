@@ -18,7 +18,6 @@ import mezz.jei.api.gui.IGuiProperties;
 import mezz.jei.config.Config;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiScreenHelper;
-import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.recipes.RecipesGui;
@@ -43,7 +42,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	}
 
 	private final IngredientFilter ingredientFilter;
-	private final GuiIconToggleButton configButton;
+	private final ConfigButton configButton;
 	private final IngredientGridWithNavigation contents;
 	private final GuiScreenHelper guiScreenHelper;
 	private final GuiTextFieldFilter searchField;
@@ -254,6 +253,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 
 	@Override
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
+		if (this.guiProperties != null && configButton.handleKeyPressed(mouseButton - 100)) {
+			return true;
+		}
 		if (isSearchDisplayed()) {
 			if (isListDisplayed() && this.ghostIngredientDragManager.handleMouseClicked(mouseX, mouseY)) {
 				return true;
@@ -334,6 +336,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	}
 
 	public boolean onGlobalKeyPressed(int eventKey) {
+		if (this.guiProperties != null && configButton.handleKeyPressed(eventKey)) {
+			return true;
+		}
 		if (isSearchDisplayed()) {
 			if (KeyBindings.toggleCheatMode.isActiveAndMatches(eventKey)) {
 				Config.toggleCheatItemsEnabled();
