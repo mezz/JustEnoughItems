@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "Безформени рецепти",
   "jei.tooltip.cheat.mode.button.enabled": "Режим на Мамене",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Натисни %s за да го превключите.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "%s-натисни тук за да го превключиш.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s тук за да го превключиш.",
   "jei.tooltip.recipe.by": "Recipe By: %s",
   "jei.tooltip.recipe.id": "Recipe ID: %s",
   "jei.tooltip.not.enough.space": "There is not enough space to display the ingredient list here.",

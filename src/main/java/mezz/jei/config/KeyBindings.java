@@ -22,6 +22,7 @@ public final class KeyBindings {
 	public static final KeyMapping toggleOverlay;
 	public static final KeyMapping focusSearch;
 	public static final KeyMapping toggleCheatMode;
+	public static final KeyMapping toggleCheatModeConfigButton;
 	public static final KeyMapping toggleEditMode;
 
 	public static final KeyMapping recipeBack;
@@ -85,6 +86,7 @@ public final class KeyBindings {
 
 			// Cheat Mode
 			toggleCheatMode = new KeyMapping("key.jei.toggleCheatMode", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), cheatModeCategoryName),
+			toggleCheatModeConfigButton = new KeyMapping("key.jei.toggleCheatModeConfigButton", JeiConflictContexts.JEI_GUI_HOVER_CONFIG_BUTTON, KeyModifier.CONTROL, InputConstants.Type.MOUSE, 0, cheatModeCategoryName),
 			cheatOneItem1 = new KeyMapping("key.jei.cheatOneItem", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, InputConstants.Type.MOUSE, 0, cheatModeCategoryName),
 			cheatOneItem2 = new KeyMapping("key.jei.cheatOneItem2", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, InputConstants.Type.MOUSE, 1, cheatModeCategoryName),
 			cheatItemStack1 = new KeyMapping("key.jei.cheatItemStack", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, KeyModifier.SHIFT, InputConstants.Type.MOUSE, 0, cheatModeCategoryName),
@@ -127,6 +129,18 @@ public final class KeyBindings {
 		},
 
 		JEI_GUI_HOVER_CHEAT_MODE {
+			@Override
+			public boolean isActive() {
+				return KeyConflictContext.GUI.isActive();
+			}
+
+			@Override
+			public boolean conflicts(IKeyConflictContext other) {
+				return this == other;
+			}
+		},
+
+		JEI_GUI_HOVER_CONFIG_BUTTON {
 			@Override
 			public boolean isActive() {
 				return KeyConflictContext.GUI.isActive();

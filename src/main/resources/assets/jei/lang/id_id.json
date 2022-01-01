@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "Resep Tak Berbentuk",
   "jei.tooltip.cheat.mode.button.enabled": "Mode Curang diaktifkan",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Tekan %s untuk mengaktifkannya.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "%s-klik di sini untuk mengaktifkannya.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s di sini untuk mengaktifkannya.",
   "jei.tooltip.recipe.by": "Resep Oleh: %s",
   "jei.tooltip.recipe.id": "ID Resep: %s",
   "jei.tooltip.not.enough.space": "Tidak cukup ruang untuk menampilkan JEI di sini.",

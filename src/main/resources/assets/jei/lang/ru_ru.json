@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "Бесформенный рецепт",
   "jei.tooltip.cheat.mode.button.enabled": "Режим жульничества",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Нажмите %s для переключения.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "Зажмите %s и нажмите здесь для переключения.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s here to toggle it.",
   "jei.tooltip.recipe.by": "Рецепт из: %s",
   "jei.tooltip.recipe.id": "ID рецепта: %s",
   "jei.tooltip.not.enough.space": "Здесь недостаточно места для отображения JEI.",

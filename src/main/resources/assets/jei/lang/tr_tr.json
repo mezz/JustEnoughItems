@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "Şekilsiz Tarif",
   "jei.tooltip.cheat.mode.button.enabled": "Hile Modu",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Değiştirmek için %s düğmesine bas.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "%s-değiştirmek için buna bas.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s here to toggle it.",
   "jei.tooltip.recipe.by": "%s Tarifi",
   "jei.tooltip.recipe.id": "Tarif Kimliği: %s",
   "jei.tooltip.not.enough.space": "Burada içerik listesini gösterecek kadar yer yok.",

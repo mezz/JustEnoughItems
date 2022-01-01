@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "Shapeless Recipe",
   "jei.tooltip.cheat.mode.button.enabled": "Cheat Mode enabled",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Press \"%s\" to toggle it.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "%s-click here to toggle it.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s here to toggle it.",
   "jei.tooltip.recipe.by": "Recipe By: %s",
   "jei.tooltip.recipe.id": "Recipe ID: %s",
   "jei.tooltip.not.enough.space": "There is not enough space to display the JEI ingredient list overlay here.",

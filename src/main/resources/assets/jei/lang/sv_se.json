@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "Formlöst recept",
   "jei.tooltip.cheat.mode.button.enabled": "Fuskläget är aktiverat",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Tryck på %s för att slå på/av det.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "%s-klicka för att slå på/av det.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s för att slå på/av det.",
   "jei.tooltip.recipe.by": "Recept av: %s",
   "jei.tooltip.recipe.id": "Recept-ID: %s",
   "jei.tooltip.not.enough.space": "Det finns inte tillräckligt mycket utrymme för att visa JEI här.",

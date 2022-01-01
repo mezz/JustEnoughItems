@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "Ricetta senza forma",
   "jei.tooltip.cheat.mode.button.enabled": "Modalità trucchi attivata",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Premi %s per attivarla/disattivarla.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "Clic %s qui per attivarla/disattivarla.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s qui per attivarla/disattivarla.",
   "jei.tooltip.recipe.by": "Ricetta di: %s",
   "jei.tooltip.recipe.id": "ID ricetta: %s",
   "jei.tooltip.not.enough.space": "Non c'è abbastanza spazio per la schermata JEI qui.",
