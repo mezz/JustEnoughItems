@@ -226,7 +226,7 @@ public class GuiIngredient<T> extends GuiComponent implements IGuiIngredient<T> 
 					tooltip.add(acceptsAny.withStyle(ChatFormatting.GRAY));
 				}
 			}
-			TooltipRenderer.drawHoveringText(poseStack, tooltip, xOffset + mouseX, yOffset + mouseY, value);
+			TooltipRenderer.drawHoveringText(poseStack, tooltip, xOffset + mouseX, yOffset + mouseY, value, ingredientRenderer);
 
 			RenderSystem.enableDepthTest();
 		} catch (RuntimeException e) {
