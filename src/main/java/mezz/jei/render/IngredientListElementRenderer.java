@@ -96,7 +96,7 @@ public class IngredientListElementRenderer<T> {
 	public void drawTooltip(PoseStack poseStack, int mouseX, int mouseY, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig) {
 		T ingredient = element.getIngredient();
 		List<FormattedText> tooltip = getTooltip(ingredientFilterConfig, worldConfig);
-		TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, ingredient);
+		TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, ingredient, ingredientRenderer);
 	}
 
 	protected void renderEditMode(PoseStack poseStack, Rect2i area, int padding, IEditModeConfig editModeConfig) {
